@@ -22,6 +22,8 @@
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.build.targetEncoding>UTF-8</project.build.targetEncoding>
+
+        <service.version>2.0</service.version>
     </properties>
 
 </project>

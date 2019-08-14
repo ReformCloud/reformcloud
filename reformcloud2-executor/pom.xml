@@ -11,6 +11,32 @@
 
     <artifactId>reformcloud2-executor</artifactId>
 
+    <repositories>
+        <!-- spigot mc repo -->
+        <repository>
+            <id>spigotmc-repo</id>
+            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+        </repository>
+
+        <!-- bungee repo -->
+        <repository>
+            <id>bungeecord-repo</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </repository>
+
+        <!-- velocity repo -->
+        <repository>
+            <id>velocity</id>
+            <url>https://repo.velocitypowered.com/snapshots/</url>
+        </repository>
+
+        <!-- reformcloud repo for proxprox and nukkitX -->
+        <repository>
+            <id>reformcloud-repo</id>
+            <url>https://repo.reformcloud.systems/</url>
+        </repository>
+    </repositories>
+
     <dependencies>
         <!-- default api for all methods -->
         <dependency>
@@ -18,6 +44,54 @@
             <artifactId>reformcloud2-executor-api</artifactId>
             <version>2.0-SNAPSHOT</version>
             <scope>compile</scope>
+            <type>jar</type>
+        </dependency>
+
+        <!-- dependencies for reformcloud -->
+
+        <!-- dependencies for apis -->
+        <!-- spigot api -->
+        <dependency>
+            <groupId>org.spigotmc</groupId>
+            <artifactId>spigot-api</artifactId>
+            <version>1.14.4-R0.1-SNAPSHOT</version>
+            <scope>provided</scope>
+            <type>jar</type>
+        </dependency>
+
+        <!-- bungee api -->
+        <dependency>
+            <groupId>net.md-5</groupId>
+            <artifactId>bungeecord-api</artifactId>
+            <version>1.14-SNAPSHOT</version>
+            <scope>provided</scope>
+            <type>jar</type>
+        </dependency>
+
+        <!-- velocity api -->
+        <dependency>
+            <groupId>com.velocitypowered</groupId>
+            <artifactId>velocity-api</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+            <scope>provided</scope>
+            <type>jar</type>
+        </dependency>
+
+        <!-- ProxProx api -->
+        <dependency>
+            <groupId>io.gomint.proxy</groupId>
+            <artifactId>proxprox-api</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>provided</scope>
+            <type>jar</type>
+        </dependency>
+
+        <!-- NukkitX api -->
+        <dependency>
+            <groupId>cn.nukkit</groupId>
+            <artifactId>nukkit</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>provided</scope>
             <type>jar</type>
         </dependency>
     </dependencies>
