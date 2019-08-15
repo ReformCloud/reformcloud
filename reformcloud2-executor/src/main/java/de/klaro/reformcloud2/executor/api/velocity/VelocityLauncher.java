@@ -6,6 +6,7 @@ import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.proxy.ProxyServer;
+import de.klaro.reformcloud2.executor.api.common.dependency.DependencyLoader;
 
 @Plugin(
         id = "reformcloud_2_api_executor",
@@ -22,6 +23,7 @@ public final class VelocityLauncher {
 
     @Inject
     public VelocityLauncher(ProxyServer proxyServer) {
+        DependencyLoader.doLoad();
     }
 
     @Subscribe

@@ -2,7 +2,6 @@ package de.klaro.reformcloud2.runner;
 
 import de.klaro.reformcloud2.runner.classloading.ClassPreparer;
 import de.klaro.reformcloud2.runner.classloading.RunnerClassLoader;
-import de.klaro.reformcloud2.runner.util.ExceptionConsumer;
 import de.klaro.reformcloud2.runner.util.ExceptionFunction;
 
 import java.io.*;
@@ -14,8 +13,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.jar.JarFile;
 
@@ -100,6 +101,32 @@ public final class Runner {
                     }
                 }
             });
+        } else {
+            runIfProcessExists(new Consumer<Path>() {
+                @Override
+                public void accept(Path path) {
+                    ClassLoader classLoader = ClassPreparer.create(path, new ExceptionFunction<Path, ClassLoader>() {
+                        @Override
+                        public ClassLoader apply(Path path) throws Exception {
+                            URL[] urls = new URL[]{path.toUri().toURL()};
+                            return new RunnerClassLoader(urls);
+                        }
+                    });
+                    if (!(classLoader instanceof URLClassLoader)) {
+                        throw new RuntimeException("ClassLoader has to be a url class loader");
+                    }
+
+                    updateClassLoader(classLoader);
+                    try (JarFile jarFile = new JarFile(path.toFile())) {
+                        String main = jarFile.getManifest().getMainAttributes().getValue("Main-Class");
+                        Method invoke = classLoader.loadClass(main).getMethod("main", String[].class);
+                        invoke.setAccessible(true);
+                        invoke.invoke(null, (Object) args);
+                    } catch (final Exception ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            });
         }
     }
 
@@ -119,27 +146,11 @@ public final class Runner {
             return;
         }
 
-        if (shouldUnpackController()) {
-            getResourceAsStream("internal/files/controller.jar", new ExceptionConsumer<InputStream>() {
-                @Override
-                public void accept(InputStream inputStream) throws Exception {
-                    Files.copy(
-                            inputStream, Paths.get("reformcloud/.bin/executor.jar"), StandardCopyOption.REPLACE_EXISTING
-                    );
-                }
-            });
+        unpackExecutor();
 
+        if (shouldUnpackController()) {
             andThen.accept(write(properties, "1"), "1");
         } else {
-            getResourceAsStream("internal/files/client.jar", new ExceptionConsumer<InputStream>() {
-                @Override
-                public void accept(InputStream inputStream) throws Exception {
-                    Files.copy(
-                            inputStream, Paths.get("reformcloud/.bin/executor.jar"), StandardCopyOption.REPLACE_EXISTING
-                    );
-                }
-            });
-
             andThen.accept(write(properties, "2"), "2");
         }
     }
@@ -177,9 +188,9 @@ public final class Runner {
         return s.equalsIgnoreCase("controller");
     }
 
-    private static void getResourceAsStream(String path, ExceptionConsumer<InputStream> andThen) {
-        try (InputStream inputStream = Runner.class.getClassLoader().getResourceAsStream(path)) {
-            andThen.accept(inputStream);
+    private static void unpackExecutor() {
+        try (InputStream inputStream = Runner.class.getClassLoader().getResourceAsStream("internal/files/executor.jar")) {
+            Files.copy(Objects.requireNonNull(inputStream), Paths.get("reformcloud/.bin/executor.jar"), StandardCopyOption.REPLACE_EXISTING);
         } catch (final Exception ex) {
             ex.printStackTrace();
         }
@@ -199,5 +210,15 @@ public final class Runner {
 
     private static void createInvoke(String id) {
         System.setProperty("reformcloud.executor.type", id);
+    }
+
+    /* ================== */
+
+    private static void runIfProcessExists(Consumer<Path> consumer) {
+        if (!Files.exists(Paths.get("process.jar"))) {
+            throw new RuntimeException("Cannot find process jar to execute");
+        }
+
+        consumer.accept(Paths.get("process.jar"));
     }
 }
