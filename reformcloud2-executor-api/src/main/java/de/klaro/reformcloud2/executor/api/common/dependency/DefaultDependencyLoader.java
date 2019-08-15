@@ -1,6 +1,5 @@
 package de.klaro.reformcloud2.executor.api.common.dependency;
 
-import de.klaro.reformcloud2.executor.api.common.dependency.repo.DefaultDependency;
 import de.klaro.reformcloud2.executor.api.common.dependency.repo.DefaultRepositories;
 
 import java.io.IOException;

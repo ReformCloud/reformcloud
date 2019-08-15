@@ -1,6 +1,6 @@
-package de.klaro.reformcloud2.executor.api.common.dependency.repo;
+package de.klaro.reformcloud2.executor.api.common.dependency;
 
-import de.klaro.reformcloud2.executor.api.common.dependency.Dependency;
+import de.klaro.reformcloud2.executor.api.common.dependency.repo.Repository;
 import de.klaro.reformcloud2.executor.api.common.utility.DownloadHelper;
 import de.klaro.reformcloud2.executor.api.common.utility.SystemHelper;
 
@@ -15,7 +15,7 @@ public final class DefaultDependency implements Dependency {
 
     private static final Pattern PATTERN = Pattern.compile("(.*)-(.*).jar");
 
-    public DefaultDependency(Repository repository, String groupID, String artifactID, Properties properties) {
+    DefaultDependency(Repository repository, String groupID, String artifactID, Properties properties) {
         this.repository = repository;
         this.groupID = groupID;
         this.artifactID = artifactID;

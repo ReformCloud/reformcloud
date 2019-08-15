@@ -22,6 +22,10 @@ public final class DownloadHelper {
             httpURLConnection.connect();
 
             try (InputStream inputStream = httpURLConnection.getInputStream()) {
+                if (!Files.exists(Paths.get(target).getParent())) {
+                    Files.createDirectories(Paths.get(target).getParent());
+                }
+
                 Files.copy(inputStream, Paths.get(target), StandardCopyOption.REPLACE_EXISTING);
             }
         } catch (final IOException ex) {
