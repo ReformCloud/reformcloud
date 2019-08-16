@@ -1,6 +1,6 @@
 package de.klaro.reformcloud2.executor.api.common.restapi.request;
 
-import de.klaro.reformcloud2.executor.api.common.utility.Nameable;
+import de.klaro.reformcloud2.executor.api.common.utility.name.Nameable;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;

@@ -1,7 +1,7 @@
 package de.klaro.reformcloud2.executor.api.common.network.channel;
 
 import de.klaro.reformcloud2.executor.api.common.network.packet.Packet;
-import de.klaro.reformcloud2.executor.api.common.utility.ReNameable;
+import de.klaro.reformcloud2.executor.api.common.utility.name.ReNameable;
 
 public interface NetworkChannel extends ReNameable {
 

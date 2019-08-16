@@ -3,7 +3,7 @@ package de.klaro.reformcloud2.executor.api.common.groups;
 import de.klaro.reformcloud2.executor.api.common.groups.utils.PlayerAccessConfiguration;
 import de.klaro.reformcloud2.executor.api.common.groups.utils.StartupConfiguration;
 import de.klaro.reformcloud2.executor.api.common.groups.utils.Template;
-import de.klaro.reformcloud2.executor.api.common.utility.Nameable;
+import de.klaro.reformcloud2.executor.api.common.utility.name.Nameable;
 
 import java.util.Map;
 

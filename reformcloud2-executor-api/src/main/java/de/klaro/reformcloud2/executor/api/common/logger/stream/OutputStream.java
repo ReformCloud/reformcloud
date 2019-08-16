@@ -20,10 +20,13 @@ public final class OutputStream extends OutputBase {
 
     @Override
     public void flush() throws IOException {
-        String content = toString(StandardCharsets.UTF_8.name());
-        super.reset();
-        if (!content.isEmpty() && !content.equals(LINE_SEPARATOR)) {
-            loggerBase.logp(level, "", "", content);
+        synchronized (this) {
+            super.flush();
+            String content = toString(StandardCharsets.UTF_8.name());
+            super.reset();
+            if (!content.isEmpty() && !content.equals(LINE_SEPARATOR)) {
+                loggerBase.logp(level, "", "", content);
+            }
         }
     }
 }

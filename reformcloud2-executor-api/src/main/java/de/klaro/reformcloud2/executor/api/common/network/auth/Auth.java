@@ -1,6 +1,6 @@
 package de.klaro.reformcloud2.executor.api.common.network.auth;
 
-import de.klaro.reformcloud2.executor.api.common.utility.Nameable;
+import de.klaro.reformcloud2.executor.api.common.utility.name.Nameable;
 
 public interface Auth extends Nameable {
 
