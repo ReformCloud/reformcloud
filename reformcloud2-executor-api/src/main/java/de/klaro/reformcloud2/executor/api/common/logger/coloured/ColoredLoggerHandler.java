@@ -141,6 +141,7 @@ public final class ColoredLoggerHandler extends LoggerBase {
             @Override
             public void accept(LoggerLineHandler handler) {
                 handler.handleLine(line, ColoredLoggerHandler.this);
+                handler.handleRaw(Colours.stripColor(line), ColoredLoggerHandler.this);
             }
         });
     }
