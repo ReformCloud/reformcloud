@@ -64,7 +64,6 @@ public enum Version {
             "https://mcmirror.io/files/Spigot/Spigot-1.14.3-d05d3c1-20190703-0030.jar", 1),
     SPIGOT_1_14_4("Spigot 1.14.4", "1.14.4",
             "https://mcmirror.io/files/Spigot/Spigot-1.14.4-9de398a-20190719-2300.jar", 1),
-
     /**
      * Paper Versions
      */
@@ -98,7 +97,6 @@ public enum Version {
             "https://mcmirror.io/files/Paper/Paper-1.14.3-1bacdbd-20190702-1850.jar", 1),
     PAPER_1_14_4("Paper 1.14.4", "1.14.4",
             "https://mcmirror.io/files/Paper/Paper-1.14.4-9fe63a1-20190720-0401.jar", 1),
-
     /**
      * SpongeVanilla Versions
      */
@@ -186,13 +184,13 @@ public enum Version {
     /**
      * MCPE server
      */
-    NUKKIT_X("NukkitX", "",
-            "", 3),
+    NUKKIT_X("NukkitX", "1.0",
+            "https://ci.nukkitx.com/job/NukkitX/job/Nukkit/job/master/lastStableBuild/artifact/target/nukkit-1.0-SNAPSHOT.jar", 3),
     /**
      * MCPE proxy
      */
-    PROX_PROX("ProxProx", "",
-            "", 4);
+    PROX_PROX("ProxProx", "1.0",
+            "https://dl.reformcloud.systems/proxprox/ProxProx.jar", 4);
 
     private static final TreeMap<String, Version> JAVA_SERVER_PROVIDERS = new TreeMap<>();
 
@@ -206,7 +204,6 @@ public enum Version {
 
     public static final Deque<String> AVAILABLE_JAVA_PROXY_VERSIONS = new ConcurrentLinkedDeque<>();
 
-    //TODO
     public static final Deque<String> AVAILABLE_POCKET_SERVER_VERSIONS = new ConcurrentLinkedDeque<>();
 
     public static final Deque<String> AVAILABLE_POCKET_PROXY_VERSIONS = new ConcurrentLinkedDeque<>();
@@ -247,6 +244,10 @@ public enum Version {
                 "1.8-1.14",
                 "1.7-1.14"
         ));
+
+        AVAILABLE_POCKET_PROXY_VERSIONS.add("1.0");
+
+        AVAILABLE_POCKET_SERVER_VERSIONS.add("1.0");
 
         for (Version version : values()) {
             if (version.id == 1 && !JAVA_SERVER_PROVIDERS.containsKey(version.name)) {
