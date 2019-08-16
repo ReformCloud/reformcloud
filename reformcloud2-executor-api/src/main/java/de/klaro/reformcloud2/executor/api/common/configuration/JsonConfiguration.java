@@ -2,7 +2,7 @@ package de.klaro.reformcloud2.executor.api.common.configuration;
 
 import com.google.gson.*;
 import de.klaro.reformcloud2.executor.api.common.base.Conditions;
-import de.klaro.reformcloud2.executor.api.common.utility.SystemHelper;
+import de.klaro.reformcloud2.executor.api.common.utility.system.SystemHelper;
 
 import java.io.*;
 import java.lang.reflect.Type;

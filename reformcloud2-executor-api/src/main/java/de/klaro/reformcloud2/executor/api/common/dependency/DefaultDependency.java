@@ -1,8 +1,8 @@
 package de.klaro.reformcloud2.executor.api.common.dependency;
 
 import de.klaro.reformcloud2.executor.api.common.dependency.repo.Repository;
-import de.klaro.reformcloud2.executor.api.common.utility.DownloadHelper;
-import de.klaro.reformcloud2.executor.api.common.utility.SystemHelper;
+import de.klaro.reformcloud2.executor.api.common.utility.system.DownloadHelper;
+import de.klaro.reformcloud2.executor.api.common.utility.system.SystemHelper;
 
 import java.io.File;
 import java.io.FileFilter;

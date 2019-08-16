@@ -1,6 +1,6 @@
 package de.klaro.reformcloud2.executor.api.common.groups.utils;
 
-import de.klaro.reformcloud2.executor.api.common.utility.DownloadHelper;
+import de.klaro.reformcloud2.executor.api.common.utility.system.DownloadHelper;
 
 import java.util.Arrays;
 import java.util.Deque;
