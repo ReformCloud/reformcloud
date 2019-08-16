@@ -131,6 +131,8 @@ public final class Runner {
     }
 
     private static void startSetup(BiConsumer<String, String> andThen) {
+        unpackExecutor();
+
         Properties properties = new Properties();
         if (Files.exists(Paths.get("reformcloud/.bin/config.properties"))) {
             try (InputStream inputStream = Files.newInputStream(Paths.get("reformcloud/.bin/config.properties"))) {
@@ -145,8 +147,6 @@ public final class Runner {
             );
             return;
         }
-
-        unpackExecutor();
 
         if (shouldUnpackController()) {
             andThen.accept(write(properties, "1"), "1");
@@ -190,6 +190,7 @@ public final class Runner {
 
     private static void unpackExecutor() {
         try (InputStream inputStream = Runner.class.getClassLoader().getResourceAsStream("internal/files/executor.jar")) {
+            Files.createDirectories(Paths.get("reformcloud/.bin/libs"));
             Files.copy(Objects.requireNonNull(inputStream), Paths.get("reformcloud/.bin/executor.jar"), StandardCopyOption.REPLACE_EXISTING);
         } catch (final Exception ex) {
             ex.printStackTrace();
