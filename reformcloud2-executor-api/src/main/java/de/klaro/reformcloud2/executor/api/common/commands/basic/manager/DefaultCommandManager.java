@@ -5,6 +5,7 @@ import de.klaro.reformcloud2.executor.api.common.commands.Command;
 import de.klaro.reformcloud2.executor.api.common.commands.dispatcher.command.CommandEvent;
 import de.klaro.reformcloud2.executor.api.common.commands.manager.CommandManager;
 import de.klaro.reformcloud2.executor.api.common.commands.source.CommandSource;
+import de.klaro.reformcloud2.executor.api.common.language.LanguageManager;
 import de.klaro.reformcloud2.executor.api.common.utility.list.Links;
 
 import java.util.*;
@@ -174,8 +175,7 @@ public final class DefaultCommandManager implements CommandManager {
 
         Command command = getCommand(split[0]);
         if (command == null) {
-            //TODO: send unknown command message from language file
-            //result.accept();
+            result.accept(LanguageManager.get("command-unknown"));
             return;
         }
 
@@ -186,8 +186,7 @@ public final class DefaultCommandManager implements CommandManager {
         }
 
         if (!command.sources().equals(AllowedCommandSources.ALL) && !command.sources().equals(commandSources)) {
-            //TODO: send not allowed command source message from language file
-            //result.accept();
+            result.accept(LanguageManager.get("command-source-not-allowed"));
             return;
         }
 
