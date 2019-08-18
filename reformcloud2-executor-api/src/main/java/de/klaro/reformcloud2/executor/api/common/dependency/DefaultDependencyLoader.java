@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.function.Consumer;
 
-final class DefaultDependencyLoader extends DependencyLoader {
+public final class DefaultDependencyLoader extends DependencyLoader {
 
     static {
         Properties properties = new Properties();
@@ -52,17 +52,7 @@ final class DefaultDependencyLoader extends DependencyLoader {
             @Override
             public void accept(Dependency dependency) {
                 System.out.println("Preloading dependency " + dependency.getArtifactID() + " from repo " + dependency.getRepository().getName() + "...");
-                try {
-                    dependency.prepareIfUpdate();
-                    if (Files.exists(dependency.getPath())) {
-                        urls.add(dependency.getPath().toUri().toURL());
-                    } else {
-                        dependency.download();
-                        urls.add(dependency.getPath().toUri().toURL());
-                    }
-                } catch (final MalformedURLException ex) {
-                    ex.printStackTrace();
-                }
+                urls.add(loadDependency(dependency));
             }
         });
     }
@@ -72,8 +62,30 @@ final class DefaultDependencyLoader extends DependencyLoader {
         urls.forEach(new Consumer<URL>() {
             @Override
             public void accept(URL url) {
-                DefaultDependencyLoader.this.addURL(url);
+                addDependency(url);
             }
         });
+    }
+
+    @Override
+    public URL loadDependency(Dependency dependency) {
+        try {
+            dependency.prepareIfUpdate();
+            if (Files.exists(dependency.getPath())) {
+                return dependency.getPath().toUri().toURL();
+            } else {
+                dependency.download();
+                return dependency.getPath().toUri().toURL();
+            }
+        } catch (final MalformedURLException ex) {
+            ex.printStackTrace();
+        }
+
+        return null;
+    }
+
+    @Override
+    public void addDependency(URL depend) {
+        DefaultDependencyLoader.this.addURL(depend);
     }
 }

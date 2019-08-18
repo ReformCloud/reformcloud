@@ -175,7 +175,7 @@ public final class DefaultCommandManager implements CommandManager {
 
         Command command = getCommand(split[0]);
         if (command == null) {
-            result.accept(LanguageManager.get("command-unknown"));
+            result.accept(LanguageManager.get("command-unknown", split[0]));
             return;
         }
 
@@ -186,7 +186,7 @@ public final class DefaultCommandManager implements CommandManager {
         }
 
         if (!command.sources().equals(AllowedCommandSources.ALL) && !command.sources().equals(commandSources)) {
-            result.accept(LanguageManager.get("command-source-not-allowed"));
+            result.accept(LanguageManager.get("command-source-not-allowed", commandSources.name()));
             return;
         }
 

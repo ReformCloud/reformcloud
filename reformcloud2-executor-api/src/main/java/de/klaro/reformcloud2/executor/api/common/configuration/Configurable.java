@@ -1,5 +1,7 @@
 package de.klaro.reformcloud2.executor.api.common.configuration;
 
+import com.google.gson.reflect.TypeToken;
+
 import java.io.File;
 import java.lang.reflect.Type;
 import java.nio.file.Path;
@@ -27,7 +29,7 @@ public interface Configurable<V extends Configurable> {
 
     V get(String key);
 
-    <T> T get(String key, Type type);
+    <T> T get(String key, TypeToken<T> type);
 
     <T> T get(String key, Class<T> type);
 

@@ -27,4 +27,8 @@ public abstract class DependencyLoader {
     public abstract void loadDependencies();
 
     public abstract void addDependencies();
+
+    public abstract URL loadDependency(Dependency dependency);
+
+    public abstract void addDependency(URL depend);
 }

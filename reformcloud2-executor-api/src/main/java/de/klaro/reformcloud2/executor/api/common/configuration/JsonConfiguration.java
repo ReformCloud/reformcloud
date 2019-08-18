@@ -1,6 +1,7 @@
 package de.klaro.reformcloud2.executor.api.common.configuration;
 
 import com.google.gson.*;
+import com.google.gson.reflect.TypeToken;
 import de.klaro.reformcloud2.executor.api.common.base.Conditions;
 import de.klaro.reformcloud2.executor.api.common.utility.system.SystemHelper;
 
@@ -25,7 +26,6 @@ public final class JsonConfiguration implements Configurable<JsonConfiguration> 
     });
 
     public JsonConfiguration() {
-        this.jsonObject = new JsonObject();
     }
 
     public JsonConfiguration(String json) {
@@ -38,6 +38,22 @@ public final class JsonConfiguration implements Configurable<JsonConfiguration> 
 
         Conditions.isTrue(jsonElement.isJsonObject(), "JsonElement has to be a json object");
         this.jsonObject = jsonElement.getAsJsonObject();
+    }
+
+    public JsonConfiguration(InputStream stream) {
+        try (InputStreamReader inputStreamReader = new InputStreamReader(stream, StandardCharsets.UTF_8)) {
+            JsonElement jsonElement;
+            try {
+                jsonElement = PARSER.parse(inputStreamReader);
+            } catch (final Exception ex) {
+                jsonElement = new JsonObject();
+            }
+
+            Conditions.isTrue(jsonElement.isJsonObject(), "JsonElement has to be a json object");
+            this.jsonObject = jsonElement.getAsJsonObject();
+        } catch (final IOException ex) {
+            ex.printStackTrace();
+        }
     }
 
     public JsonConfiguration(Reader json) {
@@ -56,7 +72,7 @@ public final class JsonConfiguration implements Configurable<JsonConfiguration> 
         this.jsonObject = jsonObject;
     }
 
-    private final JsonObject jsonObject;
+    private JsonObject jsonObject = new JsonObject();
 
     @Override
     public Configurable add(String key, JsonConfiguration value) {
@@ -128,8 +144,8 @@ public final class JsonConfiguration implements Configurable<JsonConfiguration> 
     }
 
     @Override
-    public <T> T get(String key, Type type) {
-        return getOrDefault(key, type, null);
+    public <T> T get(String key, TypeToken<T> type) {
+        return getOrDefault(key, type.getType(), null);
     }
 
     @Override
