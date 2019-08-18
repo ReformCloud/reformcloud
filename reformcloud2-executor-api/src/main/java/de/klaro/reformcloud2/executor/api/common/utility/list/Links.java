@@ -3,6 +3,7 @@ package de.klaro.reformcloud2.executor.api.common.utility.list;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -59,5 +60,18 @@ public final class Links {
         }
 
         return null;
+    }
+
+    public static <F, T> List<T> getValues(Map<F, T> in, Predicate<F> predicate) {
+        List<T> out = new ArrayList<>();
+        in.entrySet().forEach(new Consumer<Map.Entry<F, T>>() {
+            @Override
+            public void accept(Map.Entry<F, T> ftEntry) {
+                if (predicate.test(ftEntry.getKey())) {
+                    out.add(ftEntry.getValue());
+                }
+            }
+        });
+        return out;
     }
 }
