@@ -37,6 +37,8 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
 
     private static final DependencyLoader DEPENDENCY_LOADER = new DefaultDependencyLoader();
 
+    private final List<ApplicationHandler> applicationHandlers = new ArrayList<>();
+
     @Override
     public void detectApplications() {
         Conditions.isTrue(APP_DIR.isDirectory());
@@ -82,6 +84,13 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
                 ex.printStackTrace();
             }
         }
+
+        applicationHandlers.forEach(new Consumer<ApplicationHandler>() {
+            @Override
+            public void accept(ApplicationHandler applicationHandler) {
+                applicationHandler.onDetectApplications();
+            }
+        });
     }
 
     @Override
@@ -115,6 +124,13 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
                 throwable.printStackTrace();
             }
         }
+
+        applicationHandlers.forEach(new Consumer<ApplicationHandler>() {
+            @Override
+            public void accept(ApplicationHandler applicationHandler) {
+                applicationHandler.onInstallApplications();
+            }
+        });
     }
 
     @Override
@@ -127,6 +143,13 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
                 System.out.println(LanguageManager.get("successfully-loaded-app", application.getApplication().getName()));
             }
         });
+
+        applicationHandlers.forEach(new Consumer<ApplicationHandler>() {
+            @Override
+            public void accept(ApplicationHandler applicationHandler) {
+                applicationHandler.onLoadApplications();
+            }
+        });
     }
 
     @Override
@@ -137,6 +160,13 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
                 application.onEnable();
                 application.getApplication().setApplicationStatus(ApplicationStatus.ENABLED);
                 System.out.println(LanguageManager.get("successfully-enabled-app", application.getApplication().getName()));
+            }
+        });
+
+        applicationHandlers.forEach(new Consumer<ApplicationHandler>() {
+            @Override
+            public void accept(ApplicationHandler applicationHandler) {
+                applicationHandler.onEnableApplications();
             }
         });
     }
@@ -158,6 +188,13 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
             }
         });
         applications.clear();
+
+        applicationHandlers.forEach(new Consumer<ApplicationHandler>() {
+            @Override
+            public void accept(ApplicationHandler applicationHandler) {
+                applicationHandler.onDisableApplications();
+            }
+        });
     }
 
     @Override
@@ -290,5 +327,10 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
                 return application.getApplication();
             }
         }));
+    }
+
+    @Override
+    public void addApplicationHandler(ApplicationHandler applicationHandler) {
+        applicationHandlers.add(applicationHandler);
     }
 }

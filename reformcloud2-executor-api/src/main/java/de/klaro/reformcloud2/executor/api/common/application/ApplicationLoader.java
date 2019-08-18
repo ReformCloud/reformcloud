@@ -25,4 +25,6 @@ public interface ApplicationLoader {
     String getApplicationName(LoadedApplication loadedApplication);
 
     List<LoadedApplication> getApplications();
+
+    void addApplicationHandler(ApplicationHandler applicationHandler);
 }
