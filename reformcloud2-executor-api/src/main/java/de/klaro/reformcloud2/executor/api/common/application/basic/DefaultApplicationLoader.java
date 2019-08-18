@@ -146,9 +146,10 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
         applications.forEach(new Consumer<Application>() {
             @Override
             public void accept(Application application) {
-                application.onPreDisable();
                 application.getApplication().setApplicationStatus(ApplicationStatus.PRE_DISABLE);
+                application.onPreDisable();
                 System.out.println(LanguageManager.get("successfully-pre-disabled-app", application.getApplication().getName()));
+                application.getApplication().setApplicationStatus(ApplicationStatus.DISABLED);
 
                 application.getApplication().setApplicationStatus(ApplicationStatus.UNINSTALLING);
                 application.onUninstall();
@@ -239,9 +240,10 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
             return false;
         }
 
-        application.onPreDisable();
         application.getApplication().setApplicationStatus(ApplicationStatus.PRE_DISABLE);
+        application.onPreDisable();
         System.out.println(LanguageManager.get("successfully-pre-disabled-app", application.getApplication().getName()));
+        application.getApplication().setApplicationStatus(ApplicationStatus.DISABLED);
 
         application.getApplication().setApplicationStatus(ApplicationStatus.UNINSTALLING);
         application.onUninstall();
