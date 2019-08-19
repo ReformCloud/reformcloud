@@ -11,7 +11,7 @@ public final class Conditions {
     }
 
     public static void isTrue(boolean test) {
-        isTrue(test, (Object) null);
+        isTrue(test, null);
     }
 
     public static void isTrue(boolean test, String message, Object... args) {

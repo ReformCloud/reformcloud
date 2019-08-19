@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -73,5 +74,18 @@ public final class Links {
             }
         });
         return out;
+    }
+
+    public static <F, T> void forEachValues(Map<F, T> map, Consumer<T> consumer) {
+        map.forEach(new BiConsumer<F, T>() {
+            @Override
+            public void accept(F f, T t) {
+                consumer.accept(t);
+            }
+        });
+    }
+
+    public static <F> void forEach(List<F> list, Consumer<F> consumer) {
+        list.forEach(consumer);
     }
 }

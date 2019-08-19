@@ -22,7 +22,7 @@ public interface EventManager {
 
     void unregisterListener(Object listener);
 
-    void unregisterListener(Class<?> listener);
+    void unregisterAll();
 
     List<List<LoadedListener>> getListeners();
 }

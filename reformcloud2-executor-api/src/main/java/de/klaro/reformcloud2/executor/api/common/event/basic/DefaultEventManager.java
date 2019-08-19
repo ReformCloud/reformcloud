@@ -37,19 +37,36 @@ public final class DefaultEventManager implements EventManager {
 
     @Override
     public void callEvent(Event event) {
+        event.preCall();
+
         List<LoadedListener> listeners = done.get(event.getClass());
         if (listeners != null) {
             listeners.forEach(new Consumer<LoadedListener>() {
                 @Override
                 public void accept(LoadedListener loadedListener) {
-                    try {
-                        loadedListener.call(event);
-                    } catch (final InvocationTargetException | IllegalAccessException ex) {
-                        ex.printStackTrace();
+                    if (!event.isAsync()) {
+                        try {
+                            loadedListener.call(event);
+                        } catch (final InvocationTargetException | IllegalAccessException ex) {
+                            ex.printStackTrace();
+                        }
+                    } else {
+                        CompletableFuture.runAsync(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    loadedListener.call(event);
+                                } catch (final InvocationTargetException | IllegalAccessException ex) {
+                                    ex.printStackTrace();
+                                }
+                            }
+                        });
                     }
                 }
             });
         }
+
+        event.postCall();
     }
 
     @Override
@@ -74,12 +91,16 @@ public final class DefaultEventManager implements EventManager {
 
     @Override
     public void registerListener(Object listener) {
-        this.register(listener.getClass());
+        this.register(listener);
     }
 
     @Override
     public void registerListener(Class<?> listener) {
-        this.register(listener);
+        try {
+            this.register(listener.newInstance());
+        } catch (final InstantiationException | IllegalAccessException ex) {
+            ex.printStackTrace();
+        }
     }
 
     @Override
@@ -104,12 +125,22 @@ public final class DefaultEventManager implements EventManager {
 
     @Override
     public void unregisterListener(Object listener) {
-        unregister(listener.getClass());
+        unregister(listener);
     }
 
     @Override
-    public void unregisterListener(Class<?> listener) {
-        unregister(listener);
+    public void unregisterAll() {
+        Links.forEachValues(done, new Consumer<List<LoadedListener>>() {
+            @Override
+            public void accept(List<LoadedListener> loadedListeners) {
+                Links.forEach(loadedListeners, new Consumer<LoadedListener>() {
+                    @Override
+                    public void accept(LoadedListener loadedListener) {
+                        unregister(loadedListener.getListener());
+                    }
+                });
+            }
+        });
     }
 
     @Override
@@ -122,14 +153,14 @@ public final class DefaultEventManager implements EventManager {
         }));
     }
 
-    private Map<Class<?>, Map<Byte, Set<Method>>> find(Class<?> listener) {
+    private Map<Class<?>, Map<Byte, Set<Method>>> find(Object listener) {
         Map<Class<?>, Map<Byte, Set<Method>>> result = new HashMap<>();
-        for (Method method : listener.getMethods()) {
+        for (Method method : listener.getClass().getDeclaredMethods()) {
             Listener annotation = method.getAnnotation(Listener.class);
             if (annotation != null) {
                 Class<?>[] parameters = method.getParameterTypes();
                 Conditions.isTrue(parameters.length == 1, "Listener class {0} tried to register a method with {1} instead of one argument",
-                        listener.getSimpleName(), parameters.length);
+                        listener.getClass().getSimpleName(), parameters.length);
 
                 Map<Byte, Set<Method>> map = result.computeIfAbsent(parameters[0], new Function<Class<?>, Map<Byte, Set<Method>>>() {
                     @Override
@@ -152,7 +183,7 @@ public final class DefaultEventManager implements EventManager {
         return result;
     }
 
-    private void register(Class<?> listener) {
+    private void register(Object listener) {
         Map<Class<?>, Map<Byte, Set<Method>>> handlers = find(listener);
         lock.lock();
         try {
@@ -206,7 +237,7 @@ public final class DefaultEventManager implements EventManager {
         }
     }
 
-    private void unregister(Class<?> listener) {
+    private void unregister(Object listener) {
         Map<Class<?>, Map<Byte, Set<Method>>> handler = find(listener);
         lock.lock();
         try {
@@ -215,9 +246,9 @@ public final class DefaultEventManager implements EventManager {
                 if (prioritiesMap != null) {
                     for (Byte aByte : classMapEntry.getValue().keySet()) {
                         Map<Object, Method[]> currentPriority = prioritiesMap.get(aByte);
-                        if ( currentPriority != null ) {
+                        if (currentPriority != null) {
                             currentPriority.remove(listener);
-                            if ( currentPriority.isEmpty() ) {
+                            if (currentPriority.isEmpty()) {
                                 prioritiesMap.remove(aByte);
                             }
                         }

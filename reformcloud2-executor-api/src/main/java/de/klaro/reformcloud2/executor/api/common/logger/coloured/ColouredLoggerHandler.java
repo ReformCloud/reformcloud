@@ -22,11 +22,11 @@ import java.util.function.Predicate;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 
-public final class ColoredLoggerHandler extends LoggerBase {
+public final class ColouredLoggerHandler extends LoggerBase {
 
     private static final String PROMPT = Colours.WHITE + System.getProperty("user.name") + "@ReformCloud" + Colours.CYAN + "2" + Colours.WHITE + "~# ";
 
-    public ColoredLoggerHandler() throws IOException {
+    public ColouredLoggerHandler() throws IOException {
         this.consoleReader = new ConsoleReader(System.in, System.out);
         this.consoleReader.setExpandEvents(false);
 
@@ -140,8 +140,8 @@ public final class ColoredLoggerHandler extends LoggerBase {
         handlers.forEach(new Consumer<LoggerLineHandler>() {
             @Override
             public void accept(LoggerLineHandler handler) {
-                handler.handleLine(line, ColoredLoggerHandler.this);
-                handler.handleRaw(Colours.stripColor(line), ColoredLoggerHandler.this);
+                handler.handleLine(line, ColouredLoggerHandler.this);
+                handler.handleRaw(Colours.stripColor(line), ColouredLoggerHandler.this);
             }
         });
     }

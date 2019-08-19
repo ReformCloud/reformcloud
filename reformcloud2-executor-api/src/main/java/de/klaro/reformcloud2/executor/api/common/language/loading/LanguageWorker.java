@@ -20,7 +20,7 @@ public final class LanguageWorker {
         try {
             LinkedList<Language> out = new LinkedList<>();
             Language use = null;
-            Enumeration<URL> enumeration = LanguageWorker.class.getClassLoader().getResources("internal/languages");
+            Enumeration<URL> enumeration = LanguageWorker.class.getClassLoader().getResources("languages");
             while (enumeration.hasMoreElements()) {
                 File file = new File(enumeration.nextElement().toURI());
                 for (File languageFile : Objects.requireNonNull(file.listFiles(new FileFilter() {
@@ -29,10 +29,11 @@ public final class LanguageWorker {
                         return pathname.isFile() && pathname.getName().endsWith(".properties");
                     }
                 }))) {
-                    try (InputStream inputStream = LanguageWorker.class.getClassLoader().getResourceAsStream(file.getPath())) {
+                    try (InputStream inputStream = LanguageWorker.class.getClassLoader().getResourceAsStream("languages/" + languageFile.getName())) {
                         Properties properties = new Properties();
                         properties.load(inputStream);
-                        if (!properties.contains("language.setting.name") && !properties.contains("language.setting.display")) {
+
+                        if (properties.get("language.setting.name") == null || properties.get("language.setting.display") == null) {
                             throw new IllegalStateException("Language file which is not configured properly found");
                         }
 
