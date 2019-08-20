@@ -9,10 +9,11 @@ import java.util.Map;
 
 public class ProcessGroup implements Nameable {
 
-    public ProcessGroup(String name, String parentGroup, StartupConfiguration startupConfiguration,
-                        Map<Integer, Template> templatePerPriority,
+    public ProcessGroup(String name, boolean showIdInName, String parentGroup,
+                        StartupConfiguration startupConfiguration, Map<Integer, Template> templatePerPriority,
                         PlayerAccessConfiguration playerAccessConfiguration, boolean staticProcess) {
         this.name = name;
+        this.showIdInName = showIdInName;
         this.parentGroup = parentGroup;
         this.startupConfiguration = startupConfiguration;
         this.templatePerPriority = templatePerPriority;
@@ -21,6 +22,8 @@ public class ProcessGroup implements Nameable {
     }
 
     private String name;
+
+    private boolean showIdInName;
 
     private String parentGroup;
 
@@ -31,6 +34,10 @@ public class ProcessGroup implements Nameable {
     private PlayerAccessConfiguration playerAccessConfiguration;
 
     private boolean staticProcess;
+
+    public boolean isShowIdInName() {
+        return showIdInName;
+    }
 
     public String getParentGroup() {
         return parentGroup;

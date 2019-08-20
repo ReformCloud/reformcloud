@@ -88,4 +88,16 @@ public final class Links {
     public static <F> void forEach(List<F> list, Consumer<F> consumer) {
         list.forEach(consumer);
     }
+
+    public static <F, T, X> List<X> keyApply(Map<F, T> map, Function<F, X> fxFunction) {
+        List<X> out = new ArrayList<>();
+        map.keySet().forEach(new Consumer<F>() {
+            @Override
+            public void accept(F f) {
+                out.add(fxFunction.apply(f));
+            }
+        });
+
+        return out;
+    }
 }
