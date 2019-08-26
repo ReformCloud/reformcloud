@@ -22,4 +22,6 @@ public interface PacketHandler {
     List<NetworkHandler> getAllNetworkHandlers();
 
     QueryHandler getQueryHandler();
+
+    void clearHandlers();
 }

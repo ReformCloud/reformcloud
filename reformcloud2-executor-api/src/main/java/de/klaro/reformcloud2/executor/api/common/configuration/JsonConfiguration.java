@@ -75,7 +75,7 @@ public final class JsonConfiguration implements Configurable<JsonConfiguration> 
     private JsonObject jsonObject = new JsonObject();
 
     @Override
-    public Configurable add(String key, JsonConfiguration value) {
+    public JsonConfiguration add(String key, JsonConfiguration value) {
         if (value == null) {
             jsonObject.add(key, JsonNull.INSTANCE);
             return this;
@@ -86,7 +86,7 @@ public final class JsonConfiguration implements Configurable<JsonConfiguration> 
     }
 
     @Override
-    public Configurable add(String key, Object value) {
+    public JsonConfiguration add(String key, Object value) {
         if (value == null) {
             jsonObject.add(key, JsonNull.INSTANCE);
             return this;
@@ -97,43 +97,43 @@ public final class JsonConfiguration implements Configurable<JsonConfiguration> 
     }
 
     @Override
-    public Configurable add(String key, String value) {
+    public JsonConfiguration add(String key, String value) {
         this.jsonObject.addProperty(key, value);
         return this;
     }
 
     @Override
-    public Configurable add(String key, Integer value) {
+    public JsonConfiguration add(String key, Integer value) {
         this.jsonObject.addProperty(key, value);
         return this;
     }
 
     @Override
-    public Configurable add(String key, Long value) {
+    public JsonConfiguration add(String key, Long value) {
         this.jsonObject.addProperty(key, value);
         return this;
     }
 
     @Override
-    public Configurable add(String key, Short value) {
+    public JsonConfiguration add(String key, Short value) {
         this.jsonObject.addProperty(key, value);
         return this;
     }
 
     @Override
-    public Configurable add(String key, Byte value) {
+    public JsonConfiguration add(String key, Byte value) {
         this.jsonObject.addProperty(key, value);
         return this;
     }
 
     @Override
-    public Configurable add(String key, Boolean value) {
+    public JsonConfiguration add(String key, Boolean value) {
         this.jsonObject.addProperty(key, value);
         return this;
     }
 
     @Override
-    public Configurable remove(String key) {
+    public JsonConfiguration remove(String key) {
         this.jsonObject.remove(key);
         return this;
     }

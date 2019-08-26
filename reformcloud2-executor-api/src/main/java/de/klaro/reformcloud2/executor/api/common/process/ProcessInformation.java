@@ -97,7 +97,7 @@ public final class ProcessInformation implements Nameable {
 
     @Override
     public String getName() {
-        return null;
+        return processName;
     }
 
     public void setProcessState(ProcessState processState) {

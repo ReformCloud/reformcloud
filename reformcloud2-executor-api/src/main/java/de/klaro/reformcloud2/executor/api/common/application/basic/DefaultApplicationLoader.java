@@ -66,11 +66,11 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
                             file,
                             appConfig
                     ).withDependencies(
-                            configurable.get("dependencies", new TypeToken<List<Dependency>>() {})
+                            configurable.getOrDefault("dependencies", new TypeToken<List<Dependency>>() {}.getType(), new ArrayList<>())
                     ).withDescription(
-                            configurable.getString("description")
+                            configurable.getOrDefault("description", (String) null)
                     ).withWebsite(
-                            configurable.getString("website")
+                            configurable.getOrDefault("website", (String) null)
                     ).create();
 
                     Conditions.isTrue(applicationConfig.getName() != null, "Application has no name");

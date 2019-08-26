@@ -9,23 +9,23 @@ import java.util.function.Predicate;
 
 public interface Configurable<V extends Configurable> {
 
-    Configurable add(String key, V value);
+    V add(String key, V value);
 
-    Configurable add(String key, Object value);
+    V add(String key, Object value);
 
-    Configurable add(String key, String value);
+    V add(String key, String value);
 
-    Configurable add(String key, Integer value);
+    V add(String key, Integer value);
 
-    Configurable add(String key, Long value);
+    V add(String key, Long value);
 
-    Configurable add(String key, Short value);
+    V add(String key, Short value);
 
-    Configurable add(String key, Byte value);
+    V add(String key, Byte value);
 
-    Configurable add(String key, Boolean value);
+    V add(String key, Boolean value);
 
-    Configurable remove(String key);
+    V remove(String key);
 
     V get(String key);
 

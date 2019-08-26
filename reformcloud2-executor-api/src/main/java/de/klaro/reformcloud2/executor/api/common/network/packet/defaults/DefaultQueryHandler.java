@@ -37,4 +37,9 @@ public final class DefaultQueryHandler implements QueryHandler {
         packet.setQueryID(uuid);
         return packet;
     }
+
+    @Override
+    public void clearQueries() {
+        this.waiting.clear();
+    }
 }

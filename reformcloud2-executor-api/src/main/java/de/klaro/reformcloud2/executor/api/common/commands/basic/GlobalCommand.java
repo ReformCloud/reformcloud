@@ -14,13 +14,17 @@ import java.util.List;
 
 public abstract class GlobalCommand implements Command {
 
-    private static final String DEFAULT_DESCRIPTION = "A reformcloud2 provided command";
+    public static final String DEFAULT_DESCRIPTION = "A reformcloud2 provided command";
 
     public GlobalCommand(String command, String permission, String description, List<String> aliases) {
         this.mainCommand = command.toLowerCase();
         this.aliases = Links.toLowerCase(aliases);
         this.description = description;
-        this.permissionCheck = new DefaultPermission(permission.toLowerCase(), PermissionResult.DENIED);
+        if (permission != null) {
+            this.permissionCheck = new DefaultPermission(permission.toLowerCase(), PermissionResult.DENIED);
+        } else {
+            this.permissionCheck = new DefaultPermission(null, PermissionResult.ALLOWED);
+        }
     }
 
     public GlobalCommand(String command, String description, List<String> aliases) {

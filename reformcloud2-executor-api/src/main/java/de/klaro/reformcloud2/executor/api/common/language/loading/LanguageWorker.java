@@ -16,6 +16,8 @@ import java.util.Properties;
 
 public final class LanguageWorker {
 
+    private LanguageWorker() {}
+
     public static void doLoad() {
         try {
             LinkedList<Language> out = new LinkedList<>();

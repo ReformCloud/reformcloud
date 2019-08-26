@@ -1,8 +1,11 @@
 package de.klaro.reformcloud2.executor.api.common;
 
+import de.klaro.reformcloud2.executor.api.ExecutorType;
 import de.klaro.reformcloud2.executor.api.common.base.Conditions;
 
 public abstract class ExecutorAPI {
+
+    protected ExecutorType type;
 
     /* ========================== */
 
@@ -18,4 +21,8 @@ public abstract class ExecutorAPI {
     }
 
     /* ========================== */
+
+    public ExecutorType getType() {
+        return type;
+    }
 }

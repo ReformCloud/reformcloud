@@ -1,9 +1,6 @@
 package de.klaro.reformcloud2.executor.api.common.utility.list;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -99,5 +96,55 @@ public final class Links {
         });
 
         return out;
+    }
+
+    @SafeVarargs
+    public static <S, F> Collection<F> newCollection(Function<S, F> function, S... in) {
+        return newCollection(Arrays.asList(in), function);
+    }
+
+    public static <S, F> Collection<F> newCollection(List<S> in, Function<S, F> function) {
+        return newCollection(in, new Predicate<S>() {
+            @Override
+            public boolean test(S s) {
+                return true;
+            }
+        }, function);
+    }
+
+    public static <S, F> Collection<F> newCollection(List<S> in, Predicate<S> predicate, Function<S, F> function) {
+        Collection<F> out = new LinkedList<>();
+        in.forEach(new Consumer<S>() {
+            @Override
+            public void accept(S s) {
+                if (predicate.test(s)) {
+                    out.add(function.apply(s));
+                }
+            }
+        });
+
+        return out;
+    }
+
+    public static <T> List<T> list(Collection<T> list, Predicate<T> predicate) {
+        List<T> out = new LinkedList<>();
+        list.forEach(new Consumer<T>() {
+            @Override
+            public void accept(T t) {
+                if (predicate.test(t)) {
+                    out.add(t);
+                }
+            }
+        });
+        return out;
+    }
+
+    public static <F, T> Collection<T> arrayCollect(F[] fs, Function<F, T> ftFunction) {
+        Collection<T> collection = new LinkedList<>();
+        for (F f : fs) {
+            collection.add(ftFunction.apply(f));
+        }
+
+        return collection;
     }
 }

@@ -1,18 +1,18 @@
 package de.klaro.reformcloud2.executor.api.common.network.packet;
 
-import de.klaro.reformcloud2.executor.api.common.configuration.Configurable;
+import de.klaro.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 
 import java.util.UUID;
 
 public class DefaultPacket implements Packet {
 
-    public DefaultPacket(int id, Configurable content) {
+    public DefaultPacket(int id, JsonConfiguration content) {
         this.id = id;
         this.content = content;
         this.uid = null;
     }
 
-    public DefaultPacket(int id, Configurable content, UUID queryUniqueID) {
+    public DefaultPacket(int id, JsonConfiguration content, UUID queryUniqueID) {
         this.id = id;
         this.content = content;
         this.uid = queryUniqueID;
@@ -22,7 +22,7 @@ public class DefaultPacket implements Packet {
 
     private UUID uid;
 
-    private final Configurable content;
+    private final JsonConfiguration content;
 
     @Override
     public int packetID() {
@@ -35,7 +35,7 @@ public class DefaultPacket implements Packet {
     }
 
     @Override
-    public Configurable content() {
+    public JsonConfiguration content() {
         return content;
     }
 

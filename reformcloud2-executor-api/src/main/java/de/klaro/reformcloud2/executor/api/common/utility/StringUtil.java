@@ -1,5 +1,9 @@
 package de.klaro.reformcloud2.executor.api.common.utility;
 
+import de.klaro.reformcloud2.executor.api.common.base.Conditions;
+
+import java.util.UUID;
+
 public final class StringUtil {
 
     public static void sendHeader() {
@@ -12,5 +16,15 @@ public final class StringUtil {
                 "\n" +
                 "                  Not just a cloud system, but an experience.\n"
         );
+    }
+
+    public static String generateString(int times) {
+        Conditions.isTrue(times > 0);
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i = 0; i < times; i++) {
+            stringBuilder.append(UUID.randomUUID().toString().replace("-", ""));
+        }
+
+        return stringBuilder.toString();
     }
 }

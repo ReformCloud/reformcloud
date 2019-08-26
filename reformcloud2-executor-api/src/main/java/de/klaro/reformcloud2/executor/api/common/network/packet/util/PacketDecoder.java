@@ -1,6 +1,5 @@
 package de.klaro.reformcloud2.executor.api.common.network.packet.util;
 
-import de.klaro.reformcloud2.executor.api.common.configuration.Configurable;
 import de.klaro.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import de.klaro.reformcloud2.executor.api.common.network.NetworkUtil;
 import de.klaro.reformcloud2.executor.api.common.network.packet.DefaultPacket;
@@ -21,7 +20,7 @@ public final class PacketDecoder extends ByteToMessageDecoder {
 
         try {
             int id = NetworkUtil.read(byteBuf);
-            Configurable content = new JsonConfiguration(NetworkUtil.readString(byteBuf));
+            JsonConfiguration content = new JsonConfiguration(NetworkUtil.readString(byteBuf));
             String query = NetworkUtil.readString(byteBuf);
 
             if (query.equals("null")) {

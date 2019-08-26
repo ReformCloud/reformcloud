@@ -14,4 +14,6 @@ public interface QueryHandler {
     QueryRequest<Packet> sendQueryAsync(PacketSender sender, Packet packet);
 
     Packet convertToQuery(Packet packet, UUID uuid);
+
+    void clearQueries();
 }

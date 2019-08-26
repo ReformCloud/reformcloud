@@ -2,14 +2,20 @@ package de.klaro.reformcloud2.executor.api.common.groups.utils;
 
 public final class Template {
 
-    public Template(String name, String downloadURL, RuntimeConfiguration runtimeConfiguration, Version version) {
+    public Template(int priority, String name, String serverNameSplitter, String downloadURL, RuntimeConfiguration runtimeConfiguration, Version version) {
+        this.priority = priority;
         this.name = name;
+        this.serverNameSplitter = serverNameSplitter;
         this.downloadURL = downloadURL;
         this.runtimeConfiguration = runtimeConfiguration;
         this.version = version;
     }
 
+    private int priority;
+
     private String name;
+
+    private String serverNameSplitter;
 
     private String downloadURL;
 
@@ -17,8 +23,16 @@ public final class Template {
 
     private Version version;
 
+    public int getPriority() {
+        return priority;
+    }
+
     public String getName() {
         return name;
+    }
+
+    public String getServerNameSplitter() {
+        return serverNameSplitter;
     }
 
     public String getDownloadURL() {

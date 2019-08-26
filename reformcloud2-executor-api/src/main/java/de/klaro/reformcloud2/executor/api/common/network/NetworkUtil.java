@@ -22,11 +22,15 @@ import io.netty.util.concurrent.DefaultThreadFactory;
 import io.netty.util.concurrent.MultithreadEventExecutorGroup;
 
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
 public final class NetworkUtil {
+
+    public static final Executor EXECUTOR = Executors.newCachedThreadPool();
 
     public static final Consumer<ChannelHandlerContext> DEFAULT_AUTH_FAILURE_HANDLER = new Consumer<ChannelHandlerContext>() {
         @Override

@@ -1,22 +1,25 @@
 package de.klaro.reformcloud2.executor.api.common.groups;
 
+import com.google.gson.reflect.TypeToken;
 import de.klaro.reformcloud2.executor.api.common.groups.utils.PlayerAccessConfiguration;
 import de.klaro.reformcloud2.executor.api.common.groups.utils.StartupConfiguration;
 import de.klaro.reformcloud2.executor.api.common.groups.utils.Template;
 import de.klaro.reformcloud2.executor.api.common.utility.name.Nameable;
 
-import java.util.Map;
+import java.util.List;
 
 public class ProcessGroup implements Nameable {
 
+    public static final TypeToken<ProcessGroup> TYPE = new TypeToken<ProcessGroup>() {};
+
     public ProcessGroup(String name, boolean showIdInName, String parentGroup,
-                        StartupConfiguration startupConfiguration, Map<Integer, Template> templatePerPriority,
+                        StartupConfiguration startupConfiguration, List<Template> templates,
                         PlayerAccessConfiguration playerAccessConfiguration, boolean staticProcess) {
         this.name = name;
         this.showIdInName = showIdInName;
         this.parentGroup = parentGroup;
         this.startupConfiguration = startupConfiguration;
-        this.templatePerPriority = templatePerPriority;
+        this.templates = templates;
         this.playerAccessConfiguration = playerAccessConfiguration;
         this.staticProcess = staticProcess;
     }
@@ -29,7 +32,7 @@ public class ProcessGroup implements Nameable {
 
     private StartupConfiguration startupConfiguration;
 
-    private Map<Integer, Template> templatePerPriority;
+    private List<Template> templates;
 
     private PlayerAccessConfiguration playerAccessConfiguration;
 
@@ -40,15 +43,15 @@ public class ProcessGroup implements Nameable {
     }
 
     public String getParentGroup() {
-        return parentGroup;
+        return parentGroup == null ? "null" : parentGroup;
     }
 
     public StartupConfiguration getStartupConfiguration() {
         return startupConfiguration;
     }
 
-    public Map<Integer, Template> getTemplatePerPriority() {
-        return templatePerPriority;
+    public List<Template> getTemplates() {
+        return templates;
     }
 
     public PlayerAccessConfiguration getPlayerAccessConfiguration() {

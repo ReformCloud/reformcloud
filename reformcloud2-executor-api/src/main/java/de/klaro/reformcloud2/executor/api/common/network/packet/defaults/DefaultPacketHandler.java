@@ -77,4 +77,9 @@ public final class DefaultPacketHandler implements PacketHandler {
     public QueryHandler getQueryHandler() {
         return queryHandler;
     }
+
+    @Override
+    public void clearHandlers() {
+        this.handlers.clear();
+    }
 }

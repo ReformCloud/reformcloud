@@ -3,6 +3,8 @@ package de.klaro.reformcloud2.executor.api.common.process;
 import de.klaro.reformcloud2.executor.api.common.CommonHelper;
 import de.klaro.reformcloud2.executor.api.common.utility.list.Links;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -193,6 +195,32 @@ public final class ProcessRuntimeInformation {
                         return ThreadInfo.create(thread);
                     }
                 })
+        );
+    }
+
+    public static ProcessRuntimeInformation empty() {
+        return new ProcessRuntimeInformation(
+                -1,
+                -1,
+                -1,
+                -1,
+                -1,
+                -1,
+                -1,
+                -1,
+                -1,
+                -1,
+                -1,
+                null,
+                null,
+                null,
+                null,
+                -1,
+                new long[0],
+                new HashMap<>(),
+                null,
+                null,
+                new ArrayList<>()
         );
     }
 }

@@ -10,5 +10,7 @@ public final class ControllerLauncher {
         StringUtil.sendHeader();
         DependencyLoader.doLoad();
         LanguageWorker.doLoad();
+
+        new ControllerExecutor();
     }
 }
