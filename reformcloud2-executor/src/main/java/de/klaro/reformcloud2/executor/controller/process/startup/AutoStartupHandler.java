@@ -63,6 +63,7 @@ public final class AutoStartupHandler extends AbsoluteThread {
                                 if (processGroup.getStartupConfiguration().getMaxOnlineProcesses() == -1
                                         || processGroup.getStartupConfiguration().getMaxOnlineProcesses() > i) {
                                     ControllerExecutor.getInstance().getProcessManager().startProcess(processGroup.getName());
+                                    AbsoluteThread.sleep(100);
                                 }
                             } else {
                                 break;

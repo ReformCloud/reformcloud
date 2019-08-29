@@ -103,4 +103,46 @@
         </dependency>
     </dependencies>
 
+    <build>
+        <!-- set the final name to executor for the runner -->
+        <finalName>executor</finalName>
+
+        <plugins>
+
+            <!-- maven shade plugin (central) -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.2.1</version>
+                <executions>
+                    <execution>
+                        <!-- shade while package -->
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- maven jar plugin (central) -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.1.2</version>
+                <configuration>
+                    <archive>
+                        <manifestEntries>
+                            <!-- set the main class to the executor chooser !! This will start the application based on the runner input -->
+                            <Main-Class>de.klaro.reformcloud2.executor.ExecutorChooser</Main-Class>
+                            <Version>${project.version}</Version>
+                            <Implementation-Version>${service.version}</Implementation-Version>
+                            <Specification-Version>${service.spec}</Specification-Version>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
 </project>

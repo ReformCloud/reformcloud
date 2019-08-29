@@ -8,11 +8,13 @@
     <artifactId>reformcloud2</artifactId>
     <packaging>pom</packaging>
     <version>2.0-SNAPSHOT</version>
+
+    <!-- do not change the module order to prevent issues while building the project -->
     <modules>
-        <module>reformcloud2-runner</module>
-        <module>reformcloud2-executor</module>
-        <module>reformcloud2-executor-api</module>
         <module>reformcloud2-default-applications</module>
+        <module>reformcloud2-executor-api</module>
+        <module>reformcloud2-executor</module>
+        <module>reformcloud2-runner</module>
     </modules>
 
     <properties>
@@ -24,6 +26,22 @@
         <project.build.targetEncoding>UTF-8</project.build.targetEncoding>
 
         <service.version>2.0</service.version>
+        <service.spec>BETA</service.spec>
     </properties>
+
+    <build>
+        <plugins>
+            <!-- maven compiler plugin to set the target and source version (1.8) -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
+                <configuration>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>
