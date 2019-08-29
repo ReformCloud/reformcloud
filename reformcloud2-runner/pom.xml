@@ -71,6 +71,21 @@
                             </target>
                         </configuration>
                     </execution>
+
+                    <execution>
+                        <id>delete-executor-other</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+
+                        <configuration>
+                            <target name="delete directories">
+                                <delete dir="${basedir}/../reformcloud2-executor/target" includeemptydirs="true" />
+                                <delete dir="${basedir}/../reformcloud2-executor-api/target" includeemptydirs="true" />
+                            </target>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
         </plugins>

@@ -388,4 +388,9 @@ public final class DefaultProcessManager implements ProcessManager {
             return best.get();
         }
     }
+
+    @Override
+    public Iterator<ProcessInformation> iterator() {
+        return Links.newList(processInformation).iterator();
+    }
 }

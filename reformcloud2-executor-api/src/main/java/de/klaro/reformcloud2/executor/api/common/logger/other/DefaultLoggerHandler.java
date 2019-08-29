@@ -67,6 +67,17 @@ public final class DefaultLoggerHandler extends LoggerBase {
     }
 
     @Override
+    public String readLineNoPrompt() {
+        try {
+            return consoleReader.readLine();
+        } catch (final IOException ex) {
+            ex.printStackTrace();
+        }
+
+        return null;
+    }
+
+    @Override
     public String readString(Predicate<String> predicate, Runnable invalidInputMessage) {
         String line = readLine();
         while (line == null || !predicate.test(line)) {

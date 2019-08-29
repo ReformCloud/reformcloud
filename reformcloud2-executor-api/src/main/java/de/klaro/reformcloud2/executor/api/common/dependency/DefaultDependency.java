@@ -15,7 +15,7 @@ public final class DefaultDependency implements Dependency {
 
     private static final Pattern PATTERN = Pattern.compile("(.*)-(.*).jar");
 
-    DefaultDependency(Repository repository, String groupID, String artifactID, Properties properties) {
+    public DefaultDependency(Repository repository, String groupID, String artifactID, Properties properties) {
         this.repository = repository;
         this.groupID = groupID;
         this.artifactID = artifactID;

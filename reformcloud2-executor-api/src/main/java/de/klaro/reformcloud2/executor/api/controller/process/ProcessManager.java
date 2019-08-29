@@ -7,7 +7,7 @@ import de.klaro.reformcloud2.executor.api.common.process.ProcessInformation;
 import java.util.List;
 import java.util.UUID;
 
-public interface ProcessManager {
+public interface ProcessManager extends Iterable<ProcessInformation> {
 
     List<ProcessInformation> getAllProcesses();
 

@@ -33,6 +33,8 @@ public abstract class LoggerBase extends Logger implements AutoCloseable {
 
     public abstract String readLine();
 
+    public abstract String readLineNoPrompt();
+
     public abstract String readString(Predicate<String> predicate, Runnable invalidInputMessage);
 
     public abstract <T> T read(Function<String, T> function, Runnable invalidInputMessage);
