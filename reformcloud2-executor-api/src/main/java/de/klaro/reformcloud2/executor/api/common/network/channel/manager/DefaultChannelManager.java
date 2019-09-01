@@ -5,6 +5,7 @@ import de.klaro.reformcloud2.executor.api.common.utility.list.Links;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -46,8 +47,8 @@ public final class DefaultChannelManager implements ChannelManager {
     }
 
     @Override
-    public PacketSender get(String name) {
-        return Links.filter(senders, new Predicate<PacketSender>() {
+    public Optional<PacketSender> get(String name) {
+        return Links.filterToOptional(senders, new Predicate<PacketSender>() {
             @Override
             public boolean test(PacketSender packetSender) {
                 return packetSender.getName().equals(name);

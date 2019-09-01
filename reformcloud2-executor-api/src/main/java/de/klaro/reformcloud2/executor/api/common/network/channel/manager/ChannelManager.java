@@ -2,6 +2,8 @@ package de.klaro.reformcloud2.executor.api.common.network.channel.manager;
 
 import de.klaro.reformcloud2.executor.api.common.network.channel.PacketSender;
 
+import java.util.Optional;
+
 public interface ChannelManager {
 
     void registerChannel(PacketSender packetSender);
@@ -10,5 +12,5 @@ public interface ChannelManager {
 
     void unregisterAll();
 
-    PacketSender get(String name);
+    Optional<PacketSender> get(String name);
 }

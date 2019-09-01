@@ -411,6 +411,7 @@ public final class JsonConfiguration implements Configurable<JsonConfiguration> 
 
     @Override
     public void write(Path path) {
+        SystemHelper.deleteFile(path.toFile());
         SystemHelper.createFile(path);
 
         try (OutputStreamWriter outputStreamWriter = new OutputStreamWriter(Files.newOutputStream(path), StandardCharsets.UTF_8)) {

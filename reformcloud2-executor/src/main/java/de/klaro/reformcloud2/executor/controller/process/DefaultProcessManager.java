@@ -7,6 +7,7 @@ import de.klaro.reformcloud2.executor.api.common.groups.ProcessGroup;
 import de.klaro.reformcloud2.executor.api.common.groups.utils.RuntimeConfiguration;
 import de.klaro.reformcloud2.executor.api.common.groups.utils.Template;
 import de.klaro.reformcloud2.executor.api.common.groups.utils.Version;
+import de.klaro.reformcloud2.executor.api.common.network.channel.PacketSender;
 import de.klaro.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import de.klaro.reformcloud2.executor.api.common.process.NetworkInfo;
 import de.klaro.reformcloud2.executor.api.common.process.ProcessInformation;
@@ -97,19 +98,6 @@ public final class DefaultProcessManager implements ProcessManager {
     }
 
     @Override
-    public ProcessInformation updateProcessInfo(ProcessInformation processInformation) {
-        ProcessInformation current = getProcess(processInformation.getProcessUniqueID());
-        if (current == null) {
-            this.processInformation.add(processInformation);
-            return processInformation;
-        }
-
-        this.processInformation.remove(current);
-        this.processInformation.add(processInformation);
-        return processInformation;
-    }
-
-    @Override
     public ProcessInformation getProcess(String name) {
         requireNonNull(name);
         return Links.filter(processInformation, new Predicate<ProcessInformation>() {
@@ -167,8 +155,13 @@ public final class DefaultProcessManager implements ProcessManager {
             return null;
         }
 
-        this.updateProcessInfo(processInformation);
-        DefaultChannelManager.INSTANCE.get(processInformation.getParent()).sendPacket(new ControllerPacketOutStartProcess(processInformation));
+        this.update(processInformation);
+        DefaultChannelManager.INSTANCE.get(processInformation.getParent()).ifPresent(new Consumer<PacketSender>() {
+            @Override
+            public void accept(PacketSender packetSender) {
+                packetSender.sendPacket(new ControllerPacketOutStartProcess(processInformation));
+            }
+        });
         return processInformation;
     }
 
@@ -179,7 +172,12 @@ public final class DefaultProcessManager implements ProcessManager {
             return null;
         }
 
-        DefaultChannelManager.INSTANCE.get(processInformation.getParent()).sendPacket(new ControllerPacketOutStopProcess(processInformation.getProcessUniqueID()));
+        DefaultChannelManager.INSTANCE.get(processInformation.getParent()).ifPresent(new Consumer<PacketSender>() {
+            @Override
+            public void accept(PacketSender packetSender) {
+                packetSender.sendPacket(new ControllerPacketOutStopProcess(processInformation.getProcessUniqueID()));
+            }
+        });
         return processInformation;
     }
 
@@ -190,7 +188,12 @@ public final class DefaultProcessManager implements ProcessManager {
             return null;
         }
 
-        DefaultChannelManager.INSTANCE.get(processInformation.getParent()).sendPacket(new ControllerPacketOutStopProcess(processInformation.getProcessUniqueID()));
+        DefaultChannelManager.INSTANCE.get(processInformation.getParent()).ifPresent(new Consumer<PacketSender>() {
+            @Override
+            public void accept(PacketSender packetSender) {
+                packetSender.sendPacket(new ControllerPacketOutStopProcess(processInformation.getProcessUniqueID()));
+            }
+        });
         return processInformation;
     }
 
@@ -244,7 +247,7 @@ public final class DefaultProcessManager implements ProcessManager {
             stringBuilder.append(id);
         }
 
-        return new ProcessInformation(
+        ProcessInformation processInformation = new ProcessInformation(
                 stringBuilder.substring(0),
                 client.getName(),
                 UUID.randomUUID(),
@@ -254,8 +257,9 @@ public final class DefaultProcessManager implements ProcessManager {
                         client.startHost(),
                         port,
                         false
-                ), processGroup, template, ProcessRuntimeInformation.empty(), new ArrayList<>(), extra
+                ), processGroup, template, ProcessRuntimeInformation.empty(), new ArrayList<>(), extra, 0
         );
+        return processInformation.updateMaxPlayers(null);
     }
 
     private int nextID(ProcessGroup processGroup) {
@@ -392,5 +396,18 @@ public final class DefaultProcessManager implements ProcessManager {
     @Override
     public Iterator<ProcessInformation> iterator() {
         return Links.newList(processInformation).iterator();
+    }
+
+    @Override
+    public void update(ProcessInformation processInformation) {
+        ProcessInformation current = getProcess(processInformation.getProcessUniqueID());
+        if (current == null) {
+            this.processInformation.add(processInformation);
+            return;
+        }
+
+        this.processInformation.remove(current);
+        this.processInformation.add(processInformation);
+        return;
     }
 }

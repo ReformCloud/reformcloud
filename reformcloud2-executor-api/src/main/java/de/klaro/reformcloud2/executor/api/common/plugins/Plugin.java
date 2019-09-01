@@ -4,17 +4,17 @@ import de.klaro.reformcloud2.executor.api.common.utility.name.Nameable;
 
 import java.util.List;
 
-public interface Plugin extends Nameable {
+public abstract class Plugin implements Nameable {
 
-    int version();
+    public abstract int version();
 
-    String author();
+    public abstract String author();
 
-    String main();
+    public abstract String main();
 
-    List<String> depends();
+    public abstract List<String> depends();
 
-    List<String> softpends();
+    public abstract List<String> softpends();
 
-    boolean enabled();
+    public abstract boolean enabled();
 }

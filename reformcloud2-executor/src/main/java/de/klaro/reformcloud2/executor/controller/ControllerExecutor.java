@@ -1,18 +1,27 @@
 package de.klaro.reformcloud2.executor.controller;
 
+import com.google.gson.reflect.TypeToken;
 import de.klaro.reformcloud2.executor.api.common.application.ApplicationLoader;
+import de.klaro.reformcloud2.executor.api.common.application.InstallableApplication;
+import de.klaro.reformcloud2.executor.api.common.application.LoadedApplication;
 import de.klaro.reformcloud2.executor.api.common.application.basic.DefaultApplicationLoader;
 import de.klaro.reformcloud2.executor.api.common.commands.AllowedCommandSources;
+import de.klaro.reformcloud2.executor.api.common.commands.Command;
 import de.klaro.reformcloud2.executor.api.common.commands.basic.ConsoleCommandSource;
+import de.klaro.reformcloud2.executor.api.common.commands.basic.DefaultCommandSource;
 import de.klaro.reformcloud2.executor.api.common.commands.basic.commands.CommandHelp;
 import de.klaro.reformcloud2.executor.api.common.commands.basic.commands.CommandReload;
 import de.klaro.reformcloud2.executor.api.common.commands.basic.commands.CommandStop;
 import de.klaro.reformcloud2.executor.api.common.commands.basic.manager.DefaultCommandManager;
 import de.klaro.reformcloud2.executor.api.common.commands.manager.CommandManager;
 import de.klaro.reformcloud2.executor.api.common.commands.source.CommandSource;
+import de.klaro.reformcloud2.executor.api.common.configuration.Configurable;
+import de.klaro.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import de.klaro.reformcloud2.executor.api.common.groups.MainGroup;
 import de.klaro.reformcloud2.executor.api.common.groups.ProcessGroup;
+import de.klaro.reformcloud2.executor.api.common.groups.utils.*;
 import de.klaro.reformcloud2.executor.api.common.language.LanguageManager;
+import de.klaro.reformcloud2.executor.api.common.language.loading.LanguageWorker;
 import de.klaro.reformcloud2.executor.api.common.logger.LoggerBase;
 import de.klaro.reformcloud2.executor.api.common.logger.coloured.ColouredLoggerHandler;
 import de.klaro.reformcloud2.executor.api.common.logger.other.DefaultLoggerHandler;
@@ -20,6 +29,8 @@ import de.klaro.reformcloud2.executor.api.common.network.auth.Auth;
 import de.klaro.reformcloud2.executor.api.common.network.auth.NetworkType;
 import de.klaro.reformcloud2.executor.api.common.network.auth.defaults.DefaultAuth;
 import de.klaro.reformcloud2.executor.api.common.network.auth.defaults.DefaultServerAuthHandler;
+import de.klaro.reformcloud2.executor.api.common.network.channel.PacketSender;
+import de.klaro.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import de.klaro.reformcloud2.executor.api.common.network.packet.Packet;
 import de.klaro.reformcloud2.executor.api.common.network.packet.defaults.DefaultPacketHandler;
 import de.klaro.reformcloud2.executor.api.common.network.packet.handler.PacketHandler;
@@ -27,20 +38,36 @@ import de.klaro.reformcloud2.executor.api.common.network.server.DefaultNetworkSe
 import de.klaro.reformcloud2.executor.api.common.network.server.NetworkServer;
 import de.klaro.reformcloud2.executor.api.common.patch.Patcher;
 import de.klaro.reformcloud2.executor.api.common.patch.basic.DefaultPatcher;
+import de.klaro.reformcloud2.executor.api.common.plugins.InstallablePlugin;
+import de.klaro.reformcloud2.executor.api.common.plugins.Plugin;
+import de.klaro.reformcloud2.executor.api.common.plugins.basic.DefaultPlugin;
+import de.klaro.reformcloud2.executor.api.common.process.Player;
+import de.klaro.reformcloud2.executor.api.common.process.ProcessInformation;
 import de.klaro.reformcloud2.executor.api.common.utility.function.Double;
 import de.klaro.reformcloud2.executor.api.common.utility.function.DoubleFunction;
+import de.klaro.reformcloud2.executor.api.common.utility.list.Links;
+import de.klaro.reformcloud2.executor.api.common.utility.task.Task;
+import de.klaro.reformcloud2.executor.api.common.utility.task.defaults.DefaultTask;
 import de.klaro.reformcloud2.executor.api.controller.Controller;
 import de.klaro.reformcloud2.executor.api.controller.process.ProcessManager;
 import de.klaro.reformcloud2.executor.controller.config.ControllerConfig;
 import de.klaro.reformcloud2.executor.controller.config.ControllerExecutorConfig;
 import de.klaro.reformcloud2.executor.controller.packet.in.PacketInClientAuthSuccess;
+import de.klaro.reformcloud2.executor.controller.packet.out.api.ControllerAPIAction;
+import de.klaro.reformcloud2.executor.controller.packet.out.api.ControllerExecuteCommand;
+import de.klaro.reformcloud2.executor.controller.packet.out.api.ControllerPluginAction;
+import de.klaro.reformcloud2.executor.controller.packet.out.api.query.ControllerQueryGetPlugin;
+import de.klaro.reformcloud2.executor.controller.packet.out.api.query.ControllerQueryGetPlugins;
 import de.klaro.reformcloud2.executor.controller.process.DefaultProcessManager;
 import de.klaro.reformcloud2.executor.controller.process.startup.AutoStartupHandler;
 
 import java.io.IOException;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
+import java.util.function.ToIntFunction;
 
 public final class ControllerExecutor extends Controller {
 
@@ -153,7 +180,8 @@ public final class ControllerExecutor extends Controller {
         this.applicationLoader.detectApplications();
         this.applicationLoader.installApplications();
 
-        this.controllerExecutorConfig = null;
+        LanguageWorker.doReload(); //Reloads the language files
+
         this.controllerExecutorConfig = new ControllerExecutorConfig();
 
         this.autoStartupHandler.update(); //Update the automatic startup handler to re-sort the groups per priority
@@ -229,6 +257,10 @@ public final class ControllerExecutor extends Controller {
         return patcher;
     }
 
+    public AutoStartupHandler getAutoStartupHandler() {
+        return autoStartupHandler;
+    }
+
     private void runConsole() {
         String line;
 
@@ -277,5 +309,1262 @@ public final class ControllerExecutor extends Controller {
         this.packetHandler.registerNetworkHandlers(
                 new PacketInClientAuthSuccess()
         );
+    }
+
+    @Override
+    public Task<Boolean> loadApplicationAsync(InstallableApplication application) {
+        Task<Boolean> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(new Runnable() {
+            @Override
+            public void run() {
+                task.complete(applicationLoader.doSpecificApplicationInstall(application));
+            }
+        });
+        return task;
+    }
+
+    @Override
+    public Task<Boolean> unloadApplicationAsync(LoadedApplication application) {
+        Task<Boolean> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(new Runnable() {
+            @Override
+            public void run() {
+                task.complete(applicationLoader.doSpecificApplicationUninstall(application));
+            }
+        });
+        return task;
+    }
+
+    @Override
+    public Task<Boolean> unloadApplicationAsync(String application) {
+        Task<Boolean> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(new Runnable() {
+            @Override
+            public void run() {
+                task.complete(applicationLoader.doSpecificApplicationUninstall(application));
+            }
+        });
+        return task;
+    }
+
+    @Override
+    public Task<LoadedApplication> getApplicationAsync(String name) {
+        Task<LoadedApplication> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(new Runnable() {
+            @Override
+            public void run() {
+                task.complete(applicationLoader.getApplication(name));
+            }
+        });
+        return task;
+    }
+
+    @Override
+    public Task<List<LoadedApplication>> getApplicationsAsync() {
+        Task<List<LoadedApplication>> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(new Runnable() {
+            @Override
+            public void run() {
+                task.complete(applicationLoader.getApplications());
+            }
+        });
+        return task;
+    }
+
+    @Override
+    public boolean loadApplication(InstallableApplication application) {
+        return applicationLoader.doSpecificApplicationInstall(application);
+    }
+
+    @Override
+    public boolean unloadApplication(LoadedApplication application) {
+        return applicationLoader.doSpecificApplicationUninstall(application);
+    }
+
+    @Override
+    public boolean unloadApplication(String application) {
+        return applicationLoader.doSpecificApplicationUninstall(application);
+    }
+
+    @Override
+    public LoadedApplication getApplication(String name) {
+        return applicationLoader.getApplication(name);
+    }
+
+    @Override
+    public List<LoadedApplication> getApplications() {
+        return applicationLoader.getApplications();
+    }
+
+    @Override
+    public Task<Void> sendColouredLineAsync(String line) throws IllegalAccessException {
+        if (!(loggerBase instanceof ColouredLoggerHandler)) {
+            throw new IllegalAccessException();
+        }
+
+        Task<Void> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    sendColouredLine(line);
+                    task.complete(null);
+                } catch (IllegalAccessException ignored) {
+                    //already catches above
+                }
+            }
+        });
+        return task;
+    }
+
+    @Override
+    public Task<Void> sendRawLineAsync(String line) {
+        Task<Void> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(new Runnable() {
+            @Override
+            public void run() {
+                loggerBase.logRaw(line);
+                task.complete(null);
+            }
+        });
+        return task;
+    }
+
+    @Override
+    public Task<String> dispatchCommandAndGetResultAsync(String commandLine) {
+        Task<String> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(new Runnable() {
+            @Override
+            public void run() {
+                commandManager.dispatchCommand(new DefaultCommandSource(new Consumer<String>() {
+                    @Override
+                    public void accept(String s) {
+                        task.complete(s);
+                    }
+                }, commandManager), AllowedCommandSources.ALL, commandLine, new Consumer<String>() {
+                    @Override
+                    public void accept(String s) {
+                        task.complete(s);
+                    }
+                });
+            }
+        });
+        return task;
+    }
+
+    @Override
+    public Task<Command> getControllerCommandAsync(String name) {
+        Task<Command> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(new Runnable() {
+            @Override
+            public void run() {
+                task.complete(commandManager.getCommand(name));
+            }
+        });
+        return task;
+    }
+
+    @Override
+    public Task<Void> registerControllerCommandAsync(Command command) {
+        Task<Void> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(new Runnable() {
+            @Override
+            public void run() {
+                commandManager.register(command);
+                task.complete(null);
+            }
+        });
+        return task;
+    }
+
+    @Override
+    public Task<Boolean> isControllerCommandRegisteredAsync(String name) {
+        Task<Boolean> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(new Runnable() {
+            @Override
+            public void run() {
+                task.complete(commandManager.getCommand(name) != null);
+            }
+        });
+        return task;
+    }
+
+    @Override
+    public void sendColouredLine(String line) throws IllegalAccessException {
+        if (!(loggerBase instanceof ColouredLoggerHandler)) {
+            throw new IllegalAccessException();
+        }
+
+        loggerBase.log(line);
+    }
+
+    @Override
+    public void sendRawLine(String line) {
+        loggerBase.logRaw(line);
+    }
+
+    @Override
+    public String dispatchCommandAndGetResult(String commandLine) {
+        return dispatchCommandAndGetResultAsync(commandLine).getUninterruptedly();
+    }
+
+    @Override
+    public Command getControllerCommand(String name) {
+        return getControllerCommandAsync(name).getUninterruptedly();
+    }
+
+    @Override
+    public void registerControllerCommand(Command command) {
+        commandManager.register(command);
+    }
+
+    @Override
+    public boolean isControllerCommandRegistered(String name) {
+        return getControllerCommand(name) != null;
+    }
+
+    @Override
+    public Task<MainGroup> createMainGroupAsync(String name) {
+        return createMainGroupAsync(name, new ArrayList<>());
+    }
+
+    @Override
+    public Task<MainGroup> createMainGroupAsync(String name, List<String> subgroups) {
+        Task<MainGroup> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(new Runnable() {
+            @Override
+            public void run() {
+                MainGroup mainGroup = new MainGroup(name, subgroups);
+                task.complete(controllerExecutorConfig.createMainGroup(mainGroup));
+            }
+        });
+        return task;
+    }
+
+    @Override
+    public Task<ProcessGroup> createProcessGroupAsync(String name) {
+        return createProcessGroupAsync(name, null);
+    }
+
+    @Override
+    public Task<ProcessGroup> createProcessGroupAsync(String name, String parent) {
+        return createProcessGroupAsync(name, parent, Collections.singletonList(
+                new Template(0, "default", "#", null, new RuntimeConfiguration(
+                        512, new ArrayList<>(), new HashMap<>()
+                ), Version.PAPER_1_8_8)
+        ));
+    }
+
+    @Override
+    public Task<ProcessGroup> createProcessGroupAsync(String name, String parent, List<Template> templates) {
+        return createProcessGroupAsync(name, parent, templates, new StartupConfiguration(
+                -1, 1, 1, 41000, StartupEnvironment.JAVA_RUNTIME, true, new ArrayList<>()
+        ));
+    }
+
+    @Override
+    public Task<ProcessGroup> createProcessGroupAsync(String name, String parent, List<Template> templates, StartupConfiguration startupConfiguration) {
+        return createProcessGroupAsync(name, parent, templates, startupConfiguration, new PlayerAccessConfiguration(
+                false, "reformcloud.join.maintenance", false,
+                null, true, true, true, 50
+        ));
+    }
+
+    @Override
+    public Task<ProcessGroup> createProcessGroupAsync(String name, String parent, List<Template> templates, StartupConfiguration startupConfiguration, PlayerAccessConfiguration playerAccessConfiguration) {
+        return createProcessGroupAsync(name, parent, templates, startupConfiguration, playerAccessConfiguration, false);
+    }
+
+    @Override
+    public Task<ProcessGroup> createProcessGroupAsync(String name, String parent, List<Template> templates, StartupConfiguration startupConfiguration, PlayerAccessConfiguration playerAccessConfiguration, boolean staticGroup) {
+        Task<ProcessGroup> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(new Runnable() {
+            @Override
+            public void run() {
+                ProcessGroup processGroup = new ProcessGroup(
+                        name,
+                        true,
+                        parent,
+                        startupConfiguration,
+                        templates,
+                        playerAccessConfiguration,
+                        staticGroup
+                );
+                task.complete(createProcessGroupAsync(processGroup).getUninterruptedly());
+            }
+        });
+        return task;
+    }
+
+    @Override
+    public Task<ProcessGroup> createProcessGroupAsync(ProcessGroup processGroup) {
+        Task<ProcessGroup> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(new Runnable() {
+            @Override
+            public void run() {
+                task.complete(controllerExecutorConfig.createProcessGroup(processGroup));
+            }
+        });
+        return task;
+    }
+
+    @Override
+    public Task<MainGroup> updateMainGroupAsync(MainGroup mainGroup) {
+        Task<MainGroup> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(new Runnable() {
+            @Override
+            public void run() {
+                controllerExecutorConfig.updateMainGroup(mainGroup);
+                task.complete(mainGroup);
+            }
+        });
+        return task;
+    }
+
+    @Override
+    public Task<ProcessGroup> updateProcessGroupAsync(ProcessGroup processGroup) {
+        Task<ProcessGroup> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(new Runnable() {
+            @Override
+            public void run() {
+                controllerExecutorConfig.updateProcessGroup(processGroup);
+                task.complete(processGroup);
+            }
+        });
+        return task;
+    }
+
+    @Override
+    public Task<MainGroup> getMainGroupAsync(String name) {
+        Task<MainGroup> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(new Runnable() {
+            @Override
+            public void run() {
+                task.complete(Links.filter(controllerExecutorConfig.getMainGroups(), new Predicate<MainGroup>() {
+                    @Override
+                    public boolean test(MainGroup mainGroup) {
+                        return mainGroup.getName().equals(name);
+                    }
+                }));
+            }
+        });
+        return task;
+    }
+
+    @Override
+    public Task<ProcessGroup> getProcessGroupAsync(String name) {
+        Task<ProcessGroup> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(new Runnable() {
+            @Override
+            public void run() {
+                task.complete(Links.filter(controllerExecutorConfig.getProcessGroups(), new Predicate<ProcessGroup>() {
+                    @Override
+                    public boolean test(ProcessGroup processGroup) {
+                        return processGroup.getName().equals(name);
+                    }
+                }));
+            }
+        });
+        return task;
+    }
+
+    @Override
+    public Task<Void> deleteMainGroupAsync(String name) {
+        Task<Void> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(new Runnable() {
+            @Override
+            public void run() {
+                Links.filterToOptional(controllerExecutorConfig.getMainGroups(), new Predicate<MainGroup>() {
+                    @Override
+                    public boolean test(MainGroup mainGroup) {
+                        return mainGroup.getName().equals(name);
+                    }
+                }).ifPresent(new Consumer<MainGroup>() {
+                    @Override
+                    public void accept(MainGroup mainGroup) {
+                        controllerExecutorConfig.deleteMainGroup(mainGroup);
+                    }
+                });
+                task.complete(null);
+            }
+        });
+        return task;
+    }
+
+    @Override
+    public Task<Void> deleteProcessGroupAsync(String name) {
+        Task<Void> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(new Runnable() {
+            @Override
+            public void run() {
+                Links.filterToOptional(controllerExecutorConfig.getProcessGroups(), new Predicate<ProcessGroup>() {
+                    @Override
+                    public boolean test(ProcessGroup processGroup) {
+                        return processGroup.getName().equals(name);
+                    }
+                }).ifPresent(new Consumer<ProcessGroup>() {
+                    @Override
+                    public void accept(ProcessGroup processGroup) {
+                        controllerExecutorConfig.deleteProcessGroup(processGroup);
+                    }
+                });
+                task.complete(null);
+            }
+        });
+        return task;
+    }
+
+    @Override
+    public Task<List<MainGroup>> getMainGroupsAsync() {
+        Task<List<MainGroup>> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(new Runnable() {
+            @Override
+            public void run() {
+                task.complete(Collections.unmodifiableList(controllerExecutorConfig.getMainGroups()));
+            }
+        });
+        return task;
+    }
+
+    @Override
+    public Task<List<ProcessGroup>> getProcessGroupsAsync() {
+        Task<List<ProcessGroup>> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(new Runnable() {
+            @Override
+            public void run() {
+                task.complete(Collections.unmodifiableList(controllerExecutorConfig.getProcessGroups()));
+            }
+        });
+        return task;
+    }
+
+    @Override
+    public MainGroup createMainGroup(String name) {
+        return createMainGroupAsync(name).getUninterruptedly();
+    }
+
+    @Override
+    public MainGroup createMainGroup(String name, List<String> subgroups) {
+        return createMainGroupAsync(name, subgroups).getUninterruptedly();
+    }
+
+    @Override
+    public ProcessGroup createProcessGroup(String name) {
+        return createProcessGroupAsync(name).getUninterruptedly();
+    }
+
+    @Override
+    public ProcessGroup createProcessGroup(String name, String parent) {
+        return createProcessGroupAsync(name, parent).getUninterruptedly();
+    }
+
+    @Override
+    public ProcessGroup createProcessGroup(String name, String parent, List<Template> templates) {
+        return createProcessGroupAsync(name, parent, templates).getUninterruptedly();
+    }
+
+    @Override
+    public ProcessGroup createProcessGroup(String name, String parent, List<Template> templates, StartupConfiguration startupConfiguration) {
+        return createProcessGroupAsync(name, parent, templates, startupConfiguration).getUninterruptedly();
+    }
+
+    @Override
+    public ProcessGroup createProcessGroup(String name, String parent, List<Template> templates, StartupConfiguration startupConfiguration, PlayerAccessConfiguration playerAccessConfiguration) {
+        return createProcessGroupAsync(name, parent, templates, startupConfiguration, playerAccessConfiguration).getUninterruptedly();
+    }
+
+    @Override
+    public ProcessGroup createProcessGroup(String name, String parent, List<Template> templates, StartupConfiguration startupConfiguration, PlayerAccessConfiguration playerAccessConfiguration, boolean staticGroup) {
+        return createProcessGroupAsync(name, parent, templates, startupConfiguration, playerAccessConfiguration, staticGroup).getUninterruptedly();
+    }
+
+    @Override
+    public ProcessGroup createProcessGroup(ProcessGroup processGroup) {
+        return createProcessGroupAsync(processGroup).getUninterruptedly();
+    }
+
+    @Override
+    public MainGroup updateMainGroup(MainGroup mainGroup) {
+        return updateMainGroupAsync(mainGroup).getUninterruptedly();
+    }
+
+    @Override
+    public ProcessGroup updateProcessGroup(ProcessGroup processGroup) {
+        return updateProcessGroupAsync(processGroup).getUninterruptedly();
+    }
+
+    @Override
+    public MainGroup getMainGroup(String name) {
+        return getMainGroupAsync(name).getUninterruptedly();
+    }
+
+    @Override
+    public ProcessGroup getProcessGroup(String name) {
+        return getProcessGroupAsync(name).getUninterruptedly();
+    }
+
+    @Override
+    public void deleteMainGroup(String name) {
+        deleteMainGroupAsync(name).awaitUninterruptedly();
+    }
+
+    @Override
+    public void deleteProcessGroup(String name) {
+        deleteProcessGroupAsync(name).awaitUninterruptedly();
+    }
+
+    @Override
+    public List<MainGroup> getMainGroups() {
+        return getMainGroupsAsync().getUninterruptedly();
+    }
+
+    @Override
+    public List<ProcessGroup> getProcessGroups() {
+        return getProcessGroupsAsync().getUninterruptedly();
+    }
+
+    @Override
+    public Task<Void> sendMessageAsync(UUID player, String message) {
+        Task<Void> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(new Runnable() {
+            @Override
+            public void run() {
+                ProcessInformation processInformation = ControllerExecutor.this.getPlayerOnProxy(player);
+                if (processInformation != null) {
+                    DefaultChannelManager.INSTANCE.get(processInformation.getName()).ifPresent(new Consumer<PacketSender>() {
+                        @Override
+                        public void accept(PacketSender packetSender) {
+                            packetSender.sendPacket(new ControllerAPIAction(
+                                    ControllerAPIAction.APIAction.SEND_MESSAGE,
+                                    Arrays.asList(player, message)
+                            ));
+                        }
+                    });
+                }
+                task.complete(null);
+            }
+        });
+        return task;
+    }
+
+    @Override
+    public Task<Void> kickPlayerAsync(UUID player, String message) {
+        Task<Void> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(new Runnable() {
+            @Override
+            public void run() {
+                ProcessInformation processInformation = ControllerExecutor.this.getPlayerOnProxy(player);
+                if (processInformation != null) {
+                    DefaultChannelManager.INSTANCE.get(processInformation.getName()).ifPresent(new Consumer<PacketSender>() {
+                        @Override
+                        public void accept(PacketSender packetSender) {
+                            packetSender.sendPacket(new ControllerAPIAction(
+                                    ControllerAPIAction.APIAction.KICK_PLAYER,
+                                    Arrays.asList(player, message)
+                            ));
+                        }
+                    });
+                }
+                task.complete(null);
+            }
+        });
+        return task;
+    }
+
+    @Override
+    public Task<Void> kickPlayerFromServerAsync(UUID player, String message) {
+        Task<Void> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(new Runnable() {
+            @Override
+            public void run() {
+                ProcessInformation processInformation = ControllerExecutor.this.getPlayerOnServer(player);
+                if (processInformation != null) {
+                    DefaultChannelManager.INSTANCE.get(processInformation.getName()).ifPresent(new Consumer<PacketSender>() {
+                        @Override
+                        public void accept(PacketSender packetSender) {
+                            packetSender.sendPacket(new ControllerAPIAction(
+                                    ControllerAPIAction.APIAction.KICK_PLAYER,
+                                    Arrays.asList(player, message)
+                            ));
+                        }
+                    });
+                }
+                task.complete(null);
+            }
+        });
+        return task;
+    }
+
+    @Override
+    public Task<Void> playSoundAsync(UUID player, String sound, float f1, float f2) {
+        Task<Void> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(new Runnable() {
+            @Override
+            public void run() {
+                ProcessInformation processInformation = ControllerExecutor.this.getPlayerOnServer(player);
+                if (processInformation != null) {
+                    DefaultChannelManager.INSTANCE.get(processInformation.getName()).ifPresent(new Consumer<PacketSender>() {
+                        @Override
+                        public void accept(PacketSender packetSender) {
+                            packetSender.sendPacket(new ControllerAPIAction(
+                                    ControllerAPIAction.APIAction.PLAY_SOUND,
+                                    Arrays.asList(player, sound, f1, f2)
+                            ));
+                        }
+                    });
+                }
+                task.complete(null);
+            }
+        });
+        return task;
+    }
+
+    @Override
+    public Task<Void> sendTitleAsync(UUID player, String title, String subTitle, int fadeIn, int stay, int fadeOut) {
+        Task<Void> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(new Runnable() {
+            @Override
+            public void run() {
+                ProcessInformation processInformation = ControllerExecutor.this.getPlayerOnProxy(player);
+                if (processInformation != null) {
+                    DefaultChannelManager.INSTANCE.get(processInformation.getName()).ifPresent(new Consumer<PacketSender>() {
+                        @Override
+                        public void accept(PacketSender packetSender) {
+                            packetSender.sendPacket(new ControllerAPIAction(
+                                    ControllerAPIAction.APIAction.SEND_TITLE,
+                                    Arrays.asList(player, title, subTitle, fadeIn, stay, fadeOut)
+                            ));
+                        }
+                    });
+                }
+                task.complete(null);
+            }
+        });
+        return task;
+    }
+
+    @Override
+    public Task<Void> playEffectAsync(UUID player, String entityEffect) {
+        Task<Void> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(new Runnable() {
+            @Override
+            public void run() {
+                ProcessInformation processInformation = ControllerExecutor.this.getPlayerOnServer(player);
+                if (processInformation != null) {
+                    DefaultChannelManager.INSTANCE.get(processInformation.getName()).ifPresent(new Consumer<PacketSender>() {
+                        @Override
+                        public void accept(PacketSender packetSender) {
+                            packetSender.sendPacket(new ControllerAPIAction(
+                                    ControllerAPIAction.APIAction.PLAY_ENTITY_EFFECT,
+                                    Arrays.asList(player, entityEffect)
+                            ));
+                        }
+                    });
+                }
+                task.complete(null);
+            }
+        });
+        return task;
+    }
+
+    @Override
+    public <T> Task<Void> playEffectAsync(UUID player, String effect, T data) {
+        Task<Void> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(new Runnable() {
+            @Override
+            public void run() {
+                ProcessInformation processInformation = ControllerExecutor.this.getPlayerOnProxy(player);
+                if (processInformation != null) {
+                    DefaultChannelManager.INSTANCE.get(processInformation.getName()).ifPresent(new Consumer<PacketSender>() {
+                        @Override
+                        public void accept(PacketSender packetSender) {
+                            packetSender.sendPacket(new ControllerAPIAction(
+                                    ControllerAPIAction.APIAction.PLAY_EFFECT,
+                                    Arrays.asList(player, effect, data)
+                            ));
+                        }
+                    });
+                }
+                task.complete(null);
+            }
+        });
+        return task;
+    }
+
+    @Override
+    public Task<Void> respawnAsync(UUID player) {
+        Task<Void> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(new Runnable() {
+            @Override
+            public void run() {
+                ProcessInformation processInformation = ControllerExecutor.this.getPlayerOnServer(player);
+                if (processInformation != null) {
+                    DefaultChannelManager.INSTANCE.get(processInformation.getName()).ifPresent(new Consumer<PacketSender>() {
+                        @Override
+                        public void accept(PacketSender packetSender) {
+                            packetSender.sendPacket(new ControllerAPIAction(
+                                    ControllerAPIAction.APIAction.RESPAWN,
+                                    Collections.singletonList(player)
+                            ));
+                        }
+                    });
+                }
+                task.complete(null);
+            }
+        });
+        return task;
+    }
+
+    @Override
+    public Task<Void> teleportAsync(UUID player, String world, double x, double y, double z, float yaw, float pitch) {
+        Task<Void> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(new Runnable() {
+            @Override
+            public void run() {
+                ProcessInformation processInformation = ControllerExecutor.this.getPlayerOnServer(player);
+                if (processInformation != null) {
+                    DefaultChannelManager.INSTANCE.get(processInformation.getName()).ifPresent(new Consumer<PacketSender>() {
+                        @Override
+                        public void accept(PacketSender packetSender) {
+                            packetSender.sendPacket(new ControllerAPIAction(
+                                    ControllerAPIAction.APIAction.LOCATION_TELEPORT,
+                                    Arrays.asList(player, world, x, y, z, yaw, pitch)
+                            ));
+                        }
+                    });
+                }
+                task.complete(null);
+            }
+        });
+        return task;
+    }
+
+    @Override
+    public Task<Void> connectAsync(UUID player, String server) {
+        Task<Void> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(new Runnable() {
+            @Override
+            public void run() {
+                ProcessInformation processInformation = ControllerExecutor.this.getPlayerOnProxy(player);
+                if (processInformation != null) {
+                    DefaultChannelManager.INSTANCE.get(processInformation.getName()).ifPresent(new Consumer<PacketSender>() {
+                        @Override
+                        public void accept(PacketSender packetSender) {
+                            packetSender.sendPacket(new ControllerAPIAction(
+                                    ControllerAPIAction.APIAction.CONNECT,
+                                    Arrays.asList(player, server)
+                            ));
+                        }
+                    });
+                }
+                task.complete(null);
+            }
+        });
+        return task;
+    }
+
+    @Override
+    public Task<Void> connectAsync(UUID player, ProcessInformation server) {
+        return connectAsync(player, server.getName());
+    }
+
+    @Override
+    public Task<Void> connectAsync(UUID player, UUID target) {
+        ProcessInformation targetServer = getPlayerOnServer(target);
+        return connectAsync(player, targetServer);
+    }
+
+    @Override
+    public Task<Void> setResourcePackAsync(UUID player, String pack) {
+        Task<Void> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(new Runnable() {
+            @Override
+            public void run() {
+                ProcessInformation processInformation = ControllerExecutor.this.getPlayerOnServer(player);
+                if (processInformation != null) {
+                    DefaultChannelManager.INSTANCE.get(processInformation.getName()).ifPresent(new Consumer<PacketSender>() {
+                        @Override
+                        public void accept(PacketSender packetSender) {
+                            packetSender.sendPacket(new ControllerAPIAction(
+                                    ControllerAPIAction.APIAction.SET_RESOURCE_PACK,
+                                    Arrays.asList(player, pack)
+                            ));
+                        }
+                    });
+                }
+                task.complete(null);
+            }
+        });
+        return task;
+    }
+
+    @Override
+    public void sendMessage(UUID player, String message) {
+        sendMessageAsync(player, message).awaitUninterruptedly();
+    }
+
+    @Override
+    public void kickPlayer(UUID player, String message) {
+        kickPlayerAsync(player, message).awaitUninterruptedly();
+    }
+
+    @Override
+    public void kickPlayerFromServer(UUID player, String message) {
+        kickPlayerFromServerAsync(player, message).awaitUninterruptedly();
+    }
+
+    @Override
+    public void playSound(UUID player, String sound, float f1, float f2) {
+        playSoundAsync(player, sound, f1, f2).awaitUninterruptedly();
+    }
+
+    @Override
+    public void sendTitle(UUID player, String title, String subTitle, int fadeIn, int stay, int fadeOut) {
+        sendTitleAsync(player, title, subTitle, fadeIn, stay, fadeOut).awaitUninterruptedly();
+    }
+
+    @Override
+    public void playEffect(UUID player, String entityEffect) {
+        playEffectAsync(player, entityEffect).awaitUninterruptedly();
+    }
+
+    @Override
+    public <T> void playEffect(UUID player, String effect, T data) {
+        playEffectAsync(player, effect, data).awaitUninterruptedly();
+    }
+
+    @Override
+    public void respawn(UUID player) {
+        respawnAsync(player).awaitUninterruptedly();
+    }
+
+    @Override
+    public void teleport(UUID player, String world, double x, double y, double z, float yaw, float pitch) {
+        teleportAsync(player, world, x, y, z, yaw, pitch).awaitUninterruptedly();
+    }
+
+    @Override
+    public void connect(UUID player, String server) {
+        connectAsync(player, server).awaitUninterruptedly();
+    }
+
+    @Override
+    public void connect(UUID player, ProcessInformation server) {
+        connectAsync(player, server).awaitUninterruptedly();
+    }
+
+    @Override
+    public void connect(UUID player, UUID target) {
+        connectAsync(player, target).awaitUninterruptedly();
+    }
+
+    @Override
+    public void setResourcePack(UUID player, String pack) {
+        setResourcePackAsync(player, pack).awaitUninterruptedly();
+    }
+
+    @Override
+    public Task<Void> installPluginAsync(String process, InstallablePlugin plugin) {
+        Task<Void> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(new Runnable() {
+            @Override
+            public void run() {
+                DefaultChannelManager.INSTANCE.get(process).ifPresent(new Consumer<PacketSender>() {
+                    @Override
+                    public void accept(PacketSender packetSender) {
+                        packetSender.sendPacket(new ControllerPluginAction(
+                                ControllerPluginAction.Action.INSTALL,
+                                plugin
+                        ));
+                    }
+                });
+                task.complete(null);
+            }
+        });
+        return task;
+    }
+
+    @Override
+    public Task<Void> installPluginAsync(ProcessInformation process, InstallablePlugin plugin) {
+        return installPluginAsync(process.getName(), plugin);
+    }
+
+    @Override
+    public Task<Void> unloadPluginAsync(String process, Plugin plugin) {
+        Task<Void> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(new Runnable() {
+            @Override
+            public void run() {
+                DefaultChannelManager.INSTANCE.get(process).ifPresent(new Consumer<PacketSender>() {
+                    @Override
+                    public void accept(PacketSender packetSender) {
+                        packetSender.sendPacket(new ControllerPluginAction(
+                                ControllerPluginAction.Action.UNINSTALL,
+                                plugin
+                        ));
+                    }
+                });
+                task.complete(null);
+            }
+        });
+        return task;
+    }
+
+    @Override
+    public Task<Void> unloadPluginAsync(ProcessInformation process, Plugin plugin) {
+        return unloadPluginAsync(process.getName(), plugin);
+    }
+
+    @Override
+    public Task<Plugin> getInstalledPluginAsync(String process, String name) {
+        Task<Plugin> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(new Runnable() {
+            @Override
+            public void run() {
+                DefaultChannelManager.INSTANCE.get(process).ifPresent(new Consumer<PacketSender>() {
+                    @Override
+                    public void accept(PacketSender packetSender) {
+                        packetHandler.getQueryHandler().sendQueryAsync(packetSender, new ControllerQueryGetPlugin(name)).onComplete(new Consumer<Packet>() {
+                            @Override
+                            public void accept(Packet packet) {
+                                task.complete(packet.content().get("plugin", DefaultPlugin.TYPE_TOKEN));
+                            }
+                        });
+                    }
+                });
+            }
+        });
+        return task;
+    }
+
+    @Override
+    public Task<Plugin> getInstalledPluginAsync(ProcessInformation process, String name) {
+        return getInstalledPluginAsync(process.getName(), name);
+    }
+
+    @Override
+    public Task<Collection<DefaultPlugin>> getPluginsAsync(String process, String author) {
+        Task<Collection<DefaultPlugin>> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(new Runnable() {
+            @Override
+            public void run() {
+                DefaultChannelManager.INSTANCE.get(process).ifPresent(new Consumer<PacketSender>() {
+                    @Override
+                    public void accept(PacketSender packetSender) {
+                        packetHandler.getQueryHandler().sendQueryAsync(packetSender, new ControllerQueryGetPlugins(author)).onComplete(new Consumer<Packet>() {
+                            @Override
+                            public void accept(Packet packet) {
+                                task.complete(packet.content().get("plugin", new TypeToken<Collection<DefaultPlugin>>() {}));
+                            }
+                        });
+                    }
+                });
+            }
+        });
+        return task;
+    }
+
+    @Override
+    public Task<Collection<DefaultPlugin>> getPluginsAsync(ProcessInformation process, String author) {
+        return getPluginsAsync(process.getName(), author);
+    }
+
+    @Override
+    public Task<Collection<DefaultPlugin>> getPluginsAsync(String process) {
+        Task<Collection<DefaultPlugin>> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(new Runnable() {
+            @Override
+            public void run() {
+                DefaultChannelManager.INSTANCE.get(process).ifPresent(new Consumer<PacketSender>() {
+                    @Override
+                    public void accept(PacketSender packetSender) {
+                        packetHandler.getQueryHandler().sendQueryAsync(packetSender, new ControllerQueryGetPlugins()).onComplete(new Consumer<Packet>() {
+                            @Override
+                            public void accept(Packet packet) {
+                                task.complete(packet.content().get("plugin", new TypeToken<Collection<DefaultPlugin>>() {}));
+                            }
+                        });
+                    }
+                });
+            }
+        });
+        return task;
+    }
+
+    @Override
+    public Task<Collection<DefaultPlugin>> getPluginsAsync(ProcessInformation processInformation) {
+        return getPluginsAsync(processInformation.getName());
+    }
+
+    @Override
+    public void installPlugin(String process, InstallablePlugin plugin) {
+        installPluginAsync(process, plugin).awaitUninterruptedly(TimeUnit.SECONDS, 5);
+    }
+
+    @Override
+    public void installPlugin(ProcessInformation process, InstallablePlugin plugin) {
+        installPluginAsync(process, plugin).awaitUninterruptedly(TimeUnit.SECONDS, 5);
+    }
+
+    @Override
+    public void unloadPlugin(String process, Plugin plugin) {
+        unloadPluginAsync(process, plugin).awaitUninterruptedly(TimeUnit.SECONDS, 5);
+    }
+
+    @Override
+    public void unloadPlugin(ProcessInformation process, Plugin plugin) {
+        unloadPluginAsync(process, plugin).awaitUninterruptedly(TimeUnit.SECONDS, 5);
+    }
+
+    @Override
+    public Plugin getInstalledPlugin(String process, String name) {
+        return getInstalledPluginAsync(process, name).getUninterruptedly(TimeUnit.SECONDS, 5);
+    }
+
+    @Override
+    public Plugin getInstalledPlugin(ProcessInformation process, String name) {
+        return getInstalledPluginAsync(process, name).getUninterruptedly(TimeUnit.SECONDS, 5);
+    }
+
+    @Override
+    public Collection<DefaultPlugin> getPlugins(String process, String author) {
+        return getPluginsAsync(process, author).getUninterruptedly(TimeUnit.SECONDS, 5);
+    }
+
+    @Override
+    public Collection<DefaultPlugin> getPlugins(ProcessInformation process, String author) {
+        return getPluginsAsync(process, author).getUninterruptedly(TimeUnit.SECONDS, 5);
+    }
+
+    @Override
+    public Collection<DefaultPlugin> getPlugins(String process) {
+        return getPluginsAsync(process).getUninterruptedly(TimeUnit.SECONDS, 5);
+    }
+
+    @Override
+    public Collection<DefaultPlugin> getPlugins(ProcessInformation processInformation) {
+        return getPluginsAsync(processInformation).getUninterruptedly(TimeUnit.SECONDS, 5);
+    }
+
+    @Override
+    public Task<ProcessInformation> startProcessAsync(String groupName) {
+        return startProcessAsync(groupName, null);
+    }
+
+    @Override
+    public Task<ProcessInformation> startProcessAsync(String groupName, String template) {
+        return startProcessAsync(groupName, template, new JsonConfiguration());
+    }
+
+    @Override
+    public Task<ProcessInformation> startProcessAsync(String groupName, String template, Configurable configurable) {
+        Task<ProcessInformation> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(new Runnable() {
+            @Override
+            public void run() {
+                task.complete(processManager.startProcess(groupName, template, configurable));
+            }
+        });
+        return task;
+    }
+
+    @Override
+    public Task<ProcessInformation> stopProcessAsync(String name) {
+        Task<ProcessInformation> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(new Runnable() {
+            @Override
+            public void run() {
+                task.complete(processManager.stopProcess(name));
+            }
+        });
+        return task;
+    }
+
+    @Override
+    public Task<ProcessInformation> stopProcessAsync(UUID uniqueID) {
+        Task<ProcessInformation> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(new Runnable() {
+            @Override
+            public void run() {
+                task.complete(processManager.stopProcess(uniqueID));
+            }
+        });
+        return task;
+    }
+
+    @Override
+    public Task<ProcessInformation> getProcessAsync(String name) {
+        Task<ProcessInformation> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(new Runnable() {
+            @Override
+            public void run() {
+                task.complete(processManager.getProcess(name));
+            }
+        });
+        return task;
+    }
+
+    @Override
+    public Task<ProcessInformation> getProcessAsync(UUID uniqueID) {
+        Task<ProcessInformation> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(new Runnable() {
+            @Override
+            public void run() {
+                task.complete(processManager.getProcess(uniqueID));
+            }
+        });
+        return task;
+    }
+
+    @Override
+    public Task<List<ProcessInformation>> getAllProcessesAsync() {
+        Task<List<ProcessInformation>> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(new Runnable() {
+            @Override
+            public void run() {
+                task.complete(processManager.getAllProcesses());
+            }
+        });
+        return task;
+    }
+
+    @Override
+    public Task<List<ProcessInformation>> getProcessesAsync(String group) {
+        Task<List<ProcessInformation>> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(new Runnable() {
+            @Override
+            public void run() {
+                task.complete(processManager.getProcesses(group));
+            }
+        });
+        return task;
+    }
+
+    @Override
+    public Task<Void> executeProcessCommandAsync(String name, String commandLine) {
+        Task<Void> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(new Runnable() {
+            @Override
+            public void run() {
+                DefaultChannelManager.INSTANCE.get(name).ifPresent(new Consumer<PacketSender>() {
+                    @Override
+                    public void accept(PacketSender packetSender) {
+                        packetSender.sendPacket(new ControllerExecuteCommand(commandLine));
+                    }
+                });
+                task.complete(null);
+            }
+        });
+        return task;
+    }
+
+    @Override
+    public Task<Integer> getGlobalOnlineCountAsync(Collection<String> ignoredProxies) {
+        Task<Integer> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(new Runnable() {
+            @Override
+            public void run() {
+                task.complete(processManager.getAllProcesses().stream().filter(new Predicate<ProcessInformation>() {
+                    @Override
+                    public boolean test(ProcessInformation processInformation) {
+                        return !processInformation.getTemplate().isServer() && !ignoredProxies.contains(processInformation.getName());
+                    }
+                }).mapToInt(new ToIntFunction<ProcessInformation>() {
+                    @Override
+                    public int applyAsInt(ProcessInformation value) {
+                        return value.getOnlineCount();
+                    }
+                }).sum());
+            }
+        });
+        return task;
+    }
+
+    @Override
+    public ProcessInformation startProcess(String groupName) {
+        return startProcessAsync(groupName).getUninterruptedly();
+    }
+
+    @Override
+    public ProcessInformation startProcess(String groupName, String template) {
+        return startProcessAsync(groupName, template).getUninterruptedly();
+    }
+
+    @Override
+    public ProcessInformation startProcess(String groupName, String template, Configurable configurable) {
+        return startProcessAsync(groupName, template, configurable).getUninterruptedly();
+    }
+
+    @Override
+    public ProcessInformation stopProcess(String name) {
+        return stopProcessAsync(name).getUninterruptedly();
+    }
+
+    @Override
+    public ProcessInformation stopProcess(UUID uniqueID) {
+        return stopProcessAsync(uniqueID).getUninterruptedly();
+    }
+
+    @Override
+    public ProcessInformation getProcess(String name) {
+        return getProcessAsync(name).getUninterruptedly();
+    }
+
+    @Override
+    public ProcessInformation getProcess(UUID uniqueID) {
+        return getProcessAsync(uniqueID).getUninterruptedly();
+    }
+
+    @Override
+    public List<ProcessInformation> getAllProcesses() {
+        return getAllProcessesAsync().getUninterruptedly();
+    }
+
+    @Override
+    public List<ProcessInformation> getProcesses(String group) {
+        return getProcessesAsync(group).getUninterruptedly();
+    }
+
+    @Override
+    public void executeProcessCommand(String name, String commandLine) {
+        executeProcessCommandAsync(name, commandLine).awaitUninterruptedly();
+    }
+
+    @Override
+    public int getGlobalOnlineCount(Collection<String> ignoredProxies) {
+        return getGlobalOnlineCountAsync(ignoredProxies).getUninterruptedly();
+    }
+
+    @Override
+    public void update(ProcessInformation processInformation) {
+        this.processManager.update(processInformation);
+    }
+
+    private ProcessInformation getPlayerOnProxy(UUID uniqueID) {
+        return Links.filter(processManager.getAllProcesses(), new Predicate<ProcessInformation>() {
+            @Override
+            public boolean test(ProcessInformation processInformation) {
+                return !processInformation.getTemplate().isServer() && Links.filterToOptional(processInformation.getOnlinePlayers(), new Predicate<Player>() {
+                    @Override
+                    public boolean test(Player player) {
+                        return player.getUniqueID().equals(uniqueID);
+                    }
+                }).isPresent();
+            }
+        });
+    }
+
+    private ProcessInformation getPlayerOnServer(UUID uniqueID) {
+        return Links.filter(processManager.getAllProcesses(), new Predicate<ProcessInformation>() {
+            @Override
+            public boolean test(ProcessInformation processInformation) {
+                return processInformation.getTemplate().isServer() && Links.filterToOptional(processInformation.getOnlinePlayers(), new Predicate<Player>() {
+                    @Override
+                    public boolean test(Player player) {
+                        return player.getUniqueID().equals(uniqueID);
+                    }
+                }).isPresent();
+            }
+        });
     }
 }

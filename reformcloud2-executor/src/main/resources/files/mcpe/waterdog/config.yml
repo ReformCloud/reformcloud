@@ -1,0 +1,69 @@
+replace_username_spaces: true
+forge_support: true
+player_limit: -1
+use_xuid_for_uuid: true
+bedrock_encryption: true
+permissions:
+  default:
+  - bungeecord.command.server
+  - bungeecord.command.list
+  admin:
+  - bungeecord.command.alert
+  - bungeecord.command.end
+  - bungeecord.command.ip
+  - bungeecord.command.reload
+timeout: 30000
+log_commands: false
+online_mode: true
+disabled_commands:
+- disabledcommandhere
+servers:
+  lobby:
+    raknet: false
+    motd: '\n'
+    transfer_group: default
+    address: localhost:25565
+    restricted: false
+listeners:
+- query_port: 25577
+  motd: '\n'
+  tab_list: GLOBAL_PING
+  query_enabled: false
+  proxy_protocol: false
+  forced_hosts: &id033
+    pvp.md-5.net: pvp
+  ping_passthrough: false
+  raknet: false
+  priorities:
+  - lobby
+  bind_local_address: true
+  host: 0.0.0.0:25577
+  max_players: 1
+  tab_size: 60
+  force_default_server: false
+- query_port: 19132
+  motd: '\n'
+  tab_list: GLOBAL_PING
+  query_enabled: true
+  proxy_protocol: false
+  forced_hosts: *id033
+  ping_passthrough: false
+  raknet: true
+  priorities:
+  - lobby
+  bind_local_address: true
+  host: 0.0.0.0:19132
+  max_players: 1
+  tab_size: 60
+  force_default_server: false
+ip_forward: true
+network_compression_threshold: 256
+max_mtu: -1
+prevent_proxy_connections: false
+groups:
+  md_5:
+  - admin
+connection_throttle: 4000
+stats: 55a8c2a1-827f-4619-9831-6b2a34fad2d5
+connection_throttle_limit: 3
+log_pings: true

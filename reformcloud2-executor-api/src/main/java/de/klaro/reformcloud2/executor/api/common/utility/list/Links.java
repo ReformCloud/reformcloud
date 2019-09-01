@@ -50,6 +50,16 @@ public final class Links {
         return null;
     }
 
+    public static <T> Optional<T> filterToOptional(Collection<T> in, Predicate<T> predicate) {
+        for (T t : in) {
+            if (predicate.test(t)) {
+                return Optional.of(t);
+            }
+        }
+
+        return Optional.empty();
+    }
+
     public static <T, F> F filterAndApply(List<T> in, Predicate<T> predicate, Function<T, F> function) {
         for (T t : in) {
             if (predicate.test(t)) {

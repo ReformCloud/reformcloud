@@ -4,6 +4,7 @@ import de.klaro.reformcloud2.executor.api.common.base.Conditions;
 import de.klaro.reformcloud2.executor.api.common.language.LanguageManager;
 import de.klaro.reformcloud2.executor.api.common.language.language.Language;
 import de.klaro.reformcloud2.executor.api.common.language.language.source.LanguageSource;
+import de.klaro.reformcloud2.executor.api.common.utility.function.Double;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -19,6 +20,18 @@ public final class LanguageWorker {
     private LanguageWorker() {}
 
     public static void doLoad() {
+        Double<String, LinkedList<Language>> in = detectLanguages();
+        LanguageManager.load(in.getFirst(), in.getSecond().toArray(new Language[0]));
+    }
+
+    public static void doReload() {
+        Double<String, LinkedList<Language>> in = detectLanguages();
+        LanguageManager.reload(in.getFirst(), in.getSecond().toArray(new Language[0]));
+    }
+
+    private static Double<String, LinkedList<Language>> detectLanguages() {
+        Double<String, LinkedList<Language>> done = null;
+
         try {
             LinkedList<Language> out = new LinkedList<>();
             Language use = null;
@@ -66,10 +79,12 @@ public final class LanguageWorker {
                 use = out.getFirst();
             }
 
-            LanguageManager.load(use.source().getSource(), out.toArray(new Language[0]));
+            done = new Double<>(use.source().getName(), out);
         } catch (final Throwable ex) {
             ex.printStackTrace();
         }
+
+        return done;
     }
 
     private static class InternalLanguageSource implements LanguageSource {

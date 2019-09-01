@@ -10,6 +10,8 @@ import de.klaro.reformcloud2.executor.api.common.logger.setup.Setup;
 import de.klaro.reformcloud2.executor.api.common.logger.setup.basic.DefaultSetup;
 import de.klaro.reformcloud2.executor.api.common.logger.setup.basic.DefaultSetupQuestion;
 import de.klaro.reformcloud2.executor.api.common.utility.StringUtil;
+import de.klaro.reformcloud2.executor.api.common.utility.list.Links;
+import de.klaro.reformcloud2.executor.api.common.utility.system.SystemHelper;
 import de.klaro.reformcloud2.executor.controller.ControllerExecutor;
 
 import java.io.File;
@@ -192,6 +194,87 @@ public final class ControllerExecutorConfig {
                     }
                 }
         )).startSetup(ControllerExecutor.getInstance().getLoggerBase());
+    }
+
+    public MainGroup createMainGroup(MainGroup mainGroup) {
+        MainGroup mainGroup1 = mainGroups.stream().filter(new Predicate<MainGroup>() {
+            @Override
+            public boolean test(MainGroup group) {
+                return mainGroup.getName().equals(group.getName());
+            }
+        }).findFirst().orElse(null);
+        if (mainGroup1 == null) {
+            new JsonConfiguration()
+                    .add("group", mainGroup).write("reformcloud/groups/main/" + mainGroup.getName() + ".json");
+            mainGroups.add(mainGroup);
+            return mainGroup;
+        }
+
+        return null;
+    }
+
+    public ProcessGroup createProcessGroup(ProcessGroup processGroup) {
+        ProcessGroup processGroup1 = processGroups.stream().filter(new Predicate<ProcessGroup>() {
+            @Override
+            public boolean test(ProcessGroup group) {
+                return processGroup.getName().equals(group.getName());
+            }
+        }).findFirst().orElse(null);
+        if (processGroup1 == null) {
+            new JsonConfiguration()
+                    .add("group", processGroup).write("reformcloud/groups/sub/" + processGroup.getName() + ".json");
+            processGroups.add(processGroup);
+            ControllerExecutor.getInstance().getAutoStartupHandler().update();
+            return processGroup;
+        }
+
+        return null;
+    }
+
+    public void deleteMainGroup(MainGroup mainGroup) {
+        mainGroups.remove(mainGroup);
+        SystemHelper.deleteFile(new File("reformcloud/groups/main/" + mainGroup.getName() + ".json"));
+    }
+
+    public void deleteProcessGroup(ProcessGroup processGroup) {
+        processGroups.remove(processGroup);
+        SystemHelper.deleteFile(new File("reformcloud/groups/sub/" + processGroup.getName() + ".json"));
+        ControllerExecutor.getInstance().getAutoStartupHandler().update();
+    }
+
+    public void updateProcessGroup(ProcessGroup processGroup) {
+        Links.filterToOptional(processGroups, new Predicate<ProcessGroup>() {
+            @Override
+            public boolean test(ProcessGroup group) {
+                return processGroup.getName().equals(group.getName());
+            }
+        }).ifPresent(new Consumer<ProcessGroup>() {
+            @Override
+            public void accept(ProcessGroup group) {
+                processGroups.remove(group);
+                processGroups.add(processGroup);
+                new JsonConfiguration()
+                        .add("group", processGroup).write("reformcloud/groups/sub/" + processGroup.getName() + ".json");
+                ControllerExecutor.getInstance().getAutoStartupHandler().update();
+            }
+        });
+    }
+
+    public void updateMainGroup(MainGroup mainGroup) {
+        Links.filterToOptional(mainGroups, new Predicate<MainGroup>() {
+            @Override
+            public boolean test(MainGroup group) {
+                return group.getName().equals(mainGroup.getName());
+            }
+        }).ifPresent(new Consumer<MainGroup>() {
+            @Override
+            public void accept(MainGroup group) {
+                mainGroups.remove(group);
+                mainGroups.add(mainGroup);
+                new JsonConfiguration()
+                        .add("group", mainGroup).write("reformcloud/groups/main/" + mainGroup.getName() + ".json");
+            }
+        });
     }
 
     public ControllerConfig getControllerConfig() {

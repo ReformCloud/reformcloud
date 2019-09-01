@@ -2,10 +2,16 @@ package de.klaro.reformcloud2.executor.api.common.database.basic.drivers.file;
 
 import de.klaro.reformcloud2.executor.api.common.database.Database;
 
-public final class FileDatabase extends Database<Void> { //Void because file database will not give any database back
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+public final class FileDatabase extends Database<Path> {
+
+    private String table;
 
     @Override
     public void connect(String host, int port, String userName, String password, String table) {
+        this.table = table;
     }
 
     @Override
@@ -22,7 +28,7 @@ public final class FileDatabase extends Database<Void> { //Void because file dat
     }
 
     @Override
-    public Void get() {
-        return null;
+    public Path get() {
+        return Paths.get(table);
     }
 }
