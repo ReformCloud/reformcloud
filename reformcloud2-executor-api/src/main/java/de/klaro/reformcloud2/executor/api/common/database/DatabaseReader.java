@@ -1,20 +1,25 @@
 package de.klaro.reformcloud2.executor.api.common.database;
 
-import de.klaro.reformcloud2.executor.api.common.utility.annotiations.Nullable;
+import de.klaro.reformcloud2.executor.api.common.configuration.JsonConfiguration;
+import de.klaro.reformcloud2.executor.api.common.utility.name.Nameable;
+import de.klaro.reformcloud2.executor.api.common.utility.task.Task;
 
-public interface DatabaseReader<T, K, V> extends Iterable<T> {
+/**
+ * This class represents a database table where all operations are async in it
+ */
+public interface DatabaseReader extends Iterable<JsonConfiguration>, Nameable {
 
-    DatabaseResult<T> find(K key);
+    Task<JsonConfiguration> find(String key);
 
-    DatabaseResult<T> findIfAbsent(@Nullable K key, V identifier);
+    Task<JsonConfiguration> findIfAbsent(String identifier);
 
-    DatabaseResult<T> insert(K key, V identifier);
+    Task<JsonConfiguration> insert(String key, String identifier, JsonConfiguration data);
 
-    DatabaseResult<Void> remove(K key);
+    Task<Void> remove(String key, String identifier);
 
-    DatabaseResult<Void> removeIfAbsent(V identifier);
+    Task<Void> removeIfAbsent(String identifier);
 
-    DatabaseResult<Boolean> contains(K key);
+    Task<Boolean> contains(String key);
 
-    DatabaseResult<Integer> size();
+    Task<Integer> size();
 }

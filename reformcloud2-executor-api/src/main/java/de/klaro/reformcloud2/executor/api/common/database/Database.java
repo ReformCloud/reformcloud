@@ -15,5 +15,11 @@ public abstract class Database<V> {
 
     public abstract void disconnect();
 
+    public abstract boolean createDatabase(String name);
+
+    public abstract boolean deleteDatabase(String name);
+
+    public abstract DatabaseReader createForTable(String table);
+
     public abstract V get();
 }

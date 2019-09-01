@@ -2,6 +2,7 @@ package de.klaro.reformcloud2.executor.api.common;
 
 import de.klaro.reformcloud2.executor.api.ExecutorType;
 import de.klaro.reformcloud2.executor.api.common.api.applications.ApplicationAsyncAPI;
+import de.klaro.reformcloud2.executor.api.common.api.client.ClientAsyncAPI;
 import de.klaro.reformcloud2.executor.api.common.api.console.ConsoleAsyncAPI;
 import de.klaro.reformcloud2.executor.api.common.api.group.GroupAsyncAPI;
 import de.klaro.reformcloud2.executor.api.common.api.player.PlayerAsyncAPI;
@@ -17,7 +18,8 @@ public abstract class ExecutorAPI implements
         ApplicationAsyncAPI,
         ConsoleAsyncAPI,
         PlayerAsyncAPI,
-        PluginAsyncAPI {
+        PluginAsyncAPI,
+        ClientAsyncAPI {
 
     protected ExecutorType type;
 
