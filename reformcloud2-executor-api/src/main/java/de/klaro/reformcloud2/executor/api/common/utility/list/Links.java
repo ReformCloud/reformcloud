@@ -157,4 +157,15 @@ public final class Links {
 
         return collection;
     }
+
+    public static <T, F> Collection<F> apply(Collection<T> collection, Function<T, F> function) {
+        Collection<F> out = new LinkedList<>();
+        collection.forEach(new Consumer<T>() {
+            @Override
+            public void accept(T t) {
+                out.add(function.apply(t));
+            }
+        });
+        return out;
+    }
 }
