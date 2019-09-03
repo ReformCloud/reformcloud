@@ -1,10 +1,13 @@
 package de.klaro.reformcloud2.executor.controller;
 
 import com.google.gson.reflect.TypeToken;
+import de.klaro.reformcloud2.executor.api.ExecutorType;
+import de.klaro.reformcloud2.executor.api.common.ExecutorAPI;
 import de.klaro.reformcloud2.executor.api.common.application.ApplicationLoader;
 import de.klaro.reformcloud2.executor.api.common.application.InstallableApplication;
 import de.klaro.reformcloud2.executor.api.common.application.LoadedApplication;
 import de.klaro.reformcloud2.executor.api.common.application.basic.DefaultApplicationLoader;
+import de.klaro.reformcloud2.executor.api.common.client.ClientRuntimeInformation;
 import de.klaro.reformcloud2.executor.api.common.commands.AllowedCommandSources;
 import de.klaro.reformcloud2.executor.api.common.commands.Command;
 import de.klaro.reformcloud2.executor.api.common.commands.basic.ConsoleCommandSource;
@@ -17,6 +20,11 @@ import de.klaro.reformcloud2.executor.api.common.commands.manager.CommandManager
 import de.klaro.reformcloud2.executor.api.common.commands.source.CommandSource;
 import de.klaro.reformcloud2.executor.api.common.configuration.Configurable;
 import de.klaro.reformcloud2.executor.api.common.configuration.JsonConfiguration;
+import de.klaro.reformcloud2.executor.api.common.database.Database;
+import de.klaro.reformcloud2.executor.api.common.database.DatabaseReader;
+import de.klaro.reformcloud2.executor.api.common.database.basic.drivers.file.FileDatabase;
+import de.klaro.reformcloud2.executor.api.common.database.basic.drivers.mongo.MongoDatabase;
+import de.klaro.reformcloud2.executor.api.common.database.basic.drivers.mysql.MySQLDatabase;
 import de.klaro.reformcloud2.executor.api.common.groups.MainGroup;
 import de.klaro.reformcloud2.executor.api.common.groups.ProcessGroup;
 import de.klaro.reformcloud2.executor.api.common.groups.utils.*;
@@ -52,22 +60,21 @@ import de.klaro.reformcloud2.executor.api.controller.Controller;
 import de.klaro.reformcloud2.executor.api.controller.process.ProcessManager;
 import de.klaro.reformcloud2.executor.controller.config.ControllerConfig;
 import de.klaro.reformcloud2.executor.controller.config.ControllerExecutorConfig;
+import de.klaro.reformcloud2.executor.controller.config.DatabaseConfig;
 import de.klaro.reformcloud2.executor.controller.packet.in.PacketInClientAuthSuccess;
 import de.klaro.reformcloud2.executor.controller.packet.out.api.ControllerAPIAction;
 import de.klaro.reformcloud2.executor.controller.packet.out.api.ControllerExecuteCommand;
 import de.klaro.reformcloud2.executor.controller.packet.out.api.ControllerPluginAction;
 import de.klaro.reformcloud2.executor.controller.packet.out.api.query.ControllerQueryGetPlugin;
 import de.klaro.reformcloud2.executor.controller.packet.out.api.query.ControllerQueryGetPlugins;
+import de.klaro.reformcloud2.executor.controller.process.ClientManager;
 import de.klaro.reformcloud2.executor.controller.process.DefaultProcessManager;
 import de.klaro.reformcloud2.executor.controller.process.startup.AutoStartupHandler;
 
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
-import java.util.function.ToIntFunction;
+import java.util.function.*;
 
 public final class ControllerExecutor extends Controller {
 
@@ -79,9 +86,11 @@ public final class ControllerExecutor extends Controller {
 
     private AutoStartupHandler autoStartupHandler;
 
-    private ControllerExecutorConfig controllerExecutorConfig = new ControllerExecutorConfig();
+    private ControllerExecutorConfig controllerExecutorConfig;
 
     private ControllerConfig controllerConfig;
+
+    private Database database;
 
     private final CommandManager commandManager = new DefaultCommandManager();
 
@@ -97,13 +106,30 @@ public final class ControllerExecutor extends Controller {
 
     private final Patcher patcher = new DefaultPatcher();
 
+    private final DatabaseConfig databaseConfig = new DatabaseConfig();
+
+    ControllerExecutor() {
+        ExecutorAPI.setInstance(this);
+        super.type = ExecutorType.CONTROLLER;
+
+        Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    shutdown();
+                } catch (final Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+        }, "Shutdown-Hook"));
+
+        bootstrap();
+    }
+
     @Override
     protected void bootstrap() {
         long current = System.currentTimeMillis();
         instance = this;
-
-        applicationLoader.detectApplications();
-        applicationLoader.installApplications();
 
         try {
             if (Boolean.getBoolean("reformcloud2.disable.colours")) {
@@ -114,6 +140,11 @@ public final class ControllerExecutor extends Controller {
         } catch (final IOException ex) {
             ex.printStackTrace();
         }
+
+        this.controllerExecutorConfig = new ControllerExecutorConfig();
+
+        applicationLoader.detectApplications();
+        applicationLoader.installApplications();
 
         this.controllerConfig = controllerExecutorConfig.getControllerConfig();
         this.controllerConfig.getNetworkListener().forEach(new Consumer<Map<String, Integer>>() {
@@ -148,6 +179,27 @@ public final class ControllerExecutor extends Controller {
                 });
             }
         });
+
+        databaseConfig.load();
+        switch (databaseConfig.getType()) {
+            case FILE: {
+                this.database = new FileDatabase();
+                this.databaseConfig.connect(this.database);
+                break;
+            }
+
+            case MONGO: {
+                this.database = new MongoDatabase();
+                this.databaseConfig.connect(this.database);
+                break;
+            }
+
+            case MYSQL: {
+                this.database = new MySQLDatabase();
+                this.databaseConfig.connect(this.database);
+                break;
+            }
+        }
 
         applicationLoader.loadApplications();
 
@@ -241,6 +293,11 @@ public final class ControllerExecutor extends Controller {
         return packetHandler;
     }
 
+    @Override
+    public CommandManager getCommandManager() {
+        return commandManager;
+    }
+
     public LoggerBase getLoggerBase() {
         return loggerBase;
     }
@@ -270,6 +327,7 @@ public final class ControllerExecutor extends Controller {
                 loggerBase.getConsoleReader().resetPromptLine("", "", 0);
 
                 while ((line = loggerBase.readLine()) != null && !line.trim().isEmpty() && running) {
+                    loggerBase.getConsoleReader().setPrompt("");
                     commandManager.dispatchCommand(console, AllowedCommandSources.ALL, line, new Consumer<String>() {
                         @Override
                         public void accept(String s) {
@@ -1566,5 +1624,290 @@ public final class ControllerExecutor extends Controller {
                 }).isPresent();
             }
         });
+    }
+
+    @Override
+    public Task<Boolean> isClientConnectedAsync(String name) {
+        Task<Boolean> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(new Runnable() {
+            @Override
+            public void run() {
+                task.complete(Links.filterToOptional(ClientManager.INSTANCE.clientRuntimeInformation, new Predicate<ClientRuntimeInformation>() {
+                    @Override
+                    public boolean test(ClientRuntimeInformation clientRuntimeInformation) {
+                        return clientRuntimeInformation.getName().equals(name);
+                    }
+                }).isPresent());
+            }
+        });
+        return task;
+    }
+
+    @Override
+    public Task<String> getClientStartHostAsync(String name) {
+        Task<String> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(new Runnable() {
+            @Override
+            public void run() {
+                ClientRuntimeInformation information = Links.filter(ClientManager.INSTANCE.clientRuntimeInformation, new Predicate<ClientRuntimeInformation>() {
+                    @Override
+                    public boolean test(ClientRuntimeInformation clientRuntimeInformation) {
+                        return clientRuntimeInformation.getName().equals(name);
+                    }
+                });
+                if (information == null) {
+                    task.complete(null);
+                } else {
+                    task.complete(information.startHost());
+                }
+            }
+        });
+        return task;
+    }
+
+    @Override
+    public Task<Integer> getMaxMemoryAsync(String name) {
+        Task<Integer> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(new Runnable() {
+            @Override
+            public void run() {
+                ClientRuntimeInformation information = Links.filter(ClientManager.INSTANCE.clientRuntimeInformation, new Predicate<ClientRuntimeInformation>() {
+                    @Override
+                    public boolean test(ClientRuntimeInformation clientRuntimeInformation) {
+                        return clientRuntimeInformation.getName().equals(name);
+                    }
+                });
+                if (information == null) {
+                    task.complete(null);
+                } else {
+                    task.complete(information.maxMemory());
+                }
+            }
+        });
+        return task;
+    }
+
+    @Override
+    public Task<Integer> getMaxProcessesAsync(String name) {
+        Task<Integer> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(new Runnable() {
+            @Override
+            public void run() {
+                ClientRuntimeInformation information = Links.filter(ClientManager.INSTANCE.clientRuntimeInformation, new Predicate<ClientRuntimeInformation>() {
+                    @Override
+                    public boolean test(ClientRuntimeInformation clientRuntimeInformation) {
+                        return clientRuntimeInformation.getName().equals(name);
+                    }
+                });
+                if (information == null) {
+                    task.complete(null);
+                } else {
+                    task.complete(information.maxProcessCount());
+                }
+            }
+        });
+        return task;
+    }
+
+    @Override
+    public Task<ClientRuntimeInformation> getClientInformationAsync(String name) {
+        Task<ClientRuntimeInformation> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(new Runnable() {
+            @Override
+            public void run() {
+                ClientRuntimeInformation information = Links.filter(ClientManager.INSTANCE.clientRuntimeInformation, new Predicate<ClientRuntimeInformation>() {
+                    @Override
+                    public boolean test(ClientRuntimeInformation clientRuntimeInformation) {
+                        return clientRuntimeInformation.getName().equals(name);
+                    }
+                });
+                task.complete(information);
+            }
+        });
+        return task;
+    }
+
+    @Override
+    public boolean isClientConnected(String name) {
+        return isClientConnectedAsync(name).getUninterruptedly();
+    }
+
+    @Override
+    public String getClientStartHost(String name) {
+        return getClientStartHostAsync(name).getUninterruptedly();
+    }
+
+    @Override
+    public int getMaxMemory(String name) {
+        return getMaxMemoryAsync(name).getUninterruptedly();
+    }
+
+    @Override
+    public int getMaxProcesses(String name) {
+        return getMaxProcessesAsync(name).getUninterruptedly();
+    }
+
+    @Override
+    public ClientRuntimeInformation getClientInformation(String name) {
+        return getClientInformationAsync(name).getUninterruptedly();
+    }
+
+    @Override
+    public Task<JsonConfiguration> findAsync(String table, String key, String identifier) {
+        Task<JsonConfiguration> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(new Runnable() {
+            @Override
+            public void run() {
+                DatabaseReader databaseReader = ControllerExecutor.this.database.createForTable(table);
+                JsonConfiguration result = databaseReader.find(key).getUninterruptedly();
+                if (result != null) {
+                    task.complete(result);
+                } else if (identifier != null) {
+                    task.complete(databaseReader.findIfAbsent(identifier).getUninterruptedly());
+                } else {
+                    task.complete(null);
+                }
+            }
+        });
+        return task;
+    }
+
+    @Override
+    public <T> Task<T> findAsync(String table, String key, String identifier, Function<JsonConfiguration, T> function) {
+        Task<T> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(new Runnable() {
+            @Override
+            public void run() {
+                JsonConfiguration jsonConfiguration = findAsync(table, key, identifier).getUninterruptedly();
+                if (jsonConfiguration != null) {
+                    task.complete(function.apply(jsonConfiguration));
+                } else {
+                    task.complete(null);
+                }
+            }
+        });
+        return task;
+    }
+
+    @Override
+    public Task<Void> insertAsync(String table, String key, String identifier, JsonConfiguration data) {
+        Task<Void> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(new Runnable() {
+            @Override
+            public void run() {
+                database.createForTable(table).insert(key, identifier, data).awaitUninterruptedly();
+                task.complete(null);
+            }
+        });
+        return task;
+    }
+
+    @Override
+    public Task<Boolean> updateAsync(String table, String key, JsonConfiguration newData) {
+        return database.createForTable(table).update(key, newData);
+    }
+
+    @Override
+    public Task<Boolean> updateIfAbsentAsync(String table, String identifier, JsonConfiguration newData) {
+        return database.createForTable(table).updateIfAbsent(identifier, newData);
+    }
+
+    @Override
+    public Task<Void> removeAsync(String table, String key) {
+        return database.createForTable(table).remove(key);
+    }
+
+    @Override
+    public Task<Void> removeIfAbsentAsync(String table, String identifier) {
+        return database.createForTable(table).removeIfAbsent(identifier);
+    }
+
+    @Override
+    public Task<Boolean> createDatabaseAsync(String name) {
+        Task<Boolean> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(new Runnable() {
+            @Override
+            public void run() {
+                task.complete(database.createDatabase(name));
+            }
+        });
+        return task;
+    }
+
+    @Override
+    public Task<Boolean> deleteDatabaseAsync(String name) {
+        Task<Boolean> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(new Runnable() {
+            @Override
+            public void run() {
+                task.complete(database.deleteDatabase(name));
+            }
+        });
+        return task;
+    }
+
+    @Override
+    public Task<Boolean> containsAsync(String table, String key) {
+        return database.createForTable(table).contains(key);
+    }
+
+    @Override
+    public Task<Integer> sizeAsync(String table) {
+        return database.createForTable(table).size();
+    }
+
+    @Override
+    public JsonConfiguration find(String table, String key, String identifier) {
+        return findAsync(table, key, identifier).getUninterruptedly();
+    }
+
+    @Override
+    public <T> T find(String table, String key, String identifier, Function<JsonConfiguration, T> function) {
+        return findAsync(table, key, identifier, function).getUninterruptedly();
+    }
+
+    @Override
+    public void insert(String table, String key, String identifier, JsonConfiguration data) {
+        insertAsync(table, key, identifier, data).awaitUninterruptedly();
+    }
+
+    @Override
+    public boolean update(String table, String key, JsonConfiguration newData) {
+        return updateAsync(table, key, newData).getUninterruptedly();
+    }
+
+    @Override
+    public boolean updateIfAbsent(String table, String identifier, JsonConfiguration newData) {
+        return updateIfAbsentAsync(table, identifier, newData).getUninterruptedly();
+    }
+
+    @Override
+    public void remove(String table, String key) {
+        removeAsync(table, key).awaitUninterruptedly();
+    }
+
+    @Override
+    public void removeIfAbsent(String table, String identifier) {
+        removeIfAbsentAsync(table, identifier).awaitUninterruptedly();
+    }
+
+    @Override
+    public boolean createDatabase(String name) {
+        return createDatabaseAsync(name).getUninterruptedly();
+    }
+
+    @Override
+    public boolean deleteDatabase(String name) {
+        return deleteDatabaseAsync(name).getUninterruptedly();
+    }
+
+    @Override
+    public boolean contains(String table, String key) {
+        return containsAsync(table, key).getUninterruptedly();
+    }
+
+    @Override
+    public int size(String table) {
+        return sizeAsync(table).getUninterruptedly();
     }
 }

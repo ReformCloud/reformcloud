@@ -4,13 +4,13 @@ import de.klaro.reformcloud2.executor.api.common.logger.LoggerBase;
 import de.klaro.reformcloud2.executor.api.common.logger.setup.Setup;
 import de.klaro.reformcloud2.executor.api.common.logger.setup.SetupQuestion;
 
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Consumer;
 
 public final class DefaultSetup implements Setup {
 
-    private final SortedSet<SetupQuestion> questions = new TreeSet<>();
+    private final Queue<SetupQuestion> questions = new ConcurrentLinkedQueue<>();
 
     @Override
     public Setup addQuestion(SetupQuestion setupQuestion) {
@@ -24,7 +24,7 @@ public final class DefaultSetup implements Setup {
             @Override
             public void accept(SetupQuestion setupQuestion) {
                 System.out.println(setupQuestion.question());
-                String line = loggerBase.readLine();
+                String line = loggerBase.readLineNoPrompt();
                 while (line.trim().isEmpty() || !setupQuestion.tester().test(line)) {
                     System.out.println(setupQuestion.wrongAnswerMessage());
                     line = loggerBase.readLine();

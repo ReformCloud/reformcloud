@@ -1,11 +1,11 @@
 package de.klaro.reformcloud2.executor.api.common.commands.basic.commands;
 
-import de.klaro.reformcloud2.executor.api.common.commands.basic.command.sources.ConsoleCommand;
+import de.klaro.reformcloud2.executor.api.common.commands.basic.GlobalCommand;
 import de.klaro.reformcloud2.executor.api.common.commands.source.CommandSource;
 
 import java.util.Arrays;
 
-public final class CommandStop extends ConsoleCommand {
+public final class CommandStop extends GlobalCommand {
 
     public CommandStop() {
         super("stop", "reformcloud.command.permissions", "The stop command", Arrays.asList(

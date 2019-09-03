@@ -4,6 +4,7 @@ import de.klaro.reformcloud2.executor.api.ExecutorType;
 import de.klaro.reformcloud2.executor.api.common.api.applications.ApplicationAsyncAPI;
 import de.klaro.reformcloud2.executor.api.common.api.client.ClientAsyncAPI;
 import de.klaro.reformcloud2.executor.api.common.api.console.ConsoleAsyncAPI;
+import de.klaro.reformcloud2.executor.api.common.api.database.DatabaseAsyncAPI;
 import de.klaro.reformcloud2.executor.api.common.api.group.GroupAsyncAPI;
 import de.klaro.reformcloud2.executor.api.common.api.player.PlayerAsyncAPI;
 import de.klaro.reformcloud2.executor.api.common.api.plugins.PluginAsyncAPI;
@@ -19,7 +20,8 @@ public abstract class ExecutorAPI implements
         ConsoleAsyncAPI,
         PlayerAsyncAPI,
         PluginAsyncAPI,
-        ClientAsyncAPI {
+        ClientAsyncAPI,
+        DatabaseAsyncAPI {
 
     protected ExecutorType type;
 
@@ -27,7 +29,7 @@ public abstract class ExecutorAPI implements
 
     private static ExecutorAPI instance;
 
-    public static void setInstance(ExecutorAPI instance) {
+    protected static void setInstance(ExecutorAPI instance) {
         Conditions.isTrue(ExecutorAPI.instance == null, "Executor api instance is already defined");
         ExecutorAPI.instance = Objects.requireNonNull(instance);
     }

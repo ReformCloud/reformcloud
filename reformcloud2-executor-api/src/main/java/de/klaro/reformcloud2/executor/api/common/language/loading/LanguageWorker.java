@@ -6,14 +6,12 @@ import de.klaro.reformcloud2.executor.api.common.language.language.Language;
 import de.klaro.reformcloud2.executor.api.common.language.language.source.LanguageSource;
 import de.klaro.reformcloud2.executor.api.common.utility.function.Double;
 
-import java.io.File;
-import java.io.FileFilter;
-import java.io.InputStream;
-import java.net.URL;
-import java.util.Enumeration;
+import java.io.IOException;
+import java.util.Arrays;
 import java.util.LinkedList;
-import java.util.Objects;
 import java.util.Properties;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
 
 public final class LanguageWorker {
 
@@ -34,25 +32,25 @@ public final class LanguageWorker {
 
         try {
             LinkedList<Language> out = new LinkedList<>();
-            Language use = null;
-            Enumeration<URL> enumeration = LanguageWorker.class.getClassLoader().getResources("languages");
-            while (enumeration.hasMoreElements()) {
-                File file = new File(enumeration.nextElement().toURI());
-                for (File languageFile : Objects.requireNonNull(file.listFiles(new FileFilter() {
-                    @Override
-                    public boolean accept(File pathname) {
-                        return pathname.isFile() && pathname.getName().endsWith(".properties");
-                    }
-                }))) {
-                    try (InputStream inputStream = LanguageWorker.class.getClassLoader().getResourceAsStream("languages/" + languageFile.getName())) {
-                        Properties properties = new Properties();
-                        properties.load(inputStream);
+            AtomicReference<Language> atomicReference = new AtomicReference<>();
 
-                        if (properties.get("language.setting.name") == null || properties.get("language.setting.display") == null) {
-                            throw new IllegalStateException("Language file which is not configured properly found");
-                        }
+            Properties config = open("language-config.properties");
+            String toSplit = config.getProperty("languages", "en,de");
 
+            String[] languages = toSplit.contains(",") ? toSplit.split(",") : new String[]{toSplit};
+
+            String defaultLang = config.getProperty("default-lang", "en");
+            if (languages.length == 0) {
+                throw new AssertionError("No languages found");
+            }
+
+            Arrays.stream(languages).forEach(new Consumer<String>() {
+                @Override
+                public void accept(String s) {
+                    try {
+                        Properties properties = open("languages/" + s + ".properties");
                         LanguageSource languageSource = new InternalLanguageSource(properties);
+
                         Language language = new Language() {
                             @Override
                             public LanguageSource source() {
@@ -64,27 +62,33 @@ public final class LanguageWorker {
                                 return properties;
                             }
                         };
-
-                        if (file.getName().startsWith("use--") && use == null) {
-                            use = language;
-                        }
-
                         out.add(language);
+                        if (s.equals(defaultLang)) {
+                            atomicReference.set(language);
+                        }
+                    } catch (final IOException ex) {
+                        ex.printStackTrace();
                     }
                 }
-            }
+            });
 
-            if (use == null) {
+            if (atomicReference.get() == null) {
                 Conditions.isTrue(out.size() != 0, "No language found");
-                use = out.getFirst();
+                atomicReference.set(out.getFirst());
             }
 
-            done = new Double<>(use.source().getName(), out);
+            done = new Double<>(atomicReference.get().source().getSource(), out);
         } catch (final Throwable ex) {
             ex.printStackTrace();
         }
 
         return done;
+    }
+
+    private static Properties open(String path) throws IOException {
+        Properties properties = new Properties();
+        properties.load(LanguageWorker.class.getClassLoader().getResourceAsStream(path));
+        return properties;
     }
 
     private static class InternalLanguageSource implements LanguageSource {

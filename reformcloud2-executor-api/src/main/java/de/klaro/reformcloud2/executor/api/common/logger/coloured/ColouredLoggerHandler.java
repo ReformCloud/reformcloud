@@ -11,9 +11,12 @@ import de.klaro.reformcloud2.executor.api.common.logger.coloured.handler.Coloure
 import de.klaro.reformcloud2.executor.api.common.logger.stream.OutputStream;
 import jline.console.ConsoleReader;
 import org.fusesource.jansi.Ansi;
+import org.fusesource.jansi.AnsiConsole;
 
 import java.io.IOException;
 import java.io.PrintStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -29,6 +32,12 @@ public final class ColouredLoggerHandler extends LoggerBase {
     public ColouredLoggerHandler() throws IOException {
         this.consoleReader = new ConsoleReader(System.in, System.out);
         this.consoleReader.setExpandEvents(false);
+
+        if (!Files.exists(Paths.get("logs"))) {
+            Files.createDirectories(Paths.get("logs"));
+        }
+
+        AnsiConsole.systemInstall();
 
         FileHandler fileHandler = new FileHandler("logs/cloud.log", 70000000, 8, true);
         fileHandler.setLevel(Level.ALL);

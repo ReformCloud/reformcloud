@@ -9,7 +9,7 @@ import java.util.function.Predicate;
 
 public final class ClientManager {
 
-    final List<ClientRuntimeInformation> clientRuntimeInformation = new ArrayList<>();
+    public final List<ClientRuntimeInformation> clientRuntimeInformation = new ArrayList<>();
 
     public static final ClientManager INSTANCE = new ClientManager();
 

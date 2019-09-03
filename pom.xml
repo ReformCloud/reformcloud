@@ -30,6 +30,8 @@
     </properties>
 
     <build>
+        <defaultGoal>clean package</defaultGoal>
+
         <plugins>
             <!-- maven compiler plugin to set the target and source version (1.8) -->
             <plugin>

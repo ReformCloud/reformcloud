@@ -8,33 +8,35 @@ import de.klaro.reformcloud2.executor.api.common.database.Database;
 import de.klaro.reformcloud2.executor.api.common.database.DatabaseReader;
 import de.klaro.reformcloud2.executor.api.common.dependency.DefaultDependency;
 import de.klaro.reformcloud2.executor.api.common.dependency.repo.DefaultRepositories;
+import de.klaro.reformcloud2.executor.api.common.utility.maps.AbsentMap;
 import de.klaro.reformcloud2.executor.api.common.utility.task.Task;
 import de.klaro.reformcloud2.executor.api.common.utility.task.defaults.DefaultTask;
 import org.bson.Document;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 public final class MongoDatabase extends Database<com.mongodb.client.MongoDatabase> {
 
-    private final Map<String, DatabaseReader> perTableReader = new ConcurrentHashMap<>();
+    private final Map<String, DatabaseReader> perTableReader = new AbsentMap<>();
 
     public MongoDatabase() {
         Properties properties = new Properties();
         properties.setProperty("mongo-java-driver", "3.11.0");
 
-        DEPENDENCY_LOADER.loadDependency(new DefaultDependency(
+        URL dependency = DEPENDENCY_LOADER.loadDependency(new DefaultDependency(
                 DefaultRepositories.MAVEN_CENTRAL,
                 "org.mongodb",
                 "mongo-java-driver",
                 properties
         ));
+        DEPENDENCY_LOADER.addDependency(dependency);
     }
 
     private MongoClient mongoClient;
@@ -118,11 +120,13 @@ public final class MongoDatabase extends Database<com.mongodb.client.MongoDataba
                 Task.EXECUTOR.execute(new Runnable() {
                     @Override
                     public void run() {
-                        Document document = mongoDatabase.getCollection(table).find(Filters.eq("key", key)).first();
+                        Document document = mongoDatabase.getCollection(table).find(Filters.eq("%%%%key", key)).first();
                         if (document == null) {
                             task.complete(null);
                         } else {
-                            task.complete(new JsonConfiguration(document.toJson()));
+                            JsonConfiguration configuration = new JsonConfiguration(document.toJson());
+                            configuration.remove("%%%%key").remove("%%%%identifier");
+                            task.complete(configuration);
                         }
                     }
                 });
@@ -135,11 +139,13 @@ public final class MongoDatabase extends Database<com.mongodb.client.MongoDataba
                 Task.EXECUTOR.execute(new Runnable() {
                     @Override
                     public void run() {
-                        Document document = mongoDatabase.getCollection(table).find(Filters.eq("identifier", identifier)).first();
+                        Document document = mongoDatabase.getCollection(table).find(Filters.eq("%%%%identifier", identifier)).first();
                         if (document == null) {
                             task.complete(null);
                         } else {
-                            task.complete(new JsonConfiguration(document.toJson()));
+                            JsonConfiguration configuration = new JsonConfiguration(document.toJson());
+                            configuration.remove("%%%%key").remove("%%%%identifier");
+                            task.complete(configuration);
                         }
                     }
                 });
@@ -152,8 +158,9 @@ public final class MongoDatabase extends Database<com.mongodb.client.MongoDataba
                 Task.EXECUTOR.execute(new Runnable() {
                     @Override
                     public void run() {
-                        Document document = mongoDatabase.getCollection(table).find(Filters.eq("identifier", identifier)).first();
+                        Document document = mongoDatabase.getCollection(table).find(Filters.eq("%%%%identifier", identifier)).first();
                         if (document == null) {
+                            data.add("%%%%key", key).add("%%%%identifier", identifier != null ? identifier : UUID.randomUUID().toString());
                             mongoDatabase.getCollection(table).insertOne(JsonConfiguration.GSON.get().fromJson(data.toPrettyString(), Document.class));
                             task.complete(data);
                         } else {
@@ -165,12 +172,52 @@ public final class MongoDatabase extends Database<com.mongodb.client.MongoDataba
             }
 
             @Override
-            public Task<Void> remove(String key, String identifier) {
+            public Task<Boolean> update(String key, JsonConfiguration newData) {
+                Task<Boolean> task = new DefaultTask<>();
+                Task.EXECUTOR.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        Document document = mongoDatabase.getCollection(table).find(Filters.eq("%%%%key", key)).first();
+                        if (document == null) {
+                            task.complete(false);
+                        } else {
+                            JsonConfiguration configuration = new JsonConfiguration(document.toJson());
+                            remove(key).awaitUninterruptedly();
+                            insert(key, configuration.getString("%%%%identifier"), newData).awaitUninterruptedly();
+                            task.complete(true);
+                        }
+                    }
+                });
+                return task;
+            }
+
+            @Override
+            public Task<Boolean> updateIfAbsent(String identifier, JsonConfiguration newData) {
+                Task<Boolean> task = new DefaultTask<>();
+                Task.EXECUTOR.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        Document document = mongoDatabase.getCollection(table).find(Filters.eq("%%%%identifier", identifier)).first();
+                        if (document == null) {
+                            task.complete(false);
+                        } else {
+                            JsonConfiguration configuration = new JsonConfiguration(document.toJson());
+                            remove(configuration.getString("%%%%key")).awaitUninterruptedly();
+                            insert(configuration.getString("%%%%key"), identifier, newData).awaitUninterruptedly();
+                            task.complete(true);
+                        }
+                    }
+                });
+                return task;
+            }
+
+            @Override
+            public Task<Void> remove(String key) {
                 Task<Void> task = new DefaultTask<>();
                 Task.EXECUTOR.execute(new Runnable() {
                     @Override
                     public void run() {
-                        mongoDatabase.getCollection(table).deleteOne(Filters.eq("key", key));
+                        mongoDatabase.getCollection(table).deleteOne(Filters.eq("%%%%key", key));
                         task.complete(null);
                     }
                 });
@@ -183,7 +230,7 @@ public final class MongoDatabase extends Database<com.mongodb.client.MongoDataba
                 Task.EXECUTOR.execute(new Runnable() {
                     @Override
                     public void run() {
-                        mongoDatabase.getCollection(table).deleteOne(Filters.eq("identifier", identifier));
+                        mongoDatabase.getCollection(table).deleteOne(Filters.eq("%%%%identifier", identifier));
                         task.complete(null);
                     }
                 });
@@ -196,7 +243,7 @@ public final class MongoDatabase extends Database<com.mongodb.client.MongoDataba
                 Task.EXECUTOR.execute(new Runnable() {
                     @Override
                     public void run() {
-                        Document document = mongoDatabase.getCollection(table).find(Filters.eq("key", key)).first();
+                        Document document = mongoDatabase.getCollection(table).find(Filters.eq("%%%%key", key)).first();
                         task.complete(document != null);
                     }
                 });

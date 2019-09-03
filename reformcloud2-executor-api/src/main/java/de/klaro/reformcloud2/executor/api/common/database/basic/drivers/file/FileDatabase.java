@@ -3,6 +3,7 @@ package de.klaro.reformcloud2.executor.api.common.database.basic.drivers.file;
 import de.klaro.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import de.klaro.reformcloud2.executor.api.common.database.Database;
 import de.klaro.reformcloud2.executor.api.common.database.DatabaseReader;
+import de.klaro.reformcloud2.executor.api.common.utility.maps.AbsentMap;
 import de.klaro.reformcloud2.executor.api.common.utility.system.SystemHelper;
 import de.klaro.reformcloud2.executor.api.common.utility.task.Task;
 import de.klaro.reformcloud2.executor.api.common.utility.task.defaults.DefaultTask;
@@ -12,14 +13,13 @@ import java.io.FileFilter;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 public final class FileDatabase extends Database<Path> {
 
     private String table;
 
-    private final Map<String, DatabaseReader> perTableReader = new ConcurrentHashMap<>();
+    private final Map<String, DatabaseReader> perTableReader = new AbsentMap<>();
 
     @Override
     public void connect(String host, int port, String userName, String password, String table) {
@@ -69,7 +69,7 @@ public final class FileDatabase extends Database<Path> {
                         }))) {
                             if (file.getName().startsWith(key)) {
                                 task.complete(JsonConfiguration.read(file));
-                                break;
+                                return;
                             }
                         }
 
@@ -94,7 +94,7 @@ public final class FileDatabase extends Database<Path> {
                             String[] split = file.getName().split("-");
                             if (split.length == 2 && split[1].replace(".json", "").equals(identifier)) {
                                 task.complete(JsonConfiguration.read(file));
-                                break;
+                                return;
                             }
                         }
 
@@ -123,12 +123,74 @@ public final class FileDatabase extends Database<Path> {
             }
 
             @Override
-            public Task<Void> remove(String key, String identifier) {
+            public Task<Boolean> update(String key, JsonConfiguration newData) {
+                Task<Boolean> task = new DefaultTask<>();
+                Task.EXECUTOR.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        for (File file : Objects.requireNonNull(new File(FileDatabase.this.table + "/" + table).listFiles(new FileFilter() {
+                            @Override
+                            public boolean accept(File pathname) {
+                                return pathname.isFile() && pathname.getName().endsWith(".json");
+                            }
+                        }))) {
+                            if (file.getName().startsWith(key)) {
+                                newData.write(file);
+                                task.complete(true);
+                                return;
+                            }
+                        }
+
+                        task.complete(false);
+                    }
+                });
+                return task;
+            }
+
+            @Override
+            public Task<Boolean> updateIfAbsent(String identifier, JsonConfiguration newData) {
+                Task<Boolean> task = new DefaultTask<>();
+                Task.EXECUTOR.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        for (File file : Objects.requireNonNull(new File(FileDatabase.this.table + "/" + table).listFiles(new FileFilter() {
+                            @Override
+                            public boolean accept(File pathname) {
+                                return pathname.isFile() && pathname.getName().endsWith(".json");
+                            }
+                        }))) {
+                            String[] split = file.getName().split("-");
+                            if (split.length == 2 && split[1].replace(".json", "").equals(identifier)) {
+                                newData.write(file);
+                                task.complete(true);
+                                return;
+                            }
+                        }
+
+                        task.complete(false);
+                    }
+                });
+                return task;
+            }
+
+            @Override
+            public Task<Void> remove(String key) {
                 Task<Void> task = new DefaultTask<>();
                 Task.EXECUTOR.execute(new Runnable() {
                     @Override
                     public void run() {
-                        SystemHelper.deleteFile(new File(FileDatabase.this.table + "/" + table + "/" + key + "-" + identifier + ".json"));
+                        for (File file : Objects.requireNonNull(new File(FileDatabase.this.table + "/" + table).listFiles(new FileFilter() {
+                            @Override
+                            public boolean accept(File pathname) {
+                                return pathname.isFile() && pathname.getName().endsWith(".json");
+                            }
+                        }))) {
+                            if (file.getName().startsWith(key)) {
+                                SystemHelper.deleteFile(file);
+                                break;
+                            }
+                        }
+
                         task.complete(null);
                     }
                 });
@@ -150,7 +212,7 @@ public final class FileDatabase extends Database<Path> {
                             String[] split = file.getName().split("-");
                             if (split.length == 2 && split[1].replace(".json", "").equals(identifier)) {
                                 SystemHelper.deleteFile(file);
-                                break;
+                                return;
                             }
                         }
 
@@ -174,7 +236,7 @@ public final class FileDatabase extends Database<Path> {
                         }))) {
                             if (file.getName().startsWith(key)) {
                                 task.complete(true);
-                                break;
+                                return;
                             }
                         }
 

@@ -18,12 +18,7 @@ public final class DefaultTask<V> extends Task<V> {
     @Override
     public V get(long timeout, TimeUnit unit) {
         try {
-            V result = super.get(timeout, unit);
-            if (result == null) {
-                handleFailure(new NullPointerException("A task returned null as response"));
-            }
-
-            return result;
+            return super.get(timeout, unit);
         } catch (final InterruptedException | ExecutionException | TimeoutException ex) {
             handleFailure(ex);
         }
@@ -35,12 +30,7 @@ public final class DefaultTask<V> extends Task<V> {
     @Override
     public V get() {
         try {
-            V result = super.get();
-            if (result == null) {
-                handleFailure(new NullPointerException("A task returned null as response"));
-            }
-
-            return result;
+            return super.get();
         } catch (final InterruptedException | ExecutionException ex) {
             handleFailure(ex);
         }

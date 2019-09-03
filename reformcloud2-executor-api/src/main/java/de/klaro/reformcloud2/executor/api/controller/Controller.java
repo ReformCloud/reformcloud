@@ -1,8 +1,8 @@
 package de.klaro.reformcloud2.executor.api.controller;
 
-import de.klaro.reformcloud2.executor.api.ExecutorType;
 import de.klaro.reformcloud2.executor.api.common.ExecutorAPI;
 import de.klaro.reformcloud2.executor.api.common.base.Conditions;
+import de.klaro.reformcloud2.executor.api.common.commands.manager.CommandManager;
 import de.klaro.reformcloud2.executor.api.common.language.LanguageManager;
 import de.klaro.reformcloud2.executor.api.common.network.NetworkUtil;
 import de.klaro.reformcloud2.executor.api.common.network.channel.NetworkChannelReader;
@@ -20,24 +20,6 @@ import java.util.function.Consumer;
 
 public abstract class Controller extends ExecutorAPI implements ReloadableRuntime {
 
-    public Controller() {
-        ExecutorAPI.setInstance(this);
-        super.type = ExecutorType.CONTROLLER;
-
-        Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    shutdown();
-                } catch (final Exception ex) {
-                    ex.printStackTrace();
-                }
-            }
-        }, "Shutdown-Hook"));
-
-        bootstrap();
-    }
-
     protected abstract void bootstrap();
 
     public abstract void shutdown() throws Exception;
@@ -49,6 +31,8 @@ public abstract class Controller extends ExecutorAPI implements ReloadableRuntim
     public abstract NetworkServer getNetworkServer();
 
     public abstract PacketHandler getPacketHandler();
+
+    public abstract CommandManager getCommandManager();
 
     public NetworkChannelReader networkChannelReader() {
         return new NetworkChannelReader() {

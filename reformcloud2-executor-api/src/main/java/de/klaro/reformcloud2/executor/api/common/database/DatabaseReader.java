@@ -15,7 +15,11 @@ public interface DatabaseReader extends Iterable<JsonConfiguration>, Nameable {
 
     Task<JsonConfiguration> insert(String key, String identifier, JsonConfiguration data);
 
-    Task<Void> remove(String key, String identifier);
+    Task<Boolean> update(String key, JsonConfiguration newData);
+
+    Task<Boolean> updateIfAbsent(String identifier, JsonConfiguration newData);
+
+    Task<Void> remove(String key);
 
     Task<Void> removeIfAbsent(String identifier);
 

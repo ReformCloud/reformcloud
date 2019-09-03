@@ -5,21 +5,22 @@ import de.klaro.reformcloud2.executor.api.common.database.Database;
 import de.klaro.reformcloud2.executor.api.common.database.DatabaseReader;
 import de.klaro.reformcloud2.executor.api.common.dependency.DefaultDependency;
 import de.klaro.reformcloud2.executor.api.common.dependency.repo.DefaultRepositories;
+import de.klaro.reformcloud2.executor.api.common.utility.maps.AbsentMap;
 import de.klaro.reformcloud2.executor.api.common.utility.task.Task;
 import de.klaro.reformcloud2.executor.api.common.utility.task.defaults.DefaultTask;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.sql.*;
 import java.text.MessageFormat;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public final class MySQLDatabase extends Database<Connection> {
 
-    private final Map<String, DatabaseReader> perTableReader = new ConcurrentHashMap<>();
+    private final Map<String, DatabaseReader> perTableReader = new AbsentMap<>();
 
     private static final String CONNECT_ARGUMENTS = "jdbc:mysql://{0}:{1}/{2}?autoReconnect=true&useUnicode=true&useJDBCCompliantTimezoneShift=true" +
             "&useLegacyDatetimeCode=false&serverTimezone=UTC";
@@ -28,12 +29,13 @@ public final class MySQLDatabase extends Database<Connection> {
         Properties properties = new Properties();
         properties.setProperty("mysql-connector-java", "8.0.17");
 
-        DEPENDENCY_LOADER.loadDependency(new DefaultDependency(
+        URL dependency = DEPENDENCY_LOADER.loadDependency(new DefaultDependency(
                 DefaultRepositories.MAVEN_CENTRAL,
                 "mysql",
                 "mysql-connector-java",
                 properties
         ));
+        DEPENDENCY_LOADER.addDependency(dependency);
     }
 
     private String host;
@@ -228,7 +230,57 @@ public final class MySQLDatabase extends Database<Connection> {
             }
 
             @Override
-            public Task<Void> remove(String key, String identifier) {
+            public Task<Boolean> update(String key, JsonConfiguration newData) {
+                Task<Boolean> task = new DefaultTask<>();
+                Task.EXECUTOR.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        JsonConfiguration configuration = find(key).getUninterruptedly();
+                        if (configuration == null) {
+                            task.complete(false);
+                        } else {
+                            remove(key);
+                            insert(key, UUID.randomUUID().toString(), newData);
+                            task.complete(true);
+                        }
+                    }
+                });
+                return task;
+            }
+
+            @Override
+            public Task<Boolean> updateIfAbsent(String identifier, JsonConfiguration newData) {
+                Task<Boolean> task = new DefaultTask<>();
+                Task.EXECUTOR.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        JsonConfiguration configuration = findIfAbsent(identifier).getUninterruptedly();
+                        if (configuration == null) {
+                            task.complete(false);
+                        } else {
+                            removeIfAbsent(identifier);
+                            try {
+                                PreparedStatement statement = connection.prepareStatement("SELECT `key` FROM `" + table + "` WHERE `identifier` = ?");
+                                statement.setString(1, identifier);
+                                ResultSet resultSet = statement.executeQuery();
+                                if (resultSet.next()) {
+                                    insert(resultSet.getString("key"), identifier, newData);
+                                    task.complete(true);
+                                } else {
+                                    task.complete(false);
+                                }
+                            } catch (final SQLException ex) {
+                                ex.printStackTrace();
+                                task.complete(false);
+                            }
+                        }
+                    }
+                });
+                return task;
+            }
+
+            @Override
+            public Task<Void> remove(String key) {
                 Task<Void> task = new DefaultTask<>();
                 Task.EXECUTOR.execute(new Runnable() {
                     @Override

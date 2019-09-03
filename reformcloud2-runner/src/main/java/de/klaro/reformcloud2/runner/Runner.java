@@ -51,7 +51,7 @@ public final class Runner {
     /* ================================== */
 
     public static synchronized void main(String[] args) {
-        if (isNotAPI()) {
+        if (!isAPI()) {
             startSetup(new BiConsumer<String, String>() {
                 @Override
                 public void accept(String version, String id) {
@@ -155,9 +155,9 @@ public final class Runner {
         }
     }
 
-    private static boolean isNotAPI() {
+    private static boolean isAPI() {
         return System.getProperty("reformcloud.executor.type") != null &&
-                !System.getProperty("reformcloud.executor.type").equals("3");
+                System.getProperty("reformcloud.executor.type").equals("3");
     }
 
     private static String write(Properties properties, String id) {
@@ -189,7 +189,7 @@ public final class Runner {
     }
 
     private static void unpackExecutor() {
-        try (InputStream inputStream = Runner.class.getClassLoader().getResourceAsStream("internal/files/executor.jar")) {
+        try (InputStream inputStream = Runner.class.getClassLoader().getResourceAsStream("files/executor.jar")) {
             Files.createDirectories(Paths.get("reformcloud/.bin/libs"));
             Files.copy(Objects.requireNonNull(inputStream), Paths.get("reformcloud/.bin/executor.jar"), StandardCopyOption.REPLACE_EXISTING);
         } catch (final Exception ex) {

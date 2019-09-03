@@ -9,11 +9,8 @@ import java.io.FileFilter;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Properties;
-import java.util.regex.Pattern;
 
 public final class DefaultDependency implements Dependency {
-
-    private static final Pattern PATTERN = Pattern.compile("(.*)-(.*).jar");
 
     public DefaultDependency(Repository repository, String groupID, String artifactID, Properties properties) {
         this.repository = repository;
@@ -75,8 +72,8 @@ public final class DefaultDependency implements Dependency {
             }
         } else {
             File dependency = files[0];
-            String version = PATTERN.matcher(dependency.getName()).group(2);
-            if (!version.equals(getVersion())) {
+            String[] version = dependency.getName().split("-");
+            if (!version[version.length -1].equals(getVersion())) {
                 SystemHelper.deleteFile(dependency);
             }
         }
