@@ -18,7 +18,7 @@ public final class LengthSerializer extends MessageToByteEncoder<ByteBuf> {
         }
 
         byteBuf2.ensureWritable(space + readable);
-        NetworkUtil.write(byteBuf, readable);
+        NetworkUtil.write(byteBuf2, readable);
         byteBuf2.writeBytes(byteBuf, byteBuf.readerIndex(), readable);
     }
 

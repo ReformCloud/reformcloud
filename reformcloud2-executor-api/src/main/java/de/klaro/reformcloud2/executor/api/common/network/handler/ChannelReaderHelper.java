@@ -82,6 +82,10 @@ public final class ChannelReaderHelper extends SimpleChannelInboundHandler<Packe
             return;
         }
 
+        if (!auth.get()) {
+            return;
+        }
+
         channelReader.read(channelHandlerContext, packet);
     }
 }

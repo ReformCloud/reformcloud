@@ -13,11 +13,5 @@ public interface ConsoleAsyncAPI extends ConsoleSyncAPI {
 
     Task<Command> getControllerCommandAsync(String name);
 
-    /**
-     * @deprecated This method will not work outside of controller
-     */
-    @Deprecated
-    Task<Void> registerControllerCommandAsync(Command command);
-
     Task<Boolean> isControllerCommandRegisteredAsync(String name);
 }

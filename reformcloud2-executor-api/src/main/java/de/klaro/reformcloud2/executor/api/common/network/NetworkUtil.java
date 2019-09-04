@@ -1,7 +1,9 @@
 package de.klaro.reformcloud2.executor.api.common.network;
 
+import de.klaro.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import de.klaro.reformcloud2.executor.api.common.network.channel.PacketSender;
 import de.klaro.reformcloud2.executor.api.common.network.channel.defaults.DefaultPacketSender;
+import de.klaro.reformcloud2.executor.api.common.network.packet.DefaultPacket;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.EventLoopGroup;
@@ -35,7 +37,7 @@ public final class NetworkUtil {
     public static final Consumer<ChannelHandlerContext> DEFAULT_AUTH_FAILURE_HANDLER = new Consumer<ChannelHandlerContext>() {
         @Override
         public void accept(ChannelHandlerContext context) {
-            context.channel().close();
+            context.channel().writeAndFlush(new DefaultPacket(-511, new JsonConfiguration().add("access", false))).syncUninterruptibly().channel().close();
         }
     };
 
@@ -127,10 +129,10 @@ public final class NetworkUtil {
         return result;
     }
 
-    public static void write(ByteBuf byteBuf, String s) {
+    public static ByteBuf write(ByteBuf byteBuf, String s) {
         byte[] bytes = s.getBytes(StandardCharsets.UTF_8);
         write(byteBuf, bytes.length);
-        byteBuf.writeBytes(bytes);
+        return byteBuf.writeBytes(bytes);
     }
 
     public static String readString(ByteBuf byteBuf) {

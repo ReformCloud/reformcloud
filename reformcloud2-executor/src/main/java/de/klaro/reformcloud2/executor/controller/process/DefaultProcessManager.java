@@ -146,7 +146,7 @@ public final class DefaultProcessManager implements ProcessManager {
         Template found = Links.filter(processGroup.getTemplates(), new Predicate<Template>() {
             @Override
             public boolean test(Template test) {
-                return test.getName().equals(template);
+                return Objects.equals(test.getName(), template);
             }
         });
 

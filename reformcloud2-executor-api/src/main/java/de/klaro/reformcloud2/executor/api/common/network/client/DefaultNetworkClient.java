@@ -6,9 +6,7 @@ import de.klaro.reformcloud2.executor.api.common.network.auth.packet.PacketOutAu
 import de.klaro.reformcloud2.executor.api.common.network.channel.NetworkChannelReader;
 import de.klaro.reformcloud2.executor.api.common.network.handler.ClientInitializerHandler;
 import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelOption;
-import io.netty.channel.EventLoopGroup;
+import io.netty.channel.*;
 import io.netty.channel.socket.SocketChannel;
 
 public final class DefaultNetworkClient implements NetworkClient {
@@ -33,7 +31,16 @@ public final class DefaultNetworkClient implements NetworkClient {
 
                     .handler(new ClientInitializerHandler(channelReader, this))
 
-                    .connect(host, port).channel().writeAndFlush(new PacketOutAuth(auth)).syncUninterruptibly().channel();
+                    .connect(host, port)
+
+                    .addListener(new ChannelFutureListener() {
+                        @Override
+                        public void operationComplete(ChannelFuture channelFuture) {
+                            if (channelFuture.isSuccess()) {
+                                channelFuture.channel().writeAndFlush(new PacketOutAuth(auth)).syncUninterruptibly();
+                            }
+                        }
+                    }).channel();
         } catch (final Exception ex) {
             ex.printStackTrace();
         }

@@ -40,7 +40,7 @@ public final class Links {
         return out;
     }
 
-    public static <T> T filter(List<T> in, Predicate<T> predicate) {
+    public static <T> T filter(Collection<T> in, Predicate<T> predicate) {
         for (T t : in) {
             if (predicate.test(t)) {
                 return t;
@@ -139,6 +139,19 @@ public final class Links {
     public static <T> List<T> list(Collection<T> list, Predicate<T> predicate) {
         List<T> out = new LinkedList<>();
         list.forEach(new Consumer<T>() {
+            @Override
+            public void accept(T t) {
+                if (predicate.test(t)) {
+                    out.add(t);
+                }
+            }
+        });
+        return out;
+    }
+
+    public static <T> Collection<T> allOf(Collection<T> collection, Predicate<T> predicate) {
+        Collection<T> out = new LinkedList<>();
+        collection.forEach(new Consumer<T>() {
             @Override
             public void accept(T t) {
                 if (predicate.test(t)) {

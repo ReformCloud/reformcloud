@@ -1,5 +1,6 @@
 package de.klaro.reformcloud2.executor.api.common.process;
 
+import com.google.gson.reflect.TypeToken;
 import de.klaro.reformcloud2.executor.api.common.configuration.Configurable;
 import de.klaro.reformcloud2.executor.api.common.groups.ProcessGroup;
 import de.klaro.reformcloud2.executor.api.common.groups.utils.Template;
@@ -12,6 +13,8 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 public final class ProcessInformation implements Nameable {
+
+    public static final TypeToken<ProcessInformation> TYPE = new TypeToken<ProcessInformation>() {};
 
     public ProcessInformation(String processName, String parent, UUID processUniqueID, int id,
                               ProcessState processState, NetworkInfo networkInfo,

@@ -41,7 +41,7 @@ public final class ClientInitializerHandler extends InitializerHandler {
     private final NetworkClient networkClient;
 
     @Override
-    protected void initChannel(Channel channel) throws Exception {
+    protected void initChannel(Channel channel) {
         channel.pipeline()
                 .addLast("deserializer", new LengthDeserializer())
                 .addLast("decoder", new PacketDecoder())

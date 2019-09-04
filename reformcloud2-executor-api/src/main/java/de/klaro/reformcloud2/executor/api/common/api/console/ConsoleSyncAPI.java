@@ -12,7 +12,5 @@ public interface ConsoleSyncAPI {
 
     Command getControllerCommand(String name);
 
-    void registerControllerCommand(Command command);
-
     boolean isControllerCommandRegistered(String name);
 }

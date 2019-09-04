@@ -10,5 +10,7 @@ public final class ClientLauncher {
         StringUtil.sendHeader();
         DependencyLoader.doLoad();
         LanguageWorker.doLoad();
+
+        new ClientExecutor();
     }
 }

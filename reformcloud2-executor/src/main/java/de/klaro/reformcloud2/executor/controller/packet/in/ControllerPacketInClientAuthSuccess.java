@@ -10,7 +10,7 @@ import de.klaro.reformcloud2.executor.controller.process.ClientManager;
 
 import java.util.function.Consumer;
 
-public final class PacketInClientAuthSuccess implements NetworkHandler {
+public final class ControllerPacketInClientAuthSuccess implements NetworkHandler {
 
     @Override
     public int getHandlingPacketID() {

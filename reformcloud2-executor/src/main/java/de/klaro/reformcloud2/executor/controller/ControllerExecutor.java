@@ -18,7 +18,6 @@ import de.klaro.reformcloud2.executor.api.common.commands.basic.commands.Command
 import de.klaro.reformcloud2.executor.api.common.commands.basic.manager.DefaultCommandManager;
 import de.klaro.reformcloud2.executor.api.common.commands.manager.CommandManager;
 import de.klaro.reformcloud2.executor.api.common.commands.source.CommandSource;
-import de.klaro.reformcloud2.executor.api.common.configuration.Configurable;
 import de.klaro.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import de.klaro.reformcloud2.executor.api.common.database.Database;
 import de.klaro.reformcloud2.executor.api.common.database.DatabaseReader;
@@ -38,6 +37,7 @@ import de.klaro.reformcloud2.executor.api.common.network.auth.NetworkType;
 import de.klaro.reformcloud2.executor.api.common.network.auth.defaults.DefaultAuth;
 import de.klaro.reformcloud2.executor.api.common.network.auth.defaults.DefaultServerAuthHandler;
 import de.klaro.reformcloud2.executor.api.common.network.channel.PacketSender;
+import de.klaro.reformcloud2.executor.api.common.network.channel.handler.NetworkHandler;
 import de.klaro.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import de.klaro.reformcloud2.executor.api.common.network.packet.Packet;
 import de.klaro.reformcloud2.executor.api.common.network.packet.defaults.DefaultPacketHandler;
@@ -61,7 +61,6 @@ import de.klaro.reformcloud2.executor.api.controller.process.ProcessManager;
 import de.klaro.reformcloud2.executor.controller.config.ControllerConfig;
 import de.klaro.reformcloud2.executor.controller.config.ControllerExecutorConfig;
 import de.klaro.reformcloud2.executor.controller.config.DatabaseConfig;
-import de.klaro.reformcloud2.executor.controller.packet.in.PacketInClientAuthSuccess;
 import de.klaro.reformcloud2.executor.controller.packet.out.api.ControllerAPIAction;
 import de.klaro.reformcloud2.executor.controller.packet.out.api.ControllerExecuteCommand;
 import de.klaro.reformcloud2.executor.controller.packet.out.api.ControllerPluginAction;
@@ -70,6 +69,7 @@ import de.klaro.reformcloud2.executor.controller.packet.out.api.query.Controller
 import de.klaro.reformcloud2.executor.controller.process.ClientManager;
 import de.klaro.reformcloud2.executor.controller.process.DefaultProcessManager;
 import de.klaro.reformcloud2.executor.controller.process.startup.AutoStartupHandler;
+import org.reflections.Reflections;
 
 import java.io.IOException;
 import java.util.*;
@@ -364,9 +364,12 @@ public final class ControllerExecutor extends Controller {
     }
 
     private void loadPacketHandlers() {
-        this.packetHandler.registerNetworkHandlers(
-                new PacketInClientAuthSuccess()
-        );
+        new Reflections("de.klaro.reformcloud2.executor.controller.packet.in").getSubTypesOf(NetworkHandler.class).forEach(new Consumer<Class<? extends NetworkHandler>>() {
+            @Override
+            public void accept(Class<? extends NetworkHandler> aClass) {
+                packetHandler.registerHandler(aClass);
+            }
+        });
     }
 
     @Override
@@ -523,19 +526,6 @@ public final class ControllerExecutor extends Controller {
     }
 
     @Override
-    public Task<Void> registerControllerCommandAsync(Command command) {
-        Task<Void> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(new Runnable() {
-            @Override
-            public void run() {
-                commandManager.register(command);
-                task.complete(null);
-            }
-        });
-        return task;
-    }
-
-    @Override
     public Task<Boolean> isControllerCommandRegisteredAsync(String name) {
         Task<Boolean> task = new DefaultTask<>();
         Task.EXECUTOR.execute(new Runnable() {
@@ -569,11 +559,6 @@ public final class ControllerExecutor extends Controller {
     @Override
     public Command getControllerCommand(String name) {
         return getControllerCommandAsync(name).getUninterruptedly();
-    }
-
-    @Override
-    public void registerControllerCommand(Command command) {
-        commandManager.register(command);
     }
 
     @Override
@@ -1415,7 +1400,7 @@ public final class ControllerExecutor extends Controller {
     }
 
     @Override
-    public Task<ProcessInformation> startProcessAsync(String groupName, String template, Configurable configurable) {
+    public Task<ProcessInformation> startProcessAsync(String groupName, String template, JsonConfiguration configurable) {
         Task<ProcessInformation> task = new DefaultTask<>();
         Task.EXECUTOR.execute(new Runnable() {
             @Override
@@ -1549,7 +1534,7 @@ public final class ControllerExecutor extends Controller {
     }
 
     @Override
-    public ProcessInformation startProcess(String groupName, String template, Configurable configurable) {
+    public ProcessInformation startProcess(String groupName, String template, JsonConfiguration configurable) {
         return startProcessAsync(groupName, template, configurable).getUninterruptedly();
     }
 

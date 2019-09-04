@@ -1,12 +1,16 @@
 package de.klaro.reformcloud2.executor.api.common.plugins;
 
+import com.google.gson.reflect.TypeToken;
+import de.klaro.reformcloud2.executor.api.common.plugins.basic.DefaultPlugin;
 import de.klaro.reformcloud2.executor.api.common.utility.name.Nameable;
 
 import java.util.List;
 
 public abstract class Plugin implements Nameable {
 
-    public abstract int version();
+    public static final TypeToken<DefaultPlugin> TYPE = new TypeToken<DefaultPlugin>() {};
+
+    public abstract String version();
 
     public abstract String author();
 

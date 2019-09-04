@@ -11,7 +11,7 @@ import java.util.List;
 public final class LengthDeserializer extends ByteToMessageDecoder {
 
     @Override
-    protected void decode(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf, List<Object> list) throws Exception {
+    protected void decode(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf, List<Object> list) {
         byteBuf.markReaderIndex();
         byte[] bytes = new byte[5];
 
@@ -33,7 +33,7 @@ public final class LengthDeserializer extends ByteToMessageDecoder {
 
                     list.add(byteBuf.readBytes(length));
                 } finally {
-                    byteBuf.release();
+                    buf.release();
                 }
 
                 return;

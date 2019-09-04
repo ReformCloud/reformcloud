@@ -41,6 +41,15 @@ public final class DefaultDependencyLoader extends DependencyLoader {
             ), new DefaultDependency(
                     DefaultRepositories.MAVEN_CENTRAL,
                     "org.yaml", "snakeyaml", PROPERTIES
+            ), new DefaultDependency(
+                    DefaultRepositories.MAVEN_CENTRAL,
+                    "org.reflections", "reflections", PROPERTIES
+            ), new DefaultDependency(
+                    DefaultRepositories.MAVEN_CENTRAL,
+                    "com.google.guava", "guava", PROPERTIES
+            ), new DefaultDependency(
+                    DefaultRepositories.MAVEN_CENTRAL,
+                    "org.javassist", "javassist", PROPERTIES
             )
     );
 

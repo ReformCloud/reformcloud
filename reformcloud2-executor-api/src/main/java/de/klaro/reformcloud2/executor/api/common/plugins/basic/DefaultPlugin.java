@@ -9,7 +9,7 @@ public final class DefaultPlugin extends Plugin {
 
     public static final TypeToken<DefaultPlugin> TYPE_TOKEN = new TypeToken<DefaultPlugin>() {};
 
-    public DefaultPlugin(int version, String author, String main, List<String> depends, List<String> softpends, boolean enabled, String name) {
+    public DefaultPlugin(String version, String author, String main, List<String> depends, List<String> softpends, boolean enabled, String name) {
         this.version = version;
         this.author = author;
         this.main = main;
@@ -19,7 +19,7 @@ public final class DefaultPlugin extends Plugin {
         this.name = name;
     }
 
-    private final int version;
+    private final String version;
 
     private final String author;
 
@@ -34,7 +34,7 @@ public final class DefaultPlugin extends Plugin {
     private final String name;
 
     @Override
-    public int version() {
+    public String version() {
         return version;
     }
 

@@ -1,6 +1,6 @@
 package de.klaro.reformcloud2.executor.api.common.api.process;
 
-import de.klaro.reformcloud2.executor.api.common.configuration.Configurable;
+import de.klaro.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import de.klaro.reformcloud2.executor.api.common.process.ProcessInformation;
 import de.klaro.reformcloud2.executor.api.common.utility.task.Task;
 
@@ -14,7 +14,7 @@ public interface ProcessAsyncAPI extends ProcessSyncAPI {
 
     Task<ProcessInformation> startProcessAsync(String groupName, String template);
 
-    Task<ProcessInformation> startProcessAsync(String groupName, String template, Configurable configurable);
+    Task<ProcessInformation> startProcessAsync(String groupName, String template, JsonConfiguration configurable);
 
     Task<ProcessInformation> stopProcessAsync(String name);
 

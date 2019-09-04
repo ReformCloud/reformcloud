@@ -2,9 +2,10 @@ package de.klaro.reformcloud2.executor.api.common.network.packet;
 
 import de.klaro.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 
+import java.io.Serializable;
 import java.util.UUID;
 
-public interface Packet {
+public interface Packet extends Serializable {
 
     int packetID();
 

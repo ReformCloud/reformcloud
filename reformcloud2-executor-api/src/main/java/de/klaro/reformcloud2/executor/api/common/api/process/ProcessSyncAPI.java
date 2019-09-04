@@ -1,8 +1,9 @@
 package de.klaro.reformcloud2.executor.api.common.api.process;
 
-import de.klaro.reformcloud2.executor.api.common.configuration.Configurable;
+import de.klaro.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import de.klaro.reformcloud2.executor.api.common.process.ProcessInformation;
 import de.klaro.reformcloud2.executor.api.common.utility.task.Task;
+import de.klaro.reformcloud2.executor.api.common.utility.task.defaults.DefaultTask;
 
 import java.util.Collection;
 import java.util.List;
@@ -15,7 +16,7 @@ public interface ProcessSyncAPI {
 
     ProcessInformation startProcess(String groupName, String template);
 
-    ProcessInformation startProcess(String groupName, String template, Configurable configurable);
+    ProcessInformation startProcess(String groupName, String template, JsonConfiguration configurable);
 
     ProcessInformation stopProcess(String name);
 
@@ -39,12 +40,15 @@ public interface ProcessSyncAPI {
 
     void update(ProcessInformation processInformation);
 
-    default void updateAsync(ProcessInformation processInformation) {
+    default Task<Void> updateAsync(ProcessInformation processInformation) {
+        Task<Void> task = new DefaultTask<>();
         Task.EXECUTOR.execute(new Runnable() {
             @Override
             public void run() {
                 update(processInformation);
+                task.complete(null);
             }
         });
+        return task;
     }
 }

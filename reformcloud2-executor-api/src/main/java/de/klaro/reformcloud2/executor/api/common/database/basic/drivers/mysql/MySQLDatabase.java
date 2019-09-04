@@ -235,13 +235,16 @@ public final class MySQLDatabase extends Database<Connection> {
                 Task.EXECUTOR.execute(new Runnable() {
                     @Override
                     public void run() {
-                        JsonConfiguration configuration = find(key).getUninterruptedly();
-                        if (configuration == null) {
-                            task.complete(false);
-                        } else {
-                            remove(key);
-                            insert(key, UUID.randomUUID().toString(), newData);
+                        try {
+                            PreparedStatement statement = connection.prepareStatement("UPDATE `" + table + "` SET `data` = ? WHERE `key` = ?");
+                            statement.setBytes(1, newData.toPrettyBytes());
+                            statement.setString(2, key);
+                            statement.executeUpdate();
+                            statement.close();
                             task.complete(true);
+                        } catch (final SQLException ex) {
+                            ex.printStackTrace();
+                            task.complete(false);
                         }
                     }
                 });
