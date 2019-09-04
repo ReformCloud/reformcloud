@@ -32,6 +32,13 @@ import java.util.function.Consumer;
 
 public final class NetworkUtil {
 
+    /* ============================= */
+
+    public static final int CONTROLLER_INFORMATION_PACKETS = 2000;
+
+    /* ============================ */
+
+
     public static final Executor EXECUTOR = Executors.newCachedThreadPool();
 
     public static final Consumer<ChannelHandlerContext> DEFAULT_AUTH_FAILURE_HANDLER = new Consumer<ChannelHandlerContext>() {

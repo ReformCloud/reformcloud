@@ -1,6 +1,7 @@
 package de.klaro.reformcloud2.executor.api.common.network.auth;
 
 import com.google.gson.reflect.TypeToken;
+import de.klaro.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import de.klaro.reformcloud2.executor.api.common.network.auth.defaults.DefaultAuth;
 import de.klaro.reformcloud2.executor.api.common.utility.name.Nameable;
 
@@ -13,4 +14,6 @@ public interface Auth extends Nameable {
     String parent();
 
     NetworkType type();
+
+    JsonConfiguration extra();
 }

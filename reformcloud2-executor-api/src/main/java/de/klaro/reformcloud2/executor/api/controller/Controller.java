@@ -34,7 +34,7 @@ public abstract class Controller extends ExecutorAPI implements ReloadableRuntim
 
     public abstract CommandManager getCommandManager();
 
-    public NetworkChannelReader networkChannelReader() {
+    public NetworkChannelReader networkChannelReader(Consumer<PacketSender> onDisconnect) {
         return new NetworkChannelReader() {
 
             private PacketSender sender;
@@ -68,6 +68,7 @@ public abstract class Controller extends ExecutorAPI implements ReloadableRuntim
             public void channelInactive(ChannelHandlerContext context) {
                 if (sender != null) {
                     DefaultChannelManager.INSTANCE.unregisterChannel(sender);
+                    onDisconnect.accept(sender);
                     System.out.println(LanguageManager.get("network-channel-disconnected", sender.getName()));
                 }
             }

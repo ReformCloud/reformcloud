@@ -335,6 +335,10 @@ public enum Version {
     }
 
     public static void downloadVersion(Version version) {
-        DownloadHelper.downloadAndDisconnect(version.url, "reformcloud/versions/" + version.name + ".jar");
+        DownloadHelper.downloadAndDisconnect(version.url, "reformcloud/files/" + format(version));
+    }
+
+    public static String format(Version version) {
+        return version.name.toLowerCase().replace(" ", "-") + ".jar";
     }
 }

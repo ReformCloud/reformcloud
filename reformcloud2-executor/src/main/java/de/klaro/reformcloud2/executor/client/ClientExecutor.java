@@ -2,6 +2,7 @@ package de.klaro.reformcloud2.executor.client;
 
 import de.klaro.reformcloud2.executor.api.ExecutorType;
 import de.klaro.reformcloud2.executor.api.client.Client;
+import de.klaro.reformcloud2.executor.api.client.process.ProcessManager;
 import de.klaro.reformcloud2.executor.api.common.ExecutorAPI;
 import de.klaro.reformcloud2.executor.api.common.client.ClientRuntimeInformation;
 import de.klaro.reformcloud2.executor.api.common.client.basic.DefaultClientRuntimeInformation;
@@ -10,17 +11,24 @@ import de.klaro.reformcloud2.executor.api.common.commands.basic.ConsoleCommandSo
 import de.klaro.reformcloud2.executor.api.common.commands.basic.manager.DefaultCommandManager;
 import de.klaro.reformcloud2.executor.api.common.commands.manager.CommandManager;
 import de.klaro.reformcloud2.executor.api.common.commands.source.CommandSource;
+import de.klaro.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import de.klaro.reformcloud2.executor.api.common.language.LanguageManager;
 import de.klaro.reformcloud2.executor.api.common.logger.LoggerBase;
 import de.klaro.reformcloud2.executor.api.common.logger.coloured.ColouredLoggerHandler;
 import de.klaro.reformcloud2.executor.api.common.logger.other.DefaultLoggerHandler;
 import de.klaro.reformcloud2.executor.api.common.network.auth.defaults.DefaultAuth;
+import de.klaro.reformcloud2.executor.api.common.network.channel.handler.NetworkHandler;
 import de.klaro.reformcloud2.executor.api.common.network.client.DefaultNetworkClient;
 import de.klaro.reformcloud2.executor.api.common.network.client.NetworkClient;
 import de.klaro.reformcloud2.executor.api.common.network.packet.defaults.DefaultPacketHandler;
 import de.klaro.reformcloud2.executor.api.common.network.packet.handler.PacketHandler;
+import de.klaro.reformcloud2.executor.api.common.utility.StringUtil;
+import de.klaro.reformcloud2.executor.api.common.utility.system.DownloadHelper;
 import de.klaro.reformcloud2.executor.client.config.ClientConfig;
 import de.klaro.reformcloud2.executor.client.config.ClientExecutorConfig;
+import de.klaro.reformcloud2.executor.client.process.ProcessQueue;
+import de.klaro.reformcloud2.executor.client.process.basic.DefaultProcessManager;
+import org.reflections.Reflections;
 
 import java.io.IOException;
 import java.util.function.Consumer;
@@ -35,7 +43,7 @@ public final class ClientExecutor extends Client {
 
     private ClientConfig clientConfig;
 
-    private ClientRuntimeInformation clientRuntimeInformation;
+    private DefaultClientRuntimeInformation clientRuntimeInformation;
 
     private ClientExecutorConfig clientExecutorConfig;
 
@@ -46,6 +54,10 @@ public final class ClientExecutor extends Client {
     private final NetworkClient networkClient = new DefaultNetworkClient();
 
     private final PacketHandler packetHandler = new DefaultPacketHandler();
+
+    private final ProcessManager processManager = new DefaultProcessManager();
+
+    private final ProcessQueue processQueue = new ProcessQueue();
 
     ClientExecutor() {
         ExecutorAPI.setInstance(this);
@@ -80,6 +92,8 @@ public final class ClientExecutor extends Client {
             ex.printStackTrace();
         }
 
+        DownloadHelper.downloadAndDisconnect(StringUtil.RUNNER_DOWNLOAD_URL, "reformcloud/files/runner.jar");
+
         this.clientExecutorConfig = new ClientExecutorConfig();
         this.clientConfig = clientExecutorConfig.getClientConfig();
         this.clientRuntimeInformation = new DefaultClientRuntimeInformation(
@@ -89,6 +103,8 @@ public final class ClientExecutor extends Client {
                 clientConfig.getName()
         );
 
+        registerNetworkHandlers();
+
         this.networkClient.connect(
                 clientExecutorConfig.getClientConnectionConfig().getHost(),
                 clientExecutorConfig.getClientConnectionConfig().getPort(),
@@ -96,13 +112,23 @@ public final class ClientExecutor extends Client {
                         clientExecutorConfig.getConnectionKey(),
                         null,
                         true,
-                        clientConfig.getName()
+                        clientConfig.getName(),
+                        new JsonConfiguration().add("info", clientRuntimeInformation)
                 ), networkChannelReader
         );
 
         running = true;
         System.out.println(LanguageManager.get("startup-done", Long.toString(System.currentTimeMillis() - current)));
         runConsole();
+    }
+
+    private void registerNetworkHandlers() {
+        new Reflections("de.klaro.reformcloud2.executor.client.packet.in").getSubTypesOf(NetworkHandler.class).forEach(new Consumer<Class<? extends NetworkHandler>>() {
+            @Override
+            public void accept(Class<? extends NetworkHandler> aClass) {
+                packetHandler.registerHandler(aClass);
+            }
+        });
     }
 
     @Override
@@ -113,6 +139,7 @@ public final class ClientExecutor extends Client {
     @Override
     public void shutdown() throws Exception {
         this.networkClient.disconnect();
+        processQueue.interrupt();
     }
 
     @Override
@@ -138,8 +165,16 @@ public final class ClientExecutor extends Client {
         return instance;
     }
 
+    public ProcessManager getProcessManager() {
+        return processManager;
+    }
+
     public ClientConfig getClientConfig() {
         return clientConfig;
+    }
+
+    public ClientExecutorConfig getClientExecutorConfig() {
+        return clientExecutorConfig;
     }
 
     public ClientRuntimeInformation getClientRuntimeInformation() {

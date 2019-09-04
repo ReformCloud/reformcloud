@@ -1,7 +1,6 @@
 package de.klaro.reformcloud2.executor.controller.process;
 
 import de.klaro.reformcloud2.executor.api.common.client.ClientRuntimeInformation;
-import de.klaro.reformcloud2.executor.api.common.configuration.Configurable;
 import de.klaro.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import de.klaro.reformcloud2.executor.api.common.groups.ProcessGroup;
 import de.klaro.reformcloud2.executor.api.common.groups.utils.RuntimeConfiguration;
@@ -37,7 +36,7 @@ public final class DefaultProcessManager implements ProcessManager {
 
     private List<ProcessInformation> processInformation = new ArrayList<>();
 
-    private Queue<Trio<ProcessGroup, Template, Configurable>> noClientTryLater = new ConcurrentLinkedQueue<>();
+    private Queue<Trio<ProcessGroup, Template, JsonConfiguration>> noClientTryLater = new ConcurrentLinkedQueue<>();
 
     public DefaultProcessManager() {
         CompletableFuture.runAsync(new Runnable() {
@@ -45,8 +44,9 @@ public final class DefaultProcessManager implements ProcessManager {
             public void run() {
                 while (!Thread.currentThread().isInterrupted()) {
                     if (!noClientTryLater.isEmpty()) {
-                        Trio<ProcessGroup, Template, Configurable> trio = noClientTryLater.poll();
+                        Trio<ProcessGroup, Template, JsonConfiguration> trio = noClientTryLater.peek();
                         startProcess(trio.getFirst().getName(), trio.getSecond().getName(), trio.getThird());
+                        noClientTryLater.remove(trio);
                     }
 
                     try {
@@ -83,14 +83,14 @@ public final class DefaultProcessManager implements ProcessManager {
             }
         });
 
-        Links.list(this.noClientTryLater, new Predicate<Trio<ProcessGroup, Template, Configurable>>() {
+        Links.list(this.noClientTryLater, new Predicate<Trio<ProcessGroup, Template, JsonConfiguration>>() {
             @Override
-            public boolean test(Trio<ProcessGroup, Template, Configurable> trio) {
+            public boolean test(Trio<ProcessGroup, Template, JsonConfiguration> trio) {
                 return trio.getFirst().getName().equals(group);
             }
-        }).forEach(new Consumer<Trio<ProcessGroup, Template, Configurable>>() {
+        }).forEach(new Consumer<Trio<ProcessGroup, Template, JsonConfiguration>>() {
             @Override
-            public void accept(Trio<ProcessGroup, Template, Configurable> trio) {
+            public void accept(Trio<ProcessGroup, Template, JsonConfiguration> trio) {
                 out.add(trio.getSecond());
             }
         });
@@ -131,7 +131,7 @@ public final class DefaultProcessManager implements ProcessManager {
     }
 
     @Override
-    public ProcessInformation startProcess(String groupName, String template, Configurable configurable) {
+    public ProcessInformation startProcess(String groupName, String template, JsonConfiguration configurable) {
         ProcessGroup processGroup = Links.filter(ControllerExecutor.getInstance().getControllerExecutorConfig().getProcessGroups(), new Predicate<ProcessGroup>() {
             @Override
             public boolean test(ProcessGroup processGroup) {
@@ -197,7 +197,7 @@ public final class DefaultProcessManager implements ProcessManager {
         return processInformation;
     }
 
-    private ProcessInformation create(ProcessGroup processGroup, Template template, Configurable extra) {
+    private ProcessInformation create(ProcessGroup processGroup, Template template, JsonConfiguration extra) {
         if (extra == null) {
             extra = new JsonConfiguration();
         }
@@ -322,8 +322,8 @@ public final class DefaultProcessManager implements ProcessManager {
                         usedMemory += integer;
                     }
 
-                    if (startedOn.size() < clientRuntimeInformation.maxProcessCount()) {
-                        return clientRuntimeInformation.maxMemory() < usedMemory + template.getRuntimeConfiguration().getMaxMemory();
+                    if (startedOn.size() < clientRuntimeInformation.maxProcessCount() || clientRuntimeInformation.maxProcessCount() == -1) {
+                        return clientRuntimeInformation.maxMemory() > (usedMemory + template.getRuntimeConfiguration().getMaxMemory());
                     }
 
                     return false;
@@ -369,8 +369,8 @@ public final class DefaultProcessManager implements ProcessManager {
                         usedMemory += integer;
                     }
 
-                    if (startedOn.size() < clientRuntimeInformation.maxProcessCount()) {
-                        return clientRuntimeInformation.maxMemory() < usedMemory + template.getRuntimeConfiguration().getMaxMemory();
+                    if (startedOn.size() < clientRuntimeInformation.maxProcessCount() || clientRuntimeInformation.maxProcessCount() == -1) {
+                        return clientRuntimeInformation.maxMemory() > (usedMemory + template.getRuntimeConfiguration().getMaxMemory());
                     }
 
                     return false;
@@ -408,6 +408,5 @@ public final class DefaultProcessManager implements ProcessManager {
 
         this.processInformation.remove(current);
         this.processInformation.add(processInformation);
-        return;
     }
 }

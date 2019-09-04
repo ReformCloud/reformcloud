@@ -5,9 +5,9 @@ import java.nio.file.Paths;
 
 public final class ClientConnectionConfig {
 
-    public static final Path PATH = Paths.get("reformcloud/connection.json");
+    static final Path PATH = Paths.get("reformcloud/connection.json");
 
-    public ClientConnectionConfig(String host, int port) {
+    ClientConnectionConfig(String host, int port) {
         this.host = host;
         this.port = port;
     }

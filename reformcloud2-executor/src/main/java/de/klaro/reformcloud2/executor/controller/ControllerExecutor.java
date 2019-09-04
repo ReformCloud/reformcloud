@@ -8,10 +8,12 @@ import de.klaro.reformcloud2.executor.api.common.application.InstallableApplicat
 import de.klaro.reformcloud2.executor.api.common.application.LoadedApplication;
 import de.klaro.reformcloud2.executor.api.common.application.basic.DefaultApplicationLoader;
 import de.klaro.reformcloud2.executor.api.common.client.ClientRuntimeInformation;
+import de.klaro.reformcloud2.executor.api.common.client.basic.DefaultClientRuntimeInformation;
 import de.klaro.reformcloud2.executor.api.common.commands.AllowedCommandSources;
 import de.klaro.reformcloud2.executor.api.common.commands.Command;
 import de.klaro.reformcloud2.executor.api.common.commands.basic.ConsoleCommandSource;
 import de.klaro.reformcloud2.executor.api.common.commands.basic.DefaultCommandSource;
+import de.klaro.reformcloud2.executor.api.common.commands.basic.commands.CommandClear;
 import de.klaro.reformcloud2.executor.api.common.commands.basic.commands.CommandHelp;
 import de.klaro.reformcloud2.executor.api.common.commands.basic.commands.CommandReload;
 import de.klaro.reformcloud2.executor.api.common.commands.basic.commands.CommandStop;
@@ -154,7 +156,12 @@ public final class ControllerExecutor extends Controller {
                     @Override
                     public void accept(String s, Integer integer) {
                         ControllerExecutor.this.networkServer.bind(s, integer, new DefaultServerAuthHandler(
-                                Controller.getInstance().networkChannelReader(),
+                                Controller.getInstance().networkChannelReader(new Consumer<PacketSender>() {
+                                    @Override
+                                    public void accept(PacketSender packetSender) {
+                                        ClientManager.INSTANCE.disconnectClient(packetSender.getName());
+                                    }
+                                }),
                                 new DoubleFunction<Packet, String, Boolean>() {
                                     @Override
                                     public Double<String, Boolean> apply(Packet packet) {
@@ -166,6 +173,8 @@ public final class ControllerExecutor extends Controller {
 
                                         if (auth.type().equals(NetworkType.CLIENT)) {
                                             System.out.println(LanguageManager.get("client-connected", auth.getName()));
+                                            DefaultClientRuntimeInformation runtimeInformation = auth.extra().get("info", ClientRuntimeInformation.TYPE);
+                                            ClientManager.INSTANCE.connectClient(runtimeInformation);
                                         } else {
                                             System.out.println(LanguageManager.get("process-connected", auth.getName(), auth.parent()));
                                         }
@@ -360,6 +369,7 @@ public final class ControllerExecutor extends Controller {
         this.commandManager
                 .register(CommandStop.class)
                 .register(new CommandReload(this))
+                .register(new CommandClear(loggerBase))
                 .register(new CommandHelp(commandManager));
     }
 

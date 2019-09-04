@@ -6,6 +6,8 @@ import java.util.UUID;
 
 public final class StringUtil {
 
+    public static final String RUNNER_DOWNLOAD_URL = "https://internal.reformcloud.systems/runner.jar";
+
     public static void sendHeader() {
         System.out.println(
                 "    __       __                        ___ _                 _ ____  \n" +

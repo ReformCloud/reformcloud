@@ -1,7 +1,7 @@
 package de.klaro.reformcloud2.executor.api.common.process;
 
 import com.google.gson.reflect.TypeToken;
-import de.klaro.reformcloud2.executor.api.common.configuration.Configurable;
+import de.klaro.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import de.klaro.reformcloud2.executor.api.common.groups.ProcessGroup;
 import de.klaro.reformcloud2.executor.api.common.groups.utils.Template;
 import de.klaro.reformcloud2.executor.api.common.plugins.Plugin;
@@ -20,7 +20,7 @@ public final class ProcessInformation implements Nameable {
                               ProcessState processState, NetworkInfo networkInfo,
                               ProcessGroup processGroup, Template template,
                               ProcessRuntimeInformation processRuntimeInformation,
-                              List<Plugin> plugins, Configurable extra, int maxPlayers) {
+                              List<Plugin> plugins, JsonConfiguration extra, int maxPlayers) {
         this.processName = processName;
         this.parent = parent;
         this.processUniqueID = processUniqueID;
@@ -64,7 +64,7 @@ public final class ProcessInformation implements Nameable {
 
     private List<Plugin> plugins;
 
-    private Configurable extra;
+    private JsonConfiguration extra;
 
     public String getProcessName() {
         return processName;
@@ -118,7 +118,7 @@ public final class ProcessInformation implements Nameable {
         return plugins;
     }
 
-    public Configurable getExtra() {
+    public JsonConfiguration getExtra() {
         return extra;
     }
 

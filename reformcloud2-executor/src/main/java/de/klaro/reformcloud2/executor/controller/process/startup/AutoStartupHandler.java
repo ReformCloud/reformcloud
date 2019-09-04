@@ -38,7 +38,11 @@ public final class AutoStartupHandler extends AbsoluteThread {
             int o1Priority = o1.getStartupConfiguration().getStartupPriority();
             int o2Priority = o2.getStartupConfiguration().getStartupPriority();
 
-            return Integer.compare(o1Priority, o2Priority);
+            if (o1Priority <= o2Priority) {
+                return -1;
+            }
+
+            return 1;
         }
     });
 
@@ -51,7 +55,7 @@ public final class AutoStartupHandler extends AbsoluteThread {
                     List<Template> started = ControllerExecutor.getInstance().getProcessManager().getOnlineAndWaiting(processGroup.getName());
 
                     if (started.size() < processGroup.getStartupConfiguration().getMinOnlineProcesses()) {
-                        for (int i = started.size(); i >= processGroup.getStartupConfiguration().getMinOnlineProcesses(); i++) {
+                        for (int i = started.size(); i < processGroup.getStartupConfiguration().getMinOnlineProcesses(); i++) {
                             if (i >= 1024) {
                                 //Do not allow more than 1024 process per group
                                 break;

@@ -31,6 +31,9 @@ public final class ClientExecutorConfig {
                 }
             },
             "reformcloud/temp",
+            "reformcloud/static",
+            "reformcloud/templates",
+            "reformcloud/global",
             "reformcloud/files",
             "reformcloud/files/.connection"
     );

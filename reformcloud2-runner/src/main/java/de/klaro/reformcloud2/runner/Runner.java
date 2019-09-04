@@ -105,6 +105,7 @@ public final class Runner {
             runIfProcessExists(new Consumer<Path>() {
                 @Override
                 public void accept(Path path) {
+                    unpackExecutorAsPlugin();
                     ClassLoader classLoader = ClassPreparer.create(path, new ExceptionFunction<Path, ClassLoader>() {
                         @Override
                         public ClassLoader apply(Path path) throws Exception {
@@ -192,6 +193,15 @@ public final class Runner {
         try (InputStream inputStream = Runner.class.getClassLoader().getResourceAsStream("files/executor.jar")) {
             Files.createDirectories(Paths.get("reformcloud/.bin/libs"));
             Files.copy(Objects.requireNonNull(inputStream), Paths.get("reformcloud/.bin/executor.jar"), StandardCopyOption.REPLACE_EXISTING);
+        } catch (final Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    private static void unpackExecutorAsPlugin() {
+        try (InputStream inputStream = Runner.class.getClassLoader().getResourceAsStream("files/executor.jar")) {
+            Files.createDirectories(Paths.get("reformcloud/.bin/libs"));
+            Files.copy(Objects.requireNonNull(inputStream), Paths.get("plugins/executor.jar"), StandardCopyOption.REPLACE_EXISTING);
         } catch (final Exception ex) {
             ex.printStackTrace();
         }

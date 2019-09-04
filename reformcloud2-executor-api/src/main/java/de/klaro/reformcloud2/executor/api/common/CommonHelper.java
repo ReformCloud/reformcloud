@@ -30,6 +30,10 @@ public final class CommonHelper {
         return ManagementFactory.getThreadMXBean();
     }
 
+    public static double cpuUsageSystem() {
+        return operatingSystemMXBean().getSystemCpuLoad() * 100;
+    }
+
     public static long memoryPoolMXBeanCollectionUsage() {
         AtomicLong atomicLong = new AtomicLong(0);
         ManagementFactory.getMemoryPoolMXBeans().forEach(new Consumer<MemoryPoolMXBean>() {

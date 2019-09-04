@@ -50,6 +50,9 @@ public final class DefaultDependencyLoader extends DependencyLoader {
             ), new DefaultDependency(
                     DefaultRepositories.MAVEN_CENTRAL,
                     "org.javassist", "javassist", PROPERTIES
+            ), new DefaultDependency(
+                    DefaultRepositories.MAVEN_CENTRAL,
+                    "commons-io", "commons-io", PROPERTIES
             )
     );
 
