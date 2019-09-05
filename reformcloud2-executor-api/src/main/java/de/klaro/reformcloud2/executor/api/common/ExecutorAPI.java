@@ -43,4 +43,14 @@ public abstract class ExecutorAPI implements
     public ExecutorType getType() {
         return type;
     }
+
+    static {
+        System.setProperty("java.net.preferIPv4Stack", "true");
+        System.setProperty("io.netty.noPreferDirect", "true");
+        System.setProperty("io.netty.maxDirectMemory", "0");
+        System.setProperty("io.netty.leakDetectionLevel", "DISABLED");
+        System.setProperty("io.netty.recycler.maxCapacity", "0");
+        System.setProperty("io.netty.recycler.maxCapacity.default", "0");
+        System.setProperty("io.netty.allocator.type", "UNPOOLED");
+    }
 }

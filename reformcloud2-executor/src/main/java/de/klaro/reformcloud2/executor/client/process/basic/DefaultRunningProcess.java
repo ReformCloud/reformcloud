@@ -13,8 +13,9 @@ import de.klaro.reformcloud2.executor.client.ClientExecutor;
 import net.md_5.config.Configuration;
 import net.md_5.config.ConfigurationProvider;
 import net.md_5.config.YamlConfiguration;
-import org.apache.commons.io.FileUtils;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -24,6 +25,8 @@ import java.nio.file.StandardCopyOption;
 import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 public final class DefaultRunningProcess implements RunningProcess {
 
@@ -62,6 +65,7 @@ public final class DefaultRunningProcess implements RunningProcess {
         new JsonConfiguration()
                 .add("controller-host", ClientExecutor.getInstance().getClientExecutorConfig().getClientConnectionConfig().getHost())
                 .add("controller-port", ClientExecutor.getInstance().getClientExecutorConfig().getClientConnectionConfig().getPort())
+                .add("startInfo", processInformation)
                 .write(path + "/reformcloud/.connection/connection.json");
 
         ExecutorAPI.getInstance().update(processInformation);
@@ -75,7 +79,7 @@ public final class DefaultRunningProcess implements RunningProcess {
             return false;
         }
 
-        List<String> pre = new ArrayList<>(Arrays.asList(
+        List<String> command = new ArrayList<>(Arrays.asList(
                 "java",
                 "-XX:+UseG1GC",
                 "-XX:MaxGCPauseMillis=50",
@@ -91,40 +95,22 @@ public final class DefaultRunningProcess implements RunningProcess {
         this.processInformation.getTemplate().getRuntimeConfiguration().getSystemProperties().forEach(new BiConsumer<String, String>() {
             @Override
             public void accept(String s, String s2) {
-                pre.add("-D" + s + "=" + s2);
+                command.add("-D" + s + "=" + s2);
             }
         });
 
-        List<String> after = new ArrayList<>(Arrays.asList(
+        command.addAll(Arrays.asList(
                 "-jar",
-                "runner.jar",
-                "nogui"
+                "runner.jar"
         ));
-
-        this.processInformation.getTemplate().getRuntimeConfiguration().getProcessParameters().forEach(new Consumer<String>() {
-            @Override
-            public void accept(String s) {
-                after.add(s);
-            }
-        });
-
-        List<String> fullCommand = new ArrayList<>();
-        pre.forEach(new Consumer<String>() {
-            @Override
-            public void accept(String s) {
-                fullCommand.add(s);
-            }
-        });
-
-        after.forEach(new Consumer<String>() {
-            @Override
-            public void accept(String s) {
-                fullCommand.add(s);
-            }
-        });
+        command.addAll(this.processInformation.getTemplate().getRuntimeConfiguration().getProcessParameters());
+        updateCommandLine(command, processInformation.getTemplate().getVersion());
 
         try {
-            this.process = Runtime.getRuntime().exec(fullCommand.toArray(new String[0]),null, path.toFile());
+            this.process = new ProcessBuilder()
+                    .directory(path.toFile())
+                    .command(command)
+                    .start();
         } catch (final IOException ex) {
             ex.printStackTrace();
             return false;
@@ -148,6 +134,9 @@ public final class DefaultRunningProcess implements RunningProcess {
         }
 
         ClientExecutor.getInstance().getProcessManager().unregisterProcess(processInformation.getName());
+        if (!processInformation.getProcessGroup().isStaticProcess()) {
+            SystemHelper.deleteDirectory(path);
+        }
 
         try {
             this.finalize();
@@ -215,11 +204,18 @@ public final class DefaultRunningProcess implements RunningProcess {
 
     private void rewriteSpongeConfig() {
         File config = Paths.get(path + "/config/sponge/global.conf").toFile();
+        rewriteFile(config, new UnaryOperator<String>() {
+            @Override
+            public String apply(String s) {
+                if (s.startsWith("ip-forwarding=")) {
+                    s = "ip-forwarding=true";
+                } else if (s.startsWith("bungeecord=")) {
+                    s = "bungeecord=true";
+                }
 
-        writeToFile(config, Objects.requireNonNull(readToString(config))
-                .replace("ip-forwarding=false", "ip-forwarding=true")
-                .replace("bungeecord=false", "bungeecord=true")
-        );
+                return s;
+            }
+        });
     }
 
     // ========================= //
@@ -262,6 +258,94 @@ public final class DefaultRunningProcess implements RunningProcess {
     }
 
     // ========================= //
+    //Bungee
+    private boolean isLogicallyBungee() {
+        Version version = processInformation.getTemplate().getVersion();
+        return version.equals(Version.WATERFALL)
+                || version.equals(Version.TRAVERTINE)
+                || version.equals(Version.HEXACORD)
+                || version.equals(Version.BUNGEECORD);
+    }
+
+    private void rewriteBungeeConfig() {
+        File file = Paths.get(path + "/config.yml").toFile();
+        rewriteFile(file, new UnaryOperator<String>() {
+            @Override
+            public String apply(String s) {
+                if (s.startsWith("  host:")) {
+                    s = "  host: " + ClientExecutor.getInstance().getClientConfig().getStartHost() + ":" + processInformation.getNetworkInfo().getPort();
+                } else if (s.startsWith("ip_forward:")) {
+                    s = "ip_forward: true";
+                }
+
+                return s;
+            }
+        });
+    }
+
+    // ========================= //
+    //Waterdog
+    private void rewriteWaterDogConfig() {
+        File file = Paths.get(path + "/config.yml").toFile();
+        rewriteFile(file, new UnaryOperator<String>() {
+            @Override
+            public String apply(String s) {
+                if (s.startsWith("  host:")) {
+                    s = "  host: " + ClientExecutor.getInstance().getClientConfig().getStartHost() + ":" + processInformation.getNetworkInfo().getPort();
+                } else if (s.startsWith("ip_forward:")) {
+                    s = "ip_forward: true";
+                } else if (s.startsWith("use_xuid_for_uuid:")) {
+                    s = "use_xuid_for_uuid: true";
+                } else if (s.startsWith("  raknet:")) {
+                    s = "  raknet: true";
+                }
+
+                return s;
+            }
+        });
+    }
+
+    // ========================= //
+    //Velocity
+    private void rewriteVelocityConfig() {
+        File file = Paths.get(path + "/velocity.toml").toFile();
+        rewriteFile(file, new UnaryOperator<String>() {
+            @Override
+            public String apply(String s) {
+                if (s.startsWith("bind")) {
+                    s = "bind = \"" + ClientExecutor.getInstance().getClientConfig().getStartHost() + ":" + processInformation.getNetworkInfo().getPort() + "\"";
+                } else if (s.startsWith("show-max-players") && processInformation.getProcessGroup().getPlayerAccessConfiguration().isUseCloudPlayerLimit()) {
+                    s = "show-max-players = " + processInformation.getProcessGroup().getPlayerAccessConfiguration().getMaxPlayers();
+                } else if (s.startsWith("player-info-forwarding-mode")) {
+                    s = "player-info-forwarding-mode = \"LEGACY\"";
+                }
+
+                return s;
+            }
+        });
+    }
+
+    // ========================= //
+    //ProxProx
+    private void rewriteProxProxConfig() {
+        Path file = Paths.get(path + "/config.yml");
+        try (InputStreamReader inputStreamReader = new InputStreamReader(Files.newInputStream(file), StandardCharsets.UTF_8)) {
+            Configuration configuration = ConfigurationProvider.getProvider(YamlConfiguration.class).load(inputStreamReader);
+            configuration.set("ip", ClientExecutor.getInstance().getClientConfig().getStartHost());
+            configuration.set("port", processInformation.getNetworkInfo().getPort());
+            if (processInformation.getProcessGroup().getPlayerAccessConfiguration().isUseCloudPlayerLimit()) {
+                configuration.set("maxPlayers", processInformation.getProcessGroup().getPlayerAccessConfiguration().getMaxPlayers());
+            }
+
+            try (OutputStreamWriter outputStreamWriter = new OutputStreamWriter(Files.newOutputStream(file), StandardCharsets.UTF_8)) {
+                ConfigurationProvider.getProvider(YamlConfiguration.class).save(configuration, outputStreamWriter);
+            }
+        } catch (final IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    // ========================= //
     //Spigot
     private void rewriteSpigotConfig() {
         try (InputStreamReader inputStreamReader = new InputStreamReader(Files.newInputStream(Paths.get(path + "/spigot.yml")), StandardCharsets.UTF_8)) {
@@ -283,32 +367,13 @@ public final class DefaultRunningProcess implements RunningProcess {
         if (processInformation.getTemplate().isServer()) {
             serverStartup();
         } else {
-
+            proxyStartup();
         }
     }
 
     private void serverStartup() {
-        if (processInformation.getTemplate().isServer()) {
-            createEula();
-        }
-
-        if (processInformation.getTemplate().getDownloadURL() != null) {
-            DownloadHelper.downloadAndDisconnect(processInformation.getTemplate().getDownloadURL(), path + "/template.zip");
-            SystemHelper.unZip(Paths.get(path + "/template.zip").toFile(), path.toString());
-            SystemHelper.deleteFile(Paths.get(path + "/template.zip").toFile());
-        } else {
-            Path template = Paths.get("reformcloud/templates/" + processInformation.getProcessGroup().getName() + "/" + processInformation.getTemplate().getName());
-            if (Files.exists(template)) {
-                SystemHelper.copyDirectory(template, path.toString());
-            } else {
-                SystemHelper.createDirectory(template);
-            }
-        }
-
-        SystemHelper.copyDirectory(Paths.get("reformcloud/.bin/libs"), path + "/reformcloud/.bin/libs");
-        SystemHelper.createDirectory(Paths.get(path + "/plugins"));
-        SystemHelper.createDirectory(Paths.get(path + "/reformcloud/.connection"));
-        SystemHelper.doCopy("reformcloud/files/.connection/connection.json", path + "/reformcloud/.connection/key.json");
+        createEula();
+        createTemplateAndFiles();
 
         if (isLogicallySpongeVanilla()) {
             SystemHelper.createDirectory(Paths.get(path + "/config/sponge"));
@@ -322,12 +387,28 @@ public final class DefaultRunningProcess implements RunningProcess {
             SystemHelper.createDirectory(Paths.get(path + "/config"));
             SystemHelper.doInternalCopy(getClass().getClassLoader(), "files/java/glowstone/glowstone.yml", path + "/config/glowstone.yml");
             rewriteGlowstoneConfig();
+        } else if (processInformation.getTemplate().getVersion().equals(Version.NUKKIT_X)) {
+            SystemHelper.doInternalCopy(getClass().getClassLoader(), "files/mcpe/nukkit/server.properties", path + "/server.properties");
+            SystemHelper.doInternalCopy(getClass().getClassLoader(), "files/mcpe/nukkit/nukkit.yml", path + "/nukkit.yml");
+            Properties properties = new Properties();
+            try (InputStream inputStream = Files.newInputStream(Paths.get(path + "/server.properties"))) {
+                properties.load(inputStream);
+                properties.setProperty("server-ip", ClientExecutor.getInstance().getClientConfig().getStartHost());
+                properties.setProperty("server-port", Integer.toString(processInformation.getNetworkInfo().getPort()));
+                properties.setProperty("xbox-auth", Boolean.toString(false));
+
+                try (OutputStream outputStream = Files.newOutputStream(Paths.get(path + "/server.properties"))) {
+                    properties.store(outputStream, "ReformCloud2 client edit");
+                }
+            } catch (final IOException ex) {
+                ex.printStackTrace();
+            }
         } else {
             SystemHelper.doInternalCopy(getClass().getClassLoader(), "files/java/bukkit/spigot.yml", path + "/spigot.yml");
             rewriteSpigotConfig();
         }
 
-        if (!isLogicallyGlowstone()) {
+        if (!isLogicallyGlowstone() && !processInformation.getTemplate().getVersion().equals(Version.NUKKIT_X)) {
             Properties properties = new Properties();
             SystemHelper.doInternalCopy(getClass().getClassLoader(), "files/java/bukkit/server.properties", path + "/server.properties");
             try (InputStream inputStream = Files.newInputStream(Paths.get(path + "/server.properties"))) {
@@ -362,22 +443,97 @@ public final class DefaultRunningProcess implements RunningProcess {
         }
     }
 
-    // ========================= //
-    //Static
-    private static String readToString(File file) {
+    private void proxyStartup() {
+        createTemplateAndFiles();
+        if (!Files.exists(Paths.get(path + "/server-icon.png"))) {
+            SystemHelper.doInternalCopy(getClass().getClassLoader(), "files/server-icon.png", path + "/server-icon.png");
+        }
+
         try {
-            return FileUtils.readFileToString(file, StandardCharsets.UTF_8);
+            BufferedImage bufferedImage = ImageIO.read(Paths.get(path + "/server-icon.png").toFile());
+            if (bufferedImage.getHeight() != 64 || bufferedImage.getWidth() != 64) {
+                System.err.println("The server icon of the process " + processInformation.getName() + " is not correctly sized");
+                SystemHelper.rename(Paths.get(path + "/server-icon.png").toFile(), path + "/server-icon-old.png");
+                SystemHelper.doInternalCopy(getClass().getClassLoader(), "files/server-icon.png", path + "/server-icon.png");
+            }
         } catch (final IOException ex) {
             ex.printStackTrace();
-            return null;
+        }
+
+        if (isLogicallyBungee()) {
+            SystemHelper.doInternalCopy(getClass().getClassLoader(), "files/java/bungee/config.yml", path + "/config.yml");
+            rewriteBungeeConfig();
+        } else if (processInformation.getTemplate().getVersion().equals(Version.PROX_PROX)) {
+            SystemHelper.doInternalCopy(getClass().getClassLoader(), "files/mcpe/proxprox/config.yml", path + "/config.yml");
+            rewriteProxProxConfig();
+        } else if (processInformation.getTemplate().getVersion().equals(Version.WATERDOG)) {
+            SystemHelper.doInternalCopy(getClass().getClassLoader(), "files/mcpe/waterdog/config.yml", path + "/config.yml");
+            rewriteWaterDogConfig();
+        } else if (processInformation.getTemplate().getVersion().equals(Version.VELOCITY)) {
+            SystemHelper.doInternalCopy(getClass().getClassLoader(), "files/java/velocity/velocity.toml", path + "/velocity.toml");
+            rewriteVelocityConfig();
+        }
+
+        if (!Files.exists(Paths.get(path + "/process.jar"))) {
+            Version version = processInformation.getTemplate().getVersion();
+            Version.downloadVersion(version);
+            SystemHelper.doCopy("reformcloud/files/" + Version.format(version), path + "/process.jar");
         }
     }
 
-    private static void writeToFile(File file, String s) {
+    private void createTemplateAndFiles() {
+        if (processInformation.getTemplate().getDownloadURL() != null) {
+            DownloadHelper.downloadAndDisconnect(processInformation.getTemplate().getDownloadURL(), path + "/template.zip");
+            SystemHelper.unZip(Paths.get(path + "/template.zip").toFile(), path.toString());
+            SystemHelper.deleteFile(Paths.get(path + "/template.zip").toFile());
+        } else {
+            Path template = Paths.get("reformcloud/templates/" + processInformation.getProcessGroup().getName() + "/" + processInformation.getTemplate().getName());
+            if (Files.exists(template)) {
+                SystemHelper.copyDirectory(template, path.toString());
+            } else {
+                SystemHelper.createDirectory(template);
+            }
+        }
+
+        SystemHelper.copyDirectory(Paths.get("reformcloud/.bin/libs"), path + "/reformcloud/.bin/libs");
+        SystemHelper.createDirectory(Paths.get(path + "/plugins"));
+        SystemHelper.createDirectory(Paths.get(path + "/reformcloud/.connection"));
+        SystemHelper.doCopy("reformcloud/files/.connection/connection.json", path + "/reformcloud/.connection/key.json");
+    }
+
+    // ========================= //
+    //Static
+    private static void rewriteFile(File file, Function<String, String> function) {
         try {
-            FileUtils.write(file, s, StandardCharsets.UTF_8);
+            List<String> list = Files.readAllLines(file.toPath());
+            List<String> newLine = new ArrayList<>();
+
+            list.forEach(new Consumer<String>() {
+                @Override
+                public void accept(String s) {
+                    newLine.add(function.apply(s));
+                }
+            });
+
+            try (PrintWriter printWriter = new PrintWriter(new OutputStreamWriter(Files.newOutputStream(file.toPath()), StandardCharsets.UTF_8), true)) {
+                newLine.forEach(new Consumer<String>() {
+                    @Override
+                    public void accept(String s) {
+                        printWriter.write(s + "\n");
+                        printWriter.flush();
+                    }
+                });
+            }
         } catch (final IOException ex) {
             ex.printStackTrace();
+        }
+    }
+
+    private static void updateCommandLine(List<String> command, Version version) {
+        if (version.getId() == 1) {
+            command.add("nogui");
+        } else if (version.getId() == 3) {
+            command.add("disable-ansi");
         }
     }
 }

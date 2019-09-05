@@ -18,6 +18,9 @@ import de.klaro.reformcloud2.executor.api.controller.process.ProcessManager;
 import de.klaro.reformcloud2.executor.controller.ControllerExecutor;
 import de.klaro.reformcloud2.executor.controller.packet.out.ControllerPacketOutStartProcess;
 import de.klaro.reformcloud2.executor.controller.packet.out.ControllerPacketOutStopProcess;
+import de.klaro.reformcloud2.executor.controller.packet.out.event.ControllerEventProcessClosed;
+import de.klaro.reformcloud2.executor.controller.packet.out.event.ControllerEventProcessStarted;
+import de.klaro.reformcloud2.executor.controller.packet.out.event.ControllerEventProcessUpdated;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -139,6 +142,7 @@ public final class DefaultProcessManager implements ProcessManager {
             }
         });
         if (processGroup == null) {
+            System.out.println(groupName);
             new NullPointerException("Cannot find specified group name").printStackTrace();
             return null;
         }
@@ -160,6 +164,13 @@ public final class DefaultProcessManager implements ProcessManager {
             @Override
             public void accept(PacketSender packetSender) {
                 packetSender.sendPacket(new ControllerPacketOutStartProcess(processInformation));
+            }
+        });
+        //Send event packet to notify processes
+        DefaultChannelManager.INSTANCE.getAllSender().forEach(new Consumer<PacketSender>() {
+            @Override
+            public void accept(PacketSender packetSender) {
+                packetSender.sendPacket(new ControllerEventProcessStarted(processInformation));
             }
         });
         return processInformation;
@@ -192,9 +203,26 @@ public final class DefaultProcessManager implements ProcessManager {
             @Override
             public void accept(PacketSender packetSender) {
                 packetSender.sendPacket(new ControllerPacketOutStopProcess(processInformation.getProcessUniqueID()));
+                notifyDisconnect(processInformation);
             }
         });
         return processInformation;
+    }
+
+    @Override
+    public void onClientDisconnect(String clientName) {
+        Links.allOf(processInformation, new Predicate<ProcessInformation>() {
+            @Override
+            public boolean test(ProcessInformation processInformation) {
+                return processInformation.getParent().equals(clientName);
+            }
+        }).forEach(new Consumer<ProcessInformation>() {
+            @Override
+            public void accept(ProcessInformation processInformation) {
+                DefaultProcessManager.this.processInformation.remove(processInformation);
+                notifyDisconnect(processInformation);
+            }
+        });
     }
 
     private ProcessInformation create(ProcessGroup processGroup, Template template, JsonConfiguration extra) {
@@ -408,5 +436,23 @@ public final class DefaultProcessManager implements ProcessManager {
 
         this.processInformation.remove(current);
         this.processInformation.add(processInformation);
+
+        DefaultChannelManager.INSTANCE.getAllSender().forEach(new Consumer<PacketSender>() {
+            @Override
+            public void accept(PacketSender packetSender) {
+                packetSender.sendPacket(new ControllerEventProcessUpdated(processInformation));
+            }
+        });
+    }
+
+
+    // ==========================
+    private void notifyDisconnect(ProcessInformation processInformation) {
+        DefaultChannelManager.INSTANCE.getAllSender().forEach(new Consumer<PacketSender>() {
+            @Override
+            public void accept(PacketSender packetSender) {
+                packetSender.sendPacket(new ControllerEventProcessClosed(processInformation));
+            }
+        });
     }
 }

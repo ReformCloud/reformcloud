@@ -1,38 +1,22 @@
-package de.klaro.reformcloud2.executor.api.client;
+package de.klaro.reformcloud2.executor.api.api;
 
-import de.klaro.reformcloud2.executor.api.common.ExecutorAPI;
 import de.klaro.reformcloud2.executor.api.common.api.basic.ExternalAPIImplementation;
 import de.klaro.reformcloud2.executor.api.common.base.Conditions;
-import de.klaro.reformcloud2.executor.api.common.commands.manager.CommandManager;
 import de.klaro.reformcloud2.executor.api.common.language.LanguageManager;
 import de.klaro.reformcloud2.executor.api.common.network.NetworkUtil;
 import de.klaro.reformcloud2.executor.api.common.network.channel.NetworkChannelReader;
 import de.klaro.reformcloud2.executor.api.common.network.channel.PacketSender;
 import de.klaro.reformcloud2.executor.api.common.network.channel.handler.NetworkHandler;
 import de.klaro.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
-import de.klaro.reformcloud2.executor.api.common.network.client.NetworkClient;
 import de.klaro.reformcloud2.executor.api.common.network.packet.Packet;
 import de.klaro.reformcloud2.executor.api.common.network.packet.handler.PacketHandler;
-import de.klaro.reformcloud2.executor.api.common.utility.runtime.ReloadableRuntime;
 import io.netty.channel.ChannelHandlerContext;
 
 import java.net.InetSocketAddress;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-public abstract class Client extends ExternalAPIImplementation implements ReloadableRuntime {
-
-    protected abstract void bootstrap();
-
-    public abstract void shutdown() throws Exception;
-
-    public abstract CommandManager getCommandManager();
-
-    public static Client getInstance() {
-        return (Client) ExecutorAPI.getInstance();
-    }
-
-    public abstract NetworkClient getNetworkClient();
+public abstract class API extends ExternalAPIImplementation {
 
     protected final NetworkChannelReader networkChannelReader = new NetworkChannelReader() {
 
@@ -40,7 +24,7 @@ public abstract class Client extends ExternalAPIImplementation implements Reload
 
         @Override
         public PacketHandler getPacketHandler() {
-            return Client.this.packetHandler();
+            return API.this.packetHandler();
         }
 
         @Override

@@ -38,6 +38,6 @@ public final class DefaultProcessGroup extends ProcessGroup {
                         true,
                         true,
                         maxPlayers
-                ), false);
+                ), false, true);
     }
 }

@@ -38,7 +38,8 @@ public final class DefaultNetworkServer implements NetworkServer {
                         .childOption(ChannelOption.TCP_NODELAY, true)
 
                         .childHandler(new ServerInitializerHandler(
-                                authHandler.channelReader(),
+                                authHandler.packetHandler(),
+                                authHandler.onDisconnect(),
                                 authHandler.function(),
                                 authHandler.onSuccess(),
                                 authHandler.onAuthFailure()

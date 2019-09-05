@@ -7,6 +7,7 @@ import de.klaro.reformcloud2.executor.api.common.utility.list.Links;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -21,7 +22,12 @@ public final class DefaultProcessManager implements ProcessManager {
 
     @Override
     public void unregisterProcess(String name) {
-        getProcess(name).ifPresent(new Consumer<RunningProcess>() {
+        Links.filterToOptional(list, new Predicate<RunningProcess>() {
+            @Override
+            public boolean test(RunningProcess runningProcess) {
+                return runningProcess.getProcessInformation().getName().equals(name);
+            }
+        }).ifPresent(new Consumer<RunningProcess>() {
             @Override
             public void accept(RunningProcess runningProcess) {
                 list.remove(runningProcess);
@@ -30,11 +36,11 @@ public final class DefaultProcessManager implements ProcessManager {
     }
 
     @Override
-    public Optional<RunningProcess> getProcess(String name) {
+    public Optional<RunningProcess> getProcess(UUID uniqueID) {
         return Links.filterToOptional(list, new Predicate<RunningProcess>() {
             @Override
             public boolean test(RunningProcess runningProcess) {
-                return runningProcess.getProcessInformation().getName().equals(name);
+                return runningProcess.getProcessInformation().getProcessUniqueID().equals(uniqueID);
             }
         });
     }

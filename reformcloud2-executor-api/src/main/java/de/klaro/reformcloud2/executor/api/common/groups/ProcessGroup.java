@@ -22,6 +22,20 @@ public class ProcessGroup implements Nameable {
         this.templates = templates;
         this.playerAccessConfiguration = playerAccessConfiguration;
         this.staticProcess = staticProcess;
+        this.canBeUsedAsLobby = false;
+    }
+
+    public ProcessGroup(String name, boolean showIdInName, String parentGroup,
+                        StartupConfiguration startupConfiguration, List<Template> templates,
+                        PlayerAccessConfiguration playerAccessConfiguration, boolean staticProcess, boolean asLobby) {
+        this.name = name;
+        this.showIdInName = showIdInName;
+        this.parentGroup = parentGroup;
+        this.startupConfiguration = startupConfiguration;
+        this.templates = templates;
+        this.playerAccessConfiguration = playerAccessConfiguration;
+        this.staticProcess = staticProcess;
+        this.canBeUsedAsLobby = asLobby;
     }
 
     private String name;
@@ -37,6 +51,8 @@ public class ProcessGroup implements Nameable {
     private PlayerAccessConfiguration playerAccessConfiguration;
 
     private boolean staticProcess;
+
+    private boolean canBeUsedAsLobby;
 
     public boolean isShowIdInName() {
         return showIdInName;
@@ -60,6 +76,10 @@ public class ProcessGroup implements Nameable {
 
     public boolean isStaticProcess() {
         return staticProcess;
+    }
+
+    public boolean isCanBeUsedAsLobby() {
+        return canBeUsedAsLobby;
     }
 
     @Override

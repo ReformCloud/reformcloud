@@ -29,4 +29,6 @@ public interface ProcessManager extends Iterable<ProcessInformation>, Updateable
     ProcessInformation stopProcess(String name);
 
     ProcessInformation stopProcess(UUID uniqueID);
+
+    void onClientDisconnect(String clientName);
 }

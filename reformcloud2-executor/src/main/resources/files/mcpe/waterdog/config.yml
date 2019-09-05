@@ -19,7 +19,7 @@ disabled_commands:
 - disabledcommandhere
 servers:
   lobby:
-    raknet: false
+    raknet: true
     motd: '\n'
     transfer_group: default
     address: localhost:25565
@@ -33,7 +33,7 @@ listeners:
   forced_hosts: &id033
     pvp.md-5.net: pvp
   ping_passthrough: false
-  raknet: false
+  raknet: true
   priorities:
   - lobby
   bind_local_address: true

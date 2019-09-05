@@ -1,9 +1,9 @@
 package de.klaro.reformcloud2.executor.api.common.network.handler;
 
-import de.klaro.reformcloud2.executor.api.common.network.channel.NetworkChannelReader;
 import de.klaro.reformcloud2.executor.api.common.network.channel.PacketSender;
 import de.klaro.reformcloud2.executor.api.common.network.init.InitializerHandler;
 import de.klaro.reformcloud2.executor.api.common.network.packet.Packet;
+import de.klaro.reformcloud2.executor.api.common.network.packet.handler.PacketHandler;
 import de.klaro.reformcloud2.executor.api.common.network.packet.serialisation.LengthDeserializer;
 import de.klaro.reformcloud2.executor.api.common.network.packet.serialisation.LengthSerializer;
 import de.klaro.reformcloud2.executor.api.common.network.packet.util.PacketDecoder;
@@ -17,9 +17,9 @@ import java.util.function.Consumer;
 
 public final class ServerInitializerHandler extends InitializerHandler {
 
-    public ServerInitializerHandler(NetworkChannelReader channelReader, DoubleFunction<Packet, String, Boolean> function,
+    public ServerInitializerHandler(PacketHandler packetHandler, Consumer<PacketSender> consumer, DoubleFunction<Packet, String, Boolean> function,
                                     BiFunction<String, ChannelHandlerContext, PacketSender> onAuthSuccess, Consumer<ChannelHandlerContext> onAuthFailure) {
-        super(channelReader);
+        super(packetHandler, consumer);
         this.function = function;
         this.onSuccess = onAuthSuccess;
         this.onAuthFailure = onAuthFailure;
@@ -38,6 +38,6 @@ public final class ServerInitializerHandler extends InitializerHandler {
                 .addLast("decoder", new PacketDecoder())
                 .addLast("serializer", new LengthSerializer())
                 .addLast("encoder", new PacketEncoder())
-                .addLast("handler", new ChannelReaderHelper(networkChannelReader, function, onSuccess, onAuthFailure));
+                .addLast("handler", new ChannelReaderHelper(newHandler(), function, onSuccess, onAuthFailure));
     }
 }

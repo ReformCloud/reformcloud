@@ -143,6 +143,10 @@ public final class ProcessInformation implements Nameable {
         return onlinePlayers.add(new Player(playerUuid, playerName));
     }
 
+    public boolean isLobby() {
+        return template.isServer() && processGroup.isCanBeUsedAsLobby();
+    }
+
     public void onLogout(UUID uniqueID) {
         Links.filterToOptional(onlinePlayers, new Predicate<Player>() {
             @Override

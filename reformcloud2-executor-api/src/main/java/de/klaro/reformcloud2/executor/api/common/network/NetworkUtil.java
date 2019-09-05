@@ -1,9 +1,16 @@
 package de.klaro.reformcloud2.executor.api.common.network;
 
+import de.klaro.reformcloud2.executor.api.common.base.Conditions;
 import de.klaro.reformcloud2.executor.api.common.configuration.JsonConfiguration;
+import de.klaro.reformcloud2.executor.api.common.language.LanguageManager;
+import de.klaro.reformcloud2.executor.api.common.network.channel.NetworkChannelReader;
 import de.klaro.reformcloud2.executor.api.common.network.channel.PacketSender;
 import de.klaro.reformcloud2.executor.api.common.network.channel.defaults.DefaultPacketSender;
+import de.klaro.reformcloud2.executor.api.common.network.channel.handler.NetworkHandler;
+import de.klaro.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import de.klaro.reformcloud2.executor.api.common.network.packet.DefaultPacket;
+import de.klaro.reformcloud2.executor.api.common.network.packet.Packet;
+import de.klaro.reformcloud2.executor.api.common.network.packet.handler.PacketHandler;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.EventLoopGroup;
@@ -23,6 +30,7 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.util.concurrent.DefaultThreadFactory;
 import io.netty.util.concurrent.MultithreadEventExecutorGroup;
 
+import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -35,6 +43,8 @@ public final class NetworkUtil {
     /* ============================= */
 
     public static final int CONTROLLER_INFORMATION_PACKETS = 2000;
+
+    public static final int EVENT_BUS = 3000;
 
     /* ============================ */
 
@@ -64,36 +74,42 @@ public final class NetworkUtil {
     private static final ThreadFactory THREAD_FACTORY = new DefaultThreadFactory(MultithreadEventExecutorGroup.class, true, Thread.MIN_PRIORITY);
 
     public static EventLoopGroup eventLoopGroup() {
-        if (EPOLL) {
-            return new EpollEventLoopGroup(Runtime.getRuntime().availableProcessors(), THREAD_FACTORY);
-        }
+        if (!Boolean.getBoolean("reformcloud.disable.native")) {
+            if (EPOLL) {
+                return new EpollEventLoopGroup(Runtime.getRuntime().availableProcessors(), THREAD_FACTORY);
+            }
 
-        if (K_QUEUE) {
-            return new KQueueEventLoopGroup(Runtime.getRuntime().availableProcessors(), THREAD_FACTORY);
+            if (K_QUEUE) {
+                return new KQueueEventLoopGroup(Runtime.getRuntime().availableProcessors(), THREAD_FACTORY);
+            }
         }
 
         return new NioEventLoopGroup(Runtime.getRuntime().availableProcessors(), THREAD_FACTORY);
     }
 
     public static Class<? extends ServerSocketChannel> serverSocketChannel() {
-        if (EPOLL) {
-            return EpollServerSocketChannel.class;
-        }
+        if (!Boolean.getBoolean("reformcloud.disable.native")) {
+            if (EPOLL) {
+                return EpollServerSocketChannel.class;
+            }
 
-        if (K_QUEUE) {
-            return KQueueServerSocketChannel.class;
+            if (K_QUEUE) {
+                return KQueueServerSocketChannel.class;
+            }
         }
 
         return NioServerSocketChannel.class;
     }
 
     public static Class<? extends SocketChannel> socketChannel() {
-        if (EPOLL) {
-            return EpollSocketChannel.class;
-        }
+        if (!Boolean.getBoolean("reformcloud.disable.native")) {
+            if (EPOLL) {
+                return EpollSocketChannel.class;
+            }
 
-        if (K_QUEUE) {
-            return KQueueSocketChannel.class;
+            if (K_QUEUE) {
+                return KQueueSocketChannel.class;
+            }
         }
 
         return NioSocketChannel.class;
@@ -147,6 +163,73 @@ public final class NetworkUtil {
         byte[] bytes = new byte[size];
         byteBuf.readBytes(bytes, 0, size);
         return new String(bytes, StandardCharsets.UTF_8);
+    }
+
+    public static NetworkChannelReader newReader(PacketHandler packetHandler, Consumer<PacketSender> consumer) {
+        return new NetworkChannelReader() {
+            private PacketSender sender;
+
+            @Override
+            public PacketHandler getPacketHandler() {
+                return packetHandler;
+            }
+
+            @Override
+            public PacketSender sender() {
+                return sender;
+            }
+
+            @Override
+            public void setSender(PacketSender sender) {
+                Conditions.isTrue(this.sender == null);
+                this.sender = sender;
+                DefaultChannelManager.INSTANCE.registerChannel(sender);
+            }
+
+            @Override
+            public void channelActive(ChannelHandlerContext context) {
+                if (sender == null) {
+                    String address = ((InetSocketAddress) context.channel().remoteAddress()).getAddress().getHostAddress();
+                    System.out.println(LanguageManager.get("network-channel-connected", address));
+                }
+            }
+
+            @Override
+            public void channelInactive(ChannelHandlerContext context) {
+                if (sender != null) {
+                    DefaultChannelManager.INSTANCE.unregisterChannel(sender);
+                    consumer.accept(sender);
+                    System.out.println(LanguageManager.get("network-channel-disconnected", sender.getName()));
+                }
+            }
+
+            @Override
+            public void read(ChannelHandlerContext context, Packet packet) {
+                NetworkUtil.EXECUTOR.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (packet.queryUniqueID() != null && getPacketHandler().getQueryHandler().hasWaitingQuery(packet.queryUniqueID())) {
+                            getPacketHandler().getQueryHandler().getWaitingQuery(packet.queryUniqueID()).complete(packet);
+                        } else {
+                            getPacketHandler().getNetworkHandlers(packet.packetID()).forEach(new Consumer<NetworkHandler>() {
+                                @Override
+                                public void accept(NetworkHandler networkHandler) {
+                                    networkHandler.handlePacket(sender, packet, new Consumer<Packet>() {
+                                        @Override
+                                        public void accept(Packet out) {
+                                            if (packet.queryUniqueID() != null) {
+                                                out.setQueryID(packet.queryUniqueID());
+                                                sender.sendPacket(out);
+                                            }
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                    }
+                });
+            }
+        };
     }
 
     private NetworkUtil() {}

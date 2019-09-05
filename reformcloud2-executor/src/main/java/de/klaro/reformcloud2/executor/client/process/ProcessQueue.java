@@ -27,7 +27,6 @@ public final class ProcessQueue extends AbsoluteThread {
         while (!Thread.currentThread().isInterrupted()) {
             if (!QUEUE.isEmpty()) {
                 ProcessInformation processInformation = QUEUE.poll();
-                System.out.println(processInformation.getName());
                 RunningProcess runningProcess = RunningProcessBuilder.build(processInformation);
                 if (runningProcess != null && runningProcess.bootstrap()) {
                     ClientExecutor.getInstance().getProcessManager().registerProcess(runningProcess);

@@ -41,6 +41,14 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- reflections -->
+        <dependency>
+            <groupId>org.reflections</groupId>
+            <artifactId>reflections</artifactId>
+            <version>0.9.11</version>
+            <scope>provided</scope>
+        </dependency>
+
         <dependency>
             <groupId>org.mongodb</groupId>
             <artifactId>mongo-java-driver</artifactId>

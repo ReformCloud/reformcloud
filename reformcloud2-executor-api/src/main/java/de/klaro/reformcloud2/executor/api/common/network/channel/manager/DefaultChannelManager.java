@@ -55,4 +55,9 @@ public final class DefaultChannelManager implements ChannelManager {
             }
         });
     }
+
+    @Override
+    public List<PacketSender> getAllSender() {
+        return Links.unmodifiable(senders);
+    }
 }

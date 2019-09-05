@@ -34,11 +34,14 @@ public final class ClientInitializerHandler extends InitializerHandler {
     };
 
     public ClientInitializerHandler(NetworkChannelReader channelReader, NetworkClient networkClient) {
-        super(channelReader);
+        super(null, null);
         this.networkClient = networkClient;
+        this.channelReader = channelReader;
     }
 
     private final NetworkClient networkClient;
+
+    private final NetworkChannelReader channelReader;
 
     @Override
     protected void initChannel(Channel channel) {
@@ -48,7 +51,7 @@ public final class ClientInitializerHandler extends InitializerHandler {
                 .addLast("serializer", new LengthSerializer())
                 .addLast("encoder", new PacketEncoder())
                 .addLast("handler", new ChannelReaderHelper(
-                        networkChannelReader,
+                        channelReader,
                         EMPTY_FUNCTION,
                         NetworkUtil.DEFAULT_SUCCESS_HANDLER,
                         DEFAULT_FAIL_HANDLER

@@ -1,4 +1,4 @@
 name: 'ReformCloud2BungeeExecutor'
 version: '2'
 author: '_Klaro'
-main: de.klaro.reformcloud2.executor.api.bungee.BungeeExecutor
+main: de.klaro.reformcloud2.executor.api.bungee.BungeeLauncher

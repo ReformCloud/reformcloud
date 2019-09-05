@@ -26,6 +26,8 @@ import de.klaro.reformcloud2.executor.api.common.database.DatabaseReader;
 import de.klaro.reformcloud2.executor.api.common.database.basic.drivers.file.FileDatabase;
 import de.klaro.reformcloud2.executor.api.common.database.basic.drivers.mongo.MongoDatabase;
 import de.klaro.reformcloud2.executor.api.common.database.basic.drivers.mysql.MySQLDatabase;
+import de.klaro.reformcloud2.executor.api.common.event.EventManager;
+import de.klaro.reformcloud2.executor.api.common.event.basic.DefaultEventManager;
 import de.klaro.reformcloud2.executor.api.common.groups.MainGroup;
 import de.klaro.reformcloud2.executor.api.common.groups.ProcessGroup;
 import de.klaro.reformcloud2.executor.api.common.groups.utils.*;
@@ -110,6 +112,8 @@ public final class ControllerExecutor extends Controller {
 
     private final DatabaseConfig databaseConfig = new DatabaseConfig();
 
+    private final EventManager eventManager = new DefaultEventManager();
+
     ControllerExecutor() {
         ExecutorAPI.setInstance(this);
         super.type = ExecutorType.CONTROLLER;
@@ -156,12 +160,13 @@ public final class ControllerExecutor extends Controller {
                     @Override
                     public void accept(String s, Integer integer) {
                         ControllerExecutor.this.networkServer.bind(s, integer, new DefaultServerAuthHandler(
-                                Controller.getInstance().networkChannelReader(new Consumer<PacketSender>() {
+                                packetHandler,
+                                new Consumer<PacketSender>() {
                                     @Override
                                     public void accept(PacketSender packetSender) {
                                         ClientManager.INSTANCE.disconnectClient(packetSender.getName());
                                     }
-                                }),
+                                },
                                 new DoubleFunction<Packet, String, Boolean>() {
                                     @Override
                                     public Double<String, Boolean> apply(Packet packet) {
@@ -176,6 +181,10 @@ public final class ControllerExecutor extends Controller {
                                             DefaultClientRuntimeInformation runtimeInformation = auth.extra().get("info", ClientRuntimeInformation.TYPE);
                                             ClientManager.INSTANCE.connectClient(runtimeInformation);
                                         } else {
+                                            ProcessInformation information = processManager.getProcess(auth.getName());
+                                            information.getNetworkInfo().setConnected(true);
+                                            processManager.update(information);
+
                                             System.out.println(LanguageManager.get("process-connected", auth.getName(), auth.parent()));
                                         }
 
@@ -325,6 +334,10 @@ public final class ControllerExecutor extends Controller {
 
     public AutoStartupHandler getAutoStartupHandler() {
         return autoStartupHandler;
+    }
+
+    public EventManager getEventManager() {
+        return eventManager;
     }
 
     private void runConsole() {

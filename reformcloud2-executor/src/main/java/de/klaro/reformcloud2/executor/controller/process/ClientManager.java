@@ -2,6 +2,7 @@ package de.klaro.reformcloud2.executor.controller.process;
 
 import de.klaro.reformcloud2.executor.api.common.client.ClientRuntimeInformation;
 import de.klaro.reformcloud2.executor.api.common.utility.list.Links;
+import de.klaro.reformcloud2.executor.controller.ControllerExecutor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +29,7 @@ public final class ClientManager {
             return;
         }
 
+        ControllerExecutor.getInstance().getProcessManager().onClientDisconnect(found.getName());
         clientRuntimeInformation.remove(found);
     }
 }
