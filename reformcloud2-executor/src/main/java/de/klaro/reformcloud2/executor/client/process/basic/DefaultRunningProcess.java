@@ -427,7 +427,10 @@ public final class DefaultRunningProcess implements RunningProcess {
 
         if (!isLogicallySpongeForge() && !Files.exists(Paths.get(path + "/process.jar"))) {
             Version version = processInformation.getTemplate().getVersion();
-            Version.downloadVersion(version);
+            if (!Files.exists(Paths.get("reformcloud/files/" + Version.format(version)))) {
+                Version.downloadVersion(version);
+            }
+
             SystemHelper.doCopy("reformcloud/files/" + Version.format(version), path + "/process.jar");
         } else if (isLogicallySpongeForge()) {
             Version version = processInformation.getTemplate().getVersion();
@@ -476,7 +479,10 @@ public final class DefaultRunningProcess implements RunningProcess {
 
         if (!Files.exists(Paths.get(path + "/process.jar"))) {
             Version version = processInformation.getTemplate().getVersion();
-            Version.downloadVersion(version);
+            if (!Files.exists(Paths.get("reformcloud/files/" + Version.format(version)))) {
+                Version.downloadVersion(version);
+            }
+
             SystemHelper.doCopy("reformcloud/files/" + Version.format(version), path + "/process.jar");
         }
     }

@@ -5,7 +5,6 @@ import de.klaro.reformcloud2.executor.api.common.api.basic.events.ProcessStarted
 import de.klaro.reformcloud2.executor.api.common.api.basic.events.ProcessStoppedEvent;
 import de.klaro.reformcloud2.executor.api.common.api.basic.events.ProcessUpdatedEvent;
 import de.klaro.reformcloud2.executor.api.common.event.handler.Listener;
-import de.klaro.reformcloud2.executor.api.common.groups.utils.Version;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.config.ListenerInfo;
@@ -31,10 +30,6 @@ public final class ProcessEventHandler {
 
     @Listener
     public void handleUpdate(ProcessUpdatedEvent event) {
-        if (!event.getProcessInformation().getTemplate().isServer() || event.getProcessInformation().getTemplate().getVersion().equals(Version.NUKKIT_X)) {
-            return;
-        }
-
         BungeeExecutor.registerServer(event.getProcessInformation());
     }
 

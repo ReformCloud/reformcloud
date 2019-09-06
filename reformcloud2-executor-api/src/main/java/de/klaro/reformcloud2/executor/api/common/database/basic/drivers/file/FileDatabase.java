@@ -23,7 +23,7 @@ public final class FileDatabase extends Database<Path> {
 
     @Override
     public void connect(String host, int port, String userName, String password, String table) {
-        this.table = table;
+        this.table = "reformcloud/.database/" + table;
     }
 
     @Override

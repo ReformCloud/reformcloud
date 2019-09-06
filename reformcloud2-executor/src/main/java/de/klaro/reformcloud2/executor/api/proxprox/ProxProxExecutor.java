@@ -1,4 +1,4 @@
-package de.klaro.reformcloud2.executor.api.spigot;
+package de.klaro.reformcloud2.executor.api.proxprox;
 
 import de.klaro.reformcloud2.executor.api.api.API;
 import de.klaro.reformcloud2.executor.api.common.ExecutorAPI;
@@ -13,17 +13,31 @@ import de.klaro.reformcloud2.executor.api.common.network.client.DefaultNetworkCl
 import de.klaro.reformcloud2.executor.api.common.network.client.NetworkClient;
 import de.klaro.reformcloud2.executor.api.common.network.packet.defaults.DefaultPacketHandler;
 import de.klaro.reformcloud2.executor.api.common.network.packet.handler.PacketHandler;
+import de.klaro.reformcloud2.executor.api.common.process.NetworkInfo;
 import de.klaro.reformcloud2.executor.api.common.process.ProcessInformation;
+import de.klaro.reformcloud2.executor.api.common.utility.list.Links;
 import de.klaro.reformcloud2.executor.api.common.utility.system.SystemHelper;
-import org.bukkit.plugin.java.JavaPlugin;
+import de.klaro.reformcloud2.executor.api.proxprox.event.ConnectHandler;
+import de.klaro.reformcloud2.executor.api.proxprox.event.ProcessEventHandler;
+import io.gomint.proxprox.ProxProxProxy;
+import io.gomint.proxprox.api.ProxProx;
+import io.gomint.proxprox.api.data.ServerDataHolder;
+import io.gomint.proxprox.api.entity.Player;
+import io.gomint.proxprox.api.plugin.Plugin;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+import java.util.function.Consumer;
 
-public final class SpigotExecutor extends API {
+public final class ProxProxExecutor extends API {
 
-    private static SpigotExecutor instance;
+    private static ProxProxExecutor instance;
 
-    private final JavaPlugin plugin;
+    private static final Map<String, ProcessInformation> markedServers = new HashMap<>();
+
+    private final Plugin plugin;
 
     private final PacketHandler packetHandler = new DefaultPacketHandler();
 
@@ -31,11 +45,13 @@ public final class SpigotExecutor extends API {
 
     private ProcessInformation thisProcessInformation;
 
-    SpigotExecutor(JavaPlugin plugin) {
+    ProxProxExecutor(Plugin plugin) {
         instance = this;
         this.plugin = plugin;
+
         new ExternalEventBusHandler(packetHandler, new DefaultEventManager());
-        getEventManager().registerListener(this);
+        getEventManager().registerListener(new ProcessEventHandler());
+        ProxProxProxy.getInstance().getPluginManager().registerListener(plugin, new ConnectHandler());
 
         String connectionKey = JsonConfiguration.read("reformcloud/.connection/key.json").getString("key");
         SystemHelper.deleteFile(new File("reformcloud/.connection/key.json"));
@@ -57,25 +73,62 @@ public final class SpigotExecutor extends API {
         ExecutorAPI.setInstance(this);
     }
 
-    public JavaPlugin getPlugin() {
-        return plugin;
+    NetworkClient getNetworkClient() {
+        return networkClient;
     }
 
-    public static SpigotExecutor getInstance() {
-        return instance;
+    public Plugin getPlugin() {
+        return plugin;
     }
 
     public EventManager getEventManager() {
         return ExternalEventBusHandler.getInstance().getEventManager();
     }
 
-    NetworkClient getNetworkClient() {
-        return networkClient;
+    public static ProxProxExecutor getInstance() {
+        return instance;
     }
 
     @Override
     public PacketHandler packetHandler() {
         return packetHandler;
+    }
+
+    public static void handleProcessUpdate(ProcessInformation processInformation) {
+        if (!markedServers.containsKey(processInformation.getName())
+                && processInformation.getNetworkInfo().isConnected()
+                && processInformation.getTemplate().getVersion().getId() == 3) {
+            markedServers.put(processInformation.getName(), processInformation);
+        }
+    }
+
+    public static void handleProcessRemove(ProcessInformation processInformation) {
+        markedServers.remove(processInformation.getName());
+    }
+
+    public static void connectPlayer(UUID uuid, String target) {
+        Links.toOptional(ProxProx.getProxy().getPlayer(uuid)).ifPresent(new Consumer<Player>() {
+            @Override
+            public void accept(Player player) {
+                if (markedServers.containsKey(target)) {
+                    NetworkInfo networkInfo = toNetworkInfo(markedServers.get(target));
+                    player.connect(networkInfo.getHost(), networkInfo.getPort());
+                }
+            }
+        });
+    }
+
+    private static NetworkInfo toNetworkInfo(ProcessInformation processInformation) {
+        return processInformation.getNetworkInfo();
+    }
+
+    public static ServerDataHolder toServerDataHolder(ProcessInformation processInformation) {
+        NetworkInfo networkInfo = toNetworkInfo(processInformation);
+        return new ServerDataHolder(networkInfo.getHost(), networkInfo.getPort());
+    }
+
+    public static boolean isServerKnown(ProcessInformation processInformation) {
+        return markedServers.containsKey(processInformation.getName());
     }
 
     @Listener

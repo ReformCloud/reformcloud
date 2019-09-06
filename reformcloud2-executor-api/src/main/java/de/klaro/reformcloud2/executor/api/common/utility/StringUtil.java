@@ -10,6 +10,7 @@ public final class StringUtil {
 
     public static void sendHeader() {
         System.out.println(
+                "\n" +
                 "    __       __                        ___ _                 _ ____  \n" +
                 "   /__\\ ___ / _| ___  _ __ _ __ ___   / __\\ | ___  _   _  __| |___ \\ \n" +
                 "  / \\/// _ \\ |_ / _ \\| '__| '_ ` _ \\ / /  | |/ _ \\| | | |/ _` | __) |\n" +

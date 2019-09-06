@@ -1,12 +1,16 @@
 package de.klaro.reformcloud2.executor.api.bungee;
 
 import de.klaro.reformcloud2.executor.api.api.API;
+import de.klaro.reformcloud2.executor.api.bungee.event.ConnectHandler;
 import de.klaro.reformcloud2.executor.api.bungee.event.ProcessEventHandler;
 import de.klaro.reformcloud2.executor.api.common.ExecutorAPI;
 import de.klaro.reformcloud2.executor.api.common.api.basic.ExternalEventBusHandler;
+import de.klaro.reformcloud2.executor.api.common.api.basic.events.ProcessUpdatedEvent;
 import de.klaro.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import de.klaro.reformcloud2.executor.api.common.event.EventManager;
 import de.klaro.reformcloud2.executor.api.common.event.basic.DefaultEventManager;
+import de.klaro.reformcloud2.executor.api.common.event.handler.Listener;
+import de.klaro.reformcloud2.executor.api.common.groups.utils.Version;
 import de.klaro.reformcloud2.executor.api.common.network.auth.defaults.DefaultAuth;
 import de.klaro.reformcloud2.executor.api.common.network.channel.PacketSender;
 import de.klaro.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
@@ -24,6 +28,8 @@ import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.plugin.Plugin;
 
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.InetSocketAddress;
 import java.util.function.Consumer;
 
@@ -33,31 +39,33 @@ public final class BungeeExecutor extends API {
 
     private final PacketHandler packetHandler = new DefaultPacketHandler();
 
-    private final NetworkClient networkClient;
+    private final NetworkClient networkClient = new DefaultNetworkClient();
 
     private final Plugin plugin;
+
+    private ProcessInformation thisProcessInformation;
 
     BungeeExecutor(Plugin plugin) {
         this.plugin = plugin;
         instance = this;
         new ExternalEventBusHandler(packetHandler, new DefaultEventManager());
         getEventManager().registerListener(new ProcessEventHandler());
+        getEventManager().registerListener(this);
 
         String connectionKey = JsonConfiguration.read("reformcloud/.connection/key.json").getString("key");
         SystemHelper.deleteFile(new File("reformcloud/.connection/key.json"));
         JsonConfiguration connectionConfig = JsonConfiguration.read("reformcloud/.connection/connection.json");
 
-        ProcessInformation startInfo = connectionConfig.get("startInfo", ProcessInformation.TYPE);
+        this.thisProcessInformation = connectionConfig.get("startInfo", ProcessInformation.TYPE);
 
-        this.networkClient = new DefaultNetworkClient();
         this.networkClient.connect(
                 connectionConfig.getString("controller-host"),
                 connectionConfig.getInteger("controller-port"),
                 new DefaultAuth(
                         connectionKey,
-                        startInfo.getParent(),
+                        thisProcessInformation.getParent(),
                         false,
-                        startInfo.getName(),
+                        thisProcessInformation.getName(),
                         new JsonConfiguration()
                 ), networkChannelReader
         );
@@ -78,7 +86,7 @@ public final class BungeeExecutor extends API {
     }
 
     @Override
-    protected PacketHandler packetHandler() {
+    public PacketHandler packetHandler() {
         return packetHandler;
     }
 
@@ -115,23 +123,19 @@ public final class BungeeExecutor extends API {
                         registerServer(processInformation);
                     }
                 });
+                ProxyServer.getInstance().getReconnectHandler().close();
+                ProxyServer.getInstance().getPluginManager().registerListener(plugin, new ConnectHandler());
             }
         });
     }
 
     public static void registerServer(ProcessInformation processInformation) {
         if (!ProxyServer.getInstance().getServers().containsKey(processInformation.getName())
-                && processInformation.getNetworkInfo().isConnected()) {
-            ServerInfo serverInfo = ProxyServer.getInstance().constructServerInfo(
-                    processInformation.getName(),
-                    new InetSocketAddress(
-                            processInformation.getNetworkInfo().getHost(),
-                            processInformation.getNetworkInfo().getPort()
-                    ), "ReformCloud2", false
-            );
+                && processInformation.getNetworkInfo().isConnected()
+                && processInformation.getTemplate().isServer()) {
             ProxyServer.getInstance().getServers().put(
                     processInformation.getName(),
-                    serverInfo
+                    constructServerInfo(processInformation)
             );
 
             if (processInformation.isLobby()) {
@@ -142,6 +146,47 @@ public final class BungeeExecutor extends API {
                     }
                 });
             }
+        }
+    }
+
+    private static ServerInfo constructServerInfo(ProcessInformation processInformation) {
+        if (BungeeExecutor.getInstance().getThisProcessInformation().getTemplate().getVersion().equals(Version.WATERDOG)) {
+            try {
+                Method method = ProxyServer.class.getMethod("constructServerInfo",
+                        String.class, InetSocketAddress.class, String.class, boolean.class, boolean.class, String.class);
+                method.setAccessible(true);
+                return (ServerInfo) method.invoke(
+                        ProxyServer.getInstance(),
+                        processInformation.getName(),
+                        new InetSocketAddress(processInformation.getNetworkInfo().getHost(), processInformation.getNetworkInfo().getPort()),
+                        "ReformCloud2",
+                        false,
+                        processInformation.getTemplate().getVersion().getId() == 3,
+                        "default"
+                );
+            } catch (final InvocationTargetException | IllegalAccessException | NoSuchMethodException ex) {
+                ex.printStackTrace();
+            }
+        }
+
+        return ProxyServer.getInstance().constructServerInfo(
+                processInformation.getName(),
+                new InetSocketAddress(
+                        processInformation.getNetworkInfo().getHost(),
+                        processInformation.getNetworkInfo().getPort()
+                ), "ReformCloud2", false
+        );
+    }
+
+    @Override
+    public ProcessInformation getThisProcessInformation() {
+        return thisProcessInformation;
+    }
+
+    @Listener
+    public void handleThisUpdate(final ProcessUpdatedEvent event) {
+        if (event.getProcessInformation().getProcessUniqueID().equals(thisProcessInformation.getProcessUniqueID())) {
+            thisProcessInformation = event.getProcessInformation();
         }
     }
 }

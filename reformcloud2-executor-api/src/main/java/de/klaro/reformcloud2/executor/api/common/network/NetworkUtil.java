@@ -42,9 +42,11 @@ public final class NetworkUtil {
 
     /* ============================= */
 
-    public static final int CONTROLLER_INFORMATION_PACKETS = 2000;
+    public static final int CONTROLLER_INFORMATION_BUS = 2000;
 
     public static final int EVENT_BUS = 3000;
+
+    public static final int CONTROLLER_QUERY_BUS = 4000;
 
     /* ============================ */
 

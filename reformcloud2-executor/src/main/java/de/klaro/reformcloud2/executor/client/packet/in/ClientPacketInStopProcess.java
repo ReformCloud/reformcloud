@@ -14,7 +14,7 @@ public final class ClientPacketInStopProcess implements NetworkHandler {
 
     @Override
     public int getHandlingPacketID() {
-        return NetworkUtil.CONTROLLER_INFORMATION_PACKETS + 3;
+        return NetworkUtil.CONTROLLER_INFORMATION_BUS + 3;
     }
 
     @Override

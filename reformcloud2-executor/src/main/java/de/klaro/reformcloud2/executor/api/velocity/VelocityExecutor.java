@@ -1,5 +1,8 @@
-package de.klaro.reformcloud2.executor.api.spigot;
+package de.klaro.reformcloud2.executor.api.velocity;
 
+import com.velocitypowered.api.proxy.ProxyServer;
+import com.velocitypowered.api.proxy.server.RegisteredServer;
+import com.velocitypowered.api.proxy.server.ServerInfo;
 import de.klaro.reformcloud2.executor.api.api.API;
 import de.klaro.reformcloud2.executor.api.common.ExecutorAPI;
 import de.klaro.reformcloud2.executor.api.common.api.basic.ExternalEventBusHandler;
@@ -15,15 +18,18 @@ import de.klaro.reformcloud2.executor.api.common.network.packet.defaults.Default
 import de.klaro.reformcloud2.executor.api.common.network.packet.handler.PacketHandler;
 import de.klaro.reformcloud2.executor.api.common.process.ProcessInformation;
 import de.klaro.reformcloud2.executor.api.common.utility.system.SystemHelper;
-import org.bukkit.plugin.java.JavaPlugin;
+import de.klaro.reformcloud2.executor.api.proxprox.event.ProcessEventHandler;
+import de.klaro.reformcloud2.executor.api.velocity.event.ConnectHandler;
 
 import java.io.File;
+import java.net.InetSocketAddress;
+import java.util.function.Consumer;
 
-public final class SpigotExecutor extends API {
+public final class VelocityExecutor extends API {
 
-    private static SpigotExecutor instance;
+    private static VelocityExecutor instance;
 
-    private final JavaPlugin plugin;
+    private final ProxyServer proxyServer;
 
     private final PacketHandler packetHandler = new DefaultPacketHandler();
 
@@ -31,11 +37,14 @@ public final class SpigotExecutor extends API {
 
     private ProcessInformation thisProcessInformation;
 
-    SpigotExecutor(JavaPlugin plugin) {
+    VelocityExecutor(ProxyServer proxyServer) {
         instance = this;
-        this.plugin = plugin;
+        this.proxyServer = proxyServer;
+
         new ExternalEventBusHandler(packetHandler, new DefaultEventManager());
+        getEventManager().registerListener(new ProcessEventHandler());
         getEventManager().registerListener(this);
+        proxyServer.getEventManager().register(proxyServer, new ConnectHandler());
 
         String connectionKey = JsonConfiguration.read("reformcloud/.connection/key.json").getString("key");
         SystemHelper.deleteFile(new File("reformcloud/.connection/key.json"));
@@ -57,18 +66,6 @@ public final class SpigotExecutor extends API {
         ExecutorAPI.setInstance(this);
     }
 
-    public JavaPlugin getPlugin() {
-        return plugin;
-    }
-
-    public static SpigotExecutor getInstance() {
-        return instance;
-    }
-
-    public EventManager getEventManager() {
-        return ExternalEventBusHandler.getInstance().getEventManager();
-    }
-
     NetworkClient getNetworkClient() {
         return networkClient;
     }
@@ -76,6 +73,43 @@ public final class SpigotExecutor extends API {
     @Override
     public PacketHandler packetHandler() {
         return packetHandler;
+    }
+
+    public EventManager getEventManager() {
+        return ExternalEventBusHandler.getInstance().getEventManager();
+    }
+
+    public ProxyServer getProxyServer() {
+        return proxyServer;
+    }
+
+    public static VelocityExecutor getInstance() {
+        return instance;
+    }
+
+    public void handleProcessUpdate(ProcessInformation processInformation) {
+        if (!isServerRegistered(processInformation.getName())
+                && processInformation.getNetworkInfo().isConnected()
+                && processInformation.getTemplate().getVersion().getId() == 1) {
+            ServerInfo serverInfo = new ServerInfo(
+                    processInformation.getName(),
+                    new InetSocketAddress(processInformation.getNetworkInfo().getHost(), processInformation.getNetworkInfo().getPort())
+            );
+            proxyServer.registerServer(serverInfo);
+        }
+    }
+
+    public void handleProcessRemove(ProcessInformation processInformation) {
+        proxyServer.getServer(processInformation.getName()).ifPresent(new Consumer<RegisteredServer>() {
+            @Override
+            public void accept(RegisteredServer registeredServer) {
+                proxyServer.unregisterServer(registeredServer.getServerInfo());
+            }
+        });
+    }
+
+    public boolean isServerRegistered(String name) {
+        return proxyServer.getServer(name).isPresent();
     }
 
     @Listener

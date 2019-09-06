@@ -53,22 +53,20 @@ public final class SystemHelper {
     }
 
     public static void deleteDirectory(Path path) {
-        try {
-            Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
-                @Override
-                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
-                    if (file.toFile().isDirectory()) {
-                        deleteDirectory(file);
-                    } else {
-                        deleteFile(path.toFile());
-                    }
-
-                    return FileVisitResult.CONTINUE;
-                }
-            });
-        } catch (final IOException ex) {
-            ex.printStackTrace();
+        final File[] files = path.toFile().listFiles();
+        if (files == null) {
+            return;
         }
+
+        for (File file : files) {
+            if (file.isDirectory()) {
+                deleteDirectory(file.toPath());
+            } else {
+                deleteFile(file);
+            }
+        }
+
+        deleteFile(path.toFile());
     }
 
     public static void recreateDirectory(Path path) {
@@ -84,7 +82,7 @@ public final class SystemHelper {
     }
 
     public static void doInternalCopy(ClassLoader classLoader, String file, String target) {
-        if (Files.exists(Paths.get(file))) {
+        if (Files.exists(Paths.get(target))) {
             return;
         }
 

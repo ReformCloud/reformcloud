@@ -53,15 +53,17 @@ public final class DefaultPatcher implements Patcher {
             loadPatches(-1L);
         }
 
-        CompletableFuture.runAsync(new Runnable() {
-            @Override
-            public void run() {
-                while (!Thread.currentThread().isInterrupted()) {
-                    AbsoluteThread.sleep(TimeUnit.MINUTES, 10);
-                    loadPatches(lastCheck);
+        if (!Boolean.getBoolean("reformcloud.patcher.disable")) {
+            CompletableFuture.runAsync(new Runnable() {
+                @Override
+                public void run() {
+                    while (!Thread.currentThread().isInterrupted()) {
+                        AbsoluteThread.sleep(TimeUnit.MINUTES, 10);
+                        loadPatches(lastCheck);
+                    }
                 }
-            }
-        });
+            });
+        }
     }
 
     private long pausedTo;

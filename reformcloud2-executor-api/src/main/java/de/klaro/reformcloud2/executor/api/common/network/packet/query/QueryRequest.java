@@ -21,4 +21,8 @@ public final class QueryRequest<T extends Packet> {
     public void complete(T result) {
         this.task.complete(result);
     }
+
+    public Task<T> getTask() {
+        return task;
+    }
 }

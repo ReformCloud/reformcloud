@@ -13,12 +13,11 @@ public final class BungeeLauncher extends Plugin {
         DependencyLoader.doLoad();
         LanguageWorker.doLoad();
         StringUtil.sendHeader();
-
-        new BungeeExecutor(this);
     }
 
     @Override
     public void onEnable() {
+        new BungeeExecutor(this);
         BungeeExecutor.clearHandlers();
     }
 

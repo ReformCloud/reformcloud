@@ -32,4 +32,19 @@ public final class ClientManager {
         ControllerExecutor.getInstance().getProcessManager().onClientDisconnect(found.getName());
         clientRuntimeInformation.remove(found);
     }
+
+    public void updateClient(ClientRuntimeInformation information) {
+        ClientRuntimeInformation found = Links.filter(clientRuntimeInformation, new Predicate<ClientRuntimeInformation>() {
+            @Override
+            public boolean test(ClientRuntimeInformation clientRuntimeInformation) {
+                return clientRuntimeInformation.getName().equals(information.getName());
+            }
+        });
+        if (found == null) {
+            return;
+        }
+
+        clientRuntimeInformation.remove(found);
+        clientRuntimeInformation.add(information);
+    }
 }

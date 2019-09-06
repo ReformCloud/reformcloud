@@ -101,7 +101,7 @@
         <!-- ProxProx api -->
         <dependency>
             <groupId>io.gomint.proxy</groupId>
-            <artifactId>proxprox-api</artifactId>
+            <artifactId>proxprox-server</artifactId>
             <version>1.0-SNAPSHOT</version>
             <scope>provided</scope>
             <type>jar</type>

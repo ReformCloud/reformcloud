@@ -165,6 +165,7 @@ public final class ControllerExecutor extends Controller {
                                     @Override
                                     public void accept(PacketSender packetSender) {
                                         ClientManager.INSTANCE.disconnectClient(packetSender.getName());
+                                        processManager.onChannelClose(packetSender.getName());
                                     }
                                 },
                                 new DoubleFunction<Packet, String, Boolean>() {

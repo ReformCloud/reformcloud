@@ -2,6 +2,7 @@ name: 'ReformCloud2NukkitExecutor'
 author: '_Klaro'
 version: '2'
 main: de.klaro.reformcloud2.executor.api.nukkit.NukkitLauncher
+api: ['1.0.0']
 
 load: STARTUP
 # Additional

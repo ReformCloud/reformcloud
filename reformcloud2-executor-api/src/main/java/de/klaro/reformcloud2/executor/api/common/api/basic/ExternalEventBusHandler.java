@@ -1,22 +1,21 @@
 package de.klaro.reformcloud2.executor.api.common.api.basic;
 
+import de.klaro.reformcloud2.executor.api.common.api.basic.packets.in.event.EventPacketInProcessClosed;
+import de.klaro.reformcloud2.executor.api.common.api.basic.packets.in.event.EventPacketInProcessStarted;
+import de.klaro.reformcloud2.executor.api.common.api.basic.packets.in.event.EventPacketInProcessUpdated;
 import de.klaro.reformcloud2.executor.api.common.event.Event;
 import de.klaro.reformcloud2.executor.api.common.event.EventManager;
-import de.klaro.reformcloud2.executor.api.common.network.channel.handler.NetworkHandler;
 import de.klaro.reformcloud2.executor.api.common.network.packet.handler.PacketHandler;
-import de.klaro.reformcloud2.executor.api.common.utility.reflections.ReflectionsImpl;
 
-import java.util.function.Consumer;
-
+//Note! This class CANNOT use Reflections because it leads to problems using spigot (older guava implementation)
 public final class ExternalEventBusHandler {
 
     public ExternalEventBusHandler(PacketHandler packetHandler, EventManager eventManager) {
-        new ReflectionsImpl("de.klaro.reformcloud2.executor.api.common.api.basic.packet.in.event").getSubTypesOf(NetworkHandler.class).forEach(new Consumer<Class<? extends NetworkHandler>>() {
-            @Override
-            public void accept(Class<? extends NetworkHandler> aClass) {
-                packetHandler.registerHandler(aClass);
-            }
-        });
+        packetHandler.registerNetworkHandlers(
+                new EventPacketInProcessClosed(),
+                new EventPacketInProcessStarted(),
+                new EventPacketInProcessUpdated()
+        );
         this.eventManager = eventManager;
         instance = this;
     }

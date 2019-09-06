@@ -445,6 +445,16 @@ public final class DefaultProcessManager implements ProcessManager {
         });
     }
 
+    @Override
+    public void onChannelClose(String name) {
+        ProcessInformation info = getProcess(name);
+        if (info != null) {
+            processInformation.remove(info);
+        } else {
+            //If the channel is not a process it may be a client
+            onClientDisconnect(name);
+        }
+    }
 
     // ==========================
     private void notifyDisconnect(ProcessInformation processInformation) {

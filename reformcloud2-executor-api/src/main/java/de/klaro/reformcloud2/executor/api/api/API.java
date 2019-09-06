@@ -10,6 +10,7 @@ import de.klaro.reformcloud2.executor.api.common.network.channel.handler.Network
 import de.klaro.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import de.klaro.reformcloud2.executor.api.common.network.packet.Packet;
 import de.klaro.reformcloud2.executor.api.common.network.packet.handler.PacketHandler;
+import de.klaro.reformcloud2.executor.api.common.process.ProcessInformation;
 import io.netty.channel.ChannelHandlerContext;
 
 import java.net.InetSocketAddress;
@@ -17,6 +18,8 @@ import java.util.Objects;
 import java.util.function.Consumer;
 
 public abstract class API extends ExternalAPIImplementation {
+
+    public abstract ProcessInformation getThisProcessInformation();
 
     protected final NetworkChannelReader networkChannelReader = new NetworkChannelReader() {
 

@@ -9,6 +9,6 @@ import java.util.UUID;
 public final class ControllerPacketOutStopProcess extends DefaultPacket {
 
     public ControllerPacketOutStopProcess(UUID uniqueID) {
-        super(NetworkUtil.CONTROLLER_INFORMATION_PACKETS + 3, new JsonConfiguration().add("uniqueID", uniqueID));
+        super(NetworkUtil.CONTROLLER_INFORMATION_BUS + 3, new JsonConfiguration().add("uniqueID", uniqueID));
     }
 }

@@ -13,7 +13,7 @@ public final class ClientPacketInStartProcess implements NetworkHandler {
 
     @Override
     public int getHandlingPacketID() {
-        return NetworkUtil.CONTROLLER_INFORMATION_PACKETS + 2;
+        return NetworkUtil.CONTROLLER_INFORMATION_BUS + 2;
     }
 
     @Override

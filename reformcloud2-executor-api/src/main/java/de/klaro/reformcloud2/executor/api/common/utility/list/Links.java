@@ -181,4 +181,8 @@ public final class Links {
         });
         return out;
     }
+
+    public static <E> Optional<E> toOptional(E in) {
+        return Optional.ofNullable(in);
+    }
 }

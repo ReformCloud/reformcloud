@@ -8,6 +8,6 @@ import de.klaro.reformcloud2.executor.api.common.process.ProcessInformation;
 public final class ControllerPacketOutStartProcess extends DefaultPacket {
 
     public ControllerPacketOutStartProcess(ProcessInformation processInformation) {
-        super(NetworkUtil.CONTROLLER_INFORMATION_PACKETS + 2, new JsonConfiguration().add("info", processInformation));
+        super(NetworkUtil.CONTROLLER_INFORMATION_BUS + 2, new JsonConfiguration().add("info", processInformation));
     }
 }
