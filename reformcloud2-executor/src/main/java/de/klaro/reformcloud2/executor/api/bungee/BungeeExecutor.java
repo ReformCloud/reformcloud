@@ -45,6 +45,8 @@ public final class BungeeExecutor extends API {
 
     private ProcessInformation thisProcessInformation;
 
+    private static boolean WATERDOG;
+
     BungeeExecutor(Plugin plugin) {
         this.plugin = plugin;
         instance = this;
@@ -57,6 +59,8 @@ public final class BungeeExecutor extends API {
         JsonConfiguration connectionConfig = JsonConfiguration.read("reformcloud/.connection/connection.json");
 
         this.thisProcessInformation = connectionConfig.get("startInfo", ProcessInformation.TYPE);
+        WATERDOG = thisProcessInformation.getTemplate().getVersion().equals(Version.WATERDOG)
+                || thisProcessInformation.getTemplate().getVersion().equals(Version.WATERDOG_PE);
 
         this.networkClient.connect(
                 connectionConfig.getString("controller-host"),
@@ -150,7 +154,7 @@ public final class BungeeExecutor extends API {
     }
 
     private static ServerInfo constructServerInfo(ProcessInformation processInformation) {
-        if (BungeeExecutor.getInstance().getThisProcessInformation().getTemplate().getVersion().equals(Version.WATERDOG)) {
+        if (WATERDOG) {
             try {
                 Method method = ProxyServer.class.getMethod("constructServerInfo",
                         String.class, InetSocketAddress.class, String.class, boolean.class, boolean.class, String.class);

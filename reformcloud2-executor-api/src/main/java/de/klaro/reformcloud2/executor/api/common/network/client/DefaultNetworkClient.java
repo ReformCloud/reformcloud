@@ -18,7 +18,7 @@ public final class DefaultNetworkClient implements NetworkClient {
     private Channel channel;
 
     @Override
-    public void connect(String host, int port, Auth auth, NetworkChannelReader channelReader) {
+    public boolean connect(String host, int port, Auth auth, NetworkChannelReader channelReader) {
         try {
             this.channel = new Bootstrap().group(eventLoopGroup)
                     .channel(channelClass)
@@ -41,8 +41,10 @@ public final class DefaultNetworkClient implements NetworkClient {
                             }
                         }
                     }).channel();
+            return true;
         } catch (final Exception ex) {
             ex.printStackTrace();
+            return false;
         }
     }
 

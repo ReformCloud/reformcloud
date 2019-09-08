@@ -18,7 +18,8 @@ import java.util.function.Consumer;
 
 public final class ConnectHandler implements Listener {
 
-    private final int id = BungeeExecutor.getInstance().getThisProcessInformation().getTemplate().getVersion().equals(Version.WATERDOG) ? 2 : 1;
+    //Note: Cannot send always the same version like on velocity because it can support MCPE or not
+    private final Version version = BungeeExecutor.getInstance().getThisProcessInformation().getTemplate().getVersion();
 
     @EventHandler
     public void handle(final ServerConnectEvent event) {
@@ -28,7 +29,7 @@ public final class ConnectHandler implements Listener {
                 @Override
                 public void accept(PacketSender packetSender) {
                     Packet result = BungeeExecutor.getInstance().packetHandler().getQueryHandler().sendQueryAsync(packetSender,
-                            new APIPacketOutGetBestLobbyForPlayer(proxiedPlayer.getPermissions(), id)
+                            new APIPacketOutGetBestLobbyForPlayer(proxiedPlayer.getPermissions(), version)
                     ).getTask().getUninterruptedly(TimeUnit.SECONDS, 3);
                     if (result != null) {
                         ProcessInformation info = result.content().get("result", ProcessInformation.TYPE);

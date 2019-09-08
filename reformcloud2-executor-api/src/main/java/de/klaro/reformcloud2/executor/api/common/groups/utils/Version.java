@@ -187,16 +187,15 @@ public enum Version {
     NUKKIT_X("NukkitX", "1.0",
             "https://ci.nukkitx.com/job/NukkitX/job/Nukkit/job/master/lastStableBuild/artifact/target/nukkit-1.0-SNAPSHOT.jar", 3),
     /**
-     * MCPE proxy
-     */
-    PROX_PROX("ProxProx", "1.0",
-            "https://dl.reformcloud.systems/proxprox/ProxProx.jar", 4),
-
-    /**
-     * MCPE & Java Proxy
+     * Waterdog as Java Proxy
      */
     WATERDOG("Waterdog", "1.8-1.14",
-            "https://ci.codemc.org/job/yesdog/job/Waterdog/lastSuccessfulBuild/artifact/Waterfall-Proxy/bootstrap/target/Waterdog.jar", 5);
+            "https://ci.codemc.org/job/yesdog/job/Waterdog/lastSuccessfulBuild/artifact/Waterfall-Proxy/bootstrap/target/Waterdog.jar", 2),
+    /**
+     * Waterdog as McPE Proxy
+     */
+    WATERDOG_PE("Waterdog", "1.8-1.14",
+            "https://ci.codemc.org/job/yesdog/job/Waterdog/lastSuccessfulBuild/artifact/Waterfall-Proxy/bootstrap/target/Waterdog.jar", 2);
 
     private static final TreeMap<String, Version> JAVA_SERVER_PROVIDERS = new TreeMap<>();
 

@@ -30,7 +30,7 @@
             <url>https://repo.velocitypowered.com/snapshots/</url>
         </repository>
 
-        <!-- reformcloud repo for proxprox and nukkitX -->
+        <!-- reformcloud repo for nukkitX -->
         <repository>
             <id>reformcloud-repo</id>
             <url>https://repo.reformcloud.systems/</url>
@@ -94,15 +94,6 @@
             <groupId>com.velocitypowered</groupId>
             <artifactId>velocity-api</artifactId>
             <version>1.0.0-SNAPSHOT</version>
-            <scope>provided</scope>
-            <type>jar</type>
-        </dependency>
-
-        <!-- ProxProx api -->
-        <dependency>
-            <groupId>io.gomint.proxy</groupId>
-            <artifactId>proxprox-server</artifactId>
-            <version>1.0-SNAPSHOT</version>
             <scope>provided</scope>
             <type>jar</type>
         </dependency>

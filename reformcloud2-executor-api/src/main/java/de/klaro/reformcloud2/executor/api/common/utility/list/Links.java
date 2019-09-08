@@ -24,7 +24,7 @@ public final class Links {
         return Collections.unmodifiableList(in);
     }
 
-    public static <T> List<T> newList(List<T> in) {
+    public static <T> List<T> newList(Collection<T> in) {
         return new ArrayList<>(in);
     }
 

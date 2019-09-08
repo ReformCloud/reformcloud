@@ -282,10 +282,6 @@ public final class ControllerExecutor extends Controller {
         networkServer.closeAll(); //Close network first that all channels now that the controller is disconnecting
 
         autoStartupHandler.interrupt();
-
-        controllerExecutorConfig.getProcessGroups().clear();
-        controllerExecutorConfig.getMainGroups().clear();
-
         applicationLoader.disableApplications();
         loggerBase.close();
     }
@@ -1548,6 +1544,18 @@ public final class ControllerExecutor extends Controller {
     }
 
     @Override
+    public Task<ProcessInformation> getThisProcessInformationAsync() {
+        Task<ProcessInformation> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(new Runnable() {
+            @Override
+            public void run() {
+                task.complete(getThisProcessInformation());
+            }
+        });
+        return task;
+    }
+
+    @Override
     public ProcessInformation startProcess(String groupName) {
         return startProcessAsync(groupName).getUninterruptedly();
     }
@@ -1600,6 +1608,11 @@ public final class ControllerExecutor extends Controller {
     @Override
     public int getGlobalOnlineCount(Collection<String> ignoredProxies) {
         return getGlobalOnlineCountAsync(ignoredProxies).getUninterruptedly();
+    }
+
+    @Override
+    public ProcessInformation getThisProcessInformation() {
+        return null;
     }
 
     @Override

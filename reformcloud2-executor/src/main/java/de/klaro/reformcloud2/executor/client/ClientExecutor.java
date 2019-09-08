@@ -31,18 +31,24 @@ import de.klaro.reformcloud2.executor.api.common.network.client.DefaultNetworkCl
 import de.klaro.reformcloud2.executor.api.common.network.client.NetworkClient;
 import de.klaro.reformcloud2.executor.api.common.network.packet.defaults.DefaultPacketHandler;
 import de.klaro.reformcloud2.executor.api.common.network.packet.handler.PacketHandler;
+import de.klaro.reformcloud2.executor.api.common.process.ProcessInformation;
 import de.klaro.reformcloud2.executor.api.common.utility.StringUtil;
 import de.klaro.reformcloud2.executor.api.common.utility.system.DownloadHelper;
 import de.klaro.reformcloud2.executor.api.common.utility.system.SystemHelper;
+import de.klaro.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
 import de.klaro.reformcloud2.executor.client.config.ClientConfig;
 import de.klaro.reformcloud2.executor.client.config.ClientExecutorConfig;
 import de.klaro.reformcloud2.executor.client.packet.out.ClientPacketOutNotifyRuntimeUpdate;
 import de.klaro.reformcloud2.executor.client.process.ProcessQueue;
 import de.klaro.reformcloud2.executor.client.process.basic.DefaultProcessManager;
+import de.klaro.reformcloud2.executor.client.watchdog.WatchdogThread;
 import org.reflections.Reflections;
 
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 public final class ClientExecutor extends Client {
@@ -59,6 +65,8 @@ public final class ClientExecutor extends Client {
 
     private ClientExecutorConfig clientExecutorConfig;
 
+    private WatchdogThread watchdogThread;
+
     private final CommandManager commandManager = new DefaultCommandManager();
 
     private final CommandSource console = new ConsoleCommandSource(commandManager);
@@ -70,6 +78,8 @@ public final class ClientExecutor extends Client {
     private final ProcessManager processManager = new DefaultProcessManager();
 
     private final ProcessQueue processQueue = new ProcessQueue();
+
+    private static final AtomicBoolean GLOBAL_CONNECTION_STATUS = new AtomicBoolean(false);
 
     ClientExecutor() {
         ExecutorAPI.setInstance(this);
@@ -121,18 +131,9 @@ public final class ClientExecutor extends Client {
                 packetHandler, new DefaultEventManager()
         );
 
-        this.networkClient.connect(
-                clientExecutorConfig.getClientConnectionConfig().getHost(),
-                clientExecutorConfig.getClientConnectionConfig().getPort(),
-                new DefaultAuth(
-                        clientExecutorConfig.getConnectionKey(),
-                        null,
-                        true,
-                        clientConfig.getName(),
-                        new JsonConfiguration().add("info", clientRuntimeInformation)
-                ), networkChannelReader
-        );
+        this.watchdogThread = new WatchdogThread();
 
+        doConnect();
         running = true;
         System.out.println(LanguageManager.get("startup-done", Long.toString(System.currentTimeMillis() - current)));
         runConsole();
@@ -177,10 +178,13 @@ public final class ClientExecutor extends Client {
 
     @Override
     public void shutdown() {
+        this.watchdogThread.interrupt();
+        processQueue.interrupt();
+
         this.packetHandler.clearHandlers();
         this.packetHandler.getQueryHandler().clearQueries();
         this.networkClient.disconnect();
-        processQueue.interrupt();
+
         SystemHelper.deleteDirectory(Paths.get("reformcloud/temp"));
     }
 
@@ -264,5 +268,79 @@ public final class ClientExecutor extends Client {
                 packetSender.sendPacket(new ClientPacketOutNotifyRuntimeUpdate(information));
             }
         });
+    }
+
+    private void doConnect() {
+        if (GLOBAL_CONNECTION_STATUS.get()) {
+            // Returns if the cloud means that the connection is already open
+            return;
+        }
+
+        AtomicInteger atomicInteger = new AtomicInteger(0);
+        boolean isConnected = false;
+        while (!isConnected && atomicInteger.get() <= 10) {
+            System.out.println(LanguageManager.get(
+                    "network-client-try-connect",
+                    clientExecutorConfig.getClientConnectionConfig().getHost(),
+                    Integer.toString(clientExecutorConfig.getClientConnectionConfig().getPort()),
+                    atomicInteger.getAndIncrement()
+            ));
+            isConnected = tryConnect();
+            if (isConnected) {
+                break;
+                //If the client is connected break before waiting other 500 ms
+            }
+
+            AbsoluteThread.sleep(TimeUnit.MILLISECONDS, 500);
+        }
+
+        if (isConnected) {
+            System.out.println(LanguageManager.get(
+                    "network-client-connect-success",
+                    clientExecutorConfig.getClientConnectionConfig().getHost(),
+                    Integer.toString(clientExecutorConfig.getClientConnectionConfig().getPort()),
+                    atomicInteger.get()
+            ));
+            GLOBAL_CONNECTION_STATUS.set(true);
+        } else {
+            System.out.println(LanguageManager.get(
+                    "network-client-connection-refused",
+                    clientExecutorConfig.getClientConnectionConfig().getHost(),
+                    Integer.toString(clientExecutorConfig.getClientConnectionConfig().getPort())
+            ));
+            AbsoluteThread.sleep(TimeUnit.SECONDS, 5);
+            System.exit(-1);
+        }
+    }
+
+    private boolean tryConnect() {
+        return this.networkClient.connect(
+                clientExecutorConfig.getClientConnectionConfig().getHost(),
+                clientExecutorConfig.getClientConnectionConfig().getPort(),
+                new DefaultAuth(
+                        clientExecutorConfig.getConnectionKey(),
+                        null,
+                        true,
+                        clientConfig.getName(),
+                        new JsonConfiguration().add("info", clientRuntimeInformation)
+                ), createChannelReader(new Runnable() {
+                    @Override
+                    public void run() {
+                        processManager.stopAll();
+                        AbsoluteThread.sleep(TimeUnit.MILLISECONDS, 500);
+
+                        if (GLOBAL_CONNECTION_STATUS.get()) {
+                            GLOBAL_CONNECTION_STATUS.set(false);
+                            System.out.println(LanguageManager.get("network-client-connection-lost"));
+                            tryConnect();
+                        }
+                    }
+                })
+        );
+    }
+
+    @Override
+    public ProcessInformation getThisProcessInformation() {
+        return null;
     }
 }

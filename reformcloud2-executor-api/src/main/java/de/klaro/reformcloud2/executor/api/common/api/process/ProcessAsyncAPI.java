@@ -31,4 +31,6 @@ public interface ProcessAsyncAPI extends ProcessSyncAPI {
     Task<Void> executeProcessCommandAsync(String name, String commandLine);
 
     Task<Integer> getGlobalOnlineCountAsync(Collection<String> ignoredProxies);
+
+    Task<ProcessInformation> getThisProcessInformationAsync();
 }

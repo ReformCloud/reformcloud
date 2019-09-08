@@ -3,7 +3,6 @@ package de.klaro.reformcloud2.executor.api.velocity;
 import com.google.inject.Inject;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
-import com.velocitypowered.api.event.proxy.ProxyReloadEvent;
 import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.proxy.ProxyServer;
@@ -37,13 +36,8 @@ public final class VelocityLauncher {
 
     @Subscribe
     public void handleInit(ProxyInitializeEvent event) {
-        new VelocityExecutor(proxyServer);
+        new VelocityExecutor(this, proxyServer);
         proxyServer = null;
-    }
-
-    @Subscribe
-    public void handleReload(ProxyReloadEvent event) {
-        System.exit(0);
     }
 
     @Subscribe

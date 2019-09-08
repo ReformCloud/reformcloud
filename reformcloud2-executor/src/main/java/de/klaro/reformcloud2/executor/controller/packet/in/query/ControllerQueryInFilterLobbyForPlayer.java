@@ -28,24 +28,20 @@ public final class ControllerQueryInFilterLobbyForPlayer implements NetworkHandl
     @Override
     public void handlePacket(PacketSender packetSender, Packet packet, Consumer<Packet> responses) {
         List<String> perms = packet.content().get("perms", new TypeToken<List<String>>() {});
-        int id = packet.content().getInteger("id");
-        responses.accept(new DefaultPacket(-1, new JsonConfiguration().add("result", filter(perms, id))));
+        Version version = packet.content().get("version", Version.class);
+        responses.accept(new DefaultPacket(-1, new JsonConfiguration().add("result", filter(perms, version))));
     }
 
-    private ProcessInformation filter(List<String> perms, int id) {
+    private ProcessInformation filter(List<String> perms, Version version) {
         List<ProcessInformation> out = new ArrayList<>();
         ExecutorAPI.getInstance().getAllProcesses().forEach(new Consumer<ProcessInformation>() {
             @Override
             public void accept(ProcessInformation processInformation) {
-                if (!processInformation.isLobby()) {
+                if (!processInformation.isLobby() || !processInformation.getNetworkInfo().isConnected()) {
                     return;
                 }
 
-                if (id == 0 && !processInformation.getTemplate().getVersion().equals(Version.NUKKIT_X)) {
-                    return;
-                }
-
-                if (id == 1 && processInformation.getTemplate().getVersion().equals(Version.NUKKIT_X)) {
+                if (!version.equals(Version.WATERDOG) && processInformation.getTemplate().getVersion().equals(Version.NUKKIT_X)) {
                     return;
                 }
 

@@ -4,10 +4,7 @@ import de.klaro.reformcloud2.executor.api.client.process.ProcessManager;
 import de.klaro.reformcloud2.executor.api.client.process.RunningProcess;
 import de.klaro.reformcloud2.executor.api.common.utility.list.Links;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -43,6 +40,11 @@ public final class DefaultProcessManager implements ProcessManager {
                 return runningProcess.getProcessInformation().getProcessUniqueID().equals(uniqueID);
             }
         });
+    }
+
+    @Override
+    public Collection<RunningProcess> getAll() {
+        return Collections.unmodifiableCollection(list);
     }
 
     @Override

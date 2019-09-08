@@ -1,5 +1,8 @@
 package de.klaro.reformcloud2.executor.controller.process;
 
+import de.klaro.reformcloud2.executor.api.common.api.basic.events.ProcessStartedEvent;
+import de.klaro.reformcloud2.executor.api.common.api.basic.events.ProcessStoppedEvent;
+import de.klaro.reformcloud2.executor.api.common.api.basic.events.ProcessUpdatedEvent;
 import de.klaro.reformcloud2.executor.api.common.client.ClientRuntimeInformation;
 import de.klaro.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import de.klaro.reformcloud2.executor.api.common.groups.ProcessGroup;
@@ -173,6 +176,7 @@ public final class DefaultProcessManager implements ProcessManager {
                 packetSender.sendPacket(new ControllerEventProcessStarted(processInformation));
             }
         });
+        ControllerExecutor.getInstance().getEventManager().callEvent(new ProcessStartedEvent(processInformation));
         return processInformation;
     }
 
@@ -443,6 +447,7 @@ public final class DefaultProcessManager implements ProcessManager {
                 packetSender.sendPacket(new ControllerEventProcessUpdated(processInformation));
             }
         });
+        ControllerExecutor.getInstance().getEventManager().callEvent(new ProcessUpdatedEvent(processInformation));
     }
 
     @Override
@@ -464,5 +469,6 @@ public final class DefaultProcessManager implements ProcessManager {
                 packetSender.sendPacket(new ControllerEventProcessClosed(processInformation));
             }
         });
+        ControllerExecutor.getInstance().getEventManager().callEvent(new ProcessStoppedEvent(processInformation));
     }
 }

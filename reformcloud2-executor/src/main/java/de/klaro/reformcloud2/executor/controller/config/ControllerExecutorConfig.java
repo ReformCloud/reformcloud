@@ -163,7 +163,7 @@ public final class ControllerExecutorConfig {
 
                             case 2: {
                                 proxy = new DefaultProcessGroup(
-                                        "Proxy", mainProxy.getName(), 19132, Version.PROX_PROX,
+                                        "Proxy", mainProxy.getName(), 19132, Version.WATERDOG,
                                         128, true, 512
                                 );
                                 lobby = new DefaultProcessGroup(

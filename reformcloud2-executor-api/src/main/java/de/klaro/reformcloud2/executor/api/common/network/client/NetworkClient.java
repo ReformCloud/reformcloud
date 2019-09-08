@@ -5,7 +5,7 @@ import de.klaro.reformcloud2.executor.api.common.network.channel.NetworkChannelR
 
 public interface NetworkClient {
 
-    void connect(String host, int port, Auth auth, NetworkChannelReader channelReader);
+    boolean connect(String host, int port, Auth auth, NetworkChannelReader channelReader);
 
     void disconnect();
 }

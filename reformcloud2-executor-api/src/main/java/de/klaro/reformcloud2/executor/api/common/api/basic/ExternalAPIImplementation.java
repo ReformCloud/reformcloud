@@ -23,6 +23,7 @@ import de.klaro.reformcloud2.executor.api.common.process.ProcessInformation;
 import de.klaro.reformcloud2.executor.api.common.utility.list.Links;
 import de.klaro.reformcloud2.executor.api.common.utility.task.Task;
 import de.klaro.reformcloud2.executor.api.common.utility.task.defaults.DefaultTask;
+import de.klaro.reformcloud2.executor.api.common.utility.task.excpetion.TaskCompletionException;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -1453,6 +1454,18 @@ public abstract class ExternalAPIImplementation extends ExecutorAPI {
         updateAsync(processInformation).getUninterruptedly();
     }
 
+    @Override
+    public Task<ProcessInformation> getThisProcessInformationAsync() {
+        Task<ProcessInformation> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(new Runnable() {
+            @Override
+            public void run() {
+                task.complete(getThisProcessInformation());
+            }
+        });
+        return task;
+    }
+
     /* ============== */
 
     protected abstract PacketHandler packetHandler();
@@ -1470,7 +1483,12 @@ public abstract class ExternalAPIImplementation extends ExecutorAPI {
         DefaultChannelManager.INSTANCE.get("Controller").ifPresent(new Consumer<PacketSender>() {
             @Override
             public void accept(PacketSender packetSender) {
-                packetHandler().getQueryHandler().sendQueryAsync(packetSender, packet).onComplete(result);
+                packetHandler().getQueryHandler().sendQueryAsync(packetSender, packet).getTask().onFailure(new Consumer<TaskCompletionException>() {
+                    @Override
+                    public void accept(TaskCompletionException e) {
+                        result.accept(null);
+                    }
+                }).onComplete(result);
             }
         });
     }

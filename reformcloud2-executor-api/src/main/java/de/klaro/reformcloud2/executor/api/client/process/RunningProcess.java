@@ -4,6 +4,8 @@ import de.klaro.reformcloud2.executor.api.common.process.ProcessInformation;
 
 public interface RunningProcess {
 
+    long getStartupTime();
+
     RunningProcess prepare();
 
     boolean bootstrap();

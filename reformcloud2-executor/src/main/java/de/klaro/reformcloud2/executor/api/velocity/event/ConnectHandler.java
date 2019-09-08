@@ -3,6 +3,7 @@ package de.klaro.reformcloud2.executor.api.velocity.event;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.player.ServerPreConnectEvent;
 import com.velocitypowered.api.proxy.Player;
+import de.klaro.reformcloud2.executor.api.common.groups.utils.Version;
 import de.klaro.reformcloud2.executor.api.common.network.channel.PacketSender;
 import de.klaro.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import de.klaro.reformcloud2.executor.api.common.network.packet.Packet;
@@ -24,7 +25,7 @@ public final class ConnectHandler {
                 @Override
                 public void accept(PacketSender packetSender) {
                     Packet result = VelocityExecutor.getInstance().packetHandler().getQueryHandler().sendQueryAsync(packetSender,
-                            new APIPacketOutGetBestLobbyForPlayer(new ArrayList<>(), 1)
+                            new APIPacketOutGetBestLobbyForPlayer(new ArrayList<>(), Version.VELOCITY)
                     ).getTask().getUninterruptedly(TimeUnit.SECONDS, 3);
                     if (result != null) {
                         ProcessInformation info = result.content().get("result", ProcessInformation.TYPE);

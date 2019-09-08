@@ -34,6 +34,8 @@ public interface ProcessSyncAPI {
 
     int getGlobalOnlineCount(Collection<String> ignoredProxies);
 
+    ProcessInformation getThisProcessInformation();
+
     default void forEach(Consumer<ProcessInformation> action) {
         getAllProcesses().forEach(action);
     }

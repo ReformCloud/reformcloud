@@ -18,8 +18,8 @@ import de.klaro.reformcloud2.executor.api.common.network.packet.defaults.Default
 import de.klaro.reformcloud2.executor.api.common.network.packet.handler.PacketHandler;
 import de.klaro.reformcloud2.executor.api.common.process.ProcessInformation;
 import de.klaro.reformcloud2.executor.api.common.utility.system.SystemHelper;
-import de.klaro.reformcloud2.executor.api.proxprox.event.ProcessEventHandler;
 import de.klaro.reformcloud2.executor.api.velocity.event.ConnectHandler;
+import de.klaro.reformcloud2.executor.api.velocity.event.ProcessEventHandler;
 
 import java.io.File;
 import java.net.InetSocketAddress;
@@ -37,14 +37,14 @@ public final class VelocityExecutor extends API {
 
     private ProcessInformation thisProcessInformation;
 
-    VelocityExecutor(ProxyServer proxyServer) {
+    VelocityExecutor(VelocityLauncher launcher, ProxyServer proxyServer) {
         instance = this;
         this.proxyServer = proxyServer;
 
         new ExternalEventBusHandler(packetHandler, new DefaultEventManager());
         getEventManager().registerListener(new ProcessEventHandler());
         getEventManager().registerListener(this);
-        proxyServer.getEventManager().register(proxyServer, new ConnectHandler());
+        proxyServer.getEventManager().register(launcher, new ConnectHandler());
 
         String connectionKey = JsonConfiguration.read("reformcloud/.connection/key.json").getString("key");
         SystemHelper.deleteFile(new File("reformcloud/.connection/key.json"));

@@ -23,6 +23,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -41,6 +42,13 @@ public final class DefaultRunningProcess implements RunningProcess {
     private boolean prepared = false;
 
     private Process process;
+
+    private final AtomicLong startupTime = new AtomicLong(-1);
+
+    @Override
+    public long getStartupTime() {
+        return startupTime.get();
+    }
 
     @Override
     public RunningProcess prepare() {
@@ -118,6 +126,7 @@ public final class DefaultRunningProcess implements RunningProcess {
 
         processInformation.setProcessState(ProcessState.STARTED);
         ExecutorAPI.getInstance().update(processInformation);
+        startupTime.set(System.currentTimeMillis());
         return true;
     }
 
@@ -297,12 +306,17 @@ public final class DefaultRunningProcess implements RunningProcess {
                 } else if (s.startsWith("use_xuid_for_uuid:")) {
                     s = "use_xuid_for_uuid: true";
                 } else if (s.startsWith("  raknet:")) {
-                    s = "  raknet: true";
+                    s = "  raknet: " + processInformation.getTemplate().getVersion().equals(Version.WATERDOG_PE);
                 }
 
                 return s;
             }
         });
+    }
+
+    private boolean isLogicallyWaterDog() {
+        return processInformation.getTemplate().getVersion().equals(Version.WATERDOG)
+                || processInformation.getTemplate().getVersion().equals(Version.WATERDOG_PE);
     }
 
     // ========================= //
@@ -323,26 +337,6 @@ public final class DefaultRunningProcess implements RunningProcess {
                 return s;
             }
         });
-    }
-
-    // ========================= //
-    //ProxProx
-    private void rewriteProxProxConfig() {
-        Path file = Paths.get(path + "/config.yml");
-        try (InputStreamReader inputStreamReader = new InputStreamReader(Files.newInputStream(file), StandardCharsets.UTF_8)) {
-            Configuration configuration = ConfigurationProvider.getProvider(YamlConfiguration.class).load(inputStreamReader);
-            configuration.set("ip", ClientExecutor.getInstance().getClientConfig().getStartHost());
-            configuration.set("port", processInformation.getNetworkInfo().getPort());
-            if (processInformation.getProcessGroup().getPlayerAccessConfiguration().isUseCloudPlayerLimit()) {
-                configuration.set("maxPlayers", processInformation.getProcessGroup().getPlayerAccessConfiguration().getMaxPlayers());
-            }
-
-            try (OutputStreamWriter outputStreamWriter = new OutputStreamWriter(Files.newOutputStream(file), StandardCharsets.UTF_8)) {
-                ConfigurationProvider.getProvider(YamlConfiguration.class).save(configuration, outputStreamWriter);
-            }
-        } catch (final IOException ex) {
-            ex.printStackTrace();
-        }
     }
 
     // ========================= //
@@ -466,10 +460,7 @@ public final class DefaultRunningProcess implements RunningProcess {
         if (isLogicallyBungee()) {
             SystemHelper.doInternalCopy(getClass().getClassLoader(), "files/java/bungee/config.yml", path + "/config.yml");
             rewriteBungeeConfig();
-        } else if (processInformation.getTemplate().getVersion().equals(Version.PROX_PROX)) {
-            SystemHelper.doInternalCopy(getClass().getClassLoader(), "files/mcpe/proxprox/config.yml", path + "/config.yml");
-            rewriteProxProxConfig();
-        } else if (processInformation.getTemplate().getVersion().equals(Version.WATERDOG)) {
+        } else if (isLogicallyWaterDog()) {
             SystemHelper.doInternalCopy(getClass().getClassLoader(), "files/mcpe/waterdog/config.yml", path + "/config.yml");
             rewriteWaterDogConfig();
         } else if (processInformation.getTemplate().getVersion().equals(Version.VELOCITY)) {
