@@ -48,6 +48,8 @@ public final class NetworkUtil {
 
     public static final int CONTROLLER_QUERY_BUS = 4000;
 
+    public static final int PLAYER_INFORMATION_BUS = 5000;
+
     /* ============================ */
 
 

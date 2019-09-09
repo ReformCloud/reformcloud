@@ -4,7 +4,7 @@ import com.google.gson.reflect.TypeToken;
 import de.klaro.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import de.klaro.reformcloud2.executor.api.common.groups.ProcessGroup;
 import de.klaro.reformcloud2.executor.api.common.groups.utils.Template;
-import de.klaro.reformcloud2.executor.api.common.plugins.Plugin;
+import de.klaro.reformcloud2.executor.api.common.plugins.basic.DefaultPlugin;
 import de.klaro.reformcloud2.executor.api.common.utility.list.Links;
 import de.klaro.reformcloud2.executor.api.common.utility.name.Nameable;
 
@@ -20,7 +20,7 @@ public final class ProcessInformation implements Nameable {
                               ProcessState processState, NetworkInfo networkInfo,
                               ProcessGroup processGroup, Template template,
                               ProcessRuntimeInformation processRuntimeInformation,
-                              List<Plugin> plugins, JsonConfiguration extra, int maxPlayers) {
+                              List<DefaultPlugin> plugins, JsonConfiguration extra, int maxPlayers) {
         this.processName = processName;
         this.parent = parent;
         this.processUniqueID = processUniqueID;
@@ -45,6 +45,8 @@ public final class ProcessInformation implements Nameable {
 
     private int maxPlayers;
 
+    private String motd = "A ReformCloud2 server";
+
     private SortedSet<Player> onlinePlayers = new TreeSet<>(new Comparator<Player>() {
         @Override
         public int compare(Player o1, Player o2) {
@@ -62,7 +64,7 @@ public final class ProcessInformation implements Nameable {
 
     private ProcessRuntimeInformation processRuntimeInformation;
 
-    private List<Plugin> plugins;
+    private List<DefaultPlugin> plugins;
 
     private JsonConfiguration extra;
 
@@ -80,6 +82,10 @@ public final class ProcessInformation implements Nameable {
 
     public int getId() {
         return id;
+    }
+
+    public String getMotd() {
+        return motd;
     }
 
     public int getMaxPlayers() {
@@ -114,7 +120,7 @@ public final class ProcessInformation implements Nameable {
         return processRuntimeInformation;
     }
 
-    public List<Plugin> getPlugins() {
+    public List<DefaultPlugin> getPlugins() {
         return plugins;
     }
 
@@ -131,8 +137,8 @@ public final class ProcessInformation implements Nameable {
         this.processState = processState;
     }
 
-    public void setProcessRuntimeInformation(ProcessRuntimeInformation processRuntimeInformation) {
-        this.processRuntimeInformation = processRuntimeInformation;
+    public void setMotd(String motd) {
+        this.motd = motd;
     }
 
     public boolean onLogin(UUID playerUuid, String playerName) {
@@ -170,14 +176,18 @@ public final class ProcessInformation implements Nameable {
         }).isPresent();
     }
 
-    public ProcessInformation updateMaxPlayers(Properties properties) {
+    public ProcessInformation updateMaxPlayers(Integer value) {
         if (processGroup.getPlayerAccessConfiguration().isUseCloudPlayerLimit()) {
             this.maxPlayers = processGroup.getPlayerAccessConfiguration().getMaxPlayers();
         } else {
-            if (properties != null) {
-                this.maxPlayers = Integer.parseInt(properties.getProperty("max-players", "20"));
+            if (value != null) {
+                this.maxPlayers = value;
             }
         }
         return this;
+    }
+
+    public void updateRuntimeInformation() {
+        this.processRuntimeInformation = ProcessRuntimeInformation.create();
     }
 }

@@ -4,17 +4,19 @@ import de.klaro.reformcloud2.executor.api.common.api.basic.ExternalAPIImplementa
 import de.klaro.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import de.klaro.reformcloud2.executor.api.common.network.packet.DefaultPacket;
 
-import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public final class ExternalAPIPacketOutAPIAction extends DefaultPacket {
 
     public ExternalAPIPacketOutAPIAction(APIAction action, Object... args) {
-        super(
-                ExternalAPIImplementation.EXTERNAL_PACKET_ID + 26,
-                new JsonConfiguration()
-                        .add("action", action)
-                        .add("args", Arrays.asList(args))
-        );
+        super(ExternalAPIImplementation.EXTERNAL_PACKET_ID + 26,null);
+
+        JsonConfiguration jsonConfiguration = new JsonConfiguration().add("action", action);
+        AtomicInteger atomicInteger = new AtomicInteger(1);
+        for (Object o : args) {
+            jsonConfiguration.add(Integer.toString(atomicInteger.getAndIncrement()), o);
+        }
+        setContent(jsonConfiguration);
     }
 
     public enum APIAction {

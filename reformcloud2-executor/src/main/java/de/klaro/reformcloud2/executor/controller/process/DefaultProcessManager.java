@@ -9,6 +9,7 @@ import de.klaro.reformcloud2.executor.api.common.groups.ProcessGroup;
 import de.klaro.reformcloud2.executor.api.common.groups.utils.RuntimeConfiguration;
 import de.klaro.reformcloud2.executor.api.common.groups.utils.Template;
 import de.klaro.reformcloud2.executor.api.common.groups.utils.Version;
+import de.klaro.reformcloud2.executor.api.common.language.LanguageManager;
 import de.klaro.reformcloud2.executor.api.common.network.channel.PacketSender;
 import de.klaro.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import de.klaro.reformcloud2.executor.api.common.process.NetworkInfo;
@@ -17,8 +18,10 @@ import de.klaro.reformcloud2.executor.api.common.process.ProcessRuntimeInformati
 import de.klaro.reformcloud2.executor.api.common.process.ProcessState;
 import de.klaro.reformcloud2.executor.api.common.utility.list.Links;
 import de.klaro.reformcloud2.executor.api.common.utility.list.Trio;
+import de.klaro.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
 import de.klaro.reformcloud2.executor.api.controller.process.ProcessManager;
 import de.klaro.reformcloud2.executor.controller.ControllerExecutor;
+import de.klaro.reformcloud2.executor.controller.packet.out.ControllerPacketOutProcessDisconnected;
 import de.klaro.reformcloud2.executor.controller.packet.out.ControllerPacketOutStartProcess;
 import de.klaro.reformcloud2.executor.controller.packet.out.ControllerPacketOutStopProcess;
 import de.klaro.reformcloud2.executor.controller.packet.out.event.ControllerEventProcessClosed;
@@ -55,10 +58,7 @@ public final class DefaultProcessManager implements ProcessManager {
                         noClientTryLater.remove(trio);
                     }
 
-                    try {
-                        TimeUnit.MILLISECONDS.sleep(500);
-                    } catch (final InterruptedException ignored) {
-                    }
+                    AbsoluteThread.sleep(TimeUnit.MILLISECONDS, 200);
                 }
             }
         });
@@ -250,7 +250,7 @@ public final class DefaultProcessManager implements ProcessManager {
             });
 
             if (bestTemplate.get() == null) {
-                bestTemplate.set(new Template(0, "default", "#", null, new RuntimeConfiguration(
+                bestTemplate.set(new Template(0, "default", "#", null, "§8A ReformCloud2 default Process", new RuntimeConfiguration(
                         512, new ArrayList<>(), new HashMap<>()
                 ), Version.PAPER_1_8_8));
 
@@ -455,6 +455,20 @@ public final class DefaultProcessManager implements ProcessManager {
         ProcessInformation info = getProcess(name);
         if (info != null) {
             processInformation.remove(info);
+            notifyDisconnect(info);
+            DefaultChannelManager.INSTANCE.get(info.getParent()).ifPresent(new Consumer<PacketSender>() {
+                @Override
+                public void accept(PacketSender packetSender) {
+                    packetSender.sendPacket(new ControllerPacketOutProcessDisconnected(info.getProcessUniqueID()));
+                }
+            });
+
+            System.out.println(LanguageManager.get(
+                    "process-connection-lost",
+                    info.getName(),
+                    info.getProcessUniqueID(),
+                    info.getParent()
+            ));
         } else {
             //If the channel is not a process it may be a client
             onClientDisconnect(name);

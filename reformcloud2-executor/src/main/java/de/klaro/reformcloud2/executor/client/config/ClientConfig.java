@@ -13,7 +13,7 @@ public final class ClientConfig {
         this.maxProcesses = maxProcesses;
         this.maxCpu = maxCpu;
         this.startHost = startHost;
-        this.name = "Client-" + UUID.randomUUID().toString();
+        this.name = "Client-" + UUID.randomUUID().toString().split("-")[0];
     }
 
     ClientConfig(int maxMemory, int maxProcesses, double maxCpu, String startHost, String name) {

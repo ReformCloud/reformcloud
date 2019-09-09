@@ -52,9 +52,11 @@ import de.klaro.reformcloud2.executor.api.common.patch.Patcher;
 import de.klaro.reformcloud2.executor.api.common.patch.basic.DefaultPatcher;
 import de.klaro.reformcloud2.executor.api.common.plugins.InstallablePlugin;
 import de.klaro.reformcloud2.executor.api.common.plugins.Plugin;
+import de.klaro.reformcloud2.executor.api.common.plugins.basic.DefaultInstallablePlugin;
 import de.klaro.reformcloud2.executor.api.common.plugins.basic.DefaultPlugin;
 import de.klaro.reformcloud2.executor.api.common.process.Player;
 import de.klaro.reformcloud2.executor.api.common.process.ProcessInformation;
+import de.klaro.reformcloud2.executor.api.common.process.ProcessState;
 import de.klaro.reformcloud2.executor.api.common.utility.function.Double;
 import de.klaro.reformcloud2.executor.api.common.utility.function.DoubleFunction;
 import de.klaro.reformcloud2.executor.api.common.utility.list.Links;
@@ -184,6 +186,7 @@ public final class ControllerExecutor extends Controller {
                                         } else {
                                             ProcessInformation information = processManager.getProcess(auth.getName());
                                             information.getNetworkInfo().setConnected(true);
+                                            information.setProcessState(ProcessState.READY);
                                             processManager.update(information);
 
                                             System.out.println(LanguageManager.get("process-connected", auth.getName(), auth.parent()));
@@ -281,9 +284,9 @@ public final class ControllerExecutor extends Controller {
 
         networkServer.closeAll(); //Close network first that all channels now that the controller is disconnecting
 
+        loggerBase.close();
         autoStartupHandler.interrupt();
         applicationLoader.disableApplications();
-        loggerBase.close();
     }
 
     public ControllerExecutorConfig getControllerExecutorConfig() {
@@ -612,7 +615,7 @@ public final class ControllerExecutor extends Controller {
     @Override
     public Task<ProcessGroup> createProcessGroupAsync(String name, String parent) {
         return createProcessGroupAsync(name, parent, Collections.singletonList(
-                new Template(0, "default", "#", null, new RuntimeConfiguration(
+                new Template(0, "default", "#", null, "§8A ReformCloud2 default process", new RuntimeConfiguration(
                         512, new ArrayList<>(), new HashMap<>()
                 ), Version.PAPER_1_8_8)
         ));
@@ -1237,7 +1240,13 @@ public final class ControllerExecutor extends Controller {
                     public void accept(PacketSender packetSender) {
                         packetSender.sendPacket(new ControllerPluginAction(
                                 ControllerPluginAction.Action.INSTALL,
-                                plugin
+                                new DefaultInstallablePlugin(
+                                        plugin.getDownloadURL(),
+                                        plugin.getName(),
+                                        plugin.version(),
+                                        plugin.author(),
+                                        plugin.main()
+                                )
                         ));
                     }
                 });
@@ -1263,7 +1272,15 @@ public final class ControllerExecutor extends Controller {
                     public void accept(PacketSender packetSender) {
                         packetSender.sendPacket(new ControllerPluginAction(
                                 ControllerPluginAction.Action.UNINSTALL,
-                                plugin
+                                new DefaultPlugin(
+                                        plugin.version(),
+                                        plugin.author(),
+                                        plugin.main(),
+                                        plugin.depends(),
+                                        plugin.softpends(),
+                                        plugin.enabled(),
+                                        plugin.getName()
+                                )
                         ));
                     }
                 });

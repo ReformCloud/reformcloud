@@ -195,7 +195,7 @@ public enum Version {
      * Waterdog as McPE Proxy
      */
     WATERDOG_PE("Waterdog", "1.8-1.14",
-            "https://ci.codemc.org/job/yesdog/job/Waterdog/lastSuccessfulBuild/artifact/Waterfall-Proxy/bootstrap/target/Waterdog.jar", 2);
+            "https://ci.codemc.org/job/yesdog/job/Waterdog/lastSuccessfulBuild/artifact/Waterfall-Proxy/bootstrap/target/Waterdog.jar", 4);
 
     private static final TreeMap<String, Version> JAVA_SERVER_PROVIDERS = new TreeMap<>();
 
@@ -263,9 +263,6 @@ public enum Version {
                 POCKET_SERVER_PROVIDERS.put(version.name, version);
             } else if (version.id == 4 && !POCKET_PROXY_PROVIDERS.containsKey(version.name)) {
                 POCKET_PROXY_PROVIDERS.put(version.name, version);
-            } else if (version.id == 5 && (!POCKET_PROXY_PROVIDERS.containsKey(version.name) || !JAVA_PROXY_PROVIDERS.containsKey(version.name))) {
-                POCKET_PROXY_PROVIDERS.put(version.name, version);
-                JAVA_PROXY_PROVIDERS.put(version.name, version);
             }
         }
     }

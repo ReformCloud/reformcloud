@@ -4,12 +4,16 @@ import de.klaro.reformcloud2.executor.api.client.process.RunningProcess;
 import de.klaro.reformcloud2.executor.api.common.ExecutorAPI;
 import de.klaro.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import de.klaro.reformcloud2.executor.api.common.groups.utils.Version;
+import de.klaro.reformcloud2.executor.api.common.network.channel.PacketSender;
+import de.klaro.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import de.klaro.reformcloud2.executor.api.common.process.ProcessInformation;
 import de.klaro.reformcloud2.executor.api.common.process.ProcessState;
 import de.klaro.reformcloud2.executor.api.common.utility.StringUtil;
 import de.klaro.reformcloud2.executor.api.common.utility.system.DownloadHelper;
 import de.klaro.reformcloud2.executor.api.common.utility.system.SystemHelper;
+import de.klaro.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
 import de.klaro.reformcloud2.executor.client.ClientExecutor;
+import de.klaro.reformcloud2.executor.client.packet.out.ClientPacketOutProcessPrepared;
 import net.md_5.config.Configuration;
 import net.md_5.config.ConfigurationProvider;
 import net.md_5.config.YamlConfiguration;
@@ -23,6 +27,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -70,6 +75,14 @@ public final class DefaultRunningProcess implements RunningProcess {
 
         SystemHelper.doCopy("reformcloud/files/runner.jar", path + "/runner.jar");
 
+        String motd;
+        if (processInformation.getTemplate().getMotd() == null) {
+            motd = "A ReformCloud2 Process";
+        } else {
+            motd = processInformation.getTemplate().getMotd();
+        }
+
+        processInformation.setMotd(motd);
         new JsonConfiguration()
                 .add("controller-host", ClientExecutor.getInstance().getClientExecutorConfig().getClientConnectionConfig().getHost())
                 .add("controller-port", ClientExecutor.getInstance().getClientExecutorConfig().getClientConnectionConfig().getPort())
@@ -78,6 +91,17 @@ public final class DefaultRunningProcess implements RunningProcess {
 
         ExecutorAPI.getInstance().update(processInformation);
         prepared = true;
+
+        DefaultChannelManager.INSTANCE.get("Controller").ifPresent(new Consumer<PacketSender>() {
+            @Override
+            public void accept(PacketSender packetSender) {
+                packetSender.sendPacket(new ClientPacketOutProcessPrepared(
+                        processInformation.getName(),
+                        processInformation.getProcessUniqueID(),
+                        processInformation.getTemplate().getName()
+                ));
+            }
+        });
         return this;
     }
 
@@ -132,6 +156,11 @@ public final class DefaultRunningProcess implements RunningProcess {
 
     @Override
     public boolean shutdown() {
+        sendCommand("stop");
+        sendCommand("end");
+
+        AbsoluteThread.sleep(TimeUnit.MILLISECONDS, 100);
+
         process.destroyForcibly().destroy();
 
         if (running()) {

@@ -14,4 +14,6 @@ public interface Packet extends Serializable {
     JsonConfiguration content();
 
     void setQueryID(UUID id);
+
+    void setContent(JsonConfiguration content);
 }

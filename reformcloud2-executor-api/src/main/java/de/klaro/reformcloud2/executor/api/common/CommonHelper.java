@@ -3,12 +3,16 @@ package de.klaro.reformcloud2.executor.api.common;
 import com.sun.management.OperatingSystemMXBean;
 
 import java.lang.management.*;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 
 public final class CommonHelper {
 
     private CommonHelper() {}
+
+    public static final Executor EXECUTOR = Executors.newCachedThreadPool();
 
     public static MemoryMXBean memoryMXBean() {
         return ManagementFactory.getMemoryMXBean();

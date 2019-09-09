@@ -22,7 +22,7 @@ public class DefaultPacket implements Packet {
 
     private UUID uid;
 
-    private final JsonConfiguration content;
+    private JsonConfiguration content;
 
     @Override
     public int packetID() {
@@ -42,5 +42,10 @@ public class DefaultPacket implements Packet {
     @Override
     public void setQueryID(UUID id) {
         this.uid = id;
+    }
+
+    @Override
+    public void setContent(JsonConfiguration content) {
+        this.content = content;
     }
 }

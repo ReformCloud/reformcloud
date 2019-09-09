@@ -14,5 +14,7 @@ public interface ProcessManager {
 
     Collection<RunningProcess> getAll();
 
+    void onProcessDisconnect(UUID uuid);
+
     void stopAll();
 }

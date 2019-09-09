@@ -6,6 +6,8 @@ public enum ProcessState {
 
     STARTED,
 
+    READY,
+
     FULL,
 
     INVISIBLE,

@@ -1,6 +1,7 @@
 package de.klaro.reformcloud2.executor.client.process;
 
 import de.klaro.reformcloud2.executor.api.client.process.RunningProcess;
+import de.klaro.reformcloud2.executor.api.common.CommonHelper;
 import de.klaro.reformcloud2.executor.api.common.process.ProcessInformation;
 import de.klaro.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
 import de.klaro.reformcloud2.executor.client.ClientExecutor;
@@ -10,10 +11,11 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 public final class ProcessQueue extends AbsoluteThread {
 
-    private static final Queue<ProcessInformation> QUEUE = new ConcurrentLinkedQueue<>();
+    private static final Queue<RunningProcess> QUEUE = new ConcurrentLinkedQueue<>();
 
     public static void queue(ProcessInformation information) {
-        QUEUE.add(information);
+        RunningProcess runningProcess = RunningProcessBuilder.build(information).prepare();
+        QUEUE.add(runningProcess);
     }
 
     /* ============== */
@@ -26,16 +28,23 @@ public final class ProcessQueue extends AbsoluteThread {
     public void run() {
         while (!Thread.currentThread().isInterrupted()) {
             if (!QUEUE.isEmpty()) {
-                ProcessInformation processInformation = QUEUE.poll();
-                RunningProcess runningProcess = RunningProcessBuilder.build(processInformation);
-                if (runningProcess != null && runningProcess.bootstrap()) {
+                RunningProcess runningProcess = QUEUE.poll();
+                if (isStartupNowLogic() && runningProcess != null && runningProcess.bootstrap()) {
                     ClientExecutor.getInstance().getProcessManager().registerProcess(runningProcess);
                 } else {
-                    QUEUE.add(processInformation);
+                    QUEUE.add(runningProcess);
                 }
             }
 
             AbsoluteThread.sleep(100);
         }
+    }
+
+    private static boolean isStartupNowLogic() {
+        if (ClientExecutor.getInstance().getClientConfig().getMaxCpu() <= 0D) {
+            return true;
+        }
+
+        return CommonHelper.cpuUsageSystem() <= ClientExecutor.getInstance().getClientConfig().getMaxCpu();
     }
 }

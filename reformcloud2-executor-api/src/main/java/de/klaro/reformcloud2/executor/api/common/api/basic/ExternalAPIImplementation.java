@@ -575,7 +575,7 @@ public abstract class ExternalAPIImplementation extends ExecutorAPI {
     @Override
     public Task<ProcessGroup> createProcessGroupAsync(String name, String parent) {
         return createProcessGroupAsync(name, parent, Collections.singletonList(
-                new Template(0, "default", "#", null, new RuntimeConfiguration(
+                new Template(0, "default", "#", null, "§8A ReformCloud2 default process", new RuntimeConfiguration(
                         512, new ArrayList<>(), new HashMap<>()
                 ), Version.PAPER_1_8_8)
         ));

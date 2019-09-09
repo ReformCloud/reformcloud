@@ -278,7 +278,7 @@ public final class ClientExecutor extends Client {
 
         AtomicInteger atomicInteger = new AtomicInteger(0);
         boolean isConnected = false;
-        while (!isConnected && atomicInteger.get() <= 10) {
+        while (atomicInteger.get() <= 10) {
             System.out.println(LanguageManager.get(
                     "network-client-try-connect",
                     clientExecutorConfig.getClientConnectionConfig().getHost(),
@@ -288,7 +288,6 @@ public final class ClientExecutor extends Client {
             isConnected = tryConnect();
             if (isConnected) {
                 break;
-                //If the client is connected break before waiting other 500 ms
             }
 
             AbsoluteThread.sleep(TimeUnit.MILLISECONDS, 500);
@@ -332,7 +331,7 @@ public final class ClientExecutor extends Client {
                         if (GLOBAL_CONNECTION_STATUS.get()) {
                             GLOBAL_CONNECTION_STATUS.set(false);
                             System.out.println(LanguageManager.get("network-client-connection-lost"));
-                            tryConnect();
+                            doConnect();
                         }
                     }
                 })

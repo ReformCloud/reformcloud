@@ -4,16 +4,19 @@ import de.klaro.reformcloud2.executor.api.common.configuration.JsonConfiguration
 import de.klaro.reformcloud2.executor.api.common.network.packet.DefaultPacket;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public final class ControllerAPIAction extends DefaultPacket {
 
     public ControllerAPIAction(APIAction action, List<Object> args) {
-        super(
-                46,
-                new JsonConfiguration()
-                    .add("action", action)
-                    .add("args", args)
-        );
+        super(46, null);
+
+        JsonConfiguration jsonConfiguration = new JsonConfiguration().add("action", action);
+        AtomicInteger atomicInteger = new AtomicInteger(1);
+        for (Object o : args) {
+            jsonConfiguration.add(Integer.toString(atomicInteger.getAndIncrement()), o);
+        }
+        setContent(jsonConfiguration);
     }
 
     public enum APIAction {

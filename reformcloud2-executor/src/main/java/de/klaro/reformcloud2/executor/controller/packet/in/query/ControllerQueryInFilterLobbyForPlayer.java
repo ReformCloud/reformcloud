@@ -41,7 +41,7 @@ public final class ControllerQueryInFilterLobbyForPlayer implements NetworkHandl
                     return;
                 }
 
-                if (!version.equals(Version.WATERDOG) && processInformation.getTemplate().getVersion().equals(Version.NUKKIT_X)) {
+                if (!version.equals(Version.WATERDOG_PE) && processInformation.getTemplate().getVersion().equals(Version.NUKKIT_X)) {
                     return;
                 }
 
