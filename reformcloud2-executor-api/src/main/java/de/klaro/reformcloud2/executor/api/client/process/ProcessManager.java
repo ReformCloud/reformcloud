@@ -12,6 +12,8 @@ public interface ProcessManager {
 
     Optional<RunningProcess> getProcess(UUID uniqueID);
 
+    Optional<RunningProcess> getProcess(String name);
+
     Collection<RunningProcess> getAll();
 
     void onProcessDisconnect(UUID uuid);

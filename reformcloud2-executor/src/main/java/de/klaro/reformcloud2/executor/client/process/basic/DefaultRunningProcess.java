@@ -14,6 +14,7 @@ import de.klaro.reformcloud2.executor.api.common.utility.system.SystemHelper;
 import de.klaro.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
 import de.klaro.reformcloud2.executor.client.ClientExecutor;
 import de.klaro.reformcloud2.executor.client.packet.out.ClientPacketOutProcessPrepared;
+import de.klaro.reformcloud2.executor.client.process.PortUtil;
 import net.md_5.config.Configuration;
 import net.md_5.config.ConfigurationProvider;
 import net.md_5.config.YamlConfiguration;
@@ -67,6 +68,8 @@ public final class DefaultRunningProcess implements RunningProcess {
             SystemHelper.recreateDirectory(path);
         }
 
+        int port = PortUtil.checkPort(processInformation.getNetworkInfo().getPort());
+        processInformation.getNetworkInfo().setPort(port);
         chooseLogicallyStartup();
 
         if (!Files.exists(Paths.get("reformcloud/files/runner.jar"))) {

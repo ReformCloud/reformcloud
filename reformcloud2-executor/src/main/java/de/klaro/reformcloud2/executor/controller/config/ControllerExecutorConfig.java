@@ -1,5 +1,6 @@
 package de.klaro.reformcloud2.executor.controller.config;
 
+import de.klaro.reformcloud2.executor.api.common.ExecutorAPI;
 import de.klaro.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import de.klaro.reformcloud2.executor.api.common.groups.MainGroup;
 import de.klaro.reformcloud2.executor.api.common.groups.ProcessGroup;
@@ -9,9 +10,11 @@ import de.klaro.reformcloud2.executor.api.common.groups.utils.Version;
 import de.klaro.reformcloud2.executor.api.common.logger.setup.Setup;
 import de.klaro.reformcloud2.executor.api.common.logger.setup.basic.DefaultSetup;
 import de.klaro.reformcloud2.executor.api.common.logger.setup.basic.DefaultSetupQuestion;
+import de.klaro.reformcloud2.executor.api.common.process.ProcessInformation;
 import de.klaro.reformcloud2.executor.api.common.utility.StringUtil;
 import de.klaro.reformcloud2.executor.api.common.utility.list.Links;
 import de.klaro.reformcloud2.executor.api.common.utility.system.SystemHelper;
+import de.klaro.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
 import de.klaro.reformcloud2.executor.controller.ControllerExecutor;
 
 import java.io.File;
@@ -20,6 +23,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -240,6 +244,14 @@ public final class ControllerExecutorConfig {
         processGroups.remove(processGroup);
         SystemHelper.deleteFile(new File("reformcloud/groups/sub/" + processGroup.getName() + ".json"));
         ControllerExecutor.getInstance().getAutoStartupHandler().update();
+
+        ExecutorAPI.getInstance().getProcesses(processGroup.getName()).forEach(new Consumer<ProcessInformation>() {
+            @Override
+            public void accept(ProcessInformation processInformation) {
+                ExecutorAPI.getInstance().stopProcess(processInformation.getProcessUniqueID());
+                AbsoluteThread.sleep(TimeUnit.MILLISECONDS, 10);
+            }
+        });
     }
 
     public void updateProcessGroup(ProcessGroup processGroup) {

@@ -5,6 +5,8 @@ import de.klaro.reformcloud2.executor.api.common.network.auth.Auth;
 import de.klaro.reformcloud2.executor.api.common.network.auth.packet.PacketOutAuth;
 import de.klaro.reformcloud2.executor.api.common.network.channel.NetworkChannelReader;
 import de.klaro.reformcloud2.executor.api.common.network.handler.ClientInitializerHandler;
+import de.klaro.reformcloud2.executor.api.common.utility.task.Task;
+import de.klaro.reformcloud2.executor.api.common.utility.task.defaults.DefaultTask;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
 import io.netty.channel.socket.SocketChannel;
@@ -19,6 +21,8 @@ public final class DefaultNetworkClient implements NetworkClient {
 
     @Override
     public boolean connect(String host, int port, Auth auth, NetworkChannelReader channelReader) {
+        final Task<Boolean> connectTask = new DefaultTask<>();
+
         try {
             this.channel = new Bootstrap().group(eventLoopGroup)
                     .channel(channelClass)
@@ -33,19 +37,24 @@ public final class DefaultNetworkClient implements NetworkClient {
 
                     .connect(host, port)
 
+                    .addListener(ChannelFutureListener.CLOSE_ON_FAILURE)
+                    .addListener(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE)
                     .addListener(new ChannelFutureListener() {
                         @Override
                         public void operationComplete(ChannelFuture channelFuture) {
                             if (channelFuture.isSuccess()) {
                                 channelFuture.channel().writeAndFlush(new PacketOutAuth(auth)).syncUninterruptibly();
                             }
+
+                            connectTask.complete(channelFuture.isSuccess());
                         }
                     }).channel();
-            return true;
         } catch (final Exception ex) {
             ex.printStackTrace();
-            return false;
+            connectTask.complete(false);
         }
+
+        return connectTask.getUninterruptedly();
     }
 
     @Override

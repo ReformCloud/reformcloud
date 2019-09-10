@@ -65,6 +65,16 @@ public final class DefaultProcessManager implements ProcessManager {
     }
 
     @Override
+    public Optional<RunningProcess> getProcess(String name) {
+        return Links.filterToOptional(list, new Predicate<RunningProcess>() {
+            @Override
+            public boolean test(RunningProcess runningProcess) {
+                return runningProcess.getProcessInformation().getName().equals(name);
+            }
+        });
+    }
+
+    @Override
     public Collection<RunningProcess> getAll() {
         return Collections.unmodifiableCollection(list);
     }

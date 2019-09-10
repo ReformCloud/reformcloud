@@ -6,7 +6,13 @@ import de.klaro.reformcloud2.executor.api.common.groups.utils.*;
 import java.util.Collections;
 
 public final class DefaultProcessGroup extends ProcessGroup {
+
     public DefaultProcessGroup(String name, String parent, int port, Version version, int maxMemory, boolean maintenance, int maxPlayers) {
+        this(name, parent, port, version, maxMemory, maintenance, maxPlayers, false, true);
+    }
+
+    public DefaultProcessGroup(String name, String parent, int port, Version version,
+                               int maxMemory, boolean maintenance, int maxPlayers, boolean staticServer, boolean lobby) {
         super(
                 name,
                 true,
@@ -39,6 +45,6 @@ public final class DefaultProcessGroup extends ProcessGroup {
                         true,
                         true,
                         maxPlayers
-                ), false, true);
+                ), staticServer, lobby);
     }
 }

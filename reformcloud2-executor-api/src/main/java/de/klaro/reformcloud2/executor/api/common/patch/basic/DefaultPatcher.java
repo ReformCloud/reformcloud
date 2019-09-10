@@ -53,7 +53,7 @@ public final class DefaultPatcher implements Patcher {
             loadPatches(-1L);
         }
 
-        if (!Boolean.getBoolean("reformcloud.patcher.disable")) {
+        if (Boolean.getBoolean("reformcloud.patcher.disable")) {
             CompletableFuture.runAsync(new Runnable() {
                 @Override
                 public void run() {

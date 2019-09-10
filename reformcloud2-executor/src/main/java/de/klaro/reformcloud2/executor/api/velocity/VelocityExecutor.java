@@ -25,9 +25,11 @@ import de.klaro.reformcloud2.executor.api.common.utility.task.Task;
 import de.klaro.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
 import de.klaro.reformcloud2.executor.api.executor.PlayerAPIExecutor;
 import de.klaro.reformcloud2.executor.api.packets.in.APIPacketInAPIAction;
+import de.klaro.reformcloud2.executor.api.packets.in.APIPacketInPluginAction;
 import de.klaro.reformcloud2.executor.api.velocity.event.ExtraListenerHandler;
 import de.klaro.reformcloud2.executor.api.velocity.event.PlayerListenerHandler;
 import de.klaro.reformcloud2.executor.api.velocity.event.ProcessEventHandler;
+import de.klaro.reformcloud2.executor.api.velocity.plugins.PluginExecutorContainer;
 import de.klaro.reformcloud2.executor.api.velocity.plugins.PluginUpdater;
 import net.kyori.text.TextComponent;
 
@@ -59,6 +61,7 @@ public final class VelocityExecutor extends API implements PlayerAPIExecutor {
         proxyServer.getEventManager().register(launcher, new ExtraListenerHandler());
 
         packetHandler.registerHandler(new APIPacketInAPIAction(this));
+        packetHandler.registerHandler(new APIPacketInPluginAction(new PluginExecutorContainer()));
 
         String connectionKey = JsonConfiguration.read("reformcloud/.connection/key.json").getString("key");
         SystemHelper.deleteFile(new File("reformcloud/.connection/key.json"));

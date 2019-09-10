@@ -22,6 +22,10 @@ public final class NetworkInfo {
         return port;
     }
 
+    public void setPort(int port) {
+        this.port = port;
+    }
+
     public boolean isConnected() {
         return connected;
     }

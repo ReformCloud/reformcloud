@@ -24,7 +24,9 @@ import de.klaro.reformcloud2.executor.api.common.utility.system.SystemHelper;
 import de.klaro.reformcloud2.executor.api.common.utility.task.Task;
 import de.klaro.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
 import de.klaro.reformcloud2.executor.api.executor.PlayerAPIExecutor;
+import de.klaro.reformcloud2.executor.api.nukkit.plugins.PluginsExecutorContainer;
 import de.klaro.reformcloud2.executor.api.packets.in.APIPacketInAPIAction;
+import de.klaro.reformcloud2.executor.api.packets.in.APIPacketInPluginAction;
 
 import java.io.File;
 import java.util.UUID;
@@ -50,6 +52,7 @@ public final class NukkitExecutor extends API implements PlayerAPIExecutor {
         getEventManager().registerListener(this);
 
         packetHandler.registerHandler(new APIPacketInAPIAction(this));
+        packetHandler.registerHandler(new APIPacketInPluginAction(new PluginsExecutorContainer()));
 
         String connectionKey = JsonConfiguration.read("reformcloud/.connection/key.json").getString("key");
         SystemHelper.deleteFile(new File("reformcloud/.connection/key.json"));

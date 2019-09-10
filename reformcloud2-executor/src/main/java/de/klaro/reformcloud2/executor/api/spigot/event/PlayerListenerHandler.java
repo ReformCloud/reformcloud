@@ -22,7 +22,7 @@ import java.util.concurrent.TimeUnit;
 
 public final class PlayerListenerHandler implements Listener {
 
-    @EventHandler (priority = EventPriority.LOWEST)
+    @EventHandler (priority = EventPriority.HIGH)
     public void handle(final PlayerLoginEvent event) {
         if (ExecutorAPI.getInstance().getThisProcessInformation().getProcessGroup().getPlayerAccessConfiguration().isOnlyProxyJoin()) {
             PacketSender packetSender = DefaultChannelManager.INSTANCE.get("Controller").orElse(null);
@@ -43,10 +43,7 @@ public final class PlayerListenerHandler implements Listener {
                 event.setResult(PlayerLoginEvent.Result.KICK_BANNED);
             }
         }
-    }
 
-    @EventHandler (priority = EventPriority.HIGHEST)
-    public void handle(final PlayerJoinEvent event) {
         final Player player = event.getPlayer();
         final ProcessInformation current = ExecutorAPI.getInstance().getThisProcessInformation();
         final PlayerAccessConfiguration configuration = current.getProcessGroup().getPlayerAccessConfiguration();
@@ -54,26 +51,30 @@ public final class PlayerListenerHandler implements Listener {
         if (configuration.isUseCloudPlayerLimit()
                 && configuration.getMaxPlayers() < current.getOnlineCount() + 1
                 && !player.hasPermission("reformcloud.join.full")) {
-            player.kickPlayer("§4§lThe server is full");
+            event.setKickMessage("§4§lThe server is full");
+            event.setResult(PlayerLoginEvent.Result.KICK_BANNED);
             return;
         }
 
         if (configuration.isJoinOnlyPerPermission()
                 && configuration.getJoinPermission() != null
                 && !player.hasPermission(configuration.getJoinPermission())) {
-            player.kickPlayer("§4§lYou do not have permission to enter this server");
+            event.setKickMessage("§4§lYou do not have permission to enter this server");
+            event.setResult(PlayerLoginEvent.Result.KICK_BANNED);
             return;
         }
 
         if (configuration.isMaintenance()
                 && configuration.getMaintenanceJoinPermission() != null
                 && !player.hasPermission(configuration.getMaintenanceJoinPermission())) {
-            player.kickPlayer("§4§lThis server is currently in maintenance");
+            event.setKickMessage("§4§lThis server is currently in maintenance");
+            event.setResult(PlayerLoginEvent.Result.KICK_BANNED);
             return;
         }
 
         if (current.getProcessState().equals(ProcessState.FULL) && !player.hasPermission("reformcloud.join.full")) {
-            player.kickPlayer("§4§lYou are not allowed to join this server in the current state");
+            event.setKickMessage("§4§lYou are not allowed to join this server in the current state");
+            event.setResult(PlayerLoginEvent.Result.KICK_BANNED);
             return;
         }
 
@@ -82,6 +83,12 @@ public final class PlayerListenerHandler implements Listener {
                 && !current.getProcessState().equals(ProcessState.INVISIBLE)) {
             current.setProcessState(ProcessState.FULL);
         }
+    }
+
+    @EventHandler (priority = EventPriority.HIGHEST)
+    public void handle(final PlayerJoinEvent event) {
+        final Player player = event.getPlayer();
+        final ProcessInformation current = ExecutorAPI.getInstance().getThisProcessInformation();
 
         current.updateRuntimeInformation();
         current.onLogin(player.getUniqueId(), player.getName());

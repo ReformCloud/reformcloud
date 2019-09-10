@@ -1,6 +1,5 @@
 package de.klaro.reformcloud2.executor.controller;
 
-import com.google.gson.reflect.TypeToken;
 import de.klaro.reformcloud2.executor.api.ExecutorType;
 import de.klaro.reformcloud2.executor.api.common.ExecutorAPI;
 import de.klaro.reformcloud2.executor.api.common.application.ApplicationLoader;
@@ -64,14 +63,13 @@ import de.klaro.reformcloud2.executor.api.common.utility.task.Task;
 import de.klaro.reformcloud2.executor.api.common.utility.task.defaults.DefaultTask;
 import de.klaro.reformcloud2.executor.api.controller.Controller;
 import de.klaro.reformcloud2.executor.api.controller.process.ProcessManager;
+import de.klaro.reformcloud2.executor.controller.commands.CommandProcess;
 import de.klaro.reformcloud2.executor.controller.config.ControllerConfig;
 import de.klaro.reformcloud2.executor.controller.config.ControllerExecutorConfig;
 import de.klaro.reformcloud2.executor.controller.config.DatabaseConfig;
 import de.klaro.reformcloud2.executor.controller.packet.out.api.ControllerAPIAction;
 import de.klaro.reformcloud2.executor.controller.packet.out.api.ControllerExecuteCommand;
 import de.klaro.reformcloud2.executor.controller.packet.out.api.ControllerPluginAction;
-import de.klaro.reformcloud2.executor.controller.packet.out.api.query.ControllerQueryGetPlugin;
-import de.klaro.reformcloud2.executor.controller.packet.out.api.query.ControllerQueryGetPlugins;
 import de.klaro.reformcloud2.executor.controller.process.ClientManager;
 import de.klaro.reformcloud2.executor.controller.process.DefaultProcessManager;
 import de.klaro.reformcloud2.executor.controller.process.startup.AutoStartupHandler;
@@ -381,6 +379,7 @@ public final class ControllerExecutor extends Controller {
     private void loadCommands() {
         this.commandManager
                 .register(CommandStop.class)
+                .register(new CommandProcess())
                 .register(new CommandReload(this))
                 .register(new CommandClear(loggerBase))
                 .register(new CommandHelp(commandManager));
@@ -1301,17 +1300,18 @@ public final class ControllerExecutor extends Controller {
         Task.EXECUTOR.execute(new Runnable() {
             @Override
             public void run() {
-                DefaultChannelManager.INSTANCE.get(process).ifPresent(new Consumer<PacketSender>() {
+                ProcessInformation processInformation = getProcess(process);
+                if (processInformation == null) {
+                    task.complete(null);
+                    return;
+                }
+
+                task.complete(Links.filter(processInformation.getPlugins(), new Predicate<DefaultPlugin>() {
                     @Override
-                    public void accept(PacketSender packetSender) {
-                        packetHandler.getQueryHandler().sendQueryAsync(packetSender, new ControllerQueryGetPlugin(name)).onComplete(new Consumer<Packet>() {
-                            @Override
-                            public void accept(Packet packet) {
-                                task.complete(packet.content().get("plugin", DefaultPlugin.TYPE_TOKEN));
-                            }
-                        });
+                    public boolean test(DefaultPlugin defaultPlugin) {
+                        return defaultPlugin.getName().equals(name);
                     }
-                });
+                }));
             }
         });
         return task;
@@ -1328,17 +1328,18 @@ public final class ControllerExecutor extends Controller {
         Task.EXECUTOR.execute(new Runnable() {
             @Override
             public void run() {
-                DefaultChannelManager.INSTANCE.get(process).ifPresent(new Consumer<PacketSender>() {
+                ProcessInformation processInformation = getProcess(process);
+                if (processInformation == null) {
+                    task.complete(null);
+                    return;
+                }
+
+                task.complete(Links.allOf(processInformation.getPlugins(), new Predicate<DefaultPlugin>() {
                     @Override
-                    public void accept(PacketSender packetSender) {
-                        packetHandler.getQueryHandler().sendQueryAsync(packetSender, new ControllerQueryGetPlugins(author)).onComplete(new Consumer<Packet>() {
-                            @Override
-                            public void accept(Packet packet) {
-                                task.complete(packet.content().get("plugin", new TypeToken<Collection<DefaultPlugin>>() {}));
-                            }
-                        });
+                    public boolean test(DefaultPlugin defaultPlugin) {
+                        return defaultPlugin.author().equals(author);
                     }
-                });
+                }));
             }
         });
         return task;
@@ -1355,17 +1356,13 @@ public final class ControllerExecutor extends Controller {
         Task.EXECUTOR.execute(new Runnable() {
             @Override
             public void run() {
-                DefaultChannelManager.INSTANCE.get(process).ifPresent(new Consumer<PacketSender>() {
-                    @Override
-                    public void accept(PacketSender packetSender) {
-                        packetHandler.getQueryHandler().sendQueryAsync(packetSender, new ControllerQueryGetPlugins()).onComplete(new Consumer<Packet>() {
-                            @Override
-                            public void accept(Packet packet) {
-                                task.complete(packet.content().get("plugin", new TypeToken<Collection<DefaultPlugin>>() {}));
-                            }
-                        });
-                    }
-                });
+                ProcessInformation processInformation = getProcess(process);
+                if (processInformation == null) {
+                    task.complete(null);
+                    return;
+                }
+
+                task.complete(processInformation.getPlugins());
             }
         });
         return task;
@@ -1526,10 +1523,11 @@ public final class ControllerExecutor extends Controller {
         Task.EXECUTOR.execute(new Runnable() {
             @Override
             public void run() {
-                DefaultChannelManager.INSTANCE.get(name).ifPresent(new Consumer<PacketSender>() {
+                ProcessInformation information = getProcess(name);
+                DefaultChannelManager.INSTANCE.get(information.getParent()).ifPresent(new Consumer<PacketSender>() {
                     @Override
                     public void accept(PacketSender packetSender) {
-                        packetSender.sendPacket(new ControllerExecuteCommand(commandLine));
+                        packetSender.sendPacket(new ControllerExecuteCommand(name, commandLine));
                     }
                 });
                 task.complete(null);

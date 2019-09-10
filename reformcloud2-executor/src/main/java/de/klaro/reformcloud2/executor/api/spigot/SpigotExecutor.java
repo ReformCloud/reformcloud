@@ -23,6 +23,8 @@ import de.klaro.reformcloud2.executor.api.common.utility.task.Task;
 import de.klaro.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
 import de.klaro.reformcloud2.executor.api.executor.PlayerAPIExecutor;
 import de.klaro.reformcloud2.executor.api.packets.in.APIPacketInAPIAction;
+import de.klaro.reformcloud2.executor.api.packets.in.APIPacketInPluginAction;
+import de.klaro.reformcloud2.executor.api.spigot.plugins.PluginExecutorContainer;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.server.ServerListPingEvent;
@@ -51,6 +53,7 @@ public final class SpigotExecutor extends API implements PlayerAPIExecutor {
         getEventManager().registerListener(this);
 
         packetHandler.registerHandler(new APIPacketInAPIAction(this));
+        packetHandler.registerHandler(new APIPacketInPluginAction(new PluginExecutorContainer()));
 
         String connectionKey = JsonConfiguration.read("reformcloud/.connection/key.json").getString("key");
         SystemHelper.deleteFile(new File("reformcloud/.connection/key.json"));

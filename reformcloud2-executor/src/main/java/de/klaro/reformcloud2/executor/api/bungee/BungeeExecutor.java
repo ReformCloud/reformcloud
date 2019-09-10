@@ -4,6 +4,7 @@ import de.klaro.reformcloud2.executor.api.api.API;
 import de.klaro.reformcloud2.executor.api.bungee.event.ExtraListenerHandler;
 import de.klaro.reformcloud2.executor.api.bungee.event.PlayerListenerHandler;
 import de.klaro.reformcloud2.executor.api.bungee.event.ProcessEventHandler;
+import de.klaro.reformcloud2.executor.api.bungee.plugins.PluginExecutorContainer;
 import de.klaro.reformcloud2.executor.api.bungee.plugins.PluginUpdater;
 import de.klaro.reformcloud2.executor.api.common.ExecutorAPI;
 import de.klaro.reformcloud2.executor.api.common.api.basic.ExternalEventBusHandler;
@@ -26,6 +27,7 @@ import de.klaro.reformcloud2.executor.api.common.utility.task.Task;
 import de.klaro.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
 import de.klaro.reformcloud2.executor.api.executor.PlayerAPIExecutor;
 import de.klaro.reformcloud2.executor.api.packets.in.APIPacketInAPIAction;
+import de.klaro.reformcloud2.executor.api.packets.in.APIPacketInPluginAction;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.config.ListenerInfo;
@@ -64,6 +66,7 @@ public final class BungeeExecutor extends API implements PlayerAPIExecutor {
         getEventManager().registerListener(this);
 
         packetHandler.registerHandler(new APIPacketInAPIAction(this));
+        packetHandler.registerHandler(new APIPacketInPluginAction(new PluginExecutorContainer()));
 
         String connectionKey = JsonConfiguration.read("reformcloud/.connection/key.json").getString("key");
         SystemHelper.deleteFile(new File("reformcloud/.connection/key.json"));
