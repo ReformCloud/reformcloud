@@ -2,24 +2,42 @@ package de.klaro.reformcloud2.executor.controller.commands;
 
 import de.klaro.reformcloud2.executor.api.common.CommonHelper;
 import de.klaro.reformcloud2.executor.api.common.ExecutorAPI;
+import de.klaro.reformcloud2.executor.api.common.client.ClientRuntimeInformation;
 import de.klaro.reformcloud2.executor.api.common.commands.basic.GlobalCommand;
 import de.klaro.reformcloud2.executor.api.common.commands.source.CommandSource;
+import de.klaro.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import de.klaro.reformcloud2.executor.api.common.groups.MainGroup;
 import de.klaro.reformcloud2.executor.api.common.groups.ProcessGroup;
 import de.klaro.reformcloud2.executor.api.common.groups.basic.DefaultProcessGroup;
 import de.klaro.reformcloud2.executor.api.common.groups.utils.*;
 import de.klaro.reformcloud2.executor.api.common.language.LanguageManager;
+import de.klaro.reformcloud2.executor.api.common.network.channel.PacketSender;
+import de.klaro.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import de.klaro.reformcloud2.executor.api.common.process.ProcessInformation;
+import de.klaro.reformcloud2.executor.api.common.utility.StringUtil;
+import de.klaro.reformcloud2.executor.api.common.utility.system.DownloadHelper;
+import de.klaro.reformcloud2.executor.api.common.utility.system.SystemHelper;
 import de.klaro.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
+import de.klaro.reformcloud2.executor.client.config.ClientConfig;
+import de.klaro.reformcloud2.executor.client.config.ClientConnectionConfig;
 import de.klaro.reformcloud2.executor.controller.ControllerExecutor;
+import de.klaro.reformcloud2.executor.controller.packet.out.ControllerPacketOutCopyProcess;
+import de.klaro.reformcloud2.executor.controller.packet.out.ControllerPacketOutToggleScreen;
+import de.klaro.reformcloud2.executor.controller.process.ClientManager;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.UnaryOperator;
 
-public final class CommandProcess extends GlobalCommand {
+public final class CommandReformCloud extends GlobalCommand {
 
-    public CommandProcess() {
+    public CommandReformCloud() {
         super("rc", "reformcloud.command.rc", "The main management command for reformcloud", Arrays.asList("reformcloud", "servers", "process", "proxies"));
     }
 
@@ -29,49 +47,49 @@ public final class CommandProcess extends GlobalCommand {
             {
                 System.out.println(LanguageManager.get("command-rc-available-versions", "Java-Proxy"));
                 StringBuilder stringBuilder = new StringBuilder();
-                Version.getAvailableJavaProxyVersions().forEach(new Consumer<String>() {
+                Version.getJavaProxyProviders().forEach(new BiConsumer<String, Version>() {
                     @Override
-                    public void accept(String s) {
-                        stringBuilder.append(s).append(", ");
+                    public void accept(String s, Version v) {
+                        stringBuilder.append(v.name()).append(", ");
                     }
                 });
-                System.out.println(stringBuilder.substring(0, stringBuilder.length() - 1));
+                System.out.println(stringBuilder.substring(0, stringBuilder.length() - 2));
             }
 
             {
                 System.out.println(LanguageManager.get("command-rc-available-versions", "Pocket-Edition-Proxy"));
-                StringBuilder stringBuilder = new StringBuilder().append("\n");
-                Version.getAvailablePocketProxyVersions().forEach(new Consumer<String>() {
+                StringBuilder stringBuilder = new StringBuilder();
+                Version.getPocketProxyProviders().forEach(new BiConsumer<String, Version>() {
                     @Override
-                    public void accept(String s) {
-                        stringBuilder.append(s).append(", ");
+                    public void accept(String s, Version v) {
+                        stringBuilder.append(v.name()).append(", ");
                     }
                 });
-                System.out.println(stringBuilder.substring(0, stringBuilder.length() - 1));
+                System.out.println(stringBuilder.substring(0, stringBuilder.length() - 2));
             }
 
             {
                 System.out.println(LanguageManager.get("command-rc-available-versions", "Java-Server"));
                 StringBuilder stringBuilder = new StringBuilder();
-                Version.getAvailableJavaServerVersions().forEach(new Consumer<String>() {
+                Version.getJavaServerProviders().forEach(new BiConsumer<String, Version>() {
                     @Override
-                    public void accept(String s) {
-                        stringBuilder.append(s).append(", ");
+                    public void accept(String s, Version v) {
+                        stringBuilder.append(v.name()).append(", ");
                     }
                 });
-                System.out.println(stringBuilder.substring(0, stringBuilder.length() - 1));
+                System.out.println(stringBuilder.substring(0, stringBuilder.length() - 2));
             }
 
             {
                 System.out.println(LanguageManager.get("command-rc-available-versions", "Pocket-Edition-Server"));
                 StringBuilder stringBuilder = new StringBuilder();
-                Version.getAvailablePocketServerVersions().forEach(new Consumer<String>() {
+                Version.getPocketServerProviders().forEach(new BiConsumer<String, Version>() {
                     @Override
-                    public void accept(String s) {
-                        stringBuilder.append(s).append(", ");
+                    public void accept(String s, Version v) {
+                        stringBuilder.append(v.name()).append(", ");
                     }
                 });
-                System.out.println(stringBuilder.substring(0, stringBuilder.length() - 1));
+                System.out.println(stringBuilder.substring(0, stringBuilder.length() - 2));
             }
             return true;
         } else if (strings.length == 1 && strings[0].equalsIgnoreCase("list")) {
@@ -89,6 +107,18 @@ public final class CommandProcess extends GlobalCommand {
                 }
             });
             return true;
+        } else if (strings.length == 1 && strings[0].equalsIgnoreCase("clients")) {
+            System.out.println(LanguageManager.get("command-rc-connected-clients"));
+            ClientManager.INSTANCE.clientRuntimeInformation.forEach(new Consumer<ClientRuntimeInformation>() {
+                @Override
+                public void accept(ClientRuntimeInformation clientRuntimeInformation) {
+                    System.out.println("   => " + clientRuntimeInformation.getName()
+                            + " Ram: " + clientRuntimeInformation.maxMemory() + "MB max"
+                            + " Host: " + clientRuntimeInformation.startHost()
+                    );
+                }
+            });
+            return true;
         }
 
 
@@ -98,7 +128,76 @@ public final class CommandProcess extends GlobalCommand {
         }
 
         switch (strings[0].toLowerCase()) {
+            case "screen": {
+                if (strings.length == 3) {
+                    ProcessInformation processInformation;
+                    UUID uuid = CommonHelper.tryParse(strings[1]);
+                    if (uuid == null) {
+                        processInformation = ExecutorAPI.getInstance().getProcess(strings[1]);
+                    } else {
+                        processInformation = ExecutorAPI.getInstance().getProcess(uuid);
+                    }
+
+                    if (processInformation == null) {
+                        System.out.println(LanguageManager.get("command-rc-process-unknown", strings[1]));
+                        return true;
+                    }
+
+                    DefaultChannelManager.INSTANCE.get(processInformation.getParent()).ifPresent(new Consumer<PacketSender>() {
+                        @Override
+                        public void accept(PacketSender packetSender) {
+                            packetSender.sendPacket(new ControllerPacketOutToggleScreen(processInformation.getProcessUniqueID()));
+                        }
+                    });
+                    System.out.println(LanguageManager.get("command-rc-execute-success"));
+                    return true;
+                }
+                break;
+            }
+
+            case "copy": {
+                ProcessInformation processInformation;
+                UUID uuid = CommonHelper.tryParse(strings[1]);
+                if (uuid == null) {
+                    processInformation = ExecutorAPI.getInstance().getProcess(strings[1]);
+                } else {
+                    processInformation = ExecutorAPI.getInstance().getProcess(uuid);
+                }
+
+                if (processInformation == null) {
+                    System.out.println(LanguageManager.get("command-rc-process-unknown", strings[1]));
+                    return true;
+                }
+
+                DefaultChannelManager.INSTANCE.get(processInformation.getParent()).ifPresent(new Consumer<PacketSender>() {
+                    @Override
+                    public void accept(PacketSender packetSender) {
+                        packetSender.sendPacket(new ControllerPacketOutCopyProcess(processInformation.getProcessUniqueID()));
+                    }
+                });
+                System.out.println(LanguageManager.get("command-rc-execute-success"));
+                return true;
+            }
+
             case "start": {
+                if (strings.length == 2 && strings[1].equalsIgnoreCase("internalclient")) {
+                    if (ClientManager.INSTANCE.getProcess() == null) {
+                        try {
+                            Process process = new ProcessBuilder()
+                                    .command(Arrays.asList("java", "-jar", "runner.jar").toArray(new String[0]))
+                                    .directory(new File("reformcloud/.client"))
+                                    .start();
+                            ClientManager.INSTANCE.setProcess(process);
+                        } catch (final IOException ex) {
+                            ex.printStackTrace();
+                        }
+                        System.out.println(LanguageManager.get("command-rc-execute-success"));
+                    } else {
+                        System.out.println(LanguageManager.get("command-rc-internal-client-already-started"));
+                    }
+                    return true;
+                }
+
                 if (strings.length == 2) {
                     ProcessGroup processGroup = ExecutorAPI.getInstance().getProcessGroup(strings[1]);
                     if (processGroup == null) {
@@ -158,6 +257,17 @@ public final class CommandProcess extends GlobalCommand {
             }
 
             case "stop": {
+                if (strings.length == 2 && strings[1].equalsIgnoreCase("internalclient")) {
+                    if (ClientManager.INSTANCE.getProcess() != null) {
+                        ClientManager.INSTANCE.getProcess().destroyForcibly().destroy();
+                        ClientManager.INSTANCE.setProcess(null);
+                        System.out.println(LanguageManager.get("command-rc-execute-success"));
+                    } else {
+                        System.out.println(LanguageManager.get("command-rc-internal-client-not-started"));
+                    }
+                    return true;
+                }
+
                 if (strings.length == 2) {
                     ProcessInformation processInformation;
                     UUID uuid = CommonHelper.tryParse(strings[1]);
@@ -274,6 +384,71 @@ public final class CommandProcess extends GlobalCommand {
             }
 
             case "create": {
+                if (strings.length == 3 && strings[1].equalsIgnoreCase("internalclient")) {
+                    if (Files.exists(Paths.get("reformcloud/.client"))) {
+                        System.out.println(LanguageManager.get("command-rc-internalclient-already-exists"));
+                        return true;
+                    }
+
+                    if (strings[2].split("\\.").length != 4) {
+                        System.out.println(LanguageManager.get("command-rc-expected-ip", strings[2]));
+                        return true;
+                    }
+
+                    if (ControllerExecutor.getInstance().getControllerConfig().getNetworkListener().size() == 0) {
+                        System.out.println(LanguageManager.get("command-rc-no-network-listener-configured"));
+                        return true;
+                    }
+
+                    SystemHelper.createDirectory(Paths.get("reformcloud/.client/reformcloud/.bin"));
+                    SystemHelper.createDirectory(Paths.get("reformcloud/.client/files/.connection"));
+                    SystemHelper.doCopy("reformcloud/.bin/config.properties", "reformcloud/.client/reformcloud/.bin/config.properties");
+                    SystemHelper.doCopy("reformcloud/.bin/connection.json", "reformcloud/.client/files/.connection/connection.json");
+                    CommonHelper.rewriteProperties(
+                            "reformcloud/.client/reformcloud/.bin/config.properties",
+                            "ReformCloudController edit",
+                            new UnaryOperator<String>() {
+                                @Override
+                                public String apply(String s) {
+                                    if (s.equals("reformcloud.type.id")) {
+                                        s = "2";
+                                    }
+
+                                    return s;
+                                }
+                            }
+                    );
+                    new JsonConfiguration()
+                            .add("config", new ClientConfig(
+                                    CommonHelper.calculateMaxMemory(),
+                                    -1,
+                                    90.0D,
+                                    strings[2]
+                            )).write(ClientConfig.PATH);
+                    Map<String, Integer> map = ControllerExecutor.getInstance().getControllerConfig().getNetworkListener().get(
+                            new Random().nextInt(ControllerExecutor.getInstance().getControllerConfig().getNetworkListener().size())
+                    );
+                    new JsonConfiguration()
+                            .add("config", new ClientConnectionConfig(
+                                    map.keySet().toArray(new String[0])[0],
+                                    map.values().toArray(new Integer[0])[0]
+                            )).write(ClientConfig.PATH);
+                    DownloadHelper.downloadAndDisconnect(StringUtil.RUNNER_DOWNLOAD_URL, "reformcloud/.client");
+                    try {
+                        Process process = new ProcessBuilder()
+                                .command(Arrays.asList("java", "-jar", "runner.jar").toArray(new String[0]))
+                                .directory(new File("reformcloud/.client"))
+                                .start();
+                        ClientManager.INSTANCE.setProcess(process);
+                    } catch (final IOException ex) {
+                        ex.printStackTrace();
+                        return true;
+                    }
+
+                    System.out.println(LanguageManager.get("command-rc-execute-success"));
+                    return true;
+                }
+
                 if (strings[1].equalsIgnoreCase("main") && strings.length == 3) {
                     MainGroup mainGroup = ExecutorAPI.getInstance().getMainGroup(strings[2]);
                     if (mainGroup == null) {
@@ -581,6 +756,17 @@ public final class CommandProcess extends GlobalCommand {
                     }
                 }
 
+                if (strings.length == 2 && strings[1].equalsIgnoreCase("internalclient")) {
+                    if (ClientManager.INSTANCE.getProcess() != null) {
+                        ClientManager.INSTANCE.getProcess().destroyForcibly().destroy();
+                        ClientManager.INSTANCE.setProcess(null);
+                    }
+
+                    SystemHelper.deleteDirectory(Paths.get("reformcloud/.client"));
+                    System.out.println(LanguageManager.get("command-rc-execute-success"));
+                    return true;
+                }
+
                 break;
             }
 
@@ -597,18 +783,24 @@ public final class CommandProcess extends GlobalCommand {
     private void sendHelp(CommandSource commandSource) {
         commandSource.sendMessage(
                 "\n" +
+                "rc copy <uuid | name>\n" +
+                "rc screen <uuid | name> toggle\n" +
                 "rc list\n" +
                 "rc list <group>\n" +
+                "rc clients\n" +
                 "rc listgroups <main | sub>\n" +
                 "rc versions\n" +
+                "rc start internalclient\n" +
                 "rc start <group>\n" +
                 "rc start <group> <amount>\n" +
                 "rc start <group> <amount> <template>\n" +
+                "rc stop internalclient\n" +
                 "rc stop <name>\n" +
                 "rc stop <uuid>\n" +
                 "rc stopall <subGroup>\n" +
                 "rc ofAll <mainGroup> <list | stop>\n" +
                 "rc execute <name | uuid> <command>\n" +
+                "rc create internalclient <start-host>\n" +
                 "rc create main <name>\n" +
                 "rc create sub <name>\n" +
                 "rc create sub <name> <version>\n" +
@@ -616,7 +808,8 @@ public final class CommandProcess extends GlobalCommand {
                 "rc create sub <name> <version> <parent> <static>\n" +
                 "rc create sub <name> <version> <parent> <static> <lobby>\n" +
                 "rc create sub <name> <version> <parent> <static> <minonline> <maxonline>\n" +
-                "rc delete <sub | main> <name>"
+                "rc delete <sub | main> <name>\n" +
+                "rc delete internalclient"
         );
     }
 }

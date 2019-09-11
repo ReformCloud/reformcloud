@@ -115,7 +115,7 @@ public final class DefaultRunningProcess implements RunningProcess {
         }
 
         List<String> command = new ArrayList<>(Arrays.asList(
-                "java",
+                processInformation.getProcessGroup().getStartupConfiguration().getStartupEnvironment().getCommand(),
                 "-XX:+UseG1GC",
                 "-XX:MaxGCPauseMillis=50",
                 "-XX:-UseAdaptiveSizePolicy",
@@ -208,6 +208,23 @@ public final class DefaultRunningProcess implements RunningProcess {
         } catch (final IOException ex) {
             return false;
         }
+    }
+
+    @Override
+    public void copy() {
+        if (prepared) {
+            SystemHelper.deleteDirectory(Paths.get(
+                    "reformcloud/templates/"
+                            + processInformation.getProcessGroup().getName() + "/" + processInformation.getTemplate().getName()
+            ));
+            SystemHelper.copyDirectory(path, "reformcloud/templates/"
+                    + processInformation.getProcessGroup().getName() + "/" + processInformation.getTemplate().getName());
+        }
+    }
+
+    @Override
+    public Optional<Process> getProcess() {
+        return Optional.ofNullable(process);
     }
 
     @Override

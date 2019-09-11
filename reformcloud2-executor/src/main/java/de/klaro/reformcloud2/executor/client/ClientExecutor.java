@@ -41,6 +41,7 @@ import de.klaro.reformcloud2.executor.client.config.ClientExecutorConfig;
 import de.klaro.reformcloud2.executor.client.packet.out.ClientPacketOutNotifyRuntimeUpdate;
 import de.klaro.reformcloud2.executor.client.process.ProcessQueue;
 import de.klaro.reformcloud2.executor.client.process.basic.DefaultProcessManager;
+import de.klaro.reformcloud2.executor.client.screen.ScreenManager;
 import de.klaro.reformcloud2.executor.client.watchdog.WatchdogThread;
 import org.reflections.Reflections;
 
@@ -78,6 +79,8 @@ public final class ClientExecutor extends Client {
     private final ProcessManager processManager = new DefaultProcessManager();
 
     private final ProcessQueue processQueue = new ProcessQueue();
+
+    private final ScreenManager screenManager = new ScreenManager();
 
     private static final AtomicBoolean GLOBAL_CONNECTION_STATUS = new AtomicBoolean(false);
 
@@ -205,6 +208,14 @@ public final class ClientExecutor extends Client {
 
     public LoggerBase getLoggerBase() {
         return loggerBase;
+    }
+
+    public ScreenManager getScreenManager() {
+        return screenManager;
+    }
+
+    public static boolean isRunning() {
+        return running;
     }
 
     public static ClientExecutor getInstance() {

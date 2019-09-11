@@ -63,7 +63,7 @@ import de.klaro.reformcloud2.executor.api.common.utility.task.Task;
 import de.klaro.reformcloud2.executor.api.common.utility.task.defaults.DefaultTask;
 import de.klaro.reformcloud2.executor.api.controller.Controller;
 import de.klaro.reformcloud2.executor.api.controller.process.ProcessManager;
-import de.klaro.reformcloud2.executor.controller.commands.CommandProcess;
+import de.klaro.reformcloud2.executor.controller.commands.CommandReformCloud;
 import de.klaro.reformcloud2.executor.controller.config.ControllerConfig;
 import de.klaro.reformcloud2.executor.controller.config.ControllerExecutorConfig;
 import de.klaro.reformcloud2.executor.controller.config.DatabaseConfig;
@@ -75,7 +75,10 @@ import de.klaro.reformcloud2.executor.controller.process.DefaultProcessManager;
 import de.klaro.reformcloud2.executor.controller.process.startup.AutoStartupHandler;
 import org.reflections.Reflections;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.function.*;
@@ -230,6 +233,18 @@ public final class ControllerExecutor extends Controller {
 
         applicationLoader.enableApplications();
 
+        if (Files.exists(Paths.get("reformcloud/.client"))) {
+            try {
+                Process process = new ProcessBuilder()
+                        .command(Arrays.asList("java", "-jar", "runner.jar").toArray(new String[0]))
+                        .directory(new File("reformcloud/.client"))
+                        .start();
+                ClientManager.INSTANCE.setProcess(process);
+            } catch (final IOException ex) {
+                ex.printStackTrace();
+            }
+        }
+
         running = true;
         System.out.println(LanguageManager.get("startup-done", Long.toString(System.currentTimeMillis() - current)));
         runConsole();
@@ -281,6 +296,7 @@ public final class ControllerExecutor extends Controller {
         System.out.println(LanguageManager.get("runtime-try-shutdown"));
 
         networkServer.closeAll(); //Close network first that all channels now that the controller is disconnecting
+        ClientManager.INSTANCE.onShutdown();
 
         loggerBase.close();
         autoStartupHandler.interrupt();
@@ -379,7 +395,7 @@ public final class ControllerExecutor extends Controller {
     private void loadCommands() {
         this.commandManager
                 .register(CommandStop.class)
-                .register(new CommandProcess())
+                .register(new CommandReformCloud())
                 .register(new CommandReload(this))
                 .register(new CommandClear(loggerBase))
                 .register(new CommandHelp(commandManager));

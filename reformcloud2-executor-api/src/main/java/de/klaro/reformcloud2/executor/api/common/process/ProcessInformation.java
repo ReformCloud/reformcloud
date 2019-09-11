@@ -68,10 +68,6 @@ public final class ProcessInformation implements Nameable {
 
     private JsonConfiguration extra;
 
-    public String getProcessName() {
-        return processName;
-    }
-
     public String getParent() {
         return parent;
     }

@@ -3,8 +3,14 @@ package de.klaro.reformcloud2.executor.api.common;
 import com.sun.management.OperatingSystemMXBean;
 import de.klaro.reformcloud2.executor.api.common.utility.optional.ReferencedOptional;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStreamWriter;
 import java.lang.management.*;
 import java.lang.ref.WeakReference;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -80,6 +86,34 @@ public final class CommonHelper {
         } catch (final Throwable throwable) {
             return null;
         }
+    }
+
+    public static void rewriteProperties(String path, String saveComment, Function<String, String> function) {
+        if (!Files.exists(Paths.get(path))) {
+            return;
+        }
+
+        try (InputStream inputStream = Files.newInputStream(Paths.get(path))) {
+            Properties properties = new Properties();
+            properties.load(inputStream);
+
+            properties.stringPropertyNames().forEach(new Consumer<String>() {
+                @Override
+                public void accept(String s) {
+                    properties.setProperty(s, function.apply(s));
+                }
+            });
+
+            try (OutputStreamWriter outputStreamWriter = new OutputStreamWriter(Files.newOutputStream(Paths.get(path)), StandardCharsets.UTF_8)) {
+                properties.store(outputStreamWriter, saveComment);
+            }
+        } catch (final IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    public static int calculateMaxMemory() {
+        return (int) ((operatingSystemMXBean().getTotalPhysicalMemorySize() / 1048576) - 2048);
     }
 
     /* == Enum Helper == */

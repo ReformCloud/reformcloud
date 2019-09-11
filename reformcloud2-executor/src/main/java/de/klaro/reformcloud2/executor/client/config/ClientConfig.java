@@ -6,9 +6,9 @@ import java.util.UUID;
 
 public final class ClientConfig {
 
-    static final Path PATH = Paths.get("reformcloud/config.json");
+    public static final Path PATH = Paths.get("reformcloud/config.json");
 
-    ClientConfig(int maxMemory, int maxProcesses, double maxCpu, String startHost) {
+    public ClientConfig(int maxMemory, int maxProcesses, double maxCpu, String startHost) {
         this.maxMemory = maxMemory;
         this.maxProcesses = maxProcesses;
         this.maxCpu = maxCpu;

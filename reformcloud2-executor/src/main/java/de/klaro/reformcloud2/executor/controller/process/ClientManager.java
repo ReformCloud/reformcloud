@@ -10,7 +10,12 @@ import java.util.function.Predicate;
 
 public final class ClientManager {
 
-    public final List<ClientRuntimeInformation> clientRuntimeInformation = new ArrayList<>();
+    public final List<ClientRuntimeInformation> clientRuntimeInformation = new ArrayList<>(); // TODO: Use a getter here?
+
+    /**
+     * Represents the internal client process
+     */
+    private Process process;
 
     public static final ClientManager INSTANCE = new ClientManager();
 
@@ -49,5 +54,20 @@ public final class ClientManager {
 
         clientRuntimeInformation.remove(found);
         clientRuntimeInformation.add(information);
+    }
+
+    public void onShutdown() {
+        clientRuntimeInformation.clear();
+        if (process != null) {
+            process.destroyForcibly().destroy();
+        }
+    }
+
+    public Process getProcess() {
+        return process;
+    }
+
+    public void setProcess(Process process) {
+        this.process = process;
     }
 }
