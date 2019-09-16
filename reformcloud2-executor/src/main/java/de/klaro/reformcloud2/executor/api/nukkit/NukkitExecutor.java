@@ -30,7 +30,6 @@ import de.klaro.reformcloud2.executor.api.packets.in.APIPacketInPluginAction;
 
 import java.io.File;
 import java.util.UUID;
-import java.util.function.Consumer;
 
 public final class NukkitExecutor extends API implements PlayerAPIExecutor {
 
@@ -106,19 +105,16 @@ public final class NukkitExecutor extends API implements PlayerAPIExecutor {
     }
 
     private void awaitConnectionAndUpdate() {
-        Task.EXECUTOR.execute(new Runnable() {
-            @Override
-            public void run() {
-                PacketSender packetSender = DefaultChannelManager.INSTANCE.get("Controller").orElse(null);
-                while (packetSender == null) {
-                    packetSender = DefaultChannelManager.INSTANCE.get("Controller").orElse(null);
-                    AbsoluteThread.sleep(100);
-                }
-
-                thisProcessInformation.updateMaxPlayers(Server.getInstance().getMaxPlayers());
-                thisProcessInformation.updateRuntimeInformation();
-                ExecutorAPI.getInstance().update(thisProcessInformation);
+        Task.EXECUTOR.execute(() -> {
+            PacketSender packetSender = DefaultChannelManager.INSTANCE.get("Controller").orElse(null);
+            while (packetSender == null) {
+                packetSender = DefaultChannelManager.INSTANCE.get("Controller").orElse(null);
+                AbsoluteThread.sleep(100);
             }
+
+            thisProcessInformation.updateMaxPlayers(Server.getInstance().getMaxPlayers());
+            thisProcessInformation.updateRuntimeInformation();
+            ExecutorAPI.getInstance().update(thisProcessInformation);
         });
     }
 
@@ -133,22 +129,12 @@ public final class NukkitExecutor extends API implements PlayerAPIExecutor {
 
     @Override
     public void executeSendMessage(UUID player, String message) {
-        Server.getInstance().getPlayer(player).ifPresent(new Consumer<Player>() {
-            @Override
-            public void accept(Player player) {
-                player.sendMessage(message);
-            }
-        });
+        Server.getInstance().getPlayer(player).ifPresent(player1 -> player1.sendMessage(message));
     }
 
     @Override
     public void executeKickPlayer(UUID player, String message) {
-        Server.getInstance().getPlayer(player).ifPresent(new Consumer<Player>() {
-            @Override
-            public void accept(Player player) {
-                player.kick(message);
-            }
-        });
+        Server.getInstance().getPlayer(player).ifPresent(player1 -> player1.kick(message));
     }
 
     @Override
@@ -158,12 +144,7 @@ public final class NukkitExecutor extends API implements PlayerAPIExecutor {
 
     @Override
     public void executeSendTitle(UUID player, String title, String subTitle, int fadeIn, int stay, int fadeOut) {
-        Server.getInstance().getPlayer(player).ifPresent(new Consumer<Player>() {
-            @Override
-            public void accept(Player player) {
-                player.sendTitle(title, subTitle, fadeIn, stay, fadeOut);
-            }
-        });
+        Server.getInstance().getPlayer(player).ifPresent(player1 -> player1.sendTitle(title, subTitle, fadeIn, stay, fadeOut));
     }
 
     @Override
@@ -178,22 +159,12 @@ public final class NukkitExecutor extends API implements PlayerAPIExecutor {
 
     @Override
     public void executeRespawn(UUID player) {
-        Server.getInstance().getPlayer(player).ifPresent(new Consumer<Player>() {
-            @Override
-            public void accept(Player player) {
-                player.kill();
-            }
-        });
+        Server.getInstance().getPlayer(player).ifPresent(Player::kill);
     }
 
     @Override
     public void executeTeleport(UUID player, String world, double x, double y, double z, float yaw, float pitch) {
-        Server.getInstance().getPlayer(player).ifPresent(new Consumer<Player>() {
-            @Override
-            public void accept(Player player) {
-                player.teleport(new Location(x, y, z, yaw, pitch));
-            }
-        });
+        Server.getInstance().getPlayer(player).ifPresent(player1 -> player1.teleport(new Location(x, y, z, yaw, pitch)));
     }
 
     @Override

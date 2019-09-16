@@ -1,7 +1,6 @@
 package de.klaro.reformcloud2.executor.api.velocity.plugins;
 
 import com.velocitypowered.api.plugin.PluginContainer;
-import com.velocitypowered.api.plugin.meta.PluginDependency;
 import de.klaro.reformcloud2.executor.api.common.ExecutorAPI;
 import de.klaro.reformcloud2.executor.api.common.plugins.basic.DefaultPlugin;
 import de.klaro.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
@@ -11,7 +10,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
 
 public final class PluginUpdater extends AbsoluteThread {
 
@@ -26,32 +24,26 @@ public final class PluginUpdater extends AbsoluteThread {
             if (plugins.size() != ExecutorAPI.getInstance().getThisProcessInformation().getPlugins().size()) {
                 ExecutorAPI.getInstance().getThisProcessInformation().updateRuntimeInformation();
                 ExecutorAPI.getInstance().getThisProcessInformation().getPlugins().clear();
-                plugins.forEach(new Consumer<PluginContainer>() {
-                    @Override
-                    public void accept(PluginContainer plugin) {
-                        List<String> depends = new ArrayList<>();
-                        List<String> softDepends = new ArrayList<>();
-                        plugin.getDescription().getDependencies().forEach(new Consumer<PluginDependency>() {
-                            @Override
-                            public void accept(PluginDependency pluginDependency) {
-                                if (pluginDependency.isOptional()) {
-                                    softDepends.add(pluginDependency.getId());
-                                } else {
-                                    depends.add(pluginDependency.getId());
-                                }
-                            }
-                        });
+                plugins.forEach(plugin -> {
+                    List<String> depends = new ArrayList<>();
+                    List<String> softDepends = new ArrayList<>();
+                    plugin.getDescription().getDependencies().forEach(pluginDependency -> {
+                        if (pluginDependency.isOptional()) {
+                            softDepends.add(pluginDependency.getId());
+                        } else {
+                            depends.add(pluginDependency.getId());
+                        }
+                    });
 
-                        ExecutorAPI.getInstance().getThisProcessInformation().getPlugins().add(new DefaultPlugin(
-                                plugin.getDescription().getVersion().get(),
-                                plugin.getDescription().getAuthors().get(0),
-                                null,
-                                depends,
-                                softDepends,
-                                true,
-                                plugin.getDescription().getId()
-                        ));
-                    }
+                    ExecutorAPI.getInstance().getThisProcessInformation().getPlugins().add(new DefaultPlugin(
+                            plugin.getDescription().getVersion().get(),
+                            plugin.getDescription().getAuthors().get(0),
+                            null,
+                            depends,
+                            softDepends,
+                            true,
+                            plugin.getDescription().getId()
+                    ));
                 });
                 ExecutorAPI.getInstance().update(ExecutorAPI.getInstance().getThisProcessInformation());
             }

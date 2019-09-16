@@ -8,7 +8,10 @@ import de.klaro.reformcloud2.executor.api.common.network.handler.ClientInitializ
 import de.klaro.reformcloud2.executor.api.common.utility.task.Task;
 import de.klaro.reformcloud2.executor.api.common.utility.task.defaults.DefaultTask;
 import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.*;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelFutureListener;
+import io.netty.channel.ChannelOption;
+import io.netty.channel.EventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 
 public final class DefaultNetworkClient implements NetworkClient {
@@ -39,15 +42,12 @@ public final class DefaultNetworkClient implements NetworkClient {
 
                     .addListener(ChannelFutureListener.CLOSE_ON_FAILURE)
                     .addListener(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE)
-                    .addListener(new ChannelFutureListener() {
-                        @Override
-                        public void operationComplete(ChannelFuture channelFuture) {
-                            if (channelFuture.isSuccess()) {
-                                channelFuture.channel().writeAndFlush(new PacketOutAuth(auth)).syncUninterruptibly();
-                            }
-
-                            connectTask.complete(channelFuture.isSuccess());
+                    .addListener((ChannelFutureListener) channelFuture -> {
+                        if (channelFuture.isSuccess()) {
+                            channelFuture.channel().writeAndFlush(new PacketOutAuth(auth)).syncUninterruptibly();
                         }
+
+                        connectTask.complete(channelFuture.isSuccess());
                     }).channel();
         } catch (final Exception ex) {
             ex.printStackTrace();

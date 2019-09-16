@@ -2,7 +2,6 @@ package de.klaro.reformcloud2.runner;
 
 import de.klaro.reformcloud2.runner.classloading.ClassPreparer;
 import de.klaro.reformcloud2.runner.classloading.RunnerClassLoader;
-import de.klaro.reformcloud2.runner.util.ExceptionFunction;
 
 import java.io.*;
 import java.lang.reflect.Field;
@@ -34,98 +33,76 @@ public final class Runner {
         );
     }
 
-    private static final Predicate<String> CONTROLLER_UNPACK_TEST = new Predicate<String>() {
-        @Override
-        public boolean test(String s) {
-            return s != null && (s.equalsIgnoreCase("controller") || s.equalsIgnoreCase("client"));
-        }
-    };
+    private static final Predicate<String> CONTROLLER_UNPACK_TEST = s -> s != null && (s.equalsIgnoreCase("controller") || s.equalsIgnoreCase("client"));
 
-    private static final Runnable CHOOSE_INSTALL_MESSAGE = new Runnable() {
-        @Override
-        public void run() {
-            System.out.println("Please choose an executor: [\"controller\", \"client\"]");
-        }
-    };
+    private static final Runnable CHOOSE_INSTALL_MESSAGE = () -> System.out.println("Please choose an executor: [\"controller\", \"client\"]");
 
     /* ================================== */
 
     public static synchronized void main(String[] args) {
         if (!isAPI()) {
-            startSetup(new BiConsumer<String, String>() {
-                @Override
-                public void accept(String version, String id) {
-                    final File file = new File("reformcloud/.bin/executor.jar");
-                    if (!file.exists()) {
-                        throw new RuntimeException("Executor file does not exists");
-                    }
+            startSetup((version, id) -> {
+                final File file = new File("reformcloud/.bin/executor.jar");
+                if (!file.exists()) {
+                    throw new RuntimeException("Executor file does not exists");
+                }
 
-                    ClassLoader classLoader = ClassPreparer.create(file.toPath(),
-                            new ExceptionFunction<Path, ClassLoader>() {
-                                @Override
-                                public ClassLoader apply(Path path) throws Exception {
-                                    URL[] urls = new URL[]{path.toUri().toURL()};
-                                    return new RunnerClassLoader(urls);
-                                }
-                            });
-                    if (!(classLoader instanceof URLClassLoader)) {
-                        throw new RuntimeException("ClassLoader has to be a url class loader");
-                    }
+                ClassLoader classLoader = ClassPreparer.create(file.toPath(),
+                        path -> {
+                            URL[] urls = new URL[]{path.toUri().toURL()};
+                            return new RunnerClassLoader(urls);
+                        });
+                if (!(classLoader instanceof URLClassLoader)) {
+                    throw new RuntimeException("ClassLoader has to be a url class loader");
+                }
 
-                    updateClassLoader(classLoader);
+                updateClassLoader(classLoader);
 
-                    try (JarFile jarFile = new JarFile(file)) {
-                        String main = jarFile.getManifest().getMainAttributes().getValue("Main-Class");
-                        Method invoke = classLoader.loadClass(main).getMethod("main", String[].class);
-                        invoke.setAccessible(true);
+                try (JarFile jarFile = new JarFile(file)) {
+                    String main = jarFile.getManifest().getMainAttributes().getValue("Main-Class");
+                    Method invoke = classLoader.loadClass(main).getMethod("main", String[].class);
+                    invoke.setAccessible(true);
 
-                        switch (id) {
-                            case "1": {
-                                createInvoke("1");
-                                invoke.invoke(null, (Object) args);
-                                break;
-                            }
-
-                            case "2": {
-                                createInvoke("2");
-                                invoke.invoke(null, (Object) args);
-                                break;
-                            }
-
-                            default: {
-                                throw new RuntimeException("Unknown id provided by config detected");
-                            }
+                    switch (id) {
+                        case "1": {
+                            createInvoke("1");
+                            invoke.invoke(null, (Object) args);
+                            break;
                         }
-                    } catch (final Exception ex) {
-                        ex.printStackTrace();
+
+                        case "2": {
+                            createInvoke("2");
+                            invoke.invoke(null, (Object) args);
+                            break;
+                        }
+
+                        default: {
+                            throw new RuntimeException("Unknown id provided by config detected");
+                        }
                     }
+                } catch (final Exception ex) {
+                    ex.printStackTrace();
                 }
             });
         } else {
-            runIfProcessExists(new Consumer<Path>() {
-                @Override
-                public void accept(Path path) {
-                    unpackExecutorAsPlugin();
-                    ClassLoader classLoader = ClassPreparer.create(path, new ExceptionFunction<Path, ClassLoader>() {
-                        @Override
-                        public ClassLoader apply(Path path) throws Exception {
-                            URL[] urls = new URL[]{path.toUri().toURL()};
-                            return new RunnerClassLoader(urls);
-                        }
-                    });
-                    if (!(classLoader instanceof URLClassLoader)) {
-                        throw new RuntimeException("ClassLoader has to be a url class loader");
-                    }
+            runIfProcessExists(path -> {
+                unpackExecutorAsPlugin();
+                ClassLoader classLoader = ClassPreparer.create(path, path1 -> {
+                    URL[] urls = new URL[]{path1.toUri().toURL()};
+                    return new RunnerClassLoader(urls);
+                });
+                if (!(classLoader instanceof URLClassLoader)) {
+                    throw new RuntimeException("ClassLoader has to be a url class loader");
+                }
 
-                    updateClassLoader(classLoader);
-                    try (JarFile jarFile = new JarFile(path.toFile())) {
-                        String main = jarFile.getManifest().getMainAttributes().getValue("Main-Class");
-                        Method invoke = classLoader.loadClass(main).getMethod("main", String[].class);
-                        invoke.setAccessible(true);
-                        invoke.invoke(null, (Object) args);
-                    } catch (final Exception ex) {
-                        ex.printStackTrace();
-                    }
+                updateClassLoader(classLoader);
+                try (JarFile jarFile = new JarFile(path.toFile())) {
+                    String main = jarFile.getManifest().getMainAttributes().getValue("Main-Class");
+                    Method invoke = classLoader.loadClass(main).getMethod("main", String[].class);
+                    invoke.setAccessible(true);
+                    invoke.invoke(null, (Object) args);
+                } catch (final Exception ex) {
+                    ex.printStackTrace();
                 }
             });
         }

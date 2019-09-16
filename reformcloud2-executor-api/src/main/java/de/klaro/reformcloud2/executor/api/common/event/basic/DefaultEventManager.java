@@ -14,9 +14,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
 
 public final class DefaultEventManager implements EventManager {
 
@@ -41,27 +38,21 @@ public final class DefaultEventManager implements EventManager {
 
         List<LoadedListener> listeners = done.get(event.getClass());
         if (listeners != null) {
-            listeners.forEach(new Consumer<LoadedListener>() {
-                @Override
-                public void accept(LoadedListener loadedListener) {
-                    if (!event.isAsync()) {
+            listeners.forEach(loadedListener -> {
+                if (!event.isAsync()) {
+                    try {
+                        loadedListener.call(event);
+                    } catch (final InvocationTargetException | IllegalAccessException ex) {
+                        ex.printStackTrace();
+                    }
+                } else {
+                    CompletableFuture.runAsync(() -> {
                         try {
                             loadedListener.call(event);
                         } catch (final InvocationTargetException | IllegalAccessException ex) {
                             ex.printStackTrace();
                         }
-                    } else {
-                        CompletableFuture.runAsync(new Runnable() {
-                            @Override
-                            public void run() {
-                                try {
-                                    loadedListener.call(event);
-                                } catch (final InvocationTargetException | IllegalAccessException ex) {
-                                    ex.printStackTrace();
-                                }
-                            }
-                        });
-                    }
+                    });
                 }
             });
         }
@@ -71,22 +62,12 @@ public final class DefaultEventManager implements EventManager {
 
     @Override
     public void callEventAsync(Class<? extends Event> event) {
-        CompletableFuture.runAsync(new Runnable() {
-            @Override
-            public void run() {
-                callEvent(event);
-            }
-        });
+        CompletableFuture.runAsync(() -> callEvent(event));
     }
 
     @Override
     public void callEventAsync(Event event) {
-        CompletableFuture.runAsync(new Runnable() {
-            @Override
-            public void run() {
-                callEvent(event);
-            }
-        });
+        CompletableFuture.runAsync(() -> callEvent(event));
     }
 
     @Override
@@ -105,22 +86,12 @@ public final class DefaultEventManager implements EventManager {
 
     @Override
     public void registerListenerAsync(Object listener) {
-        CompletableFuture.runAsync(new Runnable() {
-            @Override
-            public void run() {
-                registerListener(listener);
-            }
-        });
+        CompletableFuture.runAsync(() -> registerListener(listener));
     }
 
     @Override
     public void registerListenerAsync(Class<?> listener) {
-        CompletableFuture.runAsync(new Runnable() {
-            @Override
-            public void run() {
-                registerListener(listener);
-            }
-        });
+        CompletableFuture.runAsync(() -> registerListener(listener));
     }
 
     @Override
@@ -130,27 +101,12 @@ public final class DefaultEventManager implements EventManager {
 
     @Override
     public void unregisterAll() {
-        Links.forEachValues(done, new Consumer<List<LoadedListener>>() {
-            @Override
-            public void accept(List<LoadedListener> loadedListeners) {
-                Links.forEach(loadedListeners, new Consumer<LoadedListener>() {
-                    @Override
-                    public void accept(LoadedListener loadedListener) {
-                        unregister(loadedListener.getListener());
-                    }
-                });
-            }
-        });
+        Links.forEachValues(done, loadedListeners -> Links.forEach(loadedListeners, loadedListener -> unregister(loadedListener.getListener())));
     }
 
     @Override
     public List<List<LoadedListener>> getListeners() {
-        return Collections.unmodifiableList(Links.getValues(done, new Predicate<Class<?>>() {
-            @Override
-            public boolean test(Class<?> aClass) {
-                return true;
-            }
-        }));
+        return Collections.unmodifiableList(Links.getValues(done, aClass -> true));
     }
 
     private Map<Class<?>, Map<Byte, Set<Method>>> find(Object listener) {
@@ -162,19 +118,9 @@ public final class DefaultEventManager implements EventManager {
                 Conditions.isTrue(parameters.length == 1, "Listener class {0} tried to register a method with {1} instead of one argument",
                         listener.getClass().getSimpleName(), parameters.length);
 
-                Map<Byte, Set<Method>> map = result.computeIfAbsent(parameters[0], new Function<Class<?>, Map<Byte, Set<Method>>>() {
-                    @Override
-                    public Map<Byte, Set<Method>> apply(Class<?> aClass) {
-                        return new HashMap<>();
-                    }
-                });
+                Map<Byte, Set<Method>> map = result.computeIfAbsent(parameters[0], aClass -> new HashMap<>());
 
-                Set<Method> methods = map.computeIfAbsent(annotation.priority().getPriority(), new Function<Byte, Set<Method>>() {
-                    @Override
-                    public Set<Method> apply(Byte aByte) {
-                        return new HashSet<>();
-                    }
-                });
+                Set<Method> methods = map.computeIfAbsent(annotation.priority().getPriority(), aByte -> new HashSet<>());
 
                 methods.add(method);
             }
@@ -188,20 +134,10 @@ public final class DefaultEventManager implements EventManager {
         lock.lock();
         try {
             for (Map.Entry<Class<?>, Map<Byte, Set<Method>>> classMapEntry : handlers.entrySet()) {
-                Map<Byte, Map<Object, Method[]>> priorities = byListenerAndPriority.computeIfAbsent(classMapEntry.getKey(), new Function<Class<?>, Map<Byte, Map<Object, Method[]>>>() {
-                    @Override
-                    public Map<Byte, Map<Object, Method[]>> apply(Class<?> aClass) {
-                        return new HashMap<>();
-                    }
-                });
+                Map<Byte, Map<Object, Method[]>> priorities = byListenerAndPriority.computeIfAbsent(classMapEntry.getKey(), aClass -> new HashMap<>());
 
                 for (Map.Entry<Byte, Set<Method>> byteSetEntry : classMapEntry.getValue().entrySet()) {
-                    Map<Object, Method[]> current = priorities.computeIfAbsent(byteSetEntry.getKey(), new Function<Byte, Map<Object, Method[]>>() {
-                        @Override
-                        public Map<Object, Method[]> apply(Byte aByte) {
-                            return new HashMap<>();
-                        }
-                    });
+                    Map<Object, Method[]> current = priorities.computeIfAbsent(byteSetEntry.getKey(), aByte -> new HashMap<>());
 
                     Method[] methods = new Method[byteSetEntry.getValue().size()];
                     current.put(listener, byteSetEntry.getValue().toArray(methods));

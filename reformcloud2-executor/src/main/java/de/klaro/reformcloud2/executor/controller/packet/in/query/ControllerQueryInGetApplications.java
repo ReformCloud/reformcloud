@@ -2,7 +2,6 @@ package de.klaro.reformcloud2.executor.controller.packet.in.query;
 
 import de.klaro.reformcloud2.executor.api.common.ExecutorAPI;
 import de.klaro.reformcloud2.executor.api.common.api.basic.ExternalAPIImplementation;
-import de.klaro.reformcloud2.executor.api.common.application.LoadedApplication;
 import de.klaro.reformcloud2.executor.api.common.application.basic.DefaultLoadedApplication;
 import de.klaro.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import de.klaro.reformcloud2.executor.api.common.network.channel.PacketSender;
@@ -12,7 +11,6 @@ import de.klaro.reformcloud2.executor.api.common.network.packet.Packet;
 import de.klaro.reformcloud2.executor.api.common.utility.list.Links;
 
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 public final class ControllerQueryInGetApplications implements NetworkHandler {
 
@@ -27,11 +25,6 @@ public final class ControllerQueryInGetApplications implements NetworkHandler {
     }
 
     private static JsonConfiguration convert() {
-        return new JsonConfiguration().add("result", Links.apply(ExecutorAPI.getInstance().getApplications(), new Function<LoadedApplication, DefaultLoadedApplication>() {
-            @Override
-            public DefaultLoadedApplication apply(LoadedApplication application) {
-                return new DefaultLoadedApplication(application.loader(), application.applicationConfig(), application.mainClass());
-            }
-        }));
+        return new JsonConfiguration().add("result", Links.apply(ExecutorAPI.getInstance().getApplications(), application -> new DefaultLoadedApplication(application.loader(), application.applicationConfig(), application.mainClass())));
     }
 }

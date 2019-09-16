@@ -12,7 +12,6 @@ import io.netty.channel.socket.ServerSocketChannel;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.BiConsumer;
 
 public final class DefaultNetworkServer implements NetworkServer {
 
@@ -47,14 +46,11 @@ public final class DefaultNetworkServer implements NetworkServer {
 
                         .bind(host, port)
 
-                        .addListener(new ChannelFutureListener() {
-                            @Override
-                            public void operationComplete(ChannelFuture channelFuture) {
-                                if (channelFuture.isSuccess()) {
-                                    DefaultNetworkServer.this.channelFutures.put(port, channelFuture);
-                                } else {
-                                    channelFuture.cause().printStackTrace();
-                                }
+                        .addListener((ChannelFutureListener) channelFuture -> {
+                            if (channelFuture.isSuccess()) {
+                                DefaultNetworkServer.this.channelFutures.put(port, channelFuture);
+                            } else {
+                                channelFuture.cause().printStackTrace();
                             }
                         });
         }
@@ -70,12 +66,7 @@ public final class DefaultNetworkServer implements NetworkServer {
 
     @Override
     public void closeAll() {
-        channelFutures.forEach(new BiConsumer<Integer, ChannelFuture>() {
-            @Override
-            public void accept(Integer integer, ChannelFuture channelFuture) {
-                channelFuture.cancel(true);
-            }
-        });
+        channelFutures.forEach((integer, channelFuture) -> channelFuture.cancel(true));
 
         channelFutures.clear();
         this.worker.shutdownGracefully();

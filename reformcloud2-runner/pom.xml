@@ -12,7 +12,7 @@
     <artifactId>reformcloud2-runner</artifactId>
 
     <build>
-        <finalName>ReformCloud${service.version}@${service.spec}</finalName>
+        <finalName>runner</finalName>
 
         <plugins>
 

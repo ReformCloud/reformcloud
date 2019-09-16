@@ -9,7 +9,6 @@ import net.md_5.bungee.api.plugin.Plugin;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
 
 public final class PluginUpdater extends AbsoluteThread {
 
@@ -24,20 +23,15 @@ public final class PluginUpdater extends AbsoluteThread {
             if (plugins.size() != ExecutorAPI.getInstance().getThisProcessInformation().getPlugins().size()) {
                 ExecutorAPI.getInstance().getThisProcessInformation().updateRuntimeInformation();
                 ExecutorAPI.getInstance().getThisProcessInformation().getPlugins().clear();
-                plugins.forEach(new Consumer<Plugin>() {
-                    @Override
-                    public void accept(Plugin plugin) {
-                        ExecutorAPI.getInstance().getThisProcessInformation().getPlugins().add(new DefaultPlugin(
-                                plugin.getDescription().getVersion(),
-                                plugin.getDescription().getAuthor(),
-                                plugin.getDescription().getMain(),
-                                new ArrayList<>(plugin.getDescription().getDepends()),
-                                new ArrayList<>(plugin.getDescription().getSoftDepends()),
-                                true,
-                                plugin.getDescription().getName()
-                        ));
-                    }
-                });
+                plugins.forEach(plugin -> ExecutorAPI.getInstance().getThisProcessInformation().getPlugins().add(new DefaultPlugin(
+                        plugin.getDescription().getVersion(),
+                        plugin.getDescription().getAuthor(),
+                        plugin.getDescription().getMain(),
+                        new ArrayList<>(plugin.getDescription().getDepends()),
+                        new ArrayList<>(plugin.getDescription().getSoftDepends()),
+                        true,
+                        plugin.getDescription().getName()
+                )));
                 ExecutorAPI.getInstance().update(ExecutorAPI.getInstance().getThisProcessInformation());
             }
 

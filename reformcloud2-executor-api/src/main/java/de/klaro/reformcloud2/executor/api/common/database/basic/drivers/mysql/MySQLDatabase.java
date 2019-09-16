@@ -135,35 +135,32 @@ public final class MySQLDatabase extends Database<Connection> {
             @Override
             public Task<JsonConfiguration> find(String key) {
                 Task<JsonConfiguration> task = new DefaultTask<>();
-                Task.EXECUTOR.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            PreparedStatement statement = connection.prepareStatement("SELECT `data` FROM `" + table + "` WHERE `key` = ?");
-                            statement.setString(1, key);
-                            ResultSet resultSet = statement.executeQuery();
-                            if (resultSet.next()) {
-                                byte[] bytes = resultSet.getBytes("data");
-                                if (bytes.length != 0) {
-                                    try (InputStream inputStream = new ByteArrayInputStream(bytes)) {
-                                        task.complete(new JsonConfiguration(inputStream));
-                                    } catch (final IOException ex) {
-                                        ex.printStackTrace();
-                                        task.complete(null);
-                                    }
-                                } else {
+                Task.EXECUTOR.execute(() -> {
+                    try {
+                        PreparedStatement statement = connection.prepareStatement("SELECT `data` FROM `" + table + "` WHERE `key` = ?");
+                        statement.setString(1, key);
+                        ResultSet resultSet = statement.executeQuery();
+                        if (resultSet.next()) {
+                            byte[] bytes = resultSet.getBytes("data");
+                            if (bytes.length != 0) {
+                                try (InputStream inputStream = new ByteArrayInputStream(bytes)) {
+                                    task.complete(new JsonConfiguration(inputStream));
+                                } catch (final IOException ex) {
+                                    ex.printStackTrace();
                                     task.complete(null);
                                 }
                             } else {
                                 task.complete(null);
                             }
-
-                            statement.close();
-                            resultSet.close();
-                        } catch (final SQLException ex) {
-                            ex.printStackTrace();
+                        } else {
                             task.complete(null);
                         }
+
+                        statement.close();
+                        resultSet.close();
+                    } catch (final SQLException ex) {
+                        ex.printStackTrace();
+                        task.complete(null);
                     }
                 });
                 return task;
@@ -172,35 +169,32 @@ public final class MySQLDatabase extends Database<Connection> {
             @Override
             public Task<JsonConfiguration> findIfAbsent(String identifier) {
                 Task<JsonConfiguration> task = new DefaultTask<>();
-                Task.EXECUTOR.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            PreparedStatement statement = connection.prepareStatement("SELECT `data` FROM `" + table + "` WHERE `identifier` = ?");
-                            statement.setString(1, identifier);
-                            ResultSet resultSet = statement.executeQuery();
-                            if (resultSet.next()) {
-                                byte[] bytes = resultSet.getBytes("data");
-                                if (bytes.length != 0) {
-                                    try (InputStream inputStream = new ByteArrayInputStream(bytes)) {
-                                        task.complete(new JsonConfiguration(inputStream));
-                                    } catch (final IOException ex) {
-                                        ex.printStackTrace();
-                                        task.complete(null);
-                                    }
-                                } else {
+                Task.EXECUTOR.execute(() -> {
+                    try {
+                        PreparedStatement statement = connection.prepareStatement("SELECT `data` FROM `" + table + "` WHERE `identifier` = ?");
+                        statement.setString(1, identifier);
+                        ResultSet resultSet = statement.executeQuery();
+                        if (resultSet.next()) {
+                            byte[] bytes = resultSet.getBytes("data");
+                            if (bytes.length != 0) {
+                                try (InputStream inputStream = new ByteArrayInputStream(bytes)) {
+                                    task.complete(new JsonConfiguration(inputStream));
+                                } catch (final IOException ex) {
+                                    ex.printStackTrace();
                                     task.complete(null);
                                 }
                             } else {
                                 task.complete(null);
                             }
-
-                            statement.close();
-                            resultSet.close();
-                        } catch (final SQLException ex) {
-                            ex.printStackTrace();
+                        } else {
                             task.complete(null);
                         }
+
+                        statement.close();
+                        resultSet.close();
+                    } catch (final SQLException ex) {
+                        ex.printStackTrace();
+                        task.complete(null);
                     }
                 });
                 return task;
@@ -209,21 +203,18 @@ public final class MySQLDatabase extends Database<Connection> {
             @Override
             public Task<JsonConfiguration> insert(String key, String identifier, JsonConfiguration data) {
                 Task<JsonConfiguration> task = new DefaultTask<>();
-                Task.EXECUTOR.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            PreparedStatement statement = connection.prepareStatement("INSERT INTO `" + table + "` (`key`, `identifier`, `data`) VALUES (?, ?, ?);");
-                            statement.setString(1, key);
-                            statement.setString(2, identifier);
-                            statement.setBytes(3, data.toPrettyBytes());
-                            statement.executeUpdate();
-                            statement.close();
-                            task.complete(data);
-                        } catch (final SQLException ex) {
-                            ex.printStackTrace();
-                            task.complete(null);
-                        }
+                Task.EXECUTOR.execute(() -> {
+                    try {
+                        PreparedStatement statement = connection.prepareStatement("INSERT INTO `" + table + "` (`key`, `identifier`, `data`) VALUES (?, ?, ?);");
+                        statement.setString(1, key);
+                        statement.setString(2, identifier);
+                        statement.setBytes(3, data.toPrettyBytes());
+                        statement.executeUpdate();
+                        statement.close();
+                        task.complete(data);
+                    } catch (final SQLException ex) {
+                        ex.printStackTrace();
+                        task.complete(null);
                     }
                 });
                 return task;
@@ -232,20 +223,17 @@ public final class MySQLDatabase extends Database<Connection> {
             @Override
             public Task<Boolean> update(String key, JsonConfiguration newData) {
                 Task<Boolean> task = new DefaultTask<>();
-                Task.EXECUTOR.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            PreparedStatement statement = connection.prepareStatement("UPDATE `" + table + "` SET `data` = ? WHERE `key` = ?");
-                            statement.setBytes(1, newData.toPrettyBytes());
-                            statement.setString(2, key);
-                            statement.executeUpdate();
-                            statement.close();
-                            task.complete(true);
-                        } catch (final SQLException ex) {
-                            ex.printStackTrace();
-                            task.complete(false);
-                        }
+                Task.EXECUTOR.execute(() -> {
+                    try {
+                        PreparedStatement statement = connection.prepareStatement("UPDATE `" + table + "` SET `data` = ? WHERE `key` = ?");
+                        statement.setBytes(1, newData.toPrettyBytes());
+                        statement.setString(2, key);
+                        statement.executeUpdate();
+                        statement.close();
+                        task.complete(true);
+                    } catch (final SQLException ex) {
+                        ex.printStackTrace();
+                        task.complete(false);
                     }
                 });
                 return task;
@@ -254,28 +242,25 @@ public final class MySQLDatabase extends Database<Connection> {
             @Override
             public Task<Boolean> updateIfAbsent(String identifier, JsonConfiguration newData) {
                 Task<Boolean> task = new DefaultTask<>();
-                Task.EXECUTOR.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        JsonConfiguration configuration = findIfAbsent(identifier).getUninterruptedly();
-                        if (configuration == null) {
-                            task.complete(false);
-                        } else {
-                            removeIfAbsent(identifier);
-                            try {
-                                PreparedStatement statement = connection.prepareStatement("SELECT `key` FROM `" + table + "` WHERE `identifier` = ?");
-                                statement.setString(1, identifier);
-                                ResultSet resultSet = statement.executeQuery();
-                                if (resultSet.next()) {
-                                    insert(resultSet.getString("key"), identifier, newData);
-                                    task.complete(true);
-                                } else {
-                                    task.complete(false);
-                                }
-                            } catch (final SQLException ex) {
-                                ex.printStackTrace();
+                Task.EXECUTOR.execute(() -> {
+                    JsonConfiguration configuration = findIfAbsent(identifier).getUninterruptedly();
+                    if (configuration == null) {
+                        task.complete(false);
+                    } else {
+                        removeIfAbsent(identifier);
+                        try {
+                            PreparedStatement statement = connection.prepareStatement("SELECT `key` FROM `" + table + "` WHERE `identifier` = ?");
+                            statement.setString(1, identifier);
+                            ResultSet resultSet = statement.executeQuery();
+                            if (resultSet.next()) {
+                                insert(resultSet.getString("key"), identifier, newData);
+                                task.complete(true);
+                            } else {
                                 task.complete(false);
                             }
+                        } catch (final SQLException ex) {
+                            ex.printStackTrace();
+                            task.complete(false);
                         }
                     }
                 });
@@ -285,20 +270,17 @@ public final class MySQLDatabase extends Database<Connection> {
             @Override
             public Task<Void> remove(String key) {
                 Task<Void> task = new DefaultTask<>();
-                Task.EXECUTOR.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            PreparedStatement statement = connection.prepareStatement("DELETE FROM `" + table + "` WHERE `key` = ?");
-                            statement.setString(1, key);
-                            statement.executeUpdate();
-                            statement.close();
-                        } catch (final SQLException ex) {
-                            ex.printStackTrace();
-                        }
-
-                        task.complete(null);
+                Task.EXECUTOR.execute(() -> {
+                    try {
+                        PreparedStatement statement = connection.prepareStatement("DELETE FROM `" + table + "` WHERE `key` = ?");
+                        statement.setString(1, key);
+                        statement.executeUpdate();
+                        statement.close();
+                    } catch (final SQLException ex) {
+                        ex.printStackTrace();
                     }
+
+                    task.complete(null);
                 });
                 return task;
             }
@@ -306,20 +288,17 @@ public final class MySQLDatabase extends Database<Connection> {
             @Override
             public Task<Void> removeIfAbsent(String identifier) {
                 Task<Void> task = new DefaultTask<>();
-                Task.EXECUTOR.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            PreparedStatement statement = connection.prepareStatement("DELETE FROM `" + table + "` WHERE `identifier` = ?");
-                            statement.setString(1, identifier);
-                            statement.executeUpdate();
-                            statement.close();
-                        } catch (final SQLException ex) {
-                            ex.printStackTrace();
-                        }
-
-                        task.complete(null);
+                Task.EXECUTOR.execute(() -> {
+                    try {
+                        PreparedStatement statement = connection.prepareStatement("DELETE FROM `" + table + "` WHERE `identifier` = ?");
+                        statement.setString(1, identifier);
+                        statement.executeUpdate();
+                        statement.close();
+                    } catch (final SQLException ex) {
+                        ex.printStackTrace();
                     }
+
+                    task.complete(null);
                 });
                 return task;
             }
@@ -327,35 +306,27 @@ public final class MySQLDatabase extends Database<Connection> {
             @Override
             public Task<Boolean> contains(String key) {
                 Task<Boolean> task = new DefaultTask<>();
-                Task.EXECUTOR.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        task.complete(find(key).getUninterruptedly() != null);
-                    }
-                });
+                Task.EXECUTOR.execute(() -> task.complete(find(key).getUninterruptedly() != null));
                 return task;
             }
 
             @Override
             public Task<Integer> size() {
                 Task<Integer> task = new DefaultTask<>();
-                Task.EXECUTOR.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            AtomicInteger atomicInteger = new AtomicInteger();
-                            PreparedStatement statement = connection.prepareStatement("SELECT `data` FROM `" + table + "`");
-                            ResultSet resultSet = statement.executeQuery();
-                            while (resultSet.next()) {
-                                atomicInteger.addAndGet(1);
-                            }
-                            task.complete(atomicInteger.get());
-                            statement.close();
-                            resultSet.close();
-                        } catch (final SQLException ex) {
-                            ex.printStackTrace();
-                            task.complete(0);
+                Task.EXECUTOR.execute(() -> {
+                    try {
+                        AtomicInteger atomicInteger = new AtomicInteger();
+                        PreparedStatement statement = connection.prepareStatement("SELECT `data` FROM `" + table + "`");
+                        ResultSet resultSet = statement.executeQuery();
+                        while (resultSet.next()) {
+                            atomicInteger.addAndGet(1);
                         }
+                        task.complete(atomicInteger.get());
+                        statement.close();
+                        resultSet.close();
+                    } catch (final SQLException ex) {
+                        ex.printStackTrace();
+                        task.complete(0);
                     }
                 });
                 return task;

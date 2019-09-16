@@ -2,7 +2,6 @@ package de.klaro.reformcloud2.executor.controller.commands;
 
 import de.klaro.reformcloud2.executor.api.common.CommonHelper;
 import de.klaro.reformcloud2.executor.api.common.ExecutorAPI;
-import de.klaro.reformcloud2.executor.api.common.client.ClientRuntimeInformation;
 import de.klaro.reformcloud2.executor.api.common.commands.basic.GlobalCommand;
 import de.klaro.reformcloud2.executor.api.common.commands.source.CommandSource;
 import de.klaro.reformcloud2.executor.api.common.configuration.JsonConfiguration;
@@ -11,7 +10,6 @@ import de.klaro.reformcloud2.executor.api.common.groups.ProcessGroup;
 import de.klaro.reformcloud2.executor.api.common.groups.basic.DefaultProcessGroup;
 import de.klaro.reformcloud2.executor.api.common.groups.utils.*;
 import de.klaro.reformcloud2.executor.api.common.language.LanguageManager;
-import de.klaro.reformcloud2.executor.api.common.network.channel.PacketSender;
 import de.klaro.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import de.klaro.reformcloud2.executor.api.common.process.ProcessInformation;
 import de.klaro.reformcloud2.executor.api.common.utility.StringUtil;
@@ -31,8 +29,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
 
 public final class CommandReformCloud extends GlobalCommand {
@@ -47,77 +43,47 @@ public final class CommandReformCloud extends GlobalCommand {
             {
                 System.out.println(LanguageManager.get("command-rc-available-versions", "Java-Proxy"));
                 StringBuilder stringBuilder = new StringBuilder();
-                Version.getJavaProxyProviders().forEach(new BiConsumer<String, Version>() {
-                    @Override
-                    public void accept(String s, Version v) {
-                        stringBuilder.append(v.name()).append(", ");
-                    }
-                });
+                Version.getJavaProxyProviders().forEach((s, v) -> stringBuilder.append(v.name()).append(", "));
                 System.out.println(stringBuilder.substring(0, stringBuilder.length() - 2));
             }
 
             {
                 System.out.println(LanguageManager.get("command-rc-available-versions", "Pocket-Edition-Proxy"));
                 StringBuilder stringBuilder = new StringBuilder();
-                Version.getPocketProxyProviders().forEach(new BiConsumer<String, Version>() {
-                    @Override
-                    public void accept(String s, Version v) {
-                        stringBuilder.append(v.name()).append(", ");
-                    }
-                });
+                Version.getPocketProxyProviders().forEach((s, v) -> stringBuilder.append(v.name()).append(", "));
                 System.out.println(stringBuilder.substring(0, stringBuilder.length() - 2));
             }
 
             {
                 System.out.println(LanguageManager.get("command-rc-available-versions", "Java-Server"));
                 StringBuilder stringBuilder = new StringBuilder();
-                Version.getJavaServerProviders().forEach(new BiConsumer<String, Version>() {
-                    @Override
-                    public void accept(String s, Version v) {
-                        stringBuilder.append(v.name()).append(", ");
-                    }
-                });
+                Version.getJavaServerProviders().forEach((s, v) -> stringBuilder.append(v.name()).append(", "));
                 System.out.println(stringBuilder.substring(0, stringBuilder.length() - 2));
             }
 
             {
                 System.out.println(LanguageManager.get("command-rc-available-versions", "Pocket-Edition-Server"));
                 StringBuilder stringBuilder = new StringBuilder();
-                Version.getPocketServerProviders().forEach(new BiConsumer<String, Version>() {
-                    @Override
-                    public void accept(String s, Version v) {
-                        stringBuilder.append(v.name()).append(", ");
-                    }
-                });
+                Version.getPocketServerProviders().forEach((s, v) -> stringBuilder.append(v.name()).append(", "));
                 System.out.println(stringBuilder.substring(0, stringBuilder.length() - 2));
             }
             return true;
         } else if (strings.length == 1 && strings[0].equalsIgnoreCase("list")) {
-            ExecutorAPI.getInstance().getAllProcesses().forEach(new Consumer<ProcessInformation>() {
-                @Override
-                public void accept(ProcessInformation processInformation) {
-                    System.out.println(
-                            "  => "
-                                    + processInformation.getName()
-                                    + "/" + processInformation.getProcessUniqueID()
-                                    + " " + processInformation.getOnlineCount() + "/"
-                                    + processInformation.getMaxPlayers() + " "
-                                    + processInformation.getTemplate().getVersion()
-                    );
-                }
-            });
+            ExecutorAPI.getInstance().getAllProcesses().forEach(processInformation -> System.out.println(
+                    "  => "
+                            + processInformation.getName()
+                            + "/" + processInformation.getProcessUniqueID()
+                            + " " + processInformation.getOnlineCount() + "/"
+                            + processInformation.getMaxPlayers() + " "
+                            + processInformation.getTemplate().getVersion()
+            ));
             return true;
         } else if (strings.length == 1 && strings[0].equalsIgnoreCase("clients")) {
             System.out.println(LanguageManager.get("command-rc-connected-clients"));
-            ClientManager.INSTANCE.clientRuntimeInformation.forEach(new Consumer<ClientRuntimeInformation>() {
-                @Override
-                public void accept(ClientRuntimeInformation clientRuntimeInformation) {
-                    System.out.println("   => " + clientRuntimeInformation.getName()
-                            + " Ram: " + clientRuntimeInformation.maxMemory() + "MB max"
-                            + " Host: " + clientRuntimeInformation.startHost()
-                    );
-                }
-            });
+            ClientManager.INSTANCE.clientRuntimeInformation.forEach(clientRuntimeInformation -> System.out.println("   => " + clientRuntimeInformation.getName()
+                    + " Ram: " + clientRuntimeInformation.maxMemory() + "MB max"
+                    + " Host: " + clientRuntimeInformation.startHost()
+            ));
             return true;
         }
 
@@ -143,12 +109,7 @@ public final class CommandReformCloud extends GlobalCommand {
                         return true;
                     }
 
-                    DefaultChannelManager.INSTANCE.get(processInformation.getParent()).ifPresent(new Consumer<PacketSender>() {
-                        @Override
-                        public void accept(PacketSender packetSender) {
-                            packetSender.sendPacket(new ControllerPacketOutToggleScreen(processInformation.getProcessUniqueID()));
-                        }
-                    });
+                    DefaultChannelManager.INSTANCE.get(processInformation.getParent()).ifPresent(packetSender -> packetSender.sendPacket(new ControllerPacketOutToggleScreen(processInformation.getProcessUniqueID())));
                     System.out.println(LanguageManager.get("command-rc-execute-success"));
                     return true;
                 }
@@ -169,18 +130,31 @@ public final class CommandReformCloud extends GlobalCommand {
                     return true;
                 }
 
-                DefaultChannelManager.INSTANCE.get(processInformation.getParent()).ifPresent(new Consumer<PacketSender>() {
-                    @Override
-                    public void accept(PacketSender packetSender) {
-                        packetSender.sendPacket(new ControllerPacketOutCopyProcess(processInformation.getProcessUniqueID()));
-                    }
-                });
+                DefaultChannelManager.INSTANCE.get(processInformation.getParent()).ifPresent(packetSender -> packetSender.sendPacket(new ControllerPacketOutCopyProcess(processInformation.getProcessUniqueID())));
+                System.out.println(LanguageManager.get("command-rc-execute-success"));
+                return true;
+            }
+
+            case "maintenance": {
+                ProcessGroup processGroup = ExecutorAPI.getInstance().getProcessGroup(strings[1]);
+                if (processGroup == null) {
+                    System.out.println(LanguageManager.get("command-rc-group-unknown", strings[1]));
+                    return true;
+                }
+
+                processGroup.getPlayerAccessConfiguration().toggleMaintenance();
+                ExecutorAPI.getInstance().updateProcessGroup(processGroup);
                 System.out.println(LanguageManager.get("command-rc-execute-success"));
                 return true;
             }
 
             case "start": {
                 if (strings.length == 2 && strings[1].equalsIgnoreCase("internalclient")) {
+                    if (!Files.exists(Paths.get("reformcloud/.client"))) {
+                        System.out.println(LanguageManager.get("command-rc-internal-client-not-installed"));
+                        return true;
+                    }
+
                     if (ClientManager.INSTANCE.getProcess() == null) {
                         try {
                             Process process = new ProcessBuilder()
@@ -297,12 +271,9 @@ public final class CommandReformCloud extends GlobalCommand {
                         return true;
                     }
 
-                    ExecutorAPI.getInstance().getProcesses(processGroup.getName()).forEach(new Consumer<ProcessInformation>() {
-                        @Override
-                        public void accept(ProcessInformation processInformation) {
-                            ExecutorAPI.getInstance().stopProcess(processInformation.getProcessUniqueID());
-                            AbsoluteThread.sleep(TimeUnit.MILLISECONDS, 10);
-                        }
+                    ExecutorAPI.getInstance().getProcesses(processGroup.getName()).forEach(processInformation -> {
+                        ExecutorAPI.getInstance().stopProcess(processInformation.getProcessUniqueID());
+                        AbsoluteThread.sleep(TimeUnit.MILLISECONDS, 10);
                     });
 
                     System.out.println(LanguageManager.get("command-rc-execute-success"));
@@ -320,12 +291,7 @@ public final class CommandReformCloud extends GlobalCommand {
                             return true;
                         }
 
-                        mainGroup.getSubGroups().forEach(new Consumer<String>() {
-                            @Override
-                            public void accept(String s) {
-                                System.out.println(LanguageManager.get("command-rc-main-sub-group", s));
-                            }
-                        });
+                        mainGroup.getSubGroups().forEach(s -> System.out.println(LanguageManager.get("command-rc-main-sub-group", s)));
                         return true;
                     } else if (strings[2].equalsIgnoreCase("stop")) {
                         MainGroup mainGroup = ExecutorAPI.getInstance().getMainGroup(strings[1]);
@@ -334,22 +300,16 @@ public final class CommandReformCloud extends GlobalCommand {
                             return true;
                         }
 
-                        mainGroup.getSubGroups().forEach(new Consumer<String>() {
-                            @Override
-                            public void accept(String s) {
-                                ProcessGroup processGroup = ExecutorAPI.getInstance().getProcessGroup(s);
-                                if (processGroup == null) {
-                                    return;
-                                }
-
-                                ExecutorAPI.getInstance().getProcesses(processGroup.getName()).forEach(new Consumer<ProcessInformation>() {
-                                    @Override
-                                    public void accept(ProcessInformation processInformation) {
-                                        ExecutorAPI.getInstance().stopProcess(processInformation.getProcessUniqueID());
-                                        AbsoluteThread.sleep(TimeUnit.MILLISECONDS, 10);
-                                    }
-                                });
+                        mainGroup.getSubGroups().forEach(s -> {
+                            ProcessGroup processGroup = ExecutorAPI.getInstance().getProcessGroup(s);
+                            if (processGroup == null) {
+                                return;
                             }
+
+                            ExecutorAPI.getInstance().getProcesses(processGroup.getName()).forEach(processInformation -> {
+                                ExecutorAPI.getInstance().stopProcess(processInformation.getProcessUniqueID());
+                                AbsoluteThread.sleep(TimeUnit.MILLISECONDS, 10);
+                            });
                         });
 
                         System.out.println(LanguageManager.get("command-rc-execute-success"));
@@ -401,21 +361,18 @@ public final class CommandReformCloud extends GlobalCommand {
                     }
 
                     SystemHelper.createDirectory(Paths.get("reformcloud/.client/reformcloud/.bin"));
-                    SystemHelper.createDirectory(Paths.get("reformcloud/.client/files/.connection"));
+                    SystemHelper.createDirectory(Paths.get("reformcloud/.client/reformcloud/files/.connection"));
                     SystemHelper.doCopy("reformcloud/.bin/config.properties", "reformcloud/.client/reformcloud/.bin/config.properties");
-                    SystemHelper.doCopy("reformcloud/.bin/connection.json", "reformcloud/.client/files/.connection/connection.json");
+                    SystemHelper.doCopy("reformcloud/.bin/connection.json", "reformcloud/.client/reformcloud/files/.connection/connection.json");
                     CommonHelper.rewriteProperties(
                             "reformcloud/.client/reformcloud/.bin/config.properties",
                             "ReformCloudController edit",
-                            new UnaryOperator<String>() {
-                                @Override
-                                public String apply(String s) {
-                                    if (s.equals("reformcloud.type.id")) {
-                                        s = "2";
-                                    }
-
-                                    return s;
+                            (UnaryOperator<String>) s -> {
+                                if (s.equals("reformcloud.type.id")) {
+                                    s = "2";
                                 }
+
+                                return s;
                             }
                     );
                     new JsonConfiguration()
@@ -424,7 +381,7 @@ public final class CommandReformCloud extends GlobalCommand {
                                     -1,
                                     90.0D,
                                     strings[2]
-                            )).write(ClientConfig.PATH);
+                            )).write(Paths.get("reformcloud/.client/" + ClientConfig.PATH));
                     Map<String, Integer> map = ControllerExecutor.getInstance().getControllerConfig().getNetworkListener().get(
                             new Random().nextInt(ControllerExecutor.getInstance().getControllerConfig().getNetworkListener().size())
                     );
@@ -432,8 +389,8 @@ public final class CommandReformCloud extends GlobalCommand {
                             .add("config", new ClientConnectionConfig(
                                     map.keySet().toArray(new String[0])[0],
                                     map.values().toArray(new Integer[0])[0]
-                            )).write(ClientConfig.PATH);
-                    DownloadHelper.downloadAndDisconnect(StringUtil.RUNNER_DOWNLOAD_URL, "reformcloud/.client");
+                            )).write("reformcloud/.client/" + ClientConnectionConfig.PATH);
+                    DownloadHelper.downloadAndDisconnect(StringUtil.RUNNER_DOWNLOAD_URL, "reformcloud/.client/runner.jar");
                     try {
                         Process process = new ProcessBuilder()
                                 .command(Arrays.asList("java", "-jar", "runner.jar").toArray(new String[0]))
@@ -682,19 +639,14 @@ public final class CommandReformCloud extends GlobalCommand {
 
             case "list": {
                 if (strings.length == 2) {
-                    ExecutorAPI.getInstance().getProcesses(strings[1]).forEach(new Consumer<ProcessInformation>() {
-                        @Override
-                        public void accept(ProcessInformation processInformation) {
-                            System.out.println(
-                                    "  => "
-                                            + processInformation.getName()
-                                            + "/" + processInformation.getProcessUniqueID()
-                                            + " " + processInformation.getOnlineCount() + "/"
-                                            + processInformation.getMaxPlayers() + " "
-                                            + processInformation.getTemplate().getVersion()
-                            );
-                        }
-                    });
+                    ExecutorAPI.getInstance().getProcesses(strings[1]).forEach(processInformation -> System.out.println(
+                            "  => "
+                                    + processInformation.getName()
+                                    + "/" + processInformation.getProcessUniqueID()
+                                    + " " + processInformation.getOnlineCount() + "/"
+                                    + processInformation.getMaxPlayers() + " "
+                                    + processInformation.getTemplate().getVersion()
+                    ));
                 }
 
                 System.out.println(LanguageManager.get("command-rc-execute-success"));
@@ -703,28 +655,18 @@ public final class CommandReformCloud extends GlobalCommand {
 
             case "listgroups": {
                 if (strings.length == 2 && strings[1].equalsIgnoreCase("sub")) {
-                    ExecutorAPI.getInstance().getProcessGroups().forEach(new Consumer<ProcessGroup>() {
-                        @Override
-                        public void accept(ProcessGroup processGroup) {
-                            System.out.println("  => " +
-                                    processGroup.getName() +
-                                    " parent: " + processGroup.getParentGroup() +
-                                    " maintenance: " + processGroup.getPlayerAccessConfiguration().isMaintenance() +
-                                    " static: " + processGroup.isStaticProcess() +
-                                    " lobby: " + processGroup.isCanBeUsedAsLobby()
-                            );
-                        }
-                    });
+                    ExecutorAPI.getInstance().getProcessGroups().forEach(processGroup -> System.out.println("  => " +
+                            processGroup.getName() +
+                            " parent: " + processGroup.getParentGroup() +
+                            " maintenance: " + processGroup.getPlayerAccessConfiguration().isMaintenance() +
+                            " static: " + processGroup.isStaticProcess() +
+                            " lobby: " + processGroup.isCanBeUsedAsLobby()
+                    ));
                     return true;
                 }
 
                 if (strings.length == 2 && strings[1].equalsIgnoreCase("main")) {
-                    ExecutorAPI.getInstance().getMainGroups().forEach(new Consumer<MainGroup>() {
-                        @Override
-                        public void accept(MainGroup mainGroup) {
-                            System.out.println("  => " + mainGroup.getName() + "/" + mainGroup.getSubGroups());
-                        }
-                    });
+                    ExecutorAPI.getInstance().getMainGroups().forEach(mainGroup -> System.out.println("  => " + mainGroup.getName() + "/" + mainGroup.getSubGroups()));
                     return true;
                 }
                 break;
@@ -783,6 +725,7 @@ public final class CommandReformCloud extends GlobalCommand {
     private void sendHelp(CommandSource commandSource) {
         commandSource.sendMessage(
                 "\n" +
+                "rc maintenance <group>\n" +
                 "rc copy <uuid | name>\n" +
                 "rc screen <uuid | name> toggle\n" +
                 "rc list\n" +

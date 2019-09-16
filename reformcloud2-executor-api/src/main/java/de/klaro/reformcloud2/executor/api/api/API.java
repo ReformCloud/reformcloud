@@ -6,16 +6,15 @@ import de.klaro.reformcloud2.executor.api.common.language.LanguageManager;
 import de.klaro.reformcloud2.executor.api.common.network.NetworkUtil;
 import de.klaro.reformcloud2.executor.api.common.network.channel.NetworkChannelReader;
 import de.klaro.reformcloud2.executor.api.common.network.channel.PacketSender;
-import de.klaro.reformcloud2.executor.api.common.network.channel.handler.NetworkHandler;
 import de.klaro.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import de.klaro.reformcloud2.executor.api.common.network.packet.Packet;
 import de.klaro.reformcloud2.executor.api.common.network.packet.handler.PacketHandler;
 import de.klaro.reformcloud2.executor.api.common.process.ProcessInformation;
+import de.klaro.reformcloud2.executor.api.common.process.ProcessState;
 import io.netty.channel.ChannelHandlerContext;
 
 import java.net.InetSocketAddress;
 import java.util.Objects;
-import java.util.function.Consumer;
 
 public abstract class API extends ExternalAPIImplementation {
 
@@ -39,6 +38,10 @@ public abstract class API extends ExternalAPIImplementation {
         public void setSender(PacketSender sender) {
             Conditions.isTrue(packetSender == null);
             packetSender = Objects.requireNonNull(sender);
+            if (packetSender.getName().equals("Controller")) {
+                getThisProcessInformation().getNetworkInfo().setConnected(true);
+                getThisProcessInformation().setProcessState(ProcessState.READY);
+            }
             DefaultChannelManager.INSTANCE.registerChannel(packetSender);
         }
 
@@ -60,27 +63,16 @@ public abstract class API extends ExternalAPIImplementation {
 
         @Override
         public void read(ChannelHandlerContext context, Packet packet) {
-            NetworkUtil.EXECUTOR.execute(new Runnable() {
-                @Override
-                public void run() {
-                    if (packet.queryUniqueID() != null && getPacketHandler().getQueryHandler().hasWaitingQuery(packet.queryUniqueID())) {
-                        getPacketHandler().getQueryHandler().getWaitingQuery(packet.queryUniqueID()).complete(packet);
-                    } else {
-                        getPacketHandler().getNetworkHandlers(packet.packetID()).forEach(new Consumer<NetworkHandler>() {
-                            @Override
-                            public void accept(NetworkHandler networkHandler) {
-                                networkHandler.handlePacket(packetSender, packet, new Consumer<Packet>() {
-                                    @Override
-                                    public void accept(Packet out) {
-                                        if (packet.queryUniqueID() != null) {
-                                            out.setQueryID(packet.queryUniqueID());
-                                            packetSender.sendPacket(out);
-                                        }
-                                    }
-                                });
-                            }
-                        });
-                    }
+            NetworkUtil.EXECUTOR.execute(() -> {
+                if (packet.queryUniqueID() != null && getPacketHandler().getQueryHandler().hasWaitingQuery(packet.queryUniqueID())) {
+                    getPacketHandler().getQueryHandler().getWaitingQuery(packet.queryUniqueID()).complete(packet);
+                } else {
+                    getPacketHandler().getNetworkHandlers(packet.packetID()).forEach(networkHandler -> networkHandler.handlePacket(packetSender, packet, out -> {
+                        if (packet.queryUniqueID() != null) {
+                            out.setQueryID(packet.queryUniqueID());
+                            packetSender.sendPacket(out);
+                        }
+                    }));
                 }
             });
         }

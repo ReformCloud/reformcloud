@@ -5,7 +5,6 @@ import de.klaro.reformcloud2.executor.api.common.network.NetworkUtil;
 import de.klaro.reformcloud2.executor.api.common.network.channel.PacketSender;
 import de.klaro.reformcloud2.executor.api.common.network.channel.handler.NetworkHandler;
 import de.klaro.reformcloud2.executor.api.common.network.packet.Packet;
-import de.klaro.reformcloud2.executor.controller.ControllerExecutor;
 
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -28,6 +27,5 @@ public final class ControllerPacketInProcessStopped implements NetworkHandler {
                 uuid,
                 packetSender.getName()
         ));
-        ControllerExecutor.getInstance().getProcessManager().onChannelClose(name);
     }
 }

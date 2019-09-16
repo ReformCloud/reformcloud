@@ -7,11 +7,6 @@ public interface Updateable<T> {
     void update(T t);
 
     default void updateAsync(T t) {
-        Task.EXECUTOR.execute(new Runnable() {
-            @Override
-            public void run() {
-                update(t);
-            }
-        });
+        Task.EXECUTOR.execute(() -> update(t));
     }
 }

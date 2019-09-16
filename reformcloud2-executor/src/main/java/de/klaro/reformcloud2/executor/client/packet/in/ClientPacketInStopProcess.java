@@ -20,11 +20,6 @@ public final class ClientPacketInStopProcess implements NetworkHandler {
     @Override
     public void handlePacket(PacketSender packetSender, Packet packet, Consumer<Packet> responses) {
         UUID uniqueID = packet.content().get("uniqueID", UUID.class);
-        ClientExecutor.getInstance().getProcessManager().getProcess(uniqueID).ifPresent(new Consumer<RunningProcess>() {
-            @Override
-            public void accept(RunningProcess runningProcess) {
-                runningProcess.shutdown();
-            }
-        });
+        ClientExecutor.getInstance().getProcessManager().getProcess(uniqueID).ifPresent(RunningProcess::shutdown);
     }
 }

@@ -6,26 +6,15 @@ import de.klaro.reformcloud2.executor.api.common.api.basic.events.ProcessStopped
 import de.klaro.reformcloud2.executor.api.common.api.basic.events.ProcessUpdatedEvent;
 import de.klaro.reformcloud2.executor.api.common.event.handler.Listener;
 import net.md_5.bungee.api.ProxyServer;
-import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.api.config.ListenerInfo;
-import net.md_5.bungee.api.connection.ProxiedPlayer;
-
-import java.util.function.Consumer;
 
 public final class ProcessEventHandler {
 
     @Listener
     public void handleStart(ProcessStartedEvent event) {
-        ProxyServer.getInstance().getPlayers().forEach(new Consumer<ProxiedPlayer>() {
-            @Override
-            public void accept(ProxiedPlayer proxiedPlayer) {
-                if (proxiedPlayer.hasPermission("reformcloud2.notify")) {
-                    proxiedPlayer.sendMessage(TextComponent.fromLegacyText(
-                            "§7[§a+§7] §6§l" + event.getProcessInformation().getName()
-                    ));
-                }
-            }
-        });
+        BungeeExecutor.getInstance().publishNotification(
+                BungeeExecutor.getInstance().getMessages().getProcessStarted(),
+                event.getProcessInformation().getName()
+        );
     }
 
     @Listener
@@ -37,12 +26,12 @@ public final class ProcessEventHandler {
     public void handleRemove(ProcessStoppedEvent event) {
         ProxyServer.getInstance().getServers().remove(event.getProcessInformation().getName());
         if (event.getProcessInformation().isLobby()) {
-            ProxyServer.getInstance().getConfig().getListeners().forEach(new Consumer<ListenerInfo>() {
-                @Override
-                public void accept(ListenerInfo listenerInfo) {
-                    listenerInfo.getServerPriority().remove(event.getProcessInformation().getName());
-                }
-            });
+            ProxyServer.getInstance().getConfig().getListeners().forEach(listenerInfo -> listenerInfo.getServerPriority().remove(event.getProcessInformation().getName()));
         }
+
+        BungeeExecutor.getInstance().publishNotification(
+                BungeeExecutor.getInstance().getMessages().getProcessStopped(),
+                event.getProcessInformation().getName()
+        );
     }
 }

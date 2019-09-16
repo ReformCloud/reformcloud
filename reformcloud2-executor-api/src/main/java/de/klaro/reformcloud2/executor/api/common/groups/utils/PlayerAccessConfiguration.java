@@ -63,4 +63,8 @@ public final class PlayerAccessConfiguration {
     public int getMaxPlayers() {
         return maxPlayers;
     }
+
+    public void toggleMaintenance() {
+        this.maintenance = !this.maintenance;
+    }
 }

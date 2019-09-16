@@ -1,8 +1,6 @@
 package de.klaro.reformcloud2.executor.api.velocity;
 
-import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
-import com.velocitypowered.api.proxy.server.RegisteredServer;
 import com.velocitypowered.api.proxy.server.ServerInfo;
 import de.klaro.reformcloud2.executor.api.api.API;
 import de.klaro.reformcloud2.executor.api.common.ExecutorAPI;
@@ -12,6 +10,7 @@ import de.klaro.reformcloud2.executor.api.common.configuration.JsonConfiguration
 import de.klaro.reformcloud2.executor.api.common.event.EventManager;
 import de.klaro.reformcloud2.executor.api.common.event.basic.DefaultEventManager;
 import de.klaro.reformcloud2.executor.api.common.event.handler.Listener;
+import de.klaro.reformcloud2.executor.api.common.groups.messages.IngameMessages;
 import de.klaro.reformcloud2.executor.api.common.network.auth.defaults.DefaultAuth;
 import de.klaro.reformcloud2.executor.api.common.network.channel.PacketSender;
 import de.klaro.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
@@ -26,6 +25,8 @@ import de.klaro.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
 import de.klaro.reformcloud2.executor.api.executor.PlayerAPIExecutor;
 import de.klaro.reformcloud2.executor.api.packets.in.APIPacketInAPIAction;
 import de.klaro.reformcloud2.executor.api.packets.in.APIPacketInPluginAction;
+import de.klaro.reformcloud2.executor.api.packets.out.APIBungeePacketOutRequestIngameMessages;
+import de.klaro.reformcloud2.executor.api.velocity.commands.CommandLeave;
 import de.klaro.reformcloud2.executor.api.velocity.event.ExtraListenerHandler;
 import de.klaro.reformcloud2.executor.api.velocity.event.PlayerListenerHandler;
 import de.klaro.reformcloud2.executor.api.velocity.event.ProcessEventHandler;
@@ -36,7 +37,6 @@ import net.kyori.text.TextComponent;
 import java.io.File;
 import java.net.InetSocketAddress;
 import java.util.UUID;
-import java.util.function.Consumer;
 
 public final class VelocityExecutor extends API implements PlayerAPIExecutor {
 
@@ -47,6 +47,8 @@ public final class VelocityExecutor extends API implements PlayerAPIExecutor {
     private final PacketHandler packetHandler = new DefaultPacketHandler();
 
     private final NetworkClient networkClient = new DefaultNetworkClient();
+
+    private IngameMessages messages = new IngameMessages();
 
     private ProcessInformation thisProcessInformation;
 
@@ -114,16 +116,14 @@ public final class VelocityExecutor extends API implements PlayerAPIExecutor {
                     new InetSocketAddress(processInformation.getNetworkInfo().getHost(), processInformation.getNetworkInfo().getPort())
             );
             proxyServer.registerServer(serverInfo);
+
+            publishNotification(messages.getProcessConnected(), processInformation.getName());
         }
     }
 
     public void handleProcessRemove(ProcessInformation processInformation) {
-        proxyServer.getServer(processInformation.getName()).ifPresent(new Consumer<RegisteredServer>() {
-            @Override
-            public void accept(RegisteredServer registeredServer) {
-                proxyServer.unregisterServer(registeredServer.getServerInfo());
-            }
-        });
+        proxyServer.getServer(processInformation.getName()).ifPresent(registeredServer -> proxyServer.unregisterServer(registeredServer.getServerInfo()));
+        publishNotification(messages.getProcessStopped(), processInformation.getName());
     }
 
     public boolean isServerRegistered(String name) {
@@ -131,27 +131,34 @@ public final class VelocityExecutor extends API implements PlayerAPIExecutor {
     }
 
     private void awaitConnectionAndUpdate() {
-        Task.EXECUTOR.execute(new Runnable() {
-            @Override
-            public void run() {
-                PacketSender packetSender = DefaultChannelManager.INSTANCE.get("Controller").orElse(null);
-                while (packetSender == null) {
-                    packetSender = DefaultChannelManager.INSTANCE.get("Controller").orElse(null);
-                    AbsoluteThread.sleep(100);
-                }
+        Task.EXECUTOR.execute(() -> {
+            PacketSender packetSender = DefaultChannelManager.INSTANCE.get("Controller").orElse(null);
+            while (packetSender == null) {
+                packetSender = DefaultChannelManager.INSTANCE.get("Controller").orElse(null);
+                AbsoluteThread.sleep(100);
+            }
 
-                getAllProcesses().forEach(new Consumer<ProcessInformation>() {
-                    @Override
-                    public void accept(ProcessInformation processInformation) {
-                        handleProcessUpdate(processInformation);
-                    }
-                });
+            getAllProcesses().forEach(this::handleProcessUpdate);
 
-                new PluginUpdater();
+            new PluginUpdater();
 
-                thisProcessInformation.updateMaxPlayers(proxyServer.getConfiguration().getShowMaxPlayers());
-                thisProcessInformation.updateRuntimeInformation();
-                ExecutorAPI.getInstance().update(thisProcessInformation);
+            thisProcessInformation.updateMaxPlayers(proxyServer.getConfiguration().getShowMaxPlayers());
+            thisProcessInformation.updateRuntimeInformation();
+            ExecutorAPI.getInstance().update(thisProcessInformation);
+
+            DefaultChannelManager.INSTANCE.get("Controller").ifPresent(controller -> packetHandler.getQueryHandler().sendQueryAsync(controller, new APIBungeePacketOutRequestIngameMessages()).onComplete(packet -> {
+                IngameMessages ingameMessages = packet.content().get("messages", IngameMessages.TYPE);
+                setMessages(ingameMessages);
+            }));
+            proxyServer.getCommandManager().register(new CommandLeave(), "leave", "lobby", "l", "hub", "quit");
+        });
+    }
+
+    public void publishNotification(String message, Object... replacements) {
+        final String replacedMessage = messages.format(message, replacements);
+        proxyServer.getAllPlayers().forEach(player -> {
+            if (player.hasPermission("reformcloud.notify")) {
+                player.sendMessage(TextComponent.of(replacedMessage));
             }
         });
     }
@@ -168,6 +175,14 @@ public final class VelocityExecutor extends API implements PlayerAPIExecutor {
         return thisProcessInformation;
     }
 
+    public IngameMessages getMessages() {
+        return messages;
+    }
+
+    private void setMessages(IngameMessages messages) {
+        this.messages = messages;
+    }
+
     public void setThisProcessInformation(ProcessInformation thisProcessInformation) {
         this.thisProcessInformation = thisProcessInformation;
     }
@@ -176,22 +191,12 @@ public final class VelocityExecutor extends API implements PlayerAPIExecutor {
 
     @Override
     public void executeSendMessage(UUID player, String message) {
-        proxyServer.getPlayer(player).ifPresent(new Consumer<Player>() {
-            @Override
-            public void accept(Player player) {
-                player.sendMessage(TextComponent.of(message));
-            }
-        });
+        proxyServer.getPlayer(player).ifPresent(player1 -> player1.sendMessage(TextComponent.of(message)));
     }
 
     @Override
     public void executeKickPlayer(UUID player, String message) {
-        proxyServer.getPlayer(player).ifPresent(new Consumer<Player>() {
-            @Override
-            public void accept(Player player) {
-                player.disconnect(TextComponent.of(message));
-            }
-        });
+        proxyServer.getPlayer(player).ifPresent(player1 -> player1.disconnect(TextComponent.of(message)));
     }
 
     @Override
@@ -226,14 +231,11 @@ public final class VelocityExecutor extends API implements PlayerAPIExecutor {
 
     @Override
     public void executeConnect(UUID player, String server) {
-        proxyServer.getPlayer(player).ifPresent(new Consumer<Player>() {
-            @Override
-            public void accept(Player player) {
-                if (isServerRegistered(server)) {
-                    player.createConnectionRequest(
-                            proxyServer.getServer(server).get()
-                    ).fireAndForget();
-                }
+        proxyServer.getPlayer(player).ifPresent(player1 -> {
+            if (isServerRegistered(server)) {
+                player1.createConnectionRequest(
+                        proxyServer.getServer(server).get()
+                ).fireAndForget();
             }
         });
     }
@@ -245,31 +247,18 @@ public final class VelocityExecutor extends API implements PlayerAPIExecutor {
 
     @Override
     public void executeConnect(UUID player, UUID target) {
-        proxyServer.getPlayer(player).ifPresent(new Consumer<Player>() {
-            @Override
-            public void accept(Player player) {
-                proxyServer.getPlayer(target).ifPresent(new Consumer<Player>() {
-                    @Override
-                    public void accept(Player targetPlayer) {
-                        if (targetPlayer.getCurrentServer().isPresent()
-                                && isServerRegistered(targetPlayer.getCurrentServer().get().getServerInfo().getName())) {
-                            player.createConnectionRequest(
-                                    targetPlayer.getCurrentServer().get().getServer()
-                            ).fireAndForget();
-                        }
-                    }
-                });
+        proxyServer.getPlayer(player).ifPresent(player1 -> proxyServer.getPlayer(target).ifPresent(targetPlayer -> {
+            if (targetPlayer.getCurrentServer().isPresent()
+                    && isServerRegistered(targetPlayer.getCurrentServer().get().getServerInfo().getName())) {
+                player1.createConnectionRequest(
+                        targetPlayer.getCurrentServer().get().getServer()
+                ).fireAndForget();
             }
-        });
+        }));
     }
 
     @Override
     public void executeSetResourcePack(UUID player, String pack) {
-        proxyServer.getPlayer(player).ifPresent(new Consumer<Player>() {
-            @Override
-            public void accept(Player player) {
-                player.sendResourcePack(pack);
-            }
-        });
+        proxyServer.getPlayer(player).ifPresent(player1 -> player1.sendResourcePack(pack));
     }
 }

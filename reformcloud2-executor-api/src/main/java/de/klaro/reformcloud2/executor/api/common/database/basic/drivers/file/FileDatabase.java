@@ -9,7 +9,6 @@ import de.klaro.reformcloud2.executor.api.common.utility.task.Task;
 import de.klaro.reformcloud2.executor.api.common.utility.task.defaults.DefaultTask;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
@@ -58,23 +57,15 @@ public final class FileDatabase extends Database<Path> {
             @Override
             public Task<JsonConfiguration> find(String key) {
                 Task<JsonConfiguration> task = new DefaultTask<>();
-                Task.EXECUTOR.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        for (File file : Objects.requireNonNull(new File(FileDatabase.this.table + "/" + table).listFiles(new FileFilter() {
-                            @Override
-                            public boolean accept(File pathname) {
-                                return pathname.isFile() && pathname.getName().endsWith(".json");
-                            }
-                        }))) {
-                            if (file.getName().startsWith(key)) {
-                                task.complete(JsonConfiguration.read(file));
-                                return;
-                            }
+                Task.EXECUTOR.execute(() -> {
+                    for (File file : Objects.requireNonNull(new File(FileDatabase.this.table + "/" + table).listFiles(pathname -> pathname.isFile() && pathname.getName().endsWith(".json")))) {
+                        if (file.getName().startsWith(key)) {
+                            task.complete(JsonConfiguration.read(file));
+                            return;
                         }
-
-                        task.complete(null);
                     }
+
+                    task.complete(null);
                 });
                 return task;
             }
@@ -82,24 +73,16 @@ public final class FileDatabase extends Database<Path> {
             @Override
             public Task<JsonConfiguration> findIfAbsent(String identifier) {
                 Task<JsonConfiguration> task = new DefaultTask<>();
-                Task.EXECUTOR.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        for (File file : Objects.requireNonNull(new File(FileDatabase.this.table + "/" + table).listFiles(new FileFilter() {
-                            @Override
-                            public boolean accept(File pathname) {
-                                return pathname.isFile() && pathname.getName().endsWith(".json");
-                            }
-                        }))) {
-                            String[] split = file.getName().split("-");
-                            if (split.length == 2 && split[1].replace(".json", "").equals(identifier)) {
-                                task.complete(JsonConfiguration.read(file));
-                                return;
-                            }
+                Task.EXECUTOR.execute(() -> {
+                    for (File file : Objects.requireNonNull(new File(FileDatabase.this.table + "/" + table).listFiles(pathname -> pathname.isFile() && pathname.getName().endsWith(".json")))) {
+                        String[] split = file.getName().split("-");
+                        if (split.length == 2 && split[1].replace(".json", "").equals(identifier)) {
+                            task.complete(JsonConfiguration.read(file));
+                            return;
                         }
-
-                        task.complete(null);
                     }
+
+                    task.complete(null);
                 });
                 return task;
             }
@@ -107,16 +90,13 @@ public final class FileDatabase extends Database<Path> {
             @Override
             public Task<JsonConfiguration> insert(String key, String identifier, JsonConfiguration data) {
                 Task<JsonConfiguration> task = new DefaultTask<>();
-                Task.EXECUTOR.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        JsonConfiguration configuration = find(key).getUninterruptedly(TimeUnit.SECONDS, 5);
-                        if (configuration == null) {
-                            data.write(Paths.get(FileDatabase.this.table + "/" + table + "/" + key + "-" + identifier + ".json"));
-                            task.complete(data);
-                        } else {
-                            task.complete(configuration);
-                        }
+                Task.EXECUTOR.execute(() -> {
+                    JsonConfiguration configuration = find(key).getUninterruptedly(TimeUnit.SECONDS, 5);
+                    if (configuration == null) {
+                        data.write(Paths.get(FileDatabase.this.table + "/" + table + "/" + key + "-" + identifier + ".json"));
+                        task.complete(data);
+                    } else {
+                        task.complete(configuration);
                     }
                 });
                 return task;
@@ -125,24 +105,16 @@ public final class FileDatabase extends Database<Path> {
             @Override
             public Task<Boolean> update(String key, JsonConfiguration newData) {
                 Task<Boolean> task = new DefaultTask<>();
-                Task.EXECUTOR.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        for (File file : Objects.requireNonNull(new File(FileDatabase.this.table + "/" + table).listFiles(new FileFilter() {
-                            @Override
-                            public boolean accept(File pathname) {
-                                return pathname.isFile() && pathname.getName().endsWith(".json");
-                            }
-                        }))) {
-                            if (file.getName().startsWith(key)) {
-                                newData.write(file);
-                                task.complete(true);
-                                return;
-                            }
+                Task.EXECUTOR.execute(() -> {
+                    for (File file : Objects.requireNonNull(new File(FileDatabase.this.table + "/" + table).listFiles(pathname -> pathname.isFile() && pathname.getName().endsWith(".json")))) {
+                        if (file.getName().startsWith(key)) {
+                            newData.write(file);
+                            task.complete(true);
+                            return;
                         }
-
-                        task.complete(false);
                     }
+
+                    task.complete(false);
                 });
                 return task;
             }
@@ -150,25 +122,17 @@ public final class FileDatabase extends Database<Path> {
             @Override
             public Task<Boolean> updateIfAbsent(String identifier, JsonConfiguration newData) {
                 Task<Boolean> task = new DefaultTask<>();
-                Task.EXECUTOR.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        for (File file : Objects.requireNonNull(new File(FileDatabase.this.table + "/" + table).listFiles(new FileFilter() {
-                            @Override
-                            public boolean accept(File pathname) {
-                                return pathname.isFile() && pathname.getName().endsWith(".json");
-                            }
-                        }))) {
-                            String[] split = file.getName().split("-");
-                            if (split.length == 2 && split[1].replace(".json", "").equals(identifier)) {
-                                newData.write(file);
-                                task.complete(true);
-                                return;
-                            }
+                Task.EXECUTOR.execute(() -> {
+                    for (File file : Objects.requireNonNull(new File(FileDatabase.this.table + "/" + table).listFiles(pathname -> pathname.isFile() && pathname.getName().endsWith(".json")))) {
+                        String[] split = file.getName().split("-");
+                        if (split.length == 2 && split[1].replace(".json", "").equals(identifier)) {
+                            newData.write(file);
+                            task.complete(true);
+                            return;
                         }
-
-                        task.complete(false);
                     }
+
+                    task.complete(false);
                 });
                 return task;
             }
@@ -176,23 +140,15 @@ public final class FileDatabase extends Database<Path> {
             @Override
             public Task<Void> remove(String key) {
                 Task<Void> task = new DefaultTask<>();
-                Task.EXECUTOR.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        for (File file : Objects.requireNonNull(new File(FileDatabase.this.table + "/" + table).listFiles(new FileFilter() {
-                            @Override
-                            public boolean accept(File pathname) {
-                                return pathname.isFile() && pathname.getName().endsWith(".json");
-                            }
-                        }))) {
-                            if (file.getName().startsWith(key)) {
-                                SystemHelper.deleteFile(file);
-                                break;
-                            }
+                Task.EXECUTOR.execute(() -> {
+                    for (File file : Objects.requireNonNull(new File(FileDatabase.this.table + "/" + table).listFiles(pathname -> pathname.isFile() && pathname.getName().endsWith(".json")))) {
+                        if (file.getName().startsWith(key)) {
+                            SystemHelper.deleteFile(file);
+                            break;
                         }
-
-                        task.complete(null);
                     }
+
+                    task.complete(null);
                 });
                 return task;
             }
@@ -200,24 +156,16 @@ public final class FileDatabase extends Database<Path> {
             @Override
             public Task<Void> removeIfAbsent(String identifier) {
                 Task<Void> task = new DefaultTask<>();
-                Task.EXECUTOR.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        for (File file : Objects.requireNonNull(new File(FileDatabase.this.table + "/" + table).listFiles(new FileFilter() {
-                            @Override
-                            public boolean accept(File pathname) {
-                                return pathname.isFile() && pathname.getName().endsWith(".json");
-                            }
-                        }))) {
-                            String[] split = file.getName().split("-");
-                            if (split.length == 2 && split[1].replace(".json", "").equals(identifier)) {
-                                SystemHelper.deleteFile(file);
-                                return;
-                            }
+                Task.EXECUTOR.execute(() -> {
+                    for (File file : Objects.requireNonNull(new File(FileDatabase.this.table + "/" + table).listFiles(pathname -> pathname.isFile() && pathname.getName().endsWith(".json")))) {
+                        String[] split = file.getName().split("-");
+                        if (split.length == 2 && split[1].replace(".json", "").equals(identifier)) {
+                            SystemHelper.deleteFile(file);
+                            return;
                         }
-
-                        task.complete(null);
                     }
+
+                    task.complete(null);
                 });
                 return task;
             }
@@ -225,23 +173,15 @@ public final class FileDatabase extends Database<Path> {
             @Override
             public Task<Boolean> contains(String key) {
                 Task<Boolean> task = new DefaultTask<>();
-                Task.EXECUTOR.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        for (File file : Objects.requireNonNull(new File(FileDatabase.this.table + "/" + table).listFiles(new FileFilter() {
-                            @Override
-                            public boolean accept(File pathname) {
-                                return pathname.isFile() && pathname.getName().endsWith(".json");
-                            }
-                        }))) {
-                            if (file.getName().startsWith(key)) {
-                                task.complete(true);
-                                return;
-                            }
+                Task.EXECUTOR.execute(() -> {
+                    for (File file : Objects.requireNonNull(new File(FileDatabase.this.table + "/" + table).listFiles(pathname -> pathname.isFile() && pathname.getName().endsWith(".json")))) {
+                        if (file.getName().startsWith(key)) {
+                            task.complete(true);
+                            return;
                         }
-
-                        task.complete(false);
                     }
+
+                    task.complete(false);
                 });
                 return task;
             }
@@ -249,17 +189,9 @@ public final class FileDatabase extends Database<Path> {
             @Override
             public Task<Integer> size() {
                 Task<Integer> task = new DefaultTask<>();
-                Task.EXECUTOR.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        int size = Objects.requireNonNull(new File(FileDatabase.this.table + "/" + table).listFiles(new FileFilter() {
-                            @Override
-                            public boolean accept(File pathname) {
-                                return pathname.isFile() && pathname.getName().endsWith(".json");
-                            }
-                        })).length;
-                        task.complete(size);
-                    }
+                Task.EXECUTOR.execute(() -> {
+                    int size = Objects.requireNonNull(new File(FileDatabase.this.table + "/" + table).listFiles(pathname -> pathname.isFile() && pathname.getName().endsWith(".json"))).length;
+                    task.complete(size);
                 });
                 return task;
             }
@@ -272,12 +204,7 @@ public final class FileDatabase extends Database<Path> {
             @Override
             public Iterator<JsonConfiguration> iterator() {
                 List<JsonConfiguration> list = new ArrayList<>();
-                for (File file : Objects.requireNonNull(new File(FileDatabase.this.table + "/" + table).listFiles(new FileFilter() {
-                    @Override
-                    public boolean accept(File pathname) {
-                        return pathname.isFile() && pathname.getName().endsWith(".json");
-                    }
-                }))) {
+                for (File file : Objects.requireNonNull(new File(FileDatabase.this.table + "/" + table).listFiles(pathname -> pathname.isFile() && pathname.getName().endsWith(".json")))) {
                     list.add(JsonConfiguration.read(file));
                 }
 

@@ -12,18 +12,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 
 public final class JsonConfiguration implements Configurable<JsonConfiguration> {
 
     public static final JsonParser PARSER = new JsonParser();
 
-    public static final ThreadLocal<Gson> GSON = ThreadLocal.withInitial(new Supplier<Gson>() {
-        @Override
-        public Gson get() {
-            return new GsonBuilder().setPrettyPrinting().serializeNulls().disableHtmlEscaping().create();
-        }
-    });
+    public static final ThreadLocal<Gson> GSON = ThreadLocal.withInitial(() -> new GsonBuilder().setPrettyPrinting().serializeNulls().disableHtmlEscaping().create());
 
     public JsonConfiguration() {
     }
@@ -185,92 +179,47 @@ public final class JsonConfiguration implements Configurable<JsonConfiguration> 
 
     @Override
     public JsonConfiguration getOrDefault(String key, JsonConfiguration def) {
-        return getOrDefaultIf(key, def, new Predicate<JsonConfiguration>() {
-            @Override
-            public boolean test(JsonConfiguration jsonConfiguration) {
-                return true;
-            }
-        });
+        return getOrDefaultIf(key, def, jsonConfiguration -> true);
     }
 
     @Override
     public <T> T getOrDefault(String key, Type type, T def) {
-        return getOrDefaultIf(key, type, def, new Predicate<T>() {
-            @Override
-            public boolean test(T t) {
-                return true;
-            }
-        });
+        return getOrDefaultIf(key, type, def, t -> true);
     }
 
     @Override
     public <T> T getOrDefault(String key, Class<T> type, T def) {
-        return getOrDefaultIf(key, type, def, new Predicate<T>() {
-            @Override
-            public boolean test(T t) {
-                return true;
-            }
-        });
+        return getOrDefaultIf(key, type, def, t -> true);
     }
 
     @Override
     public String getOrDefault(String key, String def) {
-        return getOrDefaultIf(key, def, new Predicate<String>() {
-            @Override
-            public boolean test(String s) {
-                return true;
-            }
-        });
+        return getOrDefaultIf(key, def, s -> true);
     }
 
     @Override
     public Integer getOrDefault(String key, Integer def) {
-        return getOrDefaultIf(key, def, new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer integer) {
-                return true;
-            }
-        });
+        return getOrDefaultIf(key, def, integer -> true);
     }
 
     @Override
     public Long getOrDefault(String key, Long def) {
-        return getOrDefaultIf(key, def, new Predicate<Long>() {
-            @Override
-            public boolean test(Long aLong) {
-                return true;
-            }
-        });
+        return getOrDefaultIf(key, def, aLong -> true);
     }
 
     @Override
     public Short getOrDefault(String key, Short def) {
-        return getOrDefaultIf(key, def, new Predicate<Short>() {
-            @Override
-            public boolean test(Short aShort) {
-                return true;
-            }
-        });
+        return getOrDefaultIf(key, def, aShort -> true);
     }
 
     @Override
     public Byte getOrDefault(String key, Byte def) {
-        return getOrDefaultIf(key, def, new Predicate<Byte>() {
-            @Override
-            public boolean test(Byte aByte) {
-                return true;
-            }
-        });
+        return getOrDefaultIf(key, def, aByte -> true);
     }
 
     @Override
     public Boolean getOrDefault(String key, Boolean def) {
-        return getOrDefaultIf(key, def, new Predicate<Boolean>() {
-            @Override
-            public boolean test(Boolean aBoolean) {
-                return true;
-            }
-        });
+        return getOrDefaultIf(key, def, aBoolean -> true);
     }
 
     private JsonElement getElement(String key) {

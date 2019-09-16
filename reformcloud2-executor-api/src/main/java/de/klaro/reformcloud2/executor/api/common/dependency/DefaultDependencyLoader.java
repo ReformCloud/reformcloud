@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
-import java.util.function.Consumer;
 
 public final class DefaultDependencyLoader extends DependencyLoader {
 
@@ -57,23 +56,15 @@ public final class DefaultDependencyLoader extends DependencyLoader {
 
     @Override
     public void loadDependencies() {
-        DEFAULT_DEPENDENCIES.forEach(new Consumer<Dependency>() {
-            @Override
-            public void accept(Dependency dependency) {
-                System.out.println("Preloading dependency " + dependency.getArtifactID() + " from repo " + dependency.getRepository().getName() + "...");
-                urls.add(loadDependency(dependency));
-            }
+        DEFAULT_DEPENDENCIES.forEach(dependency -> {
+            System.out.println("Preloading dependency " + dependency.getArtifactID() + " from repo " + dependency.getRepository().getName() + "...");
+            urls.add(loadDependency(dependency));
         });
     }
 
     @Override
     public void addDependencies() {
-        urls.forEach(new Consumer<URL>() {
-            @Override
-            public void accept(URL url) {
-                addDependency(url);
-            }
-        });
+        urls.forEach(this::addDependency);
     }
 
     @Override

@@ -10,8 +10,6 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
-import java.util.function.Function;
 
 public final class ScreenManager extends AbsoluteThread {
 
@@ -27,13 +25,10 @@ public final class ScreenManager extends AbsoluteThread {
 
     @Override
     public void run() {
-        while (!Thread.currentThread().isInterrupted() && ClientExecutor.isRunning()) {
-            ClientExecutor.getInstance().getProcessManager().getAll().forEach(new Consumer<RunningProcess>() {
-                @Override
-                public void accept(RunningProcess runningProcess) {
-                    readLog(runningProcess);
-                    readErrorLog(runningProcess);
-                }
+        while (!Thread.currentThread().isInterrupted()) {
+            ClientExecutor.getInstance().getProcessManager().getAll().forEach(runningProcess -> {
+                readLog(runningProcess);
+                readErrorLog(runningProcess);
             });
             AbsoluteThread.sleep(TimeUnit.MILLISECONDS, 200);
         }
@@ -74,12 +69,7 @@ public final class ScreenManager extends AbsoluteThread {
                 return;
             }
 
-            ProcessScreen screen = perProcessScreenLines.computeIfAbsent(runningProcess.getProcessInformation().getProcessUniqueID(), new Function<UUID, ProcessScreen>() {
-                @Override
-                public ProcessScreen apply(UUID uuid) {
-                    return new ProcessScreen(runningProcess.getProcessInformation().getProcessUniqueID());
-                }
-            });
+            ProcessScreen screen = perProcessScreenLines.computeIfAbsent(runningProcess.getProcessInformation().getProcessUniqueID(), uuid -> new ProcessScreen(runningProcess.getProcessInformation().getProcessUniqueID()));
 
             for (String in : text.split("\r")) {
                 for (String string : in.split("\n")) {

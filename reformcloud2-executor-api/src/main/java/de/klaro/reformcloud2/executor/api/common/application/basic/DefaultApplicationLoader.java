@@ -15,15 +15,11 @@ import de.klaro.reformcloud2.executor.api.common.utility.list.Links;
 import de.klaro.reformcloud2.executor.api.common.utility.system.DownloadHelper;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.*;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -43,12 +39,7 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
     public void detectApplications() {
         Conditions.isTrue(APP_DIR.isDirectory());
 
-        for (File file : Objects.requireNonNull(APP_DIR.listFiles(new FileFilter() {
-            @Override
-            public boolean accept(File pathname) {
-                return pathname.isFile() && pathname.getName().endsWith(".jar");
-            }
-        }))) {
+        for (File file : Objects.requireNonNull(APP_DIR.listFiles(pathname -> pathname.isFile() && pathname.getName().endsWith(".jar")))) {
             try (JarFile jarFile = new JarFile(file)) {
                 JarEntry appConfig = jarFile.getJarEntry("application.json");
                 if (appConfig == null) {
@@ -85,12 +76,7 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
             }
         }
 
-        applicationHandlers.forEach(new Consumer<ApplicationHandler>() {
-            @Override
-            public void accept(ApplicationHandler applicationHandler) {
-                applicationHandler.onDetectApplications();
-            }
-        });
+        applicationHandlers.forEach(ApplicationHandler::onDetectApplications);
     }
 
     @Override
@@ -125,76 +111,47 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
             }
         }
 
-        applicationHandlers.forEach(new Consumer<ApplicationHandler>() {
-            @Override
-            public void accept(ApplicationHandler applicationHandler) {
-                applicationHandler.onInstallApplications();
-            }
-        });
+        applicationHandlers.forEach(ApplicationHandler::onInstallApplications);
     }
 
     @Override
     public void loadApplications() {
-        applications.forEach(new Consumer<Application>() {
-            @Override
-            public void accept(Application application) {
-                application.onLoad();
-                application.getApplication().setApplicationStatus(ApplicationStatus.LOADED);
-                System.out.println(LanguageManager.get("successfully-loaded-app", application.getApplication().getName()));
-            }
+        applications.forEach(application -> {
+            application.onLoad();
+            application.getApplication().setApplicationStatus(ApplicationStatus.LOADED);
+            System.out.println(LanguageManager.get("successfully-loaded-app", application.getApplication().getName()));
         });
 
-        applicationHandlers.forEach(new Consumer<ApplicationHandler>() {
-            @Override
-            public void accept(ApplicationHandler applicationHandler) {
-                applicationHandler.onLoadApplications();
-            }
-        });
+        applicationHandlers.forEach(ApplicationHandler::onLoadApplications);
     }
 
     @Override
     public void enableApplications() {
-        applications.forEach(new Consumer<Application>() {
-            @Override
-            public void accept(Application application) {
-                application.onEnable();
-                application.getApplication().setApplicationStatus(ApplicationStatus.ENABLED);
-                System.out.println(LanguageManager.get("successfully-enabled-app", application.getApplication().getName()));
-            }
+        applications.forEach(application -> {
+            application.onEnable();
+            application.getApplication().setApplicationStatus(ApplicationStatus.ENABLED);
+            System.out.println(LanguageManager.get("successfully-enabled-app", application.getApplication().getName()));
         });
 
-        applicationHandlers.forEach(new Consumer<ApplicationHandler>() {
-            @Override
-            public void accept(ApplicationHandler applicationHandler) {
-                applicationHandler.onEnableApplications();
-            }
-        });
+        applicationHandlers.forEach(ApplicationHandler::onEnableApplications);
     }
 
     @Override
     public void disableApplications() {
-        applications.forEach(new Consumer<Application>() {
-            @Override
-            public void accept(Application application) {
-                application.getApplication().setApplicationStatus(ApplicationStatus.PRE_DISABLE);
-                application.onPreDisable();
-                System.out.println(LanguageManager.get("successfully-pre-disabled-app", application.getApplication().getName()));
-                application.getApplication().setApplicationStatus(ApplicationStatus.DISABLED);
+        applications.forEach(application -> {
+            application.getApplication().setApplicationStatus(ApplicationStatus.PRE_DISABLE);
+            application.onPreDisable();
+            System.out.println(LanguageManager.get("successfully-pre-disabled-app", application.getApplication().getName()));
+            application.getApplication().setApplicationStatus(ApplicationStatus.DISABLED);
 
-                application.getApplication().setApplicationStatus(ApplicationStatus.UNINSTALLING);
-                application.onUninstall();
-                System.out.println(LanguageManager.get("successfully-uninstalled-app", application.getApplication().getName()));
-                application.getApplication().setApplicationStatus(ApplicationStatus.UNINSTALLED);
-            }
+            application.getApplication().setApplicationStatus(ApplicationStatus.UNINSTALLING);
+            application.onUninstall();
+            System.out.println(LanguageManager.get("successfully-uninstalled-app", application.getApplication().getName()));
+            application.getApplication().setApplicationStatus(ApplicationStatus.UNINSTALLED);
         });
         applications.clear();
 
-        applicationHandlers.forEach(new Consumer<ApplicationHandler>() {
-            @Override
-            public void accept(ApplicationHandler applicationHandler) {
-                applicationHandler.onDisableApplications();
-            }
-        });
+        applicationHandlers.forEach(ApplicationHandler::onDisableApplications);
     }
 
     @Override
@@ -267,12 +224,7 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
 
     @Override
     public boolean doSpecificApplicationUninstall(LoadedApplication loadedApplication) {
-        Application application = Links.filter(applications, new Predicate<Application>() {
-            @Override
-            public boolean test(Application application) {
-                return application.getApplication().getName().equals(loadedApplication.getName());
-            }
-        });
+        Application application = Links.filter(applications, application1 -> application1.getApplication().getName().equals(loadedApplication.getName()));
         if (application == null) {
             return false;
         }
@@ -301,17 +253,7 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
 
     @Override
     public LoadedApplication getApplication(String name) {
-        return Links.filterAndApply(applications, new Predicate<Application>() {
-            @Override
-            public boolean test(Application app) {
-                return app.getApplication().getName().equals(name);
-            }
-        }, new Function<Application, LoadedApplication>() {
-            @Override
-            public LoadedApplication apply(Application app) {
-                return app.getApplication();
-            }
-        });
+        return Links.filterAndApply(applications, app -> app.getApplication().getName().equals(name), Application::getApplication);
     }
 
     @Override
@@ -321,12 +263,7 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
 
     @Override
     public List<LoadedApplication> getApplications() {
-        return Collections.unmodifiableList(Links.apply(applications, new Function<Application, LoadedApplication>() {
-            @Override
-            public LoadedApplication apply(Application application) {
-                return application.getApplication();
-            }
-        }));
+        return Collections.unmodifiableList(Links.apply(applications, Application::getApplication));
     }
 
     @Override

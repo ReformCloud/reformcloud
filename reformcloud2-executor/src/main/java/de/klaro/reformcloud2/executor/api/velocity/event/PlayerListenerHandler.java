@@ -21,12 +21,10 @@ import de.klaro.reformcloud2.executor.api.common.process.ProcessInformation;
 import de.klaro.reformcloud2.executor.api.common.process.ProcessState;
 import de.klaro.reformcloud2.executor.api.packets.out.*;
 import de.klaro.reformcloud2.executor.api.velocity.VelocityExecutor;
-import net.kyori.text.Component;
 import net.kyori.text.TextComponent;
 
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
 
 public final class PlayerListenerHandler {
 
@@ -34,21 +32,21 @@ public final class PlayerListenerHandler {
     public void handleConnect(final ServerPreConnectEvent event) {
         final Player player = event.getPlayer();
         if (!player.getCurrentServer().isPresent()) {
-            DefaultChannelManager.INSTANCE.get("Controller").ifPresent(new Consumer<PacketSender>() {
-                @Override
-                public void accept(PacketSender packetSender) {
-                    Packet result = VelocityExecutor.getInstance().packetHandler().getQueryHandler().sendQueryAsync(packetSender,
-                            new APIPacketOutGetBestLobbyForPlayer(new ArrayList<>(), Version.VELOCITY)
-                    ).getTask().getUninterruptedly(TimeUnit.SECONDS, 3);
-                    if (result != null) {
-                        ProcessInformation info = result.content().get("result", ProcessInformation.TYPE);
-                        if (info != null && VelocityExecutor.getInstance().isServerRegistered(info.getName())) {
-                            event.setResult(ServerPreConnectEvent.ServerResult.allowed(
-                                    VelocityExecutor.getInstance().getProxyServer().getServer(info.getName()).get()
-                            ));
-                        }
+            DefaultChannelManager.INSTANCE.get("Controller").ifPresent(packetSender -> {
+                Packet result = VelocityExecutor.getInstance().packetHandler().getQueryHandler().sendQueryAsync(packetSender,
+                        new APIPacketOutGetBestLobbyForPlayer(new ArrayList<>(), Version.VELOCITY)
+                ).getTask().getUninterruptedly(TimeUnit.SECONDS, 3);
+                if (result != null) {
+                    ProcessInformation info = result.content().get("result", ProcessInformation.TYPE);
+                    if (info != null && VelocityExecutor.getInstance().isServerRegistered(info.getName())) {
+                        event.setResult(ServerPreConnectEvent.ServerResult.allowed(
+                                VelocityExecutor.getInstance().getProxyServer().getServer(info.getName()).get()
+                        ));
+                        return;
                     }
                 }
+
+                event.setResult(ServerPreConnectEvent.ServerResult.denied());
             });
         }
     }
@@ -113,74 +111,53 @@ public final class PlayerListenerHandler {
         VelocityExecutor.getInstance().setThisProcessInformation(current); //Update it directly on the current host to prevent issues
         ExecutorAPI.getInstance().update(current);
 
-        CommonHelper.EXECUTOR.execute(new Runnable() {
-            @Override
-            public void run() {
-                DefaultChannelManager.INSTANCE.get("Controller").ifPresent(new Consumer<PacketSender>() {
-                    @Override
-                    public void accept(PacketSender packetSender) {
-                        packetSender.sendPacket(new APIPacketOutPlayerLoggedIn(event.getPlayer().getUsername()));
-                    }
-                });
-            }
-        });
+        CommonHelper.EXECUTOR.execute(() -> DefaultChannelManager.INSTANCE.get("Controller").ifPresent(packetSender -> packetSender.sendPacket(new APIPacketOutPlayerLoggedIn(event.getPlayer().getUsername()))));
     }
 
     @Subscribe (order = PostOrder.FIRST)
     public void handle(final KickedFromServerEvent event) {
         Player player = event.getPlayer();
-        DefaultChannelManager.INSTANCE.get("Controller").ifPresent(new Consumer<PacketSender>() {
-            @Override
-            public void accept(PacketSender packetSender) {
-                Packet result = VelocityExecutor.getInstance().packetHandler().getQueryHandler().sendQueryAsync(packetSender,
-                        new APIPacketOutGetBestLobbyForPlayer(new ArrayList<>(), Version.VELOCITY)
-                ).getTask().getUninterruptedly(TimeUnit.SECONDS, 3);
-                if (result != null) {
-                    ProcessInformation info = result.content().get("result", ProcessInformation.TYPE);
-                    event.getOriginalReason().ifPresent(new Consumer<Component>() {
-                        @Override
-                        public void accept(Component component) {
-                            player.sendMessage(component);
-                        }
-                    });
+        DefaultChannelManager.INSTANCE.get("Controller").ifPresent(packetSender -> {
+            Packet result = VelocityExecutor.getInstance().packetHandler().getQueryHandler().sendQueryAsync(packetSender,
+                    new APIPacketOutGetBestLobbyForPlayer(new ArrayList<>(), Version.VELOCITY)
+            ).getTask().getUninterruptedly(TimeUnit.SECONDS, 3);
+            if (result != null) {
+                ProcessInformation info = result.content().get("result", ProcessInformation.TYPE);
+                event.getOriginalReason().ifPresent(player::sendMessage);
 
-                    if (info != null && VelocityExecutor.getInstance().isServerRegistered(info.getName())) {
-                        event.setResult(KickedFromServerEvent.RedirectPlayer.create(
-                                VelocityExecutor.getInstance().getProxyServer().getServer(info.getName()).get()
-                        ));
-                    }
+                if (info != null && VelocityExecutor.getInstance().isServerRegistered(info.getName())) {
+                    event.setResult(KickedFromServerEvent.RedirectPlayer.create(
+                            VelocityExecutor.getInstance().getProxyServer().getServer(info.getName()).get()
+                    ));
+                    return;
                 }
             }
+
+            event.setResult(KickedFromServerEvent.DisconnectPlayer.create(
+                    TextComponent.of("There is no lobby server available")
+            ));
         });
     }
 
     @Subscribe (order = PostOrder.FIRST)
     public void handle(final DisconnectEvent event) {
-        DefaultChannelManager.INSTANCE.get("Controller").ifPresent(new Consumer<PacketSender>() {
-            @Override
-            public void accept(PacketSender packetSender) {
-                packetSender.sendPacket(new APIPacketOutLogoutPlayer(
-                        event.getPlayer().getUniqueId(),
-                        event.getPlayer().getUsername()
-                ));
-            }
-        });
+        DefaultChannelManager.INSTANCE.get("Controller").ifPresent(packetSender -> packetSender.sendPacket(new APIPacketOutLogoutPlayer(
+                event.getPlayer().getUniqueId(),
+                event.getPlayer().getUsername()
+        )));
 
-        CommonHelper.EXECUTOR.execute(new Runnable() {
-            @Override
-            public void run() {
-                ProcessInformation current = ExecutorAPI.getInstance().getThisProcessInformation();
-                if (VelocityExecutor.getInstance().getProxyServer().getPlayerCount() < current.getMaxPlayers()
-                        && !current.getProcessState().equals(ProcessState.READY)
-                        && !current.getProcessState().equals(ProcessState.INVISIBLE)) {
-                    current.setProcessState(ProcessState.READY);
-                }
-
-                current.updateRuntimeInformation();
-                current.onLogout(event.getPlayer().getUniqueId());
-                VelocityExecutor.getInstance().setThisProcessInformation(current);
-                ExecutorAPI.getInstance().update(current);
+        CommonHelper.EXECUTOR.execute(() -> {
+            ProcessInformation current = ExecutorAPI.getInstance().getThisProcessInformation();
+            if (VelocityExecutor.getInstance().getProxyServer().getPlayerCount() < current.getMaxPlayers()
+                    && !current.getProcessState().equals(ProcessState.READY)
+                    && !current.getProcessState().equals(ProcessState.INVISIBLE)) {
+                current.setProcessState(ProcessState.READY);
             }
+
+            current.updateRuntimeInformation();
+            current.onLogout(event.getPlayer().getUniqueId());
+            VelocityExecutor.getInstance().setThisProcessInformation(current);
+            ExecutorAPI.getInstance().update(current);
         });
     }
 
@@ -188,16 +165,11 @@ public final class PlayerListenerHandler {
     public void handle(final PlayerChatEvent event) {
         if (ExecutorAPI.getInstance().getThisProcessInformation().getProcessGroup().getPlayerAccessConfiguration().isPlayerControllerCommandReporting()
                 && event.getMessage().startsWith("/")) {
-            DefaultChannelManager.INSTANCE.get("Controller").ifPresent(new Consumer<PacketSender>() {
-                @Override
-                public void accept(PacketSender packetSender) {
-                    packetSender.sendPacket(new APIPacketOutPlayerCommandExecute(
-                            event.getPlayer().getUsername(),
-                            event.getPlayer().getUniqueId(),
-                            event.getMessage().replaceFirst("/", "")
-                    ));
-                }
-            });
+            DefaultChannelManager.INSTANCE.get("Controller").ifPresent(packetSender -> packetSender.sendPacket(new APIPacketOutPlayerCommandExecute(
+                    event.getPlayer().getUsername(),
+                    event.getPlayer().getUniqueId(),
+                    event.getMessage().replaceFirst("/", "")
+            )));
         }
     }
 

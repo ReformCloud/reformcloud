@@ -7,7 +7,6 @@ import de.klaro.reformcloud2.executor.api.common.network.packet.query.QueryHandl
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Consumer;
 
 public final class DefaultPacketHandler implements PacketHandler {
 
@@ -44,12 +43,9 @@ public final class DefaultPacketHandler implements PacketHandler {
 
     @Override
     public void unregisterNetworkHandlers(int id) {
-        new ArrayList<>(handlers).forEach(new Consumer<NetworkHandler>() {
-            @Override
-            public void accept(NetworkHandler networkHandler) {
-                if (networkHandler.getHandlingPacketID() == id) {
-                    handlers.remove(networkHandler);
-                }
+        new ArrayList<>(handlers).forEach(networkHandler -> {
+            if (networkHandler.getHandlingPacketID() == id) {
+                handlers.remove(networkHandler);
             }
         });
     }
@@ -57,12 +53,9 @@ public final class DefaultPacketHandler implements PacketHandler {
     @Override
     public List<NetworkHandler> getNetworkHandlers(int id) {
         List<NetworkHandler> networkHandlers = new ArrayList<>();
-        handlers.forEach(new Consumer<NetworkHandler>() {
-            @Override
-            public void accept(NetworkHandler networkHandler) {
-                if (networkHandler.getHandlingPacketID() == id) {
-                    networkHandlers.add(networkHandler);
-                }
+        handlers.forEach(networkHandler -> {
+            if (networkHandler.getHandlingPacketID() == id) {
+                networkHandlers.add(networkHandler);
             }
         });
         return networkHandlers;

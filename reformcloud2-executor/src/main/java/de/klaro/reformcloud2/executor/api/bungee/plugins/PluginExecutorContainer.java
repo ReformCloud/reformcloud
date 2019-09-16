@@ -22,8 +22,6 @@ import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.logging.Handler;
@@ -96,12 +94,7 @@ public final class PluginExecutorContainer implements PluginExecutor {
                 description.setFile(pluginFile);
 
                 //depends
-                Collection<String> loaded = Links.apply(ProxyServer.getInstance().getPluginManager().getPlugins(), new Function<net.md_5.bungee.api.plugin.Plugin, String>() {
-                    @Override
-                    public String apply(net.md_5.bungee.api.plugin.Plugin plugin) {
-                        return plugin.getDescription().getName();
-                    }
-                });
+                Collection<String> loaded = Links.apply(ProxyServer.getInstance().getPluginManager().getPlugins(), plugin1 -> plugin1.getDescription().getName());
                 for (String depend : description.getDepends()) {
                     Conditions.isTrue(loaded.contains(depend), depend + " required by " + description.getName() + " is not loaded");
                 }
@@ -147,12 +140,9 @@ public final class PluginExecutorContainer implements PluginExecutor {
         ProxyServer.getInstance().getScheduler().cancel(plugin);
         plugin.getExecutorService().shutdownNow(); // This field is actually deprecated may be removed in further releases (Take care of it)
 
-        Thread.getAllStackTraces().keySet().forEach(new Consumer<Thread>() {
-            @Override
-            public void accept(Thread thread) {
-                if (thread.getContextClassLoader().equals(pluginClassLoader)) {
-                    thread.interrupt();
-                }
+        Thread.getAllStackTraces().keySet().forEach(thread -> {
+            if (thread.getContextClassLoader().equals(pluginClassLoader)) {
+                thread.interrupt();
             }
         });
 

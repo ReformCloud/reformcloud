@@ -1,6 +1,7 @@
 package de.klaro.reformcloud2.executor.api.bungee;
 
 import de.klaro.reformcloud2.executor.api.api.API;
+import de.klaro.reformcloud2.executor.api.bungee.commands.CommandLeave;
 import de.klaro.reformcloud2.executor.api.bungee.event.ExtraListenerHandler;
 import de.klaro.reformcloud2.executor.api.bungee.event.PlayerListenerHandler;
 import de.klaro.reformcloud2.executor.api.bungee.event.ProcessEventHandler;
@@ -13,6 +14,7 @@ import de.klaro.reformcloud2.executor.api.common.configuration.JsonConfiguration
 import de.klaro.reformcloud2.executor.api.common.event.EventManager;
 import de.klaro.reformcloud2.executor.api.common.event.basic.DefaultEventManager;
 import de.klaro.reformcloud2.executor.api.common.event.handler.Listener;
+import de.klaro.reformcloud2.executor.api.common.groups.messages.IngameMessages;
 import de.klaro.reformcloud2.executor.api.common.groups.utils.Version;
 import de.klaro.reformcloud2.executor.api.common.network.auth.defaults.DefaultAuth;
 import de.klaro.reformcloud2.executor.api.common.network.channel.PacketSender;
@@ -28,9 +30,9 @@ import de.klaro.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
 import de.klaro.reformcloud2.executor.api.executor.PlayerAPIExecutor;
 import de.klaro.reformcloud2.executor.api.packets.in.APIPacketInAPIAction;
 import de.klaro.reformcloud2.executor.api.packets.in.APIPacketInPluginAction;
+import de.klaro.reformcloud2.executor.api.packets.out.APIBungeePacketOutRequestIngameMessages;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.api.config.ListenerInfo;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Plugin;
@@ -40,7 +42,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.InetSocketAddress;
 import java.util.UUID;
-import java.util.function.Consumer;
 
 public final class BungeeExecutor extends API implements PlayerAPIExecutor {
 
@@ -53,6 +54,8 @@ public final class BungeeExecutor extends API implements PlayerAPIExecutor {
     private final Plugin plugin;
 
     private ProcessInformation thisProcessInformation;
+
+    private IngameMessages messages = new IngameMessages();
 
     private static boolean waterdog;
 
@@ -115,42 +118,36 @@ public final class BungeeExecutor extends API implements PlayerAPIExecutor {
 
     // ===============
     static void clearHandlers() {
-        ProxyServer.getInstance().getConfig().getListeners().forEach(new Consumer<ListenerInfo>() {
-            @Override
-            public void accept(ListenerInfo listenerInfo) {
-                listenerInfo.getServerPriority().clear();
-            }
-        });
+        ProxyServer.getInstance().getConfig().getListeners().forEach(listenerInfo -> listenerInfo.getServerPriority().clear());
         ProxyServer.getInstance().getConfig().getServers().clear();
     }
 
     private void awaitConnectionAndUpdate() {
-        Task.EXECUTOR.execute(new Runnable() {
-            @Override
-            public void run() {
-                PacketSender packetSender = DefaultChannelManager.INSTANCE.get("Controller").orElse(null);
-                while (packetSender == null) {
-                    packetSender = DefaultChannelManager.INSTANCE.get("Controller").orElse(null);
-                    AbsoluteThread.sleep(100);
-                }
-
+        Task.EXECUTOR.execute(() -> {
+            PacketSender packetSender = DefaultChannelManager.INSTANCE.get("Controller").orElse(null);
+            while (packetSender == null) {
+                packetSender = DefaultChannelManager.INSTANCE.get("Controller").orElse(null);
                 AbsoluteThread.sleep(100);
-
-                getAllProcesses().forEach(new Consumer<ProcessInformation>() {
-                    @Override
-                    public void accept(ProcessInformation processInformation) {
-                        registerServer(processInformation);
-                    }
-                });
-                ProxyServer.getInstance().getReconnectHandler().close();
-                ProxyServer.getInstance().getPluginManager().registerListener(plugin, new PlayerListenerHandler());
-                ProxyServer.getInstance().getPluginManager().registerListener(plugin, new ExtraListenerHandler());
-                new PluginUpdater();
-
-                thisProcessInformation.updateMaxPlayers(ProxyServer.getInstance().getConfig().getPlayerLimit());
-                thisProcessInformation.updateRuntimeInformation();
-                ExecutorAPI.getInstance().update(thisProcessInformation);
             }
+
+            AbsoluteThread.sleep(100);
+
+            getAllProcesses().forEach(BungeeExecutor::registerServer);
+            ProxyServer.getInstance().getReconnectHandler().close();
+            ProxyServer.getInstance().getPluginManager().registerListener(plugin, new PlayerListenerHandler());
+            ProxyServer.getInstance().getPluginManager().registerListener(plugin, new ExtraListenerHandler());
+            new PluginUpdater();
+
+            thisProcessInformation.updateMaxPlayers(ProxyServer.getInstance().getConfig().getPlayerLimit());
+            thisProcessInformation.updateRuntimeInformation();
+            ExecutorAPI.getInstance().update(thisProcessInformation);
+
+            DefaultChannelManager.INSTANCE.get("Controller").ifPresent(controller -> packetHandler.getQueryHandler().sendQueryAsync(controller, new APIBungeePacketOutRequestIngameMessages()).onComplete(packet -> {
+                IngameMessages ingameMessages = packet.content().get("messages", IngameMessages.TYPE);
+                setMessages(ingameMessages);
+            }));
+
+            ProxyServer.getInstance().getPluginManager().registerCommand(plugin, new CommandLeave());
         });
     }
 
@@ -163,18 +160,15 @@ public final class BungeeExecutor extends API implements PlayerAPIExecutor {
                 return;
             }
 
+            getInstance().publishNotification(getInstance().getMessages().getProcessConnected(), processInformation.getName());
+
             ProxyServer.getInstance().getServers().put(
                     processInformation.getName(),
                     serverInfo
             );
 
             if (processInformation.isLobby()) {
-                ProxyServer.getInstance().getConfig().getListeners().forEach(new Consumer<ListenerInfo>() {
-                    @Override
-                    public void accept(ListenerInfo listenerInfo) {
-                        listenerInfo.getServerPriority().add(processInformation.getName());
-                    }
-                });
+                ProxyServer.getInstance().getConfig().getListeners().forEach(listenerInfo -> listenerInfo.getServerPriority().add(processInformation.getName()));
             }
         }
     }
@@ -214,6 +208,15 @@ public final class BungeeExecutor extends API implements PlayerAPIExecutor {
         );
     }
 
+    public void publishNotification(String message, Object... replacements) {
+        final String replacedMessage = messages.format(message, replacements);
+        ProxyServer.getInstance().getPlayers().forEach(player -> {
+            if (player.hasPermission("reformcloud.notify")) {
+                player.sendMessage(TextComponent.fromLegacyText(replacedMessage));
+            }
+        });
+    }
+
     @Override
     public ProcessInformation getThisProcessInformation() {
         return thisProcessInformation;
@@ -221,6 +224,14 @@ public final class BungeeExecutor extends API implements PlayerAPIExecutor {
 
     public void setThisProcessInformation(ProcessInformation thisProcessInformation) {
         this.thisProcessInformation = thisProcessInformation;
+    }
+
+    public IngameMessages getMessages() {
+        return messages;
+    }
+
+    private void setMessages(IngameMessages messages) {
+        this.messages = messages;
     }
 
     @Listener

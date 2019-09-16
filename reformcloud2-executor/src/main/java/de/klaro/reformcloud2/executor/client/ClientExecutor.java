@@ -24,7 +24,6 @@ import de.klaro.reformcloud2.executor.api.common.logger.LoggerBase;
 import de.klaro.reformcloud2.executor.api.common.logger.coloured.ColouredLoggerHandler;
 import de.klaro.reformcloud2.executor.api.common.logger.other.DefaultLoggerHandler;
 import de.klaro.reformcloud2.executor.api.common.network.auth.defaults.DefaultAuth;
-import de.klaro.reformcloud2.executor.api.common.network.channel.PacketSender;
 import de.klaro.reformcloud2.executor.api.common.network.channel.handler.NetworkHandler;
 import de.klaro.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import de.klaro.reformcloud2.executor.api.common.network.client.DefaultNetworkClient;
@@ -50,7 +49,6 @@ import java.nio.file.Paths;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Consumer;
 
 public final class ClientExecutor extends Client {
 
@@ -88,14 +86,11 @@ public final class ClientExecutor extends Client {
         ExecutorAPI.setInstance(this);
         super.type = ExecutorType.CLIENT;
 
-        Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    shutdown();
-                } catch (final Exception ex) {
-                    ex.printStackTrace();
-                }
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            try {
+                shutdown();
+            } catch (final Exception ex) {
+                ex.printStackTrace();
             }
         }));
 
@@ -143,12 +138,7 @@ public final class ClientExecutor extends Client {
     }
 
     private void registerNetworkHandlers() {
-        new Reflections("de.klaro.reformcloud2.executor.client.packet.in").getSubTypesOf(NetworkHandler.class).forEach(new Consumer<Class<? extends NetworkHandler>>() {
-            @Override
-            public void accept(Class<? extends NetworkHandler> aClass) {
-                packetHandler.registerHandler(aClass);
-            }
-        });
+        new Reflections("de.klaro.reformcloud2.executor.client.packet.in").getSubTypesOf(NetworkHandler.class).forEach(packetHandler::registerHandler);
     }
 
     private void registerDefaultCommands() {
@@ -184,6 +174,7 @@ public final class ClientExecutor extends Client {
         this.watchdogThread.interrupt();
         processQueue.interrupt();
 
+        this.screenManager.interrupt();
         this.packetHandler.clearHandlers();
         this.packetHandler.getQueryHandler().clearQueries();
         this.networkClient.disconnect();
@@ -252,12 +243,7 @@ public final class ClientExecutor extends Client {
 
                 while ((line = loggerBase.readLine()) != null && !line.trim().isEmpty() && running) {
                     loggerBase.getConsoleReader().setPrompt("");
-                    commandManager.dispatchCommand(console, AllowedCommandSources.ALL, line, new Consumer<String>() {
-                        @Override
-                        public void accept(String s) {
-                            System.out.println(s);
-                        }
-                    });
+                    commandManager.dispatchCommand(console, AllowedCommandSources.ALL, line, System.out::println);
                 }
             } catch (final Throwable throwable) {
                 throwable.printStackTrace();
@@ -266,18 +252,15 @@ public final class ClientExecutor extends Client {
     }
 
     private void notifyUpdate() {
-        DefaultChannelManager.INSTANCE.get("Controller").ifPresent(new Consumer<PacketSender>() {
-            @Override
-            public void accept(PacketSender packetSender) {
-                DefaultClientRuntimeInformation information = new DefaultClientRuntimeInformation(
-                        clientConfig.getStartHost(),
-                        clientConfig.getMaxMemory(),
-                        clientConfig.getMaxProcesses(),
-                        clientConfig.getName()
-                );
+        DefaultChannelManager.INSTANCE.get("Controller").ifPresent(packetSender -> {
+            DefaultClientRuntimeInformation information = new DefaultClientRuntimeInformation(
+                    clientConfig.getStartHost(),
+                    clientConfig.getMaxMemory(),
+                    clientConfig.getMaxProcesses(),
+                    clientConfig.getName()
+            );
 
-                packetSender.sendPacket(new ClientPacketOutNotifyRuntimeUpdate(information));
-            }
+            packetSender.sendPacket(new ClientPacketOutNotifyRuntimeUpdate(information));
         });
     }
 
@@ -333,17 +316,14 @@ public final class ClientExecutor extends Client {
                         true,
                         clientConfig.getName(),
                         new JsonConfiguration().add("info", clientRuntimeInformation)
-                ), createChannelReader(new Runnable() {
-                    @Override
-                    public void run() {
-                        processManager.stopAll();
-                        AbsoluteThread.sleep(TimeUnit.MILLISECONDS, 500);
+                ), createChannelReader(() -> {
+                    processManager.stopAll();
+                    AbsoluteThread.sleep(TimeUnit.MILLISECONDS, 500);
 
-                        if (GLOBAL_CONNECTION_STATUS.get()) {
-                            GLOBAL_CONNECTION_STATUS.set(false);
-                            System.out.println(LanguageManager.get("network-client-connection-lost"));
-                            doConnect();
-                        }
+                    if (GLOBAL_CONNECTION_STATUS.get()) {
+                        GLOBAL_CONNECTION_STATUS.set(false);
+                        System.out.println(LanguageManager.get("network-client-connection-lost"));
+                        doConnect();
                     }
                 })
         );

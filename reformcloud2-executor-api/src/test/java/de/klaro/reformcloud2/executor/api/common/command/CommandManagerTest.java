@@ -11,7 +11,6 @@ import de.klaro.reformcloud2.executor.api.common.language.loading.LanguageWorker
 import org.junit.Test;
 
 import java.util.Collections;
-import java.util.function.Consumer;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -31,25 +30,14 @@ public final class CommandManagerTest {
 
         assertEquals(1, commandManager.getCommands().size());
 
-        commandManager.dispatchCommand(new ConsoleCommandSource(commandManager), AllowedCommandSources.REST, "test", new Consumer<String>() {
-            @Override
-            public void accept(String s) {
-                assertEquals(s, "The command source REST is not allowed");
-            }
+        commandManager.dispatchCommand(new ConsoleCommandSource(commandManager), AllowedCommandSources.REST, "test", s -> assertEquals(s, "The command source REST is not allowed"));
+
+        commandManager.dispatchCommand(new ConsoleCommandSource(commandManager), AllowedCommandSources.CONSOLE, "test", s -> {
+            throw new IllegalStateException();
         });
 
-        commandManager.dispatchCommand(new ConsoleCommandSource(commandManager), AllowedCommandSources.CONSOLE, "test", new Consumer<String>() {
-            @Override
-            public void accept(String s) {
-                throw new IllegalStateException();
-            }
-        });
-
-        commandManager.dispatchCommand(new ConsoleCommandSource(commandManager), AllowedCommandSources.CONSOLE, "ttt", new Consumer<String>() {
-            @Override
-            public void accept(String s) {
-                throw new IllegalStateException();
-            }
+        commandManager.dispatchCommand(new ConsoleCommandSource(commandManager), AllowedCommandSources.CONSOLE, "ttt", s -> {
+            throw new IllegalStateException();
         });
 
         assertNotNull(commandManager.unregisterAndGetCommand("test"));

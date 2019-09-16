@@ -20,11 +20,6 @@ public final class ClientPacketInCopyProcess implements NetworkHandler {
     @Override
     public void handlePacket(PacketSender packetSender, Packet packet, Consumer<Packet> responses) {
         UUID uuid = packet.content().get("uuid", UUID.class);
-        ClientExecutor.getInstance().getProcessManager().getProcess(uuid).ifPresent(new Consumer<RunningProcess>() {
-            @Override
-            public void accept(RunningProcess runningProcess) {
-                runningProcess.copy();
-            }
-        });
+        ClientExecutor.getInstance().getProcessManager().getProcess(uuid).ifPresent(RunningProcess::copy);
     }
 }

@@ -45,14 +45,11 @@ public final class DefaultServerAuthHandler implements ServerAuthHandler {
 
     @Override
     public BiFunction<String, ChannelHandlerContext, PacketSender> onSuccess() {
-        return new BiFunction<String, ChannelHandlerContext, PacketSender>() {
-            @Override
-            public PacketSender apply(String s, ChannelHandlerContext context) {
-                context.channel().writeAndFlush(new DefaultPacket(-511, new JsonConfiguration().add("access", true)));
-                PacketSender sender = new DefaultPacketSender(context.channel());
-                sender.setName(s);
-                return sender;
-            }
+        return (s, context) -> {
+            context.channel().writeAndFlush(new DefaultPacket(-511, new JsonConfiguration().add("access", true)));
+            PacketSender sender = new DefaultPacketSender(context.channel());
+            sender.setName(s);
+            return sender;
         };
     }
 

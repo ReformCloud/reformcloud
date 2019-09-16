@@ -11,8 +11,6 @@ import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.event.server.PluginEnableEvent;
 import org.bukkit.plugin.Plugin;
 
-import java.util.function.Predicate;
-
 public final class ExtraListenerHandler implements Listener {
 
     @EventHandler
@@ -36,12 +34,7 @@ public final class ExtraListenerHandler implements Listener {
     public void handle(final PluginDisableEvent event) {
         final ProcessInformation processInformation = ExecutorAPI.getInstance().getThisProcessInformation();
         Plugin plugin = event.getPlugin();
-        DefaultPlugin defaultPlugin = Links.filter(processInformation.getPlugins(), new Predicate<DefaultPlugin>() {
-            @Override
-            public boolean test(DefaultPlugin in) {
-                return in.getName().equals(plugin.getName());
-            }
-        });
+        DefaultPlugin defaultPlugin = Links.filter(processInformation.getPlugins(), in -> in.getName().equals(plugin.getName()));
         if (defaultPlugin != null) {
             processInformation.getPlugins().remove(defaultPlugin);
             processInformation.updateRuntimeInformation();

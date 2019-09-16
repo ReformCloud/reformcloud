@@ -5,7 +5,6 @@ import de.klaro.reformcloud2.executor.api.common.utility.system.DownloadHelper;
 import de.klaro.reformcloud2.executor.api.common.utility.system.SystemHelper;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Properties;
@@ -56,12 +55,7 @@ public final class DefaultDependency implements Dependency {
 
     @Override
     public void prepareIfUpdate() {
-        File[] files = new File("reformcloud/.bin/libs/").listFiles(new FileFilter() {
-            @Override
-            public boolean accept(File pathname) {
-                return pathname.getName().startsWith(getArtifactID()) && pathname.getName().endsWith(".jar");
-            }
-        });
+        File[] files = new File("reformcloud/.bin/libs/").listFiles(pathname -> pathname.getName().startsWith(getArtifactID()) && pathname.getName().endsWith(".jar"));
         if (files == null || files.length == 0) {
             return;
         }

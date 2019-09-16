@@ -11,7 +11,6 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Consumer;
 
 public final class LanguageWorker {
 
@@ -44,31 +43,28 @@ public final class LanguageWorker {
                 throw new AssertionError("No languages found");
             }
 
-            Arrays.stream(languages).forEach(new Consumer<String>() {
-                @Override
-                public void accept(String s) {
-                    try {
-                        Properties properties = open("languages/" + s + ".properties");
-                        LanguageSource languageSource = new InternalLanguageSource(properties);
+            Arrays.stream(languages).forEach(s -> {
+                try {
+                    Properties properties = open("languages/" + s + ".properties");
+                    LanguageSource languageSource = new InternalLanguageSource(properties);
 
-                        Language language = new Language() {
-                            @Override
-                            public LanguageSource source() {
-                                return languageSource;
-                            }
-
-                            @Override
-                            public Properties messages() {
-                                return properties;
-                            }
-                        };
-                        out.add(language);
-                        if (s.equals(defaultLang)) {
-                            atomicReference.set(language);
+                    Language language = new Language() {
+                        @Override
+                        public LanguageSource source() {
+                            return languageSource;
                         }
-                    } catch (final IOException ex) {
-                        ex.printStackTrace();
+
+                        @Override
+                        public Properties messages() {
+                            return properties;
+                        }
+                    };
+                    out.add(language);
+                    if (s.equals(defaultLang)) {
+                        atomicReference.set(language);
                     }
+                } catch (final IOException ex) {
+                    ex.printStackTrace();
                 }
             });
 

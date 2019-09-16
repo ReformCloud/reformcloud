@@ -117,17 +117,14 @@ public final class MongoDatabase extends Database<com.mongodb.client.MongoDataba
             @Override
             public Task<JsonConfiguration> find(String key) {
                 Task<JsonConfiguration> task = new DefaultTask<>();
-                Task.EXECUTOR.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        Document document = mongoDatabase.getCollection(table).find(Filters.eq("%%%%key", key)).first();
-                        if (document == null) {
-                            task.complete(null);
-                        } else {
-                            JsonConfiguration configuration = new JsonConfiguration(document.toJson());
-                            configuration.remove("%%%%key").remove("%%%%identifier");
-                            task.complete(configuration);
-                        }
+                Task.EXECUTOR.execute(() -> {
+                    Document document = mongoDatabase.getCollection(table).find(Filters.eq("%%%%key", key)).first();
+                    if (document == null) {
+                        task.complete(null);
+                    } else {
+                        JsonConfiguration configuration = new JsonConfiguration(document.toJson());
+                        configuration.remove("%%%%key").remove("%%%%identifier");
+                        task.complete(configuration);
                     }
                 });
                 return task;
@@ -136,17 +133,14 @@ public final class MongoDatabase extends Database<com.mongodb.client.MongoDataba
             @Override
             public Task<JsonConfiguration> findIfAbsent(String identifier) {
                 Task<JsonConfiguration> task = new DefaultTask<>();
-                Task.EXECUTOR.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        Document document = mongoDatabase.getCollection(table).find(Filters.eq("%%%%identifier", identifier)).first();
-                        if (document == null) {
-                            task.complete(null);
-                        } else {
-                            JsonConfiguration configuration = new JsonConfiguration(document.toJson());
-                            configuration.remove("%%%%key").remove("%%%%identifier");
-                            task.complete(configuration);
-                        }
+                Task.EXECUTOR.execute(() -> {
+                    Document document = mongoDatabase.getCollection(table).find(Filters.eq("%%%%identifier", identifier)).first();
+                    if (document == null) {
+                        task.complete(null);
+                    } else {
+                        JsonConfiguration configuration = new JsonConfiguration(document.toJson());
+                        configuration.remove("%%%%key").remove("%%%%identifier");
+                        task.complete(configuration);
                     }
                 });
                 return task;
@@ -155,17 +149,14 @@ public final class MongoDatabase extends Database<com.mongodb.client.MongoDataba
             @Override
             public Task<JsonConfiguration> insert(String key, String identifier, JsonConfiguration data) {
                 Task<JsonConfiguration> task = new DefaultTask<>();
-                Task.EXECUTOR.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        Document document = mongoDatabase.getCollection(table).find(Filters.eq("%%%%identifier", identifier)).first();
-                        if (document == null) {
-                            data.add("%%%%key", key).add("%%%%identifier", identifier != null ? identifier : UUID.randomUUID().toString());
-                            mongoDatabase.getCollection(table).insertOne(JsonConfiguration.GSON.get().fromJson(data.toPrettyString(), Document.class));
-                            task.complete(data);
-                        } else {
-                            task.complete(new JsonConfiguration(document.toJson()));
-                        }
+                Task.EXECUTOR.execute(() -> {
+                    Document document = mongoDatabase.getCollection(table).find(Filters.eq("%%%%identifier", identifier)).first();
+                    if (document == null) {
+                        data.add("%%%%key", key).add("%%%%identifier", identifier != null ? identifier : UUID.randomUUID().toString());
+                        mongoDatabase.getCollection(table).insertOne(JsonConfiguration.GSON.get().fromJson(data.toPrettyString(), Document.class));
+                        task.complete(data);
+                    } else {
+                        task.complete(new JsonConfiguration(document.toJson()));
                     }
                 });
                 return task;
@@ -174,18 +165,15 @@ public final class MongoDatabase extends Database<com.mongodb.client.MongoDataba
             @Override
             public Task<Boolean> update(String key, JsonConfiguration newData) {
                 Task<Boolean> task = new DefaultTask<>();
-                Task.EXECUTOR.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        Document document = mongoDatabase.getCollection(table).find(Filters.eq("%%%%key", key)).first();
-                        if (document == null) {
-                            task.complete(false);
-                        } else {
-                            JsonConfiguration configuration = new JsonConfiguration(document.toJson());
-                            remove(key).awaitUninterruptedly();
-                            insert(key, configuration.getString("%%%%identifier"), newData).awaitUninterruptedly();
-                            task.complete(true);
-                        }
+                Task.EXECUTOR.execute(() -> {
+                    Document document = mongoDatabase.getCollection(table).find(Filters.eq("%%%%key", key)).first();
+                    if (document == null) {
+                        task.complete(false);
+                    } else {
+                        JsonConfiguration configuration = new JsonConfiguration(document.toJson());
+                        remove(key).awaitUninterruptedly();
+                        insert(key, configuration.getString("%%%%identifier"), newData).awaitUninterruptedly();
+                        task.complete(true);
                     }
                 });
                 return task;
@@ -194,18 +182,15 @@ public final class MongoDatabase extends Database<com.mongodb.client.MongoDataba
             @Override
             public Task<Boolean> updateIfAbsent(String identifier, JsonConfiguration newData) {
                 Task<Boolean> task = new DefaultTask<>();
-                Task.EXECUTOR.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        Document document = mongoDatabase.getCollection(table).find(Filters.eq("%%%%identifier", identifier)).first();
-                        if (document == null) {
-                            task.complete(false);
-                        } else {
-                            JsonConfiguration configuration = new JsonConfiguration(document.toJson());
-                            remove(configuration.getString("%%%%key")).awaitUninterruptedly();
-                            insert(configuration.getString("%%%%key"), identifier, newData).awaitUninterruptedly();
-                            task.complete(true);
-                        }
+                Task.EXECUTOR.execute(() -> {
+                    Document document = mongoDatabase.getCollection(table).find(Filters.eq("%%%%identifier", identifier)).first();
+                    if (document == null) {
+                        task.complete(false);
+                    } else {
+                        JsonConfiguration configuration = new JsonConfiguration(document.toJson());
+                        remove(configuration.getString("%%%%key")).awaitUninterruptedly();
+                        insert(configuration.getString("%%%%key"), identifier, newData).awaitUninterruptedly();
+                        task.complete(true);
                     }
                 });
                 return task;
@@ -214,12 +199,9 @@ public final class MongoDatabase extends Database<com.mongodb.client.MongoDataba
             @Override
             public Task<Void> remove(String key) {
                 Task<Void> task = new DefaultTask<>();
-                Task.EXECUTOR.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        mongoDatabase.getCollection(table).deleteOne(Filters.eq("%%%%key", key));
-                        task.complete(null);
-                    }
+                Task.EXECUTOR.execute(() -> {
+                    mongoDatabase.getCollection(table).deleteOne(Filters.eq("%%%%key", key));
+                    task.complete(null);
                 });
                 return task;
             }
@@ -227,12 +209,9 @@ public final class MongoDatabase extends Database<com.mongodb.client.MongoDataba
             @Override
             public Task<Void> removeIfAbsent(String identifier) {
                 Task<Void> task = new DefaultTask<>();
-                Task.EXECUTOR.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        mongoDatabase.getCollection(table).deleteOne(Filters.eq("%%%%identifier", identifier));
-                        task.complete(null);
-                    }
+                Task.EXECUTOR.execute(() -> {
+                    mongoDatabase.getCollection(table).deleteOne(Filters.eq("%%%%identifier", identifier));
+                    task.complete(null);
                 });
                 return task;
             }
@@ -240,12 +219,9 @@ public final class MongoDatabase extends Database<com.mongodb.client.MongoDataba
             @Override
             public Task<Boolean> contains(String key) {
                 Task<Boolean> task = new DefaultTask<>();
-                Task.EXECUTOR.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        Document document = mongoDatabase.getCollection(table).find(Filters.eq("%%%%key", key)).first();
-                        task.complete(document != null);
-                    }
+                Task.EXECUTOR.execute(() -> {
+                    Document document = mongoDatabase.getCollection(table).find(Filters.eq("%%%%key", key)).first();
+                    task.complete(document != null);
                 });
                 return task;
             }
@@ -253,18 +229,10 @@ public final class MongoDatabase extends Database<com.mongodb.client.MongoDataba
             @Override
             public Task<Integer> size() {
                 Task<Integer> task = new DefaultTask<>();
-                Task.EXECUTOR.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        AtomicInteger atomicInteger = new AtomicInteger(0);
-                        mongoDatabase.getCollection(table).find().forEach(new Consumer<Document>() {
-                            @Override
-                            public void accept(Document document) {
-                                atomicInteger.addAndGet(1);
-                            }
-                        });
-                        task.complete(atomicInteger.get());
-                    }
+                Task.EXECUTOR.execute(() -> {
+                    AtomicInteger atomicInteger = new AtomicInteger(0);
+                    mongoDatabase.getCollection(table).find().forEach((Consumer<Document>) document -> atomicInteger.addAndGet(1));
+                    task.complete(atomicInteger.get());
                 });
                 return task;
             }
@@ -277,12 +245,7 @@ public final class MongoDatabase extends Database<com.mongodb.client.MongoDataba
             @Override
             public Iterator<JsonConfiguration> iterator() {
                 List<JsonConfiguration> list = new ArrayList<>();
-                mongoDatabase.getCollection(table).find().forEach(new Consumer<Document>() {
-                    @Override
-                    public void accept(Document document) {
-                        list.add(new JsonConfiguration(document.toJson()));
-                    }
-                });
+                mongoDatabase.getCollection(table).find().forEach((Consumer<Document>) document -> list.add(new JsonConfiguration(document.toJson())));
                 return list.iterator();
             }
         });

@@ -61,12 +61,7 @@ public final class DefaultTask<V> extends Task<V> {
 
     @Override
     public void exec() {
-        Task.EXECUTOR.execute(new Runnable() {
-            @Override
-            public void run() {
-                awaitUninterruptedly();
-            }
-        });
+        Task.EXECUTOR.execute(this::awaitUninterruptedly);
     }
 
     @Override

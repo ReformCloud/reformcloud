@@ -6,7 +6,6 @@ import de.klaro.reformcloud2.executor.api.common.language.LanguageManager;
 import de.klaro.reformcloud2.executor.api.common.network.channel.NetworkChannelReader;
 import de.klaro.reformcloud2.executor.api.common.network.channel.PacketSender;
 import de.klaro.reformcloud2.executor.api.common.network.channel.defaults.DefaultPacketSender;
-import de.klaro.reformcloud2.executor.api.common.network.channel.handler.NetworkHandler;
 import de.klaro.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import de.klaro.reformcloud2.executor.api.common.network.packet.DefaultPacket;
 import de.klaro.reformcloud2.executor.api.common.network.packet.Packet;
@@ -55,20 +54,12 @@ public final class NetworkUtil {
 
     public static final Executor EXECUTOR = Executors.newCachedThreadPool();
 
-    public static final Consumer<ChannelHandlerContext> DEFAULT_AUTH_FAILURE_HANDLER = new Consumer<ChannelHandlerContext>() {
-        @Override
-        public void accept(ChannelHandlerContext context) {
-            context.channel().writeAndFlush(new DefaultPacket(-511, new JsonConfiguration().add("access", false))).syncUninterruptibly().channel().close();
-        }
-    };
+    public static final Consumer<ChannelHandlerContext> DEFAULT_AUTH_FAILURE_HANDLER = context -> context.channel().writeAndFlush(new DefaultPacket(-511, new JsonConfiguration().add("access", false))).syncUninterruptibly().channel().close();
 
-    public static final BiFunction<String, ChannelHandlerContext, PacketSender> DEFAULT_SUCCESS_HANDLER = new BiFunction<String, ChannelHandlerContext, PacketSender>() {
-        @Override
-        public PacketSender apply(String s, ChannelHandlerContext context) {
-            PacketSender packetSender = new DefaultPacketSender(context.channel());
-            packetSender.setName(s);
-            return packetSender;
-        }
+    public static final BiFunction<String, ChannelHandlerContext, PacketSender> DEFAULT_SUCCESS_HANDLER = (s, context) -> {
+        PacketSender packetSender = new DefaultPacketSender(context.channel());
+        packetSender.setName(s);
+        return packetSender;
     };
 
     private static final boolean EPOLL = Epoll.isAvailable();
@@ -209,27 +200,16 @@ public final class NetworkUtil {
 
             @Override
             public void read(ChannelHandlerContext context, Packet packet) {
-                NetworkUtil.EXECUTOR.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (packet.queryUniqueID() != null && getPacketHandler().getQueryHandler().hasWaitingQuery(packet.queryUniqueID())) {
-                            getPacketHandler().getQueryHandler().getWaitingQuery(packet.queryUniqueID()).complete(packet);
-                        } else {
-                            getPacketHandler().getNetworkHandlers(packet.packetID()).forEach(new Consumer<NetworkHandler>() {
-                                @Override
-                                public void accept(NetworkHandler networkHandler) {
-                                    networkHandler.handlePacket(sender, packet, new Consumer<Packet>() {
-                                        @Override
-                                        public void accept(Packet out) {
-                                            if (packet.queryUniqueID() != null) {
-                                                out.setQueryID(packet.queryUniqueID());
-                                                sender.sendPacket(out);
-                                            }
-                                        }
-                                    });
-                                }
-                            });
-                        }
+                NetworkUtil.EXECUTOR.execute(() -> {
+                    if (packet.queryUniqueID() != null && getPacketHandler().getQueryHandler().hasWaitingQuery(packet.queryUniqueID())) {
+                        getPacketHandler().getQueryHandler().getWaitingQuery(packet.queryUniqueID()).complete(packet);
+                    } else {
+                        getPacketHandler().getNetworkHandlers(packet.packetID()).forEach(networkHandler -> networkHandler.handlePacket(sender, packet, out -> {
+                            if (packet.queryUniqueID() != null) {
+                                out.setQueryID(packet.queryUniqueID());
+                                sender.sendPacket(out);
+                            }
+                        }));
                     }
                 });
             }

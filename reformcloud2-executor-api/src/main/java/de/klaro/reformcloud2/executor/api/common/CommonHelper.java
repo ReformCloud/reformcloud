@@ -15,7 +15,6 @@ import java.util.*;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 public final class CommonHelper {
@@ -50,15 +49,12 @@ public final class CommonHelper {
 
     public static long memoryPoolMXBeanCollectionUsage() {
         AtomicLong atomicLong = new AtomicLong(0);
-        ManagementFactory.getMemoryPoolMXBeans().forEach(new Consumer<MemoryPoolMXBean>() {
-            @Override
-            public void accept(MemoryPoolMXBean memoryPoolMXBean) {
-                if (memoryPoolMXBean.getCollectionUsage() == null) {
-                    return;
-                }
-
-                atomicLong.addAndGet(memoryPoolMXBean.getCollectionUsage().getUsed());
+        ManagementFactory.getMemoryPoolMXBeans().forEach(memoryPoolMXBean -> {
+            if (memoryPoolMXBean.getCollectionUsage() == null) {
+                return;
             }
+
+            atomicLong.addAndGet(memoryPoolMXBean.getCollectionUsage().getUsed());
         });
 
         return atomicLong.get();
@@ -97,12 +93,7 @@ public final class CommonHelper {
             Properties properties = new Properties();
             properties.load(inputStream);
 
-            properties.stringPropertyNames().forEach(new Consumer<String>() {
-                @Override
-                public void accept(String s) {
-                    properties.setProperty(s, function.apply(s));
-                }
-            });
+            properties.stringPropertyNames().forEach(s -> properties.setProperty(s, function.apply(s)));
 
             try (OutputStreamWriter outputStreamWriter = new OutputStreamWriter(Files.newOutputStream(Paths.get(path)), StandardCharsets.UTF_8)) {
                 properties.store(outputStreamWriter, saveComment);
@@ -121,12 +112,7 @@ public final class CommonHelper {
     private static final Map<Class<? extends Enum<?>>, Map<String, WeakReference<? extends Enum<?>>>> CACHE = new HashMap<>();
 
     public static <T extends Enum<T>> ReferencedOptional<T> findEnumField(Class<T> enumClass, String field) {
-        Map<String, WeakReference<? extends Enum<?>>> cached = CACHE.computeIfAbsent(enumClass, new Function<Class<? extends Enum<?>>, Map<String, WeakReference<? extends Enum<?>>>>() {
-            @Override
-            public Map<String, WeakReference<? extends Enum<?>>> apply(Class<? extends Enum<?>> aClass) {
-                return cache(enumClass);
-            }
-        });
+        Map<String, WeakReference<? extends Enum<?>>> cached = CACHE.computeIfAbsent(enumClass, aClass -> cache(enumClass));
 
         WeakReference<? extends Enum<?>> reference = cached.get(field);
         return reference == null ? ReferencedOptional.empty() : ReferencedOptional.build(enumClass.cast(reference.get()));
@@ -136,12 +122,7 @@ public final class CommonHelper {
         Map<String, WeakReference<? extends Enum<?>>> out = new HashMap<>();
         try {
             Collection<T> instance = EnumSet.allOf(enumClass);
-            instance.forEach(new Consumer<T>() {
-                @Override
-                public void accept(T t) {
-                    out.put(t.name(), new WeakReference<>(t));
-                }
-            });
+            instance.forEach(t -> out.put(t.name(), new WeakReference<>(t)));
         } catch (final Throwable ignored) {
         }
 

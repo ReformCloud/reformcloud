@@ -8,18 +8,14 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public final class DownloadHelper {
 
     public static void downloadAndDisconnect(String url, String target) {
-        openConnection(url, new Consumer<InputStream>() {
-            @Override
-            public void accept(InputStream stream) {
-                SystemHelper.createDirectory(Paths.get(target).getParent());
-                SystemHelper.doCopy(stream, Paths.get(target), StandardCopyOption.REPLACE_EXISTING);
-            }
+        openConnection(url, stream -> {
+            SystemHelper.createDirectory(Paths.get(target).getParent());
+            SystemHelper.doCopy(stream, Paths.get(target), StandardCopyOption.REPLACE_EXISTING);
         });
     }
 
@@ -30,12 +26,7 @@ public final class DownloadHelper {
                     "User-Agent",
                     "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.95 Safari/537.11"
             );
-            headers.forEach(new BiConsumer<String, String>() {
-                @Override
-                public void accept(String s, String s2) {
-                    httpURLConnection.setRequestProperty(s, s2);
-                }
-            });
+            headers.forEach(httpURLConnection::setRequestProperty);
             httpURLConnection.setDoOutput(false);
             httpURLConnection.setUseCaches(false);
             httpURLConnection.connect();

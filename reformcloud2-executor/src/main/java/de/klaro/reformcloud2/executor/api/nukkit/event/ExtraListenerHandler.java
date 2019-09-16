@@ -11,8 +11,6 @@ import de.klaro.reformcloud2.executor.api.common.process.ProcessInformation;
 import de.klaro.reformcloud2.executor.api.common.utility.list.Links;
 import de.klaro.reformcloud2.executor.api.nukkit.NukkitExecutor;
 
-import java.util.function.Predicate;
-
 public final class ExtraListenerHandler implements Listener {
 
     @EventHandler
@@ -36,12 +34,7 @@ public final class ExtraListenerHandler implements Listener {
     public void handle(final PluginDisableEvent event) {
         final ProcessInformation processInformation = ExecutorAPI.getInstance().getThisProcessInformation();
         Plugin plugin = event.getPlugin();
-        DefaultPlugin defaultPlugin = Links.filter(processInformation.getPlugins(), new Predicate<DefaultPlugin>() {
-            @Override
-            public boolean test(DefaultPlugin in) {
-                return in.getName().equals(plugin.getName());
-            }
-        });
+        DefaultPlugin defaultPlugin = Links.filter(processInformation.getPlugins(), in -> in.getName().equals(plugin.getName()));
         if (defaultPlugin != null) {
             processInformation.getPlugins().remove(defaultPlugin);
             processInformation.updateRuntimeInformation();

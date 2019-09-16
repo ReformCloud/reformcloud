@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 
 public final class ProcessRuntimeInformation {
 
@@ -189,12 +188,7 @@ public final class ProcessRuntimeInformation {
                 CommonHelper.runtimeMXBean().getSystemProperties(),
                 CommonHelper.runtimeMXBean().getClassPath(),
                 CommonHelper.runtimeMXBean().getBootClassPath(),
-                Links.keyApply(Thread.getAllStackTraces(), new Function<Thread, ThreadInfo>() {
-                    @Override
-                    public ThreadInfo apply(Thread thread) {
-                        return ThreadInfo.create(thread);
-                    }
-                })
+                Links.keyApply(Thread.getAllStackTraces(), ThreadInfo::create)
         );
     }
 

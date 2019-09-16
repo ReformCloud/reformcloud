@@ -11,7 +11,7 @@ public final class LanguageTest {
     public void languageLoadTest() {
         LanguageWorker.doLoad();
 
-        assertEquals(LanguageManager.get("language.setting.display"), "en-US");
+        assertEquals(LanguageManager.get("language.setting.display"), "en_US");
         assertEquals(LanguageManager.get("command-unknown"), "The command {0} is not known! Please use \"help\" to get a list of all commands");
     }
 }

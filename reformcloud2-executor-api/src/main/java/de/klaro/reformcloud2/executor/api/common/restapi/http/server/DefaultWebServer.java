@@ -13,7 +13,6 @@ import io.netty.channel.socket.ServerSocketChannel;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.BiConsumer;
 
 public final class DefaultWebServer implements WebServer {
 
@@ -65,12 +64,7 @@ public final class DefaultWebServer implements WebServer {
 
     @Override
     public void close() {
-        channelFutures.forEach(new BiConsumer<Integer, ChannelFuture>() {
-            @Override
-            public void accept(Integer integer, ChannelFuture channelFuture) {
-                channelFuture.cancel(true);
-            }
-        });
+        channelFutures.forEach((integer, channelFuture) -> channelFuture.cancel(true));
         channelFutures.clear();
 
         worker.shutdownGracefully();

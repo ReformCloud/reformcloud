@@ -4,9 +4,9 @@ import de.klaro.reformcloud2.executor.api.common.client.ClientRuntimeInformation
 import de.klaro.reformcloud2.executor.api.common.language.LanguageManager;
 import de.klaro.reformcloud2.executor.api.common.utility.list.Links;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Predicate;
 
 public final class ClientManager {
 
@@ -24,12 +24,7 @@ public final class ClientManager {
     }
 
     public void disconnectClient(String name) {
-        ClientRuntimeInformation found = Links.filter(clientRuntimeInformation, new Predicate<ClientRuntimeInformation>() {
-            @Override
-            public boolean test(ClientRuntimeInformation clientRuntimeInformation) {
-                return clientRuntimeInformation.getName().equals(name);
-            }
-        });
+        ClientRuntimeInformation found = Links.filter(clientRuntimeInformation, clientRuntimeInformation -> clientRuntimeInformation.getName().equals(name));
         if (found == null) {
             return;
         }
@@ -42,12 +37,7 @@ public final class ClientManager {
     }
 
     public void updateClient(ClientRuntimeInformation information) {
-        ClientRuntimeInformation found = Links.filter(clientRuntimeInformation, new Predicate<ClientRuntimeInformation>() {
-            @Override
-            public boolean test(ClientRuntimeInformation clientRuntimeInformation) {
-                return clientRuntimeInformation.getName().equals(information.getName());
-            }
-        });
+        ClientRuntimeInformation found = Links.filter(clientRuntimeInformation, clientRuntimeInformation -> clientRuntimeInformation.getName().equals(information.getName()));
         if (found == null) {
             return;
         }
@@ -59,6 +49,12 @@ public final class ClientManager {
     public void onShutdown() {
         clientRuntimeInformation.clear();
         if (process != null) {
+            try {
+                process.getOutputStream().write("stop".getBytes());
+                process.getOutputStream().flush();
+            } catch (final IOException ignored) {
+            }
+
             process.destroyForcibly().destroy();
         }
     }

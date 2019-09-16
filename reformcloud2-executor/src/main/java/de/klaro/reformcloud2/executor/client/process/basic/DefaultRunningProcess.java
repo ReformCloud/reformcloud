@@ -4,7 +4,6 @@ import de.klaro.reformcloud2.executor.api.client.process.RunningProcess;
 import de.klaro.reformcloud2.executor.api.common.ExecutorAPI;
 import de.klaro.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import de.klaro.reformcloud2.executor.api.common.groups.utils.Version;
-import de.klaro.reformcloud2.executor.api.common.network.channel.PacketSender;
 import de.klaro.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import de.klaro.reformcloud2.executor.api.common.process.ProcessInformation;
 import de.klaro.reformcloud2.executor.api.common.process.ProcessState;
@@ -30,8 +29,6 @@ import java.nio.file.StandardCopyOption;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
@@ -95,16 +92,11 @@ public final class DefaultRunningProcess implements RunningProcess {
         ExecutorAPI.getInstance().update(processInformation);
         prepared = true;
 
-        DefaultChannelManager.INSTANCE.get("Controller").ifPresent(new Consumer<PacketSender>() {
-            @Override
-            public void accept(PacketSender packetSender) {
-                packetSender.sendPacket(new ClientPacketOutProcessPrepared(
-                        processInformation.getName(),
-                        processInformation.getProcessUniqueID(),
-                        processInformation.getTemplate().getName()
-                ));
-            }
-        });
+        DefaultChannelManager.INSTANCE.get("Controller").ifPresent(packetSender -> packetSender.sendPacket(new ClientPacketOutProcessPrepared(
+                processInformation.getName(),
+                processInformation.getProcessUniqueID(),
+                processInformation.getTemplate().getName()
+        )));
         return this;
     }
 
@@ -127,12 +119,7 @@ public final class DefaultRunningProcess implements RunningProcess {
                 "-Xmx" + processInformation.getTemplate().getRuntimeConfiguration().getMaxMemory() + "M"
         ));
 
-        this.processInformation.getTemplate().getRuntimeConfiguration().getSystemProperties().forEach(new BiConsumer<String, String>() {
-            @Override
-            public void accept(String s, String s2) {
-                command.add("-D" + s + "=" + s2);
-            }
-        });
+        this.processInformation.getTemplate().getRuntimeConfiguration().getSystemProperties().forEach((s, s2) -> command.add("-D" + s + "=" + s2));
 
         command.addAll(Arrays.asList(
                 "-jar",
@@ -262,17 +249,14 @@ public final class DefaultRunningProcess implements RunningProcess {
 
     private void rewriteSpongeConfig() {
         File config = Paths.get(path + "/config/sponge/global.conf").toFile();
-        rewriteFile(config, new UnaryOperator<String>() {
-            @Override
-            public String apply(String s) {
-                if (s.startsWith("ip-forwarding=")) {
-                    s = "ip-forwarding=true";
-                } else if (s.startsWith("bungeecord=")) {
-                    s = "bungeecord=true";
-                }
-
-                return s;
+        rewriteFile(config, (UnaryOperator<String>) s -> {
+            if (s.startsWith("ip-forwarding=")) {
+                s = "ip-forwarding=true";
+            } else if (s.startsWith("bungeecord=")) {
+                s = "bungeecord=true";
             }
+
+            return s;
         });
     }
 
@@ -327,17 +311,14 @@ public final class DefaultRunningProcess implements RunningProcess {
 
     private void rewriteBungeeConfig() {
         File file = Paths.get(path + "/config.yml").toFile();
-        rewriteFile(file, new UnaryOperator<String>() {
-            @Override
-            public String apply(String s) {
-                if (s.startsWith("  host:")) {
-                    s = "  host: " + ClientExecutor.getInstance().getClientConfig().getStartHost() + ":" + processInformation.getNetworkInfo().getPort();
-                } else if (s.startsWith("ip_forward:")) {
-                    s = "ip_forward: true";
-                }
-
-                return s;
+        rewriteFile(file, (UnaryOperator<String>) s -> {
+            if (s.startsWith("  host:")) {
+                s = "  host: " + ClientExecutor.getInstance().getClientConfig().getStartHost() + ":" + processInformation.getNetworkInfo().getPort();
+            } else if (s.startsWith("ip_forward:")) {
+                s = "ip_forward: true";
             }
+
+            return s;
         });
     }
 
@@ -345,21 +326,18 @@ public final class DefaultRunningProcess implements RunningProcess {
     //Waterdog
     private void rewriteWaterDogConfig() {
         File file = Paths.get(path + "/config.yml").toFile();
-        rewriteFile(file, new UnaryOperator<String>() {
-            @Override
-            public String apply(String s) {
-                if (s.startsWith("  host:")) {
-                    s = "  host: " + ClientExecutor.getInstance().getClientConfig().getStartHost() + ":" + processInformation.getNetworkInfo().getPort();
-                } else if (s.startsWith("ip_forward:")) {
-                    s = "ip_forward: true";
-                } else if (s.startsWith("use_xuid_for_uuid:")) {
-                    s = "use_xuid_for_uuid: true";
-                } else if (s.startsWith("  raknet:")) {
-                    s = "  raknet: " + processInformation.getTemplate().getVersion().equals(Version.WATERDOG_PE);
-                }
-
-                return s;
+        rewriteFile(file, (UnaryOperator<String>) s -> {
+            if (s.startsWith("  host:")) {
+                s = "  host: " + ClientExecutor.getInstance().getClientConfig().getStartHost() + ":" + processInformation.getNetworkInfo().getPort();
+            } else if (s.startsWith("ip_forward:")) {
+                s = "ip_forward: true";
+            } else if (s.startsWith("use_xuid_for_uuid:")) {
+                s = "use_xuid_for_uuid: true";
+            } else if (s.startsWith("  raknet:")) {
+                s = "  raknet: " + processInformation.getTemplate().getVersion().equals(Version.WATERDOG_PE);
             }
+
+            return s;
         });
     }
 
@@ -372,19 +350,16 @@ public final class DefaultRunningProcess implements RunningProcess {
     //Velocity
     private void rewriteVelocityConfig() {
         File file = Paths.get(path + "/velocity.toml").toFile();
-        rewriteFile(file, new UnaryOperator<String>() {
-            @Override
-            public String apply(String s) {
-                if (s.startsWith("bind")) {
-                    s = "bind = \"" + ClientExecutor.getInstance().getClientConfig().getStartHost() + ":" + processInformation.getNetworkInfo().getPort() + "\"";
-                } else if (s.startsWith("show-max-players") && processInformation.getProcessGroup().getPlayerAccessConfiguration().isUseCloudPlayerLimit()) {
-                    s = "show-max-players = " + processInformation.getProcessGroup().getPlayerAccessConfiguration().getMaxPlayers();
-                } else if (s.startsWith("player-info-forwarding-mode")) {
-                    s = "player-info-forwarding-mode = \"LEGACY\"";
-                }
-
-                return s;
+        rewriteFile(file, (UnaryOperator<String>) s -> {
+            if (s.startsWith("bind")) {
+                s = "bind = \"" + ClientExecutor.getInstance().getClientConfig().getStartHost() + ":" + processInformation.getNetworkInfo().getPort() + "\"";
+            } else if (s.startsWith("show-max-players") && processInformation.getProcessGroup().getPlayerAccessConfiguration().isUseCloudPlayerLimit()) {
+                s = "show-max-players = " + processInformation.getProcessGroup().getPlayerAccessConfiguration().getMaxPlayers();
+            } else if (s.startsWith("player-info-forwarding-mode")) {
+                s = "player-info-forwarding-mode = \"LEGACY\"";
             }
+
+            return s;
         });
     }
 
@@ -554,20 +529,12 @@ public final class DefaultRunningProcess implements RunningProcess {
             List<String> list = Files.readAllLines(file.toPath());
             List<String> newLine = new ArrayList<>();
 
-            list.forEach(new Consumer<String>() {
-                @Override
-                public void accept(String s) {
-                    newLine.add(function.apply(s));
-                }
-            });
+            list.forEach(s -> newLine.add(function.apply(s)));
 
             try (PrintWriter printWriter = new PrintWriter(new OutputStreamWriter(Files.newOutputStream(file.toPath()), StandardCharsets.UTF_8), true)) {
-                newLine.forEach(new Consumer<String>() {
-                    @Override
-                    public void accept(String s) {
-                        printWriter.write(s + "\n");
-                        printWriter.flush();
-                    }
+                newLine.forEach(s -> {
+                    printWriter.write(s + "\n");
+                    printWriter.flush();
                 });
             }
         } catch (final IOException ex) {

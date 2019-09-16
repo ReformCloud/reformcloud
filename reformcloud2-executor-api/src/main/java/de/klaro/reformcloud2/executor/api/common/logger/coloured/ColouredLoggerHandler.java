@@ -19,7 +19,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.logging.FileHandler;
@@ -157,12 +156,9 @@ public final class ColouredLoggerHandler extends LoggerBase {
     }
 
     private void handleLine(String line) {
-        handlers.forEach(new Consumer<LoggerLineHandler>() {
-            @Override
-            public void accept(LoggerLineHandler handler) {
-                handler.handleLine(line, ColouredLoggerHandler.this);
-                handler.handleRaw(Colours.stripColor(line), ColouredLoggerHandler.this);
-            }
+        handlers.forEach(handler -> {
+            handler.handleLine(line, ColouredLoggerHandler.this);
+            handler.handleRaw(Colours.stripColor(line), ColouredLoggerHandler.this);
         });
     }
 }

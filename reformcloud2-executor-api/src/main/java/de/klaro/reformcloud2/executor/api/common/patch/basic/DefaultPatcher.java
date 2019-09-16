@@ -11,7 +11,6 @@ import de.klaro.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -20,7 +19,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
 
 public final class DefaultPatcher implements Patcher {
 
@@ -54,13 +52,10 @@ public final class DefaultPatcher implements Patcher {
         }
 
         if (Boolean.getBoolean("reformcloud.patcher.disable")) {
-            CompletableFuture.runAsync(new Runnable() {
-                @Override
-                public void run() {
-                    while (!Thread.currentThread().isInterrupted()) {
-                        AbsoluteThread.sleep(TimeUnit.MINUTES, 10);
-                        loadPatches(lastCheck);
-                    }
+            CompletableFuture.runAsync(() -> {
+                while (!Thread.currentThread().isInterrupted()) {
+                    AbsoluteThread.sleep(TimeUnit.MINUTES, 10);
+                    loadPatches(lastCheck);
                 }
             });
         }
@@ -98,18 +93,10 @@ public final class DefaultPatcher implements Patcher {
             if (lastCheck != -1L) {
                 DownloadHelper.openConnection(UPDATE_SERVER_URL + "requestpatches", Collections.singletonMap(
                         "-XLastCheck", Long.toString(lastCheck)
-                ), new Consumer<InputStream>() {
-                    @Override
-                    public void accept(InputStream inputStream) {
-                        JsonConfiguration jsonConfiguration = new JsonConfiguration(inputStream);
-                        if (jsonConfiguration.getBoolean("success")) {
-                            jsonConfiguration.get("result", new TypeToken<List<DefaultPatch>>() {}).forEach(new Consumer<DefaultPatch>() {
-                                @Override
-                                public void accept(DefaultPatch defaultPatch) {
-                                    patches.add(defaultPatch);
-                                }
-                            });
-                        }
+                ), inputStream -> {
+                    JsonConfiguration jsonConfiguration = new JsonConfiguration(inputStream);
+                    if (jsonConfiguration.getBoolean("success")) {
+                        jsonConfiguration.get("result", new TypeToken<List<DefaultPatch>>() {}).forEach(patches::add);
                     }
                 });
             }
@@ -122,39 +109,31 @@ public final class DefaultPatcher implements Patcher {
     @Override
     public void doPatches() {
         if (checkAccess()) {
-            new ArrayList<>(patches).forEach(new Consumer<Patch>() {
-                @Override
-                public void accept(Patch patch) {
-                    final long current = System.currentTimeMillis();
-                    patches.remove(patch);
-                    String file = patch.patchNote().getName() + "-" + patch.patchNote().newVersion() + ".jar";
+            new ArrayList<>(patches).forEach(patch -> {
+                final long current = System.currentTimeMillis();
+                patches.remove(patch);
+                String file = patch.patchNote().getName() + "-" + patch.patchNote().newVersion() + ".jar";
 
-                    System.out.println(LanguageManager.get("patch-apply", patch.patchNote().getName(),
-                            patch.patchNote().newVersion()));
+                System.out.println(LanguageManager.get("patch-apply", patch.patchNote().getName(),
+                        patch.patchNote().newVersion()));
 
-                    DownloadHelper.openConnection(UPDATE_SERVER_URL + "downloadpatch", Collections.singletonMap(
-                            "-XFileName", patch.fileName()
-                    ), new Consumer<InputStream>() {
-                        @Override
-                        public void accept(InputStream inputStream) {
-                            SystemHelper.doCopy(inputStream, Paths.get(
-                                    "reformcloud/.update/" + patch.patchNote().getName() + "-" + patch.patchNote().newVersion() + ".jar"
-                            ));
-                        }
-                    });
-                    System.out.println(patch.patchNote().updateMessage());
+                DownloadHelper.openConnection(UPDATE_SERVER_URL + "downloadpatch", Collections.singletonMap(
+                        "-XFileName", patch.fileName()
+                ), inputStream -> SystemHelper.doCopy(inputStream, Paths.get(
+                        "reformcloud/.update/" + patch.patchNote().getName() + "-" + patch.patchNote().newVersion() + ".jar"
+                )));
+                System.out.println(patch.patchNote().updateMessage());
 
-                    try {
-                        Process process = Runtime.getRuntime().exec("java -jar " + file, null, new File("reformcloud/.update"));
-                        process.waitFor();
-                        process.destroyForcibly().destroy();
-                    } catch (final IOException | InterruptedException ex) {
-                        ex.printStackTrace();
-                    }
-
-                    System.out.println(LanguageManager.get("patch-apply-done", patch.patchNote().getName(),
-                            Long.toString(System.currentTimeMillis() - current)));
+                try {
+                    Process process = Runtime.getRuntime().exec("java -jar " + file, null, new File("reformcloud/.update"));
+                    process.waitFor();
+                    process.destroyForcibly().destroy();
+                } catch (final IOException | InterruptedException ex) {
+                    ex.printStackTrace();
                 }
+
+                System.out.println(LanguageManager.get("patch-apply-done", patch.patchNote().getName(),
+                        Long.toString(System.currentTimeMillis() - current)));
             });
         }
     }

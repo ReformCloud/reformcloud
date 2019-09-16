@@ -21,7 +21,6 @@ import net.md_5.bungee.event.EventHandler;
 import net.md_5.bungee.event.EventPriority;
 
 import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
 
 public final class PlayerListenerHandler implements Listener {
 
@@ -31,22 +30,32 @@ public final class PlayerListenerHandler implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void handle(final ServerConnectEvent event) {
         final ProxiedPlayer proxiedPlayer = event.getPlayer();
+        proxiedPlayer.setReconnectServer(null);
         if (proxiedPlayer.getServer() == null) {
-            DefaultChannelManager.INSTANCE.get("Controller").ifPresent(new Consumer<PacketSender>() {
-                @Override
-                public void accept(PacketSender packetSender) {
-                    Packet result = BungeeExecutor.getInstance().packetHandler().getQueryHandler().sendQueryAsync(packetSender,
-                            new APIPacketOutGetBestLobbyForPlayer(proxiedPlayer.getPermissions(), version)
-                    ).getTask().getUninterruptedly(TimeUnit.SECONDS, 3);
-                    if (result != null) {
-                        ProcessInformation info = result.content().get("result", ProcessInformation.TYPE);
-                        if (info != null && ProxyServer.getInstance().getServers().containsKey(info.getName())) {
-                            event.setTarget(ProxyServer.getInstance().getServerInfo(info.getName()));
-                        }
+            DefaultChannelManager.INSTANCE.get("Controller").ifPresent(packetSender -> {
+                Packet result = BungeeExecutor.getInstance().packetHandler().getQueryHandler().sendQueryAsync(packetSender,
+                        new APIPacketOutGetBestLobbyForPlayer(proxiedPlayer.getPermissions(), version)
+                ).getTask().getUninterruptedly(TimeUnit.SECONDS, 3);
+                if (result != null) {
+                    ProcessInformation info = result.content().get("result", ProcessInformation.TYPE);
+                    if (info != null && ProxyServer.getInstance().getServers().containsKey(info.getName())) {
+                        event.setTarget(ProxyServer.getInstance().getServerInfo(info.getName()));
+                        return;
                     }
                 }
+
+                proxiedPlayer.disconnect(TextComponent.fromLegacyText("There is currently no lobby server available"));
+                event.setCancelled(true);
             });
         }
+    }
+
+    @EventHandler
+    public void handle(final ServerConnectedEvent event) {
+        DefaultChannelManager.INSTANCE.get("Controller").ifPresent(sender -> sender.sendPacket(new APIBungeePacketOutPlayerServerSwitch(
+                event.getPlayer().getUniqueId(),
+                event.getServer().getInfo().getName()
+        )));
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -110,67 +119,50 @@ public final class PlayerListenerHandler implements Listener {
         BungeeExecutor.getInstance().setThisProcessInformation(current); //Update it directly on the current host to prevent issues
         ExecutorAPI.getInstance().update(current);
 
-        CommonHelper.EXECUTOR.execute(new Runnable() {
-            @Override
-            public void run() {
-                DefaultChannelManager.INSTANCE.get("Controller").ifPresent(new Consumer<PacketSender>() {
-                    @Override
-                    public void accept(PacketSender packetSender) {
-                        packetSender.sendPacket(new APIPacketOutPlayerLoggedIn(event.getPlayer().getName()));
-                    }
-                });
-            }
-        });
+        CommonHelper.EXECUTOR.execute(() -> DefaultChannelManager.INSTANCE.get("Controller").ifPresent(packetSender -> packetSender.sendPacket(new APIPacketOutPlayerLoggedIn(event.getPlayer().getName()))));
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void handle(final ServerKickEvent event) {
         ProxiedPlayer proxiedPlayer = event.getPlayer();
-        DefaultChannelManager.INSTANCE.get("Controller").ifPresent(new Consumer<PacketSender>() {
-            @Override
-            public void accept(PacketSender packetSender) {
-                Packet result = BungeeExecutor.getInstance().packetHandler().getQueryHandler().sendQueryAsync(packetSender,
-                        new APIPacketOutGetBestLobbyForPlayer(proxiedPlayer.getPermissions(), version)
-                ).getTask().getUninterruptedly(TimeUnit.SECONDS, 3);
-                if (result != null) {
-                    ProcessInformation info = result.content().get("result", ProcessInformation.TYPE);
-                    if (info != null && ProxyServer.getInstance().getServers().containsKey(info.getName())) {
-                        event.setCancelled(true);
-                        event.setCancelServer(ProxyServer.getInstance().getServerInfo(info.getName()));
-                        proxiedPlayer.sendMessage(event.getKickReasonComponent());
-                    }
+        DefaultChannelManager.INSTANCE.get("Controller").ifPresent(packetSender -> {
+            Packet result = BungeeExecutor.getInstance().packetHandler().getQueryHandler().sendQueryAsync(packetSender,
+                    new APIPacketOutGetBestLobbyForPlayer(proxiedPlayer.getPermissions(), version)
+            ).getTask().getUninterruptedly(TimeUnit.SECONDS, 3);
+            if (result != null) {
+                ProcessInformation info = result.content().get("result", ProcessInformation.TYPE);
+                if (info != null && ProxyServer.getInstance().getServers().containsKey(info.getName())) {
+                    event.setCancelled(true);
+                    event.setCancelServer(ProxyServer.getInstance().getServerInfo(info.getName()));
+                    proxiedPlayer.sendMessage(event.getKickReasonComponent());
+                    return;
                 }
             }
+
+            proxiedPlayer.disconnect(TextComponent.fromLegacyText("There is currently no lobby server available"));
+            event.setCancelled(false);
         });
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void handle(final PlayerDisconnectEvent event) {
-        DefaultChannelManager.INSTANCE.get("Controller").ifPresent(new Consumer<PacketSender>() {
-            @Override
-            public void accept(PacketSender packetSender) {
-                packetSender.sendPacket(new APIPacketOutLogoutPlayer(
-                        event.getPlayer().getUniqueId(),
-                        event.getPlayer().getName()
-                ));
-            }
-        });
+        DefaultChannelManager.INSTANCE.get("Controller").ifPresent(packetSender -> packetSender.sendPacket(new APIPacketOutLogoutPlayer(
+                event.getPlayer().getUniqueId(),
+                event.getPlayer().getName()
+        )));
 
-        CommonHelper.EXECUTOR.execute(new Runnable() {
-            @Override
-            public void run() {
-                ProcessInformation current = ExecutorAPI.getInstance().getThisProcessInformation();
-                if (ProxyServer.getInstance().getOnlineCount() < current.getMaxPlayers()
-                        && !current.getProcessState().equals(ProcessState.READY)
-                        && !current.getProcessState().equals(ProcessState.INVISIBLE)) {
-                    current.setProcessState(ProcessState.READY);
-                }
-
-                current.updateRuntimeInformation();
-                current.onLogout(event.getPlayer().getUniqueId());
-                BungeeExecutor.getInstance().setThisProcessInformation(current);
-                ExecutorAPI.getInstance().update(current);
+        CommonHelper.EXECUTOR.execute(() -> {
+            ProcessInformation current = ExecutorAPI.getInstance().getThisProcessInformation();
+            if (ProxyServer.getInstance().getOnlineCount() < current.getMaxPlayers()
+                    && !current.getProcessState().equals(ProcessState.READY)
+                    && !current.getProcessState().equals(ProcessState.INVISIBLE)) {
+                current.setProcessState(ProcessState.READY);
             }
+
+            current.updateRuntimeInformation();
+            current.onLogout(event.getPlayer().getUniqueId());
+            BungeeExecutor.getInstance().setThisProcessInformation(current);
+            ExecutorAPI.getInstance().update(current);
         });
     }
 
@@ -181,15 +173,10 @@ public final class PlayerListenerHandler implements Listener {
         }
 
         ProxiedPlayer proxiedPlayer = (ProxiedPlayer) event.getSender();
-        DefaultChannelManager.INSTANCE.get("Controller").ifPresent(new Consumer<PacketSender>() {
-            @Override
-            public void accept(PacketSender packetSender) {
-                packetSender.sendPacket(new APIPacketOutPlayerCommandExecute(
-                        proxiedPlayer.getName(),
-                        proxiedPlayer.getUniqueId(),
-                        event.getMessage().replaceFirst("/", "")
-                ));
-            }
-        });
+        DefaultChannelManager.INSTANCE.get("Controller").ifPresent(packetSender -> packetSender.sendPacket(new APIPacketOutPlayerCommandExecute(
+                proxiedPlayer.getName(),
+                proxiedPlayer.getUniqueId(),
+                event.getMessage().replaceFirst("/", "")
+        )));
     }
 }

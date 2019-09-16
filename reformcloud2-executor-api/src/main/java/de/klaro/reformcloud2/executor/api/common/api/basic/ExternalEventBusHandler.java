@@ -1,8 +1,6 @@
 package de.klaro.reformcloud2.executor.api.common.api.basic;
 
-import de.klaro.reformcloud2.executor.api.common.api.basic.packets.in.event.EventPacketInProcessClosed;
-import de.klaro.reformcloud2.executor.api.common.api.basic.packets.in.event.EventPacketInProcessStarted;
-import de.klaro.reformcloud2.executor.api.common.api.basic.packets.in.event.EventPacketInProcessUpdated;
+import de.klaro.reformcloud2.executor.api.common.api.basic.packets.in.event.*;
 import de.klaro.reformcloud2.executor.api.common.event.Event;
 import de.klaro.reformcloud2.executor.api.common.event.EventManager;
 import de.klaro.reformcloud2.executor.api.common.network.packet.handler.PacketHandler;
@@ -14,7 +12,10 @@ public final class ExternalEventBusHandler {
         packetHandler.registerNetworkHandlers(
                 new EventPacketInProcessClosed(),
                 new EventPacketInProcessStarted(),
-                new EventPacketInProcessUpdated()
+                new EventPacketInProcessUpdated(),
+                new EventPacketInPlayerServerSwitch(),
+                new EventPacketInLogoutPlayer(),
+                new EventPacketInPlayerConnected()
         );
         this.eventManager = eventManager;
         instance = this;

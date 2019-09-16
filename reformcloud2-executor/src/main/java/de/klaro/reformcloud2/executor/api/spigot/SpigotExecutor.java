@@ -110,60 +110,54 @@ public final class SpigotExecutor extends API implements PlayerAPIExecutor {
     }
 
     private void awaitConnectionAndUpdate() {
-        Task.EXECUTOR.execute(new Runnable() {
-            @Override
-            public void run() {
-                PacketSender packetSender = DefaultChannelManager.INSTANCE.get("Controller").orElse(null);
-                while (packetSender == null) {
-                    packetSender = DefaultChannelManager.INSTANCE.get("Controller").orElse(null);
-                    AbsoluteThread.sleep(100);
-                }
-
-                thisProcessInformation.updateMaxPlayers(Bukkit.getMaxPlayers());
-                thisProcessInformation.updateRuntimeInformation();
-                ExecutorAPI.getInstance().update(thisProcessInformation);
-                startSimulatePing();
+        Task.EXECUTOR.execute(() -> {
+            PacketSender packetSender = DefaultChannelManager.INSTANCE.get("Controller").orElse(null);
+            while (packetSender == null) {
+                packetSender = DefaultChannelManager.INSTANCE.get("Controller").orElse(null);
+                AbsoluteThread.sleep(100);
             }
+
+            thisProcessInformation.updateMaxPlayers(Bukkit.getMaxPlayers());
+            thisProcessInformation.updateRuntimeInformation();
+            ExecutorAPI.getInstance().update(thisProcessInformation);
+            startSimulatePing();
         });
     }
 
     private void startSimulatePing() {
-        Bukkit.getScheduler().runTaskTimer(plugin, new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    ServerListPingEvent serverListPingEvent = new ServerListPingEvent(
-                            new InetSocketAddress("127.0.0.1", 50000).getAddress(),
-                            thisProcessInformation.getMotd(),
-                            Bukkit.getOnlinePlayers().size(),
-                            thisProcessInformation.getMaxPlayers()
-                    );
-                    Bukkit.getPluginManager().callEvent(serverListPingEvent);
+        Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, () -> {
+            try {
+                ServerListPingEvent serverListPingEvent = new ServerListPingEvent(
+                        new InetSocketAddress("127.0.0.1", 50000).getAddress(),
+                        thisProcessInformation.getMotd(),
+                        Bukkit.getOnlinePlayers().size(),
+                        thisProcessInformation.getMaxPlayers()
+                );
+                Bukkit.getPluginManager().callEvent(serverListPingEvent);
 
-                    boolean hasChanges = false;
-                    if (!serverListPingEvent.getMotd().equals(thisProcessInformation.getMotd())) {
-                        thisProcessInformation.setMotd(serverListPingEvent.getMotd());
-                        hasChanges = true;
-                    }
-
-                    if (serverListPingEvent.getMaxPlayers() != thisProcessInformation.getMaxPlayers()) {
-                        thisProcessInformation.updateMaxPlayers(serverListPingEvent.getMaxPlayers());
-                        hasChanges = true;
-                    }
-
-                    if (!thisProcessInformation.getProcessState().equals(ProcessState.INVISIBLE)
-                            && (serverListPingEvent.getMotd().toLowerCase().contains("hide")
-                            || serverListPingEvent.getMotd().toLowerCase().contains("invisible"))) {
-                        thisProcessInformation.setProcessState(ProcessState.INVISIBLE);
-                        hasChanges = true;
-                    }
-
-                    if (hasChanges) {
-                        thisProcessInformation.updateRuntimeInformation();
-                        ExecutorAPI.getInstance().update(thisProcessInformation);
-                    }
-                } catch (final Throwable ignored) {
+                boolean hasChanges = false;
+                if (!serverListPingEvent.getMotd().equals(thisProcessInformation.getMotd())) {
+                    thisProcessInformation.setMotd(serverListPingEvent.getMotd());
+                    hasChanges = true;
                 }
+
+                if (serverListPingEvent.getMaxPlayers() != thisProcessInformation.getMaxPlayers()) {
+                    thisProcessInformation.updateMaxPlayers(serverListPingEvent.getMaxPlayers());
+                    hasChanges = true;
+                }
+
+                if (!thisProcessInformation.getProcessState().equals(ProcessState.INVISIBLE)
+                        && (serverListPingEvent.getMotd().toLowerCase().contains("hide")
+                        || serverListPingEvent.getMotd().toLowerCase().contains("invisible"))) {
+                    thisProcessInformation.setProcessState(ProcessState.INVISIBLE);
+                    hasChanges = true;
+                }
+
+                if (hasChanges) {
+                    thisProcessInformation.updateRuntimeInformation();
+                    ExecutorAPI.getInstance().update(thisProcessInformation);
+                }
+            } catch (final Throwable ignored) {
             }
         }, 0, 20);
     }

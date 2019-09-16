@@ -9,8 +9,6 @@ import de.klaro.reformcloud2.executor.api.common.utility.list.Links;
 import de.klaro.reformcloud2.executor.api.common.utility.name.Nameable;
 
 import java.util.*;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
 
 public final class ProcessInformation implements Nameable {
 
@@ -47,12 +45,7 @@ public final class ProcessInformation implements Nameable {
 
     private String motd = "A ReformCloud2 server";
 
-    private SortedSet<Player> onlinePlayers = new TreeSet<>(new Comparator<Player>() {
-        @Override
-        public int compare(Player o1, Player o2) {
-            return Long.compare(o1.getJoined(), o2.getJoined());
-        }
-    });
+    private SortedSet<Player> onlinePlayers = new TreeSet<>((o1, o2) -> Long.compare(o1.getJoined(), o2.getJoined()));
 
     private ProcessState processState;
 
@@ -137,6 +130,10 @@ public final class ProcessInformation implements Nameable {
         this.motd = motd;
     }
 
+    public void setProcessGroup(ProcessGroup processGroup) {
+        this.processGroup = processGroup;
+    }
+
     public boolean onLogin(UUID playerUuid, String playerName) {
         if (isPlayerOnline(playerUuid)) {
             return false;
@@ -150,26 +147,11 @@ public final class ProcessInformation implements Nameable {
     }
 
     public void onLogout(UUID uniqueID) {
-        Links.filterToOptional(onlinePlayers, new Predicate<Player>() {
-            @Override
-            public boolean test(Player player) {
-                return player.getUniqueID().equals(uniqueID);
-            }
-        }).ifPresent(new Consumer<Player>() {
-            @Override
-            public void accept(Player player) {
-                onlinePlayers.remove(player);
-            }
-        });
+        Links.filterToOptional(onlinePlayers, player -> player.getUniqueID().equals(uniqueID)).ifPresent(player -> onlinePlayers.remove(player));
     }
 
     public boolean isPlayerOnline(UUID uniqueID) {
-        return Links.filterToOptional(onlinePlayers, new Predicate<Player>() {
-            @Override
-            public boolean test(Player player) {
-                return player.getUniqueID().equals(uniqueID);
-            }
-        }).isPresent();
+        return Links.filterToOptional(onlinePlayers, player -> player.getUniqueID().equals(uniqueID)).isPresent();
     }
 
     public ProcessInformation updateMaxPlayers(Integer value) {
@@ -185,5 +167,20 @@ public final class ProcessInformation implements Nameable {
 
     public void updateRuntimeInformation() {
         this.processRuntimeInformation = ProcessRuntimeInformation.create();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof ProcessInformation)) {
+            return false;
+        }
+
+        ProcessInformation compare = (ProcessInformation) obj;
+        return Objects.equals(compare.getProcessUniqueID(), getProcessUniqueID());
+    }
+
+    @Override
+    public String toString() {
+        return getName() + "/" + getProcessUniqueID();
     }
 }

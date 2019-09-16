@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.logging.FileHandler;
@@ -145,12 +144,9 @@ public final class DefaultLoggerHandler extends LoggerBase {
     }
 
     private void handleLine(String line) {
-        handlers.forEach(new Consumer<LoggerLineHandler>() {
-            @Override
-            public void accept(LoggerLineHandler handler) {
-                handler.handleLine(line, DefaultLoggerHandler.this);
-                handler.handleRaw(line, DefaultLoggerHandler.this); //Line is always raw because no colour is used
-            }
+        handlers.forEach(handler -> {
+            handler.handleLine(line, DefaultLoggerHandler.this);
+            handler.handleRaw(line, DefaultLoggerHandler.this); //Line is always raw because no colour is used
         });
     }
 }

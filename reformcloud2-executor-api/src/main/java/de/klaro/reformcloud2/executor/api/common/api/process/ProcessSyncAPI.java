@@ -44,12 +44,9 @@ public interface ProcessSyncAPI {
 
     default Task<Void> updateAsync(ProcessInformation processInformation) {
         Task<Void> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(new Runnable() {
-            @Override
-            public void run() {
-                update(processInformation);
-                task.complete(null);
-            }
+        Task.EXECUTOR.execute(() -> {
+            update(processInformation);
+            task.complete(null);
         });
         return task;
     }

@@ -34,41 +34,38 @@ public final class ControllerQueryInFilterLobbyForPlayer implements NetworkHandl
 
     private ProcessInformation filter(List<String> perms, Version version) {
         List<ProcessInformation> out = new ArrayList<>();
-        ExecutorAPI.getInstance().getAllProcesses().forEach(new Consumer<ProcessInformation>() {
-            @Override
-            public void accept(ProcessInformation processInformation) {
-                if (!processInformation.isLobby() || !processInformation.getNetworkInfo().isConnected()) {
-                    return;
-                }
+        ExecutorAPI.getInstance().getAllProcesses().forEach(processInformation -> {
+            if (!processInformation.isLobby() || !processInformation.getNetworkInfo().isConnected()) {
+                return;
+            }
 
-                if (!version.equals(Version.WATERDOG_PE) && processInformation.getTemplate().getVersion().equals(Version.NUKKIT_X)) {
-                    return;
-                }
+            if (!version.equals(Version.WATERDOG_PE) && processInformation.getTemplate().getVersion().equals(Version.NUKKIT_X)) {
+                return;
+            }
 
-                final PlayerAccessConfiguration playerAccessConfiguration = processInformation.getProcessGroup().getPlayerAccessConfiguration();
-                if (playerAccessConfiguration.isMaintenance() && perms.contains("reformcloud2.maintenance")) {
-                    out.add(processInformation);
-                    return;
-                }
+            final PlayerAccessConfiguration playerAccessConfiguration = processInformation.getProcessGroup().getPlayerAccessConfiguration();
+            if (playerAccessConfiguration.isMaintenance() && perms.contains("reformcloud2.maintenance")) {
+                out.add(processInformation);
+                return;
+            }
 
-                if (playerAccessConfiguration.isUseCloudPlayerLimit()
-                        && processInformation.getOnlineCount() < playerAccessConfiguration.getMaxPlayers()) {
-                    out.add(processInformation);
-                    return;
-                }
+            if (playerAccessConfiguration.isUseCloudPlayerLimit()
+                    && processInformation.getOnlineCount() < playerAccessConfiguration.getMaxPlayers()) {
+                out.add(processInformation);
+                return;
+            }
 
-                if (playerAccessConfiguration.isJoinOnlyPerPermission()
-                        && playerAccessConfiguration.getJoinPermission() != null
-                        && Links.toLowerCase(perms).contains(playerAccessConfiguration.getJoinPermission().toLowerCase())) {
-                    out.add(processInformation);
-                    return;
-                }
+            if (playerAccessConfiguration.isJoinOnlyPerPermission()
+                    && playerAccessConfiguration.getJoinPermission() != null
+                    && Links.toLowerCase(perms).contains(playerAccessConfiguration.getJoinPermission().toLowerCase())) {
+                out.add(processInformation);
+                return;
+            }
 
-                if (!playerAccessConfiguration.isMaintenance()
-                        && !playerAccessConfiguration.isUseCloudPlayerLimit()
-                        && !playerAccessConfiguration.isJoinOnlyPerPermission()) {
-                    out.add(processInformation);
-                }
+            if (!playerAccessConfiguration.isMaintenance()
+                    && !playerAccessConfiguration.isUseCloudPlayerLimit()
+                    && !playerAccessConfiguration.isJoinOnlyPerPermission()) {
+                out.add(processInformation);
             }
         });
 
