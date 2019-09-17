@@ -53,8 +53,10 @@ import de.klaro.reformcloud2.executor.api.common.plugins.basic.DefaultInstallabl
 import de.klaro.reformcloud2.executor.api.common.plugins.basic.DefaultPlugin;
 import de.klaro.reformcloud2.executor.api.common.process.ProcessInformation;
 import de.klaro.reformcloud2.executor.api.common.process.ProcessState;
+import de.klaro.reformcloud2.executor.api.common.utility.StringUtil;
 import de.klaro.reformcloud2.executor.api.common.utility.function.Double;
 import de.klaro.reformcloud2.executor.api.common.utility.list.Links;
+import de.klaro.reformcloud2.executor.api.common.utility.system.DownloadHelper;
 import de.klaro.reformcloud2.executor.api.common.utility.task.Task;
 import de.klaro.reformcloud2.executor.api.common.utility.task.defaults.DefaultTask;
 import de.klaro.reformcloud2.executor.api.controller.Controller;
@@ -212,6 +214,7 @@ public final class ControllerExecutor extends Controller {
 
         if (Files.exists(Paths.get("reformcloud/.client"))) {
             try {
+                DownloadHelper.downloadAndDisconnect(StringUtil.RUNNER_DOWNLOAD_URL, "reformcloud/.client/runner.jar");
                 Process process = new ProcessBuilder()
                         .command(Arrays.asList("java", "-jar", "runner.jar").toArray(new String[0]))
                         .directory(new File("reformcloud/.client"))

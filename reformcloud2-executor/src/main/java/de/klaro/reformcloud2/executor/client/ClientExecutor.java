@@ -102,6 +102,8 @@ public final class ClientExecutor extends Client {
         long current = System.currentTimeMillis();
         instance = this;
 
+        SystemHelper.deleteDirectory(Paths.get("reformcloud/temp"));
+
         try {
             if (Boolean.getBoolean("reformcloud2.disable.colours")) {
                 this.loggerBase = new DefaultLoggerHandler();
@@ -173,8 +175,8 @@ public final class ClientExecutor extends Client {
     public void shutdown() {
         this.watchdogThread.interrupt();
         processQueue.interrupt();
-
         this.screenManager.interrupt();
+
         this.packetHandler.clearHandlers();
         this.packetHandler.getQueryHandler().clearQueries();
         this.networkClient.disconnect();

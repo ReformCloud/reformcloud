@@ -69,7 +69,7 @@ public final class ScreenManager extends AbsoluteThread {
                 return;
             }
 
-            ProcessScreen screen = perProcessScreenLines.computeIfAbsent(runningProcess.getProcessInformation().getProcessUniqueID(), uuid -> new ProcessScreen(runningProcess.getProcessInformation().getProcessUniqueID()));
+            ProcessScreen screen = perProcessScreenLines.get(runningProcess.getProcessInformation().getProcessUniqueID());
 
             for (String in : text.split("\r")) {
                 for (String string : in.split("\n")) {

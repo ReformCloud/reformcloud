@@ -4,8 +4,10 @@ import de.klaro.reformcloud2.executor.api.client.process.ProcessManager;
 import de.klaro.reformcloud2.executor.api.client.process.RunningProcess;
 import de.klaro.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import de.klaro.reformcloud2.executor.api.common.utility.list.Links;
+import de.klaro.reformcloud2.executor.client.ClientExecutor;
 import de.klaro.reformcloud2.executor.client.packet.out.ClientPacketOutProcessRegistered;
 import de.klaro.reformcloud2.executor.client.packet.out.ClientPacketOutProcessStopped;
+import de.klaro.reformcloud2.executor.client.screen.ProcessScreen;
 
 import java.util.*;
 
@@ -16,6 +18,11 @@ public final class DefaultProcessManager implements ProcessManager {
     @Override
     public void registerProcess(RunningProcess runningProcess) {
         list.add(runningProcess);
+        ClientExecutor.getInstance().getScreenManager().getPerProcessScreenLines().put(
+                runningProcess.getProcessInformation().getProcessUniqueID(),
+                new ProcessScreen(runningProcess.getProcessInformation().getProcessUniqueID())
+        );
+
         DefaultChannelManager.INSTANCE.get("Controller").ifPresent(packetSender -> packetSender.sendPacket(new ClientPacketOutProcessRegistered(
                 runningProcess.getProcessInformation().getProcessUniqueID(),
                 runningProcess.getProcessInformation().getName()
@@ -26,6 +33,7 @@ public final class DefaultProcessManager implements ProcessManager {
     public void unregisterProcess(String name) {
         Links.filterToOptional(list, runningProcess -> runningProcess.getProcessInformation().getName().equals(name)).ifPresent(runningProcess -> {
             list.remove(runningProcess);
+
             DefaultChannelManager.INSTANCE.get("Controller").ifPresent(packetSender -> packetSender.sendPacket(new ClientPacketOutProcessStopped(
                     runningProcess.getProcessInformation().getProcessUniqueID(),
                     runningProcess.getProcessInformation().getName()

@@ -49,6 +49,16 @@ public final class Links {
         return Optional.empty();
     }
 
+    public static <K, V> Optional<V> filterToOptional(Map<K, V> in, Predicate<K> predicate) {
+        for (Map.Entry<K, V> entry : in.entrySet()) {
+            if (predicate.test(entry.getKey())) {
+                return Optional.of(entry.getValue());
+            }
+        }
+
+        return Optional.empty();
+    }
+
     public static <T, F> F filterAndApply(List<T> in, Predicate<T> predicate, Function<T, F> function) {
         for (T t : in) {
             if (predicate.test(t)) {

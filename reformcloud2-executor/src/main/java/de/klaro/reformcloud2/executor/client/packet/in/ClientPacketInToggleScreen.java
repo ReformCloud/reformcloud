@@ -4,7 +4,9 @@ import de.klaro.reformcloud2.executor.api.common.network.NetworkUtil;
 import de.klaro.reformcloud2.executor.api.common.network.channel.PacketSender;
 import de.klaro.reformcloud2.executor.api.common.network.channel.handler.NetworkHandler;
 import de.klaro.reformcloud2.executor.api.common.network.packet.Packet;
+import de.klaro.reformcloud2.executor.api.common.utility.list.Links;
 import de.klaro.reformcloud2.executor.client.ClientExecutor;
+import de.klaro.reformcloud2.executor.client.screen.ProcessScreen;
 
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -19,8 +21,10 @@ public final class ClientPacketInToggleScreen implements NetworkHandler {
     @Override
     public void handlePacket(PacketSender packetSender, Packet packet, Consumer<Packet> responses) {
         UUID uuid = packet.content().get("uuid", UUID.class);
-        if (ClientExecutor.getInstance().getScreenManager().getPerProcessScreenLines().containsKey(uuid)) {
-            ClientExecutor.getInstance().getScreenManager().getPerProcessScreenLines().get(uuid).toggleScreen();
-        }
+
+        Links.filterToOptional(
+                ClientExecutor.getInstance().getScreenManager().getPerProcessScreenLines(),
+                uuid::equals
+        ).ifPresent(ProcessScreen::toggleScreen);
     }
 }

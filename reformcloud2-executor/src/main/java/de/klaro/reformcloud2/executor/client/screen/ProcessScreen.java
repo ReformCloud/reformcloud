@@ -9,7 +9,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 public final class ProcessScreen {
 
-    ProcessScreen(UUID uuid) {
+    public ProcessScreen(UUID uuid) {
         this.uuid = uuid;
     }
 

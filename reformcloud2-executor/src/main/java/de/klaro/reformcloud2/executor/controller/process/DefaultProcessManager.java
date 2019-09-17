@@ -63,7 +63,7 @@ public final class DefaultProcessManager implements ProcessManager {
 
     @Override
     public List<ProcessInformation> getProcesses(String group) {
-        return Links.list(processInformation, processInformation -> processInformation.getProcessGroup().getName().equals(group));
+        return Links.list(getAllProcesses(), processInformation -> processInformation.getProcessGroup().getName().equals(group));
     }
 
     @Override
