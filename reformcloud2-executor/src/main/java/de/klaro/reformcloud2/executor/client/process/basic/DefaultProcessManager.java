@@ -33,6 +33,7 @@ public final class DefaultProcessManager implements ProcessManager {
     public void unregisterProcess(String name) {
         Links.filterToOptional(list, runningProcess -> runningProcess.getProcessInformation().getName().equals(name)).ifPresent(runningProcess -> {
             list.remove(runningProcess);
+            ClientExecutor.getInstance().getScreenManager().getPerProcessScreenLines().remove(runningProcess.getProcessInformation().getProcessUniqueID());
 
             DefaultChannelManager.INSTANCE.get("Controller").ifPresent(packetSender -> packetSender.sendPacket(new ClientPacketOutProcessStopped(
                     runningProcess.getProcessInformation().getProcessUniqueID(),

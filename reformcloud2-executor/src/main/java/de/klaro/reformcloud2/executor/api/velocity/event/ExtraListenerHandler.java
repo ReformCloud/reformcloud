@@ -15,7 +15,7 @@ public final class ExtraListenerHandler {
         final ProcessInformation processInformation = ExecutorAPI.getInstance().getThisProcessInformation();
         ServerPing serverPing = event.getPing();
         serverPing = serverPing.asBuilder()
-                .description(TextComponent.of(processInformation.getMotd()))
+                .description(TextComponent.of(processInformation.getMotd().replace("&", "§")))
                 .onlinePlayers(processInformation.getOnlineCount())
                 .maximumPlayers(processInformation.getMaxPlayers())
                 .build();

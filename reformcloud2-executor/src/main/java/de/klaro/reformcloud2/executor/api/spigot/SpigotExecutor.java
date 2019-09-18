@@ -129,14 +129,14 @@ public final class SpigotExecutor extends API implements PlayerAPIExecutor {
             try {
                 ServerListPingEvent serverListPingEvent = new ServerListPingEvent(
                         new InetSocketAddress("127.0.0.1", 50000).getAddress(),
-                        thisProcessInformation.getMotd(),
+                        ChatColor.translateAlternateColorCodes('&', thisProcessInformation.getMotd()),
                         Bukkit.getOnlinePlayers().size(),
                         thisProcessInformation.getMaxPlayers()
                 );
                 Bukkit.getPluginManager().callEvent(serverListPingEvent);
 
                 boolean hasChanges = false;
-                if (!serverListPingEvent.getMotd().equals(thisProcessInformation.getMotd())) {
+                if (!serverListPingEvent.getMotd().equals(ChatColor.translateAlternateColorCodes('&', thisProcessInformation.getMotd()))) {
                     thisProcessInformation.setMotd(serverListPingEvent.getMotd());
                     hasChanges = true;
                 }

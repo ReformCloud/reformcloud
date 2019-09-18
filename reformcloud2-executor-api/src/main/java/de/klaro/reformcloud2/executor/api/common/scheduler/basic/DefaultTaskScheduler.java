@@ -6,20 +6,20 @@ import de.klaro.reformcloud2.executor.api.common.scheduler.TaskScheduler;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public final class DefaultTaskScheduler implements TaskScheduler {
+
+    public static final TaskScheduler INSTANCE = new DefaultTaskScheduler();
+
+    //===============================
 
     private final AtomicInteger atomicInteger = new AtomicInteger();
 
     private final Map<Integer, ScheduledTask> tasks = new HashMap<>();
 
     private final Object object = new Object();
-
-    private ExecutorService executorService;
 
     @Override
     public void cancel(int id) {
@@ -32,13 +32,6 @@ public final class DefaultTaskScheduler implements TaskScheduler {
     @Override
     public void cancel(ScheduledTask scheduledTask) {
         scheduledTask.cancel();
-    }
-
-    @Override
-    public void cancel0(ScheduledTask scheduledTask) {
-        synchronized (object) {
-            tasks.remove(scheduledTask.getID());
-        }
     }
 
     @Override
@@ -56,21 +49,11 @@ public final class DefaultTaskScheduler implements TaskScheduler {
         Conditions.isTrue(runnable != null);
         Conditions.isTrue(timeUnit != null);
 
-        ScheduledTask scheduledTask = new DefaultTask(this, atomicInteger.getAndIncrement(), runnable, delay, period, timeUnit);
+        ScheduledTask scheduledTask = new DefaultTask(atomicInteger.getAndIncrement(), runnable, delay, period, timeUnit);
         synchronized (object) {
             tasks.put(scheduledTask.getID(), scheduledTask);
         }
 
-        service().execute(scheduledTask);
         return scheduledTask;
-    }
-
-    @Override
-    public ExecutorService service() {
-        if (executorService == null) {
-            executorService = Executors.newCachedThreadPool();
-        }
-
-        return executorService;
     }
 }
