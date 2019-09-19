@@ -38,7 +38,7 @@ import static java.util.Objects.requireNonNull;
 
 public final class DefaultProcessManager implements ProcessManager {
 
-    private List<ProcessInformation> processInformation = new ArrayList<>();
+    private final List<ProcessInformation> processInformation = new ArrayList<>();
 
     private Queue<Trio<ProcessGroup, Template, JsonConfiguration>> noClientTryLater = new ConcurrentLinkedQueue<>();
 
@@ -58,7 +58,9 @@ public final class DefaultProcessManager implements ProcessManager {
 
     @Override
     public List<ProcessInformation> getAllProcesses() {
-        return Links.newList(processInformation);
+        synchronized (processInformation) {
+            return Links.newList(processInformation);
+        }
     }
 
     @Override
@@ -147,7 +149,10 @@ public final class DefaultProcessManager implements ProcessManager {
     @Override
     public void onClientDisconnect(String clientName) {
         Links.allOf(processInformation, processInformation -> processInformation.getParent().equals(clientName)).forEach(processInformation -> {
-            DefaultProcessManager.this.processInformation.remove(processInformation);
+            synchronized (DefaultProcessManager.this.processInformation) {
+                DefaultProcessManager.this.processInformation.remove(processInformation);
+            }
+
             notifyDisconnect(processInformation);
         });
     }
@@ -295,19 +300,21 @@ public final class DefaultProcessManager implements ProcessManager {
 
     @Override
     public void update(ProcessInformation processInformation) {
-        ProcessInformation current = getProcess(processInformation.getProcessUniqueID());
-        if (current == null) {
-            this.processInformation.add(processInformation);
-            return;
-        }
-
-        this.processInformation.replaceAll(info -> {
-            if (info.getProcessUniqueID().equals(processInformation.getProcessUniqueID())) {
-                info = processInformation;
+        synchronized (processInformation) {
+            ProcessInformation current = getProcess(processInformation.getProcessUniqueID());
+            if (current == null) {
+                this.processInformation.add(processInformation);
+                return;
             }
 
-            return info;
-        });
+            this.processInformation.replaceAll(info -> {
+                if (info.getProcessUniqueID().equals(processInformation.getProcessUniqueID())) {
+                    info = processInformation;
+                }
+
+                return info;
+            });
+        }
 
         DefaultChannelManager.INSTANCE.getAllSender().forEach(packetSender -> packetSender.sendPacket(new ControllerEventProcessUpdated(processInformation)));
         ControllerExecutor.getInstance().getEventManager().callEvent(new ProcessUpdatedEvent(processInformation));
@@ -317,7 +324,10 @@ public final class DefaultProcessManager implements ProcessManager {
     public void onChannelClose(String name) {
         final ProcessInformation info = getProcess(name);
         if (info != null) {
-            processInformation.remove(info);
+            synchronized (processInformation) {
+                processInformation.remove(info);
+            }
+
             notifyDisconnect(info);
             DefaultChannelManager.INSTANCE.get(info.getParent()).ifPresent(packetSender -> packetSender.sendPacket(new ControllerPacketOutProcessDisconnected(info.getProcessUniqueID())));
 

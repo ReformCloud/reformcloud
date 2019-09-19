@@ -1,5 +1,8 @@
 package de.klaro.reformcloud2.executor.api.common.utility.list;
 
+import de.klaro.reformcloud2.executor.api.common.utility.annotiations.ReplacedWith;
+import de.klaro.reformcloud2.executor.api.common.utility.optional.ReferencedOptional;
+
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -39,6 +42,8 @@ public final class Links {
         return null;
     }
 
+    @Deprecated
+    @ReplacedWith("Links#filterToReference")
     public static <T> Optional<T> filterToOptional(Collection<T> in, Predicate<T> predicate) {
         for (T t : in) {
             if (predicate.test(t)) {
@@ -47,6 +52,16 @@ public final class Links {
         }
 
         return Optional.empty();
+    }
+
+    public static <T> ReferencedOptional<T> filterToReference(Collection<T> in, Predicate<T> predicate) {
+        for (T t : in) {
+            if (predicate.test(t)) {
+                return ReferencedOptional.build(t);
+            }
+        }
+
+        return ReferencedOptional.empty();
     }
 
     public static <K, V> Optional<V> filterToOptional(Map<K, V> in, Predicate<K> predicate) {
