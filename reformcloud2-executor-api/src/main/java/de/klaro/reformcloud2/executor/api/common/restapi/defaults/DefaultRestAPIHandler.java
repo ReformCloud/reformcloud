@@ -17,6 +17,8 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
+import static io.netty.channel.ChannelFutureListener.CLOSE;
+
 public final class DefaultRestAPIHandler extends RestAPIHandler {
 
     public DefaultRestAPIHandler(RequestListenerHandler requestHandler) {
@@ -29,7 +31,7 @@ public final class DefaultRestAPIHandler extends RestAPIHandler {
             Configurable configurable = new JsonConfiguration(webSocketFrame.text());
             Double<Boolean, WebRequester> result = requestHandler.authHandler().handleAuth(configurable, channelHandlerContext);
             if (!result.getFirst()) {
-                channelHandlerContext.channel().close();
+                channelHandlerContext.channel().writeAndFlush(new TextWebSocketFrame("Authentication failed")).addListener(CLOSE);
             } else {
                 Map<UUID, Operation> operations = new HashMap<>();
                 requestHandler.getHandlers().forEach(requestHandler -> requestHandler.handleRequest(
@@ -55,7 +57,7 @@ public final class DefaultRestAPIHandler extends RestAPIHandler {
                 }));
             }
         } catch (final Throwable throwable) {
-            channelHandlerContext.channel().close();
+            channelHandlerContext.channel().writeAndFlush(new TextWebSocketFrame("An error occurred: " + throwable.getMessage())).addListener(CLOSE);
         }
     }
 }

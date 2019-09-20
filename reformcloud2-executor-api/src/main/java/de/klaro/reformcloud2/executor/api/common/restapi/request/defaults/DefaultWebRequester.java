@@ -59,6 +59,10 @@ public class DefaultWebRequester implements WebRequester {
     @Override
     public PermissionResult hasPermissionValue(String perm) {
         String matched = Links.filter(permissions, permission -> {
+            if (permission.equals("*")) {
+                return true;
+            }
+
             if (permission.startsWith("-")) {
                 permission = permission.replaceFirst("-", "");
             }

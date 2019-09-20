@@ -53,6 +53,12 @@ import de.klaro.reformcloud2.executor.api.common.plugins.basic.DefaultInstallabl
 import de.klaro.reformcloud2.executor.api.common.plugins.basic.DefaultPlugin;
 import de.klaro.reformcloud2.executor.api.common.process.ProcessInformation;
 import de.klaro.reformcloud2.executor.api.common.process.ProcessState;
+import de.klaro.reformcloud2.executor.api.common.restapi.auth.basic.DefaultWebServerAuth;
+import de.klaro.reformcloud2.executor.api.common.restapi.http.server.DefaultWebServer;
+import de.klaro.reformcloud2.executor.api.common.restapi.http.server.WebServer;
+import de.klaro.reformcloud2.executor.api.common.restapi.request.RequestListenerHandler;
+import de.klaro.reformcloud2.executor.api.common.restapi.request.defaults.DefaultRequestListenerHandler;
+import de.klaro.reformcloud2.executor.api.common.restapi.user.WebUser;
 import de.klaro.reformcloud2.executor.api.common.utility.StringUtil;
 import de.klaro.reformcloud2.executor.api.common.utility.function.Double;
 import de.klaro.reformcloud2.executor.api.common.utility.list.Links;
@@ -97,6 +103,8 @@ public final class ControllerExecutor extends Controller {
 
     private Database database;
 
+    private RequestListenerHandler requestListenerHandler;
+
     private final CommandManager commandManager = new DefaultCommandManager();
 
     private final CommandSource console = new ConsoleCommandSource(commandManager);
@@ -104,6 +112,8 @@ public final class ControllerExecutor extends Controller {
     private final ApplicationLoader applicationLoader = new DefaultApplicationLoader();
 
     private final NetworkServer networkServer = new DefaultNetworkServer();
+
+    private final WebServer webServer = new DefaultWebServer();
 
     private final PacketHandler packetHandler = new DefaultPacketHandler();
 
@@ -146,6 +156,7 @@ public final class ControllerExecutor extends Controller {
         }
 
         this.controllerExecutorConfig = new ControllerExecutorConfig();
+        this.requestListenerHandler = new DefaultRequestListenerHandler(new DefaultWebServerAuth(this));
 
         applicationLoader.detectApplications();
         applicationLoader.installApplications();
@@ -209,6 +220,19 @@ public final class ControllerExecutor extends Controller {
         sendGroups();
         loadCommands();
         loadPacketHandlers();
+
+        this.controllerExecutorConfig.getControllerConfig().getHttpNetworkListener().forEach(map -> map.forEach((host, port) -> {
+                this.webServer.add(host, port, this.requestListenerHandler);
+            })
+        );
+
+        if (controllerExecutorConfig.isFirstStartup()) {
+            final String token = StringUtil.generateString(2);
+            WebUser webUser = new WebUser("admin", token, Collections.singletonList("*"));
+            insert("internal_users", webUser.getName(), "", new JsonConfiguration().add("user", webUser));
+
+            System.out.println(LanguageManager.get("setup-created-default-user", webUser.getName(), token));
+        }
 
         applicationLoader.enableApplications();
 
@@ -275,12 +299,13 @@ public final class ControllerExecutor extends Controller {
 
         System.out.println(LanguageManager.get("runtime-try-shutdown"));
 
-        networkServer.closeAll(); //Close network first that all channels now that the controller is disconnecting
+        this.networkServer.closeAll(); //Close network first that all channels now that the controller is disconnecting
+        this.webServer.close();
         ClientManager.INSTANCE.onShutdown();
 
-        loggerBase.close();
-        autoStartupHandler.interrupt();
-        applicationLoader.disableApplications();
+        this.loggerBase.close();
+        this.autoStartupHandler.interrupt();
+        this.applicationLoader.disableApplications();
     }
 
     public ControllerExecutorConfig getControllerExecutorConfig() {
@@ -308,6 +333,10 @@ public final class ControllerExecutor extends Controller {
     @Override
     public CommandManager getCommandManager() {
         return commandManager;
+    }
+
+    public RequestListenerHandler getRequestListenerHandler() {
+        return requestListenerHandler;
     }
 
     public LoggerBase getLoggerBase() {

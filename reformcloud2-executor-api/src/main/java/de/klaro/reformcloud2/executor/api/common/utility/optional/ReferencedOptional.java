@@ -65,7 +65,7 @@ public final class ReferencedOptional<T> implements Serializable {
      */
     @Deprecated
     public void ifPresent(Consumer<T> consumer) {
-        if (reference.get().isPresent()) {
+        if (reference.get() != null && reference.get().isPresent()) {
             reference.get().ifPresent(consumer);
         }
     }

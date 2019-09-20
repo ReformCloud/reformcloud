@@ -23,6 +23,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static de.klaro.reformcloud2.executor.api.common.utility.list.Links.newCollection;
 import static de.klaro.reformcloud2.executor.api.common.utility.system.SystemHelper.createDirectory;
@@ -49,9 +50,12 @@ public final class ControllerExecutorConfig {
 
     private final IngameMessages ingameMessages;
 
+    private final AtomicBoolean firstStartup = new AtomicBoolean(false);
+
     public ControllerExecutorConfig() {
         createDirectories();
         if (!Files.exists(ControllerConfig.PATH)) {
+            this.firstStartup.set(true);
             firstSetup();
         }
 
@@ -249,5 +253,9 @@ public final class ControllerExecutorConfig {
 
     public IngameMessages getIngameMessages() {
         return ingameMessages;
+    }
+
+    public final boolean isFirstStartup() {
+        return firstStartup.get();
     }
 }
