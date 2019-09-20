@@ -27,7 +27,7 @@ public final class DefaultRestAPIHandler extends RestAPIHandler {
     protected void channelRead0(ChannelHandlerContext channelHandlerContext, TextWebSocketFrame webSocketFrame) {
         try {
             Configurable configurable = new JsonConfiguration(webSocketFrame.text());
-            Double<Boolean, WebRequester> result = requestHandler.authHandler().handleAuth(configurable);
+            Double<Boolean, WebRequester> result = requestHandler.authHandler().handleAuth(configurable, channelHandlerContext);
             if (!result.getFirst()) {
                 channelHandlerContext.channel().close();
             } else {

@@ -10,7 +10,7 @@ import java.util.function.Predicate;
 
 public final class Links {
 
-    public static List<String> toLowerCase(List<String> list) {
+    public static List<String> toLowerCase(Collection<String> list) {
         List<String> strings = new ArrayList<>();
         list.forEach(string -> strings.add(string.toLowerCase()));
 
