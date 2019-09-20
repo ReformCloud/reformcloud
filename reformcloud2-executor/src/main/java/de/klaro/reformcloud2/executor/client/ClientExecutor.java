@@ -66,6 +66,8 @@ public final class ClientExecutor extends Client {
 
     private WatchdogThread watchdogThread;
 
+    private ScreenManager screenManager;
+
     private final CommandManager commandManager = new DefaultCommandManager();
 
     private final CommandSource console = new ConsoleCommandSource(commandManager);
@@ -77,8 +79,6 @@ public final class ClientExecutor extends Client {
     private final ProcessManager processManager = new DefaultProcessManager();
 
     private final ProcessQueue processQueue = new ProcessQueue();
-
-    private final ScreenManager screenManager = new ScreenManager();
 
     private static final AtomicBoolean GLOBAL_CONNECTION_STATUS = new AtomicBoolean(false);
 
@@ -132,6 +132,7 @@ public final class ClientExecutor extends Client {
         );
 
         this.watchdogThread = new WatchdogThread();
+        this.screenManager = new ScreenManager();
 
         doConnect();
         running = true;
