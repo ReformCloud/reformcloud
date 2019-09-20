@@ -221,18 +221,19 @@ public final class ControllerExecutor extends Controller {
         loadCommands();
         loadPacketHandlers();
 
-        this.controllerExecutorConfig.getControllerConfig().getHttpNetworkListener().forEach(map -> map.forEach((host, port) -> {
-                this.webServer.add(host, port, this.requestListenerHandler);
-            })
-        );
-
         if (controllerExecutorConfig.isFirstStartup()) {
             final String token = StringUtil.generateString(2);
             WebUser webUser = new WebUser("admin", token, Collections.singletonList("*"));
+            createDatabase("internal_users");
             insert("internal_users", webUser.getName(), "", new JsonConfiguration().add("user", webUser));
 
             System.out.println(LanguageManager.get("setup-created-default-user", webUser.getName(), token));
         }
+
+        this.controllerExecutorConfig.getControllerConfig().getHttpNetworkListener().forEach(map -> map.forEach((host, port) -> {
+                this.webServer.add(host, port, this.requestListenerHandler);
+            })
+        );
 
         applicationLoader.enableApplications();
 
