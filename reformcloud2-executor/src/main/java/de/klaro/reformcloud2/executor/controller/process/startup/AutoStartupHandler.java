@@ -1,7 +1,6 @@
 package de.klaro.reformcloud2.executor.controller.process.startup;
 
 import de.klaro.reformcloud2.executor.api.common.groups.ProcessGroup;
-import de.klaro.reformcloud2.executor.api.common.groups.utils.Template;
 import de.klaro.reformcloud2.executor.api.common.process.ProcessInformation;
 import de.klaro.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
 import de.klaro.reformcloud2.executor.controller.ControllerExecutor;
@@ -22,7 +21,7 @@ public final class AutoStartupHandler extends AbsoluteThread {
             perPriorityStartup.clear();
         }
 
-        ControllerExecutor.getInstance().getControllerExecutorConfig().getProcessGroups().forEach(processGroup -> perPriorityStartup.add(processGroup));
+        perPriorityStartup.addAll(ControllerExecutor.getInstance().getControllerExecutorConfig().getProcessGroups());
     }
 
     private SortedSet<ProcessGroup> perPriorityStartup = new TreeSet<>((o1, o2) -> {
@@ -40,10 +39,10 @@ public final class AutoStartupHandler extends AbsoluteThread {
     public void run() {
         while (!Thread.currentThread().isInterrupted()) {
             perPriorityStartup.forEach(processGroup -> {
-                List<Template> started = ControllerExecutor.getInstance().getProcessManager().getOnlineAndWaiting(processGroup.getName());
+                int started = ControllerExecutor.getInstance().getProcessManager().getOnlineAndWaitingProcessCount(processGroup.getName());
 
-                if (started.size() < processGroup.getStartupConfiguration().getMinOnlineProcesses()) {
-                    for (int i = started.size(); i < processGroup.getStartupConfiguration().getMinOnlineProcesses(); i++) {
+                if (started < processGroup.getStartupConfiguration().getMinOnlineProcesses()) {
+                    for (int i = started; i < processGroup.getStartupConfiguration().getMinOnlineProcesses(); i++) {
                         if (i >= 1024) {
                             //Do not allow more than 1024 process per group
                             break;

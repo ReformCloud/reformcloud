@@ -28,29 +28,12 @@ public interface ProcessManager extends Iterable<ProcessInformation>, Updateable
     List<ProcessInformation> getProcesses(String group);
 
     /**
-     * Get the list of currently online and waiting process templates
-     * <p>
-     * @param group The name of the group which should be filtered (required to be non-null)
-     * @return A list containing all waiting / online process templates
-     * @see #getOnlineAndWaitingProcessCount(String)
-     * @see Template
-     * @deprecated This method is deprecated because the return value is currently a list with templates. We should replace it that it returns an integer
-     */
-    @Deprecated
-    List<Template> getOnlineAndWaiting(String group);
-
-    /**
      * Gets the current online and waiting process count of a specific group
      * <p>
      * @param group The name of the group which should be filtered (required to be non-null)
      * @return The online and waiting process count of an specific group
-     * @see #getOnlineAndWaiting(String)
-     * @deprecated because it currently returns the size of the list above not an direct counted value
      */
-    @Deprecated
-    default Integer getOnlineAndWaitingProcessCount(String group) {
-        return getOnlineAndWaiting(group).size();
-    }
+    Integer getOnlineAndWaitingProcessCount(String group);
 
     /**
      * Gets a specific process by the name
@@ -141,7 +124,7 @@ public interface ProcessManager extends Iterable<ProcessInformation>, Updateable
 
     /**
      * This method gets called when a channel closes
-     *
+     * <p>
      * @param name The name of the channel sender
      * @see #onClientDisconnect(String)
      */

@@ -14,7 +14,7 @@ public final class DefaultTask implements ScheduledTask {
         this.task = run;
         this.executorService = Executors.newSingleThreadScheduledExecutor(newThreadFactory(id));
 
-        this.executorService.scheduleAtFixedRate(this, delay, period, timeUnit);
+        this.executorService.scheduleAtFixedRate(this.task, delay, period, timeUnit);
     }
 
     private final AtomicBoolean running = new AtomicBoolean(true);
@@ -47,10 +47,5 @@ public final class DefaultTask implements ScheduledTask {
         }
 
         executorService.shutdownNow();
-    }
-
-    @Override
-    public void run() {
-        task.run();
     }
 }

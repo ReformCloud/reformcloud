@@ -45,13 +45,7 @@ public final class Links {
     @Deprecated
     @ReplacedWith("Links#filterToReference")
     public static <T> Optional<T> filterToOptional(Collection<T> in, Predicate<T> predicate) {
-        for (T t : in) {
-            if (predicate.test(t)) {
-                return Optional.of(t);
-            }
-        }
-
-        return Optional.empty();
+        return Optional.ofNullable(filterToReference(in, predicate).get());
     }
 
     public static <T> ReferencedOptional<T> filterToReference(Collection<T> in, Predicate<T> predicate) {

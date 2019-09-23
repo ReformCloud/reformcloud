@@ -208,10 +208,6 @@ public final class ClientExecutor extends Client {
         return screenManager;
     }
 
-    public static boolean isRunning() {
-        return running;
-    }
-
     public static ClientExecutor getInstance() {
         return instance;
     }

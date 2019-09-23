@@ -4,7 +4,7 @@ import de.klaro.reformcloud2.executor.api.common.restapi.request.RequestListener
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 
-public abstract class RestAPIHandler extends SimpleChannelInboundHandler<TextWebSocketFrame> {
+public abstract class RestAPIHandler extends SimpleChannelInboundHandler<Object> {
 
     public RestAPIHandler(RequestListenerHandler requestHandler) {
         this.requestHandler = requestHandler;

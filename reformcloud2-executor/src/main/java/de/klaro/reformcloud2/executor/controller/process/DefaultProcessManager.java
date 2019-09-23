@@ -32,6 +32,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.ToIntFunction;
 import java.util.function.UnaryOperator;
 
 import static java.util.Objects.requireNonNull;
@@ -69,12 +70,9 @@ public final class DefaultProcessManager implements ProcessManager {
     }
 
     @Override
-    public List<Template> getOnlineAndWaiting(String group) {
-        List<Template> out = new LinkedList<>();
-        getProcesses(group).forEach(processInformation -> out.add(processInformation.getTemplate()));
-
-        Links.list(this.noClientTryLater, trio -> trio.getFirst().getName().equals(group)).forEach(trio -> out.add(trio.getSecond()));
-        return out;
+    public Integer getOnlineAndWaitingProcessCount(String group) {
+        int out = noClientTryLater.stream().filter(e -> e.getFirst().getName().equals(group)).mapToInt(value -> 1).sum();
+        return getProcesses(group).size() + out;
     }
 
     @Override
@@ -131,8 +129,7 @@ public final class DefaultProcessManager implements ProcessManager {
             return null;
         }
 
-        DefaultChannelManager.INSTANCE.get(processInformation.getParent()).ifPresent(packetSender -> packetSender.sendPacket(new ControllerPacketOutStopProcess(processInformation.getProcessUniqueID())));
-        return processInformation;
+        return stopProcess(processInformation.getProcessUniqueID());
     }
 
     @Override
@@ -143,6 +140,13 @@ public final class DefaultProcessManager implements ProcessManager {
         }
 
         DefaultChannelManager.INSTANCE.get(processInformation.getParent()).ifPresent(packetSender -> packetSender.sendPacket(new ControllerPacketOutStopProcess(processInformation.getProcessUniqueID())));
+        if (!processInformation.getNetworkInfo().isConnected()) {
+            // If the process is not connected to the controller it will not lose the connection so we are going to remove it
+            synchronized (this.processInformation) {
+                this.processInformation.remove(processInformation);
+            }
+        }
+
         return processInformation;
     }
 

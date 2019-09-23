@@ -1,8 +1,12 @@
 package de.klaro.reformcloud2.executor.api.common.scheduler;
 
+import de.klaro.reformcloud2.executor.api.common.scheduler.basic.DefaultTaskScheduler;
+
 import java.util.concurrent.TimeUnit;
 
 public interface TaskScheduler {
+
+    TaskScheduler INSTANCE = new DefaultTaskScheduler();
 
     void cancel(int id);
 

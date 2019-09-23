@@ -11,10 +11,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public final class DefaultTaskScheduler implements TaskScheduler {
 
-    public static final TaskScheduler INSTANCE = new DefaultTaskScheduler();
-
-    //===============================
-
     private final AtomicInteger atomicInteger = new AtomicInteger();
 
     private final Map<Integer, ScheduledTask> tasks = new HashMap<>();

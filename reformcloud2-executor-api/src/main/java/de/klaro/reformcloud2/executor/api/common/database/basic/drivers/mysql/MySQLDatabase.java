@@ -5,6 +5,7 @@ import de.klaro.reformcloud2.executor.api.common.database.Database;
 import de.klaro.reformcloud2.executor.api.common.database.DatabaseReader;
 import de.klaro.reformcloud2.executor.api.common.dependency.DefaultDependency;
 import de.klaro.reformcloud2.executor.api.common.dependency.repo.DefaultRepositories;
+import de.klaro.reformcloud2.executor.api.common.scheduler.TaskScheduler;
 import de.klaro.reformcloud2.executor.api.common.utility.maps.AbsentMap;
 import de.klaro.reformcloud2.executor.api.common.utility.task.Task;
 import de.klaro.reformcloud2.executor.api.common.utility.task.defaults.DefaultTask;
@@ -16,6 +17,7 @@ import java.net.URL;
 import java.sql.*;
 import java.text.MessageFormat;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public final class MySQLDatabase extends Database<Connection> {
@@ -70,6 +72,10 @@ public final class MySQLDatabase extends Database<Connection> {
                                 table
                         ), userName, password
                 );
+
+                if (isConnected()) {
+                    startReconnect();
+                }
             } catch (final Exception ex) {
                 ex.printStackTrace();
             }
@@ -369,5 +375,9 @@ public final class MySQLDatabase extends Database<Connection> {
     @Override
     public Connection get() {
         return connection;
+    }
+
+    private void startReconnect() {
+        TaskScheduler.INSTANCE.schedule(() -> createDatabase("internal_users"), 0, 5, TimeUnit.MINUTES);
     }
 }
