@@ -80,7 +80,7 @@ public final class CommandReformCloud extends GlobalCommand {
             return true;
         } else if (strings.length == 1 && strings[0].equalsIgnoreCase("clients")) {
             System.out.println(LanguageManager.get("command-rc-connected-clients"));
-            ClientManager.INSTANCE.clientRuntimeInformation.forEach(clientRuntimeInformation -> System.out.println("   => " + clientRuntimeInformation.getName()
+            ClientManager.INSTANCE.getClientRuntimeInformation().forEach(clientRuntimeInformation -> System.out.println("   => " + clientRuntimeInformation.getName()
                     + " Ram: " + clientRuntimeInformation.maxMemory() + "MB max"
                     + " Host: " + clientRuntimeInformation.startHost()
             ));

@@ -6,11 +6,12 @@ import de.klaro.reformcloud2.executor.api.common.utility.list.Links;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public final class ClientManager {
 
-    public final List<ClientRuntimeInformation> clientRuntimeInformation = new ArrayList<>(); // TODO: Use a getter here?
+    private final Collection<ClientRuntimeInformation> clientRuntimeInformation = new ArrayList<>();
 
     /**
      * Represents the internal client process
@@ -65,5 +66,9 @@ public final class ClientManager {
 
     public void setProcess(Process process) {
         this.process = process;
+    }
+
+    public Collection<ClientRuntimeInformation> getClientRuntimeInformation() {
+        return clientRuntimeInformation;
     }
 }

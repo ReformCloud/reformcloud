@@ -1337,7 +1337,7 @@ public final class ControllerExecutor extends Controller {
     @Override
     public Task<Boolean> isClientConnectedAsync(String name) {
         Task<Boolean> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> task.complete(Links.filterToOptional(ClientManager.INSTANCE.clientRuntimeInformation, clientRuntimeInformation -> clientRuntimeInformation.getName().equals(name)).isPresent()));
+        Task.EXECUTOR.execute(() -> task.complete(Links.filterToOptional(ClientManager.INSTANCE.getClientRuntimeInformation(), clientRuntimeInformation -> clientRuntimeInformation.getName().equals(name)).isPresent()));
         return task;
     }
 
@@ -1345,7 +1345,7 @@ public final class ControllerExecutor extends Controller {
     public Task<String> getClientStartHostAsync(String name) {
         Task<String> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
-            ClientRuntimeInformation information = Links.filter(ClientManager.INSTANCE.clientRuntimeInformation, clientRuntimeInformation -> clientRuntimeInformation.getName().equals(name));
+            ClientRuntimeInformation information = Links.filter(ClientManager.INSTANCE.getClientRuntimeInformation(), clientRuntimeInformation -> clientRuntimeInformation.getName().equals(name));
             if (information == null) {
                 task.complete(null);
             } else {
@@ -1359,7 +1359,7 @@ public final class ControllerExecutor extends Controller {
     public Task<Integer> getMaxMemoryAsync(String name) {
         Task<Integer> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
-            ClientRuntimeInformation information = Links.filter(ClientManager.INSTANCE.clientRuntimeInformation, clientRuntimeInformation -> clientRuntimeInformation.getName().equals(name));
+            ClientRuntimeInformation information = Links.filter(ClientManager.INSTANCE.getClientRuntimeInformation(), clientRuntimeInformation -> clientRuntimeInformation.getName().equals(name));
             if (information == null) {
                 task.complete(null);
             } else {
@@ -1373,7 +1373,7 @@ public final class ControllerExecutor extends Controller {
     public Task<Integer> getMaxProcessesAsync(String name) {
         Task<Integer> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
-            ClientRuntimeInformation information = Links.filter(ClientManager.INSTANCE.clientRuntimeInformation, clientRuntimeInformation -> clientRuntimeInformation.getName().equals(name));
+            ClientRuntimeInformation information = Links.filter(ClientManager.INSTANCE.getClientRuntimeInformation(), clientRuntimeInformation -> clientRuntimeInformation.getName().equals(name));
             if (information == null) {
                 task.complete(null);
             } else {
@@ -1387,7 +1387,7 @@ public final class ControllerExecutor extends Controller {
     public Task<ClientRuntimeInformation> getClientInformationAsync(String name) {
         Task<ClientRuntimeInformation> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
-            ClientRuntimeInformation information = Links.filter(ClientManager.INSTANCE.clientRuntimeInformation, clientRuntimeInformation -> clientRuntimeInformation.getName().equals(name));
+            ClientRuntimeInformation information = Links.filter(ClientManager.INSTANCE.getClientRuntimeInformation(), clientRuntimeInformation -> clientRuntimeInformation.getName().equals(name));
             task.complete(information);
         });
         return task;

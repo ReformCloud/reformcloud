@@ -248,7 +248,7 @@ public final class DefaultProcessManager implements ProcessManager {
     private ClientRuntimeInformation client(ProcessGroup processGroup, Template template) {
         if (processGroup.getStartupConfiguration().isSearchBestClientAlone()) {
             AtomicReference<ClientRuntimeInformation> best = new AtomicReference<>();
-            Links.newCollection(ClientManager.INSTANCE.clientRuntimeInformation, clientRuntimeInformation -> {
+            Links.newCollection(ClientManager.INSTANCE.getClientRuntimeInformation(), clientRuntimeInformation -> {
                 Collection<Integer> startedOn = Links.newCollection(processInformation, processInformation -> processInformation.getParent().equals(clientRuntimeInformation.getName()), processInformation -> processInformation.getTemplate().getRuntimeConfiguration().getMaxMemory());
 
                 int usedMemory = 0;
@@ -270,7 +270,7 @@ public final class DefaultProcessManager implements ProcessManager {
             return best.get();
         } else {
             AtomicReference<ClientRuntimeInformation> best = new AtomicReference<>();
-            Links.newCollection(ClientManager.INSTANCE.clientRuntimeInformation, clientRuntimeInformation -> {
+            Links.newCollection(ClientManager.INSTANCE.getClientRuntimeInformation(), clientRuntimeInformation -> {
                 if (!processGroup.getStartupConfiguration().getUseOnlyTheseClients().contains(clientRuntimeInformation.getName())) {
                     return false;
                 }

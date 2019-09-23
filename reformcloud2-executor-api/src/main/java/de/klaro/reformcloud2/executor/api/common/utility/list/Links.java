@@ -108,11 +108,11 @@ public final class Links {
         return newCollection(Arrays.asList(in), function);
     }
 
-    public static <S, F> Collection<F> newCollection(List<S> in, Function<S, F> function) {
+    public static <S, F> Collection<F> newCollection(Collection<S> in, Function<S, F> function) {
         return newCollection(in, s -> true, function);
     }
 
-    public static <S, F> Collection<F> newCollection(List<S> in, Predicate<S> predicate, Function<S, F> function) {
+    public static <S, F> Collection<F> newCollection(Collection<S> in, Predicate<S> predicate, Function<S, F> function) {
         Collection<F> out = new LinkedList<>();
         in.forEach(s -> {
             if (predicate.test(s)) {
