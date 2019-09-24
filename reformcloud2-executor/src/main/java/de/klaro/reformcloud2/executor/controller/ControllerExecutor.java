@@ -650,7 +650,7 @@ public final class ControllerExecutor extends Controller {
     public Task<Void> deleteMainGroupAsync(String name) {
         Task<Void> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
-            Links.filterToOptional(controllerExecutorConfig.getMainGroups(), mainGroup -> mainGroup.getName().equals(name)).ifPresent(mainGroup -> controllerExecutorConfig.deleteMainGroup(mainGroup));
+            Links.filterToReference(controllerExecutorConfig.getMainGroups(), mainGroup -> mainGroup.getName().equals(name)).ifPresent(mainGroup -> controllerExecutorConfig.deleteMainGroup(mainGroup));
             task.complete(null);
         });
         return task;
@@ -660,7 +660,7 @@ public final class ControllerExecutor extends Controller {
     public Task<Void> deleteProcessGroupAsync(String name) {
         Task<Void> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
-            Links.filterToOptional(controllerExecutorConfig.getProcessGroups(), processGroup -> processGroup.getName().equals(name)).ifPresent(processGroup -> controllerExecutorConfig.deleteProcessGroup(processGroup));
+            Links.filterToReference(controllerExecutorConfig.getProcessGroups(), processGroup -> processGroup.getName().equals(name)).ifPresent(processGroup -> controllerExecutorConfig.deleteProcessGroup(processGroup));
             task.complete(null);
         });
         return task;
@@ -1327,17 +1327,17 @@ public final class ControllerExecutor extends Controller {
     }
 
     private ProcessInformation getPlayerOnProxy(UUID uniqueID) {
-        return Links.filter(processManager.getAllProcesses(), processInformation -> !processInformation.getTemplate().isServer() && Links.filterToOptional(processInformation.getOnlinePlayers(), player -> player.getUniqueID().equals(uniqueID)).isPresent());
+        return Links.filter(processManager.getAllProcesses(), processInformation -> !processInformation.getTemplate().isServer() && Links.filterToReference(processInformation.getOnlinePlayers(), player -> player.getUniqueID().equals(uniqueID)).isPresent());
     }
 
     private ProcessInformation getPlayerOnServer(UUID uniqueID) {
-        return Links.filter(processManager.getAllProcesses(), processInformation -> processInformation.getTemplate().isServer() && Links.filterToOptional(processInformation.getOnlinePlayers(), player -> player.getUniqueID().equals(uniqueID)).isPresent());
+        return Links.filter(processManager.getAllProcesses(), processInformation -> processInformation.getTemplate().isServer() && Links.filterToReference(processInformation.getOnlinePlayers(), player -> player.getUniqueID().equals(uniqueID)).isPresent());
     }
 
     @Override
     public Task<Boolean> isClientConnectedAsync(String name) {
         Task<Boolean> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> task.complete(Links.filterToOptional(ClientManager.INSTANCE.getClientRuntimeInformation(), clientRuntimeInformation -> clientRuntimeInformation.getName().equals(name)).isPresent()));
+        Task.EXECUTOR.execute(() -> task.complete(Links.filterToReference(ClientManager.INSTANCE.getClientRuntimeInformation(), clientRuntimeInformation -> clientRuntimeInformation.getName().equals(name)).isPresent()));
         return task;
     }
 

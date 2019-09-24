@@ -212,7 +212,7 @@ public final class ControllerExecutorConfig {
     }
 
     public void updateProcessGroup(ProcessGroup processGroup) {
-        Links.filterToOptional(processGroups, group -> processGroup.getName().equals(group.getName())).ifPresent(group -> {
+        Links.filterToReference(processGroups, group -> processGroup.getName().equals(group.getName())).ifPresent(group -> {
             processGroups.remove(group);
             processGroups.add(processGroup);
             new JsonConfiguration()
@@ -227,7 +227,7 @@ public final class ControllerExecutorConfig {
     }
 
     public void updateMainGroup(MainGroup mainGroup) {
-        Links.filterToOptional(mainGroups, group -> group.getName().equals(mainGroup.getName())).ifPresent(group -> {
+        Links.filterToReference(mainGroups, group -> group.getName().equals(mainGroup.getName())).ifPresent(group -> {
             mainGroups.remove(group);
             mainGroups.add(mainGroup);
             new JsonConfiguration()

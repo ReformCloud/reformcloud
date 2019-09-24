@@ -1,6 +1,5 @@
 package de.klaro.reformcloud2.executor.api.common.utility.list;
 
-import de.klaro.reformcloud2.executor.api.common.utility.annotiations.ReplacedWith;
 import de.klaro.reformcloud2.executor.api.common.utility.optional.ReferencedOptional;
 
 import java.util.*;
@@ -42,12 +41,6 @@ public final class Links {
         return null;
     }
 
-    @Deprecated
-    @ReplacedWith("Links#filterToReference")
-    public static <T> Optional<T> filterToOptional(Collection<T> in, Predicate<T> predicate) {
-        return Optional.ofNullable(filterToReference(in, predicate).get());
-    }
-
     public static <T> ReferencedOptional<T> filterToReference(Collection<T> in, Predicate<T> predicate) {
         for (T t : in) {
             if (predicate.test(t)) {
@@ -58,14 +51,14 @@ public final class Links {
         return ReferencedOptional.empty();
     }
 
-    public static <K, V> Optional<V> filterToOptional(Map<K, V> in, Predicate<K> predicate) {
+    public static <K, V> ReferencedOptional<V> filterToReference(Map<K, V> in, Predicate<K> predicate) {
         for (Map.Entry<K, V> entry : in.entrySet()) {
             if (predicate.test(entry.getKey())) {
-                return Optional.of(entry.getValue());
+                return ReferencedOptional.build(entry.getValue());
             }
         }
 
-        return Optional.empty();
+        return ReferencedOptional.empty();
     }
 
     public static <T, F> F filterAndApply(List<T> in, Predicate<T> predicate, Function<T, F> function) {
@@ -80,9 +73,9 @@ public final class Links {
 
     public static <F, T> List<T> getValues(Map<F, T> in, Predicate<F> predicate) {
         List<T> out = new ArrayList<>();
-        in.entrySet().forEach(ftEntry -> {
-            if (predicate.test(ftEntry.getKey())) {
-                out.add(ftEntry.getValue());
+        in.forEach((key, value) -> {
+            if (predicate.test(key)) {
+                out.add(value);
             }
         });
         return out;
@@ -143,22 +136,9 @@ public final class Links {
         return out;
     }
 
-    public static <F, T> Collection<T> arrayCollect(F[] fs, Function<F, T> ftFunction) {
-        Collection<T> collection = new LinkedList<>();
-        for (F f : fs) {
-            collection.add(ftFunction.apply(f));
-        }
-
-        return collection;
-    }
-
     public static <T, F> Collection<F> apply(Collection<T> collection, Function<T, F> function) {
         Collection<F> out = new LinkedList<>();
         collection.forEach(t -> out.add(function.apply(t)));
         return out;
-    }
-
-    public static <E> Optional<E> toOptional(E in) {
-        return Optional.ofNullable(in);
     }
 }

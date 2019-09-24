@@ -22,7 +22,7 @@ public final class ClientPacketInToggleScreen implements NetworkHandler {
     public void handlePacket(PacketSender packetSender, Packet packet, Consumer<Packet> responses) {
         UUID uuid = packet.content().get("uuid", UUID.class);
 
-        Links.filterToOptional(
+        Links.filterToReference(
                 ClientExecutor.getInstance().getScreenManager().getPerProcessScreenLines(),
                 uuid::equals
         ).ifPresent(ProcessScreen::toggleScreen);

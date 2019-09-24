@@ -1,8 +1,7 @@
 package de.klaro.reformcloud2.executor.api.client.process;
 
 import de.klaro.reformcloud2.executor.api.common.process.ProcessInformation;
-
-import java.util.Optional;
+import de.klaro.reformcloud2.executor.api.common.utility.optional.ReferencedOptional;
 
 public interface RunningProcess {
 
@@ -20,7 +19,7 @@ public interface RunningProcess {
 
     void copy();
 
-    Optional<Process> getProcess();
+    ReferencedOptional<Process> getProcess();
 
     ProcessInformation getProcessInformation();
 }

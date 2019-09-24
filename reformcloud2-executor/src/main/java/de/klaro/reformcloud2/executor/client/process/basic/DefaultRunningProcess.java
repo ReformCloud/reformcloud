@@ -8,6 +8,7 @@ import de.klaro.reformcloud2.executor.api.common.network.channel.manager.Default
 import de.klaro.reformcloud2.executor.api.common.process.ProcessInformation;
 import de.klaro.reformcloud2.executor.api.common.process.ProcessState;
 import de.klaro.reformcloud2.executor.api.common.utility.StringUtil;
+import de.klaro.reformcloud2.executor.api.common.utility.optional.ReferencedOptional;
 import de.klaro.reformcloud2.executor.api.common.utility.system.DownloadHelper;
 import de.klaro.reformcloud2.executor.api.common.utility.system.SystemHelper;
 import de.klaro.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
@@ -210,8 +211,8 @@ public final class DefaultRunningProcess implements RunningProcess {
     }
 
     @Override
-    public Optional<Process> getProcess() {
-        return Optional.ofNullable(process);
+    public ReferencedOptional<Process> getProcess() {
+        return ReferencedOptional.build(process);
     }
 
     @Override

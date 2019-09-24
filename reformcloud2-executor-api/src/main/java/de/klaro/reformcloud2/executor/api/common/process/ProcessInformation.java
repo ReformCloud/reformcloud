@@ -147,11 +147,11 @@ public final class ProcessInformation implements Nameable {
     }
 
     public void onLogout(UUID uniqueID) {
-        Links.filterToOptional(onlinePlayers, player -> player.getUniqueID().equals(uniqueID)).ifPresent(player -> onlinePlayers.remove(player));
+        Links.filterToReference(onlinePlayers, player -> player.getUniqueID().equals(uniqueID)).ifPresent(player -> onlinePlayers.remove(player));
     }
 
     public boolean isPlayerOnline(UUID uniqueID) {
-        return Links.filterToOptional(onlinePlayers, player -> player.getUniqueID().equals(uniqueID)).isPresent();
+        return Links.filterToReference(onlinePlayers, player -> player.getUniqueID().equals(uniqueID)).isPresent();
     }
 
     public ProcessInformation updateMaxPlayers(Integer value) {

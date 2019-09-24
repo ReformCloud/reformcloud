@@ -10,6 +10,8 @@ public final class ReferencedOptional<T> implements Serializable {
 
     private static final long serialVersionUID = 2358039311687874123L;
 
+    // =======================
+
     public static <T> ReferencedOptional<T> empty() {
         return new ReferencedOptional<>();
     }
@@ -18,6 +20,8 @@ public final class ReferencedOptional<T> implements Serializable {
     public static <T> ReferencedOptional<T> build(@Nullable T value) {
         return new ReferencedOptional<>().update(value);
     }
+
+    // =======================
 
     private final AtomicReference<T> reference = new AtomicReference<>();
 
@@ -34,8 +38,9 @@ public final class ReferencedOptional<T> implements Serializable {
     }
 
     public void ifPresent(Consumer<T> consumer) {
-        if (reference.get() != null) {
-            consumer.accept(reference.get());
+        T value = reference.get();
+        if (value != null) {
+            consumer.accept(value);
         }
     }
 
@@ -46,6 +51,10 @@ public final class ReferencedOptional<T> implements Serializable {
         }
 
         return value;
+    }
+
+    public boolean isPresent() {
+        return get() != null;
     }
 
     @Nullable
