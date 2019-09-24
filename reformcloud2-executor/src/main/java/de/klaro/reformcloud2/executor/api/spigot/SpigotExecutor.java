@@ -1,6 +1,7 @@
 package de.klaro.reformcloud2.executor.api.spigot;
 
 import com.google.common.base.Enums;
+import de.klaro.reformcloud2.executor.api.ExecutorType;
 import de.klaro.reformcloud2.executor.api.api.API;
 import de.klaro.reformcloud2.executor.api.common.ExecutorAPI;
 import de.klaro.reformcloud2.executor.api.common.api.basic.ExternalEventBusHandler;
@@ -47,6 +48,8 @@ public final class SpigotExecutor extends API implements PlayerAPIExecutor {
     private ProcessInformation thisProcessInformation;
 
     SpigotExecutor(JavaPlugin plugin) {
+        super.type = ExecutorType.API;
+
         instance = this;
         this.plugin = plugin;
         new ExternalEventBusHandler(packetHandler, new DefaultEventManager());

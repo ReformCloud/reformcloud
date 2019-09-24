@@ -2,6 +2,7 @@ package de.klaro.reformcloud2.executor.api.velocity;
 
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.server.ServerInfo;
+import de.klaro.reformcloud2.executor.api.ExecutorType;
 import de.klaro.reformcloud2.executor.api.api.API;
 import de.klaro.reformcloud2.executor.api.common.ExecutorAPI;
 import de.klaro.reformcloud2.executor.api.common.api.basic.ExternalEventBusHandler;
@@ -53,6 +54,8 @@ public final class VelocityExecutor extends API implements PlayerAPIExecutor {
     private ProcessInformation thisProcessInformation;
 
     VelocityExecutor(VelocityLauncher launcher, ProxyServer proxyServer) {
+        super.type = ExecutorType.API;
+
         instance = this;
         this.proxyServer = proxyServer;
 

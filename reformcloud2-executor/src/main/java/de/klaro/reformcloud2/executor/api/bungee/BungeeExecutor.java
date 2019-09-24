@@ -1,5 +1,6 @@
 package de.klaro.reformcloud2.executor.api.bungee;
 
+import de.klaro.reformcloud2.executor.api.ExecutorType;
 import de.klaro.reformcloud2.executor.api.api.API;
 import de.klaro.reformcloud2.executor.api.bungee.commands.CommandLeave;
 import de.klaro.reformcloud2.executor.api.bungee.event.ExtraListenerHandler;
@@ -62,6 +63,8 @@ public final class BungeeExecutor extends API implements PlayerAPIExecutor {
     private static boolean waterdogPE;
 
     BungeeExecutor(Plugin plugin) {
+        super.type = ExecutorType.API;
+
         this.plugin = plugin;
         instance = this;
         new ExternalEventBusHandler(packetHandler, new DefaultEventManager());

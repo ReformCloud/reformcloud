@@ -4,22 +4,20 @@ import de.klaro.reformcloud2.executor.api.common.patch.Patch;
 
 public final class DefaultPatch implements Patch {
 
-    public DefaultPatch(String url, DefaultPatchNote note) {
-        this.url = url;
-        this.note = note;
+    public DefaultPatch(long releaseDate, String downloadURL) {
+        this.releaseDate = releaseDate;
+        this.downloadURL = downloadURL;
     }
 
-    private String url;
+    private final long releaseDate;
 
-    private DefaultPatchNote note;
+    private final String downloadURL;
 
-    @Override
-    public String fileName() {
-        return url;
+    public long getReleaseDate() {
+        return releaseDate;
     }
 
-    @Override
-    public DefaultPatchNote patchNote() {
-        return note;
+    public String getDownloadURL() {
+        return downloadURL;
     }
 }

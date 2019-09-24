@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.level.Location;
 import cn.nukkit.plugin.Plugin;
+import de.klaro.reformcloud2.executor.api.ExecutorType;
 import de.klaro.reformcloud2.executor.api.api.API;
 import de.klaro.reformcloud2.executor.api.common.ExecutorAPI;
 import de.klaro.reformcloud2.executor.api.common.api.basic.ExternalEventBusHandler;
@@ -44,6 +45,8 @@ public final class NukkitExecutor extends API implements PlayerAPIExecutor {
     private ProcessInformation thisProcessInformation;
 
     NukkitExecutor(Plugin plugin) {
+        super.type = ExecutorType.API;
+
         instance = this;
         this.plugin = plugin;
 

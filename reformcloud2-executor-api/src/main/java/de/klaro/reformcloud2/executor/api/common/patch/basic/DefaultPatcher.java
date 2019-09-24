@@ -5,6 +5,7 @@ import de.klaro.reformcloud2.executor.api.common.configuration.JsonConfiguration
 import de.klaro.reformcloud2.executor.api.common.language.LanguageManager;
 import de.klaro.reformcloud2.executor.api.common.patch.Patch;
 import de.klaro.reformcloud2.executor.api.common.patch.Patcher;
+import de.klaro.reformcloud2.executor.api.common.utility.list.Links;
 import de.klaro.reformcloud2.executor.api.common.utility.system.DownloadHelper;
 import de.klaro.reformcloud2.executor.api.common.utility.system.SystemHelper;
 import de.klaro.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
@@ -14,13 +15,15 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 public final class DefaultPatcher implements Patcher {
+
+    private static final String[] COMMAND = Arrays.asList("java", "-jar", "patch.jar").toArray(new String[0]);
+
+    private static final File FILE = new File("patches");
 
     private static final Path PATH = Paths.get("reformcloud/.update/internal.json");
 
@@ -91,12 +94,14 @@ public final class DefaultPatcher implements Patcher {
     public void loadPatches(long lastCheck) {
         if (checkAccess()) {
             if (lastCheck != -1L) {
-                DownloadHelper.openConnection(UPDATE_SERVER_URL + "requestpatches", Collections.singletonMap(
+                DownloadHelper.openConnection(UPDATE_SERVER_URL + "patches", Collections.singletonMap(
                         "-XLastCheck", Long.toString(lastCheck)
                 ), inputStream -> {
                     JsonConfiguration jsonConfiguration = new JsonConfiguration(inputStream);
                     if (jsonConfiguration.getBoolean("success")) {
-                        jsonConfiguration.get("result", new TypeToken<List<DefaultPatch>>() {}).forEach(patches::add);
+                        Collection<DefaultPatch> patches = jsonConfiguration.get("updates", new TypeToken<Collection<DefaultPatch>>() {});
+                        this.patches.addAll(patches);
+                        System.out.println(LanguageManager.get("patches-found", patches.size()));
                     }
                 });
             }
@@ -108,33 +113,27 @@ public final class DefaultPatcher implements Patcher {
 
     @Override
     public void doPatches() {
+        SystemHelper.createDirectory(FILE.toPath());
+
         if (checkAccess()) {
-            new ArrayList<>(patches).forEach(patch -> {
-                final long current = System.currentTimeMillis();
-                patches.remove(patch);
-                String file = patch.patchNote().getName() + "-" + patch.patchNote().newVersion() + ".jar";
+            synchronized (this.patches) {
+                Links.newList(this.patches).forEach(e -> {
+                    try {
+                        DownloadHelper.downloadAndDisconnect(e.getDownloadURL(), "patches/patch.jar");
+                        Process process = new ProcessBuilder(COMMAND)
+                                .inheritIO()
+                                .directory(FILE)
+                                .start();
 
-                System.out.println(LanguageManager.get("patch-apply", patch.patchNote().getName(),
-                        patch.patchNote().newVersion()));
+                        process.waitFor();
+                        process.destroy();
 
-                DownloadHelper.openConnection(UPDATE_SERVER_URL + "downloadpatch", Collections.singletonMap(
-                        "-XFileName", patch.fileName()
-                ), inputStream -> SystemHelper.doCopy(inputStream, Paths.get(
-                        "reformcloud/.update/" + patch.patchNote().getName() + "-" + patch.patchNote().newVersion() + ".jar"
-                )));
-                System.out.println(patch.patchNote().updateMessage());
-
-                try {
-                    Process process = Runtime.getRuntime().exec("java -jar " + file, null, new File("reformcloud/.update"));
-                    process.waitFor();
-                    process.destroyForcibly().destroy();
-                } catch (final IOException | InterruptedException ex) {
-                    ex.printStackTrace();
-                }
-
-                System.out.println(LanguageManager.get("patch-apply-done", patch.patchNote().getName(),
-                        Long.toString(System.currentTimeMillis() - current)));
-            });
+                        SystemHelper.deleteFile(new File("patches/patch.jar"));
+                    } catch (final InterruptedException | IOException ex) {
+                        ex.printStackTrace();
+                    }
+                });
+            }
         }
     }
 
