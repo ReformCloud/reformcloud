@@ -134,7 +134,10 @@ public final class PlayerListenerHandler implements Listener {
                 if (info != null && ProxyServer.getInstance().getServers().containsKey(info.getName())) {
                     event.setCancelled(true);
                     event.setCancelServer(ProxyServer.getInstance().getServerInfo(info.getName()));
-                    proxiedPlayer.sendMessage(event.getKickReasonComponent());
+                    if (event.getKickReasonComponent() != null) {
+                        proxiedPlayer.sendMessage(event.getKickReasonComponent());
+                    }
+
                     return;
                 }
             }

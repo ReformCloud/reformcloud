@@ -128,6 +128,10 @@ public final class SpigotExecutor extends API implements PlayerAPIExecutor {
     }
 
     private void startSimulatePing() {
+        if (thisProcessInformation.getMotd() == null) {
+            return;
+        }
+
         Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, () -> {
             try {
                 ServerListPingEvent serverListPingEvent = new ServerListPingEvent(

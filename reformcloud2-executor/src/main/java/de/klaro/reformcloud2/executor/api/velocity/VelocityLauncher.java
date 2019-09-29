@@ -9,6 +9,7 @@ import com.velocitypowered.api.proxy.ProxyServer;
 import de.klaro.reformcloud2.executor.api.common.dependency.DependencyLoader;
 import de.klaro.reformcloud2.executor.api.common.language.loading.LanguageWorker;
 import de.klaro.reformcloud2.executor.api.common.utility.StringUtil;
+import net.kyori.text.TextComponent;
 
 @Plugin(
         id = "reformcloud_2_api_executor",
@@ -37,11 +38,13 @@ public final class VelocityLauncher {
     @Subscribe
     public void handleInit(ProxyInitializeEvent event) {
         new VelocityExecutor(this, proxyServer);
-        proxyServer = null;
     }
 
     @Subscribe
     public void handleStop(ProxyShutdownEvent event) {
         VelocityExecutor.getInstance().getNetworkClient().disconnect();
+        proxyServer.getAllPlayers().forEach(e -> e.disconnect(TextComponent.of(
+                VelocityExecutor.getInstance().getMessages().getCurrentProcessClosed()
+        )));
     }
 }

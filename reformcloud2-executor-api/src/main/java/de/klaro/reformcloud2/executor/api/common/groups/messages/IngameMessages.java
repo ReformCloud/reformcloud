@@ -12,7 +12,8 @@ public class IngameMessages {
     }
 
     public IngameMessages(String prefix, String processStarted, String processConnected, String processStopped,
-                          String noHubServerAvailable, String alreadyConnectedToHub, String connectingToHub) {
+                          String noHubServerAvailable, String alreadyConnectedToHub, String connectingToHub,
+                          String currentProcessClosed) {
         this.prefix = prefix;
         this.processStarted = processStarted;
         this.processConnected = processConnected;
@@ -20,6 +21,7 @@ public class IngameMessages {
         this.noHubServerAvailable = noHubServerAvailable;
         this.alreadyConnectedToHub = alreadyConnectedToHub;
         this.connectingToHub = connectingToHub;
+        this.currentProcessClosed = currentProcessClosed;
     }
 
     private String prefix = "§6§lR§e§leform§6§lC§e§lloud§6§l2 §7|";
@@ -35,6 +37,8 @@ public class IngameMessages {
     private String alreadyConnectedToHub = "%prefix% You are §ealready connected to a §6Hub-Server";
 
     private String connectingToHub = "%prefix% §aSending §7to hub §6{0}§7...";
+
+    private String currentProcessClosed = "%prefix% §7The current process got §cstopped";
 
     public String getPrefix() {
         return prefix;
@@ -62,6 +66,10 @@ public class IngameMessages {
 
     public String getConnectingToHub() {
         return connectingToHub;
+    }
+
+    public String getCurrentProcessClosed() {
+        return currentProcessClosed;
     }
 
     public String format(String message, Object... replacements) {

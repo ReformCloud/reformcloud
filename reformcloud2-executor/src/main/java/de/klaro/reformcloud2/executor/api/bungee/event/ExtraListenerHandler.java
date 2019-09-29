@@ -15,6 +15,10 @@ public final class ExtraListenerHandler implements Listener {
     @EventHandler (priority = EventPriority.LOWEST)
     public void handle(final ProxyPingEvent event) {
         final ProcessInformation processInformation = ExecutorAPI.getInstance().getThisProcessInformation();
+        if (processInformation.getMotd() == null) {
+            return;
+        }
+
         final ServerPing serverPing = event.getResponse();
 
         serverPing.setDescriptionComponent(

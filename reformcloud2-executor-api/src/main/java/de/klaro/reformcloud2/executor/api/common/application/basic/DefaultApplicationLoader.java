@@ -144,6 +144,8 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
             System.out.println(LanguageManager.get("successfully-pre-disabled-app", application.getApplication().getName()));
             application.getApplication().setApplicationStatus(ApplicationStatus.DISABLED);
 
+            application.onDisable();
+
             application.getApplication().setApplicationStatus(ApplicationStatus.UNINSTALLING);
             application.onUninstall();
             System.out.println(LanguageManager.get("successfully-uninstalled-app", application.getApplication().getName()));
@@ -233,6 +235,8 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
         application.onPreDisable();
         System.out.println(LanguageManager.get("successfully-pre-disabled-app", application.getApplication().getName()));
         application.getApplication().setApplicationStatus(ApplicationStatus.DISABLED);
+
+        application.onDisable();
 
         application.getApplication().setApplicationStatus(ApplicationStatus.UNINSTALLING);
         application.onUninstall();

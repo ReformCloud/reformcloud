@@ -13,6 +13,10 @@ public final class ExtraListenerHandler {
     @Subscribe (order = PostOrder.LAST)
     public void handle(final ProxyPingEvent event) {
         final ProcessInformation processInformation = ExecutorAPI.getInstance().getThisProcessInformation();
+        if (processInformation.getMotd() == null) {
+            return;
+        }
+
         ServerPing serverPing = event.getPing();
         serverPing = serverPing.asBuilder()
                 .description(TextComponent.of(processInformation.getMotd().replace("&", "§")))

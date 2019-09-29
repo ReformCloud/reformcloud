@@ -15,12 +15,11 @@ public final class SpigotLauncher extends JavaPlugin {
         DependencyLoader.doLoad();
         LanguageWorker.doLoad();
         StringUtil.sendHeader();
-
-        new SpigotExecutor(this);
     }
 
     @Override
     public void onEnable() {
+        new SpigotExecutor(this);
         Bukkit.getServer().getPluginManager().registerEvents(new PlayerListenerHandler(), this);
         Bukkit.getServer().getPluginManager().registerEvents(new ExtraListenerHandler(), this);
     }
@@ -29,5 +28,7 @@ public final class SpigotLauncher extends JavaPlugin {
     public void onDisable() {
         SpigotExecutor.getInstance().getNetworkClient().disconnect();
         Bukkit.getScheduler().cancelTasks(this);
+
+        Bukkit.getOnlinePlayers().forEach(e -> e.kickPlayer(""));
     }
 }

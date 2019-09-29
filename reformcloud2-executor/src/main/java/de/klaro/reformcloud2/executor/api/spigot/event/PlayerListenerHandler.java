@@ -26,7 +26,7 @@ public final class PlayerListenerHandler implements Listener {
     public void handle(final PlayerLoginEvent event) {
         if (ExecutorAPI.getInstance().getThisProcessInformation().getProcessGroup().getPlayerAccessConfiguration().isOnlyProxyJoin()) {
             PacketSender packetSender = DefaultChannelManager.INSTANCE.get("Controller").orElse(null);
-            if (packetSender == null) {
+            if (packetSender == null || !ExecutorAPI.getInstance().getThisProcessInformation().getNetworkInfo().isConnected()) {
                 event.setResult(PlayerLoginEvent.Result.KICK_BANNED);
                 event.setKickMessage("§4§lThe current server is not connected to the controller");
                 return;
