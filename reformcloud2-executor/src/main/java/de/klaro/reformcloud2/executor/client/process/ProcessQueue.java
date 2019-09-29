@@ -2,6 +2,7 @@ package de.klaro.reformcloud2.executor.client.process;
 
 import de.klaro.reformcloud2.executor.api.client.process.RunningProcess;
 import de.klaro.reformcloud2.executor.api.common.CommonHelper;
+import de.klaro.reformcloud2.executor.api.common.language.LanguageManager;
 import de.klaro.reformcloud2.executor.api.common.process.ProcessInformation;
 import de.klaro.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
 import de.klaro.reformcloud2.executor.client.ClientExecutor;
@@ -16,6 +17,11 @@ public final class ProcessQueue extends AbsoluteThread {
     public static void queue(ProcessInformation information) {
         RunningProcess runningProcess = RunningProcessBuilder.build(information).prepare();
         QUEUE.add(runningProcess);
+        System.out.println(LanguageManager.get(
+                "client-process-now-in-queue",
+                runningProcess.getProcessInformation().getName(),
+                QUEUE.size()
+        ));
     }
 
     /* ============== */
@@ -29,10 +35,39 @@ public final class ProcessQueue extends AbsoluteThread {
         while (!Thread.currentThread().isInterrupted()) {
             if (!QUEUE.isEmpty()) {
                 RunningProcess runningProcess = QUEUE.poll();
-                if (isStartupNowLogic() && runningProcess != null && runningProcess.bootstrap()) {
-                    ClientExecutor.getInstance().getProcessManager().registerProcess(runningProcess);
+                if (runningProcess == null) {
+                    continue;
+                }
+
+                if (isStartupNowLogic()) {
+                    System.out.println(LanguageManager.get(
+                            "client-process-start",
+                            runningProcess.getProcessInformation().getName()
+                    ));
+
+                    if (runningProcess.bootstrap()) {
+                        ClientExecutor.getInstance().getProcessManager().registerProcess(runningProcess);
+                        System.out.println(LanguageManager.get(
+                                "client-process-start-done",
+                                runningProcess.getProcessInformation().getName()
+                        ));
+                    } else {
+                        QUEUE.add(runningProcess);
+                        System.out.println(LanguageManager.get(
+                                "client-process-start-failed",
+                                runningProcess.getProcessInformation().getName(),
+                                QUEUE.size()
+                        ));
+                    }
                 } else {
                     QUEUE.add(runningProcess);
+                    System.out.println(LanguageManager.get(
+                            "client-process-start-not-logic",
+                            runningProcess.getProcessInformation().getName(),
+                            CommonHelper.cpuUsageSystem(),
+                            ClientExecutor.getInstance().getClientConfig().getMaxCpu(),
+                            QUEUE.size()
+                    ));
                 }
             }
 

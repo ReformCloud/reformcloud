@@ -114,7 +114,7 @@ public final class SystemHelper {
         }
     }
 
-    public static void doCopy(InputStream inputStream, Path path, CopyOption... options) {
+    static void doCopy(InputStream inputStream, Path path, CopyOption... options) {
         try {
             Files.copy(inputStream, path, options);
         } catch (final IOException ex) {

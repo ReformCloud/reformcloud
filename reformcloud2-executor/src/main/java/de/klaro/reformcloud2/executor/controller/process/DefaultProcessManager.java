@@ -32,14 +32,13 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.ToIntFunction;
 import java.util.function.UnaryOperator;
 
 import static java.util.Objects.requireNonNull;
 
 public final class DefaultProcessManager implements ProcessManager {
 
-    private final List<ProcessInformation> processInformation = new ArrayList<>();
+    private final Collection<ProcessInformation> processInformation = new ConcurrentLinkedQueue<>();
 
     private Queue<Trio<ProcessGroup, Template, JsonConfiguration>> noClientTryLater = new ConcurrentLinkedQueue<>();
 
@@ -102,8 +101,8 @@ public final class DefaultProcessManager implements ProcessManager {
     public ProcessInformation startProcess(String groupName, String template, JsonConfiguration configurable) {
         ProcessGroup processGroup = Links.filter(ControllerExecutor.getInstance().getControllerExecutorConfig().getProcessGroups(), processGroup1 -> processGroup1.getName().equals(groupName));
         if (processGroup == null) {
-            System.out.println(groupName);
-            new NullPointerException("Cannot find specified group name").printStackTrace();
+            // In some cases the group got deleted but the update process is sync and this method get called async!
+            // To prevent any issues just return at this point
             return null;
         }
 
@@ -311,12 +310,10 @@ public final class DefaultProcessManager implements ProcessManager {
                 return;
             }
 
-            this.processInformation.replaceAll(info -> {
-                if (info.getProcessUniqueID().equals(processInformation.getProcessUniqueID())) {
-                    info = processInformation;
-                }
-
-                return info;
+            Links.filterToReference(this.processInformation,
+                    e -> e.getProcessUniqueID().equals(processInformation.getProcessUniqueID())).ifPresent(e -> {
+                        this.processInformation.remove(e);
+                        this.processInformation.add(processInformation);
             });
         }
 
@@ -328,12 +325,10 @@ public final class DefaultProcessManager implements ProcessManager {
     public void onChannelClose(String name) {
         final ProcessInformation info = getProcess(name);
         if (info != null) {
-            synchronized (processInformation) {
-                processInformation.remove(info);
-            }
-
             notifyDisconnect(info);
-            DefaultChannelManager.INSTANCE.get(info.getParent()).ifPresent(packetSender -> packetSender.sendPacket(new ControllerPacketOutProcessDisconnected(info.getProcessUniqueID())));
+            DefaultChannelManager.INSTANCE.get(info.getParent()).ifPresent(packetSender -> packetSender.sendPacket(
+                    new ControllerPacketOutProcessDisconnected(info.getProcessUniqueID()))
+            );
 
             System.out.println(LanguageManager.get(
                     "process-connection-lost",
@@ -341,6 +336,8 @@ public final class DefaultProcessManager implements ProcessManager {
                     info.getProcessUniqueID(),
                     info.getParent()
             ));
+
+            this.processInformation.remove(info);
         } else {
             //If the channel is not a process it may be a client
             onClientDisconnect(name);

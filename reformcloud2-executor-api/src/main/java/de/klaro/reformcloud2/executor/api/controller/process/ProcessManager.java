@@ -1,7 +1,6 @@
 package de.klaro.reformcloud2.executor.api.controller.process;
 
 import de.klaro.reformcloud2.executor.api.common.configuration.JsonConfiguration;
-import de.klaro.reformcloud2.executor.api.common.groups.utils.Template;
 import de.klaro.reformcloud2.executor.api.common.process.ProcessInformation;
 import de.klaro.reformcloud2.executor.api.common.utility.annotiations.Nullable;
 import de.klaro.reformcloud2.executor.api.common.utility.update.Updateable;

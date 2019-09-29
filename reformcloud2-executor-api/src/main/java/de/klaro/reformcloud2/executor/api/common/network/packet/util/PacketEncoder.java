@@ -9,7 +9,7 @@ import io.netty.handler.codec.MessageToByteEncoder;
 public final class PacketEncoder extends MessageToByteEncoder<Packet> {
 
     @Override
-    protected void encode(ChannelHandlerContext channelHandlerContext, Packet packet, ByteBuf byteBuf) throws Exception {
+    protected void encode(ChannelHandlerContext channelHandlerContext, Packet packet, ByteBuf byteBuf) {
         byte[] content = packet.content().toPrettyBytes();
         String uid = packet.queryUniqueID() != null ? packet.queryUniqueID().toString() : "null";
 

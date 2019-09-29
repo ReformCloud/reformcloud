@@ -43,9 +43,9 @@ public final class CommandManagerTest {
         assertNotNull(commandManager.unregisterAndGetCommand("test"));
     }
 
-    public class TestCommand extends ConsoleCommand {
+    public static class TestCommand extends ConsoleCommand {
 
-        public TestCommand() {
+        TestCommand() {
             super("test", "test.command", "A test command", Collections.singletonList("ttt"));
         }
 

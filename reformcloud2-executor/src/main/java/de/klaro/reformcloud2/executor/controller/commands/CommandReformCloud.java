@@ -346,7 +346,7 @@ public final class CommandReformCloud extends GlobalCommand {
             case "create": {
                 if (strings.length == 3 && strings[1].equalsIgnoreCase("internalclient")) {
                     if (Files.exists(Paths.get("reformcloud/.client"))) {
-                        System.out.println(LanguageManager.get("command-rc-internalclient-already-exists"));
+                        System.out.println(LanguageManager.get("command-rc-internal-client-already-exists"));
                         return true;
                     }
 
@@ -677,7 +677,7 @@ public final class CommandReformCloud extends GlobalCommand {
                     if (strings[1].equalsIgnoreCase("sub")) {
                         ProcessGroup processGroup = ExecutorAPI.getInstance().getProcessGroup(strings[2]);
                         if (processGroup == null) {
-                            System.out.println(LanguageManager.get("command-rc-group-unknown", strings[1]));
+                            System.out.println(LanguageManager.get("command-rc-group-unknown", strings[2]));
                             return true;
                         }
 
@@ -689,7 +689,7 @@ public final class CommandReformCloud extends GlobalCommand {
                     if (strings[1].equalsIgnoreCase("main")) {
                         MainGroup mainGroup = ExecutorAPI.getInstance().getMainGroup(strings[2]);
                         if (mainGroup == null) {
-                            System.out.println(LanguageManager.get("command-rc-main-group-unknown", strings[1]));
+                            System.out.println(LanguageManager.get("command-rc-main-group-unknown", strings[2]));
                         }
 
                         ControllerExecutor.getInstance().getControllerExecutorConfig().deleteMainGroup(mainGroup);

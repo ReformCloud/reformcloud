@@ -8,6 +8,20 @@ public class IngameMessages {
 
     public static final TypeToken<IngameMessages> TYPE = new TypeToken<IngameMessages>() {};
 
+    public IngameMessages() {
+    }
+
+    public IngameMessages(String prefix, String processStarted, String processConnected, String processStopped,
+                          String noHubServerAvailable, String alreadyConnectedToHub, String connectingToHub) {
+        this.prefix = prefix;
+        this.processStarted = processStarted;
+        this.processConnected = processConnected;
+        this.processStopped = processStopped;
+        this.noHubServerAvailable = noHubServerAvailable;
+        this.alreadyConnectedToHub = alreadyConnectedToHub;
+        this.connectingToHub = connectingToHub;
+    }
+
     private String prefix = "§6§lR§e§leform§6§lC§e§lloud§6§l2 §7|";
 
     private String processStarted = "%prefix% [§e§l+§7] {0}";

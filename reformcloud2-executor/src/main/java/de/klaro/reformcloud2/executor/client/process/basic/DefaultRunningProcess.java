@@ -167,11 +167,6 @@ public final class DefaultRunningProcess implements RunningProcess {
             SystemHelper.deleteDirectory(path);
         }
 
-        try {
-            this.finalize();
-        } catch (final Throwable ignored) {
-        }
-
         return !running();
     }
 

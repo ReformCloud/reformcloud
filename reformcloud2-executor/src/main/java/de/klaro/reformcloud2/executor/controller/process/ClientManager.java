@@ -7,7 +7,6 @@ import de.klaro.reformcloud2.executor.api.common.utility.list.Links;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 public final class ClientManager {
 

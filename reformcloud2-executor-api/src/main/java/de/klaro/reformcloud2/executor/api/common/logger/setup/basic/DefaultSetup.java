@@ -24,7 +24,7 @@ public final class DefaultSetup implements Setup {
             String line = loggerBase.readLineNoPrompt();
             while (line.trim().isEmpty() || !setupQuestion.tester().test(line)) {
                 System.out.println(setupQuestion.wrongAnswerMessage());
-                line = loggerBase.readLine();
+                line = loggerBase.readLineNoPrompt();
             }
 
             setupQuestion.then().accept(line);

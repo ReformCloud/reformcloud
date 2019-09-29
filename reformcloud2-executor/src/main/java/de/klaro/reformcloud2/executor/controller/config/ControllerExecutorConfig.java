@@ -11,17 +11,20 @@ import de.klaro.reformcloud2.executor.api.common.groups.utils.Version;
 import de.klaro.reformcloud2.executor.api.common.logger.setup.Setup;
 import de.klaro.reformcloud2.executor.api.common.logger.setup.basic.DefaultSetup;
 import de.klaro.reformcloud2.executor.api.common.logger.setup.basic.DefaultSetupQuestion;
+import de.klaro.reformcloud2.executor.api.common.registry.Registry;
+import de.klaro.reformcloud2.executor.api.common.registry.basic.RegistryBuilder;
 import de.klaro.reformcloud2.executor.api.common.utility.StringUtil;
 import de.klaro.reformcloud2.executor.api.common.utility.list.Links;
-import de.klaro.reformcloud2.executor.api.common.utility.system.SystemHelper;
 import de.klaro.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
 import de.klaro.reformcloud2.executor.controller.ControllerExecutor;
 
-import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -46,6 +49,10 @@ public final class ControllerExecutorConfig {
 
     private final List<ProcessGroup> processGroups = new ArrayList<>();
 
+    private final Registry subGroupRegistry;
+
+    private final Registry mainGroupRegistry;
+
     private final String connectionKey;
 
     private final IngameMessages ingameMessages;
@@ -54,6 +61,9 @@ public final class ControllerExecutorConfig {
 
     public ControllerExecutorConfig() {
         createDirectories();
+        this.subGroupRegistry = RegistryBuilder.newRegistry(Paths.get("reformcloud/groups/sub"));
+        this.mainGroupRegistry = RegistryBuilder.newRegistry(Paths.get("reformcloud/groups/main"));
+
         if (!Files.exists(ControllerConfig.PATH)) {
             this.firstStartup.set(true);
             firstSetup();
@@ -74,13 +84,8 @@ public final class ControllerExecutorConfig {
     }
 
     private void loadGroups() {
-        for (File file : Objects.requireNonNull(new File("reformcloud/groups/main").listFiles(pathname -> pathname.isFile() && pathname.getName().endsWith(".json")))) {
-            this.mainGroups.add(JsonConfiguration.read(file).get("group", MainGroup.TYPE));
-        }
-
-        for (File file : Objects.requireNonNull(new File("reformcloud/groups/sub").listFiles(pathname -> pathname.isFile() && pathname.getName().endsWith(".json")))) {
-            this.processGroups.add(JsonConfiguration.read(file).get("group", ProcessGroup.TYPE));
-        }
+        processGroups.addAll(this.subGroupRegistry.readKeys(e -> e.get("key", ProcessGroup.TYPE)));
+        mainGroups.addAll(this.mainGroupRegistry.readKeys(e -> e.get("key", MainGroup.TYPE)));
     }
 
     private void createDirectories() {
@@ -157,15 +162,11 @@ public final class ControllerExecutorConfig {
                         throw new IllegalStateException("Lobby or Proxy group not initialized correctly");
                     }
 
-                    new JsonConfiguration()
-                            .add("group", mainProxy).write("reformcloud/groups/main/" + mainProxy.getName() + ".json");
-                    new JsonConfiguration()
-                            .add("group", mainLobby).write("reformcloud/groups/main/" + mainLobby.getName() + ".json");
+                    this.mainGroupRegistry.createKey(mainProxy.getName(), mainProxy);
+                    this.mainGroupRegistry.createKey(mainLobby.getName(), mainLobby);
 
-                    new JsonConfiguration()
-                            .add("group", proxy).write("reformcloud/groups/sub/" + proxy.getName() + ".json");
-                    new JsonConfiguration()
-                            .add("group", lobby).write("reformcloud/groups/sub/" + lobby.getName() + ".json");
+                    this.subGroupRegistry.createKey(proxy.getName(), proxy);
+                    this.subGroupRegistry.createKey(lobby.getName(), lobby);
                 }
         )).startSetup(ControllerExecutor.getInstance().getLoggerBase());
     }
@@ -173,10 +174,8 @@ public final class ControllerExecutorConfig {
     public MainGroup createMainGroup(MainGroup mainGroup) {
         MainGroup mainGroup1 = mainGroups.stream().filter(group -> mainGroup.getName().equals(group.getName())).findFirst().orElse(null);
         if (mainGroup1 == null) {
-            new JsonConfiguration()
-                    .add("group", mainGroup).write("reformcloud/groups/main/" + mainGroup.getName() + ".json");
-            mainGroups.add(mainGroup);
-            return mainGroup;
+            this.mainGroups.add(mainGroup);
+            return this.mainGroupRegistry.createKey(mainGroup.getName(), mainGroup);
         }
 
         return null;
@@ -185,11 +184,9 @@ public final class ControllerExecutorConfig {
     public ProcessGroup createProcessGroup(ProcessGroup processGroup) {
         ProcessGroup processGroup1 = processGroups.stream().filter(group -> processGroup.getName().equals(group.getName())).findFirst().orElse(null);
         if (processGroup1 == null) {
-            new JsonConfiguration()
-                    .add("group", processGroup).write("reformcloud/groups/sub/" + processGroup.getName() + ".json");
-            processGroups.add(processGroup);
+            this.processGroups.add(processGroup);
             ControllerExecutor.getInstance().getAutoStartupHandler().update();
-            return processGroup;
+            return this.subGroupRegistry.createKey(processGroup.getName(), processGroup);
         }
 
         return null;
@@ -197,12 +194,12 @@ public final class ControllerExecutorConfig {
 
     public void deleteMainGroup(MainGroup mainGroup) {
         mainGroups.remove(mainGroup);
-        SystemHelper.deleteFile(new File("reformcloud/groups/main/" + mainGroup.getName() + ".json"));
+        this.mainGroupRegistry.deleteKey(mainGroup.getName());
     }
 
     public void deleteProcessGroup(ProcessGroup processGroup) {
+        this.subGroupRegistry.deleteKey(processGroup.getName());
         processGroups.remove(processGroup);
-        SystemHelper.deleteFile(new File("reformcloud/groups/sub/" + processGroup.getName() + ".json"));
         ControllerExecutor.getInstance().getAutoStartupHandler().update();
 
         ExecutorAPI.getInstance().getProcesses(processGroup.getName()).forEach(processInformation -> {
@@ -215,8 +212,7 @@ public final class ControllerExecutorConfig {
         Links.filterToReference(processGroups, group -> processGroup.getName().equals(group.getName())).ifPresent(group -> {
             processGroups.remove(group);
             processGroups.add(processGroup);
-            new JsonConfiguration()
-                    .add("group", processGroup).write("reformcloud/groups/sub/" + processGroup.getName() + ".json");
+            this.subGroupRegistry.updateKey(processGroup.getName(), processGroup);
             ControllerExecutor.getInstance().getAutoStartupHandler().update();
         });
 
@@ -230,8 +226,7 @@ public final class ControllerExecutorConfig {
         Links.filterToReference(mainGroups, group -> group.getName().equals(mainGroup.getName())).ifPresent(group -> {
             mainGroups.remove(group);
             mainGroups.add(mainGroup);
-            new JsonConfiguration()
-                    .add("group", mainGroup).write("reformcloud/groups/main/" + mainGroup.getName() + ".json");
+            this.mainGroupRegistry.updateKey(mainGroup.getName(), mainGroup);
         });
     }
 

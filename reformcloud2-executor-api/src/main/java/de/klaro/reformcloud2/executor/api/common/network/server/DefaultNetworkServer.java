@@ -67,8 +67,8 @@ public final class DefaultNetworkServer implements NetworkServer {
     @Override
     public void closeAll() {
         channelFutures.forEach((integer, channelFuture) -> channelFuture.cancel(true));
-
         channelFutures.clear();
+
         this.worker.shutdownGracefully();
         this.boss.shutdownGracefully();
     }

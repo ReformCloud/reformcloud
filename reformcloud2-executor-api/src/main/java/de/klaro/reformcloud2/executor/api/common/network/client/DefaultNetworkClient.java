@@ -27,7 +27,8 @@ public final class DefaultNetworkClient implements NetworkClient {
         final Task<Boolean> connectTask = new DefaultTask<>();
 
         try {
-            this.channel = new Bootstrap().group(eventLoopGroup)
+            this.channel = new Bootstrap()
+                    .group(eventLoopGroup)
                     .channel(channelClass)
 
                     .option(ChannelOption.SO_REUSEADDR, true)
@@ -62,5 +63,7 @@ public final class DefaultNetworkClient implements NetworkClient {
         if (this.channel != null && channel.isOpen()) {
             channel.close();
         }
+
+        eventLoopGroup.shutdownGracefully();
     }
 }

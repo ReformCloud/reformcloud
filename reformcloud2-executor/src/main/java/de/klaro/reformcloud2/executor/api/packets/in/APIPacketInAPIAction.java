@@ -8,6 +8,8 @@ import de.klaro.reformcloud2.executor.api.executor.PlayerAPIExecutor;
 import java.util.UUID;
 import java.util.function.Consumer;
 
+import static de.klaro.reformcloud2.executor.api.common.api.basic.packets.out.ExternalAPIPacketOutAPIAction.APIAction;
+
 public final class APIPacketInAPIAction implements NetworkHandler {
 
     public APIPacketInAPIAction(PlayerAPIExecutor executor) {
@@ -25,7 +27,7 @@ public final class APIPacketInAPIAction implements NetworkHandler {
     public void handlePacket(PacketSender packetSender, Packet packet, Consumer<Packet> responses) {
         APIAction apiAction = packet.content().get("action", APIAction.class);
         UUID targetPlayer = packet.content().get("1", UUID.class);
-        
+
         switch (apiAction) {
             case CONNECT: {
                 try {
@@ -102,30 +104,5 @@ public final class APIPacketInAPIAction implements NetworkHandler {
                 break;
             }
         }
-    }
-
-    private enum APIAction {
-
-        SEND_MESSAGE,
-
-        KICK_PLAYER,
-
-        PLAY_SOUND,
-
-        SEND_TITLE,
-
-        PLAY_ENTITY_EFFECT,
-
-        PLAY_EFFECT,
-
-        RESPAWN,
-
-        //ENTITY_TELEPORT, //For update?
-
-        LOCATION_TELEPORT,
-
-        CONNECT,
-
-        SET_RESOURCE_PACK
     }
 }

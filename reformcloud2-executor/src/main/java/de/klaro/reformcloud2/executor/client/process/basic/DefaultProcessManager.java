@@ -60,7 +60,7 @@ public final class DefaultProcessManager implements ProcessManager {
 
     @Override
     public void onProcessDisconnect(UUID uuid) {
-        Links.filterToReference(list, runningProcess -> runningProcess.getProcessInformation().getProcessUniqueID().equals(uuid)).ifPresent(list::remove);
+        Links.filterToReference(list, runningProcess -> runningProcess.getProcessInformation().getProcessUniqueID().equals(uuid)).ifPresent(RunningProcess::shutdown);
     }
 
     @Override

@@ -12,7 +12,7 @@ import net.md_5.bungee.event.EventPriority;
 
 public final class ExtraListenerHandler implements Listener {
 
-    @EventHandler (priority = EventPriority.HIGHEST)
+    @EventHandler (priority = EventPriority.LOWEST)
     public void handle(final ProxyPingEvent event) {
         final ProcessInformation processInformation = ExecutorAPI.getInstance().getThisProcessInformation();
         final ServerPing serverPing = event.getResponse();

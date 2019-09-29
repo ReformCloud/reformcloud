@@ -15,6 +15,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
@@ -28,6 +30,8 @@ public final class DefaultPatcher implements Patcher {
     private static final Path PATH = Paths.get("reformcloud/.update/internal.json");
 
     private static final String UPDATE_SERVER_URL = "http://external.reformcloud.systems:1550/";
+
+    private static final DateFormat DATE_FORMAT = new SimpleDateFormat("dd.MM.yyyy kk:mm:ss");
 
     private final List<Patch> patches = new ArrayList<>();
 
@@ -100,8 +104,10 @@ public final class DefaultPatcher implements Patcher {
                     JsonConfiguration jsonConfiguration = new JsonConfiguration(inputStream);
                     if (jsonConfiguration.getBoolean("success")) {
                         Collection<DefaultPatch> patches = jsonConfiguration.get("updates", new TypeToken<Collection<DefaultPatch>>() {});
-                        this.patches.addAll(patches);
-                        System.out.println(LanguageManager.get("patches-found", patches.size()));
+                        if (patches.size() != 0) {
+                            this.patches.addAll(patches);
+                            System.out.println(LanguageManager.get("patches-found", patches.size()));
+                        }
                     }
                 });
             }
@@ -119,6 +125,13 @@ public final class DefaultPatcher implements Patcher {
             synchronized (this.patches) {
                 Links.newList(this.patches).forEach(e -> {
                     try {
+                        final long startTime = System.currentTimeMillis();
+                        System.out.println(LanguageManager.get(
+                                "patch-apply",
+                                e.getDownloadURL(),
+                                DATE_FORMAT.format(e.getReleaseDate())
+                        ));
+
                         DownloadHelper.downloadAndDisconnect(e.getDownloadURL(), "patches/patch.jar");
                         Process process = new ProcessBuilder(COMMAND)
                                 .inheritIO()
@@ -129,6 +142,12 @@ public final class DefaultPatcher implements Patcher {
                         process.destroy();
 
                         SystemHelper.deleteFile(new File("patches/patch.jar"));
+
+                        System.out.println(LanguageManager.get(
+                                "patch-apply-done",
+                                e.getDownloadURL(),
+                                System.currentTimeMillis() - startTime
+                        ));
                     } catch (final InterruptedException | IOException ex) {
                         ex.printStackTrace();
                     }
