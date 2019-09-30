@@ -8,7 +8,7 @@ public class PermissionAPI {
     public static final PermissionAPI INSTANCE = new PermissionAPI();
 
     private PermissionAPI() {
-        this.permissionUtil = new DefaultPermissionUtil();
+        this.permissionUtil = DefaultPermissionUtil.doLoad();
     }
 
     private final PermissionUtil permissionUtil;

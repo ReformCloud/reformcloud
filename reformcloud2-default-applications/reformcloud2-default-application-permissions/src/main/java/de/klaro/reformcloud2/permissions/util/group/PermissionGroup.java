@@ -1,5 +1,6 @@
 package de.klaro.reformcloud2.permissions.util.group;
 
+import com.google.gson.reflect.TypeToken;
 import de.klaro.reformcloud2.permissions.util.basic.checks.GeneralCheck;
 import de.klaro.reformcloud2.permissions.util.basic.checks.WildcardCheck;
 import de.klaro.reformcloud2.permissions.util.permission.PermissionNode;
@@ -9,13 +10,17 @@ import java.util.Map;
 
 public class PermissionGroup {
 
-    public PermissionGroup(Collection<PermissionNode> permissionNodes, Map<String, Collection<PermissionNode>> perGroupPermissions,
-                           Collection<String> subGroups, String name, int priority) {
+    public static final TypeToken<PermissionGroup> TYPE = new TypeToken<PermissionGroup>() {};
+
+    public PermissionGroup(Collection<PermissionNode> permissionNodes, Map<String,
+            Collection<PermissionNode>> perGroupPermissions,
+                           Collection<String> subGroups, String name, int priority, long timeout) {
         this.permissionNodes = permissionNodes;
         this.perGroupPermissions = perGroupPermissions;
         this.subGroups = subGroups;
         this.name = name;
         this.priority = priority;
+        this.timeout = timeout;
     }
 
     private final Collection<PermissionNode> permissionNodes;
@@ -27,6 +32,8 @@ public class PermissionGroup {
     private final String name;
 
     private final int priority;
+
+    private final long timeout;
 
     public Collection<PermissionNode> getPermissionNodes() {
         return permissionNodes;
@@ -46,6 +53,10 @@ public class PermissionGroup {
 
     public int getPriority() {
         return priority;
+    }
+
+    public boolean isValid() {
+        return timeout == -1 || timeout > System.currentTimeMillis();
     }
 
     public boolean hasPermission(String perm) {

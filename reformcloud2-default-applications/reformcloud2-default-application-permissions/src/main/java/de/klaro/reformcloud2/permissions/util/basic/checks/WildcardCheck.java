@@ -15,7 +15,7 @@ public class WildcardCheck {
             if (actual.length() > 1
                     && actual.endsWith("*")
                     && perm.startsWith(actual.substring(0, perm.length() - 1))
-                    && !e.canBeRemoved()) {
+                    && e.isValid()) {
                 return e.isSet();
             }
 
@@ -40,7 +40,7 @@ public class WildcardCheck {
             if (actual.length() > 1
                     && actual.endsWith("*")
                     && perm.startsWith(actual.substring(0, perm.length() - 1))
-                    && !currentGroupPerm.canBeRemoved()) {
+                    && currentGroupPerm.isValid()) {
                 return currentGroupPerm.isSet();
             }
         }

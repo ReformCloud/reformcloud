@@ -12,6 +12,12 @@ public interface PermissionUtil {
     @Nullable
     PermissionGroup getGroup(String name);
 
+    void updateGroup(PermissionGroup permissionGroup);
+
+    void addGroupPermission(PermissionGroup permissionGroup, PermissionNode permissionNode);
+
+    void addProcessGroupPermission(String processGroup, PermissionGroup permissionGroup, PermissionNode permissionNode);
+
     @Nullable
     PermissionGroup createGroup(String name);
 
@@ -23,5 +29,9 @@ public interface PermissionUtil {
 
     void addUserPermission(UUID uuid, PermissionNode permissionNode);
 
+    void updateUser(PermissionUser permissionUser);
+
     void deleteUser(UUID uuid);
+
+    void handleDisconnect(UUID uuid);
 }

@@ -1,5 +1,6 @@
 package de.klaro.reformcloud2.permissions.util.user;
 
+import com.google.gson.reflect.TypeToken;
 import de.klaro.reformcloud2.executor.api.common.utility.list.Links;
 import de.klaro.reformcloud2.permissions.PermissionAPI;
 import de.klaro.reformcloud2.permissions.util.permission.PermissionNode;
@@ -8,6 +9,8 @@ import java.util.Collection;
 import java.util.UUID;
 
 public class PermissionUser {
+
+    public static final TypeToken<PermissionUser> TYPE = new TypeToken<PermissionUser>() {};
 
     public PermissionUser(UUID uuid, Collection<PermissionNode> permissionNodes, Collection<String> groups) {
         this.uuid = uuid;
@@ -45,7 +48,7 @@ public class PermissionUser {
         }
 
         final PermissionNode node = Links.filter(permissionNodes,
-                e -> e.getActualPermission().equalsIgnoreCase(permission) && !e.canBeRemoved());
+                e -> e.getActualPermission().equalsIgnoreCase(permission) && e.isValid());
         if (node != null) {
             return node.isSet();
         }

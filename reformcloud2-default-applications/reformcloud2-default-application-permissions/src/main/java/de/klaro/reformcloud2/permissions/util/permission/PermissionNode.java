@@ -25,8 +25,8 @@ public class PermissionNode {
         return set && (timeout == -1 || timeout > System.currentTimeMillis());
     }
 
-    public boolean canBeRemoved() {
-        return timeout != -1 && timeout < System.currentTimeMillis();
+    public boolean isValid() {
+        return timeout == -1 || timeout > System.currentTimeMillis();
     }
 
     public String getActualPermission() {
