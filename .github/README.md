@@ -1,8 +1,7 @@
 ![](https://s17.directupload.net/images/190317/g4777bij.png)
 
 # ReformCloud 2 [![Discord](https://img.shields.io/discord/499666347337449472.svg?color=7289DA&label=discord)](https://discord.gg/uskXdVZ) [![CodeFactor](https://www.codefactor.io/repository/github/derklaro/reformcloud2/badge?s=1093a7711bb179b3fb6e48ffbb3e4c1315e5aada)](https://www.codefactor.io/repository/github/derklaro/reformcloud2)
-ReformCloud 2 is a server management tool to control every network you are running. 
-The cloud system is build to handle all sizes of networks such as network with 80 players or networks with 1000 players.
+ReformCloud is a cloud system programmed and optimized for all sizes of networks. Due to an extensive API which supports Sync as well as Asnyc it is easy for any developer to integrate a reformcloud into his systems.
 
 The cloud system supports java and bedrock edition.
 
@@ -65,4 +64,26 @@ After the setup: **start using reformcloud2!**
 git clone https://github.com/derklaro/reformcloud2.git
 cd reformcloud2/
 mvn clean package
+```
+
+## Maven
+**Repository:**
+```xml
+    <repositories>
+        <!-- ReformCloud official repository -->
+        <repository>
+            <id>reformcloud</id>
+            <url>https://repo.reformcloud.systems</url>
+        </repository>
+    </repositories>
+```
+
+**Dependency:**
+```xml
+    <dependency>
+        <groupId>de.klaro.reformcloud2</groupId>
+        <artifactId>reformcloud2-executor-api</artifactId>
+        <version>2.0-SNAPSHOT</version>
+        <scope>provided</scope>
+    </dependency>
 ```
