@@ -6,7 +6,7 @@ The cloud system is build to handle all sizes of networks such as network with 8
 
 The cloud system supports java and bedrock edition.
 
-### Currently support java versions:
+### Currently supported java versions:
 | Version Name                        | Version ID      |
 |-------------------------------------|-----------------|
 | Bungeecord (Waterfall, Hexacord...) | 1.7.10 - 1.14.4 |
