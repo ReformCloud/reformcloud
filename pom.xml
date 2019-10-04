@@ -9,6 +9,37 @@
     <packaging>pom</packaging>
     <version>2.0-SNAPSHOT</version>
 
+    <licenses>
+        <license>
+            <name>The Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <name>Pasqual K.</name>
+            <email>info@reformcloud.systems</email>
+            <organization>reformcloudproject</organization>
+            <organizationUrl>https://reformcloud.systems</organizationUrl>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>scm:git:git://github.com/derklaro/reformcloud2.git</connection>
+        <developerConnection>scm:git:ssh://github.com/derklaro/reformcloud2.git</developerConnection>
+        <url>https://github.com/derklaro/reformcloud2</url>
+    </scm>
+
+    <issueManagement>
+        <url>https://github.com/derklaro/reformcloud2/issues</url>
+        <system>GitHub Issues</system>
+    </issueManagement>
+
+    <name>reformcloud2:${version}</name>
+    <description>A simple server management system for minecraft java/bedrock proxies and servers</description>
+    <url>https://reformcloud.systems/</url>
+
     <!-- do not change the module order to prevent issues while building the project -->
     <modules>
         <module>reformcloud2-default-applications</module>
