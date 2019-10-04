@@ -3,9 +3,11 @@ package de.klaro.reformcloud2.permissions.velocity;
 import com.google.inject.Inject;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
+import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
 import com.velocitypowered.api.plugin.Dependency;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.proxy.ProxyServer;
+import de.klaro.reformcloud2.permissions.packets.PacketHelper;
 import de.klaro.reformcloud2.permissions.velocity.listener.VelocityPermissionListener;
 
 @Plugin(
@@ -14,7 +16,7 @@ import de.klaro.reformcloud2.permissions.velocity.listener.VelocityPermissionLis
         version = "2",
         description = "The reformcloud permission plugin",
         url = "https://reformcloud.systems",
-        authors = {"_Klaro"},
+        authors = {"derklaro"},
         dependencies = {@Dependency(id = "reformcloud_2_api_executor")}
 )
 public class VelocityPermissionPlugin {
@@ -29,5 +31,10 @@ public class VelocityPermissionPlugin {
     @Subscribe
     public void handleInit(ProxyInitializeEvent event) {
         proxyServer.getEventManager().register(this, new VelocityPermissionListener());
+    }
+
+    @Subscribe
+    public void handleStop(ProxyShutdownEvent event) {
+        PacketHelper.unregisterAPIPackets();
     }
 }

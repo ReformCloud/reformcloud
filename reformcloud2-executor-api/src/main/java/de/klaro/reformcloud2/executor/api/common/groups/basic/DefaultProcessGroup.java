@@ -34,7 +34,7 @@ public final class DefaultProcessGroup extends ProcessGroup {
                         new RuntimeConfiguration(
                                 maxMemory,
                                 Collections.emptyList(),
-                                Collections.singletonMap("reformcloud2.developer", "_Klaro")
+                                Collections.singletonMap("reformcloud2.developer", "derklaro")
                         ), version
                 )), new PlayerAccessConfiguration(
                         maintenance,

@@ -200,6 +200,11 @@ public final class ClientExecutor extends Client {
         return packetHandler;
     }
 
+    @Override
+    public PacketHandler getPacketHandler() {
+        return packetHandler;
+    }
+
     public LoggerBase getLoggerBase() {
         return loggerBase;
     }

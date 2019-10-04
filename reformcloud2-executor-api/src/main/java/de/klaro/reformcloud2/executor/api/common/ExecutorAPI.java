@@ -10,6 +10,7 @@ import de.klaro.reformcloud2.executor.api.common.api.player.PlayerAsyncAPI;
 import de.klaro.reformcloud2.executor.api.common.api.plugins.PluginAsyncAPI;
 import de.klaro.reformcloud2.executor.api.common.api.process.ProcessAsyncAPI;
 import de.klaro.reformcloud2.executor.api.common.base.Conditions;
+import de.klaro.reformcloud2.executor.api.common.network.packet.handler.PacketHandler;
 
 import java.util.Objects;
 
@@ -37,6 +38,8 @@ public abstract class ExecutorAPI implements
     public static ExecutorAPI getInstance() {
         return instance;
     }
+
+    public abstract PacketHandler getPacketHandler();
 
     /* ========================== */
 

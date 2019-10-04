@@ -1,5 +1,5 @@
 name: 'ReformCloud2NukkitExecutor'
-author: '_Klaro'
+author: 'derklaro'
 version: '2'
 main: de.klaro.reformcloud2.executor.api.nukkit.NukkitLauncher
 api: ['1.0.0']

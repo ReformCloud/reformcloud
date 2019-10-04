@@ -17,7 +17,7 @@ import net.kyori.text.TextComponent;
         version = "2",
         description = "The reformcloud executor api",
         authors = {
-                "_Klaro",
+                "derklaro",
                 "ReformCloud-Team"
         },
         url = "https://reformcloud.systems"

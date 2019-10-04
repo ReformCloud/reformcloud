@@ -2,8 +2,20 @@ package de.klaro.reformcloud2.permissions.util.basic;
 
 import de.klaro.reformcloud2.executor.api.ExecutorType;
 import de.klaro.reformcloud2.executor.api.common.ExecutorAPI;
+import de.klaro.reformcloud2.executor.api.common.api.basic.ExternalEventBusHandler;
 import de.klaro.reformcloud2.executor.api.common.configuration.JsonConfiguration;
+import de.klaro.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
+import de.klaro.reformcloud2.permissions.packets.api.out.APIPacketOutGroupAction;
+import de.klaro.reformcloud2.permissions.packets.controller.out.ControllerPacketOutGroupAction;
+import de.klaro.reformcloud2.permissions.packets.controller.out.ControllerPacketOutUserAction;
+import de.klaro.reformcloud2.permissions.packets.util.PermissionAction;
 import de.klaro.reformcloud2.permissions.util.PermissionUtil;
+import de.klaro.reformcloud2.permissions.util.events.group.PermissionGroupCreateEvent;
+import de.klaro.reformcloud2.permissions.util.events.group.PermissionGroupDeleteEvent;
+import de.klaro.reformcloud2.permissions.util.events.group.PermissionGroupUpdateEvent;
+import de.klaro.reformcloud2.permissions.util.events.user.PermissionUserCreateEvent;
+import de.klaro.reformcloud2.permissions.util.events.user.PermissionUserDeleteEvent;
+import de.klaro.reformcloud2.permissions.util.events.user.PermissionUserUpdateEvent;
 import de.klaro.reformcloud2.permissions.util.group.PermissionGroup;
 import de.klaro.reformcloud2.permissions.util.permission.PermissionNode;
 import de.klaro.reformcloud2.permissions.util.user.PermissionUser;
@@ -56,9 +68,9 @@ public class DefaultPermissionUtil implements PermissionUtil {
         if (ExecutorAPI.getInstance().getType().equals(ExecutorType.CONTROLLER)) {
             ExecutorAPI.getInstance().update(PERMISSION_GROUP_TABLE, permissionGroup.getName(),
                     new JsonConfiguration().add("group", permissionGroup));
-            // Notify packet
+            DefaultChannelManager.INSTANCE.getAllSender().forEach(e -> e.sendPacket(new ControllerPacketOutGroupAction(permissionGroup, PermissionAction.UPDATE)));
         } else {
-            // Send packet to controller
+            DefaultChannelManager.INSTANCE.get("Controller").ifPresent(e -> e.sendPacket(new APIPacketOutGroupAction(permissionGroup, PermissionAction.UPDATE)));
         }
     }
 
@@ -93,18 +105,31 @@ public class DefaultPermissionUtil implements PermissionUtil {
                 0,
                 -1
         );
-        ExecutorAPI.getInstance().insert(PERMISSION_GROUP_TABLE, name, null, new JsonConfiguration().add(
-                "group", newGroup
-        ));
+        if (ExecutorAPI.getInstance().getType().equals(ExecutorType.CONTROLLER)) {
+            ExecutorAPI.getInstance().insert(PERMISSION_GROUP_TABLE, name, null, new JsonConfiguration().add(
+                    "group", newGroup
+            ));
+            DefaultChannelManager.INSTANCE.getAllSender().forEach(e -> e.sendPacket(new ControllerPacketOutGroupAction(newGroup, PermissionAction.CREATE)));
+        } else {
+            DefaultChannelManager.INSTANCE.get("Controller").ifPresent(e -> e.sendPacket(new APIPacketOutGroupAction(newGroup, PermissionAction.CREATE)));
+        }
+
         return CACHE.put(name, newGroup);
     }
 
     @Override
     public void deleteGroup(String name) {
-        if (getGroup(name) != null) {
-            ExecutorAPI.getInstance().remove(PERMISSION_GROUP_TABLE, name);
-            CACHE.remove(name);
+        final PermissionGroup toDelete = getGroup(name);
+        if (toDelete != null) {
+            if (ExecutorAPI.getInstance().getType().equals(ExecutorType.CONTROLLER)) {
+                ExecutorAPI.getInstance().remove(PERMISSION_GROUP_TABLE, name);
+                DefaultChannelManager.INSTANCE.getAllSender().forEach(e -> e.sendPacket(new ControllerPacketOutGroupAction(toDelete, PermissionAction.DELETE)));
+            } else {
+                DefaultChannelManager.INSTANCE.get("Controller").ifPresent(e -> e.sendPacket(new APIPacketOutGroupAction(toDelete, PermissionAction.DELETE)));
+            }
         }
+
+        CACHE.remove(name);
     }
 
     @Override
@@ -143,12 +168,17 @@ public class DefaultPermissionUtil implements PermissionUtil {
 
         if (!ExecutorAPI.getInstance().contains(PERMISSION_PLAYER_TABLE, uuid.toString())) {
             final PermissionUser user = new PermissionUser(uuid, new ArrayList<>(), new ArrayList<>());
-            ExecutorAPI.getInstance().insert(PERMISSION_PLAYER_TABLE, uuid.toString(), null, new JsonConfiguration()
-                    .add("user", user)
-            );
+            if (ExecutorAPI.getInstance().getType().equals(ExecutorType.CONTROLLER)) {
+                ExecutorAPI.getInstance().insert(PERMISSION_PLAYER_TABLE, uuid.toString(), null, new JsonConfiguration()
+                        .add("user", user)
+                );
+                DefaultChannelManager.INSTANCE.getAllSender().forEach(e -> e.sendPacket(new ControllerPacketOutUserAction(user, PermissionAction.CREATE)));
+            } else {
+                DefaultChannelManager.INSTANCE.get("Controller").ifPresent(e -> e.sendPacket(new ControllerPacketOutUserAction(user, PermissionAction.CREATE)));
+            }
+
             return USER_CACHE.put(uuid, user);
         }
-
 
         final PermissionUser result = ExecutorAPI.getInstance().find(
                 PERMISSION_PLAYER_TABLE,
@@ -175,16 +205,23 @@ public class DefaultPermissionUtil implements PermissionUtil {
         if (ExecutorAPI.getInstance().getType().equals(ExecutorType.CONTROLLER)) {
             ExecutorAPI.getInstance().update(PERMISSION_PLAYER_TABLE, permissionUser.getUuid().toString(),
                     new JsonConfiguration().add("user", permissionUser));
-            // Notify packet
+            DefaultChannelManager.INSTANCE.getAllSender().forEach(e -> e.sendPacket(new ControllerPacketOutUserAction(permissionUser, PermissionAction.UPDATE)));
         } else {
-            // Send packet to controller
+            DefaultChannelManager.INSTANCE.get("Controller").ifPresent(e -> e.sendPacket(new ControllerPacketOutUserAction(permissionUser, PermissionAction.UPDATE)));
         }
     }
 
     @Override
     public void deleteUser(UUID uuid) {
-        if (loadUser(uuid) != null) {
-            ExecutorAPI.getInstance().remove(PERMISSION_PLAYER_TABLE, uuid.toString());
+        final PermissionUser user = loadUser(uuid);
+        if (user != null) {
+            if (ExecutorAPI.getInstance().getType().equals(ExecutorType.CONTROLLER)) {
+                ExecutorAPI.getInstance().remove(PERMISSION_PLAYER_TABLE, uuid.toString());
+                DefaultChannelManager.INSTANCE.getAllSender().forEach(e -> e.sendPacket(new ControllerPacketOutUserAction(user, PermissionAction.DELETE)));
+            } else {
+                DefaultChannelManager.INSTANCE.get("Controller").ifPresent(e -> e.sendPacket(new ControllerPacketOutUserAction(user, PermissionAction.DELETE)));
+            }
+
             USER_CACHE.remove(uuid);
         }
     }
@@ -192,6 +229,46 @@ public class DefaultPermissionUtil implements PermissionUtil {
     @Override
     public void handleDisconnect(UUID uuid) {
         USER_CACHE.remove(uuid);
+    }
+
+    @Override
+    public void handleInternalPermissionGroupUpdate(PermissionGroup permissionGroup) {
+        if (CACHE.containsKey(permissionGroup.getName())) {
+            CACHE.put(permissionGroup.getName(), permissionGroup);
+        }
+
+        ExternalEventBusHandler.getInstance().callEvent(new PermissionGroupUpdateEvent(permissionGroup));
+    }
+
+    @Override
+    public void handleInternalPermissionGroupCreate(PermissionGroup permissionGroup) {
+        ExternalEventBusHandler.getInstance().callEvent(new PermissionGroupCreateEvent(permissionGroup));
+    }
+
+    @Override
+    public void handleInternalPermissionGroupDelete(PermissionGroup permissionGroup) {
+        CACHE.remove(permissionGroup.getName());
+        ExternalEventBusHandler.getInstance().callEvent(new PermissionGroupDeleteEvent(permissionGroup.getName()));
+    }
+
+    @Override
+    public void handleInternalUserUpdate(PermissionUser permissionUser) {
+        if (USER_CACHE.containsKey(permissionUser.getUuid())) {
+            USER_CACHE.put(permissionUser.getUuid(), permissionUser);
+        }
+
+        ExternalEventBusHandler.getInstance().callEvent(new PermissionUserUpdateEvent(permissionUser));
+    }
+
+    @Override
+    public void handleInternalUserCreate(PermissionUser permissionUser) {
+        ExternalEventBusHandler.getInstance().callEvent(new PermissionUserCreateEvent(permissionUser));
+    }
+
+    @Override
+    public void handleInternalUserDelete(PermissionUser permissionUser) {
+        USER_CACHE.remove(permissionUser.getUuid());
+        ExternalEventBusHandler.getInstance().callEvent(new PermissionUserDeleteEvent(permissionUser.getUuid()));
     }
 
     private boolean hasPermission(PermissionGroup group, String perm) {

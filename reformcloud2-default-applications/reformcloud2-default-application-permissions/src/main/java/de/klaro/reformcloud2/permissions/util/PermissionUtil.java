@@ -34,4 +34,16 @@ public interface PermissionUtil {
     void deleteUser(UUID uuid);
 
     void handleDisconnect(UUID uuid);
+
+    void handleInternalPermissionGroupUpdate(PermissionGroup permissionGroup);
+
+    void handleInternalPermissionGroupCreate(PermissionGroup permissionGroup);
+
+    void handleInternalPermissionGroupDelete(PermissionGroup permissionGroup);
+
+    void handleInternalUserUpdate(PermissionUser permissionUser);
+
+    void handleInternalUserCreate(PermissionUser permissionUser);
+
+    void handleInternalUserDelete(PermissionUser permissionUser);
 }

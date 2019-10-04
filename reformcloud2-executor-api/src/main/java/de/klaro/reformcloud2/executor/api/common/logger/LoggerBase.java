@@ -9,7 +9,7 @@ import java.util.logging.Logger;
 
 public abstract class LoggerBase extends Logger implements AutoCloseable {
 
-    public LoggerBase() throws IOException {
+    public LoggerBase() {
         super("ReformCloudBaseLogger", null);
     }
 

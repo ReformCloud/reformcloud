@@ -1046,6 +1046,11 @@ public abstract class ExternalAPIImplementation extends ExecutorAPI {
         return task;
     }
 
+    @Override
+    public PacketHandler getPacketHandler() {
+        return packetHandler();
+    }
+
     /* ============== */
 
     protected abstract PacketHandler packetHandler();
