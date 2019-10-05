@@ -68,15 +68,7 @@ mvn clean package
 
 ## Maven
 **Repository:**
-```xml
-    <repositories>
-        <!-- ReformCloud official repository -->
-        <repository>
-            <id>reformcloud</id>
-            <url>https://repo.reformcloud.systems</url>
-        </repository>
-    </repositories>
-```
+ReformCloud2 is available in the [central repository](https://search.maven.org/search?q=reformcloud)
 
 **Dependency:**
 ```xml
