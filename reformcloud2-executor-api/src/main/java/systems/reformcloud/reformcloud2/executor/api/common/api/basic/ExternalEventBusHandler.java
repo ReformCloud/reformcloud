@@ -8,6 +8,12 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.handl
 //Note! This class CANNOT use Reflections because it leads to problems using spigot (older guava implementation)
 public final class ExternalEventBusHandler {
 
+    /**
+     * Initializes the external event bus which handles all known event packets and call them sync
+     *
+     * @param packetHandler The current packet handler per implementation
+     * @param eventManager The event manager which should be used
+     */
     public ExternalEventBusHandler(PacketHandler packetHandler, EventManager eventManager) {
         packetHandler.registerNetworkHandlers(
                 new EventPacketInProcessClosed(),
@@ -17,26 +23,38 @@ public final class ExternalEventBusHandler {
                 new EventPacketInLogoutPlayer(),
                 new EventPacketInPlayerConnected()
         );
+
         this.eventManager = eventManager;
         instance = this;
     }
 
+    private final EventManager eventManager;
+
     private static ExternalEventBusHandler instance;
 
-    public void update(EventManager eventManager) {
-        this.eventManager = eventManager;
-    }
-
+    /**
+     * Gets the current event manager which is used for the external event bus
+     *
+     * @return the current event manager
+     */
     public EventManager getEventManager() {
         return eventManager;
     }
 
+    /**
+     * Get the current instance of the event bus handler
+     *
+     * @return the current instance of the event bus handler
+     */
     public static ExternalEventBusHandler getInstance() {
         return instance;
     }
 
-    private EventManager eventManager;
-
+    /**
+     * Calls an event sync
+     *
+     * @param event The event which should be called
+     */
     public void callEvent(Event event) {
         eventManager.callEvent(event);
     }
