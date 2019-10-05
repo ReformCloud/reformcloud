@@ -1,7 +1,7 @@
 name: 'ReformCloud2NukkitPermissions'
 author: 'derklaro'
 version: '2'
-main: de.klaro.reformcloud2.permissions.nukkit.NukkitPermissionPlugin
+main: systems.reformcloud.reformcloud2.permissions.nukkit.NukkitPermissionPlugin
 api: ['1.0.0']
 
 # Additional

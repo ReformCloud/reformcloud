@@ -1,7 +1,7 @@
 name: 'ReformCloud2BukkitPermissions'
 version: '2'
 authors: ['derklaro', 'ReformCloud-Team']
-main: de.klaro.reformcloud2.permissions.bukkit.BukkitPermissionPlugin
+main: systems.reformcloud.reformcloud2.permissions.bukkit.BukkitPermissionPlugin
 depend:
   - ReformCloud2SpigotExecutor
 

@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>reformcloud2</artifactId>
-        <groupId>de.klaro.reformcloud2</groupId>
+        <groupId>systems.reformcloud.reformcloud2</groupId>
         <version>2.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -40,7 +40,7 @@
                 <configuration>
                     <archive>
                         <manifestEntries>
-                            <Main-Class>de.klaro.reformcloud2.runner.Runner</Main-Class>
+                            <Main-Class>systems.reformcloud.reformcloud2.runner.Runner</Main-Class>
                             <Version>${project.version}</Version>
                             <Implementation-Version>${service.version}</Implementation-Version>
                             <Specification-Version>${service.spec}</Specification-Version>

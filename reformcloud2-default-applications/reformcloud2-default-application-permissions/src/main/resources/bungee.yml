@@ -1,6 +1,6 @@
 name: 'ReformCloud2BungeePermissions'
 version: '2'
 author: 'derklaro'
-main: de.klaro.reformcloud2.permissions.bungeecord.BungeeCordPermisionPlugin
+main: systems.reformcloud.reformcloud2.permissions.bungeecord.BungeeCordPermisionPlugin
 depend:
   - ReformCloud2BungeeExecutor
