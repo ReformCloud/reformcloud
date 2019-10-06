@@ -1,6 +1,6 @@
 ![](https://s17.directupload.net/images/190317/g4777bij.png)
 
-# ReformCloud 2 [![Discord](https://img.shields.io/discord/499666347337449472.svg?color=7289DA&label=discord)](https://discord.gg/uskXdVZ) [![CodeFactor](https://www.codefactor.io/repository/github/derklaro/reformcloud2/badge?s=1093a7711bb179b3fb6e48ffbb3e4c1315e5aada)](https://www.codefactor.io/repository/github/derklaro/reformcloud2)
+# ReformCloud 2 [![Discord](https://img.shields.io/discord/499666347337449472.svg?color=7289DA&label=discord)](https://discord.gg/uskXdVZ) [![CodeFactor](https://www.codefactor.io/repository/github/derklaro/reformcloud2/badge?s=1093a7711bb179b3fb6e48ffbb3e4c1315e5aada)](https://www.codefactor.io/repository/github/derklaro/reformcloud2) [![Build Status](https://travis-ci.com/derklaro/reformcloud2.svg?token=DsMrJCyqH6BCtUu5ax94&branch=master)](https://travis-ci.com/derklaro/reformcloud2)
 ReformCloud is a cloud system programmed and optimized for all sizes of networks. Due to an extensive API which supports Sync as well as Asnyc it is easy for any developer to integrate a reformcloud into his systems.
 
 The cloud system supports java and bedrock edition.
@@ -14,7 +14,6 @@ The cloud system supports java and bedrock edition.
 | Spigot (Paper, Taco, Torch...)      | 1.7.10 - 1.14.4 |
 | Sponge                              | 1.7.10 - 1.12.2 |
 | Akarin                              | 1.12.2          |
-| GlowStone                           | 1.7.9 - 1.12.2  |
 
 ### Currently supported bedrock versions:
 | Version Name  |                     
