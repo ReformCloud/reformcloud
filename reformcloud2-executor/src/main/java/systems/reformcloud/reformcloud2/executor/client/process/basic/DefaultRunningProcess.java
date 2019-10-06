@@ -257,45 +257,6 @@ public final class DefaultRunningProcess implements RunningProcess {
     }
 
     // ========================= //
-    //Glowstone
-    private boolean isLogicallyGlowstone() {
-        Version version = processInformation.getTemplate().getVersion();
-        return version.equals(Version.GLOWSTONE_1_7_9)
-                || version.equals(Version.GLOWSTONE_1_8_9)
-                || version.equals(Version.GLOWSTONE_1_9_4)
-                || version.equals(Version.GLOWSTONE_1_10_2)
-                || version.equals(Version.GLOWSTONE_1_11_2)
-                || version.equals(Version.GLOWSTONE_1_12_2);
-    }
-
-    private void rewriteGlowstoneConfig() {
-        try (InputStreamReader inputStreamReader = new InputStreamReader(Files.newInputStream(Paths.get(path + "/config/glowstone.yml")), StandardCharsets.UTF_8)) {
-            Configuration configuration = ConfigurationProvider.getProvider(YamlConfiguration.class).load(inputStreamReader);
-            Configuration section = configuration.getSection("server");
-
-            section.set("ip", ClientExecutor.getInstance().getClientConfig().getStartHost());
-            section.set("port", processInformation.getNetworkInfo().getPort());
-            section.set("log-file", "logs/latest.log");
-            section.set("online-mode", false);
-
-            if (processInformation.getProcessGroup().getPlayerAccessConfiguration().isUseCloudPlayerLimit()) {
-                section.set("max-players", processInformation.getProcessGroup().getPlayerAccessConfiguration().getMaxPlayers());
-            }
-
-            configuration.set("server", section);
-            configuration.set("console.use-jline", false);
-            configuration.set("console.prompt", "");
-            configuration.set("advanced.proxy-support", true);
-
-            try (OutputStreamWriter outputStreamWriter = new OutputStreamWriter(Files.newOutputStream(Paths.get(path + "/config/glowstone.yml")), StandardCharsets.UTF_8)) {
-                ConfigurationProvider.getProvider(YamlConfiguration.class).save(configuration, outputStreamWriter);
-            }
-        } catch (final IOException ex) {
-            ex.printStackTrace();
-        }
-    }
-
-    // ========================= //
     //Bungee
     private boolean isLogicallyBungee() {
         Version version = processInformation.getTemplate().getVersion();
@@ -397,10 +358,6 @@ public final class DefaultRunningProcess implements RunningProcess {
             SystemHelper.createDirectory(Paths.get(path + "/config/sponge"));
             SystemHelper.doInternalCopy(getClass().getClassLoader(), "files/java/sponge/forge/global.conf", path + "/config/sponge");
             rewriteSpongeConfig();
-        } else if (isLogicallyGlowstone()) {
-            SystemHelper.createDirectory(Paths.get(path + "/config"));
-            SystemHelper.doInternalCopy(getClass().getClassLoader(), "files/java/glowstone/glowstone.yml", path + "/config/glowstone.yml");
-            rewriteGlowstoneConfig();
         } else if (processInformation.getTemplate().getVersion().equals(Version.NUKKIT_X)) {
             SystemHelper.doInternalCopy(getClass().getClassLoader(), "files/mcpe/nukkit/server.properties", path + "/server.properties");
             SystemHelper.doInternalCopy(getClass().getClassLoader(), "files/mcpe/nukkit/nukkit.yml", path + "/nukkit.yml");
@@ -422,7 +379,7 @@ public final class DefaultRunningProcess implements RunningProcess {
             rewriteSpigotConfig();
         }
 
-        if (!isLogicallyGlowstone() && !processInformation.getTemplate().getVersion().equals(Version.NUKKIT_X)) {
+        if (!processInformation.getTemplate().getVersion().equals(Version.NUKKIT_X)) {
             Properties properties = new Properties();
             SystemHelper.doInternalCopy(getClass().getClassLoader(), "files/java/bukkit/server.properties", path + "/server.properties");
             try (InputStream inputStream = Files.newInputStream(Paths.get(path + "/server.properties"))) {

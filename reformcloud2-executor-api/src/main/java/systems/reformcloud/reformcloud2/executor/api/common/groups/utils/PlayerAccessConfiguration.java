@@ -37,7 +37,7 @@ public final class PlayerAccessConfiguration {
     }
 
     public String getMaintenanceJoinPermission() {
-        return maintenanceJoinPermission;
+        return maintenanceJoinPermission == null ? "reformcloud.join.maintenance" : maintenanceJoinPermission;
     }
 
     public boolean isJoinOnlyPerPermission() {
@@ -45,7 +45,7 @@ public final class PlayerAccessConfiguration {
     }
 
     public String getJoinPermission() {
-        return joinPermission;
+        return joinPermission == null ? "reformcloud.custom.permission" : joinPermission;
     }
 
     public boolean isOnlyProxyJoin() {

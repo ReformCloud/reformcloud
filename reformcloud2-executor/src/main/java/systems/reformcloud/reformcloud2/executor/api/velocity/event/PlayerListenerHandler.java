@@ -11,6 +11,7 @@ import com.velocitypowered.api.event.player.PlayerChatEvent;
 import com.velocitypowered.api.event.player.ServerPreConnectEvent;
 import com.velocitypowered.api.proxy.Player;
 import net.kyori.text.TextComponent;
+import systems.reformcloud.reformcloud2.executor.api.bungee.BungeeExecutor;
 import systems.reformcloud.reformcloud2.executor.api.common.CommonHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.PlayerAccessConfiguration;
@@ -31,24 +32,16 @@ public final class PlayerListenerHandler {
     @Subscribe (order = PostOrder.FIRST)
     public void handleConnect(final ServerPreConnectEvent event) {
         final Player player = event.getPlayer();
-        if (!player.getCurrentServer().isPresent()) {
-            DefaultChannelManager.INSTANCE.get("Controller").ifPresent(packetSender -> {
-                Packet result = VelocityExecutor.getInstance().packetHandler().getQueryHandler().sendQueryAsync(packetSender,
-                        new APIPacketOutGetBestLobbyForPlayer(new ArrayList<>(), Version.VELOCITY)
-                ).getTask().getUninterruptedly(TimeUnit.SECONDS, 3);
-                if (result != null) {
-                    ProcessInformation info = result.content().get("result", ProcessInformation.TYPE);
-                    if (info != null && VelocityExecutor.getInstance().isServerRegistered(info.getName())) {
-                        event.setResult(ServerPreConnectEvent.ServerResult.allowed(
-                                VelocityExecutor.getInstance().getProxyServer().getServer(info.getName()).get()
-                        ));
-                        return;
-                    }
-                }
-
-                event.setResult(ServerPreConnectEvent.ServerResult.denied());
-            });
+        ProcessInformation lobby = VelocityExecutor.getBestLobbyForPlayer(VelocityExecutor.getInstance().getThisProcessInformation(),
+                player::hasPermission);
+        if (lobby != null) {
+            event.setResult(ServerPreConnectEvent.ServerResult.allowed(
+                    VelocityExecutor.getInstance().getProxyServer().getServer(lobby.getName()).get()
+            ));
+            return;
         }
+
+        event.setResult(ServerPreConnectEvent.ServerResult.denied());
     }
 
     @Subscribe (order = PostOrder.FIRST)
@@ -117,26 +110,18 @@ public final class PlayerListenerHandler {
     @Subscribe (order = PostOrder.FIRST)
     public void handle(final KickedFromServerEvent event) {
         Player player = event.getPlayer();
-        DefaultChannelManager.INSTANCE.get("Controller").ifPresent(packetSender -> {
-            Packet result = VelocityExecutor.getInstance().packetHandler().getQueryHandler().sendQueryAsync(packetSender,
-                    new APIPacketOutGetBestLobbyForPlayer(new ArrayList<>(), Version.VELOCITY)
-            ).getTask().getUninterruptedly(TimeUnit.SECONDS, 3);
-            if (result != null) {
-                ProcessInformation info = result.content().get("result", ProcessInformation.TYPE);
-                event.getOriginalReason().ifPresent(player::sendMessage);
-
-                if (info != null && VelocityExecutor.getInstance().isServerRegistered(info.getName())) {
-                    event.setResult(KickedFromServerEvent.RedirectPlayer.create(
-                            VelocityExecutor.getInstance().getProxyServer().getServer(info.getName()).get()
-                    ));
-                    return;
-                }
-            }
-
-            event.setResult(KickedFromServerEvent.DisconnectPlayer.create(
-                    TextComponent.of("There is no lobby server available")
+        ProcessInformation lobby = VelocityExecutor.getBestLobbyForPlayer(VelocityExecutor.getInstance().getThisProcessInformation(),
+                player::hasPermission);
+        if (lobby != null) {
+            event.setResult(KickedFromServerEvent.RedirectPlayer.create(
+                    VelocityExecutor.getInstance().getProxyServer().getServer(lobby.getName()).get()
             ));
-        });
+            return;
+        }
+
+        event.setResult(KickedFromServerEvent.DisconnectPlayer.create(
+                TextComponent.of("There is no lobby server available")
+        ));
     }
 
     @Subscribe (order = PostOrder.FIRST)

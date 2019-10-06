@@ -126,6 +126,16 @@ public final class Links {
         return out;
     }
 
+    public static <T> Collection<T> others(Collection<T> list, Predicate<T> predicate) {
+        List<T> out = new LinkedList<>();
+        list.forEach(t -> {
+            if (!predicate.test(t)) {
+                out.add(t);
+            }
+        });
+        return out;
+    }
+
     public static <T> Collection<T> allOf(Collection<T> collection, Predicate<T> predicate) {
         Collection<T> out = new LinkedList<>();
         collection.forEach(t -> {

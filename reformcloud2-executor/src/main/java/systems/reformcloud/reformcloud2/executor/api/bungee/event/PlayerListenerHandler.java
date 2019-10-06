@@ -24,29 +24,20 @@ import java.util.concurrent.TimeUnit;
 
 public final class PlayerListenerHandler implements Listener {
 
-    //Note: Cannot send always the same version like on velocity because it can support MCPE or not
-    private final Version version = BungeeExecutor.getInstance().getThisProcessInformation().getTemplate().getVersion();
-
     @EventHandler(priority = EventPriority.LOWEST)
     public void handle(final ServerConnectEvent event) {
         final ProxiedPlayer proxiedPlayer = event.getPlayer();
         proxiedPlayer.setReconnectServer(null);
         if (proxiedPlayer.getServer() == null) {
-            DefaultChannelManager.INSTANCE.get("Controller").ifPresent(packetSender -> {
-                Packet result = BungeeExecutor.getInstance().packetHandler().getQueryHandler().sendQueryAsync(packetSender,
-                        new APIPacketOutGetBestLobbyForPlayer(proxiedPlayer.getPermissions(), version)
-                ).getTask().getUninterruptedly(TimeUnit.SECONDS, 3);
-                if (result != null) {
-                    ProcessInformation info = result.content().get("result", ProcessInformation.TYPE);
-                    if (info != null && ProxyServer.getInstance().getServers().containsKey(info.getName())) {
-                        event.setTarget(ProxyServer.getInstance().getServerInfo(info.getName()));
-                        return;
-                    }
-                }
+            ProcessInformation lobby = BungeeExecutor.getBestLobbyForPlayer(BungeeExecutor.getInstance().getThisProcessInformation(),
+                    proxiedPlayer::hasPermission);
+            if (lobby != null) {
+                event.setTarget(ProxyServer.getInstance().getServerInfo(lobby.getName()));
+                return;
+            }
 
-                proxiedPlayer.disconnect(TextComponent.fromLegacyText("There is currently no lobby server available"));
-                event.setCancelled(true);
-            });
+            proxiedPlayer.disconnect(TextComponent.fromLegacyText("There is currently no lobby server available"));
+            event.setCancelled(true);
         }
     }
 
@@ -125,26 +116,16 @@ public final class PlayerListenerHandler implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void handle(final ServerKickEvent event) {
         ProxiedPlayer proxiedPlayer = event.getPlayer();
-        DefaultChannelManager.INSTANCE.get("Controller").ifPresent(packetSender -> {
-            Packet result = BungeeExecutor.getInstance().packetHandler().getQueryHandler().sendQueryAsync(packetSender,
-                    new APIPacketOutGetBestLobbyForPlayer(proxiedPlayer.getPermissions(), version)
-            ).getTask().getUninterruptedly(TimeUnit.SECONDS, 3);
-            if (result != null) {
-                ProcessInformation info = result.content().get("result", ProcessInformation.TYPE);
-                if (info != null && ProxyServer.getInstance().getServers().containsKey(info.getName())) {
-                    event.setCancelled(true);
-                    event.setCancelServer(ProxyServer.getInstance().getServerInfo(info.getName()));
-                    if (event.getKickReasonComponent() != null) {
-                        proxiedPlayer.sendMessage(event.getKickReasonComponent());
-                    }
+        ProcessInformation lobby = BungeeExecutor.getBestLobbyForPlayer(BungeeExecutor.getInstance().getThisProcessInformation(),
+                proxiedPlayer::hasPermission);
+        if (lobby != null) {
+            event.setCancelServer(ProxyServer.getInstance().getServerInfo(lobby.getName()));
+            event.setCancelled(true);
+            return;
+        }
 
-                    return;
-                }
-            }
-
-            proxiedPlayer.disconnect(TextComponent.fromLegacyText("There is currently no lobby server available"));
-            event.setCancelled(false);
-        });
+        proxiedPlayer.disconnect(TextComponent.fromLegacyText("There is currently no lobby server available"));
+        event.setCancelled(false);
     }
 
     @EventHandler(priority = EventPriority.LOWEST)

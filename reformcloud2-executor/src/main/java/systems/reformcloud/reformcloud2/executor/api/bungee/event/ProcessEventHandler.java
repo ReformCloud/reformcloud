@@ -26,6 +26,7 @@ public final class ProcessEventHandler {
     public void handleRemove(ProcessStoppedEvent event) {
         ProxyServer.getInstance().getServers().remove(event.getProcessInformation().getName());
         if (event.getProcessInformation().isLobby()) {
+            BungeeExecutor.LOBBY_SERVERS.remove(event.getProcessInformation());
             ProxyServer.getInstance().getConfig().getListeners().forEach(listenerInfo -> listenerInfo.getServerPriority().remove(event.getProcessInformation().getName()));
         }
 

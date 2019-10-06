@@ -7,17 +7,9 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 import systems.reformcloud.reformcloud2.executor.api.bungee.BungeeExecutor;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.Version;
-import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
-import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
-import systems.reformcloud.reformcloud2.executor.api.packets.out.APIPacketOutGetBestLobbyForPlayer;
-
-import java.util.concurrent.TimeUnit;
 
 public class CommandLeave extends Command {
-
-    private final Version version = BungeeExecutor.getInstance().getThisProcessInformation().getTemplate().getVersion();
 
     public CommandLeave() {
         super("leave", null, "lobby", "l", "hub", "quit");
@@ -39,28 +31,22 @@ public class CommandLeave extends Command {
             return;
         }
 
-        DefaultChannelManager.INSTANCE.get("Controller").ifPresent(packetSender -> {
-            Packet result = BungeeExecutor.getInstance().packetHandler().getQueryHandler().sendQueryAsync(packetSender,
-                    new APIPacketOutGetBestLobbyForPlayer(proxiedPlayer.getPermissions(), version)
-            ).getTask().getUninterruptedly(TimeUnit.SECONDS, 3);
-            if (result != null) {
-                ProcessInformation info = result.content().get("result", ProcessInformation.TYPE);
-                if (info != null && ProxyServer.getInstance().getServers().containsKey(info.getName())) {
-                    proxiedPlayer.sendMessage(TextComponent.fromLegacyText(
-                            BungeeExecutor.getInstance().getMessages().format(
-                                    BungeeExecutor.getInstance().getMessages().getConnectingToHub(), info.getName()
-                            )
-                    ));
-                    proxiedPlayer.connect(ProxyServer.getInstance().getServerInfo(info.getName()));
-                    return;
-                }
+        ProcessInformation lobby = BungeeExecutor.getBestLobbyForPlayer(BungeeExecutor.getInstance().getThisProcessInformation(),
+                proxiedPlayer::hasPermission);
+        if (lobby != null) {
+            proxiedPlayer.sendMessage(TextComponent.fromLegacyText(
+                    BungeeExecutor.getInstance().getMessages().format(
+                            BungeeExecutor.getInstance().getMessages().getConnectingToHub(), lobby.getName()
+                    )
+            ));
+            proxiedPlayer.connect(ProxyServer.getInstance().getServerInfo(lobby.getName()));
+            return;
+        }
 
-                proxiedPlayer.sendMessage(TextComponent.fromLegacyText(
-                        BungeeExecutor.getInstance().getMessages().format(
-                                BungeeExecutor.getInstance().getMessages().getNoHubServerAvailable()
-                        )
-                ));
-            }
-        });
+        proxiedPlayer.sendMessage(TextComponent.fromLegacyText(
+                BungeeExecutor.getInstance().getMessages().format(
+                        BungeeExecutor.getInstance().getMessages().getNoHubServerAvailable()
+                )
+        ));
     }
 }
