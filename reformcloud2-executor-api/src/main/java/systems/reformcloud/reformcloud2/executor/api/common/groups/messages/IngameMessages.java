@@ -40,10 +40,6 @@ public class IngameMessages {
 
     private String currentProcessClosed = "%prefix% §7The current process got §cstopped";
 
-    public String getPrefix() {
-        return prefix;
-    }
-
     public String getProcessStarted() {
         return processStarted;
     }

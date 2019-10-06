@@ -119,9 +119,9 @@ public final class PlayerListenerHandler {
             return;
         }
 
-        event.setResult(KickedFromServerEvent.DisconnectPlayer.create(
-                TextComponent.of("There is no lobby server available")
-        ));
+        event.setResult(KickedFromServerEvent.DisconnectPlayer.create(TextComponent.of(VelocityExecutor.getInstance().getMessages().format(
+                        VelocityExecutor.getInstance().getMessages().getNoHubServerAvailable()
+        ))));
     }
 
     @Subscribe (order = PostOrder.FIRST)

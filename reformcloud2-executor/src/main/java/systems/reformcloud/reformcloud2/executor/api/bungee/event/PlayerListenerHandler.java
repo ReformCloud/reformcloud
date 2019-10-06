@@ -12,15 +12,11 @@ import systems.reformcloud.reformcloud2.executor.api.bungee.BungeeExecutor;
 import systems.reformcloud.reformcloud2.executor.api.common.CommonHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.PlayerAccessConfiguration;
-import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.Version;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
-import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState;
 import systems.reformcloud.reformcloud2.executor.api.packets.out.*;
-
-import java.util.concurrent.TimeUnit;
 
 public final class PlayerListenerHandler implements Listener {
 
@@ -36,7 +32,9 @@ public final class PlayerListenerHandler implements Listener {
                 return;
             }
 
-            proxiedPlayer.disconnect(TextComponent.fromLegacyText("There is currently no lobby server available"));
+            proxiedPlayer.disconnect(TextComponent.fromLegacyText(BungeeExecutor.getInstance().getMessages().format(
+                    BungeeExecutor.getInstance().getMessages().getNoHubServerAvailable()
+            )));
             event.setCancelled(true);
         }
     }
@@ -124,7 +122,9 @@ public final class PlayerListenerHandler implements Listener {
             return;
         }
 
-        proxiedPlayer.disconnect(TextComponent.fromLegacyText("There is currently no lobby server available"));
+        proxiedPlayer.disconnect(TextComponent.fromLegacyText(BungeeExecutor.getInstance().getMessages().format(
+                BungeeExecutor.getInstance().getMessages().getNoHubServerAvailable()
+        )));
         event.setCancelled(false);
     }
 

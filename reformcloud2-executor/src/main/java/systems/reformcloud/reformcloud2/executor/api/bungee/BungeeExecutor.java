@@ -242,20 +242,35 @@ public final class BungeeExecutor extends API implements PlayerAPIExecutor {
         // Filter out all lobbies with join permission which the player does not have
         Links.others(lobbies, e -> {
             final PlayerAccessConfiguration configuration = e.getProcessGroup().getPlayerAccessConfiguration();
-            return configuration.isJoinOnlyPerPermission() && permissionCheck.apply(configuration.getJoinPermission());
+            if (!configuration.isJoinOnlyPerPermission()) {
+                return true;
+            }
+
+            return permissionCheck.apply(configuration.getJoinPermission());
         }).forEach(lobbies::remove);
 
         // Filter out all lobbies which are in maintenance and not joinable for the player
         Links.others(lobbies, e -> {
             final PlayerAccessConfiguration configuration = e.getProcessGroup().getPlayerAccessConfiguration();
-            return configuration.isMaintenance() && permissionCheck.apply(configuration.getMaintenanceJoinPermission());
+            if (!configuration.isMaintenance()) {
+                return true;
+            }
+
+            return permissionCheck.apply(configuration.getMaintenanceJoinPermission());
         }).forEach(lobbies::remove);
 
         // Filter out all full server which the player cannot access
         Links.others(lobbies, e -> {
             final PlayerAccessConfiguration configuration = e.getProcessGroup().getPlayerAccessConfiguration();
-            return configuration.isUseCloudPlayerLimit() && e.getOnlineCount() >= configuration.getMaxPlayers()
-                    && permissionCheck.apply("reformcloud.join.full");
+            if (!configuration.isUseCloudPlayerLimit()) {
+                return true;
+            }
+
+            if (e.getOnlineCount() < configuration.getMaxPlayers()) {
+                return true;
+            }
+
+            return permissionCheck.apply("reformcloud.join.full");
         }).forEach(lobbies::remove);
 
         if (lobbies.isEmpty()) {
