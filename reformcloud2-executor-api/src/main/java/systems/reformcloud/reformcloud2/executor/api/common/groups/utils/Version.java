@@ -136,20 +136,22 @@ public enum Version {
      * TorchSpigot Versions
      */
     TORCH_1_8_8("Torch 1.8.8", "1.8.8",
-            "https://archive.mcmirror.io/Torch/Torch-1.8.8-R0.1.3-RC4.jar"),
+            "https://dl.reformcloud.systems/mcversions/torch/Torch-1.8.8.jar", 1),
     TORCH_1_9_4("Torch 1.9.4", "1.9.4",
-            "https://archive.mcmirror.io/Torch/Torch-1.9.4-R2.0-Light-RELEASE.jar"), // Will be changed later.
+            "https://dl.reformcloud.systems/mcversions/torch/Torch-1.9.4.jar", 1),
     TORCH_1_11_2("Torch 1.11.2", "1.11.2",
-            "https://archive.mcmirror.io/Torch/Torchpowered-latest.jar"),
+            "https://dl.reformcloud.systems/mcversions/torch/Torch-1.11.2.jar", 1),
     /**
      * Hose Versions
      */
     HOSE_1_8_8("Hose 1.8.8", "1.8.8",
-            "https://archive.mcmirror.io/HOSE/hose-1.8.8.jar"),
+            "https://dl.reformcloud.systems/mcversions/hose/hose-1.8.8.jar", 1),
     HOSE_1_9_4("Hose 1.9.4", "1.9.4",
-            "https://archive.mcmirror.io/HOSE/hose-1.9.4.jar"), // Will be changeed later.
+            "https://dl.reformcloud.systems/mcversions/hose/hose-1.9.4.jar", 1),
     HOSE_1_10_2("Hose 1.10.2", "1.10.2",
-            "https://archive.mcmirror.io/HOSE/hose-1.10.2.jar"),
+            "https://dl.reformcloud.systems/mcversions/hose/hose-1.10.2.jar", 1),
+    HOSE_1_11_2("Hose 1.11.2", "1.11.2",
+            "https://dl.reformcloud.systems/mcversions/hose/hose-1.11.2.jar", 1),
     /**
      * Akarin Versions
      */
