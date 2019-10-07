@@ -13,6 +13,7 @@ import systems.reformcloud.reformcloud2.executor.api.bungee.event.PlayerListener
 import systems.reformcloud.reformcloud2.executor.api.bungee.event.ProcessEventHandler;
 import systems.reformcloud.reformcloud2.executor.api.bungee.plugins.PluginExecutorContainer;
 import systems.reformcloud.reformcloud2.executor.api.bungee.plugins.PluginUpdater;
+import systems.reformcloud.reformcloud2.executor.api.bungee.reconnect.ReformCloudReconnectHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.basic.ExternalEventBusHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.ProcessUpdatedEvent;
@@ -100,6 +101,7 @@ public final class BungeeExecutor extends API implements PlayerAPIExecutor {
                 ), networkChannelReader
         );
         ExecutorAPI.setInstance(this);
+        ProxyServer.getInstance().setReconnectHandler(new ReformCloudReconnectHandler());
         awaitConnectionAndUpdate();
     }
 
@@ -141,7 +143,6 @@ public final class BungeeExecutor extends API implements PlayerAPIExecutor {
             AbsoluteThread.sleep(100);
 
             getAllProcesses().forEach(BungeeExecutor::registerServer);
-            ProxyServer.getInstance().getReconnectHandler().close();
             ProxyServer.getInstance().getPluginManager().registerListener(plugin, new PlayerListenerHandler());
             ProxyServer.getInstance().getPluginManager().registerListener(plugin, new ExtraListenerHandler());
             new PluginUpdater();
