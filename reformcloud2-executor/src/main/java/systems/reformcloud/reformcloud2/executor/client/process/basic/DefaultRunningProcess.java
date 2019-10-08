@@ -152,14 +152,14 @@ public final class DefaultRunningProcess implements RunningProcess {
 
         AbsoluteThread.sleep(TimeUnit.MILLISECONDS, 100);
 
-        process.destroyForcibly().destroy();
-
         if (running()) {
-            process.destroyForcibly().destroy();
-        }
-
-        if (running()) {
-            process.destroyForcibly().destroy();
+            try {
+                if (!this.process.waitFor(7, TimeUnit.SECONDS)) {
+                    this.process.destroyForcibly();
+                }
+            } catch (final InterruptedException ex) {
+                this.process.destroyForcibly();
+            }
         }
 
         ClientExecutor.getInstance().getProcessManager().unregisterProcess(processInformation.getName());

@@ -3,6 +3,7 @@ package systems.reformcloud.reformcloud2.executor;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorType;
 import systems.reformcloud.reformcloud2.executor.client.ClientLauncher;
 import systems.reformcloud.reformcloud2.executor.controller.ControllerLauncher;
+import systems.reformcloud.reformcloud2.executor.node.NodeLauncher;
 
 public final class ExecutorChooser {
 
@@ -15,10 +16,17 @@ public final class ExecutorChooser {
         switch (executor) {
             case CONTROLLER: {
                 ControllerLauncher.main(args);
+                break;
             }
 
             case CLIENT: {
                 ClientLauncher.main(args);
+                break;
+            }
+
+            case NODE: {
+                NodeLauncher.main(args);
+                break;
             }
         }
     }

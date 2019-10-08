@@ -14,13 +14,14 @@ public final class ProcessInformation implements Nameable {
 
     public static final TypeToken<ProcessInformation> TYPE = new TypeToken<ProcessInformation>() {};
 
-    public ProcessInformation(String processName, String parent, UUID processUniqueID, int id,
+    public ProcessInformation(String processName, String parent, UUID nodeUniqueID, UUID processUniqueID, int id,
                               ProcessState processState, NetworkInfo networkInfo,
                               ProcessGroup processGroup, Template template,
                               ProcessRuntimeInformation processRuntimeInformation,
                               List<DefaultPlugin> plugins, JsonConfiguration extra, int maxPlayers) {
         this.processName = processName;
         this.parent = parent;
+        this.nodeUniqueID = nodeUniqueID;
         this.processUniqueID = processUniqueID;
         this.id = id;
         this.processState = processState;
@@ -36,6 +37,8 @@ public final class ProcessInformation implements Nameable {
     private String processName;
 
     private String parent;
+
+    private UUID nodeUniqueID;
 
     private UUID processUniqueID;
 
@@ -63,6 +66,10 @@ public final class ProcessInformation implements Nameable {
 
     public String getParent() {
         return parent;
+    }
+
+    public UUID getNodeUniqueID() {
+        return nodeUniqueID;
     }
 
     public UUID getProcessUniqueID() {

@@ -9,6 +9,8 @@ public enum ExecutorType {
 
     CLIENT(2, true),
 
+    NODE(4, true),
+
     API(3, true),
 
     UNKNOWN(-1, false);

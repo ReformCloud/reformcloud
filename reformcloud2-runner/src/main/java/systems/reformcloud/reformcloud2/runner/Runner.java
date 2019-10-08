@@ -33,9 +33,9 @@ public final class Runner {
         );
     }
 
-    private static final Predicate<String> CONTROLLER_UNPACK_TEST = s -> s != null && (s.equalsIgnoreCase("controller") || s.equalsIgnoreCase("client"));
+    private static final Predicate<String> CONTROLLER_UNPACK_TEST = s -> s != null && (s.equalsIgnoreCase("controller") || s.equalsIgnoreCase("client") || s.equalsIgnoreCase("node"));
 
-    private static final Runnable CHOOSE_INSTALL_MESSAGE = () -> System.out.println("Please choose an executor: [\"controller\", \"client\"]");
+    private static final Runnable CHOOSE_INSTALL_MESSAGE = () -> System.out.println("Please choose an executor: [\"controller\", \"client\", \"node\"]");
 
     /* ================================== */
 
@@ -72,6 +72,12 @@ public final class Runner {
 
                         case "2": {
                             createInvoke("2");
+                            invoke.invoke(null, (Object) args);
+                            break;
+                        }
+
+                        case "4": {
+                            createInvoke("4");
                             invoke.invoke(null, (Object) args);
                             break;
                         }
@@ -126,10 +132,13 @@ public final class Runner {
             return;
         }
 
-        if (shouldUnpackController()) {
+        int type = getType();
+        if (type == 1) {
             andThen.accept(write(properties, "1"), "1");
-        } else {
+        } else if (type == 2) {
             andThen.accept(write(properties, "2"), "2");
+        } else {
+            andThen.accept(write(properties, "4"), "4");
         }
     }
 
@@ -153,7 +162,7 @@ public final class Runner {
         return version;
     }
 
-    private static boolean shouldUnpackController() {
+    private static int getType() {
         CHOOSE_INSTALL_MESSAGE.run();
 
         Console console = System.console();
@@ -163,7 +172,7 @@ public final class Runner {
             s = console.readLine();
         }
 
-        return s.equalsIgnoreCase("controller");
+        return s.equalsIgnoreCase("controller") ? 1 : s.equalsIgnoreCase("node") ? 4 :  2;
     }
 
     private static void unpackExecutor() {

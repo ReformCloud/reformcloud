@@ -43,6 +43,10 @@ public final class DefaultChannelManager implements ChannelManager {
 
     @Override
     public ReferencedOptional<PacketSender> get(String name) {
+        if (name == null) {
+            return ReferencedOptional.empty();
+        }
+
         return Links.filterToReference(senders, packetSender -> packetSender.getName().equals(name));
     }
 
