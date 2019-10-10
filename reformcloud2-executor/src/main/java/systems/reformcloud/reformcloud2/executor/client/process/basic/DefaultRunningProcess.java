@@ -35,6 +35,8 @@ import java.util.function.UnaryOperator;
 
 public final class DefaultRunningProcess implements RunningProcess {
 
+    private static final String LIB_PATH = new File(".").getAbsolutePath();
+
     public DefaultRunningProcess(ProcessInformation processInformation) {
         this.processInformation = processInformation;
     }
@@ -76,14 +78,6 @@ public final class DefaultRunningProcess implements RunningProcess {
 
         SystemHelper.doCopy("reformcloud/files/runner.jar", path + "/runner.jar");
 
-        String motd;
-        if (processInformation.getTemplate().getMotd() == null) {
-            motd = "A ReformCloud2 Process";
-        } else {
-            motd = processInformation.getTemplate().getMotd();
-        }
-
-        processInformation.setMotd(motd);
         new JsonConfiguration()
                 .add("controller-host", ClientExecutor.getInstance().getClientExecutorConfig().getClientConnectionConfig().getHost())
                 .add("controller-port", ClientExecutor.getInstance().getClientExecutorConfig().getClientConnectionConfig().getPort())
@@ -116,7 +110,13 @@ public final class DefaultRunningProcess implements RunningProcess {
                 "-Dcom.mojang.eula.agree=true",
                 "-DIReallyKnowWhatIAmDoingISwear=true",
                 "-Djline.terminal=jline.UnsupportedTerminal",
+
                 "-Dreformcloud.executor.type=3",
+                "-Dreformcloud.lib.path=" + LIB_PATH,
+                "-Dreformcloud.process.path=" + new File("reformcloud/files/" + Version.format(
+                        this.processInformation.getTemplate().getVersion()
+                )).getAbsolutePath(),
+
                 "-Xmx" + processInformation.getTemplate().getRuntimeConfiguration().getMaxMemory() + "M"
         ));
 
@@ -401,8 +401,6 @@ public final class DefaultRunningProcess implements RunningProcess {
             if (!Files.exists(Paths.get("reformcloud/files/" + Version.format(version)))) {
                 Version.downloadVersion(version);
             }
-
-            SystemHelper.doCopy("reformcloud/files/" + Version.format(version), path + "/process.jar");
         } else if (isLogicallySpongeForge()) {
             Version version = processInformation.getTemplate().getVersion();
             if (!Files.exists(Paths.get("reformcloud/files/" + version.getName() + ".zip"))) {
@@ -450,8 +448,6 @@ public final class DefaultRunningProcess implements RunningProcess {
             if (!Files.exists(Paths.get("reformcloud/files/" + Version.format(version)))) {
                 Version.downloadVersion(version);
             }
-
-            SystemHelper.doCopy("reformcloud/files/" + Version.format(version), path + "/process.jar");
         }
     }
 
@@ -469,7 +465,6 @@ public final class DefaultRunningProcess implements RunningProcess {
             }
         }
 
-        SystemHelper.copyDirectory(Paths.get("reformcloud/.bin/libs"), path + "/reformcloud/.bin/libs");
         SystemHelper.createDirectory(Paths.get(path + "/plugins"));
         SystemHelper.createDirectory(Paths.get(path + "/reformcloud/.connection"));
         SystemHelper.doCopy("reformcloud/files/.connection/connection.json", path + "/reformcloud/.connection/key.json");

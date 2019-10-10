@@ -176,7 +176,7 @@ public final class DefaultProcessManager implements ProcessManager {
             });
 
             if (bestTemplate.get() == null) {
-                bestTemplate.set(new Template(0, "default", "#", null, "§8A ReformCloud2 default Process", new RuntimeConfiguration(
+                bestTemplate.set(new Template(0, "default", "#", null, new RuntimeConfiguration(
                         512, new ArrayList<>(), new HashMap<>()
                 ), Version.PAPER_1_8_8));
 
@@ -208,6 +208,7 @@ public final class DefaultProcessManager implements ProcessManager {
         ProcessInformation processInformation = new ProcessInformation(
                 stringBuilder.substring(0),
                 client.getName(),
+                null,
                 UUID.randomUUID(),
                 id,
                 ProcessState.PREPARED,

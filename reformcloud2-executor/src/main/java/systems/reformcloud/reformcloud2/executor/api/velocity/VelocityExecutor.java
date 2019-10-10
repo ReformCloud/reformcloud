@@ -15,6 +15,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.event.handler.Listen
 import systems.reformcloud.reformcloud2.executor.api.common.groups.messages.IngameMessages;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.PlayerAccessConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.Version;
+import systems.reformcloud.reformcloud2.executor.api.common.network.auth.NetworkType;
 import systems.reformcloud.reformcloud2.executor.api.common.network.auth.defaults.DefaultAuth;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
@@ -32,7 +33,6 @@ import systems.reformcloud.reformcloud2.executor.api.packets.in.APIPacketInAPIAc
 import systems.reformcloud.reformcloud2.executor.api.packets.in.APIPacketInPluginAction;
 import systems.reformcloud.reformcloud2.executor.api.packets.out.APIBungeePacketOutRequestIngameMessages;
 import systems.reformcloud.reformcloud2.executor.api.velocity.commands.CommandLeave;
-import systems.reformcloud.reformcloud2.executor.api.velocity.event.ExtraListenerHandler;
 import systems.reformcloud.reformcloud2.executor.api.velocity.event.PlayerListenerHandler;
 import systems.reformcloud.reformcloud2.executor.api.velocity.event.ProcessEventHandler;
 import systems.reformcloud.reformcloud2.executor.api.velocity.plugins.PluginExecutorContainer;
@@ -72,7 +72,6 @@ public final class VelocityExecutor extends API implements PlayerAPIExecutor {
         getEventManager().registerListener(new ProcessEventHandler());
         getEventManager().registerListener(this);
         proxyServer.getEventManager().register(launcher, new PlayerListenerHandler());
-        proxyServer.getEventManager().register(launcher, new ExtraListenerHandler());
 
         packetHandler.registerHandler(new APIPacketInAPIAction(this));
         packetHandler.registerHandler(new APIPacketInPluginAction(new PluginExecutorContainer()));
@@ -89,7 +88,7 @@ public final class VelocityExecutor extends API implements PlayerAPIExecutor {
                 new DefaultAuth(
                         connectionKey,
                         startInfo.getParent(),
-                        false,
+                        NetworkType.PROCESS,
                         startInfo.getName(),
                         new JsonConfiguration()
                 ), networkChannelReader

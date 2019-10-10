@@ -186,7 +186,6 @@ public final class Runner {
 
     private static void unpackExecutorAsPlugin() {
         try (InputStream inputStream = Runner.class.getClassLoader().getResourceAsStream("files/executor.jar")) {
-            Files.createDirectories(Paths.get("reformcloud/.bin/libs"));
             Files.copy(Objects.requireNonNull(inputStream), Paths.get("plugins/executor.jar"), StandardCopyOption.REPLACE_EXISTING);
         } catch (final Exception ex) {
             ex.printStackTrace();
@@ -212,10 +211,11 @@ public final class Runner {
     /* ================== */
 
     private static void runIfProcessExists(Consumer<Path> consumer) {
-        if (!Files.exists(Paths.get("process.jar"))) {
+        String fileName = System.getProperty("reformcloud.process.path");
+        if (fileName == null || !Files.exists(Paths.get(fileName))) {
             throw new RuntimeException("Cannot find process jar to execute");
         }
 
-        consumer.accept(Paths.get("process.jar"));
+        consumer.accept(Paths.get(fileName));
     }
 }

@@ -446,7 +446,6 @@ public final class CommandReformCloud extends GlobalCommand {
                                             "default",
                                             "#",
                                             null,
-                                            "A ReformCloud2 default process",
                                             new RuntimeConfiguration(
                                                     512,
                                                     new ArrayList<>(),
@@ -478,7 +477,6 @@ public final class CommandReformCloud extends GlobalCommand {
                                             "default",
                                             "#",
                                             null,
-                                            "A ReformCloud2 default process",
                                             new RuntimeConfiguration(
                                                     512,
                                                     new ArrayList<>(),
@@ -516,7 +514,6 @@ public final class CommandReformCloud extends GlobalCommand {
                                             "default",
                                             "#",
                                             null,
-                                            "A ReformCloud2 default process",
                                             new RuntimeConfiguration(
                                                     512,
                                                     new ArrayList<>(),
@@ -614,7 +611,6 @@ public final class CommandReformCloud extends GlobalCommand {
                                             "default",
                                             "#",
                                             null,
-                                            "A ReformCloud2 default process",
                                             new RuntimeConfiguration(
                                                     512,
                                                     new ArrayList<>(),

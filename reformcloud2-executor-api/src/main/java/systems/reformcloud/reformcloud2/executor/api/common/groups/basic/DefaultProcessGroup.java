@@ -30,7 +30,6 @@ public final class DefaultProcessGroup extends ProcessGroup {
                         "default",
                         "#",
                         null,
-                        "§8A ReformCloud2 default process",
                         new RuntimeConfiguration(
                                 maxMemory,
                                 Collections.emptyList(),

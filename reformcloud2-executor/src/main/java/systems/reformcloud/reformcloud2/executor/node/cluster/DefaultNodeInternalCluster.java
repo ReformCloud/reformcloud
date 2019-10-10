@@ -32,6 +32,11 @@ public class DefaultNodeInternalCluster implements InternalNetworkCluster {
     private NodeInformation self;
 
     @Override
+    public ClusterManager getClusterManager() {
+        return clusterManager;
+    }
+
+    @Override
     public NodeInformation getHeadNode() {
         return clusterManager.getHeadNode();
     }

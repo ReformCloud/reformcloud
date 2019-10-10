@@ -6,6 +6,7 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public final class Links {
 
@@ -94,6 +95,10 @@ public final class Links {
         map.keySet().forEach(f -> out.add(fxFunction.apply(f)));
 
         return out;
+    }
+
+    public static <F, T> List<F> keyFilter(Map<F, T> map, Predicate<F> predicate) {
+        return map.keySet().stream().filter(predicate).collect(Collectors.toList());
     }
 
     @SafeVarargs

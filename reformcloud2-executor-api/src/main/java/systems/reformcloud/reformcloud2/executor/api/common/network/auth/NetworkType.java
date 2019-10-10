@@ -4,5 +4,7 @@ public enum NetworkType {
 
     PROCESS,
 
-    CLIENT
+    CLIENT,
+
+    NODE
 }

@@ -14,6 +14,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonCo
 import systems.reformcloud.reformcloud2.executor.api.common.event.EventManager;
 import systems.reformcloud.reformcloud2.executor.api.common.event.basic.DefaultEventManager;
 import systems.reformcloud.reformcloud2.executor.api.common.event.handler.Listener;
+import systems.reformcloud.reformcloud2.executor.api.common.network.auth.NetworkType;
 import systems.reformcloud.reformcloud2.executor.api.common.network.auth.defaults.DefaultAuth;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
@@ -70,7 +71,7 @@ public final class SpigotExecutor extends API implements PlayerAPIExecutor {
                 new DefaultAuth(
                         connectionKey,
                         startInfo.getParent(),
-                        false,
+                        NetworkType.PROCESS,
                         startInfo.getName(),
                         new JsonConfiguration()
                 ), networkChannelReader
@@ -123,50 +124,7 @@ public final class SpigotExecutor extends API implements PlayerAPIExecutor {
             thisProcessInformation.updateMaxPlayers(Bukkit.getMaxPlayers());
             thisProcessInformation.updateRuntimeInformation();
             ExecutorAPI.getInstance().update(thisProcessInformation);
-            startSimulatePing();
         });
-    }
-
-    private void startSimulatePing() {
-        if (thisProcessInformation.getMotd() == null) {
-            return;
-        }
-
-        Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, () -> {
-            try {
-                ServerListPingEvent serverListPingEvent = new ServerListPingEvent(
-                        new InetSocketAddress("127.0.0.1", 50000).getAddress(),
-                        ChatColor.translateAlternateColorCodes('&', thisProcessInformation.getMotd()),
-                        Bukkit.getOnlinePlayers().size(),
-                        thisProcessInformation.getMaxPlayers()
-                );
-                Bukkit.getPluginManager().callEvent(serverListPingEvent);
-
-                boolean hasChanges = false;
-                if (!serverListPingEvent.getMotd().equals(ChatColor.translateAlternateColorCodes('&', thisProcessInformation.getMotd()))) {
-                    thisProcessInformation.setMotd(serverListPingEvent.getMotd());
-                    hasChanges = true;
-                }
-
-                if (serverListPingEvent.getMaxPlayers() != thisProcessInformation.getMaxPlayers()) {
-                    thisProcessInformation.updateMaxPlayers(serverListPingEvent.getMaxPlayers());
-                    hasChanges = true;
-                }
-
-                if (!thisProcessInformation.getProcessState().equals(ProcessState.INVISIBLE)
-                        && (serverListPingEvent.getMotd().toLowerCase().contains("hide")
-                        || serverListPingEvent.getMotd().toLowerCase().contains("invisible"))) {
-                    thisProcessInformation.setProcessState(ProcessState.INVISIBLE);
-                    hasChanges = true;
-                }
-
-                if (hasChanges) {
-                    thisProcessInformation.updateRuntimeInformation();
-                    ExecutorAPI.getInstance().update(thisProcessInformation);
-                }
-            } catch (final Throwable ignored) {
-            }
-        }, 0, 20);
     }
 
     public void setThisProcessInformation(ProcessInformation thisProcessInformation) {

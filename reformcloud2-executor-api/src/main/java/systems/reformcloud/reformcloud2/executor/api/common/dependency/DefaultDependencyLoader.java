@@ -7,12 +7,16 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
 public final class DefaultDependencyLoader extends DependencyLoader {
+
+    private static final String path = System.getProperty("reformcloud.lib.path");
 
     static {
         Properties properties = new Properties();
@@ -69,13 +73,20 @@ public final class DefaultDependencyLoader extends DependencyLoader {
 
     @Override
     public URL loadDependency(Dependency dependency) {
+        Path path;
+        if (DefaultDependencyLoader.path != null) {
+            path = Paths.get(DefaultDependencyLoader.path + "/" + dependency.getPath());
+        } else {
+            path = dependency.getPath();
+        }
+
         try {
             dependency.prepareIfUpdate();
-            if (Files.exists(dependency.getPath())) {
-                return dependency.getPath().toUri().toURL();
+            if (Files.exists(path)) {
+                return path.toUri().toURL();
             } else {
                 dependency.download();
-                return dependency.getPath().toUri().toURL();
+                return path.toUri().toURL();
             }
         } catch (final MalformedURLException ex) {
             ex.printStackTrace();

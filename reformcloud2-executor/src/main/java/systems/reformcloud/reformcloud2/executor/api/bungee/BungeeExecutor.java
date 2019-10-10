@@ -8,7 +8,6 @@ import net.md_5.bungee.api.plugin.Plugin;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorType;
 import systems.reformcloud.reformcloud2.executor.api.api.API;
 import systems.reformcloud.reformcloud2.executor.api.bungee.commands.CommandLeave;
-import systems.reformcloud.reformcloud2.executor.api.bungee.event.ExtraListenerHandler;
 import systems.reformcloud.reformcloud2.executor.api.bungee.event.PlayerListenerHandler;
 import systems.reformcloud.reformcloud2.executor.api.bungee.event.ProcessEventHandler;
 import systems.reformcloud.reformcloud2.executor.api.bungee.plugins.PluginExecutorContainer;
@@ -24,6 +23,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.event.handler.Listen
 import systems.reformcloud.reformcloud2.executor.api.common.groups.messages.IngameMessages;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.PlayerAccessConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.Version;
+import systems.reformcloud.reformcloud2.executor.api.common.network.auth.NetworkType;
 import systems.reformcloud.reformcloud2.executor.api.common.network.auth.defaults.DefaultAuth;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
@@ -95,7 +95,7 @@ public final class BungeeExecutor extends API implements PlayerAPIExecutor {
                 new DefaultAuth(
                         connectionKey,
                         thisProcessInformation.getParent(),
-                        false,
+                        NetworkType.PROCESS,
                         thisProcessInformation.getName(),
                         new JsonConfiguration()
                 ), networkChannelReader
@@ -144,7 +144,6 @@ public final class BungeeExecutor extends API implements PlayerAPIExecutor {
 
             getAllProcesses().forEach(BungeeExecutor::registerServer);
             ProxyServer.getInstance().getPluginManager().registerListener(plugin, new PlayerListenerHandler());
-            ProxyServer.getInstance().getPluginManager().registerListener(plugin, new ExtraListenerHandler());
             new PluginUpdater();
 
             thisProcessInformation.updateMaxPlayers(ProxyServer.getInstance().getConfig().getPlayerLimit());

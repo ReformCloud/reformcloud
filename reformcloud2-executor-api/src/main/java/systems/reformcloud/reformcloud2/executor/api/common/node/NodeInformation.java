@@ -1,12 +1,14 @@
 package systems.reformcloud.reformcloud2.executor.api.common.node;
 
-import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
+import com.google.gson.reflect.TypeToken;
 
 import java.util.Collection;
 import java.util.Map;
 import java.util.UUID;
 
 public class NodeInformation {
+
+    public static final TypeToken<NodeInformation> TYPE = new TypeToken<NodeInformation>() {};
 
     private String name;
 

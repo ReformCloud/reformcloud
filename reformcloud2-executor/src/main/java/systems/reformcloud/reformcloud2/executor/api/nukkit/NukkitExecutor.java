@@ -13,6 +13,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonCo
 import systems.reformcloud.reformcloud2.executor.api.common.event.EventManager;
 import systems.reformcloud.reformcloud2.executor.api.common.event.basic.DefaultEventManager;
 import systems.reformcloud.reformcloud2.executor.api.common.event.handler.Listener;
+import systems.reformcloud.reformcloud2.executor.api.common.network.auth.NetworkType;
 import systems.reformcloud.reformcloud2.executor.api.common.network.auth.defaults.DefaultAuth;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
@@ -68,7 +69,7 @@ public final class NukkitExecutor extends API implements PlayerAPIExecutor {
                 new DefaultAuth(
                         connectionKey,
                         startInfo.getParent(),
-                        false,
+                        NetworkType.PROCESS,
                         startInfo.getName(),
                         new JsonConfiguration()
                 ), networkChannelReader

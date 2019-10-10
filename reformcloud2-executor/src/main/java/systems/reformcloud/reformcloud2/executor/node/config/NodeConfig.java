@@ -1,11 +1,11 @@
 package systems.reformcloud.reformcloud2.executor.node.config;
 
 import com.google.gson.reflect.TypeToken;
+import systems.reformcloud.reformcloud2.executor.api.common.node.NodeInformation;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class NodeConfig {
 
@@ -13,21 +13,38 @@ public class NodeConfig {
 
     static final Path PATH = Paths.get("reformcloud/config.json");
 
-    NodeConfig(int maxProcesses, List<Map<String, Integer>> networkListener,
-                     List<Map<String, Integer>> httpNetworkListener) {
-        this.maxProcesses = maxProcesses;
+    NodeConfig(long maxMemory, List<Map<String, Integer>> networkListener,
+                      List<Map<String, Integer>> httpNetworkListener, List<Map<String, Integer>> otherNodes) {
+        this.name = "Node-" + UUID.randomUUID().toString().split("-")[0];
+        this.uniqueID = UUID.randomUUID();
+        this.maxMemory = maxMemory;
         this.networkListener = networkListener;
         this.httpNetworkListener = httpNetworkListener;
+        this.otherNodes = otherNodes;
     }
 
-    private int maxProcesses;
+    private String name;
+
+    private UUID uniqueID;
+
+    private long maxMemory;
 
     private List<Map<String, Integer>> networkListener;
 
     private List<Map<String, Integer>> httpNetworkListener;
 
-    public int getMaxProcesses() {
-        return maxProcesses;
+    private List<Map<String, Integer>> otherNodes;
+
+    public String getName() {
+        return name;
+    }
+
+    public UUID getUniqueID() {
+        return uniqueID;
+    }
+
+    public long getMaxMemory() {
+        return maxMemory;
     }
 
     public List<Map<String, Integer>> getNetworkListener() {
@@ -36,5 +53,22 @@ public class NodeConfig {
 
     public List<Map<String, Integer>> getHttpNetworkListener() {
         return httpNetworkListener;
+    }
+
+    public List<Map<String, Integer>> getOtherNodes() {
+        return otherNodes;
+    }
+
+    NodeInformation prepare() {
+        return new NodeInformation(
+                name,
+                uniqueID,
+                System.currentTimeMillis(),
+                new ArrayList<>(),
+                0L,
+                maxMemory,
+                new ArrayList<>(),
+                new HashMap<>()
+        );
     }
 }

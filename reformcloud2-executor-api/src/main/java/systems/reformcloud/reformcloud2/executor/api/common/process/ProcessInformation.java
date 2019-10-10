@@ -46,9 +46,7 @@ public final class ProcessInformation implements Nameable {
 
     private int maxPlayers;
 
-    private String motd = "A ReformCloud2 server";
-
-    private SortedSet<Player> onlinePlayers = new TreeSet<>((o1, o2) -> Long.compare(o1.getJoined(), o2.getJoined()));
+    private SortedSet<Player> onlinePlayers = new TreeSet<>(Comparator.comparingLong(Player::getJoined));
 
     private ProcessState processState;
 
@@ -78,10 +76,6 @@ public final class ProcessInformation implements Nameable {
 
     public int getId() {
         return id;
-    }
-
-    public String getMotd() {
-        return motd;
     }
 
     public int getMaxPlayers() {
@@ -131,10 +125,6 @@ public final class ProcessInformation implements Nameable {
 
     public void setProcessState(ProcessState processState) {
         this.processState = processState;
-    }
-
-    public void setMotd(String motd) {
-        this.motd = motd;
     }
 
     public void setProcessGroup(ProcessGroup processGroup) {

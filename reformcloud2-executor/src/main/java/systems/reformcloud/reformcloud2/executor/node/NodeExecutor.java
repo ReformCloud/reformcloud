@@ -1,47 +1,84 @@
 package systems.reformcloud.reformcloud2.executor.node;
 
+import io.netty.channel.ChannelHandlerContext;
+import systems.reformcloud.reformcloud2.executor.api.ExecutorType;
+import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.application.ApplicationLoader;
 import systems.reformcloud.reformcloud2.executor.api.common.application.InstallableApplication;
 import systems.reformcloud.reformcloud2.executor.api.common.application.LoadedApplication;
 import systems.reformcloud.reformcloud2.executor.api.common.application.basic.DefaultApplicationLoader;
 import systems.reformcloud.reformcloud2.executor.api.common.client.ClientRuntimeInformation;
+import systems.reformcloud.reformcloud2.executor.api.common.commands.AllowedCommandSources;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.Command;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.ConsoleCommandSource;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.manager.DefaultCommandManager;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.manager.CommandManager;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.source.CommandSource;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.common.database.Database;
+import systems.reformcloud.reformcloud2.executor.api.common.database.basic.drivers.file.FileDatabase;
+import systems.reformcloud.reformcloud2.executor.api.common.database.basic.drivers.mongo.MongoDatabase;
+import systems.reformcloud.reformcloud2.executor.api.common.database.basic.drivers.mysql.MySQLDatabase;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.MainGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.PlayerAccessConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.StartupConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.Template;
+import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.LoggerBase;
-import systems.reformcloud.reformcloud2.executor.api.common.network.client.DefaultNetworkClient;
+import systems.reformcloud.reformcloud2.executor.api.common.logger.coloured.ColouredLoggerHandler;
+import systems.reformcloud.reformcloud2.executor.api.common.logger.other.DefaultLoggerHandler;
+import systems.reformcloud.reformcloud2.executor.api.common.network.auth.Auth;
+import systems.reformcloud.reformcloud2.executor.api.common.network.auth.NetworkType;
+import systems.reformcloud.reformcloud2.executor.api.common.network.auth.defaults.DefaultAuth;
+import systems.reformcloud.reformcloud2.executor.api.common.network.auth.defaults.DefaultServerAuthHandler;
+import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
+import systems.reformcloud.reformcloud2.executor.api.common.network.channel.defaults.DefaultPacketSender;
 import systems.reformcloud.reformcloud2.executor.api.common.network.client.NetworkClient;
+import systems.reformcloud.reformcloud2.executor.api.common.network.packet.DefaultPacket;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.defaults.DefaultPacketHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.handler.PacketHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.server.DefaultNetworkServer;
 import systems.reformcloud.reformcloud2.executor.api.common.network.server.NetworkServer;
+import systems.reformcloud.reformcloud2.executor.api.common.node.NodeInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.plugins.InstallablePlugin;
 import systems.reformcloud.reformcloud2.executor.api.common.plugins.Plugin;
 import systems.reformcloud.reformcloud2.executor.api.common.plugins.basic.DefaultPlugin;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
+import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState;
+import systems.reformcloud.reformcloud2.executor.api.common.restapi.auth.basic.DefaultWebServerAuth;
 import systems.reformcloud.reformcloud2.executor.api.common.restapi.http.server.DefaultWebServer;
 import systems.reformcloud.reformcloud2.executor.api.common.restapi.http.server.WebServer;
+import systems.reformcloud.reformcloud2.executor.api.common.restapi.request.RequestListenerHandler;
+import systems.reformcloud.reformcloud2.executor.api.common.restapi.request.defaults.DefaultRequestListenerHandler;
+import systems.reformcloud.reformcloud2.executor.api.common.restapi.user.WebUser;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.StringUtil;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.function.Double;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 import systems.reformcloud.reformcloud2.executor.api.node.Node;
+import systems.reformcloud.reformcloud2.executor.api.node.cluster.ClusterSyncManager;
 import systems.reformcloud.reformcloud2.executor.api.node.network.NodeNetworkManager;
 import systems.reformcloud.reformcloud2.executor.api.node.process.NodeProcessManager;
 import systems.reformcloud.reformcloud2.executor.node.cluster.DefaultClusterManager;
 import systems.reformcloud.reformcloud2.executor.node.cluster.DefaultNodeInternalCluster;
+import systems.reformcloud.reformcloud2.executor.node.cluster.sync.DefaultClusterSyncManager;
+import systems.reformcloud.reformcloud2.executor.node.config.DatabaseConfig;
+import systems.reformcloud.reformcloud2.executor.node.config.NodeConfig;
 import systems.reformcloud.reformcloud2.executor.node.config.NodeExecutorConfig;
 import systems.reformcloud.reformcloud2.executor.node.network.DefaultNodeNetworkManager;
+import systems.reformcloud.reformcloud2.executor.node.network.client.NodeNetworkClient;
+import systems.reformcloud.reformcloud2.executor.node.process.LocalAutoStartupHandler;
 import systems.reformcloud.reformcloud2.executor.node.process.LocalNodeProcessManager;
 
+import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class NodeExecutor extends Node {
@@ -49,8 +86,6 @@ public class NodeExecutor extends Node {
     private static NodeExecutor instance;
 
     private static volatile boolean running = false;
-
-    private LoggerBase loggerBase;
 
     private final CommandManager commandManager = new DefaultCommandManager();
 
@@ -60,8 +95,6 @@ public class NodeExecutor extends Node {
 
     private final NetworkServer networkServer = new DefaultNetworkServer();
 
-    private final NetworkClient networkClient = new DefaultNetworkClient();
-
     private final WebServer webServer = new DefaultWebServer();
 
     private final PacketHandler packetHandler = new DefaultPacketHandler();
@@ -70,27 +103,262 @@ public class NodeExecutor extends Node {
 
     private final NodeExecutorConfig nodeExecutorConfig = new NodeExecutorConfig();
 
+    private final DatabaseConfig databaseConfig = new DatabaseConfig();
+
+    private final LocalAutoStartupHandler localAutoStartupHandler = new LocalAutoStartupHandler();
+
+    private NetworkClient networkClient;
+
+    private NodeConfig nodeConfig;
+
+    private Database database;
+
     private NodeNetworkManager nodeNetworkManager;
+
+    private ClusterSyncManager clusterSyncManager;
+
+    private LoggerBase loggerBase;
+
+    private RequestListenerHandler requestListenerHandler;
 
     NodeExecutor() {
         Node.setInstance(this);
-        instance = this;
+        ExecutorAPI.setInstance(this);
+        super.type = ExecutorType.NODE;
+
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            try {
+                shutdown();
+            } catch (final Throwable throwable) {
+                throwable.printStackTrace();
+            }
+        }, "Shutdown-Hook"));
+
+        bootstrap();
     }
 
     @Override
     protected void bootstrap() {
+        final long current = System.currentTimeMillis();
+        instance = this;
+
+        try {
+            if (Boolean.getBoolean("reformcloud2.disable.colours")) {
+                this.loggerBase = new DefaultLoggerHandler();
+            } else {
+                this.loggerBase = new ColouredLoggerHandler();
+            }
+        } catch (final IOException ex) {
+            ex.printStackTrace();
+        }
+
         this.nodeExecutorConfig.init();
+        this.nodeConfig = this.nodeExecutorConfig.getNodeConfig();
+
         this.nodeNetworkManager = new DefaultNodeNetworkManager(
-                new LocalNodeProcessManager(),
-                new DefaultNodeInternalCluster(new DefaultClusterManager(
-                        nodeExecutorConfig.getClusterFirewall()), nodeExecutorConfig.getSelf(),packetHandler
-                )
+                nodeProcessManager,
+                new DefaultNodeInternalCluster(new DefaultClusterManager(), nodeExecutorConfig.getSelf(), packetHandler)
         );
+
+        this.requestListenerHandler = new DefaultRequestListenerHandler(new DefaultWebServerAuth(this));
+
+        final NodeNetworkClient nodeNetworkClient = new NodeNetworkClient();
+        this.networkClient = nodeNetworkClient;
+        this.clusterSyncManager = new DefaultClusterSyncManager(nodeNetworkClient);
+
+        this.applicationLoader.detectApplications();
+        this.applicationLoader.installApplications();
+
+        this.nodeConfig.getNetworkListener().forEach(e -> e.forEach((ip, port) -> {
+            this.networkServer.bind(ip, port, new DefaultServerAuthHandler(
+                    packetHandler,
+                    packetSender -> {
+                        this.nodeNetworkManager.getCluster().getClusterManager().handleNodeDisconnect(
+                                    this.nodeNetworkManager.getCluster(),
+                                    packetSender.getName()
+                        );
+                    },
+                    packet -> {
+                        DefaultAuth auth = packet.content().get("auth", Auth.TYPE);
+                        if (this.nodeExecutorConfig.getConnectionKey() == null || auth == null) {
+                            System.out.println(LanguageManager.get("network-channel-auth-failed", auth == null ? "unknown" : auth.getName()));
+                            return new Double<>(auth == null ? "unknown" : auth.getName(), false);
+                        }
+
+                        if (auth.type().equals(NetworkType.CLIENT)) {
+                            return new Double<>(auth.getName(), false);
+                        }
+
+                        AtomicReference<Double<String, Boolean>> result = new AtomicReference<>();
+                        if (auth.type().equals(NetworkType.NODE)) {
+                            NodeInformation nodeInformation = packet.content().get("info", NodeInformation.TYPE);
+                            if (nodeInformation == null) {
+                                return new Double<>(auth.getName(), false);
+                            }
+
+                            this.nodeNetworkManager.getCluster().getClusterManager().handleConnect(
+                                    this.nodeNetworkManager.getCluster(),
+                                    nodeInformation,
+                                    (aBoolean, s) -> result.set(new Double<>(nodeInformation.getName(), aBoolean))
+                            );
+                        } else if (auth.type().equals(NetworkType.PROCESS)) {
+                            ProcessInformation information = nodeNetworkManager.getNodeProcessHelper()
+                                    .getLocalCloudProcess(auth.getName());
+                            if (information == null) {
+                                return new Double<>(auth.getName(), false);
+                            }
+
+                            information.getNetworkInfo().setConnected(true);
+                            information.setProcessState(ProcessState.READY);
+                            nodeNetworkManager.getNodeProcessHelper().update(information);
+                            System.out.println(LanguageManager.get("process-connected", auth.getName(), auth.parent()));
+                        }
+
+                        System.out.println(LanguageManager.get("network-channel-auth-success", auth.getName(), auth.parent()));
+                        return result.get();
+                    }
+            ) {
+                @Override
+                public BiFunction<String, ChannelHandlerContext, PacketSender> onSuccess() {
+                    return (s, context) -> {
+                        context.channel().writeAndFlush(new DefaultPacket(-511, new JsonConfiguration().add("access", true)));
+                        PacketSender sender = new DefaultPacketSender(context.channel());
+                        sender.setName(s);
+                        clusterSyncManager.getWaitingConnections().remove(sender.getAddress());
+                        return sender;
+                    };
+                }
+
+                @Override
+                public Consumer<ChannelHandlerContext> onAuthFailure() {
+                    return context -> {
+                        String host = ((InetSocketAddress) context.channel().remoteAddress()).getAddress().getHostAddress();
+                        clusterSyncManager.getWaitingConnections().remove(host);
+                        context.channel().writeAndFlush(new DefaultPacket(-511, new JsonConfiguration().add("access", false))).syncUninterruptibly().channel().close();
+                    };
+                }
+            });
+        }));
+
+        this.nodeConfig.getHttpNetworkListener().forEach(map -> map.forEach((host, port) -> {
+                    this.webServer.add(host, port, this.requestListenerHandler);
+                })
+        );
+
+        this.applicationLoader.loadApplications();
+
+        databaseConfig.load();
+        switch (databaseConfig.getType()) {
+            case FILE: {
+                this.database = new FileDatabase();
+                this.databaseConfig.connect(this.database);
+                break;
+            }
+
+            case MONGO: {
+                this.database = new MongoDatabase();
+                this.databaseConfig.connect(this.database);
+                break;
+            }
+
+            case MYSQL: {
+                this.database = new MySQLDatabase();
+                this.databaseConfig.connect(this.database);
+                break;
+            }
+        }
+
+        createDatabase("internal_users");
+        if (this.nodeExecutorConfig.isFirstStartup()) {
+            final String token = StringUtil.generateString(2);
+            WebUser webUser = new WebUser("admin", token, Collections.singletonList("*"));
+            insert("internal_users", webUser.getName(), "", new JsonConfiguration().add("user", webUser));
+
+            System.out.println(LanguageManager.get("setup-created-default-user", webUser.getName(), token));
+        }
+
+        if (this.nodeConfig.getOtherNodes().isEmpty()) {
+            System.out.println(LanguageManager.get("network-node-no-other-nodes-defined"));
+        } else {
+            if (this.nodeExecutorConfig.getConnectionKey() == null) {
+                System.out.println(LanguageManager.get("network-node-try-connect-with-no-key"));
+            } else {
+                this.nodeConfig.getOtherNodes().forEach(e -> e.forEach((ip, port) -> {
+                    if (this.networkClient.connect(ip, port, new DefaultAuth(
+                            this.nodeExecutorConfig.getConnectionKey(),
+                            null,
+                            NetworkType.NODE,
+                            this.nodeNetworkManager.getCluster().getSelfNode().getName(),
+                            new JsonConfiguration().add("info", this.nodeNetworkManager.getCluster().getSelfNode())
+                    ), createReader(name -> {
+                        NodeInformation information = this.nodeNetworkManager.getCluster().getNode(name);
+                        if (information == null) {
+                            this.nodeNetworkManager.getNodeProcessHelper().handleProcessDisconnect(name);
+                        } else {
+                            this.nodeNetworkManager.getCluster().getClusterManager().handleNodeDisconnect(
+                                    this.nodeNetworkManager.getCluster(),
+                                    name
+                            );
+                        }
+                    }))) {
+                        System.out.println(LanguageManager.get(
+                                "network-node-connection-to-other-node-success", ip, Integer.toString(port)
+                        ));
+                        this.clusterSyncManager.getWaitingConnections().add(ip);
+                    } else {
+                        System.out.println(LanguageManager.get(
+                                "network-node-connection-to-other-node-not-successful", ip, Integer.toString(port)
+                        ));
+                    }
+                }));
+            }
+        }
+
+        this.localAutoStartupHandler.doStart();
+        this.applicationLoader.enableApplications();
+
+        running = true;
+        System.out.println(LanguageManager.get("startup-done", Long.toString(System.currentTimeMillis() - current)));
+        runConsole();
+    }
+
+    public static NodeExecutor getInstance() {
+        return instance;
+    }
+
+    public LoggerBase getLoggerBase() {
+        return loggerBase;
+    }
+
+    public NodeNetworkManager getNodeNetworkManager() {
+        return nodeNetworkManager;
+    }
+
+    public ClusterSyncManager getClusterSyncManager() {
+        return clusterSyncManager;
     }
 
     @Override
     public void shutdown() throws Exception {
 
+    }
+
+    private void runConsole() {
+        String line;
+
+        while (!Thread.currentThread().isInterrupted()) {
+            try {
+                loggerBase.getConsoleReader().setPrompt("");
+                loggerBase.getConsoleReader().resetPromptLine("", "", 0);
+
+                while ((line = loggerBase.readLine()) != null && !line.trim().isEmpty() && running) {
+                    loggerBase.getConsoleReader().setPrompt("");
+                    commandManager.dispatchCommand(console, AllowedCommandSources.ALL, line, System.out::println);
+                }
+            } catch (final Throwable throwable) {
+                throwable.printStackTrace();
+            }
+        }
     }
 
     @Override

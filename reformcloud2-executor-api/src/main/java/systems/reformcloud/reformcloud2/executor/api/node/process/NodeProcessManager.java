@@ -24,6 +24,8 @@ public interface NodeProcessManager extends Updateable<ProcessInformation>, Iter
 
     ProcessInformation queueProcess(ProcessGroup processGroup, Template template, JsonConfiguration data, NodeInformation node);
 
+    void handleProcessDisconnect(String name);
+
     boolean isLocal(String name);
 
     boolean isLocal(UUID uniqueID);

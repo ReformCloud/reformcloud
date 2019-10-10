@@ -14,7 +14,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.utility.function.Dou
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
-public final class DefaultServerAuthHandler implements ServerAuthHandler {
+public class DefaultServerAuthHandler implements ServerAuthHandler {
 
     public DefaultServerAuthHandler(PacketHandler packetHandler, Consumer<PacketSender> consumer, DoubleFunction<Packet, String, Boolean> authHandler) {
         this.authHandler = authHandler;

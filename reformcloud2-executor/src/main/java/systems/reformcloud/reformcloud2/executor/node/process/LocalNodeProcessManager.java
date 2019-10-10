@@ -4,9 +4,11 @@ import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonCo
 import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.Template;
 import systems.reformcloud.reformcloud2.executor.api.common.node.NodeInformation;
+import systems.reformcloud.reformcloud2.executor.api.common.node.NodeProcess;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links;
 import systems.reformcloud.reformcloud2.executor.api.node.process.NodeProcessManager;
+import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
 
 import java.util.*;
 
@@ -45,6 +47,17 @@ public class LocalNodeProcessManager implements NodeProcessManager {
     }
 
     @Override
+    public void handleProcessDisconnect(String name) {
+        ProcessInformation information = getLocalCloudProcess(name);
+        if (information == null) {
+            return;
+        }
+
+        this.information.remove(information);
+        removeProcess(information);
+    }
+
+    @Override
     public boolean isLocal(String name) {
         return Links.filterToReference(information, e -> e.getName().equals(name)).isPresent();
     }
@@ -67,5 +80,16 @@ public class LocalNodeProcessManager implements NodeProcessManager {
     @Override
     public void update(ProcessInformation processInformation) {
 
+    }
+
+    private void removeProcess(ProcessInformation information) {
+        NodeProcess nodeProcess = Links.filter(NodeExecutor.getInstance().getNodeNetworkManager()
+                .getCluster().getSelfNode().getStartedProcesses(), e -> e.getUniqueID().equals(information.getProcessUniqueID()));
+        if (nodeProcess == null) {
+            return;
+        }
+
+        NodeExecutor.getInstance().getNodeNetworkManager().getCluster().getSelfNode().getStartedProcesses().remove(nodeProcess);
+        NodeExecutor.getInstance().getClusterSyncManager().syncProcessStop(information);
     }
 }

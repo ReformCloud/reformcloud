@@ -45,8 +45,12 @@ public final class SystemHelper {
     }
 
     public static void doCopy(String from, String target) {
-        try {
-            Files.copy(Paths.get(from), Paths.get(target), StandardCopyOption.REPLACE_EXISTING);
+        try (FileInputStream fileInputStream = new FileInputStream(from); FileOutputStream fileOutputStream = new FileOutputStream(target)) {
+            byte[] buffer = new byte[1024];
+            int length;
+            while ((length = fileInputStream.read(buffer)) > 0) {
+                fileOutputStream.write(buffer, 0, length);
+            }
         } catch (final IOException ex) {
             ex.printStackTrace();
         }

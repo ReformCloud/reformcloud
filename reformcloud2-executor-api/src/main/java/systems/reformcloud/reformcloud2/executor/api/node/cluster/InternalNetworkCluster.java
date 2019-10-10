@@ -9,6 +9,8 @@ import java.util.function.Function;
 
 public interface InternalNetworkCluster {
 
+    ClusterManager getClusterManager();
+
     NodeInformation getHeadNode();
 
     NodeInformation getSelfNode();

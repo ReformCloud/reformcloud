@@ -4,6 +4,7 @@ import org.reflections.Reflections;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorType;
 import systems.reformcloud.reformcloud2.executor.api.client.Client;
 import systems.reformcloud.reformcloud2.executor.api.client.process.ProcessManager;
+import systems.reformcloud.reformcloud2.executor.api.client.process.RunningProcess;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.basic.ExternalEventBusHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.client.ClientRuntimeInformation;
@@ -24,6 +25,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageMan
 import systems.reformcloud.reformcloud2.executor.api.common.logger.LoggerBase;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.coloured.ColouredLoggerHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.other.DefaultLoggerHandler;
+import systems.reformcloud.reformcloud2.executor.api.common.network.auth.NetworkType;
 import systems.reformcloud.reformcloud2.executor.api.common.network.auth.defaults.DefaultAuth;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.handler.NetworkHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
@@ -182,6 +184,8 @@ public final class ClientExecutor extends Client {
         this.packetHandler.getQueryHandler().clearQueries();
         this.networkClient.disconnect();
 
+        this.processManager.getAll().forEach(RunningProcess::shutdown);
+
         SystemHelper.deleteDirectory(Paths.get("reformcloud/temp"));
     }
 
@@ -317,7 +321,7 @@ public final class ClientExecutor extends Client {
                 new DefaultAuth(
                         clientExecutorConfig.getConnectionKey(),
                         null,
-                        true,
+                        NetworkType.CLIENT,
                         clientConfig.getName(),
                         new JsonConfiguration().add("info", clientRuntimeInformation)
                 ), createChannelReader(() -> {

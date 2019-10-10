@@ -6,10 +6,10 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.auth.Network
 
 public final class DefaultAuth implements Auth {
 
-    public DefaultAuth(String key, String parent, boolean isClient, String name, JsonConfiguration extra) {
+    public DefaultAuth(String key, String parent, NetworkType type, String name, JsonConfiguration extra) {
         this.key = key;
         this.parent = parent;
-        this.type = isClient ? NetworkType.CLIENT : NetworkType.PROCESS;
+        this.type = type;
         this.name = name;
         this.extra = extra;
     }
