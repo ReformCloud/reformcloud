@@ -1,5 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.node.process;
 
+import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
 import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
@@ -62,7 +63,7 @@ public class LocalAutoStartupHandler extends AbsoluteThread {
                         continue;
                     }
 
-                    NodeExecutor.getInstance().startProcess(processGroup.getName());
+                    ExecutorAPI.getInstance().startProcess(processGroup.getName());
                 }
             } catch (final Throwable throwable) {
                 throwable.printStackTrace();

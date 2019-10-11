@@ -15,8 +15,6 @@ import java.util.function.Predicate;
 
 public final class JsonConfiguration implements Configurable<JsonConfiguration> {
 
-    public static final JsonParser PARSER = new JsonParser();
-
     public static final ThreadLocal<Gson> GSON = ThreadLocal.withInitial(() -> new GsonBuilder().setPrettyPrinting().serializeNulls().disableHtmlEscaping().create());
 
     public JsonConfiguration() {
@@ -25,7 +23,7 @@ public final class JsonConfiguration implements Configurable<JsonConfiguration> 
     public JsonConfiguration(String json) {
         JsonElement jsonElement;
         try {
-            jsonElement = PARSER.parse(json);
+            jsonElement = JsonParser.parseString(json);
         } catch (final Exception ex) {
             jsonElement = new JsonObject();
         }
@@ -38,7 +36,7 @@ public final class JsonConfiguration implements Configurable<JsonConfiguration> 
         try (InputStreamReader inputStreamReader = new InputStreamReader(stream, StandardCharsets.UTF_8)) {
             JsonElement jsonElement;
             try {
-                jsonElement = PARSER.parse(inputStreamReader);
+                jsonElement = JsonParser.parseReader(inputStreamReader);
             } catch (final Exception ex) {
                 jsonElement = new JsonObject();
             }
@@ -53,7 +51,7 @@ public final class JsonConfiguration implements Configurable<JsonConfiguration> 
     public JsonConfiguration(Reader json) {
         JsonElement jsonElement;
         try {
-            jsonElement = PARSER.parse(json);
+            jsonElement = JsonParser.parseReader(json);
         } catch (final Exception ex) {
             jsonElement = new JsonObject();
         }
