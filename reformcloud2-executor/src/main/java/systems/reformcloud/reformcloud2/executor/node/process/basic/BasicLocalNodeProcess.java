@@ -1,22 +1,22 @@
-package systems.reformcloud.reformcloud2.executor.client.process.basic;
+package systems.reformcloud.reformcloud2.executor.node.process.basic;
 
 import net.md_5.config.Configuration;
 import net.md_5.config.ConfigurationProvider;
 import net.md_5.config.YamlConfiguration;
-import systems.reformcloud.reformcloud2.executor.api.client.process.RunningProcess;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.Version;
-import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.PortUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.StringUtil;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.function.Double;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.optional.ReferencedOptional;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.system.DownloadHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.system.SystemHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
-import systems.reformcloud.reformcloud2.executor.client.ClientExecutor;
+import systems.reformcloud.reformcloud2.executor.api.node.process.LocalNodeProcess;
+import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
 import systems.reformcloud.reformcloud2.executor.node.network.packet.out.NodePacketOutProcessPrepared;
 
 import javax.imageio.ImageIO;
@@ -33,11 +33,11 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
-public final class DefaultRunningProcess implements RunningProcess {
+public class BasicLocalNodeProcess implements LocalNodeProcess {
 
     private static final String LIB_PATH = new File(".").getAbsolutePath();
 
-    public DefaultRunningProcess(ProcessInformation processInformation) {
+    public BasicLocalNodeProcess(ProcessInformation processInformation) {
         this.processInformation = processInformation;
     }
 
@@ -57,7 +57,7 @@ public final class DefaultRunningProcess implements RunningProcess {
     }
 
     @Override
-    public RunningProcess prepare() {
+    public void prepare() {
         processInformation.setProcessState(ProcessState.PREPARED);
 
         if (processInformation.getProcessGroup().isStaticProcess()) {
@@ -78,21 +78,21 @@ public final class DefaultRunningProcess implements RunningProcess {
 
         SystemHelper.doCopy("reformcloud/files/runner.jar", path + "/runner.jar");
 
+        Double<String, Integer> connection = NodeExecutor.getInstance().getConnectHost();
         new JsonConfiguration()
-                .add("controller-host", ClientExecutor.getInstance().getClientExecutorConfig().getClientConnectionConfig().getHost())
-                .add("controller-port", ClientExecutor.getInstance().getClientExecutorConfig().getClientConnectionConfig().getPort())
+                .add("controller-host", connection.getFirst())
+                .add("controller-port", connection.getSecond())
                 .add("startInfo", processInformation)
                 .write(path + "/reformcloud/.connection/connection.json");
 
         ExecutorAPI.getInstance().update(processInformation);
         prepared = true;
 
-        DefaultChannelManager.INSTANCE.get("Controller").ifPresent(packetSender -> packetSender.sendPacket(new NodePacketOutProcessPrepared(
+        NodeExecutor.getInstance().getNodeNetworkManager().getCluster().broadCastToCluster(new NodePacketOutProcessPrepared(
                 processInformation.getName(),
                 processInformation.getProcessUniqueID(),
                 processInformation.getTemplate().getName()
-        )));
-        return this;
+        ));
     }
 
     @Override
@@ -146,7 +146,7 @@ public final class DefaultRunningProcess implements RunningProcess {
     }
 
     @Override
-    public boolean shutdown() {
+    public void shutdown() {
         sendCommand("stop");
         sendCommand("end");
 
@@ -162,26 +162,21 @@ public final class DefaultRunningProcess implements RunningProcess {
             }
         }
 
-        ClientExecutor.getInstance().getProcessManager().unregisterProcess(processInformation.getName());
         if (!processInformation.getProcessGroup().isStaticProcess()) {
             SystemHelper.deleteDirectory(path);
         }
-
-        return !running();
     }
 
     @Override
-    public boolean sendCommand(String command) {
+    public void sendCommand(String line) {
         if (running()) {
             try {
-                process.getOutputStream().write((command + "\n").getBytes());
+                process.getOutputStream().write((line + "\n").getBytes());
                 process.getOutputStream().flush();
             } catch (final IOException ex) {
                 ex.printStackTrace();
             }
         }
-
-        return running();
     }
 
     @Override
@@ -218,7 +213,7 @@ public final class DefaultRunningProcess implements RunningProcess {
     /* ================================= */
 
     private void createEula() {
-        try (InputStream inputStream = DefaultRunningProcess.class.getClassLoader().getResourceAsStream("files/java/bukkit/eula.txt")) {
+        try (InputStream inputStream = BasicLocalNodeProcess.class.getClassLoader().getResourceAsStream("files/java/bukkit/eula.txt")) {
             Files.copy(Objects.requireNonNull(inputStream), Paths.get(path + "/eula.txt"), StandardCopyOption.REPLACE_EXISTING);
         } catch (final IOException ex) {
             ex.printStackTrace();
@@ -270,7 +265,7 @@ public final class DefaultRunningProcess implements RunningProcess {
         File file = Paths.get(path + "/config.yml").toFile();
         rewriteFile(file, (UnaryOperator<String>) s -> {
             if (s.startsWith("  host:")) {
-                s = "  host: " + ClientExecutor.getInstance().getClientConfig().getStartHost() + ":" + processInformation.getNetworkInfo().getPort();
+                s = "  host: " + NodeExecutor.getInstance().getNodeConfig().getStartHost() + ":" + processInformation.getNetworkInfo().getPort();
             } else if (s.startsWith("ip_forward:")) {
                 s = "ip_forward: true";
             }
@@ -285,7 +280,7 @@ public final class DefaultRunningProcess implements RunningProcess {
         File file = Paths.get(path + "/config.yml").toFile();
         rewriteFile(file, (UnaryOperator<String>) s -> {
             if (s.startsWith("  host:")) {
-                s = "  host: " + ClientExecutor.getInstance().getClientConfig().getStartHost() + ":" + processInformation.getNetworkInfo().getPort();
+                s = "  host: " + NodeExecutor.getInstance().getNodeConfig().getStartHost() + ":" + processInformation.getNetworkInfo().getPort();
             } else if (s.startsWith("ip_forward:")) {
                 s = "ip_forward: true";
             } else if (s.startsWith("use_xuid_for_uuid:")) {
@@ -309,7 +304,7 @@ public final class DefaultRunningProcess implements RunningProcess {
         File file = Paths.get(path + "/velocity.toml").toFile();
         rewriteFile(file, (UnaryOperator<String>) s -> {
             if (s.startsWith("bind")) {
-                s = "bind = \"" + ClientExecutor.getInstance().getClientConfig().getStartHost() + ":" + processInformation.getNetworkInfo().getPort() + "\"";
+                s = "bind = \"" + NodeExecutor.getInstance().getNodeConfig().getStartHost() + ":" + processInformation.getNetworkInfo().getPort() + "\"";
             } else if (s.startsWith("show-max-players") && processInformation.getProcessGroup().getPlayerAccessConfiguration().isUseCloudPlayerLimit()) {
                 s = "show-max-players = " + processInformation.getProcessGroup().getPlayerAccessConfiguration().getMaxPlayers();
             } else if (s.startsWith("player-info-forwarding-mode")) {
@@ -364,12 +359,12 @@ public final class DefaultRunningProcess implements RunningProcess {
             Properties properties = new Properties();
             try (InputStream inputStream = Files.newInputStream(Paths.get(path + "/server.properties"))) {
                 properties.load(inputStream);
-                properties.setProperty("server-ip", ClientExecutor.getInstance().getClientConfig().getStartHost());
+                properties.setProperty("server-ip", NodeExecutor.getInstance().getNodeConfig().getStartHost());
                 properties.setProperty("server-port", Integer.toString(processInformation.getNetworkInfo().getPort()));
                 properties.setProperty("xbox-auth", Boolean.toString(false));
 
                 try (OutputStream outputStream = Files.newOutputStream(Paths.get(path + "/server.properties"))) {
-                    properties.store(outputStream, "ReformCloud2 client edit");
+                    properties.store(outputStream, "ReformCloud2 node edit");
                 }
             } catch (final IOException ex) {
                 ex.printStackTrace();
@@ -384,12 +379,12 @@ public final class DefaultRunningProcess implements RunningProcess {
             SystemHelper.doInternalCopy(getClass().getClassLoader(), "files/java/bukkit/server.properties", path + "/server.properties");
             try (InputStream inputStream = Files.newInputStream(Paths.get(path + "/server.properties"))) {
                 properties.load(inputStream);
-                properties.setProperty("server-ip", ClientExecutor.getInstance().getClientConfig().getStartHost());
+                properties.setProperty("server-ip", NodeExecutor.getInstance().getNodeConfig().getStartHost());
                 properties.setProperty("server-port", Integer.toString(processInformation.getNetworkInfo().getPort()));
                 properties.setProperty("online-mode", Boolean.toString(false));
 
                 try (OutputStream outputStream = Files.newOutputStream(Paths.get(path + "/server.properties"))) {
-                    properties.store(outputStream, "ReformCloud2 client edit");
+                    properties.store(outputStream, "ReformCloud2 node edit");
                 }
             } catch (final IOException ex) {
                 ex.printStackTrace();
@@ -496,5 +491,15 @@ public final class DefaultRunningProcess implements RunningProcess {
         } else if (version.getId() == 3) {
             command.add("disable-ansi");
         }
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof LocalNodeProcess)) {
+            return false;
+        }
+
+        LocalNodeProcess process = (LocalNodeProcess) obj;
+        return process.getProcessInformation().getProcessUniqueID().equals(processInformation.getProcessUniqueID());
     }
 }

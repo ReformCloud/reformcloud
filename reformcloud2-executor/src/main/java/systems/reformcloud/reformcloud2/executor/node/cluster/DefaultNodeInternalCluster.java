@@ -64,6 +64,10 @@ public class DefaultNodeInternalCluster implements InternalNetworkCluster {
 
     @Override
     public void publishToHeadNode(Packet packet) {
+        if (getHeadNode() == null) {
+            return;
+        }
+
         DefaultChannelManager.INSTANCE.get(getHeadNode().getName()).ifPresent(sender -> sender.sendPacket(packet));
     }
 

@@ -19,8 +19,10 @@ import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links.newCollection;
@@ -32,7 +34,12 @@ public class NodeExecutorConfig {
             "reformcloud/groups/main",
             "reformcloud/groups/sub",
             "reformcloud/configs",
-            "reformcloud/applications"
+            "reformcloud/applications",
+            "reformcloud/temp",
+            "reformcloud/static",
+            "reformcloud/templates",
+            "reformcloud/global",
+            "reformcloud/files/.connection"
     );
 
     private final Setup setup = new DefaultSetup();
@@ -42,6 +49,10 @@ public class NodeExecutorConfig {
     private NodeConfig nodeConfig;
 
     private String connectionKey;
+
+    private final List<MainGroup> mainGroups = new ArrayList<>();
+
+    private final List<ProcessGroup> processGroups = new ArrayList<>();
 
     private final AtomicBoolean firstStartup = new AtomicBoolean(false);
 
@@ -54,21 +65,22 @@ public class NodeExecutorConfig {
         if (!Files.exists(NodeConfig.PATH)) {
             firstStartup.set(true);
             setup.addQuestion(new DefaultSetupQuestion(
-                    "Please enter the start host of the client",
+                    "Please enter the start host of the node",
                     "Please enter your real address",
                     e -> e.split("\\.").length == 4,
                     e -> new JsonConfiguration().add("config", new NodeConfig(
                             CommonHelper.calculateMaxMemory(),
+                            e,
                             Collections.emptyList(),
                             Collections.singletonList(Collections.singletonMap(e, 2008)),
                             Collections.singletonList(Collections.singletonMap(e, 1809))
                     )).write(NodeConfig.PATH)
             )).addQuestion(new DefaultSetupQuestion(
-                    "Please copy the connection key for other nodes into the console (if there is any other node)",
+                    "Please copy the connection key for other nodes into the console (if there is any other node) or type \"null\"",
                     "",
                     s -> true,
                     s -> {
-                        if (s.trim().isEmpty()) {
+                        if (s.equalsIgnoreCase("null")) {
                             return;
                         }
 
@@ -140,6 +152,11 @@ public class NodeExecutorConfig {
         this.connectionKey = JsonConfiguration.read("reformcloud/files/.connection/connection.json").getString("key");
     }
 
+    private void loadGroups() {
+        processGroups.addAll(this.localSubGroupsRegistry.readKeys(e -> e.get("key", ProcessGroup.TYPE)));
+        mainGroups.addAll(this.localMainGroupsRegistry.readKeys(e -> e.get("key", MainGroup.TYPE)));
+    }
+
     private void createDirectories() {
         PATHS.forEach(SystemHelper::createDirectory);
     }
@@ -158,5 +175,13 @@ public class NodeExecutorConfig {
 
     public boolean isFirstStartup() {
         return firstStartup.get();
+    }
+
+    public List<MainGroup> getMainGroups() {
+        return mainGroups;
+    }
+
+    public List<ProcessGroup> getProcessGroups() {
+        return processGroups;
     }
 }

@@ -1,7 +1,7 @@
 ![](https://s17.directupload.net/images/190317/g4777bij.png)
 
-# ReformCloud 2 [![Discord](https://img.shields.io/discord/499666347337449472.svg?color=7289DA&label=discord)](https://discord.gg/uskXdVZ) [![CodeFactor](https://www.codefactor.io/repository/github/derklaro/reformcloud2/badge?s=1093a7711bb179b3fb6e48ffbb3e4c1315e5aada)](https://www.codefactor.io/repository/github/derklaro/reformcloud2) [![Build Status](https://travis-ci.com/derklaro/reformcloud2.svg?token=DsMrJCyqH6BCtUu5ax94&branch=master)](https://travis-ci.com/derklaro/reformcloud2)
-ReformCloud is a cloud system programmed and optimized for all sizes of networks. Due to an extensive API which supports Sync as well as Asnyc it is easy for any developer to integrate a reformcloud into his systems.
+# ReformCloud 2 [![Discord](https://img.shields.io/discord/499666347337449472.svg?color=7289DA&label=discord)](https://discord.gg/uskXdVZ) [![CodeFactor](https://www.codefactor.io/repository/github/derklaro/reformcloud2/badge?s=1093a7711bb179b3fb6e48ffbb3e4c1315e5aada)](https://www.codefactor.io/repository/github/derklaro/reformcloud2) [![Build Status](https://travis-ci.com/derklaro/reformcloud2.svg?token=DsMrJCyqH6BCtUu5ax94&branch=master)](https://travis-ci.com/derklaro/reformcloud2) [![Issue Tracker](https://img.shields.io/badge/Issue%20Tracker-OpenProject-brightgreen?style=plastic&logo=appveyor)](https://board.reformcloud.systems/projects/rc2/)
+ReformCloud is a cloud system programmed and optimized for all sizes of networks. Due to an extensive API which supports Sync as well as Asnyc it is easy for any developer to integrate a reformcloud into his systems. Also reformcloud can used as a normal Client/Controller (Master/Wrapper) system or as a node system.
 
 The cloud system supports java and bedrock edition.
 
@@ -21,7 +21,7 @@ The cloud system supports java and bedrock edition.
 | NukkitX       |
 | WaterDog      |
 
-**Give a try and leave a review!**
+**Give it a try and leave a review!**
 
 # Run ReformCloud2 the first time
 ## System requirements
@@ -38,6 +38,9 @@ java -XX:+UseG1GC -XX:MaxGCPauseMillis=50 -XX:CompileThreshold=100 -Xmx512m -Xms
 
 The runner is now going to download the needed libraries, so **make sure you have an internet connection** 
 during the first startup! Please answer all questions which the runner is going to ask you!
+
+In this setup you can choose which type you want to install. Please choose it carefully because
+any changes may cause trouble during the next startup.
 
 After the setup: **start using reformcloud2!**
 

@@ -5,12 +5,19 @@ import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.Template;
 import systems.reformcloud.reformcloud2.executor.api.common.node.NodeInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.node.NodeProcess;
+import systems.reformcloud.reformcloud2.executor.api.common.process.NetworkInfo;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
+import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessRuntimeInformation;
+import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links;
+import systems.reformcloud.reformcloud2.executor.api.node.process.LocalNodeProcess;
 import systems.reformcloud.reformcloud2.executor.api.node.process.NodeProcessManager;
 import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
+import systems.reformcloud.reformcloud2.executor.node.process.manager.LocalProcessManager;
+import systems.reformcloud.reformcloud2.executor.node.process.startup.LocalProcessQueue;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class LocalNodeProcessManager implements NodeProcessManager {
 
@@ -28,17 +35,55 @@ public class LocalNodeProcessManager implements NodeProcessManager {
 
     @Override
     public ProcessInformation startLocalProcess(ProcessGroup processGroup, Template template, JsonConfiguration data) {
-        return null;
+        int id = nextID(processGroup);
+        ProcessInformation processInformation = new ProcessInformation(
+                processGroup.getName() + (processGroup.isShowIdInName() ? id : ""),
+                NodeExecutor.getInstance().getNodeConfig().getName(),
+                NodeExecutor.getInstance().getNodeConfig().getUniqueID(),
+                UUID.randomUUID(),
+                id,
+                ProcessState.PREPARED,
+                new NetworkInfo(
+                        NodeExecutor.getInstance().getConnectHost().getFirst(),
+                        NodeExecutor.getInstance().getConnectHost().getSecond(),
+                        false
+                ), processGroup,
+                template,
+                ProcessRuntimeInformation.empty(),
+                new ArrayList<>(),
+                data,
+                processGroup.getPlayerAccessConfiguration().getMaxPlayers()
+        );
+        LocalProcessQueue.queue(processInformation);
+        return processInformation;
     }
 
     @Override
     public ProcessInformation stopLocalProcess(String name) {
-        return null;
+        List<LocalNodeProcess> processes = LocalProcessManager.getNodeProcesses()
+                .stream()
+                .filter(e -> e.getProcessInformation().getName().equals(name))
+                .collect(Collectors.toList());
+        if (processes.isEmpty()) {
+            return null;
+        }
+
+        processes.forEach(LocalNodeProcess::shutdown);
+        return processes.get(0).getProcessInformation();
     }
 
     @Override
     public ProcessInformation stopLocalProcess(UUID uuid) {
-        return null;
+        List<LocalNodeProcess> processes = LocalProcessManager.getNodeProcesses()
+                .stream()
+                .filter(e -> e.getProcessInformation().getProcessUniqueID().equals(uuid))
+                .collect(Collectors.toList());
+        if (processes.isEmpty()) {
+            return null;
+        }
+
+        processes.forEach(LocalNodeProcess::shutdown);
+        return processes.get(0).getProcessInformation();
     }
 
     @Override
@@ -91,5 +136,16 @@ public class LocalNodeProcessManager implements NodeProcessManager {
 
         NodeExecutor.getInstance().getNodeNetworkManager().getCluster().getSelfNode().getStartedProcesses().remove(nodeProcess);
         NodeExecutor.getInstance().getClusterSyncManager().syncProcessStop(information);
+    }
+
+    private int nextID(ProcessGroup processGroup) {
+        int id = 1;
+        Collection<Integer> ids = Links.newCollection(information, processInformation -> processInformation.getProcessGroup().getName().equals(processGroup.getName()), ProcessInformation::getId);
+
+        while (ids.contains(id)) {
+            id++;
+        }
+
+        return id;
     }
 }

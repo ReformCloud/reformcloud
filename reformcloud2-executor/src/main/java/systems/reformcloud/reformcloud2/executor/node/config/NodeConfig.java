@@ -13,11 +13,12 @@ public class NodeConfig {
 
     static final Path PATH = Paths.get("reformcloud/config.json");
 
-    NodeConfig(long maxMemory, List<Map<String, Integer>> networkListener,
-                      List<Map<String, Integer>> httpNetworkListener, List<Map<String, Integer>> otherNodes) {
-        this.name = "Node-" + UUID.randomUUID().toString().split("-")[0];
+    NodeConfig(long maxMemory, String startHost, List<Map<String, Integer>> networkListener,
+               List<Map<String, Integer>> httpNetworkListener, List<Map<String, Integer>> otherNodes) {
+        this.name = UUID.randomUUID().toString().split("-")[0];
         this.uniqueID = UUID.randomUUID();
         this.maxMemory = maxMemory;
+        this.startHost = startHost;
         this.networkListener = networkListener;
         this.httpNetworkListener = httpNetworkListener;
         this.otherNodes = otherNodes;
@@ -28,6 +29,8 @@ public class NodeConfig {
     private UUID uniqueID;
 
     private long maxMemory;
+
+    private String startHost;
 
     private List<Map<String, Integer>> networkListener;
 
@@ -45,6 +48,10 @@ public class NodeConfig {
 
     public long getMaxMemory() {
         return maxMemory;
+    }
+
+    public String getStartHost() {
+        return startHost;
     }
 
     public List<Map<String, Integer>> getNetworkListener() {

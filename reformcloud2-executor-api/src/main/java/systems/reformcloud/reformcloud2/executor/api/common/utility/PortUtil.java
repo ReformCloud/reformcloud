@@ -1,4 +1,4 @@
-package systems.reformcloud.reformcloud2.executor.client.process;
+package systems.reformcloud.reformcloud2.executor.api.common.utility;
 
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
@@ -6,6 +6,7 @@ import java.net.ServerSocket;
 public final class PortUtil {
 
     private PortUtil() {
+        throw new UnsupportedOperationException();
     }
 
     public static int checkPort(int startPort) {

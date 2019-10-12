@@ -32,6 +32,6 @@ public class AbsoluteThread extends Thread {
     }
 
     public static void sleep(long time) {
-        sleep(TimeUnit.MILLISECONDS, 5);
+        sleep(TimeUnit.MILLISECONDS, time);
     }
 }

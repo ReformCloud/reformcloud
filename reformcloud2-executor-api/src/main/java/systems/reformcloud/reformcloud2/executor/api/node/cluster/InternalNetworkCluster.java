@@ -18,7 +18,7 @@ public interface InternalNetworkCluster {
     void updateSelf(NodeInformation self);
 
     default boolean isSelfNodeHead() {
-        return getHeadNode().equals(getSelfNode());
+        return getHeadNode() != null && getHeadNode().equals(getSelfNode());
     }
 
     NodeInformation getNode(String name);

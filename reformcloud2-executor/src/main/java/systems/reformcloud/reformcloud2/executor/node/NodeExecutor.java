@@ -2,6 +2,7 @@ package systems.reformcloud.reformcloud2.executor.node;
 
 import io.netty.channel.ChannelHandlerContext;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorType;
+import systems.reformcloud.reformcloud2.executor.api.common.CommonHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.application.ApplicationLoader;
 import systems.reformcloud.reformcloud2.executor.api.common.application.InstallableApplication;
@@ -11,6 +12,10 @@ import systems.reformcloud.reformcloud2.executor.api.common.client.ClientRuntime
 import systems.reformcloud.reformcloud2.executor.api.common.commands.AllowedCommandSources;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.Command;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.ConsoleCommandSource;
+import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.CommandClear;
+import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.CommandHelp;
+import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.CommandReload;
+import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.CommandStop;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.manager.DefaultCommandManager;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.manager.CommandManager;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.source.CommandSource;
@@ -55,6 +60,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.restapi.user.WebUser
 import systems.reformcloud.reformcloud2.executor.api.common.utility.StringUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.function.Double;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
 import systems.reformcloud.reformcloud2.executor.api.node.Node;
 import systems.reformcloud.reformcloud2.executor.api.node.cluster.ClusterSyncManager;
 import systems.reformcloud.reformcloud2.executor.api.node.network.NodeNetworkManager;
@@ -67,15 +73,15 @@ import systems.reformcloud.reformcloud2.executor.node.config.NodeConfig;
 import systems.reformcloud.reformcloud2.executor.node.config.NodeExecutorConfig;
 import systems.reformcloud.reformcloud2.executor.node.network.DefaultNodeNetworkManager;
 import systems.reformcloud.reformcloud2.executor.node.network.client.NodeNetworkClient;
+import systems.reformcloud.reformcloud2.executor.node.network.packet.out.NodePacketOutSyncGroups;
 import systems.reformcloud.reformcloud2.executor.node.process.LocalAutoStartupHandler;
 import systems.reformcloud.reformcloud2.executor.node.process.LocalNodeProcessManager;
+import systems.reformcloud.reformcloud2.executor.node.process.manager.LocalProcessManager;
+import systems.reformcloud.reformcloud2.executor.node.process.startup.LocalProcessQueue;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -106,6 +112,8 @@ public class NodeExecutor extends Node {
     private final DatabaseConfig databaseConfig = new DatabaseConfig();
 
     private final LocalAutoStartupHandler localAutoStartupHandler = new LocalAutoStartupHandler();
+
+    private LocalProcessQueue localProcessQueue;
 
     private NetworkClient networkClient;
 
@@ -314,12 +322,18 @@ public class NodeExecutor extends Node {
             }
         }
 
+        this.localProcessQueue = new LocalProcessQueue();
         this.localAutoStartupHandler.doStart();
         this.applicationLoader.enableApplications();
 
+        this.loadCommands();
+        this.sendGroups();
+
         running = true;
         System.out.println(LanguageManager.get("startup-done", Long.toString(System.currentTimeMillis() - current)));
-        runConsole();
+
+        this.awaitConnectionsAndUpdate();
+        this.runConsole();
     }
 
     public static NodeExecutor getInstance() {
@@ -338,9 +352,43 @@ public class NodeExecutor extends Node {
         return clusterSyncManager;
     }
 
+    public NodeConfig getNodeConfig() {
+        return nodeConfig;
+    }
+
+    public Double<String, Integer> getConnectHost() {
+        if (this.nodeConfig.getNetworkListener().size() == 1) {
+            Map.Entry<String, Integer> result = nodeConfig.getNetworkListener().get(0).entrySet().iterator().next();
+            return new Double<>(result.getKey(), result.getValue());
+        }
+
+        Map.Entry<String, Integer> result = nodeConfig.getNetworkListener().get(new Random().nextInt(nodeConfig.getNetworkListener().size())).entrySet().iterator().next();
+        return new Double<>(result.getKey(), result.getValue());
+    }
+
     @Override
     public void shutdown() throws Exception {
+        if (running) {
+            running = false;
+        } else {
+            return;
+        }
 
+        System.out.println(LanguageManager.get("runtime-try-shutdown"));
+
+        this.networkServer.closeAll();
+        this.networkClient.disconnect();
+        this.webServer.close();
+
+        this.localProcessQueue.interrupt();
+        this.localAutoStartupHandler.interrupt();
+
+        LocalProcessManager.close();
+
+        this.nodeNetworkManager.getNodeProcessHelper().getLocalProcesses();
+        this.applicationLoader.disableApplications();
+
+        this.loggerBase.close();
     }
 
     private void runConsole() {
@@ -1164,5 +1212,36 @@ public class NodeExecutor extends Node {
     @Override
     public void reload() throws Exception {
 
+    }
+
+    private void awaitConnectionsAndUpdate() {
+        CommonHelper.EXECUTOR.execute(() -> {
+            while (!this.clusterSyncManager.isConnectedAndSyncWithCluster()) {
+                AbsoluteThread.sleep(100);
+            }
+
+            AbsoluteThread.sleep(100);
+            if (this.nodeNetworkManager.getCluster().isSelfNodeHead()) {
+                return;
+            }
+
+            this.nodeNetworkManager.getCluster().publishToHeadNode(new NodePacketOutSyncGroups(
+                    this.nodeExecutorConfig.getMainGroups(),
+                    this.nodeExecutorConfig.getProcessGroups()
+            ));
+        });
+    }
+
+    private void loadCommands() {
+        this.commandManager
+                .register(CommandStop.class)
+                .register(new CommandReload(this))
+                .register(new CommandClear(loggerBase))
+                .register(new CommandHelp(commandManager));
+    }
+
+    private void sendGroups() {
+        this.nodeExecutorConfig.getMainGroups().forEach(mainGroup -> System.out.println(LanguageManager.get("loading-main-group", mainGroup.getName())));
+        this.nodeExecutorConfig.getProcessGroups().forEach(processGroup -> System.out.println(LanguageManager.get("loading-process-group", processGroup.getName(), processGroup.getParentGroup())));
     }
 }

@@ -16,16 +16,11 @@ public class NodeNetworkClient implements NetworkClient {
 
     @Override
     public boolean connect(String host, int port, Auth auth, NetworkChannelReader channelReader) {
-        if (CONNECTIONS.stream().anyMatch(e -> e.equals(host))) {
+        if (CONNECTIONS.stream().anyMatch(host::equals)) {
             return false;
         }
 
-        if (CLIENT.connect(host, port, auth, channelReader)) {
-            CONNECTIONS.add(host);
-            return true;
-        }
-
-        return false;
+        return CLIENT.connect(host, port, auth, channelReader);
     }
 
     @Override
