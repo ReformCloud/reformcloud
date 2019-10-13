@@ -124,7 +124,14 @@ public class LocalNodeProcessManager implements NodeProcessManager {
 
     @Override
     public void update(ProcessInformation processInformation) {
+        if (isLocal(processInformation.getProcessUniqueID())) {
+            Links.filterToReference(information, e -> e.getProcessUniqueID().equals(processInformation.getProcessUniqueID())).ifPresent(e -> {
+                information.remove(e);
+                information.add(processInformation);
+            });
+        }
 
+        NodeExecutor.getInstance().getClusterSyncManager().syncProcessUpdate(processInformation);
     }
 
     private void removeProcess(ProcessInformation information) {

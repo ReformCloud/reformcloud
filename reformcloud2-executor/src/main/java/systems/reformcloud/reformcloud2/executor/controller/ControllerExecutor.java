@@ -24,8 +24,10 @@ import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonCo
 import systems.reformcloud.reformcloud2.executor.api.common.database.Database;
 import systems.reformcloud.reformcloud2.executor.api.common.database.DatabaseReader;
 import systems.reformcloud.reformcloud2.executor.api.common.database.basic.drivers.file.FileDatabase;
+import systems.reformcloud.reformcloud2.executor.api.common.database.basic.drivers.h2.H2Database;
 import systems.reformcloud.reformcloud2.executor.api.common.database.basic.drivers.mongo.MongoDatabase;
 import systems.reformcloud.reformcloud2.executor.api.common.database.basic.drivers.mysql.MySQLDatabase;
+import systems.reformcloud.reformcloud2.executor.api.common.database.config.DatabaseConfig;
 import systems.reformcloud.reformcloud2.executor.api.common.event.EventManager;
 import systems.reformcloud.reformcloud2.executor.api.common.event.basic.DefaultEventManager;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.MainGroup;
@@ -71,7 +73,6 @@ import systems.reformcloud.reformcloud2.executor.api.controller.process.ProcessM
 import systems.reformcloud.reformcloud2.executor.controller.commands.CommandReformCloud;
 import systems.reformcloud.reformcloud2.executor.controller.config.ControllerConfig;
 import systems.reformcloud.reformcloud2.executor.controller.config.ControllerExecutorConfig;
-import systems.reformcloud.reformcloud2.executor.controller.config.DatabaseConfig;
 import systems.reformcloud.reformcloud2.executor.controller.packet.out.api.ControllerAPIAction;
 import systems.reformcloud.reformcloud2.executor.controller.packet.out.api.ControllerExecuteCommand;
 import systems.reformcloud.reformcloud2.executor.controller.packet.out.api.ControllerPluginAction;
@@ -197,6 +198,12 @@ public final class ControllerExecutor extends Controller {
         switch (databaseConfig.getType()) {
             case FILE: {
                 this.database = new FileDatabase();
+                this.databaseConfig.connect(this.database);
+                break;
+            }
+
+            case H2: {
+                this.database = new H2Database();
                 this.databaseConfig.connect(this.database);
                 break;
             }

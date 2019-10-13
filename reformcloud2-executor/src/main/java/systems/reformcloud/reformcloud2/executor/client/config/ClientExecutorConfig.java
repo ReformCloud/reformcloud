@@ -55,8 +55,8 @@ public final class ClientExecutorConfig {
                 s -> true,
                 s -> new JsonConfiguration().add("key", s).write("reformcloud/files/.connection/connection.json"))
         ).addQuestion(new DefaultSetupQuestion("Please write the start host", "Please write an ip address",
-                s -> s.split("\\.").length == 4,
-                startHost::set)
+                s -> s.trim().split("\\.").length == 4,
+                s -> startHost.set(s.trim()))
         ).addQuestion(new DefaultSetupQuestion("Please enter the max memory of the client", "Please write a number bigger than 128",
                 s -> {
                     try {
@@ -70,8 +70,8 @@ public final class ClientExecutorConfig {
                         .add("config", new ClientConfig(Integer.parseInt(s), -1, 99.0, startHost.get()))
                         .write(ClientConfig.PATH))
         ).addQuestion(new DefaultSetupQuestion("Please write the ip address of the controller", "Please write the real ip ;)",
-                s -> s.split("\\.").length == 4,
-                controllerHost::set)
+                s -> s.trim().split("\\.").length == 4,
+                s -> controllerHost.set(s.trim()))
         ).addQuestion(new DefaultSetupQuestion("Please write the controller network port (default: 2008)", "The port must be bigger than 0",
                 s -> {
                     try {

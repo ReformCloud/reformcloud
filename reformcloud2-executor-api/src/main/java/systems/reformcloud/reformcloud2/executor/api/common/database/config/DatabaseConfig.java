@@ -1,4 +1,4 @@
-package systems.reformcloud.reformcloud2.executor.controller.config;
+package systems.reformcloud.reformcloud2.executor.api.common.database.config;
 
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.database.Database;
@@ -15,7 +15,7 @@ public final class DatabaseConfig {
     public void load() {
         if (!Files.exists(Paths.get("reformcloud/configs/database.json"))) {
             new JsonConfiguration()
-                    .add("type", DatabaseType.FILE)
+                    .add("type", DatabaseType.H2)
                     .add("host", "127.0.0.1")
                     .add("port", -1)
                     .add("user", "reformcloud")
@@ -49,6 +49,8 @@ public final class DatabaseConfig {
     public enum DatabaseType {
 
         FILE,
+
+        H2,
 
         MONGO,
 

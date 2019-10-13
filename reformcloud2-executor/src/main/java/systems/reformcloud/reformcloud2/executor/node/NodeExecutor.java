@@ -22,8 +22,10 @@ import systems.reformcloud.reformcloud2.executor.api.common.commands.source.Comm
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.database.Database;
 import systems.reformcloud.reformcloud2.executor.api.common.database.basic.drivers.file.FileDatabase;
+import systems.reformcloud.reformcloud2.executor.api.common.database.basic.drivers.h2.H2Database;
 import systems.reformcloud.reformcloud2.executor.api.common.database.basic.drivers.mongo.MongoDatabase;
 import systems.reformcloud.reformcloud2.executor.api.common.database.basic.drivers.mysql.MySQLDatabase;
+import systems.reformcloud.reformcloud2.executor.api.common.database.config.DatabaseConfig;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.MainGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.PlayerAccessConfiguration;
@@ -60,6 +62,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.restapi.user.WebUser
 import systems.reformcloud.reformcloud2.executor.api.common.utility.StringUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.function.Double;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.task.defaults.DefaultTask;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
 import systems.reformcloud.reformcloud2.executor.api.node.Node;
 import systems.reformcloud.reformcloud2.executor.api.node.cluster.ClusterSyncManager;
@@ -68,7 +71,6 @@ import systems.reformcloud.reformcloud2.executor.api.node.process.NodeProcessMan
 import systems.reformcloud.reformcloud2.executor.node.cluster.DefaultClusterManager;
 import systems.reformcloud.reformcloud2.executor.node.cluster.DefaultNodeInternalCluster;
 import systems.reformcloud.reformcloud2.executor.node.cluster.sync.DefaultClusterSyncManager;
-import systems.reformcloud.reformcloud2.executor.node.config.DatabaseConfig;
 import systems.reformcloud.reformcloud2.executor.node.config.NodeConfig;
 import systems.reformcloud.reformcloud2.executor.node.config.NodeExecutorConfig;
 import systems.reformcloud.reformcloud2.executor.node.network.DefaultNodeNetworkManager;
@@ -167,6 +169,7 @@ public class NodeExecutor extends Node {
                 nodeProcessManager,
                 new DefaultNodeInternalCluster(new DefaultClusterManager(), nodeExecutorConfig.getSelf(), packetHandler)
         );
+        this.nodeNetworkManager.getCluster().getClusterManager().init();
 
         this.requestListenerHandler = new DefaultRequestListenerHandler(new DefaultWebServerAuth(this));
 
@@ -259,6 +262,12 @@ public class NodeExecutor extends Node {
         switch (databaseConfig.getType()) {
             case FILE: {
                 this.database = new FileDatabase();
+                this.databaseConfig.connect(this.database);
+                break;
+            }
+
+            case H2: {
+                this.database = new H2Database();
                 this.databaseConfig.connect(this.database);
                 break;
             }
@@ -385,6 +394,8 @@ public class NodeExecutor extends Node {
 
         LocalProcessManager.close();
 
+        this.database.disconnect();
+
         this.nodeNetworkManager.getNodeProcessHelper().getLocalProcesses();
         this.applicationLoader.disableApplications();
 
@@ -411,67 +422,77 @@ public class NodeExecutor extends Node {
 
     @Override
     public NetworkServer getNetworkServer() {
-        return null;
+        return networkServer;
     }
 
     @Override
     public CommandManager getCommandManager() {
-        return null;
+        return commandManager;
     }
 
     @Override
     public PacketHandler getPacketHandler() {
-        return null;
+        return packetHandler;
     }
 
     @Override
     public Task<Boolean> loadApplicationAsync(InstallableApplication application) {
-        return null;
+        Task<Boolean> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(() -> task.complete(applicationLoader.doSpecificApplicationInstall(application)));
+        return task;
     }
 
     @Override
     public Task<Boolean> unloadApplicationAsync(LoadedApplication application) {
-        return null;
+        Task<Boolean> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(() -> task.complete(applicationLoader.doSpecificApplicationUninstall(application)));
+        return task;
     }
 
     @Override
     public Task<Boolean> unloadApplicationAsync(String application) {
-        return null;
+        Task<Boolean> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(() -> task.complete(applicationLoader.doSpecificApplicationUninstall(application)));
+        return task;
     }
 
     @Override
     public Task<LoadedApplication> getApplicationAsync(String name) {
-        return null;
+        Task<LoadedApplication> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(() -> task.complete(applicationLoader.getApplication(name)));
+        return task;
     }
 
     @Override
     public Task<List<LoadedApplication>> getApplicationsAsync() {
-        return null;
+        Task<List<LoadedApplication>> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(() -> task.complete(applicationLoader.getApplications()));
+        return task;
     }
 
     @Override
     public boolean loadApplication(InstallableApplication application) {
-        return false;
+        return applicationLoader.doSpecificApplicationInstall(application);
     }
 
     @Override
     public boolean unloadApplication(LoadedApplication application) {
-        return false;
+        return applicationLoader.doSpecificApplicationUninstall(application);
     }
 
     @Override
     public boolean unloadApplication(String application) {
-        return false;
+        return applicationLoader.doSpecificApplicationUninstall(application);
     }
 
     @Override
     public LoadedApplication getApplication(String name) {
-        return null;
+        return applicationLoader.getApplication(name);
     }
 
     @Override
     public List<LoadedApplication> getApplications() {
-        return null;
+        return applicationLoader.getApplications();
     }
 
     @Override

@@ -6,6 +6,8 @@ import java.util.function.BiConsumer;
 
 public interface ClusterManager {
 
+    void init();
+
     void handleNodeDisconnect(InternalNetworkCluster cluster, String name);
 
     void handleConnect(InternalNetworkCluster cluster, NodeInformation nodeInformation, BiConsumer<Boolean, String> result);

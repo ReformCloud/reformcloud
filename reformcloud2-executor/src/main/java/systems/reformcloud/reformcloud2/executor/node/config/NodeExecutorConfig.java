@@ -67,13 +67,13 @@ public class NodeExecutorConfig {
             setup.addQuestion(new DefaultSetupQuestion(
                     "Please enter the start host of the node",
                     "Please enter your real address",
-                    e -> e.split("\\.").length == 4,
+                    e -> e.trim().split("\\.").length == 4,
                     e -> new JsonConfiguration().add("config", new NodeConfig(
                             CommonHelper.calculateMaxMemory(),
-                            e,
-                            Collections.emptyList(),
-                            Collections.singletonList(Collections.singletonMap(e, 2008)),
-                            Collections.singletonList(Collections.singletonMap(e, 1809))
+                            e.trim(),
+                            Collections.singletonList(Collections.singletonMap(e.trim(), 1809)),
+                            Collections.singletonList(Collections.singletonMap(e.trim(), 2008)),
+                            Collections.emptyList()
                     )).write(NodeConfig.PATH)
             )).addQuestion(new DefaultSetupQuestion(
                     "Please copy the connection key for other nodes into the console (if there is any other node) or type \"null\"",

@@ -15,7 +15,7 @@ public class NodeConfig {
 
     NodeConfig(long maxMemory, String startHost, List<Map<String, Integer>> networkListener,
                List<Map<String, Integer>> httpNetworkListener, List<Map<String, Integer>> otherNodes) {
-        this.name = UUID.randomUUID().toString().split("-")[0];
+        this.name = "Node-" + UUID.randomUUID().toString().split("-")[0];
         this.uniqueID = UUID.randomUUID();
         this.maxMemory = maxMemory;
         this.startHost = startHost;

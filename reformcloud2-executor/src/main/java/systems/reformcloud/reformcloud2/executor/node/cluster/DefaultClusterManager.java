@@ -4,6 +4,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.node.NodeInformation
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links;
 import systems.reformcloud.reformcloud2.executor.api.node.cluster.ClusterManager;
 import systems.reformcloud.reformcloud2.executor.api.node.cluster.InternalNetworkCluster;
+import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -14,6 +15,11 @@ public class DefaultClusterManager implements ClusterManager {
     private final Collection<NodeInformation> nodeInformation = new ArrayList<>();
 
     private NodeInformation head;
+
+    @Override
+    public void init() {
+        nodeInformation.add(NodeExecutor.getInstance().getNodeNetworkManager().getCluster().getSelfNode());
+    }
 
     @Override
     public void handleNodeDisconnect(InternalNetworkCluster cluster, String name) {

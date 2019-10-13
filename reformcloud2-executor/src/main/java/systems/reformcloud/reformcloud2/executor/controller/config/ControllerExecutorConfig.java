@@ -104,11 +104,11 @@ public final class ControllerExecutorConfig {
 
         setup.addQuestion(new DefaultSetupQuestion("Please write the ip address of the controller",
                 "Please write your real ip",
-                s -> s.split("\\.").length == 4,
+                s -> s.trim().split("\\.").length == 4,
                 s -> new JsonConfiguration().add("config", new ControllerConfig(
                         -1,
-                        Collections.singletonList(Collections.singletonMap(s, 2008)),
-                        Collections.singletonList(Collections.singletonMap(s, 1809))
+                        Collections.singletonList(Collections.singletonMap(s.trim(), 2008)),
+                        Collections.singletonList(Collections.singletonMap(s.trim(), 1809))
                 )).write(ControllerConfig.PATH)
         )).addQuestion(new DefaultSetupQuestion(
                 "Please choose an installation type [(Java Proxy and Java Lobby) \"1\", (Pocket Proxy and Pocket Lobby) \"2\", (Nothing) \"3\"]",

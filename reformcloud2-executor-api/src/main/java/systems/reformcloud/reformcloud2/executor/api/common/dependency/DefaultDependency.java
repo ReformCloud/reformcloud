@@ -62,12 +62,21 @@ public final class DefaultDependency implements Dependency {
 
         if (files.length > 1) {
             for (File file : files) {
-                SystemHelper.deleteFile(file);
+                String version = file.getName()
+                        .replaceFirst(getArtifactID(), "") // Replace the name of the dependency (netty-all-4.1.42.Final.jar -> -4.1.42.Final.jar)
+                        .replaceFirst("-", "") // Replaces the first name (-4.1.42.Final.jar -> 4.1.42.Final.jar)
+                        .replace(".jar", ""); // Replaces the .jar (4.1.42.Final.jar -> 4.1.42.Final)
+                if (!version.equals(getVersion())) {
+                    SystemHelper.deleteFile(file);
+                }
             }
         } else {
             File dependency = files[0];
-            String[] version = dependency.getName().split("-");
-            if (!version[version.length -1].equals(getVersion())) {
+            String version = dependency.getName()
+                    .replaceFirst(getArtifactID(), "") // Replace the name of the dependency (netty-all-4.1.42.Final.jar -> -4.1.42.Final.jar)
+                    .replaceFirst("-", "") // Replaces the first name (-4.1.42.Final.jar -> 4.1.42.Final.jar)
+                    .replace(".jar", ""); // Replaces the .jar (4.1.42.Final.jar -> 4.1.42.Final)
+            if (!version.equals(getVersion())) {
                 SystemHelper.deleteFile(dependency);
             }
         }
