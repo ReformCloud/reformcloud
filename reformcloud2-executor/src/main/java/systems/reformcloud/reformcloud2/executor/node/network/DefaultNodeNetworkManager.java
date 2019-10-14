@@ -2,7 +2,7 @@ package systems.reformcloud.reformcloud2.executor.node.network;
 
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
-import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.Template;
+import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Template;
 import systems.reformcloud.reformcloud2.executor.api.common.node.NodeInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.node.cluster.InternalNetworkCluster;
@@ -13,7 +13,6 @@ import systems.reformcloud.reformcloud2.executor.node.network.packet.query.NodeP
 import systems.reformcloud.reformcloud2.executor.node.network.packet.query.NodePacketOutQueryStartProcess;
 
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class DefaultNodeNetworkManager implements NodeNetworkManager {
 

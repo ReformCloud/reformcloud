@@ -5,6 +5,8 @@ import systems.reformcloud.reformcloud2.executor.api.common.base.Conditions;
 import java.io.*;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -98,11 +100,23 @@ public final class SystemHelper {
     }
 
     public static void copyDirectory(Path path, String target) {
+        copyDirectory(path, Paths.get(target));
+    }
+
+    public static void copyDirectory(Path path, Path target) {
+        copyDirectory(path, target, new ArrayList<>());
+    }
+
+    public static void copyDirectory(Path path, Path target, Collection<String> excludedFiles) {
         try {
             Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
                 @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                    Path targetFile = Paths.get(target, path.relativize(file).toString());
+                    if (excludedFiles.stream().anyMatch(e -> e.equals(file.toFile().getName()))) {
+                        return FileVisitResult.CONTINUE;
+                    }
+
+                    Path targetFile = Paths.get(target.toString(), path.relativize(file).toString());
                     Path parent = targetFile.getParent();
 
                     if (parent != null && !Files.exists(parent)) {

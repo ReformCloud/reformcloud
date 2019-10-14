@@ -11,7 +11,13 @@ import systems.reformcloud.reformcloud2.executor.api.common.commands.Command;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.MainGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
-import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.*;
+import systems.reformcloud.reformcloud2.executor.api.common.groups.template.RuntimeConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Template;
+import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Version;
+import systems.reformcloud.reformcloud2.executor.api.common.groups.template.backend.basic.FileBackend;
+import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.PlayerAccessConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.StartupConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.StartupEnvironment;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.handler.PacketHandler;
@@ -378,7 +384,7 @@ public abstract class ExternalAPIImplementation extends ExecutorAPI {
     @Override
     public Task<ProcessGroup> createProcessGroupAsync(String name, String parent) {
         return createProcessGroupAsync(name, parent, Collections.singletonList(
-                new Template(0, "default", "#", null, new RuntimeConfiguration(
+                new Template(0, "default", FileBackend.NAME, "#", new RuntimeConfiguration(
                         512, new ArrayList<>(), new HashMap<>()
                 ), Version.PAPER_1_8_8)
         ));

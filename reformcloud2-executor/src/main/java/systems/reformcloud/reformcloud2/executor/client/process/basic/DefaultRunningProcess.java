@@ -6,7 +6,8 @@ import net.md_5.config.YamlConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.client.process.RunningProcess;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
-import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.Version;
+import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Version;
+import systems.reformcloud.reformcloud2.executor.api.common.groups.template.backend.TemplateBackendManager;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState;
@@ -195,14 +196,11 @@ public final class DefaultRunningProcess implements RunningProcess {
 
     @Override
     public void copy() {
-        if (prepared && processInformation.getTemplate().getDownloadURL() == null) {
-            SystemHelper.deleteDirectory(Paths.get(
-                    "reformcloud/templates/"
-                            + processInformation.getProcessGroup().getName() + "/" + processInformation.getTemplate().getName()
-            ));
-            SystemHelper.copyDirectory(path, "reformcloud/templates/"
-                    + processInformation.getProcessGroup().getName() + "/" + processInformation.getTemplate().getName());
-        }
+        TemplateBackendManager.getOrDefault(this.processInformation.getTemplate().getBackend()).deployTemplate(
+                this.processInformation.getProcessGroup().getName(),
+                this.processInformation.getTemplate().getName(),
+                this.path
+        );
     }
 
     @Override
@@ -452,18 +450,11 @@ public final class DefaultRunningProcess implements RunningProcess {
     }
 
     private void createTemplateAndFiles() {
-        if (processInformation.getTemplate().getDownloadURL() != null) {
-            DownloadHelper.downloadAndDisconnect(processInformation.getTemplate().getDownloadURL(), path + "/template.zip");
-            SystemHelper.unZip(Paths.get(path + "/template.zip").toFile(), path.toString());
-            SystemHelper.deleteFile(Paths.get(path + "/template.zip").toFile());
-        } else {
-            Path template = Paths.get("reformcloud/templates/" + processInformation.getProcessGroup().getName() + "/" + processInformation.getTemplate().getName());
-            if (Files.exists(template)) {
-                SystemHelper.copyDirectory(template, path.toString());
-            } else {
-                SystemHelper.createDirectory(template);
-            }
-        }
+        TemplateBackendManager.getOrDefault(this.processInformation.getTemplate().getBackend()).loadTemplate(
+                this.processInformation.getProcessGroup().getName(),
+                this.processInformation.getTemplate().getName(),
+                this.path
+        );
 
         SystemHelper.createDirectory(Paths.get(path + "/plugins"));
         SystemHelper.createDirectory(Paths.get(path + "/reformcloud/.connection"));

@@ -2,9 +2,9 @@ package systems.reformcloud.reformcloud2.executor.api.common.api.group;
 
 import systems.reformcloud.reformcloud2.executor.api.common.groups.MainGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
+import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Template;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.PlayerAccessConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.StartupConfiguration;
-import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.Template;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 
 import java.util.List;

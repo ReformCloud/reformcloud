@@ -1,13 +1,13 @@
-package systems.reformcloud.reformcloud2.executor.api.common.groups.utils;
+package systems.reformcloud.reformcloud2.executor.api.common.groups.template;
 
 public final class Template {
 
-    public Template(int priority, String name, String serverNameSplitter, String downloadURL,
+    public Template(int priority, String name, String backend, String serverNameSplitter,
                     RuntimeConfiguration runtimeConfiguration, Version version) {
         this.priority = priority;
         this.name = name;
+        this.backend = backend;
         this.serverNameSplitter = serverNameSplitter;
-        this.downloadURL = downloadURL;
         this.runtimeConfiguration = runtimeConfiguration;
         this.version = version;
     }
@@ -16,9 +16,9 @@ public final class Template {
 
     private String name;
 
-    private String serverNameSplitter;
+    private String backend;
 
-    private String downloadURL;
+    private String serverNameSplitter;
 
     private RuntimeConfiguration runtimeConfiguration;
 
@@ -32,12 +32,12 @@ public final class Template {
         return name;
     }
 
-    public String getServerNameSplitter() {
-        return serverNameSplitter;
+    public String getBackend() {
+        return backend;
     }
 
-    public String getDownloadURL() {
-        return downloadURL;
+    public String getServerNameSplitter() {
+        return serverNameSplitter;
     }
 
     public RuntimeConfiguration getRuntimeConfiguration() {

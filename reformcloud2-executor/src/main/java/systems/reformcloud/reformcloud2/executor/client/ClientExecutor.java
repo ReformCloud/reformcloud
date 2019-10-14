@@ -21,6 +21,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.commands.source.Comm
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.event.EventManager;
 import systems.reformcloud.reformcloud2.executor.api.common.event.basic.DefaultEventManager;
+import systems.reformcloud.reformcloud2.executor.api.common.groups.template.backend.TemplateBackendManager;
 import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.LoggerBase;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.coloured.ColouredLoggerHandler;
@@ -126,6 +127,8 @@ public final class ClientExecutor extends Client {
                 clientConfig.getMaxProcesses(),
                 clientConfig.getName()
         );
+
+        TemplateBackendManager.registerDefaults();
 
         registerNetworkHandlers();
         registerDefaultCommands();

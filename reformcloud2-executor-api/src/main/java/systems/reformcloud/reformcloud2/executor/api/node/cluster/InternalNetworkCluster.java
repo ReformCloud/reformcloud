@@ -1,6 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.api.node.cluster;
 
-import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.Template;
+import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Template;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.api.common.node.NodeInformation;
 

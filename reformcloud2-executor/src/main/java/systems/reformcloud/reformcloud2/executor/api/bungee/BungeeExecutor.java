@@ -21,8 +21,8 @@ import systems.reformcloud.reformcloud2.executor.api.common.event.EventManager;
 import systems.reformcloud.reformcloud2.executor.api.common.event.basic.DefaultEventManager;
 import systems.reformcloud.reformcloud2.executor.api.common.event.handler.Listener;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.messages.IngameMessages;
+import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Version;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.PlayerAccessConfiguration;
-import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.Version;
 import systems.reformcloud.reformcloud2.executor.api.common.network.auth.NetworkType;
 import systems.reformcloud.reformcloud2.executor.api.common.network.auth.defaults.DefaultAuth;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
@@ -45,7 +45,10 @@ import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.InetSocketAddress;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.UUID;
 import java.util.function.Function;
 
 public final class BungeeExecutor extends API implements PlayerAPIExecutor {

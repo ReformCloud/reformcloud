@@ -8,7 +8,13 @@ import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonCo
 import systems.reformcloud.reformcloud2.executor.api.common.groups.MainGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.basic.DefaultProcessGroup;
-import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.*;
+import systems.reformcloud.reformcloud2.executor.api.common.groups.template.RuntimeConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Template;
+import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Version;
+import systems.reformcloud.reformcloud2.executor.api.common.groups.template.backend.basic.FileBackend;
+import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.PlayerAccessConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.StartupConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.StartupEnvironment;
 import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
@@ -444,8 +450,8 @@ public final class CommandReformCloud extends GlobalCommand {
                                     Collections.singletonList(new Template(
                                             0,
                                             "default",
+                                            FileBackend.NAME,
                                             "#",
-                                            null,
                                             new RuntimeConfiguration(
                                                     512,
                                                     new ArrayList<>(),
@@ -475,8 +481,8 @@ public final class CommandReformCloud extends GlobalCommand {
                                     Collections.singletonList(new Template(
                                             0,
                                             "default",
+                                            FileBackend.NAME,
                                             "#",
-                                            null,
                                             new RuntimeConfiguration(
                                                     512,
                                                     new ArrayList<>(),
@@ -512,8 +518,8 @@ public final class CommandReformCloud extends GlobalCommand {
                                     Collections.singletonList(new Template(
                                             0,
                                             "default",
+                                            FileBackend.NAME,
                                             "#",
-                                            null,
                                             new RuntimeConfiguration(
                                                     512,
                                                     new ArrayList<>(),
@@ -609,8 +615,8 @@ public final class CommandReformCloud extends GlobalCommand {
                                     Collections.singletonList(new Template(
                                             0,
                                             "default",
+                                            FileBackend.NAME,
                                             "#",
-                                            null,
                                             new RuntimeConfiguration(
                                                     512,
                                                     new ArrayList<>(),

@@ -11,21 +11,18 @@ import com.velocitypowered.api.event.player.PlayerChatEvent;
 import com.velocitypowered.api.event.player.ServerPreConnectEvent;
 import com.velocitypowered.api.proxy.Player;
 import net.kyori.text.TextComponent;
-import systems.reformcloud.reformcloud2.executor.api.bungee.BungeeExecutor;
 import systems.reformcloud.reformcloud2.executor.api.common.CommonHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.PlayerAccessConfiguration;
-import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.Version;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
-import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState;
-import systems.reformcloud.reformcloud2.executor.api.packets.out.*;
+import systems.reformcloud.reformcloud2.executor.api.packets.out.APIPacketOutCreateLoginRequest;
+import systems.reformcloud.reformcloud2.executor.api.packets.out.APIPacketOutLogoutPlayer;
+import systems.reformcloud.reformcloud2.executor.api.packets.out.APIPacketOutPlayerCommandExecute;
+import systems.reformcloud.reformcloud2.executor.api.packets.out.APIPacketOutPlayerLoggedIn;
 import systems.reformcloud.reformcloud2.executor.api.velocity.VelocityExecutor;
-
-import java.util.ArrayList;
-import java.util.concurrent.TimeUnit;
 
 public final class PlayerListenerHandler {
 

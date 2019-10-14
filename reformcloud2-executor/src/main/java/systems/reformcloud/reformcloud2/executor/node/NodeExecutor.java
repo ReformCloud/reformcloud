@@ -28,9 +28,10 @@ import systems.reformcloud.reformcloud2.executor.api.common.database.basic.drive
 import systems.reformcloud.reformcloud2.executor.api.common.database.config.DatabaseConfig;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.MainGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
+import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Template;
+import systems.reformcloud.reformcloud2.executor.api.common.groups.template.backend.TemplateBackendManager;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.PlayerAccessConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.StartupConfiguration;
-import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.Template;
 import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.LoggerBase;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.coloured.ColouredLoggerHandler;
@@ -179,6 +180,8 @@ public class NodeExecutor extends Node {
 
         this.applicationLoader.detectApplications();
         this.applicationLoader.installApplications();
+
+        TemplateBackendManager.registerDefaults();
 
         this.nodeConfig.getNetworkListener().forEach(e -> e.forEach((ip, port) -> {
             this.networkServer.bind(ip, port, new DefaultServerAuthHandler(

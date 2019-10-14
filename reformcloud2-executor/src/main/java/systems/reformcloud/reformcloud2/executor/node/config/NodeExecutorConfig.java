@@ -6,7 +6,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.groups.MainGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.basic.DefaultMainGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.basic.DefaultProcessGroup;
-import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.Version;
+import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Version;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.setup.Setup;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.setup.basic.DefaultSetup;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.setup.basic.DefaultSetupQuestion;

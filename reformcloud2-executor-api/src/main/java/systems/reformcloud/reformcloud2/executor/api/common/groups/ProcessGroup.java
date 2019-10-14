@@ -1,9 +1,9 @@
 package systems.reformcloud.reformcloud2.executor.api.common.groups;
 
 import com.google.gson.reflect.TypeToken;
+import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Template;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.PlayerAccessConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.StartupConfiguration;
-import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.Template;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.name.Nameable;
 
 import java.util.List;

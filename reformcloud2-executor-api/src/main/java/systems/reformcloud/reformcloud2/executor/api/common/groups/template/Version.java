@@ -1,4 +1,4 @@
-package systems.reformcloud.reformcloud2.executor.api.common.groups.utils;
+package systems.reformcloud.reformcloud2.executor.api.common.groups.template;
 
 import systems.reformcloud.reformcloud2.executor.api.common.utility.system.DownloadHelper;
 
