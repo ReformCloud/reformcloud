@@ -2,6 +2,7 @@ package systems.reformcloud.reformcloud2.executor.api.common.restapi.request;
 
 import systems.reformcloud.reformcloud2.executor.api.common.restapi.auth.Auth;
 
+import java.util.Collection;
 import java.util.List;
 
 public interface RequestListenerHandler {
@@ -14,5 +15,5 @@ public interface RequestListenerHandler {
 
     void unregisterHandler(RequestHandler requestHandler);
 
-    List<RequestHandler> getHandlers();
+    Collection<RequestHandler> getHandlers();
 }

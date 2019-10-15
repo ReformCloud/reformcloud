@@ -1,16 +1,12 @@
 package systems.reformcloud.reformcloud2.executor.api.common.restapi.request.defaults;
 
 import io.netty.channel.Channel;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.permission.PermissionResult;
 import systems.reformcloud.reformcloud2.executor.api.common.restapi.request.WebRequester;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links;
 
 import java.util.Collection;
-import java.util.function.Consumer;
 
 public class DefaultWebRequester implements WebRequester {
 
@@ -29,26 +25,6 @@ public class DefaultWebRequester implements WebRequester {
     @Override
     public Channel channel() {
         return context.channel();
-    }
-
-    @Override
-    public void send(String message) {
-        send(new TextWebSocketFrame(message));
-    }
-
-    @Override
-    public void send(TextWebSocketFrame webSocketFrame) {
-        context.channel().writeAndFlush(webSocketFrame);
-    }
-
-    @Override
-    public void sendAnd(String message, Consumer<ChannelFuture> then) {
-        sendAnd(new TextWebSocketFrame(message), then);
-    }
-
-    @Override
-    public void sendAnd(TextWebSocketFrame webSocketFrame, Consumer<ChannelFuture> then) {
-        context.channel().writeAndFlush(webSocketFrame).addListener((ChannelFutureListener) then::accept);
     }
 
     @Override

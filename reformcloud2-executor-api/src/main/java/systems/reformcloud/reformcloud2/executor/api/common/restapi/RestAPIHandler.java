@@ -1,9 +1,10 @@
 package systems.reformcloud.reformcloud2.executor.api.common.restapi;
 
 import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.handler.codec.http.HttpRequest;
 import systems.reformcloud.reformcloud2.executor.api.common.restapi.request.RequestListenerHandler;
 
-public abstract class RestAPIHandler extends SimpleChannelInboundHandler<Object> {
+public abstract class RestAPIHandler extends SimpleChannelInboundHandler<HttpRequest> {
 
     public RestAPIHandler(RequestListenerHandler requestHandler) {
         this.requestHandler = requestHandler;

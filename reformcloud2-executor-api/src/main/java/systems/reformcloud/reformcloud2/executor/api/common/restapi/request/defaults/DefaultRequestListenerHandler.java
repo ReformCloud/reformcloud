@@ -5,6 +5,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.restapi.request.Requ
 import systems.reformcloud.reformcloud2.executor.api.common.restapi.request.RequestListenerHandler;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -45,7 +46,7 @@ public final class DefaultRequestListenerHandler implements RequestListenerHandl
     }
 
     @Override
-    public List<RequestHandler> getHandlers() {
+    public Collection<RequestHandler> getHandlers() {
         return Collections.unmodifiableList(requestHandlers);
     }
 }

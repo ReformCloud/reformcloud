@@ -10,5 +10,5 @@ abstract class ChannelInitializerHandler extends ChannelInitializer<Channel> {
         this.requestListenerHandler = requestListenerHandler;
     }
 
-    protected final RequestListenerHandler requestListenerHandler;
+    final RequestListenerHandler requestListenerHandler;
 }

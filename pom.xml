@@ -70,9 +70,6 @@
 
         <service.version>2.0</service.version>
         <service.spec>BETA</service.spec>
-
-        <gpg.name>null</gpg.name>
-        <gpg.pass>null</gpg.pass>
     </properties>
 
     <build>
