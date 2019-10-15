@@ -29,7 +29,7 @@ public final class MySQLDatabase extends Database<Connection> {
 
     public MySQLDatabase() {
         Properties properties = new Properties();
-        properties.setProperty("mysql-connector-java", "8.0.17");
+        properties.setProperty("mysql-connector-java", "8.0.18");
 
         URL dependency = DEPENDENCY_LOADER.loadDependency(new DefaultDependency(
                 DefaultRepositories.MAVEN_CENTRAL,
