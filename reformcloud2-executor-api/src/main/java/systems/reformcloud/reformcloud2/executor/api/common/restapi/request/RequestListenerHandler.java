@@ -3,7 +3,6 @@ package systems.reformcloud.reformcloud2.executor.api.common.restapi.request;
 import systems.reformcloud.reformcloud2.executor.api.common.restapi.auth.Auth;
 
 import java.util.Collection;
-import java.util.List;
 
 public interface RequestListenerHandler {
 

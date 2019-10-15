@@ -32,7 +32,7 @@ public final class ServerInitializerHandler extends InitializerHandler {
     private final Consumer<ChannelHandlerContext> onAuthFailure;
 
     @Override
-    protected void initChannel(Channel channel) throws Exception {
+    protected void initChannel(Channel channel) {
         channel.pipeline()
                 .addLast("deserializer", new LengthDeserializer())
                 .addLast("decoder", new PacketDecoder())

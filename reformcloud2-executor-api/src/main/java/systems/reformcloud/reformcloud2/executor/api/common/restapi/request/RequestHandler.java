@@ -1,6 +1,5 @@
 package systems.reformcloud.reformcloud2.executor.api.common.restapi.request;
 
-import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpResponse;
 

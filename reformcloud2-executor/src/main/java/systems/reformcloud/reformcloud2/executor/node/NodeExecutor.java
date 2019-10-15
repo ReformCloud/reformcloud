@@ -186,12 +186,10 @@ public class NodeExecutor extends Node {
         this.nodeConfig.getNetworkListener().forEach(e -> e.forEach((ip, port) -> {
             this.networkServer.bind(ip, port, new DefaultServerAuthHandler(
                     packetHandler,
-                    packetSender -> {
-                        this.nodeNetworkManager.getCluster().getClusterManager().handleNodeDisconnect(
-                                    this.nodeNetworkManager.getCluster(),
-                                    packetSender.getName()
-                        );
-                    },
+                    packetSender -> this.nodeNetworkManager.getCluster().getClusterManager().handleNodeDisconnect(
+                                this.nodeNetworkManager.getCluster(),
+                                packetSender.getName()
+                    ),
                     packet -> {
                         DefaultAuth auth = packet.content().get("auth", Auth.TYPE);
                         if (this.nodeExecutorConfig.getConnectionKey() == null || auth == null) {
@@ -525,22 +523,26 @@ public class NodeExecutor extends Node {
 
     @Override
     public boolean isClientConnected(String name) {
-        return false;
+        return this.nodeNetworkManager.getCluster().getNode(name) != null;
     }
 
     @Override
     public String getClientStartHost(String name) {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public int getMaxMemory(String name) {
-        return 0;
+        if (!isClientConnected(name)) {
+            return -1;
+        }
+
+        return (int) nodeNetworkManager.getCluster().getNode(name).getMaxMemory();
     }
 
     @Override
     public int getMaxProcesses(String name) {
-        return 0;
+        throw new UnsupportedOperationException("There is no config option for max node processes");
     }
 
     @Override

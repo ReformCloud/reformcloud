@@ -8,7 +8,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.NetworkUtil;
 public final class LengthSerializer extends MessageToByteEncoder<ByteBuf> {
 
     @Override
-    protected void encode(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf, ByteBuf byteBuf2) throws Exception {
+    protected void encode(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf, ByteBuf byteBuf2) {
         int readable = byteBuf.readableBytes();
 
         int space = getVarIntSize(readable);

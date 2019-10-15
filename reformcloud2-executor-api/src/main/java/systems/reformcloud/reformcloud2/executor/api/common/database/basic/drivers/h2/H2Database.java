@@ -26,7 +26,7 @@ public class H2Database extends Database<Connection> {
 
     public H2Database() {
         Properties properties = new Properties();
-        properties.put("h2", "1.4.199");
+        properties.put("h2", "1.4.200");
 
         URL url = DEPENDENCY_LOADER.loadDependency(new DefaultDependency(
                 DefaultRepositories.MAVEN_CENTRAL,

@@ -13,7 +13,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packe
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.handler.PacketHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.server.NetworkServer;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.runtime.ReloadableRuntime;
-import systems.reformcloud.reformcloud2.executor.api.controller.Controller;
 
 import java.net.InetSocketAddress;
 import java.util.function.Consumer;
