@@ -4,6 +4,7 @@ import com.google.gson.reflect.TypeToken;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.name.Nameable;
 
 import java.util.List;
+import java.util.Objects;
 
 public class MainGroup implements Nameable {
 
@@ -25,5 +26,14 @@ public class MainGroup implements Nameable {
 
     public List<String> getSubGroups() {
         return subGroups;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof MainGroup)) return false;
+        MainGroup mainGroup = (MainGroup) o;
+        return Objects.equals(getName(), mainGroup.getName()) &&
+                Objects.equals(getSubGroups(), mainGroup.getSubGroups());
     }
 }

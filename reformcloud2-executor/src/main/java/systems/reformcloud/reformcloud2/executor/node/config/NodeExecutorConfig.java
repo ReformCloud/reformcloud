@@ -150,11 +150,36 @@ public class NodeExecutorConfig {
         this.nodeConfig = JsonConfiguration.read(NodeConfig.PATH).get("config", NodeConfig.TYPE);
         this.self = this.nodeConfig.prepare();
         this.connectionKey = JsonConfiguration.read("reformcloud/files/.connection/connection.json").getString("key");
+        this.loadGroups();
     }
 
     private void loadGroups() {
         processGroups.addAll(this.localSubGroupsRegistry.readKeys(e -> e.get("key", ProcessGroup.TYPE)));
         mainGroups.addAll(this.localMainGroupsRegistry.readKeys(e -> e.get("key", MainGroup.TYPE)));
+    }
+
+    public void handleProcessGroupCreate(ProcessGroup processGroup) {
+
+    }
+
+    public void handleMainGroupCreate(MainGroup mainGroup) {
+
+    }
+
+    public void handleProcessGroupUpdate(ProcessGroup processGroup) {
+
+    }
+
+    public void handleMainGroupUpdate(MainGroup mainGroup) {
+
+    }
+
+    public void handleProcessGroupDelete(ProcessGroup processGroup) {
+
+    }
+
+    public void handleMainGroupDelete(MainGroup mainGroup) {
+
     }
 
     private void createDirectories() {

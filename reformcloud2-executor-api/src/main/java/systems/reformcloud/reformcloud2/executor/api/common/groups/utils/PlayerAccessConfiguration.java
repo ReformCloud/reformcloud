@@ -1,5 +1,7 @@
 package systems.reformcloud.reformcloud2.executor.api.common.groups.utils;
 
+import java.util.Objects;
+
 public final class PlayerAccessConfiguration {
 
     public PlayerAccessConfiguration(boolean maintenance, String maintenanceJoinPermission,
@@ -66,5 +68,20 @@ public final class PlayerAccessConfiguration {
 
     public void toggleMaintenance() {
         this.maintenance = !this.maintenance;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof PlayerAccessConfiguration)) return false;
+        PlayerAccessConfiguration that = (PlayerAccessConfiguration) o;
+        return isMaintenance() == that.isMaintenance() &&
+                isJoinOnlyPerPermission() == that.isJoinOnlyPerPermission() &&
+                isOnlyProxyJoin() == that.isOnlyProxyJoin() &&
+                isPlayerControllerCommandReporting() == that.isPlayerControllerCommandReporting() &&
+                isUseCloudPlayerLimit() == that.isUseCloudPlayerLimit() &&
+                getMaxPlayers() == that.getMaxPlayers() &&
+                Objects.equals(getMaintenanceJoinPermission(), that.getMaintenanceJoinPermission()) &&
+                Objects.equals(getJoinPermission(), that.getJoinPermission());
     }
 }

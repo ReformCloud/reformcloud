@@ -1,6 +1,7 @@
 package systems.reformcloud.reformcloud2.executor.node;
 
 import io.netty.channel.ChannelHandlerContext;
+import org.reflections.Reflections;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorType;
 import systems.reformcloud.reformcloud2.executor.api.common.CommonHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
@@ -46,6 +47,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.auth.default
 import systems.reformcloud.reformcloud2.executor.api.common.network.auth.defaults.DefaultServerAuthHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.defaults.DefaultPacketSender;
+import systems.reformcloud.reformcloud2.executor.api.common.network.channel.handler.NetworkHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.common.network.client.NetworkClient;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.DefaultPacket;
@@ -73,6 +75,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.utility.task.default
 import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
 import systems.reformcloud.reformcloud2.executor.api.node.Node;
 import systems.reformcloud.reformcloud2.executor.api.node.cluster.ClusterSyncManager;
+import systems.reformcloud.reformcloud2.executor.api.node.cluster.SyncAction;
 import systems.reformcloud.reformcloud2.executor.api.node.network.NodeNetworkManager;
 import systems.reformcloud.reformcloud2.executor.api.node.process.NodeProcessManager;
 import systems.reformcloud.reformcloud2.executor.node.cluster.DefaultClusterManager;
@@ -82,7 +85,6 @@ import systems.reformcloud.reformcloud2.executor.node.config.NodeConfig;
 import systems.reformcloud.reformcloud2.executor.node.config.NodeExecutorConfig;
 import systems.reformcloud.reformcloud2.executor.node.network.DefaultNodeNetworkManager;
 import systems.reformcloud.reformcloud2.executor.node.network.client.NodeNetworkClient;
-import systems.reformcloud.reformcloud2.executor.node.network.packet.out.NodePacketOutSyncGroups;
 import systems.reformcloud.reformcloud2.executor.node.network.packet.out.api.NodeAPIAction;
 import systems.reformcloud.reformcloud2.executor.node.process.LocalAutoStartupHandler;
 import systems.reformcloud.reformcloud2.executor.node.process.LocalNodeProcessManager;
@@ -189,6 +191,8 @@ public class NodeExecutor extends Node {
         this.applicationLoader.installApplications();
 
         TemplateBackendManager.registerDefaults();
+
+        this.loadPacketHandlers();
 
         this.nodeConfig.getNetworkListener().forEach(e -> e.forEach((ip, port) -> {
             this.networkServer.bind(ip, port, new DefaultServerAuthHandler(
@@ -371,6 +375,10 @@ public class NodeExecutor extends Node {
 
     public NodeConfig getNodeConfig() {
         return nodeConfig;
+    }
+
+    public NodeExecutorConfig getNodeExecutorConfig() {
+        return nodeExecutorConfig;
     }
 
     public Double<String, Integer> getConnectHost() {
@@ -1393,10 +1401,12 @@ public class NodeExecutor extends Node {
                 return;
             }
 
-            this.nodeNetworkManager.getCluster().publishToHeadNode(new NodePacketOutSyncGroups(
-                    this.nodeExecutorConfig.getMainGroups(),
-                    this.nodeExecutorConfig.getProcessGroups()
-            ));
+            this.clusterSyncManager.syncProcessGroups(
+                    this.nodeExecutorConfig.getProcessGroups(), SyncAction.SYNC
+            );
+            this.clusterSyncManager.syncMainGroups(
+                    this.nodeExecutorConfig.getMainGroups(), SyncAction.SYNC
+            );
         });
     }
 
@@ -1406,6 +1416,10 @@ public class NodeExecutor extends Node {
                 .register(new CommandReload(this))
                 .register(new CommandClear(loggerBase))
                 .register(new CommandHelp(commandManager));
+    }
+
+    private void loadPacketHandlers() {
+        new Reflections("systems.reformcloud.reformcloud2.executor.node.network.packet.in").getSubTypesOf(NetworkHandler.class).forEach(packetHandler::registerHandler);
     }
 
     private void sendGroups() {

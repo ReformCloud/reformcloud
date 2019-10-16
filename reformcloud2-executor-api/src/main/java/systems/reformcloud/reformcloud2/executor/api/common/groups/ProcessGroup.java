@@ -7,6 +7,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.Startup
 import systems.reformcloud.reformcloud2.executor.api.common.utility.name.Nameable;
 
 import java.util.List;
+import java.util.Objects;
 
 public class ProcessGroup implements Nameable {
 
@@ -85,5 +86,20 @@ public class ProcessGroup implements Nameable {
     @Override
     public String getName() {
         return name;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ProcessGroup)) return false;
+        ProcessGroup that = (ProcessGroup) o;
+        return isShowIdInName() == that.isShowIdInName() &&
+                isStaticProcess() == that.isStaticProcess() &&
+                isCanBeUsedAsLobby() == that.isCanBeUsedAsLobby() &&
+                Objects.equals(getName(), that.getName()) &&
+                Objects.equals(getParentGroup(), that.getParentGroup()) &&
+                Objects.equals(getStartupConfiguration(), that.getStartupConfiguration()) &&
+                Objects.equals(getTemplates(), that.getTemplates()) &&
+                Objects.equals(getPlayerAccessConfiguration(), that.getPlayerAccessConfiguration());
     }
 }

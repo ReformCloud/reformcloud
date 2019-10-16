@@ -112,6 +112,8 @@ public class BasicLocalNodeProcess implements LocalNodeProcess {
                 "-DIReallyKnowWhatIAmDoingISwear=true",
                 "-Djline.terminal=jline.UnsupportedTerminal",
 
+                "-Djava.system.class.loader=systems.reformcloud.reformcloud2.runner.classloading.RunnerClassLoader",
+
                 "-Dreformcloud.executor.type=3",
                 "-Dreformcloud.lib.path=" + LIB_PATH,
                 "-Dreformcloud.process.path=" + new File("reformcloud/files/" + Version.format(

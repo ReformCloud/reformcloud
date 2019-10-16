@@ -1,6 +1,7 @@
 package systems.reformcloud.reformcloud2.executor.api.common.groups.utils;
 
 import java.util.List;
+import java.util.Objects;
 
 public final class StartupConfiguration {
 
@@ -56,5 +57,19 @@ public final class StartupConfiguration {
 
     public List<String> getUseOnlyTheseClients() {
         return useOnlyTheseClients;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof StartupConfiguration)) return false;
+        StartupConfiguration that = (StartupConfiguration) o;
+        return getMaxOnlineProcesses() == that.getMaxOnlineProcesses() &&
+                getMinOnlineProcesses() == that.getMinOnlineProcesses() &&
+                getStartupPriority() == that.getStartupPriority() &&
+                getStartPort() == that.getStartPort() &&
+                isSearchBestClientAlone() == that.isSearchBestClientAlone() &&
+                getStartupEnvironment() == that.getStartupEnvironment() &&
+                Objects.equals(getUseOnlyTheseClients(), that.getUseOnlyTheseClients());
     }
 }

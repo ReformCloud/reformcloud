@@ -14,9 +14,9 @@ public interface ClusterSyncManager {
 
     void syncProcessStop(ProcessInformation processInformation);
 
-    void syncProcessGroups(Collection<ProcessGroup> processGroups);
+    void syncProcessGroups(Collection<ProcessGroup> processGroups, SyncAction action);
 
-    void syncMainGroup(Collection<MainGroup> mainGroups);
+    void syncMainGroups(Collection<MainGroup> mainGroups, SyncAction action);
 
     Collection<ProcessGroup> getProcessGroups();
 
@@ -37,6 +37,10 @@ public interface ClusterSyncManager {
     void syncProcessGroupDelete(String name);
 
     void syncMainGroupDelete(String name);
+
+    void handleProcessGroupSync(Collection<ProcessGroup> groups, SyncAction action);
+
+    void handleMainGroupSync(Collection<MainGroup> groups, SyncAction action);
 
     void doClusterReload();
 
