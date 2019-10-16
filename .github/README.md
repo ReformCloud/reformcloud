@@ -28,12 +28,12 @@ The cloud system supports java and bedrock edition.
 
  - 1 GB Memory
  - 1 CPU Core
- - Java 8, 9, **~~10~~ (Java 10 is not supported anymore)** or 11
+ - Java 8, 9, **~~10~~ (Java 10 is not supported anymore)**, 11, 12 or 13
  
 ## Startup
 The startup is very easy. Just start the cloud system using the following command:
 ```
-java -XX:+UseG1GC -XX:MaxGCPauseMillis=50 -XX:CompileThreshold=100 -Xmx512m -Xms256m -jar runner.jar
+java -Djava.system.class.loader=systems.reformcloud.reformcloud2.runner.classloading.RunnerClassLoader -XX:+UseG1GC -XX:MaxGCPauseMillis=50 -XX:CompileThreshold=100 -Xmx512m -Xms256m -jar runner.jar
 ```
 
 The runner is now going to download the needed libraries, so **make sure you have an internet connection** 

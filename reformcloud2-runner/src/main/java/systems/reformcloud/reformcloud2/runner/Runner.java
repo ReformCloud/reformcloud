@@ -199,8 +199,7 @@ public final class Runner {
             Field field = ClassLoader.class.getDeclaredField("scl");
             field.setAccessible(true);
             field.set(null, newLoader);
-        } catch (final Exception ex) {
-            ex.printStackTrace();
+        } catch (final Exception ignored) {
         }
     }
 
