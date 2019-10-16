@@ -1,5 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.node.cluster.sync;
 
+import systems.reformcloud.reformcloud2.executor.api.common.groups.MainGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.node.cluster.ClusterSyncManager;
@@ -52,8 +53,58 @@ public class DefaultClusterSyncManager implements ClusterSyncManager {
     }
 
     @Override
+    public void syncMainGroup(Collection<MainGroup> mainGroups) {
+
+    }
+
+    @Override
     public Collection<ProcessGroup> getProcessGroups() {
         return processGroups;
+    }
+
+    @Override
+    public Collection<MainGroup> getMainGroups() {
+        return null;
+    }
+
+    @Override
+    public boolean existsProcessGroup(String name) {
+        return false;
+    }
+
+    @Override
+    public boolean existsMainGroup(String name) {
+        return false;
+    }
+
+    @Override
+    public void syncProcessGroupCreate(ProcessGroup group) {
+
+    }
+
+    @Override
+    public void syncMainGroupCreate(MainGroup group) {
+
+    }
+
+    @Override
+    public void syncProcessGroupUpdate(ProcessGroup processGroup) {
+
+    }
+
+    @Override
+    public void syncMainGroupUpdate(MainGroup mainGroup) {
+
+    }
+
+    @Override
+    public void syncProcessGroupDelete(String name) {
+
+    }
+
+    @Override
+    public void syncMainGroupDelete(String name) {
+
     }
 
     @Override

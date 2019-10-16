@@ -1,5 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.api.node.cluster;
 
+import systems.reformcloud.reformcloud2.executor.api.common.groups.MainGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 
@@ -15,7 +16,27 @@ public interface ClusterSyncManager {
 
     void syncProcessGroups(Collection<ProcessGroup> processGroups);
 
+    void syncMainGroup(Collection<MainGroup> mainGroups);
+
     Collection<ProcessGroup> getProcessGroups();
+
+    Collection<MainGroup> getMainGroups();
+
+    boolean existsProcessGroup(String name);
+
+    boolean existsMainGroup(String name);
+
+    void syncProcessGroupCreate(ProcessGroup group);
+
+    void syncMainGroupCreate(MainGroup group);
+
+    void syncProcessGroupUpdate(ProcessGroup processGroup);
+
+    void syncMainGroupUpdate(MainGroup mainGroup);
+
+    void syncProcessGroupDelete(String name);
+
+    void syncMainGroupDelete(String name);
 
     void doClusterReload();
 

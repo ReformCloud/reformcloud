@@ -185,16 +185,16 @@ public abstract class ExternalAPIImplementation extends ExecutorAPI {
     }
 
     @Override
-    public Task<Command> getControllerCommandAsync(String name) {
+    public Task<Command> getCommandAsync(String name) {
         Task<Command> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> sendPacketQuery(new ExternalAPIPacketOutGetCommand(name), packet -> task.complete(packet.content().get("result", Command.TYPE))));
         return task;
     }
 
     @Override
-    public Task<Boolean> isControllerCommandRegisteredAsync(String name) {
+    public Task<Boolean> isCommandRegisteredAsync(String name) {
         Task<Boolean> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> task.complete(getControllerCommandAsync(name).getUninterruptedly(TimeUnit.SECONDS, 5) != null));
+        Task.EXECUTOR.execute(() -> task.complete(getCommandAsync(name).getUninterruptedly(TimeUnit.SECONDS, 5) != null));
         return task;
     }
 
@@ -214,13 +214,13 @@ public abstract class ExternalAPIImplementation extends ExecutorAPI {
     }
 
     @Override
-    public Command getControllerCommand(String name) {
-        return getControllerCommandAsync(name).getUninterruptedly();
+    public Command getCommand(String name) {
+        return getCommandAsync(name).getUninterruptedly();
     }
 
     @Override
-    public boolean isControllerCommandRegistered(String name) {
-        return isControllerCommandRegisteredAsync(name).getUninterruptedly();
+    public boolean isCommandRegistered(String name) {
+        return isCommandRegisteredAsync(name).getUninterruptedly();
     }
 
     @Override

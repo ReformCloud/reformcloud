@@ -30,5 +30,5 @@ public interface NodeProcessManager extends Updateable<ProcessInformation>, Iter
 
     boolean isLocal(UUID uniqueID);
 
-    Collection<ProcessInformation> getLocalProcesses();
+    Collection<ProcessInformation> getClusterProcesses();
 }

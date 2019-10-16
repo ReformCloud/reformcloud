@@ -11,7 +11,7 @@ public interface ConsoleAsyncAPI extends ConsoleSyncAPI {
 
     Task<String> dispatchCommandAndGetResultAsync(String commandLine);
 
-    Task<Command> getControllerCommandAsync(String name);
+    Task<Command> getCommandAsync(String name);
 
-    Task<Boolean> isControllerCommandRegisteredAsync(String name);
+    Task<Boolean> isCommandRegisteredAsync(String name);
 }

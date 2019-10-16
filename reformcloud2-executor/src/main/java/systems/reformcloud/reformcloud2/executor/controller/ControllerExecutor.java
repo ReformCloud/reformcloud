@@ -509,14 +509,14 @@ public final class ControllerExecutor extends Controller {
     }
 
     @Override
-    public Task<Command> getControllerCommandAsync(String name) {
+    public Task<Command> getCommandAsync(String name) {
         Task<Command> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> task.complete(commandManager.getCommand(name)));
         return task;
     }
 
     @Override
-    public Task<Boolean> isControllerCommandRegisteredAsync(String name) {
+    public Task<Boolean> isCommandRegisteredAsync(String name) {
         Task<Boolean> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> task.complete(commandManager.getCommand(name) != null));
         return task;
@@ -542,13 +542,13 @@ public final class ControllerExecutor extends Controller {
     }
 
     @Override
-    public Command getControllerCommand(String name) {
-        return getControllerCommandAsync(name).getUninterruptedly();
+    public Command getCommand(String name) {
+        return getCommandAsync(name).getUninterruptedly();
     }
 
     @Override
-    public boolean isControllerCommandRegistered(String name) {
-        return getControllerCommand(name) != null;
+    public boolean isCommandRegistered(String name) {
+        return getCommand(name) != null;
     }
 
     @Override

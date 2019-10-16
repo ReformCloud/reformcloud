@@ -113,7 +113,7 @@ public class LocalNodeProcessManager implements NodeProcessManager {
     }
 
     @Override
-    public Collection<ProcessInformation> getLocalProcesses() {
+    public Collection<ProcessInformation> getClusterProcesses() {
         return Collections.unmodifiableCollection(information);
     }
 

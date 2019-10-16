@@ -10,7 +10,7 @@ public interface ConsoleSyncAPI {
 
     String dispatchCommandAndGetResult(String commandLine);
 
-    Command getControllerCommand(String name);
+    Command getCommand(String name);
 
-    boolean isControllerCommandRegistered(String name);
+    boolean isCommandRegistered(String name);
 }
