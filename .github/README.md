@@ -28,7 +28,11 @@ The cloud system supports java and bedrock edition.
 
  - 1 GB Memory
  - 1 CPU Core
- - Java 8, 9, **~~10~~ (Java 10 is not supported anymore)**, 11, 12 or 13
+
+## Supported Java Versions
+ 
+ - Java 8+ : **SUPPORTED**
+ - Java 7- : **NOT SUPPORTED**
  
 ## Startup
 The startup is very easy. Just start the cloud system using the following command:
