@@ -3,6 +3,7 @@ package systems.reformcloud.reformcloud2.executor.node.process;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Template;
+import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.common.node.NodeInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.node.NodeProcess;
 import systems.reformcloud.reformcloud2.executor.api.common.process.NetworkInfo;
@@ -12,7 +13,9 @@ import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links;
 import systems.reformcloud.reformcloud2.executor.api.node.process.LocalNodeProcess;
 import systems.reformcloud.reformcloud2.executor.api.node.process.NodeProcessManager;
+import systems.reformcloud.reformcloud2.executor.client.process.ProcessQueue;
 import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
+import systems.reformcloud.reformcloud2.executor.node.network.packet.out.NodePacketOutQueueProcess;
 import systems.reformcloud.reformcloud2.executor.node.process.manager.LocalProcessManager;
 import systems.reformcloud.reformcloud2.executor.node.process.startup.LocalProcessQueue;
 
@@ -88,7 +91,76 @@ public class LocalNodeProcessManager implements NodeProcessManager {
 
     @Override
     public ProcessInformation queueProcess(ProcessGroup processGroup, Template template, JsonConfiguration data, NodeInformation node) {
-        return null;
+        int id = nextID(processGroup);
+        ProcessInformation processInformation = new ProcessInformation(
+                processGroup.getName() + (processGroup.isShowIdInName() ? id : ""),
+                NodeExecutor.getInstance().getNodeConfig().getName(),
+                NodeExecutor.getInstance().getNodeConfig().getUniqueID(),
+                UUID.randomUUID(),
+                id,
+                ProcessState.PREPARED,
+                new NetworkInfo(
+                        NodeExecutor.getInstance().getConnectHost().getFirst(),
+                        NodeExecutor.getInstance().getConnectHost().getSecond(),
+                        false
+                ), processGroup,
+                template,
+                ProcessRuntimeInformation.empty(),
+                new ArrayList<>(),
+                data,
+                processGroup.getPlayerAccessConfiguration().getMaxPlayers()
+        );
+        DefaultChannelManager.INSTANCE.get(node.getName()).ifPresent(e -> e.sendPacket(new NodePacketOutQueueProcess(processInformation)));
+        return processInformation;
+    }
+
+    @Override
+    public void queueLocal(ProcessInformation processInformation) {
+        ProcessQueue.queue(processInformation);
+        NodeInformation information = NodeExecutor.getInstance().getNodeNetworkManager().getCluster().getSelfNode();
+        information.addUsedMemory(processInformation.getTemplate().getRuntimeConfiguration().getMaxMemory());
+        information.getQueuedProcesses().put(processInformation.getProcessGroup().getName(), processInformation.getName());
+        NodeExecutor.getInstance().getClusterSyncManager().syncSelfInformation();
+    }
+
+    @Override
+    public void handleLocalProcessStart(ProcessInformation processInformation) {
+        NodeInformation information = NodeExecutor.getInstance().getNodeNetworkManager().getCluster().getSelfNode();
+        Links.deepFilterToReference(information.getQueuedProcesses(), e -> e.getValue().equals(processInformation.getName()))
+                .ifPresent(information.getQueuedProcesses()::remove);
+        information.getStartedProcesses().add(new NodeProcess(
+                processInformation.getProcessGroup().getName(),
+                processInformation.getName(),
+                processInformation.getProcessUniqueID()
+        ));
+        NodeExecutor.getInstance().getClusterSyncManager().syncSelfInformation();
+    }
+
+    @Override
+    public void handleLocalProcessStop(ProcessInformation processInformation) {
+        NodeInformation information = NodeExecutor.getInstance().getNodeNetworkManager().getCluster().getSelfNode();
+        information.removeUsedMemory(processInformation.getTemplate().getRuntimeConfiguration().getMaxMemory());
+        Links.filterToReference(information.getStartedProcesses(), e -> e.getUniqueID().equals(processInformation.getProcessUniqueID()))
+                .ifPresent(information.getStartedProcesses()::remove);
+        NodeExecutor.getInstance().getClusterSyncManager().syncSelfInformation();
+    }
+
+    @Override
+    public void handleProcessStart(ProcessInformation processInformation) {
+        this.information.add(processInformation);
+    }
+
+    @Override
+    public void handleProcessUpdate(ProcessInformation processInformation) {
+        Links.filterToReference(this.information, e -> e.getProcessUniqueID().equals(processInformation.getProcessUniqueID())).ifPresent(e -> {
+            this.information.remove(e);
+            this.information.add(processInformation);
+        });
+    }
+
+    @Override
+    public void handleProcessStop(ProcessInformation processInformation) {
+        Links.filterToReference(information, e -> e.getProcessUniqueID().equals(processInformation.getProcessUniqueID())).ifPresent(information::remove);
     }
 
     @Override

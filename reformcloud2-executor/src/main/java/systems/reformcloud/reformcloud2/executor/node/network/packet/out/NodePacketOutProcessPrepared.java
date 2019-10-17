@@ -9,7 +9,7 @@ import java.util.UUID;
 public class NodePacketOutProcessPrepared extends DefaultPacket {
 
     public NodePacketOutProcessPrepared(String name, UUID uuid, String template) {
-        super(NetworkUtil.CONTROLLER_INFORMATION_BUS + 6, new JsonConfiguration()
+        super(NetworkUtil.NODE_TO_NODE_BUS + 10, new JsonConfiguration()
                 .add("name", name)
                 .add("uuid", uuid)
                 .add("template", template)

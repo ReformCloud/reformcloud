@@ -159,27 +159,27 @@ public class NodeExecutorConfig {
     }
 
     public void handleProcessGroupCreate(ProcessGroup processGroup) {
-
+        this.localSubGroupsRegistry.createKey(processGroup.getName(), processGroup);
     }
 
     public void handleMainGroupCreate(MainGroup mainGroup) {
-
+        this.localMainGroupsRegistry.createKey(mainGroup.getName(), mainGroup);
     }
 
     public void handleProcessGroupUpdate(ProcessGroup processGroup) {
-
+        this.localSubGroupsRegistry.updateKey(processGroup.getName(), processGroup);
     }
 
     public void handleMainGroupUpdate(MainGroup mainGroup) {
-
+        this.localMainGroupsRegistry.updateKey(mainGroup.getName(), mainGroup);
     }
 
     public void handleProcessGroupDelete(ProcessGroup processGroup) {
-
+        this.localSubGroupsRegistry.deleteKey(processGroup.getName());
     }
 
     public void handleMainGroupDelete(MainGroup mainGroup) {
-
+        this.localMainGroupsRegistry.deleteKey(mainGroup.getName());
     }
 
     private void createDirectories() {

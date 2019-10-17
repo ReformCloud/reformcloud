@@ -18,7 +18,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.utility.system.Downl
 import systems.reformcloud.reformcloud2.executor.api.common.utility.system.SystemHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
 import systems.reformcloud.reformcloud2.executor.client.ClientExecutor;
-import systems.reformcloud.reformcloud2.executor.node.network.packet.out.NodePacketOutProcessPrepared;
+import systems.reformcloud.reformcloud2.executor.client.packet.out.ClientPacketOutProcessPrepared;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -88,7 +88,7 @@ public final class DefaultRunningProcess implements RunningProcess {
         ExecutorAPI.getInstance().update(processInformation);
         prepared = true;
 
-        DefaultChannelManager.INSTANCE.get("Controller").ifPresent(packetSender -> packetSender.sendPacket(new NodePacketOutProcessPrepared(
+        DefaultChannelManager.INSTANCE.get("Controller").ifPresent(packetSender -> packetSender.sendPacket(new ClientPacketOutProcessPrepared(
                 processInformation.getName(),
                 processInformation.getProcessUniqueID(),
                 processInformation.getTemplate().getName()

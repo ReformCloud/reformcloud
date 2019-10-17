@@ -24,6 +24,18 @@ public interface NodeProcessManager extends Updateable<ProcessInformation>, Iter
 
     ProcessInformation queueProcess(ProcessGroup processGroup, Template template, JsonConfiguration data, NodeInformation node);
 
+    void queueLocal(ProcessInformation processInformation);
+
+    void handleLocalProcessStart(ProcessInformation processInformation);
+
+    void handleLocalProcessStop(ProcessInformation processInformation);
+
+    void handleProcessStart(ProcessInformation processInformation);
+
+    void handleProcessUpdate(ProcessInformation processInformation);
+
+    void handleProcessStop(ProcessInformation processInformation);
+
     void handleProcessDisconnect(String name);
 
     boolean isLocal(String name);

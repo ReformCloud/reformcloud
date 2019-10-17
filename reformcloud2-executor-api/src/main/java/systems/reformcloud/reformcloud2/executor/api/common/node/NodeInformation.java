@@ -74,6 +74,14 @@ public class NodeInformation {
         return queuedProcesses;
     }
 
+    public void addUsedMemory(int memory) {
+        this.usedMemory += memory;
+    }
+
+    public void removeUsedMemory(int memory) {
+        this.usedMemory -= memory;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (!(obj instanceof NodeInformation)) {

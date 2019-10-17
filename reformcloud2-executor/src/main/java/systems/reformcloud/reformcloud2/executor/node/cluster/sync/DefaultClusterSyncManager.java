@@ -2,12 +2,14 @@ package systems.reformcloud.reformcloud2.executor.node.cluster.sync;
 
 import systems.reformcloud.reformcloud2.executor.api.common.groups.MainGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
+import systems.reformcloud.reformcloud2.executor.api.common.node.NodeInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links;
 import systems.reformcloud.reformcloud2.executor.api.node.cluster.ClusterSyncManager;
 import systems.reformcloud.reformcloud2.executor.api.node.cluster.SyncAction;
 import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
 import systems.reformcloud.reformcloud2.executor.node.network.client.NodeNetworkClient;
+import systems.reformcloud.reformcloud2.executor.node.network.packet.out.NodePacketOutNodeInformationUpdate;
 import systems.reformcloud.reformcloud2.executor.node.network.packet.out.cluster.PacketOutProcessAction;
 import systems.reformcloud.reformcloud2.executor.node.network.packet.out.cluster.PacketOutReloadCluster;
 import systems.reformcloud.reformcloud2.executor.node.network.packet.out.cluster.PacketOutSyncMainGroups;
@@ -30,6 +32,13 @@ public class DefaultClusterSyncManager implements ClusterSyncManager {
     private final Collection<ProcessGroup> processGroups = new ArrayList<>();
 
     private final Collection<MainGroup> mainGroups = new ArrayList<>();
+
+    @Override
+    public void syncSelfInformation() {
+        NodeExecutor.getInstance().getNodeNetworkManager().getCluster().broadCastToCluster(
+                new NodePacketOutNodeInformationUpdate(NodeExecutor.getInstance().getNodeNetworkManager().getCluster().getSelfNode())
+        );
+    }
 
     @Override
     public void syncProcessStartup(ProcessInformation processInformation) {
@@ -164,6 +173,10 @@ public class DefaultClusterSyncManager implements ClusterSyncManager {
                         NodeExecutor.getInstance().getNodeExecutorConfig().handleProcessGroupUpdate(newGroup);
                     }
                 }));
+
+                if (action.equals(SyncAction.SYNC)) {
+                    processGroups.addAll(Links.allOf(groups, g -> processGroups.stream().noneMatch(e -> e.getName().equals(g.getName()))));
+                }
                 break;
             }
 
@@ -201,6 +214,10 @@ public class DefaultClusterSyncManager implements ClusterSyncManager {
                         NodeExecutor.getInstance().getNodeExecutorConfig().handleMainGroupUpdate(newGroup);
                     }
                 }));
+
+                if (action.equals(SyncAction.SYNC)) {
+                    mainGroups.addAll(Links.allOf(groups, g -> mainGroups.stream().noneMatch(e -> e.getName().equals(g.getName()))));
+                }
                 break;
             }
 
@@ -215,14 +232,23 @@ public class DefaultClusterSyncManager implements ClusterSyncManager {
     }
 
     @Override
-    public void doClusterReload() {
-        NodeExecutor.getInstance().getNodeNetworkManager().getCluster().broadCastToCluster(new PacketOutReloadCluster());
-
+    public void handleClusterReload() {
         try {
             NodeExecutor.getInstance().reload();
-        } catch (final Throwable throwable) {
-            throwable.printStackTrace();
+        } catch (final Exception ex) {
+            ex.printStackTrace();
         }
+    }
+
+    @Override
+    public void handleNodeInformationUpdate(NodeInformation nodeInformation) {
+        NodeExecutor.getInstance().getNodeNetworkManager().getCluster().handleNodeUpdate(nodeInformation);
+    }
+
+    @Override
+    public void doClusterReload() {
+        NodeExecutor.getInstance().getNodeNetworkManager().getCluster().broadCastToCluster(new PacketOutReloadCluster());
+        handleClusterReload();
     }
 
     @Override

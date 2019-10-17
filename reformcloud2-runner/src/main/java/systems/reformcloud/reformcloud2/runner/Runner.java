@@ -53,7 +53,7 @@ public final class Runner {
                             return new RunnerClassLoader(urls);
                         });
                 if (!(classLoader instanceof URLClassLoader)) {
-                    throw new RuntimeException("ClassLoader has to be a url class loader");
+                    throw new RuntimeException("ClassLoader has to be an url class loader");
                 }
 
                 updateClassLoader(classLoader);

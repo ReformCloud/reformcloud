@@ -62,6 +62,16 @@ public final class Links {
         return ReferencedOptional.empty();
     }
 
+    public static <K, V> ReferencedOptional<V> deepFilterToReference(Map<K, V> in, Predicate<Map.Entry<K, V>> predicate) {
+        for (Map.Entry<K, V> entry : in.entrySet()) {
+            if (predicate.test(entry)) {
+                return ReferencedOptional.build(entry.getValue());
+            }
+        }
+
+        return ReferencedOptional.empty();
+    }
+
     public static <T, F> F filterAndApply(List<T> in, Predicate<T> predicate, Function<T, F> function) {
         for (T t : in) {
             if (predicate.test(t)) {

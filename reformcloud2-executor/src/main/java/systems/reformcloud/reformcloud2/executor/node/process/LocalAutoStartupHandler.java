@@ -64,10 +64,13 @@ public class LocalAutoStartupHandler extends AbsoluteThread {
                     }
 
                     ExecutorAPI.getInstance().startProcess(processGroup.getName());
+                    AbsoluteThread.sleep(100);
                 }
             } catch (final Throwable throwable) {
                 throwable.printStackTrace();
             }
+
+            AbsoluteThread.sleep(50);
         }
     }
 }

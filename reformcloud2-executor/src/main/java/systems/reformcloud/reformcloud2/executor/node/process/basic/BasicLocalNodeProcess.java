@@ -144,6 +144,9 @@ public class BasicLocalNodeProcess implements LocalNodeProcess {
 
         processInformation.setProcessState(ProcessState.STARTED);
         ExecutorAPI.getInstance().update(processInformation);
+
+        NodeExecutor.getInstance().getClusterSyncManager().syncProcessStartup(processInformation);
+        NodeExecutor.getInstance().getNodeNetworkManager().getNodeProcessHelper().handleLocalProcessStart(processInformation);
         startupTime.set(System.currentTimeMillis());
         return true;
     }
@@ -152,6 +155,9 @@ public class BasicLocalNodeProcess implements LocalNodeProcess {
     public void shutdown() {
         sendCommand("stop");
         sendCommand("end");
+
+        NodeExecutor.getInstance().getClusterSyncManager().syncProcessStop(processInformation);
+        NodeExecutor.getInstance().getNodeNetworkManager().getNodeProcessHelper().handleLocalProcessStop(processInformation);
 
         AbsoluteThread.sleep(TimeUnit.MILLISECONDS, 100);
 

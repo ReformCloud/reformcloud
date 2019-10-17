@@ -25,6 +25,8 @@ public interface InternalNetworkCluster {
 
     Collection<NodeInformation> getConnectedNodes();
 
+    void handleNodeUpdate(NodeInformation nodeInformation);
+
     default boolean noOtherNodes() {
         return getConnectedNodes().isEmpty();
     }

@@ -7,6 +7,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.channel.mana
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.handler.PacketHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.node.NodeInformation;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links;
 import systems.reformcloud.reformcloud2.executor.api.node.cluster.ClusterManager;
 import systems.reformcloud.reformcloud2.executor.api.node.cluster.InternalNetworkCluster;
 
@@ -60,6 +61,14 @@ public class DefaultNodeInternalCluster implements InternalNetworkCluster {
     @Override
     public Collection<NodeInformation> getConnectedNodes() {
         return connectedNodes;
+    }
+
+    @Override
+    public void handleNodeUpdate(NodeInformation nodeInformation) {
+        Links.filterToReference(connectedNodes, e -> e.getNodeUniqueID().equals(nodeInformation.getNodeUniqueID())).ifPresent(e -> {
+            this.connectedNodes.add(nodeInformation);
+            this.connectedNodes.remove(e);
+        });
     }
 
     @Override

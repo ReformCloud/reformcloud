@@ -2,11 +2,14 @@ package systems.reformcloud.reformcloud2.executor.api.node.cluster;
 
 import systems.reformcloud.reformcloud2.executor.api.common.groups.MainGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
+import systems.reformcloud.reformcloud2.executor.api.common.node.NodeInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 
 import java.util.Collection;
 
 public interface ClusterSyncManager {
+
+    void syncSelfInformation();
 
     void syncProcessStartup(ProcessInformation processInformation);
 
@@ -41,6 +44,10 @@ public interface ClusterSyncManager {
     void handleProcessGroupSync(Collection<ProcessGroup> groups, SyncAction action);
 
     void handleMainGroupSync(Collection<MainGroup> groups, SyncAction action);
+
+    void handleClusterReload();
+
+    void handleNodeInformationUpdate(NodeInformation nodeInformation);
 
     void doClusterReload();
 
