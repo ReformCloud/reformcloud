@@ -94,6 +94,7 @@ public class BasicLocalNodeProcess implements LocalNodeProcess {
                 processInformation.getProcessUniqueID(),
                 processInformation.getTemplate().getName()
         ));
+        NodeExecutor.getInstance().getNodeNetworkManager().getNodeProcessHelper().registerLocalProcess(this);
     }
 
     @Override
@@ -158,6 +159,7 @@ public class BasicLocalNodeProcess implements LocalNodeProcess {
 
         NodeExecutor.getInstance().getClusterSyncManager().syncProcessStop(processInformation);
         NodeExecutor.getInstance().getNodeNetworkManager().getNodeProcessHelper().handleLocalProcessStop(processInformation);
+        NodeExecutor.getInstance().getNodeNetworkManager().getNodeProcessHelper().unregisterLocalProcess(processInformation.getProcessUniqueID());
 
         AbsoluteThread.sleep(TimeUnit.MILLISECONDS, 100);
 

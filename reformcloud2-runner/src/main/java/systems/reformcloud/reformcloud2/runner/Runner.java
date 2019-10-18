@@ -4,7 +4,7 @@ import systems.reformcloud.reformcloud2.runner.classloading.ClassPreparer;
 import systems.reformcloud.reformcloud2.runner.classloading.RunnerClassLoader;
 
 import java.io.*;
-import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -56,36 +56,17 @@ public final class Runner {
                     throw new RuntimeException("ClassLoader has to be an url class loader");
                 }
 
-                updateClassLoader(classLoader);
-
                 try (JarFile jarFile = new JarFile(file)) {
                     String main = jarFile.getManifest().getMainAttributes().getValue("Main-Class");
                     Method invoke = classLoader.loadClass(main).getMethod("main", String[].class);
-                    invoke.setAccessible(true);
 
-                    switch (id) {
-                        case "1": {
-                            createInvoke("1");
-                            invoke.invoke(null, (Object) args);
-                            break;
-                        }
-
-                        case "2": {
-                            createInvoke("2");
-                            invoke.invoke(null, (Object) args);
-                            break;
-                        }
-
-                        case "4": {
-                            createInvoke("4");
-                            invoke.invoke(null, (Object) args);
-                            break;
-                        }
-
-                        default: {
-                            throw new RuntimeException("Unknown id provided by config detected");
-                        }
+                    if (id.equals("1") || id.equals("2") || id.equals("4")) {
+                        createInvoke(id);
+                    } else {
+                        throw new RuntimeException("Unknown id provided by config detected");
                     }
+
+                    invokeMethod(invoke, args, classLoader);
                 } catch (final Exception ex) {
                     ex.printStackTrace();
                 }
@@ -101,12 +82,11 @@ public final class Runner {
                     throw new RuntimeException("ClassLoader has to be a url class loader");
                 }
 
-                updateClassLoader(classLoader);
                 try (JarFile jarFile = new JarFile(path.toFile())) {
                     String main = jarFile.getManifest().getMainAttributes().getValue("Main-Class");
                     Method invoke = classLoader.loadClass(main).getMethod("main", String[].class);
-                    invoke.setAccessible(true);
-                    invoke.invoke(null, (Object) args);
+
+                    invokeMethod(invoke, args, classLoader);
                 } catch (final Exception ex) {
                     ex.printStackTrace();
                 }
@@ -192,17 +172,6 @@ public final class Runner {
         }
     }
 
-    private static void updateClassLoader(ClassLoader newLoader) {
-        Thread.currentThread().setContextClassLoader(newLoader);
-
-        try {
-            Field field = ClassLoader.class.getDeclaredField("scl");
-            field.setAccessible(true);
-            field.set(null, newLoader);
-        } catch (final Exception ignored) {
-        }
-    }
-
     private static void createInvoke(String id) {
         System.setProperty("reformcloud.executor.type", id);
     }
@@ -216,5 +185,23 @@ public final class Runner {
         }
 
         consumer.accept(Paths.get(fileName));
+    }
+
+    private static void invokeMethod(Method method, Object args, ClassLoader classLoader) {
+        try {
+            Thread thread = new Thread(() -> {
+                try {
+                    method.invoke(null, args);
+                } catch (final InvocationTargetException | IllegalAccessException ex) {
+                    ex.printStackTrace();
+                }
+            });
+            thread.setContextClassLoader(classLoader);
+            thread.setDaemon(true);
+            thread.start();
+            thread.join();
+        } catch (final InterruptedException ex) {
+            ex.printStackTrace();
+        }
     }
 }

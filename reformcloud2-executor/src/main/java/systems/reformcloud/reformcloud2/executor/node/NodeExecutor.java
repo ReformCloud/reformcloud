@@ -88,6 +88,7 @@ import systems.reformcloud.reformcloud2.executor.node.config.NodeConfig;
 import systems.reformcloud.reformcloud2.executor.node.config.NodeExecutorConfig;
 import systems.reformcloud.reformcloud2.executor.node.network.DefaultNodeNetworkManager;
 import systems.reformcloud.reformcloud2.executor.node.network.client.NodeNetworkClient;
+import systems.reformcloud.reformcloud2.executor.node.network.packet.out.NodePacketOutExecuteCommand;
 import systems.reformcloud.reformcloud2.executor.node.network.packet.out.api.NodeAPIAction;
 import systems.reformcloud.reformcloud2.executor.node.network.packet.out.api.NodePluginAction;
 import systems.reformcloud.reformcloud2.executor.node.process.LocalAutoStartupHandler;
@@ -1605,107 +1606,172 @@ public class NodeExecutor extends Node {
 
     @Override
     public Task<ProcessInformation> startProcessAsync(String groupName, String template, JsonConfiguration configurable) {
-        return null;
+        Task<ProcessInformation> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(() -> {
+            ProcessGroup group = Links.filterToReference(clusterSyncManager.getProcessGroups(), e -> e.getName().equals(groupName)).orNothing();
+            if (group == null) {
+                task.complete(null);
+                return;
+            }
+
+            task.complete(nodeNetworkManager.startProcess(
+                    group,
+                    Links.filterToReference(group.getTemplates(), e -> e.getName().equals(template)).orNothing(),
+                    configurable
+            ));
+        });
+        return task;
     }
 
     @Override
     public Task<ProcessInformation> stopProcessAsync(String name) {
-        return null;
+        Task<ProcessInformation> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(() -> {
+            ProcessInformation old = nodeNetworkManager.getNodeProcessHelper().getClusterProcess(name);
+            if (old == null) {
+                task.complete(null);
+                return;
+            }
+
+            nodeNetworkManager.stopProcess(old.getName());
+            task.complete(old);
+        });
+        return task;
     }
 
     @Override
     public Task<ProcessInformation> stopProcessAsync(UUID uniqueID) {
-        return null;
+        Task<ProcessInformation> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(() -> {
+            ProcessInformation old = nodeNetworkManager.getNodeProcessHelper().getClusterProcess(uniqueID);
+            if (old == null) {
+                task.complete(null);
+                return;
+            }
+
+            nodeNetworkManager.stopProcess(old.getProcessUniqueID());
+            task.complete(old);
+        });
+        return task;
     }
 
     @Override
     public Task<ProcessInformation> getProcessAsync(String name) {
-        return null;
+        Task<ProcessInformation> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(() -> task.complete(nodeNetworkManager.getNodeProcessHelper().getClusterProcess(name)));
+        return task;
     }
 
     @Override
     public Task<ProcessInformation> getProcessAsync(UUID uniqueID) {
-        return null;
+        Task<ProcessInformation> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(() -> task.complete(nodeNetworkManager.getNodeProcessHelper().getClusterProcess(uniqueID)));
+        return task;
     }
 
     @Override
     public Task<List<ProcessInformation>> getAllProcessesAsync() {
-        return null;
+        Task<List<ProcessInformation>> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(() -> task.complete(Links.newList(nodeNetworkManager.getNodeProcessHelper().getClusterProcesses())));
+        return task;
     }
 
     @Override
     public Task<List<ProcessInformation>> getProcessesAsync(String group) {
-        return null;
+        Task<List<ProcessInformation>> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(() -> task.complete(Links.newList(nodeNetworkManager.getNodeProcessHelper().getClusterProcesses(group))));
+        return task;
     }
 
     @Override
     public Task<Void> executeProcessCommandAsync(String name, String commandLine) {
-        return null;
+        Task<Void> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(() -> {
+            ProcessInformation processInformation = this.getProcess(name);
+            if (processInformation == null) {
+                task.complete(null);
+                return;
+            }
+
+            DefaultChannelManager.INSTANCE.get(processInformation.getParent())
+                    .ifPresent(e -> e.sendPacket(new NodePacketOutExecuteCommand(processInformation.getName(), commandLine)));
+            task.complete(null);
+        });
+        return task;
     }
 
     @Override
     public Task<Integer> getGlobalOnlineCountAsync(Collection<String> ignoredProxies) {
-        return null;
+        Task<Integer> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(() -> {
+            int online = Links.allOf(nodeNetworkManager.getNodeProcessHelper().getClusterProcesses(),
+                    e -> !e.getTemplate().isServer() && !ignoredProxies.contains(e.getName())
+            ).stream().mapToInt(ProcessInformation::getOnlineCount).sum();
+            task.complete(online);
+        });
+        return task;
     }
 
     @Override
     public Task<ProcessInformation> getThisProcessInformationAsync() {
-        return null;
+        Task<ProcessInformation> task = new DefaultTask<>();
+        task.complete(null);
+        return task;
     }
 
     @Override
     public ProcessInformation startProcess(String groupName) {
-        return null;
+        return startProcessAsync(groupName).getUninterruptedly();
     }
 
     @Override
     public ProcessInformation startProcess(String groupName, String template) {
-        return null;
+        return startProcessAsync(groupName, template).getUninterruptedly();
     }
 
     @Override
     public ProcessInformation startProcess(String groupName, String template, JsonConfiguration configurable) {
-        return null;
+        return startProcessAsync(groupName, template, configurable).getUninterruptedly();
     }
 
     @Override
     public ProcessInformation stopProcess(String name) {
-        return null;
+        return stopProcessAsync(name).getUninterruptedly();
     }
 
     @Override
     public ProcessInformation stopProcess(UUID uniqueID) {
-        return null;
+        return stopProcessAsync(uniqueID).getUninterruptedly();
     }
 
     @Override
     public ProcessInformation getProcess(String name) {
-        return null;
+        return getProcessAsync(name).getUninterruptedly();
     }
 
     @Override
     public ProcessInformation getProcess(UUID uniqueID) {
-        return null;
+        return getProcessAsync(uniqueID).getUninterruptedly();
     }
 
     @Override
     public List<ProcessInformation> getAllProcesses() {
-        return null;
+        return getAllProcessesAsync().getUninterruptedly();
     }
 
     @Override
     public List<ProcessInformation> getProcesses(String group) {
-        return null;
+        return getProcessesAsync(group).getUninterruptedly();
     }
 
     @Override
     public void executeProcessCommand(String name, String commandLine) {
-
+        executeProcessCommandAsync(name, commandLine).awaitUninterruptedly();
     }
 
     @Override
     public int getGlobalOnlineCount(Collection<String> ignoredProxies) {
-        return 0;
+        return getGlobalOnlineCountAsync(ignoredProxies).getUninterruptedly();
     }
 
     @Override
@@ -1715,7 +1781,7 @@ public class NodeExecutor extends Node {
 
     @Override
     public void update(ProcessInformation processInformation) {
-
+        this.nodeNetworkManager.getNodeProcessHelper().update(processInformation);
     }
 
     @Override

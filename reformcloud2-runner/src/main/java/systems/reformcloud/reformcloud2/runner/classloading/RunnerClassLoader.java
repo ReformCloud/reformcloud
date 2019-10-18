@@ -16,4 +16,9 @@ public final class RunnerClassLoader extends URLClassLoader {
     public RunnerClassLoader(URL[] urls) {
         super(urls, ClassLoader.getSystemClassLoader());
     }
+
+    @Override
+    public void addURL(URL url) {
+        super.addURL(url);
+    }
 }

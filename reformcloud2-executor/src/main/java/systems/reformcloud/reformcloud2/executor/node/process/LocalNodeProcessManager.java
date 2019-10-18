@@ -26,6 +26,13 @@ public class LocalNodeProcessManager implements NodeProcessManager {
 
     private final Collection<ProcessInformation> information = new ArrayList<>();
 
+    private final Collection<LocalNodeProcess> localNodeProcesses = new ArrayList<>();
+
+    @Override
+    public LocalNodeProcess getLocalProcess(String name) {
+        return Links.filterToReference(localNodeProcesses, e -> e.getProcessInformation().getName().equals(name)).orNothing();
+    }
+
     @Override
     public ProcessInformation getLocalCloudProcess(String name) {
         return Links.filterToReference(information, e -> e.getName().equals(name)).orNothing();
@@ -110,8 +117,19 @@ public class LocalNodeProcessManager implements NodeProcessManager {
                 data,
                 processGroup.getPlayerAccessConfiguration().getMaxPlayers()
         );
+
         DefaultChannelManager.INSTANCE.get(node.getName()).ifPresent(e -> e.sendPacket(new NodePacketOutQueueProcess(processInformation)));
         return processInformation;
+    }
+
+    @Override
+    public void registerLocalProcess(LocalNodeProcess process) {
+        this.localNodeProcesses.add(process);
+    }
+
+    @Override
+    public void unregisterLocalProcess(UUID uniqueID) {
+        Links.filterToReference(localNodeProcesses, e -> e.getProcessInformation().getProcessUniqueID().equals(uniqueID)).ifPresent(localNodeProcesses::remove);
     }
 
     @Override
@@ -187,6 +205,11 @@ public class LocalNodeProcessManager implements NodeProcessManager {
     @Override
     public Collection<ProcessInformation> getClusterProcesses() {
         return Collections.unmodifiableCollection(information);
+    }
+
+    @Override
+    public Collection<ProcessInformation> getClusterProcesses(String group) {
+        return Links.allOf(information, e -> e.getProcessGroup().getName().equals(group));
     }
 
     @Override

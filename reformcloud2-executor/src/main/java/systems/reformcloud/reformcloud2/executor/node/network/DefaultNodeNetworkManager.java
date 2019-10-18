@@ -2,7 +2,10 @@ package systems.reformcloud.reformcloud2.executor.node.network;
 
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
+import systems.reformcloud.reformcloud2.executor.api.common.groups.template.RuntimeConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Template;
+import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Version;
+import systems.reformcloud.reformcloud2.executor.api.common.groups.template.backend.basic.FileBackend;
 import systems.reformcloud.reformcloud2.executor.api.common.node.NodeInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.node.cluster.InternalNetworkCluster;
@@ -12,6 +15,9 @@ import systems.reformcloud.reformcloud2.executor.node.network.packet.out.NodePac
 import systems.reformcloud.reformcloud2.executor.node.network.packet.query.NodePacketOutQueryGetProcess;
 import systems.reformcloud.reformcloud2.executor.node.network.packet.query.NodePacketOutQueryStartProcess;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Random;
 import java.util.UUID;
 
 public class DefaultNodeNetworkManager implements NodeNetworkManager {
@@ -57,13 +63,25 @@ public class DefaultNodeNetworkManager implements NodeNetworkManager {
 
     @Override
     public ProcessInformation startProcess(ProcessGroup processGroup, Template template, JsonConfiguration data) {
+        if (processGroup == null) {
+            return null;
+        }
+
+        if (template == null) {
+            template = randomTemplate(processGroup);
+        }
+
+        if (data == null) {
+            data = new JsonConfiguration();
+        }
+
         if (getCluster().isSelfNodeHead()) {
             if (getCluster().noOtherNodes()) {
                 return localNodeProcessManager.startLocalProcess(processGroup, template, data);
             }
 
             NodeInformation best = getCluster().findBestNodeForStartup(template);
-            if (best != null && best.equals(getCluster().getHeadNode())) {
+            if (best != null && best.canEqual(getCluster().getHeadNode())) {
                 return localNodeProcessManager.startLocalProcess(processGroup, template, data);
             }
 
@@ -93,5 +111,19 @@ public class DefaultNodeNetworkManager implements NodeNetworkManager {
         }
 
         getCluster().publishToHeadNode(new NodePacketOutStopProcess(uuid));
+    }
+
+    private Template randomTemplate(ProcessGroup processGroup) {
+        if (processGroup.getTemplates().isEmpty()) {
+            return new Template(0, "default", FileBackend.NAME, "#", new RuntimeConfiguration(
+                    512, new ArrayList<>(), new HashMap<>()
+            ), Version.PAPER_1_8_8);
+        }
+
+        if (processGroup.getTemplates().size() == 1) {
+            return processGroup.getTemplates().get(0);
+        }
+
+        return processGroup.getTemplates().get(new Random().nextInt(processGroup.getTemplates().size()));
     }
 }

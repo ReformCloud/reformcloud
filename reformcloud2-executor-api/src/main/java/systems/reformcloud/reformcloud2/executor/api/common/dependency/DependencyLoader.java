@@ -1,9 +1,8 @@
 package systems.reformcloud.reformcloud2.executor.api.common.dependency;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import systems.reformcloud.reformcloud2.runner.classloading.RunnerClassLoader;
+
 import java.net.URL;
-import java.net.URLClassLoader;
 
 public abstract class DependencyLoader {
 
@@ -14,14 +13,8 @@ public abstract class DependencyLoader {
     }
 
     void addURL(URL url) {
-        URLClassLoader urlClassLoader = (URLClassLoader) ClassLoader.getSystemClassLoader();
-        try {
-            Method addURL = URLClassLoader.class.getDeclaredMethod("addURL", URL.class);
-            addURL.setAccessible(true);
-            addURL.invoke(urlClassLoader, url);
-        } catch (final NoSuchMethodException | IllegalAccessException | InvocationTargetException ex) {
-            ex.printStackTrace();
-        }
+        RunnerClassLoader urlClassLoader = (RunnerClassLoader) Thread.currentThread().getContextClassLoader();
+        urlClassLoader.addURL(url);
     }
 
     public abstract void loadDependencies();

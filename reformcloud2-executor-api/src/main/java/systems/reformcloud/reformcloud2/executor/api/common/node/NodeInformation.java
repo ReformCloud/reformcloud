@@ -4,6 +4,7 @@ import com.google.gson.reflect.TypeToken;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 public class NodeInformation {
@@ -83,11 +84,21 @@ public class NodeInformation {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (!(obj instanceof NodeInformation)) {
-            return false;
-        }
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof NodeInformation)) return false;
+        NodeInformation that = (NodeInformation) o;
+        return getStartupTime() == that.getStartupTime() &&
+                getUsedMemory() == that.getUsedMemory() &&
+                getMaxMemory() == that.getMaxMemory() &&
+                Objects.equals(getName(), that.getName()) &&
+                Objects.equals(getNodeUniqueID(), that.getNodeUniqueID()) &&
+                Objects.equals(getConnectedNodes(), that.getConnectedNodes()) &&
+                Objects.equals(getStartedProcesses(), that.getStartedProcesses()) &&
+                Objects.equals(getQueuedProcesses(), that.getQueuedProcesses());
+    }
 
-        return getNodeUniqueID().equals(((NodeInformation) obj).getNodeUniqueID());
+    public boolean canEqual(NodeInformation other) {
+        return getNodeUniqueID().equals(other.getNodeUniqueID());
     }
 }

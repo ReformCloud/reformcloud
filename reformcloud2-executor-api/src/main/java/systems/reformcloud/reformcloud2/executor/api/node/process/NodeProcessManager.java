@@ -12,6 +12,8 @@ import java.util.UUID;
 
 public interface NodeProcessManager extends Updateable<ProcessInformation>, Iterable<ProcessInformation> {
 
+    LocalNodeProcess getLocalProcess(String name);
+
     ProcessInformation getLocalCloudProcess(String name);
 
     ProcessInformation getLocalCloudProcess(UUID uuid);
@@ -23,6 +25,10 @@ public interface NodeProcessManager extends Updateable<ProcessInformation>, Iter
     ProcessInformation stopLocalProcess(UUID uuid);
 
     ProcessInformation queueProcess(ProcessGroup processGroup, Template template, JsonConfiguration data, NodeInformation node);
+
+    void registerLocalProcess(LocalNodeProcess process);
+
+    void unregisterLocalProcess(UUID uniqueID);
 
     void queueLocal(ProcessInformation processInformation);
 
@@ -43,6 +49,8 @@ public interface NodeProcessManager extends Updateable<ProcessInformation>, Iter
     boolean isLocal(UUID uniqueID);
 
     Collection<ProcessInformation> getClusterProcesses();
+
+    Collection<ProcessInformation> getClusterProcesses(String group);
 
     ProcessInformation getClusterProcess(String name);
 
