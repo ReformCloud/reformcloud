@@ -8,8 +8,8 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.channel.Pack
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.handler.NetworkHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
+import systems.reformcloud.reformcloud2.executor.api.common.process.join.OnlyProxyJoinHelper;
 import systems.reformcloud.reformcloud2.executor.controller.ControllerExecutor;
-import systems.reformcloud.reformcloud2.executor.controller.join.OnlyProxyJoinHelper;
 import systems.reformcloud.reformcloud2.executor.controller.packet.out.event.ControllerEventLogoutPlayer;
 
 import java.util.UUID;

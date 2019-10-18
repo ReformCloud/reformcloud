@@ -1,21 +1,22 @@
-package systems.reformcloud.reformcloud2.executor.controller.packet.in.query;
+package systems.reformcloud.reformcloud2.executor.node.network.packet.in.player;
 
-import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.PlayerLogoutEvent;
+import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
 import systems.reformcloud.reformcloud2.executor.api.common.network.NetworkUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.handler.NetworkHandler;
-import systems.reformcloud.reformcloud2.executor.api.common.network.packet.DefaultPacket;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.api.common.process.join.OnlyProxyJoinHelper;
+import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
 
 import java.util.UUID;
 import java.util.function.Consumer;
 
-public final class ControllerQueryHasPlayerAccess implements NetworkHandler {
+public final class PacketInAPILogoutPlayer implements NetworkHandler {
 
     @Override
     public int getHandlingPacketID() {
-        return NetworkUtil.PLAYER_INFORMATION_BUS + 4;
+        return NetworkUtil.PLAYER_INFORMATION_BUS + 3;
     }
 
     @Override
@@ -23,6 +24,14 @@ public final class ControllerQueryHasPlayerAccess implements NetworkHandler {
         UUID uuid = packet.content().get("uuid", UUID.class);
         String name = packet.content().getString("name");
 
-        responses.accept(new DefaultPacket(-1, new JsonConfiguration().add("access", OnlyProxyJoinHelper.walkedOverProxy(uuid, name))));
+        OnlyProxyJoinHelper.onDisconnect(uuid);
+        System.out.println(LanguageManager.get(
+                "player-logged-out",
+                name,
+                uuid,
+                packetSender.getName()
+        ));
+
+        NodeExecutor.getInstance().getEventManager().callEvent(new PlayerLogoutEvent(name, uuid));
     }
 }

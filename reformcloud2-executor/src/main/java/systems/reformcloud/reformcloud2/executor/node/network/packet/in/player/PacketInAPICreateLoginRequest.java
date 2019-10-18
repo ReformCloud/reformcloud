@@ -1,4 +1,4 @@
-package systems.reformcloud.reformcloud2.executor.controller.packet.in;
+package systems.reformcloud.reformcloud2.executor.node.network.packet.in.player;
 
 import systems.reformcloud.reformcloud2.executor.api.common.network.NetworkUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
@@ -9,7 +9,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.process.join.OnlyPro
 import java.util.UUID;
 import java.util.function.Consumer;
 
-public final class ControllerPacketInAPICreateLoginRequest implements NetworkHandler {
+public final class PacketInAPICreateLoginRequest implements NetworkHandler {
 
     @Override
     public int getHandlingPacketID() {

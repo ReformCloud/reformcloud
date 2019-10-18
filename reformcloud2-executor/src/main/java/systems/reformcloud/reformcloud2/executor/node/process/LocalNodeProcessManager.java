@@ -190,6 +190,16 @@ public class LocalNodeProcessManager implements NodeProcessManager {
     }
 
     @Override
+    public ProcessInformation getClusterProcess(String name) {
+        return Links.filterToReference(information, e -> e.getName().equals(name)).orNothing();
+    }
+
+    @Override
+    public ProcessInformation getClusterProcess(UUID uniqueID) {
+        return Links.filterToReference(information, e -> e.getProcessUniqueID().equals(uniqueID)).orNothing();
+    }
+
+    @Override
     public Iterator<ProcessInformation> iterator() {
         return Links.newList(information).iterator();
     }

@@ -1,6 +1,5 @@
-package systems.reformcloud.reformcloud2.executor.controller.join;
+package systems.reformcloud.reformcloud2.executor.api.common.process.join;
 
-import systems.reformcloud.reformcloud2.executor.api.common.process.join.JoinRequest;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links;
 
 import java.util.ArrayList;

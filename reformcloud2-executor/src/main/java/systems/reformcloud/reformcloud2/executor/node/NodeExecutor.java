@@ -27,6 +27,8 @@ import systems.reformcloud.reformcloud2.executor.api.common.database.basic.drive
 import systems.reformcloud.reformcloud2.executor.api.common.database.basic.drivers.mongo.MongoDatabase;
 import systems.reformcloud.reformcloud2.executor.api.common.database.basic.drivers.mysql.MySQLDatabase;
 import systems.reformcloud.reformcloud2.executor.api.common.database.config.DatabaseConfig;
+import systems.reformcloud.reformcloud2.executor.api.common.event.EventManager;
+import systems.reformcloud.reformcloud2.executor.api.common.event.basic.DefaultEventManager;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.MainGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.RuntimeConfiguration;
@@ -58,6 +60,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.server.Netwo
 import systems.reformcloud.reformcloud2.executor.api.common.node.NodeInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.plugins.InstallablePlugin;
 import systems.reformcloud.reformcloud2.executor.api.common.plugins.Plugin;
+import systems.reformcloud.reformcloud2.executor.api.common.plugins.basic.DefaultInstallablePlugin;
 import systems.reformcloud.reformcloud2.executor.api.common.plugins.basic.DefaultPlugin;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState;
@@ -86,6 +89,7 @@ import systems.reformcloud.reformcloud2.executor.node.config.NodeExecutorConfig;
 import systems.reformcloud.reformcloud2.executor.node.network.DefaultNodeNetworkManager;
 import systems.reformcloud.reformcloud2.executor.node.network.client.NodeNetworkClient;
 import systems.reformcloud.reformcloud2.executor.node.network.packet.out.api.NodeAPIAction;
+import systems.reformcloud.reformcloud2.executor.node.network.packet.out.api.NodePluginAction;
 import systems.reformcloud.reformcloud2.executor.node.process.LocalAutoStartupHandler;
 import systems.reformcloud.reformcloud2.executor.node.process.LocalNodeProcessManager;
 import systems.reformcloud.reformcloud2.executor.node.process.manager.LocalProcessManager;
@@ -124,6 +128,8 @@ public class NodeExecutor extends Node {
     private final DatabaseConfig databaseConfig = new DatabaseConfig();
 
     private final LocalAutoStartupHandler localAutoStartupHandler = new LocalAutoStartupHandler();
+
+    private final EventManager eventManager = new DefaultEventManager();
 
     private LocalProcessQueue localProcessQueue;
 
@@ -379,6 +385,10 @@ public class NodeExecutor extends Node {
 
     public NodeExecutorConfig getNodeExecutorConfig() {
         return nodeExecutorConfig;
+    }
+
+    public EventManager getEventManager() {
+        return eventManager;
     }
 
     public Double<String, Integer> getConnectHost() {
@@ -1373,112 +1383,224 @@ public class NodeExecutor extends Node {
 
     @Override
     public Task<Void> installPluginAsync(String process, InstallablePlugin plugin) {
-        return null;
+        Task<Void> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(() -> {
+            ProcessInformation information = this.nodeNetworkManager.getNodeProcessHelper().getClusterProcess(process);
+            if (information == null) {
+                task.complete(null);
+                return;
+            }
+
+            task.complete(installPluginAsync(information, plugin).getUninterruptedly());
+        });
+        return task;
     }
 
     @Override
     public Task<Void> installPluginAsync(ProcessInformation process, InstallablePlugin plugin) {
-        return null;
+        Task<Void> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(() -> {
+            if (this.nodeNetworkManager.getCluster().getSelfNode().getName().equals(process.getParent())) {
+                DefaultChannelManager.INSTANCE.get(process.getName()).ifPresent(e -> e.sendPacket(new NodePluginAction(
+                        NodePluginAction.Action.INSTALL, process.getName(), new DefaultInstallablePlugin(
+                        plugin.getDownloadURL(),
+                        plugin.getName(),
+                        plugin.version(),
+                        plugin.author(),
+                        plugin.main()
+                ))));
+            } else {
+                DefaultChannelManager.INSTANCE.get(process.getParent()).ifPresent(e -> e.sendPacket(new NodePluginAction(
+                        NodePluginAction.Action.INSTALL, process.getName(), new DefaultInstallablePlugin(
+                        plugin.getDownloadURL(),
+                        plugin.getName(),
+                        plugin.version(),
+                        plugin.author(),
+                        plugin.main()
+                ))));
+            }
+
+            task.complete(null);
+        });
+        return task;
     }
 
     @Override
     public Task<Void> unloadPluginAsync(String process, Plugin plugin) {
-        return null;
+        Task<Void> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(() -> {
+            ProcessInformation information = this.nodeNetworkManager.getNodeProcessHelper().getClusterProcess(process);
+            if (information == null) {
+                task.complete(null);
+                return;
+            }
+
+            task.complete(unloadPluginAsync(information, plugin).getUninterruptedly());
+        });
+        return task;
     }
 
     @Override
     public Task<Void> unloadPluginAsync(ProcessInformation process, Plugin plugin) {
-        return null;
+        Task<Void> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(() -> {
+            if (this.nodeNetworkManager.getCluster().getSelfNode().getName().equals(process.getParent())) {
+                DefaultChannelManager.INSTANCE.get(process.getName()).ifPresent(e -> e.sendPacket(new NodePluginAction(
+                        NodePluginAction.Action.UNINSTALL,
+                        process.getName(),
+                        new DefaultPlugin(
+                                plugin.version(),
+                                plugin.author(),
+                                plugin.main(),
+                                plugin.depends(),
+                                plugin.softpends(),
+                                plugin.enabled(),
+                                plugin.getName()
+                        ))));
+            } else {
+                DefaultChannelManager.INSTANCE.get(process.getParent()).ifPresent(e -> e.sendPacket(new NodePluginAction(
+                        NodePluginAction.Action.UNINSTALL,
+                        process.getName(),
+                        new DefaultPlugin(
+                                plugin.version(),
+                                plugin.author(),
+                                plugin.main(),
+                                plugin.depends(),
+                                plugin.softpends(),
+                                plugin.enabled(),
+                                plugin.getName()
+                        ))));
+            }
+
+            task.complete(null);
+        });
+        return task;
     }
 
     @Override
     public Task<Plugin> getInstalledPluginAsync(String process, String name) {
-        return null;
+        Task<Plugin> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(() -> {
+            ProcessInformation information = this.nodeNetworkManager.getNodeProcessHelper().getClusterProcess(process);
+            if (information == null) {
+                task.complete(null);
+                return;
+            }
+
+            task.complete(getInstalledPluginAsync(information, name).getUninterruptedly());
+        });
+        return task;
     }
 
     @Override
     public Task<Plugin> getInstalledPluginAsync(ProcessInformation process, String name) {
-        return null;
+        Task<Plugin> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(() -> task.complete(Links.filterToReference(process.getPlugins(), e -> e.getName().equals(name)).orNothing()));
+        return task;
     }
 
     @Override
     public Task<Collection<DefaultPlugin>> getPluginsAsync(String process, String author) {
-        return null;
+        Task<Collection<DefaultPlugin>> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(() -> {
+            ProcessInformation information = this.nodeNetworkManager.getNodeProcessHelper().getClusterProcess(process);
+            if (information == null) {
+                task.complete(null);
+                return;
+            }
+
+            task.complete(getPluginsAsync(information, author).getUninterruptedly());
+        });
+        return task;
     }
 
     @Override
     public Task<Collection<DefaultPlugin>> getPluginsAsync(ProcessInformation process, String author) {
-        return null;
+        Task<Collection<DefaultPlugin>> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(() -> task.complete(Links.allOf(process.getPlugins(), e -> e.author().equals(author))));
+        return task;
     }
 
     @Override
     public Task<Collection<DefaultPlugin>> getPluginsAsync(String process) {
-        return null;
+        Task<Collection<DefaultPlugin>> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(() -> {
+            ProcessInformation information = this.nodeNetworkManager.getNodeProcessHelper().getClusterProcess(process);
+            if (information == null) {
+                task.complete(null);
+                return;
+            }
+
+            task.complete(getPluginsAsync(information).getUninterruptedly());
+        });
+        return task;
     }
 
     @Override
     public Task<Collection<DefaultPlugin>> getPluginsAsync(ProcessInformation processInformation) {
-        return null;
+        Task<Collection<DefaultPlugin>> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(() -> task.complete(Collections.unmodifiableList(processInformation.getPlugins())));
+        return task;
     }
 
     @Override
     public void installPlugin(String process, InstallablePlugin plugin) {
-
+        installPluginAsync(process, plugin).awaitUninterruptedly();
     }
 
     @Override
     public void installPlugin(ProcessInformation process, InstallablePlugin plugin) {
-
+        installPluginAsync(process, plugin).awaitUninterruptedly();
     }
 
     @Override
     public void unloadPlugin(String process, Plugin plugin) {
-
+        unloadPluginAsync(process, plugin).awaitUninterruptedly();
     }
 
     @Override
     public void unloadPlugin(ProcessInformation process, Plugin plugin) {
-
+        unloadPluginAsync(process, plugin).awaitUninterruptedly();
     }
 
     @Override
     public Plugin getInstalledPlugin(String process, String name) {
-        return null;
+        return getInstalledPluginAsync(process, name).getUninterruptedly();
     }
 
     @Override
     public Plugin getInstalledPlugin(ProcessInformation process, String name) {
-        return null;
+        return getInstalledPluginAsync(process, name).getUninterruptedly();
     }
 
     @Override
     public Collection<DefaultPlugin> getPlugins(String process, String author) {
-        return null;
+        return getPluginsAsync(process, author).getUninterruptedly();
     }
 
     @Override
     public Collection<DefaultPlugin> getPlugins(ProcessInformation process, String author) {
-        return null;
+        return getPluginsAsync(process, author).getUninterruptedly();
     }
 
     @Override
     public Collection<DefaultPlugin> getPlugins(String process) {
-        return null;
+        return getPluginsAsync(process).getUninterruptedly();
     }
 
     @Override
     public Collection<DefaultPlugin> getPlugins(ProcessInformation processInformation) {
-        return null;
+        return getPluginsAsync(processInformation).getUninterruptedly();
     }
 
     @Override
     public Task<ProcessInformation> startProcessAsync(String groupName) {
-        return null;
+        return startProcessAsync(groupName, null);
     }
 
     @Override
     public Task<ProcessInformation> startProcessAsync(String groupName, String template) {
-        return null;
+        return startProcessAsync(groupName, template, new JsonConfiguration());
     }
 
     @Override
@@ -1631,6 +1753,9 @@ public class NodeExecutor extends Node {
 
     private void loadPacketHandlers() {
         new Reflections("systems.reformcloud.reformcloud2.executor.node.network.packet.in").getSubTypesOf(NetworkHandler.class).forEach(packetHandler::registerHandler);
+
+        // The query handler for the external api, we can re-use them
+        new Reflections("systems.reformcloud.reformcloud2.executor.controller.packet.in.query").getSubTypesOf(NetworkHandler.class).forEach(packetHandler::registerHandler);
     }
 
     private void sendGroups() {
