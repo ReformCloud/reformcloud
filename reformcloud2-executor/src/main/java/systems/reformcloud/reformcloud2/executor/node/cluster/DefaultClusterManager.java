@@ -23,7 +23,7 @@ public class DefaultClusterManager implements ClusterManager {
 
     @Override
     public void handleNodeDisconnect(InternalNetworkCluster cluster, String name) {
-        Links.allOf(nodeInformation, e -> e.getName().equals(name)).forEach(e -> {
+        Links.allOf(Links.newList(nodeInformation), e -> e.getName().equals(name)).forEach(e -> {
             this.nodeInformation.remove(e);
             cluster.getConnectedNodes().remove(e);
         });

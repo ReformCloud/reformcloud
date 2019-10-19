@@ -158,7 +158,7 @@ public class NodeExecutorConfig {
         this.nodeConfig = JsonConfiguration.read(NodeConfig.PATH).get("config", NodeConfig.TYPE);
         this.ingameMessages = JsonConfiguration.read("reformcloud/configs/messages.json").get("messages", IngameMessages.TYPE);
         this.self = this.nodeConfig.prepare();
-        this.connectionKey = JsonConfiguration.read("reformcloud/files/.connection/connection.json").getString("key");
+        this.connectionKey = JsonConfiguration.read("reformcloud/files/.connection/connection.json").getOrDefault("key", (String) null);
         this.loadGroups();
 
         this.currentNodeConnectionKey = StringUtil.generateString(64);

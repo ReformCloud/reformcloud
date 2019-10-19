@@ -22,6 +22,8 @@ public class PacketInProcessAction implements NetworkHandler {
         ProcessAction action = packet.content().get("action", ProcessAction.class);
         ProcessInformation information = packet.content().get("info", ProcessInformation.TYPE);
 
+        System.out.println(action.name() + "/" + information.getName());
+
         switch (action) {
             case START: {
                 NodeExecutor.getInstance().getNodeNetworkManager().getNodeProcessHelper().handleProcessStart(

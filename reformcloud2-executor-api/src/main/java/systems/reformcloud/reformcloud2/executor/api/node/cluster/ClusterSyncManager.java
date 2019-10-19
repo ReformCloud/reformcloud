@@ -21,6 +21,8 @@ public interface ClusterSyncManager {
 
     void syncMainGroups(Collection<MainGroup> mainGroups, SyncAction action);
 
+    void syncProcessInformation(Collection<ProcessInformation> information);
+
     Collection<ProcessGroup> getProcessGroups();
 
     Collection<MainGroup> getMainGroups();
@@ -44,6 +46,8 @@ public interface ClusterSyncManager {
     void handleProcessGroupSync(Collection<ProcessGroup> groups, SyncAction action);
 
     void handleMainGroupSync(Collection<MainGroup> groups, SyncAction action);
+
+    void handleProcessInformationSync(Collection<ProcessInformation> information);
 
     void handleClusterReload();
 

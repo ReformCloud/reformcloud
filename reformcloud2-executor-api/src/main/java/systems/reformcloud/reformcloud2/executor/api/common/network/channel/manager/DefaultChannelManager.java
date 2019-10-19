@@ -47,7 +47,9 @@ public final class DefaultChannelManager implements ChannelManager {
             return ReferencedOptional.empty();
         }
 
-        return Links.filterToReference(senders, packetSender -> packetSender.getName().equals(name));
+        synchronized (senders) {
+            return Links.filterToReference(senders, packetSender -> packetSender.getName().equals(name));
+        }
     }
 
     @Override

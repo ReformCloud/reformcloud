@@ -18,7 +18,13 @@ import java.util.function.Consumer;
 
 public final class ClientInitializerHandler extends InitializerHandler {
 
-    private static final DoubleFunction<Packet, String, Boolean> EMPTY_FUNCTION = packet -> new Double<>("Controller", true);
+    private static final DoubleFunction<Packet, String, Boolean> EMPTY_FUNCTION = packet -> {
+        if (packet.content().has("name")) {
+            return new Double<>(packet.content().getString("name"), true);
+        }
+
+        return new Double<>("Controller", true);
+    };
 
     private final Consumer<ChannelHandlerContext> DEFAULT_FAIL_HANDLER = new Consumer<ChannelHandlerContext>() {
         @Override

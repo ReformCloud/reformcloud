@@ -81,7 +81,6 @@ import systems.reformcloud.reformcloud2.executor.api.node.Node;
 import systems.reformcloud.reformcloud2.executor.api.node.cluster.ClusterSyncManager;
 import systems.reformcloud.reformcloud2.executor.api.node.cluster.SyncAction;
 import systems.reformcloud.reformcloud2.executor.api.node.network.NodeNetworkManager;
-import systems.reformcloud.reformcloud2.executor.api.node.process.NodeProcessManager;
 import systems.reformcloud.reformcloud2.executor.node.cluster.DefaultClusterManager;
 import systems.reformcloud.reformcloud2.executor.node.cluster.DefaultNodeInternalCluster;
 import systems.reformcloud.reformcloud2.executor.node.cluster.sync.DefaultClusterSyncManager;
@@ -124,8 +123,6 @@ public class NodeExecutor extends Node {
     private final WebServer webServer = new DefaultWebServer();
 
     private final PacketHandler packetHandler = new DefaultPacketHandler();
-
-    private final NodeProcessManager nodeProcessManager = new LocalNodeProcessManager();
 
     private final NodeExecutorConfig nodeExecutorConfig = new NodeExecutorConfig();
 
@@ -188,7 +185,7 @@ public class NodeExecutor extends Node {
         this.nodeConfig = this.nodeExecutorConfig.getNodeConfig();
 
         this.nodeNetworkManager = new DefaultNodeNetworkManager(
-                nodeProcessManager,
+                new LocalNodeProcessManager(),
                 new DefaultNodeInternalCluster(new DefaultClusterManager(), nodeExecutorConfig.getSelf(), packetHandler)
         );
         this.nodeNetworkManager.getCluster().getClusterManager().init();
@@ -229,7 +226,7 @@ public class NodeExecutor extends Node {
 
                         AtomicReference<Double<String, Boolean>> result = new AtomicReference<>();
                         if (auth.type().equals(NetworkType.NODE)) {
-                            NodeInformation nodeInformation = packet.content().get("info", NodeInformation.TYPE);
+                            NodeInformation nodeInformation = auth.extra().get("info", NodeInformation.TYPE);
                             if (nodeInformation == null) {
                                 return new Double<>(auth.getName(), false);
                             }
@@ -271,10 +268,36 @@ public class NodeExecutor extends Node {
                 @Override
                 public BiFunction<String, ChannelHandlerContext, PacketSender> onSuccess() {
                     return (s, context) -> {
-                        context.channel().writeAndFlush(new DefaultPacket(-511, new JsonConfiguration().add("access", true)));
+                        context.channel().writeAndFlush(new DefaultPacket(-511, new JsonConfiguration()
+                                .add("name", nodeExecutorConfig.getSelf().getName())
+                                .add("access", true)));
                         PacketSender sender = new DefaultPacketSender(context.channel());
                         sender.setName(s);
                         clusterSyncManager.getWaitingConnections().remove(sender.getAddress());
+
+                        Links.filterToReference(nodeConfig.getOtherNodes(), e -> e.keySet().stream().anyMatch(c -> c.equals(
+                                sender.getAddress()
+                        ))).ifPresent(e -> e.forEach((key, value) -> networkClient.connect(
+                                key, value, new DefaultAuth(
+                                        nodeExecutorConfig.getConnectionKey(),
+                                        null,
+                                        NetworkType.NODE,
+                                        nodeNetworkManager.getCluster().getSelfNode().getName(),
+                                        new JsonConfiguration().add("info", nodeNetworkManager.getCluster().getSelfNode())
+                                ), createReader(sender1 -> {
+                                    NodeInformation information = nodeNetworkManager.getCluster().getNode(sender1.getName());
+                                    if (information == null) {
+                                        nodeNetworkManager.getNodeProcessHelper().handleProcessDisconnect(sender1.getName());
+                                    } else {
+                                        nodeNetworkManager.getCluster().getClusterManager().handleNodeDisconnect(
+                                                nodeNetworkManager.getCluster(),
+                                                sender1.getName()
+                                        );
+                                    }
+
+                                    NodeNetworkClient.CONNECTIONS.remove(sender1.getAddress());
+                                }))));
+                        sync(sender);
                         return sender;
                     };
                 }
@@ -346,16 +369,18 @@ public class NodeExecutor extends Node {
                             NetworkType.NODE,
                             this.nodeNetworkManager.getCluster().getSelfNode().getName(),
                             new JsonConfiguration().add("info", this.nodeNetworkManager.getCluster().getSelfNode())
-                    ), createReader(name -> {
-                        NodeInformation information = this.nodeNetworkManager.getCluster().getNode(name);
+                    ), createReader(sender -> {
+                        NodeInformation information = this.nodeNetworkManager.getCluster().getNode(sender.getName());
                         if (information == null) {
-                            this.nodeNetworkManager.getNodeProcessHelper().handleProcessDisconnect(name);
+                            this.nodeNetworkManager.getNodeProcessHelper().handleProcessDisconnect(sender.getName());
                         } else {
                             this.nodeNetworkManager.getCluster().getClusterManager().handleNodeDisconnect(
                                     this.nodeNetworkManager.getCluster(),
-                                    name
+                                    sender.getName()
                             );
                         }
+
+                        NodeNetworkClient.CONNECTIONS.remove(sender.getAddress());
                     }))) {
                         System.out.println(LanguageManager.get(
                                 "network-node-connection-to-other-node-success", ip, Integer.toString(port)
@@ -1849,6 +1874,21 @@ public class NodeExecutor extends Node {
             }
 
             packetHandler.registerHandler(e);
+        });
+    }
+
+    private void sync(PacketSender sender) {
+        Task.EXECUTOR.execute(() -> {
+            while (!DefaultChannelManager.INSTANCE.get(sender.getName()).isPresent()) {
+                AbsoluteThread.sleep(20);
+            }
+
+            this.clusterSyncManager.syncMainGroups(this.nodeExecutorConfig.getMainGroups(), SyncAction.SYNC);
+            this.clusterSyncManager.syncProcessGroups(this.nodeExecutorConfig.getProcessGroups(), SyncAction.SYNC);
+            this.clusterSyncManager.syncProcessInformation(Links.allOf(
+                    this.nodeNetworkManager.getNodeProcessHelper().getClusterProcesses(),
+                    e -> this.nodeNetworkManager.getNodeProcessHelper().isLocal(e.getProcessUniqueID())
+            ));
         });
     }
 

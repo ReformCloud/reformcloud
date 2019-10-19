@@ -12,7 +12,7 @@ public class NodeNetworkClient implements NetworkClient {
 
     private static final NetworkClient CLIENT = new DefaultNetworkClient();
 
-    private static final Collection<String> CONNECTIONS = new ArrayList<>();
+    public static final Collection<String> CONNECTIONS = new ArrayList<>();
 
     @Override
     public boolean connect(String host, int port, Auth auth, NetworkChannelReader channelReader) {
@@ -20,7 +20,12 @@ public class NodeNetworkClient implements NetworkClient {
             return false;
         }
 
-        return CLIENT.connect(host, port, auth, channelReader);
+        if (CLIENT.connect(host, port, auth, channelReader)) {
+            CONNECTIONS.add(host);
+            return true;
+        }
+
+        return false;
     }
 
     @Override

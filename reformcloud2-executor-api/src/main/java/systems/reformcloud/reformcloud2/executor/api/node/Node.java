@@ -38,7 +38,7 @@ public abstract class Node extends ExecutorAPI implements ReloadableRuntime {
 
     public abstract CommandManager getCommandManager();
 
-    protected final NetworkChannelReader createReader(Consumer<String> onDisconnect) {
+    protected final NetworkChannelReader createReader(Consumer<PacketSender> onDisconnect) {
         return new NetworkChannelReader() {
 
             private PacketSender sender;
@@ -69,8 +69,8 @@ public abstract class Node extends ExecutorAPI implements ReloadableRuntime {
 
             @Override
             public void channelInactive(ChannelHandlerContext context) {
-                onDisconnect.accept(sender.getName());
                 if (sender != null) {
+                    onDisconnect.accept(sender);
                     DefaultChannelManager.INSTANCE.unregisterChannel(sender);
                     System.out.println(LanguageManager.get("network-channel-disconnected", sender.getName()));
                 }

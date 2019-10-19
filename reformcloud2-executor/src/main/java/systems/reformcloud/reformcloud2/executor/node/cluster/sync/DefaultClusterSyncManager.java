@@ -10,10 +10,7 @@ import systems.reformcloud.reformcloud2.executor.api.node.cluster.SyncAction;
 import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
 import systems.reformcloud.reformcloud2.executor.node.network.client.NodeNetworkClient;
 import systems.reformcloud.reformcloud2.executor.node.network.packet.out.NodePacketOutNodeInformationUpdate;
-import systems.reformcloud.reformcloud2.executor.node.network.packet.out.cluster.PacketOutProcessAction;
-import systems.reformcloud.reformcloud2.executor.node.network.packet.out.cluster.PacketOutReloadCluster;
-import systems.reformcloud.reformcloud2.executor.node.network.packet.out.cluster.PacketOutSyncMainGroups;
-import systems.reformcloud.reformcloud2.executor.node.network.packet.out.cluster.PacketOutSyncProcessGroups;
+import systems.reformcloud.reformcloud2.executor.node.network.packet.out.cluster.*;
 import systems.reformcloud.reformcloud2.executor.node.process.util.ProcessAction;
 
 import java.util.ArrayList;
@@ -69,6 +66,11 @@ public class DefaultClusterSyncManager implements ClusterSyncManager {
     @Override
     public void syncMainGroups(Collection<MainGroup> mainGroups, SyncAction action) {
         NodeExecutor.getInstance().getNodeNetworkManager().getCluster().broadCastToCluster(new PacketOutSyncMainGroups(mainGroups, action));
+    }
+
+    @Override
+    public void syncProcessInformation(Collection<ProcessInformation> information) {
+        NodeExecutor.getInstance().getNodeNetworkManager().getCluster().broadCastToCluster(new PacketOutSyncProcessInformation(information));
     }
 
     @Override
@@ -165,7 +167,7 @@ public class DefaultClusterSyncManager implements ClusterSyncManager {
 
             case SYNC:
             case UPDATE: {
-                groups.forEach(newGroup -> this.processGroups.forEach(oldGroup -> {
+                groups.forEach(newGroup -> Links.newList(this.processGroups).forEach(oldGroup -> {
                     if (newGroup.getName().equals(oldGroup.getName()) && !newGroup.equals(oldGroup)) {
                         this.processGroups.remove(oldGroup);
                         this.processGroups.add(newGroup);
@@ -206,7 +208,7 @@ public class DefaultClusterSyncManager implements ClusterSyncManager {
 
             case SYNC:
             case UPDATE: {
-                groups.forEach(newGroup -> this.mainGroups.forEach(oldGroup -> {
+                groups.forEach(newGroup -> Links.newList(this.mainGroups).forEach(oldGroup -> {
                     if (newGroup.getName().equals(oldGroup.getName()) && !newGroup.equals(oldGroup)) {
                         this.mainGroups.remove(oldGroup);
                         this.mainGroups.add(newGroup);
@@ -229,6 +231,12 @@ public class DefaultClusterSyncManager implements ClusterSyncManager {
                 break;
             }
         }
+    }
+
+    @Override
+    public void handleProcessInformationSync(Collection<ProcessInformation> information) {
+        Collection<ProcessInformation> clusterProcesses = NodeExecutor.getInstance().getNodeNetworkManager().getNodeProcessHelper().getClusterProcesses();
+        clusterProcesses.addAll(Links.allOf(information, e -> clusterProcesses.stream().noneMatch(i -> i.getProcessUniqueID().equals(e.getProcessUniqueID()))));
     }
 
     @Override
