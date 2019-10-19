@@ -3,6 +3,7 @@ package systems.reformcloud.reformcloud2.executor.api.common.configuration;
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 import systems.reformcloud.reformcloud2.executor.api.common.base.Conditions;
+import systems.reformcloud.reformcloud2.executor.api.common.configuration.gson.InternalJsonParser;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.system.SystemHelper;
 
 import java.io.*;
@@ -23,7 +24,7 @@ public final class JsonConfiguration implements Configurable<JsonConfiguration> 
     public JsonConfiguration(String json) {
         JsonElement jsonElement;
         try {
-            jsonElement = JsonParser.parseString(json);
+            jsonElement = InternalJsonParser.parseString(json);
         } catch (final Exception ex) {
             jsonElement = new JsonObject();
         }
@@ -36,7 +37,7 @@ public final class JsonConfiguration implements Configurable<JsonConfiguration> 
         try (InputStreamReader inputStreamReader = new InputStreamReader(stream, StandardCharsets.UTF_8)) {
             JsonElement jsonElement;
             try {
-                jsonElement = JsonParser.parseReader(inputStreamReader);
+                jsonElement = InternalJsonParser.parseReader(inputStreamReader);
             } catch (final Exception ex) {
                 jsonElement = new JsonObject();
             }
@@ -51,7 +52,7 @@ public final class JsonConfiguration implements Configurable<JsonConfiguration> 
     public JsonConfiguration(Reader json) {
         JsonElement jsonElement;
         try {
-            jsonElement = JsonParser.parseReader(json);
+            jsonElement = InternalJsonParser.parseReader(json);
         } catch (final Exception ex) {
             jsonElement = new JsonObject();
         }

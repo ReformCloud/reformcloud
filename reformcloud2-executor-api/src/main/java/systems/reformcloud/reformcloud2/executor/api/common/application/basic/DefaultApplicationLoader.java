@@ -150,6 +150,8 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
             application.onUninstall();
             System.out.println(LanguageManager.get("successfully-uninstalled-app", application.getApplication().getName()));
             application.getApplication().setApplicationStatus(ApplicationStatus.UNINSTALLED);
+
+            application.unloadAllLanguageFiles();
         });
         applications.clear();
 
@@ -242,6 +244,8 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
         application.onUninstall();
         System.out.println(LanguageManager.get("successfully-uninstalled-app", application.getApplication().getName()));
         application.getApplication().setApplicationStatus(ApplicationStatus.UNINSTALLED);
+
+        application.unloadAllLanguageFiles();
         return true;
     }
 

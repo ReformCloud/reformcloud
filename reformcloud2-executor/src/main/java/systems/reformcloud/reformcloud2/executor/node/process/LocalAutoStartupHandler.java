@@ -11,17 +11,11 @@ import java.util.TreeSet;
 public class LocalAutoStartupHandler extends AbsoluteThread {
 
     public void doStart() {
-        if (!isInterrupted()) {
-            return;
-        }
-
         updatePriority(Thread.MIN_PRIORITY).enableDaemon().start();
     }
 
     public void update() {
         perPriorityStartup.clear();
-        System.gc();
-
         perPriorityStartup.addAll(NodeExecutor.getInstance().getClusterSyncManager().getProcessGroups());
     }
 

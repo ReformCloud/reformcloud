@@ -4,8 +4,9 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.NetworkUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.handler.NetworkHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links;
 import systems.reformcloud.reformcloud2.executor.api.node.process.LocalNodeProcess;
-import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
+import systems.reformcloud.reformcloud2.executor.node.process.manager.LocalProcessManager;
 
 import java.util.function.Consumer;
 
@@ -21,7 +22,7 @@ public class NodePacketInExecuteCommand implements NetworkHandler {
         String name = packet.content().getString("name");
         String command = packet.content().getString("command");
 
-        LocalNodeProcess nodeProcess = NodeExecutor.getInstance().getNodeNetworkManager().getNodeProcessHelper().getLocalProcess(name);
+        LocalNodeProcess nodeProcess = Links.filterToReference(LocalProcessManager.getNodeProcesses(), e -> e.getProcessInformation().getName().equals(name)).orNothing();
         if (nodeProcess == null) {
             return;
         }

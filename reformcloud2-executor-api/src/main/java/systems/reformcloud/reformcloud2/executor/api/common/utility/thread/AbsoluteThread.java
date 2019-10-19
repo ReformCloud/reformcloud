@@ -34,4 +34,17 @@ public class AbsoluteThread extends Thread {
     public static void sleep(long time) {
         sleep(TimeUnit.MILLISECONDS, time);
     }
+
+    private volatile boolean interrupted = false;
+
+    @Override
+    public void interrupt() {
+        interrupted = true;
+        super.interrupt();
+    }
+
+    @Override
+    public boolean isInterrupted() {
+        return interrupted;
+    }
 }

@@ -10,6 +10,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.process.NetworkInfo;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessRuntimeInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.PortUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links;
 import systems.reformcloud.reformcloud2.executor.api.node.process.LocalNodeProcess;
 import systems.reformcloud.reformcloud2.executor.api.node.process.NodeProcessManager;
@@ -26,13 +27,6 @@ public class LocalNodeProcessManager implements NodeProcessManager {
 
     private final Collection<ProcessInformation> information = new ArrayList<>();
 
-    private final Collection<LocalNodeProcess> localNodeProcesses = new ArrayList<>();
-
-    @Override
-    public LocalNodeProcess getLocalProcess(String name) {
-        return Links.filterToReference(localNodeProcesses, e -> e.getProcessInformation().getName().equals(name)).orNothing();
-    }
-
     @Override
     public ProcessInformation getLocalCloudProcess(String name) {
         return Links.filterToReference(information, e -> e.getName().equals(name)).orNothing();
@@ -47,15 +41,15 @@ public class LocalNodeProcessManager implements NodeProcessManager {
     public ProcessInformation startLocalProcess(ProcessGroup processGroup, Template template, JsonConfiguration data) {
         int id = nextID(processGroup);
         ProcessInformation processInformation = new ProcessInformation(
-                processGroup.getName() + (processGroup.isShowIdInName() ? id : ""),
+                processGroup.getName() + (processGroup.isShowIdInName() ? (template.getServerNameSplitter() + id) : ""),
                 NodeExecutor.getInstance().getNodeConfig().getName(),
                 NodeExecutor.getInstance().getNodeConfig().getUniqueID(),
                 UUID.randomUUID(),
                 id,
                 ProcessState.PREPARED,
                 new NetworkInfo(
-                        NodeExecutor.getInstance().getConnectHost().getFirst(),
-                        NodeExecutor.getInstance().getConnectHost().getSecond(),
+                        NodeExecutor.getInstance().getNodeConfig().getStartHost(),
+                        nextPort(processGroup.getStartupConfiguration().getStartPort()),
                         false
                 ), processGroup,
                 template,
@@ -100,15 +94,15 @@ public class LocalNodeProcessManager implements NodeProcessManager {
     public ProcessInformation queueProcess(ProcessGroup processGroup, Template template, JsonConfiguration data, NodeInformation node) {
         int id = nextID(processGroup);
         ProcessInformation processInformation = new ProcessInformation(
-                processGroup.getName() + (processGroup.isShowIdInName() ? id : ""),
+                processGroup.getName() + (processGroup.isShowIdInName() ? (template.getServerNameSplitter() + id) : ""),
                 NodeExecutor.getInstance().getNodeConfig().getName(),
                 NodeExecutor.getInstance().getNodeConfig().getUniqueID(),
                 UUID.randomUUID(),
                 id,
                 ProcessState.PREPARED,
                 new NetworkInfo(
-                        NodeExecutor.getInstance().getConnectHost().getFirst(),
-                        NodeExecutor.getInstance().getConnectHost().getSecond(),
+                        NodeExecutor.getInstance().getNodeConfig().getStartHost(),
+                        nextPort(processGroup.getStartupConfiguration().getStartPort()),
                         false
                 ), processGroup,
                 template,
@@ -124,12 +118,12 @@ public class LocalNodeProcessManager implements NodeProcessManager {
 
     @Override
     public void registerLocalProcess(LocalNodeProcess process) {
-        this.localNodeProcesses.add(process);
+        this.information.add(process.getProcessInformation());
     }
 
     @Override
     public void unregisterLocalProcess(UUID uniqueID) {
-        Links.filterToReference(localNodeProcesses, e -> e.getProcessInformation().getProcessUniqueID().equals(uniqueID)).ifPresent(localNodeProcesses::remove);
+        Links.filterToReference(information, e -> e.getProcessUniqueID().equals(uniqueID)).ifPresent(information::remove);
     }
 
     @Override
@@ -259,5 +253,15 @@ public class LocalNodeProcessManager implements NodeProcessManager {
         }
 
         return id;
+    }
+
+    private int nextPort(int startPort) {
+        Collection<Integer> ports = information.stream().map(e -> e.getNetworkInfo().getPort()).collect(Collectors.toList());
+        while (ports.contains(startPort)) {
+            startPort++;
+        }
+
+        startPort = PortUtil.checkPort(startPort);
+        return startPort;
     }
 }

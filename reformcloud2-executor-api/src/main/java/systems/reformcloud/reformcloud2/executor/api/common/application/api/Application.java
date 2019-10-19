@@ -3,9 +3,13 @@ package systems.reformcloud.reformcloud2.executor.api.common.application.api;
 import systems.reformcloud.reformcloud2.executor.api.common.application.LoadedApplication;
 import systems.reformcloud.reformcloud2.executor.api.common.application.factory.ApplicationThreadFactory;
 import systems.reformcloud.reformcloud2.executor.api.common.application.factory.ApplicationThreadGroup;
+import systems.reformcloud.reformcloud2.executor.api.common.application.language.ApplicationLanguage;
+import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
+import systems.reformcloud.reformcloud2.executor.api.common.language.language.Language;
 
 import java.io.File;
 import java.io.InputStream;
+import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -40,6 +44,15 @@ public class Application {
 
     public final InputStream getResourceAsStream(String name) {
         return getClass().getClassLoader().getResourceAsStream(name);
+    }
+
+    public final void registerLanguage(Properties properties) {
+        Language language = new ApplicationLanguage(application.getName(), properties);
+        LanguageManager.loadAddonMessageFile(application.getName(), language);
+    }
+
+    public final void unloadAllLanguageFiles() {
+        LanguageManager.unregisterMessageFile(application.getName());
     }
 
     public final LoadedApplication getApplication() {

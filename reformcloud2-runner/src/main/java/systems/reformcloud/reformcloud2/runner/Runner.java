@@ -4,6 +4,7 @@ import systems.reformcloud.reformcloud2.runner.classloading.ClassPreparer;
 import systems.reformcloud.reformcloud2.runner.classloading.RunnerClassLoader;
 
 import java.io.*;
+import java.lang.instrument.Instrumentation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
@@ -189,19 +190,22 @@ public final class Runner {
 
     private static void invokeMethod(Method method, Object args, ClassLoader classLoader) {
         try {
-            Thread thread = new Thread(() -> {
-                try {
-                    method.invoke(null, args);
-                } catch (final InvocationTargetException | IllegalAccessException ex) {
-                    ex.printStackTrace();
-                }
-            });
-            thread.setContextClassLoader(classLoader);
-            thread.setDaemon(true);
-            thread.start();
-            thread.join();
-        } catch (final InterruptedException ex) {
+            Thread.currentThread().setContextClassLoader(classLoader);
+            method.invoke(null, args);
+        } catch (final InvocationTargetException | IllegalAccessException ex) {
             ex.printStackTrace();
+        }
+    }
+
+    public static void premain(String string, Instrumentation inst) {
+        if (System.getProperty("reformcloud.lib.path") == null || System.getProperty("reformcloud.process.path") == null) {
+            return;
+        }
+
+        try {
+            inst.appendToSystemClassLoaderSearch(new JarFile(new File(System.getProperty("reformcloud.process.path"))));
+        } catch (final Throwable throwable) {
+            throwable.printStackTrace();
         }
     }
 }

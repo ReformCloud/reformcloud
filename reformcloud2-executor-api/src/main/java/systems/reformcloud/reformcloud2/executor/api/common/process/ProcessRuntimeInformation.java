@@ -187,7 +187,7 @@ public final class ProcessRuntimeInformation {
                 CommonHelper.threadMXBean().findDeadlockedThreads(),
                 CommonHelper.runtimeMXBean().getSystemProperties(),
                 CommonHelper.runtimeMXBean().getClassPath(),
-                CommonHelper.runtimeMXBean().getBootClassPath(),
+                CommonHelper.runtimeMXBean().isBootClassPathSupported() ? CommonHelper.runtimeMXBean().getBootClassPath() : "unknown",
                 Links.keyApply(Thread.getAllStackTraces(), ThreadInfo::create)
         );
     }

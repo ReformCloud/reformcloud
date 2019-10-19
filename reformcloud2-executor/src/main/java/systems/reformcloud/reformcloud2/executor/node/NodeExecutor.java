@@ -73,6 +73,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.restapi.user.WebUser
 import systems.reformcloud.reformcloud2.executor.api.common.utility.StringUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.function.Double;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.system.SystemHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.defaults.DefaultTask;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
@@ -98,6 +99,7 @@ import systems.reformcloud.reformcloud2.executor.node.process.startup.LocalProce
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiFunction;
@@ -179,6 +181,8 @@ public class NodeExecutor extends Node {
             ex.printStackTrace();
         }
 
+        SystemHelper.deleteDirectory(Paths.get("reformcloud/temp"));
+
         this.nodeExecutorConfig.init();
         this.nodeConfig = this.nodeExecutorConfig.getNodeConfig();
 
@@ -193,6 +197,9 @@ public class NodeExecutor extends Node {
         final NodeNetworkClient nodeNetworkClient = new NodeNetworkClient();
         this.networkClient = nodeNetworkClient;
         this.clusterSyncManager = new DefaultClusterSyncManager(nodeNetworkClient);
+
+        this.clusterSyncManager.getProcessGroups().addAll(nodeExecutorConfig.getProcessGroups());
+        this.clusterSyncManager.getMainGroups().addAll(nodeExecutorConfig.getMainGroups());
 
         this.applicationLoader.detectApplications();
         this.applicationLoader.installApplications();
@@ -210,9 +217,9 @@ public class NodeExecutor extends Node {
                     ),
                     packet -> {
                         DefaultAuth auth = packet.content().get("auth", Auth.TYPE);
-                        if (this.nodeExecutorConfig.getConnectionKey() == null || auth == null) {
-                            System.out.println(LanguageManager.get("network-channel-auth-failed", auth == null ? "unknown" : auth.getName()));
-                            return new Double<>(auth == null ? "unknown" : auth.getName(), false);
+                        if (auth == null) {
+                            System.out.println(LanguageManager.get("network-channel-auth-failed", "unknown"));
+                            return new Double<>("unknown", false);
                         }
 
                         if (auth.type().equals(NetworkType.CLIENT)) {
@@ -223,6 +230,11 @@ public class NodeExecutor extends Node {
                         if (auth.type().equals(NetworkType.NODE)) {
                             NodeInformation nodeInformation = packet.content().get("info", NodeInformation.TYPE);
                             if (nodeInformation == null) {
+                                return new Double<>(auth.getName(), false);
+                            }
+
+                            if (nodeExecutorConfig.getConnectionKey() == null || !auth.key().equals(nodeExecutorConfig.getConnectionKey())) {
+                                System.out.println(LanguageManager.get("network-channel-auth-failed", auth.getName()));
                                 return new Double<>(auth.getName(), false);
                             }
 
@@ -237,6 +249,13 @@ public class NodeExecutor extends Node {
                             if (information == null) {
                                 return new Double<>(auth.getName(), false);
                             }
+
+                            if (!auth.key().equals(nodeExecutorConfig.getCurrentNodeConnectionKey())) {
+                                System.out.println(LanguageManager.get("network-channel-auth-failed", auth.getName()));
+                                return new Double<>(auth.getName(), false);
+                            }
+
+                            result.set(new Double<>(auth.getName(), true));
 
                             information.getNetworkInfo().setConnected(true);
                             information.setProcessState(ProcessState.READY);
@@ -351,6 +370,7 @@ public class NodeExecutor extends Node {
         }
 
         this.localProcessQueue = new LocalProcessQueue();
+        this.localAutoStartupHandler.update();
         this.localAutoStartupHandler.doStart();
         this.applicationLoader.enableApplications();
 
@@ -425,10 +445,10 @@ public class NodeExecutor extends Node {
 
         this.database.disconnect();
 
-        this.nodeNetworkManager.getNodeProcessHelper().getClusterProcesses();
         this.applicationLoader.disableApplications();
-
         this.loggerBase.close();
+
+        SystemHelper.deleteDirectory(Paths.get("reformcloud/temp"));
     }
 
     private void runConsole() {
@@ -1821,7 +1841,13 @@ public class NodeExecutor extends Node {
         new Reflections("systems.reformcloud.reformcloud2.executor.node.network.packet.in").getSubTypesOf(NetworkHandler.class).forEach(packetHandler::registerHandler);
 
         // The query handler for the external api, we can re-use them
-        new Reflections("systems.reformcloud.reformcloud2.executor.controller.packet.in.query").getSubTypesOf(NetworkHandler.class).forEach(packetHandler::registerHandler);
+        new Reflections("systems.reformcloud.reformcloud2.executor.controller.packet.in.query").getSubTypesOf(NetworkHandler.class).forEach(e -> {
+            if (e.getSimpleName().equals("ControllerQueryInRequestIngameMessages")) {
+                return;
+            }
+
+            packetHandler.registerHandler(e);
+        });
     }
 
     private void sendGroups() {

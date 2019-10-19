@@ -6,6 +6,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.groups.MainGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.basic.DefaultMainGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.basic.DefaultProcessGroup;
+import systems.reformcloud.reformcloud2.executor.api.common.groups.messages.IngameMessages;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Version;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.setup.Setup;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.setup.basic.DefaultSetup;
@@ -13,6 +14,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.logger.setup.basic.D
 import systems.reformcloud.reformcloud2.executor.api.common.node.NodeInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.registry.Registry;
 import systems.reformcloud.reformcloud2.executor.api.common.registry.basic.RegistryBuilder;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.StringUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.system.SystemHelper;
 import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
 
@@ -50,6 +52,8 @@ public class NodeExecutorConfig {
 
     private String connectionKey;
 
+    private String currentNodeConnectionKey;
+
     private final List<MainGroup> mainGroups = new ArrayList<>();
 
     private final List<ProcessGroup> processGroups = new ArrayList<>();
@@ -59,6 +63,8 @@ public class NodeExecutorConfig {
     private final Registry localMainGroupsRegistry = RegistryBuilder.newRegistry(Paths.get("reformcloud/groups/main"));
 
     private final Registry localSubGroupsRegistry = RegistryBuilder.newRegistry(Paths.get("reformcloud/groups/sub"));
+
+    private IngameMessages ingameMessages;
 
     public void init() {
         createDirectories();
@@ -145,12 +151,17 @@ public class NodeExecutorConfig {
                         this.localSubGroupsRegistry.createKey(lobby.getName(), lobby);
                     }
             )).startSetup(NodeExecutor.getInstance().getLoggerBase());
+
+            new JsonConfiguration().add("messages", new IngameMessages()).write(Paths.get("reformcloud/configs/messages.json"));
         }
 
         this.nodeConfig = JsonConfiguration.read(NodeConfig.PATH).get("config", NodeConfig.TYPE);
+        this.ingameMessages = JsonConfiguration.read("reformcloud/configs/messages.json").get("messages", IngameMessages.TYPE);
         this.self = this.nodeConfig.prepare();
         this.connectionKey = JsonConfiguration.read("reformcloud/files/.connection/connection.json").getString("key");
         this.loadGroups();
+
+        this.currentNodeConnectionKey = StringUtil.generateString(64);
     }
 
     private void loadGroups() {
@@ -198,12 +209,20 @@ public class NodeExecutorConfig {
         return connectionKey;
     }
 
+    public String getCurrentNodeConnectionKey() {
+        return currentNodeConnectionKey;
+    }
+
     public boolean isFirstStartup() {
         return firstStartup.get();
     }
 
     public List<MainGroup> getMainGroups() {
         return mainGroups;
+    }
+
+    public IngameMessages getIngameMessages() {
+        return ingameMessages;
     }
 
     public List<ProcessGroup> getProcessGroups() {

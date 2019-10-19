@@ -19,6 +19,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.Absol
 import systems.reformcloud.reformcloud2.executor.api.node.process.LocalNodeProcess;
 import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
 import systems.reformcloud.reformcloud2.executor.node.network.packet.out.NodePacketOutProcessPrepared;
+import systems.reformcloud.reformcloud2.executor.node.process.manager.LocalProcessManager;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -94,6 +95,7 @@ public class BasicLocalNodeProcess implements LocalNodeProcess {
                 processInformation.getProcessUniqueID(),
                 processInformation.getTemplate().getName()
         ));
+        LocalProcessManager.registerLocalProcess(this);
         NodeExecutor.getInstance().getNodeNetworkManager().getNodeProcessHelper().registerLocalProcess(this);
     }
 
@@ -113,8 +115,6 @@ public class BasicLocalNodeProcess implements LocalNodeProcess {
                 "-DIReallyKnowWhatIAmDoingISwear=true",
                 "-Djline.terminal=jline.UnsupportedTerminal",
 
-                "-Djava.system.class.loader=systems.reformcloud.reformcloud2.runner.classloading.RunnerClassLoader",
-
                 "-Dreformcloud.executor.type=3",
                 "-Dreformcloud.lib.path=" + LIB_PATH,
                 "-Dreformcloud.process.path=" + new File("reformcloud/files/" + Version.format(
@@ -126,17 +126,22 @@ public class BasicLocalNodeProcess implements LocalNodeProcess {
 
         this.processInformation.getTemplate().getRuntimeConfiguration().getSystemProperties().forEach((s, s2) -> command.add("-D" + s + "=" + s2));
 
-        command.addAll(Arrays.asList(
-                "-jar",
-                "runner.jar"
-        ));
         command.addAll(this.processInformation.getTemplate().getRuntimeConfiguration().getProcessParameters());
+        command.addAll(Arrays.asList(
+                "-javaagent:runner.jar",
+                "systems.reformcloud.reformcloud2.runner.Runner"
+        ));
         updateCommandLine(command, processInformation.getTemplate().getVersion());
 
         try {
-            this.process = new ProcessBuilder()
+            Files.createFile(Paths.get(path + "/reformcloud/log-out.log"));
+
+            this.process = new ProcessBuilder(command)
                     .directory(path.toFile())
-                    .command(command)
+
+                    .redirectErrorStream(true)
+                    .redirectOutput(new File(path + "/reformcloud/log-out.log"))
+
                     .start();
         } catch (final IOException ex) {
             ex.printStackTrace();
@@ -158,8 +163,9 @@ public class BasicLocalNodeProcess implements LocalNodeProcess {
         sendCommand("end");
 
         NodeExecutor.getInstance().getClusterSyncManager().syncProcessStop(processInformation);
-        NodeExecutor.getInstance().getNodeNetworkManager().getNodeProcessHelper().handleLocalProcessStop(processInformation);
         NodeExecutor.getInstance().getNodeNetworkManager().getNodeProcessHelper().unregisterLocalProcess(processInformation.getProcessUniqueID());
+        NodeExecutor.getInstance().getNodeNetworkManager().getNodeProcessHelper().handleLocalProcessStop(processInformation);
+        LocalProcessManager.unregisterProcesses(processInformation.getProcessUniqueID());
 
         AbsoluteThread.sleep(TimeUnit.MILLISECONDS, 100);
 
@@ -463,7 +469,8 @@ public class BasicLocalNodeProcess implements LocalNodeProcess {
 
         SystemHelper.createDirectory(Paths.get(path + "/plugins"));
         SystemHelper.createDirectory(Paths.get(path + "/reformcloud/.connection"));
-        SystemHelper.doCopy("reformcloud/files/.connection/connection.json", path + "/reformcloud/.connection/key.json");
+        new JsonConfiguration().add("key", NodeExecutor.getInstance().getNodeExecutorConfig().getCurrentNodeConnectionKey())
+                .write(path + "/reformcloud/.connection/key.json");
     }
 
     // ========================= //

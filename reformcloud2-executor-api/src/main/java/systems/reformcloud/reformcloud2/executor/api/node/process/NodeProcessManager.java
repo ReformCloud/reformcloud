@@ -12,8 +12,6 @@ import java.util.UUID;
 
 public interface NodeProcessManager extends Updateable<ProcessInformation>, Iterable<ProcessInformation> {
 
-    LocalNodeProcess getLocalProcess(String name);
-
     ProcessInformation getLocalCloudProcess(String name);
 
     ProcessInformation getLocalCloudProcess(UUID uuid);

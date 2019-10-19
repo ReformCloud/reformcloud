@@ -103,6 +103,7 @@ public final class BungeeExecutor extends API implements PlayerAPIExecutor {
                         new JsonConfiguration()
                 ), networkChannelReader
         );
+
         ExecutorAPI.setInstance(this);
         ProxyServer.getInstance().setReconnectHandler(new ReformCloudReconnectHandler());
         awaitConnectionAndUpdate();

@@ -6,20 +6,20 @@ ReformCloud is a cloud system programmed and optimized for all sizes of networks
 The cloud system supports java and bedrock edition.
 
 ### Currently supported java versions:
-| Version Name                        | Version ID      |
-|-------------------------------------|-----------------|
-| Bungeecord (Waterfall, Hexacord...) | 1.7.10 - 1.14.4 |
-| Velocity                            | 1.7.10 - 1.14.4 |
-| Waterdog                            | 1.8 - 1.14.4    |
-| Spigot (Paper, Taco, Torch...)      | 1.7.10 - 1.14.4 |
-| Sponge                              | 1.7.10 - 1.12.2 |
-| Akarin                              | 1.12.2          |
+| Version Name                        | Version ID      | Recommended Java Version     |
+|-------------------------------------|-----------------|------------------------------|
+| Bungeecord (Waterfall, Hexacord...) | 1.7.10 - 1.14.4 | Java 13                      | 
+| Velocity                            | 1.7.10 - 1.14.4 | Java 13                      |
+| Waterdog                            | 1.8 - 1.14.4    | Java 13                      | 
+| Spigot (Paper, Taco, Torch...)      | 1.7.10 - 1.14.4 | <1.12 Java 8 / >1.12 Java 13 |
+| Sponge                              | 1.7.10 - 1.12.2 | Java 8                       |
+| Akarin                              | 1.12.2          | Java 8                       |
 
 ### Currently supported bedrock versions:
-| Version Name  |                     
-|---------------|
-| NukkitX       |
-| WaterDog      |
+| Version Name  | Recommended Java Version |                
+|---------------|--------------------------|
+| NukkitX       | Java 13                  |
+| WaterDog      | Java 13                  |
 
 **Give it a try and leave a review!**
 
@@ -34,10 +34,12 @@ The cloud system supports java and bedrock edition.
  - Java 8+ : **SUPPORTED**
  - Java 7- : **NOT SUPPORTED**
  
+ - Java 13 : **RECOMMENDED**
+ 
 ## Startup
 The startup is very easy. Just start the cloud system using the following command:
 ```
-java -Djava.system.class.loader=systems.reformcloud.reformcloud2.runner.classloading.RunnerClassLoader -XX:+UseG1GC -XX:MaxGCPauseMillis=50 -XX:CompileThreshold=100 -Xmx512m -Xms256m -jar runner.jar
+java -Djava.system.class.loader=systems.reformcloud.reformcloud2.RunnerClassLoader -XX:+UseG1GC -XX:MaxGCPauseMillis=50 -XX:CompileThreshold=100 -Xmx512m -Xms256m -jar runner.jar
 ```
 
 The runner is now going to download the needed libraries, so **make sure you have an internet connection** 

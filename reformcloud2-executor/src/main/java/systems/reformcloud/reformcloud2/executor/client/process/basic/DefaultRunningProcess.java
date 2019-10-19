@@ -112,8 +112,6 @@ public final class DefaultRunningProcess implements RunningProcess {
                 "-DIReallyKnowWhatIAmDoingISwear=true",
                 "-Djline.terminal=jline.UnsupportedTerminal",
 
-                "-Djava.system.class.loader=systems.reformcloud.reformcloud2.runner.classloading.RunnerClassLoader",
-
                 "-Dreformcloud.executor.type=3",
                 "-Dreformcloud.lib.path=" + LIB_PATH,
                 "-Dreformcloud.process.path=" + new File("reformcloud/files/" + Version.format(
@@ -125,17 +123,22 @@ public final class DefaultRunningProcess implements RunningProcess {
 
         this.processInformation.getTemplate().getRuntimeConfiguration().getSystemProperties().forEach((s, s2) -> command.add("-D" + s + "=" + s2));
 
-        command.addAll(Arrays.asList(
-                "-jar",
-                "runner.jar"
-        ));
         command.addAll(this.processInformation.getTemplate().getRuntimeConfiguration().getProcessParameters());
+        command.addAll(Arrays.asList(
+                "-javaagent:runner.jar",
+                "systems.reformcloud.reformcloud2.runner.Runner"
+        ));
         updateCommandLine(command, processInformation.getTemplate().getVersion());
 
         try {
-            this.process = new ProcessBuilder()
+            Files.createFile(Paths.get(path + "/reformcloud/log-out.log"));
+
+            this.process = new ProcessBuilder(command)
                     .directory(path.toFile())
-                    .command(command)
+
+                    .redirectErrorStream(true)
+                    .redirectOutput(new File(path + "/reformcloud/log-out.log"))
+
                     .start();
         } catch (final IOException ex) {
             ex.printStackTrace();

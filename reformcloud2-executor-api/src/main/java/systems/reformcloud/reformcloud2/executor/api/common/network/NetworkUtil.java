@@ -7,10 +7,6 @@ import io.netty.channel.epoll.Epoll;
 import io.netty.channel.epoll.EpollEventLoopGroup;
 import io.netty.channel.epoll.EpollServerSocketChannel;
 import io.netty.channel.epoll.EpollSocketChannel;
-import io.netty.channel.kqueue.KQueue;
-import io.netty.channel.kqueue.KQueueEventLoopGroup;
-import io.netty.channel.kqueue.KQueueServerSocketChannel;
-import io.netty.channel.kqueue.KQueueSocketChannel;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.ServerSocketChannel;
 import io.netty.channel.socket.SocketChannel;
@@ -68,18 +64,12 @@ public final class NetworkUtil {
 
     private static final boolean EPOLL = Epoll.isAvailable();
 
-    private static final boolean K_QUEUE = KQueue.isAvailable();
-
     private static final ThreadFactory THREAD_FACTORY = new DefaultThreadFactory(MultithreadEventExecutorGroup.class, true, Thread.MIN_PRIORITY);
 
     public static EventLoopGroup eventLoopGroup() {
         if (!Boolean.getBoolean("reformcloud.disable.native")) {
             if (EPOLL) {
                 return new EpollEventLoopGroup(Runtime.getRuntime().availableProcessors(), THREAD_FACTORY);
-            }
-
-            if (K_QUEUE) {
-                return new KQueueEventLoopGroup(Runtime.getRuntime().availableProcessors(), THREAD_FACTORY);
             }
         }
 
@@ -91,10 +81,6 @@ public final class NetworkUtil {
             if (EPOLL) {
                 return EpollServerSocketChannel.class;
             }
-
-            if (K_QUEUE) {
-                return KQueueServerSocketChannel.class;
-            }
         }
 
         return NioServerSocketChannel.class;
@@ -104,10 +90,6 @@ public final class NetworkUtil {
         if (!Boolean.getBoolean("reformcloud.disable.native")) {
             if (EPOLL) {
                 return EpollSocketChannel.class;
-            }
-
-            if (K_QUEUE) {
-                return KQueueSocketChannel.class;
             }
         }
 
