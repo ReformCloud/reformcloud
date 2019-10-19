@@ -4,21 +4,21 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.NetworkUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.handler.NetworkHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
-import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
-import systems.reformcloud.reformcloud2.executor.node.process.startup.LocalProcessQueue;
+import systems.reformcloud.reformcloud2.executor.api.common.node.NodeInformation;
+import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
 
 import java.util.function.Consumer;
 
-public class NodePacketInStartProcess implements NetworkHandler {
+public class PacketInNodeInformationUpdate implements NetworkHandler {
 
     @Override
     public int getHandlingPacketID() {
-        return NetworkUtil.NODE_TO_NODE_BUS + 6;
+        return NetworkUtil.NODE_TO_NODE_BUS + 9;
     }
 
     @Override
     public void handlePacket(PacketSender packetSender, Packet packet, Consumer<Packet> responses) {
-        ProcessInformation processInformation = packet.content().get("info", ProcessInformation.TYPE);
-        LocalProcessQueue.queue(processInformation);
+        NodeInformation information = packet.content().get("info", NodeInformation.TYPE);
+        NodeExecutor.getInstance().getClusterSyncManager().handleNodeInformationUpdate(information);
     }
 }

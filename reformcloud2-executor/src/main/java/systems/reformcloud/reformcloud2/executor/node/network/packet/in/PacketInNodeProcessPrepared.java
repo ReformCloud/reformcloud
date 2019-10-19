@@ -9,7 +9,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packe
 import java.util.UUID;
 import java.util.function.Consumer;
 
-public final class PacketInProcessPrepared implements NetworkHandler {
+public final class PacketInNodeProcessPrepared implements NetworkHandler {
 
     @Override
     public int getHandlingPacketID() {

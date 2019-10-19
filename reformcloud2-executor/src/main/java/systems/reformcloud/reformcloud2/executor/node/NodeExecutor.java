@@ -85,6 +85,7 @@ import systems.reformcloud.reformcloud2.executor.api.node.process.NodeProcessMan
 import systems.reformcloud.reformcloud2.executor.node.cluster.DefaultClusterManager;
 import systems.reformcloud.reformcloud2.executor.node.cluster.DefaultNodeInternalCluster;
 import systems.reformcloud.reformcloud2.executor.node.cluster.sync.DefaultClusterSyncManager;
+import systems.reformcloud.reformcloud2.executor.node.commands.CommandReformCloud;
 import systems.reformcloud.reformcloud2.executor.node.config.NodeConfig;
 import systems.reformcloud.reformcloud2.executor.node.config.NodeExecutorConfig;
 import systems.reformcloud.reformcloud2.executor.node.network.DefaultNodeNetworkManager;
@@ -1831,6 +1832,7 @@ public class NodeExecutor extends Node {
 
     private void loadCommands() {
         this.commandManager
+                .register(new CommandReformCloud())
                 .register(CommandStop.class)
                 .register(new CommandReload(this))
                 .register(new CommandClear(loggerBase))

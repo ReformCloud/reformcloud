@@ -1,10 +1,9 @@
-package systems.reformcloud.reformcloud2.executor.controller.commands;
+package systems.reformcloud.reformcloud2.executor.node.commands;
 
 import systems.reformcloud.reformcloud2.executor.api.common.CommonHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.GlobalCommand;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.source.CommandSource;
-import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.MainGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.basic.DefaultProcessGroup;
@@ -18,24 +17,13 @@ import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.Startup
 import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.StringUtil;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.system.DownloadHelper;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.system.SystemHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
-import systems.reformcloud.reformcloud2.executor.client.config.ClientConfig;
-import systems.reformcloud.reformcloud2.executor.client.config.ClientConnectionConfig;
-import systems.reformcloud.reformcloud2.executor.controller.ControllerExecutor;
 import systems.reformcloud.reformcloud2.executor.controller.packet.out.ControllerPacketOutCopyProcess;
 import systems.reformcloud.reformcloud2.executor.controller.packet.out.ControllerPacketOutToggleScreen;
-import systems.reformcloud.reformcloud2.executor.controller.process.ClientManager;
+import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-import java.util.function.UnaryOperator;
 
 public final class CommandReformCloud extends GlobalCommand {
 
@@ -82,13 +70,6 @@ public final class CommandReformCloud extends GlobalCommand {
                             + " " + processInformation.getOnlineCount() + "/"
                             + processInformation.getMaxPlayers() + " "
                             + processInformation.getTemplate().getVersion()
-            ));
-            return true;
-        } else if (strings.length == 1 && strings[0].equalsIgnoreCase("clients")) {
-            System.out.println(LanguageManager.get("command-rc-connected-clients"));
-            ClientManager.INSTANCE.getClientRuntimeInformation().forEach(clientRuntimeInformation -> System.out.println("   => " + clientRuntimeInformation.getName()
-                    + " Ram: " + clientRuntimeInformation.maxMemory() + "MB max"
-                    + " Host: " + clientRuntimeInformation.startHost()
             ));
             return true;
         }
@@ -155,29 +136,6 @@ public final class CommandReformCloud extends GlobalCommand {
             }
 
             case "start": {
-                if (strings.length == 2 && strings[1].equalsIgnoreCase("internalclient")) {
-                    if (!Files.exists(Paths.get("reformcloud/.client"))) {
-                        System.out.println(LanguageManager.get("command-rc-internal-client-not-installed"));
-                        return true;
-                    }
-
-                    if (ClientManager.INSTANCE.getProcess() == null) {
-                        try {
-                            Process process = new ProcessBuilder()
-                                    .command(Arrays.asList("java", "-jar", "runner.jar").toArray(new String[0]))
-                                    .directory(new File("reformcloud/.client"))
-                                    .start();
-                            ClientManager.INSTANCE.setProcess(process);
-                        } catch (final IOException ex) {
-                            ex.printStackTrace();
-                        }
-                        System.out.println(LanguageManager.get("command-rc-execute-success"));
-                    } else {
-                        System.out.println(LanguageManager.get("command-rc-internal-client-already-started"));
-                    }
-                    return true;
-                }
-
                 if (strings.length == 2) {
                     ProcessGroup processGroup = ExecutorAPI.getInstance().getProcessGroup(strings[1]);
                     if (processGroup == null) {
@@ -237,17 +195,6 @@ public final class CommandReformCloud extends GlobalCommand {
             }
 
             case "stop": {
-                if (strings.length == 2 && strings[1].equalsIgnoreCase("internalclient")) {
-                    if (ClientManager.INSTANCE.getProcess() != null) {
-                        ClientManager.INSTANCE.getProcess().destroyForcibly().destroy();
-                        ClientManager.INSTANCE.setProcess(null);
-                        System.out.println(LanguageManager.get("command-rc-execute-success"));
-                    } else {
-                        System.out.println(LanguageManager.get("command-rc-internal-client-not-started"));
-                    }
-                    return true;
-                }
-
                 if (strings.length == 2) {
                     ProcessInformation processInformation;
                     UUID uuid = CommonHelper.tryParse(strings[1]);
@@ -350,68 +297,6 @@ public final class CommandReformCloud extends GlobalCommand {
             }
 
             case "create": {
-                if (strings.length == 3 && strings[1].equalsIgnoreCase("internalclient")) {
-                    if (Files.exists(Paths.get("reformcloud/.client"))) {
-                        System.out.println(LanguageManager.get("command-rc-internal-client-already-exists"));
-                        return true;
-                    }
-
-                    if (strings[2].split("\\.").length != 4) {
-                        System.out.println(LanguageManager.get("command-rc-expected-ip", strings[2]));
-                        return true;
-                    }
-
-                    if (ControllerExecutor.getInstance().getControllerConfig().getNetworkListener().size() == 0) {
-                        System.out.println(LanguageManager.get("command-rc-no-network-listener-configured"));
-                        return true;
-                    }
-
-                    SystemHelper.createDirectory(Paths.get("reformcloud/.client/reformcloud/.bin"));
-                    SystemHelper.createDirectory(Paths.get("reformcloud/.client/reformcloud/files/.connection"));
-                    SystemHelper.doCopy("reformcloud/.bin/config.properties", "reformcloud/.client/reformcloud/.bin/config.properties");
-                    SystemHelper.doCopy("reformcloud/.bin/connection.json", "reformcloud/.client/reformcloud/files/.connection/connection.json");
-                    CommonHelper.rewriteProperties(
-                            "reformcloud/.client/reformcloud/.bin/config.properties",
-                            "ReformCloudController edit",
-                            (UnaryOperator<String>) s -> {
-                                if (s.equals("reformcloud.type.id")) {
-                                    s = "2";
-                                }
-
-                                return s;
-                            }
-                    );
-                    new JsonConfiguration()
-                            .add("config", new ClientConfig(
-                                    CommonHelper.calculateMaxMemory(),
-                                    -1,
-                                    90.0D,
-                                    strings[2]
-                            )).write(Paths.get("reformcloud/.client/" + ClientConfig.PATH));
-                    Map<String, Integer> map = ControllerExecutor.getInstance().getControllerConfig().getNetworkListener().get(
-                            new Random().nextInt(ControllerExecutor.getInstance().getControllerConfig().getNetworkListener().size())
-                    );
-                    new JsonConfiguration()
-                            .add("config", new ClientConnectionConfig(
-                                    map.keySet().toArray(new String[0])[0],
-                                    map.values().toArray(new Integer[0])[0]
-                            )).write("reformcloud/.client/" + ClientConnectionConfig.PATH);
-                    DownloadHelper.downloadAndDisconnect(StringUtil.RUNNER_DOWNLOAD_URL, "reformcloud/.client/runner.jar");
-                    try {
-                        Process process = new ProcessBuilder()
-                                .command(Arrays.asList("java", "-jar", "runner.jar").toArray(new String[0]))
-                                .directory(new File("reformcloud/.client"))
-                                .start();
-                        ClientManager.INSTANCE.setProcess(process);
-                    } catch (final IOException ex) {
-                        ex.printStackTrace();
-                        return true;
-                    }
-
-                    System.out.println(LanguageManager.get("command-rc-execute-success"));
-                    return true;
-                }
-
                 if (strings[1].equalsIgnoreCase("main") && strings.length == 3) {
                     MainGroup mainGroup = ExecutorAPI.getInstance().getMainGroup(strings[2]);
                     if (mainGroup == null) {
@@ -683,7 +568,7 @@ public final class CommandReformCloud extends GlobalCommand {
                             return true;
                         }
 
-                        ControllerExecutor.getInstance().getControllerExecutorConfig().deleteProcessGroup(processGroup);
+                        NodeExecutor.getInstance().getClusterSyncManager().syncProcessGroupDelete(processGroup.getName());
                         System.out.println(LanguageManager.get("command-rc-execute-success"));
                         return true;
                     }
@@ -695,21 +580,10 @@ public final class CommandReformCloud extends GlobalCommand {
                             return true;
                         }
 
-                        ControllerExecutor.getInstance().getControllerExecutorConfig().deleteMainGroup(mainGroup);
+                        NodeExecutor.getInstance().getClusterSyncManager().syncMainGroupDelete(mainGroup.getName());
                         System.out.println(LanguageManager.get("command-rc-execute-success"));
                         return true;
                     }
-                }
-
-                if (strings.length == 2 && strings[1].equalsIgnoreCase("internalclient")) {
-                    if (ClientManager.INSTANCE.getProcess() != null) {
-                        ClientManager.INSTANCE.getProcess().destroyForcibly().destroy();
-                        ClientManager.INSTANCE.setProcess(null);
-                    }
-
-                    SystemHelper.deleteDirectory(Paths.get("reformcloud/.client"));
-                    System.out.println(LanguageManager.get("command-rc-execute-success"));
-                    return true;
                 }
 
                 break;
@@ -733,20 +607,16 @@ public final class CommandReformCloud extends GlobalCommand {
                 "rc screen <uuid | name> toggle\n" +
                 "rc list\n" +
                 "rc list <group>\n" +
-                "rc clients\n" +
                 "rc listgroups <main | sub>\n" +
                 "rc versions\n" +
-                "rc start internalclient\n" +
                 "rc start <group>\n" +
                 "rc start <group> <amount>\n" +
                 "rc start <group> <amount> <template>\n" +
-                "rc stop internalclient\n" +
                 "rc stop <name>\n" +
                 "rc stop <uuid>\n" +
                 "rc stopall <subGroup>\n" +
                 "rc ofAll <mainGroup> <list | stop>\n" +
                 "rc execute <name | uuid> <command>\n" +
-                "rc create internalclient <start-host>\n" +
                 "rc create main <name>\n" +
                 "rc create sub <name>\n" +
                 "rc create sub <name> <version>\n" +
@@ -754,8 +624,7 @@ public final class CommandReformCloud extends GlobalCommand {
                 "rc create sub <name> <version> <parent> <static>\n" +
                 "rc create sub <name> <version> <parent> <static> <lobby>\n" +
                 "rc create sub <name> <version> <parent> <static> <minonline> <maxonline>\n" +
-                "rc delete <sub | main> <name>\n" +
-                "rc delete internalclient"
+                "rc delete <sub | main> <name>"
         );
     }
 }

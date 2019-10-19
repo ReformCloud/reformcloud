@@ -10,7 +10,7 @@ import systems.reformcloud.reformcloud2.executor.node.process.manager.LocalProce
 
 import java.util.function.Consumer;
 
-public class NodePacketInExecuteCommand implements NetworkHandler {
+public class PacketInNodeExecuteCommand implements NetworkHandler {
 
     @Override
     public int getHandlingPacketID() {
