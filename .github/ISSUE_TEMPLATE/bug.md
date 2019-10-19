@@ -7,7 +7,7 @@ Read this before submitting the bug report! Do not include this in your bug repo
 -->
 
 ### Information
-**Environment information:** *Cloud + Server Version Info (e.g. 2.0 / Paper 1.14.4)*
+**Environment information:** *Java Version & Cloud + Server Version Info (e.g. 2.0 / Paper 1.14.4)*
 
 **Server/crash log:** *The link to the error (If there was any stacktrace printed in the console)*
 
