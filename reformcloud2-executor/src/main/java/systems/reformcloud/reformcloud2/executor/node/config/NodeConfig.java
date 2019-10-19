@@ -70,7 +70,7 @@ public class NodeConfig {
         return new NodeInformation(
                 name,
                 uniqueID,
-                System.currentTimeMillis(),
+                System.nanoTime(),
                 new ArrayList<>(),
                 0L,
                 maxMemory,
