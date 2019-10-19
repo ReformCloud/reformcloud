@@ -39,7 +39,7 @@ The cloud system supports java and bedrock edition.
 ## Startup
 The startup is very easy. Just start the cloud system using the following command:
 ```
-java -Djava.system.class.loader=systems.reformcloud.reformcloud2.RunnerClassLoader -XX:+UseG1GC -XX:MaxGCPauseMillis=50 -XX:CompileThreshold=100 -Xmx512m -Xms256m -jar runner.jar
+java -XX:+UseG1GC -XX:MaxGCPauseMillis=50 -XX:CompileThreshold=100 -Xmx512m -Xms256m -jar runner.jar
 ```
 
 The runner is now going to download the needed libraries, so **make sure you have an internet connection** 
