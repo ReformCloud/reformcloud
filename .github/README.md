@@ -5,7 +5,7 @@ ReformCloud is a cloud system programmed and optimized for all sizes of networks
 
 The cloud system supports java and bedrock edition.
 
-### Currently supported java versions:
+### Currently supported minecraft-java-edition versions:
 | Version Name                        | Version ID      | Recommended Java Version     |
 |-------------------------------------|-----------------|------------------------------|
 | Bungeecord (Waterfall, Hexacord...) | 1.7.10 - 1.14.4 | Java 13                      | 
@@ -15,13 +15,11 @@ The cloud system supports java and bedrock edition.
 | Sponge                              | 1.7.10 - 1.12.2 | Java 8                       |
 | Akarin                              | 1.12.2          | Java 8                       |
 
-### Currently supported bedrock versions:
+### Currently supported minecraft-pocket-edition versions:
 | Version Name  | Recommended Java Version |                
 |---------------|--------------------------|
 | NukkitX       | Java 13                  |
 | WaterDog      | Java 13                  |
-
-**Give it a try and leave a review!**
 
 # Run ReformCloud2 the first time
 ## System requirements
