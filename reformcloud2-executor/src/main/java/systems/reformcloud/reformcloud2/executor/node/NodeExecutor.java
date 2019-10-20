@@ -434,6 +434,10 @@ public class NodeExecutor extends Node {
         return nodeExecutorConfig;
     }
 
+    public LocalAutoStartupHandler getLocalAutoStartupHandler() {
+        return localAutoStartupHandler;
+    }
+
     public EventManager getEventManager() {
         return eventManager;
     }
@@ -1875,6 +1879,8 @@ public class NodeExecutor extends Node {
 
             packetHandler.registerHandler(e);
         });
+
+        new Reflections("systems.reformcloud.reformcloud2.executor.node.network.packet.query.in").getSubTypesOf(NetworkHandler.class).forEach(packetHandler::registerHandler);
     }
 
     private void sync(PacketSender sender) {

@@ -14,7 +14,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.utility.PortUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links;
 import systems.reformcloud.reformcloud2.executor.api.node.process.LocalNodeProcess;
 import systems.reformcloud.reformcloud2.executor.api.node.process.NodeProcessManager;
-import systems.reformcloud.reformcloud2.executor.client.process.ProcessQueue;
 import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
 import systems.reformcloud.reformcloud2.executor.node.network.packet.out.NodePacketOutQueueProcess;
 import systems.reformcloud.reformcloud2.executor.node.process.manager.LocalProcessManager;
@@ -38,13 +37,13 @@ public class LocalNodeProcessManager implements NodeProcessManager {
     }
 
     @Override
-    public ProcessInformation startLocalProcess(ProcessGroup processGroup, Template template, JsonConfiguration data) {
+    public ProcessInformation startLocalProcess(ProcessGroup processGroup, Template template, JsonConfiguration data, UUID processUniqueID) {
         int id = nextID(processGroup);
         ProcessInformation processInformation = new ProcessInformation(
                 processGroup.getName() + (processGroup.isShowIdInName() ? (template.getServerNameSplitter() + id) : ""),
                 NodeExecutor.getInstance().getNodeConfig().getName(),
                 NodeExecutor.getInstance().getNodeConfig().getUniqueID(),
-                UUID.randomUUID(),
+                processUniqueID,
                 id,
                 ProcessState.PREPARED,
                 new NetworkInfo(
@@ -58,6 +57,9 @@ public class LocalNodeProcessManager implements NodeProcessManager {
                 data,
                 processGroup.getPlayerAccessConfiguration().getMaxPlayers()
         );
+        NodeInformation information = NodeExecutor.getInstance().getNodeNetworkManager().getCluster().getSelfNode();
+        information.addUsedMemory(processInformation.getTemplate().getRuntimeConfiguration().getMaxMemory());
+        NodeExecutor.getInstance().getClusterSyncManager().syncSelfInformation();
         LocalProcessQueue.queue(processInformation);
         return processInformation;
     }
@@ -91,28 +93,11 @@ public class LocalNodeProcessManager implements NodeProcessManager {
     }
 
     @Override
-    public ProcessInformation queueProcess(ProcessGroup processGroup, Template template, JsonConfiguration data, NodeInformation node) {
-        int id = nextID(processGroup);
-        ProcessInformation processInformation = new ProcessInformation(
-                processGroup.getName() + (processGroup.isShowIdInName() ? (template.getServerNameSplitter() + id) : ""),
-                NodeExecutor.getInstance().getNodeConfig().getName(),
-                NodeExecutor.getInstance().getNodeConfig().getUniqueID(),
-                UUID.randomUUID(),
-                id,
-                ProcessState.PREPARED,
-                new NetworkInfo(
-                        NodeExecutor.getInstance().getNodeConfig().getStartHost(),
-                        nextPort(processGroup.getStartupConfiguration().getStartPort()),
-                        false
-                ), processGroup,
-                template,
-                ProcessRuntimeInformation.empty(),
-                new ArrayList<>(),
-                data,
-                processGroup.getPlayerAccessConfiguration().getMaxPlayers()
-        );
-
-        DefaultChannelManager.INSTANCE.get(node.getName()).ifPresent(e -> e.sendPacket(new NodePacketOutQueueProcess(processInformation)));
+    public ProcessInformation queueProcess(ProcessGroup processGroup, Template template, JsonConfiguration data, NodeInformation node, UUID uniqueID) {
+        ProcessInformation processInformation = constructCaInfo(processGroup, template, data, node, uniqueID);
+        DefaultChannelManager.INSTANCE.get(node.getName()).ifPresent(e -> e.sendPacket(new NodePacketOutQueueProcess(
+                processGroup, template, data, uniqueID
+        )));
         return processInformation;
     }
 
@@ -127,20 +112,9 @@ public class LocalNodeProcessManager implements NodeProcessManager {
     }
 
     @Override
-    public void queueLocal(ProcessInformation processInformation) {
-        ProcessQueue.queue(processInformation);
-        NodeInformation information = NodeExecutor.getInstance().getNodeNetworkManager().getCluster().getSelfNode();
-        information.addUsedMemory(processInformation.getTemplate().getRuntimeConfiguration().getMaxMemory());
-        information.getQueuedProcesses().put(processInformation.getProcessGroup().getName(), processInformation.getName());
-        NodeExecutor.getInstance().getClusterSyncManager().syncSelfInformation();
-    }
-
-    @Override
     public void handleLocalProcessStart(ProcessInformation processInformation) {
         handleProcessStart(processInformation);
         NodeInformation information = NodeExecutor.getInstance().getNodeNetworkManager().getCluster().getSelfNode();
-        Links.deepFilterToReference(information.getQueuedProcesses(), e -> e.getValue().equals(processInformation.getName()))
-                .ifPresent(information.getQueuedProcesses()::remove);
         information.getStartedProcesses().add(new NodeProcess(
                 processInformation.getProcessGroup().getName(),
                 processInformation.getName(),
@@ -174,7 +148,6 @@ public class LocalNodeProcessManager implements NodeProcessManager {
 
     @Override
     public void handleProcessUpdate(ProcessInformation processInformation) {
-        System.out.println((int) this.information.stream().filter(e -> e.getProcessUniqueID().equals(processInformation.getProcessUniqueID())).count());
         Links.filterToReference(this.information, e -> e.getProcessUniqueID().equals(processInformation.getProcessUniqueID())).ifPresent(e -> {
             this.information.remove(e);
             this.information.add(processInformation);
@@ -219,6 +192,13 @@ public class LocalNodeProcessManager implements NodeProcessManager {
     @Override
     public Collection<ProcessInformation> getClusterProcesses(String group) {
         return Links.allOf(information, e -> e.getProcessGroup().getName().equals(group));
+    }
+
+    @Override
+    public Collection<ProcessInformation> getLocalProcesses() {
+        return Links.allOf(getClusterProcesses(), e -> e.getNodeUniqueID().equals(
+                NodeExecutor.getInstance().getNodeNetworkManager().getCluster().getSelfNode().getNodeUniqueID()
+        ));
     }
 
     @Override
@@ -272,5 +252,28 @@ public class LocalNodeProcessManager implements NodeProcessManager {
 
         startPort = PortUtil.checkPort(startPort);
         return startPort;
+    }
+
+    private ProcessInformation constructCaInfo(ProcessGroup processGroup, Template template, JsonConfiguration data,
+                                 NodeInformation node, UUID uniqueID) {
+        int id = nextID(processGroup);
+        return new ProcessInformation(
+                processGroup.getName() + (processGroup.isShowIdInName() ? (template.getServerNameSplitter() + id) : ""),
+                node.getName(),
+                node.getNodeUniqueID(),
+                uniqueID,
+                id,
+                ProcessState.PREPARED,
+                new NetworkInfo(
+                        null,
+                        -1,
+                        false
+                ), processGroup,
+                template,
+                ProcessRuntimeInformation.empty(),
+                new ArrayList<>(),
+                data,
+                processGroup.getPlayerAccessConfiguration().getMaxPlayers()
+        );
     }
 }

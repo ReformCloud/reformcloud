@@ -55,7 +55,7 @@ public class DefaultNodeInternalCluster implements InternalNetworkCluster {
 
     @Override
     public NodeInformation getNode(String name) {
-        return getConnectedNodes().stream().filter(e -> e.getName().equals(name)).findFirst().orElse(null);
+        return Links.filterToReference(connectedNodes, e -> e.getName().equals(name)).orNothing();
     }
 
     @Override
@@ -85,7 +85,11 @@ public class DefaultNodeInternalCluster implements InternalNetworkCluster {
         getConnectedNodes()
                 .stream()
                 .map(e -> DefaultChannelManager.INSTANCE.get(e.getName()).orNothing())
-                .forEach(e -> e.sendPacket(packet));
+                .forEach(e -> {
+                    if (e != null) {
+                        e.sendPacket(packet);
+                    }
+                });
     }
 
     @Override

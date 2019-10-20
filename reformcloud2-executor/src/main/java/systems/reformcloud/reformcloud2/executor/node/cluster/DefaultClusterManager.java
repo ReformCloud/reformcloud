@@ -26,7 +26,15 @@ public class DefaultClusterManager implements ClusterManager {
         Links.allOf(Links.newList(nodeInformation), e -> e.getName().equals(name)).forEach(e -> {
             this.nodeInformation.remove(e);
             cluster.getConnectedNodes().remove(e);
+            Links.allOf(Links.newList(NodeExecutor.getInstance().getNodeNetworkManager().getNodeProcessHelper().getClusterProcesses()),
+                    i -> i.getNodeUniqueID().equals(e.getNodeUniqueID())
+            ).forEach(NodeExecutor.getInstance().getNodeNetworkManager().getNodeProcessHelper().getClusterProcesses()::remove);
+
+            if (head != null && head.getNodeUniqueID().equals(e.getNodeUniqueID())) {
+                head = null;
+            }
         });
+
         recalculateHead();
     }
 
@@ -45,13 +53,11 @@ public class DefaultClusterManager implements ClusterManager {
 
     @Override
     public int getOnlineAndWaiting(String groupName) {
-        return this.nodeInformation
-                .stream()
-                .filter(e -> e.getStartedProcesses().stream().anyMatch(s -> s.getGroup().equals(groupName))
-                        || e.getQueuedProcesses().entrySet().stream().anyMatch(s -> s.getKey().equals(groupName)))
-                .mapToInt(e -> Links.keyFilter(e.getQueuedProcesses(), g -> g.equals(groupName)).size()
-                        + Links.allOf(e.getStartedProcesses(), s -> s.getGroup().equals(groupName)).size())
-                .sum();
+        int onlineOrWaiting = Links.allOf(NodeExecutor.getInstance().getNodeNetworkManager().getNodeProcessHelper().getClusterProcesses(),
+                e -> e.getProcessGroup().getName().equals(groupName)).size();
+        onlineOrWaiting += Links.deepFilter(NodeExecutor.getInstance().getNodeNetworkManager().getQueuedProcesses(),
+                v -> v.getValue().equals(groupName)).size();
+        return onlineOrWaiting;
     }
 
     @Override

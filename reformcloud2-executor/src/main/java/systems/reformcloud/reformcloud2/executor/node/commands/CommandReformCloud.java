@@ -17,10 +17,12 @@ import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.Startup
 import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
 import systems.reformcloud.reformcloud2.executor.controller.packet.out.ControllerPacketOutCopyProcess;
 import systems.reformcloud.reformcloud2.executor.controller.packet.out.ControllerPacketOutToggleScreen;
 import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
+import systems.reformcloud.reformcloud2.executor.node.config.NodeConfig;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -297,6 +299,31 @@ public final class CommandReformCloud extends GlobalCommand {
             }
 
             case "create": {
+                if (strings[1].equalsIgnoreCase("node") && strings.length == 4) {
+                    if (strings[2].split("\\.").length != 4) {
+                        System.out.println(LanguageManager.get("command-rc-node-ip-invalid", strings[2]));
+                        return true;
+                    }
+
+                    Integer port = CommonHelper.fromString(strings[3]);
+                    if (port == null || port < 0) {
+                        System.out.println(LanguageManager.get("command-rc-node-port-invalid", strings[3]));
+                        return true;
+                    }
+
+                    if (existsNode(strings[2], port)) {
+                        System.out.println(LanguageManager.get("command-rc-node-already-exists", strings[2], strings[3]));
+                        return true;
+                    }
+
+                    NodeExecutor.getInstance().getNodeConfig().getOtherNodes().add(
+                            Collections.singletonMap(strings[2], port)
+                    );
+                    NodeExecutor.getInstance().getNodeConfig().save();
+                    System.out.println(LanguageManager.get("command-rc-execute-success"));
+                    return true;
+                }
+
                 if (strings[1].equalsIgnoreCase("main") && strings.length == 3) {
                     MainGroup mainGroup = ExecutorAPI.getInstance().getMainGroup(strings[2]);
                     if (mainGroup == null) {
@@ -617,6 +644,7 @@ public final class CommandReformCloud extends GlobalCommand {
                 "rc stopall <subGroup>\n" +
                 "rc ofAll <mainGroup> <list | stop>\n" +
                 "rc execute <name | uuid> <command>\n" +
+                "rc create node <ip> <port>\n" +
                 "rc create main <name>\n" +
                 "rc create sub <name>\n" +
                 "rc create sub <name> <version>\n" +
@@ -626,5 +654,11 @@ public final class CommandReformCloud extends GlobalCommand {
                 "rc create sub <name> <version> <parent> <static> <minonline> <maxonline>\n" +
                 "rc delete <sub | main> <name>"
         );
+    }
+
+    private boolean existsNode(String host, int port) {
+        NodeConfig config = NodeExecutor.getInstance().getNodeConfig();
+        return Links.filterToReference(config.getOtherNodes(), e -> Links.deepFilterToReference(e,
+                g -> g.getKey().equalsIgnoreCase(host) && g.getValue() == port).isPresent()).isPresent();
     }
 }

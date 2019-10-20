@@ -7,6 +7,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInfor
 import systems.reformcloud.reformcloud2.executor.api.node.cluster.InternalNetworkCluster;
 import systems.reformcloud.reformcloud2.executor.api.node.process.NodeProcessManager;
 
+import java.util.Map;
 import java.util.UUID;
 
 public interface NodeNetworkManager {
@@ -24,4 +25,6 @@ public interface NodeNetworkManager {
     void stopProcess(String name);
 
     void stopProcess(UUID uuid);
+
+    Map<UUID, String> getQueuedProcesses();
 }

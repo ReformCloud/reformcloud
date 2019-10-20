@@ -20,16 +20,9 @@ public class PacketInNodeStopProcess implements NetworkHandler {
 
     @Override
     public void handlePacket(PacketSender packetSender, Packet packet, Consumer<Packet> responses) {
-        LocalNodeProcess information;
-        if (packet.content().has("name")) {
-            String name = packet.content().getString("name");
-            information = Links.filterToReference(LocalProcessManager.getNodeProcesses(),
-                    e -> e.getProcessInformation().getName().equals(name)).orNothing();
-        } else {
-            UUID uniqueID = packet.content().get("uniqueID", UUID.class);
-            information = Links.filterToReference(LocalProcessManager.getNodeProcesses(),
-                    e -> e.getProcessInformation().getProcessUniqueID().equals(uniqueID)).orNothing();
-        }
+        UUID uniqueID = packet.content().get("uniqueID", UUID.class);
+        LocalNodeProcess information = Links.filterToReference(LocalProcessManager.getNodeProcesses(),
+                e -> e.getProcessInformation().getProcessUniqueID().equals(uniqueID)).orNothing();
 
         if (information == null) {
             return;

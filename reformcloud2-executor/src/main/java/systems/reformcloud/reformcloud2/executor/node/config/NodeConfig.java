@@ -1,11 +1,15 @@
 package systems.reformcloud.reformcloud2.executor.node.config;
 
 import com.google.gson.reflect.TypeToken;
+import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.node.NodeInformation;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 public class NodeConfig {
 
@@ -71,11 +75,13 @@ public class NodeConfig {
                 name,
                 uniqueID,
                 System.nanoTime(),
-                new ArrayList<>(),
                 0L,
                 maxMemory,
-                new ArrayList<>(),
-                new HashMap<>()
+                new ArrayList<>()
         );
+    }
+
+    public void save() {
+        new JsonConfiguration().add("config", this).write(PATH);
     }
 }

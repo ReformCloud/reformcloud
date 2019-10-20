@@ -1,4 +1,4 @@
-package systems.reformcloud.reformcloud2.executor.node.network.packet.query;
+package systems.reformcloud.reformcloud2.executor.node.network.packet.query.out;
 
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
@@ -9,7 +9,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Defau
 public class NodePacketOutQueryStartProcess extends DefaultPacket {
 
     public NodePacketOutQueryStartProcess(ProcessGroup processGroup, Template template, JsonConfiguration data) {
-        super(NetworkUtil.NODE_TO_NODE_QUERY_BUS + 2, new JsonConfiguration()
+        super(NetworkUtil.NODE_TO_NODE_QUERY_BUS + 1, new JsonConfiguration()
                 .add("group", processGroup)
                 .add("template", template)
                 .add("data", data)

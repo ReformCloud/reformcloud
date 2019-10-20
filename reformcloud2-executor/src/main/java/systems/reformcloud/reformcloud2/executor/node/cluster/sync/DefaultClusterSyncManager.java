@@ -39,6 +39,7 @@ public class DefaultClusterSyncManager implements ClusterSyncManager {
 
     @Override
     public void syncProcessStartup(ProcessInformation processInformation) {
+        NodeExecutor.getInstance().getNodeNetworkManager().getQueuedProcesses().remove(processInformation.getProcessUniqueID());
         NodeExecutor.getInstance().getNodeNetworkManager().getCluster().broadCastToCluster(new PacketOutProcessAction(
                 ProcessAction.START, processInformation
         ));
@@ -99,6 +100,7 @@ public class DefaultClusterSyncManager implements ClusterSyncManager {
         this.syncProcessGroups(this.processGroups, SyncAction.CREATE);
 
         NodeExecutor.getInstance().getNodeExecutorConfig().handleProcessGroupCreate(group);
+        NodeExecutor.getInstance().getLocalAutoStartupHandler().update();
     }
 
     @Override
@@ -117,6 +119,7 @@ public class DefaultClusterSyncManager implements ClusterSyncManager {
             this.syncProcessGroups(processGroups, SyncAction.UPDATE);
 
             NodeExecutor.getInstance().getNodeExecutorConfig().handleProcessGroupUpdate(processGroup);
+            NodeExecutor.getInstance().getLocalAutoStartupHandler().update();
         });
     }
 
@@ -138,6 +141,7 @@ public class DefaultClusterSyncManager implements ClusterSyncManager {
             this.syncProcessGroups(processGroups, SyncAction.DELETE);
 
             NodeExecutor.getInstance().getNodeExecutorConfig().handleProcessGroupDelete(e);
+            NodeExecutor.getInstance().getLocalAutoStartupHandler().update();
         });
     }
 
@@ -190,6 +194,8 @@ public class DefaultClusterSyncManager implements ClusterSyncManager {
                 break;
             }
         }
+
+        NodeExecutor.getInstance().getLocalAutoStartupHandler().update();
     }
 
     @Override

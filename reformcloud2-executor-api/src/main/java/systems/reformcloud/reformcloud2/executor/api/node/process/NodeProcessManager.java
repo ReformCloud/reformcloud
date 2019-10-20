@@ -16,19 +16,17 @@ public interface NodeProcessManager extends Updateable<ProcessInformation>, Iter
 
     ProcessInformation getLocalCloudProcess(UUID uuid);
 
-    ProcessInformation startLocalProcess(ProcessGroup processGroup, Template template, JsonConfiguration data);
+    ProcessInformation startLocalProcess(ProcessGroup processGroup, Template template, JsonConfiguration data, UUID uniqueID);
 
     ProcessInformation stopLocalProcess(String name);
 
     ProcessInformation stopLocalProcess(UUID uuid);
 
-    ProcessInformation queueProcess(ProcessGroup processGroup, Template template, JsonConfiguration data, NodeInformation node);
+    ProcessInformation queueProcess(ProcessGroup processGroup, Template template, JsonConfiguration data, NodeInformation node, UUID uniqueID);
 
     void registerLocalProcess(LocalNodeProcess process);
 
     void unregisterLocalProcess(UUID uniqueID);
-
-    void queueLocal(ProcessInformation processInformation);
 
     void handleLocalProcessStart(ProcessInformation processInformation);
 
@@ -49,6 +47,8 @@ public interface NodeProcessManager extends Updateable<ProcessInformation>, Iter
     Collection<ProcessInformation> getClusterProcesses();
 
     Collection<ProcessInformation> getClusterProcesses(String group);
+
+    Collection<ProcessInformation> getLocalProcesses();
 
     ProcessInformation getClusterProcess(String name);
 

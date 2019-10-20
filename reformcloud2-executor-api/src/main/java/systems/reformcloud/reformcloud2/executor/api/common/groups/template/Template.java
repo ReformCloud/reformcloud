@@ -1,6 +1,10 @@
 package systems.reformcloud.reformcloud2.executor.api.common.groups.template;
 
+import com.google.gson.reflect.TypeToken;
+
 public final class Template {
+
+    public static final TypeToken<Template> TYPE = new TypeToken<Template>() {};
 
     public Template(int priority, String name, String backend, String serverNameSplitter,
                     RuntimeConfiguration runtimeConfiguration, Version version) {

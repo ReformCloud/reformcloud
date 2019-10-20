@@ -6,9 +6,12 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 public final class Links {
+
+    private Links() {
+        throw new UnsupportedOperationException();
+    }
 
     public static List<String> toLowerCase(Collection<String> list) {
         List<String> strings = new ArrayList<>();
@@ -62,16 +65,6 @@ public final class Links {
         return ReferencedOptional.empty();
     }
 
-    public static <K, V> ReferencedOptional<V> deepFilterToReference(Map<K, V> in, Predicate<Map.Entry<K, V>> predicate) {
-        for (Map.Entry<K, V> entry : in.entrySet()) {
-            if (predicate.test(entry)) {
-                return ReferencedOptional.build(entry.getValue());
-            }
-        }
-
-        return ReferencedOptional.empty();
-    }
-
     public static <T, F> F filterAndApply(List<T> in, Predicate<T> predicate, Function<T, F> function) {
         for (T t : in) {
             if (predicate.test(t)) {
@@ -105,10 +98,6 @@ public final class Links {
         map.keySet().forEach(f -> out.add(fxFunction.apply(f)));
 
         return out;
-    }
-
-    public static <F, T> List<F> keyFilter(Map<F, T> map, Predicate<F> predicate) {
-        return map.keySet().stream().filter(predicate).collect(Collectors.toList());
     }
 
     @SafeVarargs
@@ -165,5 +154,25 @@ public final class Links {
         Collection<F> out = new LinkedList<>();
         collection.forEach(t -> out.add(function.apply(t)));
         return out;
+    }
+
+    public static <F, S> Collection<S> deepFilter(Map<F, S> in, Predicate<Map.Entry<F, S>> predicate) {
+        Collection<S> out = new LinkedList<>();
+        in.entrySet().forEach(e -> {
+            if (predicate.test(e)) {
+                out.add(e.getValue());
+            }
+        });
+        return out;
+    }
+
+    public static <F, S> ReferencedOptional<Map.Entry<F, S>> deepFilterToReference(Map<F, S> in, Predicate<Map.Entry<F, S>> predicate) {
+        for (Map.Entry<F, S> fsEntry : in.entrySet()) {
+            if (predicate.test(fsEntry)) {
+                return ReferencedOptional.build(fsEntry);
+            }
+        }
+
+        return ReferencedOptional.empty();
     }
 }

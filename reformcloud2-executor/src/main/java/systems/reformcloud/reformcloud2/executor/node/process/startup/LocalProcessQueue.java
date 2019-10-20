@@ -6,12 +6,12 @@ import systems.reformcloud.reformcloud2.executor.api.node.process.LocalNodeProce
 import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
 import systems.reformcloud.reformcloud2.executor.node.process.basic.BasicLocalNodeProcess;
 
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.BlockingDeque;
+import java.util.concurrent.LinkedBlockingDeque;
 
 public class LocalProcessQueue extends AbsoluteThread {
 
-    private static final Queue<LocalNodeProcess> QUEUE = new ConcurrentLinkedDeque<>();
+    private static final BlockingDeque<LocalNodeProcess> QUEUE = new LinkedBlockingDeque<>();
 
     public LocalProcessQueue() {
         enableDaemon().updatePriority(Thread.MIN_PRIORITY).start();
@@ -20,24 +20,36 @@ public class LocalProcessQueue extends AbsoluteThread {
     public static void queue(ProcessInformation processInformation) {
         LocalNodeProcess localNodeProcess = new BasicLocalNodeProcess(processInformation);
         localNodeProcess.prepare();
-        QUEUE.add(localNodeProcess);
+        QUEUE.offerLast(localNodeProcess);
     }
 
     @Override
     public void run() {
-        while (!NodeExecutor.getInstance().getClusterSyncManager().isConnectedAndSyncWithCluster()) {
-            AbsoluteThread.sleep(500);
-        }
-
         while (!Thread.currentThread().isInterrupted()) {
-            if (!QUEUE.isEmpty()) {
-                LocalNodeProcess process = QUEUE.poll();
-                if (!process.bootstrap()) {
-                    QUEUE.add(process);
-                }
+            if (!NodeExecutor.getInstance().getClusterSyncManager().isConnectedAndSyncWithCluster()) {
+                AbsoluteThread.sleep(500);
+                continue;
             }
 
-            AbsoluteThread.sleep(100);
+            try {
+                LocalNodeProcess process = QUEUE.take();
+                if (isMemoryFree(process.getProcessInformation().getTemplate().getRuntimeConfiguration().getMaxMemory())
+                        && process.bootstrap()) {
+                    System.out.println(""); // TODO: Message
+                    AbsoluteThread.sleep(50);
+                    continue;
+                }
+
+                QUEUE.offerLast(process);
+                AbsoluteThread.sleep(200);
+            } catch (final InterruptedException ignored) {
+            }
         }
+    }
+
+    private boolean isMemoryFree(int memory) {
+        return NodeExecutor.getInstance().getNodeConfig().getMaxMemory() >=
+                (NodeExecutor.getInstance().getNodeNetworkManager().getNodeProcessHelper().getLocalProcesses()
+                        .stream().mapToInt(e -> e.getTemplate().getRuntimeConfiguration().getMaxMemory()).sum() + memory);
     }
 }

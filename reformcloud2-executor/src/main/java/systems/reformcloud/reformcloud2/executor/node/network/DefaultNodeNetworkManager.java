@@ -6,21 +6,21 @@ import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Runt
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Template;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Version;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.backend.basic.FileBackend;
+import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.common.node.NodeInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.node.cluster.InternalNetworkCluster;
 import systems.reformcloud.reformcloud2.executor.api.node.network.NodeNetworkManager;
 import systems.reformcloud.reformcloud2.executor.api.node.process.NodeProcessManager;
 import systems.reformcloud.reformcloud2.executor.node.network.packet.out.NodePacketOutStopProcess;
-import systems.reformcloud.reformcloud2.executor.node.network.packet.query.NodePacketOutQueryGetProcess;
-import systems.reformcloud.reformcloud2.executor.node.network.packet.query.NodePacketOutQueryStartProcess;
+import systems.reformcloud.reformcloud2.executor.node.network.packet.query.out.NodePacketOutQueryStartProcess;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class DefaultNodeNetworkManager implements NodeNetworkManager {
+
+    private static final Map<UUID, String> QUEUED_PROCESSES = new ConcurrentHashMap<>();
 
     public DefaultNodeNetworkManager(NodeProcessManager processManager, InternalNetworkCluster cluster) {
         this.localNodeProcessManager = processManager;
@@ -43,22 +43,12 @@ public class DefaultNodeNetworkManager implements NodeNetworkManager {
 
     @Override
     public ProcessInformation getCloudProcess(String name) {
-        ProcessInformation information = localNodeProcessManager.getLocalCloudProcess(name);
-        if (information != null) {
-            return information;
-        }
-
-        return getCluster().sendQueryToHead(new NodePacketOutQueryGetProcess(name), packet -> packet.content().get("result", ProcessInformation.TYPE));
+        return localNodeProcessManager.getClusterProcess(name);
     }
 
     @Override
     public ProcessInformation getCloudProcess(UUID uuid) {
-        ProcessInformation information = localNodeProcessManager.getLocalCloudProcess(uuid);
-        if (information != null) {
-            return information;
-        }
-
-        return getCluster().sendQueryToHead(new NodePacketOutQueryGetProcess(uuid), packet -> packet.content().get("result", ProcessInformation.TYPE));
+        return localNodeProcessManager.getClusterProcess(uuid);
     }
 
     @Override
@@ -76,16 +66,19 @@ public class DefaultNodeNetworkManager implements NodeNetworkManager {
         }
 
         if (getCluster().isSelfNodeHead()) {
+            final UUID processUniqueID = UUID.randomUUID();
+            QUEUED_PROCESSES.put(processUniqueID, processGroup.getName());
+
             if (getCluster().noOtherNodes()) {
-                return localNodeProcessManager.startLocalProcess(processGroup, template, data);
+                return localNodeProcessManager.startLocalProcess(processGroup, template, data, processUniqueID);
             }
 
             NodeInformation best = getCluster().findBestNodeForStartup(template);
             if (best != null && best.canEqual(getCluster().getHeadNode())) {
-                return localNodeProcessManager.startLocalProcess(processGroup, template, data);
+                return localNodeProcessManager.startLocalProcess(processGroup, template, data, processUniqueID);
             }
 
-            return localNodeProcessManager.queueProcess(processGroup, template, data, best);
+            return localNodeProcessManager.queueProcess(processGroup, template, data, best, processUniqueID);
         }
 
         return getCluster().sendQueryToHead(new NodePacketOutQueryStartProcess(processGroup, template, data),
@@ -95,12 +88,12 @@ public class DefaultNodeNetworkManager implements NodeNetworkManager {
 
     @Override
     public void stopProcess(String name) {
-        if (localNodeProcessManager.isLocal(name)) {
-            localNodeProcessManager.stopLocalProcess(name);
+        ProcessInformation information = localNodeProcessManager.getClusterProcess(name);
+        if (information == null) {
             return;
         }
 
-        getCluster().publishToHeadNode(new NodePacketOutStopProcess(name));
+        stopProcess(information.getProcessUniqueID());
     }
 
     @Override
@@ -110,7 +103,17 @@ public class DefaultNodeNetworkManager implements NodeNetworkManager {
             return;
         }
 
-        getCluster().publishToHeadNode(new NodePacketOutStopProcess(uuid));
+        ProcessInformation information = localNodeProcessManager.getClusterProcess(uuid);
+        if (information == null) {
+            return;
+        }
+
+        DefaultChannelManager.INSTANCE.get(information.getParent()).ifPresent(e -> e.sendPacket(new NodePacketOutStopProcess(uuid)));
+    }
+
+    @Override
+    public Map<UUID, String> getQueuedProcesses() {
+        return QUEUED_PROCESSES;
     }
 
     private Template randomTemplate(ProcessGroup processGroup) {

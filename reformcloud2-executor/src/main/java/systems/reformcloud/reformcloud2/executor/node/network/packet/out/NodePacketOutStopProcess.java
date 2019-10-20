@@ -8,10 +8,6 @@ import java.util.UUID;
 
 public class NodePacketOutStopProcess extends DefaultPacket {
 
-    public NodePacketOutStopProcess(String name) {
-        super(NetworkUtil.NODE_TO_NODE_BUS + 1, new JsonConfiguration().add("name", name));
-    }
-
     public NodePacketOutStopProcess(UUID uniqueID) {
         super(NetworkUtil.NODE_TO_NODE_BUS + 1, new JsonConfiguration().add("uniqueID", uniqueID));
     }
