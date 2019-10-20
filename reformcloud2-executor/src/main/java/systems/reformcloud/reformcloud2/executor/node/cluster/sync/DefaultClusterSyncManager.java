@@ -262,7 +262,6 @@ public class DefaultClusterSyncManager implements ClusterSyncManager {
     @Override
     public void doClusterReload() {
         NodeExecutor.getInstance().getNodeNetworkManager().getCluster().broadCastToCluster(new PacketOutReloadCluster());
-        handleClusterReload();
     }
 
     @Override

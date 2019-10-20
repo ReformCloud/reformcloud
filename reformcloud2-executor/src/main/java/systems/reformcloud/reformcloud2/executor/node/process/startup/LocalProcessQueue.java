@@ -1,5 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.node.process.startup;
 
+import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
 import systems.reformcloud.reformcloud2.executor.api.node.process.LocalNodeProcess;
@@ -20,7 +21,9 @@ public class LocalProcessQueue extends AbsoluteThread {
     public static void queue(ProcessInformation processInformation) {
         LocalNodeProcess localNodeProcess = new BasicLocalNodeProcess(processInformation);
         localNodeProcess.prepare();
+        int size = QUEUE.size();
         QUEUE.offerLast(localNodeProcess);
+        System.out.println(LanguageManager.get("client-process-now-in-queue", processInformation.getName(), size +1));
     }
 
     @Override
@@ -35,11 +38,12 @@ public class LocalProcessQueue extends AbsoluteThread {
                 LocalNodeProcess process = QUEUE.take();
                 if (isMemoryFree(process.getProcessInformation().getTemplate().getRuntimeConfiguration().getMaxMemory())
                         && process.bootstrap()) {
-                    System.out.println(""); // TODO: Message
+                    System.out.println(LanguageManager.get("node-process-start", process.getProcessInformation().getName()));
                     AbsoluteThread.sleep(50);
                     continue;
                 }
 
+                System.out.println(LanguageManager.get("client-process-start-failed", process.getProcessInformation().getName(), QUEUE.size() +1));
                 QUEUE.offerLast(process);
                 AbsoluteThread.sleep(200);
             } catch (final InterruptedException ignored) {

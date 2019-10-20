@@ -193,6 +193,16 @@ public class NodeExecutorConfig {
         this.localMainGroupsRegistry.deleteKey(mainGroup.getName());
     }
 
+    public NodeConfig reload() {
+        this.nodeConfig = JsonConfiguration.read(NodeConfig.PATH).get("config", NodeConfig.TYPE);
+        this.ingameMessages = JsonConfiguration.read("reformcloud/configs/messages.json").get("messages", IngameMessages.TYPE);
+        this.self = this.nodeConfig.prepare();
+        this.connectionKey = JsonConfiguration.read("reformcloud/files/.connection/connection.json").getOrDefault("key", (String) null);
+        this.loadGroups();
+
+        return this.nodeConfig;
+    }
+
     private void createDirectories() {
         PATHS.forEach(SystemHelper::createDirectory);
     }

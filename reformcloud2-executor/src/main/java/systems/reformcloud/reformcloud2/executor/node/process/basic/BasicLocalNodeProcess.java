@@ -7,6 +7,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Version;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.backend.TemplateBackendManager;
+import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.PortUtil;
@@ -154,6 +155,8 @@ public class BasicLocalNodeProcess implements LocalNodeProcess {
         NodeExecutor.getInstance().getClusterSyncManager().syncProcessStartup(processInformation);
         NodeExecutor.getInstance().getNodeNetworkManager().getNodeProcessHelper().handleLocalProcessStart(processInformation);
         startupTime.set(System.currentTimeMillis());
+
+        System.out.println(LanguageManager.get("client-process-start-done", processInformation.getName()));
         return true;
     }
 

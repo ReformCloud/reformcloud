@@ -40,6 +40,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.PlayerA
 import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.StartupConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.StartupEnvironment;
 import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
+import systems.reformcloud.reformcloud2.executor.api.common.language.loading.LanguageWorker;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.LoggerBase;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.coloured.ColouredLoggerHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.other.DefaultLoggerHandler;
@@ -1836,7 +1837,42 @@ public class NodeExecutor extends Node {
 
     @Override
     public void reload() throws Exception {
+        final long current = System.currentTimeMillis();
+        System.out.println(LanguageManager.get("runtime-try-reload"));
+
+        this.applicationLoader.disableApplications();
+
+        this.commandManager.unregisterAll();
+        this.packetHandler.clearHandlers();
+
+        this.clusterSyncManager.getProcessGroups().clear();
+        this.clusterSyncManager.getMainGroups().clear();
+
+        this.nodeExecutorConfig.getProcessGroups().clear();
+        this.nodeExecutorConfig.getMainGroups().clear();
+
+        this.applicationLoader.detectApplications();
+        this.applicationLoader.installApplications();
+
+        LanguageWorker.doReload();
+
+        this.nodeConfig = this.nodeExecutorConfig.reload();
+
+        this.clusterSyncManager.getProcessGroups().addAll(nodeExecutorConfig.getProcessGroups());
+        this.clusterSyncManager.getMainGroups().addAll(nodeExecutorConfig.getMainGroups());
+
+        this.localAutoStartupHandler.update();
+
+        this.applicationLoader.loadApplications();
+
+        this.sendGroups();
+        this.loadCommands();
+        this.loadPacketHandlers();
+
+        this.applicationLoader.enableApplications();
+
         this.clusterSyncManager.doClusterReload();
+        System.out.println(LanguageManager.get("runtime-reload-done", Long.toString(System.currentTimeMillis() - current)));
     }
 
     private void awaitConnectionsAndUpdate() {
