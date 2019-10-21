@@ -15,6 +15,7 @@ public final class ProcessEventHandler {
                 BungeeExecutor.getInstance().getMessages().getProcessStarted(),
                 event.getProcessInformation().getName()
         );
+        BungeeExecutor.registerServer(event.getProcessInformation());
     }
 
     @Listener

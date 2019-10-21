@@ -5,7 +5,11 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.channel.Pack
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.handler.NetworkHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
+import systems.reformcloud.reformcloud2.executor.controller.packet.out.event.ControllerEventProcessClosed;
+import systems.reformcloud.reformcloud2.executor.controller.packet.out.event.ControllerEventProcessStarted;
+import systems.reformcloud.reformcloud2.executor.controller.packet.out.event.ControllerEventProcessUpdated;
 import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
+import systems.reformcloud.reformcloud2.executor.node.cluster.sync.DefaultClusterSyncManager;
 import systems.reformcloud.reformcloud2.executor.node.process.util.ProcessAction;
 
 import java.util.function.Consumer;
@@ -30,6 +34,7 @@ public class PacketInProcessAction implements NetworkHandler {
                 NodeExecutor.getInstance().getNodeNetworkManager().getNodeProcessHelper().handleProcessStart(
                         information
                 );
+                DefaultClusterSyncManager.sendToAllExcludedNodes(new ControllerEventProcessStarted(information));
                 break;
             }
 
@@ -37,6 +42,7 @@ public class PacketInProcessAction implements NetworkHandler {
                 NodeExecutor.getInstance().getNodeNetworkManager().getNodeProcessHelper().handleProcessUpdate(
                         information
                 );
+                DefaultClusterSyncManager.sendToAllExcludedNodes(new ControllerEventProcessUpdated(information));
                 break;
             }
 
@@ -44,6 +50,7 @@ public class PacketInProcessAction implements NetworkHandler {
                 NodeExecutor.getInstance().getNodeNetworkManager().getNodeProcessHelper().handleProcessStop(
                         information
                 );
+                DefaultClusterSyncManager.sendToAllExcludedNodes(new ControllerEventProcessClosed(information));
                 break;
             }
         }

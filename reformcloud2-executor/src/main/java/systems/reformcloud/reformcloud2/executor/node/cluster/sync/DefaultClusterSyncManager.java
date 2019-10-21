@@ -2,11 +2,16 @@ package systems.reformcloud.reformcloud2.executor.node.cluster.sync;
 
 import systems.reformcloud.reformcloud2.executor.api.common.groups.MainGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
+import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
+import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.api.common.node.NodeInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links;
 import systems.reformcloud.reformcloud2.executor.api.node.cluster.ClusterSyncManager;
 import systems.reformcloud.reformcloud2.executor.api.node.cluster.SyncAction;
+import systems.reformcloud.reformcloud2.executor.controller.packet.out.event.ControllerEventProcessClosed;
+import systems.reformcloud.reformcloud2.executor.controller.packet.out.event.ControllerEventProcessStarted;
+import systems.reformcloud.reformcloud2.executor.controller.packet.out.event.ControllerEventProcessUpdated;
 import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
 import systems.reformcloud.reformcloud2.executor.node.network.client.NodeNetworkClient;
 import systems.reformcloud.reformcloud2.executor.node.network.packet.out.NodePacketOutNodeInformationUpdate;
@@ -43,6 +48,7 @@ public class DefaultClusterSyncManager implements ClusterSyncManager {
         NodeExecutor.getInstance().getNodeNetworkManager().getCluster().broadCastToCluster(new PacketOutProcessAction(
                 ProcessAction.START, processInformation
         ));
+        sendToAllExcludedNodes(new ControllerEventProcessStarted(processInformation));
     }
 
     @Override
@@ -50,6 +56,7 @@ public class DefaultClusterSyncManager implements ClusterSyncManager {
         NodeExecutor.getInstance().getNodeNetworkManager().getCluster().broadCastToCluster(new PacketOutProcessAction(
                 ProcessAction.UPDATE, processInformation
         ));
+        sendToAllExcludedNodes(new ControllerEventProcessUpdated(processInformation));
     }
 
     @Override
@@ -57,6 +64,7 @@ public class DefaultClusterSyncManager implements ClusterSyncManager {
         NodeExecutor.getInstance().getNodeNetworkManager().getCluster().broadCastToCluster(new PacketOutProcessAction(
                 ProcessAction.STOP, processInformation
         ));
+        sendToAllExcludedNodes(new ControllerEventProcessClosed(processInformation));
     }
 
     @Override
@@ -242,7 +250,11 @@ public class DefaultClusterSyncManager implements ClusterSyncManager {
     @Override
     public void handleProcessInformationSync(Collection<ProcessInformation> information) {
         Collection<ProcessInformation> clusterProcesses = NodeExecutor.getInstance().getNodeNetworkManager().getNodeProcessHelper().getClusterProcesses();
-        clusterProcesses.addAll(Links.allOf(information, e -> clusterProcesses.stream().noneMatch(i -> i.getProcessUniqueID().equals(e.getProcessUniqueID()))));
+        Links.allOf(information, e -> clusterProcesses.stream().noneMatch(i -> i.getProcessUniqueID().equals(e.getProcessUniqueID())))
+                .forEach(e -> {
+                    clusterProcesses.add(e);
+                    sendToAllExcludedNodes(new ControllerEventProcessStarted(e));
+                });
     }
 
     @Override
@@ -277,5 +289,11 @@ public class DefaultClusterSyncManager implements ClusterSyncManager {
     @Override
     public Collection<String> getWaitingConnections() {
         return waiting;
+    }
+
+    public static void sendToAllExcludedNodes(Packet packet) {
+        Links.allOf(DefaultChannelManager.INSTANCE.getAllSender(),
+                e -> NodeExecutor.getInstance().getNodeNetworkManager().getCluster().getNode(e.getName()) == null
+        ).forEach(e -> e.sendPacket(packet));
     }
 }

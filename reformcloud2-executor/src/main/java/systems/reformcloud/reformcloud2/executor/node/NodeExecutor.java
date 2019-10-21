@@ -259,6 +259,7 @@ public class NodeExecutor extends Node {
                             information.getNetworkInfo().setConnected(true);
                             information.setProcessState(ProcessState.READY);
                             nodeNetworkManager.getNodeProcessHelper().update(information);
+                            nodeNetworkManager.getNodeProcessHelper().handleProcessConnection(information);
                             System.out.println(LanguageManager.get("process-connected", auth.getName(), auth.parent()));
                         }
 
@@ -269,9 +270,16 @@ public class NodeExecutor extends Node {
                 @Override
                 public BiFunction<String, ChannelHandlerContext, PacketSender> onSuccess() {
                     return (s, context) -> {
-                        context.channel().writeAndFlush(new DefaultPacket(-511, new JsonConfiguration()
-                                .add("name", nodeExecutorConfig.getSelf().getName())
-                                .add("access", true)));
+                        ProcessInformation process = nodeNetworkManager.getNodeProcessHelper()
+                                .getLocalCloudProcess(s);
+
+                        JsonConfiguration result = new JsonConfiguration().add("access", true);
+                        if (process == null) {
+                            // Node
+                            result.add("name", nodeExecutorConfig.getSelf().getName());
+                        }
+                        context.channel().writeAndFlush(new DefaultPacket(-511, result));
+
                         PacketSender sender = new DefaultPacketSender(context.channel());
                         sender.setName(s);
                         clusterSyncManager.getWaitingConnections().remove(sender.getAddress());

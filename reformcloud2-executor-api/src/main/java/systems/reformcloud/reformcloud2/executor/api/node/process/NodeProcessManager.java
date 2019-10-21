@@ -36,6 +36,8 @@ public interface NodeProcessManager extends Updateable<ProcessInformation>, Iter
 
     void handleProcessUpdate(ProcessInformation processInformation);
 
+    void handleProcessConnection(ProcessInformation processInformation);
+
     void handleProcessStop(ProcessInformation processInformation);
 
     void handleProcessDisconnect(String name);

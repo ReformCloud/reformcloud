@@ -5,6 +5,8 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.NetworkUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.handler.NetworkHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
+import systems.reformcloud.reformcloud2.executor.controller.packet.out.event.ControllerEventPlayerConnected;
+import systems.reformcloud.reformcloud2.executor.node.cluster.sync.DefaultClusterSyncManager;
 
 import java.util.function.Consumer;
 
@@ -23,5 +25,7 @@ public final class PacketInAPIPlayerLoggedIn implements NetworkHandler {
                 name,
                 packetSender.getName()
         ));
+
+        DefaultClusterSyncManager.sendToAllExcludedNodes(new ControllerEventPlayerConnected(name));
     }
 }

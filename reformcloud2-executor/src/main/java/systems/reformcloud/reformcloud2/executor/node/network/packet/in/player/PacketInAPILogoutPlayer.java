@@ -7,7 +7,9 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.channel.Pack
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.handler.NetworkHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.api.common.process.join.OnlyProxyJoinHelper;
+import systems.reformcloud.reformcloud2.executor.controller.packet.out.event.ControllerEventLogoutPlayer;
 import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
+import systems.reformcloud.reformcloud2.executor.node.cluster.sync.DefaultClusterSyncManager;
 
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -33,5 +35,6 @@ public final class PacketInAPILogoutPlayer implements NetworkHandler {
         ));
 
         NodeExecutor.getInstance().getEventManager().callEvent(new PlayerLogoutEvent(name, uuid));
+        DefaultClusterSyncManager.sendToAllExcludedNodes(new ControllerEventLogoutPlayer(name, uuid));
     }
 }

@@ -14,6 +14,7 @@ public final class ProcessEventHandler {
                 VelocityExecutor.getInstance().getMessages().getProcessStarted(),
                 event.getProcessInformation().getName()
         );
+        VelocityExecutor.getInstance().handleProcessUpdate(event.getProcessInformation());
     }
 
     @Listener

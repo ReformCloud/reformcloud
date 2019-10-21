@@ -12,8 +12,11 @@ import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessRunti
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.PortUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
 import systems.reformcloud.reformcloud2.executor.api.node.process.LocalNodeProcess;
 import systems.reformcloud.reformcloud2.executor.api.node.process.NodeProcessManager;
+import systems.reformcloud.reformcloud2.executor.controller.packet.out.event.ControllerEventProcessUpdated;
 import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
 import systems.reformcloud.reformcloud2.executor.node.network.packet.out.NodePacketOutQueueProcess;
 import systems.reformcloud.reformcloud2.executor.node.process.manager.LocalProcessManager;
@@ -151,6 +154,17 @@ public class LocalNodeProcessManager implements NodeProcessManager {
         Links.filterToReference(this.information, e -> e.getProcessUniqueID().equals(processInformation.getProcessUniqueID())).ifPresent(e -> {
             this.information.remove(e);
             this.information.add(processInformation);
+        });
+    }
+
+    @Override
+    public void handleProcessConnection(ProcessInformation processInformation) {
+        Task.EXECUTOR.execute(() -> {
+            while (!DefaultChannelManager.INSTANCE.get(processInformation.getName()).isPresent()) {
+                AbsoluteThread.sleep(5);
+            }
+
+            DefaultChannelManager.INSTANCE.get(processInformation.getName()).ifPresent(e -> e.sendPacket(new ControllerEventProcessUpdated(processInformation)));
         });
     }
 
