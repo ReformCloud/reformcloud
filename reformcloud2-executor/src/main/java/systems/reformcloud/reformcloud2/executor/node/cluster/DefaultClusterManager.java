@@ -4,7 +4,9 @@ import systems.reformcloud.reformcloud2.executor.api.common.node.NodeInformation
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links;
 import systems.reformcloud.reformcloud2.executor.api.node.cluster.ClusterManager;
 import systems.reformcloud.reformcloud2.executor.api.node.cluster.InternalNetworkCluster;
+import systems.reformcloud.reformcloud2.executor.controller.packet.out.event.ControllerEventProcessClosed;
 import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
+import systems.reformcloud.reformcloud2.executor.node.cluster.sync.DefaultClusterSyncManager;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -28,7 +30,10 @@ public class DefaultClusterManager implements ClusterManager {
             cluster.getConnectedNodes().remove(e);
             Links.allOf(Links.newList(NodeExecutor.getInstance().getNodeNetworkManager().getNodeProcessHelper().getClusterProcesses()),
                     i -> i.getNodeUniqueID().equals(e.getNodeUniqueID())
-            ).forEach(NodeExecutor.getInstance().getNodeNetworkManager().getNodeProcessHelper().getClusterProcesses()::remove);
+            ).forEach(i -> {
+                NodeExecutor.getInstance().getNodeNetworkManager().getNodeProcessHelper().handleProcessStop(i);
+                DefaultClusterSyncManager.sendToAllExcludedNodes(new ControllerEventProcessClosed(i));
+            });
 
             if (head != null && head.getNodeUniqueID().equals(e.getNodeUniqueID())) {
                 head = null;
