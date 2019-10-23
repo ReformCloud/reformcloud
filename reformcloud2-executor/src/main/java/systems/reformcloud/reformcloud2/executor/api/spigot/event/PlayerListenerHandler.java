@@ -78,6 +78,12 @@ public final class PlayerListenerHandler implements Listener {
             return;
         }
 
+        if (!current.onLogin(player.getUniqueId(), player.getName())) {
+            event.setKickMessage("§4§lYou are not allowed to join this server");
+            event.setResult(PlayerLoginEvent.Result.KICK_BANNED);
+            return;
+        }
+
         if (Bukkit.getOnlinePlayers().size() >= current.getMaxPlayers()
                 && !current.getProcessState().equals(ProcessState.FULL)
                 && !current.getProcessState().equals(ProcessState.INVISIBLE)) {
@@ -87,11 +93,8 @@ public final class PlayerListenerHandler implements Listener {
 
     @EventHandler (priority = EventPriority.HIGHEST)
     public void handle(final PlayerJoinEvent event) {
-        final Player player = event.getPlayer();
         final ProcessInformation current = ExecutorAPI.getInstance().getThisProcessInformation();
-
         current.updateRuntimeInformation();
-        current.onLogin(player.getUniqueId(), player.getName());
         SpigotExecutor.getInstance().setThisProcessInformation(current);
         ExecutorAPI.getInstance().update(current);
     }

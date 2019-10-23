@@ -93,7 +93,12 @@ public final class PlayerListenerHandler implements Listener {
         }
 
         if (current.getProcessState().equals(ProcessState.FULL) && !player.hasPermission("reformcloud.join.full")) {
-            player.disconnect(TextComponent.fromLegacyText("§4§lYou are not allowed to join this server in the current state"));
+            player.disconnect(TextComponent.fromLegacyText("§4§lYou are not allowed to join this proxy in the current state"));
+            return;
+        }
+
+        if (!current.onLogin(event.getPlayer().getUniqueId(), event.getPlayer().getName())) {
+            player.disconnect(TextComponent.fromLegacyText("§4§lYou are not allowed to join this proxy"));
             return;
         }
 
@@ -103,7 +108,6 @@ public final class PlayerListenerHandler implements Listener {
             current.setProcessState(ProcessState.FULL);
         }
 
-        current.onLogin(event.getPlayer().getUniqueId(), event.getPlayer().getName());
         current.updateRuntimeInformation();
         BungeeExecutor.getInstance().setThisProcessInformation(current); //Update it directly on the current host to prevent issues
         ExecutorAPI.getInstance().update(current);

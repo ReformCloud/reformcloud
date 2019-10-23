@@ -90,6 +90,11 @@ public final class PlayerListenerHandler {
             return;
         }
 
+        if (!current.onLogin(event.getPlayer().getUniqueId(), event.getPlayer().getUsername())) {
+            player.disconnect(TextComponent.of("§4§lYou are not allowed to join this proxy"));
+            return;
+        }
+
         if (VelocityExecutor.getInstance().getProxyServer().getPlayerCount() >= current.getMaxPlayers()
                 && !current.getProcessState().equals(ProcessState.FULL)
                 && !current.getProcessState().equals(ProcessState.INVISIBLE)) {
@@ -97,7 +102,6 @@ public final class PlayerListenerHandler {
         }
 
         current.updateRuntimeInformation();
-        current.onLogin(event.getPlayer().getUniqueId(), event.getPlayer().getUsername());
         VelocityExecutor.getInstance().setThisProcessInformation(current); //Update it directly on the current host to prevent issues
         ExecutorAPI.getInstance().update(current);
 

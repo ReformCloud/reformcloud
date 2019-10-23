@@ -77,6 +77,11 @@ public final class PlayerListenerHandler implements Listener {
             return;
         }
 
+        if (!current.onLogin(player.getUniqueId(), player.getName())) {
+            player.kick("§4§lYou are not allowed to join this server");
+            return;
+        }
+
         if (Server.getInstance().getOnlinePlayers().size() >= current.getMaxPlayers()
                 && !current.getProcessState().equals(ProcessState.FULL)
                 && !current.getProcessState().equals(ProcessState.INVISIBLE)) {
@@ -84,7 +89,6 @@ public final class PlayerListenerHandler implements Listener {
         }
 
         current.updateRuntimeInformation();
-        current.onLogin(player.getUniqueId(), player.getName());
         NukkitExecutor.getInstance().setThisProcessInformation(current);
         ExecutorAPI.getInstance().update(current);
     }
