@@ -35,15 +35,9 @@ public final class ApplicationConfigBuilder {
 
     private String website = "https://reformcloud.systems";
 
+    private String implementedVersion = "2.0.0";
+
     private final List<Dependency> dependencies = new ArrayList<>();
-
-    public ApplicationConfigBuilder withDependency(Dependency dependency) {
-        if (dependency != null) {
-            dependencies.add(dependency);
-        }
-
-        return this;
-    }
 
     public ApplicationConfigBuilder withDependencies(List<Dependency> dependencies) {
         if (dependencies != null) {
@@ -64,6 +58,14 @@ public final class ApplicationConfigBuilder {
     public ApplicationConfigBuilder withWebsite(String website) {
         if (website != null) {
             this.website = website;
+        }
+
+        return this;
+    }
+
+    public ApplicationConfigBuilder withImplementedVersion(String impl) {
+        if (impl != null) {
+            this.implementedVersion = impl;
         }
 
         return this;
@@ -99,6 +101,11 @@ public final class ApplicationConfigBuilder {
             @Override
             public String website() {
                 return website;
+            }
+
+            @Override
+            public String implementedVersion() {
+                return implementedVersion;
             }
 
             @Override

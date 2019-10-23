@@ -20,6 +20,8 @@ public interface ApplicationConfig extends Nameable {
 
     String website();
 
+    String implementedVersion();
+
     File applicationFile();
 
     JarEntry applicationConfigFile();

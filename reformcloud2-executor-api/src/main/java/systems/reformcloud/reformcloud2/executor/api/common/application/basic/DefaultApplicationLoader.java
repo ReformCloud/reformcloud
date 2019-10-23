@@ -5,6 +5,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.application.*;
 import systems.reformcloud.reformcloud2.executor.api.common.application.api.Application;
 import systems.reformcloud.reformcloud2.executor.api.common.application.builder.ApplicationConfigBuilder;
 import systems.reformcloud.reformcloud2.executor.api.common.application.loader.AppClassLoader;
+import systems.reformcloud.reformcloud2.executor.api.common.application.unsafe.ApplicationUnsafe;
 import systems.reformcloud.reformcloud2.executor.api.common.base.Conditions;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.dependency.DefaultDependencyLoader;
@@ -62,12 +63,17 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
                             configurable.getOrDefault("description", (String) null)
                     ).withWebsite(
                             configurable.getOrDefault("website", (String) null)
+                    ).withImplementedVersion(
+                            configurable.getOrDefault("impl-version", (String) null)
                     ).create();
 
                     Conditions.isTrue(applicationConfig.getName() != null, "Application has no name");
                     Conditions.isTrue(applicationConfig.main() != null, "Application must have a main class");
                     Conditions.isTrue(applicationConfig.author() != null, "Application must have a author");
                     Conditions.isTrue(applicationConfig.version() != null, "Application must have a version");
+                    Conditions.isTrue(applicationConfig.implementedVersion() != null, "Application must have an api-version");
+
+                    ApplicationUnsafe.checkIfUnsafe(applicationConfig);
 
                     load.put(applicationConfig.getName(), applicationConfig);
                 }
@@ -188,12 +194,17 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
                         configurable.getString("description")
                 ).withWebsite(
                         configurable.getString("website")
+                ).withImplementedVersion(
+                        configurable.getString("impl-version")
                 ).create();
 
                 Conditions.isTrue(applicationConfig.getName() != null, "Application has no name");
                 Conditions.isTrue(applicationConfig.main() != null, "Application must have a main class");
                 Conditions.isTrue(applicationConfig.author() != null, "Application must have a author");
                 Conditions.isTrue(applicationConfig.version() != null, "Application must have a version");
+                Conditions.isTrue(applicationConfig.implementedVersion() != null, "Application must have an api-version");
+
+                ApplicationUnsafe.checkIfUnsafe(applicationConfig);
 
                 if (applicationConfig.dependencies().length != 0) {
                     for (Dependency dependency : applicationConfig.dependencies()) {
