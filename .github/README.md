@@ -64,7 +64,7 @@ After the setup: **start using reformcloud2!**
 | [MongoDB Java Driver](https://github.com/mongodb/mongo-java-driver) | [MongoDB](https://github.com/mongodb/)               | [Apache License 2.0](https://github.com/mongodb/mongo-java-driver/blob/master/LICENSE.txt) |
 | [MySQL connector Java](https://github.com/mysql/mysql-connector-j)  | [MySQL](https://github.com/mysql/)                   | [Self written Licence](https://github.com/mysql/mysql-connector-j/blob/release/8.0/LICENSE)|
 | [Snake Yml](https://github.com/lsst-camera-dh/snakeyaml/)           | [lsst-camera-dh](https://github.com/lsst-camera-dh/) | [Apache License 2.0](https://github.com/lsst-camera-dh/snakeyaml/blob/master/LICENSE.txt)  |
-
+| [H2](https://github.com/h2database/h2database/)                      | [h2database](https://github.com/h2database/)        | No Licence                                                                                 |
 ## Build this project
 ```
 git clone https://github.com/derklaro/reformcloud2.git
