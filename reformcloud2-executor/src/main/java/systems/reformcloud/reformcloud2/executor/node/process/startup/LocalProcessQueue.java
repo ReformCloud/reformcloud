@@ -7,12 +7,12 @@ import systems.reformcloud.reformcloud2.executor.api.node.process.LocalNodeProce
 import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
 import systems.reformcloud.reformcloud2.executor.node.process.basic.BasicLocalNodeProcess;
 
-import java.util.concurrent.BlockingDeque;
-import java.util.concurrent.LinkedBlockingDeque;
+import java.util.Comparator;
+import java.util.concurrent.PriorityBlockingQueue;
 
 public class LocalProcessQueue extends AbsoluteThread {
 
-    private static final BlockingDeque<LocalNodeProcess> QUEUE = new LinkedBlockingDeque<>();
+    private static final PriorityBlockingQueue<LocalNodeProcess> QUEUE = new PriorityBlockingQueue<>(15, Comparator.comparingInt(o -> o.getProcessInformation().getId()));
 
     public LocalProcessQueue() {
         enableDaemon().updatePriority(Thread.MIN_PRIORITY).start();
@@ -22,7 +22,7 @@ public class LocalProcessQueue extends AbsoluteThread {
         LocalNodeProcess localNodeProcess = new BasicLocalNodeProcess(processInformation);
         localNodeProcess.prepare();
         int size = QUEUE.size();
-        QUEUE.offerLast(localNodeProcess);
+        QUEUE.offer(localNodeProcess);
         System.out.println(LanguageManager.get("client-process-now-in-queue", processInformation.getName(), size +1));
     }
 
@@ -44,7 +44,7 @@ public class LocalProcessQueue extends AbsoluteThread {
                 }
 
                 System.out.println(LanguageManager.get("client-process-start-failed", process.getProcessInformation().getName(), QUEUE.size() +1));
-                QUEUE.offerLast(process);
+                QUEUE.offer(process);
                 AbsoluteThread.sleep(200);
             } catch (final InterruptedException ignored) {
             }

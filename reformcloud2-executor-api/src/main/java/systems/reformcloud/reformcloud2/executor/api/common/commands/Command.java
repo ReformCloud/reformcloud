@@ -12,15 +12,37 @@ public interface Command extends TabCompleter {
 
     TypeToken<GlobalCommand> TYPE = new TypeToken<GlobalCommand>() {};
 
+    /**
+     * @return The main command name
+     */
     String mainCommand();
 
+    /**
+     * @return The permission of the command
+     */
     Permission permission();
 
+    /**
+     * @return The command aliases
+     */
     List<String> aliases();
 
+    /**
+     * @return The command description
+     */
     String description();
 
+    /**
+     * @return The allowed command sources
+     */
     AllowedCommandSources sources();
 
+    /**
+     * Handles the command
+     *
+     * @param commandSource The command source of the command
+     * @param strings The parameters given in the command
+     * @return If the command execute was successful
+     */
     boolean handleCommand(CommandSource commandSource, String[] strings);
 }

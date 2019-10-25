@@ -8,9 +8,18 @@ public interface ClientRuntimeInformation extends Nameable {
 
     TypeToken<DefaultClientRuntimeInformation> TYPE = new TypeToken<DefaultClientRuntimeInformation>() {};
 
+    /**
+     * @return The start host of the client
+     */
     String startHost();
 
+    /**
+     * @return The max memory of the client
+     */
     int maxMemory();
 
+    /**
+     * @return The max process count of the client
+     */
     int maxProcessCount();
 }

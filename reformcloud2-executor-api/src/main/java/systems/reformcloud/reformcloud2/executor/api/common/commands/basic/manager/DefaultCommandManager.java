@@ -190,12 +190,12 @@ public final class DefaultCommandManager implements CommandManager {
             return;
         }
 
-        if (split.length == 1) {
-            String[] strings = new String[0];
-            command.handleCommand(commandSource, strings);
+        String[] strings = split.length == 1 ? new String[0] : Arrays.copyOfRange(split, 1, split.length);
+        if (command.handleCommand(commandSource, strings)) {
+            result.accept("Execution successful");
         } else {
-            String[] strings = Arrays.copyOfRange(split, 1, split.length);
-            command.handleCommand(commandSource, strings);
+            new Exception("Error in handling command:: status=false").printStackTrace();
+            result.accept("Execution failed");
         }
     }
 }
