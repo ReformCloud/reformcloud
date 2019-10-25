@@ -32,14 +32,6 @@ public final class CommandManagerTest {
 
         commandManager.dispatchCommand(new ConsoleCommandSource(commandManager), AllowedCommandSources.REST, "test", s -> assertEquals(s, "The command source REST is not allowed"));
 
-        commandManager.dispatchCommand(new ConsoleCommandSource(commandManager), AllowedCommandSources.CONSOLE, "test", s -> {
-            throw new IllegalStateException();
-        });
-
-        commandManager.dispatchCommand(new ConsoleCommandSource(commandManager), AllowedCommandSources.CONSOLE, "ttt", s -> {
-            throw new IllegalStateException();
-        });
-
         assertNotNull(commandManager.unregisterAndGetCommand("test"));
     }
 
