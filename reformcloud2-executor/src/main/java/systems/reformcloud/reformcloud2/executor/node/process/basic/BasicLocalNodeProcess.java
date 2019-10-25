@@ -464,11 +464,13 @@ public class BasicLocalNodeProcess implements LocalNodeProcess {
     }
 
     private void createTemplateAndFiles() {
-        TemplateBackendManager.getOrDefault(this.processInformation.getTemplate().getBackend()).loadTemplate(
-                this.processInformation.getProcessGroup().getName(),
-                this.processInformation.getTemplate().getName(),
-                this.path
-        );
+        if (!processInformation.getProcessGroup().isStaticProcess()) {
+            TemplateBackendManager.getOrDefault(this.processInformation.getTemplate().getBackend()).loadTemplate(
+                    this.processInformation.getProcessGroup().getName(),
+                    this.processInformation.getTemplate().getName(),
+                    this.path
+            );
+        }
 
         SystemHelper.createDirectory(Paths.get(path + "/plugins"));
         SystemHelper.createDirectory(Paths.get(path + "/reformcloud/.connection"));
