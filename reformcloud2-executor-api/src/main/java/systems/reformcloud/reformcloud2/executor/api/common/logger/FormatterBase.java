@@ -12,6 +12,15 @@ public abstract class FormatterBase extends Formatter {
 
     protected final LoggerBase loggerBase;
 
+    /**
+     * Formats an exception to a string writer
+     *
+     * @see Throwable
+     * @see StringWriter
+     *
+     * @param throwable The throwable which should get converted
+     * @return A string writer containing the stacktrace
+     */
     protected StringWriter format(Throwable throwable) {
         StringWriter stringWriter = new StringWriter();
         PrintWriter printWriter = new PrintWriter(stringWriter);

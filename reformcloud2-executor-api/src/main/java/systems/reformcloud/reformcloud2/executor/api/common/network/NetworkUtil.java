@@ -51,7 +51,6 @@ public final class NetworkUtil {
 
     /* ============================ */
 
-
     public static final Executor EXECUTOR = Executors.newCachedThreadPool();
 
     public static final Consumer<ChannelHandlerContext> DEFAULT_AUTH_FAILURE_HANDLER = context -> context.channel().writeAndFlush(new DefaultPacket(-511, new JsonConfiguration().add("access", false))).syncUninterruptibly().channel().close();
@@ -94,12 +93,6 @@ public final class NetworkUtil {
         }
 
         return NioSocketChannel.class;
-    }
-
-    public static byte[] readBytes(ByteBuf byteBuf, int size) {
-        byte[] result = new byte[size];
-        byteBuf.readBytes(result);
-        return result;
     }
 
     public static ByteBuf write(ByteBuf byteBuf, int value) {
@@ -202,5 +195,7 @@ public final class NetworkUtil {
         };
     }
 
-    private NetworkUtil() {}
+    private NetworkUtil() {
+        throw new UnsupportedOperationException();
+    }
 }

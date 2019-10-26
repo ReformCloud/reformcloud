@@ -19,7 +19,9 @@ import java.util.function.Function;
 
 public final class CommonHelper {
 
-    private CommonHelper() {}
+    private CommonHelper() {
+        throw new UnsupportedOperationException();
+    }
 
     public static final Executor EXECUTOR = Executors.newCachedThreadPool();
 
