@@ -1,12 +1,15 @@
 package systems.reformcloud.reformcloud2.executor.api.common.groups.template.backend.basic;
 
+import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
+import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Template;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.backend.TemplateBackend;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.system.SystemHelper;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Collections;
+import java.util.Arrays;
 
 public class FileBackend implements TemplateBackend {
 
@@ -27,11 +30,16 @@ public class FileBackend implements TemplateBackend {
     @Override
     public void loadTemplate(String group, String template, Path target) {
         if (!existsTemplate(group, template)) {
-            SystemHelper.createDirectory(format(group, template));
+            createTemplate(group, template);
             return;
         }
 
         SystemHelper.copyDirectory(format(group, template), target);
+    }
+
+    @Override
+    public void loadGlobalTemplates(ProcessGroup group, Path target) {
+        Links.allOf(group.getTemplates(), Template::isGlobal).forEach(e -> loadTemplate(group.getName(), e.getName(), target));
     }
 
     @Override
@@ -40,7 +48,7 @@ public class FileBackend implements TemplateBackend {
             return;
         }
 
-        SystemHelper.copyDirectory(current, format(group, template), Collections.singletonList("runner.jar"));
+        SystemHelper.copyDirectory(current, format(group, template), Arrays.asList("log-out.log", "runner.jar"));
     }
 
     @Override

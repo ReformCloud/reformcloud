@@ -6,10 +6,11 @@ public final class Template {
 
     public static final TypeToken<Template> TYPE = new TypeToken<Template>() {};
 
-    public Template(int priority, String name, String backend, String serverNameSplitter,
+    public Template(int priority, String name, boolean global, String backend, String serverNameSplitter,
                     RuntimeConfiguration runtimeConfiguration, Version version) {
         this.priority = priority;
         this.name = name;
+        this.global = global;
         this.backend = backend;
         this.serverNameSplitter = serverNameSplitter;
         this.runtimeConfiguration = runtimeConfiguration;
@@ -19,6 +20,8 @@ public final class Template {
     private int priority;
 
     private String name;
+
+    private boolean global;
 
     private String backend;
 
@@ -34,6 +37,10 @@ public final class Template {
 
     public String getName() {
         return name;
+    }
+
+    public boolean isGlobal() {
+        return global;
     }
 
     public String getBackend() {

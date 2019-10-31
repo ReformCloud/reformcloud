@@ -34,6 +34,7 @@ public final class DefaultProcessGroup extends ProcessGroup {
                 ), Collections.singletonList(new Template(
                         0,
                         "default",
+                        false,
                         FileBackend.NAME,
                         "#",
                         new RuntimeConfiguration(

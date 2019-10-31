@@ -203,7 +203,7 @@ public final class CommandReformCloud extends GlobalCommand {
                         return true;
                     }
 
-                    for (int started = 0; started <= i; started++) {
+                    for (int started = 1; started <= i; started++) {
                         ExecutorAPI.getInstance().startProcess(processGroup.getName());
                         AbsoluteThread.sleep(TimeUnit.MILLISECONDS, 20);
                     }
@@ -450,6 +450,7 @@ public final class CommandReformCloud extends GlobalCommand {
                                     Collections.singletonList(new Template(
                                             0,
                                             "default",
+                                            false,
                                             FileBackend.NAME,
                                             "#",
                                             new RuntimeConfiguration(
@@ -481,6 +482,7 @@ public final class CommandReformCloud extends GlobalCommand {
                                     Collections.singletonList(new Template(
                                             0,
                                             "default",
+                                            false,
                                             FileBackend.NAME,
                                             "#",
                                             new RuntimeConfiguration(
@@ -518,6 +520,7 @@ public final class CommandReformCloud extends GlobalCommand {
                                     Collections.singletonList(new Template(
                                             0,
                                             "default",
+                                            false,
                                             FileBackend.NAME,
                                             "#",
                                             new RuntimeConfiguration(
@@ -615,6 +618,7 @@ public final class CommandReformCloud extends GlobalCommand {
                                     Collections.singletonList(new Template(
                                             0,
                                             "default",
+                                            false,
                                             FileBackend.NAME,
                                             "#",
                                             new RuntimeConfiguration(

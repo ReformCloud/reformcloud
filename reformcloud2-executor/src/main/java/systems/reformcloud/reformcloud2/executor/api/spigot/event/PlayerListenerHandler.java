@@ -78,6 +78,8 @@ public final class PlayerListenerHandler implements Listener {
             return;
         }
 
+        System.out.println("TRY LOGIN " + event.getPlayer().getName());
+
         if (!current.onLogin(player.getUniqueId(), player.getName())) {
             event.setKickMessage("§4§lYou are not allowed to join this server");
             event.setResult(PlayerLoginEvent.Result.KICK_BANNED);
@@ -102,9 +104,13 @@ public final class PlayerListenerHandler implements Listener {
     @EventHandler (priority = EventPriority.LOWEST)
     public void handle(final PlayerQuitEvent event) {
         ProcessInformation current = ExecutorAPI.getInstance().getThisProcessInformation();
+        System.out.println("CALLING LOGOUT " + event.getPlayer().getName());
         if (!current.isPlayerOnline(event.getPlayer().getUniqueId())) {
+            System.out.println("NOT ONLINE " + event.getPlayer().getName());
             return;
         }
+
+        System.out.println("ONLINE " + event.getPlayer().getName());
 
         if (Bukkit.getOnlinePlayers().size() < current.getMaxPlayers()
                 && !current.getProcessState().equals(ProcessState.READY)

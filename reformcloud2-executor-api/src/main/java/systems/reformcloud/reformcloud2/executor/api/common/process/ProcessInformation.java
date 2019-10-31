@@ -132,10 +132,6 @@ public final class ProcessInformation implements Nameable {
     }
 
     public boolean onLogin(UUID playerUuid, String playerName) {
-        if (isPlayerOnline(playerUuid)) {
-            return false;
-        }
-
         return onlinePlayers.add(new Player(playerUuid, playerName));
     }
 

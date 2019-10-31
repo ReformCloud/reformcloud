@@ -28,10 +28,10 @@ public class PacketInProcessAction implements NetworkHandler {
 
         switch (action) {
             case START: {
-                NodeExecutor.getInstance().getNodeNetworkManager().getQueuedProcesses().remove(information.getProcessUniqueID());
                 NodeExecutor.getInstance().getNodeNetworkManager().getNodeProcessHelper().handleProcessStart(
                         information
                 );
+                NodeExecutor.getInstance().getNodeNetworkManager().getQueuedProcesses().remove(information.getProcessUniqueID());
                 DefaultClusterSyncManager.sendToAllExcludedNodes(new ControllerEventProcessStarted(information));
                 break;
             }

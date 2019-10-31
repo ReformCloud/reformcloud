@@ -3,10 +3,11 @@ package systems.reformcloud.reformcloud2.executor.controller.process;
 import systems.reformcloud.reformcloud2.executor.api.common.client.ClientRuntimeInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.process.JavaProcessHelper;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.concurrent.TimeUnit;
 
 public final class ClientManager {
 
@@ -48,15 +49,11 @@ public final class ClientManager {
 
     public void onShutdown() {
         clientRuntimeInformation.clear();
-        if (process != null) {
-            try {
-                process.getOutputStream().write("stop".getBytes());
-                process.getOutputStream().flush();
-            } catch (final IOException ignored) {
-            }
-
-            process.destroyForcibly().destroy();
+        if (process == null) {
+            return;
         }
+
+        JavaProcessHelper.shutdown(process, true, true, TimeUnit.SECONDS.toMillis(10), "stop\n");
     }
 
     public Process getProcess() {

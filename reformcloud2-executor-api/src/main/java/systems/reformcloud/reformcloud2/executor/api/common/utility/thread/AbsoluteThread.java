@@ -2,7 +2,7 @@ package systems.reformcloud.reformcloud2.executor.api.common.utility.thread;
 
 import java.util.concurrent.TimeUnit;
 
-public class AbsoluteThread extends Thread {
+public abstract class AbsoluteThread extends Thread {
 
     public AbsoluteThread enableDaemon() {
         setDaemon(true);
@@ -47,4 +47,7 @@ public class AbsoluteThread extends Thread {
     public boolean isInterrupted() {
         return interrupted;
     }
+
+    @Override
+    public abstract void run();
 }

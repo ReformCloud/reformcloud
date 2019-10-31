@@ -10,16 +10,19 @@ import systems.reformcloud.reformcloud2.executor.api.common.groups.template.back
 import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.Null;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.PortUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.StringUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.function.Double;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.optional.ReferencedOptional;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.process.JavaProcessHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.system.DownloadHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.system.SystemHelper;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
 import systems.reformcloud.reformcloud2.executor.api.node.process.LocalNodeProcess;
 import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
 import systems.reformcloud.reformcloud2.executor.node.network.packet.out.NodePacketOutProcessPrepared;
+import systems.reformcloud.reformcloud2.executor.node.process.log.NodeProcessScreen;
+import systems.reformcloud.reformcloud2.executor.node.process.log.NodeProcessScreenHandler;
 import systems.reformcloud.reformcloud2.executor.node.process.manager.LocalProcessManager;
 
 import javax.imageio.ImageIO;
@@ -129,20 +132,16 @@ public class BasicLocalNodeProcess implements LocalNodeProcess {
 
         command.addAll(this.processInformation.getTemplate().getRuntimeConfiguration().getProcessParameters());
         command.addAll(Arrays.asList(
+                "-cp", Null.devNull(),
                 "-javaagent:runner.jar",
                 "systems.reformcloud.reformcloud2.runner.Runner"
         ));
         updateCommandLine(command, processInformation.getTemplate().getVersion());
 
         try {
-            Files.createFile(Paths.get(path + "/reformcloud/log-out.log"));
-
             this.process = new ProcessBuilder(command)
                     .directory(path.toFile())
-
                     .redirectErrorStream(true)
-                    .redirectOutput(new File(path + "/reformcloud/log-out.log"))
-
                     .start();
         } catch (final IOException ex) {
             ex.printStackTrace();
@@ -156,31 +155,22 @@ public class BasicLocalNodeProcess implements LocalNodeProcess {
         NodeExecutor.getInstance().getNodeNetworkManager().getNodeProcessHelper().handleLocalProcessStart(processInformation);
         startupTime.set(System.currentTimeMillis());
 
+        NodeProcessScreenHandler.registerScreen(new NodeProcessScreen(this.processInformation.getProcessUniqueID()));
+
         System.out.println(LanguageManager.get("client-process-start-done", processInformation.getName()));
         return true;
     }
 
     @Override
     public void shutdown() {
-        sendCommand("stop");
-        sendCommand("end");
+        startupTime.set(-1);
+        JavaProcessHelper.shutdown(process, true, true, TimeUnit.SECONDS.toMillis(10), "stop\n", "end\n");
 
+        NodeProcessScreenHandler.unregisterScreen(this.processInformation.getProcessUniqueID());
         NodeExecutor.getInstance().getClusterSyncManager().syncProcessStop(processInformation);
         NodeExecutor.getInstance().getNodeNetworkManager().getNodeProcessHelper().unregisterLocalProcess(processInformation.getProcessUniqueID());
         NodeExecutor.getInstance().getNodeNetworkManager().getNodeProcessHelper().handleLocalProcessStop(processInformation);
         LocalProcessManager.unregisterProcesses(processInformation.getProcessUniqueID());
-
-        AbsoluteThread.sleep(TimeUnit.MILLISECONDS, 100);
-
-        if (running()) {
-            try {
-                if (!this.process.waitFor(7, TimeUnit.SECONDS)) {
-                    this.process.destroyForcibly();
-                }
-            } catch (final InterruptedException ex) {
-                this.process.destroyForcibly();
-            }
-        }
 
         if (!processInformation.getProcessGroup().isStaticProcess()) {
             SystemHelper.deleteDirectory(path);
@@ -445,10 +435,10 @@ public class BasicLocalNodeProcess implements LocalNodeProcess {
         }
 
         if (isLogicallyBungee()) {
-            SystemHelper.doInternalCopy(getClass().getClassLoader(), "files/java/bungee/config.yml", path + "/config.yml");
+            SystemHelper.doInternalCopy(getClass().getClassLoader(), "files/java/bungee/internal-bungeecord-config.yml", path + "/config.yml");
             rewriteBungeeConfig();
         } else if (isLogicallyWaterDog()) {
-            SystemHelper.doInternalCopy(getClass().getClassLoader(), "files/mcpe/waterdog/config.yml", path + "/config.yml");
+            SystemHelper.doInternalCopy(getClass().getClassLoader(), "files/mcpe/waterdog/internal-waterdog-config.yml", path + "/config.yml");
             rewriteWaterDogConfig();
         } else if (processInformation.getTemplate().getVersion().equals(Version.VELOCITY)) {
             SystemHelper.doInternalCopy(getClass().getClassLoader(), "files/java/velocity/velocity.toml", path + "/velocity.toml");

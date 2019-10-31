@@ -574,7 +574,7 @@ public final class ControllerExecutor extends Controller {
     @Override
     public Task<ProcessGroup> createProcessGroupAsync(String name, String parent) {
         return createProcessGroupAsync(name, parent, Collections.singletonList(
-                new Template(0, "default", FileBackend.NAME,"#", new RuntimeConfiguration(
+                new Template(0, "default", false, FileBackend.NAME,"#", new RuntimeConfiguration(
                         512, new ArrayList<>(), new HashMap<>()
                 ), Version.PAPER_1_8_8)
         ));

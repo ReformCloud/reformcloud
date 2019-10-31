@@ -191,9 +191,7 @@ public final class DefaultCommandManager implements CommandManager {
         }
 
         String[] strings = split.length == 1 ? new String[0] : Arrays.copyOfRange(split, 1, split.length);
-        if (command.handleCommand(commandSource, strings)) {
-            result.accept("Execution successful");
-        } else {
+        if (!command.handleCommand(commandSource, strings)) {
             new Exception("Error in handling command:: status=false").printStackTrace();
             result.accept("Execution failed");
         }

@@ -11,12 +11,13 @@ import systems.reformcloud.reformcloud2.executor.api.common.groups.template.back
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.Null;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.PortUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.StringUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.optional.ReferencedOptional;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.process.JavaProcessHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.system.DownloadHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.system.SystemHelper;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
 import systems.reformcloud.reformcloud2.executor.client.ClientExecutor;
 import systems.reformcloud.reformcloud2.executor.client.packet.out.ClientPacketOutProcessPrepared;
 
@@ -125,20 +126,16 @@ public final class DefaultRunningProcess implements RunningProcess {
 
         command.addAll(this.processInformation.getTemplate().getRuntimeConfiguration().getProcessParameters());
         command.addAll(Arrays.asList(
+                "-cp", Null.devNull(),
                 "-javaagent:runner.jar",
                 "systems.reformcloud.reformcloud2.runner.Runner"
         ));
         updateCommandLine(command, processInformation.getTemplate().getVersion());
 
         try {
-            Files.createFile(Paths.get(path + "/reformcloud/log-out.log"));
-
             this.process = new ProcessBuilder(command)
                     .directory(path.toFile())
-
                     .redirectErrorStream(true)
-                    .redirectOutput(new File(path + "/reformcloud/log-out.log"))
-
                     .start();
         } catch (final IOException ex) {
             ex.printStackTrace();
@@ -153,27 +150,15 @@ public final class DefaultRunningProcess implements RunningProcess {
 
     @Override
     public boolean shutdown() {
-        sendCommand("stop");
-        sendCommand("end");
-
-        AbsoluteThread.sleep(TimeUnit.MILLISECONDS, 100);
-
-        if (running()) {
-            try {
-                if (!this.process.waitFor(7, TimeUnit.SECONDS)) {
-                    this.process.destroyForcibly();
-                }
-            } catch (final InterruptedException ex) {
-                this.process.destroyForcibly();
-            }
-        }
+        this.startupTime.set(-1);
+        int exitValue = JavaProcessHelper.shutdown(process, true, true, TimeUnit.SECONDS.toMillis(10), "stop\n", "end\n");
 
         ClientExecutor.getInstance().getProcessManager().unregisterProcess(processInformation.getName());
         if (!processInformation.getProcessGroup().isStaticProcess()) {
             SystemHelper.deleteDirectory(path);
         }
 
-        return !running();
+        return exitValue == 0;
     }
 
     @Override
@@ -436,10 +421,10 @@ public final class DefaultRunningProcess implements RunningProcess {
         }
 
         if (isLogicallyBungee()) {
-            SystemHelper.doInternalCopy(getClass().getClassLoader(), "files/java/bungee/config.yml", path + "/config.yml");
+            SystemHelper.doInternalCopy(getClass().getClassLoader(), "files/java/bungee/internal-bungeecord-config.yml", path + "/config.yml");
             rewriteBungeeConfig();
         } else if (isLogicallyWaterDog()) {
-            SystemHelper.doInternalCopy(getClass().getClassLoader(), "files/mcpe/waterdog/config.yml", path + "/config.yml");
+            SystemHelper.doInternalCopy(getClass().getClassLoader(), "files/mcpe/waterdog/internal-waterdog-config.yml", path + "/config.yml");
             rewriteWaterDogConfig();
         } else if (processInformation.getTemplate().getVersion().equals(Version.VELOCITY)) {
             SystemHelper.doInternalCopy(getClass().getClassLoader(), "files/java/velocity/velocity.toml", path + "/velocity.toml");

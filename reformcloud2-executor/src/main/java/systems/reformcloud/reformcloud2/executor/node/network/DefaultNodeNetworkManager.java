@@ -118,7 +118,7 @@ public class DefaultNodeNetworkManager implements NodeNetworkManager {
 
     private Template randomTemplate(ProcessGroup processGroup) {
         if (processGroup.getTemplates().isEmpty()) {
-            return new Template(0, "default", FileBackend.NAME, "#", new RuntimeConfiguration(
+            return new Template(0, "default", false, FileBackend.NAME, "#", new RuntimeConfiguration(
                     512, new ArrayList<>(), new HashMap<>()
             ), Version.PAPER_1_8_8);
         }

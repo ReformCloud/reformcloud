@@ -95,8 +95,10 @@ import systems.reformcloud.reformcloud2.executor.node.network.packet.out.api.Nod
 import systems.reformcloud.reformcloud2.executor.node.network.packet.out.api.NodePluginAction;
 import systems.reformcloud.reformcloud2.executor.node.process.LocalAutoStartupHandler;
 import systems.reformcloud.reformcloud2.executor.node.process.LocalNodeProcessManager;
+import systems.reformcloud.reformcloud2.executor.node.process.log.LogLineReader;
 import systems.reformcloud.reformcloud2.executor.node.process.manager.LocalProcessManager;
 import systems.reformcloud.reformcloud2.executor.node.process.startup.LocalProcessQueue;
+import systems.reformcloud.reformcloud2.executor.node.process.watchdog.WatchdogThread;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -134,6 +136,10 @@ public class NodeExecutor extends Node {
     private final EventManager eventManager = new DefaultEventManager();
 
     private LocalProcessQueue localProcessQueue;
+
+    private LogLineReader logLineReader;
+
+    private WatchdogThread watchdogThread;
 
     private NetworkClient networkClient;
 
@@ -204,6 +210,9 @@ public class NodeExecutor extends Node {
         this.applicationLoader.installApplications();
 
         TemplateBackendManager.registerDefaults();
+
+        this.logLineReader = new LogLineReader();
+        this.watchdogThread = new WatchdogThread();
 
         this.loadPacketHandlers();
 
@@ -477,6 +486,8 @@ public class NodeExecutor extends Node {
         this.networkClient.disconnect();
         this.webServer.close();
 
+        this.watchdogThread.interrupt();
+        this.logLineReader.interrupt();
         this.localProcessQueue.interrupt();
         this.localAutoStartupHandler.interrupt();
 
@@ -870,7 +881,7 @@ public class NodeExecutor extends Node {
     @Override
     public Task<ProcessGroup> createProcessGroupAsync(String name, String parent) {
         return createProcessGroupAsync(name, parent, Collections.singletonList(
-                new Template(0, "default", FileBackend.NAME,"#", new RuntimeConfiguration(
+                new Template(0, "default", false, FileBackend.NAME,"#", new RuntimeConfiguration(
                         512, new ArrayList<>(), new HashMap<>()
                 ), Version.PAPER_1_8_8)
         ));
@@ -1752,8 +1763,15 @@ public class NodeExecutor extends Node {
                 return;
             }
 
-            DefaultChannelManager.INSTANCE.get(processInformation.getParent())
-                    .ifPresent(e -> e.sendPacket(new NodePacketOutExecuteCommand(processInformation.getName(), commandLine)));
+            if (this.nodeConfig.getUniqueID().equals(processInformation.getNodeUniqueID())) {
+                Links.filterToReference(LocalProcessManager.getNodeProcesses(),
+                        e -> e.getProcessInformation().getProcessUniqueID().equals(processInformation.getProcessUniqueID())
+                ).ifPresent(e -> e.sendCommand(commandLine));
+            } else {
+                DefaultChannelManager.INSTANCE.get(processInformation.getParent())
+                        .ifPresent(e -> e.sendPacket(new NodePacketOutExecuteCommand(processInformation.getName(), commandLine)));
+            }
+
             task.complete(null);
         });
         return task;

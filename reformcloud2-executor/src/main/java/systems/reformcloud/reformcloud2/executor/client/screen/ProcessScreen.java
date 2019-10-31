@@ -2,12 +2,15 @@ package systems.reformcloud.reformcloud2.executor.client.screen;
 
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.executor.client.packet.out.ClientPacketOutAddScreenLine;
+import systems.reformcloud.reformcloud2.executor.client.packet.out.ClientPacketOutScreenEnabled;
 
 import java.util.Queue;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public final class ProcessScreen {
+
+    private static final String LINE_SEPARATOR = System.getProperty("line.separator");
 
     public ProcessScreen(UUID uuid) {
         this.uuid = uuid;
@@ -20,6 +23,10 @@ public final class ProcessScreen {
     private boolean enabled = false;
 
     void addScreenLine(String line) {
+        if (line.equals(LINE_SEPARATOR)) {
+            return;
+        }
+
         while (queue.size() >= 128) {
             queue.poll();
         }
@@ -32,5 +39,6 @@ public final class ProcessScreen {
 
     public void toggleScreen() {
         this.enabled = !this.enabled;
+        DefaultChannelManager.INSTANCE.get("Controller").ifPresent(packetSender -> packetSender.sendPacket(new ClientPacketOutScreenEnabled(uuid, queue)));
     }
 }

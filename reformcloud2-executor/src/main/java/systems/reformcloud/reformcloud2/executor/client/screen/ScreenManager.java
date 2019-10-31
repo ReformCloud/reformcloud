@@ -26,11 +26,8 @@ public final class ScreenManager extends AbsoluteThread {
     @Override
     public void run() {
         while (!Thread.currentThread().isInterrupted()) {
-            ClientExecutor.getInstance().getProcessManager().getAll().forEach(runningProcess -> {
-                readLog(runningProcess);
-                readErrorLog(runningProcess);
-            });
-            AbsoluteThread.sleep(TimeUnit.MILLISECONDS, 200);
+            ClientExecutor.getInstance().getProcessManager().getAll().forEach(this::readLog);
+            AbsoluteThread.sleep(TimeUnit.MILLISECONDS, 50);
         }
     }
 
@@ -43,17 +40,6 @@ public final class ScreenManager extends AbsoluteThread {
 
         InputStream inputStream = runningProcess.getProcess().get().getInputStream();
         doRead(inputStream, runningProcess);
-    }
-
-    private synchronized void readErrorLog(RunningProcess runningProcess) {
-        if (!runningProcess.getProcess().isPresent()
-                || !runningProcess.running()
-                || runningProcess.getProcess().get().getInputStream() == null) {
-            return;
-        }
-
-        InputStream errorStream = runningProcess.getProcess().get().getErrorStream();
-        doRead(errorStream, runningProcess);
     }
 
     private void doRead(InputStream inputStream, RunningProcess runningProcess) {
@@ -73,7 +59,7 @@ public final class ScreenManager extends AbsoluteThread {
 
             for (String in : text.split("\r")) {
                 for (String string : in.split("\n")) {
-                    if (!text.trim().isEmpty()) {
+                    if (!string.trim().isEmpty()) {
                         screen.addScreenLine(string);
                     }
                 }

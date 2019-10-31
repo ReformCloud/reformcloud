@@ -9,7 +9,7 @@ import java.util.logging.LogRecord;
 
 public final class DefaultLogFormatter extends FormatterBase {
 
-    private static final DateFormat DATE_FORMAT = new SimpleDateFormat("dd.MM.yyyy kk:mm:ss:SS");
+    private static final DateFormat DATE_FORMAT = new SimpleDateFormat("dd.MM.yyyy kk:mm:ss");
 
     public DefaultLogFormatter(LoggerBase loggerBase) {
         super(loggerBase);
