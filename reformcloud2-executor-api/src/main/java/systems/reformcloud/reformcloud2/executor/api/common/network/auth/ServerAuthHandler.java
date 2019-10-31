@@ -22,7 +22,7 @@ public interface ServerAuthHandler {
     Consumer<PacketSender> onDisconnect();
 
     /**
-     * Magic value
+     * @return Magic value
      */
     DoubleFunction<Packet, String, Boolean> function();
 

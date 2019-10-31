@@ -26,11 +26,11 @@ public interface QueryHandler {
 
     /**
      * Sends a query async to a packet sender
+     * Note: It's not needed to give the packet as a query packet, because the cloud is going to convert it internal
      *
      * @param sender The sender who should receive the packet
      * @param packet The packet itself which will be converted to q query packet
      * @return The query request which got created
-     * @apiNote It's not needed to give the packet as a query packet, because the cloud is going to convert it internal
      */
     QueryRequest<Packet> sendQueryAsync(PacketSender sender, Packet packet);
 

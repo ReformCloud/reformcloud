@@ -8,7 +8,7 @@ public interface Debugger {
     void debug(String message);
 
     /**
-     * Toggles the current debug state ({@code true} -> {@code false} / {@code false} -> {@code true})
+     * Toggles the current debug state ({@code true} to {@code false} / {@code false} to {@code true})
      */
     void toggleDebugState();
 
