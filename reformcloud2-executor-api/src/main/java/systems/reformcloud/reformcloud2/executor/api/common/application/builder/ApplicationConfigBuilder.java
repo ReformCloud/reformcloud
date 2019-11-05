@@ -15,7 +15,7 @@ public final class ApplicationConfigBuilder {
         this.main = main;
         this.author = author;
         this.version = version;
-        this.appFile= appFile;
+        this.appFile = appFile;
         this.descFile = descFile;
     }
 

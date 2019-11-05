@@ -43,11 +43,6 @@ public final class AutoStartupHandler extends AbsoluteThread {
 
                 if (started < processGroup.getStartupConfiguration().getMinOnlineProcesses()) {
                     for (int i = started; i < processGroup.getStartupConfiguration().getMinOnlineProcesses(); i++) {
-                        if (i >= 1024) {
-                            //Do not allow more than 1024 process per group
-                            break;
-                        }
-
                         List<ProcessInformation> all = ControllerExecutor.getInstance().getProcessManager().getAllProcesses();
                         if (ControllerExecutor.getInstance().getControllerConfig().getMaxProcesses() == -1
                                 || ControllerExecutor.getInstance().getControllerConfig().getMaxProcesses() > all.size()) {

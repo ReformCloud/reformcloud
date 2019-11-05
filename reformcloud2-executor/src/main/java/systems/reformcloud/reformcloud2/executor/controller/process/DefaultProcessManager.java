@@ -139,11 +139,6 @@ public final class DefaultProcessManager implements ProcessManager {
             return null;
         }
 
-        if (!processInformation.getNetworkInfo().isConnected()) {
-            // If the process is not connected to the controller it will not lose the connection so we are going to remove it
-            this.processInformation.remove(processInformation);
-        }
-
         DefaultChannelManager.INSTANCE.get(processInformation.getParent()).ifPresent(packetSender -> packetSender.sendPacket(new ControllerPacketOutStopProcess(processInformation.getProcessUniqueID())));
         return processInformation;
     }
@@ -207,6 +202,7 @@ public final class DefaultProcessManager implements ProcessManager {
         }
 
         ProcessInformation processInformation = new ProcessInformation(
+                processGroup.getName() + template.getServerNameSplitter() + id,
                 stringBuilder.substring(0),
                 client.getName(),
                 null,
@@ -340,6 +336,18 @@ public final class DefaultProcessManager implements ProcessManager {
         } else {
             //If the channel is not a process it may be a client
             onClientDisconnect(name);
+        }
+    }
+
+    @Override
+    public void unregisterProcess(UUID uniqueID) {
+        ProcessInformation information = getProcess(uniqueID);
+        if (information == null) {
+            return;
+        }
+
+        synchronized (processInformation) {
+            processInformation.remove(information);
         }
     }
 

@@ -4,10 +4,12 @@ import systems.reformcloud.reformcloud2.executor.api.client.process.RunningProce
 import systems.reformcloud.reformcloud2.executor.api.common.CommonHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
 import systems.reformcloud.reformcloud2.executor.client.ClientExecutor;
 
 import java.util.Queue;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public final class ProcessQueue extends AbsoluteThread {
@@ -72,6 +74,18 @@ public final class ProcessQueue extends AbsoluteThread {
             }
 
             AbsoluteThread.sleep(100);
+        }
+    }
+
+    public static ProcessInformation removeFromQueue(UUID uuid) {
+        synchronized (QUEUE) {
+            RunningProcess process = Links.filterToReference(QUEUE, e -> e.getProcessInformation().getProcessUniqueID().equals(uuid)).orNothing();
+            if (process == null) {
+                return null;
+            }
+
+            QUEUE.remove(process);
+            return process.getProcessInformation();
         }
     }
 

@@ -49,6 +49,10 @@ public final class CommonHelper {
         return operatingSystemMXBean().getSystemCpuLoad() * 100;
     }
 
+    public static Collection<String> inputArguments() {
+        return runtimeMXBean().getInputArguments();
+    }
+
     public static long memoryPoolMXBeanCollectionUsage() {
         AtomicLong atomicLong = new AtomicLong(0);
         ManagementFactory.getMemoryPoolMXBeans().forEach(memoryPoolMXBean -> {

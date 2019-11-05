@@ -7,7 +7,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.optional.ReferencedOptional;
 import systems.reformcloud.reformcloud2.executor.client.ClientExecutor;
 import systems.reformcloud.reformcloud2.executor.client.packet.out.ClientPacketOutProcessRegistered;
-import systems.reformcloud.reformcloud2.executor.client.packet.out.ClientPacketOutProcessStopped;
 import systems.reformcloud.reformcloud2.executor.client.screen.ProcessScreen;
 
 import java.util.*;
@@ -35,11 +34,6 @@ public final class DefaultProcessManager implements ProcessManager {
         Links.filterToReference(list, runningProcess -> runningProcess.getProcessInformation().getName().equals(name)).ifPresent(runningProcess -> {
             list.remove(runningProcess);
             ClientExecutor.getInstance().getScreenManager().getPerProcessScreenLines().remove(runningProcess.getProcessInformation().getProcessUniqueID());
-
-            DefaultChannelManager.INSTANCE.get("Controller").ifPresent(packetSender -> packetSender.sendPacket(new ClientPacketOutProcessStopped(
-                    runningProcess.getProcessInformation().getProcessUniqueID(),
-                    runningProcess.getProcessInformation().getName()
-            )));
         });
     }
 

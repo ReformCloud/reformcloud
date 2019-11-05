@@ -97,7 +97,7 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
 
                 URLClassLoader classLoader = new AppClassLoader(new URL[] {
                         config.getValue().applicationFile().toURI().toURL()
-                });
+                }, Thread.currentThread().getContextClassLoader());
 
                 Class<?> main = classLoader.loadClass(config.getValue().main());
                 Conditions.isTrue(main != null, "Main-Class of application " + config.getKey() + " not found");
@@ -214,7 +214,7 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
 
                 URLClassLoader classLoader = new AppClassLoader(new URL[] {
                         applicationConfig.applicationFile().toURI().toURL()
-                });
+                }, Thread.currentThread().getContextClassLoader());
 
                 Class<?> main = classLoader.loadClass(applicationConfig.main());
                 Conditions.isTrue(main != null, "Main-Class of application " + applicationConfig.getName() + " not found");

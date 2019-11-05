@@ -128,4 +128,12 @@ public interface ProcessManager extends Iterable<ProcessInformation>, Updateable
      * @see #onClientDisconnect(String)
      */
     void onChannelClose(String name);
+
+    /**
+     * Unregisters a specific by the given uuid
+     * <p>
+     * @param uniqueID The uniqueID of the process information which will be used to identify the process
+     * @see ProcessInformation#getProcessUniqueID()
+     */
+    void unregisterProcess(UUID uniqueID);
 }

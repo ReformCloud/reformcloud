@@ -249,6 +249,12 @@ public final class CommandReformCloud extends GlobalCommand {
                     System.out.println(LanguageManager.get("command-rc-execute-success"));
                     return true;
                 }
+
+                ExecutorAPI.getInstance().getAllProcesses().forEach(processInformation -> {
+                    ExecutorAPI.getInstance().stopProcess(processInformation.getProcessUniqueID());
+                    AbsoluteThread.sleep(TimeUnit.MILLISECONDS, 10);
+                });
+                System.out.println(LanguageManager.get("command-rc-execute-success"));
                 break;
             }
 

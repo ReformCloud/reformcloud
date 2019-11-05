@@ -1,0 +1,7 @@
+{
+  "name": "PermissionAddon",
+  "author": "derklaro",
+  "main": "systems.reformcloud.reformcloud2.permissions.application.ControllerApplication",
+  "version": "1.0",
+  "impl-version": "2.0"
+}

@@ -43,6 +43,7 @@ public class LocalNodeProcessManager implements NodeProcessManager {
     public ProcessInformation startLocalProcess(ProcessGroup processGroup, Template template, JsonConfiguration data, UUID processUniqueID) {
         int id = nextID(processGroup);
         ProcessInformation processInformation = new ProcessInformation(
+                processGroup.getName() + template.getServerNameSplitter() + id,
                 processGroup.getName() + (processGroup.isShowIdInName() ? (template.getServerNameSplitter() + id) : ""),
                 NodeExecutor.getInstance().getNodeConfig().getName(),
                 NodeExecutor.getInstance().getNodeConfig().getUniqueID(),
@@ -272,6 +273,7 @@ public class LocalNodeProcessManager implements NodeProcessManager {
                                  NodeInformation node, UUID uniqueID) {
         int id = nextID(processGroup);
         return new ProcessInformation(
+                processGroup.getName() + template.getServerNameSplitter() + id,
                 processGroup.getName() + (processGroup.isShowIdInName() ? (template.getServerNameSplitter() + id) : ""),
                 node.getName(),
                 node.getNodeUniqueID(),

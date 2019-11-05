@@ -13,8 +13,8 @@ public final class AppClassLoader extends URLClassLoader {
         ClassLoader.registerAsParallelCapable();
     }
 
-    public AppClassLoader(URL[] urls) {
-        super(urls);
+    public AppClassLoader(URL[] urls, ClassLoader parent) {
+        super(urls, parent);
         allLoaders.add(this);
     }
 

@@ -17,6 +17,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.comma
 import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.CommandHelp;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.CommandReload;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.CommandStop;
+import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.dump.CommandDump;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.manager.DefaultCommandManager;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.manager.CommandManager;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.source.CommandSource;
@@ -88,6 +89,7 @@ import systems.reformcloud.reformcloud2.executor.node.cluster.sync.DefaultCluste
 import systems.reformcloud.reformcloud2.executor.node.commands.CommandReformCloud;
 import systems.reformcloud.reformcloud2.executor.node.config.NodeConfig;
 import systems.reformcloud.reformcloud2.executor.node.config.NodeExecutorConfig;
+import systems.reformcloud.reformcloud2.executor.node.dump.NodeDumpUtil;
 import systems.reformcloud.reformcloud2.executor.node.network.DefaultNodeNetworkManager;
 import systems.reformcloud.reformcloud2.executor.node.network.client.NodeNetworkClient;
 import systems.reformcloud.reformcloud2.executor.node.network.packet.out.NodePacketOutExecuteCommand;
@@ -1923,6 +1925,7 @@ public class NodeExecutor extends Node {
 
     private void loadCommands() {
         this.commandManager
+                .register(new CommandDump(new NodeDumpUtil()))
                 .register(new CommandReformCloud())
                 .register(CommandStop.class)
                 .register(new CommandReload(this))

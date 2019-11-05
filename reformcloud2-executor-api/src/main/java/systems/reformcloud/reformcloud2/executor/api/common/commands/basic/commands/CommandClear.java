@@ -18,6 +18,6 @@ public final class CommandClear extends GlobalCommand {
     @Override
     public boolean handleCommand(CommandSource commandSource, String[] strings) {
         loggerBase.clearScreen();
-        return false;
+        return true;
     }
 }

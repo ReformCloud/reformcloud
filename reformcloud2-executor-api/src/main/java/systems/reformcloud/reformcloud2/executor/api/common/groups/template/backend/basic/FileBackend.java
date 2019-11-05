@@ -23,7 +23,7 @@ public class FileBackend implements TemplateBackend {
     @Override
     public void createTemplate(String group, String template) {
         if (!existsTemplate(group, template)) {
-            SystemHelper.createDirectory(format(group, template));
+            SystemHelper.createDirectory(Paths.get("reformcloud/templates", group, template, "plugins"));
         }
     }
 

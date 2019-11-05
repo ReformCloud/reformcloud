@@ -17,6 +17,8 @@ import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.comma
 import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.CommandHelp;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.CommandReload;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.CommandStop;
+import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.dump.CommandDump;
+import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.dump.basic.DefaultDumpUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.manager.DefaultCommandManager;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.manager.CommandManager;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.source.CommandSource;
@@ -402,6 +404,7 @@ public final class ControllerExecutor extends Controller {
 
     private void loadCommands() {
         this.commandManager
+                .register(new CommandDump(new DefaultDumpUtil()))
                 .register(CommandStop.class)
                 .register(new CommandReformCloud())
                 .register(new CommandReload(this))

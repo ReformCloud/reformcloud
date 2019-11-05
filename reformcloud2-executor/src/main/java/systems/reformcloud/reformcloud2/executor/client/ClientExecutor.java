@@ -15,6 +15,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.comma
 import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.CommandHelp;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.CommandReload;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.CommandStop;
+import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.dump.CommandDump;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.manager.DefaultCommandManager;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.manager.CommandManager;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.source.CommandSource;
@@ -41,6 +42,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.utility.system.Syste
 import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
 import systems.reformcloud.reformcloud2.executor.client.config.ClientConfig;
 import systems.reformcloud.reformcloud2.executor.client.config.ClientExecutorConfig;
+import systems.reformcloud.reformcloud2.executor.client.dump.ClientDumpUtil;
 import systems.reformcloud.reformcloud2.executor.client.packet.out.ClientPacketOutNotifyRuntimeUpdate;
 import systems.reformcloud.reformcloud2.executor.client.process.ProcessQueue;
 import systems.reformcloud.reformcloud2.executor.client.process.basic.DefaultProcessManager;
@@ -151,6 +153,7 @@ public final class ClientExecutor extends Client {
 
     private void registerDefaultCommands() {
         commandManager
+                .register(new CommandDump(new ClientDumpUtil()))
                 .register(CommandStop.class)
                 .register(new CommandReload(this))
                 .register(new CommandClear(loggerBase))

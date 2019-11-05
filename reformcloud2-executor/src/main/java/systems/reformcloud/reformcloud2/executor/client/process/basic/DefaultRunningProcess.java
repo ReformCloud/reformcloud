@@ -20,6 +20,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.utility.system.Downl
 import systems.reformcloud.reformcloud2.executor.api.common.utility.system.SystemHelper;
 import systems.reformcloud.reformcloud2.executor.client.ClientExecutor;
 import systems.reformcloud.reformcloud2.executor.client.packet.out.ClientPacketOutProcessPrepared;
+import systems.reformcloud.reformcloud2.executor.client.packet.out.ClientPacketOutProcessStopped;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -151,12 +152,17 @@ public final class DefaultRunningProcess implements RunningProcess {
     @Override
     public boolean shutdown() {
         this.startupTime.set(-1);
+        ClientExecutor.getInstance().getProcessManager().unregisterProcess(processInformation.getName());
         int exitValue = JavaProcessHelper.shutdown(process, true, true, TimeUnit.SECONDS.toMillis(10), "stop\n", "end\n");
 
-        ClientExecutor.getInstance().getProcessManager().unregisterProcess(processInformation.getName());
         if (!processInformation.getProcessGroup().isStaticProcess()) {
             SystemHelper.deleteDirectory(path);
         }
+
+        DefaultChannelManager.INSTANCE.get("Controller").ifPresent(packetSender -> packetSender.sendPacket(new ClientPacketOutProcessStopped(
+                processInformation.getProcessUniqueID(),
+                processInformation.getName()
+        )));
 
         return exitValue == 0;
     }
