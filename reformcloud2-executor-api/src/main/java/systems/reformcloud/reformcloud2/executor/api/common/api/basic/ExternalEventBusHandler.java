@@ -5,6 +5,9 @@ import systems.reformcloud.reformcloud2.executor.api.common.event.Event;
 import systems.reformcloud.reformcloud2.executor.api.common.event.EventManager;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.handler.PacketHandler;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 //Note! This class CANNOT use Reflections because it leads to problems using spigot (older guava implementation)
 public final class ExternalEventBusHandler {
 
@@ -14,7 +17,7 @@ public final class ExternalEventBusHandler {
      * @param packetHandler The current packet handler per implementation
      * @param eventManager The event manager which should be used
      */
-    public ExternalEventBusHandler(PacketHandler packetHandler, EventManager eventManager) {
+    public ExternalEventBusHandler(@Nonnull PacketHandler packetHandler, @Nonnull EventManager eventManager) {
         packetHandler.registerNetworkHandlers(
                 new EventPacketInProcessClosed(),
                 new EventPacketInProcessStarted(),
@@ -37,6 +40,7 @@ public final class ExternalEventBusHandler {
      *
      * @return the current event manager
      */
+    @Nonnull
     public EventManager getEventManager() {
         return eventManager;
     }
@@ -46,6 +50,7 @@ public final class ExternalEventBusHandler {
      *
      * @return the current instance of the event bus handler
      */
+    @Nullable
     public static ExternalEventBusHandler getInstance() {
         return instance;
     }
@@ -55,7 +60,7 @@ public final class ExternalEventBusHandler {
      *
      * @param event The event which should be called
      */
-    public void callEvent(Event event) {
+    public void callEvent(@Nonnull Event event) {
         eventManager.callEvent(event);
     }
 }

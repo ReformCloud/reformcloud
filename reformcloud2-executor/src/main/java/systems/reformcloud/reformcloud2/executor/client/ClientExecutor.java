@@ -49,6 +49,7 @@ import systems.reformcloud.reformcloud2.executor.client.process.basic.DefaultPro
 import systems.reformcloud.reformcloud2.executor.client.screen.ScreenManager;
 import systems.reformcloud.reformcloud2.executor.client.watchdog.WatchdogThread;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.concurrent.TimeUnit;
@@ -210,6 +211,7 @@ public final class ClientExecutor extends Client {
         return packetHandler;
     }
 
+    @Nonnull
     @Override
     public PacketHandler getPacketHandler() {
         return packetHandler;
@@ -239,6 +241,7 @@ public final class ClientExecutor extends Client {
         return clientExecutorConfig;
     }
 
+    @Nonnull
     public EventManager getEventManager() {
         return ExternalEventBusHandler.getInstance().getEventManager();
     }

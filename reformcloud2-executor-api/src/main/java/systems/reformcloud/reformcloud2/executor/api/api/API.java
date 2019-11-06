@@ -13,6 +13,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.handl
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState;
 
+import javax.annotation.Nonnull;
 import java.net.InetSocketAddress;
 import java.util.Objects;
 
@@ -24,11 +25,13 @@ public abstract class API extends ExternalAPIImplementation {
 
         private PacketSender packetSender;
 
+        @Nonnull
         @Override
         public PacketHandler getPacketHandler() {
             return API.this.packetHandler();
         }
 
+        @Nonnull
         @Override
         public PacketSender sender() {
             return packetSender;

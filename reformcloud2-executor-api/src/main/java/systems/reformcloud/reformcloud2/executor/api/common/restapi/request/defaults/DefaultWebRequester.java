@@ -6,6 +6,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.commands.permission.
 import systems.reformcloud.reformcloud2.executor.api.common.restapi.request.WebRequester;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links;
 
+import javax.annotation.Nonnull;
 import java.util.Collection;
 
 public class DefaultWebRequester implements WebRequester {
@@ -48,6 +49,7 @@ public class DefaultWebRequester implements WebRequester {
         return matched == null ? PermissionResult.NOT_SET : matched.startsWith("-") ? PermissionResult.DENIED : PermissionResult.ALLOWED;
     }
 
+    @Nonnull
     @Override
     public String getName() {
         return name;

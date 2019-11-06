@@ -6,6 +6,8 @@ import systems.reformcloud.reformcloud2.executor.api.common.application.Applicat
 import systems.reformcloud.reformcloud2.executor.api.common.application.ApplicationStatus;
 import systems.reformcloud.reformcloud2.executor.api.common.application.LoadedApplication;
 
+import javax.annotation.Nonnull;
+
 public final class DefaultLoadedApplication implements LoadedApplication {
 
     public DefaultLoadedApplication(ApplicationLoader loader, ApplicationConfig application, Class<?> main) {
@@ -23,21 +25,25 @@ public final class DefaultLoadedApplication implements LoadedApplication {
 
     private ApplicationStatus applicationStatus;
 
+    @Nonnull
     @Override
     public ApplicationLoader loader() {
         return loader;
     }
 
+    @Nonnull
     @Override
     public ExecutorAPI api() {
         return ExecutorAPI.getInstance();
     }
 
+    @Nonnull
     @Override
     public ApplicationConfig applicationConfig() {
         return application;
     }
 
+    @Nonnull
     @Override
     public ApplicationStatus applicationStatus() {
         return applicationStatus;

@@ -4,6 +4,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.dependency.repo.Repo
 import systems.reformcloud.reformcloud2.executor.api.common.utility.system.DownloadHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.system.SystemHelper;
 
+import javax.annotation.Nonnull;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -28,26 +29,31 @@ public final class DefaultDependency implements Dependency {
 
     private String url;
 
+    @Nonnull
     @Override
     public Repository getRepository() {
         return repository;
     }
 
+    @Nonnull
     @Override
     public String getGroupID() {
         return groupID;
     }
 
+    @Nonnull
     @Override
     public String getArtifactID() {
         return artifactID;
     }
 
+    @Nonnull
     @Override
     public String getVersion() {
         return version;
     }
 
+    @Nonnull
     @Override
     public Path getPath() {
         return Paths.get("reformcloud/.bin/libs/" + getArtifactID() + "-" + getVersion() + ".jar");

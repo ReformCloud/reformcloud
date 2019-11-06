@@ -30,6 +30,7 @@ import systems.reformcloud.reformcloud2.executor.api.nukkit.plugins.PluginsExecu
 import systems.reformcloud.reformcloud2.executor.api.packets.in.APIPacketInAPIAction;
 import systems.reformcloud.reformcloud2.executor.api.packets.in.APIPacketInPluginAction;
 
+import javax.annotation.Nonnull;
 import java.io.File;
 import java.util.UUID;
 
@@ -86,6 +87,7 @@ public final class NukkitExecutor extends API implements PlayerAPIExecutor {
         return plugin;
     }
 
+    @Nonnull
     public EventManager getEventManager() {
         return ExternalEventBusHandler.getInstance().getEventManager();
     }

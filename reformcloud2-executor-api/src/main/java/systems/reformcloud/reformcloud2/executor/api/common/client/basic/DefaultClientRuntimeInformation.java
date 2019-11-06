@@ -2,6 +2,8 @@ package systems.reformcloud.reformcloud2.executor.api.common.client.basic;
 
 import systems.reformcloud.reformcloud2.executor.api.common.client.ClientRuntimeInformation;
 
+import javax.annotation.Nonnull;
+
 public final class DefaultClientRuntimeInformation implements ClientRuntimeInformation {
 
     public DefaultClientRuntimeInformation(String startHost, int maxMemory, int maxProcesses, String name) {
@@ -19,6 +21,7 @@ public final class DefaultClientRuntimeInformation implements ClientRuntimeInfor
 
     private String name;
 
+    @Nonnull
     @Override
     public String startHost() {
         return startHost;
@@ -34,6 +37,7 @@ public final class DefaultClientRuntimeInformation implements ClientRuntimeInfor
         return maxProcesses;
     }
 
+    @Nonnull
     @Override
     public String getName() {
         return name;

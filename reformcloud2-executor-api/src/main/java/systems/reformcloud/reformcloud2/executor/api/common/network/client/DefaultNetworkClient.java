@@ -14,6 +14,8 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.handler.Clie
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.defaults.DefaultTask;
 
+import javax.annotation.Nonnull;
+
 public final class DefaultNetworkClient implements NetworkClient {
 
     private final EventLoopGroup eventLoopGroup = NetworkUtil.eventLoopGroup();
@@ -23,7 +25,7 @@ public final class DefaultNetworkClient implements NetworkClient {
     private Channel channel;
 
     @Override
-    public boolean connect(String host, int port, Auth auth, NetworkChannelReader channelReader) {
+    public boolean connect(@Nonnull String host, int port, @Nonnull Auth auth, @Nonnull NetworkChannelReader channelReader) {
         final Task<Boolean> connectTask = new DefaultTask<>();
 
         try {

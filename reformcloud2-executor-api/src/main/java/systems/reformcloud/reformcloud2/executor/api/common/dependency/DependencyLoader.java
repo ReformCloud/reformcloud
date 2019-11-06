@@ -2,6 +2,8 @@ package systems.reformcloud.reformcloud2.executor.api.common.dependency;
 
 import systems.reformcloud.reformcloud2.runner.classloading.RunnerClassLoader;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.net.URL;
 
 public abstract class DependencyLoader {
@@ -41,12 +43,13 @@ public abstract class DependencyLoader {
      * @param dependency The dependency which should be loaded
      * @return The file place of the dependency ad {@link URL}
      */
-    public abstract URL loadDependency(Dependency dependency);
+    @Nullable
+    public abstract URL loadDependency(@Nonnull Dependency dependency);
 
     /**
      * Adds the dependency location to the class loader search
      *
      * @param depend The {@link URL} to the place of the dependency
      */
-    public abstract void addDependency(URL depend);
+    public abstract void addDependency(@Nonnull URL depend);
 }

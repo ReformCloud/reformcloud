@@ -1,5 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.api.common.patch;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -8,6 +9,7 @@ public interface Patcher {
     /**
      * @return All loaded patches which are not applied to the runtime
      */
+    @Nonnull
     List<Patch> patches();
 
     /**

@@ -6,6 +6,8 @@ import systems.reformcloud.reformcloud2.executor.api.common.commands.complete.Ta
 import systems.reformcloud.reformcloud2.executor.api.common.commands.permission.Permission;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.source.CommandSource;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.List;
 
 public interface Command extends TabCompleter {
@@ -15,26 +17,31 @@ public interface Command extends TabCompleter {
     /**
      * @return The main command name
      */
+    @Nonnull
     String mainCommand();
 
     /**
      * @return The permission of the command
      */
+    @Nullable
     Permission permission();
 
     /**
      * @return The command aliases
      */
+    @Nonnull
     List<String> aliases();
 
     /**
      * @return The command description
      */
+    @Nonnull
     String description();
 
     /**
      * @return The allowed command sources
      */
+    @Nonnull
     AllowedCommandSources sources();
 
     /**

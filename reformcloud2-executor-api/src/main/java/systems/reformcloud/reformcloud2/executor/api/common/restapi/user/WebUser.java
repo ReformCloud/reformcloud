@@ -3,6 +3,7 @@ package systems.reformcloud.reformcloud2.executor.api.common.restapi.user;
 import com.google.gson.reflect.TypeToken;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.name.Nameable;
 
+import javax.annotation.Nonnull;
 import java.util.Collection;
 
 public class WebUser implements Nameable {
@@ -21,6 +22,7 @@ public class WebUser implements Nameable {
 
     private final Collection<String> permissions;
 
+    @Nonnull
     @Override
     public String getName() {
         return name;

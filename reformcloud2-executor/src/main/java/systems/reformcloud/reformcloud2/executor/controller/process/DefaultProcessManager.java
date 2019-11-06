@@ -28,6 +28,7 @@ import systems.reformcloud.reformcloud2.executor.controller.packet.out.event.Con
 import systems.reformcloud.reformcloud2.executor.controller.packet.out.event.ControllerEventProcessStarted;
 import systems.reformcloud.reformcloud2.executor.controller.packet.out.event.ControllerEventProcessUpdated;
 
+import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -298,7 +299,7 @@ public final class DefaultProcessManager implements ProcessManager {
     }
 
     @Override
-    public void update(ProcessInformation processInformation) {
+    public void update(@Nonnull ProcessInformation processInformation) {
         synchronized (processInformation) {
             ProcessInformation current = getProcess(processInformation.getProcessUniqueID());
             if (current == null) {

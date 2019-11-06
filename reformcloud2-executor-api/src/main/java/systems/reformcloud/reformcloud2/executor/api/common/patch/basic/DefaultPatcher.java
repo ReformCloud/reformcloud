@@ -10,6 +10,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.utility.system.Downl
 import systems.reformcloud.reformcloud2.executor.api.common.utility.system.SystemHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
 
+import javax.annotation.Nonnull;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -72,6 +73,7 @@ public final class DefaultPatcher implements Patcher {
 
     private long lastCheck;
 
+    @Nonnull
     @Override
     public List<Patch> patches() {
         return Collections.unmodifiableList(patches);

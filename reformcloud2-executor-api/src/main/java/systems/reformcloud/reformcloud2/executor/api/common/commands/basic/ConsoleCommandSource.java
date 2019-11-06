@@ -8,6 +8,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.commands.permission.
 import systems.reformcloud.reformcloud2.executor.api.common.commands.source.CommandSource;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.coloured.Colours;
 
+import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -16,11 +17,13 @@ public final class ConsoleCommandSource implements CommandSource {
     private static final PermissionCheck CONSOLE_COMMAND_CHECK = new ConsoleCommandCheck();
 
     private static final Collection<Permission> PERMISSIONS = Collections.singletonList(new Permission() {
+        @Nonnull
         @Override
         public String permission() {
             return "*";
         }
 
+        @Nonnull
         @Override
         public PermissionResult defaultResult() {
             return PermissionResult.ALLOWED;
@@ -61,6 +64,7 @@ public final class ConsoleCommandSource implements CommandSource {
         return permission.defaultResult().isAllowed();
     }
 
+    @Nonnull
     @Override
     public Collection<Permission> getEffectivePermissions() {
         return PERMISSIONS;
@@ -70,11 +74,13 @@ public final class ConsoleCommandSource implements CommandSource {
     public void recalculatePermissions() {
     }
 
+    @Nonnull
     @Override
     public PermissionCheck check() {
         return CONSOLE_COMMAND_CHECK;
     }
 
+    @Nonnull
     @Override
     public String getName() {
         return "ReformCloudConsole";
@@ -104,6 +110,7 @@ public final class ConsoleCommandSource implements CommandSource {
         }
     }
 
+    @Nonnull
     @Override
     public CommandManager commandManager() {
         return commandManager;
@@ -111,11 +118,13 @@ public final class ConsoleCommandSource implements CommandSource {
 
     private static class ConsoleCommandCheck implements PermissionCheck {
 
+        @Nonnull
         @Override
         public PermissionResult checkPermission(PermissionHolder permissionHolder, Permission permission) {
             return PermissionResult.ALLOWED;
         }
 
+        @Nonnull
         @Override
         public PermissionResult checkPermission(PermissionHolder permissionHolder, String permission) {
             return PermissionResult.ALLOWED;

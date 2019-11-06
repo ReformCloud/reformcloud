@@ -2,6 +2,9 @@ package systems.reformcloud.reformcloud2.executor.api.common.api.console;
 
 import systems.reformcloud.reformcloud2.executor.api.common.commands.Command;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 public interface ConsoleSyncAPI {
 
     /**
@@ -10,14 +13,14 @@ public interface ConsoleSyncAPI {
      * @param line The line which should be sent
      * @throws IllegalAccessException If coloured logging is not supported
      */
-    void sendColouredLine(String line) throws IllegalAccessException;
+    void sendColouredLine(@Nonnull String line) throws IllegalAccessException;
 
     /**
      * Sends a raw line into the console
      *
      * @param line The line which should be sent
      */
-    void sendRawLine(String line);
+    void sendRawLine(@Nonnull String line);
 
     /**
      * Dispatches a command into the console and waits for a result
@@ -27,7 +30,8 @@ public interface ConsoleSyncAPI {
      *  a) not registered
      *  b) doesn't sent any result to the handler
      */
-    String dispatchCommandAndGetResult(String commandLine);
+    @Nullable
+    String dispatchCommandAndGetResult(@Nonnull String commandLine);
 
     /**
      * Gets a command which is registered
@@ -35,7 +39,8 @@ public interface ConsoleSyncAPI {
      * @param name The name of the command
      * @return The command or {@code null} if the command is not registered
      */
-    Command getCommand(String name);
+    @Nullable
+    Command getCommand(@Nonnull String name);
 
     /**
      * Checks if a specific command is registered
@@ -43,5 +48,5 @@ public interface ConsoleSyncAPI {
      * @param name The name of the command
      * @return {@code true} if the command is registered or else {@code false}
      */
-    boolean isCommandRegistered(String name);
+    boolean isCommandRegistered(@Nonnull String name);
 }

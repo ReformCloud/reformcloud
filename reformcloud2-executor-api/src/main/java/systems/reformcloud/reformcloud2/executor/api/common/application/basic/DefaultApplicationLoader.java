@@ -15,11 +15,11 @@ import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageMan
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.system.DownloadHelper;
 
+import javax.annotation.Nonnull;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -95,7 +95,7 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
                     }
                 }
 
-                URLClassLoader classLoader = new AppClassLoader(new URL[] {
+                AppClassLoader classLoader = new AppClassLoader(new URL[] {
                         config.getValue().applicationFile().toURI().toURL()
                 }, Thread.currentThread().getContextClassLoader());
 
@@ -106,7 +106,7 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
                 System.out.println(LanguageManager.get("successfully-pre-installed-app", config.getKey(), config.getValue().author()));
                 application.onInstallable();
 
-                application.init(new DefaultLoadedApplication(this, config.getValue(), main));
+                application.init(new DefaultLoadedApplication(this, config.getValue(), main), classLoader);
                 application.onInstalled();
                 application.getApplication().setApplicationStatus(ApplicationStatus.INSTALLED);
                 System.out.println(LanguageManager.get("successfully-installed-app", config.getKey()));
@@ -158,6 +158,7 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
             application.getApplication().setApplicationStatus(ApplicationStatus.UNINSTALLED);
 
             application.unloadAllLanguageFiles();
+            application.getAppClassLoader().close();
         });
         applications.clear();
 
@@ -212,7 +213,7 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
                     }
                 }
 
-                URLClassLoader classLoader = new AppClassLoader(new URL[] {
+                AppClassLoader classLoader = new AppClassLoader(new URL[] {
                         applicationConfig.applicationFile().toURI().toURL()
                 }, Thread.currentThread().getContextClassLoader());
 
@@ -223,7 +224,7 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
                 System.out.println(LanguageManager.get("successfully-pre-installed-app", applicationConfig.getName(), applicationConfig.author()));
                 app.onInstallable();
 
-                app.init(new DefaultLoadedApplication(this, applicationConfig, main));
+                app.init(new DefaultLoadedApplication(this, applicationConfig, main), classLoader);
                 app.onInstalled();
                 app.getApplication().setApplicationStatus(ApplicationStatus.INSTALLED);
                 System.out.println(LanguageManager.get("successfully-installed-app", applicationConfig.getName()));
@@ -257,6 +258,7 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
         application.getApplication().setApplicationStatus(ApplicationStatus.UNINSTALLED);
 
         application.unloadAllLanguageFiles();
+        application.getAppClassLoader().close();
         return true;
     }
 
@@ -271,15 +273,17 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
     }
 
     @Override
-    public LoadedApplication getApplication(String name) {
+    public LoadedApplication getApplication(@Nonnull String name) {
         return Links.filterAndApply(applications, app -> app.getApplication().getName().equals(name), Application::getApplication);
     }
 
+    @Nonnull
     @Override
-    public String getApplicationName(LoadedApplication loadedApplication) {
+    public String getApplicationName(@Nonnull LoadedApplication loadedApplication) {
         return loadedApplication.getName();
     }
 
+    @Nonnull
     @Override
     public List<LoadedApplication> getApplications() {
         return Collections.unmodifiableList(Links.apply(applications, Application::getApplication));

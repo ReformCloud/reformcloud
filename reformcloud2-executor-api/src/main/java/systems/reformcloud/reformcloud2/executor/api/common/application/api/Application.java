@@ -4,9 +4,13 @@ import systems.reformcloud.reformcloud2.executor.api.common.application.LoadedAp
 import systems.reformcloud.reformcloud2.executor.api.common.application.factory.ApplicationThreadFactory;
 import systems.reformcloud.reformcloud2.executor.api.common.application.factory.ApplicationThreadGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.application.language.ApplicationLanguage;
+import systems.reformcloud.reformcloud2.executor.api.common.application.loader.AppClassLoader;
 import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
 import systems.reformcloud.reformcloud2.executor.api.common.language.language.Language;
 
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.File;
 import java.io.InputStream;
 import java.util.Properties;
@@ -19,9 +23,12 @@ public class Application {
 
     private ExecutorService executorService;
 
-    public void init(LoadedApplication application) {
+    private AppClassLoader appClassLoader;
+
+    public void init(@Nonnull LoadedApplication application, AppClassLoader loader) {
         this.application = application;
         this.executorService = Executors.newCachedThreadPool(new ApplicationThreadFactory(new ApplicationThreadGroup(application)));
+        this.appClassLoader = loader;
     }
 
     public void onInstallable() {}
@@ -38,10 +45,12 @@ public class Application {
 
     public void onUninstall() {}
 
+    @Nonnull
     public final File dataFolder() {
         return new File("reformcloud/applications", application.getName());
     }
 
+    @Nullable
     public final InputStream getResourceAsStream(String name) {
         return getClass().getClassLoader().getResourceAsStream(name);
     }
@@ -55,6 +64,11 @@ public class Application {
         LanguageManager.unregisterMessageFile(application.getName());
     }
 
+    public final AppClassLoader getAppClassLoader() {
+        return appClassLoader;
+    }
+
+    @Nonnull
     public final LoadedApplication getApplication() {
         return application;
     }
@@ -63,6 +77,8 @@ public class Application {
         System.out.println(log);
     }
 
+    @CheckReturnValue
+    @Nonnull
     public final ExecutorService getExecutorService() {
         return executorService;
     }

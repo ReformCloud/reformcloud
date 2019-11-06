@@ -10,8 +10,10 @@ import systems.reformcloud.reformcloud2.executor.api.common.api.player.PlayerAsy
 import systems.reformcloud.reformcloud2.executor.api.common.api.plugins.PluginAsyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.process.ProcessAsyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.base.Conditions;
+import systems.reformcloud.reformcloud2.executor.api.common.event.EventManager;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.handler.PacketHandler;
 
+import javax.annotation.Nonnull;
 import java.util.Objects;
 
 public abstract class ExecutorAPI implements
@@ -35,14 +37,22 @@ public abstract class ExecutorAPI implements
         ExecutorAPI.instance = Objects.requireNonNull(instance);
     }
 
+    @Nonnull
     public static ExecutorAPI getInstance() {
         return instance;
     }
 
+    /* ========================== */
+
+    @Nonnull
     public abstract PacketHandler getPacketHandler();
+
+    @Nonnull
+    public abstract EventManager getEventManager();
 
     /* ========================== */
 
+    @Nonnull
     public ExecutorType getType() {
         return type;
     }

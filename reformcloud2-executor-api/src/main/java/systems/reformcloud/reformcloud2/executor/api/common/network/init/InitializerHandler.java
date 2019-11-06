@@ -7,11 +7,12 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.channel.Netw
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.handler.PacketHandler;
 
+import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 
 public abstract class InitializerHandler extends ChannelInitializer<Channel> {
 
-    public InitializerHandler(PacketHandler packetHandler, Consumer<PacketSender> consumer) {
+    public InitializerHandler(@Nonnull PacketHandler packetHandler, @Nonnull Consumer<PacketSender> consumer) {
         this.packetHandler = packetHandler;
         this.senderConsumer = consumer;
     }
@@ -25,6 +26,7 @@ public abstract class InitializerHandler extends ChannelInitializer<Channel> {
      *
      * @return A new {@link NetworkChannelReader} with the given values
      */
+    @Nonnull
     protected final NetworkChannelReader newHandler() {
         return NetworkUtil.newReader(packetHandler, senderConsumer);
     }

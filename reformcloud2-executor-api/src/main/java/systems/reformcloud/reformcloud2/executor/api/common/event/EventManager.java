@@ -1,5 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.api.common.event;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 
 public interface EventManager {
@@ -79,5 +80,6 @@ public interface EventManager {
     /**
      * @return All registered listeners
      */
+    @Nonnull
     List<List<LoadedListener>> getListeners();
 }

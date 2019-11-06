@@ -2,6 +2,9 @@ package systems.reformcloud.reformcloud2.executor.api.common.configuration;
 
 import com.google.gson.reflect.TypeToken;
 
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.File;
 import java.lang.reflect.Type;
 import java.nio.file.Path;
@@ -9,40 +12,64 @@ import java.util.function.Predicate;
 
 public interface Configurable<V extends Configurable> {
 
-    V add(String key, V value);
+    @Nonnull
+    V add(@Nonnull String key, @Nullable V value);
 
-    V add(String key, Object value);
+    @Nonnull
+    V add(@Nonnull String key, @Nullable Object value);
 
-    V add(String key, String value);
+    @Nonnull
+    V add(@Nonnull String key, @Nonnull String value);
 
-    V add(String key, Integer value);
+    @Nonnull
+    V add(@Nonnull String key, @Nonnull Integer value);
 
-    V add(String key, Long value);
+    @Nonnull
+    V add(@Nonnull String key, @Nonnull Long value);
 
-    V add(String key, Short value);
+    @Nonnull
+    V add(@Nonnull String key, @Nonnull Short value);
 
-    V add(String key, Byte value);
+    @Nonnull
+    V add(@Nonnull String key, @Nonnull Byte value);
 
-    V add(String key, Boolean value);
+    @Nonnull
+    V add(@Nonnull String key, @Nonnull Boolean value);
 
-    V remove(String key);
+    @Nonnull
+    V remove(@Nonnull String key);
 
-    V get(String key);
+    @Nonnull
+    V get(@Nonnull String key);
 
-    <T> T get(String key, TypeToken<T> type);
+    @Nullable
+    <T> T get(@Nonnull String key, @Nonnull TypeToken<T> type);
 
-    <T> T get(String key, Class<T> type);
+    @Nullable
+    <T> T get(@Nonnull String key, @Nonnull Class<T> type);
 
-    String getString(String key);
+    @Nonnull
+    @CheckReturnValue
+    String getString(@Nonnull String key);
 
+    @Nonnull
+    @CheckReturnValue
     Integer getInteger(String key);
 
+    @Nonnull
+    @CheckReturnValue
     Long getLong(String key);
 
+    @Nonnull
+    @CheckReturnValue
     Short getShort(String key);
 
+    @Nonnull
+    @CheckReturnValue
     Byte getByte(String key);
 
+    @Nonnull
+    @CheckReturnValue
     Boolean getBoolean(String key);
 
     V getOrDefault(String key, V def);
@@ -89,6 +116,7 @@ public interface Configurable<V extends Configurable> {
 
     void write(File path);
 
+    @Nonnull
     String toPrettyString();
 
     byte[] toPrettyBytes();

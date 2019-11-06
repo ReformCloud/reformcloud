@@ -7,6 +7,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.commands.permission.
 import systems.reformcloud.reformcloud2.executor.api.common.commands.source.CommandSource;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -56,6 +57,7 @@ public abstract class GlobalCommand implements Command {
 
     private final Permission permissionCheck;
 
+    @Nonnull
     @Override
     public String mainCommand() {
         return mainCommand;
@@ -66,23 +68,27 @@ public abstract class GlobalCommand implements Command {
         return permissionCheck;
     }
 
+    @Nonnull
     @Override
     public List<String> aliases() {
         return aliases;
     }
 
+    @Nonnull
     @Override
     public String description() {
         return description;
     }
 
+    @Nonnull
     @Override
     public AllowedCommandSources sources() {
         return AllowedCommandSources.ALL;
     }
 
+    @Nonnull
     @Override
-    public Collection<String> complete(CommandSource commandSource, String commandLine, String[] currentArg) {
+    public Collection<String> complete(@Nonnull CommandSource commandSource, @Nonnull String commandLine, @Nonnull String[] currentArg) {
         return Collections.emptyList();
     }
 }

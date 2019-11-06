@@ -3,6 +3,7 @@ package systems.reformcloud.reformcloud2.executor.api.common.application.builder
 import systems.reformcloud.reformcloud2.executor.api.common.application.ApplicationConfig;
 import systems.reformcloud.reformcloud2.executor.api.common.dependency.Dependency;
 
+import javax.annotation.Nonnull;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -74,50 +75,60 @@ public final class ApplicationConfigBuilder {
     public ApplicationConfig create() {
         return new ApplicationConfig() {
             @Override
+            @Nonnull
             public String version() {
                 return version;
             }
 
+            @Nonnull
             @Override
             public String author() {
                 return author;
             }
 
+            @Nonnull
             @Override
             public String main() {
                 return main;
             }
 
+            @Nonnull
             @Override
             public Dependency[] dependencies() {
                 return dependencies.toArray(new Dependency[0]);
             }
 
+            @Nonnull
             @Override
             public String description() {
                 return description;
             }
 
+            @Nonnull
             @Override
             public String website() {
                 return website;
             }
 
+            @Nonnull
             @Override
             public String implementedVersion() {
                 return implementedVersion;
             }
 
+            @Nonnull
             @Override
             public File applicationFile() {
                 return appFile;
             }
 
+            @Nonnull
             @Override
             public JarEntry applicationConfigFile() {
                 return descFile;
             }
 
+            @Nonnull
             @Override
             public String getName() {
                 return name;

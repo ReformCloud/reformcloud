@@ -2,6 +2,7 @@ package systems.reformcloud.reformcloud2.executor.api.common.commands.permission
 
 import systems.reformcloud.reformcloud2.executor.api.common.utility.name.Nameable;
 
+import javax.annotation.Nonnull;
 import java.util.Collection;
 
 public interface PermissionHolder extends Nameable {
@@ -41,6 +42,7 @@ public interface PermissionHolder extends Nameable {
     /**
      * @return All permissions of the user
      */
+    @Nonnull
     Collection<Permission> getEffectivePermissions();
 
     /**
@@ -51,5 +53,6 @@ public interface PermissionHolder extends Nameable {
     /**
      * @return The permission check for the current user
      */
+    @Nonnull
     PermissionCheck check();
 }

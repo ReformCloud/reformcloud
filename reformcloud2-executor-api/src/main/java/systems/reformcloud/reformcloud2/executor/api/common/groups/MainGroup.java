@@ -3,6 +3,7 @@ package systems.reformcloud.reformcloud2.executor.api.common.groups;
 import com.google.gson.reflect.TypeToken;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.name.Nameable;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.Objects;
 
@@ -19,6 +20,7 @@ public class MainGroup implements Nameable {
 
     private List<String> subGroups;
 
+    @Nonnull
     @Override
     public String getName() {
         return name;

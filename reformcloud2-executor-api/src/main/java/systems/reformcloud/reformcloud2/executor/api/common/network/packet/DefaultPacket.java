@@ -2,6 +2,7 @@ package systems.reformcloud.reformcloud2.executor.api.common.network.packet;
 
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 
+import javax.annotation.Nonnull;
 import java.util.UUID;
 
 public class DefaultPacket implements Packet {
@@ -34,6 +35,7 @@ public class DefaultPacket implements Packet {
         return uid;
     }
 
+    @Nonnull
     @Override
     public JsonConfiguration content() {
         return content;

@@ -13,6 +13,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.utility.maps.AbsentM
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.defaults.DefaultTask;
 
+import javax.annotation.Nonnull;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -54,7 +55,7 @@ public final class MongoDatabase extends Database<com.mongodb.client.MongoDataba
     private String table;
 
     @Override
-    public void connect(String host, int port, String userName, String password, String table) {
+    public void connect(@Nonnull String host, int port, @Nonnull String userName, @Nonnull String password, @Nonnull String table) {
         if (!isConnected()) {
             this.host = host;
             this.port = port;
@@ -114,8 +115,9 @@ public final class MongoDatabase extends Database<com.mongodb.client.MongoDataba
     @Override
     public DatabaseReader createForTable(String table) {
         return perTableReader.putIfAbsent(table, new DatabaseReader() {
+            @Nonnull
             @Override
-            public Task<JsonConfiguration> find(String key) {
+            public Task<JsonConfiguration> find(@Nonnull String key) {
                 Task<JsonConfiguration> task = new DefaultTask<>();
                 Task.EXECUTOR.execute(() -> {
                     Document document = mongoDatabase.getCollection(table).find(Filters.eq("%%%%key", key)).first();
@@ -130,8 +132,9 @@ public final class MongoDatabase extends Database<com.mongodb.client.MongoDataba
                 return task;
             }
 
+            @Nonnull
             @Override
-            public Task<JsonConfiguration> findIfAbsent(String identifier) {
+            public Task<JsonConfiguration> findIfAbsent(@Nonnull String identifier) {
                 Task<JsonConfiguration> task = new DefaultTask<>();
                 Task.EXECUTOR.execute(() -> {
                     Document document = mongoDatabase.getCollection(table).find(Filters.eq("%%%%identifier", identifier)).first();
@@ -146,8 +149,9 @@ public final class MongoDatabase extends Database<com.mongodb.client.MongoDataba
                 return task;
             }
 
+            @Nonnull
             @Override
-            public Task<JsonConfiguration> insert(String key, String identifier, JsonConfiguration data) {
+            public Task<JsonConfiguration> insert(@Nonnull String key, String identifier, @Nonnull JsonConfiguration data) {
                 Task<JsonConfiguration> task = new DefaultTask<>();
                 Task.EXECUTOR.execute(() -> {
                     Document document = mongoDatabase.getCollection(table).find(Filters.eq("%%%%identifier", identifier)).first();
@@ -162,8 +166,9 @@ public final class MongoDatabase extends Database<com.mongodb.client.MongoDataba
                 return task;
             }
 
+            @Nonnull
             @Override
-            public Task<Boolean> update(String key, JsonConfiguration newData) {
+            public Task<Boolean> update(@Nonnull String key, @Nonnull JsonConfiguration newData) {
                 Task<Boolean> task = new DefaultTask<>();
                 Task.EXECUTOR.execute(() -> {
                     Document document = mongoDatabase.getCollection(table).find(Filters.eq("%%%%key", key)).first();
@@ -179,8 +184,9 @@ public final class MongoDatabase extends Database<com.mongodb.client.MongoDataba
                 return task;
             }
 
+            @Nonnull
             @Override
-            public Task<Boolean> updateIfAbsent(String identifier, JsonConfiguration newData) {
+            public Task<Boolean> updateIfAbsent(@Nonnull String identifier, @Nonnull JsonConfiguration newData) {
                 Task<Boolean> task = new DefaultTask<>();
                 Task.EXECUTOR.execute(() -> {
                     Document document = mongoDatabase.getCollection(table).find(Filters.eq("%%%%identifier", identifier)).first();
@@ -196,8 +202,9 @@ public final class MongoDatabase extends Database<com.mongodb.client.MongoDataba
                 return task;
             }
 
+            @Nonnull
             @Override
-            public Task<Void> remove(String key) {
+            public Task<Void> remove(@Nonnull String key) {
                 Task<Void> task = new DefaultTask<>();
                 Task.EXECUTOR.execute(() -> {
                     mongoDatabase.getCollection(table).deleteOne(Filters.eq("%%%%key", key));
@@ -206,8 +213,9 @@ public final class MongoDatabase extends Database<com.mongodb.client.MongoDataba
                 return task;
             }
 
+            @Nonnull
             @Override
-            public Task<Void> removeIfAbsent(String identifier) {
+            public Task<Void> removeIfAbsent(@Nonnull String identifier) {
                 Task<Void> task = new DefaultTask<>();
                 Task.EXECUTOR.execute(() -> {
                     mongoDatabase.getCollection(table).deleteOne(Filters.eq("%%%%identifier", identifier));
@@ -216,8 +224,9 @@ public final class MongoDatabase extends Database<com.mongodb.client.MongoDataba
                 return task;
             }
 
+            @Nonnull
             @Override
-            public Task<Boolean> contains(String key) {
+            public Task<Boolean> contains(@Nonnull String key) {
                 Task<Boolean> task = new DefaultTask<>();
                 Task.EXECUTOR.execute(() -> {
                     Document document = mongoDatabase.getCollection(table).find(Filters.eq("%%%%key", key)).first();
@@ -226,6 +235,7 @@ public final class MongoDatabase extends Database<com.mongodb.client.MongoDataba
                 return task;
             }
 
+            @Nonnull
             @Override
             public Task<Integer> size() {
                 Task<Integer> task = new DefaultTask<>();
@@ -237,6 +247,7 @@ public final class MongoDatabase extends Database<com.mongodb.client.MongoDataba
                 return task;
             }
 
+            @Nonnull
             @Override
             public String getName() {
                 return table;

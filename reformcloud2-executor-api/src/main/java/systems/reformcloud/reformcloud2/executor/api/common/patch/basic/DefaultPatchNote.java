@@ -2,6 +2,8 @@ package systems.reformcloud.reformcloud2.executor.api.common.patch.basic;
 
 import systems.reformcloud.reformcloud2.executor.api.common.patch.PatchNote;
 
+import javax.annotation.Nonnull;
+
 public final class DefaultPatchNote implements PatchNote {
 
     public DefaultPatchNote(String newVersion, String updateMessage, String name) {
@@ -16,16 +18,19 @@ public final class DefaultPatchNote implements PatchNote {
 
     private String name;
 
+    @Nonnull
     @Override
     public String newVersion() {
         return newVersion;
     }
 
+    @Nonnull
     @Override
     public String updateMessage() {
         return updateMessage;
     }
 
+    @Nonnull
     @Override
     public String getName() {
         return name;

@@ -6,6 +6,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.language.language.La
 import systems.reformcloud.reformcloud2.executor.api.common.language.language.source.LanguageSource;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.function.Double;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -103,6 +104,7 @@ public final class LanguageWorker {
             return name;
         }
 
+        @Nonnull
         @Override
         public String getName() {
             return display;

@@ -2,6 +2,7 @@ package systems.reformcloud.reformcloud2.executor.api.common.commands.complete;
 
 import systems.reformcloud.reformcloud2.executor.api.common.commands.source.CommandSource;
 
+import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -15,9 +16,11 @@ public interface TabCompleter {
      * @param currentArg The current arguments
      * @return The completed command arguments
      */
-    Collection<String> complete(CommandSource commandSource, String commandLine, String[] currentArg);
+    @Nonnull
+    Collection<String> complete(@Nonnull CommandSource commandSource, @Nonnull String commandLine, @Nonnull String[] currentArg);
 
-    default Collection<String> convert(String... strings) {
+    @Nonnull
+    default Collection<String> convert(@Nonnull String... strings) {
         return Arrays.asList(strings);
     }
 }

@@ -38,6 +38,7 @@ import systems.reformcloud.reformcloud2.executor.api.velocity.event.ProcessEvent
 import systems.reformcloud.reformcloud2.executor.api.velocity.plugins.PluginExecutorContainer;
 import systems.reformcloud.reformcloud2.executor.api.velocity.plugins.PluginUpdater;
 
+import javax.annotation.Nonnull;
 import java.io.File;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
@@ -106,6 +107,7 @@ public final class VelocityExecutor extends API implements PlayerAPIExecutor {
         return packetHandler;
     }
 
+    @Nonnull
     public EventManager getEventManager() {
         return ExternalEventBusHandler.getInstance().getEventManager();
     }

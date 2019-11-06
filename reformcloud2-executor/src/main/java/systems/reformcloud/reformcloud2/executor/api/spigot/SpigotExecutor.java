@@ -30,6 +30,7 @@ import systems.reformcloud.reformcloud2.executor.api.packets.in.APIPacketInAPIAc
 import systems.reformcloud.reformcloud2.executor.api.packets.in.APIPacketInPluginAction;
 import systems.reformcloud.reformcloud2.executor.api.spigot.plugins.PluginExecutorContainer;
 
+import javax.annotation.Nonnull;
 import java.io.File;
 import java.util.UUID;
 
@@ -85,6 +86,7 @@ public final class SpigotExecutor extends API implements PlayerAPIExecutor {
         return instance;
     }
 
+    @Nonnull
     public EventManager getEventManager() {
         return ExternalEventBusHandler.getInstance().getEventManager();
     }

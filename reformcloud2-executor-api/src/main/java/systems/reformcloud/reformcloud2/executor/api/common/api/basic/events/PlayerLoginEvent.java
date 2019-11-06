@@ -2,6 +2,8 @@ package systems.reformcloud.reformcloud2.executor.api.common.api.basic.events;
 
 import systems.reformcloud.reformcloud2.executor.api.common.event.Event;
 
+import javax.annotation.Nonnull;
+
 /**
  * Gets called when a player logged in on the network
  */
@@ -12,7 +14,7 @@ public class PlayerLoginEvent extends Event {
      *
      * @param name The name of the player who logs in
      */
-    public PlayerLoginEvent(String name) {
+    public PlayerLoginEvent(@Nonnull String name) {
         this.name = name;
     }
 
@@ -21,6 +23,7 @@ public class PlayerLoginEvent extends Event {
     /**
      * @return The name of the player
      */
+    @Nonnull
     public String getName() {
         return name;
     }

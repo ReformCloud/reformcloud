@@ -4,6 +4,8 @@ import com.google.gson.reflect.TypeToken;
 import systems.reformcloud.reformcloud2.executor.api.common.client.basic.DefaultClientRuntimeInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.name.Nameable;
 
+import javax.annotation.Nonnull;
+
 public interface ClientRuntimeInformation extends Nameable {
 
     TypeToken<DefaultClientRuntimeInformation> TYPE = new TypeToken<DefaultClientRuntimeInformation>() {};
@@ -11,6 +13,7 @@ public interface ClientRuntimeInformation extends Nameable {
     /**
      * @return The start host of the client
      */
+    @Nonnull
     String startHost();
 
     /**

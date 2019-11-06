@@ -6,6 +6,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.PlayerA
 import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.StartupConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.name.Nameable;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.Objects;
 
@@ -83,6 +84,7 @@ public class ProcessGroup implements Nameable {
         return canBeUsedAsLobby;
     }
 
+    @Nonnull
     @Override
     public String getName() {
         return name;

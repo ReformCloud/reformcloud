@@ -7,6 +7,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.event.LoadedListener
 import systems.reformcloud.reformcloud2.executor.api.common.event.handler.Listener;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links;
 
+import javax.annotation.Nonnull;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
@@ -104,6 +105,7 @@ public final class DefaultEventManager implements EventManager {
         Links.forEachValues(done, loadedListeners -> Links.forEach(loadedListeners, loadedListener -> unregister(loadedListener.getListener())));
     }
 
+    @Nonnull
     @Override
     public List<List<LoadedListener>> getListeners() {
         return Collections.unmodifiableList(Links.getValues(done, aClass -> true));

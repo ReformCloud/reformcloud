@@ -8,6 +8,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.plugins.basic.Defaul
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.name.Nameable;
 
+import javax.annotation.Nonnull;
 import java.util.*;
 
 public final class ProcessInformation implements Nameable {
@@ -125,6 +126,7 @@ public final class ProcessInformation implements Nameable {
         return extra;
     }
 
+    @Nonnull
     @Override
     public String getName() {
         return processName;

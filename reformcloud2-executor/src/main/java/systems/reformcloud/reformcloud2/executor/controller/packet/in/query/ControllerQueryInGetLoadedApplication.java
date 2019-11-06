@@ -10,6 +10,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.channel.hand
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.DefaultPacket;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 
+import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 
 public final class ControllerQueryInGetLoadedApplication implements NetworkHandler {
@@ -25,6 +26,7 @@ public final class ControllerQueryInGetLoadedApplication implements NetworkHandl
         responses.accept(new DefaultPacket(-1, new JsonConfiguration().add("result", convert(ExecutorAPI.getInstance().getApplication(name)))));
     }
 
+    @Nonnull
     private static DefaultLoadedApplication convert(LoadedApplication application) {
         return new DefaultLoadedApplication(application.loader(), application.applicationConfig(), application.mainClass());
     }

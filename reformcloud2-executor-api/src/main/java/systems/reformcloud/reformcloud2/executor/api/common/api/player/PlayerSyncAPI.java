@@ -1,8 +1,9 @@
 package systems.reformcloud.reformcloud2.executor.api.common.api.player;
 
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.annotiations.Nullable;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.UUID;
 
 public interface PlayerSyncAPI {
@@ -13,7 +14,7 @@ public interface PlayerSyncAPI {
      * @param player The uuid of the player which should receive the message
      * @param message The message which should be sent
      */
-    void sendMessage(UUID player, String message);
+    void sendMessage(@Nonnull UUID player, @Nonnull String message);
 
     /**
      * Kicks a player from the network
@@ -21,7 +22,7 @@ public interface PlayerSyncAPI {
      * @param player The uuid of the player which should be kicked
      * @param message The kick message
      */
-    void kickPlayer(UUID player, String message);
+    void kickPlayer(@Nonnull UUID player, @Nonnull String message);
 
     /**
      * Kicks a player from a specific server
@@ -29,7 +30,7 @@ public interface PlayerSyncAPI {
      * @param player The player which should be kicked
      * @param message The kick message
      */
-    void kickPlayerFromServer(UUID player, String message);
+    void kickPlayerFromServer(@Nonnull UUID player, @Nonnull String message);
 
     /**
      * Plays a sound to a player
@@ -39,7 +40,7 @@ public interface PlayerSyncAPI {
      * @param f1 The volume of the sound
      * @param f2 The pitch of the sound
      */
-    void playSound(UUID player, String sound, float f1, float f2);
+    void playSound(@Nonnull UUID player, @Nonnull String sound, float f1, float f2);
 
     /**
      * Sends a title to a player
@@ -51,7 +52,7 @@ public interface PlayerSyncAPI {
      * @param stay The stay time, how long the title should stay
      * @param fadeOut The fadeout time of the title
      */
-    void sendTitle(UUID player, String title, String subTitle, int fadeIn, int stay, int fadeOut);
+    void sendTitle(@Nonnull UUID player, @Nonnull String title, @Nonnull String subTitle, int fadeIn, int stay, int fadeOut);
 
     /**
      * Sets a player effect
@@ -59,7 +60,7 @@ public interface PlayerSyncAPI {
      * @param player The uuid of the player who should get the effect
      * @param entityEffect The entity effect which should be played
      */
-    void playEffect(UUID player, String entityEffect);
+    void playEffect(@Nonnull UUID player, @Nonnull String entityEffect);
 
     /**
      * Plays a player effect
@@ -69,14 +70,14 @@ public interface PlayerSyncAPI {
      * @param data A bit needed for some effects
      * @param <T> The data depending to the effect
      */
-    <T> void playEffect(UUID player, String effect, @Nullable T data);
+    <T> void playEffect(@Nonnull UUID player, @Nonnull String effect, @Nullable T data);
 
     /**
      * Respawn a player
      *
      * @param player The uuid of the player which should be re-spawned
      */
-    void respawn(UUID player);
+    void respawn(@Nonnull UUID player);
 
     /**
      * Teleports a player
@@ -89,7 +90,7 @@ public interface PlayerSyncAPI {
      * @param yaw The yaw of the new location
      * @param pitch The pitch of the new location
      */
-    void teleport(UUID player, String world, double x, double y, double z, float yaw, float pitch);
+    void teleport(@Nonnull UUID player, @Nonnull String world, double x, double y, double z, float yaw, float pitch);
 
     /**
      * Connects a player to a specific server
@@ -97,7 +98,7 @@ public interface PlayerSyncAPI {
      * @param player The player who should be connected
      * @param server The target server
      */
-    void connect(UUID player, String server);
+    void connect(@Nonnull UUID player, @Nonnull String server);
 
     /**
      * Connects a player to a specific server
@@ -105,7 +106,7 @@ public interface PlayerSyncAPI {
      * @param player The player who should be connected
      * @param server The {@link ProcessInformation} of the target server
      */
-    void connect(UUID player, ProcessInformation server);
+    void connect(@Nonnull UUID player, @Nonnull ProcessInformation server);
 
     /**
      * Connects a player to an other player
@@ -113,7 +114,7 @@ public interface PlayerSyncAPI {
      * @param player The player who should be connected
      * @param target The target player
      */
-    void connect(UUID player, UUID target);
+    void connect(@Nonnull UUID player, @Nonnull UUID target);
 
     /**
      * Sets a player resource pack
@@ -121,5 +122,5 @@ public interface PlayerSyncAPI {
      * @param player The player who should get the resource pack
      * @param pack The url of the resource pack
      */
-    void setResourcePack(UUID player, String pack);
+    void setResourcePack(@Nonnull UUID player, @Nonnull String pack);
 }

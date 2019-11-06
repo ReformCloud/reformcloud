@@ -7,6 +7,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.commands.permission.
 import systems.reformcloud.reformcloud2.executor.api.common.commands.permission.PermissionResult;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.source.CommandSource;
 
+import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.function.Consumer;
@@ -42,6 +43,7 @@ public final class DefaultCommandSource implements CommandSource {
         sendRawMessage(messages[0]);
     }
 
+    @Nonnull
     @Override
     public CommandManager commandManager() {
         return commandManager;
@@ -67,14 +69,17 @@ public final class DefaultCommandSource implements CommandSource {
         return true;
     }
 
+    @Nonnull
     @Override
     public Collection<Permission> getEffectivePermissions() {
         return Collections.singleton(new Permission() {
+            @Nonnull
             @Override
             public String permission() {
                 return "*";
             }
 
+            @Nonnull
             @Override
             public PermissionResult defaultResult() {
                 return PermissionResult.ALLOWED;
@@ -86,14 +91,17 @@ public final class DefaultCommandSource implements CommandSource {
     public void recalculatePermissions() {
     }
 
+    @Nonnull
     @Override
     public PermissionCheck check() {
         return new PermissionCheck() {
+            @Nonnull
             @Override
             public PermissionResult checkPermission(PermissionHolder permissionHolder, Permission permission) {
                 return PermissionResult.ALLOWED;
             }
 
+            @Nonnull
             @Override
             public PermissionResult checkPermission(PermissionHolder permissionHolder, String permission) {
                 return PermissionResult.ALLOWED;
@@ -101,6 +109,7 @@ public final class DefaultCommandSource implements CommandSource {
         };
     }
 
+    @Nonnull
     @Override
     public String getName() {
         return "API";

@@ -10,6 +10,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.NetworkUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.network.auth.ServerAuthHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.handler.ServerInitializerHandler;
 
+import javax.annotation.Nonnull;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,7 +25,7 @@ public final class DefaultNetworkServer implements NetworkServer {
     private final Class<? extends ServerSocketChannel> channelClass = NetworkUtil.serverSocketChannel();
 
     @Override
-    public void bind(String host, int port, ServerAuthHandler authHandler) {
+    public void bind(@Nonnull String host, int port, @Nonnull ServerAuthHandler authHandler) {
         if (!channelFutures.containsKey(port)) {
                 new ServerBootstrap()
                         .channel(channelClass)

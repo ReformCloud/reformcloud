@@ -3,6 +3,7 @@ package systems.reformcloud.reformcloud2.executor.api.common.network.packet.hand
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.handler.NetworkHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.query.QueryHandler;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 
 public interface PacketHandler {
@@ -48,16 +49,19 @@ public interface PacketHandler {
      * @param id The id which should get filtered
      * @return All registered network handlers handling the given id
      */
+    @Nonnull
     List<NetworkHandler> getNetworkHandlers(int id);
 
     /**
      * @return All registered network handlers
      */
+    @Nonnull
     List<NetworkHandler> getAllNetworkHandlers();
 
     /**
      * @return The query handler of the current instance
      */
+    @Nonnull
     QueryHandler getQueryHandler();
 
     /**

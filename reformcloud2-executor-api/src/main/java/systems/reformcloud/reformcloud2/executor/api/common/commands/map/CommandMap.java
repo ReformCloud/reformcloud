@@ -3,6 +3,8 @@ package systems.reformcloud.reformcloud2.executor.api.common.commands.map;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.Command;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.dispatcher.CommandDispatcher;
 
+import javax.annotation.Nullable;
+
 public interface CommandMap extends CommandDispatcher {
 
     /**
@@ -16,6 +18,7 @@ public interface CommandMap extends CommandDispatcher {
      * @param command The command name
      * @return The command instance or {@code null} if the command is not registered
      */
+    @Nullable
     Command getCommand(String command);
 
     /**
@@ -24,6 +27,7 @@ public interface CommandMap extends CommandDispatcher {
      * @param commandPreLine The known first letters of the command
      * @return The command instance or {@code null} if the command is not registered
      */
+    @Nullable
     Command findCommand(String commandPreLine);
 
     /**

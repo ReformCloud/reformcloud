@@ -41,6 +41,7 @@ import systems.reformcloud.reformcloud2.executor.api.packets.in.APIPacketInAPIAc
 import systems.reformcloud.reformcloud2.executor.api.packets.in.APIPacketInPluginAction;
 import systems.reformcloud.reformcloud2.executor.api.packets.out.APIBungeePacketOutRequestIngameMessages;
 
+import javax.annotation.Nonnull;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -109,6 +110,7 @@ public final class BungeeExecutor extends API implements PlayerAPIExecutor {
         awaitConnectionAndUpdate();
     }
 
+    @Nonnull
     public EventManager getEventManager() {
         return ExternalEventBusHandler.getInstance().getEventManager();
     }

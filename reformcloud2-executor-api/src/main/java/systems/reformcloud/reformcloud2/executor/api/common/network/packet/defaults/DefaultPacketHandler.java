@@ -4,6 +4,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.channel.hand
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.handler.PacketHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.query.QueryHandler;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -50,6 +51,7 @@ public final class DefaultPacketHandler implements PacketHandler {
         });
     }
 
+    @Nonnull
     @Override
     public List<NetworkHandler> getNetworkHandlers(int id) {
         List<NetworkHandler> networkHandlers = new ArrayList<>();
@@ -61,11 +63,13 @@ public final class DefaultPacketHandler implements PacketHandler {
         return networkHandlers;
     }
 
+    @Nonnull
     @Override
     public List<NetworkHandler> getAllNetworkHandlers() {
         return Collections.unmodifiableList(handlers);
     }
 
+    @Nonnull
     @Override
     public QueryHandler getQueryHandler() {
         return queryHandler;

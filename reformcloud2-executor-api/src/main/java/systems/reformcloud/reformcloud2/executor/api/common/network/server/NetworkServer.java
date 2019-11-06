@@ -2,6 +2,8 @@ package systems.reformcloud.reformcloud2.executor.api.common.network.server;
 
 import systems.reformcloud.reformcloud2.executor.api.common.network.auth.ServerAuthHandler;
 
+import javax.annotation.Nonnull;
+
 public interface NetworkServer {
 
     /**
@@ -11,7 +13,11 @@ public interface NetworkServer {
      * @param port The port which the cloud should use
      * @param authHandler The auth handler for incoming connections
      */
-    void bind(String host, int port, ServerAuthHandler authHandler);
+    void bind(
+            @Nonnull String host,
+            int port,
+            @Nonnull ServerAuthHandler authHandler
+    );
 
     /**
      * Closes a network server

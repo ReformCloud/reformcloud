@@ -11,6 +11,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.utility.maps.AbsentM
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.defaults.DefaultTask;
 
+import javax.annotation.Nonnull;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -41,7 +42,7 @@ public class H2Database extends Database<Connection> {
     private Connection connection;
 
     @Override
-    public void connect(String host, int port, String userName, String password, String table) {
+    public void connect(@Nonnull String host, int port, @Nonnull String userName, @Nonnull String password, @Nonnull String table) {
         if (!isConnected()) {
             try {
                 Driver.load();
@@ -65,7 +66,7 @@ public class H2Database extends Database<Connection> {
     @Override
     public void reconnect() {
         disconnect();
-        connect(null, -1, null, null, null);
+        connect("", -1, "", "", "");
     }
 
     @Override
@@ -109,8 +110,9 @@ public class H2Database extends Database<Connection> {
     @Override
     public DatabaseReader createForTable(String table) {
         return perTableReader.putIfAbsent(table, new DatabaseReader() {
+            @Nonnull
             @Override
-            public Task<JsonConfiguration> find(String key) {
+            public Task<JsonConfiguration> find(@Nonnull String key) {
                 Task<JsonConfiguration> task = new DefaultTask<>();
                 Task.EXECUTOR.execute(() -> {
                     try {
@@ -143,8 +145,9 @@ public class H2Database extends Database<Connection> {
                 return task;
             }
 
+            @Nonnull
             @Override
-            public Task<JsonConfiguration> findIfAbsent(String identifier) {
+            public Task<JsonConfiguration> findIfAbsent(@Nonnull String identifier) {
                 Task<JsonConfiguration> task = new DefaultTask<>();
                 Task.EXECUTOR.execute(() -> {
                     try {
@@ -177,8 +180,9 @@ public class H2Database extends Database<Connection> {
                 return task;
             }
 
+            @Nonnull
             @Override
-            public Task<JsonConfiguration> insert(String key, String identifier, JsonConfiguration data) {
+            public Task<JsonConfiguration> insert(@Nonnull String key, String identifier, @Nonnull JsonConfiguration data) {
                 Task<JsonConfiguration> task = new DefaultTask<>();
                 Task.EXECUTOR.execute(() -> {
                     try {
@@ -197,8 +201,9 @@ public class H2Database extends Database<Connection> {
                 return task;
             }
 
+            @Nonnull
             @Override
-            public Task<Boolean> update(String key, JsonConfiguration newData) {
+            public Task<Boolean> update(@Nonnull String key, @Nonnull JsonConfiguration newData) {
                 Task<Boolean> task = new DefaultTask<>();
                 Task.EXECUTOR.execute(() -> {
                     try {
@@ -216,8 +221,9 @@ public class H2Database extends Database<Connection> {
                 return task;
             }
 
+            @Nonnull
             @Override
-            public Task<Boolean> updateIfAbsent(String identifier, JsonConfiguration newData) {
+            public Task<Boolean> updateIfAbsent(@Nonnull String identifier, @Nonnull JsonConfiguration newData) {
                 Task<Boolean> task = new DefaultTask<>();
                 Task.EXECUTOR.execute(() -> {
                     JsonConfiguration configuration = findIfAbsent(identifier).getUninterruptedly();
@@ -244,8 +250,9 @@ public class H2Database extends Database<Connection> {
                 return task;
             }
 
+            @Nonnull
             @Override
-            public Task<Void> remove(String key) {
+            public Task<Void> remove(@Nonnull String key) {
                 Task<Void> task = new DefaultTask<>();
                 Task.EXECUTOR.execute(() -> {
                     try {
@@ -262,8 +269,9 @@ public class H2Database extends Database<Connection> {
                 return task;
             }
 
+            @Nonnull
             @Override
-            public Task<Void> removeIfAbsent(String identifier) {
+            public Task<Void> removeIfAbsent(@Nonnull String identifier) {
                 Task<Void> task = new DefaultTask<>();
                 Task.EXECUTOR.execute(() -> {
                     try {
@@ -280,13 +288,15 @@ public class H2Database extends Database<Connection> {
                 return task;
             }
 
+            @Nonnull
             @Override
-            public Task<Boolean> contains(String key) {
+            public Task<Boolean> contains(@Nonnull String key) {
                 Task<Boolean> task = new DefaultTask<>();
                 Task.EXECUTOR.execute(() -> task.complete(find(key).getUninterruptedly() != null));
                 return task;
             }
 
+            @Nonnull
             @Override
             public Task<Integer> size() {
                 Task<Integer> task = new DefaultTask<>();
@@ -309,6 +319,7 @@ public class H2Database extends Database<Connection> {
                 return task;
             }
 
+            @Nonnull
             @Override
             public String getName() {
                 return table;

@@ -22,6 +22,7 @@ import systems.reformcloud.reformcloud2.executor.node.network.packet.out.NodePac
 import systems.reformcloud.reformcloud2.executor.node.process.manager.LocalProcessManager;
 import systems.reformcloud.reformcloud2.executor.node.process.startup.LocalProcessQueue;
 
+import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -232,7 +233,7 @@ public class LocalNodeProcessManager implements NodeProcessManager {
     }
 
     @Override
-    public void update(ProcessInformation processInformation) {
+    public void update(@Nonnull ProcessInformation processInformation) {
         handleProcessUpdate(processInformation);
         NodeExecutor.getInstance().getClusterSyncManager().syncProcessUpdate(processInformation);
     }

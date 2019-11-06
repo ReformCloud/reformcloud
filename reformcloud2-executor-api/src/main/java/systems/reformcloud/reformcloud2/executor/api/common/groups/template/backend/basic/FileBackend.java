@@ -6,6 +6,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.groups.template.back
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.system.SystemHelper;
 
+import javax.annotation.Nonnull;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -60,6 +61,7 @@ public class FileBackend implements TemplateBackend {
         SystemHelper.deleteDirectory(format(group, template));
     }
 
+    @Nonnull
     @Override
     public String getName() {
         return NAME;

@@ -3,6 +3,8 @@ package systems.reformcloud.reformcloud2.executor.api.common.api.applications;
 import systems.reformcloud.reformcloud2.executor.api.common.application.InstallableApplication;
 import systems.reformcloud.reformcloud2.executor.api.common.application.LoadedApplication;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.List;
 
 public interface ApplicationSyncAPI {
@@ -13,7 +15,7 @@ public interface ApplicationSyncAPI {
      * @param application The application which should be loaded
      * @return {@code true} if the load was successful else {@code false}
      */
-    boolean loadApplication(InstallableApplication application);
+    boolean loadApplication(@Nonnull InstallableApplication application);
 
     /**
      * Unloads a specific application
@@ -21,7 +23,7 @@ public interface ApplicationSyncAPI {
      * @param application The application instance which should be unloaded
      * @return {@code true} if the load was successful else {@code false}
      */
-    boolean unloadApplication(LoadedApplication application);
+    boolean unloadApplication(@Nonnull LoadedApplication application);
 
     /**
      * Unloads a specific application
@@ -29,7 +31,7 @@ public interface ApplicationSyncAPI {
      * @param application The name of the application
      * @return {@code true} if the load was successful else {@code false}
      */
-    boolean unloadApplication(String application);
+    boolean unloadApplication(@Nonnull String application);
 
     /**
      * Gets a specific application
@@ -37,12 +39,14 @@ public interface ApplicationSyncAPI {
      * @param name The name of the application
      * @return the loaded application or {@code null} if the application is unloaded
      */
-    LoadedApplication getApplication(String name);
+    @Nullable
+    LoadedApplication getApplication(@Nonnull String name);
 
     /**
      * Gets all currently loaded applications
      *
      * @return a list of all loaded applications
      */
+    @Nullable
     List<LoadedApplication> getApplications();
 }

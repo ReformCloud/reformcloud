@@ -1,9 +1,9 @@
 package systems.reformcloud.reformcloud2.executor.api.common.scheduler.basic;
 
-import systems.reformcloud.reformcloud2.executor.api.common.base.Conditions;
 import systems.reformcloud.reformcloud2.executor.api.common.scheduler.ScheduledTask;
 import systems.reformcloud.reformcloud2.executor.api.common.scheduler.TaskScheduler;
 
+import javax.annotation.Nonnull;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -26,25 +26,25 @@ public final class DefaultTaskScheduler implements TaskScheduler {
     }
 
     @Override
-    public void cancel(ScheduledTask scheduledTask) {
+    public void cancel(@Nonnull ScheduledTask scheduledTask) {
         scheduledTask.cancel();
     }
 
+    @Nonnull
     @Override
-    public ScheduledTask runAsync(Runnable runnable) {
+    public ScheduledTask runAsync(@Nonnull Runnable runnable) {
         return schedule(runnable, 0, TimeUnit.MILLISECONDS);
     }
 
+    @Nonnull
     @Override
-    public ScheduledTask schedule(Runnable runnable, long delay, TimeUnit timeUnit) {
-        return schedule(runnable, delay, 0, timeUnit);
+    public ScheduledTask schedule(@Nonnull Runnable runnable, long delay, @Nonnull TimeUnit timeUnit) {
+        return schedule(runnable, 0, delay, timeUnit);
     }
 
+    @Nonnull
     @Override
-    public ScheduledTask schedule(Runnable runnable, long delay, long period, TimeUnit timeUnit) {
-        Conditions.isTrue(runnable != null);
-        Conditions.isTrue(timeUnit != null);
-
+    public ScheduledTask schedule(@Nonnull Runnable runnable, long delay, long period, @Nonnull TimeUnit timeUnit) {
         ScheduledTask scheduledTask = new DefaultTask(atomicInteger.getAndIncrement(), runnable, delay, period, timeUnit);
         synchronized (object) {
             tasks.put(scheduledTask.getID(), scheduledTask);

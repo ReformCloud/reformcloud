@@ -1,8 +1,9 @@
 package systems.reformcloud.reformcloud2.executor.api.common.network.packet;
 
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.annotiations.Nullable;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.Serializable;
 import java.util.UUID;
 
@@ -16,11 +17,13 @@ public interface Packet extends Serializable {
     /**
      * @return The id of the query or {@code null} if the packet is not a query
      */
-    @Nullable UUID queryUniqueID();
+    @Nullable
+    UUID queryUniqueID();
 
     /**
      * @return The content of the packet
      */
+    @Nonnull
     JsonConfiguration content();
 
     /**

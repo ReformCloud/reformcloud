@@ -1,10 +1,10 @@
 package systems.reformcloud.reformcloud2.permissions.util;
 
-import systems.reformcloud.reformcloud2.executor.api.common.utility.annotiations.Nullable;
 import systems.reformcloud.reformcloud2.permissions.util.group.PermissionGroup;
 import systems.reformcloud.reformcloud2.permissions.util.permission.PermissionNode;
 import systems.reformcloud.reformcloud2.permissions.util.user.PermissionUser;
 
+import javax.annotation.Nullable;
 import java.util.UUID;
 
 public interface PermissionUtil {

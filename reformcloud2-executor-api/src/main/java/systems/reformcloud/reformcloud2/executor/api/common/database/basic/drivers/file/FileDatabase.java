@@ -8,6 +8,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.utility.system.Syste
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.defaults.DefaultTask;
 
+import javax.annotation.Nonnull;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -21,7 +22,7 @@ public final class FileDatabase extends Database<Path> {
     private final Map<String, DatabaseReader> perTableReader = new AbsentMap<>();
 
     @Override
-    public void connect(String host, int port, String userName, String password, String table) {
+    public void connect(@Nonnull String host, int port, @Nonnull String userName, @Nonnull String password, @Nonnull String table) {
         this.table = "reformcloud/.database/" + table;
     }
 
@@ -54,8 +55,9 @@ public final class FileDatabase extends Database<Path> {
     @Override
     public DatabaseReader createForTable(String table) {
         return perTableReader.putIfAbsent(table, new DatabaseReader() {
+            @Nonnull
             @Override
-            public Task<JsonConfiguration> find(String key) {
+            public Task<JsonConfiguration> find(@Nonnull String key) {
                 Task<JsonConfiguration> task = new DefaultTask<>();
                 Task.EXECUTOR.execute(() -> {
                     for (File file : Objects.requireNonNull(new File(FileDatabase.this.table + "/" + table).listFiles(pathname -> pathname.isFile() && pathname.getName().endsWith(".json")))) {
@@ -70,8 +72,9 @@ public final class FileDatabase extends Database<Path> {
                 return task;
             }
 
+            @Nonnull
             @Override
-            public Task<JsonConfiguration> findIfAbsent(String identifier) {
+            public Task<JsonConfiguration> findIfAbsent(@Nonnull String identifier) {
                 Task<JsonConfiguration> task = new DefaultTask<>();
                 Task.EXECUTOR.execute(() -> {
                     for (File file : Objects.requireNonNull(new File(FileDatabase.this.table + "/" + table).listFiles(pathname -> pathname.isFile() && pathname.getName().endsWith(".json")))) {
@@ -87,8 +90,9 @@ public final class FileDatabase extends Database<Path> {
                 return task;
             }
 
+            @Nonnull
             @Override
-            public Task<JsonConfiguration> insert(String key, String identifier, JsonConfiguration data) {
+            public Task<JsonConfiguration> insert(@Nonnull String key, String identifier, @Nonnull JsonConfiguration data) {
                 Task<JsonConfiguration> task = new DefaultTask<>();
                 Task.EXECUTOR.execute(() -> {
                     JsonConfiguration configuration = find(key).getUninterruptedly(TimeUnit.SECONDS, 5);
@@ -102,8 +106,9 @@ public final class FileDatabase extends Database<Path> {
                 return task;
             }
 
+            @Nonnull
             @Override
-            public Task<Boolean> update(String key, JsonConfiguration newData) {
+            public Task<Boolean> update(@Nonnull String key, @Nonnull JsonConfiguration newData) {
                 Task<Boolean> task = new DefaultTask<>();
                 Task.EXECUTOR.execute(() -> {
                     for (File file : Objects.requireNonNull(new File(FileDatabase.this.table + "/" + table).listFiles(pathname -> pathname.isFile() && pathname.getName().endsWith(".json")))) {
@@ -119,8 +124,9 @@ public final class FileDatabase extends Database<Path> {
                 return task;
             }
 
+            @Nonnull
             @Override
-            public Task<Boolean> updateIfAbsent(String identifier, JsonConfiguration newData) {
+            public Task<Boolean> updateIfAbsent(@Nonnull String identifier, @Nonnull JsonConfiguration newData) {
                 Task<Boolean> task = new DefaultTask<>();
                 Task.EXECUTOR.execute(() -> {
                     for (File file : Objects.requireNonNull(new File(FileDatabase.this.table + "/" + table).listFiles(pathname -> pathname.isFile() && pathname.getName().endsWith(".json")))) {
@@ -137,8 +143,9 @@ public final class FileDatabase extends Database<Path> {
                 return task;
             }
 
+            @Nonnull
             @Override
-            public Task<Void> remove(String key) {
+            public Task<Void> remove(@Nonnull String key) {
                 Task<Void> task = new DefaultTask<>();
                 Task.EXECUTOR.execute(() -> {
                     for (File file : Objects.requireNonNull(new File(FileDatabase.this.table + "/" + table).listFiles(pathname -> pathname.isFile() && pathname.getName().endsWith(".json")))) {
@@ -153,8 +160,9 @@ public final class FileDatabase extends Database<Path> {
                 return task;
             }
 
+            @Nonnull
             @Override
-            public Task<Void> removeIfAbsent(String identifier) {
+            public Task<Void> removeIfAbsent(@Nonnull String identifier) {
                 Task<Void> task = new DefaultTask<>();
                 Task.EXECUTOR.execute(() -> {
                     for (File file : Objects.requireNonNull(new File(FileDatabase.this.table + "/" + table).listFiles(pathname -> pathname.isFile() && pathname.getName().endsWith(".json")))) {
@@ -170,8 +178,9 @@ public final class FileDatabase extends Database<Path> {
                 return task;
             }
 
+            @Nonnull
             @Override
-            public Task<Boolean> contains(String key) {
+            public Task<Boolean> contains(@Nonnull String key) {
                 Task<Boolean> task = new DefaultTask<>();
                 Task.EXECUTOR.execute(() -> {
                     for (File file : Objects.requireNonNull(new File(FileDatabase.this.table + "/" + table).listFiles(pathname -> pathname.isFile() && pathname.getName().endsWith(".json")))) {
@@ -186,6 +195,7 @@ public final class FileDatabase extends Database<Path> {
                 return task;
             }
 
+            @Nonnull
             @Override
             public Task<Integer> size() {
                 Task<Integer> task = new DefaultTask<>();
@@ -196,6 +206,7 @@ public final class FileDatabase extends Database<Path> {
                 return task;
             }
 
+            @Nonnull
             @Override
             public String getName() {
                 return table;

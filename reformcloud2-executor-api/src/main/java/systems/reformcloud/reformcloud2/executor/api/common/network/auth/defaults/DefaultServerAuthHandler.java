@@ -11,6 +11,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packe
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.handler.PacketHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.function.DoubleFunction;
 
+import javax.annotation.Nonnull;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
@@ -28,21 +29,25 @@ public class DefaultServerAuthHandler implements ServerAuthHandler {
 
     private final DoubleFunction<Packet, String, Boolean> authHandler;
 
+    @Nonnull
     @Override
     public PacketHandler packetHandler() {
         return packetHandler;
     }
 
+    @Nonnull
     @Override
     public Consumer<PacketSender> onDisconnect() {
         return packetSenderConsumer;
     }
 
+    @Nonnull
     @Override
     public DoubleFunction<Packet, String, Boolean> function() {
         return authHandler;
     }
 
+    @Nonnull
     @Override
     public BiFunction<String, ChannelHandlerContext, PacketSender> onSuccess() {
         return (s, context) -> {
@@ -53,6 +58,7 @@ public class DefaultServerAuthHandler implements ServerAuthHandler {
         };
     }
 
+    @Nonnull
     @Override
     public Consumer<ChannelHandlerContext> onAuthFailure() {
         return NetworkUtil.DEFAULT_AUTH_FAILURE_HANDLER;

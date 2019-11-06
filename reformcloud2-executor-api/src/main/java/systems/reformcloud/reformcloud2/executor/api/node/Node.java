@@ -14,6 +14,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.handl
 import systems.reformcloud.reformcloud2.executor.api.common.network.server.NetworkServer;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.runtime.ReloadableRuntime;
 
+import javax.annotation.Nonnull;
 import java.net.InetSocketAddress;
 import java.util.function.Consumer;
 
@@ -43,11 +44,13 @@ public abstract class Node extends ExecutorAPI implements ReloadableRuntime {
 
             private PacketSender sender;
 
+            @Nonnull
             @Override
             public PacketHandler getPacketHandler() {
                 return Node.this.getPacketHandler();
             }
 
+            @Nonnull
             @Override
             public PacketSender sender() {
                 return sender;

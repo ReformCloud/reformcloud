@@ -1,5 +1,7 @@
 package systems.reformcloud.reformcloud2.executor.api.common.logger;
 
+import javax.annotation.Nonnull;
+
 public interface LoggerLineHandler {
 
     /**
@@ -8,7 +10,7 @@ public interface LoggerLineHandler {
      * @param line The current log line which got printed
      * @param base The logger base which printed the line
      */
-    default void handleLine(String line, LoggerBase base) {
+    default void handleLine(@Nonnull String line, @Nonnull LoggerBase base) {
     }
 
     /**
@@ -17,6 +19,6 @@ public interface LoggerLineHandler {
      * @param line The current log line which got printed
      * @param base The logger base which printed the line
      */
-    default void handleRaw(String line, LoggerBase base) {
+    default void handleRaw(@Nonnull String line, @Nonnull LoggerBase base) {
     }
 }

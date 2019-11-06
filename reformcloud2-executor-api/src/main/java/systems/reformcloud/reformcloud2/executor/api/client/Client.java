@@ -15,6 +15,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packe
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.handler.PacketHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.runtime.ReloadableRuntime;
 
+import javax.annotation.Nonnull;
 import java.net.InetSocketAddress;
 import java.util.Objects;
 
@@ -37,11 +38,13 @@ public abstract class Client extends ExternalAPIImplementation implements Reload
 
             private PacketSender packetSender;
 
+            @Nonnull
             @Override
             public PacketHandler getPacketHandler() {
                 return Client.this.packetHandler();
             }
 
+            @Nonnull
             @Override
             public PacketSender sender() {
                 return packetSender;

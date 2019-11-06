@@ -6,6 +6,8 @@ import systems.reformcloud.reformcloud2.executor.api.common.base.Conditions;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.gson.InternalJsonParser;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.system.SystemHelper;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.*;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
@@ -67,8 +69,9 @@ public final class JsonConfiguration implements Configurable<JsonConfiguration> 
 
     private JsonObject jsonObject = new JsonObject();
 
+    @Nonnull
     @Override
-    public JsonConfiguration add(String key, JsonConfiguration value) {
+    public JsonConfiguration add(@Nonnull String key, @Nullable JsonConfiguration value) {
         if (value == null) {
             jsonObject.add(key, JsonNull.INSTANCE);
             return this;
@@ -78,8 +81,9 @@ public final class JsonConfiguration implements Configurable<JsonConfiguration> 
         return this;
     }
 
+    @Nonnull
     @Override
-    public JsonConfiguration add(String key, Object value) {
+    public JsonConfiguration add(@Nonnull String key, @Nullable Object value) {
         if (value == null) {
             jsonObject.add(key, JsonNull.INSTANCE);
             return this;
@@ -89,88 +93,102 @@ public final class JsonConfiguration implements Configurable<JsonConfiguration> 
         return this;
     }
 
+    @Nonnull
     @Override
-    public JsonConfiguration add(String key, String value) {
+    public JsonConfiguration add(@Nonnull String key, @Nonnull String value) {
         this.jsonObject.addProperty(key, value);
         return this;
     }
 
+    @Nonnull
     @Override
-    public JsonConfiguration add(String key, Integer value) {
+    public JsonConfiguration add(@Nonnull String key, @Nonnull Integer value) {
         this.jsonObject.addProperty(key, value);
         return this;
     }
 
+    @Nonnull
     @Override
-    public JsonConfiguration add(String key, Long value) {
+    public JsonConfiguration add(@Nonnull String key, @Nonnull Long value) {
         this.jsonObject.addProperty(key, value);
         return this;
     }
 
+    @Nonnull
     @Override
-    public JsonConfiguration add(String key, Short value) {
+    public JsonConfiguration add(@Nonnull String key, @Nonnull Short value) {
         this.jsonObject.addProperty(key, value);
         return this;
     }
 
+    @Nonnull
     @Override
-    public JsonConfiguration add(String key, Byte value) {
+    public JsonConfiguration add(@Nonnull String key, @Nonnull Byte value) {
         this.jsonObject.addProperty(key, value);
         return this;
     }
 
+    @Nonnull
     @Override
-    public JsonConfiguration add(String key, Boolean value) {
+    public JsonConfiguration add(@Nonnull String key, @Nonnull Boolean value) {
         this.jsonObject.addProperty(key, value);
         return this;
     }
 
+    @Nonnull
     @Override
-    public JsonConfiguration remove(String key) {
+    public JsonConfiguration remove(@Nonnull String key) {
         this.jsonObject.remove(key);
         return this;
     }
 
+    @Nonnull
     @Override
-    public JsonConfiguration get(String key) {
+    public JsonConfiguration get(@Nonnull String key) {
         return getOrDefault(key, new JsonConfiguration());
     }
 
     @Override
-    public <T> T get(String key, TypeToken<T> type) {
+    public <T> T get(@Nonnull String key, @Nonnull TypeToken<T> type) {
         return getOrDefault(key, type.getType(), null);
     }
 
     @Override
-    public <T> T get(String key, Class<T> type) {
+    public <T> T get(@Nonnull String key, @Nonnull Class<T> type) {
         return getOrDefault(key, type, null);
     }
 
+    @Nonnull
     @Override
-    public String getString(String key) {
+    public String getString(@Nonnull String key) {
         return getOrDefault(key, "");
     }
 
+    @Nonnull
     @Override
     public Integer getInteger(String key) {
         return getOrDefault(key, -1);
     }
 
+    @Nonnull
     @Override
     public Long getLong(String key) {
         return getOrDefault(key, (long) -1);
     }
 
+    @Nonnull
     @Override
     public Short getShort(String key) {
         return getOrDefault(key, (short) -1);
     }
 
+    @Nonnull
     @Override
     public Byte getByte(String key) {
         return getOrDefault(key, (byte) -1);
     }
 
+    @Nonnull
     @Override
     public Boolean getBoolean(String key) {
         return getOrDefault(key, false);
@@ -379,6 +397,7 @@ public final class JsonConfiguration implements Configurable<JsonConfiguration> 
         write(path.toPath());
     }
 
+    @Nonnull
     @Override
     public String toPrettyString() {
         return GSON.get().toJson(jsonObject);

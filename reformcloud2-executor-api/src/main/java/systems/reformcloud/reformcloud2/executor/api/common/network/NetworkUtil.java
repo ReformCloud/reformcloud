@@ -25,6 +25,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Defau
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.handler.PacketHandler;
 
+import javax.annotation.Nonnull;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.Executor;
@@ -143,11 +144,13 @@ public final class NetworkUtil {
         return new NetworkChannelReader() {
             private PacketSender sender;
 
+            @Nonnull
             @Override
             public PacketHandler getPacketHandler() {
                 return packetHandler;
             }
 
+            @Nonnull
             @Override
             public PacketSender sender() {
                 return sender;

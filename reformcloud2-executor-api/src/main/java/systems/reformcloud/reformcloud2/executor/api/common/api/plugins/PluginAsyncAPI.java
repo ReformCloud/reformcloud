@@ -6,6 +6,8 @@ import systems.reformcloud.reformcloud2.executor.api.common.plugins.basic.Defaul
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
 import java.util.Collection;
 
 public interface PluginAsyncAPI extends PluginSyncAPI {
@@ -17,7 +19,9 @@ public interface PluginAsyncAPI extends PluginSyncAPI {
      * @param plugin The plugin which should be installed
      * @return A task which will be completed after the packet sent
      */
-    Task<Void> installPluginAsync(String process, InstallablePlugin plugin);
+    @Nonnull
+    @CheckReturnValue
+    Task<Void> installPluginAsync(@Nonnull String process, @Nonnull InstallablePlugin plugin);
 
     /**
      * Installs a plugin on a process
@@ -26,7 +30,9 @@ public interface PluginAsyncAPI extends PluginSyncAPI {
      * @param plugin The plugin which should be installed
      * @return A task which will be completed after the packet sent
      */
-    Task<Void> installPluginAsync(ProcessInformation process, InstallablePlugin plugin);
+    @Nonnull
+    @CheckReturnValue
+    Task<Void> installPluginAsync(@Nonnull ProcessInformation process, @Nonnull InstallablePlugin plugin);
 
     /**
      * Unloads a plugin on a process
@@ -35,7 +41,9 @@ public interface PluginAsyncAPI extends PluginSyncAPI {
      * @param plugin The plugin which should be unloaded
      * @return A task which will be completed after the packet sent
      */
-    Task<Void> unloadPluginAsync(String process, Plugin plugin);
+    @Nonnull
+    @CheckReturnValue
+    Task<Void> unloadPluginAsync(@Nonnull String process, @Nonnull Plugin plugin);
 
     /**
      * Unloads a plugin on a process
@@ -44,7 +52,9 @@ public interface PluginAsyncAPI extends PluginSyncAPI {
      * @param plugin The plugin which should be unloaded
      * @return A task which will be completed after the packet sent
      */
-    Task<Void> unloadPluginAsync(ProcessInformation process, Plugin plugin);
+    @Nonnull
+    @CheckReturnValue
+    Task<Void> unloadPluginAsync(@Nonnull ProcessInformation process, @Nonnull Plugin plugin);
 
     /**
      * Get an installed plugin on a process
@@ -53,7 +63,9 @@ public interface PluginAsyncAPI extends PluginSyncAPI {
      * @param name The name of the plugin
      * @return A task which will be completed with the installed plugin or {@code null} if the process is not installed
      */
-    Task<Plugin> getInstalledPluginAsync(String process, String name);
+    @Nonnull
+    @CheckReturnValue
+    Task<Plugin> getInstalledPluginAsync(@Nonnull String process, @Nonnull String name);
 
     /**
      * Get an installed plugin on a process
@@ -62,7 +74,9 @@ public interface PluginAsyncAPI extends PluginSyncAPI {
      * @param name The name of the plugin
      * @return A task which will be completed with the installed plugin or {@code null} if the process is not installed
      */
-    Task<Plugin> getInstalledPluginAsync(ProcessInformation process, String name);
+    @Nonnull
+    @CheckReturnValue
+    Task<Plugin> getInstalledPluginAsync(@Nonnull ProcessInformation process, @Nonnull String name);
 
     /**
      * Gets all installed plugins on a process by a specific author
@@ -71,7 +85,9 @@ public interface PluginAsyncAPI extends PluginSyncAPI {
      * @param author The author of the plugin
      * @return A task which will be completed with all plugins by the author
      */
-    Task<Collection<DefaultPlugin>> getPluginsAsync(String process, String author);
+    @Nonnull
+    @CheckReturnValue
+    Task<Collection<DefaultPlugin>> getPluginsAsync(@Nonnull String process, @Nonnull String author);
 
     /**
      * Gets all installed plugins on a process by a specific author
@@ -80,7 +96,9 @@ public interface PluginAsyncAPI extends PluginSyncAPI {
      * @param author The author of the plugin
      * @return A task which will be completed with all plugins by the author
      */
-    Task<Collection<DefaultPlugin>> getPluginsAsync(ProcessInformation process, String author);
+    @Nonnull
+    @CheckReturnValue
+    Task<Collection<DefaultPlugin>> getPluginsAsync(@Nonnull ProcessInformation process, @Nonnull String author);
 
     /**
      * Gets all installed plugins on a process
@@ -88,7 +106,9 @@ public interface PluginAsyncAPI extends PluginSyncAPI {
      * @param process The process where the plugins should be searched on
      * @return A task which will be completed with all plugins on the process
      */
-    Task<Collection<DefaultPlugin>> getPluginsAsync(String process);
+    @Nonnull
+    @CheckReturnValue
+    Task<Collection<DefaultPlugin>> getPluginsAsync(@Nonnull String process);
 
     /**
      * Gets all installed plugins on a process
@@ -96,5 +116,7 @@ public interface PluginAsyncAPI extends PluginSyncAPI {
      * @param processInformation The {@link ProcessInformation} of the process where the plugins should be searched on
      * @return A task which will be completed with all plugins on the process
      */
-    Task<Collection<DefaultPlugin>> getPluginsAsync(ProcessInformation processInformation);
+    @Nonnull
+    @CheckReturnValue
+    Task<Collection<DefaultPlugin>> getPluginsAsync(@Nonnull ProcessInformation processInformation);
 }

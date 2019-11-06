@@ -3,6 +3,8 @@ package systems.reformcloud.reformcloud2.executor.api.common.network.client;
 import systems.reformcloud.reformcloud2.executor.api.common.network.auth.Auth;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.NetworkChannelReader;
 
+import javax.annotation.Nonnull;
+
 public interface NetworkClient {
 
     /**
@@ -15,7 +17,12 @@ public interface NetworkClient {
      * @param channelReader The channel reader which should get used after the successful auth
      * @return If the connection to the server was successful
      */
-    boolean connect(String host, int port, Auth auth, NetworkChannelReader channelReader);
+    boolean connect(
+            @Nonnull String host,
+            int port,
+            @Nonnull Auth auth,
+            @Nonnull NetworkChannelReader channelReader
+    );
 
     /**
      * Disconnects all open connections

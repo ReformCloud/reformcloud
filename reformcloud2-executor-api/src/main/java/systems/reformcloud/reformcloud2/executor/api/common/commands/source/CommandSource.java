@@ -3,6 +3,8 @@ package systems.reformcloud.reformcloud2.executor.api.common.commands.source;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.manager.CommandManager;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.permission.PermissionHolder;
 
+import javax.annotation.Nonnull;
+
 public interface CommandSource extends PermissionHolder {
 
     /**
@@ -36,5 +38,6 @@ public interface CommandSource extends PermissionHolder {
     /**
      * @return The command manger of the source
      */
+    @Nonnull
     CommandManager commandManager();
 }

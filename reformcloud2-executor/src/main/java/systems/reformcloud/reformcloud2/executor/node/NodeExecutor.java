@@ -102,6 +102,8 @@ import systems.reformcloud.reformcloud2.executor.node.process.manager.LocalProce
 import systems.reformcloud.reformcloud2.executor.node.process.startup.LocalProcessQueue;
 import systems.reformcloud.reformcloud2.executor.node.process.watchdog.WatchdogThread;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.file.Paths;
@@ -278,6 +280,7 @@ public class NodeExecutor extends Node {
                         return result.get();
                     }
             ) {
+                @Nonnull
                 @Override
                 public BiFunction<String, ChannelHandlerContext, PacketSender> onSuccess() {
                     return (s, context) -> {
@@ -322,6 +325,7 @@ public class NodeExecutor extends Node {
                     };
                 }
 
+                @Nonnull
                 @Override
                 public Consumer<ChannelHandlerContext> onAuthFailure() {
                     return context -> {
@@ -458,6 +462,7 @@ public class NodeExecutor extends Node {
         return localAutoStartupHandler;
     }
 
+    @Nonnull
     public EventManager getEventManager() {
         return eventManager;
     }
@@ -531,39 +536,45 @@ public class NodeExecutor extends Node {
         return commandManager;
     }
 
+    @Nonnull
     @Override
     public PacketHandler getPacketHandler() {
         return packetHandler;
     }
 
+    @Nonnull
     @Override
-    public Task<Boolean> loadApplicationAsync(InstallableApplication application) {
+    public Task<Boolean> loadApplicationAsync(@Nonnull InstallableApplication application) {
         Task<Boolean> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> task.complete(applicationLoader.doSpecificApplicationInstall(application)));
         return task;
     }
 
+    @Nonnull
     @Override
-    public Task<Boolean> unloadApplicationAsync(LoadedApplication application) {
+    public Task<Boolean> unloadApplicationAsync(@Nonnull LoadedApplication application) {
         Task<Boolean> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> task.complete(applicationLoader.doSpecificApplicationUninstall(application)));
         return task;
     }
 
+    @Nonnull
     @Override
-    public Task<Boolean> unloadApplicationAsync(String application) {
+    public Task<Boolean> unloadApplicationAsync(@Nonnull String application) {
         Task<Boolean> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> task.complete(applicationLoader.doSpecificApplicationUninstall(application)));
         return task;
     }
 
+    @Nonnull
     @Override
-    public Task<LoadedApplication> getApplicationAsync(String name) {
+    public Task<LoadedApplication> getApplicationAsync(@Nonnull String name) {
         Task<LoadedApplication> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> task.complete(applicationLoader.getApplication(name)));
         return task;
     }
 
+    @Nonnull
     @Override
     public Task<List<LoadedApplication>> getApplicationsAsync() {
         Task<List<LoadedApplication>> task = new DefaultTask<>();
@@ -572,22 +583,22 @@ public class NodeExecutor extends Node {
     }
 
     @Override
-    public boolean loadApplication(InstallableApplication application) {
+    public boolean loadApplication(@Nonnull InstallableApplication application) {
         return applicationLoader.doSpecificApplicationInstall(application);
     }
 
     @Override
-    public boolean unloadApplication(LoadedApplication application) {
+    public boolean unloadApplication(@Nonnull LoadedApplication application) {
         return applicationLoader.doSpecificApplicationUninstall(application);
     }
 
     @Override
-    public boolean unloadApplication(String application) {
+    public boolean unloadApplication(@Nonnull String application) {
         return applicationLoader.doSpecificApplicationUninstall(application);
     }
 
     @Override
-    public LoadedApplication getApplication(String name) {
+    public LoadedApplication getApplication(@Nonnull String name) {
         return applicationLoader.getApplication(name);
     }
 
@@ -596,6 +607,7 @@ public class NodeExecutor extends Node {
         return applicationLoader.getApplications();
     }
 
+    @Nonnull
     @Override
     public Task<Boolean> isClientConnectedAsync(String name) {
         Task<Boolean> task = new DefaultTask<>();
@@ -603,11 +615,13 @@ public class NodeExecutor extends Node {
         return task;
     }
 
+    @Nonnull
     @Override
     public Task<String> getClientStartHostAsync(String name) {
         return null;
     }
 
+    @Nonnull
     @Override
     public Task<Integer> getMaxMemoryAsync(String name) {
         Task<Integer> task = new DefaultTask<>();
@@ -615,28 +629,30 @@ public class NodeExecutor extends Node {
         return task;
     }
 
+    @Nonnull
     @Override
     public Task<Integer> getMaxProcessesAsync(String name) {
         return null;
     }
 
+    @Nonnull
     @Override
     public Task<ClientRuntimeInformation> getClientInformationAsync(String name) {
         return null;
     }
 
     @Override
-    public boolean isClientConnected(String name) {
+    public boolean isClientConnected(@Nonnull String name) {
         return this.nodeNetworkManager.getCluster().getNode(name) != null;
     }
 
     @Override
-    public String getClientStartHost(String name) {
+    public String getClientStartHost(@Nonnull String name) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public int getMaxMemory(String name) {
+    public int getMaxMemory(@Nonnull String name) {
         if (!isClientConnected(name)) {
             return -1;
         }
@@ -645,17 +661,18 @@ public class NodeExecutor extends Node {
     }
 
     @Override
-    public int getMaxProcesses(String name) {
+    public int getMaxProcesses(@Nonnull String name) {
         throw new UnsupportedOperationException("There is no config option for max node processes");
     }
 
     @Override
-    public ClientRuntimeInformation getClientInformation(String name) {
+    public ClientRuntimeInformation getClientInformation(@Nonnull String name) {
         return null;
     }
 
+    @Nonnull
     @Override
-    public Task<Void> sendColouredLineAsync(String line) throws IllegalAccessException {
+    public Task<Void> sendColouredLineAsync(@Nonnull String line) throws IllegalAccessException {
         Task<Void> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             System.out.println(line);
@@ -664,8 +681,9 @@ public class NodeExecutor extends Node {
         return task;
     }
 
+    @Nonnull
     @Override
-    public Task<Void> sendRawLineAsync(String line) {
+    public Task<Void> sendRawLineAsync(@Nonnull String line) {
         Task<Void> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             System.out.println(line);
@@ -674,54 +692,58 @@ public class NodeExecutor extends Node {
         return task;
     }
 
+    @Nonnull
     @Override
-    public Task<String> dispatchCommandAndGetResultAsync(String commandLine) {
+    public Task<String> dispatchCommandAndGetResultAsync(@Nonnull String commandLine) {
         Task<String> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> this.commandManager.dispatchCommand(console, AllowedCommandSources.ALL, commandLine, task::complete));
         return task;
     }
 
+    @Nonnull
     @Override
-    public Task<Command> getCommandAsync(String name) {
+    public Task<Command> getCommandAsync(@Nonnull String name) {
         Task<Command> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> task.complete(commandManager.getCommand(name)));
         return task;
     }
 
+    @Nonnull
     @Override
-    public Task<Boolean> isCommandRegisteredAsync(String name) {
+    public Task<Boolean> isCommandRegisteredAsync(@Nonnull String name) {
         Task<Boolean> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> task.complete(commandManager.getCommand(name) != null));
         return task;
     }
 
     @Override
-    public void sendColouredLine(String line) throws IllegalAccessException {
+    public void sendColouredLine(@Nonnull String line) throws IllegalAccessException {
         sendColouredLineAsync(line).awaitUninterruptedly();
     }
 
     @Override
-    public void sendRawLine(String line) {
+    public void sendRawLine(@Nonnull String line) {
         sendRawLineAsync(line).awaitUninterruptedly();
     }
 
     @Override
-    public String dispatchCommandAndGetResult(String commandLine) {
+    public String dispatchCommandAndGetResult(@Nonnull String commandLine) {
         return dispatchCommandAndGetResultAsync(commandLine).getUninterruptedly();
     }
 
     @Override
-    public Command getCommand(String name) {
+    public Command getCommand(@Nonnull String name) {
         return getCommandAsync(name).getUninterruptedly();
     }
 
     @Override
-    public boolean isCommandRegistered(String name) {
+    public boolean isCommandRegistered(@Nonnull String name) {
         return isCommandRegisteredAsync(name).getUninterruptedly();
     }
 
+    @Nonnull
     @Override
-    public Task<JsonConfiguration> findAsync(String table, String key, String identifier) {
+    public Task<JsonConfiguration> findAsync(@Nonnull String table, @Nonnull String key, String identifier) {
         Task<JsonConfiguration> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             JsonConfiguration jsonConfiguration = this.database.createForTable(table).find(key).getUninterruptedly();
@@ -734,15 +756,17 @@ public class NodeExecutor extends Node {
         return task;
     }
 
+    @Nonnull
     @Override
-    public <T> Task<T> findAsync(String table, String key, String identifier, Function<JsonConfiguration, T> function) {
+    public <T> Task<T> findAsync(@Nonnull String table, @Nonnull String key, String identifier, @Nonnull Function<JsonConfiguration, T> function) {
         Task<T> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> task.complete(function.apply(find(table, key, identifier))));
         return task;
     }
 
+    @Nonnull
     @Override
-    public Task<Void> insertAsync(String table, String key, String identifier, JsonConfiguration data) {
+    public Task<Void> insertAsync(@Nonnull String table, @Nonnull String key, String identifier, @Nonnull JsonConfiguration data) {
         Task<Void> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             this.database.createForTable(table).insert(key, identifier, data);
@@ -751,116 +775,126 @@ public class NodeExecutor extends Node {
         return task;
     }
 
+    @Nonnull
     @Override
-    public Task<Boolean> updateAsync(String table, String key, JsonConfiguration newData) {
+    public Task<Boolean> updateAsync(@Nonnull String table, @Nonnull String key, @Nonnull JsonConfiguration newData) {
         Task<Boolean> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> task.complete(this.database.createForTable(table).update(key, newData).getUninterruptedly()));
         return task;
     }
 
+    @Nonnull
     @Override
-    public Task<Boolean> updateIfAbsentAsync(String table, String identifier, JsonConfiguration newData) {
+    public Task<Boolean> updateIfAbsentAsync(@Nonnull String table, @Nonnull String identifier, @Nonnull JsonConfiguration newData) {
         Task<Boolean> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> task.complete(this.database.createForTable(table).updateIfAbsent(identifier, newData).getUninterruptedly()));
         return task;
     }
 
+    @Nonnull
     @Override
-    public Task<Void> removeAsync(String table, String key) {
+    public Task<Void> removeAsync(@Nonnull String table, @Nonnull String key) {
         return database.createForTable(table).remove(key);
     }
 
+    @Nonnull
     @Override
-    public Task<Void> removeIfAbsentAsync(String table, String identifier) {
+    public Task<Void> removeIfAbsentAsync(@Nonnull String table, @Nonnull String identifier) {
         return database.createForTable(table).removeIfAbsent(identifier);
     }
 
+    @Nonnull
     @Override
-    public Task<Boolean> createDatabaseAsync(String name) {
+    public Task<Boolean> createDatabaseAsync(@Nonnull String name) {
         Task<Boolean> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> task.complete(database.createDatabase(name)));
         return task;
     }
 
+    @Nonnull
     @Override
-    public Task<Boolean> deleteDatabaseAsync(String name) {
+    public Task<Boolean> deleteDatabaseAsync(@Nonnull String name) {
         Task<Boolean> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> task.complete(database.deleteDatabase(name)));
         return task;
     }
 
+    @Nonnull
     @Override
-    public Task<Boolean> containsAsync(String table, String key) {
+    public Task<Boolean> containsAsync(@Nonnull String table, @Nonnull String key) {
         return database.createForTable(table).contains(key);
     }
 
+    @Nonnull
     @Override
-    public Task<Integer> sizeAsync(String table) {
+    public Task<Integer> sizeAsync(@Nonnull String table) {
         return database.createForTable(table).size();
     }
 
     @Override
-    public JsonConfiguration find(String table, String key, String identifier) {
+    public JsonConfiguration find(@Nonnull String table, @Nonnull String key, String identifier) {
         return findAsync(table, key, identifier).getUninterruptedly();
     }
 
     @Override
-    public <T> T find(String table, String key, String identifier, Function<JsonConfiguration, T> function) {
+    public <T> T find(@Nonnull String table, @Nonnull String key, String identifier, @Nonnull Function<JsonConfiguration, T> function) {
         return findAsync(table, key, identifier, function).getUninterruptedly();
     }
 
     @Override
-    public void insert(String table, String key, String identifier, JsonConfiguration data) {
+    public void insert(@Nonnull String table, @Nonnull String key, String identifier, @Nonnull JsonConfiguration data) {
         insertAsync(table, key, identifier, data).awaitUninterruptedly();
     }
 
     @Override
-    public boolean update(String table, String key, JsonConfiguration newData) {
+    public boolean update(@Nonnull String table, @Nonnull String key, @Nonnull JsonConfiguration newData) {
         return updateAsync(table, key, newData).getUninterruptedly();
     }
 
     @Override
-    public boolean updateIfAbsent(String table, String identifier, JsonConfiguration newData) {
+    public boolean updateIfAbsent(@Nonnull String table, @Nonnull String identifier, @Nonnull JsonConfiguration newData) {
         return updateIfAbsentAsync(table, identifier, newData).getUninterruptedly();
     }
 
     @Override
-    public void remove(String table, String key) {
+    public void remove(@Nonnull String table, @Nonnull String key) {
         removeAsync(table, key).awaitUninterruptedly();
     }
 
     @Override
-    public void removeIfAbsent(String table, String identifier) {
+    public void removeIfAbsent(@Nonnull String table, @Nonnull String identifier) {
         removeIfAbsentAsync(table, identifier).awaitUninterruptedly();
     }
 
     @Override
-    public boolean createDatabase(String name) {
+    public boolean createDatabase(@Nonnull String name) {
         return createDatabaseAsync(name).getUninterruptedly();
     }
 
     @Override
-    public boolean deleteDatabase(String name) {
+    public boolean deleteDatabase(@Nonnull String name) {
         return deleteDatabaseAsync(name).getUninterruptedly();
     }
 
     @Override
-    public boolean contains(String table, String key) {
+    public boolean contains(@Nonnull String table, @Nonnull String key) {
         return containsAsync(table, key).getUninterruptedly();
     }
 
     @Override
-    public int size(String table) {
+    public int size(@Nonnull String table) {
         return sizeAsync(table).getUninterruptedly();
     }
 
+    @Nonnull
     @Override
-    public Task<MainGroup> createMainGroupAsync(String name) {
+    public Task<MainGroup> createMainGroupAsync(@Nonnull String name) {
         return createMainGroupAsync(name, new ArrayList<>());
     }
 
+    @Nonnull
     @Override
-    public Task<MainGroup> createMainGroupAsync(String name, List<String> subgroups) {
+    public Task<MainGroup> createMainGroupAsync(@Nonnull String name, @Nonnull List<String> subgroups) {
         Task<MainGroup> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             if (this.clusterSyncManager.existsMainGroup(name)) {
@@ -875,13 +909,15 @@ public class NodeExecutor extends Node {
         return task;
     }
 
+    @Nonnull
     @Override
-    public Task<ProcessGroup> createProcessGroupAsync(String name) {
+    public Task<ProcessGroup> createProcessGroupAsync(@Nonnull String name) {
         return createProcessGroupAsync(name, null);
     }
 
+    @Nonnull
     @Override
-    public Task<ProcessGroup> createProcessGroupAsync(String name, String parent) {
+    public Task<ProcessGroup> createProcessGroupAsync(@Nonnull String name, @Nullable String parent) {
         return createProcessGroupAsync(name, parent, Collections.singletonList(
                 new Template(0, "default", false, FileBackend.NAME,"#", new RuntimeConfiguration(
                         512, new ArrayList<>(), new HashMap<>()
@@ -889,28 +925,32 @@ public class NodeExecutor extends Node {
         ));
     }
 
+    @Nonnull
     @Override
-    public Task<ProcessGroup> createProcessGroupAsync(String name, String parent, List<Template> templates) {
+    public Task<ProcessGroup> createProcessGroupAsync(@Nonnull String name, @Nullable String parent, @Nonnull List<Template> templates) {
         return createProcessGroupAsync(name, parent, templates, new StartupConfiguration(
                 -1, 1, 1, 41000, StartupEnvironment.JAVA_RUNTIME, true, new ArrayList<>()
         ));
     }
 
+    @Nonnull
     @Override
-    public Task<ProcessGroup> createProcessGroupAsync(String name, String parent, List<Template> templates, StartupConfiguration startupConfiguration) {
+    public Task<ProcessGroup> createProcessGroupAsync(@Nonnull String name, String parent, @Nonnull List<Template> templates, @Nonnull StartupConfiguration startupConfiguration) {
         return createProcessGroupAsync(name, parent, templates, startupConfiguration, new PlayerAccessConfiguration(
                 false, "reformcloud.join.maintenance", false,
                 null, true, true, true, 50
         ));
     }
 
+    @Nonnull
     @Override
-    public Task<ProcessGroup> createProcessGroupAsync(String name, String parent, List<Template> templates, StartupConfiguration startupConfiguration, PlayerAccessConfiguration playerAccessConfiguration) {
+    public Task<ProcessGroup> createProcessGroupAsync(@Nonnull String name, String parent, @Nonnull List<Template> templates, @Nonnull StartupConfiguration startupConfiguration, @Nonnull PlayerAccessConfiguration playerAccessConfiguration) {
         return createProcessGroupAsync(name, parent, templates, startupConfiguration, playerAccessConfiguration, false);
     }
 
+    @Nonnull
     @Override
-    public Task<ProcessGroup> createProcessGroupAsync(String name, String parent, List<Template> templates, StartupConfiguration startupConfiguration, PlayerAccessConfiguration playerAccessConfiguration, boolean staticGroup) {
+    public Task<ProcessGroup> createProcessGroupAsync(@Nonnull String name, String parent, @Nonnull List<Template> templates, @Nonnull StartupConfiguration startupConfiguration, @Nonnull PlayerAccessConfiguration playerAccessConfiguration, boolean staticGroup) {
         Task<ProcessGroup> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             ProcessGroup processGroup = new ProcessGroup(
@@ -927,8 +967,9 @@ public class NodeExecutor extends Node {
         return task;
     }
 
+    @Nonnull
     @Override
-    public Task<ProcessGroup> createProcessGroupAsync(ProcessGroup processGroup) {
+    public Task<ProcessGroup> createProcessGroupAsync(@Nonnull ProcessGroup processGroup) {
         Task<ProcessGroup> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             if (clusterSyncManager.existsProcessGroup(processGroup.getName())) {
@@ -942,8 +983,9 @@ public class NodeExecutor extends Node {
         return task;
     }
 
+    @Nonnull
     @Override
-    public Task<MainGroup> updateMainGroupAsync(MainGroup mainGroup) {
+    public Task<MainGroup> updateMainGroupAsync(@Nonnull MainGroup mainGroup) {
         Task<MainGroup> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             this.clusterSyncManager.syncMainGroupUpdate(mainGroup);
@@ -952,8 +994,9 @@ public class NodeExecutor extends Node {
         return task;
     }
 
+    @Nonnull
     @Override
-    public Task<ProcessGroup> updateProcessGroupAsync(ProcessGroup processGroup) {
+    public Task<ProcessGroup> updateProcessGroupAsync(@Nonnull ProcessGroup processGroup) {
         Task<ProcessGroup> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             this.clusterSyncManager.syncProcessGroupUpdate(processGroup);
@@ -962,22 +1005,25 @@ public class NodeExecutor extends Node {
         return task;
     }
 
+    @Nonnull
     @Override
-    public Task<MainGroup> getMainGroupAsync(String name) {
+    public Task<MainGroup> getMainGroupAsync(@Nonnull String name) {
         Task<MainGroup> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> task.complete(Links.filterToReference(clusterSyncManager.getMainGroups(), e -> e.getName().equals(name)).orNothing()));
         return task;
     }
 
+    @Nonnull
     @Override
-    public Task<ProcessGroup> getProcessGroupAsync(String name) {
+    public Task<ProcessGroup> getProcessGroupAsync(@Nonnull String name) {
         Task<ProcessGroup> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> task.complete(Links.filterToReference(clusterSyncManager.getProcessGroups(), e -> e.getName().equals(name)).orNothing()));
         return task;
     }
 
+    @Nonnull
     @Override
-    public Task<Void> deleteMainGroupAsync(String name) {
+    public Task<Void> deleteMainGroupAsync(@Nonnull String name) {
         Task<Void> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             this.clusterSyncManager.syncMainGroupDelete(name);
@@ -986,8 +1032,9 @@ public class NodeExecutor extends Node {
         return task;
     }
 
+    @Nonnull
     @Override
-    public Task<Void> deleteProcessGroupAsync(String name) {
+    public Task<Void> deleteProcessGroupAsync(@Nonnull String name) {
         Task<Void> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             this.clusterSyncManager.syncProcessGroupDelete(name);
@@ -996,6 +1043,7 @@ public class NodeExecutor extends Node {
         return task;
     }
 
+    @Nonnull
     @Override
     public Task<List<MainGroup>> getMainGroupsAsync() {
         Task<List<MainGroup>> task = new DefaultTask<>();
@@ -1003,6 +1051,7 @@ public class NodeExecutor extends Node {
         return task;
     }
 
+    @Nonnull
     @Override
     public Task<List<ProcessGroup>> getProcessGroupsAsync() {
         Task<List<ProcessGroup>> task = new DefaultTask<>();
@@ -1010,93 +1059,109 @@ public class NodeExecutor extends Node {
         return task;
     }
 
+    @Nonnull
     @Override
-    public MainGroup createMainGroup(String name) {
+    public MainGroup createMainGroup(@Nonnull String name) {
         return createMainGroupAsync(name).getUninterruptedly();
     }
 
+    @Nonnull
     @Override
-    public MainGroup createMainGroup(String name, List<String> subgroups) {
+    public MainGroup createMainGroup(@Nonnull String name, @Nonnull List<String> subgroups) {
         return createMainGroupAsync(name, subgroups).getUninterruptedly();
     }
 
+    @Nonnull
     @Override
-    public ProcessGroup createProcessGroup(String name) {
+    public ProcessGroup createProcessGroup(@Nonnull String name) {
         return createProcessGroupAsync(name).getUninterruptedly();
     }
 
+    @Nonnull
     @Override
-    public ProcessGroup createProcessGroup(String name, String parent) {
+    public ProcessGroup createProcessGroup(@Nonnull String name, @Nonnull String parent) {
         return createProcessGroupAsync(name, parent).getUninterruptedly();
     }
 
+    @Nonnull
     @Override
-    public ProcessGroup createProcessGroup(String name, String parent, List<Template> templates) {
+    public ProcessGroup createProcessGroup(@Nonnull String name, @Nonnull String parent, @Nonnull List<Template> templates) {
         return createProcessGroupAsync(name, parent, templates).getUninterruptedly();
     }
 
+    @Nonnull
     @Override
-    public ProcessGroup createProcessGroup(String name, String parent, List<Template> templates, StartupConfiguration startupConfiguration) {
+    public ProcessGroup createProcessGroup(@Nonnull String name, String parent, @Nonnull List<Template> templates, @Nonnull StartupConfiguration startupConfiguration) {
         return createProcessGroupAsync(name, parent, templates, startupConfiguration).getUninterruptedly();
     }
 
+    @Nonnull
     @Override
-    public ProcessGroup createProcessGroup(String name, String parent, List<Template> templates, StartupConfiguration startupConfiguration, PlayerAccessConfiguration playerAccessConfiguration) {
+    public ProcessGroup createProcessGroup(@Nonnull String name, String parent, @Nonnull List<Template> templates, @Nonnull StartupConfiguration startupConfiguration, @Nonnull PlayerAccessConfiguration playerAccessConfiguration) {
         return createProcessGroupAsync(name, parent, templates, startupConfiguration, playerAccessConfiguration).getUninterruptedly();
     }
 
+    @Nonnull
     @Override
-    public ProcessGroup createProcessGroup(String name, String parent, List<Template> templates, StartupConfiguration startupConfiguration, PlayerAccessConfiguration playerAccessConfiguration, boolean staticGroup) {
+    public ProcessGroup createProcessGroup(@Nonnull String name, String parent, @Nonnull List<Template> templates, @Nonnull StartupConfiguration startupConfiguration, @Nonnull PlayerAccessConfiguration playerAccessConfiguration, boolean staticGroup) {
         return createProcessGroupAsync(name, parent, templates, startupConfiguration, playerAccessConfiguration, staticGroup).getUninterruptedly();
     }
 
+    @Nonnull
     @Override
-    public ProcessGroup createProcessGroup(ProcessGroup processGroup) {
+    public ProcessGroup createProcessGroup(@Nonnull ProcessGroup processGroup) {
         return createProcessGroupAsync(processGroup).getUninterruptedly();
     }
 
+    @Nonnull
     @Override
-    public MainGroup updateMainGroup(MainGroup mainGroup) {
+    public MainGroup updateMainGroup(@Nonnull MainGroup mainGroup) {
         return updateMainGroupAsync(mainGroup).getUninterruptedly();
     }
 
+    @Nonnull
     @Override
-    public ProcessGroup updateProcessGroup(ProcessGroup processGroup) {
+    public ProcessGroup updateProcessGroup(@Nonnull ProcessGroup processGroup) {
         return updateProcessGroupAsync(processGroup).getUninterruptedly();
     }
 
+    @Nonnull
     @Override
-    public MainGroup getMainGroup(String name) {
+    public MainGroup getMainGroup(@Nonnull String name) {
         return getMainGroupAsync(name).getUninterruptedly();
     }
 
+    @Nonnull
     @Override
-    public ProcessGroup getProcessGroup(String name) {
+    public ProcessGroup getProcessGroup(@Nonnull String name) {
         return getProcessGroupAsync(name).getUninterruptedly();
     }
 
     @Override
-    public void deleteMainGroup(String name) {
+    public void deleteMainGroup(@Nonnull String name) {
         deleteMainGroupAsync(name).awaitUninterruptedly();
     }
 
     @Override
-    public void deleteProcessGroup(String name) {
+    public void deleteProcessGroup(@Nonnull String name) {
         deleteProcessGroupAsync(name).awaitUninterruptedly();
     }
 
+    @Nonnull
     @Override
     public List<MainGroup> getMainGroups() {
         return getMainGroupsAsync().getUninterruptedly();
     }
 
+    @Nonnull
     @Override
     public List<ProcessGroup> getProcessGroups() {
         return getProcessGroupsAsync().getUninterruptedly();
     }
 
+    @Nonnull
     @Override
-    public Task<Void> sendMessageAsync(UUID player, String message) {
+    public Task<Void> sendMessageAsync(@Nonnull UUID player, @Nonnull String message) {
         Task<Void> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             ProcessInformation processInformation = this.getPlayerOnProxy(player);
@@ -1120,8 +1185,9 @@ public class NodeExecutor extends Node {
         return task;
     }
 
+    @Nonnull
     @Override
-    public Task<Void> kickPlayerAsync(UUID player, String message) {
+    public Task<Void> kickPlayerAsync(@Nonnull UUID player, @Nonnull String message) {
         Task<Void> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             ProcessInformation processInformation = this.getPlayerOnProxy(player);
@@ -1145,8 +1211,9 @@ public class NodeExecutor extends Node {
         return task;
     }
 
+    @Nonnull
     @Override
-    public Task<Void> kickPlayerFromServerAsync(UUID player, String message) {
+    public Task<Void> kickPlayerFromServerAsync(@Nonnull UUID player, @Nonnull String message) {
         Task<Void> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             ProcessInformation processInformation = this.getPlayerOnServer(player);
@@ -1170,8 +1237,9 @@ public class NodeExecutor extends Node {
         return task;
     }
 
+    @Nonnull
     @Override
-    public Task<Void> playSoundAsync(UUID player, String sound, float f1, float f2) {
+    public Task<Void> playSoundAsync(@Nonnull UUID player, @Nonnull String sound, float f1, float f2) {
         Task<Void> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             ProcessInformation processInformation = this.getPlayerOnServer(player);
@@ -1195,8 +1263,9 @@ public class NodeExecutor extends Node {
         return task;
     }
 
+    @Nonnull
     @Override
-    public Task<Void> sendTitleAsync(UUID player, String title, String subTitle, int fadeIn, int stay, int fadeOut) {
+    public Task<Void> sendTitleAsync(@Nonnull UUID player, @Nonnull String title, @Nonnull String subTitle, int fadeIn, int stay, int fadeOut) {
         Task<Void> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             ProcessInformation processInformation = this.getPlayerOnProxy(player);
@@ -1220,8 +1289,9 @@ public class NodeExecutor extends Node {
         return task;
     }
 
+    @Nonnull
     @Override
-    public Task<Void> playEffectAsync(UUID player, String entityEffect) {
+    public Task<Void> playEffectAsync(@Nonnull UUID player, @Nonnull String entityEffect) {
         Task<Void> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             ProcessInformation processInformation = this.getPlayerOnServer(player);
@@ -1245,8 +1315,9 @@ public class NodeExecutor extends Node {
         return task;
     }
 
+    @Nonnull
     @Override
-    public <T> Task<Void> playEffectAsync(UUID player, String effect, T data) {
+    public <T> Task<Void> playEffectAsync(@Nonnull UUID player, @Nonnull String effect, T data) {
         Task<Void> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             ProcessInformation processInformation = this.getPlayerOnServer(player);
@@ -1270,8 +1341,9 @@ public class NodeExecutor extends Node {
         return task;
     }
 
+    @Nonnull
     @Override
-    public Task<Void> respawnAsync(UUID player) {
+    public Task<Void> respawnAsync(@Nonnull UUID player) {
         Task<Void> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             ProcessInformation processInformation = this.getPlayerOnServer(player);
@@ -1295,8 +1367,9 @@ public class NodeExecutor extends Node {
         return task;
     }
 
+    @Nonnull
     @Override
-    public Task<Void> teleportAsync(UUID player, String world, double x, double y, double z, float yaw, float pitch) {
+    public Task<Void> teleportAsync(@Nonnull UUID player, @Nonnull String world, double x, double y, double z, float yaw, float pitch) {
         Task<Void> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             ProcessInformation processInformation = this.getPlayerOnServer(player);
@@ -1320,8 +1393,9 @@ public class NodeExecutor extends Node {
         return task;
     }
 
+    @Nonnull
     @Override
-    public Task<Void> connectAsync(UUID player, String server) {
+    public Task<Void> connectAsync(@Nonnull UUID player, @Nonnull String server) {
         Task<Void> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             ProcessInformation processInformation = this.getPlayerOnProxy(player);
@@ -1345,13 +1419,15 @@ public class NodeExecutor extends Node {
         return task;
     }
 
+    @Nonnull
     @Override
-    public Task<Void> connectAsync(UUID player, ProcessInformation server) {
+    public Task<Void> connectAsync(@Nonnull UUID player, @Nonnull ProcessInformation server) {
         return connectAsync(player, server.getName());
     }
 
+    @Nonnull
     @Override
-    public Task<Void> connectAsync(UUID player, UUID target) {
+    public Task<Void> connectAsync(@Nonnull UUID player, @Nonnull UUID target) {
         Task<Void> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             ProcessInformation targetServer = getPlayerOnServer(target);
@@ -1364,8 +1440,9 @@ public class NodeExecutor extends Node {
         return task;
     }
 
+    @Nonnull
     @Override
-    public Task<Void> setResourcePackAsync(UUID player, String pack) {
+    public Task<Void> setResourcePackAsync(@Nonnull UUID player, @Nonnull String pack) {
         Task<Void> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             ProcessInformation processInformation = this.getPlayerOnServer(player);
@@ -1390,72 +1467,73 @@ public class NodeExecutor extends Node {
     }
 
     @Override
-    public void sendMessage(UUID player, String message) {
+    public void sendMessage(@Nonnull UUID player, @Nonnull String message) {
         sendMessageAsync(player, message).awaitUninterruptedly();
     }
 
     @Override
-    public void kickPlayer(UUID player, String message) {
+    public void kickPlayer(@Nonnull UUID player, @Nonnull String message) {
         kickPlayerAsync(player, message).awaitUninterruptedly();
     }
 
     @Override
-    public void kickPlayerFromServer(UUID player, String message) {
+    public void kickPlayerFromServer(@Nonnull UUID player, @Nonnull String message) {
         kickPlayerFromServerAsync(player, message).awaitUninterruptedly();
     }
 
     @Override
-    public void playSound(UUID player, String sound, float f1, float f2) {
+    public void playSound(@Nonnull UUID player, @Nonnull String sound, float f1, float f2) {
         playSoundAsync(player, sound, f1, f2).awaitUninterruptedly();
     }
 
     @Override
-    public void sendTitle(UUID player, String title, String subTitle, int fadeIn, int stay, int fadeOut) {
+    public void sendTitle(@Nonnull UUID player, @Nonnull String title, @Nonnull String subTitle, int fadeIn, int stay, int fadeOut) {
         sendTitleAsync(player, title, subTitle, fadeIn, stay, fadeOut).awaitUninterruptedly();
     }
 
     @Override
-    public void playEffect(UUID player, String entityEffect) {
+    public void playEffect(@Nonnull UUID player, @Nonnull String entityEffect) {
         playEffectAsync(player, entityEffect).awaitUninterruptedly();
     }
 
     @Override
-    public <T> void playEffect(UUID player, String effect, T data) {
+    public <T> void playEffect(@Nonnull UUID player, @Nonnull String effect, T data) {
         playEffectAsync(player, effect, data).awaitUninterruptedly();
     }
 
     @Override
-    public void respawn(UUID player) {
+    public void respawn(@Nonnull UUID player) {
         respawnAsync(player).awaitUninterruptedly();
     }
 
     @Override
-    public void teleport(UUID player, String world, double x, double y, double z, float yaw, float pitch) {
+    public void teleport(@Nonnull UUID player, @Nonnull String world, double x, double y, double z, float yaw, float pitch) {
         teleportAsync(player, world, x, y, z, yaw, pitch).awaitUninterruptedly();
     }
 
     @Override
-    public void connect(UUID player, String server) {
+    public void connect(@Nonnull UUID player, @Nonnull String server) {
         connectAsync(player, server).awaitUninterruptedly();
     }
 
     @Override
-    public void connect(UUID player, ProcessInformation server) {
+    public void connect(@Nonnull UUID player, @Nonnull ProcessInformation server) {
         connectAsync(player, server).awaitUninterruptedly();
     }
 
     @Override
-    public void connect(UUID player, UUID target) {
+    public void connect(@Nonnull UUID player, @Nonnull UUID target) {
         connectAsync(player, target).awaitUninterruptedly();
     }
 
     @Override
-    public void setResourcePack(UUID player, String pack) {
+    public void setResourcePack(@Nonnull UUID player, @Nonnull String pack) {
         setResourcePackAsync(player, pack).awaitUninterruptedly();
     }
 
+    @Nonnull
     @Override
-    public Task<Void> installPluginAsync(String process, InstallablePlugin plugin) {
+    public Task<Void> installPluginAsync(@Nonnull String process, @Nonnull InstallablePlugin plugin) {
         Task<Void> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             ProcessInformation information = this.nodeNetworkManager.getNodeProcessHelper().getClusterProcess(process);
@@ -1469,8 +1547,9 @@ public class NodeExecutor extends Node {
         return task;
     }
 
+    @Nonnull
     @Override
-    public Task<Void> installPluginAsync(ProcessInformation process, InstallablePlugin plugin) {
+    public Task<Void> installPluginAsync(@Nonnull ProcessInformation process, @Nonnull InstallablePlugin plugin) {
         Task<Void> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             if (this.nodeNetworkManager.getCluster().getSelfNode().getName().equals(process.getParent())) {
@@ -1498,8 +1577,9 @@ public class NodeExecutor extends Node {
         return task;
     }
 
+    @Nonnull
     @Override
-    public Task<Void> unloadPluginAsync(String process, Plugin plugin) {
+    public Task<Void> unloadPluginAsync(@Nonnull String process, @Nonnull Plugin plugin) {
         Task<Void> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             ProcessInformation information = this.nodeNetworkManager.getNodeProcessHelper().getClusterProcess(process);
@@ -1513,8 +1593,9 @@ public class NodeExecutor extends Node {
         return task;
     }
 
+    @Nonnull
     @Override
-    public Task<Void> unloadPluginAsync(ProcessInformation process, Plugin plugin) {
+    public Task<Void> unloadPluginAsync(@Nonnull ProcessInformation process, @Nonnull Plugin plugin) {
         Task<Void> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             if (this.nodeNetworkManager.getCluster().getSelfNode().getName().equals(process.getParent())) {
@@ -1550,8 +1631,9 @@ public class NodeExecutor extends Node {
         return task;
     }
 
+    @Nonnull
     @Override
-    public Task<Plugin> getInstalledPluginAsync(String process, String name) {
+    public Task<Plugin> getInstalledPluginAsync(@Nonnull String process, @Nonnull String name) {
         Task<Plugin> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             ProcessInformation information = this.nodeNetworkManager.getNodeProcessHelper().getClusterProcess(process);
@@ -1565,15 +1647,17 @@ public class NodeExecutor extends Node {
         return task;
     }
 
+    @Nonnull
     @Override
-    public Task<Plugin> getInstalledPluginAsync(ProcessInformation process, String name) {
+    public Task<Plugin> getInstalledPluginAsync(@Nonnull ProcessInformation process, @Nonnull String name) {
         Task<Plugin> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> task.complete(Links.filterToReference(process.getPlugins(), e -> e.getName().equals(name)).orNothing()));
         return task;
     }
 
+    @Nonnull
     @Override
-    public Task<Collection<DefaultPlugin>> getPluginsAsync(String process, String author) {
+    public Task<Collection<DefaultPlugin>> getPluginsAsync(@Nonnull String process, @Nonnull String author) {
         Task<Collection<DefaultPlugin>> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             ProcessInformation information = this.nodeNetworkManager.getNodeProcessHelper().getClusterProcess(process);
@@ -1587,15 +1671,17 @@ public class NodeExecutor extends Node {
         return task;
     }
 
+    @Nonnull
     @Override
-    public Task<Collection<DefaultPlugin>> getPluginsAsync(ProcessInformation process, String author) {
+    public Task<Collection<DefaultPlugin>> getPluginsAsync(@Nonnull ProcessInformation process, @Nonnull String author) {
         Task<Collection<DefaultPlugin>> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> task.complete(Links.allOf(process.getPlugins(), e -> e.author().equals(author))));
         return task;
     }
 
+    @Nonnull
     @Override
-    public Task<Collection<DefaultPlugin>> getPluginsAsync(String process) {
+    public Task<Collection<DefaultPlugin>> getPluginsAsync(@Nonnull String process) {
         Task<Collection<DefaultPlugin>> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             ProcessInformation information = this.nodeNetworkManager.getNodeProcessHelper().getClusterProcess(process);
@@ -1609,75 +1695,83 @@ public class NodeExecutor extends Node {
         return task;
     }
 
+    @Nonnull
     @Override
-    public Task<Collection<DefaultPlugin>> getPluginsAsync(ProcessInformation processInformation) {
+    public Task<Collection<DefaultPlugin>> getPluginsAsync(@Nonnull ProcessInformation processInformation) {
         Task<Collection<DefaultPlugin>> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> task.complete(Collections.unmodifiableList(processInformation.getPlugins())));
         return task;
     }
 
     @Override
-    public void installPlugin(String process, InstallablePlugin plugin) {
+    public void installPlugin(@Nonnull String process, @Nonnull InstallablePlugin plugin) {
         installPluginAsync(process, plugin).awaitUninterruptedly();
     }
 
     @Override
-    public void installPlugin(ProcessInformation process, InstallablePlugin plugin) {
+    public void installPlugin(@Nonnull ProcessInformation process, @Nonnull InstallablePlugin plugin) {
         installPluginAsync(process, plugin).awaitUninterruptedly();
     }
 
     @Override
-    public void unloadPlugin(String process, Plugin plugin) {
+    public void unloadPlugin(@Nonnull String process, @Nonnull Plugin plugin) {
         unloadPluginAsync(process, plugin).awaitUninterruptedly();
     }
 
     @Override
-    public void unloadPlugin(ProcessInformation process, Plugin plugin) {
+    public void unloadPlugin(@Nonnull ProcessInformation process, @Nonnull Plugin plugin) {
         unloadPluginAsync(process, plugin).awaitUninterruptedly();
     }
 
     @Override
-    public Plugin getInstalledPlugin(String process, String name) {
+    public Plugin getInstalledPlugin(@Nonnull String process, @Nonnull String name) {
         return getInstalledPluginAsync(process, name).getUninterruptedly();
     }
 
     @Override
-    public Plugin getInstalledPlugin(ProcessInformation process, String name) {
+    public Plugin getInstalledPlugin(@Nonnull ProcessInformation process, @Nonnull String name) {
         return getInstalledPluginAsync(process, name).getUninterruptedly();
     }
 
+    @Nonnull
     @Override
-    public Collection<DefaultPlugin> getPlugins(String process, String author) {
+    public Collection<DefaultPlugin> getPlugins(@Nonnull String process, @Nonnull String author) {
         return getPluginsAsync(process, author).getUninterruptedly();
     }
 
+    @Nonnull
     @Override
-    public Collection<DefaultPlugin> getPlugins(ProcessInformation process, String author) {
+    public Collection<DefaultPlugin> getPlugins(@Nonnull ProcessInformation process, @Nonnull String author) {
         return getPluginsAsync(process, author).getUninterruptedly();
     }
 
+    @Nonnull
     @Override
-    public Collection<DefaultPlugin> getPlugins(String process) {
+    public Collection<DefaultPlugin> getPlugins(@Nonnull String process) {
         return getPluginsAsync(process).getUninterruptedly();
     }
 
+    @Nonnull
     @Override
-    public Collection<DefaultPlugin> getPlugins(ProcessInformation processInformation) {
+    public Collection<DefaultPlugin> getPlugins(@Nonnull ProcessInformation processInformation) {
         return getPluginsAsync(processInformation).getUninterruptedly();
     }
 
+    @Nonnull
     @Override
-    public Task<ProcessInformation> startProcessAsync(String groupName) {
+    public Task<ProcessInformation> startProcessAsync(@Nonnull String groupName) {
         return startProcessAsync(groupName, null);
     }
 
+    @Nonnull
     @Override
-    public Task<ProcessInformation> startProcessAsync(String groupName, String template) {
+    public Task<ProcessInformation> startProcessAsync(@Nonnull String groupName, String template) {
         return startProcessAsync(groupName, template, new JsonConfiguration());
     }
 
+    @Nonnull
     @Override
-    public Task<ProcessInformation> startProcessAsync(String groupName, String template, JsonConfiguration configurable) {
+    public Task<ProcessInformation> startProcessAsync(@Nonnull String groupName, String template, @Nonnull JsonConfiguration configurable) {
         Task<ProcessInformation> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             ProcessGroup group = Links.filterToReference(clusterSyncManager.getProcessGroups(), e -> e.getName().equals(groupName)).orNothing();
@@ -1695,8 +1789,9 @@ public class NodeExecutor extends Node {
         return task;
     }
 
+    @Nonnull
     @Override
-    public Task<ProcessInformation> stopProcessAsync(String name) {
+    public Task<ProcessInformation> stopProcessAsync(@Nonnull String name) {
         Task<ProcessInformation> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             ProcessInformation old = nodeNetworkManager.getNodeProcessHelper().getClusterProcess(name);
@@ -1711,8 +1806,9 @@ public class NodeExecutor extends Node {
         return task;
     }
 
+    @Nonnull
     @Override
-    public Task<ProcessInformation> stopProcessAsync(UUID uniqueID) {
+    public Task<ProcessInformation> stopProcessAsync(@Nonnull UUID uniqueID) {
         Task<ProcessInformation> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             ProcessInformation old = nodeNetworkManager.getNodeProcessHelper().getClusterProcess(uniqueID);
@@ -1727,20 +1823,23 @@ public class NodeExecutor extends Node {
         return task;
     }
 
+    @Nonnull
     @Override
-    public Task<ProcessInformation> getProcessAsync(String name) {
+    public Task<ProcessInformation> getProcessAsync(@Nonnull String name) {
         Task<ProcessInformation> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> task.complete(nodeNetworkManager.getNodeProcessHelper().getClusterProcess(name)));
         return task;
     }
 
+    @Nonnull
     @Override
-    public Task<ProcessInformation> getProcessAsync(UUID uniqueID) {
+    public Task<ProcessInformation> getProcessAsync(@Nonnull UUID uniqueID) {
         Task<ProcessInformation> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> task.complete(nodeNetworkManager.getNodeProcessHelper().getClusterProcess(uniqueID)));
         return task;
     }
 
+    @Nonnull
     @Override
     public Task<List<ProcessInformation>> getAllProcessesAsync() {
         Task<List<ProcessInformation>> task = new DefaultTask<>();
@@ -1748,15 +1847,17 @@ public class NodeExecutor extends Node {
         return task;
     }
 
+    @Nonnull
     @Override
-    public Task<List<ProcessInformation>> getProcessesAsync(String group) {
+    public Task<List<ProcessInformation>> getProcessesAsync(@Nonnull String group) {
         Task<List<ProcessInformation>> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> task.complete(Links.newList(nodeNetworkManager.getNodeProcessHelper().getClusterProcesses(group))));
         return task;
     }
 
+    @Nonnull
     @Override
-    public Task<Void> executeProcessCommandAsync(String name, String commandLine) {
+    public Task<Void> executeProcessCommandAsync(@Nonnull String name, @Nonnull String commandLine) {
         Task<Void> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             ProcessInformation processInformation = this.getProcess(name);
@@ -1779,8 +1880,9 @@ public class NodeExecutor extends Node {
         return task;
     }
 
+    @Nonnull
     @Override
-    public Task<Integer> getGlobalOnlineCountAsync(Collection<String> ignoredProxies) {
+    public Task<Integer> getGlobalOnlineCountAsync(@Nonnull Collection<String> ignoredProxies) {
         Task<Integer> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             int online = Links.allOf(nodeNetworkManager.getNodeProcessHelper().getClusterProcesses(),
@@ -1791,6 +1893,7 @@ public class NodeExecutor extends Node {
         return task;
     }
 
+    @Nonnull
     @Override
     public Task<ProcessInformation> getThisProcessInformationAsync() {
         Task<ProcessInformation> task = new DefaultTask<>();
@@ -1798,58 +1901,63 @@ public class NodeExecutor extends Node {
         return task;
     }
 
+    @Nonnull
     @Override
-    public ProcessInformation startProcess(String groupName) {
+    public ProcessInformation startProcess(@Nonnull String groupName) {
         return startProcessAsync(groupName).getUninterruptedly();
     }
 
+    @Nonnull
     @Override
-    public ProcessInformation startProcess(String groupName, String template) {
+    public ProcessInformation startProcess(@Nonnull String groupName, String template) {
         return startProcessAsync(groupName, template).getUninterruptedly();
     }
 
+    @Nonnull
     @Override
-    public ProcessInformation startProcess(String groupName, String template, JsonConfiguration configurable) {
+    public ProcessInformation startProcess(@Nonnull String groupName, String template, @Nonnull JsonConfiguration configurable) {
         return startProcessAsync(groupName, template, configurable).getUninterruptedly();
     }
 
     @Override
-    public ProcessInformation stopProcess(String name) {
+    public ProcessInformation stopProcess(@Nonnull String name) {
         return stopProcessAsync(name).getUninterruptedly();
     }
 
     @Override
-    public ProcessInformation stopProcess(UUID uniqueID) {
+    public ProcessInformation stopProcess(@Nonnull UUID uniqueID) {
         return stopProcessAsync(uniqueID).getUninterruptedly();
     }
 
     @Override
-    public ProcessInformation getProcess(String name) {
+    public ProcessInformation getProcess(@Nonnull String name) {
         return getProcessAsync(name).getUninterruptedly();
     }
 
     @Override
-    public ProcessInformation getProcess(UUID uniqueID) {
+    public ProcessInformation getProcess(@Nonnull UUID uniqueID) {
         return getProcessAsync(uniqueID).getUninterruptedly();
     }
 
+    @Nonnull
     @Override
     public List<ProcessInformation> getAllProcesses() {
         return getAllProcessesAsync().getUninterruptedly();
     }
 
+    @Nonnull
     @Override
-    public List<ProcessInformation> getProcesses(String group) {
+    public List<ProcessInformation> getProcesses(@Nonnull String group) {
         return getProcessesAsync(group).getUninterruptedly();
     }
 
     @Override
-    public void executeProcessCommand(String name, String commandLine) {
+    public void executeProcessCommand(@Nonnull String name, @Nonnull String commandLine) {
         executeProcessCommandAsync(name, commandLine).awaitUninterruptedly();
     }
 
     @Override
-    public int getGlobalOnlineCount(Collection<String> ignoredProxies) {
+    public int getGlobalOnlineCount(@Nonnull Collection<String> ignoredProxies) {
         return getGlobalOnlineCountAsync(ignoredProxies).getUninterruptedly();
     }
 
@@ -1859,7 +1967,7 @@ public class NodeExecutor extends Node {
     }
 
     @Override
-    public void update(ProcessInformation processInformation) {
+    public void update(@Nonnull ProcessInformation processInformation) {
         this.nodeNetworkManager.getNodeProcessHelper().update(processInformation);
     }
 

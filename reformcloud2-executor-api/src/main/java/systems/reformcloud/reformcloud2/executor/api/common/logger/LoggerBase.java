@@ -2,6 +2,8 @@ package systems.reformcloud.reformcloud2.executor.api.common.logger;
 
 import jline.console.ConsoleReader;
 
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -16,6 +18,7 @@ public abstract class LoggerBase extends Logger implements AutoCloseable {
     /**
      * @return The current console reader of the cloud
      */
+    @Nonnull
     public abstract ConsoleReader getConsoleReader();
 
     /**
@@ -32,12 +35,14 @@ public abstract class LoggerBase extends Logger implements AutoCloseable {
     /**
      * @return Reads the current line of the console
      */
+    @Nonnull
     public abstract String readLine();
 
     /**
      * @see #readLine()
      * @return Reads the current line without a prompt
      */
+    @Nonnull
     public abstract String readLineNoPrompt();
 
     /**
@@ -47,7 +52,11 @@ public abstract class LoggerBase extends Logger implements AutoCloseable {
      * @param invalidInputMessage The runnable if the input is invalid it get called
      * @return The string which was given in the console
      */
-    public abstract String readString(Predicate<String> predicate, Runnable invalidInputMessage);
+    @Nonnull
+    public abstract String readString(
+            @Nonnull Predicate<String> predicate,
+            @Nonnull Runnable invalidInputMessage
+    );
 
     /**
      * Reads the console input and waits for the correct input
@@ -57,14 +66,19 @@ public abstract class LoggerBase extends Logger implements AutoCloseable {
      * @param <T> The type parameter of the current needed object
      * @return The result of {@link Function#apply(Object)} to the given function
      */
-    public abstract <T> T read(Function<String, T> function, Runnable invalidInputMessage);
+    @Nonnull
+    @CheckReturnValue
+    public abstract <T> T read(
+            @Nonnull Function<String, T> function,
+            @Nonnull Runnable invalidInputMessage
+    );
 
     /**
      * Logs a message to the console, also available with {@link System#out}
      *
      * @param message The message which should be logged into the console
      */
-    public abstract void log(String message);
+    public abstract void log(@Nonnull String message);
 
     /**
      * Logs a message to the console, also available with {@link System#out};
@@ -72,7 +86,7 @@ public abstract class LoggerBase extends Logger implements AutoCloseable {
      *
      * @param message The message which should be logged into the console
      */
-    public abstract void logRaw(String message);
+    public abstract void logRaw(@Nonnull String message);
 
     /**
      * Adds a log line handler
@@ -80,12 +94,14 @@ public abstract class LoggerBase extends Logger implements AutoCloseable {
      * @param handler The handler which should get registered
      * @return The current instance of this class
      */
-    public abstract LoggerBase addLogLineHandler(LoggerLineHandler handler);
+    @Nonnull
+    public abstract LoggerBase addLogLineHandler(@Nonnull LoggerLineHandler handler);
 
     /**
      * Get the debugger of the cloud
      *
      * @return The current {@link Debugger} of the cloud
      */
+    @Nonnull
     public abstract Debugger getDebugger();
 }

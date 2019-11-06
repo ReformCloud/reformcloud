@@ -13,6 +13,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.logger.coloured.form
 import systems.reformcloud.reformcloud2.executor.api.common.logger.coloured.handler.ColouredConsoleHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.stream.OutputStream;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.file.Files;
@@ -58,11 +59,13 @@ public final class ColouredLoggerHandler extends LoggerBase {
 
     private final Debugger debugger = new ColouredDebugger();
 
+    @Nonnull
     @Override
     public ConsoleReader getConsoleReader() {
         return consoleReader;
     }
 
+    @Nonnull
     @Override
     public String readLine() {
         try {
@@ -74,6 +77,7 @@ public final class ColouredLoggerHandler extends LoggerBase {
         return null;
     }
 
+    @Nonnull
     @Override
     public String readLineNoPrompt() {
         try {
@@ -85,8 +89,9 @@ public final class ColouredLoggerHandler extends LoggerBase {
         return null;
     }
 
+    @Nonnull
     @Override
-    public String readString(Predicate<String> predicate, Runnable invalidInputMessage) {
+    public String readString(@Nonnull Predicate<String> predicate, @Nonnull Runnable invalidInputMessage) {
         String line = readLine();
         while (line == null || !predicate.test(line)) {
             invalidInputMessage.run();
@@ -96,8 +101,9 @@ public final class ColouredLoggerHandler extends LoggerBase {
         return line;
     }
 
+    @Nonnull
     @Override
-    public <T> T read(Function<String, T> function, Runnable invalidInputMessage) {
+    public <T> T read(@Nonnull Function<String, T> function, @Nonnull Runnable invalidInputMessage) {
         String line = readLine();
         T result;
         while (line == null || (result = function.apply(line)) == null) {
@@ -109,7 +115,7 @@ public final class ColouredLoggerHandler extends LoggerBase {
     }
 
     @Override
-    public void log(String message) {
+    public void log(@Nonnull String message) {
         message = Colours.coloured(message);
         handleLine(message);
 
@@ -123,7 +129,7 @@ public final class ColouredLoggerHandler extends LoggerBase {
     }
 
     @Override
-    public void logRaw(String message) {
+    public void logRaw(@Nonnull String message) {
         message = Colours.coloured(message);
         handleLine(message);
 
@@ -136,12 +142,14 @@ public final class ColouredLoggerHandler extends LoggerBase {
         }
     }
 
+    @Nonnull
     @Override
-    public LoggerBase addLogLineHandler(LoggerLineHandler handler) {
+    public LoggerBase addLogLineHandler(@Nonnull LoggerLineHandler handler) {
         this.handlers.add(handler);
         return this;
     }
 
+    @Nonnull
     @Override
     public Debugger getDebugger() {
         return debugger;

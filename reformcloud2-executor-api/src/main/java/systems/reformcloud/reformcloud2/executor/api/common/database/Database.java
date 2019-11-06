@@ -3,6 +3,10 @@ package systems.reformcloud.reformcloud2.executor.api.common.database;
 import systems.reformcloud.reformcloud2.executor.api.common.dependency.DefaultDependencyLoader;
 import systems.reformcloud.reformcloud2.executor.api.common.dependency.DependencyLoader;
 
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 public abstract class Database<V> {
 
     protected static final DependencyLoader DEPENDENCY_LOADER = new DefaultDependencyLoader();
@@ -16,7 +20,13 @@ public abstract class Database<V> {
      * @param password The password of the user
      * @param table The table which the cloud system should use
      */
-    public abstract void connect(String host, int port, String userName, String password, String table);
+    public abstract void connect(
+            @Nonnull String host,
+            int port,
+            @Nonnull String userName,
+            @Nonnull String password,
+            @Nonnull String table
+    );
 
     /**
      * @return If the connection is open and writeable
@@ -55,10 +65,14 @@ public abstract class Database<V> {
      * @param table The table for which the reader should be for
      * @return The creates {@link DatabaseReader} for the table
      */
+    @Nullable
+    @CheckReturnValue
     public abstract DatabaseReader createForTable(String table);
 
     /**
      * @return The type parameter depending to the database type
      */
+    @Nullable
+    @CheckReturnValue
     public abstract V get();
 }

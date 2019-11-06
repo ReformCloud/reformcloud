@@ -2,6 +2,7 @@ package systems.reformcloud.reformcloud2.executor.api.common.dependency;
 
 import systems.reformcloud.reformcloud2.executor.api.common.dependency.repo.DefaultRepositories;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -72,7 +73,7 @@ public final class DefaultDependencyLoader extends DependencyLoader {
     }
 
     @Override
-    public URL loadDependency(Dependency dependency) {
+    public URL loadDependency(@Nonnull Dependency dependency) {
         Path path;
         if (DefaultDependencyLoader.path != null) {
             path = Paths.get(DefaultDependencyLoader.path + "/" + dependency.getPath());
@@ -96,7 +97,7 @@ public final class DefaultDependencyLoader extends DependencyLoader {
     }
 
     @Override
-    public void addDependency(URL depend) {
+    public void addDependency(@Nonnull URL depend) {
         DefaultDependencyLoader.this.addURL(depend);
     }
 }

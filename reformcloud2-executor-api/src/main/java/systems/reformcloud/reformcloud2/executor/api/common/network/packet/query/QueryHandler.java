@@ -2,8 +2,9 @@ package systems.reformcloud.reformcloud2.executor.api.common.network.packet.quer
 
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.annotiations.Nullable;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.UUID;
 
 public interface QueryHandler {
@@ -14,7 +15,8 @@ public interface QueryHandler {
      * @param uuid The id of the query
      * @return The waiting query request or {@code null} if no such request is known
      */
-    @Nullable QueryRequest<Packet> getWaitingQuery(UUID uuid);
+    @Nullable
+    QueryRequest<Packet> getWaitingQuery(UUID uuid);
 
     /**
      * Checks if a id has a waiting query
@@ -32,6 +34,7 @@ public interface QueryHandler {
      * @param packet The packet itself which will be converted to q query packet
      * @return The query request which got created
      */
+    @Nonnull
     QueryRequest<Packet> sendQueryAsync(PacketSender sender, Packet packet);
 
     /**
@@ -41,6 +44,7 @@ public interface QueryHandler {
      * @param uuid The uuid of the packet which should be used
      * @return The packet which got converted
      */
+    @Nonnull
     Packet convertToQuery(Packet packet, UUID uuid);
 
     /**

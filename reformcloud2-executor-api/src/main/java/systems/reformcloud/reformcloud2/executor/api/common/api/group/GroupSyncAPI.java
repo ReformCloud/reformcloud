@@ -6,6 +6,8 @@ import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Temp
 import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.PlayerAccessConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.StartupConfiguration;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -17,7 +19,8 @@ public interface GroupSyncAPI {
      * @param name The name of the group
      * @return The created main group
      */
-    MainGroup createMainGroup(String name);
+    @Nonnull
+    MainGroup createMainGroup(@Nonnull String name);
 
     /**
      * Creates a new main group
@@ -26,7 +29,8 @@ public interface GroupSyncAPI {
      * @param subgroups The subgroups of the new main group
      * @return The created main group
      */
-    MainGroup createMainGroup(String name, List<String> subgroups);
+    @Nonnull
+    MainGroup createMainGroup(@Nonnull String name, @Nonnull List<String> subgroups);
 
     /**
      * Creates a new process group
@@ -34,7 +38,8 @@ public interface GroupSyncAPI {
      * @param name The name of the new group
      * @return The created process group
      */
-    ProcessGroup createProcessGroup(String name);
+    @Nonnull
+    ProcessGroup createProcessGroup(@Nonnull String name);
 
     /**
      * Creates a new process group
@@ -43,7 +48,8 @@ public interface GroupSyncAPI {
      * @param parent The parent-{@link MainGroup} group of the new group
      * @return The created process group
      */
-    ProcessGroup createProcessGroup(String name, String parent);
+    @Nonnull
+    ProcessGroup createProcessGroup(@Nonnull String name, @Nonnull String parent);
 
     /**
      * Creates a new process group
@@ -53,7 +59,8 @@ public interface GroupSyncAPI {
      * @param templates The templates which should be used for the new group
      * @return The created process group
      */
-    ProcessGroup createProcessGroup(String name, String parent, List<Template> templates);
+    @Nonnull
+    ProcessGroup createProcessGroup(@Nonnull String name, @Nullable String parent, @Nonnull List<Template> templates);
 
     /**
      * Creates a new process group
@@ -64,8 +71,13 @@ public interface GroupSyncAPI {
      * @param startupConfiguration The startup config of the new process group
      * @return The created process group
      */
-    ProcessGroup createProcessGroup(String name, String parent, List<Template> templates,
-                                    StartupConfiguration startupConfiguration);
+    @Nonnull
+    ProcessGroup createProcessGroup(
+            @Nonnull String name,
+            @Nullable String parent,
+            @Nonnull List<Template> templates,
+            @Nonnull StartupConfiguration startupConfiguration
+    );
 
     /**
      * Creates a new process group
@@ -77,8 +89,14 @@ public interface GroupSyncAPI {
      * @param playerAccessConfiguration The new player access configuration of the process group
      * @return The created process group
      */
-    ProcessGroup createProcessGroup(String name, String parent, List<Template> templates,
-                                    StartupConfiguration startupConfiguration, PlayerAccessConfiguration playerAccessConfiguration);
+    @Nonnull
+    ProcessGroup createProcessGroup(
+            @Nonnull String name,
+            @Nullable String parent,
+            @Nonnull List<Template> templates,
+            @Nonnull StartupConfiguration startupConfiguration,
+            @Nonnull PlayerAccessConfiguration playerAccessConfiguration
+    );
 
     /**
      * Creates a new process group
@@ -91,9 +109,15 @@ public interface GroupSyncAPI {
      * @param staticGroup {@code true} if the process group should be static
      * @return The created process group
      */
-    ProcessGroup createProcessGroup(String name, String parent, List<Template> templates,
-                                    StartupConfiguration startupConfiguration, PlayerAccessConfiguration playerAccessConfiguration,
-                                    boolean staticGroup);
+    @Nonnull
+    ProcessGroup createProcessGroup(
+            @Nonnull String name,
+            @Nullable String parent,
+            @Nonnull List<Template> templates,
+            @Nonnull StartupConfiguration startupConfiguration,
+            @Nonnull PlayerAccessConfiguration playerAccessConfiguration,
+            boolean staticGroup
+    );
 
     /**
      * Creates a new process group
@@ -101,7 +125,8 @@ public interface GroupSyncAPI {
      * @param processGroup The new process group
      * @return The created process group
      */
-    ProcessGroup createProcessGroup(ProcessGroup processGroup);
+    @Nonnull
+    ProcessGroup createProcessGroup(@Nonnull ProcessGroup processGroup);
 
     /**
      * Updates a main group
@@ -109,7 +134,8 @@ public interface GroupSyncAPI {
      * @param mainGroup The main group which should be updated
      * @return The new main group after the update
      */
-    MainGroup updateMainGroup(MainGroup mainGroup);
+    @Nonnull
+    MainGroup updateMainGroup(@Nonnull MainGroup mainGroup);
 
     /**
      * Updates a process group
@@ -117,7 +143,8 @@ public interface GroupSyncAPI {
      * @param processGroup The process group which should be updated
      * @return The process group after the update
      */
-    ProcessGroup updateProcessGroup(ProcessGroup processGroup);
+    @Nonnull
+    ProcessGroup updateProcessGroup(@Nonnull ProcessGroup processGroup);
 
     /**
      * Get a main group
@@ -125,7 +152,8 @@ public interface GroupSyncAPI {
      * @param name The name of the main group which should be found
      * @return The main group or {@code null} if the group does not exists
      */
-    MainGroup getMainGroup(String name);
+    @Nonnull
+    MainGroup getMainGroup(@Nonnull String name);
 
     /**
      * Get a process group
@@ -133,27 +161,29 @@ public interface GroupSyncAPI {
      * @param name The name of the process group which should be found
      * @return The process group or {@code null} if the process group does not exists
      */
-    ProcessGroup getProcessGroup(String name);
+    @Nonnull
+    ProcessGroup getProcessGroup(@Nonnull String name);
 
     /**
      * Deletes a main group
      *
      * @param name The name of the group which should be deleted
      */
-    void deleteMainGroup(String name);
+    void deleteMainGroup(@Nonnull String name);
 
     /**
      * Deletes a process group
      *
      * @param name The name of the group which should be deleted
      */
-    void deleteProcessGroup(String name);
+    void deleteProcessGroup(@Nonnull String name);
 
     /**
      * Gets all main groups
      *
      * @return All main groups
      */
+    @Nonnull
     List<MainGroup> getMainGroups();
 
     /**
@@ -161,6 +191,7 @@ public interface GroupSyncAPI {
      *
      * @return All process groups
      */
+    @Nonnull
     List<ProcessGroup> getProcessGroups();
 
     /**
@@ -168,7 +199,7 @@ public interface GroupSyncAPI {
      *
      * @param action The consumer which will handle all process groups
      */
-    default void forEachProcessGroups(Consumer<ProcessGroup> action) {
+    default void forEachProcessGroups(@Nonnull Consumer<ProcessGroup> action) {
         getProcessGroups().forEach(action);
     }
 
@@ -177,7 +208,7 @@ public interface GroupSyncAPI {
      *
      * @param action The consumer which will handle all main groups
      */
-    default void forEachMainGroups(Consumer<MainGroup> action) {
+    default void forEachMainGroups(@Nonnull Consumer<MainGroup> action) {
         getMainGroups().forEach(action);
     }
 }

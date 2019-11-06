@@ -4,6 +4,7 @@ import io.netty.channel.ChannelHandlerContext;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.handler.PacketHandler;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
 
 public interface NetworkChannelReader {
@@ -11,11 +12,13 @@ public interface NetworkChannelReader {
     /**
      * @return The packet handler of the network channel
      */
+    @Nonnull
     PacketHandler getPacketHandler();
 
     /**
      * @return The current packet sender of the reader
      */
+    @Nonnull
     PacketSender sender();
 
     /**

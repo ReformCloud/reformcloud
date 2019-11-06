@@ -4,6 +4,7 @@ import io.netty.channel.Channel;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 
+import javax.annotation.Nonnull;
 import java.net.InetSocketAddress;
 
 public class DefaultPacketSender extends PacketSender {
@@ -24,14 +25,21 @@ public class DefaultPacketSender extends PacketSender {
         return connectionTime;
     }
 
+    @Nonnull
     @Override
     public String getAddress() {
         return getEthernetAddress().getAddress().getHostAddress();
     }
 
+    @Nonnull
     @Override
     public InetSocketAddress getEthernetAddress() {
         return (InetSocketAddress) channel.remoteAddress();
+    }
+
+    @Override
+    public boolean isLoopBackSender() {
+        return !getEthernetAddress().getAddress().isLoopbackAddress();
     }
 
     @Override
@@ -76,6 +84,7 @@ public class DefaultPacketSender extends PacketSender {
         channel.close();
     }
 
+    @Nonnull
     @Override
     public String getName() {
         return name;

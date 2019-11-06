@@ -1,5 +1,7 @@
 package systems.reformcloud.reformcloud2.executor.api.common.application;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.List;
 
 public interface ApplicationLoader {
@@ -20,10 +22,13 @@ public interface ApplicationLoader {
 
     boolean doSpecificApplicationUninstall(String application);
 
-    LoadedApplication getApplication(String name);
+    @Nullable
+    LoadedApplication getApplication(@Nonnull String name);
 
-    String getApplicationName(LoadedApplication loadedApplication);
+    @Nonnull
+    String getApplicationName(@Nonnull LoadedApplication loadedApplication);
 
+    @Nonnull
     List<LoadedApplication> getApplications();
 
     void addApplicationHandler(ApplicationHandler applicationHandler);

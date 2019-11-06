@@ -5,6 +5,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.channel.Netw
 import systems.reformcloud.reformcloud2.executor.api.common.network.client.DefaultNetworkClient;
 import systems.reformcloud.reformcloud2.executor.api.common.network.client.NetworkClient;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -15,7 +16,7 @@ public class NodeNetworkClient implements NetworkClient {
     public static final Collection<String> CONNECTIONS = new ArrayList<>();
 
     @Override
-    public boolean connect(String host, int port, Auth auth, NetworkChannelReader channelReader) {
+    public boolean connect(@Nonnull String host, int port, @Nonnull Auth auth, @Nonnull NetworkChannelReader channelReader) {
         if (CONNECTIONS.stream().anyMatch(host::equals)) {
             return false;
         }

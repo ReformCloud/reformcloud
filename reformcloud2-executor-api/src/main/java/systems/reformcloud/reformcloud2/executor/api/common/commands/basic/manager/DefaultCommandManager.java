@@ -1,5 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.api.common.commands.basic.manager;
 
+import systems.reformcloud.reformcloud2.executor.api.common.base.Conditions;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.AllowedCommandSources;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.Command;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.dispatcher.command.CommandEvent;
@@ -8,6 +9,8 @@ import systems.reformcloud.reformcloud2.executor.api.common.commands.source.Comm
 import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Consumer;
 
@@ -19,14 +22,16 @@ public final class DefaultCommandManager implements CommandManager {
 
     private final Map<Command, String> noPermissionMessagePerCommand = new HashMap<>();
 
+    @Nonnull
     @Override
-    public CommandManager register(Command command) {
+    public CommandManager register(@Nonnull Command command) {
         dispatchCommandEvent(CommandEvent.ADD, command);
         return this;
     }
 
+    @Nonnull
     @Override
-    public CommandManager register(Class<? extends Command> command) {
+    public CommandManager register(@Nonnull Class<? extends Command> command) {
         try {
             register(command.newInstance());
         } catch (final InstantiationException | IllegalAccessException ex) {
@@ -37,12 +42,12 @@ public final class DefaultCommandManager implements CommandManager {
     }
 
     @Override
-    public void unregisterCommand(Command command) {
+    public void unregisterCommand(@Nonnull Command command) {
         dispatchCommandEvent(CommandEvent.REMOVE, command);
     }
 
     @Override
-    public Command unregisterAndGetCommand(String line) {
+    public Command unregisterAndGetCommand(@Nonnull String line) {
         line = line.toLowerCase();
         for (Command command : Links.newList(commands)) {
             if (command.mainCommand().equals(line) || command.aliases().contains(line)) {
@@ -55,7 +60,7 @@ public final class DefaultCommandManager implements CommandManager {
     }
 
     @Override
-    public Command dispatchCommandEvent(CommandEvent commandEvent, Command command) {
+    public Command dispatchCommandEvent(@Nonnull CommandEvent commandEvent, @Nullable Command command) {
         switch (commandEvent) {
             case ADD: {
                 commands.add(command);
@@ -82,7 +87,7 @@ public final class DefaultCommandManager implements CommandManager {
     }
 
     @Override
-    public Command dispatchCommandEvent(CommandEvent commandEvent, Command command, Command update) {
+    public Command dispatchCommandEvent(@Nonnull CommandEvent commandEvent, @Nonnull Command command, @Nonnull Command update) {
         switch (commandEvent) {
             case UNREGISTER_ALL:
             case ADD:
@@ -103,12 +108,15 @@ public final class DefaultCommandManager implements CommandManager {
     }
 
     @Override
-    public Command dispatchCommandEvent(CommandEvent commandEvent, Command command, Command update, String line) {
+    public Command dispatchCommandEvent(@Nonnull CommandEvent commandEvent, @Nullable Command command, @Nullable Command update, @Nonnull String line) {
         switch (commandEvent) {
             case UNREGISTER_ALL:
             case UPDATE:
             case REMOVE:
             case ADD: {
+                Conditions.isTrue(update != null);
+                Conditions.isTrue(command != null);
+
                 return dispatchCommandEvent(commandEvent, command, update);
             }
 
@@ -169,7 +177,7 @@ public final class DefaultCommandManager implements CommandManager {
     }
 
     @Override
-    public void dispatchCommand(CommandSource commandSource, AllowedCommandSources commandSources, String commandLine, Consumer<String> result) {
+    public void dispatchCommand(@Nonnull CommandSource commandSource, @Nonnull AllowedCommandSources commandSources, @Nonnull String commandLine, @Nonnull Consumer<String> result) {
         commandLine = commandLine.contains(" ") ? commandLine : commandLine + " ";
         String[] split = commandLine.split(" ");
 

@@ -2,9 +2,9 @@ package systems.reformcloud.reformcloud2.executor.api.controller.process;
 
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.annotiations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.update.Updateable;
 
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.UUID;
 

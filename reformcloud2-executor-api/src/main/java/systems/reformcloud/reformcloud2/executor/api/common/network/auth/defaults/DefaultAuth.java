@@ -4,6 +4,8 @@ import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonCo
 import systems.reformcloud.reformcloud2.executor.api.common.network.auth.Auth;
 import systems.reformcloud.reformcloud2.executor.api.common.network.auth.NetworkType;
 
+import javax.annotation.Nonnull;
+
 public final class DefaultAuth implements Auth {
 
     public DefaultAuth(String key, String parent, NetworkType type, String name, JsonConfiguration extra) {
@@ -24,6 +26,7 @@ public final class DefaultAuth implements Auth {
 
     private final JsonConfiguration extra;
 
+    @Nonnull
     @Override
     public String key() {
         return key;
@@ -34,16 +37,19 @@ public final class DefaultAuth implements Auth {
         return parent;
     }
 
+    @Nonnull
     @Override
     public NetworkType type() {
         return type;
     }
 
+    @Nonnull
     @Override
     public JsonConfiguration extra() {
         return extra;
     }
 
+    @Nonnull
     @Override
     public String getName() {
         return name;

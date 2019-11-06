@@ -2,6 +2,8 @@ package systems.reformcloud.reformcloud2.executor.api.common.utility.update;
 
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 
+import javax.annotation.Nonnull;
+
 public interface Updateable<T> {
 
     /**
@@ -9,7 +11,7 @@ public interface Updateable<T> {
      * <p>
      * @param t The current object which should be updated
      */
-    void update(T t);
+    void update(@Nonnull T t);
 
     /**
      * Updates a specific value asynchronously
@@ -17,7 +19,7 @@ public interface Updateable<T> {
      * @param t The current object which should be updated
      * @see #update(Object)
      */
-    default void updateAsync(T t) {
+    default void updateAsync(@Nonnull T t) {
         Task.EXECUTOR.execute(() -> update(t));
     }
 }

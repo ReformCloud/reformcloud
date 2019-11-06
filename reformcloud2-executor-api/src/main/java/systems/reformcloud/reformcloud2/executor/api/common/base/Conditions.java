@@ -1,7 +1,7 @@
 package systems.reformcloud.reformcloud2.executor.api.common.base;
 
-import systems.reformcloud.reformcloud2.executor.api.common.utility.annotiations.Nullable;
-
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.text.MessageFormat;
 
 public final class Conditions {
@@ -34,7 +34,7 @@ public final class Conditions {
      * @param message The message which will be printed if the argument is {@code false}
      * @param args The arguments which should be filled in in the message
      */
-    public static void isTrue(boolean test, String message, Object... args) {
+    public static void isTrue(boolean test, @Nonnull String message, @Nullable Object... args) {
         if (!test) {
             throw new IllegalStateException(MessageFormat.format(message, args));
         }

@@ -3,6 +3,7 @@ package systems.reformcloud.reformcloud2.executor.api.common.plugins.basic;
 import com.google.gson.reflect.TypeToken;
 import systems.reformcloud.reformcloud2.executor.api.common.plugins.Plugin;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 
 public final class DefaultPlugin extends Plugin {
@@ -33,16 +34,19 @@ public final class DefaultPlugin extends Plugin {
 
     private final String name;
 
+    @Nonnull
     @Override
     public String version() {
         return version;
     }
 
+    @Nonnull
     @Override
     public String author() {
         return author;
     }
 
+    @Nonnull
     @Override
     public String main() {
         return main;
@@ -63,6 +67,7 @@ public final class DefaultPlugin extends Plugin {
         return enabled;
     }
 
+    @Nonnull
     @Override
     public String getName() {
         return name;
