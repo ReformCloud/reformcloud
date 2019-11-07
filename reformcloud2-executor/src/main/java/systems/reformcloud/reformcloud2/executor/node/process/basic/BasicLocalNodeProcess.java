@@ -67,7 +67,7 @@ public class BasicLocalNodeProcess implements LocalNodeProcess {
         processInformation.setProcessState(ProcessState.PREPARED);
 
         if (processInformation.getProcessGroup().isStaticProcess()) {
-            this.path = Paths.get("reformcloud/static/" + processInformation.getName());
+            this.path = Paths.get("reformcloud/static/" + processInformation.getName() + "/plugins");
             SystemHelper.createDirectory(path);
         } else {
             this.path = Paths.get("reformcloud/temp/" + processInformation.getName() + "-" + processInformation.getProcessUniqueID());

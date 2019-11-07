@@ -2,6 +2,7 @@ package systems.reformcloud.reformcloud2.executor.controller.process.startup;
 
 import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
 import systems.reformcloud.reformcloud2.executor.controller.ControllerExecutor;
 
@@ -24,7 +25,7 @@ public final class AutoStartupHandler extends AbsoluteThread {
         perPriorityStartup.addAll(ControllerExecutor.getInstance().getControllerExecutorConfig().getProcessGroups());
     }
 
-    private SortedSet<ProcessGroup> perPriorityStartup = new TreeSet<>((o1, o2) -> {
+    private final SortedSet<ProcessGroup> perPriorityStartup = new TreeSet<>((o1, o2) -> {
         int o1Priority = o1.getStartupConfiguration().getStartupPriority();
         int o2Priority = o2.getStartupConfiguration().getStartupPriority();
 
@@ -38,7 +39,7 @@ public final class AutoStartupHandler extends AbsoluteThread {
     @Override
     public void run() {
         while (!Thread.currentThread().isInterrupted()) {
-            perPriorityStartup.forEach(processGroup -> {
+            Links.copySortedSet(perPriorityStartup).forEach(processGroup -> {
                 int started = ControllerExecutor.getInstance().getProcessManager().getOnlineAndWaitingProcessCount(processGroup.getName());
 
                 if (started < processGroup.getStartupConfiguration().getMinOnlineProcesses()) {

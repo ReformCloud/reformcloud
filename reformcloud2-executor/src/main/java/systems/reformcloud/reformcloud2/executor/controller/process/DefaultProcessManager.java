@@ -194,11 +194,11 @@ public final class DefaultProcessManager implements ProcessManager {
         int port = nextPort(processGroup);
         StringBuilder stringBuilder = new StringBuilder().append(processGroup.getName());
 
-        if (template.getServerNameSplitter() != null) {
-            stringBuilder.append(template.getServerNameSplitter());
-        }
-
         if (processGroup.isShowIdInName()) {
+            if (template.getServerNameSplitter() != null) {
+                stringBuilder.append(template.getServerNameSplitter());
+            }
+
             stringBuilder.append(id);
         }
 

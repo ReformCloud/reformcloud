@@ -2,6 +2,7 @@ package systems.reformcloud.reformcloud2.executor.node.process;
 
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
 import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
 
@@ -19,7 +20,7 @@ public class LocalAutoStartupHandler extends AbsoluteThread {
         perPriorityStartup.addAll(NodeExecutor.getInstance().getClusterSyncManager().getProcessGroups());
     }
 
-    private SortedSet<ProcessGroup> perPriorityStartup = new TreeSet<>((o1, o2) -> {
+    private final SortedSet<ProcessGroup> perPriorityStartup = new TreeSet<>((o1, o2) -> {
         int o1Priority = o1.getStartupConfiguration().getStartupPriority();
         int o2Priority = o2.getStartupConfiguration().getStartupPriority();
 
@@ -44,7 +45,7 @@ public class LocalAutoStartupHandler extends AbsoluteThread {
             }
 
             try {
-                for (ProcessGroup processGroup : perPriorityStartup) {
+                for (ProcessGroup processGroup : Links.copySortedSet(perPriorityStartup)) {
                     int online = NodeExecutor.getInstance().getNodeNetworkManager().getCluster().getClusterManager()
                             .getOnlineAndWaiting(processGroup.getName());
                     if (processGroup.getStartupConfiguration().getMaxOnlineProcesses() != -1

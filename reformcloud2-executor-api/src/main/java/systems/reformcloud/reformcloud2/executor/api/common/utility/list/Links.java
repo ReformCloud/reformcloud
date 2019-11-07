@@ -28,6 +28,12 @@ public final class Links {
         return new ArrayList<>(in);
     }
 
+    public static <T> SortedSet<T> copySortedSet(SortedSet<T> set) {
+        SortedSet<T> sortedSet = new TreeSet<>(set.comparator());
+        sortedSet.addAll(set);
+        return sortedSet;
+    }
+
     public static <T, F> List<F> apply(List<T> in, Function<T, F> function) {
         List<F> out = new ArrayList<>();
         in.forEach(t -> out.add(function.apply(t)));
