@@ -12,28 +12,28 @@ public interface CommandSource extends PermissionHolder {
      *
      * @param message The message which should be sent
      */
-    void sendMessage(String message);
+    void sendMessage(@Nonnull String message);
 
     /**
      * Sends a raw message to the source of the command
      *
      * @param message The message which should be sent
      */
-    void sendRawMessage(String message);
+    void sendRawMessage(@Nonnull String message);
 
     /**
      * Sends many messages to the source of the command
      *
      * @param messages The messages which should be sent
      */
-    void sendMessages(String[] messages);
+    void sendMessages(@Nonnull String[] messages);
 
     /**
      * Sends many messages to the source of the command
      *
      * @param messages The messages which should be sent
      */
-    void sendRawMessages(String[] messages);
+    void sendRawMessages(@Nonnull String[] messages);
 
     /**
      * @return The command manger of the source

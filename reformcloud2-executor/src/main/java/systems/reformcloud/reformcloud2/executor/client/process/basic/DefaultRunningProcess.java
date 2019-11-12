@@ -64,8 +64,8 @@ public final class DefaultRunningProcess implements RunningProcess {
         processInformation.setProcessState(ProcessState.PREPARED);
 
         if (processInformation.getProcessGroup().isStaticProcess()) {
-            this.path = Paths.get("reformcloud/static/" + processInformation.getName() + "/plugins");
-            SystemHelper.createDirectory(path);
+            this.path = Paths.get("reformcloud/static/" + processInformation.getName());
+            SystemHelper.createDirectory(Paths.get(path + "/plugins"));
         } else {
             this.path = Paths.get("reformcloud/temp/" + processInformation.getName() + "-" + processInformation.getProcessUniqueID());
             SystemHelper.recreateDirectory(path);
@@ -240,10 +240,12 @@ public final class DefaultRunningProcess implements RunningProcess {
     private void rewriteSpongeConfig() {
         File config = Paths.get(path + "/config/sponge/global.conf").toFile();
         rewriteFile(config, (UnaryOperator<String>) s -> {
-            if (s.startsWith("ip-forwarding=")) {
-                s = "ip-forwarding=true";
-            } else if (s.startsWith("bungeecord=")) {
-                s = "bungeecord=true";
+            if (s.startsWith("        ip-forwarding=")) {
+                s = "        ip-forwarding=true";
+            } else if (s.startsWith("        bungeecord=")) {
+                s = "        bungeecord=true";
+            } else if (s.startsWith("        plugins-dir=")) {
+                s = "        plugins-dir=\"${CANONICAL_GAME_DIR}/plugins\"";
             }
 
             return s;
@@ -346,11 +348,11 @@ public final class DefaultRunningProcess implements RunningProcess {
 
         if (isLogicallySpongeVanilla()) {
             SystemHelper.createDirectory(Paths.get(path + "/config/sponge"));
-            SystemHelper.doInternalCopy(getClass().getClassLoader(), "files/java/sponge/vanilla/global.conf", path + "/config/sponge");
+            SystemHelper.doInternalCopy(getClass().getClassLoader(), "files/java/sponge/vanilla/global.conf", path + "/config/sponge/global.conf");
             rewriteSpongeConfig();
         } else if (isLogicallySpongeForge()) {
             SystemHelper.createDirectory(Paths.get(path + "/config/sponge"));
-            SystemHelper.doInternalCopy(getClass().getClassLoader(), "files/java/sponge/forge/global.conf", path + "/config/sponge");
+            SystemHelper.doInternalCopy(getClass().getClassLoader(), "files/java/sponge/forge/global.conf", path + "/config/sponge/global.conf");
             rewriteSpongeConfig();
         } else if (processInformation.getTemplate().getVersion().equals(Version.NUKKIT_X)) {
             SystemHelper.doInternalCopy(getClass().getClassLoader(), "files/mcpe/nukkit/server.properties", path + "/server.properties");
@@ -457,6 +459,7 @@ public final class DefaultRunningProcess implements RunningProcess {
         SystemHelper.createDirectory(Paths.get(path + "/plugins"));
         SystemHelper.createDirectory(Paths.get(path + "/reformcloud/.connection"));
         SystemHelper.doCopy("reformcloud/files/.connection/connection.json", path + "/reformcloud/.connection/key.json");
+        SystemHelper.copyDirectory(Paths.get("reformcloud/global"), path);
     }
 
     // ========================= //

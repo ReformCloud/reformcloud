@@ -8,6 +8,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonCo
 import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links;
 
+import javax.annotation.Nonnull;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,7 +33,7 @@ public class CommandDump extends GlobalCommand {
     private final DumpUtil specificDumper;
 
     @Override
-    public boolean handleCommand(CommandSource commandSource, String[] strings) {
+    public boolean handleCommand(@Nonnull CommandSource commandSource, @Nonnull String[] strings) {
         commandSource.sendMessage(LanguageManager.get("command-dump-creating"));
         String dump = createFullDump();
         commandSource.sendMessage(LanguageManager.get("command-sump-created", pasteDump(dump)));

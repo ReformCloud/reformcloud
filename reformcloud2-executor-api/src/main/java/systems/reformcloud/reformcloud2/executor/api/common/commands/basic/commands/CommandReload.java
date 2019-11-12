@@ -4,6 +4,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.Globa
 import systems.reformcloud.reformcloud2.executor.api.common.commands.source.CommandSource;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.runtime.ReloadableRuntime;
 
+import javax.annotation.Nonnull;
 import java.util.Collections;
 
 public final class CommandReload extends GlobalCommand {
@@ -19,7 +20,7 @@ public final class CommandReload extends GlobalCommand {
     private final ReloadableRuntime reloadableRuntime;
 
     @Override
-    public boolean handleCommand(CommandSource commandSource, String[] strings) {
+    public boolean handleCommand(@Nonnull CommandSource commandSource, @Nonnull String[] strings) {
         try {
             reloadableRuntime.reload();
         } catch (final Exception ex) {

@@ -30,6 +30,13 @@
             <url>https://repo.velocitypowered.com/snapshots/</url>
         </repository>
 
+        <!-- sponge repo -->
+        <repository>
+            <id>sponge-repo</id>
+            <name>Sponge Maven Repository</name>
+            <url>https://repo.spongepowered.org/maven</url>
+        </repository>
+
         <!-- reformcloud repo for nukkitX -->
         <repository>
             <id>reformcloud-repo</id>
@@ -105,6 +112,15 @@
             <version>1.0-SNAPSHOT</version>
             <scope>provided</scope>
             <type>jar</type>
+        </dependency>
+
+        <!-- sponge api -->
+        <dependency>
+            <groupId>org.spongepowered</groupId>
+            <artifactId>spongeapi</artifactId>
+            <version>7.0.0</version>
+            <type>jar</type>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 

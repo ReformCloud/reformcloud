@@ -14,12 +14,11 @@ public class ProcessGroup implements Nameable {
 
     public static final TypeToken<ProcessGroup> TYPE = new TypeToken<ProcessGroup>() {};
 
-    public ProcessGroup(String name, boolean showIdInName, String parentGroup,
+    public ProcessGroup(String name, boolean showIdInName,
                         StartupConfiguration startupConfiguration, List<Template> templates,
                         PlayerAccessConfiguration playerAccessConfiguration, boolean staticProcess) {
         this.name = name;
         this.showIdInName = showIdInName;
-        this.parentGroup = parentGroup;
         this.startupConfiguration = startupConfiguration;
         this.templates = templates;
         this.playerAccessConfiguration = playerAccessConfiguration;
@@ -27,12 +26,11 @@ public class ProcessGroup implements Nameable {
         this.canBeUsedAsLobby = false;
     }
 
-    public ProcessGroup(String name, boolean showIdInName, String parentGroup,
+    public ProcessGroup(String name, boolean showIdInName,
                         StartupConfiguration startupConfiguration, List<Template> templates,
                         PlayerAccessConfiguration playerAccessConfiguration, boolean staticProcess, boolean asLobby) {
         this.name = name;
         this.showIdInName = showIdInName;
-        this.parentGroup = parentGroup;
         this.startupConfiguration = startupConfiguration;
         this.templates = templates;
         this.playerAccessConfiguration = playerAccessConfiguration;
@@ -43,8 +41,6 @@ public class ProcessGroup implements Nameable {
     private String name;
 
     private boolean showIdInName;
-
-    private String parentGroup;
 
     private StartupConfiguration startupConfiguration;
 
@@ -58,10 +54,6 @@ public class ProcessGroup implements Nameable {
 
     public boolean isShowIdInName() {
         return showIdInName;
-    }
-
-    public String getParentGroup() {
-        return parentGroup == null ? "null" : parentGroup;
     }
 
     public StartupConfiguration getStartupConfiguration() {
@@ -99,7 +91,6 @@ public class ProcessGroup implements Nameable {
                 isStaticProcess() == that.isStaticProcess() &&
                 isCanBeUsedAsLobby() == that.isCanBeUsedAsLobby() &&
                 Objects.equals(getName(), that.getName()) &&
-                Objects.equals(getParentGroup(), that.getParentGroup()) &&
                 Objects.equals(getStartupConfiguration(), that.getStartupConfiguration()) &&
                 Objects.equals(getTemplates(), that.getTemplates()) &&
                 Objects.equals(getPlayerAccessConfiguration(), that.getPlayerAccessConfiguration());

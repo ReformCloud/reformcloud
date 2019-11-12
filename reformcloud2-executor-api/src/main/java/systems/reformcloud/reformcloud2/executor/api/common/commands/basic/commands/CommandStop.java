@@ -3,6 +3,7 @@ package systems.reformcloud.reformcloud2.executor.api.common.commands.basic.comm
 import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.GlobalCommand;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.source.CommandSource;
 
+import javax.annotation.Nonnull;
 import java.util.Arrays;
 
 public final class CommandStop extends GlobalCommand {
@@ -14,7 +15,7 @@ public final class CommandStop extends GlobalCommand {
     }
 
     @Override
-    public boolean handleCommand(CommandSource commandSource, String[] strings) {
+    public boolean handleCommand(@Nonnull CommandSource commandSource, @Nonnull String[] strings) {
         System.exit(0);
         return true;
     }

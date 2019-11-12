@@ -11,10 +11,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.commands.Command;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.MainGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
-import systems.reformcloud.reformcloud2.executor.api.common.groups.template.RuntimeConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Template;
-import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Version;
-import systems.reformcloud.reformcloud2.executor.api.common.groups.template.backend.basic.FileBackend;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.PlayerAccessConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.StartupConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.StartupEnvironment;
@@ -31,7 +28,10 @@ import systems.reformcloud.reformcloud2.executor.api.common.utility.task.default
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -39,6 +39,11 @@ import java.util.function.Function;
 public abstract class ExternalAPIImplementation extends ExecutorAPI {
 
     public static final int EXTERNAL_PACKET_ID = 600;
+
+    @Override
+    public boolean isReady() {
+        return DefaultChannelManager.INSTANCE.get("Controller").isPresent();
+    }
 
     @Nonnull
     @Override
@@ -409,31 +414,21 @@ public abstract class ExternalAPIImplementation extends ExecutorAPI {
     @Nonnull
     @Override
     public Task<ProcessGroup> createProcessGroupAsync(@Nonnull String name) {
-        return createProcessGroupAsync(name, null);
+        return createProcessGroupAsync(name, new ArrayList<>());
     }
 
     @Nonnull
     @Override
-    public Task<ProcessGroup> createProcessGroupAsync(@Nonnull String name, @Nullable String parent) {
-        return createProcessGroupAsync(name, parent, Collections.singletonList(
-                new Template(0, "default", false, FileBackend.NAME, "#", new RuntimeConfiguration(
-                        512, new ArrayList<>(), new HashMap<>()
-                ), Version.PAPER_1_8_8)
-        ));
-    }
-
-    @Nonnull
-    @Override
-    public Task<ProcessGroup> createProcessGroupAsync(@Nonnull String name, @Nullable String parent, @Nonnull List<Template> templates) {
-        return createProcessGroupAsync(name, parent, templates, new StartupConfiguration(
+    public Task<ProcessGroup> createProcessGroupAsync(@Nonnull String name, @Nonnull List<Template> templates) {
+        return createProcessGroupAsync(name, templates, new StartupConfiguration(
                 -1, 1, 1, 41000, StartupEnvironment.JAVA_RUNTIME, true, new ArrayList<>()
         ));
     }
 
     @Nonnull
     @Override
-    public Task<ProcessGroup> createProcessGroupAsync(@Nonnull String name, String parent, @Nonnull List<Template> templates, @Nonnull StartupConfiguration startupConfiguration) {
-        return createProcessGroupAsync(name, parent, templates, startupConfiguration, new PlayerAccessConfiguration(
+    public Task<ProcessGroup> createProcessGroupAsync(@Nonnull String name, @Nonnull List<Template> templates, @Nonnull StartupConfiguration startupConfiguration) {
+        return createProcessGroupAsync(name, templates, startupConfiguration, new PlayerAccessConfiguration(
                 false, "reformcloud.join.maintenance", false,
                 null, true, true, true, 50
         ));
@@ -441,19 +436,18 @@ public abstract class ExternalAPIImplementation extends ExecutorAPI {
 
     @Nonnull
     @Override
-    public Task<ProcessGroup> createProcessGroupAsync(@Nonnull String name, String parent, @Nonnull List<Template> templates, @Nonnull StartupConfiguration startupConfiguration, @Nonnull PlayerAccessConfiguration playerAccessConfiguration) {
-        return createProcessGroupAsync(name, parent, templates, startupConfiguration, playerAccessConfiguration, false);
+    public Task<ProcessGroup> createProcessGroupAsync(@Nonnull String name, @Nonnull List<Template> templates, @Nonnull StartupConfiguration startupConfiguration, @Nonnull PlayerAccessConfiguration playerAccessConfiguration) {
+        return createProcessGroupAsync(name, templates, startupConfiguration, playerAccessConfiguration, false);
     }
 
     @Nonnull
     @Override
-    public Task<ProcessGroup> createProcessGroupAsync(@Nonnull String name, String parent, @Nonnull List<Template> templates, @Nonnull StartupConfiguration startupConfiguration, @Nonnull PlayerAccessConfiguration playerAccessConfiguration, boolean staticGroup) {
+    public Task<ProcessGroup> createProcessGroupAsync(@Nonnull String name, @Nonnull List<Template> templates, @Nonnull StartupConfiguration startupConfiguration, @Nonnull PlayerAccessConfiguration playerAccessConfiguration, boolean staticGroup) {
         Task<ProcessGroup> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             ProcessGroup processGroup = new ProcessGroup(
                     name,
                     true,
-                    parent,
                     startupConfiguration,
                     templates,
                     playerAccessConfiguration,
@@ -570,32 +564,26 @@ public abstract class ExternalAPIImplementation extends ExecutorAPI {
 
     @Nonnull
     @Override
-    public ProcessGroup createProcessGroup(@Nonnull String name, @Nonnull String parent) {
-        return createProcessGroupAsync(name, parent).getUninterruptedly();
+    public ProcessGroup createProcessGroup(@Nonnull String name, @Nonnull List<Template> templates) {
+        return createProcessGroupAsync(name, templates).getUninterruptedly();
     }
 
     @Nonnull
     @Override
-    public ProcessGroup createProcessGroup(@Nonnull String name, @Nonnull String parent, @Nonnull List<Template> templates) {
-        return createProcessGroupAsync(name, parent, templates).getUninterruptedly();
+    public ProcessGroup createProcessGroup(@Nonnull String name, @Nonnull List<Template> templates, @Nonnull StartupConfiguration startupConfiguration) {
+        return createProcessGroupAsync(name, templates, startupConfiguration).getUninterruptedly();
     }
 
     @Nonnull
     @Override
-    public ProcessGroup createProcessGroup(@Nonnull String name, String parent, @Nonnull List<Template> templates, @Nonnull StartupConfiguration startupConfiguration) {
-        return createProcessGroupAsync(name, parent, templates, startupConfiguration).getUninterruptedly();
+    public ProcessGroup createProcessGroup(@Nonnull String name, @Nonnull List<Template> templates, @Nonnull StartupConfiguration startupConfiguration, @Nonnull PlayerAccessConfiguration playerAccessConfiguration) {
+        return createProcessGroupAsync(name, templates, startupConfiguration, playerAccessConfiguration).getUninterruptedly();
     }
 
     @Nonnull
     @Override
-    public ProcessGroup createProcessGroup(@Nonnull String name, String parent, @Nonnull List<Template> templates, @Nonnull StartupConfiguration startupConfiguration, @Nonnull PlayerAccessConfiguration playerAccessConfiguration) {
-        return createProcessGroupAsync(name, parent, templates, startupConfiguration, playerAccessConfiguration).getUninterruptedly();
-    }
-
-    @Nonnull
-    @Override
-    public ProcessGroup createProcessGroup(@Nonnull String name, String parent, @Nonnull List<Template> templates, @Nonnull StartupConfiguration startupConfiguration, @Nonnull PlayerAccessConfiguration playerAccessConfiguration, boolean staticGroup) {
-        return createProcessGroupAsync(name, parent, templates, startupConfiguration, playerAccessConfiguration, staticGroup).getUninterruptedly();
+    public ProcessGroup createProcessGroup(@Nonnull String name, @Nonnull List<Template> templates, @Nonnull StartupConfiguration startupConfiguration, @Nonnull PlayerAccessConfiguration playerAccessConfiguration, boolean staticGroup) {
+        return createProcessGroupAsync(name, templates, startupConfiguration, playerAccessConfiguration, staticGroup).getUninterruptedly();
     }
 
     @Nonnull
@@ -616,13 +604,13 @@ public abstract class ExternalAPIImplementation extends ExecutorAPI {
         return updateProcessGroupAsync(processGroup).getUninterruptedly();
     }
 
-    @Nonnull
+    @Nullable
     @Override
     public MainGroup getMainGroup(@Nonnull String name) {
         return getMainGroupAsync(name).getUninterruptedly();
     }
 
-    @Nonnull
+    @Nullable
     @Override
     public ProcessGroup getProcessGroup(@Nonnull String name) {
         return getProcessGroupAsync(name).getUninterruptedly();

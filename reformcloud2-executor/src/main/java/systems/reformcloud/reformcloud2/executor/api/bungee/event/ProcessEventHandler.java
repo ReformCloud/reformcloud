@@ -11,10 +11,6 @@ public final class ProcessEventHandler {
 
     @Listener
     public void handleStart(ProcessStartedEvent event) {
-        BungeeExecutor.getInstance().publishNotification(
-                BungeeExecutor.getInstance().getMessages().getProcessStarted(),
-                event.getProcessInformation().getName()
-        );
         BungeeExecutor.registerServer(event.getProcessInformation());
     }
 
@@ -30,10 +26,5 @@ public final class ProcessEventHandler {
             BungeeExecutor.LOBBY_SERVERS.remove(event.getProcessInformation());
             ProxyServer.getInstance().getConfig().getListeners().forEach(listenerInfo -> listenerInfo.getServerPriority().remove(event.getProcessInformation().getName()));
         }
-
-        BungeeExecutor.getInstance().publishNotification(
-                BungeeExecutor.getInstance().getMessages().getProcessStopped(),
-                event.getProcessInformation().getName()
-        );
     }
 }

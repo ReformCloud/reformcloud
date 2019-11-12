@@ -10,10 +10,6 @@ public final class ProcessEventHandler {
 
     @Listener
     public void handleStart(ProcessStartedEvent event) {
-        VelocityExecutor.getInstance().publishNotification(
-                VelocityExecutor.getInstance().getMessages().getProcessStarted(),
-                event.getProcessInformation().getName()
-        );
         VelocityExecutor.getInstance().handleProcessUpdate(event.getProcessInformation());
     }
 

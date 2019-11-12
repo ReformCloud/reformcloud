@@ -51,5 +51,5 @@ public interface Command extends TabCompleter {
      * @param strings The parameters given in the command
      * @return If the command execute was successful
      */
-    boolean handleCommand(CommandSource commandSource, String[] strings);
+    boolean handleCommand(@Nonnull CommandSource commandSource, @Nonnull String[] strings);
 }

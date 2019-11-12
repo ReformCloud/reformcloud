@@ -67,8 +67,8 @@ public class BasicLocalNodeProcess implements LocalNodeProcess {
         processInformation.setProcessState(ProcessState.PREPARED);
 
         if (processInformation.getProcessGroup().isStaticProcess()) {
-            this.path = Paths.get("reformcloud/static/" + processInformation.getName() + "/plugins");
-            SystemHelper.createDirectory(path);
+            this.path = Paths.get("reformcloud/static/" + processInformation.getName());
+            SystemHelper.createDirectory(Paths.get(path + "/plugins"));
         } else {
             this.path = Paths.get("reformcloud/temp/" + processInformation.getName() + "-" + processInformation.getProcessUniqueID());
             SystemHelper.recreateDirectory(path);
@@ -466,6 +466,7 @@ public class BasicLocalNodeProcess implements LocalNodeProcess {
         SystemHelper.createDirectory(Paths.get(path + "/reformcloud/.connection"));
         new JsonConfiguration().add("key", NodeExecutor.getInstance().getNodeExecutorConfig().getCurrentNodeConnectionKey())
                 .write(path + "/reformcloud/.connection/key.json");
+        SystemHelper.copyDirectory(Paths.get("reformcloud/global"), path);
     }
 
     // ========================= //

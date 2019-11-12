@@ -24,22 +24,22 @@ public final class DefaultCommandSource implements CommandSource {
     private final CommandManager commandManager;
 
     @Override
-    public void sendMessage(String message) {
+    public void sendMessage(@Nonnull String message) {
         result.accept(message);
     }
 
     @Override
-    public void sendRawMessage(String message) {
+    public void sendRawMessage(@Nonnull String message) {
         result.accept(message);
     }
 
     @Override
-    public void sendMessages(String[] messages) {
+    public void sendMessages(@Nonnull String[] messages) {
         sendMessage(messages[0]);
     }
 
     @Override
-    public void sendRawMessages(String[] messages) {
+    public void sendRawMessages(@Nonnull String[] messages) {
         sendRawMessage(messages[0]);
     }
 
@@ -50,22 +50,22 @@ public final class DefaultCommandSource implements CommandSource {
     }
 
     @Override
-    public boolean hasPermission(String permission) {
+    public boolean hasPermission(@Nonnull String permission) {
         return true;
     }
 
     @Override
-    public boolean isPermissionSet(String permission) {
+    public boolean isPermissionSet(@Nonnull String permission) {
         return true;
     }
 
     @Override
-    public boolean hasPermission(Permission permission) {
+    public boolean hasPermission(@Nonnull Permission permission) {
         return true;
     }
 
     @Override
-    public boolean isPermissionSet(Permission permission) {
+    public boolean isPermissionSet(@Nonnull Permission permission) {
         return true;
     }
 

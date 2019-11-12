@@ -32,7 +32,6 @@ import systems.reformcloud.reformcloud2.executor.api.executor.PlayerAPIExecutor;
 import systems.reformcloud.reformcloud2.executor.api.packets.in.APIPacketInAPIAction;
 import systems.reformcloud.reformcloud2.executor.api.packets.in.APIPacketInPluginAction;
 import systems.reformcloud.reformcloud2.executor.api.packets.out.APIBungeePacketOutRequestIngameMessages;
-import systems.reformcloud.reformcloud2.executor.api.velocity.commands.CommandLeave;
 import systems.reformcloud.reformcloud2.executor.api.velocity.event.PlayerListenerHandler;
 import systems.reformcloud.reformcloud2.executor.api.velocity.event.ProcessEventHandler;
 import systems.reformcloud.reformcloud2.executor.api.velocity.plugins.PluginExecutorContainer;
@@ -108,6 +107,7 @@ public final class VelocityExecutor extends API implements PlayerAPIExecutor {
     }
 
     @Nonnull
+    @Override
     public EventManager getEventManager() {
         return ExternalEventBusHandler.getInstance().getEventManager();
     }
@@ -116,6 +116,7 @@ public final class VelocityExecutor extends API implements PlayerAPIExecutor {
         return proxyServer;
     }
 
+    @Nonnull
     public static VelocityExecutor getInstance() {
         return instance;
     }
@@ -132,21 +133,18 @@ public final class VelocityExecutor extends API implements PlayerAPIExecutor {
             if (processInformation.isLobby()) {
                 LOBBY_SERVERS.add(processInformation);
             }
-
-            publishNotification(messages.getProcessConnected(), processInformation.getName());
         }
     }
 
     public void handleProcessRemove(ProcessInformation processInformation) {
         proxyServer.getServer(processInformation.getName()).ifPresent(registeredServer -> proxyServer.unregisterServer(registeredServer.getServerInfo()));
-        publishNotification(messages.getProcessStopped(), processInformation.getName());
 
         if (processInformation.isLobby()) {
             LOBBY_SERVERS.remove(processInformation);
         }
     }
 
-    public boolean isServerRegistered(String name) {
+    private boolean isServerRegistered(String name) {
         return proxyServer.getServer(name).isPresent();
     }
 
@@ -170,16 +168,6 @@ public final class VelocityExecutor extends API implements PlayerAPIExecutor {
                 IngameMessages ingameMessages = packet.content().get("messages", IngameMessages.TYPE);
                 setMessages(ingameMessages);
             }));
-            proxyServer.getCommandManager().register(new CommandLeave(), "leave", "lobby", "l", "hub", "quit");
-        });
-    }
-
-    public void publishNotification(String message, Object... replacements) {
-        final String replacedMessage = messages.format(message, replacements);
-        proxyServer.getAllPlayers().forEach(player -> {
-            if (player.hasPermission("reformcloud.notify")) {
-                player.sendMessage(TextComponent.of(replacedMessage));
-            }
         });
     }
 

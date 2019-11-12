@@ -40,6 +40,12 @@ public class IngameMessages {
 
     private String currentProcessClosed = "%prefix% §7The current process got §cstopped";
 
+    private String commandExecuteSuccess = "%prefix% §aSuccessfully §7proceeded!";
+
+    public String getPrefix() {
+        return prefix;
+    }
+
     public String getProcessStarted() {
         return processStarted;
     }
@@ -66,6 +72,10 @@ public class IngameMessages {
 
     public String getCurrentProcessClosed() {
         return currentProcessClosed;
+    }
+
+    public String getCommandExecuteSuccess() {
+        return commandExecuteSuccess;
     }
 
     public String format(String message, Object... replacements) {

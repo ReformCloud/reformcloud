@@ -9,17 +9,29 @@ import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.name.Nameable;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.*;
 
 public final class ProcessInformation implements Nameable {
 
     public static final TypeToken<ProcessInformation> TYPE = new TypeToken<ProcessInformation>() {};
 
-    public ProcessInformation(String processName, String displayName, String parent, UUID nodeUniqueID, UUID processUniqueID, int id,
-                              ProcessState processState, NetworkInfo networkInfo,
-                              ProcessGroup processGroup, Template template,
-                              ProcessRuntimeInformation processRuntimeInformation,
-                              List<DefaultPlugin> plugins, JsonConfiguration extra, int maxPlayers) {
+    public ProcessInformation(
+            @Nonnull String processName,
+            @Nonnull String displayName,
+            @Nonnull String parent,
+            @Nullable UUID nodeUniqueID,
+            @Nonnull UUID processUniqueID,
+            int id,
+            @Nonnull ProcessState processState,
+            @Nonnull NetworkInfo networkInfo,
+            @Nonnull ProcessGroup processGroup,
+            @Nonnull Template template,
+            @Nonnull ProcessRuntimeInformation processRuntimeInformation,
+            @Nonnull List<DefaultPlugin> plugins,
+            @Nonnull JsonConfiguration extra,
+            int maxPlayers
+    ) {
         this.processName = processName;
         this.displayName = displayName;
         this.parent = parent;
@@ -66,10 +78,12 @@ public final class ProcessInformation implements Nameable {
 
     private JsonConfiguration extra;
 
+    @Nonnull
     public String getDisplayName() {
         return displayName;
     }
 
+    @Nonnull
     public String getParent() {
         return parent;
     }
@@ -78,6 +92,7 @@ public final class ProcessInformation implements Nameable {
         return nodeUniqueID;
     }
 
+    @Nonnull
     public UUID getProcessUniqueID() {
         return processUniqueID;
     }
@@ -94,34 +109,42 @@ public final class ProcessInformation implements Nameable {
         return onlinePlayers.size();
     }
 
+    @Nonnull
     public SortedSet<Player> getOnlinePlayers() {
         return onlinePlayers;
     }
 
+    @Nonnull
     public ProcessState getProcessState() {
         return processState;
     }
 
+    @Nonnull
     public NetworkInfo getNetworkInfo() {
         return networkInfo;
     }
 
+    @Nonnull
     public ProcessGroup getProcessGroup() {
         return processGroup;
     }
 
+    @Nonnull
     public Template getTemplate() {
         return template;
     }
 
+    @Nonnull
     public ProcessRuntimeInformation getProcessRuntimeInformation() {
         return processRuntimeInformation;
     }
 
+    @Nonnull
     public List<DefaultPlugin> getPlugins() {
         return plugins;
     }
 
+    @Nonnull
     public JsonConfiguration getExtra() {
         return extra;
     }
@@ -132,15 +155,15 @@ public final class ProcessInformation implements Nameable {
         return processName;
     }
 
-    public void setProcessState(ProcessState processState) {
+    public void setProcessState(@Nonnull ProcessState processState) {
         this.processState = processState;
     }
 
-    public void setProcessGroup(ProcessGroup processGroup) {
+    public void setProcessGroup(@Nonnull ProcessGroup processGroup) {
         this.processGroup = processGroup;
     }
 
-    public boolean onLogin(UUID playerUuid, String playerName) {
+    public boolean onLogin(@Nonnull UUID playerUuid, @Nonnull String playerName) {
         return onlinePlayers.add(new Player(playerUuid, playerName));
     }
 
@@ -148,15 +171,15 @@ public final class ProcessInformation implements Nameable {
         return template.isServer() && processGroup.isCanBeUsedAsLobby();
     }
 
-    public void onLogout(UUID uniqueID) {
+    public void onLogout(@Nonnull UUID uniqueID) {
         Links.filterToReference(onlinePlayers, player -> player.getUniqueID().equals(uniqueID)).ifPresent(player -> onlinePlayers.remove(player));
     }
 
-    public boolean isPlayerOnline(UUID uniqueID) {
+    public boolean isPlayerOnline(@Nonnull UUID uniqueID) {
         return Links.filterToReference(onlinePlayers, player -> player.getUniqueID().equals(uniqueID)).isPresent();
     }
 
-    public ProcessInformation updateMaxPlayers(Integer value) {
+    public ProcessInformation updateMaxPlayers(@Nullable Integer value) {
         if (processGroup.getPlayerAccessConfiguration().isUseCloudPlayerLimit()) {
             this.maxPlayers = processGroup.getPlayerAccessConfiguration().getMaxPlayers();
         } else {
@@ -172,7 +195,7 @@ public final class ProcessInformation implements Nameable {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@Nonnull Object obj) {
         if (!(obj instanceof ProcessInformation)) {
             return false;
         }
@@ -182,6 +205,7 @@ public final class ProcessInformation implements Nameable {
     }
 
     @Override
+    @Nonnull
     public String toString() {
         return getName() + "/" + getProcessUniqueID();
     }

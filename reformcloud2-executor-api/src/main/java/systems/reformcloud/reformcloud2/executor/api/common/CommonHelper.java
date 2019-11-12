@@ -82,6 +82,14 @@ public final class CommonHelper {
         return null;
     }
 
+    public static Long longFromString(String s) {
+        try {
+            return Long.parseLong(s);
+        } catch (final Throwable throwable) {
+            return null;
+        }
+    }
+
     public static UUID tryParse(String s) {
         try {
             return UUID.fromString(s);

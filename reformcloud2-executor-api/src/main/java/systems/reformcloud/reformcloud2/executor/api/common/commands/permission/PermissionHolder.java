@@ -13,7 +13,7 @@ public interface PermissionHolder extends Nameable {
      * @param permission The permission which should be checked
      * @return If the user has the permission
      */
-    boolean hasPermission(String permission);
+    boolean hasPermission(@Nonnull String permission);
 
     /**
      * Checks if the given permission value is set
@@ -21,7 +21,7 @@ public interface PermissionHolder extends Nameable {
      * @param permission The permission which should be checked
      * @return If the permission is set
      */
-    boolean isPermissionSet(String permission);
+    boolean isPermissionSet(@Nonnull String permission);
 
     /**
      * Checks if the user has the specified permission
@@ -29,7 +29,7 @@ public interface PermissionHolder extends Nameable {
      * @param permission Checks if the user has the given {@link Permission}
      * @return If the user has the permission else {@link Permission#defaultResult()}
      */
-    boolean hasPermission(Permission permission);
+    boolean hasPermission(@Nonnull Permission permission);
 
     /**
      * Checks if the user has the specified permission
@@ -37,7 +37,7 @@ public interface PermissionHolder extends Nameable {
      * @param permission Checks if the user has the given {@link Permission}
      * @return If the user has the permission else {@link Permission#defaultResult()}
      */
-    boolean isPermissionSet(Permission permission);
+    boolean isPermissionSet(@Nonnull Permission permission);
 
     /**
      * @return All permissions of the user

@@ -413,7 +413,7 @@ public final class JsonConfiguration implements Configurable<JsonConfiguration> 
             return new JsonConfiguration();
         }
 
-        try (InputStreamReader inputStreamReader = new InputStreamReader(Files.newInputStream(path))) {
+        try (InputStreamReader inputStreamReader = new InputStreamReader(Files.newInputStream(path), StandardCharsets.UTF_8)) {
             return new JsonConfiguration(inputStreamReader);
         } catch (final IOException ex) {
             ex.printStackTrace();

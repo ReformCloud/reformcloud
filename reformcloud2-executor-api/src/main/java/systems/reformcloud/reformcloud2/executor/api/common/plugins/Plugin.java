@@ -21,7 +21,7 @@ public abstract class Plugin implements Nameable {
     /**
      * @return The author of the plugin
      */
-    @Nonnull
+    @Nullable
     public abstract String author();
 
     /**

@@ -50,6 +50,8 @@ public abstract class ExecutorAPI implements
     @Nonnull
     public abstract EventManager getEventManager();
 
+    public abstract boolean isReady();
+
     /* ========================== */
 
     @Nonnull

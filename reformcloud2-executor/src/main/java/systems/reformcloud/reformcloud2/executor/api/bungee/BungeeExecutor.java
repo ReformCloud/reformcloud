@@ -7,7 +7,6 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Plugin;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorType;
 import systems.reformcloud.reformcloud2.executor.api.api.API;
-import systems.reformcloud.reformcloud2.executor.api.bungee.commands.CommandLeave;
 import systems.reformcloud.reformcloud2.executor.api.bungee.event.PlayerListenerHandler;
 import systems.reformcloud.reformcloud2.executor.api.bungee.event.ProcessEventHandler;
 import systems.reformcloud.reformcloud2.executor.api.bungee.plugins.PluginExecutorContainer;
@@ -160,8 +159,6 @@ public final class BungeeExecutor extends API implements PlayerAPIExecutor {
                 IngameMessages ingameMessages = packet.content().get("messages", IngameMessages.TYPE);
                 setMessages(ingameMessages);
             }));
-
-            ProxyServer.getInstance().getPluginManager().registerCommand(plugin, new CommandLeave());
         });
     }
 
@@ -173,8 +170,6 @@ public final class BungeeExecutor extends API implements PlayerAPIExecutor {
             if (serverInfo == null) {
                 return;
             }
-
-            getInstance().publishNotification(getInstance().getMessages().getProcessConnected(), processInformation.getName());
 
             ProxyServer.getInstance().getServers().put(
                     processInformation.getName(),
@@ -221,15 +216,6 @@ public final class BungeeExecutor extends API implements PlayerAPIExecutor {
                         processInformation.getNetworkInfo().getPort()
                 ), "ReformCloud2", false
         );
-    }
-
-    public void publishNotification(String message, Object... replacements) {
-        final String replacedMessage = messages.format(message, replacements);
-        ProxyServer.getInstance().getPlayers().forEach(player -> {
-            if (player.hasPermission("reformcloud.notify")) {
-                player.sendMessage(TextComponent.fromLegacyText(replacedMessage));
-            }
-        });
     }
 
     public static ProcessInformation getBestLobbyForPlayer(ProcessInformation current, Function<String, Boolean> permissionCheck) {

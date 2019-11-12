@@ -4,6 +4,7 @@ import com.google.gson.reflect.TypeToken;
 import systems.reformcloud.reformcloud2.executor.api.common.plugins.Plugin;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.List;
 
 public final class DefaultPlugin extends Plugin {
@@ -40,7 +41,7 @@ public final class DefaultPlugin extends Plugin {
         return version;
     }
 
-    @Nonnull
+    @Nullable
     @Override
     public String author() {
         return author;

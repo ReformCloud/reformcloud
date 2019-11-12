@@ -50,6 +50,8 @@ public final class NetworkUtil {
 
     public static final int PLAYER_INFORMATION_BUS = 5000;
 
+    public static final int EXTERNAL_BUS = 50000;
+
     /* ============================ */
 
     public static final Executor EXECUTOR = Executors.newCachedThreadPool();

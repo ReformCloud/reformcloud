@@ -9,7 +9,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.List;
 
 public interface GroupAsyncAPI extends GroupSyncAPI {
@@ -51,30 +50,17 @@ public interface GroupAsyncAPI extends GroupSyncAPI {
      * Creates a new process group
      *
      * @param name The name of the new group
-     * @param parent The parent-{@link MainGroup} group of the new group
-     * @return A task which will be completed with the created process group
-     */
-    @Nonnull
-    @CheckReturnValue
-    Task<ProcessGroup> createProcessGroupAsync(@Nonnull String name, @Nullable String parent);
-
-    /**
-     * Creates a new process group
-     *
-     * @param name The name of the new group
-     * @param parent The parent-{@link MainGroup} group of the new group
      * @param templates The templates which should be used for the new group
      * @return A task which will be completed with the created process group
      */
     @Nonnull
     @CheckReturnValue
-    Task<ProcessGroup> createProcessGroupAsync(@Nonnull String name, @Nullable String parent, @Nonnull List<Template> templates);
+    Task<ProcessGroup> createProcessGroupAsync(@Nonnull String name, @Nonnull List<Template> templates);
 
     /**
      * Creates a new process group
      *
      * @param name The name of the new group
-     * @param parent The parent-{@link MainGroup} group of the new group
      * @param templates The templates which should be used for the new group
      * @param startupConfiguration The startup config of the new process group
      * @return A task which will be completed with the created process group
@@ -83,7 +69,6 @@ public interface GroupAsyncAPI extends GroupSyncAPI {
     @CheckReturnValue
     Task<ProcessGroup> createProcessGroupAsync(
             @Nonnull String name,
-            @Nullable String parent,
             @Nonnull List<Template> templates,
             @Nonnull StartupConfiguration startupConfiguration
     );
@@ -92,7 +77,6 @@ public interface GroupAsyncAPI extends GroupSyncAPI {
      * Creates a new process group
      *
      * @param name The name of the new group
-     * @param parent The parent-{@link MainGroup} group of the new group
      * @param templates The templates which should be used for the new group
      * @param startupConfiguration The startup config of the new process group
      * @param playerAccessConfiguration The new player access configuration of the process group
@@ -102,7 +86,6 @@ public interface GroupAsyncAPI extends GroupSyncAPI {
     @CheckReturnValue
     Task<ProcessGroup> createProcessGroupAsync(
             @Nonnull String name,
-            @Nullable String parent,
             @Nonnull List<Template> templates,
             @Nonnull StartupConfiguration startupConfiguration,
             @Nonnull PlayerAccessConfiguration playerAccessConfiguration
@@ -112,7 +95,6 @@ public interface GroupAsyncAPI extends GroupSyncAPI {
      * Creates a new process group
      *
      * @param name The name of the new group
-     * @param parent The parent-{@link MainGroup} group of the new group
      * @param templates The templates which should be used for the new group
      * @param startupConfiguration The startup config of the new process group
      * @param playerAccessConfiguration The new player access configuration of the process group
@@ -123,7 +105,6 @@ public interface GroupAsyncAPI extends GroupSyncAPI {
     @CheckReturnValue
     Task<ProcessGroup> createProcessGroupAsync(
             @Nonnull String name,
-            @Nullable String parent,
             @Nonnull List<Template> templates,
             @Nonnull StartupConfiguration startupConfiguration,
             @Nonnull PlayerAccessConfiguration playerAccessConfiguration,

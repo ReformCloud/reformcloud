@@ -10,6 +10,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.commands.manager.Com
 import systems.reformcloud.reformcloud2.executor.api.common.commands.source.CommandSource;
 import systems.reformcloud.reformcloud2.executor.api.common.language.loading.LanguageWorker;
 
+import javax.annotation.Nonnull;
 import java.util.Collections;
 
 import static org.junit.Assert.assertEquals;
@@ -42,7 +43,7 @@ public final class CommandManagerTest {
         }
 
         @Override
-        public boolean handleCommand(CommandSource commandSource, String[] strings) {
+        public boolean handleCommand(@Nonnull CommandSource commandSource, @Nonnull String[] strings) {
             System.out.println(commandSource.getName());
             return false;
         }

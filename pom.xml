@@ -54,9 +54,9 @@
 
     <!-- do not change the module order to prevent issues while building the project -->
     <modules>
-        <module>reformcloud2-default-applications</module>
         <module>reformcloud2-executor-api</module>
         <module>reformcloud2-executor</module>
+        <module>reformcloud2-external</module>
         <module>reformcloud2-runner</module>
     </modules>
 

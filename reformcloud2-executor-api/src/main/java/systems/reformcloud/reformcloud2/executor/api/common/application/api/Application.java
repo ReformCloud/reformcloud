@@ -25,7 +25,7 @@ public class Application {
 
     private AppClassLoader appClassLoader;
 
-    public void init(@Nonnull LoadedApplication application, AppClassLoader loader) {
+    public final void init(@Nonnull LoadedApplication application, AppClassLoader loader) {
         this.application = application;
         this.executorService = Executors.newCachedThreadPool(new ApplicationThreadFactory(new ApplicationThreadGroup(application)));
         this.appClassLoader = loader;

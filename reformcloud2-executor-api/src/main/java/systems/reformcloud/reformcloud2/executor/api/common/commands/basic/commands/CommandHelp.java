@@ -4,6 +4,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.Globa
 import systems.reformcloud.reformcloud2.executor.api.common.commands.manager.CommandManager;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.source.CommandSource;
 
+import javax.annotation.Nonnull;
 import java.util.Arrays;
 
 public final class CommandHelp extends GlobalCommand {
@@ -19,7 +20,7 @@ public final class CommandHelp extends GlobalCommand {
     private final CommandManager commandManager;
 
     @Override
-    public boolean handleCommand(CommandSource commandSource, String[] strings) {
+    public boolean handleCommand(@Nonnull CommandSource commandSource, @Nonnull String[] strings) {
         commandManager.getCommands().forEach(command -> commandSource.sendMessage("   -> " + command.mainCommand() + " " + command.aliases()));
         return true;
     }

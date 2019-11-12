@@ -13,16 +13,15 @@ import java.util.Collections;
 
 public final class DefaultProcessGroup extends ProcessGroup {
 
-    public DefaultProcessGroup(String name, String parent, int port, Version version, int maxMemory, boolean maintenance, int maxPlayers) {
-        this(name, parent, port, version, maxMemory, maintenance, maxPlayers, false, true);
+    public DefaultProcessGroup(String name, int port, Version version, int maxMemory, boolean maintenance, int maxPlayers) {
+        this(name, port, version, maxMemory, maintenance, maxPlayers, false, true);
     }
 
-    public DefaultProcessGroup(String name, String parent, int port, Version version,
+    public DefaultProcessGroup(String name, int port, Version version,
                                int maxMemory, boolean maintenance, int maxPlayers, boolean staticServer, boolean lobby) {
         super(
                 name,
                 true,
-                parent,
                 new StartupConfiguration(
                         -1,
                         1,

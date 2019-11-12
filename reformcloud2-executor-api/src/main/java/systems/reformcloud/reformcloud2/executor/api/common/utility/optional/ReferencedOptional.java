@@ -16,9 +16,8 @@ public final class ReferencedOptional<T> implements Serializable {
         return new ReferencedOptional<>();
     }
 
-    @SuppressWarnings("unchecked")
     public static <T> ReferencedOptional<T> build(@Nullable T value) {
-        return new ReferencedOptional<>().update(value);
+        return new ReferencedOptional<T>().update(value);
     }
 
     // =======================

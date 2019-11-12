@@ -27,6 +27,7 @@ import systems.reformcloud.reformcloud2.executor.node.network.packet.out.screen.
 import systems.reformcloud.reformcloud2.executor.node.process.log.NodeProcessScreenHandler;
 import systems.reformcloud.reformcloud2.executor.node.process.manager.LocalProcessManager;
 
+import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -37,7 +38,7 @@ public final class CommandReformCloud extends GlobalCommand {
     }
 
     @Override
-    public boolean handleCommand(CommandSource commandSource, String[] strings) {
+    public boolean handleCommand(@Nonnull CommandSource commandSource, @Nonnull String[] strings) {
         if (strings.length == 1 && strings[0].equalsIgnoreCase("versions")) {
             {
                 System.out.println(LanguageManager.get("command-rc-available-versions", "Java-Proxy"));
@@ -379,7 +380,6 @@ public final class CommandReformCloud extends GlobalCommand {
                         if (processGroup == null) {
                             ExecutorAPI.getInstance().createProcessGroupAsync(
                                     strings[2],
-                                    null,
                                     Collections.singletonList(new Template(
                                             0,
                                             "default",
@@ -411,7 +411,6 @@ public final class CommandReformCloud extends GlobalCommand {
                         if (processGroup == null) {
                             ExecutorAPI.getInstance().createProcessGroupAsync(
                                     strings[2],
-                                    strings[4],
                                     Collections.singletonList(new Template(
                                             0,
                                             "default",
@@ -424,7 +423,13 @@ public final class CommandReformCloud extends GlobalCommand {
                                                     new HashMap<>()
                                             ), version
                                     ))
-                            );
+                            ).onComplete(e -> {
+                                MainGroup mainGroup = ExecutorAPI.getInstance().getMainGroup(strings[4]);
+                                if (mainGroup != null) {
+                                    mainGroup.getSubGroups().add(e.getName());
+                                    ExecutorAPI.getInstance().updateMainGroup(mainGroup);
+                                }
+                            });
                             System.out.println(LanguageManager.get("command-rc-execute-success"));
                         } else {
                             System.out.println(LanguageManager.get("command-rc-create-sub-group-already-exists", strings[2]));
@@ -449,7 +454,6 @@ public final class CommandReformCloud extends GlobalCommand {
                         if (processGroup == null) {
                             ExecutorAPI.getInstance().createProcessGroupAsync(
                                     strings[2],
-                                    strings[4],
                                     Collections.singletonList(new Template(
                                             0,
                                             "default",
@@ -467,7 +471,13 @@ public final class CommandReformCloud extends GlobalCommand {
                                             false, "reformcloud.join.maintenance", false,
                                             null, true, true, true, 50
                                     ), staticProcess
-                            );
+                            ).onComplete(e -> {
+                                MainGroup mainGroup = ExecutorAPI.getInstance().getMainGroup(strings[4]);
+                                if (mainGroup != null) {
+                                    mainGroup.getSubGroups().add(e.getName());
+                                    ExecutorAPI.getInstance().updateMainGroup(mainGroup);
+                                }
+                            });
                             System.out.println(LanguageManager.get("command-rc-execute-success"));
                         } else {
                             System.out.println(LanguageManager.get("command-rc-create-sub-group-already-exists", strings[2]));
@@ -499,7 +509,6 @@ public final class CommandReformCloud extends GlobalCommand {
                         if (processGroup == null) {
                             ProcessGroup processGroup1 = new DefaultProcessGroup(
                                     strings[2],
-                                    strings[4],
                                     41000,
                                     version,
                                     512,
@@ -508,6 +517,12 @@ public final class CommandReformCloud extends GlobalCommand {
                                     staticProcess,
                                     lobby
                             );
+
+                            MainGroup mainGroup = ExecutorAPI.getInstance().getMainGroup(strings[4]);
+                            if (mainGroup != null) {
+                                mainGroup.getSubGroups().add(processGroup1.getName());
+                                ExecutorAPI.getInstance().updateMainGroup(mainGroup);
+                            }
 
                             ExecutorAPI.getInstance().createProcessGroupAsync(processGroup1);
                             System.out.println(LanguageManager.get("command-rc-execute-success"));
@@ -547,7 +562,6 @@ public final class CommandReformCloud extends GlobalCommand {
                         if (processGroup == null) {
                             ExecutorAPI.getInstance().createProcessGroupAsync(
                                     strings[2],
-                                    strings[4],
                                     Collections.singletonList(new Template(
                                             0,
                                             "default",
@@ -565,7 +579,13 @@ public final class CommandReformCloud extends GlobalCommand {
                                             false, "reformcloud.join.maintenance", false,
                                             null, true, true, true, 50
                                     ), staticProcess
-                            );
+                            ).onComplete(e -> {
+                                MainGroup mainGroup = ExecutorAPI.getInstance().getMainGroup(strings[4]);
+                                if (mainGroup != null) {
+                                    mainGroup.getSubGroups().add(e.getName());
+                                    ExecutorAPI.getInstance().updateMainGroup(mainGroup);
+                                }
+                            });
                             System.out.println(LanguageManager.get("command-rc-execute-success"));
                         } else {
                             System.out.println(LanguageManager.get("command-rc-create-sub-group-already-exists", strings[2]));
@@ -596,7 +616,6 @@ public final class CommandReformCloud extends GlobalCommand {
                 if (strings.length == 2 && strings[1].equalsIgnoreCase("sub")) {
                     ExecutorAPI.getInstance().getProcessGroups().forEach(processGroup -> System.out.println("  => " +
                             processGroup.getName() +
-                            " parent: " + processGroup.getParentGroup() +
                             " maintenance: " + processGroup.getPlayerAccessConfiguration().isMaintenance() +
                             " static: " + processGroup.isStaticProcess() +
                             " lobby: " + processGroup.isCanBeUsedAsLobby()

@@ -1,10 +1,11 @@
 package systems.reformcloud.reformcloud2.executor.api.common.process;
 
+import javax.annotation.Nonnull;
 import java.util.UUID;
 
 public final class Player implements Comparable {
 
-    Player(UUID uniqueID, String name) {
+    Player(@Nonnull UUID uniqueID, @Nonnull String name) {
         this.uniqueID = uniqueID;
         this.name = name;
     }
@@ -15,10 +16,12 @@ public final class Player implements Comparable {
 
     private final long joined = System.currentTimeMillis();
 
+    @Nonnull
     public UUID getUniqueID() {
         return uniqueID;
     }
 
+    @Nonnull
     public String getName() {
         return name;
     }
@@ -28,7 +31,7 @@ public final class Player implements Comparable {
     }
 
     @Override
-    public int compareTo(Object o) {
+    public int compareTo(@Nonnull Object o) {
         if (o instanceof Player) {
             Player player = (Player) o;
             return Long.compare(player.getJoined(), getJoined());

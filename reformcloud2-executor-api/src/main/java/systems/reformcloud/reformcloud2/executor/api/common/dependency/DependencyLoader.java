@@ -22,7 +22,7 @@ public abstract class DependencyLoader {
      *
      * @param url The url which should be appended
      */
-    void addURL(URL url) {
+    void addURL(@Nonnull URL url) {
         RunnerClassLoader urlClassLoader = (RunnerClassLoader) Thread.currentThread().getContextClassLoader();
         urlClassLoader.addURL(url);
     }

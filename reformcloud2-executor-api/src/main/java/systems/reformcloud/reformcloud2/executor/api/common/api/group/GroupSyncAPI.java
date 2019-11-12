@@ -45,28 +45,16 @@ public interface GroupSyncAPI {
      * Creates a new process group
      *
      * @param name The name of the new group
-     * @param parent The parent-{@link MainGroup} group of the new group
-     * @return The created process group
-     */
-    @Nonnull
-    ProcessGroup createProcessGroup(@Nonnull String name, @Nonnull String parent);
-
-    /**
-     * Creates a new process group
-     *
-     * @param name The name of the new group
-     * @param parent The parent-{@link MainGroup} group of the new group
      * @param templates The templates which should be used for the new group
      * @return The created process group
      */
     @Nonnull
-    ProcessGroup createProcessGroup(@Nonnull String name, @Nullable String parent, @Nonnull List<Template> templates);
+    ProcessGroup createProcessGroup(@Nonnull String name, @Nonnull List<Template> templates);
 
     /**
      * Creates a new process group
      *
      * @param name The name of the new group
-     * @param parent The parent-{@link MainGroup} group of the new group
      * @param templates The templates which should be used for the new group
      * @param startupConfiguration The startup config of the new process group
      * @return The created process group
@@ -74,7 +62,6 @@ public interface GroupSyncAPI {
     @Nonnull
     ProcessGroup createProcessGroup(
             @Nonnull String name,
-            @Nullable String parent,
             @Nonnull List<Template> templates,
             @Nonnull StartupConfiguration startupConfiguration
     );
@@ -83,7 +70,6 @@ public interface GroupSyncAPI {
      * Creates a new process group
      *
      * @param name The name of the new group
-     * @param parent The parent-{@link MainGroup} group of the new group
      * @param templates The templates which should be used for the new group
      * @param startupConfiguration The startup config of the new process group
      * @param playerAccessConfiguration The new player access configuration of the process group
@@ -92,7 +78,6 @@ public interface GroupSyncAPI {
     @Nonnull
     ProcessGroup createProcessGroup(
             @Nonnull String name,
-            @Nullable String parent,
             @Nonnull List<Template> templates,
             @Nonnull StartupConfiguration startupConfiguration,
             @Nonnull PlayerAccessConfiguration playerAccessConfiguration
@@ -102,7 +87,6 @@ public interface GroupSyncAPI {
      * Creates a new process group
      *
      * @param name The name of the new group
-     * @param parent The parent-{@link MainGroup} group of the new group
      * @param templates The templates which should be used for the new group
      * @param startupConfiguration The startup config of the new process group
      * @param playerAccessConfiguration The new player access configuration of the process group
@@ -112,7 +96,6 @@ public interface GroupSyncAPI {
     @Nonnull
     ProcessGroup createProcessGroup(
             @Nonnull String name,
-            @Nullable String parent,
             @Nonnull List<Template> templates,
             @Nonnull StartupConfiguration startupConfiguration,
             @Nonnull PlayerAccessConfiguration playerAccessConfiguration,
@@ -152,7 +135,7 @@ public interface GroupSyncAPI {
      * @param name The name of the main group which should be found
      * @return The main group or {@code null} if the group does not exists
      */
-    @Nonnull
+    @Nullable
     MainGroup getMainGroup(@Nonnull String name);
 
     /**
@@ -161,7 +144,7 @@ public interface GroupSyncAPI {
      * @param name The name of the process group which should be found
      * @return The process group or {@code null} if the process group does not exists
      */
-    @Nonnull
+    @Nullable
     ProcessGroup getProcessGroup(@Nonnull String name);
 
     /**

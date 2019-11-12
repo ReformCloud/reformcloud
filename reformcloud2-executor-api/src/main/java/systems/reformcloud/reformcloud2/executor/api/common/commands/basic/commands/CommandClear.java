@@ -4,6 +4,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.Globa
 import systems.reformcloud.reformcloud2.executor.api.common.commands.source.CommandSource;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.LoggerBase;
 
+import javax.annotation.Nonnull;
 import java.util.Collections;
 
 public final class CommandClear extends GlobalCommand {
@@ -16,7 +17,7 @@ public final class CommandClear extends GlobalCommand {
     private final LoggerBase loggerBase;
 
     @Override
-    public boolean handleCommand(CommandSource commandSource, String[] strings) {
+    public boolean handleCommand(@Nonnull CommandSource commandSource, @Nonnull String[] strings) {
         loggerBase.clearScreen();
         return true;
     }

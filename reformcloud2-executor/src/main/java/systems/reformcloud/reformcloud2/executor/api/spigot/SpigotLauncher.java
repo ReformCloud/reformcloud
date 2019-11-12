@@ -15,6 +15,8 @@ public final class SpigotLauncher extends JavaPlugin {
         DependencyLoader.doLoad();
         LanguageWorker.doLoad();
         StringUtil.sendHeader();
+
+        Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
     }
 
     @Override

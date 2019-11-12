@@ -131,11 +131,11 @@ public final class ControllerExecutorConfig {
                     switch (Integer.parseInt(s)) {
                         case 1: {
                              proxy = new DefaultProcessGroup(
-                                    "Proxy", mainProxy.getName(), 25565, Version.BUNGEECORD,
+                                    "Proxy", 25565, Version.BUNGEECORD,
                                     128, true, 512
                             );
                             lobby = new DefaultProcessGroup(
-                                    "Lobby", mainLobby.getName(), 41000, Version.PAPER_1_8_8,
+                                    "Lobby", 41000, Version.PAPER_1_8_8,
                                     512, false, 50
                             );
                             break;
@@ -143,11 +143,11 @@ public final class ControllerExecutorConfig {
 
                         case 2: {
                             proxy = new DefaultProcessGroup(
-                                    "Proxy", mainProxy.getName(), 19132, Version.WATERDOG,
+                                    "Proxy", 19132, Version.WATERDOG,
                                     128, true, 512
                             );
                             lobby = new DefaultProcessGroup(
-                                    "Lobby", mainLobby.getName(), 41000, Version.NUKKIT_X,
+                                    "Lobby", 41000, Version.NUKKIT_X,
                                     512, false, 50
                             );
                             break;

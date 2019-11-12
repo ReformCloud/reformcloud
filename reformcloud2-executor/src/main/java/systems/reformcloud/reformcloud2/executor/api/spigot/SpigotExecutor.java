@@ -144,7 +144,7 @@ public final class SpigotExecutor extends API implements PlayerAPIExecutor {
     public void executeKickPlayer(UUID player, String message) {
         Player player1 = Bukkit.getPlayer(player);
         if (player1 != null) {
-            player1.kickPlayer(message);
+            Bukkit.getScheduler().runTask(plugin, () -> player1.kickPlayer(message));
         }
     }
 
@@ -153,7 +153,7 @@ public final class SpigotExecutor extends API implements PlayerAPIExecutor {
         Player player1 = Bukkit.getPlayer(player);
         Sound sound1 = Enums.getIfPresent(Sound.class, sound).orNull();
         if (player1 != null && sound1 != null) {
-            player1.playSound(player1.getLocation(), sound1, f1, f2);
+            Bukkit.getScheduler().runTask(plugin, () -> player1.playSound(player1.getLocation(), sound1, f1, f2));
         }
     }
 
@@ -161,7 +161,7 @@ public final class SpigotExecutor extends API implements PlayerAPIExecutor {
     public void executeSendTitle(UUID player, String title, String subTitle, int fadeIn, int stay, int fadeOut) {
         Player player1 = Bukkit.getPlayer(player);
         if (player1 != null) {
-            player1.sendTitle(title, subTitle, fadeIn, stay, fadeOut);
+            Bukkit.getScheduler().runTask(plugin, () -> player1.sendTitle(title, subTitle, fadeIn, stay, fadeOut));
         }
     }
 
@@ -170,7 +170,7 @@ public final class SpigotExecutor extends API implements PlayerAPIExecutor {
         Player player1 = Bukkit.getPlayer(player);
         EntityEffect entityEffect1 = Enums.getIfPresent(EntityEffect.class, entityEffect).orNull();
         if (player1 != null && entityEffect1 != null) {
-            player1.playEffect(entityEffect1);
+            Bukkit.getScheduler().runTask(plugin, () -> player1.playEffect(entityEffect1));
         }
     }
 
@@ -179,7 +179,7 @@ public final class SpigotExecutor extends API implements PlayerAPIExecutor {
         Player player1 = Bukkit.getPlayer(player);
         Effect effect1 = Enums.getIfPresent(Effect.class, effect).orNull();
         if (player1 != null && effect1 != null) {
-            player1.playEffect(player1.getLocation(), effect1, data);
+            Bukkit.getScheduler().runTask(plugin, () -> player1.playEffect(player1.getLocation(), effect1, data));
         }
     }
 
@@ -187,7 +187,7 @@ public final class SpigotExecutor extends API implements PlayerAPIExecutor {
     public void executeRespawn(UUID player) {
         Player player1 = Bukkit.getPlayer(player);
         if (player1 != null) {
-            player1.spigot().respawn();
+            Bukkit.getScheduler().runTask(plugin, () -> player1.spigot().respawn());
         }
     }
 
@@ -195,7 +195,7 @@ public final class SpigotExecutor extends API implements PlayerAPIExecutor {
     public void executeTeleport(UUID player, String world, double x, double y, double z, float yaw, float pitch) {
         Player player1 = Bukkit.getPlayer(player);
         if (player1 != null) {
-            player1.teleport(new Location(Bukkit.getWorld(world), x, y, z, yaw, pitch));
+            Bukkit.getScheduler().runTask(plugin, () -> player1.teleport(new Location(Bukkit.getWorld(world), x, y, z, yaw, pitch)));
         }
     }
 
@@ -218,7 +218,7 @@ public final class SpigotExecutor extends API implements PlayerAPIExecutor {
     public void executeSetResourcePack(UUID player, String pack) {
         Player player1 = Bukkit.getPlayer(player);
         if (player1 != null) {
-            player1.setResourcePack(pack);
+            Bukkit.getScheduler().runTask(plugin, () -> player1.setResourcePack(pack));
         }
     }
 }

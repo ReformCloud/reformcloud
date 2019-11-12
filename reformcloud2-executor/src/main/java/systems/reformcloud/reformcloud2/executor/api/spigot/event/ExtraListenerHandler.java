@@ -18,7 +18,7 @@ public final class ExtraListenerHandler implements Listener {
         Plugin plugin = event.getPlugin();
         DefaultPlugin defaultPlugin = new DefaultPlugin(
                 plugin.getDescription().getVersion(),
-                plugin.getDescription().getAuthors().get(0),
+                plugin.getDescription().getAuthors().size() != 0 ? plugin.getDescription().getAuthors().get(0) : null,
                 plugin.getDescription().getMain(),
                 plugin.getDescription().getDepend(),
                 plugin.getDescription().getSoftDepend(),

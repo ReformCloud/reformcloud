@@ -37,17 +37,17 @@ public final class ConsoleCommandSource implements CommandSource {
     private final CommandManager commandManager;
 
     @Override
-    public boolean hasPermission(String permission) {
+    public boolean hasPermission(@Nonnull String permission) {
         return true;
     }
 
     @Override
-    public boolean isPermissionSet(String permission) {
+    public boolean isPermissionSet(@Nonnull String permission) {
         return true;
     }
 
     @Override
-    public boolean hasPermission(Permission permission) {
+    public boolean hasPermission(@Nonnull Permission permission) {
         if (hasPermission(permission.permission())) {
             return true;
         }
@@ -56,7 +56,7 @@ public final class ConsoleCommandSource implements CommandSource {
     }
 
     @Override
-    public boolean isPermissionSet(Permission permission) {
+    public boolean isPermissionSet(@Nonnull Permission permission) {
         if (isPermissionSet(permission.permission())) {
             return true;
         }
@@ -87,24 +87,24 @@ public final class ConsoleCommandSource implements CommandSource {
     }
 
     @Override
-    public void sendMessage(String message) {
+    public void sendMessage(@Nonnull String message) {
         System.out.println(message);
     }
 
     @Override
-    public void sendRawMessage(String message) {
+    public void sendRawMessage(@Nonnull String message) {
         System.out.println(Colours.stripColor(message));
     }
 
     @Override
-    public void sendMessages(String[] messages) {
+    public void sendMessages(@Nonnull String[] messages) {
         for (String message : messages) {
             sendMessage(message);
         }
     }
 
     @Override
-    public void sendRawMessages(String[] messages) {
+    public void sendRawMessages(@Nonnull String[] messages) {
         for (String message : messages) {
             sendRawMessage(message);
         }
