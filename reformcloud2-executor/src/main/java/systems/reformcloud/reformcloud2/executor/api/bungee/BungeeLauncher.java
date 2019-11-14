@@ -3,7 +3,6 @@ package systems.reformcloud.reformcloud2.executor.api.bungee;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.plugin.Plugin;
-import systems.reformcloud.reformcloud2.executor.api.common.dependency.DependencyLoader;
 import systems.reformcloud.reformcloud2.executor.api.common.language.loading.LanguageWorker;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.StringUtil;
 
@@ -11,7 +10,6 @@ public final class BungeeLauncher extends Plugin {
 
     @Override
     public void onLoad() {
-        DependencyLoader.doLoad();
         LanguageWorker.doLoad();
         StringUtil.sendHeader();
     }

@@ -3,7 +3,6 @@ package systems.reformcloud.reformcloud2.executor.api.nukkit;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.plugin.PluginBase;
-import systems.reformcloud.reformcloud2.executor.api.common.dependency.DependencyLoader;
 import systems.reformcloud.reformcloud2.executor.api.common.language.loading.LanguageWorker;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.StringUtil;
 import systems.reformcloud.reformcloud2.executor.api.nukkit.event.ExtraListenerHandler;
@@ -13,7 +12,6 @@ public final class NukkitLauncher extends PluginBase {
 
     @Override
     public void onLoad() {
-        DependencyLoader.doLoad();
         LanguageWorker.doLoad();
         StringUtil.sendHeader();
     }

@@ -7,7 +7,6 @@ import org.spongepowered.api.event.game.state.GameLoadCompleteEvent;
 import org.spongepowered.api.event.game.state.GameStartedServerEvent;
 import org.spongepowered.api.event.game.state.GameStoppingServerEvent;
 import org.spongepowered.api.plugin.Plugin;
-import systems.reformcloud.reformcloud2.executor.api.common.dependency.DependencyLoader;
 import systems.reformcloud.reformcloud2.executor.api.common.language.loading.LanguageWorker;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.StringUtil;
 
@@ -26,7 +25,6 @@ public class SpongeLauncher {
 
     @Listener
     public void handle(final GameLoadCompleteEvent event) {
-        DependencyLoader.doLoad();
         LanguageWorker.doLoad();
         StringUtil.sendHeader();
     }

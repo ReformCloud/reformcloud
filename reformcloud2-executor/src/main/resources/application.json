@@ -1,8 +1,0 @@
-{
-  "name": "ReformCloud2Permissions",
-  "author": "derklaro",
-  "version": "2.0",
-  "main": "systems.reformcloud.reformcloud2.permissions.application.ControllerApplication",
-  "description": "The reformcloud 2 permissions handler",
-  "website": "https://reformcloud.systems"
-}

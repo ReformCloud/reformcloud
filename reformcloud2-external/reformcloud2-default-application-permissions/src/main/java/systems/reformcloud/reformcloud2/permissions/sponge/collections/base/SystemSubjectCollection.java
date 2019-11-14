@@ -3,6 +3,7 @@ package systems.reformcloud.reformcloud2.permissions.sponge.collections.base;
 import org.spongepowered.api.service.permission.PermissionService;
 import org.spongepowered.api.service.permission.Subject;
 import systems.reformcloud.reformcloud2.permissions.sponge.collections.DefaultSubjectCollection;
+import systems.reformcloud.reformcloud2.permissions.sponge.subject.base.system.SystemSubject;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -18,7 +19,7 @@ public class SystemSubjectCollection extends DefaultSubjectCollection {
     @Nonnull
     @Override
     protected Subject load(String id) {
-        return null;
+        return new SystemSubject(id, service, this);
     }
 
     @Override

@@ -2,7 +2,6 @@ package systems.reformcloud.reformcloud2.executor.api.spigot;
 
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
-import systems.reformcloud.reformcloud2.executor.api.common.dependency.DependencyLoader;
 import systems.reformcloud.reformcloud2.executor.api.common.language.loading.LanguageWorker;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.StringUtil;
 import systems.reformcloud.reformcloud2.executor.api.spigot.event.ExtraListenerHandler;
@@ -12,7 +11,6 @@ public final class SpigotLauncher extends JavaPlugin {
 
     @Override
     public void onLoad() {
-        DependencyLoader.doLoad();
         LanguageWorker.doLoad();
         StringUtil.sendHeader();
 

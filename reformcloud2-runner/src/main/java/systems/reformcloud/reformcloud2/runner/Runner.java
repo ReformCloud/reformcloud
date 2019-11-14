@@ -202,10 +202,22 @@ public final class Runner {
             return;
         }
 
+        String libPath = System.getProperty("reformcloud.lib.path") + "/reformcloud/.bin/libs/";
+        File file = new File(libPath);
+        if (!file.exists() || !file.isDirectory()) {
+            throw new RuntimeException("Bad lib path given " + libPath);
+        }
+
         try {
             inst.appendToSystemClassLoaderSearch(new JarFile(new File(System.getProperty("reformcloud.process.path"))));
-        } catch (final Throwable throwable) {
-            throwable.printStackTrace();
+            for (File dependency : Objects.requireNonNull(file.listFiles())) {
+                if (!dependency.getName().endsWith(".jar") || !dependency.isFile()) {
+                    continue;
+                }
+
+                inst.appendToSystemClassLoaderSearch(new JarFile(file));
+            }
+        } catch (final Throwable ignored) {
         }
     }
 }

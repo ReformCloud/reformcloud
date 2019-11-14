@@ -31,7 +31,7 @@ public class UserCollection extends DefaultSubjectCollection {
     @Override
     @Nonnull
     public CompletableFuture<Boolean> hasSubject(@Nonnull String identifier) {
-        return CompletableFuture.completedFuture(false);
+        return CompletableFuture.completedFuture(true);
     }
 
     @Override
