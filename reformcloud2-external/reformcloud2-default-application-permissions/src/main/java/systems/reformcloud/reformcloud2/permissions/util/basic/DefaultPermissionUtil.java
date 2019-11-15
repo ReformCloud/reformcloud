@@ -386,7 +386,7 @@ public class DefaultPermissionUtil implements PermissionUtil {
 
     @Override
     public void handleInternalDefaultGroupsUpdate() {
-        this.getDefaultGroups();
+        loadDefaultGroups();
         ExecutorAPI.getInstance().getEventManager().callEvent(new PermissionDefaultGroupsChangedEvent());
     }
 

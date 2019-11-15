@@ -40,7 +40,7 @@ public class WildcardCheck {
             final String actual = currentGroupPerm.getActualPermission();
             if (actual.length() > 1
                     && actual.endsWith("*")
-                    && perm.startsWith(actual.substring(0, perm.length() - 1))
+                    && perm.startsWith(actual.substring(0, actual.length() - 1))
                     && currentGroupPerm.isValid()) {
                 return currentGroupPerm.isSet();
             }
@@ -54,7 +54,7 @@ public class WildcardCheck {
             final String actual = permissionNode.getActualPermission();
             if (actual.length() > 1
                     && actual.endsWith("*")
-                    && perm.startsWith(actual.substring(0, perm.length() - 1))
+                    && perm.startsWith(actual.substring(0, actual.length() - 1))
                     && permissionNode.isValid()) {
                 return permissionNode.isSet();
             }

@@ -9,6 +9,7 @@ import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.proxy.ProxyServer;
 import systems.reformcloud.reformcloud2.permissions.PermissionAPI;
 import systems.reformcloud.reformcloud2.permissions.packets.PacketHelper;
+import systems.reformcloud.reformcloud2.permissions.velocity.command.CommandCloudPerms;
 import systems.reformcloud.reformcloud2.permissions.velocity.listener.VelocityPermissionListener;
 
 @Plugin(
@@ -24,14 +25,16 @@ public class VelocityPermissionPlugin {
 
     @Inject
     public VelocityPermissionPlugin(ProxyServer proxyServer) {
-        this.proxyServer = proxyServer;
+        proxy = proxyServer;
     }
 
-    private final ProxyServer proxyServer;
+    private static ProxyServer proxy;
 
     @Subscribe
     public void handleInit(ProxyInitializeEvent event) {
-        proxyServer.getEventManager().register(this, new VelocityPermissionListener());
+        proxy.getEventManager().register(this, new VelocityPermissionListener());
+        proxy.getCommandManager().register(new CommandCloudPerms(), "perms", "permissions", "cloudperms");
+
         PermissionAPI.handshake();
         PacketHelper.addAPIPackets();
     }
@@ -39,5 +42,9 @@ public class VelocityPermissionPlugin {
     @Subscribe
     public void handleStop(ProxyShutdownEvent event) {
         PacketHelper.unregisterAPIPackets();
+    }
+
+    public static ProxyServer getProxy() {
+        return proxy;
     }
 }

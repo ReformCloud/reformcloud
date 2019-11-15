@@ -234,7 +234,7 @@ public class CommandPerms extends GlobalCommand {
 
             PermissionGroup group = PermissionAPI.getInstance().getPermissionUtil().getGroup(strings[3]);
             if (group == null) {
-                System.out.println("The group" + strings[3] + " does not exists");
+                System.out.println("The group " + strings[3] + " does not exists");
                 return true;
             }
 
@@ -266,7 +266,7 @@ public class CommandPerms extends GlobalCommand {
 
             PermissionGroup group = PermissionAPI.getInstance().getPermissionUtil().getGroup(strings[3]);
             if (group == null) {
-                System.out.println("The group" + strings[3] + " does not exists");
+                System.out.println("The group " + strings[3] + " does not exists");
                 return true;
             }
 
@@ -313,7 +313,7 @@ public class CommandPerms extends GlobalCommand {
 
             user.getGroups().remove(filter);
             PermissionAPI.getInstance().getPermissionUtil().updateUser(user);
-            System.out.println("Successfully added group " + strings[3] + " to user " + strings[1]);
+            System.out.println("Successfully removed group " + strings[3] + " from user " + strings[1]);
             return true;
         }
 

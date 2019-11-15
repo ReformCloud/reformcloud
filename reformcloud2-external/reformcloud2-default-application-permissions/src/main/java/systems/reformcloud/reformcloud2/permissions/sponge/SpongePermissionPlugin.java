@@ -42,7 +42,7 @@ public class SpongePermissionPlugin {
     }
 
     @Listener
-    public void hanlde(final GameStoppingServerEvent event) {
+    public void handle(final GameStoppingServerEvent event) {
         PacketHelper.unregisterAPIPackets();
     }
 }

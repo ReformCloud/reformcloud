@@ -8,7 +8,7 @@ server:
   port: 25565
   name: Glowstone++ Server
   log-file: logs/log-%D.txt
-  online-mode: true
+  online-mode: false
   max-players: 20
   whitelisted: false
   motd: Glowstone++ server

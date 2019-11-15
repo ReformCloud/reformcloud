@@ -141,10 +141,6 @@ public enum Version {
     /**
      * Glowstone Versions
      */
-    GLOWSTONE_1_8_9("Glowstone 1.8.9", "1.8.9",
-            "https://dl.reformcloud.systems/mcversions/glowstone/glowstone-1.8.9.jar", 1),
-    GLOWSTONE_1_9_4("Glowstone 1.9.4", "1.9.4",
-            "https://dl.reformcloud.systems/mcversions/glowstone/glowstone-1.9.4.jar", 1),
     GLOWSTONE_1_10_2("Glowstone 1.10_2", "1.10.2",
             "https://dl.reformcloud.systems/mcversions/glowstone/glowstone-1.10.2.jar", 1),
     GLOWSTONE_1_12_2("Glowstone 1.12.2", "1.12.2",

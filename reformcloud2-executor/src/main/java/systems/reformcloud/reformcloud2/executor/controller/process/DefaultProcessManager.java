@@ -79,13 +79,17 @@ public final class DefaultProcessManager implements ProcessManager {
     @Override
     public ProcessInformation getProcess(String name) {
         requireNonNull(name);
-        return Links.filter(processInformation, processInformation -> processInformation.getName().equals(name));
+        synchronized (processInformation) {
+            return Links.filter(processInformation, processInformation -> processInformation.getName().equals(name));
+        }
     }
 
     @Override
     public ProcessInformation getProcess(UUID uniqueID) {
         requireNonNull(uniqueID);
-        return Links.filter(processInformation, processInformation -> processInformation.getProcessUniqueID().equals(uniqueID));
+        synchronized (processInformation) {
+            return Links.filter(processInformation, processInformation -> processInformation.getProcessUniqueID().equals(uniqueID));
+        }
     }
 
     @Override
@@ -321,9 +325,6 @@ public final class DefaultProcessManager implements ProcessManager {
     public void onChannelClose(String name) {
         final ProcessInformation info = getProcess(name);
         if (info != null) {
-            this.processInformation.remove(info);
-
-            notifyDisconnect(info);
             DefaultChannelManager.INSTANCE.get(info.getParent()).ifPresent(packetSender -> packetSender.sendPacket(
                     new ControllerPacketOutProcessDisconnected(info.getProcessUniqueID()))
             );
@@ -347,6 +348,7 @@ public final class DefaultProcessManager implements ProcessManager {
             return;
         }
 
+        notifyDisconnect(information);
         synchronized (processInformation) {
             processInformation.remove(information);
         }

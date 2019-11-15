@@ -17,19 +17,18 @@ public class BukkitUtil {
 
     static {
         try {
-            String version = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
-
             try {
                 // bukkit
+                String version = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
                 PERM_FIELD = Class.forName("org.bukkit.craftbukkit." + version + ".entity.CraftHumanEntity").getDeclaredField("perm");
                 PERM_FIELD.setAccessible(true);
-            } catch (final Throwable throwable) {
+            } catch (final Throwable ex) {
                 // glowstone
                 PERM_FIELD = Class.forName("net.glowstone.entity.GlowHumanEntity").getDeclaredField("permissions");
                 PERM_FIELD.setAccessible(true);
             }
-        } catch (final Throwable throwable) {
-            throw new RuntimeException("Error while obtaining bukkit or glowstone perm fields (are you using your own build?)", throwable);
+        } catch (final ClassNotFoundException | NoSuchFieldException ex) {
+            throw new RuntimeException("Error while obtaining bukkit or glowstone perm fields (are you using your own build?)", ex);
         }
     }
 
