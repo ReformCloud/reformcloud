@@ -23,6 +23,17 @@ public class SpongePermissionService implements PermissionService {
 
     // ======
 
+    static {
+        LOADED.put(SUBJECTS_COMMAND_BLOCK, CollectionCatalog.COMMAND_BLOCK_COLLECTION);
+        LOADED.put(SUBJECTS_SYSTEM, CollectionCatalog.SYSTEM_COLLECTION);
+        LOADED.put(SUBJECTS_USER, CollectionCatalog.USER_COLLECTION);
+        LOADED.put(SUBJECTS_DEFAULT, CollectionCatalog.FACTORY_COLLECTION);
+        LOADED.put(SUBJECTS_GROUP, CollectionCatalog.GROUP_COLLECTION);
+        LOADED.put(SUBJECTS_ROLE_TEMPLATE, CollectionCatalog.GROUP_COLLECTION);
+    }
+
+    // ======
+
     private static SpongePermissionService instance;
 
     public static SpongePermissionService getInstance() {
@@ -33,13 +44,6 @@ public class SpongePermissionService implements PermissionService {
 
     public SpongePermissionService() {
         instance = this;
-
-        LOADED.put(SUBJECTS_COMMAND_BLOCK, CollectionCatalog.COMMAND_BLOCK_COLLECTION);
-        LOADED.put(SUBJECTS_SYSTEM, CollectionCatalog.SYSTEM_COLLECTION);
-        LOADED.put(SUBJECTS_USER, CollectionCatalog.USER_COLLECTION);
-        LOADED.put(SUBJECTS_DEFAULT, CollectionCatalog.FACTORY_COLLECTION);
-        LOADED.put(SUBJECTS_GROUP, CollectionCatalog.GROUP_COLLECTION);
-        LOADED.put(SUBJECTS_ROLE_TEMPLATE, CollectionCatalog.GROUP_COLLECTION);
     }
 
     // ======

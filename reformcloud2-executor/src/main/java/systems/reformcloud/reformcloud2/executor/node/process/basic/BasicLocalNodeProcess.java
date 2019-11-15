@@ -323,6 +323,31 @@ public class BasicLocalNodeProcess implements LocalNodeProcess {
     }
 
     // ========================= //
+    //Glowstone
+    private boolean isLogicallyGlowstone() {
+        Version version = processInformation.getTemplate().getVersion();
+        return version.equals(Version.GLOWSTONE_1_8_9)
+                || version.equals(Version.GLOWSTONE_1_9_4)
+                || version.equals(Version.GLOWSTONE_1_10_2)
+                || version.equals(Version.GLOWSTONE_1_12_2);
+    }
+
+    private void rewriteGlowstoneConfig() {
+        try (InputStreamReader inputStreamReader = new InputStreamReader(Files.newInputStream(Paths.get(path + "/config/glowstone.yml")), StandardCharsets.UTF_8)) {
+            Configuration configuration = ConfigurationProvider.getProvider(YamlConfiguration.class).load(inputStreamReader);
+            configuration.set("server.ip", this.processInformation.getNetworkInfo().getHost());
+            configuration.set("server.port", this.processInformation.getNetworkInfo().getPort());
+            configuration.set("advanced.proxy-support", true);
+
+            try (OutputStreamWriter outputStreamWriter = new OutputStreamWriter(Files.newOutputStream(Paths.get(path + "/spigot.yml")), StandardCharsets.UTF_8)) {
+                ConfigurationProvider.getProvider(YamlConfiguration.class).save(configuration, outputStreamWriter);
+            }
+        } catch (final IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    // ========================= //
     //Spigot
     private void rewriteSpigotConfig() {
         try (InputStreamReader inputStreamReader = new InputStreamReader(Files.newInputStream(Paths.get(path + "/spigot.yml")), StandardCharsets.UTF_8)) {
@@ -352,7 +377,11 @@ public class BasicLocalNodeProcess implements LocalNodeProcess {
         createEula();
         createTemplateAndFiles();
 
-        if (isLogicallySpongeVanilla()) {
+        if (isLogicallyGlowstone()) {
+            SystemHelper.createDirectory(Paths.get(path + "/config"));
+            SystemHelper.doInternalCopy(getClass().getClassLoader(), "files/java/glowstone/glowstone.yml", path + "/config/glowstone.yml");
+            rewriteGlowstoneConfig();
+        } else if (isLogicallySpongeVanilla()) {
             SystemHelper.createDirectory(Paths.get(path + "/config/sponge"));
             SystemHelper.doInternalCopy(getClass().getClassLoader(), "files/java/sponge/vanilla/global.conf", path + "/config/sponge");
             rewriteSpongeConfig();
