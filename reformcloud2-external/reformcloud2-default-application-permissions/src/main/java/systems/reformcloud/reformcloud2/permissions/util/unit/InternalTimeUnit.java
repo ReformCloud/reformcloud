@@ -7,6 +7,10 @@ import java.util.concurrent.TimeUnit;
 
 public class InternalTimeUnit {
 
+    private InternalTimeUnit() {
+        throw new UnsupportedOperationException();
+    }
+
     public static long convert(@Nullable TimeUnit timeUnit, long time) {
         return timeUnit != null ? timeUnit.toMillis(time) : convertMonth(time);
     }

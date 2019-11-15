@@ -8,6 +8,6 @@ public class SpongePermissionListener {
 
     @Listener
     public void handle(final ClientConnectionEvent.Disconnect event) {
-        PermissionAPI.INSTANCE.getPermissionUtil().handleDisconnect(event.getTargetEntity().getUniqueId());
+        PermissionAPI.getInstance().getPermissionUtil().handleDisconnect(event.getTargetEntity().getUniqueId());
     }
 }

@@ -10,7 +10,9 @@ public class PacketHelper {
 
     public static final int PERMISSION_BUS = 8000;
 
-    private PacketHelper() {}
+    private PacketHelper() {
+        throw new UnsupportedOperationException();
+    }
 
     public static void addControllerPackets() {
         ExecutorAPI.getInstance().getPacketHandler().registerNetworkHandlers(

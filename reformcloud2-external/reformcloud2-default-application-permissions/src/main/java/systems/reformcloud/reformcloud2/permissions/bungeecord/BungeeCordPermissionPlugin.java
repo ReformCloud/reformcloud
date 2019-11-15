@@ -12,6 +12,7 @@ public class BungeeCordPermissionPlugin extends Plugin {
     public void onEnable() {
         ProxyServer.getInstance().getPluginManager().registerListener(this, new BungeeCordPermissionListener());
         PermissionAPI.handshake();
+        PacketHelper.addAPIPackets();
     }
 
     @Override

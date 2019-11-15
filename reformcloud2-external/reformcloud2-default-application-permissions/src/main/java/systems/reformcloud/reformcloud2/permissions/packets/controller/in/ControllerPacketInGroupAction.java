@@ -27,26 +27,26 @@ public class ControllerPacketInGroupAction extends DefaultNetworkHandler {
 
         switch (action) {
             case CREATE: {
-                PermissionAPI.INSTANCE.getPermissionUtil().createGroup(permissionGroup.getName());
-                PermissionAPI.INSTANCE.getPermissionUtil().handleInternalPermissionGroupCreate(permissionGroup);
+                PermissionAPI.getInstance().getPermissionUtil().createGroup(permissionGroup.getName());
+                PermissionAPI.getInstance().getPermissionUtil().handleInternalPermissionGroupCreate(permissionGroup);
                 break;
             }
 
             case UPDATE: {
-                PermissionAPI.INSTANCE.getPermissionUtil().updateGroup(permissionGroup);
-                PermissionAPI.INSTANCE.getPermissionUtil().handleInternalPermissionGroupUpdate(permissionGroup);
+                PermissionAPI.getInstance().getPermissionUtil().updateGroup(permissionGroup);
+                PermissionAPI.getInstance().getPermissionUtil().handleInternalPermissionGroupUpdate(permissionGroup);
                 break;
             }
 
             case DELETE: {
-                PermissionAPI.INSTANCE.getPermissionUtil().deleteGroup(permissionGroup.getName());
-                PermissionAPI.INSTANCE.getPermissionUtil().handleInternalPermissionGroupDelete(permissionGroup);
+                PermissionAPI.getInstance().getPermissionUtil().deleteGroup(permissionGroup.getName());
+                PermissionAPI.getInstance().getPermissionUtil().handleInternalPermissionGroupDelete(permissionGroup);
                 break;
             }
 
             case DEFAULT_GROUPS_CHANGED: {
-                PermissionAPI.INSTANCE.getPermissionUtil().removeDefaultGroup(permissionGroup.getName());
-                PermissionAPI.INSTANCE.getPermissionUtil().handleInternalDefaultGroupsUpdate();
+                PermissionAPI.getInstance().getPermissionUtil().removeDefaultGroup(permissionGroup.getName());
+                PermissionAPI.getInstance().getPermissionUtil().handleInternalDefaultGroupsUpdate();
                 break;
             }
         }

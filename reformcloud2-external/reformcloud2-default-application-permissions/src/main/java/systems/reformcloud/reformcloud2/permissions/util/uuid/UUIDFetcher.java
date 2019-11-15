@@ -13,6 +13,10 @@ import java.util.regex.Pattern;
 
 public class UUIDFetcher {
 
+    private UUIDFetcher() {
+        throw new UnsupportedOperationException();
+    }
+
     private static final Pattern PATTERN = Pattern.compile("(\\w{8})(\\w{4})(\\w{4})(\\w{4})(\\w{12})");
 
     private static final Map<String, UUID> CACHE = new ConcurrentHashMap<>();

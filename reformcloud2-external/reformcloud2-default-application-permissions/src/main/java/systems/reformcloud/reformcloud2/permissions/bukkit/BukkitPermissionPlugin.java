@@ -12,6 +12,7 @@ public class BukkitPermissionPlugin extends JavaPlugin {
     public void onEnable() {
         Bukkit.getPluginManager().registerEvents(new BukkitPermissionListener(), this);
         PermissionAPI.handshake();
+        PacketHelper.addAPIPackets();
     }
 
     @Override

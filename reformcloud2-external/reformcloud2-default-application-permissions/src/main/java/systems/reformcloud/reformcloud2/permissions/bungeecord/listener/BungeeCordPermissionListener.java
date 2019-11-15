@@ -16,9 +16,9 @@ public class BungeeCordPermissionListener implements Listener {
 
     @EventHandler
     public void handle(final PostLoginEvent event) {
-        final PermissionUser permissionUser = PermissionAPI.INSTANCE.getPermissionUtil().loadUser(event.getPlayer().getUniqueId());
+        final PermissionUser permissionUser = PermissionAPI.getInstance().getPermissionUtil().loadUser(event.getPlayer().getUniqueId());
         Task.EXECUTOR.execute(() -> {
-            PermissionAPI.INSTANCE.getPermissionUtil().getDefaultGroups().forEach(e -> {
+            PermissionAPI.getInstance().getPermissionUtil().getDefaultGroups().forEach(e -> {
                 if (Links.filterToReference(permissionUser.getGroups(), g -> g.getGroupName().equals(e.getName())).isPresent()) {
                     return;
                 }
@@ -30,7 +30,7 @@ public class BungeeCordPermissionListener implements Listener {
                 ));
             });
 
-            PermissionAPI.INSTANCE.getPermissionUtil().updateUser(permissionUser);
+            PermissionAPI.getInstance().getPermissionUtil().updateUser(permissionUser);
         });
     }
 
@@ -41,12 +41,12 @@ public class BungeeCordPermissionListener implements Listener {
         }
 
         final ProxiedPlayer player = (ProxiedPlayer) event.getSender();
-        final PermissionUser permissionUser = PermissionAPI.INSTANCE.getPermissionUtil().loadUser(player.getUniqueId());
+        final PermissionUser permissionUser = PermissionAPI.getInstance().getPermissionUtil().loadUser(player.getUniqueId());
         event.setHasPermission(permissionUser.hasPermission(event.getPermission()));
     }
 
     @EventHandler
     public void handle(final PlayerDisconnectEvent event) {
-        PermissionAPI.INSTANCE.getPermissionUtil().handleDisconnect(event.getPlayer().getUniqueId());
+        PermissionAPI.getInstance().getPermissionUtil().handleDisconnect(event.getPlayer().getUniqueId());
     }
 }

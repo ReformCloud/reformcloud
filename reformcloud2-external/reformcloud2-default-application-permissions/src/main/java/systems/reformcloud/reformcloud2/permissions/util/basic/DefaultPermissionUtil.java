@@ -34,7 +34,7 @@ public class DefaultPermissionUtil implements PermissionUtil {
 
     public static final String PERMISSION_PLAYER_TABLE = "reformcloud_internal_db_perm_player";
 
-    private static final String PERMISSION_CONFIG_TABLE = "reformcloud_internal_db_config";
+    private static final String PERMISSION_CONFIG_TABLE = "reformcloud_internal_db_perm_config";
 
     private static final Map<String, PermissionGroup> CACHE = new ConcurrentHashMap<>();
 
@@ -42,7 +42,9 @@ public class DefaultPermissionUtil implements PermissionUtil {
 
     private static final Collection<PermissionGroup> CACHED_DEFAULT_GROUPS = new LinkedList<>();
 
-    private DefaultPermissionUtil() {}
+    private DefaultPermissionUtil() {
+        loadDefaultGroups();
+    }
 
     public static PermissionUtil hello() {
         ExecutorAPI.getInstance().createDatabase(PERMISSION_GROUP_TABLE);
@@ -65,7 +67,7 @@ public class DefaultPermissionUtil implements PermissionUtil {
     }
 
     @Override
-    public PermissionGroup getGroup(String name) {
+    public PermissionGroup getGroup(@Nonnull String name) {
         if (CACHE.containsKey(name)) {
             return CACHE.get(name);
         }
@@ -90,7 +92,7 @@ public class DefaultPermissionUtil implements PermissionUtil {
     }
 
     @Override
-    public void updateGroup(PermissionGroup permissionGroup) {
+    public void updateGroup(@Nonnull PermissionGroup permissionGroup) {
         CACHE.put(permissionGroup.getName(), permissionGroup);
 
         if (ExecutorAPI.getInstance().getType().equals(ExecutorType.CONTROLLER)
@@ -104,13 +106,13 @@ public class DefaultPermissionUtil implements PermissionUtil {
     }
 
     @Override
-    public void addGroupPermission(PermissionGroup permissionGroup, PermissionNode permissionNode) {
+    public void addGroupPermission(@Nonnull PermissionGroup permissionGroup, @Nonnull PermissionNode permissionNode) {
         permissionGroup.getPermissionNodes().add(permissionNode);
         updateGroup(permissionGroup);
     }
 
     @Override
-    public void addProcessGroupPermission(String processGroup, PermissionGroup permissionGroup, PermissionNode permissionNode) {
+    public void addProcessGroupPermission(@Nonnull String processGroup, @Nonnull PermissionGroup permissionGroup, @Nonnull PermissionNode permissionNode) {
         final Collection<PermissionNode> current = permissionGroup.getPerGroupPermissions().get(processGroup);
         if (current == null) {
             permissionGroup.getPerGroupPermissions().put(processGroup, Collections.singletonList(permissionNode));
@@ -123,7 +125,7 @@ public class DefaultPermissionUtil implements PermissionUtil {
     }
 
     @Override
-    public void addDefaultGroup(String group) {
+    public void addDefaultGroup(@Nonnull String group) {
         if (ExecutorAPI.getInstance().getType().equals(ExecutorType.CONTROLLER)
                 || ExecutorAPI.getInstance().getType().equals(ExecutorType.NODE)) {
             JsonConfiguration config = ExecutorAPI.getInstance().find(PERMISSION_CONFIG_TABLE, "config", null);
@@ -146,12 +148,18 @@ public class DefaultPermissionUtil implements PermissionUtil {
             DefaultChannelManager.INSTANCE.getAllSender().forEach(e -> e.sendPacket(new ControllerPacketOutGroupAction(null, PermissionAction.DEFAULT_GROUPS_CHANGED)));
         } else {
             DefaultChannelManager.INSTANCE.get("Controller").ifPresent(e ->
-                    e.sendPacket(new APIPacketOutGroupAction(new PermissionGroup(null, null, null, group, -1), PermissionAction.DEFAULT_GROUPS_CHANGED)));
+                    e.sendPacket(new APIPacketOutGroupAction(new PermissionGroup(
+                            new ArrayList<>(),
+                            new HashMap<>(),
+                            new ArrayList<>(),
+                            group,
+                            -1),
+                            PermissionAction.DEFAULT_GROUPS_CHANGED)));
         }
     }
 
     @Override
-    public void removeDefaultGroup(String group) {
+    public void removeDefaultGroup(@Nonnull String group) {
         if (ExecutorAPI.getInstance().getType().equals(ExecutorType.CONTROLLER)
                 || ExecutorAPI.getInstance().getType().equals(ExecutorType.NODE)) {
             JsonConfiguration config = ExecutorAPI.getInstance().find(PERMISSION_CONFIG_TABLE, "config", null);
@@ -174,13 +182,19 @@ public class DefaultPermissionUtil implements PermissionUtil {
             DefaultChannelManager.INSTANCE.getAllSender().forEach(e -> e.sendPacket(new ControllerPacketOutGroupAction(null, PermissionAction.DEFAULT_GROUPS_CHANGED)));
         } else {
             DefaultChannelManager.INSTANCE.get("Controller").ifPresent(e ->
-                    e.sendPacket(new APIPacketOutGroupAction(new PermissionGroup(null, null, null, group, -1), PermissionAction.DEFAULT_GROUPS_CHANGED)));
+                    e.sendPacket(new APIPacketOutGroupAction(new PermissionGroup(
+                            new ArrayList<>(),
+                            new HashMap<>(),
+                            new ArrayList<>(),
+                            group,
+                            -1),
+                            PermissionAction.DEFAULT_GROUPS_CHANGED)));
         }
     }
 
     @Nonnull
     @Override
-    public PermissionGroup createGroup(String name) {
+    public PermissionGroup createGroup(@Nonnull String name) {
         final PermissionGroup permissionGroup = getGroup(name);
         if (permissionGroup != null) {
             return permissionGroup;
@@ -210,36 +224,11 @@ public class DefaultPermissionUtil implements PermissionUtil {
     @Nonnull
     @Override
     public Collection<PermissionGroup> getDefaultGroups() {
-        if (CACHED_DEFAULT_GROUPS.isEmpty()) {
-            JsonConfiguration config = ExecutorAPI.getInstance().find(PERMISSION_CONFIG_TABLE, "config", null);
-            if (config == null) {
-                return new LinkedList<>();
-            }
-
-            if (!config.has("defaultGroups")) {
-                return new LinkedList<>();
-            }
-
-            Collection<String> defaultGroups = config.get("defaultGroups", new TypeToken<Collection<String>>() {});
-            if (defaultGroups == null) {
-                return new LinkedList<>();
-            }
-
-            defaultGroups.forEach(e -> {
-                PermissionGroup group = getGroup(e);
-                if (group == null) {
-                    return;
-                }
-
-                CACHED_DEFAULT_GROUPS.add(group);
-            });
-        }
-
-        return CACHED_DEFAULT_GROUPS;
+        return Collections.unmodifiableCollection(CACHED_DEFAULT_GROUPS);
     }
 
     @Override
-    public void deleteGroup(String name) {
+    public void deleteGroup(@Nonnull String name) {
         final PermissionGroup toDelete = getGroup(name);
         if (toDelete != null) {
             if (ExecutorAPI.getInstance().getType().equals(ExecutorType.CONTROLLER)
@@ -255,7 +244,7 @@ public class DefaultPermissionUtil implements PermissionUtil {
     }
 
     @Override
-    public boolean hasPermission(PermissionUser permissionUser, String permission) {
+    public boolean hasPermission(@Nonnull PermissionUser permissionUser, @Nonnull String permission) {
         permission = permission.toLowerCase();
         for (NodeGroup group : permissionUser.getGroups()) {
             if (!group.isValid()) {
@@ -277,7 +266,7 @@ public class DefaultPermissionUtil implements PermissionUtil {
 
     @Nonnull
     @Override
-    public PermissionUser loadUser(UUID uuid) {
+    public PermissionUser loadUser(@Nonnull UUID uuid) {
         if (USER_CACHE.containsKey(uuid)) {
             return USER_CACHE.get(uuid);
         }
@@ -314,19 +303,19 @@ public class DefaultPermissionUtil implements PermissionUtil {
     }
 
     @Override
-    public void addUserPermission(UUID uuid, PermissionNode permissionNode) {
+    public void addUserPermission(@Nonnull UUID uuid, @Nonnull PermissionNode permissionNode) {
         final PermissionUser user = loadUser(uuid);
         user.getPermissionNodes().add(permissionNode);
         updateUser(user);
     }
 
     @Override
-    public void updateUser(PermissionUser permissionUser) {
-        USER_CACHE.put(permissionUser.getUuid(), permissionUser);
+    public void updateUser(@Nonnull PermissionUser permissionUser) {
+        USER_CACHE.put(permissionUser.getUniqueID(), permissionUser);
 
         if (ExecutorAPI.getInstance().getType().equals(ExecutorType.CONTROLLER)
                 || ExecutorAPI.getInstance().getType().equals(ExecutorType.NODE)) {
-            ExecutorAPI.getInstance().update(PERMISSION_PLAYER_TABLE, permissionUser.getUuid().toString(),
+            ExecutorAPI.getInstance().update(PERMISSION_PLAYER_TABLE, permissionUser.getUniqueID().toString(),
                     new JsonConfiguration().add("user", permissionUser));
             DefaultChannelManager.INSTANCE.getAllSender().forEach(e -> e.sendPacket(new ControllerPacketOutUserAction(permissionUser, PermissionAction.UPDATE)));
         } else {
@@ -335,7 +324,7 @@ public class DefaultPermissionUtil implements PermissionUtil {
     }
 
     @Override
-    public void deleteUser(UUID uuid) {
+    public void deleteUser(@Nonnull UUID uuid) {
         final PermissionUser user = loadUser(uuid);
         if (ExecutorAPI.getInstance().getType().equals(ExecutorType.CONTROLLER)
                 || ExecutorAPI.getInstance().getType().equals(ExecutorType.NODE)) {
@@ -377,8 +366,8 @@ public class DefaultPermissionUtil implements PermissionUtil {
 
     @Override
     public void handleInternalUserUpdate(PermissionUser permissionUser) {
-        if (USER_CACHE.containsKey(permissionUser.getUuid())) {
-            USER_CACHE.put(permissionUser.getUuid(), permissionUser);
+        if (USER_CACHE.containsKey(permissionUser.getUniqueID())) {
+            USER_CACHE.put(permissionUser.getUniqueID(), permissionUser);
         }
 
         ExecutorAPI.getInstance().getEventManager().callEvent(new PermissionUserUpdateEvent(permissionUser));
@@ -391,8 +380,8 @@ public class DefaultPermissionUtil implements PermissionUtil {
 
     @Override
     public void handleInternalUserDelete(PermissionUser permissionUser) {
-        USER_CACHE.remove(permissionUser.getUuid());
-        ExecutorAPI.getInstance().getEventManager().callEvent(new PermissionUserDeleteEvent(permissionUser.getUuid()));
+        USER_CACHE.remove(permissionUser.getUniqueID());
+        ExecutorAPI.getInstance().getEventManager().callEvent(new PermissionUserDeleteEvent(permissionUser.getUniqueID()));
     }
 
     @Override
@@ -402,7 +391,7 @@ public class DefaultPermissionUtil implements PermissionUtil {
     }
 
     @Override
-    public boolean hasPermission(PermissionGroup group, String perm) {
+    public boolean hasPermission(@Nonnull PermissionGroup group, @Nonnull String perm) {
         if (group.hasPermission(perm)) {
             return true;
         }
@@ -431,5 +420,30 @@ public class DefaultPermissionUtil implements PermissionUtil {
         Links.allOf(permissionGroup.getPermissionNodes(), e -> !e.isValid()).forEach(permissionGroup.getPermissionNodes()::remove);
         permissionGroup.getPerGroupPermissions().forEach((k, v) -> Links.allOf(v, e -> !e.isValid()).forEach(v::remove));
         updateGroup(permissionGroup);
+    }
+
+    private synchronized void loadDefaultGroups() {
+        JsonConfiguration config = ExecutorAPI.getInstance().find(PERMISSION_CONFIG_TABLE, "config", null);
+        if (config == null) {
+            return;
+        }
+
+        if (!config.has("defaultGroups")) {
+            return;
+        }
+
+        Collection<String> defaultGroups = config.get("defaultGroups", new TypeToken<Collection<String>>() {});
+        if (defaultGroups == null) {
+            return;
+        }
+
+        defaultGroups.forEach(e -> {
+            PermissionGroup group = getGroup(e);
+            if (group == null) {
+                return;
+            }
+
+            CACHED_DEFAULT_GROUPS.add(group);
+        });
     }
 }

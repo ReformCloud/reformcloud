@@ -22,7 +22,7 @@ public class DefaultPermissionFunction implements PermissionFunction {
             return Tristate.FALSE;
         }
 
-        final PermissionUser permissionUser = PermissionAPI.INSTANCE.getPermissionUtil().loadUser(uuid);
+        final PermissionUser permissionUser = PermissionAPI.getInstance().getPermissionUtil().loadUser(uuid);
         return permissionUser.hasPermission(s) ? Tristate.TRUE : Tristate.FALSE;
     }
 }

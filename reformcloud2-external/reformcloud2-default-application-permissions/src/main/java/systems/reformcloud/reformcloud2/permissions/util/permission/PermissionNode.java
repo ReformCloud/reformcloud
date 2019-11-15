@@ -1,8 +1,10 @@
 package systems.reformcloud.reformcloud2.permissions.util.permission;
 
+import javax.annotation.Nonnull;
+
 public class PermissionNode {
 
-    public PermissionNode(long addTime, long timeout, boolean set, String actualPermission) {
+    public PermissionNode(long addTime, long timeout, boolean set, @Nonnull String actualPermission) {
         this.addTime = addTime;
         this.timeout = timeout;
         this.set = set;
@@ -33,6 +35,7 @@ public class PermissionNode {
         return timeout == -1 || timeout > System.currentTimeMillis();
     }
 
+    @Nonnull
     public String getActualPermission() {
         return actualPermission;
     }

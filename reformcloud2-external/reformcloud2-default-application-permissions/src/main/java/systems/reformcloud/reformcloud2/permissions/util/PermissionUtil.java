@@ -11,39 +11,145 @@ import java.util.UUID;
 
 public interface PermissionUtil {
 
+    /**
+     * Get a specific group
+     *
+     * @param name The name of the group
+     * @return The {@link PermissionGroup} or {@code null} if the group does not exists
+     */
     @Nullable
-    PermissionGroup getGroup(String name);
+    PermissionGroup getGroup(@Nonnull String name);
 
-    void updateGroup(PermissionGroup permissionGroup);
+    /**
+     * Updates a specific permission group
+     *
+     * @param permissionGroup The permission group which should be updated
+     */
+    void updateGroup(@Nonnull PermissionGroup permissionGroup);
 
-    void addGroupPermission(PermissionGroup permissionGroup, PermissionNode permissionNode);
+    /**
+     * Adds a specific permission to a permission group
+     *
+     * @param permissionGroup The group which should get the permission
+     * @param permissionNode The permission which should be added
+     */
+    void addGroupPermission(
+            @Nonnull PermissionGroup permissionGroup,
+            @Nonnull PermissionNode permissionNode
+    );
 
-    void addProcessGroupPermission(String processGroup, PermissionGroup permissionGroup, PermissionNode permissionNode);
+    /**
+     * Adds a specific permission to a permission group on a specific process group
+     *
+     * @param processGroup The process group on which the permission should be valid
+     * @param permissionGroup The group which should get the permission
+     * @param permissionNode The permission which should be added
+     */
+    void addProcessGroupPermission(
+            @Nonnull String processGroup,
+            @Nonnull PermissionGroup permissionGroup,
+            @Nonnull PermissionNode permissionNode
+    );
 
+    /**
+     * Creates a new group
+     *
+     * @param name The name of the new group
+     * @return The created group or the group which already exists
+     */
     @Nonnull
-    PermissionGroup createGroup(String name);
+    PermissionGroup createGroup(@Nonnull String name);
 
-    void addDefaultGroup(String group);
+    /**
+     * Adds a new default group to the collection of all default groups
+     *
+     * @param group The name of the group which should be added
+     */
+    void addDefaultGroup(@Nonnull String group);
 
-    void removeDefaultGroup(String group);
+    /**
+     * Removes a default group from the collection of the default groups
+     *
+     * @param group The name of the group which should be removed
+     */
+    void removeDefaultGroup(@Nonnull String group);
 
+    /**
+     * @return A unmodifiable collection of all default groups
+     */
     @Nonnull
     Collection<PermissionGroup> getDefaultGroups();
 
-    void deleteGroup(String name);
+    /**
+     * Deletes a specific permission group
+     *
+     * @param name The name of the group which should get deleted
+     */
+    void deleteGroup(@Nonnull String name);
 
-    boolean hasPermission(PermissionUser permissionUser, String permission);
+    /**
+     * Checks if a specific permission user has the given permission
+     *
+     * @see PermissionUser#hasPermission(String)
+     *
+     * @param permissionUser The user which should get the deep group check
+     * @param permission The permission which should get checked
+     * @return If the user has the given permission
+     */
+    boolean hasPermission(
+            @Nonnull PermissionUser permissionUser,
+            @Nonnull String permission
+    );
 
-    boolean hasPermission(PermissionGroup group, String permission);
+    /**
+     * Checks if a specific permission group has the given permission
+     *
+     * @param group The group which should get permission check including all sub groups and their sub groups etc.
+     * @param permission The permission which should get checked
+     * @return If the group has the given permission
+     */
+    boolean hasPermission(
+            @Nonnull PermissionGroup group,
+            @Nonnull String permission
+    );
 
+    /**
+     * Loads a specific permission user or creates a new one
+     *
+     * @param uuid The uniqueID of the user which should get loaded
+     * @return The loaded or created permission user
+     */
     @Nonnull
-    PermissionUser loadUser(UUID uuid);
+    PermissionUser loadUser(@Nonnull UUID uuid);
 
-    void addUserPermission(UUID uuid, PermissionNode permissionNode);
+    /**
+     * Adds a specific permission to a user
+     *
+     * @param uuid The uniqueID od the permission user
+     * @param permissionNode The permission node which should get added to the user
+     */
+    void addUserPermission(
+            @Nonnull UUID uuid,
+            @Nonnull PermissionNode permissionNode
+    );
 
-    void updateUser(PermissionUser permissionUser);
+    /**
+     * Updates a specific permission user
+     *
+     * @param permissionUser The permission user which should get updated
+     */
+    void updateUser(@Nonnull PermissionUser permissionUser);
 
-    void deleteUser(UUID uuid);
+    /**
+     * Deletes a specific user irrevocable out of the database
+     *
+     * @param uuid The uniqueID of the user which should get deleted
+     */
+    void deleteUser(@Nonnull UUID uuid);
+
+    // ===================================
+    // The following methods are not documented because they are for internal use only
+    // ===================================
 
     void handleDisconnect(UUID uuid);
 

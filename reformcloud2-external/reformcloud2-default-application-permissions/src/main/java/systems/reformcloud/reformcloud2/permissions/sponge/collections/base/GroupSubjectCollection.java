@@ -26,7 +26,7 @@ public class GroupSubjectCollection extends DefaultSubjectCollection {
     @Override
     @Nonnull
     public CompletableFuture<Boolean> hasSubject(@Nonnull String identifier) {
-        return CompletableFuture.completedFuture(PermissionAPI.INSTANCE.getPermissionUtil().getGroup(identifier) != null);
+        return CompletableFuture.completedFuture(PermissionAPI.getInstance().getPermissionUtil().getGroup(identifier) != null);
     }
 
     @Override

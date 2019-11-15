@@ -15,9 +15,9 @@ public class VelocityPermissionListener {
 
     @Subscribe
     public void handle(final PostLoginEvent event) {
-        final PermissionUser permissionUser = PermissionAPI.INSTANCE.getPermissionUtil().loadUser(event.getPlayer().getUniqueId());
+        final PermissionUser permissionUser = PermissionAPI.getInstance().getPermissionUtil().loadUser(event.getPlayer().getUniqueId());
         Task.EXECUTOR.execute(() -> {
-            PermissionAPI.INSTANCE.getPermissionUtil().getDefaultGroups().forEach(e -> {
+            PermissionAPI.getInstance().getPermissionUtil().getDefaultGroups().forEach(e -> {
                 if (Links.filterToReference(permissionUser.getGroups(), g -> g.getGroupName().equals(e.getName())).isPresent()) {
                     return;
                 }
@@ -29,7 +29,7 @@ public class VelocityPermissionListener {
                 ));
             });
 
-            PermissionAPI.INSTANCE.getPermissionUtil().updateUser(permissionUser);
+            PermissionAPI.getInstance().getPermissionUtil().updateUser(permissionUser);
         });
     }
 
@@ -40,6 +40,6 @@ public class VelocityPermissionListener {
 
     @Subscribe
     public void handle(final DisconnectEvent event) {
-        PermissionAPI.INSTANCE.getPermissionUtil().handleDisconnect(event.getPlayer().getUniqueId());
+        PermissionAPI.getInstance().getPermissionUtil().handleDisconnect(event.getPlayer().getUniqueId());
     }
 }

@@ -31,12 +31,12 @@ public class GroupSubject extends AbstractGroupSubject {
 
     @Override
     protected boolean has(String permission) {
-        PermissionGroup permissionGroup = PermissionAPI.INSTANCE.getPermissionUtil().getGroup(group);
+        PermissionGroup permissionGroup = PermissionAPI.getInstance().getPermissionUtil().getGroup(group);
         if (permissionGroup == null) {
             return false;
         }
 
-        return PermissionAPI.INSTANCE.getPermissionUtil().hasPermission(permissionGroup, permission.toLowerCase());
+        return PermissionAPI.getInstance().getPermissionUtil().hasPermission(permissionGroup, permission.toLowerCase());
     }
 
     @Override

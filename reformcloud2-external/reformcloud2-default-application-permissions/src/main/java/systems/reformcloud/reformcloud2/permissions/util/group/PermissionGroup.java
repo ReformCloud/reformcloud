@@ -5,6 +5,7 @@ import systems.reformcloud.reformcloud2.permissions.util.basic.checks.GeneralChe
 import systems.reformcloud.reformcloud2.permissions.util.basic.checks.WildcardCheck;
 import systems.reformcloud.reformcloud2.permissions.util.permission.PermissionNode;
 
+import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.Map;
 
@@ -12,9 +13,13 @@ public class PermissionGroup {
 
     public static final TypeToken<PermissionGroup> TYPE = new TypeToken<PermissionGroup>() {};
 
-    public PermissionGroup(Collection<PermissionNode> permissionNodes, Map<String,
-            Collection<PermissionNode>> perGroupPermissions,
-                           Collection<String> subGroups, String name, int priority) {
+    public PermissionGroup(
+            @Nonnull Collection<PermissionNode> permissionNodes,
+            @Nonnull Map<String, Collection<PermissionNode>> perGroupPermissions,
+            @Nonnull Collection<String> subGroups,
+            @Nonnull String name,
+            int priority
+    ) {
         this.permissionNodes = permissionNodes;
         this.perGroupPermissions = perGroupPermissions;
         this.subGroups = subGroups;
@@ -32,18 +37,22 @@ public class PermissionGroup {
 
     private final int priority;
 
+    @Nonnull
     public Collection<PermissionNode> getPermissionNodes() {
         return permissionNodes;
     }
 
+    @Nonnull
     public Map<String, Collection<PermissionNode>> getPerGroupPermissions() {
         return perGroupPermissions;
     }
 
+    @Nonnull
     public Collection<String> getSubGroups() {
         return subGroups;
     }
 
+    @Nonnull
     public String getName() {
         return name;
     }
@@ -52,7 +61,7 @@ public class PermissionGroup {
         return priority;
     }
 
-    public boolean hasPermission(String perm) {
+    public boolean hasPermission(@Nonnull String perm) {
         if (WildcardCheck.hasWildcardPermission(this, perm)) {
             return true;
         }

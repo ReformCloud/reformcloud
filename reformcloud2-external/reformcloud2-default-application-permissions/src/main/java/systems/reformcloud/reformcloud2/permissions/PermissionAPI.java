@@ -1,27 +1,42 @@
 package systems.reformcloud.reformcloud2.permissions;
 
-import systems.reformcloud.reformcloud2.executor.api.ExecutorType;
-import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
-import systems.reformcloud.reformcloud2.permissions.packets.PacketHelper;
+import systems.reformcloud.reformcloud2.executor.api.common.base.Conditions;
 import systems.reformcloud.reformcloud2.permissions.util.PermissionUtil;
 import systems.reformcloud.reformcloud2.permissions.util.basic.DefaultPermissionUtil;
 
-public class PermissionAPI {
+import javax.annotation.Nonnull;
 
-    public static final PermissionAPI INSTANCE = new PermissionAPI();
+public final class PermissionAPI {
 
-    private PermissionAPI() {
-        this.permissionUtil = DefaultPermissionUtil.hello();
-        if (ExecutorAPI.getInstance().getType().equals(ExecutorType.API)) {
-            PacketHelper.addAPIPackets();
-        }
-    }
+    private static PermissionAPI instance;
 
     private final PermissionUtil permissionUtil;
 
+    // ====
+
+    private PermissionAPI() {
+        Conditions.isTrue(instance != null);
+        this.permissionUtil = DefaultPermissionUtil.hello();
+    }
+
+    @Nonnull
     public PermissionUtil getPermissionUtil() {
         return permissionUtil;
     }
 
-    public static void handshake() {}
+    @Nonnull
+    public static PermissionAPI getInstance() {
+        return instance;
+    }
+
+    /**
+     * This methods prevents an exception when creating a new instance of this class
+     */
+    public static void handshake() {
+        if (instance != null) {
+            return;
+        }
+
+        instance = new PermissionAPI();
+    }
 }

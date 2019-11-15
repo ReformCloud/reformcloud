@@ -12,6 +12,7 @@ public class NukkitPermissionPlugin extends PluginBase {
     public void onEnable() {
         Server.getInstance().getPluginManager().registerEvents(new NukkitPermissionListener(), this);
         PermissionAPI.handshake();
+        PacketHelper.addAPIPackets();
     }
 
     @Override

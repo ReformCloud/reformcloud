@@ -26,17 +26,17 @@ public class ControllerPacketInUserAction extends DefaultNetworkHandler {
 
         switch (action) {
             case DELETE: {
-                PermissionAPI.INSTANCE.getPermissionUtil().deleteUser(permissionUser.getUuid());
+                PermissionAPI.getInstance().getPermissionUtil().deleteUser(permissionUser.getUniqueID());
                 break;
             }
 
             case UPDATE: {
-                PermissionAPI.INSTANCE.getPermissionUtil().updateUser(permissionUser);
+                PermissionAPI.getInstance().getPermissionUtil().updateUser(permissionUser);
                 break;
             }
 
             case CREATE: {
-                ExecutorAPI.getInstance().insert(DefaultPermissionUtil.PERMISSION_PLAYER_TABLE, permissionUser.getUuid().toString(), null, new JsonConfiguration()
+                ExecutorAPI.getInstance().insert(DefaultPermissionUtil.PERMISSION_PLAYER_TABLE, permissionUser.getUniqueID().toString(), null, new JsonConfiguration()
                         .add("user", permissionUser)
                 );
                 break;

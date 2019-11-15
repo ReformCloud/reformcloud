@@ -3,9 +3,11 @@ package systems.reformcloud.reformcloud2.permissions.util.user;
 import com.google.gson.reflect.TypeToken;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links;
 import systems.reformcloud.reformcloud2.permissions.PermissionAPI;
+import systems.reformcloud.reformcloud2.permissions.util.basic.checks.WildcardCheck;
 import systems.reformcloud.reformcloud2.permissions.util.group.NodeGroup;
 import systems.reformcloud.reformcloud2.permissions.util.permission.PermissionNode;
 
+import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.UUID;
 
@@ -13,7 +15,11 @@ public class PermissionUser {
 
     public static final TypeToken<PermissionUser> TYPE = new TypeToken<PermissionUser>() {};
 
-    public PermissionUser(UUID uuid, Collection<PermissionNode> permissionNodes, Collection<NodeGroup> groups) {
+    public PermissionUser(
+            @Nonnull UUID uuid,
+            @Nonnull Collection<PermissionNode> permissionNodes,
+            @Nonnull Collection<NodeGroup> groups
+    ) {
         this.uuid = uuid;
         this.permissionNodes = permissionNodes;
         this.groups = groups;
@@ -25,14 +31,17 @@ public class PermissionUser {
 
     private final Collection<NodeGroup> groups;
 
-    public UUID getUuid() {
+    @Nonnull
+    public UUID getUniqueID() {
         return uuid;
     }
 
+    @Nonnull
     public Collection<PermissionNode> getPermissionNodes() {
         return permissionNodes;
     }
 
+    @Nonnull
     public Collection<NodeGroup> getGroups() {
         return groups;
     }
@@ -60,6 +69,11 @@ public class PermissionUser {
             return true;
         }
 
-        return PermissionAPI.INSTANCE.getPermissionUtil().hasPermission(this, permission);
+        Boolean wildCard = WildcardCheck.hasWildcardPermission(this, permission);
+        if (wildCard != null) {
+            return wildCard;
+        }
+
+        return PermissionAPI.getInstance().getPermissionUtil().hasPermission(this, permission);
     }
 }

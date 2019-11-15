@@ -1,8 +1,10 @@
 package systems.reformcloud.reformcloud2.permissions.util.group;
 
+import javax.annotation.Nonnull;
+
 public class NodeGroup {
 
-    public NodeGroup(long addTime, long timeout, String groupName) {
+    public NodeGroup(long addTime, long timeout, @Nonnull String groupName) {
         this.addTime = addTime;
         this.timeout = timeout;
         this.groupName = groupName;
@@ -26,6 +28,7 @@ public class NodeGroup {
         return timeout == -1 || timeout > System.currentTimeMillis();
     }
 
+    @Nonnull
     public String getGroupName() {
         return groupName;
     }

@@ -23,22 +23,22 @@ public class APIPacketInGroupAction extends DefaultNetworkHandler {
 
         switch (permissionAction) {
             case UPDATE: {
-                PermissionAPI.INSTANCE.getPermissionUtil().handleInternalPermissionGroupUpdate(permissionGroup);
+                PermissionAPI.getInstance().getPermissionUtil().handleInternalPermissionGroupUpdate(permissionGroup);
                 break;
             }
 
             case DELETE: {
-                PermissionAPI.INSTANCE.getPermissionUtil().handleInternalPermissionGroupDelete(permissionGroup);
+                PermissionAPI.getInstance().getPermissionUtil().handleInternalPermissionGroupDelete(permissionGroup);
                 break;
             }
 
             case CREATE: {
-                PermissionAPI.INSTANCE.getPermissionUtil().handleInternalPermissionGroupCreate(permissionGroup);
+                PermissionAPI.getInstance().getPermissionUtil().handleInternalPermissionGroupCreate(permissionGroup);
                 break;
             }
 
             case DEFAULT_GROUPS_CHANGED: {
-                PermissionAPI.INSTANCE.getPermissionUtil().handleInternalDefaultGroupsUpdate();
+                PermissionAPI.getInstance().getPermissionUtil().handleInternalDefaultGroupsUpdate();
                 break;
             }
         }

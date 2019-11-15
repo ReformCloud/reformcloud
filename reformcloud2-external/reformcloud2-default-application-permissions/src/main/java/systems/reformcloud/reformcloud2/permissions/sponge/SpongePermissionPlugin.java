@@ -5,10 +5,13 @@ import org.spongepowered.api.Sponge;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.event.game.state.GameStartedServerEvent;
+import org.spongepowered.api.event.game.state.GameStoppingServerEvent;
 import org.spongepowered.api.plugin.Dependency;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.service.ServiceManager;
 import org.spongepowered.api.service.permission.PermissionService;
+import systems.reformcloud.reformcloud2.permissions.PermissionAPI;
+import systems.reformcloud.reformcloud2.permissions.packets.PacketHelper;
 import systems.reformcloud.reformcloud2.permissions.sponge.listener.SpongePermissionListener;
 import systems.reformcloud.reformcloud2.permissions.sponge.service.SpongePermissionService;
 
@@ -28,11 +31,18 @@ public class SpongePermissionPlugin {
 
     @Listener
     public void handle(final GamePreInitializationEvent event) {
+        PermissionAPI.handshake();
+        PacketHelper.addAPIPackets();
         serviceManager.setProvider(this, PermissionService.class, new SpongePermissionService());
     }
 
     @Listener
     public void handle(final GameStartedServerEvent event) {
         Sponge.getEventManager().registerListeners(this, new SpongePermissionListener());
+    }
+
+    @Listener
+    public void hanlde(final GameStoppingServerEvent event) {
+        PacketHelper.unregisterAPIPackets();
     }
 }

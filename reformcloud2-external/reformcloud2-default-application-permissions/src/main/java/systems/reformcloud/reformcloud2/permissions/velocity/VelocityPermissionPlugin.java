@@ -33,6 +33,7 @@ public class VelocityPermissionPlugin {
     public void handleInit(ProxyInitializeEvent event) {
         proxyServer.getEventManager().register(this, new VelocityPermissionListener());
         PermissionAPI.handshake();
+        PacketHelper.addAPIPackets();
     }
 
     @Subscribe

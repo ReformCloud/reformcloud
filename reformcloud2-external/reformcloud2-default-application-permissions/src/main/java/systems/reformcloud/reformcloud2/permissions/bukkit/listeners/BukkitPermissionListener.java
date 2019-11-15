@@ -31,6 +31,6 @@ public class BukkitPermissionListener implements Listener {
 
     @EventHandler
     public void handle(final PlayerQuitEvent event) {
-        PermissionAPI.INSTANCE.getPermissionUtil().handleDisconnect(event.getPlayer().getUniqueId());
+        PermissionAPI.getInstance().getPermissionUtil().handleDisconnect(event.getPlayer().getUniqueId());
     }
 }

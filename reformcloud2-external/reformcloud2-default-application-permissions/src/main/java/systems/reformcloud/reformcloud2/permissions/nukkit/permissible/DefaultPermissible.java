@@ -87,7 +87,7 @@ public class DefaultPermissible extends PermissibleBase {
     public Map<String, PermissionAttachmentInfo> getEffectivePermissions() {
         this.perms = new ConcurrentHashMap<>();
 
-        final PermissionUser permissionUser = PermissionAPI.INSTANCE.getPermissionUtil().loadUser(uuid);
+        final PermissionUser permissionUser = PermissionAPI.getInstance().getPermissionUtil().loadUser(uuid);
         final ProcessInformation current = ExecutorAPI.getInstance().getThisProcessInformation();
 
         permissionUser.getPermissionNodes().stream().filter(PermissionNode::isValid)
@@ -101,13 +101,13 @@ public class DefaultPermissible extends PermissibleBase {
                 .getGroups()
                 .stream()
                 .filter(NodeGroup::isValid)
-                .map(e -> PermissionAPI.INSTANCE.getPermissionUtil().getGroup(e.getGroupName()))
+                .map(e -> PermissionAPI.getInstance().getPermissionUtil().getGroup(e.getGroupName()))
                 .filter(Objects::nonNull)
                 .flatMap(e -> {
                     Stream.Builder<PermissionGroup> stream = Stream.<PermissionGroup>builder().add(e);
                     e.getSubGroups()
                             .stream()
-                            .map(g -> PermissionAPI.INSTANCE.getPermissionUtil().getGroup(g))
+                            .map(g -> PermissionAPI.getInstance().getPermissionUtil().getGroup(g))
                             .filter(Objects::nonNull)
                             .forEach(stream);
                     return stream.build();
@@ -140,7 +140,7 @@ public class DefaultPermissible extends PermissibleBase {
     }
 
     private boolean has(String name) {
-        final PermissionUser permissionUser = PermissionAPI.INSTANCE.getPermissionUtil().loadUser(uuid);
+        final PermissionUser permissionUser = PermissionAPI.getInstance().getPermissionUtil().loadUser(uuid);
         return permissionUser.hasPermission(name);
     }
 }

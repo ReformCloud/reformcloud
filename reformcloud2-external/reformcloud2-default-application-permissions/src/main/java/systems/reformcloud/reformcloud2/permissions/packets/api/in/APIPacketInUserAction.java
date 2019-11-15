@@ -23,17 +23,17 @@ public class APIPacketInUserAction extends DefaultNetworkHandler {
 
         switch (permissionAction) {
             case CREATE: {
-                PermissionAPI.INSTANCE.getPermissionUtil().handleInternalUserCreate(permissionUser);
+                PermissionAPI.getInstance().getPermissionUtil().handleInternalUserCreate(permissionUser);
                 break;
             }
 
             case DELETE: {
-                PermissionAPI.INSTANCE.getPermissionUtil().handleInternalUserDelete(permissionUser);
+                PermissionAPI.getInstance().getPermissionUtil().handleInternalUserDelete(permissionUser);
                 break;
             }
 
             case UPDATE: {
-                PermissionAPI.INSTANCE.getPermissionUtil().handleInternalUserUpdate(permissionUser);
+                PermissionAPI.getInstance().getPermissionUtil().handleInternalUserUpdate(permissionUser);
                 break;
             }
         }

@@ -34,7 +34,7 @@ public class SpongeSubjectData extends AbstractSpongeSubjectData {
 
     private Map<String, Boolean> getPermissions() {
         Map<String, Boolean> out = new HashMap<>();
-        PermissionUser user = PermissionAPI.INSTANCE.getPermissionUtil().loadUser(uniqueID);
+        PermissionUser user = PermissionAPI.getInstance().getPermissionUtil().loadUser(uniqueID);
 
         user.getPermissionNodes().forEach(e -> {
             if (!e.isValid()) {
@@ -49,14 +49,14 @@ public class SpongeSubjectData extends AbstractSpongeSubjectData {
                 return;
             }
 
-            PermissionGroup group = PermissionAPI.INSTANCE.getPermissionUtil().getGroup(e.getGroupName());
+            PermissionGroup group = PermissionAPI.getInstance().getPermissionUtil().getGroup(e.getGroupName());
             if (group == null) {
                 return;
             }
 
             out.putAll(getPermissionsOf(group));
             group.getSubGroups().forEach(g -> {
-                PermissionGroup sub = PermissionAPI.INSTANCE.getPermissionUtil().getGroup(g);
+                PermissionGroup sub = PermissionAPI.getInstance().getPermissionUtil().getGroup(g);
                 if (sub == null) {
                     return;
                 }
