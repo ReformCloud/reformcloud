@@ -32,7 +32,7 @@ public abstract class ExecutorAPI implements
 
     private static ExecutorAPI instance;
 
-    protected static void setInstance(ExecutorAPI instance) {
+    protected static void setInstance(@Nonnull ExecutorAPI instance) {
         Conditions.isTrue(ExecutorAPI.instance == null, "Executor api instance is already defined");
         ExecutorAPI.instance = Objects.requireNonNull(instance);
     }

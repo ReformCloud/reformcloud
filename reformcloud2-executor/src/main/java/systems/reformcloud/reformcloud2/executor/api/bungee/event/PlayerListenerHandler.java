@@ -156,7 +156,7 @@ public final class PlayerListenerHandler implements Listener {
 
     @EventHandler
     public void handle(final ChatEvent event) {
-        if (!(event.getSender() instanceof ProxiedPlayer) && event.isCommand()) {
+        if (!(event.getSender() instanceof ProxiedPlayer) || !event.isCommand()) {
             return;
         }
 

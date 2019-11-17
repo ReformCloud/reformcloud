@@ -1,5 +1,6 @@
 package systems.reformcloud.reformcloud2.permissions.util;
 
+import systems.reformcloud.reformcloud2.permissions.util.group.NodeGroup;
 import systems.reformcloud.reformcloud2.permissions.util.group.PermissionGroup;
 import systems.reformcloud.reformcloud2.permissions.util.permission.PermissionNode;
 import systems.reformcloud.reformcloud2.permissions.util.user.PermissionUser;
@@ -125,12 +126,34 @@ public interface PermissionUtil {
     /**
      * Adds a specific permission to a user
      *
-     * @param uuid The uniqueID od the permission user
+     * @param uuid The uniqueID of the permission user
      * @param permissionNode The permission node which should get added to the user
      */
     void addUserPermission(
             @Nonnull UUID uuid,
             @Nonnull PermissionNode permissionNode
+    );
+
+    /**
+     * Removes a specific group from a user
+     *
+     * @param uuid The uniqueID of the permission user
+     * @param group The group which should get removed
+     */
+    void removeUserGroup(
+            @Nonnull UUID uuid,
+            @Nonnull String group
+    );
+
+    /**
+     * Adds a specific group to a user
+     *
+     * @param uuid The uniqueID of the permission user
+     * @param group The group which should get added
+     */
+    void addUserGroup(
+            @Nonnull UUID uuid,
+            @Nonnull NodeGroup group
     );
 
     /**

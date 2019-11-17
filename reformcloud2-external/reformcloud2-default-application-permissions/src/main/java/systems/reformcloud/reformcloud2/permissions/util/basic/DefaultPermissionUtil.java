@@ -310,6 +310,22 @@ public class DefaultPermissionUtil implements PermissionUtil {
     }
 
     @Override
+    public void removeUserGroup(@Nonnull UUID uuid, @Nonnull String group) {
+        final PermissionUser user = loadUser(uuid);
+        Links.filterToReference(user.getGroups(), e -> e.getGroupName().equals(group)).ifPresent(e -> {
+            user.getGroups().remove(e);
+            updateUser(user);
+        });
+    }
+
+    @Override
+    public void addUserGroup(@Nonnull UUID uuid, @Nonnull NodeGroup group) {
+        final PermissionUser user = loadUser(uuid);
+        user.getGroups().add(group);
+        updateUser(user);
+    }
+
+    @Override
     public void updateUser(@Nonnull PermissionUser permissionUser) {
         USER_CACHE.put(permissionUser.getUniqueID(), permissionUser);
 

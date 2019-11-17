@@ -36,6 +36,7 @@ public class ProcessListener {
                 AbsoluteThread.sleep(20);
             }
 
+            AbsoluteThread.sleep(1000); // Wait for complete ready
             DefaultChannelManager.INSTANCE.get(name).ifPresent(
                     e -> e.sendPacket(new PacketOutRegisterCommandsConfig())
             );

@@ -78,9 +78,7 @@ public final class PlayerListenerHandler implements Listener {
             return;
         }
 
-        System.out.println("TRY LOGIN " + event.getPlayer().getName());
-
-        if (!current.onLogin(player.getUniqueId(), player.getName())) {
+        if (current.isPlayerOnline(player.getUniqueId())) {
             event.setKickMessage("§4§lYou are not allowed to join this server");
             event.setResult(PlayerLoginEvent.Result.KICK_BANNED);
             return;
@@ -96,6 +94,7 @@ public final class PlayerListenerHandler implements Listener {
     @EventHandler (priority = EventPriority.HIGHEST)
     public void handle(final PlayerJoinEvent event) {
         final ProcessInformation current = ExecutorAPI.getInstance().getThisProcessInformation();
+        current.onLogin(event.getPlayer().getUniqueId(), event.getPlayer().getName());
         current.updateRuntimeInformation();
         SpigotExecutor.getInstance().setThisProcessInformation(current);
         ExecutorAPI.getInstance().update(current);
