@@ -26,6 +26,12 @@ public interface SignConverter<T> {
     @Nonnull
     CloudSign to(@Nonnull T t, @Nonnull String group);
 
+    /**
+     * Converts a object to the current location
+     *
+     * @param t The object which should get updates
+     * @return The created cloud location
+     */
     @Nonnull
     CloudLocation to(@Nonnull T t);
 }

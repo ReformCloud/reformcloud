@@ -24,22 +24,62 @@ public interface SignSystemAdapter<T> {
 
     // ====
 
+    /**
+     * Handles a process start to the signs
+     *
+     * @param processInformation The process info of the process which started
+     */
     void handleProcessStart(@Nonnull ProcessInformation processInformation);
 
+    /**
+     * Handles a process update to the signs
+     *
+     * @param processInformation The process info which should get updated
+     */
     void handleProcessUpdate(@Nonnull ProcessInformation processInformation);
 
+    /**
+     * Handles a process stop to the signs
+     *
+     * @param processInformation The process info of the process which stopped
+     */
     void handleProcessStop(@Nonnull ProcessInformation processInformation);
 
+    /**
+     * Creates a new sign
+     *
+     * @param t The object of the current implementation of a sign
+     * @param group The group for which the sign should be
+     * @return The created cloud sign or the which already exists
+     */
     @Nonnull
     CloudSign createSign(@Nonnull T t, @Nonnull String group);
 
+    /**
+     * Deletes a sign
+     *
+     * @param location The cloud location of the sign which should get deleted
+     */
     void deleteSign(@Nonnull CloudLocation location);
 
+    /**
+     * Gets a sign at a current location
+     *
+     * @param location The location of the sign
+     * @return The sign at the location or {@code null} if the sign does not exists
+     */
     @Nullable
     CloudSign getSignAt(@Nonnull CloudLocation location);
 
+    /**
+     * @return The converter for all objects from the implementation to the cloud
+     */
     @Nonnull
     SignConverter<T> getSignConverter();
+
+    // ===================================
+    // The following methods are not documented because they are for internal use only
+    // ===================================
 
     void handleInternalSignCreate(@Nonnull CloudSign cloudSign);
 

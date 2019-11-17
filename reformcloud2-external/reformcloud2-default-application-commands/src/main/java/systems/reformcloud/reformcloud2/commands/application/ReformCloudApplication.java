@@ -20,7 +20,7 @@ public class ReformCloudApplication extends Application {
 
     private static CommandsConfig commandsConfig;
 
-    private static final ProcessListener listener = new ProcessListener();
+    private static final ProcessListener LISTENER = new ProcessListener();
 
     @Override
     public void onEnable() {
@@ -35,14 +35,14 @@ public class ReformCloudApplication extends Application {
         }
 
         commandsConfig = JsonConfiguration.read(path).get("config", new TypeToken<CommandsConfig>() {});
-        ExecutorAPI.getInstance().getEventManager().registerListener(listener);
+        ExecutorAPI.getInstance().getEventManager().registerListener(LISTENER);
     }
 
     @Override
     public void onPreDisable() {
         commandsConfig = new CommandsConfig(false, new ArrayList<>(), false, new ArrayList<>());
 
-        ExecutorAPI.getInstance().getEventManager().unregisterListener(listener);
+        ExecutorAPI.getInstance().getEventManager().unregisterListener(LISTENER);
         ExecutorAPI.getInstance().getAllProcesses().stream().filter(e -> !e.getTemplate().isServer()).forEach(
                 e -> DefaultChannelManager.INSTANCE.get(e.getName()).ifPresent(s -> s.sendPacket(new PacketOutRegisterCommandsConfig()))
         );

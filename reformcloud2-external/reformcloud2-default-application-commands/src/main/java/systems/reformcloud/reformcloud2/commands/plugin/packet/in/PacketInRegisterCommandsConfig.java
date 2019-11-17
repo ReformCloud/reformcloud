@@ -19,10 +19,15 @@ public class PacketInRegisterCommandsConfig implements NetworkHandler {
 
     @Override
     public void handlePacket(PacketSender packetSender, Packet packet, Consumer<Packet> responses) {
+
+        System.out.println("PACKET INCOMING");
+
         final CommandsConfig config = packet.content().get("config", new TypeToken<CommandsConfig>() {});
         if (config == null) {
             return;
         }
+
+        System.out.println("PACKET NOT NULL");
 
         CommandConfigHandler.getInstance().handleCommandConfigRelease(config);
     }
