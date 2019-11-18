@@ -1,9 +1,12 @@
 package systems.reformcloud.reformcloud2.signs.sponge.adapter;
 
+import com.google.gson.reflect.TypeToken;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockType;
 import org.spongepowered.api.block.BlockTypes;
 import org.spongepowered.api.block.tileentity.Sign;
+import org.spongepowered.api.command.args.GenericArguments;
+import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.manipulator.mutable.block.DirectionalData;
 import org.spongepowered.api.data.manipulator.mutable.tileentity.SignData;
@@ -22,6 +25,8 @@ import systems.reformcloud.reformcloud2.signs.packets.api.in.APIPacketInDeleteSi
 import systems.reformcloud.reformcloud2.signs.packets.api.in.APIPacketInReloadConfig;
 import systems.reformcloud.reformcloud2.signs.packets.api.out.APIPacketOutCreateSign;
 import systems.reformcloud.reformcloud2.signs.packets.api.out.APIPacketOutDeleteSign;
+import systems.reformcloud.reformcloud2.signs.sponge.command.SpongeCommandSigns;
+import systems.reformcloud.reformcloud2.signs.sponge.listener.SpongeListener;
 import systems.reformcloud.reformcloud2.signs.util.LayoutUtil;
 import systems.reformcloud.reformcloud2.signs.util.PlaceHolderUtil;
 import systems.reformcloud.reformcloud2.signs.util.SignSystemAdapter;
@@ -64,12 +69,24 @@ public class SpongeSignSystemAdapter implements SignSystemAdapter<Sign> {
         this.config = config;
 
         ExecutorAPI.getInstance().getEventManager().registerListener(new CloudListener());
+        Sponge.getEventManager().registerListeners(plugin, new SpongeListener());
 
         ExecutorAPI.getInstance().getPacketHandler().registerNetworkHandlers(
                 new APIPacketInCreateSign(),
                 new APIPacketInDeleteSign(),
                 new APIPacketInReloadConfig()
         );
+
+        CommandSpec signs = CommandSpec.builder()
+                .description(Text.of("The default signs command of the cloud system"))
+                .permission("reformcloud.command.signs")
+                .arguments(
+                        GenericArguments.optional(GenericArguments.string(Text.of("Execute type"))),
+                        GenericArguments.optional(GenericArguments.string(Text.of("Target group")))
+                )
+                .executor(new SpongeCommandSigns())
+                .build();
+        Sponge.getCommandManager().register(plugin, signs, "signs");
 
         start();
     }
@@ -167,6 +184,19 @@ public class SpongeSignSystemAdapter implements SignSystemAdapter<Sign> {
     }
 
     @Override
+    public boolean canConnect(@Nonnull CloudSign cloudSign) {
+        if (cloudSign.getCurrentTarget() == null || !cloudSign.getCurrentTarget().getNetworkInfo().isConnected()) {
+            return false;
+        }
+
+        if (cloudSign.getCurrentTarget().getProcessGroup().getPlayerAccessConfiguration().isMaintenance()) {
+            return getSelfLayout().isShowMaintenanceProcessesOnSigns();
+        }
+
+        return true;
+    }
+
+    @Override
     public void handleInternalSignCreate(@Nonnull CloudSign cloudSign) {
         this.cachedSigns.add(cloudSign);
         tryAssign();
@@ -208,6 +238,7 @@ public class SpongeSignSystemAdapter implements SignSystemAdapter<Sign> {
             if (sign.getCurrentTarget() == null
                     && sign.getGroup().equals(processInformation.getProcessGroup().getName())) {
                 sign.setCurrentTarget(processInformation);
+                notAssigned.remove(processInformation.getProcessUniqueID());
                 return;
             }
         }
@@ -270,8 +301,7 @@ public class SpongeSignSystemAdapter implements SignSystemAdapter<Sign> {
     }
 
     private void updateAllSigns() {
-        SignLayout layout = LayoutUtil.getLayoutFor(ExecutorAPI.getInstance().getThisProcessInformation().getProcessGroup().getName(), config).orElseThrow(
-                () -> new RuntimeException("No sign config present for context global or current group"));
+        SignLayout layout = getSelfLayout();
 
         SignSubLayout searching = LayoutUtil.getNextAndCheckFor(layout.getSearchingLayouts(), counter[0])
                 .orElseThrow(() -> new RuntimeException("Waiting layout for current group not present"));
@@ -331,20 +361,6 @@ public class SpongeSignSystemAdapter implements SignSystemAdapter<Sign> {
         });
     }
 
-    private <T> Optional<T> getNextAndCheckFor(List<T> list, AtomicInteger atomicInteger) {
-        if (list.size() == 0) {
-            return Optional.empty();
-        }
-
-        int i = atomicInteger.incrementAndGet();
-        if (list.size() <= i) {
-            atomicInteger.set(-1);
-            i = 0;
-        }
-
-        return Optional.of(list.get(i));
-    }
-
     private void updateSign(CloudSign sign, SignSubLayout layout, ProcessInformation processInformation) {
         Sign sponge = getSignConverter().from(sign);
         if (sponge == null || layout.getLines() == null || layout.getLines().length != 4) {
@@ -389,7 +405,21 @@ public class SpongeSignSystemAdapter implements SignSystemAdapter<Sign> {
     }
 
     private void start() {
-        this.taskID = repeat(this::updateAllSigns, this.config.getUpdateInterval());
+        systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task.EXECUTOR.execute(() -> {
+            Collection<CloudSign> signs = ExecutorAPI.getInstance().find(SignSystemAdapter.table, "signs", null, k -> k.get("signs", new TypeToken<Collection<CloudSign>>() {
+            }));
+            if (signs == null) {
+                return;
+            }
+
+            cachedSigns.addAll(signs);
+            ExecutorAPI.getInstance().getAllProcesses().forEach(this::handleProcessStart);
+            runTasks();
+        });
+    }
+
+    private void runTasks() {
+        this.taskID = repeat(this::updateAllSigns, this.config.getUpdateInterval() * 20);
     }
 
     private void restart() {
@@ -397,14 +427,15 @@ public class SpongeSignSystemAdapter implements SignSystemAdapter<Sign> {
             Sponge.getScheduler().getTaskById(taskID).ifPresent(Task::cancel);
         }
 
-        start();
+        runTasks();
+    }
+
+    private SignLayout getSelfLayout() {
+        return LayoutUtil.getLayoutFor(ExecutorAPI.getInstance().getThisProcessInformation().getProcessGroup().getName(), config).orElseThrow(
+                () -> new RuntimeException("No sign config present for context global or current group"));
     }
 
     public static SpongeSignSystemAdapter getInstance() {
         return instance;
-    }
-
-    public Object getPlugin() {
-        return plugin;
     }
 }

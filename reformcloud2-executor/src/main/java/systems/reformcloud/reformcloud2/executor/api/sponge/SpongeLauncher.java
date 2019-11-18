@@ -4,7 +4,7 @@ import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GameLoadCompleteEvent;
-import org.spongepowered.api.event.game.state.GameStartedServerEvent;
+import org.spongepowered.api.event.game.state.GameStartingServerEvent;
 import org.spongepowered.api.event.game.state.GameStoppingServerEvent;
 import org.spongepowered.api.plugin.Plugin;
 import systems.reformcloud.reformcloud2.executor.api.common.language.loading.LanguageWorker;
@@ -30,7 +30,7 @@ public class SpongeLauncher {
     }
 
     @Listener
-    public void handle(final GameStartedServerEvent event) {
+    public void handle(final GameStartingServerEvent event) {
         Sponge.getChannelRegistrar().createChannel(this, "BungeeCord");
         new SpongeExecutor(this);
     }

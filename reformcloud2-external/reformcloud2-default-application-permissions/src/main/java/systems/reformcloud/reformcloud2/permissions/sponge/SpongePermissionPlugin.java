@@ -3,7 +3,6 @@ package systems.reformcloud.reformcloud2.permissions.sponge;
 import com.google.inject.Inject;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.event.Listener;
-import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.event.game.state.GameStartedServerEvent;
 import org.spongepowered.api.event.game.state.GameStoppingServerEvent;
 import org.spongepowered.api.plugin.Dependency;
@@ -30,14 +29,11 @@ public class SpongePermissionPlugin {
     private ServiceManager serviceManager;
 
     @Listener
-    public void handle(final GamePreInitializationEvent event) {
+    public void handle(final GameStartedServerEvent event) {
         PermissionAPI.handshake();
         PacketHelper.addAPIPackets();
         serviceManager.setProvider(this, PermissionService.class, new SpongePermissionService());
-    }
 
-    @Listener
-    public void handle(final GameStartedServerEvent event) {
         Sponge.getEventManager().registerListeners(this, new SpongePermissionListener());
     }
 

@@ -77,6 +77,8 @@ public interface SignSystemAdapter<T> {
     @Nonnull
     SignConverter<T> getSignConverter();
 
+    boolean canConnect(@Nonnull CloudSign cloudSign);
+
     // ===================================
     // The following methods are not documented because they are for internal use only
     // ===================================

@@ -7,6 +7,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import systems.reformcloud.reformcloud2.signs.bukkit.adapter.BukkitSignSystemAdapter;
+import systems.reformcloud.reformcloud2.signs.util.SignSystemAdapter;
 import systems.reformcloud.reformcloud2.signs.util.sign.CloudSign;
 
 import java.io.ByteArrayOutputStream;
@@ -26,7 +27,7 @@ public class BukkitListener implements Listener {
                     BukkitSignSystemAdapter.getInstance().getSignConverter().to(sign)
             );
 
-            if (cloudSign == null || cloudSign.getCurrentTarget() == null) {
+            if (cloudSign == null || !SignSystemAdapter.getInstance().canConnect(cloudSign)) {
                 return;
             }
 

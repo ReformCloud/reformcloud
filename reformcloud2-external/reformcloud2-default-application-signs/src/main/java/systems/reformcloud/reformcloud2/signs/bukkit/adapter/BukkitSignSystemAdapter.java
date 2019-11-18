@@ -168,6 +168,19 @@ public class BukkitSignSystemAdapter implements SignSystemAdapter<Sign> {
     }
 
     @Override
+    public boolean canConnect(@Nonnull CloudSign cloudSign) {
+        if (cloudSign.getCurrentTarget() == null || !cloudSign.getCurrentTarget().getNetworkInfo().isConnected()) {
+            return false;
+        }
+
+        if (cloudSign.getCurrentTarget().getProcessGroup().getPlayerAccessConfiguration().isMaintenance()) {
+            return getSelfLayout().isShowMaintenanceProcessesOnSigns();
+        }
+
+        return true;
+    }
+
+    @Override
     public void handleInternalSignCreate(@Nonnull CloudSign cloudSign) {
         this.cachedSigns.add(cloudSign);
         tryAssign();
@@ -215,6 +228,7 @@ public class BukkitSignSystemAdapter implements SignSystemAdapter<Sign> {
             if (sign.getCurrentTarget() == null
                     && sign.getGroup().equals(processInformation.getProcessGroup().getName())) {
                 sign.setCurrentTarget(processInformation);
+                notAssigned.remove(processInformation.getProcessUniqueID());
                 return;
             }
         }
@@ -267,8 +281,7 @@ public class BukkitSignSystemAdapter implements SignSystemAdapter<Sign> {
     }
 
     private void updateAllSigns0() {
-        SignLayout layout = LayoutUtil.getLayoutFor(ExecutorAPI.getInstance().getThisProcessInformation().getProcessGroup().getName(), config).orElseThrow(
-                () -> new RuntimeException("No sign config present for context global or current group"));
+        SignLayout layout = getSelfLayout();
 
         SignSubLayout searching = LayoutUtil.getNextAndCheckFor(layout.getSearchingLayouts(), counter[0])
                 .orElseThrow(() -> new RuntimeException("Waiting layout for current group not present"));
@@ -434,6 +447,11 @@ public class BukkitSignSystemAdapter implements SignSystemAdapter<Sign> {
     private boolean isCurrent(ProcessInformation processInformation) {
         ProcessInformation info = ExecutorAPI.getInstance().getThisProcessInformation();
         return info != null && info.getProcessUniqueID().equals(processInformation.getProcessUniqueID());
+    }
+
+    private SignLayout getSelfLayout() {
+        return LayoutUtil.getLayoutFor(ExecutorAPI.getInstance().getThisProcessInformation().getProcessGroup().getName(), config).orElseThrow(
+                () -> new RuntimeException("No sign config present for context global or current group"));
     }
 
     public static BukkitSignSystemAdapter getInstance() {
