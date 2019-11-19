@@ -5,6 +5,10 @@ import systems.reformcloud.reformcloud2.executor.api.common.utility.system.Syste
 import java.io.File;
 import java.nio.file.Paths;
 
+/**
+ * @deprecated May get replaced by another impl
+ */
+@Deprecated
 public class Null {
 
     private Null() {

@@ -34,6 +34,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.event.EventManager;
 import systems.reformcloud.reformcloud2.executor.api.common.event.basic.DefaultEventManager;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.MainGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
+import systems.reformcloud.reformcloud2.executor.api.common.groups.task.OnlinePercentCheckerTask;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Template;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.PlayerAccessConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.StartupConfiguration;
@@ -264,6 +265,8 @@ public final class ControllerExecutor extends Controller {
             }
         }
 
+        OnlinePercentCheckerTask.start();
+
         running = true;
         System.out.println(LanguageManager.get("startup-done", Long.toString(System.currentTimeMillis() - current)));
         runConsole();
@@ -273,6 +276,8 @@ public final class ControllerExecutor extends Controller {
     public void reload() {
         final long current = System.currentTimeMillis();
         System.out.println(LanguageManager.get("runtime-try-reload"));
+
+        OnlinePercentCheckerTask.stop(); // To update the config of the auto start, too
 
         this.applicationLoader.disableApplications();
 
@@ -300,6 +305,8 @@ public final class ControllerExecutor extends Controller {
         this.loadCommands();
         this.loadPacketHandlers();
 
+        OnlinePercentCheckerTask.start();
+
         this.applicationLoader.enableApplications();
         System.out.println(LanguageManager.get("runtime-reload-done", Long.toString(System.currentTimeMillis() - current)));
     }
@@ -313,6 +320,8 @@ public final class ControllerExecutor extends Controller {
         }
 
         System.out.println(LanguageManager.get("runtime-try-shutdown"));
+
+        OnlinePercentCheckerTask.stop();
 
         this.networkServer.closeAll(); //Close network first that all channels now that the controller is disconnecting
         this.webServer.close();

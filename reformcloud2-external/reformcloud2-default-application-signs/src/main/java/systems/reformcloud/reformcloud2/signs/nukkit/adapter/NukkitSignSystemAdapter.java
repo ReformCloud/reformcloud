@@ -1,26 +1,22 @@
-package systems.reformcloud.reformcloud2.signs.bukkit.adapter;
+package systems.reformcloud.reformcloud2.signs.nukkit.adapter;
 
+import cn.nukkit.Server;
+import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockSignPost;
+import cn.nukkit.blockentity.BlockEntitySign;
+import cn.nukkit.command.PluginCommand;
+import cn.nukkit.level.Location;
+import cn.nukkit.plugin.Plugin;
+import cn.nukkit.utils.TextFormat;
 import com.google.gson.reflect.TypeToken;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.block.BlockFace;
-import org.bukkit.block.BlockState;
-import org.bukkit.block.Sign;
-import org.bukkit.block.data.Directional;
-import org.bukkit.command.PluginCommand;
-import org.bukkit.material.MaterialData;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.java.JavaPlugin;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.common.base.Conditions;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
-import systems.reformcloud.reformcloud2.signs.bukkit.commands.BukkitCommandSigns;
-import systems.reformcloud.reformcloud2.signs.bukkit.listener.BukkitListener;
 import systems.reformcloud.reformcloud2.signs.listener.CloudListener;
+import systems.reformcloud.reformcloud2.signs.nukkit.commands.NukkitCommandSigns;
+import systems.reformcloud.reformcloud2.signs.nukkit.listener.NukkitListener;
 import systems.reformcloud.reformcloud2.signs.packets.api.in.APIPacketInCreateSign;
 import systems.reformcloud.reformcloud2.signs.packets.api.in.APIPacketInDeleteSign;
 import systems.reformcloud.reformcloud2.signs.packets.api.in.APIPacketInReloadConfig;
@@ -42,23 +38,35 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class BukkitSignSystemAdapter implements SignSystemAdapter<Sign> {
+public class NukkitSignSystemAdapter implements SignSystemAdapter<BlockEntitySign> {
 
-    private static BukkitSignSystemAdapter instance;
+    private static NukkitSignSystemAdapter instance;
 
-    public BukkitSignSystemAdapter(JavaPlugin plugin, SignConfig config) {
+    private static final Map<String, Block> BLOCKS = new ConcurrentHashMap<>();
+
+    static {
+        Arrays.stream(Block.class.getDeclaredFields()).forEach(e -> {
+            try {
+                Block block = (Block) e.get(null);
+                BLOCKS.put(block.getName(), block);
+            } catch (IllegalAccessException ex) {
+                ex.printStackTrace();
+            }
+        });
+    }
+
+    public NukkitSignSystemAdapter(Plugin plugin, SignConfig signConfig) {
         SignSystemAdapter.instance.set(instance = this);
 
         this.plugin = plugin;
-        this.config = config;
+        this.config = signConfig;
 
         ExecutorAPI.getInstance().getEventManager().registerListener(new CloudListener());
-        Bukkit.getPluginManager().registerEvents(new BukkitListener(), plugin);
+        Server.getInstance().getPluginManager().registerEvents(new NukkitListener(), plugin);
 
-        PluginCommand signs = plugin.getCommand("signs");
-        Conditions.isTrue(signs != null);
-        signs.setExecutor(new BukkitCommandSigns());
-        signs.setPermission("reformcloud.command.signs");
+        PluginCommand command = (PluginCommand) Server.getInstance().getPluginCommand("signs");
+        command.setExecutor(new NukkitCommandSigns());
+        command.setPermission("reformcloud.command.signs");
 
         ExecutorAPI.getInstance().getPacketHandler().registerNetworkHandlers(
                 new APIPacketInCreateSign(),
@@ -66,7 +74,6 @@ public class BukkitSignSystemAdapter implements SignSystemAdapter<Sign> {
                 new APIPacketInReloadConfig()
         );
 
-        Bukkit.getMessenger().registerOutgoingPluginChannel(plugin, "BungeeCord");
         this.start();
     }
 
@@ -138,8 +145,8 @@ public class BukkitSignSystemAdapter implements SignSystemAdapter<Sign> {
 
     @Nonnull
     @Override
-    public CloudSign createSign(@Nonnull Sign sign, @Nonnull String group) {
-        CloudSign cloudSign = getSignConverter().to(sign, group);
+    public CloudSign createSign(@Nonnull BlockEntitySign blockEntitySign, @Nonnull String group) {
+        CloudSign cloudSign = getSignConverter().to(blockEntitySign, group);
         if (getSignAt(cloudSign.getLocation()) != null) {
             return cloudSign;
         }
@@ -151,7 +158,7 @@ public class BukkitSignSystemAdapter implements SignSystemAdapter<Sign> {
     @Override
     public void deleteSign(@Nonnull CloudLocation location) {
         Links.filterToReference(cachedSigns, e -> e.getLocation().equals(location)).ifPresent(e ->
-            DefaultChannelManager.INSTANCE.get("Controller").ifPresent(s -> s.sendPacket(new APIPacketOutDeleteSign(e)))
+                DefaultChannelManager.INSTANCE.get("Controller").ifPresent(s -> s.sendPacket(new APIPacketOutDeleteSign(e)))
         );
     }
 
@@ -163,8 +170,8 @@ public class BukkitSignSystemAdapter implements SignSystemAdapter<Sign> {
 
     @Nonnull
     @Override
-    public SignConverter<Sign> getSignConverter() {
-        return BukkitSignConverter.INSTANCE;
+    public SignConverter<BlockEntitySign> getSignConverter() {
+        return NukkitSignConverter.INSTANCE;
     }
 
     @Override
@@ -193,7 +200,7 @@ public class BukkitSignSystemAdapter implements SignSystemAdapter<Sign> {
             this.cachedSigns.remove(e);
             removeAssign(e);
             updateAllSigns();
-            doSync(() -> clearLines(getSignConverter().from(e)));
+            doSync(() -> clearSign(getSignConverter().from(e)));
         });
     }
 
@@ -203,16 +210,17 @@ public class BukkitSignSystemAdapter implements SignSystemAdapter<Sign> {
         restartTask();
     }
 
-    private void clearLines(Sign sign) {
+    private void clearSign(BlockEntitySign sign) {
         if (sign == null) {
             return;
         }
 
-        sign.setLine(0, " ");
-        sign.setLine(1, " ");
-        sign.setLine(2, " ");
-        sign.setLine(3, " ");
-        sign.update();
+        sign.setText(); // Nukkit sets an empty line if the array does not contain a string for a line
+    }
+
+    private boolean isCurrent(ProcessInformation processInformation) {
+        ProcessInformation info = ExecutorAPI.getInstance().getThisProcessInformation();
+        return info != null && info.getProcessUniqueID().equals(processInformation.getProcessUniqueID());
     }
 
     private void doSync(Runnable runnable) {
@@ -220,7 +228,7 @@ public class BukkitSignSystemAdapter implements SignSystemAdapter<Sign> {
             return;
         }
 
-        Bukkit.getScheduler().runTask(plugin, runnable);
+        Server.getInstance().getScheduler().scheduleTask(plugin, runnable);
     }
 
     private void assign(ProcessInformation processInformation) {
@@ -342,80 +350,43 @@ public class BukkitSignSystemAdapter implements SignSystemAdapter<Sign> {
     }
 
     private void updateSign(CloudSign sign, SignSubLayout layout, ProcessInformation processInformation) {
-        Sign bukkit = getSignConverter().from(sign);
-        if (bukkit == null || layout.getLines() == null || layout.getLines().length != 4) {
+        BlockEntitySign nukkit = getSignConverter().from(sign);
+        if (nukkit == null || layout.getLines() == null || layout.getLines().length != 4) {
             return;
         }
 
-        bukkit.setLine(0, replaceAll(layout.getLines()[0], sign.getGroup(), processInformation));
-        bukkit.setLine(1, replaceAll(layout.getLines()[1], sign.getGroup(), processInformation));
-        bukkit.setLine(2, replaceAll(layout.getLines()[2], sign.getGroup(), processInformation));
-        bukkit.setLine(3, replaceAll(layout.getLines()[3], sign.getGroup(), processInformation));
-        bukkit.update();
-        this.changeBlockBehind(bukkit, layout);
+        String[] lines = Arrays.stream(layout.getLines()).map(e -> replaceAll(e, sign.getGroup(), processInformation)).toArray(String[]::new);
+        nukkit.setText(lines);
+        this.changeBlockBehind(nukkit, layout);
     }
 
     private String replaceAll(String line, String group, ProcessInformation processInformation) {
         if (processInformation == null) {
             line = line.replace("%group%", group);
-            return ChatColor.translateAlternateColorCodes('&', line);
+            return TextFormat.colorize('&', line);
         }
 
-        return PlaceHolderUtil.format(line, group, processInformation, s -> ChatColor.translateAlternateColorCodes('&', s));
+        return PlaceHolderUtil.format(line, group, processInformation, s -> TextFormat.colorize('&', s));
     }
 
-    private void changeBlockBehind(Sign sign, SignSubLayout layout) {
-        BlockFace blockFace = null;
-
-        try {
-            org.bukkit.material.Sign signData = (org.bukkit.material.Sign) sign.getData();
-            if (signData.isWallSign()) {
-                blockFace = signData.getFacing();
-            }
-        } catch (final Throwable throwable) {
-            if (sign.getBlockData() instanceof Directional) {
-                Directional directional = (Directional) sign.getBlockData();
-                blockFace = directional.getFacing();
-            }
+    private void changeBlockBehind(BlockEntitySign sign, SignSubLayout layout) {
+        if (!(sign.getBlock() instanceof BlockSignPost)) {
+            return;
         }
 
-        getRelative(blockFace).ifPresent(e -> {
-            Material material = Material.getMaterial(layout.getBlock());
-            if (material == null) {
-                return;
-            }
+        BlockSignPost post = (BlockSignPost) sign.getBlock();
+        Location location = post.getSide(post.getBlockFace().getOpposite()).getLocation();
+        Block block = BLOCKS.get(layout.getBlock());
+        if (block == null) {
+            return;
+        }
 
-            BlockState back = sign.getBlock().getRelative(e).getState();
-            back.setType(material);
-            back.setData(new MaterialData(material, (byte) layout.getSubID()));
-            back.update(true);
-        });
+        location.getLevel().setBlock(location, block, true, true);
     }
 
-    private Optional<BlockFace> getRelative(BlockFace face) {
-        if (face == null) {
-            return Optional.empty();
-        }
-
-        switch (face) {
-            case EAST: {
-                return Optional.of(BlockFace.WEST);
-            }
-
-            case WEST: {
-                return Optional.of(BlockFace.EAST);
-            }
-
-            case NORTH: {
-                return Optional.of(BlockFace.SOUTH);
-            }
-
-            case SOUTH: {
-                return Optional.of(BlockFace.NORTH);
-            }
-        }
-
-        return Optional.empty();
+    private SignLayout getSelfLayout() {
+        return LayoutUtil.getLayoutFor(ExecutorAPI.getInstance().getThisProcessInformation().getProcessGroup().getName(), config).orElseThrow(
+                () -> new RuntimeException("No sign config present for context global or current group"));
     }
 
     private void start() {
@@ -434,31 +405,25 @@ public class BukkitSignSystemAdapter implements SignSystemAdapter<Sign> {
 
     private void restartTask() {
         if (taskID != -1) {
-            Bukkit.getScheduler().cancelTask(taskID);
+            Server.getInstance().getScheduler().cancelTask(taskID);
         }
 
         runTasks();
     }
 
     private void runTasks() {
-        taskID = Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, this::updateAllSigns, 0, 20 * config.getUpdateInterval()).getTaskId();
+        taskID = Server.getInstance().getScheduler().scheduleRepeatingTask(plugin, this::updateAllSigns, fromLong(20 * config.getUpdateInterval()), true).getTaskId();
     }
 
-    private boolean isCurrent(ProcessInformation processInformation) {
-        ProcessInformation info = ExecutorAPI.getInstance().getThisProcessInformation();
-        return info != null && info.getProcessUniqueID().equals(processInformation.getProcessUniqueID());
+    private int fromLong(long l) {
+        if (l > Integer.MAX_VALUE) {
+            return Integer.MAX_VALUE;
+        }
+
+        return l < Integer.MIN_VALUE ? Integer.MIN_VALUE : (int) l;
     }
 
-    private SignLayout getSelfLayout() {
-        return LayoutUtil.getLayoutFor(ExecutorAPI.getInstance().getThisProcessInformation().getProcessGroup().getName(), config).orElseThrow(
-                () -> new RuntimeException("No sign config present for context global or current group"));
-    }
-
-    public static BukkitSignSystemAdapter getInstance() {
+    public static NukkitSignSystemAdapter getInstance() {
         return instance;
-    }
-
-    public Plugin getPlugin() {
-        return plugin;
     }
 }

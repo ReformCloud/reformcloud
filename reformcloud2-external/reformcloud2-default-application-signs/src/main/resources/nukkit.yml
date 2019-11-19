@@ -1,0 +1,17 @@
+name: 'ReformCloud2Signs'
+author: 'derklaro'
+version: '2.0'
+main: systems.reformcloud.reformcloud2.signs.nukkit.NukkitPlugin
+
+load: STARTUP
+
+api: ['1.0.0']
+depend:
+  - ReformCloud2SpigotExecutor
+
+commands:
+  signs:
+
+# Additional
+website: 'https://reformcloud.systems'
+description: 'The reformcloud sign plugin'

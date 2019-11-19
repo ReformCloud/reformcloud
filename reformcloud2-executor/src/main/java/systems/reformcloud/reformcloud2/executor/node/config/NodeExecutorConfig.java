@@ -40,7 +40,7 @@ public class NodeExecutorConfig {
             "reformcloud/temp",
             "reformcloud/static",
             "reformcloud/templates",
-            "reformcloud/global",
+            "reformcloud/global/plugins",
             "reformcloud/files/.connection"
     );
 

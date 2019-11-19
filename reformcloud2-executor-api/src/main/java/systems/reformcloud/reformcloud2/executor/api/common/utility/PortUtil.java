@@ -9,6 +9,12 @@ public final class PortUtil {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * Checks if a specific port is free
+     *
+     * @param startPort The port which should be checked and counted up
+     * @return The next free port
+     */
     public static int checkPort(int startPort) {
         while (isPortInUse(startPort)) {
             startPort++;

@@ -27,6 +27,8 @@ public final class StartupConfiguration {
 
     private StartupEnvironment startupEnvironment;
 
+    private AutomaticStartupConfiguration automaticStartupConfiguration = AutomaticStartupConfiguration.defaults();
+
     private boolean searchBestClientAlone;
 
     private List<String> useOnlyTheseClients;
@@ -49,6 +51,10 @@ public final class StartupConfiguration {
 
     public StartupEnvironment getStartupEnvironment() {
         return startupEnvironment;
+    }
+
+    public AutomaticStartupConfiguration getAutomaticStartupConfiguration() {
+        return automaticStartupConfiguration;
     }
 
     public boolean isSearchBestClientAlone() {

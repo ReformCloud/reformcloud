@@ -25,7 +25,7 @@ public final class ClientExecutorConfig {
             "reformcloud/temp",
             "reformcloud/static",
             "reformcloud/templates",
-            "reformcloud/global",
+            "reformcloud/global/plugins",
             "reformcloud/files",
             "reformcloud/files/.connection"
     );

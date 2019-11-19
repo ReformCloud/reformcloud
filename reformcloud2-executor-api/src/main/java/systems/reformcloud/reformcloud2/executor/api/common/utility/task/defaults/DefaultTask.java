@@ -1,8 +1,9 @@
 package systems.reformcloud.reformcloud2.executor.api.common.utility.task.defaults;
 
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.task.excpetion.TaskCompletionException;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.task.excepetion.TaskCompletionException;
 
+import javax.annotation.Nonnull;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -45,7 +46,7 @@ public final class DefaultTask<V> extends Task<V> {
     }
 
     @Override
-    public void awaitUninterruptedly(TimeUnit timeUnit, long time) {
+    public void awaitUninterruptedly(@Nonnull TimeUnit timeUnit, long time) {
         this.get(time, timeUnit);
     }
 
@@ -64,8 +65,9 @@ public final class DefaultTask<V> extends Task<V> {
         Task.EXECUTOR.execute(this::awaitUninterruptedly);
     }
 
+    @Nonnull
     @Override
-    public Task<V> onFailure(Consumer<TaskCompletionException> consumer) {
+    public Task<V> onFailure(@Nonnull Consumer<TaskCompletionException> consumer) {
         this.failureConsumer = Objects.requireNonNull(consumer);
         return this;
     }

@@ -32,6 +32,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.event.EventManager;
 import systems.reformcloud.reformcloud2.executor.api.common.event.basic.DefaultEventManager;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.MainGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
+import systems.reformcloud.reformcloud2.executor.api.common.groups.task.OnlinePercentCheckerTask;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Template;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.backend.TemplateBackendManager;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.PlayerAccessConfiguration;
@@ -424,6 +425,8 @@ public class NodeExecutor extends Node {
         this.loadCommands();
         this.sendGroups();
 
+        OnlinePercentCheckerTask.start();
+
         running = true;
         System.out.println(LanguageManager.get("startup-done", Long.toString(System.currentTimeMillis() - current)));
 
@@ -488,6 +491,8 @@ public class NodeExecutor extends Node {
         }
 
         System.out.println(LanguageManager.get("runtime-try-shutdown"));
+
+        OnlinePercentCheckerTask.stop();
 
         this.clusterSyncManager.disconnectFromCluster();
 
@@ -1961,6 +1966,8 @@ public class NodeExecutor extends Node {
         final long current = System.currentTimeMillis();
         System.out.println(LanguageManager.get("runtime-try-reload"));
 
+        OnlinePercentCheckerTask.stop();
+
         this.applicationLoader.disableApplications();
 
         this.commandManager.unregisterAll();
@@ -1993,6 +2000,8 @@ public class NodeExecutor extends Node {
         this.applicationLoader.enableApplications();
 
         this.clusterSyncManager.doClusterReload();
+
+        OnlinePercentCheckerTask.start();
         System.out.println(LanguageManager.get("runtime-reload-done", Long.toString(System.currentTimeMillis() - current)));
     }
 
