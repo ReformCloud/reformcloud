@@ -2,6 +2,7 @@ package systems.reformcloud.reformcloud2.permissions.velocity.listener;
 
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.DisconnectEvent;
+import com.velocitypowered.api.event.connection.LoginEvent;
 import com.velocitypowered.api.event.connection.PostLoginEvent;
 import com.velocitypowered.api.event.permission.PermissionsSetupEvent;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links;
@@ -12,6 +13,14 @@ import systems.reformcloud.reformcloud2.permissions.util.user.PermissionUser;
 import systems.reformcloud.reformcloud2.permissions.velocity.permission.DefaultPermissionProvider;
 
 public class VelocityPermissionListener {
+
+    @Subscribe
+    public void handle(final LoginEvent event) {
+        PermissionAPI.getInstance().getPermissionUtil().loadUser(
+                event.getPlayer().getUniqueId(),
+                event.getPlayer().getUsername()
+        );
+    }
 
     @Subscribe
     public void handle(final PostLoginEvent event) {

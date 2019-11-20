@@ -25,6 +25,7 @@ import systems.reformcloud.reformcloud2.permissions.util.permission.PermissionNo
 import systems.reformcloud.reformcloud2.permissions.util.user.PermissionUser;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -35,6 +36,8 @@ public class DefaultPermissionUtil implements PermissionUtil {
     public static final String PERMISSION_PLAYER_TABLE = "reformcloud_internal_db_perm_player";
 
     private static final String PERMISSION_CONFIG_TABLE = "reformcloud_internal_db_perm_config";
+
+    public static final String PERMISSION_NAME_TO_UNIQUE_ID_TABLE = "reformcloud_internal_db_perm_name_uuid";
 
     private static final Map<String, PermissionGroup> CACHE = new ConcurrentHashMap<>();
 
@@ -50,6 +53,7 @@ public class DefaultPermissionUtil implements PermissionUtil {
         ExecutorAPI.getInstance().createDatabase(PERMISSION_GROUP_TABLE);
         ExecutorAPI.getInstance().createDatabase(PERMISSION_PLAYER_TABLE);
         ExecutorAPI.getInstance().createDatabase(PERMISSION_CONFIG_TABLE);
+        ExecutorAPI.getInstance().createDatabase(PERMISSION_NAME_TO_UNIQUE_ID_TABLE);
 
         if (ExecutorAPI.getInstance().getType().equals(ExecutorType.CONTROLLER)
                 || ExecutorAPI.getInstance().getType().equals(ExecutorType.NODE)) {
@@ -302,6 +306,16 @@ public class DefaultPermissionUtil implements PermissionUtil {
         return result;
     }
 
+    @Nonnull
+    @Override
+    public PermissionUser loadUser(@Nonnull UUID uuid, @Nullable String name) {
+        if (name != null) {
+            pushToDB(uuid, name);
+        }
+
+        return loadUser(uuid);
+    }
+
     @Override
     public void addUserPermission(@Nonnull UUID uuid, @Nonnull PermissionNode permissionNode) {
         final PermissionUser user = loadUser(uuid);
@@ -461,5 +475,18 @@ public class DefaultPermissionUtil implements PermissionUtil {
 
             CACHED_DEFAULT_GROUPS.add(group);
         });
+    }
+
+    private void pushToDB(UUID uuid, String name) {
+        if (ExecutorAPI.getInstance().contains(PERMISSION_NAME_TO_UNIQUE_ID_TABLE, name)) {
+            ExecutorAPI.getInstance().update(PERMISSION_NAME_TO_UNIQUE_ID_TABLE, name, new JsonConfiguration().add("id", uuid));
+        } else {
+            ExecutorAPI.getInstance().insert(
+                    PERMISSION_NAME_TO_UNIQUE_ID_TABLE,
+                    name,
+                    uuid.toString(),
+                    new JsonConfiguration().add("id", uuid)
+            );
+        }
     }
 }

@@ -56,6 +56,8 @@ public class NukkitSignSystemAdapter implements SignSystemAdapter<BlockEntitySig
     }
 
     public NukkitSignSystemAdapter(Plugin plugin, SignConfig signConfig) {
+        Server.getInstance().getConsoleSender().sendMessage("HELLO 1234");
+
         SignSystemAdapter.instance.set(instance = this);
 
         this.plugin = plugin;

@@ -124,6 +124,16 @@ public interface PermissionUtil {
     PermissionUser loadUser(@Nonnull UUID uuid);
 
     /**
+     * Loads a specific permission user or creates a new one
+     *
+     * @param uuid The uniqueID of the user which should get loaded
+     * @param name The name of the user which should get loaded or {@code null} then the name will not get inserted in the db
+     * @return The loaded or created permission user
+     */
+    @Nonnull
+    PermissionUser loadUser(@Nonnull UUID uuid, @Nullable String name);
+
+    /**
      * Adds a specific permission to a user
      *
      * @param uuid The uniqueID of the permission user

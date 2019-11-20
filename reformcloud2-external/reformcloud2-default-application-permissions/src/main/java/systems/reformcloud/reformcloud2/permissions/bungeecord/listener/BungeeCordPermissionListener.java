@@ -1,6 +1,7 @@
 package systems.reformcloud.reformcloud2.permissions.bungeecord.listener;
 
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.md_5.bungee.api.event.LoginEvent;
 import net.md_5.bungee.api.event.PermissionCheckEvent;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
 import net.md_5.bungee.api.event.PostLoginEvent;
@@ -13,6 +14,15 @@ import systems.reformcloud.reformcloud2.permissions.util.group.NodeGroup;
 import systems.reformcloud.reformcloud2.permissions.util.user.PermissionUser;
 
 public class BungeeCordPermissionListener implements Listener {
+
+    @EventHandler
+    public void handle(final LoginEvent event) {
+        // Push user into name to unique ID DB
+        PermissionAPI.getInstance().getPermissionUtil().loadUser(
+                event.getConnection().getUniqueId(),
+                event.getConnection().getName()
+        );
+    }
 
     @EventHandler
     public void handle(final PostLoginEvent event) {

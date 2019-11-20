@@ -7,7 +7,7 @@ load: STARTUP
 
 api: ['1.0.0']
 depend:
-  - ReformCloud2SpigotExecutor
+  - ReformCloud2NukkitExecutor
 
 commands:
   signs:
