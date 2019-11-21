@@ -11,6 +11,7 @@ depend:
 
 commands:
   signs:
+    description: Manage signs
 
 # Additional
 website: 'https://reformcloud.systems'

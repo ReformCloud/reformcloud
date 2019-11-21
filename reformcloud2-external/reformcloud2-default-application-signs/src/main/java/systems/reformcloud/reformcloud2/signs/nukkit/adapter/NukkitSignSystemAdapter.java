@@ -7,6 +7,7 @@ import cn.nukkit.blockentity.BlockEntitySign;
 import cn.nukkit.command.PluginCommand;
 import cn.nukkit.level.Location;
 import cn.nukkit.plugin.Plugin;
+import cn.nukkit.plugin.PluginBase;
 import cn.nukkit.utils.TextFormat;
 import com.google.gson.reflect.TypeToken;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
@@ -34,6 +35,7 @@ import systems.reformcloud.reformcloud2.signs.util.sign.config.SignSubLayout;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.lang.reflect.Field;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -45,19 +47,18 @@ public class NukkitSignSystemAdapter implements SignSystemAdapter<BlockEntitySig
     private static final Map<String, Block> BLOCKS = new ConcurrentHashMap<>();
 
     static {
-        Arrays.stream(Block.class.getDeclaredFields()).forEach(e -> {
-            try {
-                Block block = (Block) e.get(null);
-                BLOCKS.put(block.getName(), block);
-            } catch (IllegalAccessException ex) {
-                ex.printStackTrace();
-            }
-        });
+        try {
+            Field fullList = Block.class.getDeclaredField("fullList");
+            fullList.setAccessible(true);
+            Block[] blocks = (Block[]) fullList.get(null);
+
+            Arrays.stream(blocks).forEach(e -> BLOCKS.put(e.getName(), e));
+        } catch (final IllegalAccessException | NoSuchFieldException ex) {
+            ex.printStackTrace();
+        }
     }
 
-    public NukkitSignSystemAdapter(Plugin plugin, SignConfig signConfig) {
-        Server.getInstance().getConsoleSender().sendMessage("HELLO 1234");
-
+    public NukkitSignSystemAdapter(PluginBase plugin, SignConfig signConfig) {
         SignSystemAdapter.instance.set(instance = this);
 
         this.plugin = plugin;
@@ -66,7 +67,7 @@ public class NukkitSignSystemAdapter implements SignSystemAdapter<BlockEntitySig
         ExecutorAPI.getInstance().getEventManager().registerListener(new CloudListener());
         Server.getInstance().getPluginManager().registerEvents(new NukkitListener(), plugin);
 
-        PluginCommand command = (PluginCommand) Server.getInstance().getPluginCommand("signs");
+        PluginCommand command = (PluginCommand) plugin.getCommand("signs");
         command.setExecutor(new NukkitCommandSigns());
         command.setPermission("reformcloud.command.signs");
 

@@ -9,7 +9,9 @@ public class NukkitPlugin extends PluginBase {
 
     @Override
     public void onEnable() {
-        ConfigRequesterUtil.requestSignConfigAsync(e -> new NukkitSignSystemAdapter(this, e));
+        ConfigRequesterUtil.requestSignConfigAsync(
+                e -> Server.getInstance().getScheduler().scheduleTask(this, () -> new NukkitSignSystemAdapter(this, e))
+        );
     }
 
     @Override
