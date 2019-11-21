@@ -4,6 +4,10 @@ import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * @deprecated The external server for patches is not yet implemented, patches are not available
+ */
+@Deprecated
 public interface Patcher {
 
     /**

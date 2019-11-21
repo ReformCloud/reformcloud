@@ -54,8 +54,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.defau
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.handler.PacketHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.server.DefaultNetworkServer;
 import systems.reformcloud.reformcloud2.executor.api.common.network.server.NetworkServer;
-import systems.reformcloud.reformcloud2.executor.api.common.patch.Patcher;
-import systems.reformcloud.reformcloud2.executor.api.common.patch.basic.DefaultPatcher;
 import systems.reformcloud.reformcloud2.executor.api.common.plugins.InstallablePlugin;
 import systems.reformcloud.reformcloud2.executor.api.common.plugins.Plugin;
 import systems.reformcloud.reformcloud2.executor.api.common.plugins.basic.DefaultInstallablePlugin;
@@ -127,8 +125,6 @@ public final class ControllerExecutor extends Controller {
     private final PacketHandler packetHandler = new DefaultPacketHandler();
 
     private final ProcessManager processManager = new DefaultProcessManager();
-
-    private final Patcher patcher = new DefaultPatcher();
 
     private final DatabaseConfig databaseConfig = new DatabaseConfig();
 
@@ -374,10 +370,6 @@ public final class ControllerExecutor extends Controller {
 
     public ControllerConfig getControllerConfig() {
         return controllerConfig;
-    }
-
-    public Patcher getPatcher() {
-        return patcher;
     }
 
     public AutoStartupHandler getAutoStartupHandler() {
