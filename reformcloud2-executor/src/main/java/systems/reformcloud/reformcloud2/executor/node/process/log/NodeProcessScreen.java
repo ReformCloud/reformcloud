@@ -8,10 +8,7 @@ import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
 import systems.reformcloud.reformcloud2.executor.node.network.packet.out.screen.NodePacketOutScreenEnabled;
 import systems.reformcloud.reformcloud2.executor.node.network.packet.out.screen.NodePacketOutScreenLineAdded;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Deque;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
 public class NodeProcessScreen {
@@ -60,6 +57,7 @@ public class NodeProcessScreen {
         enabledFrom.stream()
                 .filter(e -> DefaultChannelManager.INSTANCE.get(e).isPresent())
                 .map(e -> DefaultChannelManager.INSTANCE.get(e).orNothing())
+                .filter(Objects::nonNull)
                 .forEach(e -> e.sendPacket(new NodePacketOutScreenLineAdded(uniqueID, line)));
 
         ProcessInformation processInformation = ExecutorAPI.getInstance().getProcess(uniqueID);

@@ -16,7 +16,10 @@ public class JavaProcessHelper {
     }
 
     public static int shutdown(Process process, boolean force, boolean await, long timeOut, String... shutdownCommands) {
-        Conditions.isTrue(process != null);
+        if (process == null) {
+            return -1;
+        }
+
         Conditions.isTrue(timeOut > 0);
 
         if (!process.isAlive()) {

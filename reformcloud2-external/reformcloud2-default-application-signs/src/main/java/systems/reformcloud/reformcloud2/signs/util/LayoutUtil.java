@@ -15,8 +15,12 @@ public class LayoutUtil {
     }
 
     public static <T> Optional<T> getNextAndCheckFor(List<T> list, AtomicInteger atomicInteger) {
-        if (list.size() == 0) {
+        if (list.isEmpty()) {
             return Optional.empty();
+        }
+
+        if (list.size() == 1) {
+            return Optional.of(list.get(0));
         }
 
         int i = atomicInteger.incrementAndGet();

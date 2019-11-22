@@ -43,7 +43,6 @@ public class LocalProcessQueue extends AbsoluteThread {
                     continue;
                 }
 
-                System.out.println(LanguageManager.get("client-process-start-failed", process.getProcessInformation().getName(), QUEUE.size() +1));
                 QUEUE.offerLast(process);
                 AbsoluteThread.sleep(200);
             } catch (final InterruptedException ignored) {
