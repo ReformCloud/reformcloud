@@ -12,6 +12,10 @@ import java.util.zip.ZipInputStream;
 
 public final class SystemHelper {
 
+    private SystemHelper() {
+        throw new UnsupportedOperationException();
+    }
+
     public static void deleteFile(File file) {
         try {
             Files.deleteIfExists(file.toPath());
@@ -97,10 +101,6 @@ public final class SystemHelper {
         } catch (final IOException ex) {
             ex.printStackTrace();
         }
-    }
-
-    public static void copyDirectory(Path path, String target) {
-        copyDirectory(path, Paths.get(target));
     }
 
     public static void copyDirectory(Path path, Path target) {

@@ -17,6 +17,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.Startup
 import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.StringUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
 import systems.reformcloud.reformcloud2.executor.api.node.process.LocalNodeProcess;
@@ -593,6 +594,67 @@ public final class CommandReformCloud extends GlobalCommand {
                         return true;
                     }
                 }
+
+                if (strings.length == 9) {
+                    ProcessGroup processGroup = ExecutorAPI.getInstance().getProcessGroup(strings[2]);
+                    Version version = CommonHelper.findEnumField(Version.class, strings[3]).orNothing();
+                    Boolean staticProcess = CommonHelper.booleanFromString(strings[5]);
+                    Boolean lobby = CommonHelper.booleanFromString(strings[6]);
+                    Integer min = CommonHelper.fromString(strings[7]);
+                    Integer max = CommonHelper.fromString(strings[8]);
+
+                    if (version == null) {
+                        System.out.println(LanguageManager.get("command-rc-version-not-found", strings[3]));
+                        return true;
+                    }
+
+                    if (max == null || max < -1) {
+                        System.out.println(LanguageManager.get("command-rc-integer-failed", strings[8]));
+                        return true;
+                    }
+
+                    if (min == null || min < 0) {
+                        System.out.println(LanguageManager.get("command-rc-integer-failed", strings[7]));
+                        return true;
+                    }
+
+                    if (staticProcess == null) {
+                        System.out.println(LanguageManager.get("command-rc-required-boolean", strings[5]));
+                        return true;
+                    }
+
+                    if (lobby == null) {
+                        System.out.println(LanguageManager.get("command-rc-required-boolean", strings[6]));
+                        return true;
+                    }
+
+                    if (processGroup == null) {
+                        ProcessGroup processGroup1 = new DefaultProcessGroup(
+                                strings[2],
+                                41000,
+                                version,
+                                512,
+                                false,
+                                min,
+                                max,
+                                staticProcess,
+                                lobby
+                        );
+
+                        ExecutorAPI.getInstance().createProcessGroupAsync(processGroup1).onComplete(e -> {
+                            MainGroup mainGroup = ExecutorAPI.getInstance().getMainGroup(strings[4]);
+                            if (mainGroup != null) {
+                                mainGroup.getSubGroups().add(e.getName());
+                                ExecutorAPI.getInstance().updateMainGroup(mainGroup);
+                            }
+                        });
+                        System.out.println(LanguageManager.get("command-rc-execute-success"));
+                    } else {
+                        System.out.println(LanguageManager.get("command-rc-create-sub-group-already-exists", strings[2]));
+                    }
+                    return true;
+                }
+
                 break;
             }
 
@@ -671,33 +733,7 @@ public final class CommandReformCloud extends GlobalCommand {
     }
 
     private void sendHelp(CommandSource commandSource) {
-        commandSource.sendMessage(
-                "\n" +
-                "rc maintenance <group>\n" +
-                "rc copy <uuid | name>\n" +
-                "rc screen <uuid | name> toggle\n" +
-                "rc list\n" +
-                "rc list <group>\n" +
-                "rc listgroups <main | sub>\n" +
-                "rc versions\n" +
-                "rc start <group>\n" +
-                "rc start <group> <amount>\n" +
-                "rc start <group> <amount> <template>\n" +
-                "rc stop <name>\n" +
-                "rc stop <uuid>\n" +
-                "rc stopall <subGroup>\n" +
-                "rc ofAll <mainGroup> <list | stop>\n" +
-                "rc execute <name | uuid> <command>\n" +
-                "rc create node <ip> <port>\n" +
-                "rc create main <name>\n" +
-                "rc create sub <name>\n" +
-                "rc create sub <name> <version>\n" +
-                "rc create sub <name> <version> <parent>\n" +
-                "rc create sub <name> <version> <parent> <static>\n" +
-                "rc create sub <name> <version> <parent> <static> <lobby>\n" +
-                "rc create sub <name> <version> <parent> <static> <minonline> <maxonline>\n" +
-                "rc delete <sub | main> <name>"
-        );
+        commandSource.sendMessages(StringUtil.RC_COMMAND_HELP);
     }
 
     private boolean existsNode(String host, int port) {

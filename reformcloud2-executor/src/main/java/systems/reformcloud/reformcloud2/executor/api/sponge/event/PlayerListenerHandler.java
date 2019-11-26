@@ -45,7 +45,7 @@ public final class PlayerListenerHandler {
 
         if (configuration.isUseCloudPlayerLimit()
                 && configuration.getMaxPlayers() < current.getOnlineCount() + 1
-                && !player.hasPermission("reformcloud.join.full")) {
+                && !player.hasPermission(configuration.getFullJoinPermission())) {
             event.setCancelled(true);
             return;
         }

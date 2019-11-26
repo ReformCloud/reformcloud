@@ -18,6 +18,8 @@ public final class PlayerAccessConfiguration {
         this.maxPlayers = maxPlayers;
     }
 
+    private String fullJoinPermission;
+
     private boolean maintenance;
 
     private String maintenanceJoinPermission;
@@ -33,6 +35,10 @@ public final class PlayerAccessConfiguration {
     private boolean useCloudPlayerLimit;
 
     private int maxPlayers;
+
+    public String getFullJoinPermission() {
+        return fullJoinPermission == null ? "reformcloud.join.full" : fullJoinPermission;
+    }
 
     public boolean isMaintenance() {
         return maintenance;

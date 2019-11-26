@@ -91,7 +91,7 @@ public class DefaultPacketSender extends PacketSender {
     }
 
     @Override
-    public void setName(String newName) {
+    public void setName(@Nonnull String newName) {
         this.name = newName;
     }
 }

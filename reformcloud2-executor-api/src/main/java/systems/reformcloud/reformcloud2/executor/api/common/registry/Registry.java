@@ -56,5 +56,5 @@ public interface Registry {
      * @return A collection of all objects in the database
      */
     @Nonnull
-    <T> Collection<T> readKeys(Function<JsonConfiguration, T> function);
+    <T> Collection<T> readKeys(@Nonnull Function<JsonConfiguration, T> function);
 }

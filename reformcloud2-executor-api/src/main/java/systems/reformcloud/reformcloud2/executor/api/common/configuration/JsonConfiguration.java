@@ -137,6 +137,20 @@ public final class JsonConfiguration implements Configurable<JsonConfiguration> 
 
     @Nonnull
     @Override
+    public JsonConfiguration add(@Nonnull String key, @Nonnull Double value) {
+        this.jsonObject.addProperty(key, value);
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public JsonConfiguration add(@Nonnull String key, @Nonnull Float value) {
+        this.jsonObject.addProperty(key, value);
+        return this;
+    }
+
+    @Nonnull
+    @Override
     public JsonConfiguration remove(@Nonnull String key) {
         this.jsonObject.remove(key);
         return this;
@@ -194,6 +208,18 @@ public final class JsonConfiguration implements Configurable<JsonConfiguration> 
         return getOrDefault(key, false);
     }
 
+    @Nonnull
+    @Override
+    public Double getDouble(String key) {
+        return getOrDefault(key, -1D);
+    }
+
+    @Nonnull
+    @Override
+    public Float getFloat(String key) {
+        return getOrDefault(key, -1F);
+    }
+
     @Override
     public JsonConfiguration getOrDefault(String key, JsonConfiguration def) {
         return getOrDefaultIf(key, def, jsonConfiguration -> true);
@@ -237,6 +263,16 @@ public final class JsonConfiguration implements Configurable<JsonConfiguration> 
     @Override
     public Boolean getOrDefault(String key, Boolean def) {
         return getOrDefaultIf(key, def, aBoolean -> true);
+    }
+
+    @Override
+    public Double getOrDefault(String key, Double def) {
+        return getOrDefaultIf(key, def, s -> true);
+    }
+
+    @Override
+    public Float getOrDefault(String key, Float def) {
+        return getOrDefaultIf(key, def, aFloat -> true);
     }
 
     private JsonElement getElement(String key) {
@@ -367,6 +403,34 @@ public final class JsonConfiguration implements Configurable<JsonConfiguration> 
         if (predicate.test(result)) {
             return result;
         }
+        return def;
+    }
+
+    @Override
+    public Double getOrDefaultIf(String key, Double def, Predicate<Double> predicate) {
+        if (!has(key)) {
+            return def;
+        }
+
+        Double result = jsonObject.get(key).getAsDouble();
+        if (predicate.test(result)) {
+            return result;
+        }
+
+        return def;
+    }
+
+    @Override
+    public Float getOrDefaultIf(String key, Float def, Predicate<Float> predicate) {
+        if (!has(key)) {
+            return def;
+        }
+
+        Float result = jsonObject.get(key).getAsFloat();
+        if (predicate.test(result)) {
+            return result;
+        }
+
         return def;
     }
 

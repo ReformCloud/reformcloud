@@ -39,7 +39,9 @@ public final class PlayerListenerHandler implements Listener {
             if (result != null && result.content().getBoolean("access")) {
                 event.setCancelled(false);
             } else {
-                event.setKickMessage("§4You have to connect through an internal proxy server");
+                event.setKickMessage(format(
+                        NukkitExecutor.getInstance().getMessages().getAlreadyConnectedMessage()
+                ));
                 event.setCancelled(true);
             }
         }
@@ -53,32 +55,42 @@ public final class PlayerListenerHandler implements Listener {
 
         if (configuration.isUseCloudPlayerLimit()
                 && configuration.getMaxPlayers() < current.getOnlineCount() + 1
-                && !player.hasPermission("reformcloud.join.full")) {
-            player.kick("§4§lThe server is full");
+                && !player.hasPermission(configuration.getJoinPermission())) {
+            player.kick(format(
+                    NukkitExecutor.getInstance().getMessages().getProcessFullMessage()
+            ));
             return;
         }
 
         if (configuration.isJoinOnlyPerPermission()
                 && configuration.getJoinPermission() != null
                 && !player.hasPermission(configuration.getJoinPermission())) {
-            player.kick("§4§lYou do not have permission to enter this server");
+            player.kick(format(
+                    NukkitExecutor.getInstance().getMessages().getProcessEnterPermissionNotSet()
+            ));
             return;
         }
 
         if (configuration.isMaintenance()
                 && configuration.getMaintenanceJoinPermission() != null
                 && !player.hasPermission(configuration.getMaintenanceJoinPermission())) {
-            player.kick("§4§lThis server is currently in maintenance");
+            player.kick(format(
+                    NukkitExecutor.getInstance().getMessages().getProcessInMaintenanceMessage()
+            ));
             return;
         }
 
         if (current.getProcessState().equals(ProcessState.FULL) && !player.hasPermission("reformcloud.join.full")) {
-            player.kick("§4§lYou are not allowed to join this server in the current state");
+            player.kick(format(
+                    NukkitExecutor.getInstance().getMessages().getProcessFullMessage()
+            ));
             return;
         }
 
         if (!current.onLogin(player.getUniqueId(), player.getName())) {
-            player.kick("§4§lYou are not allowed to join this server");
+            player.kick(format(
+                    NukkitExecutor.getInstance().getMessages().getAlreadyConnectedMessage()
+            ));
             return;
         }
 
@@ -110,5 +122,9 @@ public final class PlayerListenerHandler implements Listener {
         current.onLogout(event.getPlayer().getUniqueId());
         NukkitExecutor.getInstance().setThisProcessInformation(current);
         ExecutorAPI.getInstance().update(current);
+    }
+
+    private String format(String msg) {
+        return NukkitExecutor.getInstance().getMessages().format(msg);
     }
 }

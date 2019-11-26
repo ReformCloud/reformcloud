@@ -13,6 +13,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonCo
 import systems.reformcloud.reformcloud2.executor.api.common.event.EventManager;
 import systems.reformcloud.reformcloud2.executor.api.common.event.basic.DefaultEventManager;
 import systems.reformcloud.reformcloud2.executor.api.common.event.handler.Listener;
+import systems.reformcloud.reformcloud2.executor.api.common.groups.messages.IngameMessages;
 import systems.reformcloud.reformcloud2.executor.api.common.network.auth.NetworkType;
 import systems.reformcloud.reformcloud2.executor.api.common.network.auth.defaults.DefaultAuth;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
@@ -29,6 +30,7 @@ import systems.reformcloud.reformcloud2.executor.api.executor.PlayerAPIExecutor;
 import systems.reformcloud.reformcloud2.executor.api.nukkit.plugins.PluginsExecutorContainer;
 import systems.reformcloud.reformcloud2.executor.api.packets.in.APIPacketInAPIAction;
 import systems.reformcloud.reformcloud2.executor.api.packets.in.APIPacketInPluginAction;
+import systems.reformcloud.reformcloud2.executor.api.packets.out.APIBungeePacketOutRequestIngameMessages;
 
 import javax.annotation.Nonnull;
 import java.io.File;
@@ -43,6 +45,8 @@ public final class NukkitExecutor extends API implements PlayerAPIExecutor {
     private final PacketHandler packetHandler = new DefaultPacketHandler();
 
     private final NetworkClient networkClient = new DefaultNetworkClient();
+
+    private IngameMessages messages = new IngameMessages();
 
     private ProcessInformation thisProcessInformation;
 
@@ -88,6 +92,11 @@ public final class NukkitExecutor extends API implements PlayerAPIExecutor {
     }
 
     @Nonnull
+    public IngameMessages getMessages() {
+        return messages;
+    }
+
+    @Nonnull
     public EventManager getEventManager() {
         return ExternalEventBusHandler.getInstance().getEventManager();
     }
@@ -97,6 +106,7 @@ public final class NukkitExecutor extends API implements PlayerAPIExecutor {
         return packetHandler;
     }
 
+    @Nonnull
     public static NukkitExecutor getInstance() {
         return instance;
     }
@@ -121,6 +131,10 @@ public final class NukkitExecutor extends API implements PlayerAPIExecutor {
             thisProcessInformation.updateMaxPlayers(Server.getInstance().getMaxPlayers());
             thisProcessInformation.updateRuntimeInformation();
             ExecutorAPI.getInstance().update(thisProcessInformation);
+
+            DefaultChannelManager.INSTANCE.get("Controller").ifPresent(controller -> packetHandler.getQueryHandler().sendQueryAsync(controller, new APIBungeePacketOutRequestIngameMessages()).onComplete(packet -> {
+                NukkitExecutor.this.messages = packet.content().get("messages", IngameMessages.TYPE);
+            }));
         });
     }
 

@@ -39,7 +39,9 @@ public final class PlayerListenerHandler implements Listener {
             if (result != null && result.content().getBoolean("access")) {
                 event.setResult(PlayerLoginEvent.Result.ALLOWED);
             } else {
-                event.setKickMessage("§4You have to connect through an internal proxy server");
+                event.setKickMessage(format(
+                        SpigotExecutor.getInstance().getMessages().getAlreadyConnectedMessage()
+                ));
                 event.setResult(PlayerLoginEvent.Result.KICK_BANNED);
             }
         }
@@ -50,8 +52,10 @@ public final class PlayerListenerHandler implements Listener {
 
         if (configuration.isUseCloudPlayerLimit()
                 && configuration.getMaxPlayers() < current.getOnlineCount() + 1
-                && !player.hasPermission("reformcloud.join.full")) {
-            event.setKickMessage("§4§lThe server is full");
+                && !player.hasPermission(configuration.getFullJoinPermission())) {
+            event.setKickMessage(format(
+                    SpigotExecutor.getInstance().getMessages().getProcessFullMessage()
+            ));
             event.setResult(PlayerLoginEvent.Result.KICK_BANNED);
             return;
         }
@@ -59,7 +63,9 @@ public final class PlayerListenerHandler implements Listener {
         if (configuration.isJoinOnlyPerPermission()
                 && configuration.getJoinPermission() != null
                 && !player.hasPermission(configuration.getJoinPermission())) {
-            event.setKickMessage("§4§lYou do not have permission to enter this server");
+            event.setKickMessage(format(
+                    SpigotExecutor.getInstance().getMessages().getProcessEnterPermissionNotSet()
+            ));
             event.setResult(PlayerLoginEvent.Result.KICK_BANNED);
             return;
         }
@@ -67,19 +73,25 @@ public final class PlayerListenerHandler implements Listener {
         if (configuration.isMaintenance()
                 && configuration.getMaintenanceJoinPermission() != null
                 && !player.hasPermission(configuration.getMaintenanceJoinPermission())) {
-            event.setKickMessage("§4§lThis server is currently in maintenance");
+            event.setKickMessage(format(
+                    SpigotExecutor.getInstance().getMessages().getProcessInMaintenanceMessage()
+            ));
             event.setResult(PlayerLoginEvent.Result.KICK_BANNED);
             return;
         }
 
         if (current.getProcessState().equals(ProcessState.FULL) && !player.hasPermission("reformcloud.join.full")) {
-            event.setKickMessage("§4§lYou are not allowed to join this server in the current state");
+            event.setKickMessage(format(
+                    SpigotExecutor.getInstance().getMessages().getProcessFullMessage()
+            ));
             event.setResult(PlayerLoginEvent.Result.KICK_BANNED);
             return;
         }
 
         if (current.isPlayerOnline(player.getUniqueId())) {
-            event.setKickMessage("§4§lYou are not allowed to join this server");
+            event.setKickMessage(format(
+                    SpigotExecutor.getInstance().getMessages().getAlreadyConnectedMessage()
+            ));
             event.setResult(PlayerLoginEvent.Result.KICK_BANNED);
             return;
         }
@@ -103,13 +115,9 @@ public final class PlayerListenerHandler implements Listener {
     @EventHandler (priority = EventPriority.LOWEST)
     public void handle(final PlayerQuitEvent event) {
         ProcessInformation current = ExecutorAPI.getInstance().getThisProcessInformation();
-        System.out.println("CALLING LOGOUT " + event.getPlayer().getName());
         if (!current.isPlayerOnline(event.getPlayer().getUniqueId())) {
-            System.out.println("NOT ONLINE " + event.getPlayer().getName());
             return;
         }
-
-        System.out.println("ONLINE " + event.getPlayer().getName());
 
         if (Bukkit.getOnlinePlayers().size() < current.getMaxPlayers()
                 && !current.getProcessState().equals(ProcessState.READY)
@@ -121,5 +129,9 @@ public final class PlayerListenerHandler implements Listener {
         current.onLogout(event.getPlayer().getUniqueId());
         SpigotExecutor.getInstance().setThisProcessInformation(current);
         ExecutorAPI.getInstance().update(current);
+    }
+
+    private String format(String msg) {
+        return SpigotExecutor.getInstance().getMessages().format(msg);
     }
 }

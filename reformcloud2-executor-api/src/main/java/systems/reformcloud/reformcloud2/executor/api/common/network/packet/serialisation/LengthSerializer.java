@@ -10,7 +10,6 @@ public final class LengthSerializer extends MessageToByteEncoder<ByteBuf> {
     @Override
     protected void encode(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf, ByteBuf byteBuf2) {
         int readable = byteBuf.readableBytes();
-
         int space = getVarIntSize(readable);
 
         if (space > 5) {

@@ -12,7 +12,9 @@ public class ReformCloudReconnectHandler implements ReconnectHandler {
     @Override
     public ServerInfo getServer(ProxiedPlayer proxiedPlayer) {
         ProcessInformation information = BungeeExecutor.getBestLobbyForPlayer(BungeeExecutor.getInstance().getThisProcessInformation(),
-                proxiedPlayer::hasPermission);
+                proxiedPlayer,
+                proxiedPlayer::hasPermission
+        );
         return information == null ? null : ProxyServer.getInstance().getServerInfo(information.getName());
     }
 

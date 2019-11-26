@@ -29,7 +29,7 @@ public final class AutoStartupHandler extends AbsoluteThread {
         int o1Priority = o1.getStartupConfiguration().getStartupPriority();
         int o2Priority = o2.getStartupConfiguration().getStartupPriority();
 
-        if (o1Priority <= o2Priority) {
+        if (o1Priority >= o2Priority) {
             return -1;
         }
 

@@ -12,6 +12,10 @@ import java.util.function.Consumer;
 
 public final class DownloadHelper {
 
+    private DownloadHelper() {
+        throw new UnsupportedOperationException();
+    }
+
     public static void downloadAndDisconnect(String url, String target) {
         openConnection(url, stream -> {
             SystemHelper.createDirectory(Paths.get(target).getParent());

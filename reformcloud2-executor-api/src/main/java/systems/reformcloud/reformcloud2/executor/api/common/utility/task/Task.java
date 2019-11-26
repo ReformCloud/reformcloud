@@ -46,12 +46,6 @@ public abstract class Task<V> extends CompletableFuture<V> {
     public abstract V getUninterruptedly(TimeUnit timeUnit, long time);
 
     /**
-     * Executes the current current code by waiting in a new thread for the competition
-     * @see #awaitUninterruptedly()
-     */
-    public abstract void exec();
-
-    /**
      * This methods get called when the code executes successfully
      *
      * @param consumer The callback which get called with the response of the task

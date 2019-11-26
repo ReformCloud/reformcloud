@@ -144,6 +144,11 @@ public final class Runner {
     }
 
     private static int getType() {
+        Integer type = getType0();
+        if (type != null) {
+            return type;
+        }
+
         CHOOSE_INSTALL_MESSAGE.run();
 
         Console console = System.console();
@@ -218,6 +223,19 @@ public final class Runner {
                 inst.appendToSystemClassLoaderSearch(new JarFile(file));
             }
         } catch (final Throwable ignored) {
+        }
+    }
+
+    private static Integer getType0() {
+        try {
+            int type = Integer.parseInt(System.getProperty("runner.type"));
+            if (type > 4 || type == 3 || type < 1) {
+                throw new IllegalArgumentException("Illegal runner type given");
+            }
+
+            return type;
+        } catch (final Throwable ignored) {
+            return null;
         }
     }
 }

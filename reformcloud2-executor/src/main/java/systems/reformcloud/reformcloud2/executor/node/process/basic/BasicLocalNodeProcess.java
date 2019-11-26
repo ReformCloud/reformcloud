@@ -18,6 +18,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.utility.optional.Ref
 import systems.reformcloud.reformcloud2.executor.api.common.utility.process.JavaProcessHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.system.DownloadHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.system.SystemHelper;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
 import systems.reformcloud.reformcloud2.executor.api.node.process.LocalNodeProcess;
 import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
 import systems.reformcloud.reformcloud2.executor.node.network.packet.out.NodePacketOutProcessPrepared;
@@ -200,6 +201,8 @@ public class BasicLocalNodeProcess implements LocalNodeProcess {
 
     @Override
     public void copy() {
+        sendCommand("save-all");
+        AbsoluteThread.sleep(TimeUnit.SECONDS, 1);
         TemplateBackendManager.getOrDefault(this.processInformation.getTemplate().getBackend()).deployTemplate(
                 this.processInformation.getProcessGroup().getName(),
                 this.processInformation.getTemplate().getName(),

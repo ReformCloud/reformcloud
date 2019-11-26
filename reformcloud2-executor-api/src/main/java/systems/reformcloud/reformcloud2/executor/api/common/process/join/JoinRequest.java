@@ -4,7 +4,7 @@ import java.util.UUID;
 
 public final class JoinRequest {
 
-    public JoinRequest(UUID uniqueID, String name) {
+    JoinRequest(UUID uniqueID, String name) {
         this.uniqueID = uniqueID;
         this.name = name;
     }

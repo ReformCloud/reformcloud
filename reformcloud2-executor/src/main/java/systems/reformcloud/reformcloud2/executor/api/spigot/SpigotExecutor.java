@@ -13,6 +13,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonCo
 import systems.reformcloud.reformcloud2.executor.api.common.event.EventManager;
 import systems.reformcloud.reformcloud2.executor.api.common.event.basic.DefaultEventManager;
 import systems.reformcloud.reformcloud2.executor.api.common.event.handler.Listener;
+import systems.reformcloud.reformcloud2.executor.api.common.groups.messages.IngameMessages;
 import systems.reformcloud.reformcloud2.executor.api.common.network.auth.NetworkType;
 import systems.reformcloud.reformcloud2.executor.api.common.network.auth.defaults.DefaultAuth;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
@@ -28,6 +29,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.Absol
 import systems.reformcloud.reformcloud2.executor.api.executor.PlayerAPIExecutor;
 import systems.reformcloud.reformcloud2.executor.api.packets.in.APIPacketInAPIAction;
 import systems.reformcloud.reformcloud2.executor.api.packets.in.APIPacketInPluginAction;
+import systems.reformcloud.reformcloud2.executor.api.packets.out.APIBungeePacketOutRequestIngameMessages;
 import systems.reformcloud.reformcloud2.executor.api.spigot.plugins.PluginExecutorContainer;
 
 import javax.annotation.Nonnull;
@@ -43,6 +45,8 @@ public final class SpigotExecutor extends API implements PlayerAPIExecutor {
     private final PacketHandler packetHandler = new DefaultPacketHandler();
 
     private final NetworkClient networkClient = new DefaultNetworkClient();
+
+    private IngameMessages messages = new IngameMessages();
 
     private ProcessInformation thisProcessInformation;
 
@@ -82,6 +86,11 @@ public final class SpigotExecutor extends API implements PlayerAPIExecutor {
         return plugin;
     }
 
+    public IngameMessages getMessages() {
+        return messages;
+    }
+
+    @Nonnull
     public static SpigotExecutor getInstance() {
         return instance;
     }
@@ -123,6 +132,10 @@ public final class SpigotExecutor extends API implements PlayerAPIExecutor {
             thisProcessInformation.updateMaxPlayers(Bukkit.getMaxPlayers());
             thisProcessInformation.updateRuntimeInformation();
             ExecutorAPI.getInstance().update(thisProcessInformation);
+
+            DefaultChannelManager.INSTANCE.get("Controller").ifPresent(controller -> packetHandler.getQueryHandler().sendQueryAsync(controller, new APIBungeePacketOutRequestIngameMessages()).onComplete(packet -> {
+                SpigotExecutor.this.messages = packet.content().get("messages", IngameMessages.TYPE);
+            }));
         });
     }
 

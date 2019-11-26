@@ -16,6 +16,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.base.Conditions;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
+import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 import systems.reformcloud.reformcloud2.signs.bukkit.commands.BukkitCommandSigns;
@@ -303,6 +304,14 @@ public class BukkitSignSystemAdapter implements SignSystemAdapter<Sign> {
 
         this.cachedSigns.forEach(e -> {
             if (e.getCurrentTarget() == null) {
+                updateSign(e, searching, null);
+                return;
+            }
+
+            if (e.getCurrentTarget().getProcessState().equals(ProcessState.INVISIBLE)
+                    || e.getCurrentTarget().getProcessState().equals(ProcessState.STOPPED)
+                    || e.getCurrentTarget().getProcessState().equals(ProcessState.STARTED)
+                    || e.getCurrentTarget().getProcessState().equals(ProcessState.PREPARED)) {
                 updateSign(e, searching, null);
                 return;
             }

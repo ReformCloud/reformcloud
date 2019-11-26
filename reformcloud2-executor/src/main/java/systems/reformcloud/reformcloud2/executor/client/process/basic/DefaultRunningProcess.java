@@ -18,6 +18,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.utility.optional.Ref
 import systems.reformcloud.reformcloud2.executor.api.common.utility.process.JavaProcessHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.system.DownloadHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.system.SystemHelper;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
 import systems.reformcloud.reformcloud2.executor.client.ClientExecutor;
 import systems.reformcloud.reformcloud2.executor.client.packet.out.ClientPacketOutProcessPrepared;
 import systems.reformcloud.reformcloud2.executor.client.packet.out.ClientPacketOutProcessStopped;
@@ -192,6 +193,8 @@ public final class DefaultRunningProcess implements RunningProcess {
 
     @Override
     public void copy() {
+        sendCommand("save-all");
+        AbsoluteThread.sleep(TimeUnit.SECONDS, 1);
         TemplateBackendManager.getOrDefault(this.processInformation.getTemplate().getBackend()).deployTemplate(
                 this.processInformation.getProcessGroup().getName(),
                 this.processInformation.getTemplate().getName(),

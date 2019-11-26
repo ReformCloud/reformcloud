@@ -60,11 +60,6 @@ public final class DefaultTask<V> extends Task<V> {
         return this.get(time, timeUnit);
     }
 
-    @Override
-    public void exec() {
-        Task.EXECUTOR.execute(this::awaitUninterruptedly);
-    }
-
     @Nonnull
     @Override
     public Task<V> onFailure(@Nonnull Consumer<TaskCompletionException> consumer) {

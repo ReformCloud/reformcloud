@@ -4,6 +4,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.utility.action.Compl
 
 import java.util.UUID;
 
+@Deprecated
 public interface Operation extends CompleteAction {
 
     UUID identifier();

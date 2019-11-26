@@ -26,8 +26,14 @@ public interface ScheduledTask {
      */
     void cancel();
 
+    /**
+     * Creates a new thread factory
+     *
+     * @param id The id of the new thread
+     * @return A new thread factory
+     */
     @Nonnull
-    default ThreadFactory newThreadFactory(int taskSize) {
-        return r -> new Thread(r, String.format("Thread-Group-Loop-%d", taskSize));
+    default ThreadFactory newThreadFactory(int id) {
+        return r -> new Thread(r, String.format("Thread-Group-Loop-%d", id));
     }
 }

@@ -30,6 +30,7 @@ public final class PlayerListenerHandler {
     public void handleConnect(final ServerPreConnectEvent event) {
         final Player player = event.getPlayer();
         ProcessInformation lobby = VelocityExecutor.getBestLobbyForPlayer(VelocityExecutor.getInstance().getThisProcessInformation(),
+                player,
                 player::hasPermission);
         if (lobby != null) {
             event.setResult(ServerPreConnectEvent.ServerResult.allowed(
@@ -112,6 +113,7 @@ public final class PlayerListenerHandler {
     public void handle(final KickedFromServerEvent event) {
         Player player = event.getPlayer();
         ProcessInformation lobby = VelocityExecutor.getBestLobbyForPlayer(VelocityExecutor.getInstance().getThisProcessInformation(),
+                player,
                 player::hasPermission);
         if (lobby != null) {
             event.setResult(KickedFromServerEvent.RedirectPlayer.create(

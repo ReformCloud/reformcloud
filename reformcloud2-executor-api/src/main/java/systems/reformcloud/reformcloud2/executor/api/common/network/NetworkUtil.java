@@ -98,7 +98,7 @@ public final class NetworkUtil {
         return NioSocketChannel.class;
     }
 
-    public static ByteBuf write(ByteBuf byteBuf, int value) {
+    public static synchronized ByteBuf write(ByteBuf byteBuf, int value) {
         do {
             byte temp = (byte) (value & 0b01111111);
             value >>>= 7;
@@ -111,7 +111,7 @@ public final class NetworkUtil {
         return byteBuf;
     }
 
-    public static int read(ByteBuf byteBuf) {
+    public static synchronized int read(ByteBuf byteBuf) {
         int numRead = 0;
         int result = 0;
         byte read;
@@ -129,13 +129,14 @@ public final class NetworkUtil {
         return result;
     }
 
-    public static ByteBuf write(ByteBuf byteBuf, String s) {
+    public static synchronized ByteBuf write(ByteBuf byteBuf, String s) {
         byte[] bytes = s.getBytes(StandardCharsets.UTF_8);
         write(byteBuf, bytes.length);
-        return byteBuf.writeBytes(bytes);
+        byteBuf.writeBytes(bytes);
+        return byteBuf;
     }
 
-    public static String readString(ByteBuf byteBuf) {
+    public static synchronized String readString(ByteBuf byteBuf) {
         int size = read(byteBuf);
         byte[] bytes = new byte[size];
         byteBuf.readBytes(bytes, 0, size);

@@ -37,6 +37,7 @@ public class CommandLeave implements Command {
         }
 
         ProcessInformation lobby = VelocityExecutor.getBestLobbyForPlayer(VelocityExecutor.getInstance().getThisProcessInformation(),
+                player,
                 player::hasPermission);
         if (lobby != null) {
             player.sendMessage(TextComponent.of(

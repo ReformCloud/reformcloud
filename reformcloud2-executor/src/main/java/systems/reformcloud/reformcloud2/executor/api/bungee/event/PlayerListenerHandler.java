@@ -26,7 +26,9 @@ public final class PlayerListenerHandler implements Listener {
         proxiedPlayer.setReconnectServer(null);
         if (proxiedPlayer.getServer() == null) {
             ProcessInformation lobby = BungeeExecutor.getBestLobbyForPlayer(BungeeExecutor.getInstance().getThisProcessInformation(),
-                    proxiedPlayer::hasPermission);
+                    proxiedPlayer,
+                    proxiedPlayer::hasPermission
+            );
             if (lobby != null) {
                 event.setTarget(ProxyServer.getInstance().getServerInfo(lobby.getName()));
                 return;
@@ -73,32 +75,42 @@ public final class PlayerListenerHandler implements Listener {
 
         if (configuration.isUseCloudPlayerLimit()
                 && configuration.getMaxPlayers() < current.getOnlineCount() + 1
-                && !player.hasPermission("reformcloud.join.full")) {
-            player.disconnect(TextComponent.fromLegacyText("§4§lThe proxy is full"));
+                && !player.hasPermission(configuration.getFullJoinPermission())) {
+            player.disconnect(TextComponent.fromLegacyText(format(
+                    BungeeExecutor.getInstance().getMessages().getProcessFullMessage()
+            )));
             return;
         }
 
         if (configuration.isJoinOnlyPerPermission()
                 && configuration.getJoinPermission() != null
                 && !player.hasPermission(configuration.getJoinPermission())) {
-            player.disconnect(TextComponent.fromLegacyText("§4§lYou do not have permission to enter this proxy"));
+            player.disconnect(TextComponent.fromLegacyText(format(
+                    BungeeExecutor.getInstance().getMessages().getProcessEnterPermissionNotSet()
+            )));
             return;
         }
 
         if (configuration.isMaintenance()
                 && configuration.getMaintenanceJoinPermission() != null
                 && !player.hasPermission(configuration.getMaintenanceJoinPermission())) {
-            player.disconnect(TextComponent.fromLegacyText("§4§lThis proxy is currently in maintenance"));
+            player.disconnect(TextComponent.fromLegacyText(format(
+                    BungeeExecutor.getInstance().getMessages().getProcessInMaintenanceMessage()
+            )));
             return;
         }
 
         if (current.getProcessState().equals(ProcessState.FULL) && !player.hasPermission("reformcloud.join.full")) {
-            player.disconnect(TextComponent.fromLegacyText("§4§lYou are not allowed to join this proxy in the current state"));
+            player.disconnect(TextComponent.fromLegacyText(format(
+                    BungeeExecutor.getInstance().getMessages().getProcessFullMessage()
+            )));
             return;
         }
 
         if (!current.onLogin(event.getPlayer().getUniqueId(), event.getPlayer().getName())) {
-            player.disconnect(TextComponent.fromLegacyText("§4§lYou are not allowed to join this proxy"));
+            player.disconnect(TextComponent.fromLegacyText(format(
+                    BungeeExecutor.getInstance().getMessages().getAlreadyConnectedMessage()
+            )));
             return;
         }
 
@@ -119,6 +131,7 @@ public final class PlayerListenerHandler implements Listener {
     public void handle(final ServerKickEvent event) {
         ProxiedPlayer proxiedPlayer = event.getPlayer();
         ProcessInformation lobby = BungeeExecutor.getBestLobbyForPlayer(BungeeExecutor.getInstance().getThisProcessInformation(),
+                proxiedPlayer,
                 proxiedPlayer::hasPermission);
         if (lobby != null) {
             event.setCancelServer(ProxyServer.getInstance().getServerInfo(lobby.getName()));
@@ -166,5 +179,9 @@ public final class PlayerListenerHandler implements Listener {
                 proxiedPlayer.getUniqueId(),
                 event.getMessage().replaceFirst("/", "")
         )));
+    }
+
+    private String format(String msg) {
+        return BungeeExecutor.getInstance().getMessages().format(msg);
     }
 }

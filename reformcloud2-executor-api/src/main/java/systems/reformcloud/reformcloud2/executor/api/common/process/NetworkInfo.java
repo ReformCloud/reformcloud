@@ -1,5 +1,7 @@
 package systems.reformcloud.reformcloud2.executor.api.common.process;
 
+import java.net.InetSocketAddress;
+
 public final class NetworkInfo {
 
     public NetworkInfo(String host, int port, boolean connected) {
@@ -16,6 +18,10 @@ public final class NetworkInfo {
 
     public String getHost() {
         return host;
+    }
+
+    public InetSocketAddress toInet() {
+        return InetSocketAddress.createUnresolved(getHost(), getPort());
     }
 
     public int getPort() {

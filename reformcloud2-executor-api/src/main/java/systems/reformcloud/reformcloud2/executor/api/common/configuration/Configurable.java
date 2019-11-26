@@ -37,6 +37,12 @@ public interface Configurable<V extends Configurable> {
     V add(@Nonnull String key, @Nonnull Boolean value);
 
     @Nonnull
+    V add(@Nonnull String key, @Nonnull Double value);
+
+    @Nonnull
+    V add(@Nonnull String key, @Nonnull Float value);
+
+    @Nonnull
     V remove(@Nonnull String key);
 
     @Nonnull
@@ -72,6 +78,14 @@ public interface Configurable<V extends Configurable> {
     @CheckReturnValue
     Boolean getBoolean(String key);
 
+    @Nonnull
+    @CheckReturnValue
+    Double getDouble(String key);
+
+    @Nonnull
+    @CheckReturnValue
+    Float getFloat(String key);
+
     V getOrDefault(String key, V def);
 
     <T> T getOrDefault(String key, Type type, T def);
@@ -90,6 +104,10 @@ public interface Configurable<V extends Configurable> {
 
     Boolean getOrDefault(String key, Boolean def);
 
+    Double getOrDefault(String key, Double def);
+
+    Float getOrDefault(String key, Float def);
+
     V getOrDefaultIf(String key, V def, Predicate<V> predicate);
 
     <T> T getOrDefaultIf(String key, Type type, T def, Predicate<T> predicate);
@@ -107,6 +125,10 @@ public interface Configurable<V extends Configurable> {
     Byte getOrDefaultIf(String key, Byte def, Predicate<Byte> predicate);
 
     Boolean getOrDefaultIf(String key, Boolean def, Predicate<Boolean> predicate);
+
+    Double getOrDefaultIf(String key, Double def, Predicate<Double> predicate);
+
+    Float getOrDefaultIf(String key, Float def, Predicate<Float> predicate);
 
     boolean has(String key);
 

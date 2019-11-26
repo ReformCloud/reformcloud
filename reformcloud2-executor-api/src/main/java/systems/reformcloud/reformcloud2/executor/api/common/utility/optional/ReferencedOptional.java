@@ -12,10 +12,13 @@ public final class ReferencedOptional<T> implements Serializable {
 
     // =======================
 
+    @Nonnull
     public static <T> ReferencedOptional<T> empty() {
         return new ReferencedOptional<>();
     }
 
+    @SuppressWarnings("unchecked")
+    @Nonnull
     public static <T> ReferencedOptional<T> build(@Nullable T value) {
         return new ReferencedOptional<T>().update(value);
     }

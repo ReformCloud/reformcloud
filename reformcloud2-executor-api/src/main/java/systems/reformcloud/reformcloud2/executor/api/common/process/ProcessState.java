@@ -12,9 +12,5 @@ public enum ProcessState {
 
     INVISIBLE,
 
-    STOPPED;
-
-    public boolean isJoineAble() {
-        return equals(FULL) || equals(INVISIBLE) || equals(STARTED);
-    }
+    STOPPED
 }

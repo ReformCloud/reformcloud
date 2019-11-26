@@ -80,7 +80,7 @@ public class RegistryBuilder {
 
         @Nonnull
         @Override
-        public <T> Collection<T> readKeys(Function<JsonConfiguration, T> function) {
+        public <T> Collection<T> readKeys(@Nonnull Function<JsonConfiguration, T> function) {
             if (!Files.exists(folder)) {
                 return Collections.emptyList();
             }

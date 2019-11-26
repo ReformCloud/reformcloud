@@ -4,11 +4,13 @@ import com.google.gson.reflect.TypeToken;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.application.api.Application;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.system.SystemHelper;
 import systems.reformcloud.reformcloud2.signs.application.packets.in.PacketInCreateSign;
 import systems.reformcloud.reformcloud2.signs.application.packets.in.PacketInDeleteSign;
 import systems.reformcloud.reformcloud2.signs.application.packets.in.PacketInGetSignConfig;
+import systems.reformcloud.reformcloud2.signs.application.packets.out.PacketOutReloadConfig;
 import systems.reformcloud.reformcloud2.signs.packets.PacketUtil;
 import systems.reformcloud.reformcloud2.signs.util.SignSystemAdapter;
 import systems.reformcloud.reformcloud2.signs.util.sign.CloudSign;
@@ -45,6 +47,7 @@ public class ReformCloudApplication extends Application {
         );
 
         signConfig = ConfigHelper.read(dataFolder().getPath());
+        DefaultChannelManager.INSTANCE.getAllSender().forEach(e -> e.sendPacket(new PacketOutReloadConfig(signConfig)));
     }
 
     @Override

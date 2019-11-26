@@ -218,8 +218,12 @@ public final class BungeeExecutor extends API implements PlayerAPIExecutor {
         );
     }
 
-    public static ProcessInformation getBestLobbyForPlayer(ProcessInformation current, Function<String, Boolean> permissionCheck) {
+    public static ProcessInformation getBestLobbyForPlayer(ProcessInformation current, ProxiedPlayer proxiedPlayer, Function<String, Boolean> permissionCheck) {
         final List<ProcessInformation> lobbies = new ArrayList<>(LOBBY_SERVERS);
+
+        if (proxiedPlayer != null && proxiedPlayer.getServer() != null) {
+            Links.allOf(lobbies, e -> e.getName().equals(proxiedPlayer.getServer().getInfo().getName())).forEach(lobbies::remove);
+        }
 
         // Filter all non java servers if this is a java proxy else all mcpe servers
         Links.others(lobbies, e -> {
