@@ -6,8 +6,10 @@ import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.Pro
 import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.ProcessStoppedEvent;
 import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.ProcessUpdatedEvent;
 import systems.reformcloud.reformcloud2.executor.api.common.event.handler.Listener;
+import systems.reformcloud.reformcloud2.executor.api.common.event.priority.EventPriority;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.velocity.VelocityExecutor;
+import systems.reformcloud.reforncloud2.notifications.velocity.VelocityPlugin;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -31,11 +33,10 @@ public class ProcessListener {
         );
     }
 
-    @Listener
+    @Listener (priority = EventPriority.FIRST)
     public void handle(final ProcessUpdatedEvent event) {
         ProcessInformation processInformation = event.getProcessInformation();
-        if (!STARTED.contains(processInformation.getProcessUniqueID())
-                && processInformation.getNetworkInfo().isConnected()) {
+        if (isNotify(processInformation)) {
             STARTED.add(processInformation.getProcessUniqueID());
             this.publishNotification(
                     VelocityExecutor.getInstance().getMessages().getProcessConnected(),
@@ -60,5 +61,11 @@ public class ProcessListener {
                 player.sendMessage(TextComponent.of(replacedMessage));
             }
         });
+    }
+
+    private boolean isNotify(ProcessInformation information) {
+        return !STARTED.contains(information.getProcessUniqueID())
+                && !VelocityPlugin.proxyServer.getServer(information.getName()).isPresent()
+                && information.getNetworkInfo().isConnected();
     }
 }

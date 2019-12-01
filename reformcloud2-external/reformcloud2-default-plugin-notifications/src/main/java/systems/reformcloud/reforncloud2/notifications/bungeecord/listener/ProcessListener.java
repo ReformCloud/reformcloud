@@ -7,6 +7,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.Pro
 import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.ProcessStoppedEvent;
 import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.ProcessUpdatedEvent;
 import systems.reformcloud.reformcloud2.executor.api.common.event.handler.Listener;
+import systems.reformcloud.reformcloud2.executor.api.common.event.priority.EventPriority;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 
 import java.util.Collection;
@@ -25,11 +26,10 @@ public class ProcessListener {
         );
     }
 
-    @Listener
+    @Listener (priority = EventPriority.FIRST)
     public void handle(final ProcessUpdatedEvent event) {
         ProcessInformation processInformation = event.getProcessInformation();
-        if (!STARTED.contains(processInformation.getProcessUniqueID())
-                && processInformation.getNetworkInfo().isConnected()) {
+        if (isNotify(processInformation)) {
             STARTED.add(processInformation.getProcessUniqueID());
             this.publishNotification(
                     BungeeExecutor.getInstance().getMessages().getProcessConnected(),
@@ -54,5 +54,11 @@ public class ProcessListener {
                 player.sendMessage(TextComponent.fromLegacyText(replacedMessage));
             }
         });
+    }
+
+    private boolean isNotify(ProcessInformation information) {
+        return !STARTED.contains(information.getProcessUniqueID())
+                && ProxyServer.getInstance().getServerInfo(information.getName()) == null
+                && information.getNetworkInfo().isConnected();
     }
 }

@@ -21,12 +21,16 @@ import systems.reformcloud.reforncloud2.notifications.velocity.listener.ProcessL
 public class VelocityPlugin {
 
     @Inject
-    public VelocityPlugin(ProxyServer proxyServer) {
-        this.listener = new ProcessListener(proxyServer);
+    public VelocityPlugin(ProxyServer server) {
+        this.listener = new ProcessListener(server);
         ExecutorAPI.getInstance().getEventManager().registerListener(this.listener);
+
+        proxyServer = server;
     }
 
     private final ProcessListener listener;
+
+    public static ProxyServer proxyServer;
 
     @Subscribe
     public void handle(final ProxyShutdownEvent event) {
