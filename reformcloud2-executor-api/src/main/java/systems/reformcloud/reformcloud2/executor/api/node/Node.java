@@ -31,15 +31,19 @@ public abstract class Node extends ExecutorAPI implements ReloadableRuntime {
 
     public abstract void shutdown() throws Exception;
 
+    @Nonnull
     public static Node getInstance() {
         return instance == null ? (Node) ExecutorAPI.getInstance() : instance;
     }
 
+    @Nonnull
     public abstract NetworkServer getNetworkServer();
 
+    @Nonnull
     public abstract CommandManager getCommandManager();
 
-    protected final NetworkChannelReader createReader(Consumer<PacketSender> onDisconnect) {
+    @Nonnull
+    protected final NetworkChannelReader createReader(@Nonnull Consumer<PacketSender> onDisconnect) {
         return new NetworkChannelReader() {
 
             private PacketSender sender;

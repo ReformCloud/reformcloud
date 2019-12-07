@@ -2,10 +2,13 @@ package systems.reformcloud.reformcloud2.executor.api.common.utility.list;
 
 import systems.reformcloud.reformcloud2.executor.api.common.utility.optional.ReferencedOptional;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public final class Links {
 
@@ -13,63 +16,114 @@ public final class Links {
         throw new UnsupportedOperationException();
     }
 
-    public static List<String> toLowerCase(Collection<String> list) {
+    /**
+     * Makes all strings in the list lower-case
+     *
+     * @param list The input list
+     * @return A new list with all keys of the given list, but lower-case
+     */
+    @Nonnull
+    public static List<String> toLowerCase(@Nonnull Collection<String> list) {
         List<String> strings = new ArrayList<>();
         list.forEach(string -> strings.add(string.toLowerCase()));
 
         return strings;
     }
 
-    public static <T> List<T> unmodifiable(List<T> in) {
+    /**
+     * Makes the given list unmodifiable
+     *
+     * @param in The list which should be unmodifiable
+     * @param <T> The object parameter of the values in the list
+     * @return A unmodifiable list of all given keys
+     */
+    @Nonnull
+    public static <T> List<T> unmodifiable(@Nonnull List<T> in) {
         return Collections.unmodifiableList(in);
     }
 
-    public static <T> List<T> newList(Collection<T> in) {
+    /**
+     * Creates a new list with all given parameters
+     *
+     * @param in The given keys which should be in the new list
+     * @param <T> The object parameter of the values in the list
+     * @return A new list with all values of the input list in it
+     */
+    @Nonnull
+    public static <T> List<T> newList(@Nonnull Collection<T> in) {
         return new ArrayList<>(in);
     }
 
-    public static <T> SortedSet<T> copySortedSet(SortedSet<T> set) {
+    /**
+     * Copies a sorted set including the {@link Comparator} and all values in it
+     *
+     * @param set The incoming set with all values in it
+     * @param <T> The object parameter of the values in the list
+     * @return A copy of the current set
+     */
+    @Nonnull
+    public static <T> SortedSet<T> copySortedSet(@Nonnull SortedSet<T> set) {
         SortedSet<T> sortedSet = new TreeSet<>(set.comparator());
         sortedSet.addAll(set);
         return sortedSet;
     }
 
-    public static <T, F> List<F> apply(List<T> in, Function<T, F> function) {
-        List<F> out = new ArrayList<>();
-        in.forEach(t -> out.add(function.apply(t)));
-
-        return out;
+    /**
+     * Applies a function to all values in the given list
+     *
+     * @param in The incoming list with the key values in it
+     * @param function The function which should get applied to the values
+     * @param <T> The object parameter of the values in the list
+     * @param <F> The object parameter of the values in the outgoing list
+     * @return A new list with all values of the incoming list, applied to the function
+     */
+    @Nonnull
+    public static <T, F> List<F> apply(@Nonnull List<T> in, @Nonnull Function<T, F> function) {
+        return in.stream().map(function).collect(Collectors.toList());
     }
 
-    public static <T> T filter(Collection<T> in, Predicate<T> predicate) {
+    /**
+     * Filters a specific value out of the given list
+     *
+     * @param in The incoming list
+     * @param predicate The predicate which checks if the current object equals the the filter
+     * @param <T> The object parameter of the values in the list
+     * @return The first value in the list which equals to the filter
+     */
+    @Nullable
+    public static <T> T filter(@Nonnull Collection<T> in, @Nonnull Predicate<T> predicate) {
         if (in.isEmpty()) {
             return null;
         }
 
-        for (T t : in) {
-            if (predicate.test(t)) {
-                return t;
-            }
-        }
-
-        return null;
+        return in.stream().filter(predicate).findFirst().orElse(null);
     }
 
-    public static <T> ReferencedOptional<T> filterToReference(Collection<T> in, Predicate<T> predicate) {
-        if (in.isEmpty()) {
-            return ReferencedOptional.empty();
-        }
-
-        for (T t : in) {
-            if (predicate.test(t)) {
-                return ReferencedOptional.build(t);
-            }
-        }
-
-        return ReferencedOptional.empty();
+    /**
+     * Filters a specific value out of the given list
+     *
+     * @see #filter(Collection, Predicate)
+     * @param in The incoming list
+     * @param predicate The predicate which checks if the current object equals the the filter
+     * @param <T> The object parameter of the values in the list
+     * @return A new {@link ReferencedOptional} with the value or {@code null} if no value in the list equals to the filter
+     */
+    @Nonnull
+    public static <T> ReferencedOptional<T> filterToReference(@Nonnull Collection<T> in, @Nonnull Predicate<T> predicate) {
+        return ReferencedOptional.build(filter(in, predicate));
     }
 
-    public static <K, V> ReferencedOptional<V> filterToReference(Map<K, V> in, Predicate<K> predicate) {
+    /**
+     * Filters a specific value out of the given map
+     *
+     * @param in The given map
+     * @param predicate The predicate which checks if the current object equals the the filter
+     * @param <K> The object parameter of the keys in the map
+     * @param <V> The object parameter of the values in the map
+     * @return A new {@link ReferencedOptional} with the value or {@code null} if no value in the map equals to the filter
+     */
+    @Nonnull
+    public static <K, V> ReferencedOptional<V> filterToReference(@Nonnull Map<K, V> in, @Nonnull Predicate<K> predicate) {
         if (in.isEmpty()) {
             return ReferencedOptional.empty();
         }
@@ -83,21 +137,38 @@ public final class Links {
         return ReferencedOptional.empty();
     }
 
-    public static <T, F> F filterAndApply(List<T> in, Predicate<T> predicate, Function<T, F> function) {
+    /**
+     * Filters a value out of the given list and applies the function if the value is non-{@code null}
+     *
+     * @see #filter(Collection, Predicate)
+     * @param in The given list
+     * @param predicate The predicate which checks if the current object equals the the filter
+     * @param function The function which should get applied to the first value which equals to the filter
+     * @param <T> The object parameter of the values in the list
+     * @param <F> The object parameter of the outgoing value
+     * @return The value which got applied to the function or {@code null} if no value in the list equals to the filter
+     */
+    @Nullable
+    public static <T, F> F filterAndApply(@Nonnull List<T> in, @Nonnull Predicate<T> predicate, @Nonnull Function<T, F> function) {
         if (in.isEmpty()) {
             return null;
         }
 
-        for (T t : in) {
-            if (predicate.test(t)) {
-                return function.apply(t);
-            }
-        }
-
-        return null;
+        T value = filter(in, predicate);
+        return value == null ? null : function.apply(value);
     }
 
-    public static <F, T> List<T> getValues(Map<F, T> in, Predicate<F> predicate) {
+    /**
+     * Gets all values in a map which equals to the given filter
+     *
+     * @param in The given map
+     * @param predicate The predicate which checks if the current object equals the the filter
+     * @param <F> The object parameter of the keys in the map
+     * @param <T> The object parameter of the values in the map
+     * @return A list with all values of the map which equaled to the filter
+     */
+    @Nonnull
+    public static <F, T> List<T> getValues(@Nonnull Map<F, T> in, @Nonnull Predicate<F> predicate) {
         if (in.isEmpty()) {
             return new ArrayList<>();
         }
@@ -111,15 +182,38 @@ public final class Links {
         return out;
     }
 
-    public static <F, T> void forEachValues(Map<F, T> map, Consumer<T> consumer) {
-        map.forEach((f, t) -> consumer.accept(t));
+    /**
+     * Goes trough all values in a map and applies them to a consumer
+     *
+     * @param map The given map
+     * @param consumer The consumer which should accept all values in the map
+     * @param <T> The object parameter of the values in the map
+     */
+    public static <T> void forEachValues(@Nonnull Map<?, T> map, @Nonnull Consumer<T> consumer) {
+        map.values().forEach(consumer);
     }
 
-    public static <F> void forEach(List<F> list, Consumer<F> consumer) {
+    /**
+     * Goes through all values in á list and applies them to a consumer
+     *
+     * @param list The given list
+     * @param consumer The consumer which should accept all values in the map
+     * @param <F> The object parameter of the values in the list
+     */
+    public static <F> void forEach(@Nonnull List<F> list, @Nonnull Consumer<F> consumer) {
         list.forEach(consumer);
     }
 
-    public static <F, T, X> List<X> keyApply(Map<F, T> map, Function<F, X> fxFunction) {
+    /**
+     * Applies a function to all keys in the given map
+     *
+     * @param map The given map
+     * @param fxFunction The function which should get applied to all keys in the map
+     * @param <F> The object parameter of the keys in the map
+     * @param <X>
+     * @return
+     */
+    public static <F, X> List<X> keyApply(Map<F, ?> map, Function<F, X> fxFunction) {
         List<X> out = new ArrayList<>();
         map.keySet().forEach(f -> out.add(fxFunction.apply(f)));
 

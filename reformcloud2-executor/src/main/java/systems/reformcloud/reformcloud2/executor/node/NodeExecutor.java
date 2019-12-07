@@ -533,11 +533,13 @@ public class NodeExecutor extends Node {
         }
     }
 
+    @Nonnull
     @Override
     public NetworkServer getNetworkServer() {
         return networkServer;
     }
 
+    @Nonnull
     @Override
     public CommandManager getCommandManager() {
         return commandManager;

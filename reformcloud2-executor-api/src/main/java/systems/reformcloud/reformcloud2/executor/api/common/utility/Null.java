@@ -19,9 +19,9 @@ public class Null {
         SystemHelper.createDirectory(Paths.get("reformcloud/.bin/dev/null"));
     }
 
-    private static final String devNull = new File("reformcloud/.bin/dev/null").getAbsolutePath();
+    private static final String DEV_NULL = new File("reformcloud/.bin/dev/null").getAbsolutePath();
 
     public static String devNull() {
-        return devNull;
+        return DEV_NULL;
     }
 }

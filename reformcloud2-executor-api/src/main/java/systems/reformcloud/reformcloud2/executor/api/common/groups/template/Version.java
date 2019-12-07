@@ -81,7 +81,7 @@ public enum Version {
     PAPER_1_12_2("Paper 1.12.2", "1.12.2",
             "https://dl.reformcloud.systems/mcversions/paper/paper-1.12.2.jar", 1),
     PAPER_1_13_2("Paper 1.13.2", "1.13.2",
-            "https://dl.reformcloud.systems/mcversions/paper/paper-1.13.2jar", 1),
+            "https://dl.reformcloud.systems/mcversions/paper/paper-1.13.2.jar", 1),
     PAPER_1_14_4("Paper 1.14.4", "1.14.4",
             "https://dl.reformcloud.systems/mcversions/paper/paper-1.14.4.jar", 1),
 

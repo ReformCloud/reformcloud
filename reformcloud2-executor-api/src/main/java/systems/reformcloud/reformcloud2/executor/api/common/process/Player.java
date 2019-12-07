@@ -1,9 +1,11 @@
 package systems.reformcloud.reformcloud2.executor.api.common.process;
 
 import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
 import java.util.UUID;
 
-public final class Player implements Comparable {
+@Immutable
+public final class Player implements Comparable<Player> {
 
     Player(@Nonnull UUID uniqueID, @Nonnull String name) {
         this.uniqueID = uniqueID;
@@ -31,12 +33,7 @@ public final class Player implements Comparable {
     }
 
     @Override
-    public int compareTo(@Nonnull Object o) {
-        if (o instanceof Player) {
-            Player player = (Player) o;
-            return Long.compare(player.getJoined(), getJoined());
-        }
-
-        return 0;
+    public int compareTo(@Nonnull Player o) {
+        return Long.compare(getJoined(), o.getJoined());
     }
 }

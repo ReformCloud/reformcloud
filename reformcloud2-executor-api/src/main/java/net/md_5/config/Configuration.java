@@ -27,7 +27,7 @@ public final class Configuration {
             String key = (entry.getKey() == null) ? "null" : entry.getKey().toString();
 
             if (entry.getValue() instanceof Map) {
-                this.self.put(key, new Configuration((Map) entry.getValue(),
+                this.self.put(key, new Configuration((Map<?, ?>) entry.getValue(),
                     (defaults == null) ? null : defaults.getSection(key)));
             } else {
                 this.self.put(key, entry.getValue());
@@ -89,7 +89,7 @@ public final class Configuration {
 
     public void set(String path, Object value) {
         if (value instanceof Map) {
-            value = new Configuration((Map) value,
+            value = new Configuration((Map<?, ?>) value,
                 (defaults == null) ? null : defaults.getSection(path));
         }
 

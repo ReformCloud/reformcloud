@@ -26,6 +26,7 @@ import systems.reformcloud.reformcloud2.executor.node.process.log.NodeProcessScr
 import systems.reformcloud.reformcloud2.executor.node.process.log.NodeProcessScreenHandler;
 import systems.reformcloud.reformcloud2.executor.node.process.manager.LocalProcessManager;
 
+import javax.annotation.Nonnull;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
@@ -179,7 +180,7 @@ public class BasicLocalNodeProcess implements LocalNodeProcess {
     }
 
     @Override
-    public void sendCommand(String line) {
+    public void sendCommand(@Nonnull String line) {
         if (running()) {
             try {
                 process.getOutputStream().write((line + "\n").getBytes());
@@ -210,11 +211,13 @@ public class BasicLocalNodeProcess implements LocalNodeProcess {
         );
     }
 
+    @Nonnull
     @Override
     public ReferencedOptional<Process> getProcess() {
         return ReferencedOptional.build(process);
     }
 
+    @Nonnull
     @Override
     public ProcessInformation getProcessInformation() {
         return processInformation;

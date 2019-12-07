@@ -92,7 +92,7 @@ public class YamlConfiguration extends ConfigurationProvider {
 
     @Override
     public Configuration load(String string, Configuration defaults) {
-        LinkedHashMap map = yaml.get().loadAs(string, LinkedHashMap.class);
+        LinkedHashMap<?, ?> map = yaml.get().loadAs(string, LinkedHashMap.class);
         if (map == null) {
             map = new LinkedHashMap<>();
         }
