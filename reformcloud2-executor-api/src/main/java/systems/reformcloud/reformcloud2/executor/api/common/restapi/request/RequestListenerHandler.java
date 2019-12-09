@@ -2,17 +2,54 @@ package systems.reformcloud.reformcloud2.executor.api.common.restapi.request;
 
 import systems.reformcloud.reformcloud2.executor.api.common.restapi.auth.Auth;
 
+import javax.annotation.Nonnull;
 import java.util.Collection;
 
 public interface RequestListenerHandler {
 
+    /**
+     * Updates the current auth handler
+     *
+     * @param auth The new auth handler
+     * @throws UnsupportedOperationException If the operation is not supported by the current handler
+     */
+    void setAuth(@Nonnull Auth auth);
+
+    /**
+     * @return The current auth handler of this instance
+     */
+    @Nonnull
     Auth authHandler();
 
-    RequestListenerHandler registerListener(RequestHandler requestHandler);
+    /**
+     * Registers a new request handler
+     *
+     * @param requestHandler The request handler which should get registered
+     * @return The current instance of this class
+     */
+    @Nonnull
+    RequestListenerHandler registerListener(@Nonnull RequestHandler requestHandler);
 
-    RequestListenerHandler registerListener(Class<? extends RequestHandler> requestHandler);
+    /**
+     * Registers a new request handler
+     *
+     * @see #registerListener(RequestHandler)
+     * @param requestHandler The request handler which should get registered
+     * @return The current instance of this class
+     */
+    @Nonnull
+    RequestListenerHandler registerListener(@Nonnull Class<? extends RequestHandler> requestHandler);
 
-    void unregisterHandler(RequestHandler requestHandler);
+    /**
+     * Unregisters a request handler
+     *
+     * @param requestHandler The request handler which should get unregistered
+     */
+    void unregisterHandler(@Nonnull RequestHandler requestHandler);
 
+    /**
+     * @return All currently registered request listener of this instance
+     */
+    @Nonnull
     Collection<RequestHandler> getHandlers();
 }

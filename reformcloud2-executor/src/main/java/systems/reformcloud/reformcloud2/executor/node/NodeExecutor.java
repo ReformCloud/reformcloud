@@ -434,8 +434,13 @@ public class NodeExecutor extends Node {
         this.runConsole();
     }
 
+    @Nonnull
     public static NodeExecutor getInstance() {
         return instance;
+    }
+
+    public RequestListenerHandler getRequestListenerHandler() {
+        return requestListenerHandler;
     }
 
     public LoggerBase getLoggerBase() {

@@ -16,6 +16,7 @@
         <module>reformcloud2-default-application-commands</module>
         <module>reformcloud2-default-plugin-notifications</module>
         <module>reformcloud2-default-application-signs</module>
+        <module>reformcloud2-default-application-web</module>
     </modules>
 
 

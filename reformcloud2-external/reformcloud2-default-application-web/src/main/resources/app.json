@@ -1,0 +1,7 @@
+{
+  "name": "WebAddon",
+  "author": "derklaro",
+  "main": "systems.reformcloud.reformcloud2.web.WebApplication",
+  "version": "1.0",
+  "impl-version": "2.0"
+}

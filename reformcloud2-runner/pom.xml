@@ -12,10 +12,10 @@
     <artifactId>reformcloud2-runner</artifactId>
 
     <build>
-        <finalName>runner</finalName>
+        <!-- Build time is unknown, refer to maven helper plugin (leave this alone) -->
+        <finalName>runner-${project.version}_${build.time}</finalName>
 
         <plugins>
-
             <!-- maven shade plugin (central) -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

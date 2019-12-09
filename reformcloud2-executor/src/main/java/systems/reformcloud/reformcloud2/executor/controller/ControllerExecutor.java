@@ -332,6 +332,7 @@ public final class ControllerExecutor extends Controller {
         return controllerExecutorConfig;
     }
 
+    @Nonnull
     public static ControllerExecutor getInstance() {
         if (instance == null) {
             return (ControllerExecutor) Controller.getInstance();

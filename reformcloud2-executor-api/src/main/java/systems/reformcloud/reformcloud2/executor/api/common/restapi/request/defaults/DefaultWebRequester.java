@@ -34,7 +34,7 @@ public class DefaultWebRequester implements WebRequester {
     }
 
     @Override
-    public PermissionResult hasPermissionValue(String perm) {
+    public PermissionResult hasPermissionValue(@Nonnull String perm) {
         String matched = Links.filter(permissions, permission -> {
             if (permission.equals("*")) {
                 return true;

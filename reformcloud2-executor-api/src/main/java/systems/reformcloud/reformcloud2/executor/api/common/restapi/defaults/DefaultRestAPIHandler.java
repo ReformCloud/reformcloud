@@ -56,7 +56,7 @@ public final class DefaultRestAPIHandler extends RestAPIHandler {
             return;
         }
 
-        Configurable configurable = new JsonConfiguration()
+        Configurable<JsonConfiguration> configurable = new JsonConfiguration()
                 .add("name", httpHeaders.get("-XUser"))
                 .add("token", httpHeaders.get("-XToken"));
         Double<Boolean, WebRequester> auth = tryAuth(channelHandlerContext, configurable);
@@ -69,7 +69,7 @@ public final class DefaultRestAPIHandler extends RestAPIHandler {
         }
 
         Map<UUID, Operation> operations = new HashMap<>();
-        Links.allOf(requestHandler.getHandlers(), e -> e.path().equals(path)).forEach(e -> e.handleRequest(auth.getSecond(), httpRequest, httpResponse -> {
+        Links.allOf(requestHandler.getHandlers(), e -> e.path().equals(path) && e.canAccess(auth.getSecond())).forEach(e -> e.handleRequest(auth.getSecond(), httpRequest, httpResponse -> {
             Operation operation = new HttpOperation();
             operations.put(operation.identifier(), operation);
             channelHandlerContext.channel().writeAndFlush(
@@ -90,7 +90,7 @@ public final class DefaultRestAPIHandler extends RestAPIHandler {
         }));
     }
 
-    private Double<Boolean, WebRequester> tryAuth(ChannelHandlerContext channelHandlerContext, Configurable configurable) {
+    private Double<Boolean, WebRequester> tryAuth(ChannelHandlerContext channelHandlerContext, Configurable<JsonConfiguration> configurable) {
         return requestHandler.authHandler().handleAuth(configurable, channelHandlerContext);
     }
 }
