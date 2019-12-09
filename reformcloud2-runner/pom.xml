@@ -13,6 +13,7 @@
 
     <build>
         <!-- Build time is unknown, refer to maven helper plugin (leave this alone) -->
+        <!--suppress UnresolvedMavenProperty -->
         <finalName>runner-${project.version}_${build.time}</finalName>
 
         <plugins>
