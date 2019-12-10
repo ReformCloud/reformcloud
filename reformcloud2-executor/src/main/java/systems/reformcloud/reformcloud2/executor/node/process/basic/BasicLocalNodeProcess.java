@@ -130,6 +130,7 @@ public class BasicLocalNodeProcess implements LocalNodeProcess {
                 "-Xmx" + processInformation.getTemplate().getRuntimeConfiguration().getMaxMemory() + "M"
         ));
 
+        command.addAll(this.processInformation.getTemplate().getRuntimeConfiguration().getJvmOptions());
         this.processInformation.getTemplate().getRuntimeConfiguration().getSystemProperties().forEach((s, s2) -> command.add("-D" + s + "=" + s2));
 
         command.addAll(this.processInformation.getTemplate().getRuntimeConfiguration().getProcessParameters());
