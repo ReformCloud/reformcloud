@@ -19,6 +19,6 @@ public final class ControllerQueryGetProcessGroups implements NetworkHandler {
 
     @Override
     public void handlePacket(PacketSender packetSender, Packet packet, Consumer<Packet> responses) {
-        responses.accept(new DefaultPacket(-1, new JsonConfiguration().add("result", ExecutorAPI.getInstance().getProcessGroups())));
+        responses.accept(new DefaultPacket(-1, new JsonConfiguration().add("result", ExecutorAPI.getInstance().getSyncAPI().getGroupSyncAPI().getProcessGroups())));
     }
 }

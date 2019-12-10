@@ -25,21 +25,21 @@ public final class ExtraListenerHandler implements Listener {
                 plugin.isEnabled(),
                 plugin.getName()
         );
-        ExecutorAPI.getInstance().getThisProcessInformation().getPlugins().add(defaultPlugin);
-        ExecutorAPI.getInstance().getThisProcessInformation().updateRuntimeInformation();
-        ExecutorAPI.getInstance().update(ExecutorAPI.getInstance().getThisProcessInformation());
+        ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation().getPlugins().add(defaultPlugin);
+        ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation().updateRuntimeInformation();
+        ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation());
     }
 
     @EventHandler
     public void handle(final PluginDisableEvent event) {
-        final ProcessInformation processInformation = ExecutorAPI.getInstance().getThisProcessInformation();
+        final ProcessInformation processInformation = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation();
         Plugin plugin = event.getPlugin();
         DefaultPlugin defaultPlugin = Links.filter(processInformation.getPlugins(), in -> in.getName().equals(plugin.getName()));
         if (defaultPlugin != null) {
             processInformation.getPlugins().remove(defaultPlugin);
             processInformation.updateRuntimeInformation();
             SpigotExecutor.getInstance().setThisProcessInformation(processInformation);
-            ExecutorAPI.getInstance().update(processInformation);
+            ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(processInformation);
         }
     }
 }

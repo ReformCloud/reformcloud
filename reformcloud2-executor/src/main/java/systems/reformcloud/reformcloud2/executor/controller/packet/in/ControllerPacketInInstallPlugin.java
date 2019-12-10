@@ -21,6 +21,6 @@ public final class ControllerPacketInInstallPlugin implements NetworkHandler {
     public void handlePacket(PacketSender packetSender, Packet packet, Consumer<Packet> responses) {
         String process = packet.content().getString("process");
         DefaultInstallablePlugin defaultPlugin = packet.content().get("plugin", InstallablePlugin.INSTALLABLE_TYPE);
-        ExecutorAPI.getInstance().installPlugin(process, defaultPlugin);
+        ExecutorAPI.getInstance().getSyncAPI().getPluginSyncAPI().installPlugin(process, defaultPlugin);
     }
 }

@@ -19,6 +19,12 @@ public interface TabCompleter {
     @Nonnull
     Collection<String> complete(@Nonnull CommandSource commandSource, @Nonnull String commandLine, @Nonnull String[] currentArg);
 
+    /**
+     * Creates a collection of strings of an array
+     *
+     * @param strings The array which should get converted
+     * @return The created collection of the given array
+     */
     @Nonnull
     default Collection<String> convert(@Nonnull String... strings) {
         return Arrays.asList(strings);

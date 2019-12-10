@@ -21,9 +21,9 @@ public final class PlayerListenerHandler {
 
     @Listener (order = Order.LATE)
     public void handle(final ClientConnectionEvent.Login event) {
-        if (ExecutorAPI.getInstance().getThisProcessInformation().getProcessGroup().getPlayerAccessConfiguration().isOnlyProxyJoin()) {
+        if (ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation().getProcessGroup().getPlayerAccessConfiguration().isOnlyProxyJoin()) {
             PacketSender packetSender = DefaultChannelManager.INSTANCE.get("Controller").orElse(null);
-            if (packetSender == null || !ExecutorAPI.getInstance().getThisProcessInformation().getNetworkInfo().isConnected()) {
+            if (packetSender == null || !ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation().getNetworkInfo().isConnected()) {
                 event.setCancelled(true);
                 return;
             }
@@ -40,7 +40,7 @@ public final class PlayerListenerHandler {
         }
 
         final User player = event.getTargetUser();
-        final ProcessInformation current = ExecutorAPI.getInstance().getThisProcessInformation();
+        final ProcessInformation current = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation();
         final PlayerAccessConfiguration configuration = current.getProcessGroup().getPlayerAccessConfiguration();
 
         if (configuration.isUseCloudPlayerLimit()
@@ -83,15 +83,15 @@ public final class PlayerListenerHandler {
 
     @Listener (order = Order.LATE)
     public void handle(final ClientConnectionEvent.Join event) {
-        final ProcessInformation current = ExecutorAPI.getInstance().getThisProcessInformation();
+        final ProcessInformation current = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation();
         current.updateRuntimeInformation();
         SpongeExecutor.getInstance().setThisProcessInformation(current);
-        ExecutorAPI.getInstance().update(current);
+        ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(current);
     }
 
     @Listener (order = Order.FIRST)
     public void handle(final ClientConnectionEvent.Disconnect event) {
-        ProcessInformation current = ExecutorAPI.getInstance().getThisProcessInformation();
+        ProcessInformation current = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation();
         if (!current.isPlayerOnline(event.getTargetEntity().getUniqueId())) {
             return;
         }
@@ -105,6 +105,6 @@ public final class PlayerListenerHandler {
         current.updateRuntimeInformation();
         current.onLogout(event.getTargetEntity().getUniqueId());
         SpongeExecutor.getInstance().setThisProcessInformation(current);
-        ExecutorAPI.getInstance().update(current);
+        ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(current);
     }
 }

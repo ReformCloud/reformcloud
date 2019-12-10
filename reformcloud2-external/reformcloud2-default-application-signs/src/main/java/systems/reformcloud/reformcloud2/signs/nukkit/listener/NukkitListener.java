@@ -27,7 +27,7 @@ public class NukkitListener implements Listener {
                     return;
                 }
 
-                ExecutorAPI.getInstance().connect(event.getPlayer().getUniqueId(), cloudSign.getCurrentTarget());
+                ExecutorAPI.getInstance().getSyncAPI().getPlayerSyncAPI().connect(event.getPlayer().getUniqueId(), cloudSign.getCurrentTarget());
             }
         }
     }

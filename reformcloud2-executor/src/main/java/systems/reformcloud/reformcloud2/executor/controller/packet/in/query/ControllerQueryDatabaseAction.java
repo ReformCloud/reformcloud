@@ -23,17 +23,17 @@ public final class ControllerQueryDatabaseAction implements NetworkHandler {
 
         switch (packet.content().getString("action")) {
             case "action_create": {
-                responses.accept(new DefaultPacket(-1, new JsonConfiguration().add("result", ExecutorAPI.getInstance().createDatabase(name))));
+                responses.accept(new DefaultPacket(-1, new JsonConfiguration().add("result", ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().createDatabase(name))));
                 break;
             }
 
             case "action_delete": {
-                responses.accept(new DefaultPacket(-1, new JsonConfiguration().add("result", ExecutorAPI.getInstance().deleteDatabase(name))));
+                responses.accept(new DefaultPacket(-1, new JsonConfiguration().add("result", ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().deleteDatabase(name))));
                 break;
             }
 
             case "action_size": {
-                responses.accept(new DefaultPacket(-1, new JsonConfiguration().add("result", ExecutorAPI.getInstance().size(name))));
+                responses.accept(new DefaultPacket(-1, new JsonConfiguration().add("result", ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().size(name))));
                 break;
             }
         }

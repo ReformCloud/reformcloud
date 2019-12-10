@@ -25,6 +25,6 @@ public final class ControllerQueryInGetApplications implements NetworkHandler {
     }
 
     private static JsonConfiguration convert() {
-        return new JsonConfiguration().add("result", Links.apply(ExecutorAPI.getInstance().getApplications(), application -> new DefaultLoadedApplication(application.loader(), application.applicationConfig(), application.mainClass())));
+        return new JsonConfiguration().add("result", Links.apply(ExecutorAPI.getInstance().getSyncAPI().getApplicationSyncAPI().getApplications(), application -> new DefaultLoadedApplication(application.loader(), application.applicationConfig(), application.mainClass())));
     }
 }

@@ -26,7 +26,7 @@ public class CommandReformCloud extends Command {
         final String prefix = BungeeExecutor.getInstance().getMessages().getPrefix() + " ";
 
         if (strings.length == 1 && strings[0].equalsIgnoreCase("list")) {
-            ExecutorAPI.getInstance().getAllProcesses().forEach(e -> commandSender.sendMessage(TextComponent.fromLegacyText(
+            ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getAllProcesses().forEach(e -> commandSender.sendMessage(TextComponent.fromLegacyText(
                     "=> " + e.getName()
                             + "/ Display: " + e.getDisplayName()
                             + "/ UniqueID: " + e.getProcessUniqueID()
@@ -39,32 +39,32 @@ public class CommandReformCloud extends Command {
         if (strings.length == 2) {
             switch (strings[0].toLowerCase()) {
                 case "start": {
-                    ExecutorAPI.getInstance().startProcess(strings[1]);
+                    ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().startProcess(strings[1]);
                     commandSender.sendMessage(getCommandSuccessMessage());
                     return;
                 }
 
                 case "stop": {
-                    ExecutorAPI.getInstance().stopProcess(strings[1]);
+                    ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().stopProcess(strings[1]);
                     commandSender.sendMessage(getCommandSuccessMessage());
                     return;
                 }
 
                 case "stopall": {
-                    ExecutorAPI.getInstance().getProcesses(strings[1]).forEach(e -> ExecutorAPI.getInstance().stopProcess(e.getName()));
+                    ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcesses(strings[1]).forEach(e -> ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().stopProcess(e.getName()));
                     commandSender.sendMessage(getCommandSuccessMessage());
                     return;
                 }
 
                 case "maintenance": {
-                    ProcessGroup processGroup = ExecutorAPI.getInstance().getProcessGroup(strings[1]);
+                    ProcessGroup processGroup = ExecutorAPI.getInstance().getSyncAPI().getGroupSyncAPI().getProcessGroup(strings[1]);
                     if (processGroup == null) {
                         commandSender.sendMessage(TextComponent.fromLegacyText(prefix + "§cThis group is unknown"));
                         return;
                     }
 
                     processGroup.getPlayerAccessConfiguration().toggleMaintenance();
-                    ExecutorAPI.getInstance().updateProcessGroup(processGroup);
+                    ExecutorAPI.getInstance().getSyncAPI().getGroupSyncAPI().updateProcessGroup(processGroup);
                     commandSender.sendMessage(getCommandSuccessMessage());
                     return;
                 }
@@ -80,10 +80,10 @@ public class CommandReformCloud extends Command {
                     }
 
                     if (count == 1) {
-                        ExecutorAPI.getInstance().startProcess(strings[1]);
+                        ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().startProcess(strings[1]);
                     } else {
                         for (int started = 1; started <= count; started++) {
-                            ExecutorAPI.getInstance().startProcess(strings[1]);
+                            ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().startProcess(strings[1]);
                             AbsoluteThread.sleep(TimeUnit.MILLISECONDS, 20);
                         }
                     }
@@ -94,20 +94,20 @@ public class CommandReformCloud extends Command {
 
                 case "ofall": {
                     if (strings[2].equalsIgnoreCase("stop")) {
-                        MainGroup mainGroup = ExecutorAPI.getInstance().getMainGroup(strings[1]);
+                        MainGroup mainGroup = ExecutorAPI.getInstance().getSyncAPI().getGroupSyncAPI().getMainGroup(strings[1]);
                         if (mainGroup == null) {
                             commandSender.sendMessage(TextComponent.fromLegacyText(prefix + "§cThis main group is unknown"));
                             return;
                         }
 
                         mainGroup.getSubGroups().forEach(s -> {
-                            ProcessGroup processGroup = ExecutorAPI.getInstance().getProcessGroup(s);
+                            ProcessGroup processGroup = ExecutorAPI.getInstance().getSyncAPI().getGroupSyncAPI().getProcessGroup(s);
                             if (processGroup == null) {
                                 return;
                             }
 
-                            ExecutorAPI.getInstance().getProcesses(processGroup.getName()).forEach(processInformation -> {
-                                ExecutorAPI.getInstance().stopProcess(processInformation.getProcessUniqueID());
+                            ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcesses(processGroup.getName()).forEach(processInformation -> {
+                                ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().stopProcess(processInformation.getProcessUniqueID());
                                 AbsoluteThread.sleep(TimeUnit.MILLISECONDS, 10);
                             });
                         });
@@ -125,7 +125,7 @@ public class CommandReformCloud extends Command {
                 stringBuilder.append(s).append(" ");
             }
 
-            ExecutorAPI.getInstance().executeProcessCommand(strings[1], stringBuilder.toString());
+            ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().executeProcessCommand(strings[1], stringBuilder.toString());
             commandSender.sendMessage(getCommandSuccessMessage());
             return;
         }

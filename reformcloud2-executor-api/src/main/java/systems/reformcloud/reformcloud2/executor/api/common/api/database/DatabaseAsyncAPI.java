@@ -8,7 +8,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.function.Function;
 
-public interface DatabaseAsyncAPI extends DatabaseSyncAPI {
+public interface DatabaseAsyncAPI {
 
     /**
      * Tries to find an object in the database

@@ -93,7 +93,7 @@ public class BasicLocalNodeProcess implements LocalNodeProcess {
                 .add("startInfo", processInformation)
                 .write(path + "/reformcloud/.connection/connection.json");
 
-        ExecutorAPI.getInstance().update(processInformation);
+        ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(processInformation);
         prepared = true;
 
         NodeExecutor.getInstance().getNodeNetworkManager().getCluster().broadCastToCluster(new NodePacketOutProcessPrepared(
@@ -151,7 +151,7 @@ public class BasicLocalNodeProcess implements LocalNodeProcess {
         }
 
         processInformation.setProcessState(ProcessState.STARTED);
-        ExecutorAPI.getInstance().update(processInformation);
+        ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(processInformation);
 
         NodeExecutor.getInstance().getClusterSyncManager().syncProcessStartup(processInformation);
         NodeExecutor.getInstance().getNodeNetworkManager().getNodeProcessHelper().handleLocalProcessStart(processInformation);

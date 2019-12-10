@@ -11,6 +11,7 @@ public interface WebRequester extends Nameable {
     /**
      * @return The http channel of the web requester
      */
+    @Nonnull
     Channel channel();
 
     /**
@@ -24,6 +25,7 @@ public interface WebRequester extends Nameable {
      * @param perm The permission which should get checked
      * @return If the permission is set
      */
+    @Nonnull
     PermissionResult hasPermissionValue(@Nonnull String perm);
 
     /**

@@ -58,11 +58,11 @@ public class SpongeSignConverter implements SignConverter<Sign> {
     }
 
     private CloudLocation accumulate(Location<World> location) {
-        Conditions.isTrue(ExecutorAPI.getInstance().getThisProcessInformation() != null);
+        Conditions.isTrue(ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation() != null);
 
         return new CloudLocation(
                 location.getExtent().getName(),
-                ExecutorAPI.getInstance().getThisProcessInformation().getProcessGroup().getName(),
+                ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation().getProcessGroup().getName(),
                 location.getX(),
                 location.getY(),
                 location.getZ(),

@@ -36,7 +36,7 @@ public class ControllerPacketInUserAction extends DefaultNetworkHandler {
             }
 
             case CREATE: {
-                ExecutorAPI.getInstance().insert(DefaultPermissionUtil.PERMISSION_PLAYER_TABLE, permissionUser.getUniqueID().toString(), null, new JsonConfiguration()
+                ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().insert(DefaultPermissionUtil.PERMISSION_PLAYER_TABLE, permissionUser.getUniqueID().toString(), null, new JsonConfiguration()
                         .add("user", permissionUser)
                 );
                 break;

@@ -41,6 +41,7 @@ public class WebCommand extends GlobalCommand {
 
             Objects.requireNonNull(waiting.getSecond()).complete(waiting.getFirst(), waiting.getThird());
         }
+
         return true;
     }
 }

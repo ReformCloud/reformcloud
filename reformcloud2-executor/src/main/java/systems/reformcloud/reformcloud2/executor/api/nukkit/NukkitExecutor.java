@@ -130,7 +130,7 @@ public final class NukkitExecutor extends API implements PlayerAPIExecutor {
 
             thisProcessInformation.updateMaxPlayers(Server.getInstance().getMaxPlayers());
             thisProcessInformation.updateRuntimeInformation();
-            ExecutorAPI.getInstance().update(thisProcessInformation);
+            ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(thisProcessInformation);
 
             DefaultChannelManager.INSTANCE.get("Controller").ifPresent(controller -> packetHandler.getQueryHandler().sendQueryAsync(controller, new APIBungeePacketOutRequestIngameMessages()).onComplete(packet -> {
                 NukkitExecutor.this.messages = packet.content().get("messages", IngameMessages.TYPE);

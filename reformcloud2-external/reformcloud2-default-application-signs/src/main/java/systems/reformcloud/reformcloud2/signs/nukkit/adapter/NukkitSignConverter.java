@@ -54,12 +54,12 @@ public class NukkitSignConverter implements SignConverter<BlockEntitySign> {
     }
 
     private CloudLocation accumulate(Location location) {
-        Conditions.isTrue(ExecutorAPI.getInstance().getThisProcessInformation() != null);
+        Conditions.isTrue(ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation() != null);
         Conditions.isTrue(location.getLevel() != null);
 
         return new CloudLocation(
                 location.getLevel().getName(),
-                ExecutorAPI.getInstance().getThisProcessInformation().getProcessGroup().getName(),
+                ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation().getProcessGroup().getName(),
                 location.getX(),
                 location.getY(),
                 location.getZ(),

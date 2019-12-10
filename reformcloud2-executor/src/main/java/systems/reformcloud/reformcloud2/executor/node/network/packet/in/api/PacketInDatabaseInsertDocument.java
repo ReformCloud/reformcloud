@@ -22,6 +22,6 @@ public final class PacketInDatabaseInsertDocument implements NetworkHandler {
         String key = packet.content().getString("key");
         String identifier = packet.content().getString("identifier");
         JsonConfiguration data = packet.content().get("data");
-        ExecutorAPI.getInstance().insert(table, key, identifier, data);
+        ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().insert(table, key, identifier, data);
     }
 }

@@ -58,7 +58,7 @@ public final class PlayerListenerHandler implements Listener {
             return;
         }
 
-        if (ExecutorAPI.getInstance().getThisProcessInformation().getProcessGroup().getPlayerAccessConfiguration().isOnlyProxyJoin()) {
+        if (ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation().getProcessGroup().getPlayerAccessConfiguration().isOnlyProxyJoin()) {
             PendingConnection connection = event.getConnection();
             sender.sendPacket(new APIPacketOutCreateLoginRequest(
                     connection.getUniqueId(),
@@ -70,7 +70,7 @@ public final class PlayerListenerHandler implements Listener {
     @EventHandler
     public void handle(final PostLoginEvent event) {
         final ProxiedPlayer player = event.getPlayer();
-        final ProcessInformation current = ExecutorAPI.getInstance().getThisProcessInformation();
+        final ProcessInformation current = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation();
         final PlayerAccessConfiguration configuration = current.getProcessGroup().getPlayerAccessConfiguration();
 
         if (configuration.isUseCloudPlayerLimit()
@@ -122,7 +122,7 @@ public final class PlayerListenerHandler implements Listener {
 
         current.updateRuntimeInformation();
         BungeeExecutor.getInstance().setThisProcessInformation(current); //Update it directly on the current host to prevent issues
-        ExecutorAPI.getInstance().update(current);
+        ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(current);
 
         CommonHelper.EXECUTOR.execute(() -> DefaultChannelManager.INSTANCE.get("Controller").ifPresent(packetSender -> packetSender.sendPacket(new APIPacketOutPlayerLoggedIn(event.getPlayer().getName()))));
     }
@@ -153,7 +153,7 @@ public final class PlayerListenerHandler implements Listener {
         )));
 
         CommonHelper.EXECUTOR.execute(() -> {
-            ProcessInformation current = ExecutorAPI.getInstance().getThisProcessInformation();
+            ProcessInformation current = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation();
             if (ProxyServer.getInstance().getOnlineCount() < current.getMaxPlayers()
                     && !current.getProcessState().equals(ProcessState.READY)
                     && !current.getProcessState().equals(ProcessState.INVISIBLE)) {
@@ -163,7 +163,7 @@ public final class PlayerListenerHandler implements Listener {
             current.updateRuntimeInformation();
             current.onLogout(event.getPlayer().getUniqueId());
             BungeeExecutor.getInstance().setThisProcessInformation(current);
-            ExecutorAPI.getInstance().update(current);
+            ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(current);
         });
     }
 

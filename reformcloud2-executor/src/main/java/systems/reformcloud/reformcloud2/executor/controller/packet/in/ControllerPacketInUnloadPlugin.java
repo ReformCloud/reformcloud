@@ -21,6 +21,6 @@ public final class ControllerPacketInUnloadPlugin implements NetworkHandler {
     public void handlePacket(PacketSender packetSender, Packet packet, Consumer<Packet> responses) {
         String process = packet.content().getString("process");
         DefaultPlugin defaultPlugin = packet.content().get("plugin", Plugin.TYPE);
-        ExecutorAPI.getInstance().unloadPlugin(process, defaultPlugin);
+        ExecutorAPI.getInstance().getSyncAPI().getPluginSyncAPI().unloadPlugin(process, defaultPlugin);
     }
 }

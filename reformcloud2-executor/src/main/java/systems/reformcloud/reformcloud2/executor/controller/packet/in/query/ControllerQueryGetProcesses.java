@@ -25,9 +25,9 @@ public final class ControllerQueryGetProcesses implements NetworkHandler {
 
         if (packet.content().has("group")) {
             String group = packet.content().getString("group");
-            result = ExecutorAPI.getInstance().getProcesses(group);
+            result = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcesses(group);
         } else {
-            result = ExecutorAPI.getInstance().getAllProcesses();
+            result = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getAllProcesses();
         }
 
         responses.accept(new DefaultPacket(-1, new JsonConfiguration().add("result", result)));

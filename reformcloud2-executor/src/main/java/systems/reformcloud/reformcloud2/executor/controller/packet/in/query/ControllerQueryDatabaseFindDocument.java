@@ -22,6 +22,6 @@ public final class ControllerQueryDatabaseFindDocument implements NetworkHandler
         String table = packet.content().getString("table");
         String key = packet.content().getString("key");
         String identifier = packet.content().getString("identifier");
-        responses.accept(new DefaultPacket(-1, new JsonConfiguration().add("result", ExecutorAPI.getInstance().find(table, key, identifier))));
+        responses.accept(new DefaultPacket(-1, new JsonConfiguration().add("result", ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().find(table, key, identifier))));
     }
 }

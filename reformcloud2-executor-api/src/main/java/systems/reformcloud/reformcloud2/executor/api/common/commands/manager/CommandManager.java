@@ -46,5 +46,6 @@ public interface CommandManager extends CommandMap {
     /**
      * @return All registered commands
      */
+    @Nonnull
     List<Command> getCommands();
 }

@@ -25,7 +25,7 @@ public class WildcardCheck {
             return true;
         }
 
-        final ProcessInformation current = ExecutorAPI.getInstance().getThisProcessInformation();
+        final ProcessInformation current = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation();
         if (current == null || !permissionGroup.getPerGroupPermissions().containsKey(current.getProcessGroup().getName())) {
             return false;
         }

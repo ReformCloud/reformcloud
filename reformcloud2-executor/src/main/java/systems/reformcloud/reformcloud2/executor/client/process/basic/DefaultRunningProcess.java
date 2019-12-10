@@ -88,7 +88,7 @@ public final class DefaultRunningProcess implements RunningProcess {
                 .add("startInfo", processInformation)
                 .write(path + "/reformcloud/.connection/connection.json");
 
-        ExecutorAPI.getInstance().update(processInformation);
+        ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(processInformation);
         prepared = true;
 
         DefaultChannelManager.INSTANCE.get("Controller").ifPresent(packetSender -> packetSender.sendPacket(new ClientPacketOutProcessPrepared(
@@ -145,7 +145,7 @@ public final class DefaultRunningProcess implements RunningProcess {
         }
 
         processInformation.setProcessState(ProcessState.STARTED);
-        ExecutorAPI.getInstance().update(processInformation);
+        ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(processInformation);
         startupTime.set(System.currentTimeMillis());
         return true;
     }

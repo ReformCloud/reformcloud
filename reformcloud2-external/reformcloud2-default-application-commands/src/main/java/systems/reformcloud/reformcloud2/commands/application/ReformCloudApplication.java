@@ -43,7 +43,7 @@ public class ReformCloudApplication extends Application {
         commandsConfig = new CommandsConfig(false, new ArrayList<>(), false, new ArrayList<>());
 
         ExecutorAPI.getInstance().getEventManager().unregisterListener(LISTENER);
-        ExecutorAPI.getInstance().getAllProcesses().stream().filter(e -> !e.getTemplate().isServer()).forEach(
+        ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getAllProcesses().stream().filter(e -> !e.getTemplate().isServer()).forEach(
                 e -> DefaultChannelManager.INSTANCE.get(e.getName()).ifPresent(s -> s.sendPacket(new PacketOutRegisterCommandsConfig()))
         );
     }

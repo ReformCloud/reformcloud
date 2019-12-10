@@ -24,10 +24,10 @@ public class PacketInNodePluginAction implements NetworkHandler {
 
         if (packet.content().has("installable")) {
             DefaultInstallablePlugin plugin = packet.content().get("installable", InstallablePlugin.INSTALLABLE_TYPE);
-            ExecutorAPI.getInstance().installPlugin(process, plugin);
+            ExecutorAPI.getInstance().getSyncAPI().getPluginSyncAPI().installPlugin(process, plugin);
         } else {
             DefaultPlugin plugin = packet.content().get("plugin", Plugin.TYPE);
-            ExecutorAPI.getInstance().unloadPlugin(process, plugin);
+            ExecutorAPI.getInstance().getSyncAPI().getPluginSyncAPI().unloadPlugin(process, plugin);
         }
     }
 }

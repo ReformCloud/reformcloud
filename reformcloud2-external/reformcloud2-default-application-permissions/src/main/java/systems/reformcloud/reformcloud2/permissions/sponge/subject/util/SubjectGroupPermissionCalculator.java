@@ -17,7 +17,7 @@ public class SubjectGroupPermissionCalculator {
 
     public static Map<String, Boolean> getPermissionsOf(PermissionGroup group) {
         Map<String, Boolean> out = new HashMap<>();
-        final ProcessInformation current = ExecutorAPI.getInstance().getThisProcessInformation();
+        final ProcessInformation current = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation();
         if (current != null) {
             Collection<PermissionNode> permissionNodes = group.getPerGroupPermissions().get(current.getProcessGroup().getName());
             if (permissionNodes != null) {

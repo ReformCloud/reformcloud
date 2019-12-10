@@ -10,7 +10,7 @@ import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import java.util.Collection;
 
-public interface PluginAsyncAPI extends PluginSyncAPI {
+public interface PluginAsyncAPI {
 
     /**
      * Installs a plugin on a process

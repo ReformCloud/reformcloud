@@ -23,7 +23,7 @@ public final class ControllerPacketInAddScreenLine implements NetworkHandler {
         String line = packet.content().getString("line");
         UUID uuid = packet.content().get("uuid", UUID.class);
 
-        ProcessInformation processInformation = ExecutorAPI.getInstance().getProcess(uuid);
+        ProcessInformation processInformation = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcess(uuid);
         if (processInformation != null) {
             System.out.println(LanguageManager.get("screen-line-added", processInformation.getName(), line));
         }

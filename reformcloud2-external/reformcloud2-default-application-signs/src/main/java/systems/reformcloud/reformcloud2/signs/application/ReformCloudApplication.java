@@ -30,9 +30,9 @@ public class ReformCloudApplication extends Application {
             ConfigHelper.createDefault(dataFolder().getPath());
         }
 
-        ExecutorAPI.getInstance().createDatabase(SignSystemAdapter.table);
-        if (!ExecutorAPI.getInstance().contains(SignSystemAdapter.table, "signs")) {
-            ExecutorAPI.getInstance().insert(
+        ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().createDatabase(SignSystemAdapter.table);
+        if (!ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().contains(SignSystemAdapter.table, "signs")) {
+            ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().insert(
                     SignSystemAdapter.table,
                     "signs",
                     null,
@@ -88,11 +88,11 @@ public class ReformCloudApplication extends Application {
     // ====
 
     private static Collection<CloudSign> read() {
-        return ExecutorAPI.getInstance().find(SignSystemAdapter.table, "signs", null, k -> k.get("signs", new TypeToken<Collection<CloudSign>>() {
+        return ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().find(SignSystemAdapter.table, "signs", null, k -> k.get("signs", new TypeToken<Collection<CloudSign>>() {
         }));
     }
 
     private static void insert(Collection<CloudSign> signs) {
-        ExecutorAPI.getInstance().update(SignSystemAdapter.table, "signs", new JsonConfiguration().add("signs", signs));
+        ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().update(SignSystemAdapter.table, "signs", new JsonConfiguration().add("signs", signs));
     }
 }

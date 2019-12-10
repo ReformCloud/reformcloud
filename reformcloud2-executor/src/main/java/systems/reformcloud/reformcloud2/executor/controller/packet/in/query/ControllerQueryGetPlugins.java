@@ -20,6 +20,6 @@ public final class ControllerQueryGetPlugins implements NetworkHandler {
     @Override
     public void handlePacket(PacketSender packetSender, Packet packet, Consumer<Packet> responses) {
         String process = packet.content().getString("process");
-        responses.accept(new DefaultPacket(-1, new JsonConfiguration().add("result", ExecutorAPI.getInstance().getPlugins(process))));
+        responses.accept(new DefaultPacket(-1, new JsonConfiguration().add("result", ExecutorAPI.getInstance().getSyncAPI().getPluginSyncAPI().getPlugins(process))));
     }
 }

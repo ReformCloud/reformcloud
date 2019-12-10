@@ -2,7 +2,26 @@ package systems.reformcloud.reformcloud2.executor.api.common.api.basic;
 
 import com.google.gson.reflect.TypeToken;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
+import systems.reformcloud.reformcloud2.executor.api.common.api.AsyncAPI;
+import systems.reformcloud.reformcloud2.executor.api.common.api.SyncAPI;
+import systems.reformcloud.reformcloud2.executor.api.common.api.applications.ApplicationAsyncAPI;
+import systems.reformcloud.reformcloud2.executor.api.common.api.applications.ApplicationSyncAPI;
+import systems.reformcloud.reformcloud2.executor.api.common.api.applications.api.GeneralAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.basic.packets.out.*;
+import systems.reformcloud.reformcloud2.executor.api.common.api.client.ClientAsyncAPI;
+import systems.reformcloud.reformcloud2.executor.api.common.api.client.ClientSyncAPI;
+import systems.reformcloud.reformcloud2.executor.api.common.api.console.ConsoleAsyncAPI;
+import systems.reformcloud.reformcloud2.executor.api.common.api.console.ConsoleSyncAPI;
+import systems.reformcloud.reformcloud2.executor.api.common.api.database.DatabaseAsyncAPI;
+import systems.reformcloud.reformcloud2.executor.api.common.api.database.DatabaseSyncAPI;
+import systems.reformcloud.reformcloud2.executor.api.common.api.group.GroupAsyncAPI;
+import systems.reformcloud.reformcloud2.executor.api.common.api.group.GroupSyncAPI;
+import systems.reformcloud.reformcloud2.executor.api.common.api.player.PlayerAsyncAPI;
+import systems.reformcloud.reformcloud2.executor.api.common.api.player.PlayerSyncAPI;
+import systems.reformcloud.reformcloud2.executor.api.common.api.plugins.PluginAsyncAPI;
+import systems.reformcloud.reformcloud2.executor.api.common.api.plugins.PluginSyncAPI;
+import systems.reformcloud.reformcloud2.executor.api.common.api.process.ProcessAsyncAPI;
+import systems.reformcloud.reformcloud2.executor.api.common.api.process.ProcessSyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.application.InstallableApplication;
 import systems.reformcloud.reformcloud2.executor.api.common.application.LoadedApplication;
 import systems.reformcloud.reformcloud2.executor.api.common.application.basic.DefaultLoadedApplication;
@@ -36,9 +55,27 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-public abstract class ExternalAPIImplementation extends ExecutorAPI {
+public abstract class ExternalAPIImplementation extends ExecutorAPI implements
+        ProcessSyncAPI,
+        ProcessAsyncAPI,
+        ApplicationSyncAPI,
+        ApplicationAsyncAPI,
+        ClientSyncAPI,
+        ClientAsyncAPI,
+        ConsoleSyncAPI,
+        ConsoleAsyncAPI,
+        DatabaseSyncAPI,
+        DatabaseAsyncAPI,
+        GroupSyncAPI,
+        GroupAsyncAPI,
+        PlayerSyncAPI,
+        PlayerAsyncAPI,
+        PluginSyncAPI,
+        PluginAsyncAPI {
 
     public static final int EXTERNAL_PACKET_ID = 600;
+
+    private final GeneralAPI generalAPI = new GeneralAPI(this);
 
     @Override
     public boolean isReady() {
@@ -1148,6 +1185,18 @@ public abstract class ExternalAPIImplementation extends ExecutorAPI {
     @Override
     public PacketHandler getPacketHandler() {
         return packetHandler();
+    }
+
+    @Nonnull
+    @Override
+    public SyncAPI getSyncAPI() {
+        return generalAPI;
+    }
+
+    @Nonnull
+    @Override
+    public AsyncAPI getAsyncAPI() {
+        return generalAPI;
     }
 
     /* ============== */

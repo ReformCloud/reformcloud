@@ -66,7 +66,7 @@ public class UUIDFetcher {
     }
 
     private static UUID fromDatabase(String name) {
-        JsonConfiguration configuration = ExecutorAPI.getInstance().find(
+        JsonConfiguration configuration = ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().find(
                 DefaultPermissionUtil.PERMISSION_NAME_TO_UNIQUE_ID_TABLE,
                 name,
                 null

@@ -20,6 +20,6 @@ public final class ControllerQueryInUnloadApplication implements NetworkHandler 
     @Override
     public void handlePacket(PacketSender packetSender, Packet packet, Consumer<Packet> responses) {
         String app = packet.content().getString("app");
-        responses.accept(new DefaultPacket(-1, new JsonConfiguration().add("uninstalled", ExecutorAPI.getInstance().unloadApplication(app))));
+        responses.accept(new DefaultPacket(-1, new JsonConfiguration().add("uninstalled", ExecutorAPI.getInstance().getSyncAPI().getApplicationSyncAPI().unloadApplication(app))));
     }
 }

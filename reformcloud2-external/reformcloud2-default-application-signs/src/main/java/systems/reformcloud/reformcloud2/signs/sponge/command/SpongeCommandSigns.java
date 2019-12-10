@@ -34,7 +34,7 @@ public class SpongeCommandSigns implements CommandExecutor {
         String target = args.<String>getOne("Target group").orElse(null);
 
         if (type != null && target != null && type.equalsIgnoreCase("create")) {
-            if (ExecutorAPI.getInstance().getProcessGroup(target) == null) {
+            if (ExecutorAPI.getInstance().getSyncAPI().getGroupSyncAPI().getProcessGroup(target) == null) {
                 src.sendMessage(Text.of("§7The process group " + target + " does not exists"));
                 return CommandResult.success();
             }

@@ -25,7 +25,7 @@ public class ControllerPacketInScreenEnabled implements NetworkHandler {
         UUID uniqueID = packet.content().get("uniqueID", UUID.class);
         Collection<String> lines = packet.content().get("lines", new TypeToken<Collection<String>>() {});
 
-        ProcessInformation processInformation = ExecutorAPI.getInstance().getProcess(uniqueID);
+        ProcessInformation processInformation = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcess(uniqueID);
         if (processInformation != null) {
             lines.forEach(line -> System.out.println(LanguageManager.get("screen-line-added", processInformation.getName(), line)));
         }

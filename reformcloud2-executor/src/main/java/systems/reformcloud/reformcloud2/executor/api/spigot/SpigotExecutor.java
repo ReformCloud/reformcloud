@@ -131,7 +131,7 @@ public final class SpigotExecutor extends API implements PlayerAPIExecutor {
 
             thisProcessInformation.updateMaxPlayers(Bukkit.getMaxPlayers());
             thisProcessInformation.updateRuntimeInformation();
-            ExecutorAPI.getInstance().update(thisProcessInformation);
+            ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(thisProcessInformation);
 
             DefaultChannelManager.INSTANCE.get("Controller").ifPresent(controller -> packetHandler.getQueryHandler().sendQueryAsync(controller, new APIBungeePacketOutRequestIngameMessages()).onComplete(packet -> {
                 SpigotExecutor.this.messages = packet.content().get("messages", IngameMessages.TYPE);

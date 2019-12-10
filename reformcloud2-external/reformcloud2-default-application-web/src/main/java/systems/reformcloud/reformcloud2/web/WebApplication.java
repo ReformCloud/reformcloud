@@ -3,7 +3,6 @@ package systems.reformcloud.reformcloud2.web;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorType;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.application.api.Application;
-import systems.reformcloud.reformcloud2.executor.api.common.logger.LoggerBase;
 import systems.reformcloud.reformcloud2.executor.api.common.restapi.request.RequestListenerHandler;
 import systems.reformcloud.reformcloud2.executor.controller.ControllerExecutor;
 import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
@@ -25,11 +24,5 @@ public class WebApplication extends Application {
         return ExecutorAPI.getInstance().getType().equals(ExecutorType.NODE)
                 ? NodeExecutor.getInstance().getRequestListenerHandler()
                 : ControllerExecutor.getInstance().getRequestListenerHandler();
-    }
-
-    public static LoggerBase getLogger() {
-        return ExecutorAPI.getInstance().getType().equals(ExecutorType.NODE)
-                ? NodeExecutor.getInstance().getLoggerBase()
-                : ControllerExecutor.getInstance().getLoggerBase();
     }
 }

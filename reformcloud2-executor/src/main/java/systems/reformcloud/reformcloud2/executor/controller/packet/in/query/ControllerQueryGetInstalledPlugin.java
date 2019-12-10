@@ -23,10 +23,14 @@ public final class ControllerQueryGetInstalledPlugin implements NetworkHandler {
     public void handlePacket(PacketSender packetSender, Packet packet, Consumer<Packet> responses) {
         String name = packet.content().getString("name");
         String process = packet.content().getString("process");
-        responses.accept(new DefaultPacket(-1, new JsonConfiguration().add("result", convert(ExecutorAPI.getInstance().getInstalledPlugin(process, name)))));
+        responses.accept(new DefaultPacket(-1, new JsonConfiguration().add("result", convert(ExecutorAPI.getInstance().getSyncAPI().getPluginSyncAPI().getInstalledPlugin(process, name)))));
     }
 
     private static DefaultPlugin convert(Plugin plugin) {
+        if (plugin == null) {
+            return null;
+        }
+
         return new DefaultPlugin(plugin.version(), plugin.author(), plugin.main(), plugin.depends(), plugin.softpends(), plugin.enabled(), plugin.getName());
     }
 }

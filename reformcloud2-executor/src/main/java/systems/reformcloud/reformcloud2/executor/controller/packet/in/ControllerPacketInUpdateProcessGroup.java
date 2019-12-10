@@ -19,6 +19,6 @@ public final class ControllerPacketInUpdateProcessGroup implements NetworkHandle
     @Override
     public void handlePacket(PacketSender packetSender, Packet packet, Consumer<Packet> responses) {
         ProcessGroup processGroup = packet.content().get("group", ProcessGroup.TYPE);
-        ExecutorAPI.getInstance().updateProcessGroup(processGroup);
+        ExecutorAPI.getInstance().getSyncAPI().getGroupSyncAPI().updateProcessGroup(processGroup);
     }
 }

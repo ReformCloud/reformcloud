@@ -21,6 +21,6 @@ public final class ControllerQueryDatabaseContainsDocument implements NetworkHan
     public void handlePacket(PacketSender packetSender, Packet packet, Consumer<Packet> responses) {
         String table = packet.content().getString("table");
         String key = packet.content().getString("key");
-        responses.accept(new DefaultPacket(-1, new JsonConfiguration().add("result", ExecutorAPI.getInstance().contains(table, key))));
+        responses.accept(new DefaultPacket(-1, new JsonConfiguration().add("result", ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().contains(table, key))));
     }
 }

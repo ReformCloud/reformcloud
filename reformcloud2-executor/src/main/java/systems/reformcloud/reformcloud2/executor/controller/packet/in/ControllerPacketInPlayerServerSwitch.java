@@ -26,7 +26,7 @@ public class ControllerPacketInPlayerServerSwitch implements NetworkHandler {
         String target = packet.content().getString("target");
 
         ControllerExecutor.getInstance().getEventManager().callEvent(new PlayerServerSwitchEvent(uuid, target));
-        ExecutorAPI.getInstance().getAllProcesses().forEach(process -> DefaultChannelManager.INSTANCE.get(process.getName()).ifPresent(channel -> channel.sendPacket(
+        ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getAllProcesses().forEach(process -> DefaultChannelManager.INSTANCE.get(process.getName()).ifPresent(channel -> channel.sendPacket(
                 new ControllerEventPlayerServerSwitch(uuid, target)
         )));
     }

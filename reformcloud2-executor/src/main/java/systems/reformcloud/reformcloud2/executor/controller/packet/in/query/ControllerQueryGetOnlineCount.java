@@ -22,6 +22,6 @@ public final class ControllerQueryGetOnlineCount implements NetworkHandler {
     @Override
     public void handlePacket(PacketSender packetSender, Packet packet, Consumer<Packet> responses) {
         Collection<String> ignored = packet.content().get("ignored", new TypeToken<Collection<String>>() {});
-        responses.accept(new DefaultPacket(-1, new JsonConfiguration().add("result", ExecutorAPI.getInstance().getGlobalOnlineCount(ignored))));
+        responses.accept(new DefaultPacket(-1, new JsonConfiguration().add("result", ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getGlobalOnlineCount(ignored))));
     }
 }

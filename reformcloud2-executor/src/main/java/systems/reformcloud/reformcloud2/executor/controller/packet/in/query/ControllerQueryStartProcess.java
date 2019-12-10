@@ -22,6 +22,6 @@ public final class ControllerQueryStartProcess implements NetworkHandler {
         String group = packet.content().getString("group");
         String template = packet.content().getString("template");
         JsonConfiguration extra = packet.content().get("extra");
-        responses.accept(new DefaultPacket(-1, new JsonConfiguration().add("result", ExecutorAPI.getInstance().startProcess(group, template, extra))));
+        responses.accept(new DefaultPacket(-1, new JsonConfiguration().add("result", ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().startProcess(group, template, extra))));
     }
 }

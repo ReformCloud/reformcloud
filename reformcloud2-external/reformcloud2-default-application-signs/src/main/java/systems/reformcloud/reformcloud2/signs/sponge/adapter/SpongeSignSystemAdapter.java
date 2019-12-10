@@ -230,7 +230,7 @@ public class SpongeSignSystemAdapter implements SignSystemAdapter<Sign> {
     }
 
     private boolean isCurrent(ProcessInformation processInformation) {
-        ProcessInformation info = ExecutorAPI.getInstance().getThisProcessInformation();
+        ProcessInformation info = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation();
         return info != null && info.getProcessUniqueID().equals(processInformation.getProcessUniqueID());
     }
 
@@ -415,14 +415,14 @@ public class SpongeSignSystemAdapter implements SignSystemAdapter<Sign> {
 
     private void start() {
         systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task.EXECUTOR.execute(() -> {
-            Collection<CloudSign> signs = ExecutorAPI.getInstance().find(SignSystemAdapter.table, "signs", null, k -> k.get("signs", new TypeToken<Collection<CloudSign>>() {
+            Collection<CloudSign> signs = ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().find(SignSystemAdapter.table, "signs", null, k -> k.get("signs", new TypeToken<Collection<CloudSign>>() {
             }));
             if (signs == null) {
                 return;
             }
 
             cachedSigns.addAll(signs);
-            ExecutorAPI.getInstance().getAllProcesses().forEach(this::handleProcessStart);
+            ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getAllProcesses().forEach(this::handleProcessStart);
             runTasks();
         });
     }
@@ -440,7 +440,7 @@ public class SpongeSignSystemAdapter implements SignSystemAdapter<Sign> {
     }
 
     private SignLayout getSelfLayout() {
-        return LayoutUtil.getLayoutFor(ExecutorAPI.getInstance().getThisProcessInformation().getProcessGroup().getName(), config).orElseThrow(
+        return LayoutUtil.getLayoutFor(ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation().getProcessGroup().getName(), config).orElseThrow(
                 () -> new RuntimeException("No sign config present for context global or current group"));
     }
 

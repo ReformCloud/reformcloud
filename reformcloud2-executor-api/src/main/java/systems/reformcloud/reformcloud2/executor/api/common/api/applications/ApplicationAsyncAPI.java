@@ -8,7 +8,7 @@ import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import java.util.List;
 
-public interface ApplicationAsyncAPI extends ApplicationSyncAPI {
+public interface ApplicationAsyncAPI {
 
     /**
      * Loads a specific controller application

@@ -137,6 +137,7 @@ public final class DefaultCommandManager implements CommandManager {
         }
     }
 
+    @Nonnull
     @Override
     public List<Command> getCommands() {
         return Links.unmodifiable(commands);
@@ -148,12 +149,12 @@ public final class DefaultCommandManager implements CommandManager {
     }
 
     @Override
-    public Command getCommand(String command) {
+    public Command getCommand(@Nonnull String command) {
         return dispatchCommandEvent(CommandEvent.FIND, null, null, command);
     }
 
     @Override
-    public Command findCommand(String commandPreLine) {
+    public Command findCommand(@Nonnull String commandPreLine) {
         commandPreLine = commandPreLine.toLowerCase();
         for (Command command : commands) {
             if (command.mainCommand().startsWith(commandPreLine)) {
@@ -171,7 +172,7 @@ public final class DefaultCommandManager implements CommandManager {
     }
 
     @Override
-    public void register(String noPermissionMessage, Command command) {
+    public void register(@Nonnull String noPermissionMessage, @Nonnull Command command) {
         dispatchCommandEvent(CommandEvent.ADD, command);
         this.noPermissionMessagePerCommand.put(command, noPermissionMessage);
     }
@@ -187,7 +188,7 @@ public final class DefaultCommandManager implements CommandManager {
             return;
         }
 
-        if (!commandSource.hasPermission(command.permission())) {
+        if (command.permission() != null && !commandSource.hasPermission(command.permission())) {
             String noPermMessage = this.noPermissionMessagePerCommand.getOrDefault(command, NO_PERMISSIONS);
             result.accept(noPermMessage);
             return;

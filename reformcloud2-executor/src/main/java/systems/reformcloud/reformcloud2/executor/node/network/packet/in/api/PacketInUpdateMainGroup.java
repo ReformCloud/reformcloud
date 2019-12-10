@@ -19,6 +19,6 @@ public final class PacketInUpdateMainGroup implements NetworkHandler {
     @Override
     public void handlePacket(PacketSender packetSender, Packet packet, Consumer<Packet> responses) {
         MainGroup mainGroup = packet.content().get("group", MainGroup.TYPE);
-        ExecutorAPI.getInstance().updateMainGroup(mainGroup);
+        ExecutorAPI.getInstance().getSyncAPI().getGroupSyncAPI().updateMainGroup(mainGroup);
     }
 }

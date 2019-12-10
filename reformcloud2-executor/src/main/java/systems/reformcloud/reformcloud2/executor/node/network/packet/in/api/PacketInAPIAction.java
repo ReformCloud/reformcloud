@@ -23,23 +23,23 @@ public class PacketInAPIAction implements NetworkHandler {
 
         switch (apiAction) {
             case CONNECT: {
-                ExecutorAPI.getInstance().connect(targetPlayer, packet.content().getString("2"));
+                ExecutorAPI.getInstance().getSyncAPI().getPlayerSyncAPI().connect(targetPlayer, packet.content().getString("2"));
                 break;
             }
 
             case CONNECT_PLAYER: {
                 UUID uuid = packet.content().get("2", UUID.class);
-                ExecutorAPI.getInstance().connect(targetPlayer, uuid);
+                ExecutorAPI.getInstance().getSyncAPI().getPlayerSyncAPI().connect(targetPlayer, uuid);
                 break;
             }
 
             case RESPAWN: {
-                ExecutorAPI.getInstance().respawn(targetPlayer);
+                ExecutorAPI.getInstance().getSyncAPI().getPlayerSyncAPI().respawn(targetPlayer);
                 break;
             }
 
             case PLAY_SOUND: {
-                ExecutorAPI.getInstance().playSound(targetPlayer,
+                ExecutorAPI.getInstance().getSyncAPI().getPlayerSyncAPI().playSound(targetPlayer,
                         packet.content().getString("2"),
                         packet.content().get("3", Float.class),
                         packet.content().get("4", Float.class)
@@ -48,7 +48,7 @@ public class PacketInAPIAction implements NetworkHandler {
             }
 
             case SEND_TITLE: {
-                ExecutorAPI.getInstance().sendTitle(targetPlayer,
+                ExecutorAPI.getInstance().getSyncAPI().getPlayerSyncAPI().sendTitle(targetPlayer,
                         packet.content().getString("2"),
                         packet.content().getString("3"),
                         packet.content().getInteger("4"),
@@ -59,17 +59,17 @@ public class PacketInAPIAction implements NetworkHandler {
             }
 
             case KICK_PLAYER: {
-                ExecutorAPI.getInstance().kickPlayer(targetPlayer, packet.content().getString("2"));
+                ExecutorAPI.getInstance().getSyncAPI().getPlayerSyncAPI().kickPlayer(targetPlayer, packet.content().getString("2"));
                 break;
             }
 
             case KICK_SERVER: {
-                ExecutorAPI.getInstance().kickPlayerFromServer(targetPlayer, packet.content().getString("2"));
+                ExecutorAPI.getInstance().getSyncAPI().getPlayerSyncAPI().kickPlayerFromServer(targetPlayer, packet.content().getString("2"));
                 break;
             }
 
             case PLAY_EFFECT: {
-                ExecutorAPI.getInstance().playEffect(targetPlayer,
+                ExecutorAPI.getInstance().getSyncAPI().getPlayerSyncAPI().playEffect(targetPlayer,
                         packet.content().getString("2"),
                         packet.content().get("3", Object.class)
                 );
@@ -77,17 +77,17 @@ public class PacketInAPIAction implements NetworkHandler {
             }
 
             case PLAY_ENTITY_EFFECT: {
-                ExecutorAPI.getInstance().playEffect(targetPlayer, packet.content().getString("2"));
+                ExecutorAPI.getInstance().getSyncAPI().getPlayerSyncAPI().playEffect(targetPlayer, packet.content().getString("2"));
                 break;
             }
 
             case SEND_MESSAGE: {
-                ExecutorAPI.getInstance().sendMessage(targetPlayer, packet.content().getString("2"));
+                ExecutorAPI.getInstance().getSyncAPI().getPlayerSyncAPI().sendMessage(targetPlayer, packet.content().getString("2"));
                 break;
             }
 
             case LOCATION_TELEPORT: {
-                ExecutorAPI.getInstance().teleport(targetPlayer,
+                ExecutorAPI.getInstance().getSyncAPI().getPlayerSyncAPI().teleport(targetPlayer,
                         packet.content().getString("2"),
                         packet.content().get("3", Double.class),
                         packet.content().get("4", Double.class),
@@ -99,7 +99,7 @@ public class PacketInAPIAction implements NetworkHandler {
             }
 
             case SET_RESOURCE_PACK: {
-                ExecutorAPI.getInstance().setResourcePack(targetPlayer, packet.content().getString("2"));
+                ExecutorAPI.getInstance().getSyncAPI().getPlayerSyncAPI().setResourcePack(targetPlayer, packet.content().getString("2"));
                 break;
             }
         }

@@ -24,7 +24,7 @@ public final class PlayerListenerHandler implements Listener {
 
     @EventHandler (priority = EventPriority.LOWEST)
     public void handle(final PlayerLoginEvent event) {
-        if (ExecutorAPI.getInstance().getThisProcessInformation().getProcessGroup().getPlayerAccessConfiguration().isOnlyProxyJoin()) {
+        if (ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation().getProcessGroup().getPlayerAccessConfiguration().isOnlyProxyJoin()) {
             PacketSender packetSender = DefaultChannelManager.INSTANCE.get("Controller").orElse(null);
             if (packetSender == null) {
                 event.setCancelled(true);
@@ -50,7 +50,7 @@ public final class PlayerListenerHandler implements Listener {
     @EventHandler (priority = EventPriority.LOWEST)
     public void handle(final PlayerJoinEvent event) {
         final Player player = event.getPlayer();
-        final ProcessInformation current = ExecutorAPI.getInstance().getThisProcessInformation();
+        final ProcessInformation current = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation();
         final PlayerAccessConfiguration configuration = current.getProcessGroup().getPlayerAccessConfiguration();
 
         if (configuration.isUseCloudPlayerLimit()
@@ -102,12 +102,12 @@ public final class PlayerListenerHandler implements Listener {
 
         current.updateRuntimeInformation();
         NukkitExecutor.getInstance().setThisProcessInformation(current);
-        ExecutorAPI.getInstance().update(current);
+        ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(current);
     }
 
     @EventHandler (priority = EventPriority.LOWEST)
     public void handle(final PlayerQuitEvent event) {
-        ProcessInformation current = ExecutorAPI.getInstance().getThisProcessInformation();
+        ProcessInformation current = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation();
         if (!current.isPlayerOnline(event.getPlayer().getUniqueId())) {
             return;
         }
@@ -121,7 +121,7 @@ public final class PlayerListenerHandler implements Listener {
         current.updateRuntimeInformation();
         current.onLogout(event.getPlayer().getUniqueId());
         NukkitExecutor.getInstance().setThisProcessInformation(current);
-        ExecutorAPI.getInstance().update(current);
+        ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(current);
     }
 
     private String format(String msg) {

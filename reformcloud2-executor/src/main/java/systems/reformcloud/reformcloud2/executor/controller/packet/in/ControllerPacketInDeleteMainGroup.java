@@ -18,6 +18,6 @@ public final class ControllerPacketInDeleteMainGroup implements NetworkHandler {
     @Override
     public void handlePacket(PacketSender packetSender, Packet packet, Consumer<Packet> responses) {
         String name = packet.content().getString("name");
-        ExecutorAPI.getInstance().deleteMainGroup(name);
+        ExecutorAPI.getInstance().getSyncAPI().getGroupSyncAPI().deleteMainGroup(name);
     }
 }

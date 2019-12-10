@@ -13,6 +13,7 @@ public class SetupWebRequester extends DefaultWebRequester {
         super(context, name, new ArrayList<>());
     }
 
+    @Nonnull
     @Override
     public PermissionResult hasPermissionValue(@Nonnull String perm) {
         return perm.equals("setup.allow") ? PermissionResult.ALLOWED : PermissionResult.DENIED;

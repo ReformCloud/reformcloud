@@ -88,7 +88,7 @@ public class DefaultPermissible extends PermissibleBase {
         this.perms = new ConcurrentHashMap<>();
 
         final PermissionUser permissionUser = PermissionAPI.getInstance().getPermissionUtil().loadUser(uuid);
-        final ProcessInformation current = ExecutorAPI.getInstance().getThisProcessInformation();
+        final ProcessInformation current = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation();
 
         permissionUser.getPermissionNodes().stream().filter(PermissionNode::isValid)
                 .forEach(e -> perms.put(e.getActualPermission(), new PermissionAttachmentInfo(

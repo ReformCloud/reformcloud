@@ -25,10 +25,14 @@ public final class ControllerQueryGetProcess implements NetworkHandler {
 
         if (packet.content().has("name")) {
             String name = packet.content().getString("name");
-            result = ExecutorAPI.getInstance().getProcess(name);
+            result = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcess(name);
         } else {
             UUID uniqueID = packet.content().get("uniqueID", UUID.class);
-            result = ExecutorAPI.getInstance().getProcess(uniqueID);
+            if (uniqueID == null) {
+                result = null;
+            } else {
+                result = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcess(uniqueID);
+            }
         }
 
         responses.accept(new DefaultPacket(-1, new JsonConfiguration().add("result", result)));

@@ -27,7 +27,7 @@ public class CommandLeave implements Command {
         }
 
         final Player player = (Player) commandSource;
-        if (ExecutorAPI.getInstance().getThisProcessInformation().isLobby()) {
+        if (ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation().isLobby()) {
             player.sendMessage(TextComponent.of(
                     VelocityExecutor.getInstance().getMessages().format(
                             VelocityExecutor.getInstance().getMessages().getAlreadyConnectedToHub()

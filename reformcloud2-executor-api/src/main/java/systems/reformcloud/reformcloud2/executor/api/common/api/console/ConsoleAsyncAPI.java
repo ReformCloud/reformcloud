@@ -6,7 +6,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 
-public interface ConsoleAsyncAPI extends ConsoleSyncAPI {
+public interface ConsoleAsyncAPI {
 
     /**
      * Sends a coloured line into the console

@@ -19,28 +19,28 @@ public interface Configurable<V extends Configurable> {
     V add(@Nonnull String key, @Nullable Object value);
 
     @Nonnull
-    V add(@Nonnull String key, @Nonnull String value);
+    V add(@Nonnull String key, @Nullable String value);
 
     @Nonnull
-    V add(@Nonnull String key, @Nonnull Integer value);
+    V add(@Nonnull String key, @Nullable Integer value);
 
     @Nonnull
-    V add(@Nonnull String key, @Nonnull Long value);
+    V add(@Nonnull String key, @Nullable Long value);
 
     @Nonnull
-    V add(@Nonnull String key, @Nonnull Short value);
+    V add(@Nonnull String key, @Nullable Short value);
 
     @Nonnull
-    V add(@Nonnull String key, @Nonnull Byte value);
+    V add(@Nonnull String key, @Nullable Byte value);
 
     @Nonnull
-    V add(@Nonnull String key, @Nonnull Boolean value);
+    V add(@Nonnull String key, @Nullable Boolean value);
 
     @Nonnull
-    V add(@Nonnull String key, @Nonnull Double value);
+    V add(@Nonnull String key, @Nullable Double value);
 
     @Nonnull
-    V add(@Nonnull String key, @Nonnull Float value);
+    V add(@Nonnull String key, @Nullable Float value);
 
     @Nonnull
     V remove(@Nonnull String key);

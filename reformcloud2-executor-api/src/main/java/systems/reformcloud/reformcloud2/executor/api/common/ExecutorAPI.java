@@ -1,14 +1,8 @@
 package systems.reformcloud.reformcloud2.executor.api.common;
 
 import systems.reformcloud.reformcloud2.executor.api.ExecutorType;
-import systems.reformcloud.reformcloud2.executor.api.common.api.applications.ApplicationAsyncAPI;
-import systems.reformcloud.reformcloud2.executor.api.common.api.client.ClientAsyncAPI;
-import systems.reformcloud.reformcloud2.executor.api.common.api.console.ConsoleAsyncAPI;
-import systems.reformcloud.reformcloud2.executor.api.common.api.database.DatabaseAsyncAPI;
-import systems.reformcloud.reformcloud2.executor.api.common.api.group.GroupAsyncAPI;
-import systems.reformcloud.reformcloud2.executor.api.common.api.player.PlayerAsyncAPI;
-import systems.reformcloud.reformcloud2.executor.api.common.api.plugins.PluginAsyncAPI;
-import systems.reformcloud.reformcloud2.executor.api.common.api.process.ProcessAsyncAPI;
+import systems.reformcloud.reformcloud2.executor.api.common.api.AsyncAPI;
+import systems.reformcloud.reformcloud2.executor.api.common.api.SyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.base.Conditions;
 import systems.reformcloud.reformcloud2.executor.api.common.event.EventManager;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.handler.PacketHandler;
@@ -16,15 +10,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.handl
 import javax.annotation.Nonnull;
 import java.util.Objects;
 
-public abstract class ExecutorAPI implements
-        ProcessAsyncAPI,
-        GroupAsyncAPI,
-        ApplicationAsyncAPI,
-        ConsoleAsyncAPI,
-        PlayerAsyncAPI,
-        PluginAsyncAPI,
-        ClientAsyncAPI,
-        DatabaseAsyncAPI {
+public abstract class ExecutorAPI {
 
     protected ExecutorType type;
 
@@ -45,10 +31,20 @@ public abstract class ExecutorAPI implements
     /* ========================== */
 
     @Nonnull
+    public abstract SyncAPI getSyncAPI();
+
+    @Nonnull
+    public abstract AsyncAPI getAsyncAPI();
+
+    /* ========================== */
+
+    @Nonnull
     public abstract PacketHandler getPacketHandler();
 
     @Nonnull
     public abstract EventManager getEventManager();
+
+    /* ========================== */
 
     public abstract boolean isReady();
 

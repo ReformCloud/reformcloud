@@ -52,11 +52,11 @@ public class BukkitSignConverter implements SignConverter<Sign> {
 
     private CloudLocation accumulate(Location location) {
         Conditions.isTrue(location.getWorld() != null);
-        Conditions.isTrue(ExecutorAPI.getInstance().getThisProcessInformation() != null);
+        Conditions.isTrue(ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation() != null);
 
         return new CloudLocation(
                 location.getWorld().getName(),
-                ExecutorAPI.getInstance().getThisProcessInformation().getProcessGroup().getName(),
+                ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation().getProcessGroup().getName(),
                 location.getX(),
                 location.getY(),
                 location.getZ(),

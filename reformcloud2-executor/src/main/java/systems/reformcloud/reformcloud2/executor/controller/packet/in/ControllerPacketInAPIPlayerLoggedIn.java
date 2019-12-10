@@ -30,7 +30,7 @@ public final class ControllerPacketInAPIPlayerLoggedIn implements NetworkHandler
         ));
 
         ControllerExecutor.getInstance().getEventManager().callEvent(new PlayerLoginEvent(name));
-        ExecutorAPI.getInstance().getAllProcesses().forEach(process -> DefaultChannelManager.INSTANCE.get(process.getName()).ifPresent(channel -> channel.sendPacket(
+        ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getAllProcesses().forEach(process -> DefaultChannelManager.INSTANCE.get(process.getName()).ifPresent(channel -> channel.sendPacket(
                 new ControllerEventPlayerConnected(name)
         )));
     }

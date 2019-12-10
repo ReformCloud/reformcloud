@@ -5,13 +5,11 @@ import org.reflections.Reflections;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorType;
 import systems.reformcloud.reformcloud2.executor.api.common.CommonHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
+import systems.reformcloud.reformcloud2.executor.api.common.api.AsyncAPI;
+import systems.reformcloud.reformcloud2.executor.api.common.api.SyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.application.ApplicationLoader;
-import systems.reformcloud.reformcloud2.executor.api.common.application.InstallableApplication;
-import systems.reformcloud.reformcloud2.executor.api.common.application.LoadedApplication;
 import systems.reformcloud.reformcloud2.executor.api.common.application.basic.DefaultApplicationLoader;
-import systems.reformcloud.reformcloud2.executor.api.common.client.ClientRuntimeInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.AllowedCommandSources;
-import systems.reformcloud.reformcloud2.executor.api.common.commands.Command;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.ConsoleCommandSource;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.CommandClear;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.CommandHelp;
@@ -30,14 +28,8 @@ import systems.reformcloud.reformcloud2.executor.api.common.database.basic.drive
 import systems.reformcloud.reformcloud2.executor.api.common.database.config.DatabaseConfig;
 import systems.reformcloud.reformcloud2.executor.api.common.event.EventManager;
 import systems.reformcloud.reformcloud2.executor.api.common.event.basic.DefaultEventManager;
-import systems.reformcloud.reformcloud2.executor.api.common.groups.MainGroup;
-import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.task.OnlinePercentCheckerTask;
-import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Template;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.backend.TemplateBackendManager;
-import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.PlayerAccessConfiguration;
-import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.StartupConfiguration;
-import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.StartupEnvironment;
 import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
 import systems.reformcloud.reformcloud2.executor.api.common.language.loading.LanguageWorker;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.LoggerBase;
@@ -58,10 +50,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.handl
 import systems.reformcloud.reformcloud2.executor.api.common.network.server.DefaultNetworkServer;
 import systems.reformcloud.reformcloud2.executor.api.common.network.server.NetworkServer;
 import systems.reformcloud.reformcloud2.executor.api.common.node.NodeInformation;
-import systems.reformcloud.reformcloud2.executor.api.common.plugins.InstallablePlugin;
-import systems.reformcloud.reformcloud2.executor.api.common.plugins.Plugin;
-import systems.reformcloud.reformcloud2.executor.api.common.plugins.basic.DefaultInstallablePlugin;
-import systems.reformcloud.reformcloud2.executor.api.common.plugins.basic.DefaultPlugin;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState;
 import systems.reformcloud.reformcloud2.executor.api.common.restapi.auth.basic.DefaultWebServerAuth;
@@ -75,12 +63,20 @@ import systems.reformcloud.reformcloud2.executor.api.common.utility.function.Dou
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.system.SystemHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.task.defaults.DefaultTask;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
 import systems.reformcloud.reformcloud2.executor.api.node.Node;
 import systems.reformcloud.reformcloud2.executor.api.node.cluster.ClusterSyncManager;
 import systems.reformcloud.reformcloud2.executor.api.node.cluster.SyncAction;
 import systems.reformcloud.reformcloud2.executor.api.node.network.NodeNetworkManager;
+import systems.reformcloud.reformcloud2.executor.node.api.GeneralAPI;
+import systems.reformcloud.reformcloud2.executor.node.api.applications.ApplicationAPIImplementation;
+import systems.reformcloud.reformcloud2.executor.node.api.client.ClientAPIImplementation;
+import systems.reformcloud.reformcloud2.executor.node.api.console.ConsoleAPIImplementation;
+import systems.reformcloud.reformcloud2.executor.node.api.database.DatabaseAPIImplementation;
+import systems.reformcloud.reformcloud2.executor.node.api.group.GroupAPIImplementation;
+import systems.reformcloud.reformcloud2.executor.node.api.player.PlayerAPIImplementation;
+import systems.reformcloud.reformcloud2.executor.node.api.plugins.PluginAPIImplementation;
+import systems.reformcloud.reformcloud2.executor.node.api.process.ProcessAPIImplementation;
 import systems.reformcloud.reformcloud2.executor.node.cluster.DefaultClusterManager;
 import systems.reformcloud.reformcloud2.executor.node.cluster.DefaultNodeInternalCluster;
 import systems.reformcloud.reformcloud2.executor.node.cluster.sync.DefaultClusterSyncManager;
@@ -90,9 +86,6 @@ import systems.reformcloud.reformcloud2.executor.node.config.NodeExecutorConfig;
 import systems.reformcloud.reformcloud2.executor.node.dump.NodeDumpUtil;
 import systems.reformcloud.reformcloud2.executor.node.network.DefaultNodeNetworkManager;
 import systems.reformcloud.reformcloud2.executor.node.network.client.NodeNetworkClient;
-import systems.reformcloud.reformcloud2.executor.node.network.packet.out.NodePacketOutExecuteCommand;
-import systems.reformcloud.reformcloud2.executor.node.network.packet.out.api.NodeAPIAction;
-import systems.reformcloud.reformcloud2.executor.node.network.packet.out.api.NodePluginAction;
 import systems.reformcloud.reformcloud2.executor.node.process.LocalAutoStartupHandler;
 import systems.reformcloud.reformcloud2.executor.node.process.LocalNodeProcessManager;
 import systems.reformcloud.reformcloud2.executor.node.process.log.LogLineReader;
@@ -101,15 +94,15 @@ import systems.reformcloud.reformcloud2.executor.node.process.startup.LocalProce
 import systems.reformcloud.reformcloud2.executor.node.process.watchdog.WatchdogThread;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 public class NodeExecutor extends Node {
 
@@ -136,6 +129,10 @@ public class NodeExecutor extends Node {
     private final LocalAutoStartupHandler localAutoStartupHandler = new LocalAutoStartupHandler();
 
     private final EventManager eventManager = new DefaultEventManager();
+
+    private SyncAPI syncAPI;
+
+    private AsyncAPI asyncAPI;
 
     private LocalProcessQueue localProcessQueue;
 
@@ -199,7 +196,47 @@ public class NodeExecutor extends Node {
         );
         this.nodeNetworkManager.getCluster().getClusterManager().init();
 
-        this.requestListenerHandler = new DefaultRequestListenerHandler(new DefaultWebServerAuth(this));
+        databaseConfig.load();
+        switch (databaseConfig.getType()) {
+            case FILE: {
+                this.database = new FileDatabase();
+                this.databaseConfig.connect(this.database);
+                break;
+            }
+
+            case H2: {
+                this.database = new H2Database();
+                this.databaseConfig.connect(this.database);
+                break;
+            }
+
+            case MONGO: {
+                this.database = new MongoDatabase();
+                this.databaseConfig.connect(this.database);
+                break;
+            }
+
+            case MYSQL: {
+                this.database = new MySQLDatabase();
+                this.databaseConfig.connect(this.database);
+                break;
+            }
+        }
+
+        GeneralAPI generalAPI = new GeneralAPI(
+                new ApplicationAPIImplementation(this.applicationLoader),
+                new ClientAPIImplementation(this.nodeNetworkManager),
+                new ConsoleAPIImplementation(this.commandManager),
+                new DatabaseAPIImplementation(this.database),
+                new GroupAPIImplementation(this.clusterSyncManager),
+                new PlayerAPIImplementation(this.nodeNetworkManager),
+                new PluginAPIImplementation(this.nodeNetworkManager),
+                new ProcessAPIImplementation(this.nodeNetworkManager)
+        );
+        this.syncAPI = generalAPI;
+        this.asyncAPI = generalAPI;
+
+        this.requestListenerHandler = new DefaultRequestListenerHandler(new DefaultWebServerAuth(this.getSyncAPI().getDatabaseSyncAPI()));
 
         final NodeNetworkClient nodeNetworkClient = new NodeNetworkClient();
         this.networkClient = nodeNetworkClient;
@@ -342,38 +379,11 @@ public class NodeExecutor extends Node {
 
         this.applicationLoader.loadApplications();
 
-        databaseConfig.load();
-        switch (databaseConfig.getType()) {
-            case FILE: {
-                this.database = new FileDatabase();
-                this.databaseConfig.connect(this.database);
-                break;
-            }
-
-            case H2: {
-                this.database = new H2Database();
-                this.databaseConfig.connect(this.database);
-                break;
-            }
-
-            case MONGO: {
-                this.database = new MongoDatabase();
-                this.databaseConfig.connect(this.database);
-                break;
-            }
-
-            case MYSQL: {
-                this.database = new MySQLDatabase();
-                this.databaseConfig.connect(this.database);
-                break;
-            }
-        }
-
-        createDatabase("internal_users");
+        this.getSyncAPI().getDatabaseSyncAPI().createDatabase("internal_users");
         if (this.nodeExecutorConfig.isFirstStartup()) {
             final String token = StringUtil.generateString(2);
             WebUser webUser = new WebUser("admin", token, Collections.singletonList("*"));
-            insert("internal_users", webUser.getName(), "", new JsonConfiguration().add("user", webUser));
+            this.getSyncAPI().getDatabaseSyncAPI().insert("internal_users", webUser.getName(), "", new JsonConfiguration().add("user", webUser));
 
             System.out.println(LanguageManager.get("setup-created-default-user", webUser.getName(), token));
         }
@@ -437,6 +447,18 @@ public class NodeExecutor extends Node {
     @Nonnull
     public static NodeExecutor getInstance() {
         return instance;
+    }
+
+    @Nonnull
+    @Override
+    public SyncAPI getSyncAPI() {
+        return syncAPI;
+    }
+
+    @Nonnull
+    @Override
+    public AsyncAPI getAsyncAPI() {
+        return asyncAPI;
     }
 
     public RequestListenerHandler getRequestListenerHandler() {
@@ -528,9 +550,12 @@ public class NodeExecutor extends Node {
                 loggerBase.getConsoleReader().setPrompt("");
                 loggerBase.getConsoleReader().resetPromptLine("", "", 0);
 
-                while ((line = loggerBase.readLine()) != null && !line.trim().isEmpty() && running) {
+                line = loggerBase.readLine();
+                while (!line.trim().isEmpty() && running) {
                     loggerBase.getConsoleReader().setPrompt("");
-                    commandManager.dispatchCommand(console, AllowedCommandSources.ALL, line, System.out::println);
+                    commandManager.dispatchCommand(this.console, AllowedCommandSources.ALL, line, System.out::println);
+
+                    line = loggerBase.readLine();
                 }
             } catch (final Throwable throwable) {
                 throwable.printStackTrace();
@@ -554,1418 +579,6 @@ public class NodeExecutor extends Node {
     @Override
     public PacketHandler getPacketHandler() {
         return packetHandler;
-    }
-
-    @Nonnull
-    @Override
-    public Task<Boolean> loadApplicationAsync(@Nonnull InstallableApplication application) {
-        Task<Boolean> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> task.complete(applicationLoader.doSpecificApplicationInstall(application)));
-        return task;
-    }
-
-    @Nonnull
-    @Override
-    public Task<Boolean> unloadApplicationAsync(@Nonnull LoadedApplication application) {
-        Task<Boolean> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> task.complete(applicationLoader.doSpecificApplicationUninstall(application)));
-        return task;
-    }
-
-    @Nonnull
-    @Override
-    public Task<Boolean> unloadApplicationAsync(@Nonnull String application) {
-        Task<Boolean> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> task.complete(applicationLoader.doSpecificApplicationUninstall(application)));
-        return task;
-    }
-
-    @Nonnull
-    @Override
-    public Task<LoadedApplication> getApplicationAsync(@Nonnull String name) {
-        Task<LoadedApplication> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> task.complete(applicationLoader.getApplication(name)));
-        return task;
-    }
-
-    @Nonnull
-    @Override
-    public Task<List<LoadedApplication>> getApplicationsAsync() {
-        Task<List<LoadedApplication>> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> task.complete(applicationLoader.getApplications()));
-        return task;
-    }
-
-    @Override
-    public boolean loadApplication(@Nonnull InstallableApplication application) {
-        return applicationLoader.doSpecificApplicationInstall(application);
-    }
-
-    @Override
-    public boolean unloadApplication(@Nonnull LoadedApplication application) {
-        return applicationLoader.doSpecificApplicationUninstall(application);
-    }
-
-    @Override
-    public boolean unloadApplication(@Nonnull String application) {
-        return applicationLoader.doSpecificApplicationUninstall(application);
-    }
-
-    @Override
-    public LoadedApplication getApplication(@Nonnull String name) {
-        return applicationLoader.getApplication(name);
-    }
-
-    @Override
-    public List<LoadedApplication> getApplications() {
-        return applicationLoader.getApplications();
-    }
-
-    @Nonnull
-    @Override
-    public Task<Boolean> isClientConnectedAsync(String name) {
-        Task<Boolean> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> task.complete(this.nodeNetworkManager.getCluster().getNode(name) != null));
-        return task;
-    }
-
-    @Nonnull
-    @Override
-    public Task<String> getClientStartHostAsync(String name) {
-        return null;
-    }
-
-    @Nonnull
-    @Override
-    public Task<Integer> getMaxMemoryAsync(String name) {
-        Task<Integer> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> task.complete((int) this.nodeNetworkManager.getCluster().getNode(name).getMaxMemory()));
-        return task;
-    }
-
-    @Nonnull
-    @Override
-    public Task<Integer> getMaxProcessesAsync(String name) {
-        return null;
-    }
-
-    @Nonnull
-    @Override
-    public Task<ClientRuntimeInformation> getClientInformationAsync(String name) {
-        return null;
-    }
-
-    @Override
-    public boolean isClientConnected(@Nonnull String name) {
-        return this.nodeNetworkManager.getCluster().getNode(name) != null;
-    }
-
-    @Override
-    public String getClientStartHost(@Nonnull String name) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public int getMaxMemory(@Nonnull String name) {
-        if (!isClientConnected(name)) {
-            return -1;
-        }
-
-        return (int) nodeNetworkManager.getCluster().getNode(name).getMaxMemory();
-    }
-
-    @Override
-    public int getMaxProcesses(@Nonnull String name) {
-        throw new UnsupportedOperationException("There is no config option for max node processes");
-    }
-
-    @Override
-    public ClientRuntimeInformation getClientInformation(@Nonnull String name) {
-        return null;
-    }
-
-    @Nonnull
-    @Override
-    public Task<Void> sendColouredLineAsync(@Nonnull String line) throws IllegalAccessException {
-        Task<Void> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> {
-            System.out.println(line);
-            task.complete(null);
-        });
-        return task;
-    }
-
-    @Nonnull
-    @Override
-    public Task<Void> sendRawLineAsync(@Nonnull String line) {
-        Task<Void> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> {
-            System.out.println(line);
-            task.complete(null);
-        });
-        return task;
-    }
-
-    @Nonnull
-    @Override
-    public Task<String> dispatchCommandAndGetResultAsync(@Nonnull String commandLine) {
-        Task<String> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> this.commandManager.dispatchCommand(console, AllowedCommandSources.ALL, commandLine, task::complete));
-        return task;
-    }
-
-    @Nonnull
-    @Override
-    public Task<Command> getCommandAsync(@Nonnull String name) {
-        Task<Command> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> task.complete(commandManager.getCommand(name)));
-        return task;
-    }
-
-    @Nonnull
-    @Override
-    public Task<Boolean> isCommandRegisteredAsync(@Nonnull String name) {
-        Task<Boolean> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> task.complete(commandManager.getCommand(name) != null));
-        return task;
-    }
-
-    @Override
-    public void sendColouredLine(@Nonnull String line) throws IllegalAccessException {
-        sendColouredLineAsync(line).awaitUninterruptedly();
-    }
-
-    @Override
-    public void sendRawLine(@Nonnull String line) {
-        sendRawLineAsync(line).awaitUninterruptedly();
-    }
-
-    @Override
-    public String dispatchCommandAndGetResult(@Nonnull String commandLine) {
-        return dispatchCommandAndGetResultAsync(commandLine).getUninterruptedly();
-    }
-
-    @Override
-    public Command getCommand(@Nonnull String name) {
-        return getCommandAsync(name).getUninterruptedly();
-    }
-
-    @Override
-    public boolean isCommandRegistered(@Nonnull String name) {
-        return isCommandRegisteredAsync(name).getUninterruptedly();
-    }
-
-    @Nonnull
-    @Override
-    public Task<JsonConfiguration> findAsync(@Nonnull String table, @Nonnull String key, String identifier) {
-        Task<JsonConfiguration> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> {
-            JsonConfiguration jsonConfiguration = this.database.createForTable(table).find(key).getUninterruptedly();
-            if (jsonConfiguration == null) {
-                jsonConfiguration = this.database.createForTable(table).findIfAbsent(identifier).getUninterruptedly();
-            }
-
-            task.complete(jsonConfiguration);
-        });
-        return task;
-    }
-
-    @Nonnull
-    @Override
-    public <T> Task<T> findAsync(@Nonnull String table, @Nonnull String key, String identifier, @Nonnull Function<JsonConfiguration, T> function) {
-        Task<T> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> task.complete(function.apply(find(table, key, identifier))));
-        return task;
-    }
-
-    @Nonnull
-    @Override
-    public Task<Void> insertAsync(@Nonnull String table, @Nonnull String key, String identifier, @Nonnull JsonConfiguration data) {
-        Task<Void> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> {
-            this.database.createForTable(table).insert(key, identifier, data);
-            task.complete(null);
-        });
-        return task;
-    }
-
-    @Nonnull
-    @Override
-    public Task<Boolean> updateAsync(@Nonnull String table, @Nonnull String key, @Nonnull JsonConfiguration newData) {
-        Task<Boolean> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> task.complete(this.database.createForTable(table).update(key, newData).getUninterruptedly()));
-        return task;
-    }
-
-    @Nonnull
-    @Override
-    public Task<Boolean> updateIfAbsentAsync(@Nonnull String table, @Nonnull String identifier, @Nonnull JsonConfiguration newData) {
-        Task<Boolean> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> task.complete(this.database.createForTable(table).updateIfAbsent(identifier, newData).getUninterruptedly()));
-        return task;
-    }
-
-    @Nonnull
-    @Override
-    public Task<Void> removeAsync(@Nonnull String table, @Nonnull String key) {
-        return database.createForTable(table).remove(key);
-    }
-
-    @Nonnull
-    @Override
-    public Task<Void> removeIfAbsentAsync(@Nonnull String table, @Nonnull String identifier) {
-        return database.createForTable(table).removeIfAbsent(identifier);
-    }
-
-    @Nonnull
-    @Override
-    public Task<Boolean> createDatabaseAsync(@Nonnull String name) {
-        Task<Boolean> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> task.complete(database.createDatabase(name)));
-        return task;
-    }
-
-    @Nonnull
-    @Override
-    public Task<Boolean> deleteDatabaseAsync(@Nonnull String name) {
-        Task<Boolean> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> task.complete(database.deleteDatabase(name)));
-        return task;
-    }
-
-    @Nonnull
-    @Override
-    public Task<Boolean> containsAsync(@Nonnull String table, @Nonnull String key) {
-        return database.createForTable(table).contains(key);
-    }
-
-    @Nonnull
-    @Override
-    public Task<Integer> sizeAsync(@Nonnull String table) {
-        return database.createForTable(table).size();
-    }
-
-    @Override
-    public JsonConfiguration find(@Nonnull String table, @Nonnull String key, String identifier) {
-        return findAsync(table, key, identifier).getUninterruptedly();
-    }
-
-    @Override
-    public <T> T find(@Nonnull String table, @Nonnull String key, String identifier, @Nonnull Function<JsonConfiguration, T> function) {
-        return findAsync(table, key, identifier, function).getUninterruptedly();
-    }
-
-    @Override
-    public void insert(@Nonnull String table, @Nonnull String key, String identifier, @Nonnull JsonConfiguration data) {
-        insertAsync(table, key, identifier, data).awaitUninterruptedly();
-    }
-
-    @Override
-    public boolean update(@Nonnull String table, @Nonnull String key, @Nonnull JsonConfiguration newData) {
-        return updateAsync(table, key, newData).getUninterruptedly();
-    }
-
-    @Override
-    public boolean updateIfAbsent(@Nonnull String table, @Nonnull String identifier, @Nonnull JsonConfiguration newData) {
-        return updateIfAbsentAsync(table, identifier, newData).getUninterruptedly();
-    }
-
-    @Override
-    public void remove(@Nonnull String table, @Nonnull String key) {
-        removeAsync(table, key).awaitUninterruptedly();
-    }
-
-    @Override
-    public void removeIfAbsent(@Nonnull String table, @Nonnull String identifier) {
-        removeIfAbsentAsync(table, identifier).awaitUninterruptedly();
-    }
-
-    @Override
-    public boolean createDatabase(@Nonnull String name) {
-        return createDatabaseAsync(name).getUninterruptedly();
-    }
-
-    @Override
-    public boolean deleteDatabase(@Nonnull String name) {
-        return deleteDatabaseAsync(name).getUninterruptedly();
-    }
-
-    @Override
-    public boolean contains(@Nonnull String table, @Nonnull String key) {
-        return containsAsync(table, key).getUninterruptedly();
-    }
-
-    @Override
-    public int size(@Nonnull String table) {
-        return sizeAsync(table).getUninterruptedly();
-    }
-
-    @Nonnull
-    @Override
-    public Task<MainGroup> createMainGroupAsync(@Nonnull String name) {
-        return createMainGroupAsync(name, new ArrayList<>());
-    }
-
-    @Nonnull
-    @Override
-    public Task<MainGroup> createMainGroupAsync(@Nonnull String name, @Nonnull List<String> subgroups) {
-        Task<MainGroup> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> {
-            if (this.clusterSyncManager.existsMainGroup(name)) {
-                task.complete(null);
-                return;
-            }
-
-            MainGroup mainGroup = new MainGroup(name, subgroups);
-            this.clusterSyncManager.syncMainGroupCreate(mainGroup);
-            task.complete(mainGroup);
-        });
-        return task;
-    }
-
-    @Nonnull
-    @Override
-    public Task<ProcessGroup> createProcessGroupAsync(@Nonnull String name) {
-        return createProcessGroupAsync(name, new ArrayList<>());
-    }
-
-    @Nonnull
-    @Override
-    public Task<ProcessGroup> createProcessGroupAsync(@Nonnull String name, @Nonnull List<Template> templates) {
-        return createProcessGroupAsync(name, templates, new StartupConfiguration(
-                -1, 1, 1, 41000, StartupEnvironment.JAVA_RUNTIME, true, new ArrayList<>()
-        ));
-    }
-
-    @Nonnull
-    @Override
-    public Task<ProcessGroup> createProcessGroupAsync(@Nonnull String name, @Nonnull List<Template> templates, @Nonnull StartupConfiguration startupConfiguration) {
-        return createProcessGroupAsync(name, templates, startupConfiguration, new PlayerAccessConfiguration(
-                false, "reformcloud.join.maintenance", false,
-                null, true, true, true, 50
-        ));
-    }
-
-    @Nonnull
-    @Override
-    public Task<ProcessGroup> createProcessGroupAsync(@Nonnull String name, @Nonnull List<Template> templates, @Nonnull StartupConfiguration startupConfiguration, @Nonnull PlayerAccessConfiguration playerAccessConfiguration) {
-        return createProcessGroupAsync(name, templates, startupConfiguration, playerAccessConfiguration, false);
-    }
-
-    @Nonnull
-    @Override
-    public Task<ProcessGroup> createProcessGroupAsync(@Nonnull String name, @Nonnull List<Template> templates, @Nonnull StartupConfiguration startupConfiguration, @Nonnull PlayerAccessConfiguration playerAccessConfiguration, boolean staticGroup) {
-        Task<ProcessGroup> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> {
-            ProcessGroup processGroup = new ProcessGroup(
-                    name,
-                    true,
-                    startupConfiguration,
-                    templates,
-                    playerAccessConfiguration,
-                    staticGroup
-            );
-            task.complete(createProcessGroupAsync(processGroup).getUninterruptedly());
-        });
-        return task;
-    }
-
-    @Nonnull
-    @Override
-    public Task<ProcessGroup> createProcessGroupAsync(@Nonnull ProcessGroup processGroup) {
-        Task<ProcessGroup> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> {
-            if (clusterSyncManager.existsProcessGroup(processGroup.getName())) {
-                task.complete(null);
-                return;
-            }
-
-            this.clusterSyncManager.syncProcessGroupCreate(processGroup);
-            task.complete(processGroup);
-        });
-        return task;
-    }
-
-    @Nonnull
-    @Override
-    public Task<MainGroup> updateMainGroupAsync(@Nonnull MainGroup mainGroup) {
-        Task<MainGroup> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> {
-            this.clusterSyncManager.syncMainGroupUpdate(mainGroup);
-            task.complete(mainGroup);
-        });
-        return task;
-    }
-
-    @Nonnull
-    @Override
-    public Task<ProcessGroup> updateProcessGroupAsync(@Nonnull ProcessGroup processGroup) {
-        Task<ProcessGroup> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> {
-            this.clusterSyncManager.syncProcessGroupUpdate(processGroup);
-            task.complete(processGroup);
-        });
-        return task;
-    }
-
-    @Nonnull
-    @Override
-    public Task<MainGroup> getMainGroupAsync(@Nonnull String name) {
-        Task<MainGroup> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> task.complete(Links.filterToReference(clusterSyncManager.getMainGroups(), e -> e.getName().equals(name)).orNothing()));
-        return task;
-    }
-
-    @Nonnull
-    @Override
-    public Task<ProcessGroup> getProcessGroupAsync(@Nonnull String name) {
-        Task<ProcessGroup> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> task.complete(Links.filterToReference(clusterSyncManager.getProcessGroups(), e -> e.getName().equals(name)).orNothing()));
-        return task;
-    }
-
-    @Nonnull
-    @Override
-    public Task<Void> deleteMainGroupAsync(@Nonnull String name) {
-        Task<Void> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> {
-            this.clusterSyncManager.syncMainGroupDelete(name);
-            task.complete(null);
-        });
-        return task;
-    }
-
-    @Nonnull
-    @Override
-    public Task<Void> deleteProcessGroupAsync(@Nonnull String name) {
-        Task<Void> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> {
-            this.clusterSyncManager.syncProcessGroupDelete(name);
-            task.complete(null);
-        });
-        return task;
-    }
-
-    @Nonnull
-    @Override
-    public Task<List<MainGroup>> getMainGroupsAsync() {
-        Task<List<MainGroup>> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> task.complete(Links.newList(clusterSyncManager.getMainGroups())));
-        return task;
-    }
-
-    @Nonnull
-    @Override
-    public Task<List<ProcessGroup>> getProcessGroupsAsync() {
-        Task<List<ProcessGroup>> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> task.complete(Links.newList(clusterSyncManager.getProcessGroups())));
-        return task;
-    }
-
-    @Nonnull
-    @Override
-    public MainGroup createMainGroup(@Nonnull String name) {
-        return createMainGroupAsync(name).getUninterruptedly();
-    }
-
-    @Nonnull
-    @Override
-    public MainGroup createMainGroup(@Nonnull String name, @Nonnull List<String> subgroups) {
-        return createMainGroupAsync(name, subgroups).getUninterruptedly();
-    }
-
-    @Nonnull
-    @Override
-    public ProcessGroup createProcessGroup(@Nonnull String name) {
-        return createProcessGroupAsync(name).getUninterruptedly();
-    }
-
-    @Nonnull
-    @Override
-    public ProcessGroup createProcessGroup(@Nonnull String name, @Nonnull List<Template> templates) {
-        return createProcessGroupAsync(name, templates).getUninterruptedly();
-    }
-
-    @Nonnull
-    @Override
-    public ProcessGroup createProcessGroup(@Nonnull String name, @Nonnull List<Template> templates, @Nonnull StartupConfiguration startupConfiguration) {
-        return createProcessGroupAsync(name, templates, startupConfiguration).getUninterruptedly();
-    }
-
-    @Nonnull
-    @Override
-    public ProcessGroup createProcessGroup(@Nonnull String name, @Nonnull List<Template> templates, @Nonnull StartupConfiguration startupConfiguration, @Nonnull PlayerAccessConfiguration playerAccessConfiguration) {
-        return createProcessGroupAsync(name, templates, startupConfiguration, playerAccessConfiguration).getUninterruptedly();
-    }
-
-    @Nonnull
-    @Override
-    public ProcessGroup createProcessGroup(@Nonnull String name, @Nonnull List<Template> templates, @Nonnull StartupConfiguration startupConfiguration, @Nonnull PlayerAccessConfiguration playerAccessConfiguration, boolean staticGroup) {
-        return createProcessGroupAsync(name, templates, startupConfiguration, playerAccessConfiguration, staticGroup).getUninterruptedly();
-    }
-
-    @Nonnull
-    @Override
-    public ProcessGroup createProcessGroup(@Nonnull ProcessGroup processGroup) {
-        return createProcessGroupAsync(processGroup).getUninterruptedly();
-    }
-
-    @Nonnull
-    @Override
-    public MainGroup updateMainGroup(@Nonnull MainGroup mainGroup) {
-        return updateMainGroupAsync(mainGroup).getUninterruptedly();
-    }
-
-    @Nonnull
-    @Override
-    public ProcessGroup updateProcessGroup(@Nonnull ProcessGroup processGroup) {
-        return updateProcessGroupAsync(processGroup).getUninterruptedly();
-    }
-
-    @Nullable
-    @Override
-    public MainGroup getMainGroup(@Nonnull String name) {
-        return getMainGroupAsync(name).getUninterruptedly();
-    }
-
-    @Nullable
-    @Override
-    public ProcessGroup getProcessGroup(@Nonnull String name) {
-        return getProcessGroupAsync(name).getUninterruptedly();
-    }
-
-    @Override
-    public void deleteMainGroup(@Nonnull String name) {
-        deleteMainGroupAsync(name).awaitUninterruptedly();
-    }
-
-    @Override
-    public void deleteProcessGroup(@Nonnull String name) {
-        deleteProcessGroupAsync(name).awaitUninterruptedly();
-    }
-
-    @Nonnull
-    @Override
-    public List<MainGroup> getMainGroups() {
-        return getMainGroupsAsync().getUninterruptedly();
-    }
-
-    @Nonnull
-    @Override
-    public List<ProcessGroup> getProcessGroups() {
-        return getProcessGroupsAsync().getUninterruptedly();
-    }
-
-    @Nonnull
-    @Override
-    public Task<Void> sendMessageAsync(@Nonnull UUID player, @Nonnull String message) {
-        Task<Void> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> {
-            ProcessInformation processInformation = this.getPlayerOnProxy(player);
-            if (processInformation == null) {
-                task.complete(null);
-                return;
-            }
-
-            if (this.nodeNetworkManager.getCluster().getSelfNode().getName().equals(processInformation.getParent())) {
-                DefaultChannelManager.INSTANCE.get(processInformation.getName()).ifPresent(e -> e.sendPacket(new NodeAPIAction(
-                        NodeAPIAction.APIAction.SEND_MESSAGE, Arrays.asList(player, message)
-                )));
-            } else {
-                DefaultChannelManager.INSTANCE.get(processInformation.getParent()).ifPresent(e -> e.sendPacket(new NodeAPIAction(
-                        NodeAPIAction.APIAction.SEND_MESSAGE, Arrays.asList(player, message)
-                )));
-            }
-
-            task.complete(null);
-        });
-        return task;
-    }
-
-    @Nonnull
-    @Override
-    public Task<Void> kickPlayerAsync(@Nonnull UUID player, @Nonnull String message) {
-        Task<Void> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> {
-            ProcessInformation processInformation = this.getPlayerOnProxy(player);
-            if (processInformation == null) {
-                task.complete(null);
-                return;
-            }
-
-            if (this.nodeNetworkManager.getCluster().getSelfNode().getName().equals(processInformation.getParent())) {
-                DefaultChannelManager.INSTANCE.get(processInformation.getName()).ifPresent(e -> e.sendPacket(new NodeAPIAction(
-                        NodeAPIAction.APIAction.KICK_PLAYER, Arrays.asList(player, message)
-                )));
-            } else {
-                DefaultChannelManager.INSTANCE.get(processInformation.getParent()).ifPresent(e -> e.sendPacket(new NodeAPIAction(
-                        NodeAPIAction.APIAction.KICK_PLAYER, Arrays.asList(player, message)
-                )));
-            }
-
-            task.complete(null);
-        });
-        return task;
-    }
-
-    @Nonnull
-    @Override
-    public Task<Void> kickPlayerFromServerAsync(@Nonnull UUID player, @Nonnull String message) {
-        Task<Void> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> {
-            ProcessInformation processInformation = this.getPlayerOnServer(player);
-            if (processInformation == null) {
-                task.complete(null);
-                return;
-            }
-
-            if (this.nodeNetworkManager.getCluster().getSelfNode().getName().equals(processInformation.getParent())) {
-                DefaultChannelManager.INSTANCE.get(processInformation.getName()).ifPresent(e -> e.sendPacket(new NodeAPIAction(
-                        NodeAPIAction.APIAction.KICK_PLAYER, Arrays.asList(player, message)
-                )));
-            } else {
-                DefaultChannelManager.INSTANCE.get(processInformation.getParent()).ifPresent(e -> e.sendPacket(new NodeAPIAction(
-                        NodeAPIAction.APIAction.KICK_PLAYER, Arrays.asList(player, message)
-                )));
-            }
-
-            task.complete(null);
-        });
-        return task;
-    }
-
-    @Nonnull
-    @Override
-    public Task<Void> playSoundAsync(@Nonnull UUID player, @Nonnull String sound, float f1, float f2) {
-        Task<Void> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> {
-            ProcessInformation processInformation = this.getPlayerOnServer(player);
-            if (processInformation == null) {
-                task.complete(null);
-                return;
-            }
-
-            if (this.nodeNetworkManager.getCluster().getSelfNode().getName().equals(processInformation.getParent())) {
-                DefaultChannelManager.INSTANCE.get(processInformation.getName()).ifPresent(e -> e.sendPacket(new NodeAPIAction(
-                        NodeAPIAction.APIAction.PLAY_SOUND, Arrays.asList(player, sound, f1, f2)
-                )));
-            } else {
-                DefaultChannelManager.INSTANCE.get(processInformation.getParent()).ifPresent(e -> e.sendPacket(new NodeAPIAction(
-                        NodeAPIAction.APIAction.PLAY_SOUND, Arrays.asList(player, sound, f1, f2)
-                )));
-            }
-
-            task.complete(null);
-        });
-        return task;
-    }
-
-    @Nonnull
-    @Override
-    public Task<Void> sendTitleAsync(@Nonnull UUID player, @Nonnull String title, @Nonnull String subTitle, int fadeIn, int stay, int fadeOut) {
-        Task<Void> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> {
-            ProcessInformation processInformation = this.getPlayerOnProxy(player);
-            if (processInformation == null) {
-                task.complete(null);
-                return;
-            }
-
-            if (this.nodeNetworkManager.getCluster().getSelfNode().getName().equals(processInformation.getParent())) {
-                DefaultChannelManager.INSTANCE.get(processInformation.getName()).ifPresent(e -> e.sendPacket(new NodeAPIAction(
-                        NodeAPIAction.APIAction.SEND_TITLE, Arrays.asList(player, title, subTitle, fadeIn, stay, fadeOut)
-                )));
-            } else {
-                DefaultChannelManager.INSTANCE.get(processInformation.getParent()).ifPresent(e -> e.sendPacket(new NodeAPIAction(
-                        NodeAPIAction.APIAction.SEND_TITLE, Arrays.asList(player, title, subTitle, fadeIn, stay, fadeOut)
-                )));
-            }
-
-            task.complete(null);
-        });
-        return task;
-    }
-
-    @Nonnull
-    @Override
-    public Task<Void> playEffectAsync(@Nonnull UUID player, @Nonnull String entityEffect) {
-        Task<Void> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> {
-            ProcessInformation processInformation = this.getPlayerOnServer(player);
-            if (processInformation == null) {
-                task.complete(null);
-                return;
-            }
-
-            if (this.nodeNetworkManager.getCluster().getSelfNode().getName().equals(processInformation.getParent())) {
-                DefaultChannelManager.INSTANCE.get(processInformation.getName()).ifPresent(e -> e.sendPacket(new NodeAPIAction(
-                        NodeAPIAction.APIAction.PLAY_ENTITY_EFFECT, Arrays.asList(player, entityEffect)
-                )));
-            } else {
-                DefaultChannelManager.INSTANCE.get(processInformation.getParent()).ifPresent(e -> e.sendPacket(new NodeAPIAction(
-                        NodeAPIAction.APIAction.PLAY_ENTITY_EFFECT, Arrays.asList(player, entityEffect)
-                )));
-            }
-
-            task.complete(null);
-        });
-        return task;
-    }
-
-    @Nonnull
-    @Override
-    public <T> Task<Void> playEffectAsync(@Nonnull UUID player, @Nonnull String effect, T data) {
-        Task<Void> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> {
-            ProcessInformation processInformation = this.getPlayerOnServer(player);
-            if (processInformation == null) {
-                task.complete(null);
-                return;
-            }
-
-            if (this.nodeNetworkManager.getCluster().getSelfNode().getName().equals(processInformation.getParent())) {
-                DefaultChannelManager.INSTANCE.get(processInformation.getName()).ifPresent(e -> e.sendPacket(new NodeAPIAction(
-                        NodeAPIAction.APIAction.PLAY_EFFECT, Arrays.asList(player, effect, data)
-                )));
-            } else {
-                DefaultChannelManager.INSTANCE.get(processInformation.getParent()).ifPresent(e -> e.sendPacket(new NodeAPIAction(
-                        NodeAPIAction.APIAction.PLAY_EFFECT, Arrays.asList(player, effect, data)
-                )));
-            }
-
-            task.complete(null);
-        });
-        return task;
-    }
-
-    @Nonnull
-    @Override
-    public Task<Void> respawnAsync(@Nonnull UUID player) {
-        Task<Void> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> {
-            ProcessInformation processInformation = this.getPlayerOnServer(player);
-            if (processInformation == null) {
-                task.complete(null);
-                return;
-            }
-
-            if (this.nodeNetworkManager.getCluster().getSelfNode().getName().equals(processInformation.getParent())) {
-                DefaultChannelManager.INSTANCE.get(processInformation.getName()).ifPresent(e -> e.sendPacket(new NodeAPIAction(
-                        NodeAPIAction.APIAction.RESPAWN, Collections.singletonList(player)
-                )));
-            } else {
-                DefaultChannelManager.INSTANCE.get(processInformation.getParent()).ifPresent(e -> e.sendPacket(new NodeAPIAction(
-                        NodeAPIAction.APIAction.RESPAWN, Collections.singletonList(player)
-                )));
-            }
-
-            task.complete(null);
-        });
-        return task;
-    }
-
-    @Nonnull
-    @Override
-    public Task<Void> teleportAsync(@Nonnull UUID player, @Nonnull String world, double x, double y, double z, float yaw, float pitch) {
-        Task<Void> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> {
-            ProcessInformation processInformation = this.getPlayerOnServer(player);
-            if (processInformation == null) {
-                task.complete(null);
-                return;
-            }
-
-            if (this.nodeNetworkManager.getCluster().getSelfNode().getName().equals(processInformation.getParent())) {
-                DefaultChannelManager.INSTANCE.get(processInformation.getName()).ifPresent(e -> e.sendPacket(new NodeAPIAction(
-                        NodeAPIAction.APIAction.LOCATION_TELEPORT, Arrays.asList(player, world, x, y, z, yaw, pitch)
-                )));
-            } else {
-                DefaultChannelManager.INSTANCE.get(processInformation.getParent()).ifPresent(e -> e.sendPacket(new NodeAPIAction(
-                        NodeAPIAction.APIAction.LOCATION_TELEPORT, Arrays.asList(player, world, x, y, z, yaw, pitch)
-                )));
-            }
-
-            task.complete(null);
-        });
-        return task;
-    }
-
-    @Nonnull
-    @Override
-    public Task<Void> connectAsync(@Nonnull UUID player, @Nonnull String server) {
-        Task<Void> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> {
-            ProcessInformation processInformation = this.getPlayerOnProxy(player);
-            if (processInformation == null) {
-                task.complete(null);
-                return;
-            }
-
-            if (this.nodeNetworkManager.getCluster().getSelfNode().getName().equals(processInformation.getParent())) {
-                DefaultChannelManager.INSTANCE.get(processInformation.getName()).ifPresent(e -> e.sendPacket(new NodeAPIAction(
-                        NodeAPIAction.APIAction.CONNECT, Arrays.asList(player, server)
-                )));
-            } else {
-                DefaultChannelManager.INSTANCE.get(processInformation.getParent()).ifPresent(e -> e.sendPacket(new NodeAPIAction(
-                        NodeAPIAction.APIAction.CONNECT, Arrays.asList(player, server)
-                )));
-            }
-
-            task.complete(null);
-        });
-        return task;
-    }
-
-    @Nonnull
-    @Override
-    public Task<Void> connectAsync(@Nonnull UUID player, @Nonnull ProcessInformation server) {
-        return connectAsync(player, server.getName());
-    }
-
-    @Nonnull
-    @Override
-    public Task<Void> connectAsync(@Nonnull UUID player, @Nonnull UUID target) {
-        Task<Void> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> {
-            ProcessInformation targetServer = getPlayerOnServer(target);
-            if (targetServer != null) {
-                connectAsync(player, targetServer).awaitUninterruptedly();
-            }
-
-            task.complete(null);
-        });
-        return task;
-    }
-
-    @Nonnull
-    @Override
-    public Task<Void> setResourcePackAsync(@Nonnull UUID player, @Nonnull String pack) {
-        Task<Void> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> {
-            ProcessInformation processInformation = this.getPlayerOnServer(player);
-            if (processInformation == null) {
-                task.complete(null);
-                return;
-            }
-
-            if (this.nodeNetworkManager.getCluster().getSelfNode().getName().equals(processInformation.getParent())) {
-                DefaultChannelManager.INSTANCE.get(processInformation.getName()).ifPresent(e -> e.sendPacket(new NodeAPIAction(
-                        NodeAPIAction.APIAction.SET_RESOURCE_PACK, Arrays.asList(player, pack)
-                )));
-            } else {
-                DefaultChannelManager.INSTANCE.get(processInformation.getParent()).ifPresent(e -> e.sendPacket(new NodeAPIAction(
-                        NodeAPIAction.APIAction.SET_RESOURCE_PACK, Arrays.asList(player, pack)
-                )));
-            }
-
-            task.complete(null);
-        });
-        return task;
-    }
-
-    @Override
-    public void sendMessage(@Nonnull UUID player, @Nonnull String message) {
-        sendMessageAsync(player, message).awaitUninterruptedly();
-    }
-
-    @Override
-    public void kickPlayer(@Nonnull UUID player, @Nonnull String message) {
-        kickPlayerAsync(player, message).awaitUninterruptedly();
-    }
-
-    @Override
-    public void kickPlayerFromServer(@Nonnull UUID player, @Nonnull String message) {
-        kickPlayerFromServerAsync(player, message).awaitUninterruptedly();
-    }
-
-    @Override
-    public void playSound(@Nonnull UUID player, @Nonnull String sound, float f1, float f2) {
-        playSoundAsync(player, sound, f1, f2).awaitUninterruptedly();
-    }
-
-    @Override
-    public void sendTitle(@Nonnull UUID player, @Nonnull String title, @Nonnull String subTitle, int fadeIn, int stay, int fadeOut) {
-        sendTitleAsync(player, title, subTitle, fadeIn, stay, fadeOut).awaitUninterruptedly();
-    }
-
-    @Override
-    public void playEffect(@Nonnull UUID player, @Nonnull String entityEffect) {
-        playEffectAsync(player, entityEffect).awaitUninterruptedly();
-    }
-
-    @Override
-    public <T> void playEffect(@Nonnull UUID player, @Nonnull String effect, T data) {
-        playEffectAsync(player, effect, data).awaitUninterruptedly();
-    }
-
-    @Override
-    public void respawn(@Nonnull UUID player) {
-        respawnAsync(player).awaitUninterruptedly();
-    }
-
-    @Override
-    public void teleport(@Nonnull UUID player, @Nonnull String world, double x, double y, double z, float yaw, float pitch) {
-        teleportAsync(player, world, x, y, z, yaw, pitch).awaitUninterruptedly();
-    }
-
-    @Override
-    public void connect(@Nonnull UUID player, @Nonnull String server) {
-        connectAsync(player, server).awaitUninterruptedly();
-    }
-
-    @Override
-    public void connect(@Nonnull UUID player, @Nonnull ProcessInformation server) {
-        connectAsync(player, server).awaitUninterruptedly();
-    }
-
-    @Override
-    public void connect(@Nonnull UUID player, @Nonnull UUID target) {
-        connectAsync(player, target).awaitUninterruptedly();
-    }
-
-    @Override
-    public void setResourcePack(@Nonnull UUID player, @Nonnull String pack) {
-        setResourcePackAsync(player, pack).awaitUninterruptedly();
-    }
-
-    @Nonnull
-    @Override
-    public Task<Void> installPluginAsync(@Nonnull String process, @Nonnull InstallablePlugin plugin) {
-        Task<Void> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> {
-            ProcessInformation information = this.nodeNetworkManager.getNodeProcessHelper().getClusterProcess(process);
-            if (information == null) {
-                task.complete(null);
-                return;
-            }
-
-            task.complete(installPluginAsync(information, plugin).getUninterruptedly());
-        });
-        return task;
-    }
-
-    @Nonnull
-    @Override
-    public Task<Void> installPluginAsync(@Nonnull ProcessInformation process, @Nonnull InstallablePlugin plugin) {
-        Task<Void> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> {
-            if (this.nodeNetworkManager.getCluster().getSelfNode().getName().equals(process.getParent())) {
-                DefaultChannelManager.INSTANCE.get(process.getName()).ifPresent(e -> e.sendPacket(new NodePluginAction(
-                        NodePluginAction.Action.INSTALL, process.getName(), new DefaultInstallablePlugin(
-                        plugin.getDownloadURL(),
-                        plugin.getName(),
-                        plugin.version(),
-                        plugin.author(),
-                        plugin.main()
-                ))));
-            } else {
-                DefaultChannelManager.INSTANCE.get(process.getParent()).ifPresent(e -> e.sendPacket(new NodePluginAction(
-                        NodePluginAction.Action.INSTALL, process.getName(), new DefaultInstallablePlugin(
-                        plugin.getDownloadURL(),
-                        plugin.getName(),
-                        plugin.version(),
-                        plugin.author(),
-                        plugin.main()
-                ))));
-            }
-
-            task.complete(null);
-        });
-        return task;
-    }
-
-    @Nonnull
-    @Override
-    public Task<Void> unloadPluginAsync(@Nonnull String process, @Nonnull Plugin plugin) {
-        Task<Void> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> {
-            ProcessInformation information = this.nodeNetworkManager.getNodeProcessHelper().getClusterProcess(process);
-            if (information == null) {
-                task.complete(null);
-                return;
-            }
-
-            task.complete(unloadPluginAsync(information, plugin).getUninterruptedly());
-        });
-        return task;
-    }
-
-    @Nonnull
-    @Override
-    public Task<Void> unloadPluginAsync(@Nonnull ProcessInformation process, @Nonnull Plugin plugin) {
-        Task<Void> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> {
-            if (this.nodeNetworkManager.getCluster().getSelfNode().getName().equals(process.getParent())) {
-                DefaultChannelManager.INSTANCE.get(process.getName()).ifPresent(e -> e.sendPacket(new NodePluginAction(
-                        NodePluginAction.Action.UNINSTALL,
-                        process.getName(),
-                        new DefaultPlugin(
-                                plugin.version(),
-                                plugin.author(),
-                                plugin.main(),
-                                plugin.depends(),
-                                plugin.softpends(),
-                                plugin.enabled(),
-                                plugin.getName()
-                        ))));
-            } else {
-                DefaultChannelManager.INSTANCE.get(process.getParent()).ifPresent(e -> e.sendPacket(new NodePluginAction(
-                        NodePluginAction.Action.UNINSTALL,
-                        process.getName(),
-                        new DefaultPlugin(
-                                plugin.version(),
-                                plugin.author(),
-                                plugin.main(),
-                                plugin.depends(),
-                                plugin.softpends(),
-                                plugin.enabled(),
-                                plugin.getName()
-                        ))));
-            }
-
-            task.complete(null);
-        });
-        return task;
-    }
-
-    @Nonnull
-    @Override
-    public Task<Plugin> getInstalledPluginAsync(@Nonnull String process, @Nonnull String name) {
-        Task<Plugin> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> {
-            ProcessInformation information = this.nodeNetworkManager.getNodeProcessHelper().getClusterProcess(process);
-            if (information == null) {
-                task.complete(null);
-                return;
-            }
-
-            task.complete(getInstalledPluginAsync(information, name).getUninterruptedly());
-        });
-        return task;
-    }
-
-    @Nonnull
-    @Override
-    public Task<Plugin> getInstalledPluginAsync(@Nonnull ProcessInformation process, @Nonnull String name) {
-        Task<Plugin> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> task.complete(Links.filterToReference(process.getPlugins(), e -> e.getName().equals(name)).orNothing()));
-        return task;
-    }
-
-    @Nonnull
-    @Override
-    public Task<Collection<DefaultPlugin>> getPluginsAsync(@Nonnull String process, @Nonnull String author) {
-        Task<Collection<DefaultPlugin>> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> {
-            ProcessInformation information = this.nodeNetworkManager.getNodeProcessHelper().getClusterProcess(process);
-            if (information == null) {
-                task.complete(null);
-                return;
-            }
-
-            task.complete(getPluginsAsync(information, author).getUninterruptedly());
-        });
-        return task;
-    }
-
-    @Nonnull
-    @Override
-    public Task<Collection<DefaultPlugin>> getPluginsAsync(@Nonnull ProcessInformation process, @Nonnull String author) {
-        Task<Collection<DefaultPlugin>> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> task.complete(Links.allOf(process.getPlugins(), e -> e.author().equals(author))));
-        return task;
-    }
-
-    @Nonnull
-    @Override
-    public Task<Collection<DefaultPlugin>> getPluginsAsync(@Nonnull String process) {
-        Task<Collection<DefaultPlugin>> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> {
-            ProcessInformation information = this.nodeNetworkManager.getNodeProcessHelper().getClusterProcess(process);
-            if (information == null) {
-                task.complete(null);
-                return;
-            }
-
-            task.complete(getPluginsAsync(information).getUninterruptedly());
-        });
-        return task;
-    }
-
-    @Nonnull
-    @Override
-    public Task<Collection<DefaultPlugin>> getPluginsAsync(@Nonnull ProcessInformation processInformation) {
-        Task<Collection<DefaultPlugin>> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> task.complete(Collections.unmodifiableList(processInformation.getPlugins())));
-        return task;
-    }
-
-    @Override
-    public void installPlugin(@Nonnull String process, @Nonnull InstallablePlugin plugin) {
-        installPluginAsync(process, plugin).awaitUninterruptedly();
-    }
-
-    @Override
-    public void installPlugin(@Nonnull ProcessInformation process, @Nonnull InstallablePlugin plugin) {
-        installPluginAsync(process, plugin).awaitUninterruptedly();
-    }
-
-    @Override
-    public void unloadPlugin(@Nonnull String process, @Nonnull Plugin plugin) {
-        unloadPluginAsync(process, plugin).awaitUninterruptedly();
-    }
-
-    @Override
-    public void unloadPlugin(@Nonnull ProcessInformation process, @Nonnull Plugin plugin) {
-        unloadPluginAsync(process, plugin).awaitUninterruptedly();
-    }
-
-    @Override
-    public Plugin getInstalledPlugin(@Nonnull String process, @Nonnull String name) {
-        return getInstalledPluginAsync(process, name).getUninterruptedly();
-    }
-
-    @Override
-    public Plugin getInstalledPlugin(@Nonnull ProcessInformation process, @Nonnull String name) {
-        return getInstalledPluginAsync(process, name).getUninterruptedly();
-    }
-
-    @Nonnull
-    @Override
-    public Collection<DefaultPlugin> getPlugins(@Nonnull String process, @Nonnull String author) {
-        return getPluginsAsync(process, author).getUninterruptedly();
-    }
-
-    @Nonnull
-    @Override
-    public Collection<DefaultPlugin> getPlugins(@Nonnull ProcessInformation process, @Nonnull String author) {
-        return getPluginsAsync(process, author).getUninterruptedly();
-    }
-
-    @Nonnull
-    @Override
-    public Collection<DefaultPlugin> getPlugins(@Nonnull String process) {
-        return getPluginsAsync(process).getUninterruptedly();
-    }
-
-    @Nonnull
-    @Override
-    public Collection<DefaultPlugin> getPlugins(@Nonnull ProcessInformation processInformation) {
-        return getPluginsAsync(processInformation).getUninterruptedly();
-    }
-
-    @Nonnull
-    @Override
-    public Task<ProcessInformation> startProcessAsync(@Nonnull String groupName) {
-        return startProcessAsync(groupName, null);
-    }
-
-    @Nonnull
-    @Override
-    public Task<ProcessInformation> startProcessAsync(@Nonnull String groupName, String template) {
-        return startProcessAsync(groupName, template, new JsonConfiguration());
-    }
-
-    @Nonnull
-    @Override
-    public Task<ProcessInformation> startProcessAsync(@Nonnull String groupName, String template, @Nonnull JsonConfiguration configurable) {
-        Task<ProcessInformation> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> {
-            ProcessGroup group = Links.filterToReference(clusterSyncManager.getProcessGroups(), e -> e.getName().equals(groupName)).orNothing();
-            if (group == null) {
-                task.complete(null);
-                return;
-            }
-
-            task.complete(nodeNetworkManager.startProcess(
-                    group,
-                    Links.filterToReference(group.getTemplates(), e -> e.getName().equals(template)).orNothing(),
-                    configurable
-            ));
-        });
-        return task;
-    }
-
-    @Nonnull
-    @Override
-    public Task<ProcessInformation> stopProcessAsync(@Nonnull String name) {
-        Task<ProcessInformation> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> {
-            ProcessInformation old = nodeNetworkManager.getNodeProcessHelper().getClusterProcess(name);
-            if (old == null) {
-                task.complete(null);
-                return;
-            }
-
-            nodeNetworkManager.stopProcess(old.getName());
-            task.complete(old);
-        });
-        return task;
-    }
-
-    @Nonnull
-    @Override
-    public Task<ProcessInformation> stopProcessAsync(@Nonnull UUID uniqueID) {
-        Task<ProcessInformation> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> {
-            ProcessInformation old = nodeNetworkManager.getNodeProcessHelper().getClusterProcess(uniqueID);
-            if (old == null) {
-                task.complete(null);
-                return;
-            }
-
-            nodeNetworkManager.stopProcess(old.getProcessUniqueID());
-            task.complete(old);
-        });
-        return task;
-    }
-
-    @Nonnull
-    @Override
-    public Task<ProcessInformation> getProcessAsync(@Nonnull String name) {
-        Task<ProcessInformation> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> task.complete(nodeNetworkManager.getNodeProcessHelper().getClusterProcess(name)));
-        return task;
-    }
-
-    @Nonnull
-    @Override
-    public Task<ProcessInformation> getProcessAsync(@Nonnull UUID uniqueID) {
-        Task<ProcessInformation> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> task.complete(nodeNetworkManager.getNodeProcessHelper().getClusterProcess(uniqueID)));
-        return task;
-    }
-
-    @Nonnull
-    @Override
-    public Task<List<ProcessInformation>> getAllProcessesAsync() {
-        Task<List<ProcessInformation>> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> task.complete(Links.newList(nodeNetworkManager.getNodeProcessHelper().getClusterProcesses())));
-        return task;
-    }
-
-    @Nonnull
-    @Override
-    public Task<List<ProcessInformation>> getProcessesAsync(@Nonnull String group) {
-        Task<List<ProcessInformation>> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> task.complete(Links.newList(nodeNetworkManager.getNodeProcessHelper().getClusterProcesses(group))));
-        return task;
-    }
-
-    @Nonnull
-    @Override
-    public Task<Void> executeProcessCommandAsync(@Nonnull String name, @Nonnull String commandLine) {
-        Task<Void> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> {
-            ProcessInformation processInformation = this.getProcess(name);
-            if (processInformation == null) {
-                task.complete(null);
-                return;
-            }
-
-            if (this.nodeConfig.getUniqueID().equals(processInformation.getNodeUniqueID())) {
-                Links.filterToReference(LocalProcessManager.getNodeProcesses(),
-                        e -> e.getProcessInformation().getProcessUniqueID().equals(processInformation.getProcessUniqueID())
-                ).ifPresent(e -> e.sendCommand(commandLine));
-            } else {
-                DefaultChannelManager.INSTANCE.get(processInformation.getParent())
-                        .ifPresent(e -> e.sendPacket(new NodePacketOutExecuteCommand(processInformation.getName(), commandLine)));
-            }
-
-            task.complete(null);
-        });
-        return task;
-    }
-
-    @Nonnull
-    @Override
-    public Task<Integer> getGlobalOnlineCountAsync(@Nonnull Collection<String> ignoredProxies) {
-        Task<Integer> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> {
-            int online = Links.allOf(nodeNetworkManager.getNodeProcessHelper().getClusterProcesses(),
-                    e -> !e.getTemplate().isServer() && !ignoredProxies.contains(e.getName())
-            ).stream().mapToInt(ProcessInformation::getOnlineCount).sum();
-            task.complete(online);
-        });
-        return task;
-    }
-
-    @Nonnull
-    @Override
-    public Task<ProcessInformation> getThisProcessInformationAsync() {
-        Task<ProcessInformation> task = new DefaultTask<>();
-        task.complete(null);
-        return task;
-    }
-
-    @Nonnull
-    @Override
-    public ProcessInformation startProcess(@Nonnull String groupName) {
-        return startProcessAsync(groupName).getUninterruptedly();
-    }
-
-    @Nonnull
-    @Override
-    public ProcessInformation startProcess(@Nonnull String groupName, String template) {
-        return startProcessAsync(groupName, template).getUninterruptedly();
-    }
-
-    @Nonnull
-    @Override
-    public ProcessInformation startProcess(@Nonnull String groupName, String template, @Nonnull JsonConfiguration configurable) {
-        return startProcessAsync(groupName, template, configurable).getUninterruptedly();
-    }
-
-    @Override
-    public ProcessInformation stopProcess(@Nonnull String name) {
-        return stopProcessAsync(name).getUninterruptedly();
-    }
-
-    @Override
-    public ProcessInformation stopProcess(@Nonnull UUID uniqueID) {
-        return stopProcessAsync(uniqueID).getUninterruptedly();
-    }
-
-    @Override
-    public ProcessInformation getProcess(@Nonnull String name) {
-        return getProcessAsync(name).getUninterruptedly();
-    }
-
-    @Override
-    public ProcessInformation getProcess(@Nonnull UUID uniqueID) {
-        return getProcessAsync(uniqueID).getUninterruptedly();
-    }
-
-    @Nonnull
-    @Override
-    public List<ProcessInformation> getAllProcesses() {
-        return getAllProcessesAsync().getUninterruptedly();
-    }
-
-    @Nonnull
-    @Override
-    public List<ProcessInformation> getProcesses(@Nonnull String group) {
-        return getProcessesAsync(group).getUninterruptedly();
-    }
-
-    @Override
-    public void executeProcessCommand(@Nonnull String name, @Nonnull String commandLine) {
-        executeProcessCommandAsync(name, commandLine).awaitUninterruptedly();
-    }
-
-    @Override
-    public int getGlobalOnlineCount(@Nonnull Collection<String> ignoredProxies) {
-        return getGlobalOnlineCountAsync(ignoredProxies).getUninterruptedly();
-    }
-
-    @Override
-    public ProcessInformation getThisProcessInformation() {
-        return null;
-    }
-
-    @Override
-    public void update(@Nonnull ProcessInformation processInformation) {
-        this.nodeNetworkManager.getNodeProcessHelper().update(processInformation);
     }
 
     @Override
@@ -2075,13 +688,5 @@ public class NodeExecutor extends Node {
     private void sendGroups() {
         this.nodeExecutorConfig.getMainGroups().forEach(mainGroup -> System.out.println(LanguageManager.get("loading-main-group", mainGroup.getName())));
         this.nodeExecutorConfig.getProcessGroups().forEach(processGroup -> System.out.println(LanguageManager.get("loading-process-group", processGroup.getName())));
-    }
-
-    private ProcessInformation getPlayerOnProxy(UUID uniqueID) {
-        return Links.filter(this.nodeNetworkManager.getNodeProcessHelper().getClusterProcesses(), processInformation -> !processInformation.getTemplate().isServer() && Links.filterToReference(processInformation.getOnlinePlayers(), player -> player.getUniqueID().equals(uniqueID)).isPresent());
-    }
-
-    private ProcessInformation getPlayerOnServer(UUID uniqueID) {
-        return Links.filter(this.nodeNetworkManager.getNodeProcessHelper().getClusterProcesses(), processInformation -> processInformation.getTemplate().isServer() && Links.filterToReference(processInformation.getOnlinePlayers(), player -> player.getUniqueID().equals(uniqueID)).isPresent());
     }
 }

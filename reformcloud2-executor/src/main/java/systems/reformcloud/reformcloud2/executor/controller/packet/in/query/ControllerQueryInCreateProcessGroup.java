@@ -21,6 +21,6 @@ public final class ControllerQueryInCreateProcessGroup implements NetworkHandler
     @Override
     public void handlePacket(PacketSender packetSender, Packet packet, Consumer<Packet> responses) {
         ProcessGroup group = packet.content().get("group", ProcessGroup.TYPE);
-        responses.accept(new DefaultPacket(-1, new JsonConfiguration().add("result", ExecutorAPI.getInstance().createProcessGroup(group))));
+        responses.accept(new DefaultPacket(-1, new JsonConfiguration().add("result", ExecutorAPI.getInstance().getSyncAPI().getGroupSyncAPI().createProcessGroup(group))));
     }
 }

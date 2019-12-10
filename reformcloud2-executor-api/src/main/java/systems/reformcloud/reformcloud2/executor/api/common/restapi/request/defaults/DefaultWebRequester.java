@@ -23,6 +23,7 @@ public class DefaultWebRequester implements WebRequester {
 
     private final Collection<String> permissions;
 
+    @Nonnull
     @Override
     public Channel channel() {
         return context.channel();
@@ -33,6 +34,7 @@ public class DefaultWebRequester implements WebRequester {
         return context != null && context.channel().isOpen();
     }
 
+    @Nonnull
     @Override
     public PermissionResult hasPermissionValue(@Nonnull String perm) {
         String matched = Links.filter(permissions, permission -> {

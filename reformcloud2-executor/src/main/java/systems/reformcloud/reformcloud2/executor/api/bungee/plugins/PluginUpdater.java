@@ -20,10 +20,10 @@ public final class PluginUpdater extends AbsoluteThread {
     public void run() {
         while (!Thread.currentThread().isInterrupted()) {
             Collection<Plugin> plugins = ProxyServer.getInstance().getPluginManager().getPlugins();
-            if (plugins.size() != ExecutorAPI.getInstance().getThisProcessInformation().getPlugins().size()) {
-                ExecutorAPI.getInstance().getThisProcessInformation().updateRuntimeInformation();
-                ExecutorAPI.getInstance().getThisProcessInformation().getPlugins().clear();
-                plugins.forEach(plugin -> ExecutorAPI.getInstance().getThisProcessInformation().getPlugins().add(new DefaultPlugin(
+            if (plugins.size() != ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation().getPlugins().size()) {
+                ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation().updateRuntimeInformation();
+                ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation().getPlugins().clear();
+                plugins.forEach(plugin -> ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation().getPlugins().add(new DefaultPlugin(
                         plugin.getDescription().getVersion(),
                         plugin.getDescription().getAuthor(),
                         plugin.getDescription().getMain(),
@@ -32,7 +32,7 @@ public final class PluginUpdater extends AbsoluteThread {
                         true,
                         plugin.getDescription().getName()
                 )));
-                ExecutorAPI.getInstance().update(ExecutorAPI.getInstance().getThisProcessInformation());
+                ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation());
             }
 
             AbsoluteThread.sleep(TimeUnit.SECONDS, 5);

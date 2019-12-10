@@ -24,9 +24,9 @@ public final class PlayerListenerHandler implements Listener {
 
     @EventHandler (priority = EventPriority.HIGH)
     public void handle(final PlayerLoginEvent event) {
-        if (ExecutorAPI.getInstance().getThisProcessInformation().getProcessGroup().getPlayerAccessConfiguration().isOnlyProxyJoin()) {
+        if (ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation().getProcessGroup().getPlayerAccessConfiguration().isOnlyProxyJoin()) {
             PacketSender packetSender = DefaultChannelManager.INSTANCE.get("Controller").orElse(null);
-            if (packetSender == null || !ExecutorAPI.getInstance().getThisProcessInformation().getNetworkInfo().isConnected()) {
+            if (packetSender == null || !ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation().getNetworkInfo().isConnected()) {
                 event.setResult(PlayerLoginEvent.Result.KICK_BANNED);
                 event.setKickMessage("§4§lThe current server is not connected to the controller");
                 return;
@@ -47,7 +47,7 @@ public final class PlayerListenerHandler implements Listener {
         }
 
         final Player player = event.getPlayer();
-        final ProcessInformation current = ExecutorAPI.getInstance().getThisProcessInformation();
+        final ProcessInformation current = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation();
         final PlayerAccessConfiguration configuration = current.getProcessGroup().getPlayerAccessConfiguration();
 
         if (configuration.isUseCloudPlayerLimit()
@@ -105,16 +105,16 @@ public final class PlayerListenerHandler implements Listener {
 
     @EventHandler (priority = EventPriority.HIGHEST)
     public void handle(final PlayerJoinEvent event) {
-        final ProcessInformation current = ExecutorAPI.getInstance().getThisProcessInformation();
+        final ProcessInformation current = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation();
         current.onLogin(event.getPlayer().getUniqueId(), event.getPlayer().getName());
         current.updateRuntimeInformation();
         SpigotExecutor.getInstance().setThisProcessInformation(current);
-        ExecutorAPI.getInstance().update(current);
+        ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(current);
     }
 
     @EventHandler (priority = EventPriority.LOWEST)
     public void handle(final PlayerQuitEvent event) {
-        ProcessInformation current = ExecutorAPI.getInstance().getThisProcessInformation();
+        ProcessInformation current = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation();
         if (!current.isPlayerOnline(event.getPlayer().getUniqueId())) {
             return;
         }
@@ -128,7 +128,7 @@ public final class PlayerListenerHandler implements Listener {
         current.updateRuntimeInformation();
         current.onLogout(event.getPlayer().getUniqueId());
         SpigotExecutor.getInstance().setThisProcessInformation(current);
-        ExecutorAPI.getInstance().update(current);
+        ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(current);
     }
 
     private String format(String msg) {

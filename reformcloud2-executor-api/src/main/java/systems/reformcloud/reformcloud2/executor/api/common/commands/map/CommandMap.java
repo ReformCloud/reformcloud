@@ -3,6 +3,7 @@ package systems.reformcloud.reformcloud2.executor.api.common.commands.map;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.Command;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.dispatcher.CommandDispatcher;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public interface CommandMap extends CommandDispatcher {
@@ -19,7 +20,7 @@ public interface CommandMap extends CommandDispatcher {
      * @return The command instance or {@code null} if the command is not registered
      */
     @Nullable
-    Command getCommand(String command);
+    Command getCommand(@Nonnull String command);
 
     /**
      * Tries to find a command
@@ -28,7 +29,7 @@ public interface CommandMap extends CommandDispatcher {
      * @return The command instance or {@code null} if the command is not registered
      */
     @Nullable
-    Command findCommand(String commandPreLine);
+    Command findCommand(@Nonnull String commandPreLine);
 
     /**
      * Registers an command
@@ -36,5 +37,5 @@ public interface CommandMap extends CommandDispatcher {
      * @param noPermissionMessage The no permission message for the command
      * @param command The command which should get registered
      */
-    void register(String noPermissionMessage, Command command);
+    void register(@Nonnull String noPermissionMessage, @Nonnull Command command);
 }

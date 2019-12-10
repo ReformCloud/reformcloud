@@ -22,12 +22,12 @@ public final class PacketInDatabaseRemoveDocument implements NetworkHandler {
 
         switch (packet.content().getString("action")) {
             case "remove_key": {
-                ExecutorAPI.getInstance().remove(table, key);
+                ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().remove(table, key);
                 break;
             }
 
             case "remove_identifier": {
-                ExecutorAPI.getInstance().removeIfAbsent(table, key);
+                ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().removeIfAbsent(table, key);
                 break;
             }
         }

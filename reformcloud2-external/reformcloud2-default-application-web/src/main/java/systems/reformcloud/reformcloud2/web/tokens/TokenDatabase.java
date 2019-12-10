@@ -17,14 +17,14 @@ public final class TokenDatabase {
     private static JsonConfiguration configuration;
 
     public static void load() {
-        ExecutorAPI.getInstance().createDatabase(DB);
+        ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().createDatabase(DB);
         if (isSetupDone()) {
-            configuration = ExecutorAPI.getInstance().find(DB, "global_user", null);
+            configuration = ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().find(DB, "global_user", null);
         }
     }
 
     public static boolean isSetupDone() {
-        return ExecutorAPI.getInstance().contains(DB, "global_user");
+        return ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().contains(DB, "global_user");
     }
 
     static boolean tryAuth(String token) {

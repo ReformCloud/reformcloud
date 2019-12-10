@@ -21,9 +21,9 @@ public final class PluginUpdater extends AbsoluteThread {
     public void run() {
         while (!Thread.currentThread().isInterrupted()) {
             Collection<PluginContainer> plugins = VelocityExecutor.getInstance().getProxyServer().getPluginManager().getPlugins();
-            if (plugins.size() != ExecutorAPI.getInstance().getThisProcessInformation().getPlugins().size()) {
-                ExecutorAPI.getInstance().getThisProcessInformation().updateRuntimeInformation();
-                ExecutorAPI.getInstance().getThisProcessInformation().getPlugins().clear();
+            if (plugins.size() != ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation().getPlugins().size()) {
+                ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation().updateRuntimeInformation();
+                ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation().getPlugins().clear();
                 plugins.forEach(plugin -> {
                     List<String> depends = new ArrayList<>();
                     List<String> softDepends = new ArrayList<>();
@@ -35,7 +35,7 @@ public final class PluginUpdater extends AbsoluteThread {
                         }
                     });
 
-                    ExecutorAPI.getInstance().getThisProcessInformation().getPlugins().add(new DefaultPlugin(
+                    ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation().getPlugins().add(new DefaultPlugin(
                             plugin.getDescription().getVersion().get(),
                             plugin.getDescription().getAuthors().get(0),
                             null,
@@ -45,7 +45,7 @@ public final class PluginUpdater extends AbsoluteThread {
                             plugin.getDescription().getId()
                     ));
                 });
-                ExecutorAPI.getInstance().update(ExecutorAPI.getInstance().getThisProcessInformation());
+                ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation());
             }
 
             AbsoluteThread.sleep(TimeUnit.SECONDS, 5);

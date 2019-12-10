@@ -6,7 +6,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 
-public interface ClientAsyncAPI extends ClientSyncAPI {
+public interface ClientAsyncAPI {
 
     /**
      * Checks if a client is connected

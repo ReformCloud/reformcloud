@@ -30,7 +30,7 @@ public class SpongeListener {
                     return;
                 }
 
-                ExecutorAPI.getInstance().connect(player.getUniqueId(), cloudSign.getCurrentTarget());
+                ExecutorAPI.getInstance().getSyncAPI().getPlayerSyncAPI().connect(player.getUniqueId(), cloudSign.getCurrentTarget());
             }
         }
     }

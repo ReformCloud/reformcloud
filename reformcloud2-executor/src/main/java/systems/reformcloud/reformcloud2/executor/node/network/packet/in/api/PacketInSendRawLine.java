@@ -17,6 +17,6 @@ public final class PacketInSendRawLine implements NetworkHandler {
 
     @Override
     public void handlePacket(PacketSender packetSender, Packet packet, Consumer<Packet> responses) {
-        ExecutorAPI.getInstance().sendRawLine(packet.content().getString("line"));
+        ExecutorAPI.getInstance().getSyncAPI().getConsoleSyncAPI().sendRawLine(packet.content().getString("line"));
     }
 }

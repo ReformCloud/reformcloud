@@ -50,15 +50,15 @@ public class DefaultPermissionUtil implements PermissionUtil {
     }
 
     public static PermissionUtil hello() {
-        ExecutorAPI.getInstance().createDatabase(PERMISSION_GROUP_TABLE);
-        ExecutorAPI.getInstance().createDatabase(PERMISSION_PLAYER_TABLE);
-        ExecutorAPI.getInstance().createDatabase(PERMISSION_CONFIG_TABLE);
-        ExecutorAPI.getInstance().createDatabase(PERMISSION_NAME_TO_UNIQUE_ID_TABLE);
+        ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().createDatabase(PERMISSION_GROUP_TABLE);
+        ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().createDatabase(PERMISSION_PLAYER_TABLE);
+        ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().createDatabase(PERMISSION_CONFIG_TABLE);
+        ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().createDatabase(PERMISSION_NAME_TO_UNIQUE_ID_TABLE);
 
         if (ExecutorAPI.getInstance().getType().equals(ExecutorType.CONTROLLER)
                 || ExecutorAPI.getInstance().getType().equals(ExecutorType.NODE)) {
-            if (!ExecutorAPI.getInstance().contains(PERMISSION_CONFIG_TABLE, "config")) {
-                ExecutorAPI.getInstance().insert(
+            if (!ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().contains(PERMISSION_CONFIG_TABLE, "config")) {
+                ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().insert(
                         PERMISSION_CONFIG_TABLE,
                         "config",
                         null,
@@ -76,11 +76,11 @@ public class DefaultPermissionUtil implements PermissionUtil {
             return CACHE.get(name);
         }
 
-        if (!ExecutorAPI.getInstance().contains(PERMISSION_GROUP_TABLE, name)) {
+        if (!ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().contains(PERMISSION_GROUP_TABLE, name)) {
             return null;
         }
 
-        PermissionGroup group = ExecutorAPI.getInstance().find(
+        PermissionGroup group = ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().find(
                 PERMISSION_GROUP_TABLE,
                 name,
                 null,
@@ -101,7 +101,7 @@ public class DefaultPermissionUtil implements PermissionUtil {
 
         if (ExecutorAPI.getInstance().getType().equals(ExecutorType.CONTROLLER)
                 || ExecutorAPI.getInstance().getType().equals(ExecutorType.NODE)) {
-            ExecutorAPI.getInstance().update(PERMISSION_GROUP_TABLE, permissionGroup.getName(),
+            ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().update(PERMISSION_GROUP_TABLE, permissionGroup.getName(),
                     new JsonConfiguration().add("group", permissionGroup));
             DefaultChannelManager.INSTANCE.getAllSender().forEach(e -> e.sendPacket(new ControllerPacketOutGroupAction(permissionGroup, PermissionAction.UPDATE)));
         } else {
@@ -132,7 +132,7 @@ public class DefaultPermissionUtil implements PermissionUtil {
     public void addDefaultGroup(@Nonnull String group) {
         if (ExecutorAPI.getInstance().getType().equals(ExecutorType.CONTROLLER)
                 || ExecutorAPI.getInstance().getType().equals(ExecutorType.NODE)) {
-            JsonConfiguration config = ExecutorAPI.getInstance().find(PERMISSION_CONFIG_TABLE, "config", null);
+            JsonConfiguration config = ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().find(PERMISSION_CONFIG_TABLE, "config", null);
             if (config == null) {
                 return;
             }
@@ -148,7 +148,7 @@ public class DefaultPermissionUtil implements PermissionUtil {
 
             defaultGroups.add(group);
             config.add("defaultGroups", defaultGroups);
-            ExecutorAPI.getInstance().update(PERMISSION_CONFIG_TABLE, "config", config);
+            ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().update(PERMISSION_CONFIG_TABLE, "config", config);
             DefaultChannelManager.INSTANCE.getAllSender().forEach(e -> e.sendPacket(new ControllerPacketOutGroupAction(null, PermissionAction.DEFAULT_GROUPS_CHANGED)));
         } else {
             DefaultChannelManager.INSTANCE.get("Controller").ifPresent(e ->
@@ -166,7 +166,7 @@ public class DefaultPermissionUtil implements PermissionUtil {
     public void removeDefaultGroup(@Nonnull String group) {
         if (ExecutorAPI.getInstance().getType().equals(ExecutorType.CONTROLLER)
                 || ExecutorAPI.getInstance().getType().equals(ExecutorType.NODE)) {
-            JsonConfiguration config = ExecutorAPI.getInstance().find(PERMISSION_CONFIG_TABLE, "config", null);
+            JsonConfiguration config = ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().find(PERMISSION_CONFIG_TABLE, "config", null);
             if (config == null) {
                 return;
             }
@@ -182,7 +182,7 @@ public class DefaultPermissionUtil implements PermissionUtil {
 
             defaultGroups.remove(group);
             config.add("defaultGroups", defaultGroups);
-            ExecutorAPI.getInstance().update(PERMISSION_CONFIG_TABLE, "config", config);
+            ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().update(PERMISSION_CONFIG_TABLE, "config", config);
             DefaultChannelManager.INSTANCE.getAllSender().forEach(e -> e.sendPacket(new ControllerPacketOutGroupAction(null, PermissionAction.DEFAULT_GROUPS_CHANGED)));
         } else {
             DefaultChannelManager.INSTANCE.get("Controller").ifPresent(e ->
@@ -213,7 +213,7 @@ public class DefaultPermissionUtil implements PermissionUtil {
         );
         if (ExecutorAPI.getInstance().getType().equals(ExecutorType.CONTROLLER)
                 || ExecutorAPI.getInstance().getType().equals(ExecutorType.NODE)) {
-            ExecutorAPI.getInstance().insert(PERMISSION_GROUP_TABLE, name, null, new JsonConfiguration().add(
+            ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().insert(PERMISSION_GROUP_TABLE, name, null, new JsonConfiguration().add(
                     "group", newGroup
             ));
             DefaultChannelManager.INSTANCE.getAllSender().forEach(e -> e.sendPacket(new ControllerPacketOutGroupAction(newGroup, PermissionAction.CREATE)));
@@ -237,7 +237,7 @@ public class DefaultPermissionUtil implements PermissionUtil {
         if (toDelete != null) {
             if (ExecutorAPI.getInstance().getType().equals(ExecutorType.CONTROLLER)
                     || ExecutorAPI.getInstance().getType().equals(ExecutorType.NODE)) {
-                ExecutorAPI.getInstance().remove(PERMISSION_GROUP_TABLE, name);
+                ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().remove(PERMISSION_GROUP_TABLE, name);
                 DefaultChannelManager.INSTANCE.getAllSender().forEach(e -> e.sendPacket(new ControllerPacketOutGroupAction(toDelete, PermissionAction.DELETE)));
             } else {
                 DefaultChannelManager.INSTANCE.get("Controller").ifPresent(e -> e.sendPacket(new APIPacketOutGroupAction(toDelete, PermissionAction.DELETE)));
@@ -275,11 +275,11 @@ public class DefaultPermissionUtil implements PermissionUtil {
             return USER_CACHE.get(uuid);
         }
 
-        if (!ExecutorAPI.getInstance().contains(PERMISSION_PLAYER_TABLE, uuid.toString())) {
+        if (!ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().contains(PERMISSION_PLAYER_TABLE, uuid.toString())) {
             final PermissionUser user = new PermissionUser(uuid, new ArrayList<>(), new ArrayList<>());
             if (ExecutorAPI.getInstance().getType().equals(ExecutorType.CONTROLLER)
                     || ExecutorAPI.getInstance().getType().equals(ExecutorType.NODE)) {
-                ExecutorAPI.getInstance().insert(PERMISSION_PLAYER_TABLE, uuid.toString(), null, new JsonConfiguration()
+                ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().insert(PERMISSION_PLAYER_TABLE, uuid.toString(), null, new JsonConfiguration()
                         .add("user", user)
                 );
                 DefaultChannelManager.INSTANCE.getAllSender().forEach(e -> e.sendPacket(new ControllerPacketOutUserAction(user, PermissionAction.CREATE)));
@@ -291,7 +291,7 @@ public class DefaultPermissionUtil implements PermissionUtil {
             return user;
         }
 
-        final PermissionUser result = ExecutorAPI.getInstance().find(
+        final PermissionUser result = ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().find(
                 PERMISSION_PLAYER_TABLE,
                 uuid.toString(),
                 null,
@@ -345,7 +345,7 @@ public class DefaultPermissionUtil implements PermissionUtil {
 
         if (ExecutorAPI.getInstance().getType().equals(ExecutorType.CONTROLLER)
                 || ExecutorAPI.getInstance().getType().equals(ExecutorType.NODE)) {
-            ExecutorAPI.getInstance().update(PERMISSION_PLAYER_TABLE, permissionUser.getUniqueID().toString(),
+            ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().update(PERMISSION_PLAYER_TABLE, permissionUser.getUniqueID().toString(),
                     new JsonConfiguration().add("user", permissionUser));
             DefaultChannelManager.INSTANCE.getAllSender().forEach(e -> e.sendPacket(new ControllerPacketOutUserAction(permissionUser, PermissionAction.UPDATE)));
         } else {
@@ -358,7 +358,7 @@ public class DefaultPermissionUtil implements PermissionUtil {
         final PermissionUser user = loadUser(uuid);
         if (ExecutorAPI.getInstance().getType().equals(ExecutorType.CONTROLLER)
                 || ExecutorAPI.getInstance().getType().equals(ExecutorType.NODE)) {
-            ExecutorAPI.getInstance().remove(PERMISSION_PLAYER_TABLE, uuid.toString());
+            ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().remove(PERMISSION_PLAYER_TABLE, uuid.toString());
             DefaultChannelManager.INSTANCE.getAllSender().forEach(e -> e.sendPacket(new ControllerPacketOutUserAction(user, PermissionAction.DELETE)));
         } else {
             DefaultChannelManager.INSTANCE.get("Controller").ifPresent(e -> e.sendPacket(new APIPacketOutUserAction(user, PermissionAction.DELETE)));
@@ -453,7 +453,7 @@ public class DefaultPermissionUtil implements PermissionUtil {
     }
 
     private synchronized void loadDefaultGroups() {
-        JsonConfiguration config = ExecutorAPI.getInstance().find(PERMISSION_CONFIG_TABLE, "config", null);
+        JsonConfiguration config = ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().find(PERMISSION_CONFIG_TABLE, "config", null);
         if (config == null) {
             return;
         }
@@ -478,10 +478,10 @@ public class DefaultPermissionUtil implements PermissionUtil {
     }
 
     private void pushToDB(UUID uuid, String name) {
-        if (ExecutorAPI.getInstance().contains(PERMISSION_NAME_TO_UNIQUE_ID_TABLE, name)) {
-            ExecutorAPI.getInstance().update(PERMISSION_NAME_TO_UNIQUE_ID_TABLE, name, new JsonConfiguration().add("id", uuid));
+        if (ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().contains(PERMISSION_NAME_TO_UNIQUE_ID_TABLE, name)) {
+            ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().update(PERMISSION_NAME_TO_UNIQUE_ID_TABLE, name, new JsonConfiguration().add("id", uuid));
         } else {
-            ExecutorAPI.getInstance().insert(
+            ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().insert(
                     PERMISSION_NAME_TO_UNIQUE_ID_TABLE,
                     name,
                     uuid.toString(),

@@ -20,6 +20,6 @@ public final class ControllerQueryDispatchCommandLine implements NetworkHandler 
     @Override
     public void handlePacket(PacketSender packetSender, Packet packet, Consumer<Packet> responses) {
         String line = packet.content().getString("command");
-        responses.accept(new DefaultPacket(-1, new JsonConfiguration().add("result", ExecutorAPI.getInstance().dispatchCommandAndGetResult(line))));
+        responses.accept(new DefaultPacket(-1, new JsonConfiguration().add("result", ExecutorAPI.getInstance().getSyncAPI().getConsoleSyncAPI().dispatchCommandAndGetResult(line))));
     }
 }

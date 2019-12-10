@@ -8,7 +8,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.UUID;
 
-public interface PlayerAsyncAPI extends PlayerSyncAPI {
+public interface PlayerAsyncAPI {
 
     /**
      * Sends a message to a player

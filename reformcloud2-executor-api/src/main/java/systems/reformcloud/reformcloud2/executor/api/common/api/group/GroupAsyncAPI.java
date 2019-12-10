@@ -11,7 +11,7 @@ import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import java.util.List;
 
-public interface GroupAsyncAPI extends GroupSyncAPI {
+public interface GroupAsyncAPI {
 
     /**
      * Creates a new main group

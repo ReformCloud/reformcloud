@@ -33,7 +33,7 @@ public class NodeProcessScreen {
 
         enabledFrom.add(name);
         if (name.equals(NodeExecutor.getInstance().getNodeConfig().getName())) {
-            ProcessInformation processInformation = ExecutorAPI.getInstance().getProcess(uniqueID);
+            ProcessInformation processInformation = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcess(uniqueID);
             if (processInformation != null) {
                 queue.forEach(line -> System.out.println(LanguageManager.get("screen-line-added", processInformation.getName(), line)));
             }
@@ -60,7 +60,7 @@ public class NodeProcessScreen {
                 .filter(Objects::nonNull)
                 .forEach(e -> e.sendPacket(new NodePacketOutScreenLineAdded(uniqueID, line)));
 
-        ProcessInformation processInformation = ExecutorAPI.getInstance().getProcess(uniqueID);
+        ProcessInformation processInformation = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcess(uniqueID);
         if (processInformation != null && enabledFrom.contains(NodeExecutor.getInstance().getNodeConfig().getName())) {
                 System.out.println(LanguageManager.get("screen-line-added", processInformation.getName(), line));
         }

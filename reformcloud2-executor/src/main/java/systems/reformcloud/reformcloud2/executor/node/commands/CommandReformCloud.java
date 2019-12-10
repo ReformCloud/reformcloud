@@ -70,7 +70,7 @@ public final class CommandReformCloud extends GlobalCommand {
             }
             return true;
         } else if (strings.length == 1 && strings[0].equalsIgnoreCase("list")) {
-            ExecutorAPI.getInstance().getAllProcesses().forEach(processInformation -> System.out.println(
+            ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getAllProcesses().forEach(processInformation -> System.out.println(
                     "  => "
                             + processInformation.getName()
                             + "/" + processInformation.getProcessUniqueID()
@@ -92,9 +92,9 @@ public final class CommandReformCloud extends GlobalCommand {
                     ProcessInformation processInformation;
                     UUID uuid = CommonHelper.tryParse(strings[1]);
                     if (uuid == null) {
-                        processInformation = ExecutorAPI.getInstance().getProcess(strings[1]);
+                        processInformation = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcess(strings[1]);
                     } else {
-                        processInformation = ExecutorAPI.getInstance().getProcess(uuid);
+                        processInformation = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcess(uuid);
                     }
 
                     if (processInformation == null) {
@@ -119,9 +119,9 @@ public final class CommandReformCloud extends GlobalCommand {
                 ProcessInformation processInformation;
                 UUID uuid = CommonHelper.tryParse(strings[1]);
                 if (uuid == null) {
-                    processInformation = ExecutorAPI.getInstance().getProcess(strings[1]);
+                    processInformation = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcess(strings[1]);
                 } else {
-                    processInformation = ExecutorAPI.getInstance().getProcess(uuid);
+                    processInformation = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcess(uuid);
                 }
 
                 if (processInformation == null) {
@@ -142,33 +142,33 @@ public final class CommandReformCloud extends GlobalCommand {
             }
 
             case "maintenance": {
-                ProcessGroup processGroup = ExecutorAPI.getInstance().getProcessGroup(strings[1]);
+                ProcessGroup processGroup = ExecutorAPI.getInstance().getSyncAPI().getGroupSyncAPI().getProcessGroup(strings[1]);
                 if (processGroup == null) {
                     System.out.println(LanguageManager.get("command-rc-group-unknown", strings[1]));
                     return true;
                 }
 
                 processGroup.getPlayerAccessConfiguration().toggleMaintenance();
-                ExecutorAPI.getInstance().updateProcessGroupAsync(processGroup);
+                ExecutorAPI.getInstance().getAsyncAPI().getGroupAsyncAPI().updateProcessGroupAsync(processGroup);
                 System.out.println(LanguageManager.get("command-rc-execute-success"));
                 return true;
             }
 
             case "start": {
                 if (strings.length == 2) {
-                    ProcessGroup processGroup = ExecutorAPI.getInstance().getProcessGroup(strings[1]);
+                    ProcessGroup processGroup = ExecutorAPI.getInstance().getSyncAPI().getGroupSyncAPI().getProcessGroup(strings[1]);
                     if (processGroup == null) {
                         System.out.println(LanguageManager.get("command-rc-group-unknown", strings[1]));
                         return true;
                     }
 
-                    ExecutorAPI.getInstance().startProcessAsync(processGroup.getName());
+                    ExecutorAPI.getInstance().getAsyncAPI().getProcessAsyncAPI().startProcessAsync(processGroup.getName());
                     System.out.println(LanguageManager.get("command-rc-execute-success"));
                     return true;
                 }
 
                 if (strings.length == 3) {
-                    ProcessGroup processGroup = ExecutorAPI.getInstance().getProcessGroup(strings[1]);
+                    ProcessGroup processGroup = ExecutorAPI.getInstance().getSyncAPI().getGroupSyncAPI().getProcessGroup(strings[1]);
                     if (processGroup == null) {
                         System.out.println(LanguageManager.get("command-rc-group-unknown", strings[1]));
                         return true;
@@ -181,7 +181,7 @@ public final class CommandReformCloud extends GlobalCommand {
                     }
 
                     for (int started = 1; started <= i; started++) {
-                        ExecutorAPI.getInstance().startProcessAsync(processGroup.getName());
+                        ExecutorAPI.getInstance().getAsyncAPI().getProcessAsyncAPI().startProcessAsync(processGroup.getName());
                         AbsoluteThread.sleep(TimeUnit.MILLISECONDS, 20);
                     }
 
@@ -190,7 +190,7 @@ public final class CommandReformCloud extends GlobalCommand {
                 }
 
                 if (strings.length == 4) {
-                    ProcessGroup processGroup = ExecutorAPI.getInstance().getProcessGroup(strings[1]);
+                    ProcessGroup processGroup = ExecutorAPI.getInstance().getSyncAPI().getGroupSyncAPI().getProcessGroup(strings[1]);
                     if (processGroup == null) {
                         System.out.println(LanguageManager.get("command-rc-group-unknown", strings[1]));
                         return true;
@@ -203,7 +203,7 @@ public final class CommandReformCloud extends GlobalCommand {
                     }
 
                     for (int started = 0; started <= i; started++) {
-                        ExecutorAPI.getInstance().startProcessAsync(processGroup.getName(), strings[3]);
+                        ExecutorAPI.getInstance().getAsyncAPI().getProcessAsyncAPI().startProcessAsync(processGroup.getName(), strings[3]);
                         AbsoluteThread.sleep(TimeUnit.MILLISECONDS, 20);
                     }
 
@@ -218,9 +218,9 @@ public final class CommandReformCloud extends GlobalCommand {
                     ProcessInformation processInformation;
                     UUID uuid = CommonHelper.tryParse(strings[1]);
                     if (uuid == null) {
-                        processInformation = ExecutorAPI.getInstance().getProcess(strings[1]);
+                        processInformation = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcess(strings[1]);
                     } else {
-                        processInformation = ExecutorAPI.getInstance().getProcess(uuid);
+                        processInformation = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcess(uuid);
                     }
 
                     if (processInformation == null) {
@@ -228,7 +228,7 @@ public final class CommandReformCloud extends GlobalCommand {
                         return true;
                     }
 
-                    ExecutorAPI.getInstance().stopProcessAsync(processInformation.getProcessUniqueID());
+                    ExecutorAPI.getInstance().getAsyncAPI().getProcessAsyncAPI().stopProcessAsync(processInformation.getProcessUniqueID());
                     System.out.println(LanguageManager.get("command-rc-execute-success"));
                     return true;
                 }
@@ -237,14 +237,14 @@ public final class CommandReformCloud extends GlobalCommand {
 
             case "stopall": {
                 if (strings.length == 2) {
-                    ProcessGroup processGroup = ExecutorAPI.getInstance().getProcessGroup(strings[1]);
+                    ProcessGroup processGroup = ExecutorAPI.getInstance().getSyncAPI().getGroupSyncAPI().getProcessGroup(strings[1]);
                     if (processGroup == null) {
                         System.out.println(LanguageManager.get("command-rc-group-unknown", strings[1]));
                         return true;
                     }
 
-                    ExecutorAPI.getInstance().getProcesses(processGroup.getName()).forEach(processInformation -> {
-                        ExecutorAPI.getInstance().stopProcessAsync(processInformation.getProcessUniqueID());
+                    ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcesses(processGroup.getName()).forEach(processInformation -> {
+                        ExecutorAPI.getInstance().getAsyncAPI().getProcessAsyncAPI().stopProcessAsync(processInformation.getProcessUniqueID());
                         AbsoluteThread.sleep(TimeUnit.MILLISECONDS, 10);
                     });
 
@@ -252,8 +252,8 @@ public final class CommandReformCloud extends GlobalCommand {
                     return true;
                 }
 
-                ExecutorAPI.getInstance().getAllProcesses().forEach(processInformation -> {
-                    ExecutorAPI.getInstance().stopProcess(processInformation.getProcessUniqueID());
+                ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getAllProcesses().forEach(processInformation -> {
+                    ExecutorAPI.getInstance().getAsyncAPI().getProcessAsyncAPI().stopProcessAsync(processInformation.getProcessUniqueID());
                     AbsoluteThread.sleep(TimeUnit.MILLISECONDS, 10);
                 });
                 System.out.println(LanguageManager.get("command-rc-execute-success"));
@@ -263,7 +263,7 @@ public final class CommandReformCloud extends GlobalCommand {
             case "ofall": {
                 if (strings.length == 3) {
                     if (strings[2].equalsIgnoreCase("list")) {
-                        MainGroup mainGroup = ExecutorAPI.getInstance().getMainGroup(strings[1]);
+                        MainGroup mainGroup = ExecutorAPI.getInstance().getSyncAPI().getGroupSyncAPI().getMainGroup(strings[1]);
                         if (mainGroup == null) {
                             System.out.println(LanguageManager.get("command-rc-main-group-unknown", strings[1]));
                             return true;
@@ -272,20 +272,20 @@ public final class CommandReformCloud extends GlobalCommand {
                         mainGroup.getSubGroups().forEach(s -> System.out.println(LanguageManager.get("command-rc-main-sub-group", s)));
                         return true;
                     } else if (strings[2].equalsIgnoreCase("stop")) {
-                        MainGroup mainGroup = ExecutorAPI.getInstance().getMainGroup(strings[1]);
+                        MainGroup mainGroup = ExecutorAPI.getInstance().getSyncAPI().getGroupSyncAPI().getMainGroup(strings[1]);
                         if (mainGroup == null) {
                             System.out.println(LanguageManager.get("command-rc-main-group-unknown", strings[1]));
                             return true;
                         }
 
                         mainGroup.getSubGroups().forEach(s -> {
-                            ProcessGroup processGroup = ExecutorAPI.getInstance().getProcessGroup(s);
+                            ProcessGroup processGroup = ExecutorAPI.getInstance().getSyncAPI().getGroupSyncAPI().getProcessGroup(s);
                             if (processGroup == null) {
                                 return;
                             }
 
-                            ExecutorAPI.getInstance().getProcesses(processGroup.getName()).forEach(processInformation -> {
-                                ExecutorAPI.getInstance().stopProcessAsync(processInformation.getProcessUniqueID());
+                            ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcesses(processGroup.getName()).forEach(processInformation -> {
+                                ExecutorAPI.getInstance().getAsyncAPI().getProcessAsyncAPI().stopProcessAsync(processInformation.getProcessUniqueID());
                                 AbsoluteThread.sleep(TimeUnit.MILLISECONDS, 10);
                             });
                         });
@@ -301,9 +301,9 @@ public final class CommandReformCloud extends GlobalCommand {
                 ProcessInformation processInformation;
                 UUID uuid = CommonHelper.tryParse(strings[1]);
                 if (uuid == null) {
-                    processInformation = ExecutorAPI.getInstance().getProcess(strings[1]);
+                    processInformation = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcess(strings[1]);
                 } else {
-                    processInformation = ExecutorAPI.getInstance().getProcess(uuid);
+                    processInformation = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcess(uuid);
                 }
 
                 if (processInformation == null) {
@@ -316,7 +316,7 @@ public final class CommandReformCloud extends GlobalCommand {
                     stringBuilder.append(s).append(" ");
                 }
 
-                ExecutorAPI.getInstance().executeProcessCommandAsync(processInformation.getName(), stringBuilder.toString());
+                ExecutorAPI.getInstance().getAsyncAPI().getProcessAsyncAPI().executeProcessCommandAsync(processInformation.getName(), stringBuilder.toString());
                 System.out.println(LanguageManager.get("command-rc-execute-success"));
                 return true;
             }
@@ -348,9 +348,9 @@ public final class CommandReformCloud extends GlobalCommand {
                 }
 
                 if (strings[1].equalsIgnoreCase("main") && strings.length == 3) {
-                    MainGroup mainGroup = ExecutorAPI.getInstance().getMainGroup(strings[2]);
+                    MainGroup mainGroup = ExecutorAPI.getInstance().getSyncAPI().getGroupSyncAPI().getMainGroup(strings[2]);
                     if (mainGroup == null) {
-                        ExecutorAPI.getInstance().createMainGroupAsync(strings[2]);
+                        ExecutorAPI.getInstance().getAsyncAPI().getGroupAsyncAPI().createMainGroupAsync(strings[2]);
                         System.out.println(LanguageManager.get("command-rc-execute-success"));
                     } else {
                         System.out.println(LanguageManager.get("command-rc-create-main-group-already-exists", strings[2]));
@@ -360,9 +360,9 @@ public final class CommandReformCloud extends GlobalCommand {
 
                 if (strings[1].equalsIgnoreCase("sub")) {
                     if (strings.length == 3) {
-                        ProcessGroup processGroup = ExecutorAPI.getInstance().getProcessGroup(strings[2]);
+                        ProcessGroup processGroup = ExecutorAPI.getInstance().getSyncAPI().getGroupSyncAPI().getProcessGroup(strings[2]);
                         if (processGroup == null) {
-                            ExecutorAPI.getInstance().createProcessGroupAsync(strings[2]);
+                            ExecutorAPI.getInstance().getAsyncAPI().getGroupAsyncAPI().createProcessGroupAsync(strings[2]);
                             System.out.println(LanguageManager.get("command-rc-execute-success"));
                         } else {
                             System.out.println(LanguageManager.get("command-rc-create-sub-group-already-exists", strings[2]));
@@ -371,7 +371,7 @@ public final class CommandReformCloud extends GlobalCommand {
                     }
 
                     if (strings.length == 4) {
-                        ProcessGroup processGroup = ExecutorAPI.getInstance().getProcessGroup(strings[2]);
+                        ProcessGroup processGroup = ExecutorAPI.getInstance().getSyncAPI().getGroupSyncAPI().getProcessGroup(strings[2]);
                         Version version = CommonHelper.findEnumField(Version.class, strings[3]).orNothing();
                         if (version == null) {
                             System.out.println(LanguageManager.get("command-rc-version-not-found", strings[3]));
@@ -379,7 +379,7 @@ public final class CommandReformCloud extends GlobalCommand {
                         }
 
                         if (processGroup == null) {
-                            ExecutorAPI.getInstance().createProcessGroupAsync(
+                            ExecutorAPI.getInstance().getAsyncAPI().getGroupAsyncAPI().createProcessGroupAsync(
                                     strings[2],
                                     Collections.singletonList(new Template(
                                             0,
@@ -402,7 +402,7 @@ public final class CommandReformCloud extends GlobalCommand {
                     }
 
                     if (strings.length == 5) {
-                        ProcessGroup processGroup = ExecutorAPI.getInstance().getProcessGroup(strings[2]);
+                        ProcessGroup processGroup = ExecutorAPI.getInstance().getSyncAPI().getGroupSyncAPI().getProcessGroup(strings[2]);
                         Version version = CommonHelper.findEnumField(Version.class, strings[3]).orNothing();
                         if (version == null) {
                             System.out.println(LanguageManager.get("command-rc-version-not-found", strings[3]));
@@ -410,7 +410,7 @@ public final class CommandReformCloud extends GlobalCommand {
                         }
 
                         if (processGroup == null) {
-                            ExecutorAPI.getInstance().createProcessGroupAsync(
+                            ExecutorAPI.getInstance().getAsyncAPI().getGroupAsyncAPI().createProcessGroupAsync(
                                     strings[2],
                                     Collections.singletonList(new Template(
                                             0,
@@ -425,10 +425,10 @@ public final class CommandReformCloud extends GlobalCommand {
                                             ), version
                                     ))
                             ).onComplete(e -> {
-                                MainGroup mainGroup = ExecutorAPI.getInstance().getMainGroup(strings[4]);
+                                MainGroup mainGroup = ExecutorAPI.getInstance().getSyncAPI().getGroupSyncAPI().getMainGroup(strings[4]);
                                 if (mainGroup != null) {
                                     mainGroup.getSubGroups().add(e.getName());
-                                    ExecutorAPI.getInstance().updateMainGroup(mainGroup);
+                                    ExecutorAPI.getInstance().getSyncAPI().getGroupSyncAPI().updateMainGroup(mainGroup);
                                 }
                             });
                             System.out.println(LanguageManager.get("command-rc-execute-success"));
@@ -439,7 +439,7 @@ public final class CommandReformCloud extends GlobalCommand {
                     }
 
                     if (strings.length == 6) {
-                        ProcessGroup processGroup = ExecutorAPI.getInstance().getProcessGroup(strings[2]);
+                        ProcessGroup processGroup = ExecutorAPI.getInstance().getSyncAPI().getGroupSyncAPI().getProcessGroup(strings[2]);
                         Version version = CommonHelper.findEnumField(Version.class, strings[3]).orNothing();
                         Boolean staticProcess = CommonHelper.booleanFromString(strings[5]);
                         if (version == null) {
@@ -453,7 +453,7 @@ public final class CommandReformCloud extends GlobalCommand {
                         }
 
                         if (processGroup == null) {
-                            ExecutorAPI.getInstance().createProcessGroupAsync(
+                            ExecutorAPI.getInstance().getAsyncAPI().getGroupAsyncAPI().createProcessGroupAsync(
                                     strings[2],
                                     Collections.singletonList(new Template(
                                             0,
@@ -473,10 +473,10 @@ public final class CommandReformCloud extends GlobalCommand {
                                             null, true, true, true, 50
                                     ), staticProcess
                             ).onComplete(e -> {
-                                MainGroup mainGroup = ExecutorAPI.getInstance().getMainGroup(strings[4]);
+                                MainGroup mainGroup = ExecutorAPI.getInstance().getSyncAPI().getGroupSyncAPI().getMainGroup(strings[4]);
                                 if (mainGroup != null) {
                                     mainGroup.getSubGroups().add(e.getName());
-                                    ExecutorAPI.getInstance().updateMainGroup(mainGroup);
+                                    ExecutorAPI.getInstance().getSyncAPI().getGroupSyncAPI().updateMainGroup(mainGroup);
                                 }
                             });
                             System.out.println(LanguageManager.get("command-rc-execute-success"));
@@ -487,7 +487,7 @@ public final class CommandReformCloud extends GlobalCommand {
                     }
 
                     if (strings.length == 7) {
-                        ProcessGroup processGroup = ExecutorAPI.getInstance().getProcessGroup(strings[2]);
+                        ProcessGroup processGroup = ExecutorAPI.getInstance().getSyncAPI().getGroupSyncAPI().getProcessGroup(strings[2]);
                         Version version = CommonHelper.findEnumField(Version.class, strings[3]).orNothing();
                         Boolean staticProcess = CommonHelper.booleanFromString(strings[5]);
                         Boolean lobby = CommonHelper.booleanFromString(strings[6]);
@@ -519,13 +519,13 @@ public final class CommandReformCloud extends GlobalCommand {
                                     lobby
                             );
 
-                            MainGroup mainGroup = ExecutorAPI.getInstance().getMainGroup(strings[4]);
+                            MainGroup mainGroup = ExecutorAPI.getInstance().getSyncAPI().getGroupSyncAPI().getMainGroup(strings[4]);
                             if (mainGroup != null) {
                                 mainGroup.getSubGroups().add(processGroup1.getName());
-                                ExecutorAPI.getInstance().updateMainGroup(mainGroup);
+                                ExecutorAPI.getInstance().getSyncAPI().getGroupSyncAPI().updateMainGroup(mainGroup);
                             }
 
-                            ExecutorAPI.getInstance().createProcessGroupAsync(processGroup1);
+                            ExecutorAPI.getInstance().getAsyncAPI().getGroupAsyncAPI().createProcessGroupAsync(processGroup1);
                             System.out.println(LanguageManager.get("command-rc-execute-success"));
                         } else {
                             System.out.println(LanguageManager.get("command-rc-create-sub-group-already-exists", strings[2]));
@@ -534,7 +534,7 @@ public final class CommandReformCloud extends GlobalCommand {
                     }
 
                     if (strings.length == 8) {
-                        ProcessGroup processGroup = ExecutorAPI.getInstance().getProcessGroup(strings[2]);
+                        ProcessGroup processGroup = ExecutorAPI.getInstance().getSyncAPI().getGroupSyncAPI().getProcessGroup(strings[2]);
                         Version version = CommonHelper.findEnumField(Version.class, strings[3]).orNothing();
                         Boolean staticProcess = CommonHelper.booleanFromString(strings[5]);
                         Integer min = CommonHelper.fromString(strings[6]);
@@ -561,7 +561,7 @@ public final class CommandReformCloud extends GlobalCommand {
                         }
 
                         if (processGroup == null) {
-                            ExecutorAPI.getInstance().createProcessGroupAsync(
+                            ExecutorAPI.getInstance().getAsyncAPI().getGroupAsyncAPI().createProcessGroupAsync(
                                     strings[2],
                                     Collections.singletonList(new Template(
                                             0,
@@ -581,10 +581,10 @@ public final class CommandReformCloud extends GlobalCommand {
                                             null, true, true, true, 50
                                     ), staticProcess
                             ).onComplete(e -> {
-                                MainGroup mainGroup = ExecutorAPI.getInstance().getMainGroup(strings[4]);
+                                MainGroup mainGroup = ExecutorAPI.getInstance().getSyncAPI().getGroupSyncAPI().getMainGroup(strings[4]);
                                 if (mainGroup != null) {
                                     mainGroup.getSubGroups().add(e.getName());
-                                    ExecutorAPI.getInstance().updateMainGroup(mainGroup);
+                                    ExecutorAPI.getInstance().getSyncAPI().getGroupSyncAPI().updateMainGroup(mainGroup);
                                 }
                             });
                             System.out.println(LanguageManager.get("command-rc-execute-success"));
@@ -596,7 +596,7 @@ public final class CommandReformCloud extends GlobalCommand {
                 }
 
                 if (strings.length == 9) {
-                    ProcessGroup processGroup = ExecutorAPI.getInstance().getProcessGroup(strings[2]);
+                    ProcessGroup processGroup = ExecutorAPI.getInstance().getSyncAPI().getGroupSyncAPI().getProcessGroup(strings[2]);
                     Version version = CommonHelper.findEnumField(Version.class, strings[3]).orNothing();
                     Boolean staticProcess = CommonHelper.booleanFromString(strings[5]);
                     Boolean lobby = CommonHelper.booleanFromString(strings[6]);
@@ -641,11 +641,11 @@ public final class CommandReformCloud extends GlobalCommand {
                                 lobby
                         );
 
-                        ExecutorAPI.getInstance().createProcessGroupAsync(processGroup1).onComplete(e -> {
-                            MainGroup mainGroup = ExecutorAPI.getInstance().getMainGroup(strings[4]);
+                        ExecutorAPI.getInstance().getAsyncAPI().getGroupAsyncAPI().createProcessGroupAsync(processGroup1).onComplete(e -> {
+                            MainGroup mainGroup = ExecutorAPI.getInstance().getSyncAPI().getGroupSyncAPI().getMainGroup(strings[4]);
                             if (mainGroup != null) {
                                 mainGroup.getSubGroups().add(e.getName());
-                                ExecutorAPI.getInstance().updateMainGroup(mainGroup);
+                                ExecutorAPI.getInstance().getSyncAPI().getGroupSyncAPI().updateMainGroup(mainGroup);
                             }
                         });
                         System.out.println(LanguageManager.get("command-rc-execute-success"));
@@ -660,7 +660,7 @@ public final class CommandReformCloud extends GlobalCommand {
 
             case "list": {
                 if (strings.length == 2) {
-                    ExecutorAPI.getInstance().getProcesses(strings[1]).forEach(processInformation -> System.out.println(
+                    ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcesses(strings[1]).forEach(processInformation -> System.out.println(
                             "  => "
                                     + processInformation.getName()
                                     + "/" + processInformation.getProcessUniqueID()
@@ -676,7 +676,7 @@ public final class CommandReformCloud extends GlobalCommand {
 
             case "listgroups": {
                 if (strings.length == 2 && strings[1].equalsIgnoreCase("sub")) {
-                    ExecutorAPI.getInstance().getProcessGroups().forEach(processGroup -> System.out.println("  => " +
+                    ExecutorAPI.getInstance().getSyncAPI().getGroupSyncAPI().getProcessGroups().forEach(processGroup -> System.out.println("  => " +
                             processGroup.getName() +
                             " maintenance: " + processGroup.getPlayerAccessConfiguration().isMaintenance() +
                             " static: " + processGroup.isStaticProcess() +
@@ -686,7 +686,7 @@ public final class CommandReformCloud extends GlobalCommand {
                 }
 
                 if (strings.length == 2 && strings[1].equalsIgnoreCase("main")) {
-                    ExecutorAPI.getInstance().getMainGroups().forEach(mainGroup -> System.out.println("  => " + mainGroup.getName() + "/" + mainGroup.getSubGroups()));
+                    ExecutorAPI.getInstance().getSyncAPI().getGroupSyncAPI().getMainGroups().forEach(mainGroup -> System.out.println("  => " + mainGroup.getName() + "/" + mainGroup.getSubGroups()));
                     return true;
                 }
                 break;
@@ -695,7 +695,7 @@ public final class CommandReformCloud extends GlobalCommand {
             case "delete": {
                 if (strings.length == 3) {
                     if (strings[1].equalsIgnoreCase("sub")) {
-                        ProcessGroup processGroup = ExecutorAPI.getInstance().getProcessGroup(strings[2]);
+                        ProcessGroup processGroup = ExecutorAPI.getInstance().getSyncAPI().getGroupSyncAPI().getProcessGroup(strings[2]);
                         if (processGroup == null) {
                             System.out.println(LanguageManager.get("command-rc-group-unknown", strings[2]));
                             return true;
@@ -707,7 +707,7 @@ public final class CommandReformCloud extends GlobalCommand {
                     }
 
                     if (strings[1].equalsIgnoreCase("main")) {
-                        MainGroup mainGroup = ExecutorAPI.getInstance().getMainGroup(strings[2]);
+                        MainGroup mainGroup = ExecutorAPI.getInstance().getSyncAPI().getGroupSyncAPI().getMainGroup(strings[2]);
                         if (mainGroup == null) {
                             System.out.println(LanguageManager.get("command-rc-main-group-unknown", strings[2]));
                             return true;

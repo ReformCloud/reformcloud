@@ -25,12 +25,12 @@ public final class ControllerQueryDatabaseUpdateDocument implements NetworkHandl
 
         switch (packet.content().getString("action")) {
             case "update_key": {
-                responses.accept(new DefaultPacket(-1, new JsonConfiguration().add("result", ExecutorAPI.getInstance().update(table, key, data))));
+                responses.accept(new DefaultPacket(-1, new JsonConfiguration().add("result", ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().update(table, key, data))));
                 break;
             }
 
             case "update_identifier": {
-                responses.accept(new DefaultPacket(-1, new JsonConfiguration().add("result", ExecutorAPI.getInstance().updateIfAbsent(table, key, data))));
+                responses.accept(new DefaultPacket(-1, new JsonConfiguration().add("result", ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().updateIfAbsent(table, key, data))));
                 break;
             }
         }

@@ -36,7 +36,7 @@ public final class ControllerPacketInAPILogoutPlayer implements NetworkHandler {
         ));
 
         ControllerExecutor.getInstance().getEventManager().callEvent(new PlayerLogoutEvent(name, uuid));
-        ExecutorAPI.getInstance().getAllProcesses().forEach(process -> DefaultChannelManager.INSTANCE.get(process.getName()).ifPresent(channel -> channel.sendPacket(
+        ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getAllProcesses().forEach(process -> DefaultChannelManager.INSTANCE.get(process.getName()).ifPresent(channel -> channel.sendPacket(
                 new ControllerEventLogoutPlayer(name, uuid)
         )));
     }

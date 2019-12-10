@@ -202,8 +202,8 @@ public final class ControllerExecutorConfig {
         processGroups.remove(processGroup);
         ControllerExecutor.getInstance().getAutoStartupHandler().update();
 
-        ExecutorAPI.getInstance().getProcesses(processGroup.getName()).forEach(processInformation -> {
-            ExecutorAPI.getInstance().stopProcess(processInformation.getProcessUniqueID());
+        ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcesses(processGroup.getName()).forEach(processInformation -> {
+            ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().stopProcess(processInformation.getProcessUniqueID());
             AbsoluteThread.sleep(TimeUnit.MILLISECONDS, 10);
         });
     }
@@ -216,9 +216,9 @@ public final class ControllerExecutorConfig {
             ControllerExecutor.getInstance().getAutoStartupHandler().update();
         });
 
-        Links.allOf(ExecutorAPI.getInstance().getAllProcesses(), processInformation -> processInformation.getProcessGroup().getName().equals(processGroup.getName())).forEach(processInformation -> {
+        Links.allOf(ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getAllProcesses(), processInformation -> processInformation.getProcessGroup().getName().equals(processGroup.getName())).forEach(processInformation -> {
             processInformation.setProcessGroup(processGroup);
-            ExecutorAPI.getInstance().update(processInformation);
+            ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(processInformation);
         });
     }
 

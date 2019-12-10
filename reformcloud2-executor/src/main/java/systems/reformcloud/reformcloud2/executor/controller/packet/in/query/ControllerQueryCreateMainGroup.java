@@ -21,7 +21,7 @@ public final class ControllerQueryCreateMainGroup implements NetworkHandler {
     @Override
     public void handlePacket(PacketSender packetSender, Packet packet, Consumer<Packet> responses) {
         MainGroup mainGroup = packet.content().get("group", MainGroup.TYPE);
-        responses.accept(new DefaultPacket(-1, new JsonConfiguration().add("result", ExecutorAPI.getInstance().createMainGroup(
+        responses.accept(new DefaultPacket(-1, new JsonConfiguration().add("result", ExecutorAPI.getInstance().getSyncAPI().getGroupSyncAPI().createMainGroup(
                 mainGroup.getName(), mainGroup.getSubGroups()
         ))));
     }

@@ -7,12 +7,24 @@ import javax.annotation.Nullable;
 
 public interface EventDispatcher {
 
+    /**
+     * Dispatched the command event
+     *
+     * @param commandEvent The command event which should get executed
+     * @param command The command which is affected by the command event
+     * @return The affected command
+     */
     @Nullable
-    Command dispatchCommandEvent(
-            @Nonnull CommandEvent commandEvent,
-            @Nullable Command command
-    );
+    Command dispatchCommandEvent(@Nonnull CommandEvent commandEvent, @Nullable Command command);
 
+    /**
+     * Dispatched the command event
+     *
+     * @param commandEvent The command event which should get executed
+     * @param command The command which is affected by the command event
+     * @param update The command which should get updated
+     * @return The affected command
+     */
     @Nullable
     Command dispatchCommandEvent(
             @Nonnull CommandEvent commandEvent,
@@ -20,6 +32,15 @@ public interface EventDispatcher {
             @Nonnull Command update
     );
 
+    /**
+     * Dispatched the command event
+     *
+     * @param commandEvent The command event which should get executed
+     * @param command The command which is affected by the command event
+     * @param update The command which should get updated
+     * @param line The line which is affected by the command line
+     * @return The affected command
+     */
     @Nullable
     Command dispatchCommandEvent(
             @Nonnull CommandEvent commandEvent,

@@ -95,56 +95,56 @@ public final class JsonConfiguration implements Configurable<JsonConfiguration> 
 
     @Nonnull
     @Override
-    public JsonConfiguration add(@Nonnull String key, @Nonnull String value) {
+    public JsonConfiguration add(@Nonnull String key, @Nullable String value) {
         this.jsonObject.addProperty(key, value);
         return this;
     }
 
     @Nonnull
     @Override
-    public JsonConfiguration add(@Nonnull String key, @Nonnull Integer value) {
+    public JsonConfiguration add(@Nonnull String key, @Nullable Integer value) {
         this.jsonObject.addProperty(key, value);
         return this;
     }
 
     @Nonnull
     @Override
-    public JsonConfiguration add(@Nonnull String key, @Nonnull Long value) {
+    public JsonConfiguration add(@Nonnull String key, @Nullable Long value) {
         this.jsonObject.addProperty(key, value);
         return this;
     }
 
     @Nonnull
     @Override
-    public JsonConfiguration add(@Nonnull String key, @Nonnull Short value) {
+    public JsonConfiguration add(@Nonnull String key, @Nullable Short value) {
         this.jsonObject.addProperty(key, value);
         return this;
     }
 
     @Nonnull
     @Override
-    public JsonConfiguration add(@Nonnull String key, @Nonnull Byte value) {
+    public JsonConfiguration add(@Nonnull String key, @Nullable Byte value) {
         this.jsonObject.addProperty(key, value);
         return this;
     }
 
     @Nonnull
     @Override
-    public JsonConfiguration add(@Nonnull String key, @Nonnull Boolean value) {
+    public JsonConfiguration add(@Nonnull String key, @Nullable Boolean value) {
         this.jsonObject.addProperty(key, value);
         return this;
     }
 
     @Nonnull
     @Override
-    public JsonConfiguration add(@Nonnull String key, @Nonnull Double value) {
+    public JsonConfiguration add(@Nonnull String key, @Nullable Double value) {
         this.jsonObject.addProperty(key, value);
         return this;
     }
 
     @Nonnull
     @Override
-    public JsonConfiguration add(@Nonnull String key, @Nonnull Float value) {
+    public JsonConfiguration add(@Nonnull String key, @Nullable Float value) {
         this.jsonObject.addProperty(key, value);
         return this;
     }

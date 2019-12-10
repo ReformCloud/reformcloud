@@ -153,7 +153,7 @@ public final class BungeeExecutor extends API implements PlayerAPIExecutor {
 
             thisProcessInformation.updateMaxPlayers(ProxyServer.getInstance().getConfig().getPlayerLimit());
             thisProcessInformation.updateRuntimeInformation();
-            ExecutorAPI.getInstance().update(thisProcessInformation);
+            ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(thisProcessInformation);
 
             DefaultChannelManager.INSTANCE.get("Controller").ifPresent(controller -> packetHandler.getQueryHandler().sendQueryAsync(controller, new APIBungeePacketOutRequestIngameMessages()).onComplete(packet -> {
                 IngameMessages ingameMessages = packet.content().get("messages", IngameMessages.TYPE);

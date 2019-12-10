@@ -59,7 +59,7 @@ public class DefaultDumpUtil implements DumpUtil {
     }
 
     private void bumpMainGroups(StringBuilder stringBuilder) {
-        List<MainGroup> mainGroups = ExecutorAPI.getInstance().getMainGroups();
+        List<MainGroup> mainGroups = ExecutorAPI.getInstance().getSyncAPI().getGroupSyncAPI().getMainGroups();
         stringBuilder.append("--- Registered Main Groups (").append(mainGroups.size()).append(") ---");
         stringBuilder.append("\n");
 
@@ -79,7 +79,7 @@ public class DefaultDumpUtil implements DumpUtil {
     }
 
     private void bumpProcessGroups(StringBuilder stringBuilder) {
-        List<ProcessGroup> processGroups = ExecutorAPI.getInstance().getProcessGroups();
+        List<ProcessGroup> processGroups = ExecutorAPI.getInstance().getSyncAPI().getGroupSyncAPI().getProcessGroups();
         stringBuilder.append("--- Registered Sub Groups (").append(processGroups.size()).append(") ---");
         stringBuilder.append("\n");
 
@@ -119,7 +119,7 @@ public class DefaultDumpUtil implements DumpUtil {
     }
 
     private void bumpStartedProcesses(StringBuilder stringBuilder) {
-        List<ProcessInformation> allProcesses = ExecutorAPI.getInstance().getAllProcesses();
+        List<ProcessInformation> allProcesses = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getAllProcesses();
         stringBuilder.append("--- Started Processes (").append(allProcesses.size()).append(") ---");
         stringBuilder.append("\n");
 
@@ -161,7 +161,7 @@ public class DefaultDumpUtil implements DumpUtil {
     }
 
     private void bumpLoadedApplications(StringBuilder stringBuilder) {
-        List<LoadedApplication> applications = ExecutorAPI.getInstance().getApplications();
+        List<LoadedApplication> applications = ExecutorAPI.getInstance().getSyncAPI().getApplicationSyncAPI().getApplications();
         stringBuilder.append("--- Loaded Applications (").append(applications.size()).append(") ---");
         stringBuilder.append("\n");
 

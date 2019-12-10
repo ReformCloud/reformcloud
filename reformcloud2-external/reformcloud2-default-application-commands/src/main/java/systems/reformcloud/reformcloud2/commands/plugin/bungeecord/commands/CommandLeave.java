@@ -24,7 +24,7 @@ public class CommandLeave extends Command {
         }
 
         final ProxiedPlayer proxiedPlayer = (ProxiedPlayer) commandSender;
-        if (ExecutorAPI.getInstance().getProcess(proxiedPlayer.getServer().getInfo().getName()).isLobby()) {
+        if (ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcess(proxiedPlayer.getServer().getInfo().getName()).isLobby()) {
             proxiedPlayer.sendMessage(TextComponent.fromLegacyText(
                     BungeeExecutor.getInstance().getMessages().format(
                             BungeeExecutor.getInstance().getMessages().getAlreadyConnectedToHub()

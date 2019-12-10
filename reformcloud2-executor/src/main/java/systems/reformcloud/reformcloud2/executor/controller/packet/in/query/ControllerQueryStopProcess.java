@@ -25,10 +25,10 @@ public final class ControllerQueryStopProcess implements NetworkHandler {
 
         if (packet.content().has("name")) {
             String name = packet.content().getString("name");
-            result = ExecutorAPI.getInstance().stopProcess(name);
+            result = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().stopProcess(name);
         } else {
             UUID uniqueID = packet.content().get("uniqueID", UUID.class);
-            result = ExecutorAPI.getInstance().stopProcess(uniqueID);
+            result = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().stopProcess(uniqueID);
         }
 
         responses.accept(new DefaultPacket(-1, new JsonConfiguration().add("result", result)));

@@ -17,7 +17,7 @@ public final class PacketInSendColouredLine implements NetworkHandler {
     @Override
     public void handlePacket(PacketSender packetSender, Packet packet, Consumer<Packet> responses) {
         try {
-            ExecutorAPI.getInstance().sendColouredLine(packet.content().getString("line"));
+            ExecutorAPI.getInstance().getSyncAPI().getConsoleSyncAPI().sendColouredLine(packet.content().getString("line"));
         } catch (final IllegalAccessException ignored) {
             //Ignore this because it is not caused by a direct controller mistake (but eg by developer not the owner)
         }

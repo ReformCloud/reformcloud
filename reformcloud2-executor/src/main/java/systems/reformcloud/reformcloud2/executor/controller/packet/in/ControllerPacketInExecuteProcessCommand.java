@@ -19,6 +19,6 @@ public final class ControllerPacketInExecuteProcessCommand implements NetworkHan
     public void handlePacket(PacketSender packetSender, Packet packet, Consumer<Packet> responses) {
         String command = packet.content().getString("cmd");
         String process = packet.content().getString("process");
-        ExecutorAPI.getInstance().executeProcessCommand(process, command);
+        ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().executeProcessCommand(process, command);
     }
 }

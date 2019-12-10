@@ -19,6 +19,6 @@ public final class PacketInUpdateProcessInformation implements NetworkHandler {
     @Override
     public void handlePacket(PacketSender packetSender, Packet packet, Consumer<Packet> responses) {
         ProcessInformation processInformation = packet.content().get("info", ProcessInformation.TYPE);
-        ExecutorAPI.getInstance().update(processInformation);
+        ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(processInformation);
     }
 }
