@@ -15,8 +15,10 @@ import systems.reformcloud.reformcloud2.executor.api.node.network.NodeNetworkMan
 import systems.reformcloud.reformcloud2.executor.node.network.packet.out.api.NodePluginAction;
 
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.concurrent.TimeUnit;
 
 public class PluginAPIImplementation implements PluginSyncAPI, PluginAsyncAPI {
 
@@ -231,24 +233,28 @@ public class PluginAPIImplementation implements PluginSyncAPI, PluginAsyncAPI {
     @Nonnull
     @Override
     public Collection<DefaultPlugin> getPlugins(@Nonnull String process, @Nonnull String author) {
-        return getPluginsAsync(process, author).getUninterruptedly();
+        Collection<DefaultPlugin> result = getPluginsAsync(process, author).getUninterruptedly(TimeUnit.SECONDS, 5);
+        return result == null ? new ArrayList<>() : result;
     }
 
     @Nonnull
     @Override
     public Collection<DefaultPlugin> getPlugins(@Nonnull ProcessInformation process, @Nonnull String author) {
-        return getPluginsAsync(process, author).getUninterruptedly();
+        Collection<DefaultPlugin> result = getPluginsAsync(process, author).getUninterruptedly(TimeUnit.SECONDS, 5);
+        return result == null ? new ArrayList<>() : result;
     }
 
     @Nonnull
     @Override
     public Collection<DefaultPlugin> getPlugins(@Nonnull String process) {
-        return getPluginsAsync(process).getUninterruptedly();
+        Collection<DefaultPlugin> result = getPluginsAsync(process).getUninterruptedly(TimeUnit.SECONDS, 5);
+        return result == null ? new ArrayList<>() : result;
     }
 
     @Nonnull
     @Override
     public Collection<DefaultPlugin> getPlugins(@Nonnull ProcessInformation processInformation) {
-        return getPluginsAsync(processInformation).getUninterruptedly();
+        Collection<DefaultPlugin> result = getPluginsAsync(processInformation).getUninterruptedly(TimeUnit.SECONDS, 5);
+        return result == null ? new ArrayList<>() : result;
     }
 }

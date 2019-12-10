@@ -15,6 +15,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.utility.task.default
 import systems.reformcloud.reformcloud2.executor.controller.packet.out.api.ControllerPluginAction;
 
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 
@@ -103,11 +104,11 @@ public class PluginAPIImplementation implements PluginSyncAPI, PluginAsyncAPI {
         Task.EXECUTOR.execute(() -> {
             ProcessInformation processInformation = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcess(process);
             if (processInformation == null) {
-                task.complete(null);
+                task.complete(new ArrayList<>());
                 return;
             }
 
-            task.complete(Links.allOf(processInformation.getPlugins(), defaultPlugin -> defaultPlugin.author().equals(author)));
+            task.complete(Links.allOf(processInformation.getPlugins(), defaultPlugin -> defaultPlugin.author() != null && defaultPlugin.author().equals(author)));
         });
         return task;
     }
@@ -125,7 +126,7 @@ public class PluginAPIImplementation implements PluginSyncAPI, PluginAsyncAPI {
         Task.EXECUTOR.execute(() -> {
             ProcessInformation processInformation = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcess(process);
             if (processInformation == null) {
-                task.complete(null);
+                task.complete(new ArrayList<>());
                 return;
             }
 
@@ -173,24 +174,28 @@ public class PluginAPIImplementation implements PluginSyncAPI, PluginAsyncAPI {
     @Nonnull
     @Override
     public Collection<DefaultPlugin> getPlugins(@Nonnull String process, @Nonnull String author) {
-        return getPluginsAsync(process, author).getUninterruptedly(TimeUnit.SECONDS, 5);
+        Collection<DefaultPlugin> result = getPluginsAsync(process, author).getUninterruptedly(TimeUnit.SECONDS, 5);
+        return result == null ? new ArrayList<>() : result;
     }
 
     @Nonnull
     @Override
     public Collection<DefaultPlugin> getPlugins(@Nonnull ProcessInformation process, @Nonnull String author) {
-        return getPluginsAsync(process, author).getUninterruptedly(TimeUnit.SECONDS, 5);
+        Collection<DefaultPlugin> result = getPluginsAsync(process, author).getUninterruptedly(TimeUnit.SECONDS, 5);
+        return result == null ? new ArrayList<>() : result;
     }
 
     @Nonnull
     @Override
     public Collection<DefaultPlugin> getPlugins(@Nonnull String process) {
-        return getPluginsAsync(process).getUninterruptedly(TimeUnit.SECONDS, 5);
+        Collection<DefaultPlugin> result = getPluginsAsync(process).getUninterruptedly(TimeUnit.SECONDS, 5);
+        return result == null ? new ArrayList<>() : result;
     }
 
     @Nonnull
     @Override
     public Collection<DefaultPlugin> getPlugins(@Nonnull ProcessInformation processInformation) {
-        return getPluginsAsync(processInformation).getUninterruptedly(TimeUnit.SECONDS, 5);
+        Collection<DefaultPlugin> result = getPluginsAsync(processInformation).getUninterruptedly(TimeUnit.SECONDS, 5);
+        return result == null ? new ArrayList<>() : result;
     }
 }

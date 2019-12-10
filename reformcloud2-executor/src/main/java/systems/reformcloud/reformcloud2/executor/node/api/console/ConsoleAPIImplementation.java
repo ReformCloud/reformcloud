@@ -91,7 +91,8 @@ public class ConsoleAPIImplementation implements ConsoleSyncAPI, ConsoleAsyncAPI
 
     @Override
     public boolean isCommandRegistered(@Nonnull String name) {
-        return isCommandRegisteredAsync(name).getUninterruptedly();
+        Boolean result = isCommandRegisteredAsync(name).getUninterruptedly();
+        return result == null ? false : result;
     }
 
     public final CommandSource getConsole() {

@@ -1,5 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.node.api.group;
 
+import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.group.GroupAsyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.group.GroupSyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.MainGroup;
@@ -38,7 +39,7 @@ public class GroupAPIImplementation implements GroupAsyncAPI, GroupSyncAPI {
         Task<MainGroup> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             if (this.clusterSyncManager.existsMainGroup(name)) {
-                task.complete(null);
+                task.complete(ExecutorAPI.getInstance().getSyncAPI().getGroupSyncAPI().getMainGroup(name));
                 return;
             }
 
@@ -102,7 +103,7 @@ public class GroupAPIImplementation implements GroupAsyncAPI, GroupSyncAPI {
         Task<ProcessGroup> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             if (clusterSyncManager.existsProcessGroup(processGroup.getName())) {
-                task.complete(null);
+                task.complete(ExecutorAPI.getInstance().getSyncAPI().getGroupSyncAPI().getProcessGroup(processGroup.getName()));
                 return;
             }
 
