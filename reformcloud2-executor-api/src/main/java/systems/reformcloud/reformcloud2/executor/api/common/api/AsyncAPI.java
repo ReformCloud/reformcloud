@@ -13,27 +13,51 @@ import javax.annotation.Nonnull;
 
 public interface AsyncAPI {
 
+    /**
+     * @return The current process async api instance
+     */
     @Nonnull
     ProcessAsyncAPI getProcessAsyncAPI();
 
+    /**
+     * @return The current groups async api instance
+     */
     @Nonnull
     GroupAsyncAPI getGroupAsyncAPI();
 
+    /**
+     * @return The current application async api instance
+     */
     @Nonnull
     ApplicationAsyncAPI getApplicationAsyncAPI();
 
+    /**
+     * @return The current console async api instance
+     */
     @Nonnull
     ConsoleAsyncAPI getConsoleAsyncAPI();
 
+    /**
+     * @return The current player async api instance
+     */
     @Nonnull
     PlayerAsyncAPI getPlayerAsyncAPI();
 
+    /**
+     * @return The current plugins async api instance
+     */
     @Nonnull
     PluginAsyncAPI getPluginAsyncAPI();
 
+    /**
+     * @return The current client async api instance
+     */
     @Nonnull
     ClientAsyncAPI getClientAsyncAPI();
 
+    /**
+     * @return The current database async api instance
+     */
     @Nonnull
     DatabaseAsyncAPI getDatabaseAsyncAPI();
 }

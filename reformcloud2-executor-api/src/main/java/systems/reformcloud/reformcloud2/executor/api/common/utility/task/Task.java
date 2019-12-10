@@ -1,5 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.api.common.utility.task;
 
+import systems.reformcloud.reformcloud2.executor.api.common.utility.task.defaults.DefaultTask;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.excepetion.TaskCompletionException;
 
 import javax.annotation.Nonnull;
@@ -13,6 +14,20 @@ import java.util.function.Consumer;
 public abstract class Task<V> extends CompletableFuture<V> {
 
     public static final Executor EXECUTOR = Executors.newCachedThreadPool();
+
+    /**
+     * Creates a new already completed task
+     *
+     * @param value The value of the completed task
+     * @param <U> The object parameter of the task
+     * @return The completed task
+     */
+    @Nonnull
+    public static <U> Task<U> completedTask(@Nullable U value) {
+        Task<U> task = new DefaultTask<>();
+        task.complete(value);
+        return task;
+    }
 
     /**
      * Waits blocking on the current thread for a result until the thread interrupts
