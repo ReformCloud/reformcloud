@@ -210,73 +210,122 @@ public final class Links {
      * @param map The given map
      * @param fxFunction The function which should get applied to all keys in the map
      * @param <F> The object parameter of the keys in the map
-     * @param <X>
-     * @return
+     * @param <X> The object parameter of the values in the outgoing list
+     * @return The created list with all applied values in the map
      */
-    public static <F, X> List<X> keyApply(Map<F, ?> map, Function<F, X> fxFunction) {
-        List<X> out = new ArrayList<>();
-        map.keySet().forEach(f -> out.add(fxFunction.apply(f)));
-
-        return out;
+    @Nonnull
+    public static <F, X> List<X> keyApply(@Nonnull Map<F, ?> map, @Nonnull Function<F, X> fxFunction) {
+        return map.keySet().stream().map(fxFunction).collect(Collectors.toList());
     }
 
+    /**
+     * Creates a new collection
+     *
+     * @param function The function which creates the collection
+     * @param in The array of the incoming objects
+     * @param <S> The object parameter of the array
+     * @param <F> The object parameter of the values in the outgoing list
+     * @return The created list with all values applied to the function
+     */
+    @Nonnull
     @SafeVarargs
-    public static <S, F> Collection<F> newCollection(Function<S, F> function, S... in) {
+    public static <S, F> Collection<F> newCollection(@Nonnull Function<S, F> function, S... in) {
         return newCollection(Arrays.asList(in), function);
     }
 
-    public static <S, F> Collection<F> newCollection(Collection<S> in, Function<S, F> function) {
+    /**
+     * Applies all values of the incoming collection to the function and collect the values
+     *
+     * @param in The incoming collection
+     * @param function The function to which the values get applied to
+     * @param <S> The object parameter of the array
+     * @param <F> The object parameter of the values in the outgoing list
+     * @return The created collection with the values applied to the function
+     */
+    @Nonnull
+    public static <S, F> Collection<F> newCollection(@Nonnull Collection<S> in, @Nonnull Function<S, F> function) {
         return newCollection(in, s -> true, function);
     }
 
-    public static <S, F> Collection<F> newCollection(Collection<S> in, Predicate<S> predicate, Function<S, F> function) {
-        Collection<F> out = new LinkedList<>();
-        in.forEach(s -> {
-            if (predicate.test(s)) {
-                out.add(function.apply(s));
-            }
-        });
-
-        return out;
+    /**
+     * Applies all values of the incoming collection to the function and collect the values
+     *
+     * @param in The incoming collection
+     * @param predicate The {@link Predicate} which checks if the value of the list should get into the new one
+     * @param function The function which maps the value of the incoming collection to the outgoing one
+     * @param <S> The object parameter of the collection
+     * @param <F> The object parameter of the values in the outgoing list
+     * @return The created collection
+     */
+    @Nonnull
+    public static <S, F> Collection<F> newCollection(@Nonnull Collection<S> in, @Nonnull Predicate<S> predicate, @Nonnull Function<S, F> function) {
+        return in.stream().filter(predicate).map(function).collect(Collectors.toList());
     }
 
-    public static <T> List<T> list(Collection<T> list, Predicate<T> predicate) {
-        List<T> out = new LinkedList<>();
-        list.forEach(t -> {
-            if (predicate.test(t)) {
-                out.add(t);
-            }
-        });
-        return out;
+    /**
+     * Filters all values out of the incoming collection which matches to the {@link Predicate}
+     *
+     * @param list The incoming list
+     * @param predicate The predicate which tests the values in the list
+     * @param <T> The object parameter of the collection
+     * @return The new list with all values matching the {@link Predicate}
+     */
+    @Nonnull
+    public static <T> List<T> list(@Nonnull Collection<T> list, @Nonnull Predicate<T> predicate) {
+        return list.stream().filter(predicate).collect(Collectors.toList());
     }
 
-    public static <T> Collection<T> others(Collection<T> list, Predicate<T> predicate) {
-        List<T> out = new LinkedList<>();
-        list.forEach(t -> {
-            if (!predicate.test(t)) {
-                out.add(t);
-            }
-        });
-        return out;
+    /**
+     * Filters all values out of the incoming collection which not matches to the {@link Predicate}
+     *
+     * @param list The incoming list
+     * @param predicate The predicate which tests the values in the list
+     * @param <T> The object parameter of the collection
+     * @return The new list with all values not matching the {@link Predicate}
+     */
+    @Nonnull
+    public static <T> Collection<T> others(@Nonnull Collection<T> list, @Nonnull Predicate<T> predicate) {
+        return list.stream().filter(predicate.negate()).collect(Collectors.toList());
     }
 
+    /**
+     * Filters all values out of the incoming collection which matches to the {@link Predicate}
+     *
+     * @param collection The incoming collection
+     * @param predicate The predicate which tests the values in the list
+     * @param <T> The object parameter of the collection
+     * @return The new list with all values matching the {@link Predicate}
+     */
+    @Nonnull
     public static <T> Collection<T> allOf(Collection<T> collection, Predicate<T> predicate) {
-        Collection<T> out = new LinkedList<>();
-        collection.forEach(t -> {
-            if (predicate.test(t)) {
-                out.add(t);
-            }
-        });
-        return out;
+        return collection.stream().filter(predicate).collect(Collectors.toList());
     }
 
-    public static <T, F> Collection<F> apply(Collection<T> collection, Function<T, F> function) {
-        Collection<F> out = new LinkedList<>();
-        collection.forEach(t -> out.add(function.apply(t)));
-        return out;
+    /**
+     * Applies a function to the given list
+     *
+     * @param collection The collection on which the function should get applied
+     * @param function The function which should get applied
+     * @param <T> The object parameter of the collection
+     * @param <F> The object parameter of the values in the outgoing collection
+     * @return The new collection with all values applied to the function in it
+     */
+    @Nonnull
+    public static <T, F> Collection<F> apply(@Nonnull Collection<T> collection, @Nonnull Function<T, F> function) {
+        return collection.stream().map(function).collect(Collectors.toList());
     }
 
-    public static <F, S> Collection<S> deepFilter(Map<F, S> in, Predicate<Map.Entry<F, S>> predicate) {
+    /**
+     * Filters all values of the map when the key matches to the filter
+     *
+     * @param in The incoming map
+     * @param predicate The predicate which filters the keys of the map
+     * @param <F> The object parameter of the keys in the map
+     * @param <S> The object parameter of the values in the map
+     * @return The collection with all filtered values of the map
+     */
+    @Nonnull
+    public static <F, S> Collection<S> deepFilter(@Nonnull Map<F, S> in, @Nonnull Predicate<Map.Entry<F, S>> predicate) {
         Collection<S> out = new LinkedList<>();
         in.entrySet().forEach(e -> {
             if (predicate.test(e)) {
@@ -286,7 +335,17 @@ public final class Links {
         return out;
     }
 
-    public static <F, S> ReferencedOptional<Map.Entry<F, S>> deepFilterToReference(Map<F, S> in, Predicate<Map.Entry<F, S>> predicate) {
+    /**
+     * Filters one value of the map which matches the filter
+     *
+     * @param in The incoming map
+     * @param predicate The predicate which filters the keys of the map
+     * @param <F> The object parameter of the keys in the map
+     * @param <S> The object parameter of the values in the map
+     * @return The first {@link Map.Entry} which matches to filter or {@link ReferencedOptional#empty()}
+     */
+    @Nonnull
+    public static <F, S> ReferencedOptional<Map.Entry<F, S>> deepFilterToReference(@Nonnull Map<F, S> in, @Nonnull Predicate<Map.Entry<F, S>> predicate) {
         if (in.isEmpty()) {
             return ReferencedOptional.empty();
         }
