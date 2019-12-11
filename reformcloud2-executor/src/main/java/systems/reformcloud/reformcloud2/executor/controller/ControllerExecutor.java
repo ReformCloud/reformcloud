@@ -151,7 +151,9 @@ public final class ControllerExecutor extends Controller {
             ex.printStackTrace();
         }
 
+        this.controllerExecutorConfig = new ControllerExecutorConfig();
         databaseConfig.load();
+
         switch (databaseConfig.getType()) {
             case FILE: {
                 this.database = new FileDatabase();
@@ -191,7 +193,6 @@ public final class ControllerExecutor extends Controller {
         this.syncAPI = generalAPI;
         this.asyncAPI = generalAPI;
 
-        this.controllerExecutorConfig = new ControllerExecutorConfig();
         this.requestListenerHandler = new DefaultRequestListenerHandler(new DefaultWebServerAuth(this.getSyncAPI().getDatabaseSyncAPI()));
 
         applicationLoader.detectApplications();
