@@ -95,7 +95,7 @@ public final class ControllerExecutor extends Controller {
 
     private ControllerConfig controllerConfig;
 
-    private Database database;
+    private Database<?> database;
 
     private RequestListenerHandler requestListenerHandler;
 
@@ -206,6 +206,10 @@ public final class ControllerExecutor extends Controller {
                 },
                 packet -> {
                     DefaultAuth auth = packet.content().get("auth", Auth.TYPE);
+                    if (auth == null) {
+                        return new Double<>("", false);
+                    }
+
                     if (!auth.key().equals(controllerExecutorConfig.getConnectionKey())) {
                         System.out.println(LanguageManager.get("network-channel-auth-failed", auth.getName()));
                         return new Double<>(auth.getName(), false);
@@ -217,6 +221,10 @@ public final class ControllerExecutor extends Controller {
                         ClientManager.INSTANCE.connectClient(runtimeInformation);
                     } else {
                         ProcessInformation information = processManager.getProcess(auth.getName());
+                        if (information == null) {
+                            return new Double<>(auth.getName(), false);
+                        }
+
                         information.getNetworkInfo().setConnected(true);
                         information.setProcessState(ProcessState.READY);
                         processManager.update(information);
@@ -412,9 +420,12 @@ public final class ControllerExecutor extends Controller {
                 loggerBase.getConsoleReader().setPrompt("");
                 loggerBase.getConsoleReader().resetPromptLine("", "", 0);
 
-                while ((line = loggerBase.readLine()) != null && !line.trim().isEmpty() && running) {
+                line = loggerBase.readLine();
+                while (!line.trim().isEmpty() && running) {
                     loggerBase.getConsoleReader().setPrompt("");
                     commandManager.dispatchCommand(console, AllowedCommandSources.ALL, line, System.out::println);
+
+                    line = loggerBase.readLine();
                 }
             } catch (final Throwable throwable) {
                 throwable.printStackTrace();

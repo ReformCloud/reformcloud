@@ -18,6 +18,7 @@ import java.util.Properties;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.jar.JarFile;
 
 public final class Runner {
@@ -36,7 +37,7 @@ public final class Runner {
 
     private static final Predicate<String> CONTROLLER_UNPACK_TEST = s -> s != null && (s.equalsIgnoreCase("controller") || s.equalsIgnoreCase("client") || s.equalsIgnoreCase("node"));
 
-    private static final Runnable CHOOSE_INSTALL_MESSAGE = () -> System.out.println("Please choose an executor: [\"controller\", \"client\", \"node\"]");
+    private static final Supplier<String> CHOOSE_INSTALL_MESSAGE = () -> "Please choose an executor: [\"controller\", \"client\", \"node\"]";
 
     /* ================================== */
 
@@ -149,12 +150,12 @@ public final class Runner {
             return type;
         }
 
-        CHOOSE_INSTALL_MESSAGE.run();
+        System.out.println(CHOOSE_INSTALL_MESSAGE.get());
 
         Console console = System.console();
         String s = console.readLine();
         while (s == null || s.trim().isEmpty() || !CONTROLLER_UNPACK_TEST.test(s)) {
-            CHOOSE_INSTALL_MESSAGE.run();
+            System.out.println(CHOOSE_INSTALL_MESSAGE.get());
             s = console.readLine();
         }
 
