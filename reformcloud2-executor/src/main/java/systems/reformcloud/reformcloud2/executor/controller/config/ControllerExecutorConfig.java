@@ -135,7 +135,7 @@ public final class ControllerExecutorConfig {
                                     128, true, 512
                             );
                             lobby = new DefaultProcessGroup(
-                                    "Lobby", 41000, Version.PAPER_1_8_8,
+                                    "Lobby", 41000, Version.SPIGOT_1_15,
                                     512, false, 50
                             );
                             break;
