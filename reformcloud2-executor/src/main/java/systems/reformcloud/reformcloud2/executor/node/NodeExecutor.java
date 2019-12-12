@@ -126,9 +126,9 @@ public class NodeExecutor extends Node {
 
     private final DatabaseConfig databaseConfig = new DatabaseConfig();
 
-    private final LocalAutoStartupHandler localAutoStartupHandler = new LocalAutoStartupHandler();
-
     private final EventManager eventManager = new DefaultEventManager();
+
+    private LocalAutoStartupHandler localAutoStartupHandler;
 
     private SyncAPI syncAPI;
 
@@ -144,7 +144,7 @@ public class NodeExecutor extends Node {
 
     private NodeConfig nodeConfig;
 
-    private Database database;
+    private Database<?> database;
 
     private NodeNetworkManager nodeNetworkManager;
 
@@ -190,12 +190,6 @@ public class NodeExecutor extends Node {
         this.nodeExecutorConfig.init();
         this.nodeConfig = this.nodeExecutorConfig.getNodeConfig();
 
-        this.nodeNetworkManager = new DefaultNodeNetworkManager(
-                new LocalNodeProcessManager(),
-                new DefaultNodeInternalCluster(new DefaultClusterManager(), nodeExecutorConfig.getSelf(), packetHandler)
-        );
-        this.nodeNetworkManager.getCluster().getClusterManager().init();
-
         databaseConfig.load();
         switch (databaseConfig.getType()) {
             case FILE: {
@@ -223,6 +217,19 @@ public class NodeExecutor extends Node {
             }
         }
 
+        this.nodeNetworkManager = new DefaultNodeNetworkManager(
+                new LocalNodeProcessManager(),
+                new DefaultNodeInternalCluster(new DefaultClusterManager(), nodeExecutorConfig.getSelf(), packetHandler)
+        );
+        this.nodeNetworkManager.getCluster().getClusterManager().init();
+
+        final NodeNetworkClient nodeNetworkClient = new NodeNetworkClient();
+        this.networkClient = nodeNetworkClient;
+        this.clusterSyncManager = new DefaultClusterSyncManager(nodeNetworkClient);
+
+        this.clusterSyncManager.getProcessGroups().addAll(nodeExecutorConfig.getProcessGroups());
+        this.clusterSyncManager.getMainGroups().addAll(nodeExecutorConfig.getMainGroups());
+
         GeneralAPI generalAPI = new GeneralAPI(
                 new ApplicationAPIImplementation(this.applicationLoader),
                 new ClientAPIImplementation(this.nodeNetworkManager),
@@ -238,13 +245,6 @@ public class NodeExecutor extends Node {
 
         this.requestListenerHandler = new DefaultRequestListenerHandler(new DefaultWebServerAuth(this.getSyncAPI().getDatabaseSyncAPI()));
 
-        final NodeNetworkClient nodeNetworkClient = new NodeNetworkClient();
-        this.networkClient = nodeNetworkClient;
-        this.clusterSyncManager = new DefaultClusterSyncManager(nodeNetworkClient);
-
-        this.clusterSyncManager.getProcessGroups().addAll(nodeExecutorConfig.getProcessGroups());
-        this.clusterSyncManager.getMainGroups().addAll(nodeExecutorConfig.getMainGroups());
-
         this.applicationLoader.detectApplications();
         this.applicationLoader.installApplications();
 
@@ -252,6 +252,7 @@ public class NodeExecutor extends Node {
 
         this.logLineReader = new LogLineReader();
         this.watchdogThread = new WatchdogThread();
+        this.localAutoStartupHandler = new LocalAutoStartupHandler();
 
         this.loadPacketHandlers();
 
