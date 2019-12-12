@@ -67,21 +67,17 @@ public final class PlayerListenerHandler {
 
         if (configuration.isUseCloudPlayerLimit()
                 && configuration.getMaxPlayers() < current.getOnlineCount() + 1
-                && !player.hasPermission("reformcloud.join.full")) {
+                && !player.hasPermission(configuration.getFullJoinPermission())) {
             player.disconnect(TextComponent.of("§4§lThe proxy is full"));
             return;
         }
 
-        if (configuration.isJoinOnlyPerPermission()
-                && configuration.getJoinPermission() != null
-                && !player.hasPermission(configuration.getJoinPermission())) {
+        if (configuration.isJoinOnlyPerPermission() && !player.hasPermission(configuration.getJoinPermission())) {
             player.disconnect(TextComponent.of("§4§lYou do not have permission to enter this proxy"));
             return;
         }
 
-        if (configuration.isMaintenance()
-                && configuration.getMaintenanceJoinPermission() != null
-                && !player.hasPermission(configuration.getMaintenanceJoinPermission())) {
+        if (configuration.isMaintenance() && !player.hasPermission(configuration.getMaintenanceJoinPermission())) {
             player.disconnect(TextComponent.of("§4§lThis proxy is currently in maintenance"));
             return;
         }

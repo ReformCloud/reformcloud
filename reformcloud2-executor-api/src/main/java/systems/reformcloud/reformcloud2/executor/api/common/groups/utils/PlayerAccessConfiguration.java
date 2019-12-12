@@ -1,13 +1,14 @@
 package systems.reformcloud.reformcloud2.executor.api.common.groups.utils;
 
+import javax.annotation.Nonnull;
 import java.util.Objects;
 
 public final class PlayerAccessConfiguration {
 
-    public PlayerAccessConfiguration(boolean maintenance, String maintenanceJoinPermission,
-                                     boolean joinOnlyPerPermission, String joinPermission,
-                                     boolean onlyProxyJoin, boolean playerControllerCommandReporting,
-                                     boolean useCloudPlayerLimit, int maxPlayers) {
+    public PlayerAccessConfiguration(String fullJoinPermission, boolean maintenance, String maintenanceJoinPermission,
+                                     boolean joinOnlyPerPermission, String joinPermission, boolean onlyProxyJoin,
+                                     boolean playerControllerCommandReporting, boolean useCloudPlayerLimit, int maxPlayers) {
+        this.fullJoinPermission = fullJoinPermission;
         this.maintenance = maintenance;
         this.maintenanceJoinPermission = maintenanceJoinPermission;
         this.joinOnlyPerPermission = joinOnlyPerPermission;
@@ -36,6 +37,7 @@ public final class PlayerAccessConfiguration {
 
     private int maxPlayers;
 
+    @Nonnull
     public String getFullJoinPermission() {
         return fullJoinPermission == null ? "reformcloud.join.full" : fullJoinPermission;
     }
@@ -44,6 +46,7 @@ public final class PlayerAccessConfiguration {
         return maintenance;
     }
 
+    @Nonnull
     public String getMaintenanceJoinPermission() {
         return maintenanceJoinPermission == null ? "reformcloud.join.maintenance" : maintenanceJoinPermission;
     }
@@ -52,6 +55,7 @@ public final class PlayerAccessConfiguration {
         return joinOnlyPerPermission;
     }
 
+    @Nonnull
     public String getJoinPermission() {
         return joinPermission == null ? "reformcloud.custom.permission" : joinPermission;
     }

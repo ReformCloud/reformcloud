@@ -541,9 +541,16 @@ public final class CommandReformCloud extends GlobalCommand {
                                             ), version
                                     )), new StartupConfiguration(
                                             -1, 1, 1, 41000, StartupEnvironment.JAVA_RUNTIME, true, new ArrayList<>()
-                                    ), new PlayerAccessConfiguration(
-                                            false, "reformcloud.join.maintenance", false,
-                                            null, true, true, true, 50
+                                    ),  new PlayerAccessConfiguration(
+                                            "reformcloud.join.full",
+                                            true,
+                                            "reformcloud.join.maintenance",
+                                            false,
+                                            null,
+                                            true,
+                                            true,
+                                            true,
+                                            50
                                     ), staticProcess
                             );
 
@@ -649,9 +656,16 @@ public final class CommandReformCloud extends GlobalCommand {
                                             ), version
                                     )), new StartupConfiguration(
                                             max, min, 1, 41000, StartupEnvironment.JAVA_RUNTIME, true, new ArrayList<>()
-                                    ), new PlayerAccessConfiguration(
-                                            false, "reformcloud.join.maintenance", false,
-                                            null, true, true, true, 50
+                                    ),  new PlayerAccessConfiguration(
+                                            "reformcloud.join.full",
+                                            true,
+                                            "reformcloud.join.maintenance",
+                                            false,
+                                            null,
+                                            true,
+                                            true,
+                                            true,
+                                            50
                                     ), staticProcess
                             );
 

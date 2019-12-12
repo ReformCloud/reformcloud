@@ -56,14 +56,17 @@ public class ProcessGroup implements Nameable {
         return showIdInName;
     }
 
+    @Nonnull
     public StartupConfiguration getStartupConfiguration() {
         return startupConfiguration;
     }
 
+    @Nonnull
     public List<Template> getTemplates() {
         return templates;
     }
 
+    @Nonnull
     public PlayerAccessConfiguration getPlayerAccessConfiguration() {
         return playerAccessConfiguration;
     }

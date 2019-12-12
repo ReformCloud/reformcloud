@@ -82,18 +82,14 @@ public final class PlayerListenerHandler implements Listener {
             return;
         }
 
-        if (configuration.isJoinOnlyPerPermission()
-                && configuration.getJoinPermission() != null
-                && !player.hasPermission(configuration.getJoinPermission())) {
+        if (configuration.isJoinOnlyPerPermission() && !player.hasPermission(configuration.getJoinPermission())) {
             player.disconnect(TextComponent.fromLegacyText(format(
                     BungeeExecutor.getInstance().getMessages().getProcessEnterPermissionNotSet()
             )));
             return;
         }
 
-        if (configuration.isMaintenance()
-                && configuration.getMaintenanceJoinPermission() != null
-                && !player.hasPermission(configuration.getMaintenanceJoinPermission())) {
+        if (configuration.isMaintenance() && !player.hasPermission(configuration.getMaintenanceJoinPermission())) {
             player.disconnect(TextComponent.fromLegacyText(format(
                     BungeeExecutor.getInstance().getMessages().getProcessInMaintenanceMessage()
             )));

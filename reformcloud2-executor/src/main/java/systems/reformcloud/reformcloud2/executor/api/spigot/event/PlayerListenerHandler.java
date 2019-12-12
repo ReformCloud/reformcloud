@@ -60,9 +60,7 @@ public final class PlayerListenerHandler implements Listener {
             return;
         }
 
-        if (configuration.isJoinOnlyPerPermission()
-                && configuration.getJoinPermission() != null
-                && !player.hasPermission(configuration.getJoinPermission())) {
+        if (configuration.isJoinOnlyPerPermission() && !player.hasPermission(configuration.getJoinPermission())) {
             event.setKickMessage(format(
                     SpigotExecutor.getInstance().getMessages().getProcessEnterPermissionNotSet()
             ));
@@ -70,9 +68,7 @@ public final class PlayerListenerHandler implements Listener {
             return;
         }
 
-        if (configuration.isMaintenance()
-                && configuration.getMaintenanceJoinPermission() != null
-                && !player.hasPermission(configuration.getMaintenanceJoinPermission())) {
+        if (configuration.isMaintenance() && !player.hasPermission(configuration.getMaintenanceJoinPermission())) {
             event.setKickMessage(format(
                     SpigotExecutor.getInstance().getMessages().getProcessInMaintenanceMessage()
             ));

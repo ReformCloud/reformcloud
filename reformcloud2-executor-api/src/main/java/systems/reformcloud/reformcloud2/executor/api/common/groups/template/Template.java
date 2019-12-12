@@ -1,8 +1,12 @@
 package systems.reformcloud.reformcloud2.executor.api.common.groups.template;
 
 import com.google.gson.reflect.TypeToken;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.name.Nameable;
 
-public final class Template {
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+public final class Template implements Nameable {
 
     public static final TypeToken<Template> TYPE = new TypeToken<Template>() {};
 
@@ -35,6 +39,8 @@ public final class Template {
         return priority;
     }
 
+    @Nonnull
+    @Override
     public String getName() {
         return name;
     }
@@ -43,23 +49,27 @@ public final class Template {
         return global;
     }
 
+    @Nonnull
     public String getBackend() {
         return backend;
     }
 
+    @Nullable
     public String getServerNameSplitter() {
         return serverNameSplitter;
     }
 
+    @Nonnull
     public RuntimeConfiguration getRuntimeConfiguration() {
         return runtimeConfiguration;
     }
 
+    @Nonnull
     public Version getVersion() {
         return version;
     }
 
     public boolean isServer() {
-        return version.getId() == 1 || version.getId() == 3;
+        return version.isServer();
     }
 }

@@ -55,25 +55,21 @@ public final class PlayerListenerHandler implements Listener {
 
         if (configuration.isUseCloudPlayerLimit()
                 && configuration.getMaxPlayers() < current.getOnlineCount() + 1
-                && !player.hasPermission(configuration.getJoinPermission())) {
+                && !player.hasPermission(configuration.getFullJoinPermission())) {
             player.kick(format(
                     NukkitExecutor.getInstance().getMessages().getProcessFullMessage()
             ));
             return;
         }
 
-        if (configuration.isJoinOnlyPerPermission()
-                && configuration.getJoinPermission() != null
-                && !player.hasPermission(configuration.getJoinPermission())) {
+        if (configuration.isJoinOnlyPerPermission() && !player.hasPermission(configuration.getJoinPermission())) {
             player.kick(format(
                     NukkitExecutor.getInstance().getMessages().getProcessEnterPermissionNotSet()
             ));
             return;
         }
 
-        if (configuration.isMaintenance()
-                && configuration.getMaintenanceJoinPermission() != null
-                && !player.hasPermission(configuration.getMaintenanceJoinPermission())) {
+        if (configuration.isMaintenance() && !player.hasPermission(configuration.getMaintenanceJoinPermission())) {
             player.kick(format(
                     NukkitExecutor.getInstance().getMessages().getProcessInMaintenanceMessage()
             ));
@@ -108,7 +104,7 @@ public final class PlayerListenerHandler implements Listener {
     @EventHandler (priority = EventPriority.LOWEST)
     public void handle(final PlayerQuitEvent event) {
         ProcessInformation current = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation();
-        if (!current.isPlayerOnline(event.getPlayer().getUniqueId())) {
+        if (current == null || !current.isPlayerOnline(event.getPlayer().getUniqueId())) {
             return;
         }
 

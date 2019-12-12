@@ -1,5 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.api.common.groups.utils;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.Objects;
 
@@ -8,11 +9,20 @@ public final class StartupConfiguration {
     public StartupConfiguration(int maxOnlineProcesses, int minOnlineProcesses, int startupPriority,
                                 int startPort, StartupEnvironment startupEnvironment,
                                 boolean searchBestClientAlone, List<String> useOnlyTheseClients) {
+        this(maxOnlineProcesses, minOnlineProcesses, startupPriority, startPort, startupEnvironment,
+                AutomaticStartupConfiguration.defaults(), searchBestClientAlone, useOnlyTheseClients);
+    }
+
+    public StartupConfiguration(int maxOnlineProcesses, int minOnlineProcesses, int startupPriority,
+                                int startPort, StartupEnvironment startupEnvironment,
+                                AutomaticStartupConfiguration automaticStartupConfiguration,
+                                boolean searchBestClientAlone, List<String> useOnlyTheseClients) {
         this.maxOnlineProcesses = maxOnlineProcesses;
         this.minOnlineProcesses = minOnlineProcesses;
         this.startupPriority = startupPriority;
         this.startPort = startPort;
         this.startupEnvironment = startupEnvironment;
+        this.automaticStartupConfiguration = automaticStartupConfiguration;
         this.searchBestClientAlone = searchBestClientAlone;
         this.useOnlyTheseClients = useOnlyTheseClients;
     }
@@ -27,7 +37,7 @@ public final class StartupConfiguration {
 
     private StartupEnvironment startupEnvironment;
 
-    private AutomaticStartupConfiguration automaticStartupConfiguration = AutomaticStartupConfiguration.defaults();
+    private AutomaticStartupConfiguration automaticStartupConfiguration;
 
     private boolean searchBestClientAlone;
 
@@ -53,6 +63,7 @@ public final class StartupConfiguration {
         return startupEnvironment;
     }
 
+    @Nonnull
     public AutomaticStartupConfiguration getAutomaticStartupConfiguration() {
         return automaticStartupConfiguration;
     }
@@ -61,6 +72,7 @@ public final class StartupConfiguration {
         return searchBestClientAlone;
     }
 
+    @Nonnull
     public List<String> getUseOnlyTheseClients() {
         return useOnlyTheseClients;
     }

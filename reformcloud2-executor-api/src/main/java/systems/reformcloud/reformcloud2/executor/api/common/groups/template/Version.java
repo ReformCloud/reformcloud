@@ -2,10 +2,7 @@ package systems.reformcloud.reformcloud2.executor.api.common.groups.template;
 
 import systems.reformcloud.reformcloud2.executor.api.common.utility.system.DownloadHelper;
 
-import java.util.Arrays;
-import java.util.Deque;
 import java.util.TreeMap;
-import java.util.concurrent.ConcurrentLinkedDeque;
 
 public enum Version {
 
@@ -187,55 +184,7 @@ public enum Version {
 
     private static final TreeMap<String, Version> POCKET_PROXY_PROVIDERS = new TreeMap<>();
 
-    public static final Deque<String> AVAILABLE_JAVA_SERVER_VERSIONS = new ConcurrentLinkedDeque<>();
-
-    public static final Deque<String> AVAILABLE_JAVA_PROXY_VERSIONS = new ConcurrentLinkedDeque<>();
-
-    public static final Deque<String> AVAILABLE_POCKET_SERVER_VERSIONS = new ConcurrentLinkedDeque<>();
-
-    public static final Deque<String> AVAILABLE_POCKET_PROXY_VERSIONS = new ConcurrentLinkedDeque<>();
-
     static {
-        AVAILABLE_JAVA_SERVER_VERSIONS.addAll(Arrays.asList(
-                "1.7.9",
-                "1.7.10",
-                "1.8",
-                "1.8.3",
-                "1.8.4",
-                "1.8.5",
-                "1.8.6",
-                "1.8.7",
-                "1.8.8",
-                "1.8.9",
-                "1.9",
-                "1.9.2",
-                "1.9.4",
-                "1.10",
-                "1.10.2",
-                "1.11",
-                "1.11.2",
-                "1.12",
-                "1.12.1",
-                "1.12.2",
-                "1.13",
-                "1.13.1",
-                "1.13.2",
-                "1.14",
-                "1.14.1",
-                "1.14.2",
-                "1.14.3",
-                "1.14.4"
-        ));
-
-        AVAILABLE_JAVA_PROXY_VERSIONS.addAll(Arrays.asList(
-                "1.8-1.14",
-                "1.7-1.14"
-        ));
-
-        AVAILABLE_POCKET_PROXY_VERSIONS.add("1.0");
-
-        AVAILABLE_POCKET_SERVER_VERSIONS.add("1.0");
-
         for (Version version : values()) {
             if (version.id == 1 && !JAVA_SERVER_PROVIDERS.containsKey(version.name)) {
                 JAVA_SERVER_PROVIDERS.put(version.name, version);
@@ -280,22 +229,6 @@ public enum Version {
         return POCKET_PROXY_PROVIDERS;
     }
 
-    public static Deque<String> getAvailableJavaServerVersions() {
-        return AVAILABLE_JAVA_SERVER_VERSIONS;
-    }
-
-    public static Deque<String> getAvailableJavaProxyVersions() {
-        return AVAILABLE_JAVA_PROXY_VERSIONS;
-    }
-
-    public static Deque<String> getAvailablePocketServerVersions() {
-        return AVAILABLE_POCKET_SERVER_VERSIONS;
-    }
-
-    public static Deque<String> getAvailablePocketProxyVersions() {
-        return AVAILABLE_POCKET_PROXY_VERSIONS;
-    }
-
     public String getName() {
         return name;
     }
@@ -310,6 +243,10 @@ public enum Version {
 
     public int getId() {
         return id;
+    }
+
+    public boolean isServer() {
+        return getId() == 1 || getId() == 3;
     }
 
     public static void downloadVersion(Version version) {

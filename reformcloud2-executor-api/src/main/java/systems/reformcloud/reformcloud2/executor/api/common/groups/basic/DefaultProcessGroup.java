@@ -41,11 +41,12 @@ public final class DefaultProcessGroup extends ProcessGroup {
                                 Collections.emptyList(),
                                 Collections.singletonMap("reformcloud2.developer", "derklaro")
                         ), version
-                )), new PlayerAccessConfiguration(
+                )),  new PlayerAccessConfiguration(
+                        "reformcloud.join.full",
                         maintenance,
-                        "reformcloud2.join.maintenance",
+                        "reformcloud.join.maintenance",
                         false,
-                        "reformcloud2.join.process",
+                        null,
                         true,
                         true,
                         true,
@@ -78,10 +79,11 @@ public final class DefaultProcessGroup extends ProcessGroup {
                                 Collections.singletonMap("reformcloud2.developer", "derklaro")
                         ), version
                 )), new PlayerAccessConfiguration(
+                        "reformcloud.join.full",
                         maintenance,
-                        "reformcloud2.join.maintenance",
+                        "reformcloud.join.maintenance",
                         false,
-                        "reformcloud2.join.process",
+                        null,
                         true,
                         true,
                         true,
