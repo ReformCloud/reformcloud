@@ -60,7 +60,7 @@ public final class PlayerListenerHandler {
             return;
         }
 
-        if (current.getProcessState().equals(ProcessState.FULL) && !player.hasPermission("reformcloud.join.full")) {
+        if (current.getProcessState().equals(ProcessState.FULL) && !player.hasPermission(configuration.getFullJoinPermission())) {
             event.setCancelled(true);
             return;
         }

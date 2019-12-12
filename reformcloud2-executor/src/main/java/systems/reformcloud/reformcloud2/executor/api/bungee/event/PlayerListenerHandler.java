@@ -96,7 +96,7 @@ public final class PlayerListenerHandler implements Listener {
             return;
         }
 
-        if (current.getProcessState().equals(ProcessState.FULL) && !player.hasPermission("reformcloud.join.full")) {
+        if (current.getProcessState().equals(ProcessState.FULL) && !player.hasPermission(configuration.getFullJoinPermission())) {
             player.disconnect(TextComponent.fromLegacyText(format(
                     BungeeExecutor.getInstance().getMessages().getProcessFullMessage()
             )));
