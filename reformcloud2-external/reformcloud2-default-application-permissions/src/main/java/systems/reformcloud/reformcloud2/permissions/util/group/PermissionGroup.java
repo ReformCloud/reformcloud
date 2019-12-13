@@ -35,7 +35,7 @@ public class PermissionGroup {
 
     private final String name;
 
-    private final int priority;
+    private int priority;
 
     @Nonnull
     public Collection<PermissionNode> getPermissionNodes() {
@@ -59,6 +59,10 @@ public class PermissionGroup {
 
     public int getPriority() {
         return priority;
+    }
+
+    public void setPriority(int priority) {
+        this.priority = priority;
     }
 
     public boolean hasPermission(@Nonnull String perm) {

@@ -27,6 +27,7 @@ public class CommandPerms extends GlobalCommand {
             "perms group [groupname] delete",
             "perms group [groupname] clear",
             "perms group [groupname] setdefault [default]",
+            "perms group [groupname] setpriority [priority]",
             "perms group [groupname] addperm [permission] [set]",
             "perms group [groupname] addperm [permission] [set] [timeout] [s/m/h/d/mo]",
             "perms group [groupname] addperm [processgroup] [permission] [set]",
@@ -457,6 +458,29 @@ public class CommandPerms extends GlobalCommand {
             }
 
             System.out.println("The group " + group.getName() + " is now a " + (defaultGroup ? "default" : "normal") + " group");
+            return true;
+        }
+
+        if (strings.length == 4
+                && strings[0].equalsIgnoreCase("group")
+                && strings[2].equalsIgnoreCase("setpriority")
+        ) {
+            PermissionGroup group = PermissionAPI.getInstance().getPermissionUtil().getGroup(strings[1]);
+            if (group == null) {
+                System.out.println("The group " + strings[1] + " does not exists");
+                return true;
+            }
+
+            Integer priority = CommonHelper.fromString(strings[3]);
+            if (priority == null) {
+                System.out.println("Please recheck (use an integer as 4 argument)");
+                return true;
+            }
+
+            group.setPriority(priority);
+            PermissionAPI.getInstance().getPermissionUtil().updateGroup(group);
+
+            System.out.println("The group " + group.getName() + " has now the priority: " + priority);
             return true;
         }
 
