@@ -2,6 +2,7 @@ package systems.reformcloud.reformcloud2.executor.node.api.process;
 
 import systems.reformcloud.reformcloud2.executor.api.common.api.process.ProcessAsyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.process.ProcessSyncAPI;
+import systems.reformcloud.reformcloud2.executor.api.common.base.Conditions;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
@@ -15,6 +16,7 @@ import systems.reformcloud.reformcloud2.executor.node.network.packet.out.NodePac
 import systems.reformcloud.reformcloud2.executor.node.process.manager.LocalProcessManager;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
@@ -171,19 +173,19 @@ public class ProcessAPIImplementation implements ProcessSyncAPI, ProcessAsyncAPI
         return task;
     }
 
-    @Nonnull
+    @Nullable
     @Override
     public ProcessInformation startProcess(@Nonnull String groupName) {
         return startProcessAsync(groupName).getUninterruptedly();
     }
 
-    @Nonnull
+    @Nullable
     @Override
     public ProcessInformation startProcess(@Nonnull String groupName, String template) {
         return startProcessAsync(groupName, template).getUninterruptedly();
     }
 
-    @Nonnull
+    @Nullable
     @Override
     public ProcessInformation startProcess(@Nonnull String groupName, String template, @Nonnull JsonConfiguration configurable) {
         return startProcessAsync(groupName, template, configurable).getUninterruptedly();
@@ -212,13 +214,17 @@ public class ProcessAPIImplementation implements ProcessSyncAPI, ProcessAsyncAPI
     @Nonnull
     @Override
     public List<ProcessInformation> getAllProcesses() {
-        return getAllProcessesAsync().getUninterruptedly();
+        List<ProcessInformation> list = getAllProcessesAsync().getUninterruptedly();
+        Conditions.nonNull(list);
+        return list;
     }
 
     @Nonnull
     @Override
     public List<ProcessInformation> getProcesses(@Nonnull String group) {
-        return getProcessesAsync(group).getUninterruptedly();
+        List<ProcessInformation> information = getProcessesAsync(group).getUninterruptedly();
+        Conditions.nonNull(information);
+        return information;
     }
 
     @Override
@@ -228,7 +234,8 @@ public class ProcessAPIImplementation implements ProcessSyncAPI, ProcessAsyncAPI
 
     @Override
     public int getGlobalOnlineCount(@Nonnull Collection<String> ignoredProxies) {
-        return getGlobalOnlineCountAsync(ignoredProxies).getUninterruptedly();
+        Integer integer = getGlobalOnlineCountAsync(ignoredProxies).getUninterruptedly();
+        return integer == null ? 0 : integer;
     }
 
     @Override

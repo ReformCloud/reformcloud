@@ -20,7 +20,7 @@ public interface ProcessSyncAPI {
      * @param groupName The name of the group which should be started from
      * @return The created {@link ProcessInformation}
      */
-    @Nonnull
+    @Nullable
     ProcessInformation startProcess(@Nonnull String groupName);
 
     /**
@@ -30,7 +30,7 @@ public interface ProcessSyncAPI {
      * @param template The template which should be used
      * @return The created {@link ProcessInformation}
      */
-    @Nonnull
+    @Nullable
     ProcessInformation startProcess(@Nonnull String groupName, @Nullable String template);
 
     /**
@@ -41,7 +41,7 @@ public interface ProcessSyncAPI {
      * @param configurable The data for the process
      * @return The created {@link ProcessInformation}
      */
-    @Nonnull
+    @Nullable
     ProcessInformation startProcess(
             @Nonnull String groupName,
             @Nullable String template,

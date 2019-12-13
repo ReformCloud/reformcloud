@@ -78,7 +78,8 @@ public class ClientAPIImplementation implements ClientSyncAPI, ClientAsyncAPI {
 
     @Override
     public boolean isClientConnected(@Nonnull String name) {
-        return isClientConnectedAsync(name).getUninterruptedly();
+        Boolean aBoolean = isClientConnectedAsync(name).getUninterruptedly();
+        return aBoolean != null && aBoolean;
     }
 
     @Override
@@ -88,12 +89,14 @@ public class ClientAPIImplementation implements ClientSyncAPI, ClientAsyncAPI {
 
     @Override
     public int getMaxMemory(@Nonnull String name) {
-        return getMaxMemoryAsync(name).getUninterruptedly();
+        Integer integer = getMaxMemoryAsync(name).getUninterruptedly();
+        return integer == null ? -1 : integer;
     }
 
     @Override
     public int getMaxProcesses(@Nonnull String name) {
-        return getMaxProcessesAsync(name).getUninterruptedly();
+        Integer integer = getMaxProcessesAsync(name).getUninterruptedly();
+        return integer == null ? -1 : integer;
     }
 
     @Override

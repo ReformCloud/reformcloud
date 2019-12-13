@@ -1108,19 +1108,19 @@ public abstract class ExternalAPIImplementation extends ExecutorAPI implements
         return task;
     }
 
-    @Nonnull
+    @Nullable
     @Override
     public ProcessInformation startProcess(@Nonnull String groupName) {
         return startProcessAsync(groupName).getUninterruptedly();
     }
 
-    @Nonnull
+    @Nullable
     @Override
     public ProcessInformation startProcess(@Nonnull String groupName, String template) {
         return startProcessAsync(groupName, template).getUninterruptedly();
     }
 
-    @Nonnull
+    @Nullable
     @Override
     public ProcessInformation startProcess(@Nonnull String groupName, String template, @Nonnull JsonConfiguration configurable) {
         return startProcessAsync(groupName, template, configurable).getUninterruptedly();

@@ -74,7 +74,7 @@ public final class ColouredLoggerHandler extends LoggerBase {
             ex.printStackTrace();
         }
 
-        return null;
+        return "";
     }
 
     @Nonnull
@@ -86,14 +86,14 @@ public final class ColouredLoggerHandler extends LoggerBase {
             ex.printStackTrace();
         }
 
-        return null;
+        return "";
     }
 
     @Nonnull
     @Override
     public String readString(@Nonnull Predicate<String> predicate, @Nonnull Runnable invalidInputMessage) {
         String line = readLine();
-        while (line == null || !predicate.test(line)) {
+        while (!predicate.test(line)) {
             invalidInputMessage.run();
             line = readLine();
         }
@@ -106,7 +106,7 @@ public final class ColouredLoggerHandler extends LoggerBase {
     public <T> T read(@Nonnull Function<String, T> function, @Nonnull Runnable invalidInputMessage) {
         String line = readLine();
         T result;
-        while (line == null || (result = function.apply(line)) == null) {
+        while ((result = function.apply(line)) == null) {
             invalidInputMessage.run();
             line = readLine();
         }

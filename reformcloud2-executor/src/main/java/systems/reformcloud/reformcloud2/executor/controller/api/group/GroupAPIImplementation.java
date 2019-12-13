@@ -2,6 +2,7 @@ package systems.reformcloud.reformcloud2.executor.controller.api.group;
 
 import systems.reformcloud.reformcloud2.executor.api.common.api.group.GroupAsyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.group.GroupSyncAPI;
+import systems.reformcloud.reformcloud2.executor.api.common.base.Conditions;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.MainGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Template;
@@ -146,7 +147,7 @@ public class GroupAPIImplementation implements GroupAsyncAPI, GroupSyncAPI {
     public Task<Void> deleteMainGroupAsync(@Nonnull String name) {
         Task<Void> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
-            Links.filterToReference(controllerExecutorConfig.getMainGroups(), mainGroup -> mainGroup.getName().equals(name)).ifPresent(mainGroup -> controllerExecutorConfig.deleteMainGroup(mainGroup));
+            Links.filterToReference(controllerExecutorConfig.getMainGroups(), mainGroup -> mainGroup.getName().equals(name)).ifPresent(controllerExecutorConfig::deleteMainGroup);
             task.complete(null);
         });
         return task;
@@ -157,7 +158,7 @@ public class GroupAPIImplementation implements GroupAsyncAPI, GroupSyncAPI {
     public Task<Void> deleteProcessGroupAsync(@Nonnull String name) {
         Task<Void> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
-            Links.filterToReference(controllerExecutorConfig.getProcessGroups(), processGroup -> processGroup.getName().equals(name)).ifPresent(processGroup -> controllerExecutorConfig.deleteProcessGroup(processGroup));
+            Links.filterToReference(controllerExecutorConfig.getProcessGroups(), processGroup -> processGroup.getName().equals(name)).ifPresent(controllerExecutorConfig::deleteProcessGroup);
             task.complete(null);
         });
         return task;
@@ -182,61 +183,81 @@ public class GroupAPIImplementation implements GroupAsyncAPI, GroupSyncAPI {
     @Nonnull
     @Override
     public MainGroup createMainGroup(@Nonnull String name) {
-        return createMainGroupAsync(name).getUninterruptedly();
+        MainGroup mainGroup = createMainGroupAsync(name).getUninterruptedly();
+        Conditions.nonNull(mainGroup, "An internal error occurred while executing api method. !!! This is not a bug of reformcloud !!! Please do not report this as a bug"); // Should never happen
+        return mainGroup;
     }
 
     @Nonnull
     @Override
     public MainGroup createMainGroup(@Nonnull String name, @Nonnull List<String> subgroups) {
-        return createMainGroupAsync(name, subgroups).getUninterruptedly();
+        MainGroup mainGroup = createMainGroupAsync(name, subgroups).getUninterruptedly();
+        Conditions.nonNull(mainGroup, "An internal error occurred while executing api method. !!! This is not a bug of reformcloud !!! Please do not report this as a bug"); // Should never happen
+        return mainGroup;
     }
 
     @Nonnull
     @Override
     public ProcessGroup createProcessGroup(@Nonnull String name) {
-        return createProcessGroupAsync(name).getUninterruptedly();
+        ProcessGroup processGroup = createProcessGroupAsync(name).getUninterruptedly();
+        Conditions.nonNull(processGroup, "An internal error occurred while executing api method. !!! This is not a bug of reformcloud !!! Please do not report this as a bug"); // Should never happen
+        return processGroup;
     }
 
     @Nonnull
     @Override
     public ProcessGroup createProcessGroup(@Nonnull String name, @Nonnull List<Template> templates) {
-        return createProcessGroupAsync(name, templates).getUninterruptedly();
+        ProcessGroup processGroup = createProcessGroupAsync(name, templates).getUninterruptedly();
+        Conditions.nonNull(processGroup, "An internal error occurred while executing api method. !!! This is not a bug of reformcloud !!! Please do not report this as a bug"); // Should never happen
+        return processGroup;
     }
 
     @Nonnull
     @Override
     public ProcessGroup createProcessGroup(@Nonnull String name, @Nonnull List<Template> templates, @Nonnull StartupConfiguration startupConfiguration) {
-        return createProcessGroupAsync(name, templates, startupConfiguration).getUninterruptedly();
+        ProcessGroup processGroup = createProcessGroupAsync(name, templates, startupConfiguration).getUninterruptedly();
+        Conditions.nonNull(processGroup, "An internal error occurred while executing api method. !!! This is not a bug of reformcloud !!! Please do not report this as a bug"); // Should never happen
+        return processGroup;
     }
 
     @Nonnull
     @Override
     public ProcessGroup createProcessGroup(@Nonnull String name, @Nonnull List<Template> templates, @Nonnull StartupConfiguration startupConfiguration, @Nonnull PlayerAccessConfiguration playerAccessConfiguration) {
-        return createProcessGroupAsync(name, templates, startupConfiguration, playerAccessConfiguration).getUninterruptedly();
+        ProcessGroup processGroup = createProcessGroupAsync(name, templates, startupConfiguration, playerAccessConfiguration).getUninterruptedly();
+        Conditions.nonNull(processGroup, "An internal error occurred while executing api method. !!! This is not a bug of reformcloud !!! Please do not report this as a bug"); // Should never happen
+        return processGroup;
     }
 
     @Nonnull
     @Override
     public ProcessGroup createProcessGroup(@Nonnull String name, @Nonnull List<Template> templates, @Nonnull StartupConfiguration startupConfiguration, @Nonnull PlayerAccessConfiguration playerAccessConfiguration, boolean staticGroup) {
-        return createProcessGroupAsync(name, templates, startupConfiguration, playerAccessConfiguration, staticGroup).getUninterruptedly();
+        ProcessGroup processGroup = createProcessGroupAsync(name, templates, startupConfiguration, playerAccessConfiguration, staticGroup).getUninterruptedly();
+        Conditions.nonNull(processGroup, "An internal error occurred while executing api method. !!! This is not a bug of reformcloud !!! Please do not report this as a bug"); // Should never happen
+        return processGroup;
     }
 
     @Nonnull
     @Override
     public ProcessGroup createProcessGroup(@Nonnull ProcessGroup processGroup) {
-        return createProcessGroupAsync(processGroup).getUninterruptedly();
+        ProcessGroup processGroup1 = createProcessGroupAsync(processGroup).getUninterruptedly();
+        Conditions.nonNull(processGroup1, "An internal error occurred while executing api method. !!! This is not a bug of reformcloud !!! Please do not report this as a bug"); // Should never happen
+        return processGroup1;
     }
 
     @Nonnull
     @Override
     public MainGroup updateMainGroup(@Nonnull MainGroup mainGroup) {
-        return updateMainGroupAsync(mainGroup).getUninterruptedly();
+        MainGroup group = updateMainGroupAsync(mainGroup).getUninterruptedly();
+        Conditions.nonNull(group, "An internal error occurred while executing api method. !!! This is not a bug of reformcloud !!! Please do not report this as a bug"); // Should never happen
+        return group;
     }
 
     @Nonnull
     @Override
     public ProcessGroup updateProcessGroup(@Nonnull ProcessGroup processGroup) {
-        return updateProcessGroupAsync(processGroup).getUninterruptedly();
+        ProcessGroup group = updateProcessGroupAsync(processGroup).getUninterruptedly();
+        Conditions.nonNull(group, "An internal error occurred while executing api method. !!! This is not a bug of reformcloud !!! Please do not report this as a bug"); // Should never happen
+        return group;
     }
 
     @Nullable
@@ -264,12 +285,16 @@ public class GroupAPIImplementation implements GroupAsyncAPI, GroupSyncAPI {
     @Nonnull
     @Override
     public List<MainGroup> getMainGroups() {
-        return getMainGroupsAsync().getUninterruptedly();
+        List<MainGroup> mainGroups = getMainGroupsAsync().getUninterruptedly();
+        Conditions.nonNull(mainGroups, "An internal error occurred while executing api method. !!! This is not a bug of reformcloud !!! Please do not report this as a bug"); // Should never happen
+        return mainGroups;
     }
 
     @Nonnull
     @Override
     public List<ProcessGroup> getProcessGroups() {
-        return getProcessGroupsAsync().getUninterruptedly();
+        List<ProcessGroup> groups = getProcessGroupsAsync().getUninterruptedly();
+        Conditions.nonNull(groups, "An internal error occurred while executing api method. !!! This is not a bug of reformcloud !!! Please do not report this as a bug"); // Should never happen
+        return groups;
     }
 }
