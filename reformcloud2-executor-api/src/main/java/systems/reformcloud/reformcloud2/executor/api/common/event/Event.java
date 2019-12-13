@@ -1,5 +1,11 @@
 package systems.reformcloud.reformcloud2.executor.api.common.event;
 
+/**
+ * Represents a callable event of the runtime
+ *
+ * @see EventManager#callEvent(Event)
+ * @see EventManager#registerListener(Object)
+ */
 public class Event {
 
     public Event() {
@@ -12,7 +18,7 @@ public class Event {
 
     private final boolean async;
 
-    public boolean isAsync() {
+    public final boolean isAsync() {
         return async;
     }
 

@@ -5,6 +5,12 @@ import systems.reformcloud.reformcloud2.executor.api.common.plugins.basic.Defaul
 
 import javax.annotation.Nonnull;
 
+/**
+ * This class represents any plugin which is installable on a process instance
+ *
+ * @see systems.reformcloud.reformcloud2.executor.api.common.api.plugins.PluginSyncAPI#installPlugin(String, InstallablePlugin)
+ * @see systems.reformcloud.reformcloud2.executor.api.common.api.plugins.PluginAsyncAPI#installPluginAsync(String, InstallablePlugin)
+ */
 public abstract class InstallablePlugin extends Plugin {
 
     public static final TypeToken<DefaultInstallablePlugin> INSTALLABLE_TYPE = new TypeToken<DefaultInstallablePlugin>() {};

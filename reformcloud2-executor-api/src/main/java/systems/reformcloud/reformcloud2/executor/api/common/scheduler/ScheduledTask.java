@@ -3,6 +3,9 @@ package systems.reformcloud.reformcloud2.executor.api.common.scheduler;
 import javax.annotation.Nonnull;
 import java.util.concurrent.ThreadFactory;
 
+/**
+ * Represents any task scheduled by an {@link TaskScheduler} instance
+ */
 public interface ScheduledTask {
 
     /**

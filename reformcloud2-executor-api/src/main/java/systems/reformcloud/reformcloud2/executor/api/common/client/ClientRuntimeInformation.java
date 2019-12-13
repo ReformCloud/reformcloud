@@ -6,6 +6,9 @@ import systems.reformcloud.reformcloud2.executor.api.common.utility.name.Nameabl
 
 import javax.annotation.Nonnull;
 
+/**
+ * This class represents any connected to a controller
+ */
 public interface ClientRuntimeInformation extends Nameable {
 
     TypeToken<DefaultClientRuntimeInformation> TYPE = new TypeToken<DefaultClientRuntimeInformation>() {};

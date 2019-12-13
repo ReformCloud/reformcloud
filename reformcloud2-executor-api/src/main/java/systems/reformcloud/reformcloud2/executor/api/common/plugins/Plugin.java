@@ -2,12 +2,18 @@ package systems.reformcloud.reformcloud2.executor.api.common.plugins;
 
 import com.google.gson.reflect.TypeToken;
 import systems.reformcloud.reformcloud2.executor.api.common.plugins.basic.DefaultPlugin;
+import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.name.Nameable;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 
+/**
+ * This class represents any loaded plugin on a process instance
+ *
+ * @see ProcessInformation#getPlugins()
+ */
 public abstract class Plugin implements Nameable {
 
     public static final TypeToken<DefaultPlugin> TYPE = new TypeToken<DefaultPlugin>() {};

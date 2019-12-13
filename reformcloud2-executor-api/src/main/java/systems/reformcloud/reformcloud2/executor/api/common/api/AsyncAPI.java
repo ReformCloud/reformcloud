@@ -1,5 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.api.common.api;
 
+import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.applications.ApplicationAsyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.client.ClientAsyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.console.ConsoleAsyncAPI;
@@ -11,6 +12,11 @@ import systems.reformcloud.reformcloud2.executor.api.common.api.process.ProcessA
 
 import javax.annotation.Nonnull;
 
+/**
+ * This class represents the wrapper for all async api methods in the cloud system
+ *
+ * @see ExecutorAPI#getAsyncAPI()
+ */
 public interface AsyncAPI {
 
     /**

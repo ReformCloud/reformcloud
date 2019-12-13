@@ -5,6 +5,11 @@ import systems.reformcloud.reformcloud2.executor.api.common.dependency.repo.Repo
 import javax.annotation.Nonnull;
 import java.nio.file.Path;
 
+/**
+ * Represents an dependency of the cloud system
+ *
+ * @see DependencyLoader#loadDependency(Dependency)
+ */
 public interface Dependency {
 
     /**

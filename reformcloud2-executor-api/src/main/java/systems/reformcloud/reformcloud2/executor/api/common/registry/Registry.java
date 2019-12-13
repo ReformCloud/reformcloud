@@ -7,6 +7,9 @@ import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.function.Function;
 
+/**
+ * This class represents a registry with all keys in it
+ */
 public interface Registry {
 
     /**

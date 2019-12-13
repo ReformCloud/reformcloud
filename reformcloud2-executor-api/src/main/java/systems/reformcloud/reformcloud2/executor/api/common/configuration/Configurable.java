@@ -10,6 +10,9 @@ import java.lang.reflect.Type;
 import java.nio.file.Path;
 import java.util.function.Predicate;
 
+/**
+ * Represents any configuration used in the cloud system
+ */
 public interface Configurable<V extends Configurable> {
 
     @Nonnull

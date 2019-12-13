@@ -1,5 +1,10 @@
 package systems.reformcloud.reformcloud2.executor.api.common.commands;
 
+/**
+ * Represents the allowed sources of a command
+ *
+ * @see Command#sources()
+ */
 public enum AllowedCommandSources {
 
     /**

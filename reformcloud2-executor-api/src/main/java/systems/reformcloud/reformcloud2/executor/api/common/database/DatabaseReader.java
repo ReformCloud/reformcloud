@@ -9,7 +9,9 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * This class represents a database table where all operations are async in it
+ * Represents an database with all values in it
+ *
+ * @see Database#createForTable(String)
  */
 public interface DatabaseReader extends Iterable<JsonConfiguration>, Nameable {
 

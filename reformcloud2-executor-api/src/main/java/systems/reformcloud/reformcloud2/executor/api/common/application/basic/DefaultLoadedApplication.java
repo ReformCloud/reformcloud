@@ -55,7 +55,7 @@ public final class DefaultLoadedApplication implements LoadedApplication {
     }
 
     @Override
-    public void setApplicationStatus(ApplicationStatus status) {
+    public void setApplicationStatus(@Nonnull ApplicationStatus status) {
         this.applicationStatus = status;
     }
 }

@@ -6,6 +6,12 @@ import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.Collection;
 
+/**
+ * Represents any command which can be tab completed
+ *
+ * @deprecated This feature is not implemented yet
+ */
+@Deprecated
 public interface TabCompleter {
 
     /**

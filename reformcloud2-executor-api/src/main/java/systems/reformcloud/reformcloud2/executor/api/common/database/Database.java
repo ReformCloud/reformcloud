@@ -7,6 +7,11 @@ import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+/**
+ * Represents an database of the cloud system
+ *
+ * @param <V> The type of the connection or types in it
+ */
 public abstract class Database<V> {
 
     protected static final DependencyLoader DEPENDENCY_LOADER = new DefaultDependencyLoader();

@@ -166,7 +166,7 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
     }
 
     @Override
-    public boolean doSpecificApplicationInstall(InstallableApplication application) {
+    public boolean doSpecificApplicationInstall(@Nonnull InstallableApplication application) {
         DownloadHelper.downloadAndDisconnect(application.url(), "reformcloud/applications/" + application.getName() + ".jar");
         File file = new File("reformcloud/applications/" + application.getName() + ".jar");
         if (!file.exists()) {
@@ -239,7 +239,7 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
     }
 
     @Override
-    public boolean doSpecificApplicationUninstall(LoadedApplication loadedApplication) {
+    public boolean doSpecificApplicationUninstall(@Nonnull LoadedApplication loadedApplication) {
         Application application = Links.filter(applications, application1 -> application1.getApplication().getName().equals(loadedApplication.getName()));
         if (application == null) {
             return false;
@@ -263,7 +263,7 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
     }
 
     @Override
-    public boolean doSpecificApplicationUninstall(String application) {
+    public boolean doSpecificApplicationUninstall(@Nonnull String application) {
         LoadedApplication app = getApplication(application);
         if (app == null) {
             return false;
@@ -290,7 +290,7 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
     }
 
     @Override
-    public void addApplicationHandler(ApplicationHandler applicationHandler) {
+    public void addApplicationHandler(@Nonnull ApplicationHandler applicationHandler) {
         applicationHandlers.add(applicationHandler);
     }
 }

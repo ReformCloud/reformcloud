@@ -1,5 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.api.common.api.plugins;
 
+import systems.reformcloud.reformcloud2.executor.api.common.api.SyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.plugins.InstallablePlugin;
 import systems.reformcloud.reformcloud2.executor.api.common.plugins.Plugin;
 import systems.reformcloud.reformcloud2.executor.api.common.plugins.basic.DefaultPlugin;
@@ -9,6 +10,11 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collection;
 
+/**
+ * This class represents the sync api for plugins
+ *
+ * @see SyncAPI#getPluginSyncAPI()
+ */
 public interface PluginSyncAPI {
 
     /**

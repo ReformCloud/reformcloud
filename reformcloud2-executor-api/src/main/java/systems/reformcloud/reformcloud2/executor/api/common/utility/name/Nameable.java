@@ -2,6 +2,11 @@ package systems.reformcloud.reformcloud2.executor.api.common.utility.name;
 
 import javax.annotation.Nonnull;
 
+/**
+ * Represents every object which can have a special name
+ *
+ * @see ReNameable
+ */
 public interface Nameable {
 
     /**

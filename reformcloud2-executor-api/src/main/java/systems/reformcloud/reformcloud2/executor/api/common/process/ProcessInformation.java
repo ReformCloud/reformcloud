@@ -5,6 +5,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonCo
 import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Template;
 import systems.reformcloud.reformcloud2.executor.api.common.plugins.basic.DefaultPlugin;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.clone.Clone;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.name.Nameable;
 
@@ -12,7 +13,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 
-public final class ProcessInformation implements Nameable {
+public final class ProcessInformation implements Nameable, Clone<ProcessInformation> {
 
     public static final TypeToken<ProcessInformation> TYPE = new TypeToken<ProcessInformation>() {};
 
@@ -192,6 +193,17 @@ public final class ProcessInformation implements Nameable {
 
     public void updateRuntimeInformation() {
         this.processRuntimeInformation = ProcessRuntimeInformation.create();
+    }
+
+    @Override
+    @Nonnull
+    public ProcessInformation clone() {
+        try {
+            return (ProcessInformation) super.clone();
+        } catch (final CloneNotSupportedException ex) {
+            return new ProcessInformation(processName, displayName, parent, nodeUniqueID, processUniqueID, id,
+                    processState, networkInfo, processGroup, template, processRuntimeInformation, plugins, extra, maxPlayers);
+        }
     }
 
     @Override

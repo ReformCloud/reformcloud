@@ -3,6 +3,7 @@ package systems.reformcloud.reformcloud2.executor.api.common.commands;
 import com.google.gson.reflect.TypeToken;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.GlobalCommand;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.complete.TabCompleter;
+import systems.reformcloud.reformcloud2.executor.api.common.commands.manager.CommandManager;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.permission.Permission;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.source.CommandSource;
 
@@ -10,6 +11,12 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 
+/**
+ * Represents any command
+ *
+ * @see CommandManager#register(Command)
+ * @see CommandManager#findCommand(String)
+ */
 public interface Command extends TabCompleter {
 
     TypeToken<GlobalCommand> TYPE = new TypeToken<GlobalCommand>() {};

@@ -1,5 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.api.common.api;
 
+import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.applications.ApplicationSyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.client.ClientSyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.console.ConsoleSyncAPI;
@@ -11,6 +12,11 @@ import systems.reformcloud.reformcloud2.executor.api.common.api.process.ProcessS
 
 import javax.annotation.Nonnull;
 
+/**
+ * This class is representing the wrapper for all sync api handler
+ *
+ * @see ExecutorAPI#getSyncAPI()
+ */
 public interface SyncAPI {
 
     /**
