@@ -83,6 +83,8 @@ public enum Version {
             "https://dl.reformcloud.systems/mcversions/paper/paper-1.13.2.jar", 1),
     PAPER_1_14_4("Paper 1.14.4", "1.14.4",
             "https://dl.reformcloud.systems/mcversions/paper/paper-1.14.4.jar", 1),
+    PAPER_1_15("Paper 1.15", "1.15",
+            "https://dl.reformcloud.systems/mcversions/paper/paper-1.15.jar", 1),
 
     /**
      * SpongeVanilla Versions
