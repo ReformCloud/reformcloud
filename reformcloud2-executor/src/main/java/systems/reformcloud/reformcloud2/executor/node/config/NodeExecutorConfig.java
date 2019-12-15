@@ -117,7 +117,7 @@ public class NodeExecutorConfig {
                                         128, true, 512
                                 );
                                 lobby = new DefaultProcessGroup(
-                                        "Lobby", 41000, Version.PAPER_1_8_8,
+                                        "Lobby", 41000, Version.SPIGOT_1_15,
                                         512, false, 50
                                 );
                                 break;
@@ -228,7 +228,7 @@ public class NodeExecutorConfig {
     }
 
     public List<MainGroup> getMainGroups() {
-        return mainGroups;
+        return new ArrayList<>(mainGroups);
     }
 
     public IngameMessages getIngameMessages() {
@@ -236,6 +236,6 @@ public class NodeExecutorConfig {
     }
 
     public List<ProcessGroup> getProcessGroups() {
-        return processGroups;
+        return new ArrayList<>(processGroups);
     }
 }

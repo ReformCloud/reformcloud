@@ -238,11 +238,11 @@ public final class ControllerExecutorConfig {
     }
 
     public List<MainGroup> getMainGroups() {
-        return mainGroups;
+        return new ArrayList<>(mainGroups);
     }
 
     public List<ProcessGroup> getProcessGroups() {
-        return processGroups;
+        return new ArrayList<>(processGroups);
     }
 
     public String getConnectionKey() {
