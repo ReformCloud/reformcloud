@@ -4,8 +4,8 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>reformcloud2</artifactId>
-        <groupId>de.klaro.reformcloud2</groupId>
-        <version>2.0-SNAPSHOT</version>
+        <groupId>systems.reformcloud.reformcloud2</groupId>
+        <version>2.0.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -15,6 +15,27 @@
         <finalName>runner</finalName>
 
         <plugins>
+            <!-- build helper to set the timezone of the build time -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>3.0.0</version>
+                <executions>
+                    <execution>
+                        <id>build-spec-property</id>
+                        <goals>
+                            <goal>regex-property</goal>
+                        </goals>
+                        <configuration>
+                            <name>service.spec</name>
+                            <value>${project.version}</value>
+                            <regex>(.*)-(.*)</regex>
+                            <replacement>$2</replacement>
+                            <failIfNoMatch>false</failIfNoMatch>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
 
             <!-- maven shade plugin (central) -->
             <plugin>
@@ -36,13 +57,16 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>3.1.2</version>
+                <version>3.2.0</version>
                 <configuration>
                     <archive>
                         <manifestEntries>
-                            <Main-Class>de.klaro.reformcloud2.runner.Runner</Main-Class>
+                            <Premain-Class>systems.reformcloud.reformcloud2.runner.Runner</Premain-Class>
+                            <Main-Class>systems.reformcloud.reformcloud2.runner.Runner</Main-Class>
                             <Version>${project.version}</Version>
                             <Implementation-Version>${service.version}</Implementation-Version>
+                            <!-- Set by the maven helper plugin (leave this alone) -->
+                            <!--suppress UnresolvedMavenProperty -->
                             <Specification-Version>${service.spec}</Specification-Version>
                         </manifestEntries>
                     </archive>
@@ -68,23 +92,6 @@
                                 <copy file="${basedir}/../reformcloud2-executor/target/executor.jar"
                                       tofile="${basedir}/src/main/resources/files/executor.jar"
                                 />
-                            </target>
-                        </configuration>
-                    </execution>
-
-                    <!-- Cause the runner is the last module which will be compiled it deletes all unnecessary target folders  -->
-                    <execution>
-                        <id>delete-executor-other</id>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-
-                        <configuration>
-                            <target name="delete directories">
-                                <delete dir="${basedir}/../reformcloud2-executor/target" includeemptydirs="true" />
-                                <delete dir="${basedir}/../reformcloud2-default-applications/target" includeemptydirs="true" />
-                                <delete dir="${basedir}/../reformcloud2-executor-api/target" includeemptydirs="true" />
                             </target>
                         </configuration>
                     </execution>

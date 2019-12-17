@@ -1,7 +1,7 @@
 name: 'ReformCloud2SpigotExecutor'
 version: '2'
-authors: ['_Klaro', 'ReformCloud-Team']
-main: de.klaro.reformcloud2.executor.api.spigot.SpigotLauncher
+authors: ['derklaro', 'ReformCloud-Team']
+main: systems.reformcloud.reformcloud2.executor.api.spigot.SpigotLauncher
 
 load: STARTUP
 # Additional
