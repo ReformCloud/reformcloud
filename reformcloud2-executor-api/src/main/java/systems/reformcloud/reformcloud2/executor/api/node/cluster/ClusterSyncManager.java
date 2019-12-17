@@ -1,63 +1,64 @@
 package systems.reformcloud.reformcloud2.executor.api.node.cluster;
 
+import java.util.Collection;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.MainGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.node.NodeInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 
-import java.util.Collection;
-
 public interface ClusterSyncManager {
 
-    void syncSelfInformation();
+  void syncSelfInformation();
 
-    void syncProcessStartup(ProcessInformation processInformation);
+  void syncProcessStartup(ProcessInformation processInformation);
 
-    void syncProcessUpdate(ProcessInformation processInformation);
+  void syncProcessUpdate(ProcessInformation processInformation);
 
-    void syncProcessStop(ProcessInformation processInformation);
+  void syncProcessStop(ProcessInformation processInformation);
 
-    void syncProcessGroups(Collection<ProcessGroup> processGroups, SyncAction action);
+  void syncProcessGroups(Collection<ProcessGroup> processGroups,
+                         SyncAction action);
 
-    void syncMainGroups(Collection<MainGroup> mainGroups, SyncAction action);
+  void syncMainGroups(Collection<MainGroup> mainGroups, SyncAction action);
 
-    void syncProcessInformation(Collection<ProcessInformation> information);
+  void syncProcessInformation(Collection<ProcessInformation> information);
 
-    Collection<ProcessGroup> getProcessGroups();
+  Collection<ProcessGroup> getProcessGroups();
 
-    Collection<MainGroup> getMainGroups();
+  Collection<MainGroup> getMainGroups();
 
-    boolean existsProcessGroup(String name);
+  boolean existsProcessGroup(String name);
 
-    boolean existsMainGroup(String name);
+  boolean existsMainGroup(String name);
 
-    void syncProcessGroupCreate(ProcessGroup group);
+  void syncProcessGroupCreate(ProcessGroup group);
 
-    void syncMainGroupCreate(MainGroup group);
+  void syncMainGroupCreate(MainGroup group);
 
-    void syncProcessGroupUpdate(ProcessGroup processGroup);
+  void syncProcessGroupUpdate(ProcessGroup processGroup);
 
-    void syncMainGroupUpdate(MainGroup mainGroup);
+  void syncMainGroupUpdate(MainGroup mainGroup);
 
-    void syncProcessGroupDelete(String name);
+  void syncProcessGroupDelete(String name);
 
-    void syncMainGroupDelete(String name);
+  void syncMainGroupDelete(String name);
 
-    void handleProcessGroupSync(Collection<ProcessGroup> groups, SyncAction action);
+  void handleProcessGroupSync(Collection<ProcessGroup> groups,
+                              SyncAction action);
 
-    void handleMainGroupSync(Collection<MainGroup> groups, SyncAction action);
+  void handleMainGroupSync(Collection<MainGroup> groups, SyncAction action);
 
-    void handleProcessInformationSync(Collection<ProcessInformation> information);
+  void handleProcessInformationSync(Collection<ProcessInformation> information);
 
-    void handleClusterReload();
+  void handleClusterReload();
 
-    void handleNodeInformationUpdate(NodeInformation nodeInformation);
+  void handleNodeInformationUpdate(NodeInformation nodeInformation);
 
-    void doClusterReload();
+  void doClusterReload();
 
-    void disconnectFromCluster();
+  void disconnectFromCluster();
 
-    boolean isConnectedAndSyncWithCluster();
+  boolean isConnectedAndSyncWithCluster();
 
-    Collection<String> getWaitingConnections();
+  Collection<String> getWaitingConnections();
 }

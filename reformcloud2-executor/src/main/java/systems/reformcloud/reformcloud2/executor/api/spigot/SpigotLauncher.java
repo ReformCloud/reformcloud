@@ -9,26 +9,28 @@ import systems.reformcloud.reformcloud2.executor.api.spigot.event.PlayerListener
 
 public final class SpigotLauncher extends JavaPlugin {
 
-    @Override
-    public void onLoad() {
-        LanguageWorker.doLoad();
-        StringUtil.sendHeader();
+  @Override
+  public void onLoad() {
+    LanguageWorker.doLoad();
+    StringUtil.sendHeader();
 
-        Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
-    }
+    Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
+  }
 
-    @Override
-    public void onEnable() {
-        new SpigotExecutor(this);
-        Bukkit.getServer().getPluginManager().registerEvents(new PlayerListenerHandler(), this);
-        Bukkit.getServer().getPluginManager().registerEvents(new ExtraListenerHandler(), this);
-    }
+  @Override
+  public void onEnable() {
+    new SpigotExecutor(this);
+    Bukkit.getServer().getPluginManager().registerEvents(
+        new PlayerListenerHandler(), this);
+    Bukkit.getServer().getPluginManager().registerEvents(
+        new ExtraListenerHandler(), this);
+  }
 
-    @Override
-    public void onDisable() {
-        SpigotExecutor.getInstance().getNetworkClient().disconnect();
-        Bukkit.getScheduler().cancelTasks(this);
+  @Override
+  public void onDisable() {
+    SpigotExecutor.getInstance().getNetworkClient().disconnect();
+    Bukkit.getScheduler().cancelTasks(this);
 
-        Bukkit.getOnlinePlayers().forEach(e -> e.kickPlayer(""));
-    }
+    Bukkit.getOnlinePlayers().forEach(e -> e.kickPlayer(""));
+  }
 }

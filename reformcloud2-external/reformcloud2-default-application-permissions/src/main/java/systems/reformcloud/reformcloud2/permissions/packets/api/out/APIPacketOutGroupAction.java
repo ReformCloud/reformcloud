@@ -8,7 +8,9 @@ import systems.reformcloud.reformcloud2.permissions.util.group.PermissionGroup;
 
 public class APIPacketOutGroupAction extends DefaultPacket {
 
-    public APIPacketOutGroupAction(PermissionGroup group, PermissionAction action) {
-        super(PacketHelper.PERMISSION_BUS + 1, new JsonConfiguration().add("group", group).add("action", action));
-    }
+  public APIPacketOutGroupAction(PermissionGroup group,
+                                 PermissionAction action) {
+    super(PacketHelper.PERMISSION_BUS + 1,
+          new JsonConfiguration().add("group", group).add("action", action));
+  }
 }

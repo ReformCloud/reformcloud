@@ -4,9 +4,10 @@ import systems.reformcloud.reformcloud2.executor.api.common.restapi.request.Requ
 
 public interface WebServer {
 
-    void add(String host, int port, RequestListenerHandler requestListenerHandler);
+  void add(String host, int port,
+           RequestListenerHandler requestListenerHandler);
 
-    void closeFuture(int port);
+  void closeFuture(int port);
 
-    void close();
+  void close();
 }

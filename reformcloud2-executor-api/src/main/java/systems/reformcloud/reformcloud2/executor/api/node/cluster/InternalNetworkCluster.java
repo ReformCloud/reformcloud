@@ -1,49 +1,49 @@
 package systems.reformcloud.reformcloud2.executor.api.node.cluster;
 
+import java.util.Collection;
+import java.util.function.Function;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Template;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.api.common.node.NodeInformation;
 
-import java.util.Collection;
-import java.util.function.Function;
-
 public interface InternalNetworkCluster {
 
-    ClusterManager getClusterManager();
+  ClusterManager getClusterManager();
 
-    NodeInformation getHeadNode();
+  NodeInformation getHeadNode();
 
-    NodeInformation getSelfNode();
+  NodeInformation getSelfNode();
 
-    void updateSelf(NodeInformation self);
+  void updateSelf(NodeInformation self);
 
-    default boolean isSelfNodeHead() {
-        return getHeadNode() != null && getHeadNode().equals(getSelfNode());
+  default boolean isSelfNodeHead() {
+    return getHeadNode() != null && getHeadNode().equals(getSelfNode());
+  }
+
+  NodeInformation getNode(String name);
+
+  Collection<NodeInformation> getConnectedNodes();
+
+  void handleNodeUpdate(NodeInformation nodeInformation);
+
+  default boolean noOtherNodes() { return getConnectedNodes().isEmpty(); }
+
+  void publishToHeadNode(Packet packet);
+
+  default<T> T sendQueryToHead(Packet query,
+                               Function<Packet, T> responseHandler) {
+    if (getHeadNode().getNodeUniqueID().equals(
+            getSelfNode().getNodeUniqueID())) {
+      return null;
     }
 
-    NodeInformation getNode(String name);
+    return sendQueryToNode(getHeadNode().getName(), query, responseHandler);
+  }
 
-    Collection<NodeInformation> getConnectedNodes();
+  void broadCastToCluster(Packet packet);
 
-    void handleNodeUpdate(NodeInformation nodeInformation);
+  <T> T sendQueryToNode(String node, Packet query,
+                        Function<Packet, T> responseHandler);
 
-    default boolean noOtherNodes() {
-        return getConnectedNodes().isEmpty();
-    }
-
-    void publishToHeadNode(Packet packet);
-
-    default <T> T sendQueryToHead(Packet query, Function<Packet, T> responseHandler) {
-        if (getHeadNode().getNodeUniqueID().equals(getSelfNode().getNodeUniqueID())) {
-            return null;
-        }
-
-        return sendQueryToNode(getHeadNode().getName(), query, responseHandler);
-    }
-
-    void broadCastToCluster(Packet packet);
-
-    <T> T sendQueryToNode(String node, Packet query, Function<Packet, T> responseHandler);
-
-    NodeInformation findBestNodeForStartup(Template template);
+  NodeInformation findBestNodeForStartup(Template template);
 }

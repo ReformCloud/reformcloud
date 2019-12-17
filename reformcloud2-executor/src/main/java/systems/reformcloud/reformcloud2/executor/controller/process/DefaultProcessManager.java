@@ -1,5 +1,14 @@
 package systems.reformcloud.reformcloud2.executor.controller.process;
 
+import static java.util.Objects.requireNonNull;
+
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.UnaryOperator;
+import javax.annotation.Nonnull;
 import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.ProcessStartedEvent;
 import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.ProcessStoppedEvent;
 import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.ProcessUpdatedEvent;
@@ -28,335 +37,425 @@ import systems.reformcloud.reformcloud2.executor.controller.packet.out.event.Con
 import systems.reformcloud.reformcloud2.executor.controller.packet.out.event.ControllerEventProcessStarted;
 import systems.reformcloud.reformcloud2.executor.controller.packet.out.event.ControllerEventProcessUpdated;
 
-import javax.annotation.Nonnull;
-import java.util.*;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.UnaryOperator;
-
-import static java.util.Objects.requireNonNull;
-
 public final class DefaultProcessManager implements ProcessManager {
 
-    private final Collection<ProcessInformation> processInformation = new ConcurrentLinkedQueue<>();
+  private final Collection<ProcessInformation> processInformation =
+      new ConcurrentLinkedQueue<>();
 
-    private Queue<Trio<ProcessGroup, Template, JsonConfiguration>> noClientTryLater = new ConcurrentLinkedQueue<>();
+  private Queue<Trio<ProcessGroup, Template, JsonConfiguration>>
+      noClientTryLater = new ConcurrentLinkedQueue<>();
 
-    public DefaultProcessManager() {
-        CompletableFuture.runAsync(() -> {
-            while (!Thread.currentThread().isInterrupted()) {
-                if (!noClientTryLater.isEmpty()) {
-                    Trio<ProcessGroup, Template, JsonConfiguration> trio = noClientTryLater.peek();
-                    startProcess(trio.getFirst().getName(), trio.getSecond().getName(), trio.getThird());
-                    noClientTryLater.remove(trio);
-                }
+  public DefaultProcessManager() {
+    CompletableFuture.runAsync(() -> {
+      while (!Thread.currentThread().isInterrupted()) {
+        if (!noClientTryLater.isEmpty()) {
+          Trio<ProcessGroup, Template, JsonConfiguration> trio =
+              noClientTryLater.peek();
+          startProcess(trio.getFirst().getName(), trio.getSecond().getName(),
+                       trio.getThird());
+          noClientTryLater.remove(trio);
+        }
 
-                AbsoluteThread.sleep(TimeUnit.MILLISECONDS, 200);
-            }
+        AbsoluteThread.sleep(TimeUnit.MILLISECONDS, 200);
+      }
+    });
+  }
+
+  @Override
+  public List<ProcessInformation> getAllProcesses() {
+    synchronized (processInformation) {
+      return Links.newList(processInformation);
+    }
+  }
+
+  @Override
+  public List<ProcessInformation> getProcesses(String group) {
+    return Links.list(
+        getAllProcesses(),
+        processInformation
+        -> processInformation.getProcessGroup().getName().equals(group));
+  }
+
+  @Override
+  public Integer getOnlineAndWaitingProcessCount(String group) {
+    int out = noClientTryLater.stream()
+                  .filter(e -> e.getFirst().getName().equals(group))
+                  .mapToInt(value -> 1)
+                  .sum();
+    return getProcesses(group).size() + out;
+  }
+
+  @Override
+  public ProcessInformation getProcess(String name) {
+    requireNonNull(name);
+    synchronized (processInformation) {
+      return Links.filter(
+          processInformation,
+          processInformation -> processInformation.getName().equals(name));
+    }
+  }
+
+  @Override
+  public ProcessInformation getProcess(UUID uniqueID) {
+    requireNonNull(uniqueID);
+    synchronized (processInformation) {
+      return Links.filter(
+          processInformation,
+          processInformation
+          -> processInformation.getProcessUniqueID().equals(uniqueID));
+    }
+  }
+
+  @Override
+  public ProcessInformation startProcess(String groupName) {
+    requireNonNull(groupName);
+    return startProcess(groupName, null);
+  }
+
+  @Override
+  public ProcessInformation startProcess(String groupName, String template) {
+    return startProcess(groupName, template, null);
+  }
+
+  @Override
+  public ProcessInformation startProcess(String groupName, String template,
+                                         JsonConfiguration configurable) {
+    ProcessGroup processGroup = Links.filter(
+        ControllerExecutor.getInstance()
+            .getControllerExecutorConfig()
+            .getProcessGroups(),
+        processGroup1 -> processGroup1.getName().equals(groupName));
+    if (processGroup == null) {
+      // In some cases the group got deleted but the update process is sync and
+      // this method get called async! To prevent any issues just return at this
+      // point
+      return null;
+    }
+
+    Template found =
+        Links.filter(processGroup.getTemplates(),
+                     test -> Objects.equals(test.getName(), template));
+
+    ProcessInformation processInformation =
+        create(processGroup, found, configurable);
+    if (processInformation == null) {
+      return null;
+    }
+
+    this.processInformation.add(processInformation);
+    DefaultChannelManager.INSTANCE.get(processInformation.getParent())
+        .ifPresent(
+            packetSender
+            -> packetSender.sendPacket(
+                new ControllerPacketOutStartProcess(processInformation)));
+    // Send event packet to notify processes
+    DefaultChannelManager.INSTANCE.getAllSender().forEach(
+        packetSender
+        -> packetSender.sendPacket(
+            new ControllerEventProcessStarted(processInformation)));
+    ControllerExecutor.getInstance().getEventManager().callEvent(
+        new ProcessStartedEvent(processInformation));
+    return processInformation;
+  }
+
+  @Override
+  public ProcessInformation stopProcess(String name) {
+    ProcessInformation processInformation = getProcess(name);
+    if (processInformation == null) {
+      return null;
+    }
+
+    return stopProcess(processInformation.getProcessUniqueID());
+  }
+
+  @Override
+  public ProcessInformation stopProcess(UUID uniqueID) {
+    ProcessInformation processInformation = getProcess(uniqueID);
+    if (processInformation == null) {
+      return null;
+    }
+
+    DefaultChannelManager.INSTANCE.get(processInformation.getParent())
+        .ifPresent(
+            packetSender
+            -> packetSender.sendPacket(new ControllerPacketOutStopProcess(
+                processInformation.getProcessUniqueID())));
+    return processInformation;
+  }
+
+  @Override
+  public void onClientDisconnect(String clientName) {
+    Links
+        .allOf(processInformation,
+               processInformation
+               -> processInformation.getParent().equals(clientName))
+        .forEach(processInformation -> {
+          synchronized (DefaultProcessManager.this.processInformation) {
+            DefaultProcessManager.this.processInformation.remove(
+                processInformation);
+          }
+
+          notifyDisconnect(processInformation);
         });
+  }
+
+  private ProcessInformation create(ProcessGroup processGroup,
+                                    Template template,
+                                    JsonConfiguration extra) {
+    if (extra == null) {
+      extra = new JsonConfiguration();
     }
 
-    @Override
-    public List<ProcessInformation> getAllProcesses() {
-        synchronized (processInformation) {
-            return Links.newList(processInformation);
+    if (template == null) {
+      AtomicReference<Template> bestTemplate = new AtomicReference<>();
+      processGroup.getTemplates().forEach(template1 -> {
+        if (bestTemplate.get() == null) {
+          bestTemplate.set(template1);
+        } else {
+          if (bestTemplate.get().getPriority() < template1.getPriority()) {
+            bestTemplate.set(template1);
+          }
         }
+      });
+
+      if (bestTemplate.get() == null) {
+        bestTemplate.set(new Template(
+            0, "default", false, FileBackend.NAME, "#",
+            new RuntimeConfiguration(512, new ArrayList<>(), new HashMap<>()),
+            Version.PAPER_1_8_8));
+
+        System.err.println(
+            "Starting up process " + processGroup.getName() +
+            " with default template because no template is set up");
+        Thread.dumpStack();
+      }
+
+      template = bestTemplate.get();
     }
 
-    @Override
-    public List<ProcessInformation> getProcesses(String group) {
-        return Links.list(getAllProcesses(), processInformation -> processInformation.getProcessGroup().getName().equals(group));
+    ClientRuntimeInformation client = client(processGroup, template);
+    if (client == null) {
+      noClientTryLater.add(new Trio<>(processGroup, template, extra));
+      return null;
     }
 
-    @Override
-    public Integer getOnlineAndWaitingProcessCount(String group) {
-        int out = noClientTryLater.stream().filter(e -> e.getFirst().getName().equals(group)).mapToInt(value -> 1).sum();
-        return getProcesses(group).size() + out;
+    int id = nextID(processGroup);
+    int port = nextPort(processGroup);
+    StringBuilder stringBuilder =
+        new StringBuilder().append(processGroup.getName());
+
+    if (processGroup.isShowIdInName()) {
+      if (template.getServerNameSplitter() != null) {
+        stringBuilder.append(template.getServerNameSplitter());
+      }
+
+      stringBuilder.append(id);
     }
 
-    @Override
-    public ProcessInformation getProcess(String name) {
-        requireNonNull(name);
-        synchronized (processInformation) {
-            return Links.filter(processInformation, processInformation -> processInformation.getName().equals(name));
-        }
+    ProcessInformation processInformation = new ProcessInformation(
+        processGroup.getName() + template.getServerNameSplitter() + id,
+        stringBuilder.substring(0), client.getName(), null, UUID.randomUUID(),
+        id, ProcessState.PREPARED,
+        new NetworkInfo(client.startHost(), port, false), processGroup,
+        template, ProcessRuntimeInformation.empty(), new ArrayList<>(), extra,
+        0);
+    return processInformation.updateMaxPlayers(null);
+  }
+
+  private int nextID(ProcessGroup processGroup) {
+    int id = 1;
+    Collection<Integer> ids = Links.newCollection(
+        processInformation,
+        processInformation
+        -> processInformation.getProcessGroup().getName().equals(
+            processGroup.getName()),
+        ProcessInformation::getId);
+
+    while (ids.contains(id)) {
+      id++;
     }
 
-    @Override
-    public ProcessInformation getProcess(UUID uniqueID) {
-        requireNonNull(uniqueID);
-        synchronized (processInformation) {
-            return Links.filter(processInformation, processInformation -> processInformation.getProcessUniqueID().equals(uniqueID));
-        }
+    return id;
+  }
+
+  private int nextPort(ProcessGroup processGroup) {
+    int port = processGroup.getStartupConfiguration().getStartPort();
+    Collection<Integer> ports = Links.newCollection(
+        processInformation,
+        processInformation -> processInformation.getNetworkInfo().getPort());
+
+    while (ports.contains(port)) {
+      port++;
     }
 
-    @Override
-    public ProcessInformation startProcess(String groupName) {
-        requireNonNull(groupName);
-        return startProcess(groupName, null);
-    }
+    return port;
+  }
 
-    @Override
-    public ProcessInformation startProcess(String groupName, String template) {
-        return startProcess(groupName, template, null);
-    }
-
-    @Override
-    public ProcessInformation startProcess(String groupName, String template, JsonConfiguration configurable) {
-        ProcessGroup processGroup = Links.filter(ControllerExecutor.getInstance().getControllerExecutorConfig().getProcessGroups(), processGroup1 -> processGroup1.getName().equals(groupName));
-        if (processGroup == null) {
-            // In some cases the group got deleted but the update process is sync and this method get called async!
-            // To prevent any issues just return at this point
-            return null;
-        }
-
-        Template found = Links.filter(processGroup.getTemplates(), test -> Objects.equals(test.getName(), template));
-
-        ProcessInformation processInformation = create(processGroup, found, configurable);
-        if (processInformation == null) {
-            return null;
-        }
-
-        this.processInformation.add(processInformation);
-        DefaultChannelManager.INSTANCE.get(processInformation.getParent()).ifPresent(packetSender -> packetSender.sendPacket(new ControllerPacketOutStartProcess(processInformation)));
-        //Send event packet to notify processes
-        DefaultChannelManager.INSTANCE.getAllSender().forEach(packetSender -> packetSender.sendPacket(new ControllerEventProcessStarted(processInformation)));
-        ControllerExecutor.getInstance().getEventManager().callEvent(new ProcessStartedEvent(processInformation));
-        return processInformation;
-    }
-
-    @Override
-    public ProcessInformation stopProcess(String name) {
-        ProcessInformation processInformation = getProcess(name);
-        if (processInformation == null) {
-            return null;
-        }
-
-        return stopProcess(processInformation.getProcessUniqueID());
-    }
-
-    @Override
-    public ProcessInformation stopProcess(UUID uniqueID) {
-        ProcessInformation processInformation = getProcess(uniqueID);
-        if (processInformation == null) {
-            return null;
-        }
-
-        DefaultChannelManager.INSTANCE.get(processInformation.getParent()).ifPresent(packetSender -> packetSender.sendPacket(new ControllerPacketOutStopProcess(processInformation.getProcessUniqueID())));
-        return processInformation;
-    }
-
-    @Override
-    public void onClientDisconnect(String clientName) {
-        Links.allOf(processInformation, processInformation -> processInformation.getParent().equals(clientName)).forEach(processInformation -> {
-            synchronized (DefaultProcessManager.this.processInformation) {
-                DefaultProcessManager.this.processInformation.remove(processInformation);
-            }
-
-            notifyDisconnect(processInformation);
-        });
-    }
-
-    private ProcessInformation create(ProcessGroup processGroup, Template template, JsonConfiguration extra) {
-        if (extra == null) {
-            extra = new JsonConfiguration();
-        }
-
-        if (template == null) {
-            AtomicReference<Template> bestTemplate = new AtomicReference<>();
-            processGroup.getTemplates().forEach(template1 -> {
-                if (bestTemplate.get() == null) {
-                    bestTemplate.set(template1);
-                } else {
-                    if (bestTemplate.get().getPriority() < template1.getPriority()) {
-                        bestTemplate.set(template1);
-                    }
-                }
-            });
-
-            if (bestTemplate.get() == null) {
-                bestTemplate.set(new Template(0, "default", false, FileBackend.NAME,"#", new RuntimeConfiguration(
-                        512, new ArrayList<>(), new HashMap<>()
-                ), Version.PAPER_1_8_8));
-
-                System.err.println("Starting up process " + processGroup.getName() + " with default template because no template is set up");
-                Thread.dumpStack();
-            }
-
-            template = bestTemplate.get();
-        }
-
-        ClientRuntimeInformation client = client(processGroup, template);
-        if (client == null) {
-            noClientTryLater.add(new Trio<>(processGroup, template, extra));
-            return null;
-        }
-
-        int id = nextID(processGroup);
-        int port = nextPort(processGroup);
-        StringBuilder stringBuilder = new StringBuilder().append(processGroup.getName());
-
-        if (processGroup.isShowIdInName()) {
-            if (template.getServerNameSplitter() != null) {
-                stringBuilder.append(template.getServerNameSplitter());
-            }
-
-            stringBuilder.append(id);
-        }
-
-        ProcessInformation processInformation = new ProcessInformation(
-                processGroup.getName() + template.getServerNameSplitter() + id,
-                stringBuilder.substring(0),
-                client.getName(),
-                null,
-                UUID.randomUUID(),
-                id,
-                ProcessState.PREPARED,
-                new NetworkInfo(
-                        client.startHost(),
-                        port,
-                        false
-                ), processGroup, template, ProcessRuntimeInformation.empty(), new ArrayList<>(), extra, 0
-        );
-        return processInformation.updateMaxPlayers(null);
-    }
-
-    private int nextID(ProcessGroup processGroup) {
-        int id = 1;
-        Collection<Integer> ids = Links.newCollection(processInformation, processInformation -> processInformation.getProcessGroup().getName().equals(processGroup.getName()), ProcessInformation::getId);
-
-        while (ids.contains(id)) {
-            id++;
-        }
-
-        return id;
-    }
-
-    private int nextPort(ProcessGroup processGroup) {
-        int port = processGroup.getStartupConfiguration().getStartPort();
-        Collection<Integer> ports = Links.newCollection(processInformation, processInformation -> processInformation.getNetworkInfo().getPort());
-
-        while (ports.contains(port)) {
-            port++;
-        }
-
-        return port;
-    }
-
-    private ClientRuntimeInformation client(ProcessGroup processGroup, Template template) {
-        if (processGroup.getStartupConfiguration().isSearchBestClientAlone()) {
-            AtomicReference<ClientRuntimeInformation> best = new AtomicReference<>();
-            Links.newCollection(ClientManager.INSTANCE.getClientRuntimeInformation(), clientRuntimeInformation -> {
-                Collection<Integer> startedOn = Links.newCollection(processInformation, processInformation -> processInformation.getParent().equals(clientRuntimeInformation.getName()), processInformation -> processInformation.getTemplate().getRuntimeConfiguration().getMaxMemory());
+  private ClientRuntimeInformation client(ProcessGroup processGroup,
+                                          Template template) {
+    if (processGroup.getStartupConfiguration().isSearchBestClientAlone()) {
+      AtomicReference<ClientRuntimeInformation> best = new AtomicReference<>();
+      Links
+          .newCollection(
+              ClientManager.INSTANCE.getClientRuntimeInformation(),
+              clientRuntimeInformation
+              -> {
+                Collection<Integer> startedOn = Links.newCollection(
+                    processInformation,
+                    processInformation
+                    -> processInformation.getParent().equals(
+                        clientRuntimeInformation.getName()),
+                    processInformation
+                    -> processInformation.getTemplate()
+                           .getRuntimeConfiguration()
+                           .getMaxMemory());
 
                 int usedMemory = 0;
                 for (Integer integer : startedOn) {
-                    usedMemory += integer;
+                  usedMemory += integer;
                 }
 
-                if (startedOn.size() < clientRuntimeInformation.maxProcessCount() || clientRuntimeInformation.maxProcessCount() == -1) {
-                    return clientRuntimeInformation.maxMemory() > (usedMemory + template.getRuntimeConfiguration().getMaxMemory());
+                if (startedOn.size() <
+                        clientRuntimeInformation.maxProcessCount() ||
+                    clientRuntimeInformation.maxProcessCount() == -1) {
+                  return clientRuntimeInformation.maxMemory() >
+                      (usedMemory +
+                       template.getRuntimeConfiguration().getMaxMemory());
                 }
 
                 return false;
-            }, (UnaryOperator<ClientRuntimeInformation>) clientRuntimeInformation -> clientRuntimeInformation).forEach(clientRuntimeInformation -> {
-                if (best.get() == null) {
-                    best.set(clientRuntimeInformation);
-                }
-            });
+              },
+              (UnaryOperator<ClientRuntimeInformation>)
+                  clientRuntimeInformation -> clientRuntimeInformation)
+          .forEach(clientRuntimeInformation -> {
+            if (best.get() == null) {
+              best.set(clientRuntimeInformation);
+            }
+          });
 
-            return best.get();
-        } else {
-            AtomicReference<ClientRuntimeInformation> best = new AtomicReference<>();
-            Links.newCollection(ClientManager.INSTANCE.getClientRuntimeInformation(), clientRuntimeInformation -> {
-                if (!processGroup.getStartupConfiguration().getUseOnlyTheseClients().contains(clientRuntimeInformation.getName())) {
-                    return false;
+      return best.get();
+    } else {
+      AtomicReference<ClientRuntimeInformation> best = new AtomicReference<>();
+      Links
+          .newCollection(
+              ClientManager.INSTANCE.getClientRuntimeInformation(),
+              clientRuntimeInformation
+              -> {
+                if (!processGroup.getStartupConfiguration()
+                         .getUseOnlyTheseClients()
+                         .contains(clientRuntimeInformation.getName())) {
+                  return false;
                 }
 
-                Collection<Integer> startedOn = Links.newCollection(processInformation, processInformation -> processInformation.getParent().equals(clientRuntimeInformation.getName()), processInformation -> processInformation.getTemplate().getRuntimeConfiguration().getMaxMemory());
+                Collection<Integer> startedOn = Links.newCollection(
+                    processInformation,
+                    processInformation
+                    -> processInformation.getParent().equals(
+                        clientRuntimeInformation.getName()),
+                    processInformation
+                    -> processInformation.getTemplate()
+                           .getRuntimeConfiguration()
+                           .getMaxMemory());
 
                 int usedMemory = 0;
                 for (Integer integer : startedOn) {
-                    usedMemory += integer;
+                  usedMemory += integer;
                 }
 
-                if (startedOn.size() < clientRuntimeInformation.maxProcessCount() || clientRuntimeInformation.maxProcessCount() == -1) {
-                    return clientRuntimeInformation.maxMemory() > (usedMemory + template.getRuntimeConfiguration().getMaxMemory());
+                if (startedOn.size() <
+                        clientRuntimeInformation.maxProcessCount() ||
+                    clientRuntimeInformation.maxProcessCount() == -1) {
+                  return clientRuntimeInformation.maxMemory() >
+                      (usedMemory +
+                       template.getRuntimeConfiguration().getMaxMemory());
                 }
 
                 return false;
-            }, (UnaryOperator<ClientRuntimeInformation>) clientRuntimeInformation -> clientRuntimeInformation).forEach(clientRuntimeInformation -> {
-                if (best.get() == null) {
-                    best.set(clientRuntimeInformation);
-                }
-            });
-
-            return best.get();
-        }
-    }
-
-    @Override
-    public Iterator<ProcessInformation> iterator() {
-        return Links.newList(processInformation).iterator();
-    }
-
-    @Override
-    public void update(@Nonnull ProcessInformation processInformation) {
-        synchronized (processInformation) {
-            ProcessInformation current = getProcess(processInformation.getProcessUniqueID());
-            if (current == null) {
-                return;
+              },
+              (UnaryOperator<ClientRuntimeInformation>)
+                  clientRuntimeInformation -> clientRuntimeInformation)
+          .forEach(clientRuntimeInformation -> {
+            if (best.get() == null) {
+              best.set(clientRuntimeInformation);
             }
+          });
 
-            Links.filterToReference(this.processInformation,
-                    e -> e.getProcessUniqueID().equals(processInformation.getProcessUniqueID())).ifPresent(e -> {
-                        this.processInformation.remove(e);
-                        this.processInformation.add(processInformation);
-            });
-        }
+      return best.get();
+    }
+  }
 
-        DefaultChannelManager.INSTANCE.getAllSender().forEach(packetSender -> packetSender.sendPacket(new ControllerEventProcessUpdated(processInformation)));
-        ControllerExecutor.getInstance().getEventManager().callEvent(new ProcessUpdatedEvent(processInformation));
+  @Override
+  public Iterator<ProcessInformation> iterator() {
+    return Links.newList(processInformation).iterator();
+  }
+
+  @Override
+  public void update(@Nonnull ProcessInformation processInformation) {
+    synchronized (processInformation) {
+      ProcessInformation current =
+          getProcess(processInformation.getProcessUniqueID());
+      if (current == null) {
+        return;
+      }
+
+      Links
+          .filterToReference(this.processInformation,
+                             e
+                             -> e.getProcessUniqueID().equals(
+                                 processInformation.getProcessUniqueID()))
+          .ifPresent(e -> {
+            this.processInformation.remove(e);
+            this.processInformation.add(processInformation);
+          });
     }
 
-    @Override
-    public void onChannelClose(String name) {
-        final ProcessInformation info = getProcess(name);
-        if (info != null) {
-            DefaultChannelManager.INSTANCE.get(info.getParent()).ifPresent(packetSender -> packetSender.sendPacket(
-                    new ControllerPacketOutProcessDisconnected(info.getProcessUniqueID()))
-            );
+    DefaultChannelManager.INSTANCE.getAllSender().forEach(
+        packetSender
+        -> packetSender.sendPacket(
+            new ControllerEventProcessUpdated(processInformation)));
+    ControllerExecutor.getInstance().getEventManager().callEvent(
+        new ProcessUpdatedEvent(processInformation));
+  }
 
-            System.out.println(LanguageManager.get(
-                    "process-connection-lost",
-                    info.getName(),
-                    info.getProcessUniqueID(),
-                    info.getParent()
-            ));
-        } else {
-            //If the channel is not a process it may be a client
-            onClientDisconnect(name);
-        }
+  @Override
+  public void onChannelClose(String name) {
+    final ProcessInformation info = getProcess(name);
+    if (info != null) {
+      DefaultChannelManager.INSTANCE.get(info.getParent())
+          .ifPresent(packetSender
+                     -> packetSender.sendPacket(
+                         new ControllerPacketOutProcessDisconnected(
+                             info.getProcessUniqueID())));
+
+      System.out.println(
+          LanguageManager.get("process-connection-lost", info.getName(),
+                              info.getProcessUniqueID(), info.getParent()));
+    } else {
+      // If the channel is not a process it may be a client
+      onClientDisconnect(name);
+    }
+  }
+
+  @Override
+  public void unregisterProcess(UUID uniqueID) {
+    ProcessInformation information = getProcess(uniqueID);
+    if (information == null) {
+      return;
     }
 
-    @Override
-    public void unregisterProcess(UUID uniqueID) {
-        ProcessInformation information = getProcess(uniqueID);
-        if (information == null) {
-            return;
-        }
-
-        notifyDisconnect(information);
-        synchronized (processInformation) {
-            processInformation.remove(information);
-        }
+    notifyDisconnect(information);
+    synchronized (processInformation) {
+      processInformation.remove(information);
     }
+  }
 
-    // ==========================
-    private void notifyDisconnect(ProcessInformation processInformation) {
-        DefaultChannelManager.INSTANCE.getAllSender().forEach(packetSender -> packetSender.sendPacket(new ControllerEventProcessClosed(processInformation)));
-        ControllerExecutor.getInstance().getEventManager().callEvent(new ProcessStoppedEvent(processInformation));
-    }
+  // ==========================
+  private void notifyDisconnect(ProcessInformation processInformation) {
+    DefaultChannelManager.INSTANCE.getAllSender().forEach(
+        packetSender
+        -> packetSender.sendPacket(
+            new ControllerEventProcessClosed(processInformation)));
+    ControllerExecutor.getInstance().getEventManager().callEvent(
+        new ProcessStoppedEvent(processInformation));
+  }
 }

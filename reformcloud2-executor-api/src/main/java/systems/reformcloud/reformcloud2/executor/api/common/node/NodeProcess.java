@@ -4,27 +4,21 @@ import java.util.UUID;
 
 public class NodeProcess {
 
-    private String group;
+  private String group;
 
-    private String name;
+  private String name;
 
-    private UUID uniqueID;
+  private UUID uniqueID;
 
-    public NodeProcess(String group, String name, UUID uniqueID) {
-        this.group = group;
-        this.name = name;
-        this.uniqueID = uniqueID;
-    }
+  public NodeProcess(String group, String name, UUID uniqueID) {
+    this.group = group;
+    this.name = name;
+    this.uniqueID = uniqueID;
+  }
 
-    public String getGroup() {
-        return group;
-    }
+  public String getGroup() { return group; }
 
-    public String getName() {
-        return name;
-    }
+  public String getName() { return name; }
 
-    public UUID getUniqueID() {
-        return uniqueID;
-    }
+  public UUID getUniqueID() { return uniqueID; }
 }

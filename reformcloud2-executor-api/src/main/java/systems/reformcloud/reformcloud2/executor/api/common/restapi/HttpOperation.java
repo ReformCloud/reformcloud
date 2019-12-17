@@ -1,27 +1,26 @@
 package systems.reformcloud.reformcloud2.executor.api.common.restapi;
 
-import systems.reformcloud.reformcloud2.executor.api.common.utility.operation.Operation;
-
 import java.util.UUID;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.operation.Operation;
 
 public final class HttpOperation implements Operation {
 
-    private boolean done = false;
+  private boolean done = false;
 
-    private final UUID uuid = UUID.randomUUID();
+  private final UUID uuid = UUID.randomUUID();
 
-    @Override
-    public UUID identifier() {
-        return uuid;
-    }
+  @Override
+  public UUID identifier() {
+    return uuid;
+  }
 
-    @Override
-    public boolean isDone() {
-        return done;
-    }
+  @Override
+  public boolean isDone() {
+    return done;
+  }
 
-    @Override
-    public void complete() {
-        done = true;
-    }
+  @Override
+  public void complete() {
+    done = true;
+  }
 }

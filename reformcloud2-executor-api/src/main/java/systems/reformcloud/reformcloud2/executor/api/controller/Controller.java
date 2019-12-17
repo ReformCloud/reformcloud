@@ -5,17 +5,18 @@ import systems.reformcloud.reformcloud2.executor.api.common.commands.manager.Com
 import systems.reformcloud.reformcloud2.executor.api.common.network.server.NetworkServer;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.runtime.ReloadableRuntime;
 
-public abstract class Controller extends ExecutorAPI implements ReloadableRuntime {
+public abstract class Controller
+    extends ExecutorAPI implements ReloadableRuntime {
 
-    protected abstract void bootstrap();
+  protected abstract void bootstrap();
 
-    public abstract void shutdown() throws Exception;
+  public abstract void shutdown() throws Exception;
 
-    public static Controller getInstance() {
-        return (Controller) ExecutorAPI.getInstance();
-    }
+  public static Controller getInstance() {
+    return (Controller)ExecutorAPI.getInstance();
+  }
 
-    public abstract NetworkServer getNetworkServer();
+  public abstract NetworkServer getNetworkServer();
 
-    public abstract CommandManager getCommandManager();
+  public abstract CommandManager getCommandManager();
 }

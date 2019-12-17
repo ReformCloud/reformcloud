@@ -5,13 +5,11 @@ import systems.reformcloud.reformcloud2.permissions.util.group.PermissionGroup;
 
 public class PermissionGroupUpdateEvent extends Event {
 
-    public PermissionGroupUpdateEvent(PermissionGroup permissionGroup) {
-        this.permissionGroup = permissionGroup;
-    }
+  public PermissionGroupUpdateEvent(PermissionGroup permissionGroup) {
+    this.permissionGroup = permissionGroup;
+  }
 
-    private final PermissionGroup permissionGroup;
+  private final PermissionGroup permissionGroup;
 
-    public PermissionGroup getPermissionGroup() {
-        return permissionGroup;
-    }
+  public PermissionGroup getPermissionGroup() { return permissionGroup; }
 }

@@ -8,7 +8,9 @@ import systems.reformcloud.reformcloud2.permissions.util.user.PermissionUser;
 
 public class ControllerPacketOutUserAction extends DefaultPacket {
 
-    public ControllerPacketOutUserAction(PermissionUser user, PermissionAction action) {
-        super(PacketHelper.PERMISSION_BUS + 4, new JsonConfiguration().add("user", user).add("action", action));
-    }
+  public ControllerPacketOutUserAction(PermissionUser user,
+                                       PermissionAction action) {
+    super(PacketHelper.PERMISSION_BUS + 4,
+          new JsonConfiguration().add("user", user).add("action", action));
+  }
 }

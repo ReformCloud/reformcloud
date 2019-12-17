@@ -7,7 +7,8 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Defau
 
 public final class ExternalAPIPacketOutUpdateMainGroup extends DefaultPacket {
 
-    public ExternalAPIPacketOutUpdateMainGroup(MainGroup group) {
-        super(ExternalAPIImplementation.EXTERNAL_PACKET_ID + 18, new JsonConfiguration().add("group", group));
-    }
+  public ExternalAPIPacketOutUpdateMainGroup(MainGroup group) {
+    super(ExternalAPIImplementation.EXTERNAL_PACKET_ID + 18,
+          new JsonConfiguration().add("group", group));
+  }
 }

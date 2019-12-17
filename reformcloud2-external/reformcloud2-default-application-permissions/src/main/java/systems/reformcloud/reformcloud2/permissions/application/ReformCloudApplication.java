@@ -12,22 +12,22 @@ import systems.reformcloud.reformcloud2.permissions.packets.PacketHelper;
 
 public class ReformCloudApplication extends Application {
 
-    @Override
-    public void onEnable() {
-        PacketHelper.addControllerPackets();
-        PermissionAPI.handshake();
+  @Override
+  public void onEnable() {
+    PacketHelper.addControllerPackets();
+    PermissionAPI.handshake();
 
-        getCommandManager().register(new CommandPerms());
-    }
+    getCommandManager().register(new CommandPerms());
+  }
 
-    @Override
-    public void onUninstall() {
-        PacketHelper.unregisterControllerPackets();
-    }
+  @Override
+  public void onUninstall() {
+    PacketHelper.unregisterControllerPackets();
+  }
 
-    private CommandManager getCommandManager() {
-        return ExecutorAPI.getInstance().getType().equals(ExecutorType.CONTROLLER)
-                ? ControllerExecutor.getInstance().getCommandManager()
-                : NodeExecutor.getInstance().getCommandManager();
-    }
+  private CommandManager getCommandManager() {
+    return ExecutorAPI.getInstance().getType().equals(ExecutorType.CONTROLLER)
+        ? ControllerExecutor.getInstance().getCommandManager()
+        : NodeExecutor.getInstance().getCommandManager();
+  }
 }

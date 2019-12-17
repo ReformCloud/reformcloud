@@ -1,8 +1,7 @@
 package systems.reformcloud.reformcloud2.executor.api.common.dependency.repo;
 
-import systems.reformcloud.reformcloud2.executor.api.common.dependency.Dependency;
-
 import javax.annotation.Nonnull;
+import systems.reformcloud.reformcloud2.executor.api.common.dependency.Dependency;
 
 /**
  * Represents an dependency remote repository
@@ -11,15 +10,13 @@ import javax.annotation.Nonnull;
  */
 public interface Repository {
 
-    /**
-     * @return The name of the repository
-     */
-    @Nonnull
-    String getName();
+  /**
+   * @return The name of the repository
+   */
+  @Nonnull String getName();
 
-    /**
-     * @return The url of the repository
-     */
-    @Nonnull
-    String getURL();
+  /**
+   * @return The url of the repository
+   */
+  @Nonnull String getURL();
 }

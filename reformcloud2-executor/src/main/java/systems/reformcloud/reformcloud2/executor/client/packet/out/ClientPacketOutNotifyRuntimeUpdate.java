@@ -7,7 +7,9 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Defau
 
 public final class ClientPacketOutNotifyRuntimeUpdate extends DefaultPacket {
 
-    public ClientPacketOutNotifyRuntimeUpdate(DefaultClientRuntimeInformation clientRuntimeInformation) {
-        super(NetworkUtil.CONTROLLER_INFORMATION_BUS + 4, new JsonConfiguration().add("info", clientRuntimeInformation));
-    }
+  public ClientPacketOutNotifyRuntimeUpdate(
+      DefaultClientRuntimeInformation clientRuntimeInformation) {
+    super(NetworkUtil.CONTROLLER_INFORMATION_BUS + 4,
+          new JsonConfiguration().add("info", clientRuntimeInformation));
+  }
 }

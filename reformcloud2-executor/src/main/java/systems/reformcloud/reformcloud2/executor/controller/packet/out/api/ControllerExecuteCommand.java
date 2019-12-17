@@ -5,7 +5,8 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Defau
 
 public final class ControllerExecuteCommand extends DefaultPacket {
 
-    public ControllerExecuteCommand(String name, String command) {
-        super(48, new JsonConfiguration().add("name", name).add("command", command));
-    }
+  public ControllerExecuteCommand(String name, String command) {
+    super(48,
+          new JsonConfiguration().add("name", name).add("command", command));
+  }
 }

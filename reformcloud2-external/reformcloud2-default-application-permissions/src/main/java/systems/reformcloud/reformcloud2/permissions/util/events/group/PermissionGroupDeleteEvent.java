@@ -4,13 +4,9 @@ import systems.reformcloud.reformcloud2.executor.api.common.event.Event;
 
 public class PermissionGroupDeleteEvent extends Event {
 
-    public PermissionGroupDeleteEvent(String name) {
-        this.name = name;
-    }
+  public PermissionGroupDeleteEvent(String name) { this.name = name; }
 
-    private final String name;
+  private final String name;
 
-    public String getName() {
-        return name;
-    }
+  public String getName() { return name; }
 }

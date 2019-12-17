@@ -8,33 +8,32 @@ import systems.reformcloud.reformcloud2.permissions.packets.controller.in.Contro
 
 public class PacketHelper {
 
-    public static final int PERMISSION_BUS = 8000;
+  public static final int PERMISSION_BUS = 8000;
 
-    private PacketHelper() {
-        throw new UnsupportedOperationException();
-    }
+  private PacketHelper() { throw new UnsupportedOperationException(); }
 
-    public static void addControllerPackets() {
-        ExecutorAPI.getInstance().getPacketHandler().registerNetworkHandlers(
-                new ControllerPacketInGroupAction(),
-                new ControllerPacketInUserAction()
-        );
-    }
+  public static void addControllerPackets() {
+    ExecutorAPI.getInstance().getPacketHandler().registerNetworkHandlers(
+        new ControllerPacketInGroupAction(),
+        new ControllerPacketInUserAction());
+  }
 
-    public static void addAPIPackets() {
-        ExecutorAPI.getInstance().getPacketHandler().registerNetworkHandlers(
-                new APIPacketInGroupAction(),
-                new APIPacketInUserAction()
-        );
-    }
+  public static void addAPIPackets() {
+    ExecutorAPI.getInstance().getPacketHandler().registerNetworkHandlers(
+        new APIPacketInGroupAction(), new APIPacketInUserAction());
+  }
 
-    public static void unregisterControllerPackets() {
-        ExecutorAPI.getInstance().getPacketHandler().unregisterNetworkHandlers(PacketHelper.PERMISSION_BUS + 2);
-        ExecutorAPI.getInstance().getPacketHandler().unregisterNetworkHandlers(PacketHelper.PERMISSION_BUS + 4);
-    }
+  public static void unregisterControllerPackets() {
+    ExecutorAPI.getInstance().getPacketHandler().unregisterNetworkHandlers(
+        PacketHelper.PERMISSION_BUS + 2);
+    ExecutorAPI.getInstance().getPacketHandler().unregisterNetworkHandlers(
+        PacketHelper.PERMISSION_BUS + 4);
+  }
 
-    public static void unregisterAPIPackets() {
-        ExecutorAPI.getInstance().getPacketHandler().unregisterNetworkHandlers(PacketHelper.PERMISSION_BUS + 1);
-        ExecutorAPI.getInstance().getPacketHandler().unregisterNetworkHandlers(PacketHelper.PERMISSION_BUS + 3);
-    }
+  public static void unregisterAPIPackets() {
+    ExecutorAPI.getInstance().getPacketHandler().unregisterNetworkHandlers(
+        PacketHelper.PERMISSION_BUS + 1);
+    ExecutorAPI.getInstance().getPacketHandler().unregisterNetworkHandlers(
+        PacketHelper.PERMISSION_BUS + 3);
+  }
 }
