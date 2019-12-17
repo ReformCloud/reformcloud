@@ -55,7 +55,7 @@ public interface LoadedApplication extends Nameable {
     void setApplicationStatus(@Nonnull ApplicationStatus status);
 
     /**
-     * @see #applicationConfig()#getName()
+     * @see #applicationConfig()
      * @return The name of the application
      */
     @Nonnull
