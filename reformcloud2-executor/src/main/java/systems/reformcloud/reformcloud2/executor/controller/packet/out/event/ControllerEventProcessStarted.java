@@ -7,7 +7,8 @@ import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInfor
 
 public final class ControllerEventProcessStarted extends DefaultPacket {
 
-    public ControllerEventProcessStarted(ProcessInformation processInformation) {
-        super(NetworkUtil.EVENT_BUS + 2, new JsonConfiguration().add("info", processInformation));
-    }
+  public ControllerEventProcessStarted(ProcessInformation processInformation) {
+    super(NetworkUtil.EVENT_BUS + 2,
+          new JsonConfiguration().add("info", processInformation));
+  }
 }

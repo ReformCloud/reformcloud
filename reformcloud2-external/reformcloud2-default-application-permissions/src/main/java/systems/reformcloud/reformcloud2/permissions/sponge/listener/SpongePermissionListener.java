@@ -6,8 +6,9 @@ import systems.reformcloud.reformcloud2.permissions.PermissionAPI;
 
 public class SpongePermissionListener {
 
-    @Listener
-    public void handle(final ClientConnectionEvent.Disconnect event) {
-        PermissionAPI.getInstance().getPermissionUtil().handleDisconnect(event.getTargetEntity().getUniqueId());
-    }
+  @Listener
+  public void handle(final ClientConnectionEvent.Disconnect event) {
+    PermissionAPI.getInstance().getPermissionUtil().handleDisconnect(
+        event.getTargetEntity().getUniqueId());
+  }
 }

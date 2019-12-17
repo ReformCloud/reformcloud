@@ -1,5 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.controller.api;
 
+import javax.annotation.Nonnull;
 import systems.reformcloud.reformcloud2.executor.api.common.api.AsyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.SyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.applications.ApplicationAsyncAPI;
@@ -27,139 +28,135 @@ import systems.reformcloud.reformcloud2.executor.controller.api.player.PlayerAPI
 import systems.reformcloud.reformcloud2.executor.controller.api.plugins.PluginAPIImplementation;
 import systems.reformcloud.reformcloud2.executor.controller.api.process.ProcessAPIImplementation;
 
-import javax.annotation.Nonnull;
-
 public class GeneralAPI implements SyncAPI, AsyncAPI {
 
-    public GeneralAPI(
-            ApplicationAPIImplementation applicationAPI,
-            ClientAPIImplementation clientAPI,
-            ConsoleAPIImplementation consoleAPI,
-            DatabaseAPIImplementation databaseAPI,
-            GroupAPIImplementation groupAPI,
-            PlayerAPIImplementation playerAPI,
-            PluginAPIImplementation pluginAPI,
-            ProcessAPIImplementation processAPI
-    ) {
-        this.applicationAPI = applicationAPI;
-        this.clientAPI = clientAPI;
-        this.consoleAPI = consoleAPI;
-        this.databaseAPI = databaseAPI;
-        this.groupAPI = groupAPI;
-        this.playerAPI = playerAPI;
-        this.pluginAPI = pluginAPI;
-        this.processAPI = processAPI;
-    }
+  public GeneralAPI(ApplicationAPIImplementation applicationAPI,
+                    ClientAPIImplementation clientAPI,
+                    ConsoleAPIImplementation consoleAPI,
+                    DatabaseAPIImplementation databaseAPI,
+                    GroupAPIImplementation groupAPI,
+                    PlayerAPIImplementation playerAPI,
+                    PluginAPIImplementation pluginAPI,
+                    ProcessAPIImplementation processAPI) {
+    this.applicationAPI = applicationAPI;
+    this.clientAPI = clientAPI;
+    this.consoleAPI = consoleAPI;
+    this.databaseAPI = databaseAPI;
+    this.groupAPI = groupAPI;
+    this.playerAPI = playerAPI;
+    this.pluginAPI = pluginAPI;
+    this.processAPI = processAPI;
+  }
 
-    private final ApplicationAPIImplementation applicationAPI;
+  private final ApplicationAPIImplementation applicationAPI;
 
-    private final ClientAPIImplementation clientAPI;
+  private final ClientAPIImplementation clientAPI;
 
-    private final ConsoleAPIImplementation consoleAPI;
+  private final ConsoleAPIImplementation consoleAPI;
 
-    private final DatabaseAPIImplementation databaseAPI;
+  private final DatabaseAPIImplementation databaseAPI;
 
-    private final GroupAPIImplementation groupAPI;
+  private final GroupAPIImplementation groupAPI;
 
-    private final PlayerAPIImplementation playerAPI;
+  private final PlayerAPIImplementation playerAPI;
 
-    private final PluginAPIImplementation pluginAPI;
+  private final PluginAPIImplementation pluginAPI;
 
-    private final ProcessAPIImplementation processAPI;
+  private final ProcessAPIImplementation processAPI;
 
-    @Nonnull
-    @Override
-    public ProcessAsyncAPI getProcessAsyncAPI() {
-        return processAPI;
-    }
+  @Nonnull
+  @Override
+  public ProcessAsyncAPI getProcessAsyncAPI() {
+    return processAPI;
+  }
 
-    @Nonnull
-    @Override
-    public GroupAsyncAPI getGroupAsyncAPI() {
-        return groupAPI;
-    }
+  @Nonnull
+  @Override
+  public GroupAsyncAPI getGroupAsyncAPI() {
+    return groupAPI;
+  }
 
-    @Nonnull
-    @Override
-    public ApplicationAsyncAPI getApplicationAsyncAPI() {
-        return applicationAPI;
-    }
+  @Nonnull
+  @Override
+  public ApplicationAsyncAPI getApplicationAsyncAPI() {
+    return applicationAPI;
+  }
 
-    @Nonnull
-    @Override
-    public ConsoleAsyncAPI getConsoleAsyncAPI() {
-        return consoleAPI;
-    }
+  @Nonnull
+  @Override
+  public ConsoleAsyncAPI getConsoleAsyncAPI() {
+    return consoleAPI;
+  }
 
-    @Nonnull
-    @Override
-    public PlayerAsyncAPI getPlayerAsyncAPI() {
-        return playerAPI;
-    }
+  @Nonnull
+  @Override
+  public PlayerAsyncAPI getPlayerAsyncAPI() {
+    return playerAPI;
+  }
 
-    @Nonnull
-    @Override
-    public PluginAsyncAPI getPluginAsyncAPI() {
-        return pluginAPI;
-    }
+  @Nonnull
+  @Override
+  public PluginAsyncAPI getPluginAsyncAPI() {
+    return pluginAPI;
+  }
 
-    @Nonnull
-    @Override
-    public ClientAsyncAPI getClientAsyncAPI() {
-        return clientAPI;
-    }
+  @Nonnull
+  @Override
+  public ClientAsyncAPI getClientAsyncAPI() {
+    return clientAPI;
+  }
 
-    @Nonnull
-    @Override
-    public DatabaseAsyncAPI getDatabaseAsyncAPI() {
-        return databaseAPI;
-    }
+  @Nonnull
+  @Override
+  public DatabaseAsyncAPI getDatabaseAsyncAPI() {
+    return databaseAPI;
+  }
 
-    @Nonnull
-    @Override
-    public ProcessSyncAPI getProcessSyncAPI() {
-        return processAPI;
-    }
+  @Nonnull
+  @Override
+  public ProcessSyncAPI getProcessSyncAPI() {
+    return processAPI;
+  }
 
-    @Nonnull
-    @Override
-    public GroupSyncAPI getGroupSyncAPI() {
-        return groupAPI;
-    }
+  @Nonnull
+  @Override
+  public GroupSyncAPI getGroupSyncAPI() {
+    return groupAPI;
+  }
 
-    @Nonnull
-    @Override
-    public ApplicationSyncAPI getApplicationSyncAPI() {
-        return applicationAPI;
-    }
+  @Nonnull
+  @Override
+  public ApplicationSyncAPI getApplicationSyncAPI() {
+    return applicationAPI;
+  }
 
-    @Nonnull
-    @Override
-    public ConsoleSyncAPI getConsoleSyncAPI() {
-        return consoleAPI;
-    }
+  @Nonnull
+  @Override
+  public ConsoleSyncAPI getConsoleSyncAPI() {
+    return consoleAPI;
+  }
 
-    @Nonnull
-    @Override
-    public PlayerSyncAPI getPlayerSyncAPI() {
-        return playerAPI;
-    }
+  @Nonnull
+  @Override
+  public PlayerSyncAPI getPlayerSyncAPI() {
+    return playerAPI;
+  }
 
-    @Nonnull
-    @Override
-    public PluginSyncAPI getPluginSyncAPI() {
-        return pluginAPI;
-    }
+  @Nonnull
+  @Override
+  public PluginSyncAPI getPluginSyncAPI() {
+    return pluginAPI;
+  }
 
-    @Nonnull
-    @Override
-    public ClientSyncAPI getClientSyncAPI() {
-        return clientAPI;
-    }
+  @Nonnull
+  @Override
+  public ClientSyncAPI getClientSyncAPI() {
+    return clientAPI;
+  }
 
-    @Nonnull
-    @Override
-    public DatabaseSyncAPI getDatabaseSyncAPI() {
-        return databaseAPI;
-    }
+  @Nonnull
+  @Override
+  public DatabaseSyncAPI getDatabaseSyncAPI() {
+    return databaseAPI;
+  }
 }

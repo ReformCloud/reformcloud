@@ -6,7 +6,8 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Defau
 
 public final class ExternalAPIPacketOutUnloadApplication extends DefaultPacket {
 
-    public ExternalAPIPacketOutUnloadApplication(String application) {
-        super(ExternalAPIImplementation.EXTERNAL_PACKET_ID + 2, new JsonConfiguration().add("app", application));
-    }
+  public ExternalAPIPacketOutUnloadApplication(String application) {
+    super(ExternalAPIImplementation.EXTERNAL_PACKET_ID + 2,
+          new JsonConfiguration().add("app", application));
+  }
 }

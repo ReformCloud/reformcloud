@@ -9,18 +9,20 @@ import systems.reformcloud.reformcloud2.permissions.packets.PacketHelper;
 
 public class BungeeCordPermissionPlugin extends Plugin {
 
-    @Override
-    public void onEnable() {
-        ProxyServer.getInstance().getPluginManager().registerListener(this, new BungeeCordPermissionListener());
-        ProxyServer.getInstance().getPluginManager().registerCommand(this, new CommandCloudPerms());
+  @Override
+  public void onEnable() {
+    ProxyServer.getInstance().getPluginManager().registerListener(
+        this, new BungeeCordPermissionListener());
+    ProxyServer.getInstance().getPluginManager().registerCommand(
+        this, new CommandCloudPerms());
 
-        PermissionAPI.handshake();
-        PacketHelper.addAPIPackets();
-    }
+    PermissionAPI.handshake();
+    PacketHelper.addAPIPackets();
+  }
 
-    @Override
-    public void onDisable() {
-        PacketHelper.unregisterAPIPackets();
-        ProxyServer.getInstance().getScheduler().cancel(this);
-    }
+  @Override
+  public void onDisable() {
+    PacketHelper.unregisterAPIPackets();
+    ProxyServer.getInstance().getScheduler().cancel(this);
+  }
 }

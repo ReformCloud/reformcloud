@@ -12,17 +12,17 @@ import systems.reformcloud.reformcloud2.web.tokens.TokenWebServerAuth;
 
 public class WebApplication extends Application {
 
-    public static final WebCommand WEB_COMMAND = new WebCommand();
+  public static final WebCommand WEB_COMMAND = new WebCommand();
 
-    @Override
-    public void onLoad() {
-        TokenDatabase.load();
-        getListener().setAuth(new TokenWebServerAuth());
-    }
+  @Override
+  public void onLoad() {
+    TokenDatabase.load();
+    getListener().setAuth(new TokenWebServerAuth());
+  }
 
-    public static RequestListenerHandler getListener() {
-        return ExecutorAPI.getInstance().getType().equals(ExecutorType.NODE)
-                ? NodeExecutor.getInstance().getRequestListenerHandler()
-                : ControllerExecutor.getInstance().getRequestListenerHandler();
-    }
+  public static RequestListenerHandler getListener() {
+    return ExecutorAPI.getInstance().getType().equals(ExecutorType.NODE)
+        ? NodeExecutor.getInstance().getRequestListenerHandler()
+        : ControllerExecutor.getInstance().getRequestListenerHandler();
+  }
 }

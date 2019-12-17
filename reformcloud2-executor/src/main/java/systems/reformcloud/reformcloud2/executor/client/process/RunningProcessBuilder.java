@@ -6,7 +6,7 @@ import systems.reformcloud.reformcloud2.executor.client.process.basic.DefaultRun
 
 final class RunningProcessBuilder {
 
-    static RunningProcess build(ProcessInformation processInformation) {
-        return new DefaultRunningProcess(processInformation);
-    }
+  static RunningProcess build(ProcessInformation processInformation) {
+    return new DefaultRunningProcess(processInformation);
+  }
 }

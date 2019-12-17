@@ -6,7 +6,8 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Defau
 
 public final class APIPacketOutPlayerLoggedIn extends DefaultPacket {
 
-    public APIPacketOutPlayerLoggedIn(String name) {
-        super(NetworkUtil.PLAYER_INFORMATION_BUS + 2, new JsonConfiguration().add("name", name));
-    }
+  public APIPacketOutPlayerLoggedIn(String name) {
+    super(NetworkUtil.PLAYER_INFORMATION_BUS + 2,
+          new JsonConfiguration().add("name", name));
+  }
 }
