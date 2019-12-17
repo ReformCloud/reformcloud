@@ -4,7 +4,7 @@
 #
 # For help, join us on Gitter: https://gitter.im/GlowstonePlusPlus/GlowstonePlusPlus
 server:
-  ip: ''
+  ip: ""
   port: 25565
   name: Glowstone++ Server
   log-file: logs/log-%D.txt
@@ -18,7 +18,7 @@ server:
   prevent-proxy-connections: true
 console:
   use-jline: true
-  prompt: '>'
+  prompt: ">"
   date-format: HH:mm:ss
   log-date-format: yyyy/MM/dd HH:mm:ss
 game:
@@ -31,8 +31,8 @@ game:
   announce-achievements: true
   allow-flight: false
   command-blocks: false
-  resource-pack: ''
-  resource-pack-hash: ''
+  resource-pack: ""
+  resource-pack-hash: ""
 creatures:
   enable:
     monsters: true
@@ -61,7 +61,7 @@ advanced:
   warn-on-overload: true
   exact-login-location: false
   plugin-profiling: false
-  deprecated-verbose: 'false'
+  deprecated-verbose: "false"
   compression-threshold: 256
   proxy-support: false
   player-sample-count: 12
@@ -83,12 +83,12 @@ extras:
   rcon-colors: true
 world:
   name: world
-  seed: ''
+  seed: ""
   level-type: DEFAULT
   spawn-radius: 16
   view-distance: 8
   gen-structures: true
-  gen-settings: ''
+  gen-settings: ""
   allow-nether: true
   allow-end: true
   keep-spawn-loaded: true
