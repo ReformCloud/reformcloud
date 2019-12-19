@@ -4,30 +4,35 @@ import javax.annotation.Nonnull;
 
 public class AutomaticStartupConfiguration {
 
-  public AutomaticStartupConfiguration(boolean enabled, int maxPercentOfPlayers,
-                                       long checkIntervalInSeconds) {
-    this.enabled = enabled;
-    this.maxPercentOfPlayers = maxPercentOfPlayers;
-    this.checkIntervalInSeconds = checkIntervalInSeconds;
-  }
+    public AutomaticStartupConfiguration(boolean enabled, int maxPercentOfPlayers, long checkIntervalInSeconds) {
+        this.enabled = enabled;
+        this.maxPercentOfPlayers = maxPercentOfPlayers;
+        this.checkIntervalInSeconds = checkIntervalInSeconds;
+    }
 
-  private boolean enabled;
+    private boolean enabled;
 
-  private int maxPercentOfPlayers;
+    private int maxPercentOfPlayers;
 
-  private long checkIntervalInSeconds;
+    private long checkIntervalInSeconds;
 
-  public boolean isEnabled() { return enabled; }
+    public boolean isEnabled() {
+        return enabled;
+    }
 
-  public int getMaxPercentOfPlayers() { return maxPercentOfPlayers; }
+    public int getMaxPercentOfPlayers() {
+        return maxPercentOfPlayers;
+    }
 
-  public long getCheckIntervalInSeconds() { return checkIntervalInSeconds; }
+    public long getCheckIntervalInSeconds() {
+        return checkIntervalInSeconds;
+    }
 
-  /**
-   * @return The default values of an automatic startup config
-   */
-  @Nonnull
-  public static AutomaticStartupConfiguration defaults() {
-    return new AutomaticStartupConfiguration(false, 70, 30);
-  }
+    /**
+     * @return The default values of an automatic startup config
+     */
+    @Nonnull
+    public static AutomaticStartupConfiguration defaults() {
+        return new AutomaticStartupConfiguration(false, 70, 30);
+    }
 }

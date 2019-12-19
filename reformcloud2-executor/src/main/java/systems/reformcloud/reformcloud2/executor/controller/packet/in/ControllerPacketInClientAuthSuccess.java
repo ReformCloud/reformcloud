@@ -1,7 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.controller.packet.in;
 
 import com.google.gson.reflect.TypeToken;
-import java.util.function.Consumer;
 import systems.reformcloud.reformcloud2.executor.api.common.client.ClientRuntimeInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.client.basic.DefaultClientRuntimeInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
@@ -9,21 +8,20 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.channel.hand
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.controller.process.ClientManager;
 
-public final class ControllerPacketInClientAuthSuccess
-    implements NetworkHandler {
+import java.util.function.Consumer;
 
-  @Override
-  public int getHandlingPacketID() {
-    return -45;
-  }
+public final class ControllerPacketInClientAuthSuccess implements NetworkHandler {
 
-  @Override
-  public void handlePacket(PacketSender packetSender, Packet packet,
-                           Consumer<Packet> responses) {
-    if (packet.content().has("info")) {
-      ClientRuntimeInformation clientRuntimeInformation = packet.content().get(
-          "info", new TypeToken<DefaultClientRuntimeInformation>() {});
-      ClientManager.INSTANCE.connectClient(clientRuntimeInformation);
+    @Override
+    public int getHandlingPacketID() {
+        return -45;
     }
-  }
+
+    @Override
+    public void handlePacket(PacketSender packetSender, Packet packet, Consumer<Packet> responses) {
+        if (packet.content().has("info")) {
+            ClientRuntimeInformation clientRuntimeInformation = packet.content().get("info", new TypeToken<DefaultClientRuntimeInformation>() {});
+            ClientManager.INSTANCE.connectClient(clientRuntimeInformation);
+        }
+    }
 }

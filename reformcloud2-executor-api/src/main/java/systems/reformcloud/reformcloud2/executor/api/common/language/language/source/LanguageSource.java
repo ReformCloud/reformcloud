@@ -4,8 +4,8 @@ import systems.reformcloud.reformcloud2.executor.api.common.utility.name.Nameabl
 
 public interface LanguageSource extends Nameable {
 
-  /**
-   * @return The prefix of the language source
-   */
-  String getSource();
+    /**
+     * @return The prefix of the language source
+     */
+    String getSource();
 }

@@ -1,7 +1,5 @@
 package systems.reformcloud.reformcloud2.executor.node.network;
 
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.RuntimeConfiguration;
@@ -17,127 +15,118 @@ import systems.reformcloud.reformcloud2.executor.api.node.process.NodeProcessMan
 import systems.reformcloud.reformcloud2.executor.node.network.packet.out.NodePacketOutStopProcess;
 import systems.reformcloud.reformcloud2.executor.node.network.packet.query.out.NodePacketOutQueryStartProcess;
 
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+
 public class DefaultNodeNetworkManager implements NodeNetworkManager {
 
-  private static final Map<UUID, String> QUEUED_PROCESSES =
-      new ConcurrentHashMap<>();
+    private static final Map<UUID, String> QUEUED_PROCESSES = new ConcurrentHashMap<>();
 
-  public DefaultNodeNetworkManager(NodeProcessManager processManager,
-                                   InternalNetworkCluster cluster) {
-    this.localNodeProcessManager = processManager;
-    this.cluster = cluster;
-  }
-
-  private final NodeProcessManager localNodeProcessManager;
-
-  private final InternalNetworkCluster cluster;
-
-  @Override
-  public NodeProcessManager getNodeProcessHelper() {
-    return localNodeProcessManager;
-  }
-
-  @Override
-  public InternalNetworkCluster getCluster() {
-    return cluster;
-  }
-
-  @Override
-  public ProcessInformation getCloudProcess(String name) {
-    return localNodeProcessManager.getClusterProcess(name);
-  }
-
-  @Override
-  public ProcessInformation getCloudProcess(UUID uuid) {
-    return localNodeProcessManager.getClusterProcess(uuid);
-  }
-
-  @Override
-  public ProcessInformation startProcess(ProcessGroup processGroup,
-                                         Template template,
-                                         JsonConfiguration data) {
-    if (processGroup == null) {
-      return null;
+    public DefaultNodeNetworkManager(NodeProcessManager processManager, InternalNetworkCluster cluster) {
+        this.localNodeProcessManager = processManager;
+        this.cluster = cluster;
     }
 
-    if (template == null) {
-      template = randomTemplate(processGroup);
+    private final NodeProcessManager localNodeProcessManager;
+
+    private final InternalNetworkCluster cluster;
+
+    @Override
+    public NodeProcessManager getNodeProcessHelper() {
+        return localNodeProcessManager;
     }
 
-    if (data == null) {
-      data = new JsonConfiguration();
+    @Override
+    public InternalNetworkCluster getCluster() {
+        return cluster;
     }
 
-    if (getCluster().isSelfNodeHead()) {
-      final UUID processUniqueID = UUID.randomUUID();
-      QUEUED_PROCESSES.put(processUniqueID, processGroup.getName());
-
-      if (getCluster().noOtherNodes()) {
-        return localNodeProcessManager.startLocalProcess(processGroup, template,
-                                                         data, processUniqueID);
-      }
-
-      NodeInformation best = getCluster().findBestNodeForStartup(template);
-      if (best != null && best.canEqual(getCluster().getHeadNode())) {
-        return localNodeProcessManager.startLocalProcess(processGroup, template,
-                                                         data, processUniqueID);
-      }
-
-      return localNodeProcessManager.queueProcess(processGroup, template, data,
-                                                  best, processUniqueID);
+    @Override
+    public ProcessInformation getCloudProcess(String name) {
+        return localNodeProcessManager.getClusterProcess(name);
     }
 
-    return getCluster().sendQueryToHead(
-        new NodePacketOutQueryStartProcess(processGroup, template, data),
-        packet -> packet.content().get("result", ProcessInformation.TYPE));
-  }
-
-  @Override
-  public void stopProcess(String name) {
-    ProcessInformation information =
-        localNodeProcessManager.getClusterProcess(name);
-    if (information == null) {
-      return;
+    @Override
+    public ProcessInformation getCloudProcess(UUID uuid) {
+        return localNodeProcessManager.getClusterProcess(uuid);
     }
 
-    stopProcess(information.getProcessUniqueID());
-  }
+    @Override
+    public ProcessInformation startProcess(ProcessGroup processGroup, Template template, JsonConfiguration data) {
+        if (processGroup == null) {
+            return null;
+        }
 
-  @Override
-  public void stopProcess(UUID uuid) {
-    if (localNodeProcessManager.isLocal(uuid)) {
-      localNodeProcessManager.stopLocalProcess(uuid);
-      return;
+        if (template == null) {
+            template = randomTemplate(processGroup);
+        }
+
+        if (data == null) {
+            data = new JsonConfiguration();
+        }
+
+        if (getCluster().isSelfNodeHead()) {
+            final UUID processUniqueID = UUID.randomUUID();
+            QUEUED_PROCESSES.put(processUniqueID, processGroup.getName());
+
+            if (getCluster().noOtherNodes()) {
+                return localNodeProcessManager.startLocalProcess(processGroup, template, data, processUniqueID);
+            }
+
+            NodeInformation best = getCluster().findBestNodeForStartup(template);
+            if (best != null && best.canEqual(getCluster().getHeadNode())) {
+                return localNodeProcessManager.startLocalProcess(processGroup, template, data, processUniqueID);
+            }
+
+            return localNodeProcessManager.queueProcess(processGroup, template, data, best, processUniqueID);
+        }
+
+        return getCluster().sendQueryToHead(new NodePacketOutQueryStartProcess(processGroup, template, data),
+                packet -> packet.content().get("result", ProcessInformation.TYPE
+        ));
     }
 
-    ProcessInformation information =
-        localNodeProcessManager.getClusterProcess(uuid);
-    if (information == null) {
-      return;
+    @Override
+    public void stopProcess(String name) {
+        ProcessInformation information = localNodeProcessManager.getClusterProcess(name);
+        if (information == null) {
+            return;
+        }
+
+        stopProcess(information.getProcessUniqueID());
     }
 
-    DefaultChannelManager.INSTANCE.get(information.getParent())
-        .ifPresent(e -> e.sendPacket(new NodePacketOutStopProcess(uuid)));
-  }
+    @Override
+    public void stopProcess(UUID uuid) {
+        if (localNodeProcessManager.isLocal(uuid)) {
+            localNodeProcessManager.stopLocalProcess(uuid);
+            return;
+        }
 
-  @Override
-  public Map<UUID, String> getQueuedProcesses() {
-    return QUEUED_PROCESSES;
-  }
+        ProcessInformation information = localNodeProcessManager.getClusterProcess(uuid);
+        if (information == null) {
+            return;
+        }
 
-  private Template randomTemplate(ProcessGroup processGroup) {
-    if (processGroup.getTemplates().isEmpty()) {
-      return new Template(
-          0, "default", false, FileBackend.NAME, "#",
-          new RuntimeConfiguration(512, new ArrayList<>(), new HashMap<>()),
-          Version.PAPER_1_8_8);
+        DefaultChannelManager.INSTANCE.get(information.getParent()).ifPresent(e -> e.sendPacket(new NodePacketOutStopProcess(uuid)));
     }
 
-    if (processGroup.getTemplates().size() == 1) {
-      return processGroup.getTemplates().get(0);
+    @Override
+    public Map<UUID, String> getQueuedProcesses() {
+        return QUEUED_PROCESSES;
     }
 
-    return processGroup.getTemplates().get(
-        new Random().nextInt(processGroup.getTemplates().size()));
-  }
+    private Template randomTemplate(ProcessGroup processGroup) {
+        if (processGroup.getTemplates().isEmpty()) {
+            return new Template(0, "default", false, FileBackend.NAME, "#", new RuntimeConfiguration(
+                    512, new ArrayList<>(), new HashMap<>()
+            ), Version.PAPER_1_8_8);
+        }
+
+        if (processGroup.getTemplates().size() == 1) {
+            return processGroup.getTemplates().get(0);
+        }
+
+        return processGroup.getTemplates().get(new Random().nextInt(processGroup.getTemplates().size()));
+    }
 }

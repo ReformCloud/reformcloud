@@ -7,22 +7,18 @@ import systems.reformcloud.reformcloud2.executor.api.common.plugins.basic.Defaul
 
 public final class ControllerPluginAction extends DefaultPacket {
 
-  public ControllerPluginAction(Action action,
-                                DefaultInstallablePlugin plugin) {
-    super(47, new JsonConfiguration()
-                  .add("action", action)
-                  .add("installable", plugin));
-  }
+    public ControllerPluginAction(Action action, DefaultInstallablePlugin plugin) {
+        super(47, new JsonConfiguration().add("action", action).add("installable", plugin));
+    }
 
-  public ControllerPluginAction(Action action, DefaultPlugin plugin) {
-    super(47,
-          new JsonConfiguration().add("action", action).add("plugin", plugin));
-  }
+    public ControllerPluginAction(Action action, DefaultPlugin plugin) {
+        super(47, new JsonConfiguration().add("action", action).add("plugin", plugin));
+    }
 
-  public enum Action {
+    public enum Action {
 
-    INSTALL,
+        INSTALL,
 
-    UNINSTALL
-  }
+        UNINSTALL
+    }
 }

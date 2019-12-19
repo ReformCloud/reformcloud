@@ -6,15 +6,15 @@ import systems.reformcloud.reforncloud2.notifications.bungeecord.listener.Proces
 
 public class BungeecordPlugin extends Plugin {
 
-  private static final ProcessListener LISTENER = new ProcessListener();
+    private static final ProcessListener LISTENER = new ProcessListener();
 
-  @Override
-  public void onEnable() {
-    ExecutorAPI.getInstance().getEventManager().registerListener(LISTENER);
-  }
+    @Override
+    public void onEnable() {
+        ExecutorAPI.getInstance().getEventManager().registerListener(LISTENER);
+    }
 
-  @Override
-  public void onDisable() {
-    ExecutorAPI.getInstance().getEventManager().unregisterListener(LISTENER);
-  }
+    @Override
+    public void onDisable() {
+        ExecutorAPI.getInstance().getEventManager().unregisterListener(LISTENER);
+    }
 }

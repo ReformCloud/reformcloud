@@ -1,6 +1,5 @@
 package systems.reformcloud.reformcloud2.executor.api.common.api.applications.api;
 
-import javax.annotation.Nonnull;
 import systems.reformcloud.reformcloud2.executor.api.common.api.AsyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.SyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.applications.ApplicationAsyncAPI;
@@ -21,107 +20,109 @@ import systems.reformcloud.reformcloud2.executor.api.common.api.plugins.PluginSy
 import systems.reformcloud.reformcloud2.executor.api.common.api.process.ProcessAsyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.process.ProcessSyncAPI;
 
+import javax.annotation.Nonnull;
+
 public class GeneralAPI implements SyncAPI, AsyncAPI {
 
-  public GeneralAPI(ExternalAPIImplementation externalAPIImplementation) {
-    this.externalAPIImplementation = externalAPIImplementation;
-  }
+    public GeneralAPI(ExternalAPIImplementation externalAPIImplementation) {
+        this.externalAPIImplementation = externalAPIImplementation;
+    }
 
-  private final ExternalAPIImplementation externalAPIImplementation;
+    private final ExternalAPIImplementation externalAPIImplementation;
+    
+    @Nonnull
+    @Override
+    public ProcessAsyncAPI getProcessAsyncAPI() {
+        return externalAPIImplementation;
+    }
 
-  @Nonnull
-  @Override
-  public ProcessAsyncAPI getProcessAsyncAPI() {
-    return externalAPIImplementation;
-  }
+    @Nonnull
+    @Override
+    public GroupAsyncAPI getGroupAsyncAPI() {
+        return externalAPIImplementation;
+    }
 
-  @Nonnull
-  @Override
-  public GroupAsyncAPI getGroupAsyncAPI() {
-    return externalAPIImplementation;
-  }
+    @Nonnull
+    @Override
+    public ApplicationAsyncAPI getApplicationAsyncAPI() {
+        return externalAPIImplementation;
+    }
 
-  @Nonnull
-  @Override
-  public ApplicationAsyncAPI getApplicationAsyncAPI() {
-    return externalAPIImplementation;
-  }
+    @Nonnull
+    @Override
+    public ConsoleAsyncAPI getConsoleAsyncAPI() {
+        return externalAPIImplementation;
+    }
 
-  @Nonnull
-  @Override
-  public ConsoleAsyncAPI getConsoleAsyncAPI() {
-    return externalAPIImplementation;
-  }
+    @Nonnull
+    @Override
+    public PlayerAsyncAPI getPlayerAsyncAPI() {
+        return externalAPIImplementation;
+    }
 
-  @Nonnull
-  @Override
-  public PlayerAsyncAPI getPlayerAsyncAPI() {
-    return externalAPIImplementation;
-  }
+    @Nonnull
+    @Override
+    public PluginAsyncAPI getPluginAsyncAPI() {
+        return externalAPIImplementation;
+    }
 
-  @Nonnull
-  @Override
-  public PluginAsyncAPI getPluginAsyncAPI() {
-    return externalAPIImplementation;
-  }
+    @Nonnull
+    @Override
+    public ClientAsyncAPI getClientAsyncAPI() {
+        return externalAPIImplementation;
+    }
 
-  @Nonnull
-  @Override
-  public ClientAsyncAPI getClientAsyncAPI() {
-    return externalAPIImplementation;
-  }
+    @Nonnull
+    @Override
+    public DatabaseAsyncAPI getDatabaseAsyncAPI() {
+        return externalAPIImplementation;
+    }
 
-  @Nonnull
-  @Override
-  public DatabaseAsyncAPI getDatabaseAsyncAPI() {
-    return externalAPIImplementation;
-  }
+    @Nonnull
+    @Override
+    public ProcessSyncAPI getProcessSyncAPI() {
+        return externalAPIImplementation;
+    }
 
-  @Nonnull
-  @Override
-  public ProcessSyncAPI getProcessSyncAPI() {
-    return externalAPIImplementation;
-  }
+    @Nonnull
+    @Override
+    public GroupSyncAPI getGroupSyncAPI() {
+        return externalAPIImplementation;
+    }
 
-  @Nonnull
-  @Override
-  public GroupSyncAPI getGroupSyncAPI() {
-    return externalAPIImplementation;
-  }
+    @Nonnull
+    @Override
+    public ApplicationSyncAPI getApplicationSyncAPI() {
+        return externalAPIImplementation;
+    }
 
-  @Nonnull
-  @Override
-  public ApplicationSyncAPI getApplicationSyncAPI() {
-    return externalAPIImplementation;
-  }
+    @Nonnull
+    @Override
+    public ConsoleSyncAPI getConsoleSyncAPI() {
+        return externalAPIImplementation;
+    }
 
-  @Nonnull
-  @Override
-  public ConsoleSyncAPI getConsoleSyncAPI() {
-    return externalAPIImplementation;
-  }
+    @Nonnull
+    @Override
+    public PlayerSyncAPI getPlayerSyncAPI() {
+        return externalAPIImplementation;
+    }
 
-  @Nonnull
-  @Override
-  public PlayerSyncAPI getPlayerSyncAPI() {
-    return externalAPIImplementation;
-  }
+    @Nonnull
+    @Override
+    public PluginSyncAPI getPluginSyncAPI() {
+        return externalAPIImplementation;
+    }
 
-  @Nonnull
-  @Override
-  public PluginSyncAPI getPluginSyncAPI() {
-    return externalAPIImplementation;
-  }
+    @Nonnull
+    @Override
+    public ClientSyncAPI getClientSyncAPI() {
+        return externalAPIImplementation;
+    }
 
-  @Nonnull
-  @Override
-  public ClientSyncAPI getClientSyncAPI() {
-    return externalAPIImplementation;
-  }
-
-  @Nonnull
-  @Override
-  public DatabaseSyncAPI getDatabaseSyncAPI() {
-    return externalAPIImplementation;
-  }
+    @Nonnull
+    @Override
+    public DatabaseSyncAPI getDatabaseSyncAPI() {
+        return externalAPIImplementation;
+    }
 }

@@ -6,8 +6,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Defau
 
 public final class ExternalAPIPacketOutSendRawLine extends DefaultPacket {
 
-  public ExternalAPIPacketOutSendRawLine(String line) {
-    super(ExternalAPIImplementation.EXTERNAL_PACKET_ID + 7,
-          new JsonConfiguration().add("line", line));
-  }
+    public ExternalAPIPacketOutSendRawLine(String line) {
+        super(ExternalAPIImplementation.EXTERNAL_PACKET_ID + 7, new JsonConfiguration().add("line", line));
+    }
 }

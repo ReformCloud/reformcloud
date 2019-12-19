@@ -1,10 +1,10 @@
-name: "ReformCloud2BukkitPermissions"
-version: "2"
-authors: ["derklaro", "ReformCloud-Team"]
+name: 'ReformCloud2BukkitPermissions'
+version: '2'
+authors: ['derklaro', 'ReformCloud-Team']
 main: systems.reformcloud.reformcloud2.permissions.bukkit.BukkitPermissionPlugin
 depend:
   - ReformCloud2SpigotExecutor
 
 # Additional
-website: "https://reformcloud.systems"
-description: "The reformcloud permission plugin"
+website: 'https://reformcloud.systems'
+description: 'The reformcloud permission plugin'

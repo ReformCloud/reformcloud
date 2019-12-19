@@ -6,8 +6,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Defau
 
 public class ClientPacketOutProcessWatchdogStopped extends DefaultPacket {
 
-  public ClientPacketOutProcessWatchdogStopped(String name) {
-    super(NetworkUtil.CONTROLLER_INFORMATION_BUS + 11,
-          new JsonConfiguration().add("name", name));
-  }
+    public ClientPacketOutProcessWatchdogStopped(String name) {
+        super(NetworkUtil.CONTROLLER_INFORMATION_BUS + 11, new JsonConfiguration().add("name", name));
+    }
 }

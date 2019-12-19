@@ -2,11 +2,11 @@ package systems.reformcloud.reformcloud2.permissions.packets.util;
 
 public enum PermissionAction {
 
-  CREATE,
+    CREATE,
 
-  DELETE,
+    DELETE,
 
-  UPDATE,
+    UPDATE,
 
-  DEFAULT_GROUPS_CHANGED
+    DEFAULT_GROUPS_CHANGED
 }

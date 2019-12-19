@@ -2,5 +2,5 @@ package systems.reformcloud.reformcloud2.executor.api.common.commands.basic.comm
 
 public interface DumpUtil {
 
-  void appendCurrentDump(StringBuilder stringBuilder);
+    void appendCurrentDump(StringBuilder stringBuilder);
 }

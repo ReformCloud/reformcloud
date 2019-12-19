@@ -6,22 +6,25 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Defau
 
 public final class ExternalAPIPacketOutDatabaseAction extends DefaultPacket {
 
-  public ExternalAPIPacketOutDatabaseAction(DatabaseAction action,
-                                            String name) {
-    super(ExternalAPIImplementation.EXTERNAL_PACKET_ID + 14,
-          new JsonConfiguration().add("action", action.key).add("name", name));
-  }
+    public ExternalAPIPacketOutDatabaseAction(DatabaseAction action, String name) {
+        super(ExternalAPIImplementation.EXTERNAL_PACKET_ID + 14, new JsonConfiguration()
+                .add("action", action.key)
+                .add("name", name)
+        );
+    }
 
-  public enum DatabaseAction {
+    public enum DatabaseAction {
 
-    CREATE("action_create"),
+        CREATE("action_create"),
 
-    DELETE("action_delete"),
+        DELETE("action_delete"),
 
-    SIZE("action_size");
+        SIZE("action_size");
 
-    DatabaseAction(String key) { this.key = key; }
+        DatabaseAction(String key) {
+            this.key = key;
+        }
 
-    private String key;
-  }
+        private String key;
+    }
 }

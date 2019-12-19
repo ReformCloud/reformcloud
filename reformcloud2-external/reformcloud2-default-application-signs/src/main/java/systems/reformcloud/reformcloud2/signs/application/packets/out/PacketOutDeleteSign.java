@@ -7,7 +7,7 @@ import systems.reformcloud.reformcloud2.signs.util.sign.CloudSign;
 
 public class PacketOutDeleteSign extends DefaultPacket {
 
-  public PacketOutDeleteSign(CloudSign sign) {
-    super(PacketUtil.SIGN_BUS + 5, new JsonConfiguration().add("sign", sign));
-  }
+    public PacketOutDeleteSign(CloudSign sign) {
+        super(PacketUtil.SIGN_BUS + 5, new JsonConfiguration().add("sign", sign));
+    }
 }

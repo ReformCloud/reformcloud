@@ -6,8 +6,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Defau
 
 public final class ExternalAPIPacketOutGetApplications extends DefaultPacket {
 
-  public ExternalAPIPacketOutGetApplications() {
-    super(ExternalAPIImplementation.EXTERNAL_PACKET_ID + 4,
-          new JsonConfiguration());
-  }
+    public ExternalAPIPacketOutGetApplications() {
+        super(ExternalAPIImplementation.EXTERNAL_PACKET_ID + 4, new JsonConfiguration());
+    }
 }

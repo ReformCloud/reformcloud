@@ -6,8 +6,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Defau
 
 public final class ExternalAPIPacketOutSendColouredLine extends DefaultPacket {
 
-  public ExternalAPIPacketOutSendColouredLine(String line) {
-    super(ExternalAPIImplementation.EXTERNAL_PACKET_ID + 6,
-          new JsonConfiguration().add("line", line));
-  }
+    public ExternalAPIPacketOutSendColouredLine(String line) {
+        super(ExternalAPIImplementation.EXTERNAL_PACKET_ID + 6, new JsonConfiguration().add("line", line));
+    }
 }

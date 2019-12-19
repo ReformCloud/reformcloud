@@ -10,29 +10,30 @@ import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reforncloud2.notifications.velocity.listener.ProcessListener;
 
 @Plugin(
-    id = "reformcloud_2_notifications", name = "ReformCloud2Notifications",
-    version = "2.0",
-    description =
-        "Publishes notifications to all players with a permission on server start/connect/stop",
-    url = "https://reformcloud.systems", authors = {"derklaro"},
-    dependencies = { @Dependency(id = "reformcloud_2_api_executor") })
+        id = "reformcloud_2_notifications",
+        name = "ReformCloud2Notifications",
+        version = "2.0",
+        description = "Publishes notifications to all players with a permission on server start/connect/stop",
+        url = "https://reformcloud.systems",
+        authors = {"derklaro"},
+        dependencies = {@Dependency(id = "reformcloud_2_api_executor")}
+)
 public class VelocityPlugin {
 
-  @Inject
-  public VelocityPlugin(ProxyServer server) {
-    this.listener = new ProcessListener(server);
-    ExecutorAPI.getInstance().getEventManager().registerListener(this.listener);
+    @Inject
+    public VelocityPlugin(ProxyServer server) {
+        this.listener = new ProcessListener(server);
+        ExecutorAPI.getInstance().getEventManager().registerListener(this.listener);
 
-    proxyServer = server;
-  }
+        proxyServer = server;
+    }
 
-  private final ProcessListener listener;
+    private final ProcessListener listener;
 
-  public static ProxyServer proxyServer;
+    public static ProxyServer proxyServer;
 
-  @Subscribe
-  public void handle(final ProxyShutdownEvent event) {
-    ExecutorAPI.getInstance().getEventManager().unregisterListener(
-        this.listener);
-  }
+    @Subscribe
+    public void handle(final ProxyShutdownEvent event) {
+        ExecutorAPI.getInstance().getEventManager().unregisterListener(this.listener);
+    }
 }
