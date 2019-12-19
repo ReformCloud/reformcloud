@@ -7,7 +7,9 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Defau
 
 public class PacketOutRegisterCommandsConfig extends DefaultPacket {
 
-    public PacketOutRegisterCommandsConfig() {
-        super(NetworkUtil.EXTERNAL_BUS + 1, new JsonConfiguration().add("config", ReformCloudApplication.getCommandsConfig()));
-    }
+  public PacketOutRegisterCommandsConfig() {
+    super(NetworkUtil.EXTERNAL_BUS + 1,
+          new JsonConfiguration().add(
+              "config", ReformCloudApplication.getCommandsConfig()));
+  }
 }

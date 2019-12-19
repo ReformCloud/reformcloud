@@ -6,7 +6,8 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Defau
 
 public final class NodePacketOutExecuteCommand extends DefaultPacket {
 
-    public NodePacketOutExecuteCommand(String name, String command) {
-        super(NetworkUtil.NODE_TO_NODE_BUS + 14, new JsonConfiguration().add("name", name).add("command", command));
-    }
+  public NodePacketOutExecuteCommand(String name, String command) {
+    super(NetworkUtil.NODE_TO_NODE_BUS + 14,
+          new JsonConfiguration().add("name", name).add("command", command));
+  }
 }

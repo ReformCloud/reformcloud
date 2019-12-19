@@ -7,7 +7,8 @@ import systems.reformcloud.reformcloud2.signs.util.sign.config.SignConfig;
 
 public class PacketOutReloadConfig extends DefaultPacket {
 
-    public PacketOutReloadConfig(SignConfig config) {
-        super(PacketUtil.SIGN_BUS + 6, new JsonConfiguration().add("config", config));
-    }
+  public PacketOutReloadConfig(SignConfig config) {
+    super(PacketUtil.SIGN_BUS + 6,
+          new JsonConfiguration().add("config", config));
+  }
 }

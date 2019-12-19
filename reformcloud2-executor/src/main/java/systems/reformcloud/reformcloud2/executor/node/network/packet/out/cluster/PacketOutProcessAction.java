@@ -8,7 +8,11 @@ import systems.reformcloud.reformcloud2.executor.node.process.util.ProcessAction
 
 public class PacketOutProcessAction extends DefaultPacket {
 
-    public PacketOutProcessAction(ProcessAction processAction, ProcessInformation processInformation) {
-        super(NetworkUtil.NODE_TO_NODE_BUS + 4, new JsonConfiguration().add("action", processAction).add("info", processInformation));
-    }
+  public PacketOutProcessAction(ProcessAction processAction,
+                                ProcessInformation processInformation) {
+    super(NetworkUtil.NODE_TO_NODE_BUS + 4,
+          new JsonConfiguration()
+              .add("action", processAction)
+              .add("info", processInformation));
+  }
 }

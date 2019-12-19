@@ -8,18 +8,21 @@ import systems.reformcloud.reformcloud2.executor.api.velocity.VelocityExecutor;
 
 public final class ProcessEventHandler {
 
-    @Listener
-    public void handleStart(ProcessStartedEvent event) {
-        VelocityExecutor.getInstance().handleProcessUpdate(event.getProcessInformation());
-    }
+  @Listener
+  public void handleStart(ProcessStartedEvent event) {
+    VelocityExecutor.getInstance().handleProcessUpdate(
+        event.getProcessInformation());
+  }
 
-    @Listener
-    public void handleUpdate(ProcessUpdatedEvent event) {
-        VelocityExecutor.getInstance().handleProcessUpdate(event.getProcessInformation());
-    }
+  @Listener
+  public void handleUpdate(ProcessUpdatedEvent event) {
+    VelocityExecutor.getInstance().handleProcessUpdate(
+        event.getProcessInformation());
+  }
 
-    @Listener
-    public void handleRemove(ProcessStoppedEvent event) {
-        VelocityExecutor.getInstance().handleProcessRemove(event.getProcessInformation());
-    }
+  @Listener
+  public void handleRemove(ProcessStoppedEvent event) {
+    VelocityExecutor.getInstance().handleProcessRemove(
+        event.getProcessInformation());
+  }
 }

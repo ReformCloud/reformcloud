@@ -6,7 +6,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Defau
 
 public final class PacketOutAuth extends DefaultPacket {
 
-    public PacketOutAuth(Auth auth) {
-        super(-512, new JsonConfiguration().add("auth", auth));
-    }
+  public PacketOutAuth(Auth auth) {
+    super(-512, new JsonConfiguration().add("auth", auth));
+  }
 }

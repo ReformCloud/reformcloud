@@ -6,7 +6,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Defau
 
 public class APIBungeePacketOutRequestIngameMessages extends DefaultPacket {
 
-    public APIBungeePacketOutRequestIngameMessages() {
-        super(NetworkUtil.CONTROLLER_QUERY_BUS + 2, new JsonConfiguration());
-    }
+  public APIBungeePacketOutRequestIngameMessages() {
+    super(NetworkUtil.CONTROLLER_QUERY_BUS + 2, new JsonConfiguration());
+  }
 }

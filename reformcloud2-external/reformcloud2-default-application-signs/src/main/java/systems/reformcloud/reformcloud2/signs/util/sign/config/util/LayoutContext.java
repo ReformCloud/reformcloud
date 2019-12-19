@@ -2,7 +2,7 @@ package systems.reformcloud.reformcloud2.signs.util.sign.config.util;
 
 public enum LayoutContext {
 
-    GLOBAL,
+  GLOBAL,
 
-    GROUP_BOUND
+  GROUP_BOUND
 }

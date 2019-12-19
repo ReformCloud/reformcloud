@@ -2,11 +2,11 @@ package systems.reformcloud.reformcloud2.executor.api.node.cluster;
 
 public enum SyncAction {
 
-    SYNC,
+  SYNC,
 
-    CREATE,
+  CREATE,
 
-    UPDATE,
+  UPDATE,
 
-    DELETE
+  DELETE
 }

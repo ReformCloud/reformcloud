@@ -9,22 +9,26 @@ import systems.reformcloud.reformcloud2.executor.api.common.event.handler.Listen
 
 public final class ProcessEventHandler {
 
-    @Listener
-    public void handleStart(ProcessStartedEvent event) {
-        BungeeExecutor.registerServer(event.getProcessInformation());
-    }
+  @Listener
+  public void handleStart(ProcessStartedEvent event) {
+    BungeeExecutor.registerServer(event.getProcessInformation());
+  }
 
-    @Listener
-    public void handleUpdate(ProcessUpdatedEvent event) {
-        BungeeExecutor.registerServer(event.getProcessInformation());
-    }
+  @Listener
+  public void handleUpdate(ProcessUpdatedEvent event) {
+    BungeeExecutor.registerServer(event.getProcessInformation());
+  }
 
-    @Listener
-    public void handleRemove(ProcessStoppedEvent event) {
-        ProxyServer.getInstance().getServers().remove(event.getProcessInformation().getName());
-        if (event.getProcessInformation().isLobby()) {
-            BungeeExecutor.LOBBY_SERVERS.remove(event.getProcessInformation());
-            ProxyServer.getInstance().getConfig().getListeners().forEach(listenerInfo -> listenerInfo.getServerPriority().remove(event.getProcessInformation().getName()));
-        }
+  @Listener
+  public void handleRemove(ProcessStoppedEvent event) {
+    ProxyServer.getInstance().getServers().remove(
+        event.getProcessInformation().getName());
+    if (event.getProcessInformation().isLobby()) {
+      BungeeExecutor.LOBBY_SERVERS.remove(event.getProcessInformation());
+      ProxyServer.getInstance().getConfig().getListeners().forEach(
+          listenerInfo
+          -> listenerInfo.getServerPriority().remove(
+              event.getProcessInformation().getName()));
     }
+  }
 }

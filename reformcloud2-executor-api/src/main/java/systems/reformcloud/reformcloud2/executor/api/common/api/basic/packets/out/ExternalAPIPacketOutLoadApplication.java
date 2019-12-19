@@ -8,11 +8,15 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Defau
 
 public final class ExternalAPIPacketOutLoadApplication extends DefaultPacket {
 
-    public ExternalAPIPacketOutLoadApplication(InstallableApplication application) {
-        super(ExternalAPIImplementation.EXTERNAL_PACKET_ID + 1, new JsonConfiguration().add("app", convert(application)));
-    }
+  public ExternalAPIPacketOutLoadApplication(
+      InstallableApplication application) {
+    super(ExternalAPIImplementation.EXTERNAL_PACKET_ID + 1,
+          new JsonConfiguration().add("app", convert(application)));
+  }
 
-    private static DefaultInstallableApplication convert(InstallableApplication application) {
-        return new DefaultInstallableApplication(application.url(), application.loader(), application.getName());
-    }
+  private static DefaultInstallableApplication
+  convert(InstallableApplication application) {
+    return new DefaultInstallableApplication(
+        application.url(), application.loader(), application.getName());
+  }
 }

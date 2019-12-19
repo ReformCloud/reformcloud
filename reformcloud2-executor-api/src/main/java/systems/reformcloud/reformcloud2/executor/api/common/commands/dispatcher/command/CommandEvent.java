@@ -2,13 +2,13 @@ package systems.reformcloud.reformcloud2.executor.api.common.commands.dispatcher
 
 public enum CommandEvent {
 
-    ADD,
+  ADD,
 
-    REMOVE,
+  REMOVE,
 
-    UPDATE,
+  UPDATE,
 
-    UNREGISTER_ALL,
+  UNREGISTER_ALL,
 
-    FIND
+  FIND
 }

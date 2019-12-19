@@ -6,11 +6,13 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Defau
 
 public final class ExternalAPIPacketOutGetProcesses extends DefaultPacket {
 
-    public ExternalAPIPacketOutGetProcesses() {
-        super(ExternalAPIImplementation.EXTERNAL_PACKET_ID + 34, new JsonConfiguration());
-    }
+  public ExternalAPIPacketOutGetProcesses() {
+    super(ExternalAPIImplementation.EXTERNAL_PACKET_ID + 34,
+          new JsonConfiguration());
+  }
 
-    public ExternalAPIPacketOutGetProcesses(String group) {
-        super(ExternalAPIImplementation.EXTERNAL_PACKET_ID + 34, new JsonConfiguration().add("group", group));
-    }
+  public ExternalAPIPacketOutGetProcesses(String group) {
+    super(ExternalAPIImplementation.EXTERNAL_PACKET_ID + 34,
+          new JsonConfiguration().add("group", group));
+  }
 }

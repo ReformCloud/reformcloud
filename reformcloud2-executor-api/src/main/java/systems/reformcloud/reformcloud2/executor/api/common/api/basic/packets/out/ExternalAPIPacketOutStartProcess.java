@@ -7,11 +7,12 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Defau
 
 public final class ExternalAPIPacketOutStartProcess extends DefaultPacket {
 
-    public ExternalAPIPacketOutStartProcess(String group, String template, Configurable data) {
-        super(ExternalAPIImplementation.EXTERNAL_PACKET_ID + 31, new JsonConfiguration()
-                .add("group", group)
-                .add("template", template == null ? "" : template)
-                .add("extra", data)
-        );
-    }
+  public ExternalAPIPacketOutStartProcess(String group, String template,
+                                          Configurable data) {
+    super(ExternalAPIImplementation.EXTERNAL_PACKET_ID + 31,
+          new JsonConfiguration()
+              .add("group", group)
+              .add("template", template == null ? "" : template)
+              .add("extra", data));
+  }
 }

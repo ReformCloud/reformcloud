@@ -9,9 +9,8 @@ import javax.annotation.Nonnull;
  */
 public interface Nameable {
 
-    /**
-     * @return The name of the current instance
-     */
-    @Nonnull
-    String getName();
+  /**
+   * @return The name of the current instance
+   */
+  @Nonnull String getName();
 }

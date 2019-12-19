@@ -8,14 +8,17 @@ import systems.reformcloud.reformcloud2.executor.api.common.plugins.basic.Defaul
 
 public final class ExternalAPIPacketOutInstallPlugin extends DefaultPacket {
 
-    public ExternalAPIPacketOutInstallPlugin(InstallablePlugin plugin, String process) {
-        super(ExternalAPIImplementation.EXTERNAL_PACKET_ID + 27, new JsonConfiguration()
-                .add("process", process)
-                .add("plugin", convert(plugin))
-        );
-    }
+  public ExternalAPIPacketOutInstallPlugin(InstallablePlugin plugin,
+                                           String process) {
+    super(ExternalAPIImplementation.EXTERNAL_PACKET_ID + 27,
+          new JsonConfiguration()
+              .add("process", process)
+              .add("plugin", convert(plugin)));
+  }
 
-    private static DefaultInstallablePlugin convert(InstallablePlugin plugin) {
-        return new DefaultInstallablePlugin(plugin.getDownloadURL(), plugin.getName(), plugin.version(), plugin.author(), plugin.main());
-    }
+  private static DefaultInstallablePlugin convert(InstallablePlugin plugin) {
+    return new DefaultInstallablePlugin(plugin.getDownloadURL(),
+                                        plugin.getName(), plugin.version(),
+                                        plugin.author(), plugin.main());
+  }
 }
