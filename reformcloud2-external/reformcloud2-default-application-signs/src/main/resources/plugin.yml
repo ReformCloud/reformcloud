@@ -1,5 +1,5 @@
 name: ReformCloud2Signs
-version: '2.0'
+version: "2.0"
 author: derklaro
 main: systems.reformcloud.reformcloud2.signs.bukkit.BukkitPlugin
 
@@ -7,8 +7,8 @@ depend:
   - ReformCloud2SpigotExecutor
 
 # Additional
-website: 'https://reformcloud.systems'
-description: 'The reformcloud sign plugin'
+website: "https://reformcloud.systems"
+description: "The reformcloud sign plugin"
 
 commands:
   signs:

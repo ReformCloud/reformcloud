@@ -1,10 +1,10 @@
-name: 'ReformCloud2NukkitExecutor'
-author: 'derklaro'
-version: '2'
+name: "ReformCloud2NukkitExecutor"
+author: "derklaro"
+version: "2"
 main: systems.reformcloud.reformcloud2.executor.api.nukkit.NukkitLauncher
-api: ['1.0.0']
+api: ["1.0.0"]
 
 load: STARTUP
 # Additional
-website: 'https://reformcloud.systems'
-description: 'The reformcloud executor api'
+website: "https://reformcloud.systems"
+description: "The reformcloud executor api"
