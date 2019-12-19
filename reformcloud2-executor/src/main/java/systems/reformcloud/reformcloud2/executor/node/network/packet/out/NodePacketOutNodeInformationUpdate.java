@@ -7,8 +7,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.node.NodeInformation
 
 public class NodePacketOutNodeInformationUpdate extends DefaultPacket {
 
-  public NodePacketOutNodeInformationUpdate(NodeInformation nodeInformation) {
-    super(NetworkUtil.NODE_TO_NODE_BUS + 9,
-          new JsonConfiguration().add("info", nodeInformation));
-  }
+    public NodePacketOutNodeInformationUpdate(NodeInformation nodeInformation) {
+        super(NetworkUtil.NODE_TO_NODE_BUS + 9, new JsonConfiguration().add("info", nodeInformation));
+    }
 }

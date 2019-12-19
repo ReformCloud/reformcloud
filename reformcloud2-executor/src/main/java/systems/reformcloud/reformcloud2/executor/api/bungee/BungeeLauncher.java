@@ -8,28 +8,25 @@ import systems.reformcloud.reformcloud2.executor.api.common.utility.StringUtil;
 
 public final class BungeeLauncher extends Plugin {
 
-  @Override
-  public void onLoad() {
-    LanguageWorker.doLoad();
-    StringUtil.sendHeader();
-  }
+    @Override
+    public void onLoad() {
+        LanguageWorker.doLoad();
+        StringUtil.sendHeader();
+    }
 
-  @Override
-  public void onEnable() {
-    new BungeeExecutor(this);
-    BungeeExecutor.clearHandlers();
-  }
+    @Override
+    public void onEnable() {
+        new BungeeExecutor(this);
+        BungeeExecutor.clearHandlers();
+    }
 
-  @Override
-  public void onDisable() {
-    BungeeExecutor.getInstance().getNetworkClient().disconnect();
-    ProxyServer.getInstance().getScheduler().cancel(this);
+    @Override
+    public void onDisable() {
+        BungeeExecutor.getInstance().getNetworkClient().disconnect();
+        ProxyServer.getInstance().getScheduler().cancel(this);
 
-    ProxyServer.getInstance().getPlayers().forEach(
-        e
-        -> e.disconnect(
-            TextComponent.fromLegacyText(BungeeExecutor.getInstance()
-                                             .getMessages()
-                                             .getCurrentProcessClosed())));
-  }
+        ProxyServer.getInstance().getPlayers().forEach(e -> e.disconnect(TextComponent.fromLegacyText(
+                BungeeExecutor.getInstance().getMessages().getCurrentProcessClosed()
+        )));
+    }
 }

@@ -1,9 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.api.client;
 
 import io.netty.channel.ChannelHandlerContext;
-import java.net.InetSocketAddress;
-import java.util.Objects;
-import javax.annotation.Nonnull;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.basic.ExternalAPIImplementation;
 import systems.reformcloud.reformcloud2.executor.api.common.base.Conditions;
@@ -18,91 +15,80 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packe
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.handler.PacketHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.runtime.ReloadableRuntime;
 
-public abstract class Client
-    extends ExternalAPIImplementation implements ReloadableRuntime {
+import javax.annotation.Nonnull;
+import java.net.InetSocketAddress;
+import java.util.Objects;
 
-  protected abstract void bootstrap();
+public abstract class Client extends ExternalAPIImplementation implements ReloadableRuntime {
 
-  public abstract void shutdown() throws Exception;
+    protected abstract void bootstrap();
 
-  public abstract CommandManager getCommandManager();
+    public abstract void shutdown() throws Exception;
 
-  public static Client getInstance() {
-    return (Client)ExecutorAPI.getInstance();
-  }
+    public abstract CommandManager getCommandManager();
 
-  public abstract NetworkClient getNetworkClient();
+    public static Client getInstance() {
+        return (Client) ExecutorAPI.getInstance();
+    }
 
-  protected final NetworkChannelReader
-  createChannelReader(Runnable onDisconnect) {
-    return new NetworkChannelReader() {
-      private PacketSender packetSender;
+    public abstract NetworkClient getNetworkClient();
 
-      @Nonnull
-      @Override
-      public PacketHandler getPacketHandler() {
-        return Client.this.packetHandler();
-      }
+    protected final NetworkChannelReader createChannelReader(Runnable onDisconnect) {
+        return new NetworkChannelReader() {
 
-      @Nonnull
-      @Override
-      public PacketSender sender() {
-        return packetSender;
-      }
+            private PacketSender packetSender;
 
-      @Override
-      public void setSender(PacketSender sender) {
-        Conditions.isTrue(packetSender == null);
-        packetSender = Objects.requireNonNull(sender);
-        DefaultChannelManager.INSTANCE.registerChannel(packetSender);
-      }
+            @Nonnull
+            @Override
+            public PacketHandler getPacketHandler() {
+                return Client.this.packetHandler();
+            }
 
-      @Override
-      public void channelActive(ChannelHandlerContext context) {
-        if (packetSender == null) {
-          String address =
-              ((InetSocketAddress)context.channel().remoteAddress())
-                  .getAddress()
-                  .getHostAddress();
-          System.out.println(
-              LanguageManager.get("network-channel-connected", address));
-        }
-      }
+            @Nonnull
+            @Override
+            public PacketSender sender() {
+                return packetSender;
+            }
 
-      @Override
-      public void channelInactive(ChannelHandlerContext context) {
-        onDisconnect.run();
-        if (packetSender != null) {
-          DefaultChannelManager.INSTANCE.unregisterChannel(packetSender);
-          System.out.println(LanguageManager.get("network-channel-disconnected",
-                                                 packetSender.getName()));
-        }
-      }
+            @Override
+            public void setSender(PacketSender sender) {
+                Conditions.isTrue(packetSender == null);
+                packetSender = Objects.requireNonNull(sender);
+                DefaultChannelManager.INSTANCE.registerChannel(packetSender);
+            }
 
-      @Override
-      public void read(ChannelHandlerContext context, Packet packet) {
-        NetworkUtil.EXECUTOR.execute(() -> {
-          if (packet.queryUniqueID() != null &&
-              getPacketHandler().getQueryHandler().hasWaitingQuery(
-                  packet.queryUniqueID())) {
-            getPacketHandler()
-                .getQueryHandler()
-                .getWaitingQuery(packet.queryUniqueID())
-                .complete(packet);
-          } else {
-            getPacketHandler()
-                .getNetworkHandlers(packet.packetID())
-                .forEach(networkHandler
-                         -> networkHandler.handlePacket(
-                             packetSender, packet, out -> {
-                               if (packet.queryUniqueID() != null) {
-                                 out.setQueryID(packet.queryUniqueID());
-                                 packetSender.sendPacket(out);
-                               }
-                             }));
-          }
-        });
-      }
-    };
-  }
+            @Override
+            public void channelActive(ChannelHandlerContext context) {
+                if (packetSender == null) {
+                    String address = ((InetSocketAddress) context.channel().remoteAddress()).getAddress().getHostAddress();
+                    System.out.println(LanguageManager.get("network-channel-connected", address));
+                }
+            }
+
+            @Override
+            public void channelInactive(ChannelHandlerContext context) {
+                onDisconnect.run();
+                if (packetSender != null) {
+                    DefaultChannelManager.INSTANCE.unregisterChannel(packetSender);
+                    System.out.println(LanguageManager.get("network-channel-disconnected", packetSender.getName()));
+                }
+            }
+
+            @Override
+            public void read(ChannelHandlerContext context, Packet packet) {
+                NetworkUtil.EXECUTOR.execute(() -> {
+                    if (packet.queryUniqueID() != null && getPacketHandler().getQueryHandler().hasWaitingQuery(packet.queryUniqueID())) {
+                        getPacketHandler().getQueryHandler().getWaitingQuery(packet.queryUniqueID()).complete(packet);
+                    } else {
+                        getPacketHandler().getNetworkHandlers(packet.packetID()).forEach(networkHandler -> networkHandler.handlePacket(packetSender, packet, out -> {
+                            if (packet.queryUniqueID() != null) {
+                                out.setQueryID(packet.queryUniqueID());
+                                packetSender.sendPacket(out);
+                            }
+                        }));
+                    }
+                });
+            }
+        };
+    }
 }

@@ -1,46 +1,45 @@
 package systems.reformcloud.reformcloud2.executor.api.common.client.basic;
 
-import javax.annotation.Nonnull;
 import systems.reformcloud.reformcloud2.executor.api.common.client.ClientRuntimeInformation;
 
-public final class DefaultClientRuntimeInformation
-    implements ClientRuntimeInformation {
+import javax.annotation.Nonnull;
 
-  public DefaultClientRuntimeInformation(String startHost, int maxMemory,
-                                         int maxProcesses, String name) {
-    this.startHost = startHost;
-    this.maxMemory = maxMemory;
-    this.maxProcesses = maxProcesses;
-    this.name = name;
-  }
+public final class DefaultClientRuntimeInformation implements ClientRuntimeInformation {
 
-  private String startHost;
+    public DefaultClientRuntimeInformation(String startHost, int maxMemory, int maxProcesses, String name) {
+        this.startHost = startHost;
+        this.maxMemory = maxMemory;
+        this.maxProcesses = maxProcesses;
+        this.name = name;
+    }
 
-  private int maxMemory;
+    private String startHost;
 
-  private int maxProcesses;
+    private int maxMemory;
 
-  private String name;
+    private int maxProcesses;
 
-  @Nonnull
-  @Override
-  public String startHost() {
-    return startHost;
-  }
+    private String name;
 
-  @Override
-  public int maxMemory() {
-    return maxMemory;
-  }
+    @Nonnull
+    @Override
+    public String startHost() {
+        return startHost;
+    }
 
-  @Override
-  public int maxProcessCount() {
-    return maxProcesses;
-  }
+    @Override
+    public int maxMemory() {
+        return maxMemory;
+    }
 
-  @Nonnull
-  @Override
-  public String getName() {
-    return name;
-  }
+    @Override
+    public int maxProcessCount() {
+        return maxProcesses;
+    }
+
+    @Nonnull
+    @Override
+    public String getName() {
+        return name;
+    }
 }

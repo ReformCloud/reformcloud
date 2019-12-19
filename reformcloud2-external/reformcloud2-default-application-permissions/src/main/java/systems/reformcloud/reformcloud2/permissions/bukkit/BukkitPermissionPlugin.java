@@ -8,17 +8,16 @@ import systems.reformcloud.reformcloud2.permissions.packets.PacketHelper;
 
 public class BukkitPermissionPlugin extends JavaPlugin {
 
-  @Override
-  public void onEnable() {
-    Bukkit.getPluginManager().registerEvents(new BukkitPermissionListener(),
-                                             this);
-    PermissionAPI.handshake();
-    PacketHelper.addAPIPackets();
-  }
+    @Override
+    public void onEnable() {
+        Bukkit.getPluginManager().registerEvents(new BukkitPermissionListener(), this);
+        PermissionAPI.handshake();
+        PacketHelper.addAPIPackets();
+    }
 
-  @Override
-  public void onDisable() {
-    PacketHelper.unregisterAPIPackets();
-    Bukkit.getScheduler().cancelTasks(this);
-  }
+    @Override
+    public void onDisable() {
+        PacketHelper.unregisterAPIPackets();
+        Bukkit.getScheduler().cancelTasks(this);
+    }
 }

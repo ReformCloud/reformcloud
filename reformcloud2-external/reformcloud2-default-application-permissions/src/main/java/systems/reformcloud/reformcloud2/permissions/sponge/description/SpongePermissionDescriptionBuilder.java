@@ -1,59 +1,56 @@
 package systems.reformcloud.reformcloud2.permissions.sponge.description;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.service.permission.PermissionDescription;
 import org.spongepowered.api.service.permission.PermissionService;
 import org.spongepowered.api.text.Text;
 import systems.reformcloud.reformcloud2.permissions.sponge.service.SpongePermissionService;
 
-public class SpongePermissionDescriptionBuilder
-    implements PermissionDescription.Builder {
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
-  public SpongePermissionDescriptionBuilder(@Nonnull PermissionService service,
-                                            @Nullable PluginContainer plugin) {
-    this.service = service;
-    this.pluginContainer = plugin;
-  }
+public class SpongePermissionDescriptionBuilder implements PermissionDescription.Builder {
 
-  private final PermissionService service;
+    public SpongePermissionDescriptionBuilder(@Nonnull PermissionService service, @Nullable PluginContainer plugin) {
+        this.service = service;
+        this.pluginContainer = plugin;
+    }
 
-  private String id;
+    private final PermissionService service;
 
-  private Text description;
+    private String id;
 
-  private PluginContainer pluginContainer;
+    private Text description;
 
-  @Override
-  @Nonnull
-  public PermissionDescription.Builder id(@Nonnull String permissionId) {
-    this.id = permissionId;
-    return this;
-  }
+    private PluginContainer pluginContainer;
 
-  @Override
-  @Nonnull
-  public PermissionDescription.Builder description(@Nullable Text description) {
-    this.description = description;
-    return this;
-  }
+    @Override
+    @Nonnull
+    public PermissionDescription.Builder id(@Nonnull String permissionId) {
+        this.id = permissionId;
+        return this;
+    }
 
-  @Override
-  @Nonnull
-  public PermissionDescription.Builder assign(@Nullable String role,
-                                              boolean value) {
-    return this;
-  }
+    @Override
+    @Nonnull
+    public PermissionDescription.Builder description(@Nullable Text description) {
+        this.description = description;
+        return this;
+    }
 
-  @Override
-  @Nonnull
-  public PermissionDescription register() throws IllegalStateException {
-    PermissionDescription permissionDescription =
-        new SpongePermissionDescription(service, id, pluginContainer,
-                                        description);
-    SpongePermissionService.DESCRIPTIONS.put(permissionDescription.getId(),
-                                             permissionDescription);
-    return permissionDescription;
-  }
+    @Override
+    @Nonnull
+    public PermissionDescription.Builder assign(@Nullable String role, boolean value) {
+        return this;
+    }
+
+    @Override
+    @Nonnull
+    public PermissionDescription register() throws IllegalStateException {
+        PermissionDescription permissionDescription = new SpongePermissionDescription(
+                service, id, pluginContainer, description
+        );
+        SpongePermissionService.DESCRIPTIONS.put(permissionDescription.getId(), permissionDescription);
+        return permissionDescription;
+    }
 }

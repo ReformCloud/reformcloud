@@ -4,13 +4,15 @@ import javax.annotation.Nonnull;
 
 public interface Permission {
 
-  /**
-   * @return The plain permission
-   */
-  @Nonnull String permission();
+    /**
+     * @return The plain permission
+     */
+    @Nonnull
+    String permission();
 
-  /**
-   * @return The default {@link PermissionResult}
-   */
-  @Nonnull PermissionResult defaultResult();
+    /**
+     * @return The default {@link PermissionResult}
+     */
+    @Nonnull
+    PermissionResult defaultResult();
 }

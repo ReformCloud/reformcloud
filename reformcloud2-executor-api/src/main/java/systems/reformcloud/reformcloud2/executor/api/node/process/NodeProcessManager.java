@@ -1,7 +1,5 @@
 package systems.reformcloud.reformcloud2.executor.api.node.process;
 
-import java.util.Collection;
-import java.util.UUID;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Template;
@@ -9,54 +7,52 @@ import systems.reformcloud.reformcloud2.executor.api.common.node.NodeInformation
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.update.Updateable;
 
-public interface NodeProcessManager
-    extends Updateable<ProcessInformation>, Iterable<ProcessInformation> {
+import java.util.Collection;
+import java.util.UUID;
 
-  ProcessInformation getLocalCloudProcess(String name);
+public interface NodeProcessManager extends Updateable<ProcessInformation>, Iterable<ProcessInformation> {
 
-  ProcessInformation getLocalCloudProcess(UUID uuid);
+    ProcessInformation getLocalCloudProcess(String name);
 
-  ProcessInformation startLocalProcess(ProcessGroup processGroup,
-                                       Template template,
-                                       JsonConfiguration data, UUID uniqueID);
+    ProcessInformation getLocalCloudProcess(UUID uuid);
 
-  ProcessInformation stopLocalProcess(String name);
+    ProcessInformation startLocalProcess(ProcessGroup processGroup, Template template, JsonConfiguration data, UUID uniqueID);
 
-  ProcessInformation stopLocalProcess(UUID uuid);
+    ProcessInformation stopLocalProcess(String name);
 
-  ProcessInformation queueProcess(ProcessGroup processGroup, Template template,
-                                  JsonConfiguration data, NodeInformation node,
-                                  UUID uniqueID);
+    ProcessInformation stopLocalProcess(UUID uuid);
 
-  void registerLocalProcess(LocalNodeProcess process);
+    ProcessInformation queueProcess(ProcessGroup processGroup, Template template, JsonConfiguration data, NodeInformation node, UUID uniqueID);
 
-  void unregisterLocalProcess(UUID uniqueID);
+    void registerLocalProcess(LocalNodeProcess process);
 
-  void handleLocalProcessStart(ProcessInformation processInformation);
+    void unregisterLocalProcess(UUID uniqueID);
 
-  void handleLocalProcessStop(ProcessInformation processInformation);
+    void handleLocalProcessStart(ProcessInformation processInformation);
 
-  void handleProcessStart(ProcessInformation processInformation);
+    void handleLocalProcessStop(ProcessInformation processInformation);
 
-  void handleProcessUpdate(ProcessInformation processInformation);
+    void handleProcessStart(ProcessInformation processInformation);
 
-  void handleProcessConnection(ProcessInformation processInformation);
+    void handleProcessUpdate(ProcessInformation processInformation);
 
-  void handleProcessStop(ProcessInformation processInformation);
+    void handleProcessConnection(ProcessInformation processInformation);
 
-  void handleProcessDisconnect(String name);
+    void handleProcessStop(ProcessInformation processInformation);
 
-  boolean isLocal(String name);
+    void handleProcessDisconnect(String name);
 
-  boolean isLocal(UUID uniqueID);
+    boolean isLocal(String name);
 
-  Collection<ProcessInformation> getClusterProcesses();
+    boolean isLocal(UUID uniqueID);
 
-  Collection<ProcessInformation> getClusterProcesses(String group);
+    Collection<ProcessInformation> getClusterProcesses();
 
-  Collection<ProcessInformation> getLocalProcesses();
+    Collection<ProcessInformation> getClusterProcesses(String group);
 
-  ProcessInformation getClusterProcess(String name);
+    Collection<ProcessInformation> getLocalProcesses();
 
-  ProcessInformation getClusterProcess(UUID uniqueID);
+    ProcessInformation getClusterProcess(String name);
+
+    ProcessInformation getClusterProcess(UUID uniqueID);
 }

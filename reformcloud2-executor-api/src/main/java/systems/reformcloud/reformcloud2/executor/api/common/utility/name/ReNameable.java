@@ -4,5 +4,5 @@ import javax.annotation.Nonnull;
 
 public interface ReNameable extends Nameable {
 
-  void setName(@Nonnull String newName);
+    void setName(@Nonnull String newName);
 }

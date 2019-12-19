@@ -11,30 +11,24 @@ import systems.reformcloud.reformcloud2.signs.util.sign.CloudSign;
 
 public class NukkitListener implements Listener {
 
-  @EventHandler
-  public void handle(final PlayerInteractEvent event) {
-    if (event.getAction().equals(
-            PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK)) {
-      if (event.getBlock().getId() == 68 || event.getBlock().getId() == 63) {
-        if (!(event.getBlock().getLevel().getBlockEntity(
-                  event.getBlock().getLocation())
-                  instanceof BlockEntitySign)) {
-          return;
-        }
+    @EventHandler
+    public void handle(final PlayerInteractEvent event) {
+        if (event.getAction().equals(PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK)) {
+            if (event.getBlock().getId() == 68 || event.getBlock().getId() == 63) {
+                if (!(event.getBlock().getLevel().getBlockEntity(event.getBlock().getLocation()) instanceof BlockEntitySign)) {
+                    return;
+                }
 
-        BlockEntitySign sign =
-            (BlockEntitySign)event.getBlock().getLevel().getBlockEntity(
-                event.getBlock().getLocation());
-        CloudSign cloudSign = NukkitSignSystemAdapter.getInstance().getSignAt(
-            NukkitSignSystemAdapter.getInstance().getSignConverter().to(sign));
-        if (cloudSign == null ||
-            !SignSystemAdapter.getInstance().canConnect(cloudSign)) {
-          return;
-        }
+                BlockEntitySign sign = (BlockEntitySign) event.getBlock().getLevel().getBlockEntity(event.getBlock().getLocation());
+                CloudSign cloudSign = NukkitSignSystemAdapter.getInstance().getSignAt(
+                        NukkitSignSystemAdapter.getInstance().getSignConverter().to(sign)
+                );
+                if (cloudSign == null || !SignSystemAdapter.getInstance().canConnect(cloudSign)) {
+                    return;
+                }
 
-        ExecutorAPI.getInstance().getSyncAPI().getPlayerSyncAPI().connect(
-            event.getPlayer().getUniqueId(), cloudSign.getCurrentTarget());
-      }
+                ExecutorAPI.getInstance().getSyncAPI().getPlayerSyncAPI().connect(event.getPlayer().getUniqueId(), cloudSign.getCurrentTarget());
+            }
+        }
     }
-  }
 }

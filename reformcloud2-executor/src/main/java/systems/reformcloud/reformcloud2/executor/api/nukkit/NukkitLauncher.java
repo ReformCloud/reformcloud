@@ -10,27 +10,25 @@ import systems.reformcloud.reformcloud2.executor.api.nukkit.event.PlayerListener
 
 public final class NukkitLauncher extends PluginBase {
 
-  @Override
-  public void onLoad() {
-    LanguageWorker.doLoad();
-    StringUtil.sendHeader();
-  }
+    @Override
+    public void onLoad() {
+        LanguageWorker.doLoad();
+        StringUtil.sendHeader();
+    }
 
-  @Override
-  public void onEnable() {
-    new NukkitExecutor(this);
+    @Override
+    public void onEnable() {
+        new NukkitExecutor(this);
 
-    Server.getInstance().getPluginManager().registerEvents(
-        new PlayerListenerHandler(), this);
-    Server.getInstance().getPluginManager().registerEvents(
-        new ExtraListenerHandler(), this);
-  }
+        Server.getInstance().getPluginManager().registerEvents(new PlayerListenerHandler(), this);
+        Server.getInstance().getPluginManager().registerEvents(new ExtraListenerHandler(), this);
+    }
 
-  @Override
-  public void onDisable() {
-    Server.getInstance().getScheduler().cancelTask(this);
-    NukkitExecutor.getInstance().getNetworkClient().disconnect();
+    @Override
+    public void onDisable() {
+        Server.getInstance().getScheduler().cancelTask(this);
+        NukkitExecutor.getInstance().getNetworkClient().disconnect();
 
-    Server.getInstance().getOnlinePlayers().values().forEach(Player::kick);
-  }
+        Server.getInstance().getOnlinePlayers().values().forEach(Player::kick);
+    }
 }

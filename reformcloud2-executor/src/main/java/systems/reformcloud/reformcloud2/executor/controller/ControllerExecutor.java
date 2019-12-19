@@ -1,12 +1,5 @@
 package systems.reformcloud.reformcloud2.executor.controller;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.Collections;
-import javax.annotation.Nonnull;
 import org.reflections.Reflections;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorType;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
@@ -80,415 +73,383 @@ import systems.reformcloud.reformcloud2.executor.controller.process.ClientManage
 import systems.reformcloud.reformcloud2.executor.controller.process.DefaultProcessManager;
 import systems.reformcloud.reformcloud2.executor.controller.process.startup.AutoStartupHandler;
 
+import javax.annotation.Nonnull;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.Collections;
+
 public final class ControllerExecutor extends Controller {
 
-  private static ControllerExecutor instance;
+    private static ControllerExecutor instance;
 
-  private static volatile boolean running = false;
+    private static volatile boolean running = false;
 
-  private LoggerBase loggerBase;
+    private LoggerBase loggerBase;
 
-  private AutoStartupHandler autoStartupHandler;
+    private AutoStartupHandler autoStartupHandler;
 
-  private ControllerExecutorConfig controllerExecutorConfig;
+    private ControllerExecutorConfig controllerExecutorConfig;
 
-  private ControllerConfig controllerConfig;
+    private ControllerConfig controllerConfig;
 
-  private Database<?> database;
+    private Database<?> database;
 
-  private RequestListenerHandler requestListenerHandler;
+    private RequestListenerHandler requestListenerHandler;
 
-  private SyncAPI syncAPI;
+    private SyncAPI syncAPI;
 
-  private AsyncAPI asyncAPI;
+    private AsyncAPI asyncAPI;
 
-  private final CommandManager commandManager = new DefaultCommandManager();
+    private final CommandManager commandManager = new DefaultCommandManager();
 
-  private final CommandSource console =
-      new ConsoleCommandSource(commandManager);
+    private final CommandSource console = new ConsoleCommandSource(commandManager);
 
-  private final ApplicationLoader applicationLoader =
-      new DefaultApplicationLoader();
+    private final ApplicationLoader applicationLoader = new DefaultApplicationLoader();
 
-  private final NetworkServer networkServer = new DefaultNetworkServer();
+    private final NetworkServer networkServer = new DefaultNetworkServer();
 
-  private final WebServer webServer = new DefaultWebServer();
+    private final WebServer webServer = new DefaultWebServer();
 
-  private final PacketHandler packetHandler = new DefaultPacketHandler();
+    private final PacketHandler packetHandler = new DefaultPacketHandler();
 
-  private final ProcessManager processManager = new DefaultProcessManager();
+    private final ProcessManager processManager = new DefaultProcessManager();
 
-  private final DatabaseConfig databaseConfig = new DatabaseConfig();
+    private final DatabaseConfig databaseConfig = new DatabaseConfig();
 
-  private final EventManager eventManager = new DefaultEventManager();
+    private final EventManager eventManager = new DefaultEventManager();
 
-  ControllerExecutor() {
-    ExecutorAPI.setInstance(this);
-    super.type = ExecutorType.CONTROLLER;
+    ControllerExecutor() {
+        ExecutorAPI.setInstance(this);
+        super.type = ExecutorType.CONTROLLER;
 
-    Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-      try {
-        shutdown();
-      } catch (final Exception ex) {
-        ex.printStackTrace();
-      }
-    }, "Shutdown-Hook"));
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            try {
+                shutdown();
+            } catch (final Exception ex) {
+                ex.printStackTrace();
+            }
+        }, "Shutdown-Hook"));
 
-    bootstrap();
-  }
-
-  @Override
-  protected void bootstrap() {
-    long current = System.currentTimeMillis();
-    instance = this;
-
-    try {
-      if (Boolean.getBoolean("reformcloud2.disable.colours")) {
-        this.loggerBase = new DefaultLoggerHandler();
-      } else {
-        this.loggerBase = new ColouredLoggerHandler();
-      }
-    } catch (final IOException ex) {
-      ex.printStackTrace();
+        bootstrap();
     }
 
-    this.controllerExecutorConfig = new ControllerExecutorConfig();
-    databaseConfig.load();
+    @Override
+    protected void bootstrap() {
+        long current = System.currentTimeMillis();
+        instance = this;
 
-    switch (databaseConfig.getType()) {
-    case FILE: {
-      this.database = new FileDatabase();
-      this.databaseConfig.connect(this.database);
-      break;
-    }
-
-    case H2: {
-      this.database = new H2Database();
-      this.databaseConfig.connect(this.database);
-      break;
-    }
-
-    case MONGO: {
-      this.database = new MongoDatabase();
-      this.databaseConfig.connect(this.database);
-      break;
-    }
-
-    case MYSQL: {
-      this.database = new MySQLDatabase();
-      this.databaseConfig.connect(this.database);
-      break;
-    }
-    }
-
-    GeneralAPI generalAPI =
-        new GeneralAPI(new ApplicationAPIImplementation(this.applicationLoader),
-                       new ClientAPIImplementation(),
-                       new ConsoleAPIImplementation(this.commandManager),
-                       new DatabaseAPIImplementation(this.database),
-                       new GroupAPIImplementation(),
-                       new PlayerAPIImplementation(this.processManager),
-                       new PluginAPIImplementation(),
-                       new ProcessAPIImplementation(this.processManager));
-    this.syncAPI = generalAPI;
-    this.asyncAPI = generalAPI;
-
-    this.requestListenerHandler = new DefaultRequestListenerHandler(
-        new DefaultWebServerAuth(this.getSyncAPI().getDatabaseSyncAPI()));
-
-    applicationLoader.detectApplications();
-    applicationLoader.installApplications();
-
-    this.controllerConfig = controllerExecutorConfig.getControllerConfig();
-    this.controllerConfig.getNetworkListener().forEach(
-        stringIntegerMap
-        -> stringIntegerMap.forEach(
-            (s, integer)
-                -> ControllerExecutor.this.networkServer.bind(
-                    s, integer,
-                    new DefaultServerAuthHandler(
-                        packetHandler,
-                        packetSender
-                        -> {
-                          ClientManager.INSTANCE.disconnectClient(
-                              packetSender.getName());
-                          processManager.onChannelClose(packetSender.getName());
-                        },
-                        packet -> {
-                          DefaultAuth auth =
-                              packet.content().get("auth", Auth.TYPE);
-                          if (auth == null) {
-                            return new Double<>("", false);
-                          }
-
-                          if (!auth.key().equals(controllerExecutorConfig
-                                                     .getConnectionKey())) {
-                            System.out.println(LanguageManager.get(
-                                "network-channel-auth-failed", auth.getName()));
-                            return new Double<>(auth.getName(), false);
-                          }
-
-                          if (auth.type().equals(NetworkType.CLIENT)) {
-                            System.out.println(LanguageManager.get(
-                                "client-connected", auth.getName()));
-                            DefaultClientRuntimeInformation runtimeInformation =
-                                auth.extra().get("info",
-                                                 ClientRuntimeInformation.TYPE);
-                            ClientManager.INSTANCE.connectClient(
-                                runtimeInformation);
-                          } else {
-                            ProcessInformation information =
-                                processManager.getProcess(auth.getName());
-                            if (information == null) {
-                              return new Double<>(auth.getName(), false);
-                            }
-
-                            information.getNetworkInfo().setConnected(true);
-                            information.setProcessState(ProcessState.READY);
-                            processManager.update(information);
-
-                            System.out.println(LanguageManager.get(
-                                "process-connected", auth.getName(),
-                                auth.parent()));
-                          }
-
-                          System.out.println(LanguageManager.get(
-                              "network-channel-auth-success", auth.getName(),
-                              auth.parent()));
-                          return new Double<>(auth.getName(), true);
-                        }))));
-
-    applicationLoader.loadApplications();
-
-    this.autoStartupHandler = new AutoStartupHandler();
-    sendGroups();
-    loadCommands();
-    loadPacketHandlers();
-
-    this.getSyncAPI().getDatabaseSyncAPI().createDatabase("internal_users");
-    if (controllerExecutorConfig.isFirstStartup()) {
-      final String token = StringUtil.generateString(2);
-      WebUser webUser =
-          new WebUser("admin", token, Collections.singletonList("*"));
-      this.getSyncAPI().getDatabaseSyncAPI().insert(
-          "internal_users", webUser.getName(), "",
-          new JsonConfiguration().add("user", webUser));
-
-      System.out.println(LanguageManager.get("setup-created-default-user",
-                                             webUser.getName(), token));
-    }
-
-    this.controllerExecutorConfig.getControllerConfig()
-        .getHttpNetworkListener()
-        .forEach(map -> map.forEach((host, port) -> {
-          this.webServer.add(host, port, this.requestListenerHandler);
-        }));
-
-    applicationLoader.enableApplications();
-
-    if (Files.exists(Paths.get("reformcloud/.client"))) {
-      try {
-        DownloadHelper.downloadAndDisconnect(StringUtil.RUNNER_DOWNLOAD_URL,
-                                             "reformcloud/.client/runner.jar");
-        Process process =
-            new ProcessBuilder()
-                .command(Arrays.asList("java", "-jar", "runner.jar")
-                             .toArray(new String[0]))
-                .directory(new File("reformcloud/.client"))
-                .start();
-        ClientManager.INSTANCE.setProcess(process);
-      } catch (final IOException ex) {
-        ex.printStackTrace();
-      }
-    }
-
-    OnlinePercentCheckerTask.start();
-
-    running = true;
-    System.out.println(LanguageManager.get(
-        "startup-done", Long.toString(System.currentTimeMillis() - current)));
-    runConsole();
-  }
-
-  @Override
-  public void reload() {
-    final long current = System.currentTimeMillis();
-    System.out.println(LanguageManager.get("runtime-try-reload"));
-
-    OnlinePercentCheckerTask
-        .stop(); // To update the config of the auto start, too
-
-    this.applicationLoader.disableApplications();
-
-    this.commandManager.unregisterAll();
-    this.packetHandler.clearHandlers();
-    this.packetHandler.getQueryHandler()
-        .clearQueries(); // Unsafe? May produce exception if query is sent but
-                         // not handled after reload
-
-    this.controllerExecutorConfig.getProcessGroups().clear();
-    this.controllerExecutorConfig.getMainGroups().clear();
-
-    this.applicationLoader.detectApplications();
-    this.applicationLoader.installApplications();
-
-    LanguageWorker.doReload(); // Reloads the language files
-
-    this.controllerExecutorConfig = new ControllerExecutorConfig();
-
-    this.autoStartupHandler.update(); // Update the automatic startup handler to
-                                      // re-sort the groups per priority
-
-    this.controllerConfig = controllerExecutorConfig.getControllerConfig();
-
-    this.applicationLoader.loadApplications();
-
-    this.sendGroups();
-    this.loadCommands();
-    this.loadPacketHandlers();
-
-    OnlinePercentCheckerTask.start();
-
-    this.applicationLoader.enableApplications();
-    System.out.println(LanguageManager.get(
-        "runtime-reload-done",
-        Long.toString(System.currentTimeMillis() - current)));
-  }
-
-  @Override
-  public void shutdown() throws Exception {
-    if (running) {
-      running = false;
-    } else {
-      return;
-    }
-
-    System.out.println(LanguageManager.get("runtime-try-shutdown"));
-
-    OnlinePercentCheckerTask.stop();
-
-    this.networkServer.closeAll(); // Close network first that all channels now
-                                   // that the controller is disconnecting
-    this.webServer.close();
-    ClientManager.INSTANCE.onShutdown();
-
-    this.loggerBase.close();
-    this.autoStartupHandler.interrupt();
-    this.applicationLoader.disableApplications();
-  }
-
-  public ControllerExecutorConfig getControllerExecutorConfig() {
-    return controllerExecutorConfig;
-  }
-
-  @Nonnull
-  public static ControllerExecutor getInstance() {
-    if (instance == null) {
-      return (ControllerExecutor)Controller.getInstance();
-    }
-
-    return instance;
-  }
-
-  @Nonnull
-  @Override
-  public SyncAPI getSyncAPI() {
-    return syncAPI;
-  }
-
-  @Nonnull
-  @Override
-  public AsyncAPI getAsyncAPI() {
-    return asyncAPI;
-  }
-
-  @Override
-  public NetworkServer getNetworkServer() {
-    return networkServer;
-  }
-
-  @Nonnull
-  @Override
-  public PacketHandler getPacketHandler() {
-    return packetHandler;
-  }
-
-  @Override
-  public CommandManager getCommandManager() {
-    return commandManager;
-  }
-
-  public RequestListenerHandler getRequestListenerHandler() {
-    return requestListenerHandler;
-  }
-
-  public LoggerBase getLoggerBase() { return loggerBase; }
-
-  public ProcessManager getProcessManager() { return processManager; }
-
-  public ControllerConfig getControllerConfig() { return controllerConfig; }
-
-  public AutoStartupHandler getAutoStartupHandler() {
-    return autoStartupHandler;
-  }
-
-  @Nonnull
-  @Override
-  public EventManager getEventManager() {
-    return eventManager;
-  }
-
-  @Override
-  public boolean isReady() {
-    return true;
-  }
-
-  private void runConsole() {
-    String line;
-
-    while (!Thread.currentThread().isInterrupted()) {
-      try {
-        loggerBase.getConsoleReader().setPrompt("");
-        loggerBase.getConsoleReader().resetPromptLine("", "", 0);
-
-        line = loggerBase.readLine();
-        while (!line.trim().isEmpty() && running) {
-          loggerBase.getConsoleReader().setPrompt("");
-          commandManager.dispatchCommand(console, AllowedCommandSources.ALL,
-                                         line, System.out::println);
-
-          line = loggerBase.readLine();
+        try {
+            if (Boolean.getBoolean("reformcloud2.disable.colours")) {
+                this.loggerBase = new DefaultLoggerHandler();
+            } else {
+                this.loggerBase = new ColouredLoggerHandler();
+            }
+        } catch (final IOException ex) {
+            ex.printStackTrace();
         }
-      } catch (final Throwable throwable) {
-        throwable.printStackTrace();
-      }
+
+        this.controllerExecutorConfig = new ControllerExecutorConfig();
+        databaseConfig.load();
+
+        switch (databaseConfig.getType()) {
+            case FILE: {
+                this.database = new FileDatabase();
+                this.databaseConfig.connect(this.database);
+                break;
+            }
+
+            case H2: {
+                this.database = new H2Database();
+                this.databaseConfig.connect(this.database);
+                break;
+            }
+
+            case MONGO: {
+                this.database = new MongoDatabase();
+                this.databaseConfig.connect(this.database);
+                break;
+            }
+
+            case MYSQL: {
+                this.database = new MySQLDatabase();
+                this.databaseConfig.connect(this.database);
+                break;
+            }
+        }
+
+        GeneralAPI generalAPI = new GeneralAPI(
+                new ApplicationAPIImplementation(this.applicationLoader),
+                new ClientAPIImplementation(),
+                new ConsoleAPIImplementation(this.commandManager),
+                new DatabaseAPIImplementation(this.database),
+                new GroupAPIImplementation(),
+                new PlayerAPIImplementation(this.processManager),
+                new PluginAPIImplementation(),
+                new ProcessAPIImplementation(this.processManager)
+        );
+        this.syncAPI = generalAPI;
+        this.asyncAPI = generalAPI;
+
+        this.requestListenerHandler = new DefaultRequestListenerHandler(new DefaultWebServerAuth(this.getSyncAPI().getDatabaseSyncAPI()));
+
+        applicationLoader.detectApplications();
+        applicationLoader.installApplications();
+
+        this.controllerConfig = controllerExecutorConfig.getControllerConfig();
+        this.controllerConfig.getNetworkListener().forEach(stringIntegerMap -> stringIntegerMap.forEach((s, integer) -> ControllerExecutor.this.networkServer.bind(s, integer, new DefaultServerAuthHandler(
+                packetHandler,
+                packetSender -> {
+                    ClientManager.INSTANCE.disconnectClient(packetSender.getName());
+                    processManager.onChannelClose(packetSender.getName());
+                },
+                packet -> {
+                    DefaultAuth auth = packet.content().get("auth", Auth.TYPE);
+                    if (auth == null) {
+                        return new Double<>("", false);
+                    }
+
+                    if (!auth.key().equals(controllerExecutorConfig.getConnectionKey())) {
+                        System.out.println(LanguageManager.get("network-channel-auth-failed", auth.getName()));
+                        return new Double<>(auth.getName(), false);
+                    }
+
+                    if (auth.type().equals(NetworkType.CLIENT)) {
+                        System.out.println(LanguageManager.get("client-connected", auth.getName()));
+                        DefaultClientRuntimeInformation runtimeInformation = auth.extra().get("info", ClientRuntimeInformation.TYPE);
+                        ClientManager.INSTANCE.connectClient(runtimeInformation);
+                    } else {
+                        ProcessInformation information = processManager.getProcess(auth.getName());
+                        if (information == null) {
+                            return new Double<>(auth.getName(), false);
+                        }
+
+                        information.getNetworkInfo().setConnected(true);
+                        information.setProcessState(ProcessState.READY);
+                        processManager.update(information);
+
+                        System.out.println(LanguageManager.get("process-connected", auth.getName(), auth.parent()));
+                    }
+
+                    System.out.println(LanguageManager.get("network-channel-auth-success", auth.getName(), auth.parent()));
+                    return new Double<>(auth.getName(), true);
+                }
+        ))));
+
+        applicationLoader.loadApplications();
+
+        this.autoStartupHandler = new AutoStartupHandler();
+        sendGroups();
+        loadCommands();
+        loadPacketHandlers();
+
+        this.getSyncAPI().getDatabaseSyncAPI().createDatabase("internal_users");
+        if (controllerExecutorConfig.isFirstStartup()) {
+            final String token = StringUtil.generateString(2);
+            WebUser webUser = new WebUser("admin", token, Collections.singletonList("*"));
+            this.getSyncAPI().getDatabaseSyncAPI().insert("internal_users", webUser.getName(), "", new JsonConfiguration().add("user", webUser));
+
+            System.out.println(LanguageManager.get("setup-created-default-user", webUser.getName(), token));
+        }
+
+        this.controllerExecutorConfig.getControllerConfig().getHttpNetworkListener().forEach(map -> map.forEach((host, port) -> {
+                this.webServer.add(host, port, this.requestListenerHandler);
+            })
+        );
+
+        applicationLoader.enableApplications();
+
+        if (Files.exists(Paths.get("reformcloud/.client"))) {
+            try {
+                DownloadHelper.downloadAndDisconnect(StringUtil.RUNNER_DOWNLOAD_URL, "reformcloud/.client/runner.jar");
+                Process process = new ProcessBuilder()
+                        .command(Arrays.asList("java", "-jar", "runner.jar").toArray(new String[0]))
+                        .directory(new File("reformcloud/.client"))
+                        .start();
+                ClientManager.INSTANCE.setProcess(process);
+            } catch (final IOException ex) {
+                ex.printStackTrace();
+            }
+        }
+
+        OnlinePercentCheckerTask.start();
+
+        running = true;
+        System.out.println(LanguageManager.get("startup-done", Long.toString(System.currentTimeMillis() - current)));
+        runConsole();
     }
-  }
 
-  private void sendGroups() {
-    this.controllerExecutorConfig.getMainGroups().forEach(
-        mainGroup
-        -> System.out.println(
-            LanguageManager.get("loading-main-group", mainGroup.getName())));
-    this.controllerExecutorConfig.getProcessGroups().forEach(
-        processGroup
-        -> System.out.println(LanguageManager.get("loading-process-group",
-                                                  processGroup.getName())));
-  }
+    @Override
+    public void reload() {
+        final long current = System.currentTimeMillis();
+        System.out.println(LanguageManager.get("runtime-try-reload"));
 
-  private void loadCommands() {
-    this.commandManager.register(new CommandDump(new DefaultDumpUtil()))
-        .register(CommandStop.class)
-        .register(new CommandReformCloud())
-        .register(new CommandReload(this))
-        .register(new CommandClear(loggerBase))
-        .register(new CommandHelp(commandManager));
-  }
+        OnlinePercentCheckerTask.stop(); // To update the config of the auto start, too
 
-  private void loadPacketHandlers() {
-    new Reflections(
-        "systems.reformcloud.reformcloud2.executor.controller.packet.in")
-        .getSubTypesOf(NetworkHandler.class)
-        .forEach(packetHandler::registerHandler);
-  }
+        this.applicationLoader.disableApplications();
+
+        this.commandManager.unregisterAll();
+        this.packetHandler.clearHandlers();
+        this.packetHandler.getQueryHandler().clearQueries(); //Unsafe? May produce exception if query is sent but not handled after reload
+
+        this.controllerExecutorConfig.getProcessGroups().clear();
+        this.controllerExecutorConfig.getMainGroups().clear();
+
+        this.applicationLoader.detectApplications();
+        this.applicationLoader.installApplications();
+
+        LanguageWorker.doReload(); //Reloads the language files
+
+        this.controllerExecutorConfig = new ControllerExecutorConfig();
+
+        this.autoStartupHandler.update(); //Update the automatic startup handler to re-sort the groups per priority
+
+        this.controllerConfig = controllerExecutorConfig.getControllerConfig();
+
+        this.applicationLoader.loadApplications();
+
+        this.sendGroups();
+        this.loadCommands();
+        this.loadPacketHandlers();
+
+        OnlinePercentCheckerTask.start();
+
+        this.applicationLoader.enableApplications();
+        System.out.println(LanguageManager.get("runtime-reload-done", Long.toString(System.currentTimeMillis() - current)));
+    }
+
+    @Override
+    public void shutdown() throws Exception {
+        if (running) {
+            running = false;
+        } else {
+            return;
+        }
+
+        System.out.println(LanguageManager.get("runtime-try-shutdown"));
+
+        OnlinePercentCheckerTask.stop();
+
+        this.networkServer.closeAll(); //Close network first that all channels now that the controller is disconnecting
+        this.webServer.close();
+        ClientManager.INSTANCE.onShutdown();
+
+        this.loggerBase.close();
+        this.autoStartupHandler.interrupt();
+        this.applicationLoader.disableApplications();
+    }
+
+    public ControllerExecutorConfig getControllerExecutorConfig() {
+        return controllerExecutorConfig;
+    }
+
+    @Nonnull
+    public static ControllerExecutor getInstance() {
+        if (instance == null) {
+            return (ControllerExecutor) Controller.getInstance();
+        }
+
+        return instance;
+    }
+
+    @Nonnull
+    @Override
+    public SyncAPI getSyncAPI() {
+        return syncAPI;
+    }
+
+    @Nonnull
+    @Override
+    public AsyncAPI getAsyncAPI() {
+        return asyncAPI;
+    }
+
+    @Override
+    public NetworkServer getNetworkServer() {
+        return networkServer;
+    }
+
+    @Nonnull
+    @Override
+    public PacketHandler getPacketHandler() {
+        return packetHandler;
+    }
+
+    @Override
+    public CommandManager getCommandManager() {
+        return commandManager;
+    }
+
+    public RequestListenerHandler getRequestListenerHandler() {
+        return requestListenerHandler;
+    }
+
+    public LoggerBase getLoggerBase() {
+        return loggerBase;
+    }
+
+    public ProcessManager getProcessManager() {
+        return processManager;
+    }
+
+    public ControllerConfig getControllerConfig() {
+        return controllerConfig;
+    }
+
+    public AutoStartupHandler getAutoStartupHandler() {
+        return autoStartupHandler;
+    }
+
+    @Nonnull
+    @Override
+    public EventManager getEventManager() {
+        return eventManager;
+    }
+
+    @Override
+    public boolean isReady() {
+        return true;
+    }
+
+    private void runConsole() {
+        String line;
+
+        while (!Thread.currentThread().isInterrupted()) {
+            try {
+                loggerBase.getConsoleReader().setPrompt("");
+                loggerBase.getConsoleReader().resetPromptLine("", "", 0);
+
+                line = loggerBase.readLine();
+                while (!line.trim().isEmpty() && running) {
+                    loggerBase.getConsoleReader().setPrompt("");
+                    commandManager.dispatchCommand(console, AllowedCommandSources.ALL, line, System.out::println);
+
+                    line = loggerBase.readLine();
+                }
+            } catch (final Throwable throwable) {
+                throwable.printStackTrace();
+            }
+        }
+    }
+
+    private void sendGroups() {
+        this.controllerExecutorConfig.getMainGroups().forEach(mainGroup -> System.out.println(LanguageManager.get("loading-main-group", mainGroup.getName())));
+        this.controllerExecutorConfig.getProcessGroups().forEach(processGroup -> System.out.println(LanguageManager.get("loading-process-group", processGroup.getName())));
+    }
+
+    private void loadCommands() {
+        this.commandManager
+                .register(new CommandDump(new DefaultDumpUtil()))
+                .register(CommandStop.class)
+                .register(new CommandReformCloud())
+                .register(new CommandReload(this))
+                .register(new CommandClear(loggerBase))
+                .register(new CommandHelp(commandManager));
+    }
+
+    private void loadPacketHandlers() {
+        new Reflections("systems.reformcloud.reformcloud2.executor.controller.packet.in").getSubTypesOf(NetworkHandler.class).forEach(packetHandler::registerHandler);
+    }
 }

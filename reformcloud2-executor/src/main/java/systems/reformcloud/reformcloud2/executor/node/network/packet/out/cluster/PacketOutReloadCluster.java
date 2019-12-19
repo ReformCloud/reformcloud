@@ -6,7 +6,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Defau
 
 public class PacketOutReloadCluster extends DefaultPacket {
 
-  public PacketOutReloadCluster() {
-    super(NetworkUtil.NODE_TO_NODE_BUS + 2, new JsonConfiguration());
-  }
+    public PacketOutReloadCluster() {
+        super(NetworkUtil.NODE_TO_NODE_BUS + 2, new JsonConfiguration());
+    }
 }

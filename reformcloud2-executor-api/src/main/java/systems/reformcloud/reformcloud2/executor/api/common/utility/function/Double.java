@@ -5,29 +5,28 @@ import javax.annotation.Nullable;
 
 public final class Double<F, S> {
 
-  public Double(@Nonnull F first, @Nullable S second) {
-    this.first = first;
-    this.second = second;
-  }
+    public Double(@Nonnull F first, @Nullable S second) {
+        this.first = first;
+        this.second = second;
+    }
 
-  private final F first;
+    private final F first;
 
-  private final S second;
+    private final S second;
 
-  /**
-   * @return The key of this pair
-   */
-  @Nonnull
-  public F getFirst() {
-    return first;
-  }
+    /**
+     * @return The key of this pair
+     */
+    @Nonnull
+    public F getFirst() {
+        return first;
+    }
 
-  /**
-   * @return The value of the this pair or {@code null} if the value is
-   *     undefined
-   */
-  @Nullable
-  public S getSecond() {
-    return second;
-  }
+    /**
+     * @return The value of the this pair or {@code null} if the value is undefined
+     */
+    @Nullable
+    public S getSecond() {
+        return second;
+    }
 }

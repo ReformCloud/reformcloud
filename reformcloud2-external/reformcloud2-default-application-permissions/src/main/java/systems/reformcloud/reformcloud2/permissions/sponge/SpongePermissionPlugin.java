@@ -14,27 +14,31 @@ import systems.reformcloud.reformcloud2.permissions.packets.PacketHelper;
 import systems.reformcloud.reformcloud2.permissions.sponge.listener.SpongePermissionListener;
 import systems.reformcloud.reformcloud2.permissions.sponge.service.SpongePermissionService;
 
-@Plugin(id = "reformcloud_2_perms", name = "SpongePermissionPlugin",
-        version = "2", description = "The reformcloud permission plugin",
-        authors = {"derklaro"}, url = "https://reformcloud.systems",
-        dependencies = { @Dependency(id = "reformcloud_2_api_executor") })
+@Plugin(
+        id = "reformcloud_2_perms",
+        name = "SpongePermissionPlugin",
+        version = "2",
+        description = "The reformcloud permission plugin",
+        authors = {"derklaro"},
+        url = "https://reformcloud.systems",
+        dependencies = {@Dependency(id = "reformcloud_2_api_executor")}
+)
 public class SpongePermissionPlugin {
 
-  @Inject private ServiceManager serviceManager;
+    @Inject
+    private ServiceManager serviceManager;
 
-  @Listener
-  public void handle(final GameStartedServerEvent event) {
-    PermissionAPI.handshake();
-    PacketHelper.addAPIPackets();
-    serviceManager.setProvider(this, PermissionService.class,
-                               new SpongePermissionService());
+    @Listener
+    public void handle(final GameStartedServerEvent event) {
+        PermissionAPI.handshake();
+        PacketHelper.addAPIPackets();
+        serviceManager.setProvider(this, PermissionService.class, new SpongePermissionService());
 
-    Sponge.getEventManager().registerListeners(this,
-                                               new SpongePermissionListener());
-  }
+        Sponge.getEventManager().registerListeners(this, new SpongePermissionListener());
+    }
 
-  @Listener
-  public void handle(final GameStoppingServerEvent event) {
-    PacketHelper.unregisterAPIPackets();
-  }
+    @Listener
+    public void handle(final GameStoppingServerEvent event) {
+        PacketHelper.unregisterAPIPackets();
+    }
 }

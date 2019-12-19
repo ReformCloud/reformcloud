@@ -7,25 +7,18 @@ import systems.reformcloud.reformcloud2.executor.api.common.plugins.basic.Defaul
 
 public final class NodePluginAction extends DefaultPacket {
 
-  public NodePluginAction(Action action, String process,
-                          DefaultInstallablePlugin plugin) {
-    super(47, new JsonConfiguration()
-                  .add("action", action)
-                  .add("process", process)
-                  .add("installable", plugin));
-  }
+    public NodePluginAction(Action action, String process, DefaultInstallablePlugin plugin) {
+        super(47, new JsonConfiguration().add("action", action).add("process", process).add("installable", plugin));
+    }
 
-  public NodePluginAction(Action action, String process, DefaultPlugin plugin) {
-    super(47, new JsonConfiguration()
-                  .add("action", action)
-                  .add("process", process)
-                  .add("plugin", plugin));
-  }
+    public NodePluginAction(Action action, String process, DefaultPlugin plugin) {
+        super(47, new JsonConfiguration().add("action", action).add("process", process).add("plugin", plugin));
+    }
 
-  public enum Action {
+    public enum Action {
 
-    INSTALL,
+        INSTALL,
 
-    UNINSTALL
-  }
+        UNINSTALL
+    }
 }

@@ -6,8 +6,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Defau
 
 public final class ExternalAPIPacketOutDeleteMainGroup extends DefaultPacket {
 
-  public ExternalAPIPacketOutDeleteMainGroup(String name) {
-    super(ExternalAPIImplementation.EXTERNAL_PACKET_ID + 22,
-          new JsonConfiguration().add("name", name));
-  }
+    public ExternalAPIPacketOutDeleteMainGroup(String name) {
+        super(ExternalAPIImplementation.EXTERNAL_PACKET_ID + 22, new JsonConfiguration().add("name", name));
+    }
 }

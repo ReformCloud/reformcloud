@@ -5,21 +5,21 @@ import systems.reformcloud.reformcloud2.executor.api.common.utility.optional.Ref
 
 public interface RunningProcess {
 
-  long getStartupTime();
+    long getStartupTime();
 
-  RunningProcess prepare();
+    RunningProcess prepare();
 
-  boolean bootstrap();
+    boolean bootstrap();
 
-  boolean shutdown();
+    boolean shutdown();
 
-  boolean sendCommand(String command);
+    boolean sendCommand(String command);
 
-  boolean running();
+    boolean running();
 
-  void copy();
+    void copy();
 
-  ReferencedOptional<Process> getProcess();
+    ReferencedOptional<Process> getProcess();
 
-  ProcessInformation getProcessInformation();
+    ProcessInformation getProcessInformation();
 }

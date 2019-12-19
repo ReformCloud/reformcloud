@@ -1,7 +1,5 @@
 package systems.reformcloud.reformcloud2.executor.node.network.packet.in.player;
 
-import java.util.UUID;
-import java.util.function.Consumer;
 import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.PlayerLogoutEvent;
 import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
 import systems.reformcloud.reformcloud2.executor.api.common.network.NetworkUtil;
@@ -13,26 +11,30 @@ import systems.reformcloud.reformcloud2.executor.controller.packet.out.event.Con
 import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
 import systems.reformcloud.reformcloud2.executor.node.cluster.sync.DefaultClusterSyncManager;
 
+import java.util.UUID;
+import java.util.function.Consumer;
+
 public final class PacketInAPILogoutPlayer implements NetworkHandler {
 
-  @Override
-  public int getHandlingPacketID() {
-    return NetworkUtil.PLAYER_INFORMATION_BUS + 3;
-  }
+    @Override
+    public int getHandlingPacketID() {
+        return NetworkUtil.PLAYER_INFORMATION_BUS + 3;
+    }
 
-  @Override
-  public void handlePacket(PacketSender packetSender, Packet packet,
-                           Consumer<Packet> responses) {
-    UUID uuid = packet.content().get("uuid", UUID.class);
-    String name = packet.content().getString("name");
+    @Override
+    public void handlePacket(PacketSender packetSender, Packet packet, Consumer<Packet> responses) {
+        UUID uuid = packet.content().get("uuid", UUID.class);
+        String name = packet.content().getString("name");
 
-    OnlyProxyJoinHelper.onDisconnect(uuid);
-    System.out.println(LanguageManager.get("player-logged-out", name, uuid,
-                                           packetSender.getName()));
+        OnlyProxyJoinHelper.onDisconnect(uuid);
+        System.out.println(LanguageManager.get(
+                "player-logged-out",
+                name,
+                uuid,
+                packetSender.getName()
+        ));
 
-    NodeExecutor.getInstance().getEventManager().callEvent(
-        new PlayerLogoutEvent(name, uuid));
-    DefaultClusterSyncManager.sendToAllExcludedNodes(
-        new ControllerEventLogoutPlayer(name, uuid));
-  }
+        NodeExecutor.getInstance().getEventManager().callEvent(new PlayerLogoutEvent(name, uuid));
+        DefaultClusterSyncManager.sendToAllExcludedNodes(new ControllerEventLogoutPlayer(name, uuid));
+    }
 }
