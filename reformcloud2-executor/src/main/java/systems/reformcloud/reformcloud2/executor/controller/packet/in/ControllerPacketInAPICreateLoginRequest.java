@@ -1,27 +1,26 @@
 package systems.reformcloud.reformcloud2.executor.controller.packet.in;
 
-import java.util.UUID;
-import java.util.function.Consumer;
 import systems.reformcloud.reformcloud2.executor.api.common.network.NetworkUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.handler.NetworkHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.api.common.process.join.OnlyProxyJoinHelper;
 
-public final class ControllerPacketInAPICreateLoginRequest
-    implements NetworkHandler {
+import java.util.UUID;
+import java.util.function.Consumer;
 
-  @Override
-  public int getHandlingPacketID() {
-    return NetworkUtil.PLAYER_INFORMATION_BUS + 1;
-  }
+public final class ControllerPacketInAPICreateLoginRequest implements NetworkHandler {
 
-  @Override
-  public void handlePacket(PacketSender packetSender, Packet packet,
-                           Consumer<Packet> responses) {
-    UUID uuid = packet.content().get("uniqueID", UUID.class);
-    String name = packet.content().getString("name");
+    @Override
+    public int getHandlingPacketID() {
+        return NetworkUtil.PLAYER_INFORMATION_BUS + 1;
+    }
 
-    OnlyProxyJoinHelper.createRequest(uuid, name);
-  }
+    @Override
+    public void handlePacket(PacketSender packetSender, Packet packet, Consumer<Packet> responses) {
+        UUID uuid = packet.content().get("uniqueID", UUID.class);
+        String name = packet.content().getString("name");
+
+        OnlyProxyJoinHelper.createRequest(uuid, name);
+    }
 }

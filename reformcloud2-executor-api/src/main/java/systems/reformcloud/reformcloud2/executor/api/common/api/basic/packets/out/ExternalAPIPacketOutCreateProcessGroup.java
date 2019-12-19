@@ -5,11 +5,9 @@ import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonCo
 import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.DefaultPacket;
 
-public final class ExternalAPIPacketOutCreateProcessGroup
-    extends DefaultPacket {
+public final class ExternalAPIPacketOutCreateProcessGroup extends DefaultPacket {
 
-  public ExternalAPIPacketOutCreateProcessGroup(ProcessGroup group) {
-    super(ExternalAPIImplementation.EXTERNAL_PACKET_ID + 17,
-          new JsonConfiguration().add("group", group));
-  }
+    public ExternalAPIPacketOutCreateProcessGroup(ProcessGroup group) {
+        super(ExternalAPIImplementation.EXTERNAL_PACKET_ID + 17, new JsonConfiguration().add("group", group));
+    }
 }

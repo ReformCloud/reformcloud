@@ -6,8 +6,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Defau
 
 public final class ExternalAPIPacketOutGetPlugins extends DefaultPacket {
 
-  public ExternalAPIPacketOutGetPlugins(String process) {
-    super(ExternalAPIImplementation.EXTERNAL_PACKET_ID + 30,
-          new JsonConfiguration().add("process", process));
-  }
+    public ExternalAPIPacketOutGetPlugins(String process) {
+        super(ExternalAPIImplementation.EXTERNAL_PACKET_ID + 30, new JsonConfiguration().add("process", process));
+    }
 }

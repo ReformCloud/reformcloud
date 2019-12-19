@@ -1,39 +1,38 @@
 package systems.reformcloud.reformcloud2.executor.api.common.application.basic;
 
-import javax.annotation.Nonnull;
 import systems.reformcloud.reformcloud2.executor.api.common.application.ApplicationLoader;
 import systems.reformcloud.reformcloud2.executor.api.common.application.InstallableApplication;
 
-public final class DefaultInstallableApplication
-    implements InstallableApplication {
+import javax.annotation.Nonnull;
 
-  public DefaultInstallableApplication(String url, ApplicationLoader loader,
-                                       String name) {
-    this.url = url;
-    this.loader = loader;
-    this.name = name;
-  }
+public final class DefaultInstallableApplication implements InstallableApplication {
 
-  private String url;
+    public DefaultInstallableApplication(String url, ApplicationLoader loader, String name) {
+        this.url = url;
+        this.loader = loader;
+        this.name = name;
+    }
 
-  private ApplicationLoader loader;
+    private String url;
 
-  private String name;
+    private ApplicationLoader loader;
 
-  @Nonnull
-  @Override
-  public String url() {
-    return url;
-  }
+    private String name;
 
-  @Override
-  public ApplicationLoader loader() {
-    return loader;
-  }
+    @Nonnull
+    @Override
+    public String url() {
+        return url;
+    }
 
-  @Nonnull
-  @Override
-  public String getName() {
-    return name;
-  }
+    @Override
+    public ApplicationLoader loader() {
+        return loader;
+    }
+
+    @Nonnull
+    @Override
+    public String getName() {
+        return name;
+    }
 }

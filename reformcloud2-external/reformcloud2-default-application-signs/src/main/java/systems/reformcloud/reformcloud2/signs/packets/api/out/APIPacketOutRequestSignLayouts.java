@@ -6,7 +6,7 @@ import systems.reformcloud.reformcloud2.signs.packets.PacketUtil;
 
 public class APIPacketOutRequestSignLayouts extends DefaultPacket {
 
-  public APIPacketOutRequestSignLayouts() {
-    super(PacketUtil.SIGN_BUS + 3, new JsonConfiguration());
-  }
+    public APIPacketOutRequestSignLayouts() {
+        super(PacketUtil.SIGN_BUS + 3, new JsonConfiguration());
+    }
 }

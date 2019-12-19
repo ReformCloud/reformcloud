@@ -2,10 +2,6 @@ package systems.reformcloud.reformcloud2.commands.plugin.velocity.commands;
 
 import com.velocitypowered.api.command.Command;
 import com.velocitypowered.api.command.CommandSource;
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-import javax.annotation.Nonnull;
 import net.kyori.text.TextComponent;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import systems.reformcloud.reformcloud2.executor.api.common.CommonHelper;
@@ -15,196 +11,151 @@ import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
 import systems.reformcloud.reformcloud2.executor.api.velocity.VelocityExecutor;
 
+import javax.annotation.Nonnull;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
 public class CommandReformCloud implements Command {
 
-  public CommandReformCloud(@Nonnull List<String> aliases) {
-    this.aliases = aliases;
-  }
-
-  private final List<String> aliases;
-
-  @Override
-  public void execute(CommandSource commandSender, @NonNull String[] strings) {
-    final String prefix =
-        VelocityExecutor.getInstance().getMessages().getPrefix() + " ";
-
-    if (strings.length == 1 && strings[0].equalsIgnoreCase("list")) {
-      ExecutorAPI.getInstance()
-          .getSyncAPI()
-          .getProcessSyncAPI()
-          .getAllProcesses()
-          .forEach(e
-                   -> commandSender.sendMessage(TextComponent.of(
-                       "=> " + e.getName() +
-                       "/ Display: " + e.getDisplayName() + "/ UniqueID: " +
-                       e.getProcessUniqueID() + "/ Parent: " + e.getParent() +
-                       "/ Connected: " + e.getNetworkInfo().isConnected())));
-      return;
+    public CommandReformCloud(@Nonnull List<String> aliases) {
+        this.aliases = aliases;
     }
 
-    if (strings.length == 2) {
-      switch (strings[0].toLowerCase()) {
-      case "start": {
-        ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().startProcess(
-            strings[1]);
-        commandSender.sendMessage(getCommandSuccessMessage());
-        return;
-      }
+    private final List<String> aliases;
 
-      case "stop": {
-        ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().stopProcess(
-            strings[1]);
-        commandSender.sendMessage(getCommandSuccessMessage());
-        return;
-      }
+    @Override
+    public void execute(CommandSource commandSender, @NonNull String[] strings) {
+        final String prefix = VelocityExecutor.getInstance().getMessages().getPrefix() + " ";
 
-      case "stopall": {
-        ExecutorAPI.getInstance()
-            .getSyncAPI()
-            .getProcessSyncAPI()
-            .getProcesses(strings[1])
-            .forEach(e
-                     -> ExecutorAPI.getInstance()
-                            .getSyncAPI()
-                            .getProcessSyncAPI()
-                            .stopProcess(e.getName()));
-        commandSender.sendMessage(getCommandSuccessMessage());
-        return;
-      }
-
-      case "maintenance": {
-        ProcessGroup processGroup = ExecutorAPI.getInstance()
-                                        .getSyncAPI()
-                                        .getGroupSyncAPI()
-                                        .getProcessGroup(strings[1]);
-        if (processGroup == null) {
-          commandSender.sendMessage(
-              TextComponent.of(prefix + "§cThis group is unknown"));
-          return;
-        }
-
-        processGroup.getPlayerAccessConfiguration().toggleMaintenance();
-        ExecutorAPI.getInstance()
-            .getSyncAPI()
-            .getGroupSyncAPI()
-            .updateProcessGroup(processGroup);
-        commandSender.sendMessage(getCommandSuccessMessage());
-        return;
-      }
-      }
-    }
-
-    if (strings.length == 3) {
-      switch (strings[0].toLowerCase()) {
-      case "start": {
-        Integer count = CommonHelper.fromString(strings[2]);
-        if (count == null || count <= 0) {
-          count = 1;
-        }
-
-        if (count == 1) {
-          ExecutorAPI.getInstance()
-              .getSyncAPI()
-              .getProcessSyncAPI()
-              .startProcess(strings[1]);
-        } else {
-          for (int started = 1; started <= count; started++) {
-            ExecutorAPI.getInstance()
-                .getSyncAPI()
-                .getProcessSyncAPI()
-                .startProcess(strings[1]);
-            AbsoluteThread.sleep(TimeUnit.MILLISECONDS, 20);
-          }
-        }
-
-        commandSender.sendMessage(getCommandSuccessMessage());
-        return;
-      }
-
-      case "ofall": {
-        if (strings[2].equalsIgnoreCase("stop")) {
-          MainGroup mainGroup = ExecutorAPI.getInstance()
-                                    .getSyncAPI()
-                                    .getGroupSyncAPI()
-                                    .getMainGroup(strings[1]);
-          if (mainGroup == null) {
-            commandSender.sendMessage(
-                TextComponent.of(prefix + "§cThis main group is unknown"));
+        if (strings.length == 1 && strings[0].equalsIgnoreCase("list")) {
+            ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getAllProcesses().forEach(e -> commandSender.sendMessage(TextComponent.of(
+                    "=> " + e.getName()
+                            + "/ Display: " + e.getDisplayName()
+                            + "/ UniqueID: " + e.getProcessUniqueID()
+                            + "/ Parent: " + e.getParent()
+                            + "/ Connected: " + e.getNetworkInfo().isConnected()
+            )));
             return;
-          }
+        }
 
-          mainGroup.getSubGroups().forEach(s -> {
-            ProcessGroup processGroup = ExecutorAPI.getInstance()
-                                            .getSyncAPI()
-                                            .getGroupSyncAPI()
-                                            .getProcessGroup(s);
-            if (processGroup == null) {
-              return;
+        if (strings.length == 2) {
+            switch (strings[0].toLowerCase()) {
+                case "start": {
+                    ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().startProcess(strings[1]);
+                    commandSender.sendMessage(getCommandSuccessMessage());
+                    return;
+                }
+
+                case "stop": {
+                    ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().stopProcess(strings[1]);
+                    commandSender.sendMessage(getCommandSuccessMessage());
+                    return;
+                }
+
+                case "stopall": {
+                    ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcesses(strings[1]).forEach(e -> ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().stopProcess(e.getName()));
+                    commandSender.sendMessage(getCommandSuccessMessage());
+                    return;
+                }
+
+                case "maintenance": {
+                    ProcessGroup processGroup = ExecutorAPI.getInstance().getSyncAPI().getGroupSyncAPI().getProcessGroup(strings[1]);
+                    if (processGroup == null) {
+                        commandSender.sendMessage(TextComponent.of(prefix + "§cThis group is unknown"));
+                        return;
+                    }
+
+                    processGroup.getPlayerAccessConfiguration().toggleMaintenance();
+                    ExecutorAPI.getInstance().getSyncAPI().getGroupSyncAPI().updateProcessGroup(processGroup);
+                    commandSender.sendMessage(getCommandSuccessMessage());
+                    return;
+                }
+            }
+        }
+
+        if (strings.length == 3) {
+            switch (strings[0].toLowerCase()) {
+                case "start": {
+                    Integer count = CommonHelper.fromString(strings[2]);
+                    if (count == null || count <= 0) {
+                        count = 1;
+                    }
+
+                    if (count == 1) {
+                        ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().startProcess(strings[1]);
+                    } else {
+                        for (int started = 1; started <= count; started++) {
+                            ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().startProcess(strings[1]);
+                            AbsoluteThread.sleep(TimeUnit.MILLISECONDS, 20);
+                        }
+                    }
+
+                    commandSender.sendMessage(getCommandSuccessMessage());
+                    return;
+                }
+
+                case "ofall": {
+                    if (strings[2].equalsIgnoreCase("stop")) {
+                        MainGroup mainGroup = ExecutorAPI.getInstance().getSyncAPI().getGroupSyncAPI().getMainGroup(strings[1]);
+                        if (mainGroup == null) {
+                            commandSender.sendMessage(TextComponent.of(prefix + "§cThis main group is unknown"));
+                            return;
+                        }
+
+                        mainGroup.getSubGroups().forEach(s -> {
+                            ProcessGroup processGroup = ExecutorAPI.getInstance().getSyncAPI().getGroupSyncAPI().getProcessGroup(s);
+                            if (processGroup == null) {
+                                return;
+                            }
+
+                            ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcesses(processGroup.getName()).forEach(processInformation -> {
+                                ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().stopProcess(processInformation.getProcessUniqueID());
+                                AbsoluteThread.sleep(TimeUnit.MILLISECONDS, 10);
+                            });
+                        });
+                        commandSender.sendMessage(getCommandSuccessMessage());
+                        return;
+                    }
+                    break;
+                }
+            }
+        }
+
+        if (strings.length >= 3 && strings[0].equalsIgnoreCase("execute")) {
+            StringBuilder stringBuilder = new StringBuilder();
+            for (String s : Arrays.copyOfRange(strings, 2, strings.length)) {
+                stringBuilder.append(s).append(" ");
             }
 
-            ExecutorAPI.getInstance()
-                .getSyncAPI()
-                .getProcessSyncAPI()
-                .getProcesses(processGroup.getName())
-                .forEach(processInformation -> {
-                  ExecutorAPI.getInstance()
-                      .getSyncAPI()
-                      .getProcessSyncAPI()
-                      .stopProcess(processInformation.getProcessUniqueID());
-                  AbsoluteThread.sleep(TimeUnit.MILLISECONDS, 10);
-                });
-          });
-          commandSender.sendMessage(getCommandSuccessMessage());
-          return;
+            ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().executeProcessCommand(strings[1], stringBuilder.toString());
+            commandSender.sendMessage(getCommandSuccessMessage());
+            return;
         }
-        break;
-      }
-      }
+
+        commandSender.sendMessage(TextComponent.of(prefix + "§7/rc list"));
+        commandSender.sendMessage(TextComponent.of(prefix + "§7/rc start <group>"));
+        commandSender.sendMessage(TextComponent.of(prefix + "§7/rc start <group> <count>"));
+        commandSender.sendMessage(TextComponent.of(prefix + "§7/rc stop <name>"));
+        commandSender.sendMessage(TextComponent.of(prefix + "§7/rc stopall <group>"));
+        commandSender.sendMessage(TextComponent.of(prefix + "§7/rc ofall <mainGroup> stop"));
+        commandSender.sendMessage(TextComponent.of(prefix + "§7/rc execute <name> <command>"));
+        commandSender.sendMessage(TextComponent.of(prefix + "§7/rc maintenance <group>"));
     }
 
-    if (strings.length >= 3 && strings[0].equalsIgnoreCase("execute")) {
-      StringBuilder stringBuilder = new StringBuilder();
-      for (String s : Arrays.copyOfRange(strings, 2, strings.length)) {
-        stringBuilder.append(s).append(" ");
-      }
-
-      ExecutorAPI.getInstance()
-          .getSyncAPI()
-          .getProcessSyncAPI()
-          .executeProcessCommand(strings[1], stringBuilder.toString());
-      commandSender.sendMessage(getCommandSuccessMessage());
-      return;
+    private TextComponent getCommandSuccessMessage() {
+        String message = VelocityExecutor.getInstance().getMessages().getCommandExecuteSuccess();
+        message = VelocityExecutor.getInstance().getMessages().format(message);
+        return TextComponent.of(message);
     }
 
-    commandSender.sendMessage(TextComponent.of(prefix + "§7/rc list"));
-    commandSender.sendMessage(TextComponent.of(prefix + "§7/rc start <group>"));
-    commandSender.sendMessage(
-        TextComponent.of(prefix + "§7/rc start <group> <count>"));
-    commandSender.sendMessage(TextComponent.of(prefix + "§7/rc stop <name>"));
-    commandSender.sendMessage(
-        TextComponent.of(prefix + "§7/rc stopall <group>"));
-    commandSender.sendMessage(
-        TextComponent.of(prefix + "§7/rc ofall <mainGroup> stop"));
-    commandSender.sendMessage(
-        TextComponent.of(prefix + "§7/rc execute <name> <command>"));
-    commandSender.sendMessage(
-        TextComponent.of(prefix + "§7/rc maintenance <group>"));
-  }
+    @Nonnull
+    public List<String> getAliases() {
+        return aliases;
+    }
 
-  private TextComponent getCommandSuccessMessage() {
-    String message =
-        VelocityExecutor.getInstance().getMessages().getCommandExecuteSuccess();
-    message = VelocityExecutor.getInstance().getMessages().format(message);
-    return TextComponent.of(message);
-  }
-
-  @Nonnull
-  public List<String> getAliases() {
-    return aliases;
-  }
-
-  @Override
-  public boolean hasPermission(CommandSource source, @NonNull String[] args) {
-    return source.hasPermission("reformcloud.command.reformcloud");
-  }
+    @Override
+    public boolean hasPermission(CommandSource source, @NonNull String[] args) {
+        return source.hasPermission("reformcloud.command.reformcloud");
+    }
 }

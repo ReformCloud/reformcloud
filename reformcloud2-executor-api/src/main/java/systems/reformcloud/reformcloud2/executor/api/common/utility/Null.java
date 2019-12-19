@@ -1,8 +1,9 @@
 package systems.reformcloud.reformcloud2.executor.api.common.utility;
 
+import systems.reformcloud.reformcloud2.executor.api.common.utility.system.SystemHelper;
+
 import java.io.File;
 import java.nio.file.Paths;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.system.SystemHelper;
 
 /**
  * @deprecated May get replaced by another impl
@@ -10,14 +11,17 @@ import systems.reformcloud.reformcloud2.executor.api.common.utility.system.Syste
 @Deprecated
 public class Null {
 
-  private Null() { throw new UnsupportedOperationException(); }
+    private Null() {
+        throw new UnsupportedOperationException();
+    }
 
-  static {
-    SystemHelper.createDirectory(Paths.get("reformcloud/.bin/dev/null"));
-  }
+    static {
+        SystemHelper.createDirectory(Paths.get("reformcloud/.bin/dev/null"));
+    }
 
-  private static final String DEV_NULL =
-      new File("reformcloud/.bin/dev/null").getAbsolutePath();
+    private static final String DEV_NULL = new File("reformcloud/.bin/dev/null").getAbsolutePath();
 
-  public static String devNull() { return DEV_NULL; }
+    public static String devNull() {
+        return DEV_NULL;
+    }
 }

@@ -1,9 +1,5 @@
 package systems.reformcloud.reformcloud2.executor.api.sponge;
 
-import java.io.File;
-import java.util.UUID;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.effect.sound.SoundType;
 import org.spongepowered.api.entity.living.player.Player;
@@ -38,197 +34,193 @@ import systems.reformcloud.reformcloud2.executor.api.packets.in.APIPacketInAPIAc
 import systems.reformcloud.reformcloud2.executor.api.packets.out.APIBungeePacketOutRequestIngameMessages;
 import systems.reformcloud.reformcloud2.executor.api.sponge.event.PlayerListenerHandler;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.io.File;
+import java.util.UUID;
+
 public class SpongeExecutor extends API implements PlayerAPIExecutor {
 
-  private static SpongeExecutor instance;
+    private static SpongeExecutor instance;
 
-  private final PacketHandler packetHandler = new DefaultPacketHandler();
+    private final PacketHandler packetHandler = new DefaultPacketHandler();
 
-  private final NetworkClient networkClient = new DefaultNetworkClient();
+    private final NetworkClient networkClient = new DefaultNetworkClient();
 
-  private final SpongeLauncher plugin;
+    private final SpongeLauncher plugin;
 
-  private IngameMessages messages = new IngameMessages();
+    private IngameMessages messages = new IngameMessages();
 
-  private ProcessInformation thisProcessInformation;
+    private ProcessInformation thisProcessInformation;
 
-  SpongeExecutor(SpongeLauncher launcher) {
-    super.type = ExecutorType.API;
+    SpongeExecutor(SpongeLauncher launcher) {
+        super.type = ExecutorType.API;
 
-    this.plugin = launcher;
-    instance = this;
+        this.plugin = launcher;
+        instance = this;
 
-    packetHandler.registerHandler(new APIPacketInAPIAction(this));
+        packetHandler.registerHandler(new APIPacketInAPIAction(this));
 
-    new ExternalEventBusHandler(packetHandler, new DefaultEventManager());
-    getEventManager().registerListener(this);
-    Sponge.getEventManager().registerListeners(launcher,
-                                               new PlayerListenerHandler());
+        new ExternalEventBusHandler(packetHandler, new DefaultEventManager());
+        getEventManager().registerListener(this);
+        Sponge.getEventManager().registerListeners(launcher, new PlayerListenerHandler());
 
-    String connectionKey =
-        JsonConfiguration.read("reformcloud/.connection/key.json")
-            .getString("key");
-    SystemHelper.deleteFile(new File("reformcloud/.connection/key.json"));
-    JsonConfiguration connectionConfig =
-        JsonConfiguration.read("reformcloud/.connection/connection.json");
+        String connectionKey = JsonConfiguration.read("reformcloud/.connection/key.json").getString("key");
+        SystemHelper.deleteFile(new File("reformcloud/.connection/key.json"));
+        JsonConfiguration connectionConfig = JsonConfiguration.read("reformcloud/.connection/connection.json");
 
-    ProcessInformation startInfo = this.thisProcessInformation =
-        connectionConfig.get("startInfo", ProcessInformation.TYPE);
+        ProcessInformation startInfo = this.thisProcessInformation = connectionConfig.get("startInfo", ProcessInformation.TYPE);
 
-    this.networkClient.connect(
-        connectionConfig.getString("controller-host"),
-        connectionConfig.getInteger("controller-port"),
-        new DefaultAuth(connectionKey, startInfo.getParent(),
-                        NetworkType.PROCESS, startInfo.getName(),
-                        new JsonConfiguration()),
-        networkChannelReader);
-    ExecutorAPI.setInstance(this);
-    awaitConnectionAndUpdate();
-  }
-
-  public IngameMessages getMessages() { return messages; }
-
-  @Override
-  public ProcessInformation getThisProcessInformation() {
-    return thisProcessInformation;
-  }
-
-  @Override
-  public PacketHandler packetHandler() {
-    return packetHandler;
-  }
-
-  @Nonnull
-  @Override
-  public EventManager getEventManager() {
-    return ExternalEventBusHandler.getInstance().getEventManager();
-  }
-
-  @Nonnull
-  public NetworkClient getNetworkClient() {
-    return networkClient;
-  }
-
-  @Nonnull
-  public SpongeLauncher getPlugin() {
-    return plugin;
-  }
-
-  @Nonnull
-  public static SpongeExecutor getInstance() {
-    return instance;
-  }
-
-  public void setThisProcessInformation(
-      @Nonnull ProcessInformation thisProcessInformation) {
-    this.thisProcessInformation = thisProcessInformation;
-  }
-
-  @Listener
-  public void handleThisUpdate(final ProcessUpdatedEvent event) {
-    if (event.getProcessInformation().getProcessUniqueID().equals(
-            thisProcessInformation.getProcessUniqueID())) {
-      thisProcessInformation = event.getProcessInformation();
+        this.networkClient.connect(
+                connectionConfig.getString("controller-host"),
+                connectionConfig.getInteger("controller-port"),
+                new DefaultAuth(
+                        connectionKey,
+                        startInfo.getParent(),
+                        NetworkType.PROCESS,
+                        startInfo.getName(),
+                        new JsonConfiguration()
+                ), networkChannelReader
+        );
+        ExecutorAPI.setInstance(this);
+        awaitConnectionAndUpdate();
     }
-  }
 
-  private void awaitConnectionAndUpdate() {
-    Task.EXECUTOR.execute(() -> {
-      PacketSender packetSender =
-          DefaultChannelManager.INSTANCE.get("Controller").orElse(null);
-      while (packetSender == null) {
-        packetSender =
-            DefaultChannelManager.INSTANCE.get("Controller").orElse(null);
-        AbsoluteThread.sleep(100);
-      }
+    public IngameMessages getMessages() {
+        return messages;
+    }
 
-      thisProcessInformation.updateMaxPlayers(
-          Sponge.getServer().getMaxPlayers());
-      thisProcessInformation.updateRuntimeInformation();
-      ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(
-          thisProcessInformation);
+    @Override
+    public ProcessInformation getThisProcessInformation() {
+        return thisProcessInformation;
+    }
 
-      DefaultChannelManager.INSTANCE.get("Controller")
-          .ifPresent(controller
-                     -> packetHandler.getQueryHandler()
-                            .sendQueryAsync(
-                                controller,
-                                new APIBungeePacketOutRequestIngameMessages())
-                            .onComplete(packet -> {
-                              SpongeExecutor.this.messages =
-                                  packet.content().get("messages",
-                                                       IngameMessages.TYPE);
-                            }));
-    });
-  }
+    @Override
+    public PacketHandler packetHandler() {
+        return packetHandler;
+    }
 
-  @Override
-  public void executeSendMessage(UUID player, String message) {
-    Sponge.getServer().getPlayer(player).ifPresent(
-        e -> e.sendMessage(Text.of(message)));
-  }
+    @Nonnull
+    @Override
+    public EventManager getEventManager() {
+        return ExternalEventBusHandler.getInstance().getEventManager();
+    }
 
-  @Override
-  public void executeKickPlayer(UUID player, String message) {
-    Sponge.getServer().getPlayer(player).ifPresent(
-        e -> e.kick(Text.of(message)));
-  }
+    @Nonnull
+    public NetworkClient getNetworkClient() {
+        return networkClient;
+    }
 
-  @Override
-  public void executePlaySound(UUID player, String sound, float f1, float f2) {
-    Sponge.getServer().getPlayer(player).ifPresent(e -> {
-      try {
-        SoundType soundType = SoundType.of(sound);
-        e.playSound(soundType, e.getLocation().getPosition(), f1, f2);
-      } catch (final Throwable ignored) {
-      }
-    });
-  }
+    @Nonnull
+    public SpongeLauncher getPlugin() {
+        return plugin;
+    }
 
-  @Override
-  public void executeSendTitle(UUID player, String title, String subTitle,
-                               int fadeIn, int stay, int fadeOut) {
-    Sponge.getServer().getPlayer(player).ifPresent(
-        e
-        -> e.sendTitle(Title.CLEAR.toBuilder()
-                           .title(Text.of(title))
-                           .subtitle(Text.of(subTitle))
-                           .fadeIn(fadeIn)
-                           .stay(stay)
-                           .fadeOut(fadeOut)
-                           .build()));
-  }
+    @Nonnull
+    public static SpongeExecutor getInstance() {
+        return instance;
+    }
 
-  @Override
-  public void executePlayEffect(UUID player, String entityEffect) {}
+    public void setThisProcessInformation(@Nonnull ProcessInformation thisProcessInformation) {
+        this.thisProcessInformation = thisProcessInformation;
+    }
 
-  @Override
-  public <T> void executePlayEffect(UUID player, String effect,
-                                    @Nullable T data) {}
+    @Listener
+    public void handleThisUpdate(final ProcessUpdatedEvent event) {
+        if (event.getProcessInformation().getProcessUniqueID().equals(thisProcessInformation.getProcessUniqueID())) {
+            thisProcessInformation = event.getProcessInformation();
+        }
+    }
 
-  @Override
-  public void executeRespawn(UUID player) {
-    Sponge.getServer().getPlayer(player).ifPresent(Player::respawnPlayer);
-  }
+    private void awaitConnectionAndUpdate() {
+        Task.EXECUTOR.execute(() -> {
+            PacketSender packetSender = DefaultChannelManager.INSTANCE.get("Controller").orElse(null);
+            while (packetSender == null) {
+                packetSender = DefaultChannelManager.INSTANCE.get("Controller").orElse(null);
+                AbsoluteThread.sleep(100);
+            }
 
-  @Override
-  public void executeTeleport(UUID player, String world, double x, double y,
-                              double z, float yaw, float pitch) {
-    Sponge.getServer().getPlayer(player).ifPresent(
-        e
-        -> Sponge.getServer().getWorld(world).ifPresent(
-            w -> e.setLocationSafely(new Location<World>(w, x, y, z))));
-  }
+            thisProcessInformation.updateMaxPlayers(Sponge.getServer().getMaxPlayers());
+            thisProcessInformation.updateRuntimeInformation();
+            ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(thisProcessInformation);
 
-  @Override
-  public void executeConnect(UUID player, String server) {}
+            DefaultChannelManager.INSTANCE.get("Controller").ifPresent(controller -> packetHandler.getQueryHandler().sendQueryAsync(controller, new APIBungeePacketOutRequestIngameMessages()).onComplete(packet -> {
+                SpongeExecutor.this.messages = packet.content().get("messages", IngameMessages.TYPE);
+            }));
+        });
+    }
 
-  @Override
-  public void executeConnect(UUID player, ProcessInformation server) {}
+    @Override
+    public void executeSendMessage(UUID player, String message) {
+        Sponge.getServer().getPlayer(player).ifPresent(e -> e.sendMessage(Text.of(message)));
+    }
 
-  @Override
-  public void executeConnect(UUID player, UUID target) {}
+    @Override
+    public void executeKickPlayer(UUID player, String message) {
+        Sponge.getServer().getPlayer(player).ifPresent(e -> e.kick(Text.of(message)));
+    }
 
-  @Override
-  public void executeSetResourcePack(UUID player, String pack) {}
+    @Override
+    public void executePlaySound(UUID player, String sound, float f1, float f2) {
+        Sponge.getServer().getPlayer(player).ifPresent(e -> {
+            try {
+                SoundType soundType = SoundType.of(sound);
+                e.playSound(soundType, e.getLocation().getPosition(), f1, f2);
+            } catch (final Throwable ignored) {
+            }
+        });
+    }
+
+    @Override
+    public void executeSendTitle(UUID player, String title, String subTitle, int fadeIn, int stay, int fadeOut) {
+        Sponge.getServer().getPlayer(player).ifPresent(e ->
+            e.sendTitle(Title.CLEAR.toBuilder()
+                    .title(Text.of(title))
+                    .subtitle(Text.of(subTitle))
+                    .fadeIn(fadeIn)
+                    .stay(stay)
+                    .fadeOut(fadeOut)
+                    .build()
+            )
+        );
+    }
+
+    @Override
+    public void executePlayEffect(UUID player, String entityEffect) {
+    }
+
+    @Override
+    public <T> void executePlayEffect(UUID player, String effect, @Nullable T data) {
+    }
+
+    @Override
+    public void executeRespawn(UUID player) {
+        Sponge.getServer().getPlayer(player).ifPresent(Player::respawnPlayer);
+    }
+
+    @Override
+    public void executeTeleport(UUID player, String world, double x, double y, double z, float yaw, float pitch) {
+        Sponge.getServer().getPlayer(player).ifPresent(e -> Sponge.getServer().getWorld(world).ifPresent(w ->
+            e.setLocationSafely(new Location<World>(w, x, y, z))
+        ));
+    }
+
+    @Override
+    public void executeConnect(UUID player, String server) {
+
+    }
+
+    @Override
+    public void executeConnect(UUID player, ProcessInformation server) {
+
+    }
+
+    @Override
+    public void executeConnect(UUID player, UUID target) {
+
+    }
+
+    @Override
+    public void executeSetResourcePack(UUID player, String pack) {
+    }
 }

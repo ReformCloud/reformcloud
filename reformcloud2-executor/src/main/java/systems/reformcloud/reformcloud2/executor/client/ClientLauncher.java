@@ -6,11 +6,11 @@ import systems.reformcloud.reformcloud2.executor.api.common.utility.StringUtil;
 
 public final class ClientLauncher {
 
-  public static synchronized void main(String[] args) {
-    StringUtil.sendHeader();
-    DependencyLoader.doLoad();
-    LanguageWorker.doLoad();
+    public static synchronized void main(String[] args) {
+        StringUtil.sendHeader();
+        DependencyLoader.doLoad();
+        LanguageWorker.doLoad();
 
-    new ClientExecutor();
-  }
+        new ClientExecutor();
+    }
 }

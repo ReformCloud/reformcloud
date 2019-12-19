@@ -14,35 +14,24 @@ import systems.reformcloud.reformcloud2.signs.util.sign.CloudSign;
 
 public class SpongeListener {
 
-  @Listener
-  public void handle(final InteractBlockEvent event, @First Player player) {
-    BlockState blockState = event.getTargetBlock().getState();
-    if (blockState.getType().equals(BlockTypes.STANDING_SIGN) ||
-        blockState.getType().equals(BlockTypes.WALL_SIGN)) {
-      if (event.getTargetBlock().getLocation().isPresent() &&
-          event.getTargetBlock()
-              .getLocation()
-              .get()
-              .getTileEntity()
-              .isPresent() &&
-          event.getTargetBlock().getLocation().get().getTileEntity().orElse(
-              null)
-                  instanceof Sign) {
-        Sign sign = (Sign)event.getTargetBlock()
-                        .getLocation()
-                        .get()
-                        .getTileEntity()
-                        .get();
-        CloudSign cloudSign = SpongeSignSystemAdapter.getInstance().getSignAt(
-            SpongeSignSystemAdapter.getInstance().getSignConverter().to(sign));
-        if (cloudSign == null ||
-            !SignSystemAdapter.getInstance().canConnect(cloudSign)) {
-          return;
-        }
+    @Listener
+    public void handle(final InteractBlockEvent event, @First Player player) {
+        BlockState blockState = event.getTargetBlock().getState();
+        if (blockState.getType().equals(BlockTypes.STANDING_SIGN) || blockState.getType().equals(BlockTypes.WALL_SIGN)) {
+            if (event.getTargetBlock().getLocation().isPresent()
+                    && event.getTargetBlock().getLocation().get().getTileEntity().isPresent()
+                    && event.getTargetBlock().getLocation().get().getTileEntity().orElse(null) instanceof Sign
+            ) {
+                Sign sign = (Sign) event.getTargetBlock().getLocation().get().getTileEntity().get();
+                CloudSign cloudSign = SpongeSignSystemAdapter.getInstance().getSignAt(
+                        SpongeSignSystemAdapter.getInstance().getSignConverter().to(sign)
+                );
+                if (cloudSign == null || !SignSystemAdapter.getInstance().canConnect(cloudSign)) {
+                    return;
+                }
 
-        ExecutorAPI.getInstance().getSyncAPI().getPlayerSyncAPI().connect(
-            player.getUniqueId(), cloudSign.getCurrentTarget());
-      }
+                ExecutorAPI.getInstance().getSyncAPI().getPlayerSyncAPI().connect(player.getUniqueId(), cloudSign.getCurrentTarget());
+            }
+        }
     }
-  }
 }

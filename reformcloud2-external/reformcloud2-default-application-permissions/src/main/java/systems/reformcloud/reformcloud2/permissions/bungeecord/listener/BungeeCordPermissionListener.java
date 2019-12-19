@@ -15,56 +15,48 @@ import systems.reformcloud.reformcloud2.permissions.util.user.PermissionUser;
 
 public class BungeeCordPermissionListener implements Listener {
 
-  @EventHandler
-  public void handle(final LoginEvent event) {
-    // Push user into name to unique ID DB
-    PermissionAPI.getInstance().getPermissionUtil().loadUser(
-        event.getConnection().getUniqueId(), event.getConnection().getName());
-  }
-
-  @EventHandler
-  public void handle(final PostLoginEvent event) {
-    final PermissionUser permissionUser =
+    @EventHandler
+    public void handle(final LoginEvent event) {
+        // Push user into name to unique ID DB
         PermissionAPI.getInstance().getPermissionUtil().loadUser(
-            event.getPlayer().getUniqueId());
-    Task.EXECUTOR.execute(() -> {
-      PermissionAPI.getInstance()
-          .getPermissionUtil()
-          .getDefaultGroups()
-          .forEach(e -> {
-            if (Links
-                    .filterToReference(
-                        permissionUser.getGroups(),
-                        g -> g.getGroupName().equals(e.getName()))
-                    .isPresent()) {
-              return;
-            }
-
-            permissionUser.getGroups().add(
-                new NodeGroup(System.currentTimeMillis(), -1, e.getName()));
-          });
-
-      PermissionAPI.getInstance().getPermissionUtil().updateUser(
-          permissionUser);
-    });
-  }
-
-  @EventHandler
-  public void handle(final PermissionCheckEvent event) {
-    if (!(event.getSender() instanceof ProxiedPlayer)) {
-      return;
+                event.getConnection().getUniqueId(),
+                event.getConnection().getName()
+        );
     }
 
-    final ProxiedPlayer player = (ProxiedPlayer)event.getSender();
-    final PermissionUser permissionUser =
-        PermissionAPI.getInstance().getPermissionUtil().loadUser(
-            player.getUniqueId());
-    event.setHasPermission(permissionUser.hasPermission(event.getPermission()));
-  }
+    @EventHandler
+    public void handle(final PostLoginEvent event) {
+        final PermissionUser permissionUser = PermissionAPI.getInstance().getPermissionUtil().loadUser(event.getPlayer().getUniqueId());
+        Task.EXECUTOR.execute(() -> {
+            PermissionAPI.getInstance().getPermissionUtil().getDefaultGroups().forEach(e -> {
+                if (Links.filterToReference(permissionUser.getGroups(), g -> g.getGroupName().equals(e.getName())).isPresent()) {
+                    return;
+                }
 
-  @EventHandler
-  public void handle(final PlayerDisconnectEvent event) {
-    PermissionAPI.getInstance().getPermissionUtil().handleDisconnect(
-        event.getPlayer().getUniqueId());
-  }
+                permissionUser.getGroups().add(new NodeGroup(
+                        System.currentTimeMillis(),
+                        -1,
+                        e.getName()
+                ));
+            });
+
+            PermissionAPI.getInstance().getPermissionUtil().updateUser(permissionUser);
+        });
+    }
+
+    @EventHandler
+    public void handle(final PermissionCheckEvent event) {
+        if (!(event.getSender() instanceof ProxiedPlayer)) {
+            return;
+        }
+
+        final ProxiedPlayer player = (ProxiedPlayer) event.getSender();
+        final PermissionUser permissionUser = PermissionAPI.getInstance().getPermissionUtil().loadUser(player.getUniqueId());
+        event.setHasPermission(permissionUser.hasPermission(event.getPermission()));
+    }
+
+    @EventHandler
+    public void handle(final PlayerDisconnectEvent event) {
+        PermissionAPI.getInstance().getPermissionUtil().handleDisconnect(event.getPlayer().getUniqueId());
+    }
 }

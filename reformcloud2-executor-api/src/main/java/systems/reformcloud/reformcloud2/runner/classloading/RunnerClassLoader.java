@@ -8,16 +8,20 @@ import java.net.URLClassLoader;
  */
 public final class RunnerClassLoader extends URLClassLoader {
 
-  static { ClassLoader.registerAsParallelCapable(); }
+    static {
+        ClassLoader.registerAsParallelCapable();
+    }
 
-  public RunnerClassLoader(ClassLoader loader) { super(new URL[0], loader); }
+    public RunnerClassLoader(ClassLoader loader) {
+        super(new URL[0], loader);
+    }
 
-  public RunnerClassLoader(URL[] urls) {
-    super(urls, ClassLoader.getSystemClassLoader());
-  }
+    public RunnerClassLoader(URL[] urls) {
+        super(urls, ClassLoader.getSystemClassLoader());
+    }
 
-  @Override
-  public void addURL(URL url) {
-    super.addURL(url);
-  }
+    @Override
+    public void addURL(URL url) {
+        super.addURL(url);
+    }
 }

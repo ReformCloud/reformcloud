@@ -8,33 +8,30 @@ import systems.reformcloud.reformcloud2.signs.util.SignSystemAdapter;
 
 public class CloudListener {
 
-  @Listener
-  public void handle(final ProcessStartedEvent event) {
-    if (SignSystemAdapter.getInstance() == null) {
-      return;
+    @Listener
+    public void handle(final ProcessStartedEvent event) {
+        if (SignSystemAdapter.getInstance() == null) {
+            return;
+        }
+
+        SignSystemAdapter.getInstance().handleProcessStart(event.getProcessInformation());
     }
 
-    SignSystemAdapter.getInstance().handleProcessStart(
-        event.getProcessInformation());
-  }
+    @Listener
+    public void handle(final ProcessUpdatedEvent event) {
+        if (SignSystemAdapter.getInstance() == null) {
+            return;
+        }
 
-  @Listener
-  public void handle(final ProcessUpdatedEvent event) {
-    if (SignSystemAdapter.getInstance() == null) {
-      return;
+        SignSystemAdapter.getInstance().handleProcessUpdate(event.getProcessInformation());
     }
 
-    SignSystemAdapter.getInstance().handleProcessUpdate(
-        event.getProcessInformation());
-  }
+    @Listener
+    public void handle(final ProcessStoppedEvent event) {
+        if (SignSystemAdapter.getInstance() == null) {
+            return;
+        }
 
-  @Listener
-  public void handle(final ProcessStoppedEvent event) {
-    if (SignSystemAdapter.getInstance() == null) {
-      return;
+        SignSystemAdapter.getInstance().handleProcessStop(event.getProcessInformation());
     }
-
-    SignSystemAdapter.getInstance().handleProcessStop(
-        event.getProcessInformation());
-  }
 }

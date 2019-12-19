@@ -6,9 +6,9 @@ import systems.reformcloud.reformcloud2.executor.api.common.restapi.request.Requ
 
 abstract class ChannelInitializerHandler extends ChannelInitializer<Channel> {
 
-  ChannelInitializerHandler(RequestListenerHandler requestListenerHandler) {
-    this.requestListenerHandler = requestListenerHandler;
-  }
+    ChannelInitializerHandler(RequestListenerHandler requestListenerHandler) {
+        this.requestListenerHandler = requestListenerHandler;
+    }
 
-  final RequestListenerHandler requestListenerHandler;
+    final RequestListenerHandler requestListenerHandler;
 }

@@ -1,47 +1,46 @@
 package systems.reformcloud.reformcloud2.executor.node.network.packet.out.api;
 
-import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.DefaultPacket;
 
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+
 public final class NodeAPIAction extends DefaultPacket {
 
-  public NodeAPIAction(APIAction action, List<Object> args) {
-    super(46, null);
+    public NodeAPIAction(APIAction action, List<Object> args) {
+        super(46, null);
 
-    JsonConfiguration jsonConfiguration =
-        new JsonConfiguration().add("action", action);
-    AtomicInteger atomicInteger = new AtomicInteger(1);
-    for (Object o : args) {
-      jsonConfiguration.add(Integer.toString(atomicInteger.getAndIncrement()),
-                            o);
+        JsonConfiguration jsonConfiguration = new JsonConfiguration().add("action", action);
+        AtomicInteger atomicInteger = new AtomicInteger(1);
+        for (Object o : args) {
+            jsonConfiguration.add(Integer.toString(atomicInteger.getAndIncrement()), o);
+        }
+        setContent(jsonConfiguration);
     }
-    setContent(jsonConfiguration);
-  }
 
-  public enum APIAction {
+    public enum APIAction {
 
-    SEND_MESSAGE,
+        SEND_MESSAGE,
 
-    KICK_PLAYER,
+        KICK_PLAYER,
 
-    PLAY_SOUND,
+        PLAY_SOUND,
 
-    SEND_TITLE,
+        SEND_TITLE,
 
-    PLAY_ENTITY_EFFECT,
+        PLAY_ENTITY_EFFECT,
 
-    PLAY_EFFECT,
+        PLAY_EFFECT,
 
-    RESPAWN,
+        RESPAWN,
 
-    // ENTITY_TELEPORT, //For update?
+        //ENTITY_TELEPORT, //For update?
 
-    LOCATION_TELEPORT,
+        LOCATION_TELEPORT,
 
-    CONNECT,
+        CONNECT,
 
-    SET_RESOURCE_PACK
-  }
+        SET_RESOURCE_PACK
+    }
 }

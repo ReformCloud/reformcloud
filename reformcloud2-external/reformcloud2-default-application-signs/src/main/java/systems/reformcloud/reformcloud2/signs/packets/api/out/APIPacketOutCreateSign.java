@@ -7,7 +7,7 @@ import systems.reformcloud.reformcloud2.signs.util.sign.CloudSign;
 
 public class APIPacketOutCreateSign extends DefaultPacket {
 
-  public APIPacketOutCreateSign(CloudSign sign) {
-    super(PacketUtil.SIGN_BUS + 2, new JsonConfiguration().add("sign", sign));
-  }
+    public APIPacketOutCreateSign(CloudSign sign) {
+        super(PacketUtil.SIGN_BUS + 2, new JsonConfiguration().add("sign", sign));
+    }
 }

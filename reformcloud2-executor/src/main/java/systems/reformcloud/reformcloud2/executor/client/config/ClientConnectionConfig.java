@@ -5,18 +5,22 @@ import java.nio.file.Paths;
 
 public final class ClientConnectionConfig {
 
-  public static final Path PATH = Paths.get("reformcloud/connection.json");
+    public static final Path PATH = Paths.get("reformcloud/connection.json");
 
-  public ClientConnectionConfig(String host, int port) {
-    this.host = host;
-    this.port = port;
-  }
+    public ClientConnectionConfig(String host, int port) {
+        this.host = host;
+        this.port = port;
+    }
 
-  private String host;
+    private String host;
 
-  private int port;
+    private int port;
 
-  public String getHost() { return host; }
+    public String getHost() {
+        return host;
+    }
 
-  public int getPort() { return port; }
+    public int getPort() {
+        return port;
+    }
 }

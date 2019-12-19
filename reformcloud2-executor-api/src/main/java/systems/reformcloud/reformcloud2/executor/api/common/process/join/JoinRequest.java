@@ -4,16 +4,20 @@ import java.util.UUID;
 
 public final class JoinRequest {
 
-  JoinRequest(UUID uniqueID, String name) {
-    this.uniqueID = uniqueID;
-    this.name = name;
-  }
+    JoinRequest(UUID uniqueID, String name) {
+        this.uniqueID = uniqueID;
+        this.name = name;
+    }
 
-  private final UUID uniqueID;
+    private final UUID uniqueID;
 
-  private final String name;
+    private final String name;
 
-  public UUID getUniqueID() { return uniqueID; }
+    public UUID getUniqueID() {
+        return uniqueID;
+    }
 
-  public String getName() { return name; }
+    public String getName() {
+        return name;
+    }
 }

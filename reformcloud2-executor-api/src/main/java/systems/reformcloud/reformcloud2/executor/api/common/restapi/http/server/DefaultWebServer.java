@@ -7,71 +7,67 @@ import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.socket.ServerSocketChannel;
-import java.util.HashMap;
-import java.util.Map;
 import systems.reformcloud.reformcloud2.executor.api.common.network.NetworkUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.restapi.http.init.DefaultChannelInitializerHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.restapi.request.RequestListenerHandler;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public final class DefaultWebServer implements WebServer {
 
-  private final EventLoopGroup worker = NetworkUtil.eventLoopGroup();
+    private final EventLoopGroup worker = NetworkUtil.eventLoopGroup();
 
-  private final EventLoopGroup boss = NetworkUtil.eventLoopGroup();
+    private final EventLoopGroup boss = NetworkUtil.eventLoopGroup();
 
-  private final Class<? extends ServerSocketChannel> socketClass =
-      NetworkUtil.serverSocketChannel();
+    private final Class<? extends ServerSocketChannel> socketClass = NetworkUtil.serverSocketChannel();
 
-  private final Map<Integer, ChannelFuture> channelFutures = new HashMap<>();
+    private final Map<Integer, ChannelFuture> channelFutures = new HashMap<>();
 
-  @Override
-  public void add(String host, int port,
-                  RequestListenerHandler requestListenerHandler) {
-    if (!channelFutures.containsKey(port)) {
-      try {
-        channelFutures.put(
-            port,
-            new ServerBootstrap()
-                .channel(socketClass)
-                .group(boss, worker)
+    @Override
+    public void add(String host, int port, RequestListenerHandler requestListenerHandler) {
+        if (!channelFutures.containsKey(port)) {
+            try {
+                channelFutures.put(port, new ServerBootstrap()
+                        .channel(socketClass)
+                        .group(boss, worker)
 
-                .childOption(ChannelOption.TCP_NODELAY, true)
-                .childOption(ChannelOption.IP_TOS, 24)
-                .childOption(ChannelOption.AUTO_READ, true)
-                .childOption(ChannelOption.ALLOCATOR, ByteBufAllocator.DEFAULT)
+                        .childOption(ChannelOption.TCP_NODELAY, true)
+                        .childOption(ChannelOption.IP_TOS, 24)
+                        .childOption(ChannelOption.AUTO_READ, true)
+                        .childOption(ChannelOption.ALLOCATOR, ByteBufAllocator.DEFAULT)
 
-                .childHandler(new DefaultChannelInitializerHandler(
-                    requestListenerHandler))
+                        .childHandler(new DefaultChannelInitializerHandler(requestListenerHandler))
 
-                .bind(host, port)
+                        .bind(host, port)
 
-                .addListener(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE)
-                .addListener(ChannelFutureListener.CLOSE_ON_FAILURE)
+                        .addListener(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE)
+                        .addListener(ChannelFutureListener.CLOSE_ON_FAILURE)
 
-                .sync()
-                .channel()
-                .closeFuture());
-      } catch (final InterruptedException ex) {
-        ex.printStackTrace();
-      }
+                        .sync()
+                        .channel()
+                        .closeFuture()
+                );
+            } catch (final InterruptedException ex) {
+                ex.printStackTrace();
+            }
+        }
     }
-  }
 
-  @Override
-  public void closeFuture(int port) {
-    ChannelFuture channelFuture = this.channelFutures.remove(port);
-    if (channelFuture != null) {
-      channelFuture.cancel(true);
+    @Override
+    public void closeFuture(int port) {
+        ChannelFuture channelFuture = this.channelFutures.remove(port);
+        if (channelFuture != null) {
+            channelFuture.cancel(true);
+        }
     }
-  }
 
-  @Override
-  public void close() {
-    channelFutures.forEach(
-        (integer, channelFuture) -> channelFuture.cancel(true));
-    channelFutures.clear();
+    @Override
+    public void close() {
+        channelFutures.forEach((integer, channelFuture) -> channelFuture.cancel(true));
+        channelFutures.clear();
 
-    worker.shutdownGracefully();
-    boss.shutdownGracefully();
-  }
+        worker.shutdownGracefully();
+        boss.shutdownGracefully();
+    }
 }
