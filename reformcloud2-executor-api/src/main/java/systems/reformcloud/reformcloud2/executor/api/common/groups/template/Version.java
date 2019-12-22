@@ -9,8 +9,6 @@ public enum Version {
     /**
      * Spigot Versions
      */
-    SPIGOT_1_7_10("Spigot 1.7.10", "1.7.10",
-            "https://dl.reformcloud.systems/mcversions/spigots/spigot-1.7.10.jar", 1),
     SPIGOT_1_8("Spigot 1.8", "1.8",
             "https://dl.reformcloud.systems/mcversions/spigots/spigot-1.8.jar", 1),
     SPIGOT_1_8_3("Spigot 1.8.3", "1.8.3",
@@ -63,6 +61,8 @@ public enum Version {
             "https://dl.reformcloud.systems/mcversions/spigots/spigot-1.14.4.jar", 1),
     SPIGOT_1_15("Spigot 1.15", "1.15",
             "https://dl.reformcloud.systems/mcversions/spigots/spigot-1.15.jar", 1),
+    SPIGOT_1_15_1("Spigot 1.15.1", "1.15.1",
+            "https://dl.reformcloud.systems/mcversions/spigots/spigot-1.15.1.jar", 1),
 
     /**
      * Paper Versions
@@ -85,6 +85,8 @@ public enum Version {
             "https://dl.reformcloud.systems/mcversions/paper/paper-1.14.4.jar", 1),
     PAPER_1_15("Paper 1.15", "1.15",
             "https://dl.reformcloud.systems/mcversions/paper/paper-1.15.jar", 1),
+    PAPER_1_15_1("Paper 1.15.1", "1.15.1",
+            "https://dl.reformcloud.systems/mcversions/paper/paper-1.15.1.jar", 1),
 
     /**
      * SpongeVanilla Versions
@@ -99,6 +101,7 @@ public enum Version {
             "https://dl.reformcloud.systems/mcversions/spongevanilla/spongevanilla-1.11.2.jar", 1),
     SPONGEVANILLA_1_12_2("SpongeVanilla 1.12.2", "1.12.2",
             "https://dl.reformcloud.systems/mcversions/spongevanilla/spongevanilla-1.12.2.jar", 1),
+
     /**
      * SpongeForge Versions
      */
@@ -110,6 +113,7 @@ public enum Version {
             "https://dl.reformcloud.systems/mcversions/forge/sponge-1.11.2.zip", 1),
     SPONGEFORGE_1_12_2("SpongeForge 1.12.2", "1.12.2",
             "https://dl.reformcloud.systems/mcversions/forge/sponge-1.12.2.zip", 1),
+
     /**
      * TacoSpigot Versions
      */
@@ -119,6 +123,7 @@ public enum Version {
             "https://dl.reformcloud.systems/mcversions/taco/tacospigot-1.11.2.jar", 1),
     TACO_1_12_2("Taco 1.12.2", "1.12.2",
             "https://dl.reformcloud.systems/mcversions/taco/tacospigot-1.12.2.jar", 1),
+
     /**
      * TorchSpigot Versions
      */
@@ -128,6 +133,7 @@ public enum Version {
             "https://dl.reformcloud.systems/mcversions/torch/Torch-1.9.4.jar", 1),
     TORCH_1_11_2("Torch 1.11.2", "1.11.2",
             "https://dl.reformcloud.systems/mcversions/torch/Torch-1.11.2.jar", 1),
+
     /**
      * Hose Versions
      */
@@ -139,6 +145,7 @@ public enum Version {
             "https://dl.reformcloud.systems/mcversions/hose/hose-1.10.2.jar", 1),
     HOSE_1_11_2("Hose 1.11.2", "1.11.2",
             "https://dl.reformcloud.systems/mcversions/hose/hose-1.11.2.jar", 1),
+
     /**
      * Glowstone Versions
      */
@@ -146,11 +153,13 @@ public enum Version {
             "https://dl.reformcloud.systems/mcversions/glowstone/glowstone-1.10.2.jar", 1),
     GLOWSTONE_1_12_2("Glowstone 1.12.2", "1.12.2",
             "https://dl.reformcloud.systems/mcversions/glowstone/glowstone-1.12.2.jar", 1),
+
     /**
      * Akarin Versions
      */
     AKARIN_1_12_2("Akarin 1.12.2", "1.12.2",
             "https://github.com/Akarin-project/Akarin/releases/download/1.12.2-R0.4.2/akarin-1.12.2.jar", 1),
+
     /**
      * Proxy versions
      */
@@ -164,16 +173,19 @@ public enum Version {
             "https://papermc.io/ci/job/Travertine/lastSuccessfulBuild/artifact/Travertine-Proxy/bootstrap/target/Travertine.jar", 2),
     VELOCITY("Velocity", "1.8-1.14",
             "https://ci.velocitypowered.com/job/velocity/lastSuccessfulBuild/artifact/proxy/build/libs/velocity-proxy-1.0.4-SNAPSHOT-all.jar", 2),
+
     /**
      * MCPE server
      */
     NUKKIT_X("NukkitX", "1.0",
             "https://ci.nukkitx.com/job/NukkitX/job/Nukkit/job/master/lastStableBuild/artifact/target/nukkit-1.0-SNAPSHOT.jar", 3),
+
     /**
      * Waterdog as Java Proxy
      */
     WATERDOG("Waterdog", "1.8-1.14",
             "https://ci.codemc.org/job/yesdog/job/Waterdog/lastSuccessfulBuild/artifact/Waterfall-Proxy/bootstrap/target/Waterdog.jar", 2),
+
     /**
      * Waterdog as McPE Proxy
      */
