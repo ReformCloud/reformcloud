@@ -7,6 +7,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packe
 import systems.reformcloud.reformcloud2.executor.api.common.node.NodeInformation;
 import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
 
+import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 
 public class PacketInNodeInformationUpdate implements NetworkHandler {
@@ -17,7 +18,7 @@ public class PacketInNodeInformationUpdate implements NetworkHandler {
     }
 
     @Override
-    public void handlePacket(PacketSender packetSender, Packet packet, Consumer<Packet> responses) {
+    public void handlePacket(@Nonnull PacketSender packetSender, @Nonnull Packet packet, @Nonnull Consumer<Packet> responses) {
         NodeInformation information = packet.content().get("info", NodeInformation.TYPE);
         NodeExecutor.getInstance().getClusterSyncManager().handleNodeInformationUpdate(information);
     }

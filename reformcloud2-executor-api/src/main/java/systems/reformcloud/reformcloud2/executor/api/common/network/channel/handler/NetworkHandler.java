@@ -3,6 +3,7 @@ package systems.reformcloud.reformcloud2.executor.api.common.network.channel.han
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 
+import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 
 public interface NetworkHandler {
@@ -19,5 +20,5 @@ public interface NetworkHandler {
      * @param packet The packet itself which got sent
      * @param responses The response which should be sent to the sender
      */
-    void handlePacket(PacketSender packetSender, Packet packet, Consumer<Packet> responses);
+    void handlePacket(@Nonnull PacketSender packetSender, @Nonnull Packet packet, @Nonnull Consumer<Packet> responses);
 }

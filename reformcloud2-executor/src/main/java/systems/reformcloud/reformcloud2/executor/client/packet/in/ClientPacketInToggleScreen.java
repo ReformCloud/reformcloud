@@ -8,6 +8,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links;
 import systems.reformcloud.reformcloud2.executor.client.ClientExecutor;
 import systems.reformcloud.reformcloud2.executor.client.screen.ProcessScreen;
 
+import javax.annotation.Nonnull;
 import java.util.UUID;
 import java.util.function.Consumer;
 
@@ -19,7 +20,7 @@ public final class ClientPacketInToggleScreen implements NetworkHandler {
     }
 
     @Override
-    public void handlePacket(PacketSender packetSender, Packet packet, Consumer<Packet> responses) {
+    public void handlePacket(@Nonnull PacketSender packetSender, @Nonnull Packet packet, @Nonnull Consumer<Packet> responses) {
         UUID uuid = packet.content().get("uuid", UUID.class);
 
         Links.filterToReference(

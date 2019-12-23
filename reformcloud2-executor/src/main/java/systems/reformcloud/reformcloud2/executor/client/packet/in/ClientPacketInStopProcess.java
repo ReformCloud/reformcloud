@@ -9,6 +9,7 @@ import systems.reformcloud.reformcloud2.executor.client.ClientExecutor;
 import systems.reformcloud.reformcloud2.executor.client.packet.out.ClientPacketOutProcessStopped;
 import systems.reformcloud.reformcloud2.executor.client.process.ProcessQueue;
 
+import javax.annotation.Nonnull;
 import java.lang.reflect.Method;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -21,7 +22,7 @@ public final class ClientPacketInStopProcess implements NetworkHandler {
     }
 
     @Override
-    public void handlePacket(PacketSender packetSender, Packet packet, Consumer<Packet> responses) {
+    public void handlePacket(@Nonnull PacketSender packetSender, @Nonnull Packet packet, @Nonnull Consumer<Packet> responses) {
         UUID uniqueID = packet.content().get("uniqueID", UUID.class);
 
         // Check if process is currently queued - if yes remove it from queue and send the success packet

@@ -9,6 +9,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.plugins.Plugin;
 import systems.reformcloud.reformcloud2.executor.api.common.plugins.basic.DefaultInstallablePlugin;
 import systems.reformcloud.reformcloud2.executor.api.common.plugins.basic.DefaultPlugin;
 
+import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 
 public class PacketInNodePluginAction implements NetworkHandler {
@@ -19,7 +20,7 @@ public class PacketInNodePluginAction implements NetworkHandler {
     }
 
     @Override
-    public void handlePacket(PacketSender packetSender, Packet packet, Consumer<Packet> responses) {
+    public void handlePacket(@Nonnull PacketSender packetSender, @Nonnull Packet packet, @Nonnull Consumer<Packet> responses) {
         String process = packet.content().getString("process");
 
         if (packet.content().has("installable")) {

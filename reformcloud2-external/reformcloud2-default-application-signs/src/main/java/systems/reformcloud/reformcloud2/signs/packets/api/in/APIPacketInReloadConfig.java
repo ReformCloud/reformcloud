@@ -7,6 +7,7 @@ import systems.reformcloud.reformcloud2.signs.packets.PacketUtil;
 import systems.reformcloud.reformcloud2.signs.util.SignSystemAdapter;
 import systems.reformcloud.reformcloud2.signs.util.sign.config.SignConfig;
 
+import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 
 public class APIPacketInReloadConfig implements NetworkHandler {
@@ -17,7 +18,7 @@ public class APIPacketInReloadConfig implements NetworkHandler {
     }
 
     @Override
-    public void handlePacket(PacketSender packetSender, Packet packet, Consumer<Packet> responses) {
+    public void handlePacket(@Nonnull PacketSender packetSender, @Nonnull Packet packet, @Nonnull Consumer<Packet> responses) {
         SignConfig config = packet.content().get("config", SignConfig.TYPE);
         if (config == null) {
             return;

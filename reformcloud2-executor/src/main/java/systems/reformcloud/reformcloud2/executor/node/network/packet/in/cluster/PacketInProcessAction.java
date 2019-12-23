@@ -12,6 +12,7 @@ import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
 import systems.reformcloud.reformcloud2.executor.node.cluster.sync.DefaultClusterSyncManager;
 import systems.reformcloud.reformcloud2.executor.node.process.util.ProcessAction;
 
+import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 
 public class PacketInProcessAction implements NetworkHandler {
@@ -22,7 +23,7 @@ public class PacketInProcessAction implements NetworkHandler {
     }
 
     @Override
-    public void handlePacket(PacketSender packetSender, Packet packet, Consumer<Packet> responses) {
+    public void handlePacket(@Nonnull PacketSender packetSender, @Nonnull Packet packet, @Nonnull Consumer<Packet> responses) {
         ProcessAction action = packet.content().get("action", ProcessAction.class);
         ProcessInformation information = packet.content().get("info", ProcessInformation.TYPE);
 

@@ -6,6 +6,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.channel.Pack
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.handler.NetworkHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 
+import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 
 public final class ControllerPacketInExecuteProcessCommand implements NetworkHandler {
@@ -16,7 +17,7 @@ public final class ControllerPacketInExecuteProcessCommand implements NetworkHan
     }
 
     @Override
-    public void handlePacket(PacketSender packetSender, Packet packet, Consumer<Packet> responses) {
+    public void handlePacket(@Nonnull PacketSender packetSender, @Nonnull Packet packet, @Nonnull Consumer<Packet> responses) {
         String command = packet.content().getString("cmd");
         String process = packet.content().getString("process");
         ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().executeProcessCommand(process, command);

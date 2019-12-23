@@ -7,6 +7,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.channel.hand
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 
+import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 
 public final class ControllerPacketInUpdateProcessInformation implements NetworkHandler {
@@ -17,7 +18,7 @@ public final class ControllerPacketInUpdateProcessInformation implements Network
     }
 
     @Override
-    public void handlePacket(PacketSender packetSender, Packet packet, Consumer<Packet> responses) {
+    public void handlePacket(@Nonnull PacketSender packetSender, @Nonnull Packet packet, @Nonnull Consumer<Packet> responses) {
         ProcessInformation processInformation = packet.content().get("info", ProcessInformation.TYPE);
         ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(processInformation);
     }

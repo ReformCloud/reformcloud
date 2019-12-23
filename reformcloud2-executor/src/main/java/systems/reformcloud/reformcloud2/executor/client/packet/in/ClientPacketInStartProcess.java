@@ -7,6 +7,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packe
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.client.process.ProcessQueue;
 
+import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 
 public final class ClientPacketInStartProcess implements NetworkHandler {
@@ -17,7 +18,7 @@ public final class ClientPacketInStartProcess implements NetworkHandler {
     }
 
     @Override
-    public void handlePacket(PacketSender packetSender, Packet packet, Consumer<Packet> responses) {
+    public void handlePacket(@Nonnull PacketSender packetSender, @Nonnull Packet packet, @Nonnull Consumer<Packet> responses) {
         ProcessInformation processInformation = packet.content().get("info", ProcessInformation.TYPE);
         ProcessQueue.queue(processInformation);
     }

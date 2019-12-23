@@ -6,6 +6,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.channel.hand
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
 
+import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 
 public class PacketInReloadCluster implements NetworkHandler {
@@ -16,7 +17,7 @@ public class PacketInReloadCluster implements NetworkHandler {
     }
 
     @Override
-    public void handlePacket(PacketSender packetSender, Packet packet, Consumer<Packet> responses) {
+    public void handlePacket(@Nonnull PacketSender packetSender, @Nonnull Packet packet, @Nonnull Consumer<Packet> responses) {
         NodeExecutor.getInstance().getClusterSyncManager().handleClusterReload();
     }
 }

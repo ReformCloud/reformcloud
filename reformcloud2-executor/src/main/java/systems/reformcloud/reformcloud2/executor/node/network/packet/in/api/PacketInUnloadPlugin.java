@@ -8,6 +8,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packe
 import systems.reformcloud.reformcloud2.executor.api.common.plugins.Plugin;
 import systems.reformcloud.reformcloud2.executor.api.common.plugins.basic.DefaultPlugin;
 
+import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 
 public final class PacketInUnloadPlugin implements NetworkHandler {
@@ -18,7 +19,7 @@ public final class PacketInUnloadPlugin implements NetworkHandler {
     }
 
     @Override
-    public void handlePacket(PacketSender packetSender, Packet packet, Consumer<Packet> responses) {
+    public void handlePacket(@Nonnull PacketSender packetSender, @Nonnull Packet packet, @Nonnull Consumer<Packet> responses) {
         String process = packet.content().getString("process");
         DefaultPlugin defaultPlugin = packet.content().get("plugin", Plugin.TYPE);
         ExecutorAPI.getInstance().getSyncAPI().getPluginSyncAPI().unloadPlugin(process, defaultPlugin);

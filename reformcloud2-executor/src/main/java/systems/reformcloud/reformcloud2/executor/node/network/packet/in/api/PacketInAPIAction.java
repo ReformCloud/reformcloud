@@ -6,6 +6,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.channel.Pack
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.handler.NetworkHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 
+import javax.annotation.Nonnull;
 import java.util.UUID;
 import java.util.function.Consumer;
 
@@ -17,7 +18,7 @@ public class PacketInAPIAction implements NetworkHandler {
     }
 
     @Override
-    public void handlePacket(PacketSender packetSender, Packet packet, Consumer<Packet> responses) {
+    public void handlePacket(@Nonnull PacketSender packetSender, @Nonnull Packet packet, @Nonnull Consumer<Packet> responses) {
         ExternalAPIPacketOutAPIAction.APIAction apiAction = packet.content().get("action", ExternalAPIPacketOutAPIAction.APIAction.class);
         UUID targetPlayer = packet.content().get("1", UUID.class);
 

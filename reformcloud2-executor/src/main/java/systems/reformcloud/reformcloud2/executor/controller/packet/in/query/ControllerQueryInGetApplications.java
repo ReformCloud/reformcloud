@@ -10,6 +10,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Defau
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links;
 
+import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 
 public final class ControllerQueryInGetApplications implements NetworkHandler {
@@ -20,7 +21,7 @@ public final class ControllerQueryInGetApplications implements NetworkHandler {
     }
 
     @Override
-    public void handlePacket(PacketSender packetSender, Packet packet, Consumer<Packet> responses) {
+    public void handlePacket(@Nonnull PacketSender packetSender, @Nonnull Packet packet, @Nonnull Consumer<Packet> responses) {
         responses.accept(new DefaultPacket(-1, convert()));
     }
 

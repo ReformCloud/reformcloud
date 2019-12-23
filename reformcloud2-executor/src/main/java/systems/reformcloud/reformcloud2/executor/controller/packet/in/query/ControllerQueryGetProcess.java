@@ -9,6 +9,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Defau
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 
+import javax.annotation.Nonnull;
 import java.util.UUID;
 import java.util.function.Consumer;
 
@@ -20,7 +21,7 @@ public final class ControllerQueryGetProcess implements NetworkHandler {
     }
 
     @Override
-    public void handlePacket(PacketSender packetSender, Packet packet, Consumer<Packet> responses) {
+    public void handlePacket(@Nonnull PacketSender packetSender, @Nonnull Packet packet, @Nonnull Consumer<Packet> responses) {
         ProcessInformation result;
 
         if (packet.content().has("name")) {

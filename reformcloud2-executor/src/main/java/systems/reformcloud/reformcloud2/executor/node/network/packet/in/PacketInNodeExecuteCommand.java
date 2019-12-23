@@ -8,6 +8,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links;
 import systems.reformcloud.reformcloud2.executor.api.node.process.LocalNodeProcess;
 import systems.reformcloud.reformcloud2.executor.node.process.manager.LocalProcessManager;
 
+import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 
 public class PacketInNodeExecuteCommand implements NetworkHandler {
@@ -18,7 +19,7 @@ public class PacketInNodeExecuteCommand implements NetworkHandler {
     }
 
     @Override
-    public void handlePacket(PacketSender packetSender, Packet packet, Consumer<Packet> responses) {
+    public void handlePacket(@Nonnull PacketSender packetSender, @Nonnull Packet packet, @Nonnull Consumer<Packet> responses) {
         String name = packet.content().getString("name");
         String command = packet.content().getString("command");
 

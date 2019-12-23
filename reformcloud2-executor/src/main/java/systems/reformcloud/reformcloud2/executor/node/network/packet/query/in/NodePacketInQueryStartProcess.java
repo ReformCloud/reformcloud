@@ -10,6 +10,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Defau
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
 
+import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 
 public class NodePacketInQueryStartProcess implements NetworkHandler {
@@ -20,7 +21,7 @@ public class NodePacketInQueryStartProcess implements NetworkHandler {
     }
 
     @Override
-    public void handlePacket(PacketSender packetSender, Packet packet, Consumer<Packet> responses) {
+    public void handlePacket(@Nonnull PacketSender packetSender, @Nonnull Packet packet, @Nonnull Consumer<Packet> responses) {
         ProcessGroup group = packet.content().get("group", ProcessGroup.TYPE);
         Template template = packet.content().get("template", Template.TYPE);
         JsonConfiguration data = packet.content().get("data");
