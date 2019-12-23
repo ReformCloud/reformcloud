@@ -8,6 +8,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.channel.hand
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.controller.process.ClientManager;
 
+import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 
 public final class ControllerPacketInClientAuthSuccess implements NetworkHandler {
@@ -18,7 +19,7 @@ public final class ControllerPacketInClientAuthSuccess implements NetworkHandler
     }
 
     @Override
-    public void handlePacket(PacketSender packetSender, Packet packet, Consumer<Packet> responses) {
+    public void handlePacket(@Nonnull PacketSender packetSender, @Nonnull Packet packet, @Nonnull Consumer<Packet> responses) {
         if (packet.content().has("info")) {
             ClientRuntimeInformation clientRuntimeInformation = packet.content().get("info", new TypeToken<DefaultClientRuntimeInformation>() {});
             ClientManager.INSTANCE.connectClient(clientRuntimeInformation);

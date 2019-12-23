@@ -8,6 +8,7 @@ import systems.reformcloud.reformcloud2.permissions.packets.PacketHelper;
 import systems.reformcloud.reformcloud2.permissions.packets.util.PermissionAction;
 import systems.reformcloud.reformcloud2.permissions.util.group.PermissionGroup;
 
+import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 
 public class ControllerPacketInGroupAction extends DefaultNetworkHandler {
@@ -17,7 +18,7 @@ public class ControllerPacketInGroupAction extends DefaultNetworkHandler {
     }
 
     @Override
-    public void handlePacket(PacketSender packetSender, Packet packet, Consumer<Packet> responses) {
+    public void handlePacket(@Nonnull PacketSender packetSender, @Nonnull Packet packet, @Nonnull Consumer<Packet> responses) {
         final PermissionGroup permissionGroup = packet.content().get("group", PermissionGroup.TYPE);
         final PermissionAction action = packet.content().get("action", PermissionAction.class);
 

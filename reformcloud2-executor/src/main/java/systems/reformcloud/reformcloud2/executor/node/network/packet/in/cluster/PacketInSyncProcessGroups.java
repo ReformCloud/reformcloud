@@ -9,6 +9,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packe
 import systems.reformcloud.reformcloud2.executor.api.node.cluster.SyncAction;
 import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
 
+import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.function.Consumer;
 
@@ -20,7 +21,7 @@ public class PacketInSyncProcessGroups implements NetworkHandler {
     }
 
     @Override
-    public void handlePacket(PacketSender packetSender, Packet packet, Consumer<Packet> responses) {
+    public void handlePacket(@Nonnull PacketSender packetSender, @Nonnull Packet packet, @Nonnull Consumer<Packet> responses) {
         Collection<ProcessGroup> groups = packet.content().get("info", new TypeToken<Collection<ProcessGroup>>() {});
         SyncAction action = packet.content().get("action", SyncAction.class);
 

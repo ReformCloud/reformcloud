@@ -7,6 +7,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.channel.Pack
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.handler.NetworkHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 
+import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 
 public final class ControllerPacketInUpdateProcessGroup implements NetworkHandler {
@@ -17,7 +18,7 @@ public final class ControllerPacketInUpdateProcessGroup implements NetworkHandle
     }
 
     @Override
-    public void handlePacket(PacketSender packetSender, Packet packet, Consumer<Packet> responses) {
+    public void handlePacket(@Nonnull PacketSender packetSender, @Nonnull Packet packet, @Nonnull Consumer<Packet> responses) {
         ProcessGroup processGroup = packet.content().get("group", ProcessGroup.TYPE);
         ExecutorAPI.getInstance().getSyncAPI().getGroupSyncAPI().updateProcessGroup(processGroup);
     }

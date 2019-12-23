@@ -9,6 +9,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.channel.hand
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.DefaultPacket;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 
+import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 
 public final class ControllerQueryInCreateProcessGroup implements NetworkHandler {
@@ -19,7 +20,7 @@ public final class ControllerQueryInCreateProcessGroup implements NetworkHandler
     }
 
     @Override
-    public void handlePacket(PacketSender packetSender, Packet packet, Consumer<Packet> responses) {
+    public void handlePacket(@Nonnull PacketSender packetSender, @Nonnull Packet packet, @Nonnull Consumer<Packet> responses) {
         ProcessGroup group = packet.content().get("group", ProcessGroup.TYPE);
         responses.accept(new DefaultPacket(-1, new JsonConfiguration().add("result", ExecutorAPI.getInstance().getSyncAPI().getGroupSyncAPI().createProcessGroup(group))));
     }

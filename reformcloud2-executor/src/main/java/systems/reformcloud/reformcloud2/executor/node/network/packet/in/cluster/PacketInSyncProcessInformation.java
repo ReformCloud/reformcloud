@@ -8,6 +8,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packe
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
 
+import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.function.Consumer;
 
@@ -19,7 +20,7 @@ public class PacketInSyncProcessInformation implements NetworkHandler {
     }
 
     @Override
-    public void handlePacket(PacketSender packetSender, Packet packet, Consumer<Packet> responses) {
+    public void handlePacket(@Nonnull PacketSender packetSender, @Nonnull Packet packet, @Nonnull Consumer<Packet> responses) {
         Collection<ProcessInformation> information = packet.content().get("info", new TypeToken<Collection<ProcessInformation>>() {});
         NodeExecutor.getInstance().getClusterSyncManager().handleProcessInformationSync(information);
     }

@@ -11,6 +11,7 @@ import systems.reformcloud.reformcloud2.permissions.packets.util.PermissionActio
 import systems.reformcloud.reformcloud2.permissions.util.basic.DefaultPermissionUtil;
 import systems.reformcloud.reformcloud2.permissions.util.user.PermissionUser;
 
+import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 
 public class ControllerPacketInUserAction extends DefaultNetworkHandler {
@@ -20,7 +21,7 @@ public class ControllerPacketInUserAction extends DefaultNetworkHandler {
     }
 
     @Override
-    public void handlePacket(PacketSender packetSender, Packet packet, Consumer<Packet> responses) {
+    public void handlePacket(@Nonnull PacketSender packetSender, @Nonnull Packet packet, @Nonnull Consumer<Packet> responses) {
         final PermissionUser permissionUser = packet.content().get("user", PermissionUser.TYPE);
         final PermissionAction action = packet.content().get("action", PermissionAction.class);
 

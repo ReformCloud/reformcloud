@@ -11,6 +11,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packe
 import systems.reformcloud.reformcloud2.executor.controller.ControllerExecutor;
 import systems.reformcloud.reformcloud2.executor.controller.packet.out.event.ControllerEventPlayerConnected;
 
+import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 
 public final class ControllerPacketInAPIPlayerLoggedIn implements NetworkHandler {
@@ -21,7 +22,7 @@ public final class ControllerPacketInAPIPlayerLoggedIn implements NetworkHandler
     }
 
     @Override
-    public void handlePacket(PacketSender packetSender, Packet packet, Consumer<Packet> responses) {
+    public void handlePacket(@Nonnull PacketSender packetSender, @Nonnull Packet packet, @Nonnull Consumer<Packet> responses) {
         String name = packet.content().getString("name");
         System.out.println(LanguageManager.get(
                 "player-logged-in",

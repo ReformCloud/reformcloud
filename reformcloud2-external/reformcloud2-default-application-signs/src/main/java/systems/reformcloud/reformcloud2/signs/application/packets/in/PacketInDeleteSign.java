@@ -9,6 +9,7 @@ import systems.reformcloud.reformcloud2.signs.application.packets.out.PacketOutD
 import systems.reformcloud.reformcloud2.signs.packets.PacketUtil;
 import systems.reformcloud.reformcloud2.signs.util.sign.CloudSign;
 
+import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 
 public class PacketInDeleteSign implements NetworkHandler {
@@ -19,7 +20,7 @@ public class PacketInDeleteSign implements NetworkHandler {
     }
 
     @Override
-    public void handlePacket(PacketSender packetSender, Packet packet, Consumer<Packet> responses) {
+    public void handlePacket(@Nonnull PacketSender packetSender, @Nonnull Packet packet, @Nonnull Consumer<Packet> responses) {
         CloudSign sign = packet.content().get("sign", CloudSign.TYPE);
         if (sign == null) {
             return;
