@@ -1,0 +1,100 @@
+package systems.reformcloud.reformcloud2.proxy.application;
+
+import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.system.SystemHelper;
+import systems.reformcloud.reformcloud2.proxy.ProxyConfiguration;
+import systems.reformcloud.reformcloud2.proxy.config.MotdConfiguration;
+import systems.reformcloud.reformcloud2.proxy.config.TabListConfiguration;
+
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Arrays;
+
+public class ConfigHelper {
+
+    private ConfigHelper() {
+        throw new UnsupportedOperationException();
+    }
+
+    private static ProxyConfiguration proxyConfiguration;
+
+    public static void init(File app) {
+        if (!Files.exists(app.toPath()) || !Files.exists(Paths.get(app.toString(), "config.json"))) {
+            SystemHelper.createDirectory(app.toPath());
+            new JsonConfiguration()
+                    .add("config", new ProxyConfiguration(
+                            Arrays.asList(
+                                    new MotdConfiguration(
+                                            "§b§lReform§f§lCloud §8» §7Server Network §8» [§f§l1.8§7-§6§l1.15§8]",
+                                            "§b§lN§f§lews §8» §7§lWe are §a§lonline§7§l!",
+                                            new String[] {
+                                                    " ",
+                                                    "§8× §7powered by §bReform§fCloud",
+                                                    "§8§m-------------------------",
+                                                    "§8× §7Discord: §bhttps://discord.gg/uskXdVZ",
+                                                    " "
+                                            },
+                                            "§a§l✔ §8● §6%proxy_online_players%§8/§f%proxy_max_players%",
+                                            2
+                                    ), new MotdConfiguration(
+                                            "§b§lReform§f§lCloud §8» §7Check out §b§lSpigot§f§lMC",
+                                            "§b§lN§f§lews §8» §7§lWe are §a§lonline§7§l!",
+                                            new String[] {
+                                                    " ",
+                                                    "§8× §7powered by §bReform§fCloud",
+                                                    "§8§m-------------------------",
+                                                    "§8× §7Discord: §bhttps://discord.gg/uskXdVZ",
+                                                    " "
+                                            },
+                                            "§a§l✔ §8● §6%proxy_online_players%§8/§f%proxy_max_players%",
+                                            2
+                                    )
+                            ), Arrays.asList(
+                                    new MotdConfiguration(
+                                            "§b§lReform§f§lCloud §8» §7Server Network §8» [§f§l1.8§7-§6§l1.15§8]",
+                                            "§b§lN§f§lews §8» §7§lWe are in §c§lmaintenance§7§l!",
+                                            new String[] {
+                                                    " ",
+                                                    "§8× §7powered by §bReform§fCloud",
+                                                    "§8§m-------------------------",
+                                                    "§8× §7Discord: §bhttps://discord.gg/uskXdVZ",
+                                                    " "
+                                            },
+                                            "§c§l✘ §8● §4§lMAINTENANCE",
+                                            2
+                                    ), new MotdConfiguration(
+                                            "§b§lReform§f§lCloud §8» §7Check out §b§lSpigot§f§lMC",
+                                            "§b§lN§f§lews §8» §7§lWe are in §c§lmaintenance§7§l!",
+                                            new String[] {
+                                                    " ",
+                                                    "§8× §7powered by §bReform§fCloud",
+                                                    "§8§m-------------------------",
+                                                    "§8× §7Discord: §bhttps://discord.gg/uskXdVZ",
+                                                    " "
+                                            },
+                                            "§c§l✘ §8● §4§lMAINTENANCE",
+                                            2
+                                    )
+                            ), Arrays.asList(
+                                    new TabListConfiguration(
+                                            "\n §8§l» §b§lReform§f§lCloud §8§l➥ §7%proxy_online_count%§8/§7%proxy_max_players% §8§l« \n §7Server §8§l➟ §6%player_server% \n",
+                                            "\n §7Discord §8§l➟ §bhttps://discord.gg/uskXdVZ \n §7Twitter §8§l➟ §7@§bReform§fCloud \n",
+                                            2
+                                    ), new TabListConfiguration(
+                                            "\n §8§l» §b§lReform§f§lCloud §8§l➥ §7%proxy_online_count%§8/§7%proxy_max_players% §8§l« \n §8§l➟ §7§lNot just a cloud system, but an experience \n",
+                                            "\n §7Discord §8§l➟ §bhttps://discord.gg/uskXdVZ \n §7Twitter §8§l➟ §7@§bReform§fCloud \n",
+                                           2
+                                    )
+                            )
+                    )).write(Paths.get(app.toString(), "config.json"));
+        }
+
+        proxyConfiguration = JsonConfiguration.read(Paths.get(app.toString(), "config.json"))
+                .get("config", ProxyConfiguration.TYPE);
+    }
+
+    public static ProxyConfiguration getProxyConfiguration() {
+        return proxyConfiguration;
+    }
+}

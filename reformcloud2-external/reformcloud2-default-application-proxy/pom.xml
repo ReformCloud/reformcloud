@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>reformcloud2-default-plugin-notifications</artifactId>
+    <artifactId>reformcloud2-default-application-proxy</artifactId>
 
     <repositories>
         <!-- bungee repo -->
