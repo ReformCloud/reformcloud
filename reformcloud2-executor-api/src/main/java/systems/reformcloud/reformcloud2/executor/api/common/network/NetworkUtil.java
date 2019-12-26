@@ -99,34 +99,30 @@ public final class NetworkUtil {
     }
 
     public static synchronized ByteBuf write(ByteBuf byteBuf, int value) {
-        do {
-            byte temp = (byte) (value & 0b01111111);
+        while ((value & -128) != 0) {
+            byteBuf.writeByte(value & 127 | 128);
             value >>>= 7;
-            if (value != 0) {
-                temp |= 0b10000000;
-            }
-            byteBuf.writeByte(temp);
-        } while (value != 0);
+        }
 
+        byteBuf.writeByte(value);
         return byteBuf;
     }
 
     public static synchronized int read(ByteBuf byteBuf) {
         int numRead = 0;
         int result = 0;
+
         byte read;
         do {
             read = byteBuf.readByte();
-            int value = (read & 0b01111111);
-            result |= (value << (7 * numRead));
+            numRead |= (read & 127) << result++ * 7;
 
-            numRead++;
-            if (numRead > 5) {
+            if (result > 5) {
                 throw new RuntimeException("VarInt is too big");
             }
-        } while ((read & 0b10000000) != 0);
+        } while ((read & 128) == 128);
 
-        return result;
+        return numRead;
     }
 
     public static synchronized ByteBuf write(ByteBuf byteBuf, String s) {
@@ -199,6 +195,16 @@ public final class NetworkUtil {
                 });
             }
         };
+    }
+
+    public static int getVarIntSize(int readable) {
+        for (int i = 1; i < 5; ++i) {
+            if ((readable & -1 << i * 7) == 0) {
+                return i;
+            }
+        }
+
+        return 5;
     }
 
     private NetworkUtil() {
