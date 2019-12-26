@@ -167,7 +167,7 @@ public class BasicLocalNodeProcess implements LocalNodeProcess {
     @Override
     public void shutdown() {
         startupTime.set(-1);
-        JavaProcessHelper.shutdown(process, true, true, TimeUnit.SECONDS.toMillis(10), "stop\n", "end\n");
+        JavaProcessHelper.shutdown(process, true, true, TimeUnit.SECONDS.toMillis(10), getShutdownCommands());
 
         NodeProcessScreenHandler.unregisterScreen(this.processInformation.getProcessUniqueID());
         NodeExecutor.getInstance().getClusterSyncManager().syncProcessStop(processInformation);
