@@ -9,7 +9,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-public class OnlinePercentCheckerTask {
+public final class OnlinePercentCheckerTask {
 
     private static final Collection<Integer> TASKS = new ArrayList<>();
 

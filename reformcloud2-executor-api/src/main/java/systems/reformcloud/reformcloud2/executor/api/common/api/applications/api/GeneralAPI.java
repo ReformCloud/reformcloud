@@ -29,7 +29,7 @@ public class GeneralAPI implements SyncAPI, AsyncAPI {
     }
 
     private final ExternalAPIImplementation externalAPIImplementation;
-    
+
     @Nonnull
     @Override
     public ProcessAsyncAPI getProcessAsyncAPI() {

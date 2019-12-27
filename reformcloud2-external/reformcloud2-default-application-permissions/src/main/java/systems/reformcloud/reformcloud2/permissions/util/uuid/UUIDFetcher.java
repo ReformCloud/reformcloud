@@ -13,7 +13,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
-public class UUIDFetcher {
+public final class UUIDFetcher {
 
     private UUIDFetcher() {
         throw new UnsupportedOperationException();

@@ -29,7 +29,7 @@ import javax.annotation.Nullable;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class DefaultPermissionUtil implements PermissionUtil {
+public final class DefaultPermissionUtil implements PermissionUtil {
 
     private static final String PERMISSION_GROUP_TABLE = "reformcloud_internal_db_perm_group";
 

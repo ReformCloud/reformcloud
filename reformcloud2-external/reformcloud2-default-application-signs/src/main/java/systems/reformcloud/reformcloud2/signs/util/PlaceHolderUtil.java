@@ -4,7 +4,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInfor
 
 import java.util.function.Function;
 
-public class PlaceHolderUtil {
+public final class PlaceHolderUtil {
 
     private PlaceHolderUtil() {
         throw new UnsupportedOperationException();

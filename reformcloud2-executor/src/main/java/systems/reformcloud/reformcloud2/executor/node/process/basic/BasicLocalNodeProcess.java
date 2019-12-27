@@ -85,6 +85,7 @@ public class BasicLocalNodeProcess implements LocalNodeProcess {
         }
 
         SystemHelper.doCopy("reformcloud/files/runner.jar", path + "/runner.jar");
+        SystemHelper.doCopy("reformcloud/.bin/executor.jar", path + "/plugins/executor.jar");
 
         Double<String, Integer> connection = NodeExecutor.getInstance().getConnectHost();
         new JsonConfiguration()

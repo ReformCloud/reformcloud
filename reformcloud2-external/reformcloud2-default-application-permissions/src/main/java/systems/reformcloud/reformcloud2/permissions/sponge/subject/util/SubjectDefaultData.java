@@ -7,7 +7,7 @@ import systems.reformcloud.reformcloud2.permissions.sponge.subject.base.user.Spo
 
 import java.util.UUID;
 
-public class SubjectDefaultData {
+public final class SubjectDefaultData {
 
     private SubjectDefaultData() {
         throw new UnsupportedOperationException();

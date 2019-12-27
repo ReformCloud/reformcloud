@@ -6,7 +6,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
 import systems.reformcloud.reformcloud2.proxy.ProxyConfiguration;
 
-public class PluginConfigHandler {
+public final class PluginConfigHandler {
 
     private PluginConfigHandler() {
         throw new UnsupportedOperationException();

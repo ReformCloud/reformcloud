@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 
-public class InternalJsonParser {
+public final class InternalJsonParser {
 
     private InternalJsonParser() {
         throw new UnsupportedOperationException();

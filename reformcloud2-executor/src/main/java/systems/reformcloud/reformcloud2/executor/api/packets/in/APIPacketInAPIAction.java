@@ -16,9 +16,9 @@ public final class APIPacketInAPIAction implements NetworkHandler {
     public APIPacketInAPIAction(PlayerAPIExecutor executor) {
         this.executor = executor;
     }
-    
+
     private final PlayerAPIExecutor executor;
-    
+
     @Override
     public int getHandlingPacketID() {
         return 46;

@@ -5,7 +5,7 @@ import com.velocitypowered.api.permission.PermissionProvider;
 import com.velocitypowered.api.permission.PermissionSubject;
 import com.velocitypowered.api.proxy.Player;
 
-public class DefaultPermissionProvider implements PermissionProvider {
+public final class DefaultPermissionProvider implements PermissionProvider {
 
     public static final DefaultPermissionProvider INSTANCE = new DefaultPermissionProvider();
 

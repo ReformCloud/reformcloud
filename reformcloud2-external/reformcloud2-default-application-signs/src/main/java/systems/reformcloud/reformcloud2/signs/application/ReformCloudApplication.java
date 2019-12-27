@@ -3,6 +3,7 @@ package systems.reformcloud.reformcloud2.signs.application;
 import com.google.gson.reflect.TypeToken;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.application.api.Application;
+import systems.reformcloud.reformcloud2.executor.api.common.application.updater.ApplicationUpdateRepository;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links;
@@ -11,17 +12,21 @@ import systems.reformcloud.reformcloud2.signs.application.packets.in.PacketInCre
 import systems.reformcloud.reformcloud2.signs.application.packets.in.PacketInDeleteSign;
 import systems.reformcloud.reformcloud2.signs.application.packets.in.PacketInGetSignConfig;
 import systems.reformcloud.reformcloud2.signs.application.packets.out.PacketOutReloadConfig;
+import systems.reformcloud.reformcloud2.signs.application.updater.SignsUpdater;
 import systems.reformcloud.reformcloud2.signs.packets.PacketUtil;
 import systems.reformcloud.reformcloud2.signs.util.SignSystemAdapter;
 import systems.reformcloud.reformcloud2.signs.util.sign.CloudSign;
 import systems.reformcloud.reformcloud2.signs.util.sign.config.SignConfig;
 
+import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Collections;
 
 public class ReformCloudApplication extends Application {
 
     private static SignConfig signConfig;
+
+    private static final ApplicationUpdateRepository REPOSITORY = new SignsUpdater();
 
     @Override
     public void onEnable() {
@@ -55,6 +60,12 @@ public class ReformCloudApplication extends Application {
         ExecutorAPI.getInstance().getPacketHandler().unregisterNetworkHandlers(PacketUtil.SIGN_BUS + 1);
         ExecutorAPI.getInstance().getPacketHandler().unregisterNetworkHandlers(PacketUtil.SIGN_BUS + 2);
         ExecutorAPI.getInstance().getPacketHandler().unregisterNetworkHandlers(PacketUtil.SIGN_BUS + 3);
+    }
+
+    @Nullable
+    @Override
+    public ApplicationUpdateRepository getUpdateRepository() {
+        return REPOSITORY;
     }
 
     // ====

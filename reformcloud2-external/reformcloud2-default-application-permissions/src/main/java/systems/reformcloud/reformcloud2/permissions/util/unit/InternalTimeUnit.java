@@ -5,7 +5,7 @@ import java.util.Calendar;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
-public class InternalTimeUnit {
+public final class InternalTimeUnit {
 
     private InternalTimeUnit() {
         throw new UnsupportedOperationException();

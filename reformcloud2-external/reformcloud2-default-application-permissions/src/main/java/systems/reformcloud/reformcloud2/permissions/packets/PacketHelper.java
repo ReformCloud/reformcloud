@@ -6,7 +6,7 @@ import systems.reformcloud.reformcloud2.permissions.packets.api.in.APIPacketInUs
 import systems.reformcloud.reformcloud2.permissions.packets.controller.in.ControllerPacketInGroupAction;
 import systems.reformcloud.reformcloud2.permissions.packets.controller.in.ControllerPacketInUserAction;
 
-public class PacketHelper {
+public final class PacketHelper {
 
     public static final int PERMISSION_BUS = 8000;
 

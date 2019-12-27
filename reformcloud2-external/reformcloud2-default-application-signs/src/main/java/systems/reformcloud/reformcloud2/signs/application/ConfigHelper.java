@@ -9,7 +9,7 @@ import systems.reformcloud.reformcloud2.signs.util.sign.config.util.LayoutContex
 import java.util.Arrays;
 import java.util.Collections;
 
-class ConfigHelper {
+final class ConfigHelper {
 
     private ConfigHelper() {
         throw new UnsupportedOperationException();

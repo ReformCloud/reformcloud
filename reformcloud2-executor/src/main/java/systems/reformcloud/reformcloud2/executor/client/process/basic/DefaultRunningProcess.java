@@ -81,6 +81,7 @@ public final class DefaultRunningProcess implements RunningProcess {
         }
 
         SystemHelper.doCopy("reformcloud/files/runner.jar", path + "/runner.jar");
+        SystemHelper.doCopy("reformcloud/.bin/executor.jar", path + "/plugins/executor.jar");
 
         new JsonConfiguration()
                 .add("controller-host", ClientExecutor.getInstance().getClientExecutorConfig().getClientConnectionConfig().getHost())

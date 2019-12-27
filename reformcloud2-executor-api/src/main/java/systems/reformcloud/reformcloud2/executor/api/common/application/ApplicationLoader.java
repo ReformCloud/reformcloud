@@ -35,6 +35,11 @@ public interface ApplicationLoader {
     void disableApplications();
 
     /**
+     * Fetches all updates for all addons & downloads them
+     */
+    void fetchAllUpdates();
+
+    /**
      * Installs an specific application
      *
      * @param application The application which should get installed

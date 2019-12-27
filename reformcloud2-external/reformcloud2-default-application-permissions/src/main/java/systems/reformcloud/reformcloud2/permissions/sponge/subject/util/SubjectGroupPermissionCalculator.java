@@ -9,7 +9,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-public class SubjectGroupPermissionCalculator {
+public final class SubjectGroupPermissionCalculator {
 
     private SubjectGroupPermissionCalculator() {
         throw new UnsupportedOperationException();

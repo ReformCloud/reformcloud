@@ -6,6 +6,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.application.api.Appl
 import systems.reformcloud.reformcloud2.executor.api.common.application.builder.ApplicationConfigBuilder;
 import systems.reformcloud.reformcloud2.executor.api.common.application.loader.AppClassLoader;
 import systems.reformcloud.reformcloud2.executor.api.common.application.unsafe.ApplicationUnsafe;
+import systems.reformcloud.reformcloud2.executor.api.common.application.updater.ApplicationUpdateRepository;
 import systems.reformcloud.reformcloud2.executor.api.common.base.Conditions;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.dependency.DefaultDependencyLoader;
@@ -14,12 +15,14 @@ import systems.reformcloud.reformcloud2.executor.api.common.dependency.Dependenc
 import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.system.DownloadHelper;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.system.SystemHelper;
 
 import javax.annotation.Nonnull;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -67,12 +70,6 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
                             configurable.getOrDefault("impl-version", (String) null)
                     ).create();
 
-                    Conditions.isTrue(applicationConfig.getName() != null, "Application has no name");
-                    Conditions.isTrue(applicationConfig.main() != null, "Application must have a main class");
-                    Conditions.isTrue(applicationConfig.author() != null, "Application must have a author");
-                    Conditions.isTrue(applicationConfig.version() != null, "Application must have a version");
-                    Conditions.isTrue(applicationConfig.implementedVersion() != null, "Application must have an api-version");
-
                     ApplicationUnsafe.checkIfUnsafe(applicationConfig);
 
                     load.put(applicationConfig.getName(), applicationConfig);
@@ -110,6 +107,10 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
                 application.onInstalled();
                 application.getApplication().setApplicationStatus(ApplicationStatus.INSTALLED);
                 System.out.println(LanguageManager.get("successfully-installed-app", config.getKey()));
+
+                if (application.getUpdateRepository() != null) {
+                    application.getUpdateRepository().fetchOrigin();
+                }
 
                 applications.add(application);
             } catch (final Throwable throwable) {
@@ -157,12 +158,19 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
             System.out.println(LanguageManager.get("successfully-uninstalled-app", application.getApplication().getName()));
             application.getApplication().setApplicationStatus(ApplicationStatus.UNINSTALLED);
 
+            this.handleUpdate(application);
+
             application.unloadAllLanguageFiles();
             application.getAppClassLoader().close();
         });
         applications.clear();
 
         applicationHandlers.forEach(ApplicationHandler::onDisableApplications);
+    }
+
+    @Override
+    public void fetchAllUpdates() {
+        this.applications.forEach(this::handleUpdate);
     }
 
     @Override
@@ -199,12 +207,6 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
                         configurable.getString("impl-version")
                 ).create();
 
-                Conditions.isTrue(applicationConfig.getName() != null, "Application has no name");
-                Conditions.isTrue(applicationConfig.main() != null, "Application must have a main class");
-                Conditions.isTrue(applicationConfig.author() != null, "Application must have a author");
-                Conditions.isTrue(applicationConfig.version() != null, "Application must have a version");
-                Conditions.isTrue(applicationConfig.implementedVersion() != null, "Application must have an api-version");
-
                 ApplicationUnsafe.checkIfUnsafe(applicationConfig);
 
                 if (applicationConfig.dependencies().length != 0) {
@@ -228,6 +230,10 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
                 app.onInstalled();
                 app.getApplication().setApplicationStatus(ApplicationStatus.INSTALLED);
                 System.out.println(LanguageManager.get("successfully-installed-app", applicationConfig.getName()));
+
+                if (app.getUpdateRepository() != null) {
+                    app.getUpdateRepository().fetchOrigin();
+                }
 
                 applications.add(app);
                 return true;
@@ -256,6 +262,8 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
         application.onUninstall();
         System.out.println(LanguageManager.get("successfully-uninstalled-app", application.getApplication().getName()));
         application.getApplication().setApplicationStatus(ApplicationStatus.UNINSTALLED);
+
+        this.handleUpdate(application);
 
         application.unloadAllLanguageFiles();
         application.getAppClassLoader().close();
@@ -292,5 +300,28 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
     @Override
     public void addApplicationHandler(@Nonnull ApplicationHandler applicationHandler) {
         applicationHandlers.add(applicationHandler);
+    }
+
+    private void handleUpdate(Application application) {
+        ApplicationUpdateRepository repository = application.getUpdateRepository();
+        if (repository == null || !repository.isNewVersionAvailable() || repository.getUpdate() == null) {
+            return;
+        }
+
+        SystemHelper.createDirectory(Paths.get("reformcloud/.update/apps"));
+
+        System.out.println(LanguageManager.get(
+                "application-download-update",
+                application.getApplication().applicationConfig().getName(),
+                application.getApplication().applicationConfig().version(),
+                repository.getUpdate().getNewVersion(),
+                repository.getName(),
+                repository.getUpdate().getDownloadUrl()
+        ));
+        DownloadHelper.downloadAndDisconnect(
+                repository.getUpdate().getDownloadUrl(),
+                "reformcloud/.update/apps/" + application.getApplication().getName()
+                        + "-" + repository.getUpdate().getNewVersion() + ".jar"
+        );
     }
 }

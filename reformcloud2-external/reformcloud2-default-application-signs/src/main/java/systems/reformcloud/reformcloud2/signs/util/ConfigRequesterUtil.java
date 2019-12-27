@@ -9,7 +9,7 @@ import systems.reformcloud.reformcloud2.signs.util.sign.config.SignConfig;
 
 import java.util.function.Consumer;
 
-public class ConfigRequesterUtil {
+public final class ConfigRequesterUtil {
 
     private ConfigRequesterUtil() {
         throw new UnsupportedOperationException();

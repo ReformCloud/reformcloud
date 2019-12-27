@@ -22,7 +22,7 @@ public class PlayerAPIImplementation implements PlayerAsyncAPI, PlayerSyncAPI {
     }
 
     private final ProcessManager processManager;
-    
+
     @Nonnull
     @Override
     public Task<Void> sendMessageAsync(@Nonnull UUID player, @Nonnull String message) {

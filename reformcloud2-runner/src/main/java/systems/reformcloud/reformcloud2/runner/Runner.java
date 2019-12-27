@@ -2,6 +2,8 @@ package systems.reformcloud.reformcloud2.runner;
 
 import systems.reformcloud.reformcloud2.runner.classloading.ClassPreparer;
 import systems.reformcloud.reformcloud2.runner.classloading.RunnerClassLoader;
+import systems.reformcloud.reformcloud2.runner.update.ApplicationUpdateApplier;
+import systems.reformcloud.reformcloud2.runner.update.CloudVersionUpdater;
 
 import java.io.*;
 import java.lang.instrument.Instrumentation;
@@ -43,6 +45,9 @@ public final class Runner {
 
     public static synchronized void main(String[] args) {
         if (!isAPI()) {
+            ApplicationUpdateApplier.applyUpdates();
+            CloudVersionUpdater.update();
+
             startSetup((version, id) -> {
                 final File file = new File("reformcloud/.bin/executor.jar");
                 if (!file.exists()) {
@@ -75,7 +80,6 @@ public final class Runner {
             });
         } else {
             runIfProcessExists(path -> {
-                unpackExecutorAsPlugin();
                 ClassLoader classLoader = ClassPreparer.create(path, path1 -> {
                     URL[] urls = new URL[]{path1.toUri().toURL()};
                     return new RunnerClassLoader(urls);
@@ -163,17 +167,17 @@ public final class Runner {
     }
 
     private static void unpackExecutor() {
-        try (InputStream inputStream = Runner.class.getClassLoader().getResourceAsStream("files/executor.jar")) {
-            Files.createDirectories(Paths.get("reformcloud/.bin/libs"));
-            Files.copy(Objects.requireNonNull(inputStream), Paths.get("reformcloud/.bin/executor.jar"), StandardCopyOption.REPLACE_EXISTING);
-        } catch (final Exception ex) {
-            ex.printStackTrace();
+        if (Files.exists(Paths.get("reformcloud/.bin/executor.jar"))) {
+            return;
         }
-    }
 
-    private static void unpackExecutorAsPlugin() {
         try (InputStream inputStream = Runner.class.getClassLoader().getResourceAsStream("files/executor.jar")) {
-            Files.copy(Objects.requireNonNull(inputStream), Paths.get("plugins/executor.jar"), StandardCopyOption.REPLACE_EXISTING);
+            if (inputStream == null) {
+                throw new IllegalStateException("Could not find \"executor.jar\" in \"runner.jar\". This is not a bug of reformcloud.");
+            }
+
+            Files.createDirectories(Paths.get("reformcloud/.bin/libs"));
+            Files.copy(inputStream, Paths.get("reformcloud/.bin/executor.jar"), StandardCopyOption.REPLACE_EXISTING);
         } catch (final Exception ex) {
             ex.printStackTrace();
         }

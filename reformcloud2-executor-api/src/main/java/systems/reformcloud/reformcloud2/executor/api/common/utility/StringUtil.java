@@ -7,7 +7,7 @@ import java.util.UUID;
 public final class StringUtil {
 
     public static final String RUNNER_DOWNLOAD_URL = "https://internal.reformcloud.systems/runner.jar";
-    
+
     public static final String[] RC_COMMAND_HELP = new String[] {
             "rc maintenance <group>",
             "rc copy <uuid | name>",

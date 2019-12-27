@@ -9,7 +9,7 @@ import java.nio.file.Paths;
  * @deprecated May get replaced by another impl
  */
 @Deprecated
-public class Null {
+public final class Null {
 
     private Null() {
         throw new UnsupportedOperationException();
