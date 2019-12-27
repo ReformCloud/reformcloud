@@ -355,6 +355,11 @@ public final class ControllerExecutor extends Controller {
     }
 
     @Nonnull
+    public ApplicationLoader getApplicationLoader() {
+        return applicationLoader;
+    }
+
+    @Nonnull
     @Override
     public SyncAPI getSyncAPI() {
         return syncAPI;

@@ -9,6 +9,9 @@ public final class StringUtil {
     public static final String RUNNER_DOWNLOAD_URL = "https://internal.reformcloud.systems/runner.jar";
 
     public static final String[] RC_COMMAND_HELP = new String[] {
+            "rc applications",
+            "rc applications update",
+            "rc applications update <name>",
             "rc maintenance <group>",
             "rc copy <uuid | name>",
             "rc screen <uuid | name> toggle",

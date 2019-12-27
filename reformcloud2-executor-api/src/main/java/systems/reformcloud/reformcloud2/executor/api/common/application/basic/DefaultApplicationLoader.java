@@ -174,6 +174,12 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
     }
 
     @Override
+    public void fetchUpdates(@Nonnull String application) {
+        Links.filterToReference(this.applications,
+                e -> e.getApplication().getName().equalsIgnoreCase(application)).ifPresent(this::handleUpdate);
+    }
+
+    @Override
     public boolean doSpecificApplicationInstall(@Nonnull InstallableApplication application) {
         DownloadHelper.downloadAndDisconnect(application.url(), "reformcloud/applications/" + application.getName() + ".jar");
         File file = new File("reformcloud/applications/" + application.getName() + ".jar");

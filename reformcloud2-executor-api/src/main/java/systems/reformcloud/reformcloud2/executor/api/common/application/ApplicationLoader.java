@@ -40,6 +40,13 @@ public interface ApplicationLoader {
     void fetchAllUpdates();
 
     /**
+     * Fetches the updates for a specific addon
+     *
+     * @param application The name of the application which should get checked
+     */
+    void fetchUpdates(@Nonnull String application);
+
+    /**
      * Installs an specific application
      *
      * @param application The application which should get installed

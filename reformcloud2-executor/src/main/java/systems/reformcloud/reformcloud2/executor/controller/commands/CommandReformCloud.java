@@ -92,8 +92,13 @@ public final class CommandReformCloud extends GlobalCommand {
                     + " Host: " + clientRuntimeInformation.startHost()
             ));
             return true;
+        } else if (strings.length == 1 && strings[0].equalsIgnoreCase("applications")) {
+            System.out.println(LanguageManager.get("command-rc-loaded-applications"));
+            ExecutorAPI.getInstance().getSyncAPI().getApplicationSyncAPI().getApplications().forEach(e ->
+                System.out.println("   => " + e.getName() + " / Version: " + e.applicationConfig().version())
+            );
+            return true;
         }
-
 
         if (strings.length <= 1) {
             sendHelp(commandSource);
@@ -101,6 +106,22 @@ public final class CommandReformCloud extends GlobalCommand {
         }
 
         switch (strings[0].toLowerCase()) {
+            case "applications": {
+                if (strings.length == 2 && strings[1].equalsIgnoreCase("update")) {
+                    System.out.println(LanguageManager.get("command-rc-fetching-updates"));
+                    ControllerExecutor.getInstance().getApplicationLoader().fetchAllUpdates();
+                    return true;
+                }
+
+                if (strings.length == 3 && strings[1].equalsIgnoreCase("update")) {
+                    System.out.println(LanguageManager.get("command-rc-try-fetch", strings[2]));
+                    ControllerExecutor.getInstance().getApplicationLoader().fetchUpdates(strings[2]);
+                    return true;
+                }
+
+                break;
+            }
+
             case "screen": {
                 if (strings.length == 3) {
                     ProcessInformation processInformation;

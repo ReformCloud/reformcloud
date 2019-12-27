@@ -21,6 +21,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.utility.StringUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
 import systems.reformcloud.reformcloud2.executor.api.node.process.LocalNodeProcess;
+import systems.reformcloud.reformcloud2.executor.controller.ControllerExecutor;
 import systems.reformcloud.reformcloud2.executor.controller.packet.out.ControllerPacketOutCopyProcess;
 import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
 import systems.reformcloud.reformcloud2.executor.node.config.NodeConfig;
@@ -79,6 +80,12 @@ public final class CommandReformCloud extends GlobalCommand {
                             + processInformation.getTemplate().getVersion()
             ));
             return true;
+        } else if (strings.length == 1 && strings[0].equalsIgnoreCase("applications")) {
+            System.out.println(LanguageManager.get("command-rc-loaded-applications"));
+            ExecutorAPI.getInstance().getSyncAPI().getApplicationSyncAPI().getApplications().forEach(e ->
+                    System.out.println("   => " + e.getName() + " / Version: " + e.applicationConfig().version())
+            );
+            return true;
         }
 
         if (strings.length <= 1) {
@@ -87,6 +94,22 @@ public final class CommandReformCloud extends GlobalCommand {
         }
 
         switch (strings[0].toLowerCase()) {
+            case "applications": {
+                if (strings.length == 2 && strings[1].equalsIgnoreCase("update")) {
+                    System.out.println(LanguageManager.get("command-rc-fetching-updates"));
+                    ControllerExecutor.getInstance().getApplicationLoader().fetchAllUpdates();
+                    return true;
+                }
+
+                if (strings.length == 3 && strings[1].equalsIgnoreCase("update")) {
+                    System.out.println(LanguageManager.get("command-rc-try-fetch", strings[2]));
+                    ControllerExecutor.getInstance().getApplicationLoader().fetchUpdates(strings[2]);
+                    return true;
+                }
+
+                break;
+            }
+
             case "screen": {
                 if (strings.length == 3) {
                     ProcessInformation processInformation;
