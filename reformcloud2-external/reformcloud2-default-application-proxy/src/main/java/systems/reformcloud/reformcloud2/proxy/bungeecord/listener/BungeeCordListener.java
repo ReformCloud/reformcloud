@@ -102,8 +102,8 @@ public class BungeeCordListener implements Listener {
         // ====
 
         MotdConfiguration current = getCurrentMotdConfig();
-        String[] players = replaceAll(current.getPlayerInfo() == null ? new String[0] : current.getPlayerInfo());
-        String protocol = replaceMotdString(current.getProtocol() == null ? "" : current.getProtocol());
+        String[] players = replaceAll(current.getPlayerInfo());
+        String protocol = replaceMotdString(current.getProtocol());
         String first = current.getFirstLine() == null ? "" : current.getFirstLine();
         String second = current.getSecondLine() == null ? "" : current.getSecondLine();
 
@@ -111,9 +111,11 @@ public class BungeeCordListener implements Listener {
 
         // ====
 
-        ServerPing.PlayerInfo[] playerInfos = new ServerPing.PlayerInfo[players.length];
-        for (int i = 0; i < playerInfos.length; i++) {
-            playerInfos[i] = new ServerPing.PlayerInfo(players[i], UUID.randomUUID());
+        ServerPing.PlayerInfo[] playerInfos = new ServerPing.PlayerInfo[players == null ? 0 : players.length];
+        if (players != null) {
+            for (int i = 0; i < playerInfos.length; i++) {
+                playerInfos[i] = new ServerPing.PlayerInfo(players[i], UUID.randomUUID());
+            }
         }
 
         // ====
@@ -124,12 +126,17 @@ public class BungeeCordListener implements Listener {
 
         // ====
 
-        serverPing.setDescriptionComponent(new TextComponent(finalMotd));
-        serverPing.setPlayers(new ServerPing.Players(
-                max, online, playerInfos
-        ));
-        serverPing.setVersion(new ServerPing.Protocol(protocol, 1));
+        if (players != null) {
+            serverPing.setPlayers(new ServerPing.Players(
+                    max, online, playerInfos
+            ));
+        }
 
+        if (protocol != null) {
+            serverPing.setVersion(new ServerPing.Protocol(protocol, 1));
+        }
+
+        serverPing.setDescriptionComponent(new TextComponent(finalMotd));
         event.setResponse(serverPing);
     }
 
@@ -200,6 +207,10 @@ public class BungeeCordListener implements Listener {
     /* ==================================== */
 
     private static String replaceMotdString(String text) {
+        if (text == null) {
+            return null;
+        }
+
         ProcessInformation current = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation();
         if (current == null) {
             return ChatColor.translateAlternateColorCodes('&', text);
@@ -217,6 +228,10 @@ public class BungeeCordListener implements Listener {
     }
 
     private static String[] replaceAll(String[] in) {
+        if (in == null) {
+            return null;
+        }
+
         return Arrays.stream(in).map(BungeeCordListener::replaceMotdString).toArray(String[]::new);
     }
 

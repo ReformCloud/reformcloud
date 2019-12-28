@@ -99,8 +99,8 @@ public class VelocityListener {
         // ====
 
         MotdConfiguration current = getCurrentMotdConfig();
-        String[] players = replaceAll(current.getPlayerInfo() == null ? new String[0] : current.getPlayerInfo());
-        String protocol = replaceMotdString(current.getProtocol() == null ? "" : current.getProtocol());
+        String[] players = replaceAll(current.getPlayerInfo());
+        String protocol = replaceMotdString(current.getProtocol());
         String first = current.getFirstLine() == null ? "" : current.getFirstLine();
         String second = current.getSecondLine() == null ? "" : current.getSecondLine();
 
@@ -108,9 +108,11 @@ public class VelocityListener {
 
         // ====
 
-        ServerPing.SamplePlayer[] samplePlayers = new ServerPing.SamplePlayer[players.length];
-        for (int i = 0; i < samplePlayers.length; i++) {
-            samplePlayers[i] = new ServerPing.SamplePlayer(players[i], UUID.randomUUID());
+        ServerPing.SamplePlayer[] samplePlayers = new ServerPing.SamplePlayer[players == null ? 0 : players.length];
+        if (players != null) {
+            for (int i = 0; i < samplePlayers.length; i++) {
+                samplePlayers[i] = new ServerPing.SamplePlayer(players[i], UUID.randomUUID());
+            }
         }
 
         // ====
@@ -121,21 +123,21 @@ public class VelocityListener {
 
         // ====
 
-        ServerPing result = builder
+        builder
                 .clearMods()
-
                 .description(TextComponent.of(finalMotd))
-
-                .clearSamplePlayers()
-                .samplePlayers(samplePlayers)
-
-                .version(new ServerPing.Version(1, protocol))
-
                 .maximumPlayers(max)
                 .onlinePlayers(online)
-
                 .build();
-        event.setPing(result);
+        if (players != null) {
+            builder.clearSamplePlayers().samplePlayers(samplePlayers);
+        }
+
+        if (protocol != null) {
+            builder.version(new ServerPing.Version(1, protocol));
+        }
+
+        event.setPing(builder.build());
     }
 
     @Subscribe
@@ -197,6 +199,10 @@ public class VelocityListener {
     /* ==================================== */
 
     private static String replaceMotdString(String text) {
+        if (text == null) {
+            return null;
+        }
+
         ProcessInformation current = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation();
         if (current == null) {
             return text;
@@ -214,6 +220,10 @@ public class VelocityListener {
     }
 
     private static String[] replaceAll(String[] in) {
+        if (in == null) {
+            return null;
+        }
+
         return Arrays.stream(in).map(VelocityListener::replaceMotdString).toArray(String[]::new);
     }
 
