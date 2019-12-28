@@ -41,6 +41,12 @@ public class CommandReformCloud implements Command {
 
         if (strings.length == 2) {
             switch (strings[0].toLowerCase()) {
+                case "copy": {
+                    ExecutorAPI.getInstance().getSyncAPI().getConsoleSyncAPI().dispatchCommandAndGetResult("rc copy " + strings[1]);
+                    commandSender.sendMessage(getCommandSuccessMessage());
+                    return;
+                }
+
                 case "start": {
                     ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().startProcess(strings[1]);
                     commandSender.sendMessage(getCommandSuccessMessage());
@@ -134,6 +140,7 @@ public class CommandReformCloud implements Command {
         }
 
         commandSender.sendMessage(TextComponent.of(prefix + "§7/rc list"));
+        commandSender.sendMessage(TextComponent.of(prefix + "§7/rc copy <name>"));
         commandSender.sendMessage(TextComponent.of(prefix + "§7/rc start <group>"));
         commandSender.sendMessage(TextComponent.of(prefix + "§7/rc start <group> <count>"));
         commandSender.sendMessage(TextComponent.of(prefix + "§7/rc stop <name>"));
