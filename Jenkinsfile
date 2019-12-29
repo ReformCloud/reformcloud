@@ -25,7 +25,7 @@ pipeline {
                 sh "mkdir -p results";
                 sh "cp -r .templates/* results/";
                 sh "cp reformcloud2-runner/target/runner.jar results/runner.jar";
-                sh "zip ReformCloud2.zip results/ -r -D";
+                zip archive: true, dir: 'results', glob: '', zipFile: 'ReformCloud2.zip';
                 sh "rm -rf results/";
             }
         }
