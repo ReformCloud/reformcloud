@@ -1,7 +1,7 @@
 pipeline {
     agent any
     tools {
-        jdk "Java8"
+        jdk "jdk_1.8.0_222"
     }
 
     stages {
@@ -25,14 +25,14 @@ pipeline {
                 sh "mkdir results";
                 sh "cp -r .templates/* results/";
                 sh "cp reformcloud2-runner/target/runner.jar results/runner.jar";
-                zip archive: true, dir: 'results', glob: '', zipFile: 'ReformCloud2.zip';
+                sh "zip ReformCloud2.zip results/ -r";
                 sh "rm -rf results/";
             }
         }
 
         stage('Archive') {
             steps {
-                archiveArtifacts artifacts: 'reformcloud2-runner/target/runner.jar'
+                archiveArtifacts artifacts: 'ReformCloud2.zip'
             }
         }
     }
