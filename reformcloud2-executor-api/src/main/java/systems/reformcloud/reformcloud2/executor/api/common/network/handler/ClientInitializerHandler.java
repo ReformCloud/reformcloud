@@ -7,10 +7,10 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.channel.Netw
 import systems.reformcloud.reformcloud2.executor.api.common.network.client.NetworkClient;
 import systems.reformcloud.reformcloud2.executor.api.common.network.init.InitializerHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
-import systems.reformcloud.reformcloud2.executor.api.common.network.packet.serialisation.LengthDeserializer;
-import systems.reformcloud.reformcloud2.executor.api.common.network.packet.serialisation.LengthSerializer;
-import systems.reformcloud.reformcloud2.executor.api.common.network.packet.util.PacketDecoder;
-import systems.reformcloud.reformcloud2.executor.api.common.network.packet.util.PacketEncoder;
+import systems.reformcloud.reformcloud2.executor.api.common.network.packet.netty.PacketDecoder;
+import systems.reformcloud.reformcloud2.executor.api.common.network.packet.netty.PacketEncoder;
+import systems.reformcloud.reformcloud2.executor.api.common.network.packet.netty.serialisation.LengthDeserializer;
+import systems.reformcloud.reformcloud2.executor.api.common.network.packet.netty.serialisation.LengthSerializer;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.function.Double;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.function.DoubleFunction;
 

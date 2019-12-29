@@ -1,7 +1,7 @@
 package systems.reformcloud.reformcloud2.executor.api.common.network.channel;
 
 import io.netty.channel.ChannelHandlerContext;
-import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
+import systems.reformcloud.reformcloud2.executor.api.common.network.packet.WrappedByteInput;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.handler.PacketHandler;
 
 import javax.annotation.Nonnull;
@@ -46,9 +46,9 @@ public interface NetworkChannelReader {
      * Gets called when a packet comes into the channel
      *
      * @param context The context of the channel where the packet is from
-     * @param packet The packet which got sent
+     * @param input The sent content by the sender
      */
-    void read(ChannelHandlerContext context, Packet packet);
+    void read(ChannelHandlerContext context, WrappedByteInput input);
 
     /**
      * Handles the exceptions which will occur in the channel

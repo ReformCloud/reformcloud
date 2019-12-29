@@ -6,14 +6,14 @@ import systems.reformcloud.reformcloud2.executor.api.common.application.LoadedAp
 import systems.reformcloud.reformcloud2.executor.api.common.application.basic.DefaultLoadedApplication;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
-import systems.reformcloud.reformcloud2.executor.api.common.network.channel.handler.NetworkHandler;
+import systems.reformcloud.reformcloud2.executor.api.common.network.channel.handler.DefaultJsonNetworkHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.JsonPacket;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 
 import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 
-public final class ControllerQueryInGetLoadedApplication implements NetworkHandler {
+public final class ControllerQueryInGetLoadedApplication extends DefaultJsonNetworkHandler {
 
     @Override
     public int getHandlingPacketID() {

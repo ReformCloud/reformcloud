@@ -3,11 +3,13 @@ package systems.reformcloud.reformcloud2.executor.api.common;
 import com.sun.management.OperatingSystemMXBean;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.optional.ReferencedOptional;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.lang.management.*;
 import java.lang.ref.WeakReference;
+import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -119,6 +121,18 @@ public final class CommonHelper {
 
     public static int calculateMaxMemory() {
         return (int) ((operatingSystemMXBean().getTotalPhysicalMemorySize() / 1048576) - 2048);
+    }
+
+    public static String getIpAddress(@Nonnull String input) {
+        if (input.split("\\.").length == 4) {
+            return input;
+        }
+
+        try {
+            return InetAddress.getByName(input).getHostAddress();
+        } catch (final Throwable throwable) {
+            return null;
+        }
     }
 
     /* == Enum Helper == */

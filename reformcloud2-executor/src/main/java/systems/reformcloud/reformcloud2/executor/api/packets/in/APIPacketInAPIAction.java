@@ -1,7 +1,7 @@
 package systems.reformcloud.reformcloud2.executor.api.packets.in;
 
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
-import systems.reformcloud.reformcloud2.executor.api.common.network.channel.handler.NetworkHandler;
+import systems.reformcloud.reformcloud2.executor.api.common.network.channel.handler.DefaultJsonNetworkHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.api.executor.PlayerAPIExecutor;
 
@@ -11,7 +11,7 @@ import java.util.function.Consumer;
 
 import static systems.reformcloud.reformcloud2.executor.api.common.api.basic.packets.out.ExternalAPIPacketOutAPIAction.APIAction;
 
-public final class APIPacketInAPIAction implements NetworkHandler {
+public final class APIPacketInAPIAction extends DefaultJsonNetworkHandler {
 
     public APIPacketInAPIAction(PlayerAPIExecutor executor) {
         this.executor = executor;

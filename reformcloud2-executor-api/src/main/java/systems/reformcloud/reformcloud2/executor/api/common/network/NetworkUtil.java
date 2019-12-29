@@ -23,12 +23,11 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.channel.defa
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.JsonPacket;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
+import systems.reformcloud.reformcloud2.executor.api.common.network.packet.WrappedByteInput;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.handler.PacketHandler;
 
 import javax.annotation.Nonnull;
 import java.net.InetSocketAddress;
-import java.nio.charset.StandardCharsets;
-import java.util.UUID;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
@@ -132,29 +131,11 @@ public final class NetworkUtil {
         return result;
     }
 
-    public static synchronized void writeString(ByteBuf byteBuf, String s) {
-        byte[] values = s.getBytes(StandardCharsets.UTF_8);
-        write(byteBuf, values.length);
-        byteBuf.writeBytes(values);
-    }
-
     public static synchronized byte[] readBytes(ByteBuf byteBuf) {
         int length = read(byteBuf);
         byte[] bytes = new byte[length];
         byteBuf.readBytes(bytes);
         return bytes;
-    }
-
-    public static synchronized String readString(ByteBuf byteBuf) {
-        int integer = read(byteBuf);
-        byte[] buffer = new byte[integer];
-        byteBuf.readBytes(buffer, 0, integer);
-        return new String(buffer, StandardCharsets.UTF_8);
-    }
-
-    public static synchronized UUID readUniqueID(ByteBuf byteBuf) {
-        String query = readString(byteBuf);
-        return "null".equals(query) ? null : UUID.fromString(query);
     }
 
     public static NetworkChannelReader newReader(PacketHandler packetHandler, Consumer<PacketSender> consumer) {
@@ -198,19 +179,23 @@ public final class NetworkUtil {
             }
 
             @Override
-            public void read(ChannelHandlerContext context, Packet packet) {
-                NetworkUtil.EXECUTOR.execute(() -> {
-                    if (packet.queryUniqueID() != null && getPacketHandler().getQueryHandler().hasWaitingQuery(packet.queryUniqueID())) {
-                        getPacketHandler().getQueryHandler().getWaitingQuery(packet.queryUniqueID()).complete(packet);
-                    } else {
-                        getPacketHandler().getNetworkHandlers(packet.packetID()).forEach(networkHandler -> networkHandler.handlePacket(sender, packet, out -> {
-                            if (packet.queryUniqueID() != null) {
-                                out.setQueryID(packet.queryUniqueID());
-                                sender.sendPacket(out);
-                            }
-                        }));
-                    }
-                });
+            public void read(ChannelHandlerContext context, WrappedByteInput input) {
+                NetworkUtil.EXECUTOR.execute(() ->
+                    getPacketHandler().getNetworkHandlers(input.getPacketID()).forEach(networkHandler -> {
+                        try {
+                            Packet packet = networkHandler.read(input.getPacketID(), input.toObjectStream());
+
+                            networkHandler.handlePacket(sender, packet, out -> {
+                                if (packet.queryUniqueID() != null) {
+                                    out.setQueryID(packet.queryUniqueID());
+                                    sender.sendPacket(out);
+                                }
+                            });
+                        } catch (final Exception ex) {
+                            ex.printStackTrace();
+                        }
+                    })
+                );
             }
         };
     }

@@ -3,7 +3,7 @@ package systems.reformcloud.reformcloud2.executor.node.network.packet.in.cluster
 import com.google.gson.reflect.TypeToken;
 import systems.reformcloud.reformcloud2.executor.api.common.network.NetworkUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
-import systems.reformcloud.reformcloud2.executor.api.common.network.channel.handler.NetworkHandler;
+import systems.reformcloud.reformcloud2.executor.api.common.network.channel.handler.DefaultJsonNetworkHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
@@ -12,7 +12,7 @@ import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.function.Consumer;
 
-public class PacketInSyncProcessInformation implements NetworkHandler {
+public class PacketInSyncProcessInformation extends DefaultJsonNetworkHandler {
 
     @Override
     public int getHandlingPacketID() {

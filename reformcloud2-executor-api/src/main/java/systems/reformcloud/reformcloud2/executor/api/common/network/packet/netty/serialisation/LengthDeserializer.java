@@ -1,4 +1,4 @@
-package systems.reformcloud.reformcloud2.executor.api.common.network.packet.serialisation;
+package systems.reformcloud.reformcloud2.executor.api.common.network.packet.netty.serialisation;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;

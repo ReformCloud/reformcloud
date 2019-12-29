@@ -81,7 +81,7 @@ ReformCloud2 is available in the [central repository](https://search.maven.org/s
     <dependency>
         <groupId>systems.reformcloud.reformcloud2</groupId>
         <artifactId>reformcloud2-executor-api</artifactId>
-        <version>2.0.1</version>
+        <version>2.0.2-SNAPSHOT</version>
         <scope>provided</scope>
     </dependency>
 ```

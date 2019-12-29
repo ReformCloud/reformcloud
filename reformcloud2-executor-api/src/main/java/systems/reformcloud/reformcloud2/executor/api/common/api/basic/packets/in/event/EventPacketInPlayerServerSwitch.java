@@ -4,14 +4,14 @@ import systems.reformcloud.reformcloud2.executor.api.common.api.basic.ExternalEv
 import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.PlayerServerSwitchEvent;
 import systems.reformcloud.reformcloud2.executor.api.common.network.NetworkUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
-import systems.reformcloud.reformcloud2.executor.api.common.network.channel.handler.NetworkHandler;
+import systems.reformcloud.reformcloud2.executor.api.common.network.channel.handler.DefaultJsonNetworkHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 
 import javax.annotation.Nonnull;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-public class EventPacketInPlayerServerSwitch implements NetworkHandler {
+public class EventPacketInPlayerServerSwitch extends DefaultJsonNetworkHandler {
 
     @Override
     public int getHandlingPacketID() {

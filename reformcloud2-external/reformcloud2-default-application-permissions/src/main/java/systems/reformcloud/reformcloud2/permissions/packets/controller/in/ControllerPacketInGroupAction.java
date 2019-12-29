@@ -1,7 +1,7 @@
 package systems.reformcloud.reformcloud2.permissions.packets.controller.in;
 
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
-import systems.reformcloud.reformcloud2.executor.api.common.network.channel.handler.DefaultNetworkHandler;
+import systems.reformcloud.reformcloud2.executor.api.common.network.channel.handler.DefaultJsonNetworkHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 import systems.reformcloud.reformcloud2.permissions.PermissionAPI;
 import systems.reformcloud.reformcloud2.permissions.packets.PacketHelper;
@@ -11,7 +11,7 @@ import systems.reformcloud.reformcloud2.permissions.util.group.PermissionGroup;
 import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 
-public class ControllerPacketInGroupAction extends DefaultNetworkHandler {
+public class ControllerPacketInGroupAction extends DefaultJsonNetworkHandler {
 
     public ControllerPacketInGroupAction() {
         super(PacketHelper.PERMISSION_BUS + 1);

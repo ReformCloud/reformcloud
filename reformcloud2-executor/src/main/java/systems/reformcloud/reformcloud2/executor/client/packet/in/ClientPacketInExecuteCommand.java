@@ -1,14 +1,14 @@
 package systems.reformcloud.reformcloud2.executor.client.packet.in;
 
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
-import systems.reformcloud.reformcloud2.executor.api.common.network.channel.handler.NetworkHandler;
+import systems.reformcloud.reformcloud2.executor.api.common.network.channel.handler.DefaultJsonNetworkHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.client.ClientExecutor;
 
 import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 
-public final class ClientPacketInExecuteCommand implements NetworkHandler {
+public final class ClientPacketInExecuteCommand extends DefaultJsonNetworkHandler {
 
     @Override
     public int getHandlingPacketID() {

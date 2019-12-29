@@ -4,14 +4,14 @@ import com.google.gson.reflect.TypeToken;
 import systems.reformcloud.reformcloud2.executor.api.common.client.ClientRuntimeInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.client.basic.DefaultClientRuntimeInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
-import systems.reformcloud.reformcloud2.executor.api.common.network.channel.handler.NetworkHandler;
+import systems.reformcloud.reformcloud2.executor.api.common.network.channel.handler.DefaultJsonNetworkHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.controller.process.ClientManager;
 
 import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 
-public final class ControllerPacketInClientAuthSuccess implements NetworkHandler {
+public final class ControllerPacketInClientAuthSuccess extends DefaultJsonNetworkHandler {
 
     @Override
     public int getHandlingPacketID() {

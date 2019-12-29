@@ -1,5 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.controller.config;
 
+import systems.reformcloud.reformcloud2.executor.api.common.CommonHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.MainGroup;
@@ -103,14 +104,18 @@ public final class ControllerExecutorConfig {
         ));
         new JsonConfiguration().add("messages", new IngameMessages()).write(Paths.get("reformcloud/configs/messages.json"));
 
-        setup.addQuestion(new DefaultSetupQuestion("Please write the ip address of the controller",
+        setup.addQuestion(new DefaultSetupQuestion("Please write the ip address or domain name of the server",
                 "Please write your real ip",
-                s -> s.trim().split("\\.").length == 4,
-                s -> new JsonConfiguration().add("config", new ControllerConfig(
-                        -1,
-                        Collections.singletonList(Collections.singletonMap(s.trim(), 2008)),
-                        Collections.singletonList(Collections.singletonMap(s.trim(), 1809))
-                )).write(ControllerConfig.PATH)
+                s -> CommonHelper.getIpAddress(s.trim()) != null,
+                s -> {
+                    String ip = CommonHelper.getIpAddress(s.trim());
+
+                    new JsonConfiguration().add("config", new ControllerConfig(
+                            -1,
+                            Collections.singletonList(Collections.singletonMap(ip, 2008)),
+                            Collections.singletonList(Collections.singletonMap(ip, 1809))
+                    )).write(ControllerConfig.PATH);
+                }
         )).addQuestion(new DefaultSetupQuestion(
                 "Please choose an installation type [(Java Proxy and Java Lobby) \"1\", (Pocket Proxy and Pocket Lobby) \"2\", (Nothing) \"3\"]",
                 "This installation type is not valid",

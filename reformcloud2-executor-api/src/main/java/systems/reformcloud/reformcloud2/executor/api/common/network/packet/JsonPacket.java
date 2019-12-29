@@ -4,6 +4,8 @@ import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonCo
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.UUID;
 
 public class JsonPacket implements Packet {
@@ -61,5 +63,12 @@ public class JsonPacket implements Packet {
     @Override
     public void setContent(JsonConfiguration content) {
         this.content = content;
+    }
+
+    @Override
+    public void write(@Nonnull ObjectOutputStream objectOutputStream) throws IOException {
+        objectOutputStream.writeUTF(uid == null ? "null" : uid.toString());
+        objectOutputStream.writeObject(content.toPrettyBytes());
+        objectOutputStream.writeObject(extra.length == 0 ? new byte[]{0} : extra);
     }
 }

@@ -2,7 +2,7 @@ package systems.reformcloud.reformcloud2.signs.application.packets.in;
 
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
-import systems.reformcloud.reformcloud2.executor.api.common.network.channel.handler.NetworkHandler;
+import systems.reformcloud.reformcloud2.executor.api.common.network.channel.handler.DefaultJsonNetworkHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.JsonPacket;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 import systems.reformcloud.reformcloud2.signs.application.ReformCloudApplication;
@@ -11,7 +11,7 @@ import systems.reformcloud.reformcloud2.signs.packets.PacketUtil;
 import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 
-public class PacketInGetSignConfig implements NetworkHandler {
+public class PacketInGetSignConfig extends DefaultJsonNetworkHandler {
 
     @Override
     public int getHandlingPacketID() {

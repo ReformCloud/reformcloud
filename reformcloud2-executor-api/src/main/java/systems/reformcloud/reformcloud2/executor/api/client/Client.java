@@ -12,6 +12,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.channel.Pack
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.common.network.client.NetworkClient;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
+import systems.reformcloud.reformcloud2.executor.api.common.network.packet.WrappedByteInput;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.handler.PacketHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.runtime.ReloadableRuntime;
 
@@ -75,19 +76,23 @@ public abstract class Client extends ExternalAPIImplementation implements Reload
             }
 
             @Override
-            public void read(ChannelHandlerContext context, Packet packet) {
-                NetworkUtil.EXECUTOR.execute(() -> {
-                    if (packet.queryUniqueID() != null && getPacketHandler().getQueryHandler().hasWaitingQuery(packet.queryUniqueID())) {
-                        getPacketHandler().getQueryHandler().getWaitingQuery(packet.queryUniqueID()).complete(packet);
-                    } else {
-                        getPacketHandler().getNetworkHandlers(packet.packetID()).forEach(networkHandler -> networkHandler.handlePacket(packetSender, packet, out -> {
-                            if (packet.queryUniqueID() != null) {
-                                out.setQueryID(packet.queryUniqueID());
-                                packetSender.sendPacket(out);
+            public void read(ChannelHandlerContext context, WrappedByteInput input) {
+                NetworkUtil.EXECUTOR.execute(() ->
+                        getPacketHandler().getNetworkHandlers(input.getPacketID()).forEach(networkHandler -> {
+                            try {
+                                Packet packet = networkHandler.read(input.getPacketID(), input.toObjectStream());
+
+                                networkHandler.handlePacket(packetSender, packet, out -> {
+                                    if (packet.queryUniqueID() != null) {
+                                        out.setQueryID(packet.queryUniqueID());
+                                        packetSender.sendPacket(out);
+                                    }
+                                });
+                            } catch (final Exception ex) {
+                                ex.printStackTrace();
                             }
-                        }));
-                    }
-                });
+                        })
+                );
             }
         };
     }

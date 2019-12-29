@@ -4,7 +4,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.Pla
 import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
 import systems.reformcloud.reformcloud2.executor.api.common.network.NetworkUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
-import systems.reformcloud.reformcloud2.executor.api.common.network.channel.handler.NetworkHandler;
+import systems.reformcloud.reformcloud2.executor.api.common.network.channel.handler.DefaultJsonNetworkHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.api.common.process.join.OnlyProxyJoinHelper;
 import systems.reformcloud.reformcloud2.executor.controller.packet.out.event.ControllerEventLogoutPlayer;
@@ -15,7 +15,7 @@ import javax.annotation.Nonnull;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-public final class PacketInAPILogoutPlayer implements NetworkHandler {
+public final class PacketInAPILogoutPlayer extends DefaultJsonNetworkHandler {
 
     @Override
     public int getHandlingPacketID() {

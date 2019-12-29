@@ -1,6 +1,7 @@
 package systems.reformcloud.reformcloud2.executor.api.common.network.packet.defaults;
 
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.handler.NetworkHandler;
+import systems.reformcloud.reformcloud2.executor.api.common.network.channel.handler.query.DefaultQueryNetworkHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.handler.PacketHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.query.QueryHandler;
 
@@ -11,9 +12,13 @@ import java.util.List;
 
 public final class DefaultPacketHandler implements PacketHandler {
 
-    private final QueryHandler queryHandler = new DefaultQueryHandler();
+    private static final QueryHandler QUERY_HANDLER = new DefaultQueryHandler();
 
     private final List<NetworkHandler> handlers = new ArrayList<>();
+
+    public DefaultPacketHandler() {
+        this.registerHandler(new DefaultQueryNetworkHandler(QUERY_HANDLER));
+    }
 
     @Override
     public void registerHandler(NetworkHandler networkHandler) {
@@ -72,7 +77,7 @@ public final class DefaultPacketHandler implements PacketHandler {
     @Nonnull
     @Override
     public QueryHandler getQueryHandler() {
-        return queryHandler;
+        return QUERY_HANDLER;
     }
 
     @Override
