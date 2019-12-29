@@ -37,7 +37,7 @@ public class CloudVersionUpdater {
         System.out.println("New version " + version + " detected! You are running on " + System.getProperty("reformcloud.runner.version"));
         System.out.println("Applying update from reformcloud-central...");
 
-        openConnection("https://internal.reformcloud.systems/runner.jar", inputStream -> {
+        openConnection("https://internal.reformcloud.systems/executor.jar", inputStream -> {
             try {
                 Files.copy(inputStream, Paths.get("reformcloud/.bin/executor.jar"), StandardCopyOption.REPLACE_EXISTING);
             } catch (final IOException ex) {

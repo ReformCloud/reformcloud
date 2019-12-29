@@ -3,9 +3,9 @@ package systems.reformcloud.reformcloud2.executor.api.common.api.basic.packets.o
 import systems.reformcloud.reformcloud2.executor.api.common.api.basic.ExternalAPIImplementation;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.Configurable;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
-import systems.reformcloud.reformcloud2.executor.api.common.network.packet.DefaultPacket;
+import systems.reformcloud.reformcloud2.executor.api.common.network.packet.JsonPacket;
 
-public final class ExternalAPIPacketOutStartProcess extends DefaultPacket {
+public final class ExternalAPIPacketOutStartProcess extends JsonPacket {
 
     public ExternalAPIPacketOutStartProcess(String group, String template, Configurable data) {
         super(ExternalAPIImplementation.EXTERNAL_PACKET_ID + 31, new JsonConfiguration()

@@ -12,8 +12,8 @@ public final class LengthSerializer extends MessageToByteEncoder<ByteBuf> {
         int readable = byteBuf.readableBytes();
         int space = NetworkUtil.getVarIntSize(readable);
 
-        if (space > 3) {
-            throw new RuntimeException("Unable to fit " + readable + " into " + 3);
+        if (space > 5) {
+            throw new RuntimeException("Unable to fit " + readable + " into " + 5);
         }
 
         byteBuf2.ensureWritable(space + readable);

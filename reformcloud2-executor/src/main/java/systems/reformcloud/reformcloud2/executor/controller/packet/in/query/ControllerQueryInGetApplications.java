@@ -6,7 +6,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.application.basic.De
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.handler.NetworkHandler;
-import systems.reformcloud.reformcloud2.executor.api.common.network.packet.DefaultPacket;
+import systems.reformcloud.reformcloud2.executor.api.common.network.packet.JsonPacket;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links;
 
@@ -22,7 +22,7 @@ public final class ControllerQueryInGetApplications implements NetworkHandler {
 
     @Override
     public void handlePacket(@Nonnull PacketSender packetSender, @Nonnull Packet packet, @Nonnull Consumer<Packet> responses) {
-        responses.accept(new DefaultPacket(-1, convert()));
+        responses.accept(new JsonPacket(-1, convert()));
     }
 
     private static JsonConfiguration convert() {

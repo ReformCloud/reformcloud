@@ -18,7 +18,7 @@ import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public abstract class Application {
+public class Application {
 
     private LoadedApplication application;
 
@@ -55,7 +55,9 @@ public abstract class Application {
     }
 
     @Nullable
-    public abstract ApplicationUpdateRepository getUpdateRepository();
+    public ApplicationUpdateRepository getUpdateRepository() {
+        return null;
+    }
 
     @Nonnull
     public final File dataFolder() {

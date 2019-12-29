@@ -3,27 +3,33 @@ package systems.reformcloud.reformcloud2.executor.api.common.network.packet;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.UUID;
 
-public class DefaultPacket implements Packet {
+public class JsonPacket implements Packet {
 
-    public DefaultPacket(int id, JsonConfiguration content) {
-        this.id = id;
-        this.content = content;
-        this.uid = null;
+    public JsonPacket(int id, @Nonnull JsonConfiguration content) {
+        this(id, content, null);
     }
 
-    public DefaultPacket(int id, JsonConfiguration content, UUID queryUniqueID) {
+    public JsonPacket(int id, @Nonnull JsonConfiguration content, @Nullable UUID queryUniqueID) {
+        this(id, content, queryUniqueID, new byte[]{0});
+    }
+
+    public JsonPacket(int id, @Nonnull JsonConfiguration configuration, @Nullable UUID queryUniqueID, @Nonnull byte[] extra) {
         this.id = id;
-        this.content = content;
         this.uid = queryUniqueID;
+        this.content = configuration;
+        this.extra = extra;
     }
 
-    private final int id;
+    private int id;
 
     private UUID uid;
 
     private JsonConfiguration content;
+
+    private byte[] extra;
 
     @Override
     public int packetID() {
@@ -39,6 +45,12 @@ public class DefaultPacket implements Packet {
     @Override
     public JsonConfiguration content() {
         return content;
+    }
+
+    @Nonnull
+    @Override
+    public byte[] extra() {
+        return extra;
     }
 
     @Override

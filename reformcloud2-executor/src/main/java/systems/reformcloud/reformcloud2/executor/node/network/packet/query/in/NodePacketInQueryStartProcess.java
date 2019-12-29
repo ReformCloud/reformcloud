@@ -6,7 +6,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Temp
 import systems.reformcloud.reformcloud2.executor.api.common.network.NetworkUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.handler.NetworkHandler;
-import systems.reformcloud.reformcloud2.executor.api.common.network.packet.DefaultPacket;
+import systems.reformcloud.reformcloud2.executor.api.common.network.packet.JsonPacket;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
 
@@ -26,7 +26,7 @@ public class NodePacketInQueryStartProcess implements NetworkHandler {
         Template template = packet.content().get("template", Template.TYPE);
         JsonConfiguration data = packet.content().get("data");
 
-        responses.accept(new DefaultPacket(-1, new JsonConfiguration().add("result", NodeExecutor.getInstance().getNodeNetworkManager().startProcess(
+        responses.accept(new JsonPacket(-1, new JsonConfiguration().add("result", NodeExecutor.getInstance().getNodeNetworkManager().startProcess(
                 group, template, data
         ))));
     }

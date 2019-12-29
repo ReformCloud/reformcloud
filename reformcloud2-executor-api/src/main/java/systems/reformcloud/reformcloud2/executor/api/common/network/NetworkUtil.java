@@ -21,13 +21,14 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.channel.Netw
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.defaults.DefaultPacketSender;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
-import systems.reformcloud.reformcloud2.executor.api.common.network.packet.DefaultPacket;
+import systems.reformcloud.reformcloud2.executor.api.common.network.packet.JsonPacket;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.handler.PacketHandler;
 
 import javax.annotation.Nonnull;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
+import java.util.UUID;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
@@ -37,6 +38,8 @@ import java.util.function.Consumer;
 public final class NetworkUtil {
 
     /* ============================= */
+
+    public static final int FILE_BUS = 1000;
 
     public static final int NODE_TO_NODE_BUS = 20000;
 
@@ -56,10 +59,10 @@ public final class NetworkUtil {
 
     public static final Executor EXECUTOR = Executors.newCachedThreadPool();
 
-    public static final Consumer<ChannelHandlerContext> DEFAULT_AUTH_FAILURE_HANDLER = context -> context.channel().writeAndFlush(new DefaultPacket(-511, new JsonConfiguration().add("access", false))).syncUninterruptibly().channel().close();
+    public static final Consumer<ChannelHandlerContext> DEFAULT_AUTH_FAILURE_HANDLER = context -> context.channel().writeAndFlush(new JsonPacket(-511, new JsonConfiguration().add("access", false))).syncUninterruptibly().channel().close();
 
     public static final BiFunction<String, ChannelHandlerContext, PacketSender> DEFAULT_SUCCESS_HANDLER = (s, context) -> {
-        PacketSender packetSender = new DefaultPacketSender(context.channel());
+        PacketSender packetSender = new DefaultPacketSender(context);
         packetSender.setName(s);
         return packetSender;
     };
@@ -99,44 +102,59 @@ public final class NetworkUtil {
     }
 
     public static synchronized ByteBuf write(ByteBuf byteBuf, int value) {
-        while ((value & -128) != 0) {
-            byteBuf.writeByte(value & 127 | 128);
+        do {
+            byte temp = (byte) (value & 0b01111111);
             value >>>= 7;
-        }
+            if (value != 0) {
+                temp |= 0b10000000;
+            }
+            byteBuf.writeByte(temp);
+        } while (value != 0);
 
-        byteBuf.writeByte(value);
         return byteBuf;
     }
 
     public static synchronized int read(ByteBuf byteBuf) {
         int numRead = 0;
         int result = 0;
-
         byte read;
         do {
             read = byteBuf.readByte();
-            numRead |= (read & 127) << result++ * 7;
+            int value = (read & 0b01111111);
+            result |= (value << (7 * numRead));
 
-            if (result > 5) {
+            numRead++;
+            if (numRead > 5) {
                 throw new RuntimeException("VarInt is too big");
             }
-        } while ((read & 128) == 128);
+        } while ((read & 0b10000000) != 0);
 
-        return numRead;
+        return result;
     }
 
-    public static synchronized ByteBuf write(ByteBuf byteBuf, String s) {
-        byte[] bytes = s.getBytes(StandardCharsets.UTF_8);
-        write(byteBuf, bytes.length);
-        byteBuf.writeBytes(bytes);
-        return byteBuf;
+    public static synchronized void writeString(ByteBuf byteBuf, String s) {
+        byte[] values = s.getBytes(StandardCharsets.UTF_8);
+        write(byteBuf, values.length);
+        byteBuf.writeBytes(values);
+    }
+
+    public static synchronized byte[] readBytes(ByteBuf byteBuf) {
+        int length = read(byteBuf);
+        byte[] bytes = new byte[length];
+        byteBuf.readBytes(bytes);
+        return bytes;
     }
 
     public static synchronized String readString(ByteBuf byteBuf) {
-        int size = read(byteBuf);
-        byte[] bytes = new byte[size];
-        byteBuf.readBytes(bytes, 0, size);
-        return new String(bytes, StandardCharsets.UTF_8);
+        int integer = read(byteBuf);
+        byte[] buffer = new byte[integer];
+        byteBuf.readBytes(buffer, 0, integer);
+        return new String(buffer, StandardCharsets.UTF_8);
+    }
+
+    public static synchronized UUID readUniqueID(ByteBuf byteBuf) {
+        String query = readString(byteBuf);
+        return "null".equals(query) ? null : UUID.fromString(query);
     }
 
     public static NetworkChannelReader newReader(PacketHandler packetHandler, Consumer<PacketSender> consumer) {
@@ -198,10 +216,14 @@ public final class NetworkUtil {
     }
 
     public static int getVarIntSize(int readable) {
-        for (int i = 1; i < 5; ++i) {
-            if ((readable & -1 << i * 7) == 0) {
-                return i;
-            }
+        if ((readable & -128) == 0) {
+            return 1;
+        } else if ((readable & -16384) == 0) {
+            return 2;
+        } else if ((readable & -2097152) == 0) {
+            return 3;
+        } else if ((readable & -268435456) == 0) {
+            return 4;
         }
 
         return 5;

@@ -2,11 +2,11 @@ package systems.reformcloud.reformcloud2.executor.api.common.api.basic.packets.o
 
 import systems.reformcloud.reformcloud2.executor.api.common.api.basic.ExternalAPIImplementation;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
-import systems.reformcloud.reformcloud2.executor.api.common.network.packet.DefaultPacket;
+import systems.reformcloud.reformcloud2.executor.api.common.network.packet.JsonPacket;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-public final class ExternalAPIPacketOutAPIAction extends DefaultPacket {
+public final class ExternalAPIPacketOutAPIAction extends JsonPacket {
 
     public ExternalAPIPacketOutAPIAction(APIAction action, Object... args) {
         super(ExternalAPIImplementation.EXTERNAL_PACKET_ID + 26,null);

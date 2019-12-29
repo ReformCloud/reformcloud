@@ -13,9 +13,9 @@ public final class LengthDeserializer extends ByteToMessageDecoder {
     @Override
     protected void decode(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf, List<Object> list) {
         byteBuf.markReaderIndex();
-        byte[] bytes = new byte[3];
+        byte[] bytes = new byte[5];
 
-        for (int i = 0; i < bytes.length; ++i) {
+        for (int i = 0; i < bytes.length; i++) {
             if (!byteBuf.isReadable()) {
                 byteBuf.resetReaderIndex();
                 return;
@@ -26,12 +26,12 @@ public final class LengthDeserializer extends ByteToMessageDecoder {
                 ByteBuf buf = Unpooled.wrappedBuffer(bytes);
                 try {
                     int length = NetworkUtil.read(buf);
-                    if (byteBuf.readableBytes() >= length) {
-                        list.add(byteBuf.readBytes(length));
+                    if (byteBuf.readableBytes() < length) {
+                        byteBuf.resetReaderIndex();
                         return;
                     }
 
-                    byteBuf.resetReaderIndex();
+                    list.add(byteBuf.readBytes(length));
                 } finally {
                     buf.release();
                 }

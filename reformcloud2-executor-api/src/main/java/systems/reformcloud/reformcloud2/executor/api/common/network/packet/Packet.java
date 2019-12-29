@@ -27,6 +27,12 @@ public interface Packet extends Serializable {
     JsonConfiguration content();
 
     /**
+     * @return The extra content of this packet
+     */
+    @Nonnull
+    byte[] extra();
+
+    /**
      * Sets the query id
      *
      * @param id The new id which should get used

@@ -44,7 +44,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.channel.defa
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.handler.NetworkHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.common.network.client.NetworkClient;
-import systems.reformcloud.reformcloud2.executor.api.common.network.packet.DefaultPacket;
+import systems.reformcloud.reformcloud2.executor.api.common.network.packet.JsonPacket;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.defaults.DefaultPacketHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.handler.PacketHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.server.DefaultNetworkServer;
@@ -328,9 +328,9 @@ public class NodeExecutor extends Node {
                             // Node
                             result.add("name", nodeExecutorConfig.getSelf().getName());
                         }
-                        context.channel().writeAndFlush(new DefaultPacket(-511, result));
+                        context.channel().writeAndFlush(new JsonPacket(-511, result));
 
-                        PacketSender sender = new DefaultPacketSender(context.channel());
+                        PacketSender sender = new DefaultPacketSender(context);
                         sender.setName(s);
                         clusterSyncManager.getWaitingConnections().remove(sender.getAddress());
 
@@ -367,7 +367,7 @@ public class NodeExecutor extends Node {
                     return context -> {
                         String host = ((InetSocketAddress) context.channel().remoteAddress()).getAddress().getHostAddress();
                         clusterSyncManager.getWaitingConnections().remove(host);
-                        context.channel().writeAndFlush(new DefaultPacket(-511, new JsonConfiguration().add("access", false))).syncUninterruptibly().channel().close();
+                        context.channel().writeAndFlush(new JsonPacket(-511, new JsonConfiguration().add("access", false))).syncUninterruptibly().channel().close();
                     };
                 }
             });
@@ -596,9 +596,6 @@ public class NodeExecutor extends Node {
 
         this.clusterSyncManager.getProcessGroups().clear();
         this.clusterSyncManager.getMainGroups().clear();
-
-        this.nodeExecutorConfig.getProcessGroups().clear();
-        this.nodeExecutorConfig.getMainGroups().clear();
 
         this.applicationLoader.detectApplications();
         this.applicationLoader.installApplications();

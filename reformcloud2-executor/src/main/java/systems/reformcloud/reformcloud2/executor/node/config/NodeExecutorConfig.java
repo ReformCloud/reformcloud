@@ -117,7 +117,7 @@ public class NodeExecutorConfig {
                                         128, true, 512
                                 );
                                 lobby = new DefaultProcessGroup(
-                                        "Lobby", 41000, Version.SPIGOT_1_15,
+                                        "Lobby", 41000, Version.PAPER_1_15_1,
                                         512, false, 50
                                 );
                                 break;
@@ -165,6 +165,9 @@ public class NodeExecutorConfig {
     }
 
     private void loadGroups() {
+        processGroups.clear();
+        mainGroups.clear();
+
         processGroups.addAll(this.localSubGroupsRegistry.readKeys(e -> e.get("key", ProcessGroup.TYPE)));
         mainGroups.addAll(this.localMainGroupsRegistry.readKeys(e -> e.get("key", MainGroup.TYPE)));
     }
