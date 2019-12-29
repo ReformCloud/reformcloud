@@ -22,7 +22,7 @@ pipeline {
         stage('Prepare zip') {
             steps {
                 echo "Creating zip...";
-                sh "mkdir results";
+                sh "mkdir -p results";
                 sh "cp -r .templates/* results/";
                 sh "cp reformcloud2-runner/target/runner.jar results/runner.jar";
                 sh "cd results/";
