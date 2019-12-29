@@ -1,6 +1,7 @@
 package systems.reformcloud.reformcloud2.executor.client.config;
 
 import com.google.gson.reflect.TypeToken;
+import systems.reformcloud.reformcloud2.executor.api.common.CommonHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.setup.Setup;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.setup.basic.DefaultSetup;
@@ -54,9 +55,10 @@ public final class ClientExecutorConfig {
                 "Please copy the real key",
                 s -> true,
                 s -> new JsonConfiguration().add("key", s).write("reformcloud/files/.connection/connection.json"))
-        ).addQuestion(new DefaultSetupQuestion("Please write the start host", "Please write an ip address",
-                s -> s.trim().split("\\.").length == 4,
-                s -> startHost.set(s.trim()))
+        ).addQuestion(new DefaultSetupQuestion("Please write the start host or domain name",
+                "Please write an ip address or domain name",
+                s -> CommonHelper.getIpAddress(s.trim()) != null,
+                s -> startHost.set(CommonHelper.getIpAddress(s.trim())))
         ).addQuestion(new DefaultSetupQuestion("Please enter the max memory of the client", "Please write a number bigger than 128",
                 s -> {
                     try {
@@ -69,9 +71,10 @@ public final class ClientExecutorConfig {
                 s -> new JsonConfiguration()
                         .add("config", new ClientConfig(Integer.parseInt(s), -1, 99.0, startHost.get()))
                         .write(ClientConfig.PATH))
-        ).addQuestion(new DefaultSetupQuestion("Please write the ip address of the controller", "Please write the real ip ;)",
-                s -> s.trim().split("\\.").length == 4,
-                s -> controllerHost.set(s.trim()))
+        ).addQuestion(new DefaultSetupQuestion("Please write the ip address or domain name of the controller",
+                "Please write the real ip or domain ;)",
+                s -> CommonHelper.getIpAddress(s.trim()) != null,
+                s -> controllerHost.set(CommonHelper.getIpAddress(s.trim())))
         ).addQuestion(new DefaultSetupQuestion("Please write the controller network port (default: 2008)", "The port must be bigger than 0",
                 s -> {
                     try {

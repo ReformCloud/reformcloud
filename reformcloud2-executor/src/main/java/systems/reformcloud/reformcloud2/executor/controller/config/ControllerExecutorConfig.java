@@ -105,7 +105,7 @@ public final class ControllerExecutorConfig {
         new JsonConfiguration().add("messages", new IngameMessages()).write(Paths.get("reformcloud/configs/messages.json"));
 
         setup.addQuestion(new DefaultSetupQuestion("Please write the ip address or domain name of the server",
-                "Please write your real ip",
+                "Please write your real ip or domain name",
                 s -> CommonHelper.getIpAddress(s.trim()) != null,
                 s -> {
                     String ip = CommonHelper.getIpAddress(s.trim());
@@ -141,7 +141,7 @@ public final class ControllerExecutorConfig {
                                     128, true, 512
                             );
                             lobby = new DefaultProcessGroup(
-                                    "Lobby", 41000, Version.SPIGOT_1_15,
+                                    "Lobby", 41000, Version.PAPER_1_15_1,
                                     512, false, 50
                             );
                             break;
