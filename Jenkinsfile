@@ -27,6 +27,7 @@ pipeline {
                 sh "cp reformcloud2-runner/target/runner.jar results/runner.jar";
                 sh "cd result/";
                 sh "zip ReformCloud2.zip * -r";
+                sh "cd ..";
                 sh "rm -rf results/";
             }
         }
