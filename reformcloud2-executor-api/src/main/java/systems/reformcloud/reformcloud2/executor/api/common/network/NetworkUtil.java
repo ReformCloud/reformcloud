@@ -27,6 +27,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Wrapp
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.handler.PacketHandler;
 
 import javax.annotation.Nonnull;
+import java.io.ObjectInputStream;
 import java.net.InetSocketAddress;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -182,8 +183,8 @@ public final class NetworkUtil {
             public void read(ChannelHandlerContext context, WrappedByteInput input) {
                 NetworkUtil.EXECUTOR.execute(() ->
                     getPacketHandler().getNetworkHandlers(input.getPacketID()).forEach(networkHandler -> {
-                        try {
-                            Packet packet = networkHandler.read(input.getPacketID(), input.toObjectStream());
+                        try (ObjectInputStream stream = input.toObjectStream()) {
+                            Packet packet = networkHandler.read(input.getPacketID(), stream);
 
                             networkHandler.handlePacket(sender, packet, out -> {
                                 if (packet.queryUniqueID() != null) {

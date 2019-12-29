@@ -16,6 +16,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.server.Netwo
 import systems.reformcloud.reformcloud2.executor.api.common.utility.runtime.ReloadableRuntime;
 
 import javax.annotation.Nonnull;
+import java.io.ObjectInputStream;
 import java.net.InetSocketAddress;
 import java.util.function.Consumer;
 
@@ -88,8 +89,8 @@ public abstract class Node extends ExecutorAPI implements ReloadableRuntime {
             public void read(ChannelHandlerContext context, WrappedByteInput input) {
                 NetworkUtil.EXECUTOR.execute(() ->
                         getPacketHandler().getNetworkHandlers(input.getPacketID()).forEach(networkHandler -> {
-                            try {
-                                Packet packet = networkHandler.read(input.getPacketID(), input.toObjectStream());
+                            try (ObjectInputStream stream = input.toObjectStream()) {
+                                Packet packet = networkHandler.read(input.getPacketID(), stream);
 
                                 networkHandler.handlePacket(sender, packet, out -> {
                                     if (packet.queryUniqueID() != null) {

@@ -15,6 +15,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInfor
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState;
 
 import javax.annotation.Nonnull;
+import java.io.ObjectInputStream;
 import java.net.InetSocketAddress;
 import java.util.Objects;
 
@@ -69,8 +70,8 @@ public abstract class API extends ExternalAPIImplementation {
         public void read(ChannelHandlerContext context, WrappedByteInput input) {
             NetworkUtil.EXECUTOR.execute(() ->
                     getPacketHandler().getNetworkHandlers(input.getPacketID()).forEach(networkHandler -> {
-                        try {
-                            Packet packet = networkHandler.read(input.getPacketID(), input.toObjectStream());
+                        try (ObjectInputStream stream = input.toObjectStream()) {
+                            Packet packet = networkHandler.read(input.getPacketID(), stream);
 
                             networkHandler.handlePacket(packetSender, packet, out -> {
                                 if (packet.queryUniqueID() != null) {

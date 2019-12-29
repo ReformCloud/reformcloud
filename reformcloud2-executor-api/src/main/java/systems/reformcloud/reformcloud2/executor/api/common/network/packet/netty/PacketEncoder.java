@@ -25,9 +25,10 @@ public final class PacketEncoder extends MessageToByteEncoder<Packet> {
     }
 
     private static byte[] write(Packet packet) throws IOException {
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
-        packet.write(objectOutputStream);
-        return outputStream.toByteArray();
+        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+             ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream)) {
+            packet.write(objectOutputStream);
+            return outputStream.toByteArray();
+        }
     }
 }
