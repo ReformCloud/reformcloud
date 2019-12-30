@@ -3,5 +3,5 @@
   "author": "derklaro",
   "main": "systems.reformcloud.reformcloud2.commands.application.ReformCloudApplication",
   "version": "2.0.2-SNAPSHOT",
-  "impl-version": "2.0"
+  "impl-version": "2.0.2-SNAPSHOT"
 }

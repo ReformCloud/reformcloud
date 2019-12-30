@@ -384,7 +384,7 @@ public final class CommandReformCloud extends GlobalCommand {
                         return true;
                     }
 
-                    if (strings[2].split("\\.").length != 4) {
+                    if (CommonHelper.getIpAddress(strings[2]) == null) {
                         System.out.println(LanguageManager.get("command-rc-expected-ip", strings[2]));
                         return true;
                     }
@@ -414,7 +414,7 @@ public final class CommandReformCloud extends GlobalCommand {
                                     CommonHelper.calculateMaxMemory(),
                                     -1,
                                     90.0D,
-                                    strings[2]
+                                    CommonHelper.getIpAddress(strings[2])
                             )).write(Paths.get("reformcloud/.client/" + ClientConfig.PATH));
                     Map<String, Integer> map = ControllerExecutor.getInstance().getControllerConfig().getNetworkListener().get(
                             new Random().nextInt(ControllerExecutor.getInstance().getControllerConfig().getNetworkListener().size())
