@@ -309,6 +309,11 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
     }
 
     private void handleUpdate(Application application) {
+        // Do not fetch updates on development builds
+        if (System.getProperty("reformcloud.runner.specification").equals("SNAPSHOT")) {
+            return;
+        }
+
         ApplicationUpdateRepository repository = application.getUpdateRepository();
         if (repository == null || !repository.isNewVersionAvailable() || repository.getUpdate() == null) {
             return;

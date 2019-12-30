@@ -12,27 +12,28 @@ import java.util.function.Consumer;
 
 public class CloudVersionUpdater {
 
-    public static void update() {
+    public static String update() {
         if (Files.notExists(Paths.get("reformcloud/.bin/executor.jar"))) {
-            return;
+            return null;
         }
 
+        Properties properties = new Properties();
         openConnection("https://internal.reformcloud.systems/version.properties", inputStream -> {
             try {
-                Properties properties = new Properties();
                 properties.load(inputStream);
-
-                handleVersionFetch(properties.getProperty("version"));
             } catch (final IOException ex) {
                 ex.printStackTrace();
             }
         });
+        return handleVersionFetch(properties.getProperty("version"));
     }
 
-    private static void handleVersionFetch(String version) {
+    private static String handleVersionFetch(String version) {
         if (version.equals(System.getProperty("reformcloud.runner.version"))) {
-            return;
+            return null;
         }
+
+        boolean fetchRunner = Files.exists(Paths.get("reformcloud/files/runner.jar"));
 
         System.out.println("New version " + version + " detected! You are running on " + System.getProperty("reformcloud.runner.version"));
         System.out.println("Applying update from reformcloud-central...");
@@ -43,9 +44,21 @@ public class CloudVersionUpdater {
             } catch (final IOException ex) {
                 ex.printStackTrace();
             }
-
-            System.out.println("Applied update of version " + version + ". Starting normally...");
         });
+
+        if (fetchRunner) {
+            System.out.println("Applied update to executor.jar, updating runner.jar...");
+            openConnection("https://internal.reformcloud.systems/runner.jar", inputStream -> {
+                try {
+                    Files.copy(inputStream, Paths.get("reformcloud/files/runner.jar"), StandardCopyOption.REPLACE_EXISTING);
+                } catch (final IOException ex) {
+                    ex.printStackTrace();
+                }
+            });
+        }
+
+        System.out.println("Applied update of version " + version + ". Starting normally...");
+        return version;
     }
 
     private static void openConnection(String url, Consumer<InputStream> inputStreamConsumer) {
