@@ -10,6 +10,7 @@ import javax.annotation.Nullable;
 
 public interface Auth extends Nameable {
 
+    /* The type of this interface ( default implementation ) */
     TypeToken<DefaultAuth> TYPE = new TypeToken<DefaultAuth>() {};
 
     /**

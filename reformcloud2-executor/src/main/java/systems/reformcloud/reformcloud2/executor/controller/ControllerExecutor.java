@@ -54,7 +54,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.restapi.request.defa
 import systems.reformcloud.reformcloud2.executor.api.common.restapi.user.WebUser;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.StringUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.function.Double;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.system.DownloadHelper;
 import systems.reformcloud.reformcloud2.executor.api.controller.Controller;
 import systems.reformcloud.reformcloud2.executor.api.controller.process.ProcessManager;
 import systems.reformcloud.reformcloud2.executor.controller.api.GeneralAPI;
@@ -263,7 +262,6 @@ public final class ControllerExecutor extends Controller {
 
         if (Files.exists(Paths.get("reformcloud/.client"))) {
             try {
-                DownloadHelper.downloadAndDisconnect(StringUtil.RUNNER_DOWNLOAD_URL, "reformcloud/.client/runner.jar");
                 Process process = new ProcessBuilder()
                         .command(Arrays.asList("java", "-jar", "runner.jar").toArray(new String[0]))
                         .directory(new File("reformcloud/.client"))
