@@ -4,3 +4,4 @@ dependency-reduced-pom.xml
 *.iml
 *.class
 pom.xml.versionsBackup
+reformcloud2-runner/src/main/resources/files/executor.jar

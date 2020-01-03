@@ -5,7 +5,11 @@ import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 
-public class ApplicationUpdateApplier {
+public final class ApplicationUpdateApplier {
+
+    private ApplicationUpdateApplier() {
+        throw new UnsupportedOperationException();
+    }
 
     private static final File APP_FOLDER = new File("reformcloud/applications");
 

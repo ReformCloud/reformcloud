@@ -10,7 +10,11 @@ import java.nio.file.StandardCopyOption;
 import java.util.Properties;
 import java.util.function.Consumer;
 
-public class CloudVersionUpdater {
+public final class CloudVersionUpdater {
+
+    private CloudVersionUpdater() {
+        throw new UnsupportedOperationException();
+    }
 
     public static String update() {
         if (Files.notExists(Paths.get("reformcloud/.bin/executor.jar"))) {
