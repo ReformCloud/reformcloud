@@ -55,7 +55,7 @@ public class ClientDumpUtil implements DumpUtil {
                         .append("\n\n");
             });
         } else {
-            stringBuilder.append("No processes are registered on the current node").append("\n\n");
+            stringBuilder.append("No processes are registered on the current client").append("\n\n");
         }
     }
 }
