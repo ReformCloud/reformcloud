@@ -7,7 +7,8 @@ import systems.reformcloud.reformcloud2.executor.api.client.process.ProcessManag
 import systems.reformcloud.reformcloud2.executor.api.client.process.RunningProcess;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.basic.ExternalEventBusHandler;
-import systems.reformcloud.reformcloud2.executor.api.common.client.ClientRuntimeInformation;
+import systems.reformcloud.reformcloud2.executor.api.common.application.ApplicationLoader;
+import systems.reformcloud.reformcloud2.executor.api.common.application.basic.DefaultApplicationLoader;
 import systems.reformcloud.reformcloud2.executor.api.common.client.basic.DefaultClientRuntimeInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.AllowedCommandSources;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.ConsoleCommandSource;
@@ -84,6 +85,8 @@ public final class ClientExecutor extends Client {
 
     private final ProcessQueue processQueue = new ProcessQueue();
 
+    private final ApplicationLoader applicationLoader = new DefaultApplicationLoader();
+
     private static final AtomicBoolean GLOBAL_CONNECTION_STATUS = new AtomicBoolean(false);
 
     ClientExecutor() {
@@ -127,6 +130,9 @@ public final class ClientExecutor extends Client {
                 clientConfig.getName()
         );
 
+        applicationLoader.detectApplications();
+        applicationLoader.installApplications();
+
         TemplateBackendManager.registerDefaults();
 
         registerNetworkHandlers();
@@ -135,10 +141,15 @@ public final class ClientExecutor extends Client {
                 packetHandler, new DefaultEventManager()
         );
 
+        applicationLoader.loadApplications();
+
         this.watchdogThread = new WatchdogThread();
         this.screenManager = new ScreenManager();
 
         doConnect();
+
+        applicationLoader.enableApplications();
+
         running = true;
         System.out.println(LanguageManager.get("startup-done", Long.toString(System.currentTimeMillis() - current)));
         runConsole();
@@ -159,6 +170,8 @@ public final class ClientExecutor extends Client {
 
     @Override
     public void reload() {
+        this.applicationLoader.disableApplications();
+
         this.clientExecutorConfig = new ClientExecutorConfig();
         this.clientConfig = clientExecutorConfig.getClientConfig();
         this.clientRuntimeInformation = new DefaultClientRuntimeInformation(
@@ -173,6 +186,11 @@ public final class ClientExecutor extends Client {
 
         registerDefaultCommands();
         registerNetworkHandlers();
+
+        this.applicationLoader.detectApplications();
+        this.applicationLoader.installApplications();
+        this.applicationLoader.loadApplications();
+        this.applicationLoader.enableApplications();
 
         notifyUpdate();
     }
@@ -190,6 +208,8 @@ public final class ClientExecutor extends Client {
         this.processManager.getAll().forEach(RunningProcess::shutdown);
 
         SystemHelper.deleteDirectory(Paths.get("reformcloud/temp"));
+
+        this.applicationLoader.disableApplications();
     }
 
     @Override
@@ -242,10 +262,6 @@ public final class ClientExecutor extends Client {
         return ExternalEventBusHandler.getInstance().getEventManager();
     }
 
-    public ClientRuntimeInformation getClientRuntimeInformation() {
-        return clientRuntimeInformation;
-    }
-
     private void runConsole() {
         String line;
 
@@ -254,9 +270,12 @@ public final class ClientExecutor extends Client {
                 loggerBase.getConsoleReader().setPrompt("");
                 loggerBase.getConsoleReader().resetPromptLine("", "", 0);
 
-                while ((line = loggerBase.readLine()) != null && !line.trim().isEmpty() && running) {
+                line = loggerBase.readLine();
+                while (!line.trim().isEmpty() && running) {
                     loggerBase.getConsoleReader().setPrompt("");
                     commandManager.dispatchCommand(console, AllowedCommandSources.ALL, line, System.out::println);
+
+                    line = loggerBase.readLine();
                 }
             } catch (final Throwable throwable) {
                 throwable.printStackTrace();
@@ -279,7 +298,7 @@ public final class ClientExecutor extends Client {
 
     private void doConnect() {
         if (GLOBAL_CONNECTION_STATUS.get()) {
-            // Returns if the cloud means that the connection is already open
+            // All connections are already open and ready ( prevents abuse )
             return;
         }
 

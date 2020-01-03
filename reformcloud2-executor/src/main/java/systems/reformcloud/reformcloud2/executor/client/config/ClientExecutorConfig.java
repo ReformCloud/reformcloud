@@ -25,6 +25,7 @@ public final class ClientExecutorConfig {
             s -> Paths.get(s),
             "reformcloud/temp",
             "reformcloud/static",
+            "reformcloud/applications",
             "reformcloud/templates",
             "reformcloud/global/plugins",
             "reformcloud/files",
