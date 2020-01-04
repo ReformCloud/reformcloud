@@ -42,7 +42,7 @@ public final class Runner {
             if (System.getProperty("reformcloud.runner.version").endsWith("-SNAPSHOT")) {
                 System.out.println("You are running on a snapshot build ("
                         + System.getProperty("reformcloud.runner.version") + "). Please not that this is " +
-                        "not supported and no updates of cloud will get applied.");
+                        "not supported and no updates of the cloud will get applied.");
             } else if (Boolean.getBoolean("reformcloud.disable.updates")) {
                 System.out.println("You've disabled auto update for addons and the cloud itself");
             } else {
