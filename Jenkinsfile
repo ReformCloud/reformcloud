@@ -34,6 +34,7 @@ pipeline {
         stage('Archive') {
             steps {
                 archiveArtifacts artifacts: 'ReformCloud2.zip'
+                archiveArtifacts artifacts: 'reformcloud2-runner/target/runner.jar'
             }
         }
     }
