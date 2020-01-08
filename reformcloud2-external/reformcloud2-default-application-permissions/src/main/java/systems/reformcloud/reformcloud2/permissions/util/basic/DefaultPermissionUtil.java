@@ -119,7 +119,7 @@ public final class DefaultPermissionUtil implements PermissionUtil {
     public void addProcessGroupPermission(@Nonnull String processGroup, @Nonnull PermissionGroup permissionGroup, @Nonnull PermissionNode permissionNode) {
         final Collection<PermissionNode> current = permissionGroup.getPerGroupPermissions().get(processGroup);
         if (current == null) {
-            permissionGroup.getPerGroupPermissions().put(processGroup, Collections.singletonList(permissionNode));
+            permissionGroup.getPerGroupPermissions().put(processGroup, new ArrayList<>(Collections.singletonList(permissionNode)));
             updateGroup(permissionGroup);
             return;
         }
