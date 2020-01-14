@@ -2,6 +2,6 @@
   "name": "ProxyAddon",
   "author": "derklaro",
   "main": "systems.reformcloud.reformcloud2.proxy.application.ProxyApplication",
-  "version": "2.0.2-SNAPSHOT",
-  "impl-version": "2.0.2-SNAPSHOT"
+  "version": "2.0.2",
+  "impl-version": "2.0.2"
 }
