@@ -203,6 +203,9 @@ public final class DefaultCommandManager implements CommandManager {
         if (!command.handleCommand(commandSource, strings)) {
             new Exception("Error in handling command:: status=false").printStackTrace();
             result.accept("Execution failed");
+            return;
         }
+
+        result.accept("Success");
     }
 }
