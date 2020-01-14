@@ -19,6 +19,6 @@ public class PacketInGetCommandsConfig extends DefaultJsonNetworkHandler {
 
     @Override
     public void handlePacket(@Nonnull PacketSender packetSender, @Nonnull Packet packet, @Nonnull Consumer<Packet> responses) {
-        responses.accept(new JsonPacket(-1, new JsonConfiguration().add("result", ReformCloudApplication.getCommandsConfig())));
+        responses.accept(new JsonPacket(-1, new JsonConfiguration().add("content", ReformCloudApplication.getCommandsConfig())));
     }
 }
