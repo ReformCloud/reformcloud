@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
-public class TemplateBackendManager {
+public final class TemplateBackendManager {
 
     private TemplateBackendManager() {
         throw new UnsupportedOperationException();

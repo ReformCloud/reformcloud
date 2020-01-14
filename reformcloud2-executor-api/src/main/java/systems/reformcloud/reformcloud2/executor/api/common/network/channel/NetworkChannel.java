@@ -1,9 +1,8 @@
 package systems.reformcloud.reformcloud2.executor.api.common.network.channel;
 
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.name.ReNameable;
 
-public interface NetworkChannel extends ReNameable {
+public interface NetworkChannel extends DirectIdentifiableChannel {
 
     /**
      * Sends a packet into the channel

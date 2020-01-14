@@ -104,4 +104,9 @@ public abstract class LoggerBase extends Logger implements AutoCloseable {
      */
     @Nonnull
     public abstract Debugger getDebugger();
+
+    /**
+     * For internal use only
+     */
+    public abstract void handleReload();
 }

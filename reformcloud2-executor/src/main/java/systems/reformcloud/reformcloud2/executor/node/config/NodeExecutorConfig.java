@@ -71,16 +71,20 @@ public class NodeExecutorConfig {
         if (!Files.exists(NodeConfig.PATH)) {
             firstStartup.set(true);
             setup.addQuestion(new DefaultSetupQuestion(
-                    "Please enter the start host of the node",
-                    "Please enter your real address",
-                    e -> e.trim().split("\\.").length == 4,
-                    e -> new JsonConfiguration().add("config", new NodeConfig(
-                            CommonHelper.calculateMaxMemory(),
-                            e.trim(),
-                            Collections.singletonList(Collections.singletonMap(e.trim(), 1809)),
-                            Collections.singletonList(Collections.singletonMap(e.trim(), 2008)),
-                            Collections.emptyList()
-                    )).write(NodeConfig.PATH)
+                    "Please enter the start host or domain name of the node",
+                    "Please enter your real address or domain name",
+                    e -> CommonHelper.getIpAddress(e.trim()) != null,
+                    e -> {
+                        String ip = CommonHelper.getIpAddress(e.trim());
+
+                        new JsonConfiguration().add("config", new NodeConfig(
+                                CommonHelper.calculateMaxMemory(),
+                                ip,
+                                Collections.singletonList(Collections.singletonMap(ip, 1809)),
+                                Collections.singletonList(Collections.singletonMap(ip, 2008)),
+                                Collections.emptyList()
+                        )).write(NodeConfig.PATH);
+                    }
             )).addQuestion(new DefaultSetupQuestion(
                     "Please copy the connection key for other nodes into the console (if there is any other node) or type \"null\"",
                     "",
@@ -117,7 +121,7 @@ public class NodeExecutorConfig {
                                         128, true, 512
                                 );
                                 lobby = new DefaultProcessGroup(
-                                        "Lobby", 41000, Version.SPIGOT_1_15,
+                                        "Lobby", 41000, Version.PAPER_1_15_1,
                                         512, false, 50
                                 );
                                 break;
@@ -165,6 +169,9 @@ public class NodeExecutorConfig {
     }
 
     private void loadGroups() {
+        processGroups.clear();
+        mainGroups.clear();
+
         processGroups.addAll(this.localSubGroupsRegistry.readKeys(e -> e.get("key", ProcessGroup.TYPE)));
         mainGroups.addAll(this.localMainGroupsRegistry.readKeys(e -> e.get("key", MainGroup.TYPE)));
     }

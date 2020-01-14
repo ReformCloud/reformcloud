@@ -6,7 +6,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.NetworkUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.network.auth.ServerAuthHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.defaults.DefaultPacketSender;
-import systems.reformcloud.reformcloud2.executor.api.common.network.packet.DefaultPacket;
+import systems.reformcloud.reformcloud2.executor.api.common.network.packet.JsonPacket;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.handler.PacketHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.function.DoubleFunction;
@@ -51,8 +51,8 @@ public class DefaultServerAuthHandler implements ServerAuthHandler {
     @Override
     public BiFunction<String, ChannelHandlerContext, PacketSender> onSuccess() {
         return (s, context) -> {
-            context.channel().writeAndFlush(new DefaultPacket(-511, new JsonConfiguration().add("access", true)));
-            PacketSender sender = new DefaultPacketSender(context.channel());
+            context.channel().writeAndFlush(new JsonPacket(-511, new JsonConfiguration().add("access", true)));
+            PacketSender sender = new DefaultPacketSender(context);
             sender.setName(s);
             return sender;
         };

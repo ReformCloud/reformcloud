@@ -2,7 +2,7 @@ package systems.reformcloud.reformcloud2.executor.node.network.packet.in.cluster
 
 import systems.reformcloud.reformcloud2.executor.api.common.network.NetworkUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
-import systems.reformcloud.reformcloud2.executor.api.common.network.channel.handler.NetworkHandler;
+import systems.reformcloud.reformcloud2.executor.api.common.network.channel.handler.DefaultJsonNetworkHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.controller.packet.out.event.ControllerEventProcessClosed;
@@ -15,7 +15,7 @@ import systems.reformcloud.reformcloud2.executor.node.process.util.ProcessAction
 import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 
-public class PacketInProcessAction implements NetworkHandler {
+public class PacketInProcessAction extends DefaultJsonNetworkHandler {
 
     @Override
     public int getHandlingPacketID() {

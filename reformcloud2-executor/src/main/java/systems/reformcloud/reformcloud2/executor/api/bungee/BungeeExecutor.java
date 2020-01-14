@@ -103,14 +103,17 @@ public final class BungeeExecutor extends API implements PlayerAPIExecutor {
         this.networkClient.connect(
                 connectionConfig.getString("controller-host"),
                 connectionConfig.getInteger("controller-port"),
-                new DefaultAuth(connectionKey, thisProcessInformation.getParent(),
-                        NetworkType.PROCESS, thisProcessInformation.getName(),
-                        new JsonConfiguration()),
-                networkChannelReader);
+                new DefaultAuth(
+                        connectionKey,
+                        thisProcessInformation.getParent(),
+                        NetworkType.PROCESS,
+                        thisProcessInformation.getName(),
+                        new JsonConfiguration()
+                ), networkChannelReader
+        );
 
         ExecutorAPI.setInstance(this);
-        ProxyServer.getInstance().setReconnectHandler(
-                new ReformCloudReconnectHandler());
+        ProxyServer.getInstance().setReconnectHandler(new ReformCloudReconnectHandler());
         awaitConnectionAndUpdate();
     }
 

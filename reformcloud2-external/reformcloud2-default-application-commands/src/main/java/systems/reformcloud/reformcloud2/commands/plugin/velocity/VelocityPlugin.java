@@ -1,18 +1,19 @@
 package systems.reformcloud.reformcloud2.commands.plugin.velocity;
 
+import com.google.gson.reflect.TypeToken;
 import com.google.inject.Inject;
-import com.velocitypowered.api.event.Subscribe;
-import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
 import com.velocitypowered.api.plugin.Dependency;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.proxy.ProxyServer;
 import systems.reformcloud.reformcloud2.commands.config.CommandsConfig;
 import systems.reformcloud.reformcloud2.commands.plugin.CommandConfigHandler;
-import systems.reformcloud.reformcloud2.commands.plugin.packet.in.PacketInRegisterCommandsConfig;
+import systems.reformcloud.reformcloud2.commands.plugin.packet.out.PacketOutGetCommandsConfig;
 import systems.reformcloud.reformcloud2.commands.plugin.velocity.commands.CommandLeave;
 import systems.reformcloud.reformcloud2.commands.plugin.velocity.commands.CommandReformCloud;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.network.NetworkUtil;
+import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
+import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 
 import javax.annotation.Nonnull;
 
@@ -32,15 +33,25 @@ public class VelocityPlugin {
         this.proxyServer = proxyServer;
 
         CommandConfigHandler.setInstance(new ConfigHandler());
-        ExecutorAPI.getInstance().getPacketHandler().registerHandler(new PacketInRegisterCommandsConfig());
+        NetworkUtil.EXECUTOR.execute(() -> {
+            PacketSender sender = DefaultChannelManager.INSTANCE.get("Controller").orNothing();
+            while (sender == null) {
+                sender = DefaultChannelManager.INSTANCE.get("Controller").orNothing();
+            }
+
+            ExecutorAPI.getInstance().getPacketHandler().getQueryHandler().sendQueryAsync(sender, new PacketOutGetCommandsConfig())
+                    .onComplete(e -> {
+                        CommandsConfig commandsConfig = e.content().get("content", new TypeToken<CommandsConfig>() {});
+                        if (commandsConfig == null) {
+                            return;
+                        }
+
+                        CommandConfigHandler.getInstance().handleCommandConfigRelease(commandsConfig);
+                    });
+        });
     }
 
     private final ProxyServer proxyServer;
-
-    @Subscribe
-    public void handleStop(final ProxyShutdownEvent event) {
-        ExecutorAPI.getInstance().getPacketHandler().unregisterNetworkHandlers(NetworkUtil.EXTERNAL_BUS + 1);
-    }
 
     private class ConfigHandler extends CommandConfigHandler {
 

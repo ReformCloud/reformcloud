@@ -8,7 +8,7 @@ import systems.reformcloud.reformcloud2.permissions.sponge.collections.base.User
 import systems.reformcloud.reformcloud2.permissions.sponge.collections.factory.FactoryCollection;
 import systems.reformcloud.reformcloud2.permissions.sponge.service.SpongePermissionService;
 
-public class CollectionCatalog {
+public final class CollectionCatalog {
 
     private CollectionCatalog() {
         throw new UnsupportedOperationException();

@@ -6,14 +6,14 @@ import systems.reformcloud.reformcloud2.executor.api.common.application.LoadedAp
 import systems.reformcloud.reformcloud2.executor.api.common.application.basic.DefaultLoadedApplication;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
-import systems.reformcloud.reformcloud2.executor.api.common.network.channel.handler.NetworkHandler;
-import systems.reformcloud.reformcloud2.executor.api.common.network.packet.DefaultPacket;
+import systems.reformcloud.reformcloud2.executor.api.common.network.channel.handler.DefaultJsonNetworkHandler;
+import systems.reformcloud.reformcloud2.executor.api.common.network.packet.JsonPacket;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 
 import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 
-public final class ControllerQueryInGetLoadedApplication implements NetworkHandler {
+public final class ControllerQueryInGetLoadedApplication extends DefaultJsonNetworkHandler {
 
     @Override
     public int getHandlingPacketID() {
@@ -23,7 +23,7 @@ public final class ControllerQueryInGetLoadedApplication implements NetworkHandl
     @Override
     public void handlePacket(@Nonnull PacketSender packetSender, @Nonnull Packet packet, @Nonnull Consumer<Packet> responses) {
         String name = packet.content().getString("name");
-        responses.accept(new DefaultPacket(-1, new JsonConfiguration().add("result", convert(ExecutorAPI.getInstance().getSyncAPI().getApplicationSyncAPI().getApplication(name)))));
+        responses.accept(new JsonPacket(-1, new JsonConfiguration().add("result", convert(ExecutorAPI.getInstance().getSyncAPI().getApplicationSyncAPI().getApplication(name)))));
     }
 
     private static DefaultLoadedApplication convert(LoadedApplication application) {

@@ -13,7 +13,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.utility.function.Dou
 import javax.annotation.Nonnull;
 
 public class DefaultWebServerAuth implements Auth {
-    
+
     public DefaultWebServerAuth(DatabaseSyncAPI api) {
         this.api = api;
     }

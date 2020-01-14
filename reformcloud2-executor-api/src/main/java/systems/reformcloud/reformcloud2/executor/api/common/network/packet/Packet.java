@@ -1,13 +1,13 @@
 package systems.reformcloud.reformcloud2.executor.api.common.network.packet;
 
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.common.network.packet.serialisation.PacketWriter;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.io.Serializable;
 import java.util.UUID;
 
-public interface Packet extends Serializable {
+public interface Packet extends PacketWriter {
 
     /**
      * @return The packet id of the packet
@@ -25,6 +25,12 @@ public interface Packet extends Serializable {
      */
     @Nonnull
     JsonConfiguration content();
+
+    /**
+     * @return The extra content of this packet
+     */
+    @Nonnull
+    byte[] extra();
 
     /**
      * Sets the query id

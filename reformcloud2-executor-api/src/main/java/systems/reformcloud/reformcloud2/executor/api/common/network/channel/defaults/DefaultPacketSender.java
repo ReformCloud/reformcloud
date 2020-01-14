@@ -1,6 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.api.common.network.channel.defaults;
 
-import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandlerContext;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 
@@ -9,12 +9,12 @@ import java.net.InetSocketAddress;
 
 public class DefaultPacketSender extends PacketSender {
 
-    public DefaultPacketSender(Channel channel) {
+    public DefaultPacketSender(ChannelHandlerContext channel) {
         this.channel = channel;
         this.connectionTime = System.currentTimeMillis();
     }
 
-    private Channel channel;
+    private ChannelHandlerContext channel;
 
     private final long connectionTime;
 
@@ -34,7 +34,7 @@ public class DefaultPacketSender extends PacketSender {
     @Nonnull
     @Override
     public InetSocketAddress getEthernetAddress() {
-        return (InetSocketAddress) channel.remoteAddress();
+        return (InetSocketAddress) channel.channel().remoteAddress();
     }
 
     @Override
@@ -76,7 +76,7 @@ public class DefaultPacketSender extends PacketSender {
 
     @Override
     public boolean isConnected() {
-        return channel != null && channel.isOpen();
+        return channel != null && channel.channel().isOpen();
     }
 
     @Override
@@ -93,5 +93,11 @@ public class DefaultPacketSender extends PacketSender {
     @Override
     public void setName(@Nonnull String newName) {
         this.name = newName;
+    }
+
+    @Nonnull
+    @Override
+    public ChannelHandlerContext getChannelContext() {
+        return this.channel;
     }
 }

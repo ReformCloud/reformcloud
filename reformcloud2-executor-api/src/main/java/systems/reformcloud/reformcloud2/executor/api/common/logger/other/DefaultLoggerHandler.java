@@ -11,6 +11,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.logger.other.debugge
 import systems.reformcloud.reformcloud2.executor.api.common.logger.other.fornatter.DefaultLogFormatter;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.other.handler.DefaultConsoleHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.stream.OutputStream;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.StringUtil;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
@@ -24,7 +25,7 @@ import java.util.logging.Level;
 
 public final class DefaultLoggerHandler extends LoggerBase {
 
-    private static final String PROMPT = System.getProperty("user.name") + "@ReformCloud2~# ";
+    private static String prompt = StringUtil.getConsolePrompt();
 
     public DefaultLoggerHandler() throws IOException {
         this.consoleReader = new ConsoleReader(System.in, System.out);
@@ -60,7 +61,7 @@ public final class DefaultLoggerHandler extends LoggerBase {
     @Override
     public String readLine() {
         try {
-            return consoleReader.readLine(PROMPT);
+            return consoleReader.readLine(prompt);
         } catch (final IOException ex) {
             ex.printStackTrace();
         }
@@ -142,6 +143,11 @@ public final class DefaultLoggerHandler extends LoggerBase {
     @Override
     public Debugger getDebugger() {
         return debugger;
+    }
+
+    @Override
+    public void handleReload() {
+        prompt = StringUtil.getConsolePrompt();
     }
 
     @Override

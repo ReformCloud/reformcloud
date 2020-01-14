@@ -4,14 +4,14 @@ import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.basic.ExternalAPIImplementation;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
-import systems.reformcloud.reformcloud2.executor.api.common.network.channel.handler.NetworkHandler;
-import systems.reformcloud.reformcloud2.executor.api.common.network.packet.DefaultPacket;
+import systems.reformcloud.reformcloud2.executor.api.common.network.channel.handler.DefaultJsonNetworkHandler;
+import systems.reformcloud.reformcloud2.executor.api.common.network.packet.JsonPacket;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 
 import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 
-public final class ControllerQueryDatabaseAction implements NetworkHandler {
+public final class ControllerQueryDatabaseAction extends DefaultJsonNetworkHandler {
 
     @Override
     public int getHandlingPacketID() {
@@ -24,17 +24,17 @@ public final class ControllerQueryDatabaseAction implements NetworkHandler {
 
         switch (packet.content().getString("action")) {
             case "action_create": {
-                responses.accept(new DefaultPacket(-1, new JsonConfiguration().add("result", ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().createDatabase(name))));
+                responses.accept(new JsonPacket(-1, new JsonConfiguration().add("result", ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().createDatabase(name))));
                 break;
             }
 
             case "action_delete": {
-                responses.accept(new DefaultPacket(-1, new JsonConfiguration().add("result", ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().deleteDatabase(name))));
+                responses.accept(new JsonPacket(-1, new JsonConfiguration().add("result", ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().deleteDatabase(name))));
                 break;
             }
 
             case "action_size": {
-                responses.accept(new DefaultPacket(-1, new JsonConfiguration().add("result", ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().size(name))));
+                responses.accept(new JsonPacket(-1, new JsonConfiguration().add("result", ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().size(name))));
                 break;
             }
         }

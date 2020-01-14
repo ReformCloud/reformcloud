@@ -1,6 +1,6 @@
 package systems.reformcloud.reformcloud2.signs.packets;
 
-public class PacketUtil {
+public final class PacketUtil {
 
     private PacketUtil() {
         throw new UnsupportedOperationException();

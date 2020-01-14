@@ -1,14 +1,18 @@
 package systems.reformcloud.reformcloud2.executor.api.common.utility;
 
 import systems.reformcloud.reformcloud2.executor.api.common.base.Conditions;
+import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
 
 import java.util.UUID;
 
 public final class StringUtil {
 
     public static final String RUNNER_DOWNLOAD_URL = "https://internal.reformcloud.systems/runner.jar";
-    
+
     public static final String[] RC_COMMAND_HELP = new String[] {
+            "rc applications",
+            "rc applications update",
+            "rc applications update <name>",
             "rc maintenance <group>",
             "rc copy <uuid | name>",
             "rc screen <uuid | name> toggle",
@@ -41,12 +45,17 @@ public final class StringUtil {
     };
 
     public static void sendHeader() {
+        if (Boolean.getBoolean("reformcloud.disable.header.show")) {
+            System.out.println();
+            return;
+        }
+
         System.out.println(
                         "\n" +
                         "    __       __                        ___ _                 _ ____  \n" +
                         "   /__\\ ___ / _| ___  _ __ _ __ ___   / __\\ | ___  _   _  __| |___ \\ \n" +
                         "  / \\/// _ \\ |_ / _ \\| '__| '_ ` _ \\ / /  | |/ _ \\| | | |/ _` | __) |\n" +
-                        " / _  \\  __/  _| (_) | |  | | | | | / /___| | (_) | |_| | (_| |/ __/ \n" +
+                        " / _  \\  __/  _| (_) | |  | | | | | / /___| | (_) | |_| | (_| |/ __/\n" +
                         " \\/ \\_/\\___|_|  \\___/|_|  |_| |_| |_\\____/|_|\\___/ \\__,_|\\__,_|_____|\n" +
                         " \n" +
                         "                   Not just a cloud system, but an experience.\n"
@@ -61,5 +70,11 @@ public final class StringUtil {
         }
 
         return stringBuilder.toString();
+    }
+
+    public static String getConsolePrompt() {
+        return LanguageManager.get("logger.console.prompt")
+                .replace("%version%", System.getProperty("reformcloud.runner.version", "c-build"))
+                .replace("%user_name%", System.getProperty("user.name", "unknown")) + " ";
     }
 }

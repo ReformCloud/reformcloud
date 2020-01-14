@@ -29,7 +29,7 @@ import javax.annotation.Nullable;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class DefaultPermissionUtil implements PermissionUtil {
+public final class DefaultPermissionUtil implements PermissionUtil {
 
     private static final String PERMISSION_GROUP_TABLE = "reformcloud_internal_db_perm_group";
 
@@ -119,7 +119,7 @@ public class DefaultPermissionUtil implements PermissionUtil {
     public void addProcessGroupPermission(@Nonnull String processGroup, @Nonnull PermissionGroup permissionGroup, @Nonnull PermissionNode permissionNode) {
         final Collection<PermissionNode> current = permissionGroup.getPerGroupPermissions().get(processGroup);
         if (current == null) {
-            permissionGroup.getPerGroupPermissions().put(processGroup, Collections.singletonList(permissionNode));
+            permissionGroup.getPerGroupPermissions().put(processGroup, new ArrayList<>(Collections.singletonList(permissionNode)));
             updateGroup(permissionGroup);
             return;
         }

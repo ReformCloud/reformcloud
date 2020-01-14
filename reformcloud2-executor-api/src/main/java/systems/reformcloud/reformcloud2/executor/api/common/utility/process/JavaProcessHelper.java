@@ -9,7 +9,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
-public class JavaProcessHelper {
+public final class JavaProcessHelper {
 
     private JavaProcessHelper() {
         throw new UnsupportedOperationException();

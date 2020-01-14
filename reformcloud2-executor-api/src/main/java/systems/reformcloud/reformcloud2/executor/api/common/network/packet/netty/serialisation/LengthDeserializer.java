@@ -1,4 +1,4 @@
-package systems.reformcloud.reformcloud2.executor.api.common.network.packet.serialisation;
+package systems.reformcloud.reformcloud2.executor.api.common.network.packet.netty.serialisation;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -15,7 +15,7 @@ public final class LengthDeserializer extends ByteToMessageDecoder {
         byteBuf.markReaderIndex();
         byte[] bytes = new byte[5];
 
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < bytes.length; i++) {
             if (!byteBuf.isReadable()) {
                 byteBuf.resetReaderIndex();
                 return;

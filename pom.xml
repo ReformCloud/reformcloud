@@ -7,7 +7,7 @@
     <groupId>systems.reformcloud.reformcloud2</groupId>
     <artifactId>reformcloud2</artifactId>
     <packaging>pom</packaging>
-    <version>2.0.1</version>
+    <version>2.0.2</version>
 
     <licenses>
         <license>
@@ -67,8 +67,6 @@
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.build.targetEncoding>UTF-8</project.build.targetEncoding>
-
-        <service.version>2.0</service.version>
     </properties>
 
     <dependencies>
@@ -92,6 +90,29 @@
                     <source>${maven.compiler.source}</source>
                     <target>${maven.compiler.target}</target>
                 </configuration>
+            </plugin>
+
+            <!-- maven checkstyle plugin to prevent bad code ( e.g unused imports ) -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>3.1.0</version>
+                <configuration>
+                    <configLocation>checkstyle.xml</configLocation>
+                    <encoding>UTF-8</encoding>
+                    <consoleOutput>true</consoleOutput>
+                    <failsOnError>true</failsOnError>
+                    <linkXRef>false</linkXRef>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>validate</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

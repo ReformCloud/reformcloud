@@ -2,7 +2,7 @@ package systems.reformcloud.reformcloud2.executor.node.network.packet.in.api;
 
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
-import systems.reformcloud.reformcloud2.executor.api.common.network.channel.handler.NetworkHandler;
+import systems.reformcloud.reformcloud2.executor.api.common.network.channel.handler.DefaultJsonNetworkHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.api.common.plugins.InstallablePlugin;
 import systems.reformcloud.reformcloud2.executor.api.common.plugins.Plugin;
@@ -12,7 +12,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.plugins.basic.Defaul
 import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 
-public class PacketInNodePluginAction implements NetworkHandler {
+public class PacketInNodePluginAction extends DefaultJsonNetworkHandler {
 
     @Override
     public int getHandlingPacketID() {

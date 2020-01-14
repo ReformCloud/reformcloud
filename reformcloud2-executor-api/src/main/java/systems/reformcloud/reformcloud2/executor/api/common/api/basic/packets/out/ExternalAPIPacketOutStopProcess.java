@@ -2,11 +2,11 @@ package systems.reformcloud.reformcloud2.executor.api.common.api.basic.packets.o
 
 import systems.reformcloud.reformcloud2.executor.api.common.api.basic.ExternalAPIImplementation;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
-import systems.reformcloud.reformcloud2.executor.api.common.network.packet.DefaultPacket;
+import systems.reformcloud.reformcloud2.executor.api.common.network.packet.JsonPacket;
 
 import java.util.UUID;
 
-public final class ExternalAPIPacketOutStopProcess extends DefaultPacket {
+public final class ExternalAPIPacketOutStopProcess extends JsonPacket {
 
     public ExternalAPIPacketOutStopProcess(String name) {
         super(ExternalAPIImplementation.EXTERNAL_PACKET_ID + 32, new JsonConfiguration().add("name", name));

@@ -5,7 +5,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
 import systems.reformcloud.reformcloud2.executor.api.common.network.NetworkUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
-import systems.reformcloud.reformcloud2.executor.api.common.network.channel.handler.NetworkHandler;
+import systems.reformcloud.reformcloud2.executor.api.common.network.channel.handler.DefaultJsonNetworkHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 
@@ -14,7 +14,7 @@ import java.util.Collection;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-public class PacketInScreenEnabled implements NetworkHandler {
+public class PacketInScreenEnabled extends DefaultJsonNetworkHandler {
 
     @Override
     public int getHandlingPacketID() {

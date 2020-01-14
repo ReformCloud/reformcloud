@@ -1,12 +1,12 @@
 package systems.reformcloud.reformcloud2.executor.controller.packet.out.api;
 
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
-import systems.reformcloud.reformcloud2.executor.api.common.network.packet.DefaultPacket;
+import systems.reformcloud.reformcloud2.executor.api.common.network.packet.JsonPacket;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public final class ControllerAPIAction extends DefaultPacket {
+public final class ControllerAPIAction extends JsonPacket {
 
     public ControllerAPIAction(APIAction action, List<Object> args) {
         super(46, null);

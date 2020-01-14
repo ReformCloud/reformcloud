@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class LayoutUtil {
+public final class LayoutUtil {
 
     private LayoutUtil() {
         throw new UnsupportedOperationException();

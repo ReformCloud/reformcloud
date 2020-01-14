@@ -7,7 +7,7 @@ import systems.reformcloud.reformcloud2.permissions.bukkit.permissible.DefaultPe
 
 import java.lang.reflect.Field;
 
-public class BukkitUtil {
+public final class BukkitUtil {
 
     private BukkitUtil() {
         throw new UnsupportedOperationException();

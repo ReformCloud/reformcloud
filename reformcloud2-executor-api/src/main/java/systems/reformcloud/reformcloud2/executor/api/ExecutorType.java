@@ -33,7 +33,7 @@ public enum ExecutorType {
     }
 
     /* ============================== */
-    
+
     private static final Map<Integer, ExecutorType> BY_ID = new HashMap<>();
 
     static {

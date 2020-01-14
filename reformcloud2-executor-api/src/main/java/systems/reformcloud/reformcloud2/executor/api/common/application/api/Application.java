@@ -5,6 +5,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.application.factory.
 import systems.reformcloud.reformcloud2.executor.api.common.application.factory.ApplicationThreadGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.application.language.ApplicationLanguage;
 import systems.reformcloud.reformcloud2.executor.api.common.application.loader.AppClassLoader;
+import systems.reformcloud.reformcloud2.executor.api.common.application.updater.ApplicationUpdateRepository;
 import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
 import systems.reformcloud.reformcloud2.executor.api.common.language.language.Language;
 
@@ -25,7 +26,11 @@ public class Application {
 
     private AppClassLoader appClassLoader;
 
+    private static Application self;
+
     public final void init(@Nonnull LoadedApplication application, AppClassLoader loader) {
+        self = this;
+
         this.application = application;
         this.executorService = Executors.newCachedThreadPool(new ApplicationThreadFactory(new ApplicationThreadGroup(application)));
         this.appClassLoader = loader;
@@ -44,6 +49,15 @@ public class Application {
     public void onDisable() {}
 
     public void onUninstall() {}
+
+    public static Application self() {
+        return self;
+    }
+
+    @Nullable
+    public ApplicationUpdateRepository getUpdateRepository() {
+        return null;
+    }
 
     @Nonnull
     public final File dataFolder() {

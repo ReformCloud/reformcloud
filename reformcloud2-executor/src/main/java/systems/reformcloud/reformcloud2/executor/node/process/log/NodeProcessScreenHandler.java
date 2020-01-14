@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.UUID;
 
-public class NodeProcessScreenHandler {
+public final class NodeProcessScreenHandler {
 
     private NodeProcessScreenHandler() {
         throw new UnsupportedOperationException();

@@ -2,11 +2,12 @@ package systems.reformcloud.reformcloud2.executor.api.common.network.channel.han
 
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
+import systems.reformcloud.reformcloud2.executor.api.common.network.packet.serialisation.PacketReader;
 
 import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 
-public interface NetworkHandler {
+public interface NetworkHandler extends PacketReader {
 
     /**
      * @return The packet id which this handler is going to handle

@@ -81,6 +81,7 @@ public final class DefaultRunningProcess implements RunningProcess {
         }
 
         SystemHelper.doCopy("reformcloud/files/runner.jar", path + "/runner.jar");
+        SystemHelper.doCopy("reformcloud/.bin/executor.jar", path + "/plugins/executor.jar");
 
         new JsonConfiguration()
                 .add("controller-host", ClientExecutor.getInstance().getClientExecutorConfig().getClientConnectionConfig().getHost())
@@ -155,7 +156,8 @@ public final class DefaultRunningProcess implements RunningProcess {
     public boolean shutdown() {
         this.startupTime.set(-1);
         ClientExecutor.getInstance().getProcessManager().unregisterProcess(processInformation.getName());
-        int exitValue = JavaProcessHelper.shutdown(process, true, true, TimeUnit.SECONDS.toMillis(10), "stop\n", "end\n");
+        int exitValue = JavaProcessHelper.shutdown(process, true, true,
+                TimeUnit.SECONDS.toMillis(10), getShutdownCommands());
 
         if (!processInformation.getProcessGroup().isStaticProcess()) {
             SystemHelper.deleteDirectory(path);

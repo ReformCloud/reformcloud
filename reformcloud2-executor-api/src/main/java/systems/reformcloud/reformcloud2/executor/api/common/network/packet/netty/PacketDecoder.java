@@ -1,14 +1,12 @@
-package systems.reformcloud.reformcloud2.executor.api.common.network.packet.util;
+package systems.reformcloud.reformcloud2.executor.api.common.network.packet.netty;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
-import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.network.NetworkUtil;
-import systems.reformcloud.reformcloud2.executor.api.common.network.packet.DefaultPacket;
+import systems.reformcloud.reformcloud2.executor.api.common.network.packet.defaults.DefaultWrappedByteInput;
 
 import java.util.List;
-import java.util.UUID;
 
 public final class PacketDecoder extends ByteToMessageDecoder {
 
@@ -20,14 +18,10 @@ public final class PacketDecoder extends ByteToMessageDecoder {
 
         try {
             int id = NetworkUtil.read(byteBuf);
-            JsonConfiguration content = new JsonConfiguration(NetworkUtil.readString(byteBuf));
-            String query = NetworkUtil.readString(byteBuf);
 
-            if (query.equals("null")) {
-                list.add(new DefaultPacket(id, content));
-            } else {
-                list.add(new DefaultPacket(id, content, UUID.fromString(query)));
-            }
+            list.add(new DefaultWrappedByteInput(
+                    id, NetworkUtil.readBytes(byteBuf)
+            ));
         } catch (final Throwable throwable) {
             throwable.printStackTrace();
         }

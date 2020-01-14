@@ -4,7 +4,9 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.NetworkChannelReader;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
+import systems.reformcloud.reformcloud2.executor.api.common.network.channel.handler.DefaultJsonNetworkHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
+import systems.reformcloud.reformcloud2.executor.api.common.network.packet.WrappedByteInput;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.function.Double;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.function.DoubleFunction;
 
@@ -12,7 +14,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
-public final class ChannelReaderHelper extends SimpleChannelInboundHandler<Packet> {
+public final class ChannelReaderHelper extends SimpleChannelInboundHandler<WrappedByteInput> {
 
     ChannelReaderHelper(NetworkChannelReader channelReader, DoubleFunction<Packet, String, Boolean> function,
                         BiFunction<String, ChannelHandlerContext, PacketSender> onAuthSuccess, Consumer<ChannelHandlerContext> onAuthFailure) {
@@ -53,30 +55,42 @@ public final class ChannelReaderHelper extends SimpleChannelInboundHandler<Packe
     }
 
     @Override
-    protected void channelRead0(ChannelHandlerContext channelHandlerContext, Packet packet) {
+    protected void channelRead0(ChannelHandlerContext channelHandlerContext, WrappedByteInput input) {
         //controller auth
-        if (packet.packetID() == -512 && !auth.get()) {
-            Double<String, Boolean> result = function.apply(packet);
-            if (result.getSecond()) {
-                auth.set(true);
-                PacketSender sender = onSuccess.apply(result.getFirst(), channelHandlerContext);
-                channelReader.setSender(sender);
-            } else {
-                onAuthFailure.accept(channelHandlerContext);
+        if (input.getPacketID() == -512 && !auth.get()) {
+            try {
+                Packet packet = DefaultJsonNetworkHandler.readPacket(-512, input.toObjectStream());
+
+                Double<String, Boolean> result = function.apply(packet);
+                if (result.getSecond()) {
+                    auth.set(true);
+                    PacketSender sender = onSuccess.apply(result.getFirst(), channelHandlerContext);
+                    channelReader.setSender(sender);
+                } else {
+                    onAuthFailure.accept(channelHandlerContext);
+                }
+            } catch (final Exception ex) {
+                ex.printStackTrace();
             }
 
             return;
         }
 
         //client auth success
-        if (packet.packetID() == -511 && !auth.get()) {
-            Boolean access = packet.content().getOrDefault("access", false);
-            if (access) {
-                auth.set(true);
-                Double<String, Boolean> result = function.apply(packet);
-                channelReader.setSender(onSuccess.apply(result.getFirst(), channelHandlerContext));
-            } else {
-                channelHandlerContext.channel().close();
+        if (input.getPacketID() == -511 && !auth.get()) {
+            try {
+                Packet packet = DefaultJsonNetworkHandler.readPacket(-512, input.toObjectStream());
+
+                Boolean access = packet.content().getOrDefault("access", false);
+                if (access) {
+                    auth.set(true);
+                    Double<String, Boolean> result = function.apply(packet);
+                    channelReader.setSender(onSuccess.apply(result.getFirst(), channelHandlerContext));
+                } else {
+                    channelHandlerContext.channel().close();
+                }
+            } catch (final Exception ex) {
+                ex.printStackTrace();
             }
 
             return;
@@ -86,6 +100,6 @@ public final class ChannelReaderHelper extends SimpleChannelInboundHandler<Packe
             return;
         }
 
-        channelReader.read(channelHandlerContext, packet);
+        channelReader.read(channelHandlerContext, input);
     }
 }

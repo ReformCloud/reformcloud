@@ -1,14 +1,17 @@
 package systems.reformcloud.reformcloud2.commands.plugin.bungeecord;
 
+import com.google.gson.reflect.TypeToken;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.plugin.Plugin;
 import systems.reformcloud.reformcloud2.commands.config.CommandsConfig;
 import systems.reformcloud.reformcloud2.commands.plugin.CommandConfigHandler;
 import systems.reformcloud.reformcloud2.commands.plugin.bungeecord.commands.CommandLeave;
 import systems.reformcloud.reformcloud2.commands.plugin.bungeecord.commands.CommandReformCloud;
-import systems.reformcloud.reformcloud2.commands.plugin.packet.in.PacketInRegisterCommandsConfig;
+import systems.reformcloud.reformcloud2.commands.plugin.packet.out.PacketOutGetCommandsConfig;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.network.NetworkUtil;
+import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
+import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 
 import javax.annotation.Nonnull;
 
@@ -20,7 +23,23 @@ public class BungeecordPlugin extends Plugin {
     public void onEnable() {
         instance = this;
         CommandConfigHandler.setInstance(new ConfigHandler());
-        ExecutorAPI.getInstance().getPacketHandler().registerHandler(new PacketInRegisterCommandsConfig());
+
+        NetworkUtil.EXECUTOR.execute(() -> {
+            PacketSender sender = DefaultChannelManager.INSTANCE.get("Controller").orNothing();
+            while (sender == null) {
+                sender = DefaultChannelManager.INSTANCE.get("Controller").orNothing();
+            }
+
+            ExecutorAPI.getInstance().getPacketHandler().getQueryHandler().sendQueryAsync(sender, new PacketOutGetCommandsConfig())
+                    .onComplete(e -> {
+                        CommandsConfig commandsConfig = e.content().get("content", new TypeToken<CommandsConfig>() {});
+                        if (commandsConfig == null) {
+                            return;
+                        }
+
+                        CommandConfigHandler.getInstance().handleCommandConfigRelease(commandsConfig);
+                    });
+        });
     }
 
     @Override

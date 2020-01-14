@@ -2,10 +2,10 @@ package systems.reformcloud.reformcloud2.executor.api.common.api.basic.packets.o
 
 import systems.reformcloud.reformcloud2.executor.api.common.api.basic.ExternalAPIImplementation;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
-import systems.reformcloud.reformcloud2.executor.api.common.network.packet.DefaultPacket;
+import systems.reformcloud.reformcloud2.executor.api.common.network.packet.JsonPacket;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 
-public final class ExternalAPIPacketOutUpdateProcessInformation extends DefaultPacket {
+public final class ExternalAPIPacketOutUpdateProcessInformation extends JsonPacket {
 
     public ExternalAPIPacketOutUpdateProcessInformation(ProcessInformation processInformation) {
         super(ExternalAPIImplementation.EXTERNAL_PACKET_ID + 37, new JsonConfiguration().add("info", processInformation));

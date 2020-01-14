@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.UUID;
 
-public class LocalProcessManager {
+public final class LocalProcessManager {
 
     private LocalProcessManager() { throw new UnsupportedOperationException(); }
 

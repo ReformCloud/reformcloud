@@ -16,7 +16,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.function.Function;
 
-public class RegistryBuilder {
+public final class RegistryBuilder {
 
     private RegistryBuilder() {
         throw new UnsupportedOperationException();

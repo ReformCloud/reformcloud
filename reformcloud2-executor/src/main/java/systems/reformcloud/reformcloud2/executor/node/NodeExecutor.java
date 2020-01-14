@@ -41,10 +41,10 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.auth.default
 import systems.reformcloud.reformcloud2.executor.api.common.network.auth.defaults.DefaultServerAuthHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.defaults.DefaultPacketSender;
-import systems.reformcloud.reformcloud2.executor.api.common.network.channel.handler.NetworkHandler;
+import systems.reformcloud.reformcloud2.executor.api.common.network.channel.handler.DefaultJsonNetworkHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.common.network.client.NetworkClient;
-import systems.reformcloud.reformcloud2.executor.api.common.network.packet.DefaultPacket;
+import systems.reformcloud.reformcloud2.executor.api.common.network.packet.JsonPacket;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.defaults.DefaultPacketHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.handler.PacketHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.server.DefaultNetworkServer;
@@ -328,9 +328,9 @@ public class NodeExecutor extends Node {
                             // Node
                             result.add("name", nodeExecutorConfig.getSelf().getName());
                         }
-                        context.channel().writeAndFlush(new DefaultPacket(-511, result));
+                        context.channel().writeAndFlush(new JsonPacket(-511, result));
 
-                        PacketSender sender = new DefaultPacketSender(context.channel());
+                        PacketSender sender = new DefaultPacketSender(context);
                         sender.setName(s);
                         clusterSyncManager.getWaitingConnections().remove(sender.getAddress());
 
@@ -367,7 +367,7 @@ public class NodeExecutor extends Node {
                     return context -> {
                         String host = ((InetSocketAddress) context.channel().remoteAddress()).getAddress().getHostAddress();
                         clusterSyncManager.getWaitingConnections().remove(host);
-                        context.channel().writeAndFlush(new DefaultPacket(-511, new JsonConfiguration().add("access", false))).syncUninterruptibly().channel().close();
+                        context.channel().writeAndFlush(new JsonPacket(-511, new JsonConfiguration().add("access", false))).syncUninterruptibly().channel().close();
                     };
                 }
             });
@@ -597,9 +597,6 @@ public class NodeExecutor extends Node {
         this.clusterSyncManager.getProcessGroups().clear();
         this.clusterSyncManager.getMainGroups().clear();
 
-        this.nodeExecutorConfig.getProcessGroups().clear();
-        this.nodeExecutorConfig.getMainGroups().clear();
-
         this.applicationLoader.detectApplications();
         this.applicationLoader.installApplications();
 
@@ -657,10 +654,10 @@ public class NodeExecutor extends Node {
     }
 
     private void loadPacketHandlers() {
-        new Reflections("systems.reformcloud.reformcloud2.executor.node.network.packet.in").getSubTypesOf(NetworkHandler.class).forEach(packetHandler::registerHandler);
+        new Reflections("systems.reformcloud.reformcloud2.executor.node.network.packet.in").getSubTypesOf(DefaultJsonNetworkHandler.class).forEach(packetHandler::registerHandler);
 
         // The query handler for the external api, we can re-use them
-        new Reflections("systems.reformcloud.reformcloud2.executor.controller.packet.in.query").getSubTypesOf(NetworkHandler.class).forEach(e -> {
+        new Reflections("systems.reformcloud.reformcloud2.executor.controller.packet.in.query").getSubTypesOf(DefaultJsonNetworkHandler.class).forEach(e -> {
             if (e.getSimpleName().equals("ControllerQueryInRequestIngameMessages")) {
                 return;
             }
@@ -668,7 +665,7 @@ public class NodeExecutor extends Node {
             packetHandler.registerHandler(e);
         });
 
-        new Reflections("systems.reformcloud.reformcloud2.executor.node.network.packet.query.in").getSubTypesOf(NetworkHandler.class).forEach(packetHandler::registerHandler);
+        new Reflections("systems.reformcloud.reformcloud2.executor.node.network.packet.query.in").getSubTypesOf(DefaultJsonNetworkHandler.class).forEach(packetHandler::registerHandler);
     }
 
     private void sync(PacketSender sender) {

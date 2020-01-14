@@ -85,6 +85,7 @@ public class BasicLocalNodeProcess implements LocalNodeProcess {
         }
 
         SystemHelper.doCopy("reformcloud/files/runner.jar", path + "/runner.jar");
+        SystemHelper.doCopy("reformcloud/.bin/executor.jar", path + "/plugins/executor.jar");
 
         Double<String, Integer> connection = NodeExecutor.getInstance().getConnectHost();
         new JsonConfiguration()
@@ -167,7 +168,7 @@ public class BasicLocalNodeProcess implements LocalNodeProcess {
     @Override
     public void shutdown() {
         startupTime.set(-1);
-        JavaProcessHelper.shutdown(process, true, true, TimeUnit.SECONDS.toMillis(10), "stop\n", "end\n");
+        JavaProcessHelper.shutdown(process, true, true, TimeUnit.SECONDS.toMillis(10), getShutdownCommands());
 
         NodeProcessScreenHandler.unregisterScreen(this.processInformation.getProcessUniqueID());
         NodeExecutor.getInstance().getClusterSyncManager().syncProcessStop(processInformation);
