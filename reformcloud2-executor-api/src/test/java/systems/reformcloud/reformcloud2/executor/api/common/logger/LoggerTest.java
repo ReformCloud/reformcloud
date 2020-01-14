@@ -1,6 +1,7 @@
 package systems.reformcloud.reformcloud2.executor.api.common.logger;
 
 import org.junit.Test;
+import systems.reformcloud.reformcloud2.executor.api.common.language.loading.LanguageWorker;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.coloured.ColouredLoggerHandler;
 
 import java.io.IOException;
@@ -15,6 +16,7 @@ public final class LoggerTest {
 
     @Test
     public void testLogger() throws IOException {
+        LanguageWorker.doLoad();
         LoggerBase loggerBase = new ColouredLoggerHandler();
         assertNotNull(loggerBase);
         System.out.println("&6Hallo");
