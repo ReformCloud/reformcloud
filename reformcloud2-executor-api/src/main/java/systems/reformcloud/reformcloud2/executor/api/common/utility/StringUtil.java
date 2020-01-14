@@ -45,6 +45,11 @@ public final class StringUtil {
     };
 
     public static void sendHeader() {
+        if (Boolean.getBoolean("reformcloud.disable.header.show")) {
+            System.out.println();
+            return;
+        }
+
         System.out.println(
                         "\n" +
                         "    __       __                        ___ _                 _ ____  \n" +
