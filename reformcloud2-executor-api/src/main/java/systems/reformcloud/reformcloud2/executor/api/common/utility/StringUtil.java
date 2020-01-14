@@ -1,6 +1,7 @@
 package systems.reformcloud.reformcloud2.executor.api.common.utility;
 
 import systems.reformcloud.reformcloud2.executor.api.common.base.Conditions;
+import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
 
 import java.util.UUID;
 
@@ -64,5 +65,11 @@ public final class StringUtil {
         }
 
         return stringBuilder.toString();
+    }
+
+    public static String getConsolePrompt() {
+        return LanguageManager.get("logger.console.prompt")
+                .replace("%version%", System.getProperty("reformcloud.runner.version", "c-build"))
+                .replace("%user_name%", System.getProperty("user.name", "unknown")) + " ";
     }
 }

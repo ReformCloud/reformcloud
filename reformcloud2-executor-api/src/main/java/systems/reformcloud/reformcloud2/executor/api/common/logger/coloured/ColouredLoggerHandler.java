@@ -12,6 +12,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.logger.coloured.form
 import systems.reformcloud.reformcloud2.executor.api.common.logger.coloured.formatter.LogFileFormatter;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.coloured.handler.ColouredConsoleHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.stream.OutputStream;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.StringUtil;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
@@ -27,7 +28,7 @@ import java.util.logging.Level;
 
 public final class ColouredLoggerHandler extends LoggerBase {
 
-    private static final String PROMPT = Colours.WHITE + System.getProperty("user.name") + "@ReformCloud" + Colours.CYAN + "2" + Colours.WHITE + "~# ";
+    private static String prompt = StringUtil.getConsolePrompt();
 
     public ColouredLoggerHandler() throws IOException {
         this.consoleReader = new ConsoleReader(System.in, System.out);
@@ -69,7 +70,7 @@ public final class ColouredLoggerHandler extends LoggerBase {
     @Override
     public String readLine() {
         try {
-            return consoleReader.readLine(PROMPT);
+            return consoleReader.readLine(prompt);
         } catch (final IOException ex) {
             ex.printStackTrace();
         }
@@ -153,6 +154,11 @@ public final class ColouredLoggerHandler extends LoggerBase {
     @Override
     public Debugger getDebugger() {
         return debugger;
+    }
+
+    @Override
+    public void handleReload() {
+        prompt = StringUtil.getConsolePrompt();
     }
 
     @Override

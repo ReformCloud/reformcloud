@@ -227,6 +227,7 @@ public class LocalNodeProcessManager implements NodeProcessManager {
         return Links.filterToReference(information, e -> e.getProcessUniqueID().equals(uniqueID)).orNothing();
     }
 
+    @Nonnull
     @Override
     public Iterator<ProcessInformation> iterator() {
         return Links.newList(information).iterator();
