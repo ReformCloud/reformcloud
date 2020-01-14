@@ -136,6 +136,17 @@ public class CommandReformCloud extends Command {
             return;
         }
 
+        if (strings.length >= 2 && strings[0].equalsIgnoreCase("cmd")) {
+            StringBuilder stringBuilder = new StringBuilder();
+            for (String s : Arrays.copyOfRange(strings, 1, strings.length)) {
+                stringBuilder.append(s).append(" ");
+            }
+
+            ExecutorAPI.getInstance().getSyncAPI().getConsoleSyncAPI().dispatchCommandAndGetResult(stringBuilder.toString());
+            commandSender.sendMessage(getCommandSuccessMessage());
+            return;
+        }
+
         commandSender.sendMessage(
                 new TextComponent(TextComponent.fromLegacyText(prefix + "§7/rc list\n")),
                 new TextComponent(TextComponent.fromLegacyText(prefix + "§7/rc copy <name>\n")),
@@ -145,7 +156,8 @@ public class CommandReformCloud extends Command {
                 new TextComponent(TextComponent.fromLegacyText(prefix + "§7/rc stopall <group>\n")),
                 new TextComponent(TextComponent.fromLegacyText(prefix + "§7/rc ofall <mainGroup> stop\n")),
                 new TextComponent(TextComponent.fromLegacyText(prefix + "§7/rc execute <name> <command>\n")),
-                new TextComponent(TextComponent.fromLegacyText(prefix + "§7/rc maintenance <group>"))
+                new TextComponent(TextComponent.fromLegacyText(prefix + "§7/rc maintenance <group>\n")),
+                new TextComponent(TextComponent.fromLegacyText(prefix + "§7/rc cmd <command>"))
         );
     }
 

@@ -139,6 +139,17 @@ public class CommandReformCloud implements Command {
             return;
         }
 
+        if (strings.length >= 2 && strings[0].equalsIgnoreCase("cmd")) {
+            StringBuilder stringBuilder = new StringBuilder();
+            for (String s : Arrays.copyOfRange(strings, 1, strings.length)) {
+                stringBuilder.append(s).append(" ");
+            }
+
+            ExecutorAPI.getInstance().getSyncAPI().getConsoleSyncAPI().dispatchCommandAndGetResult(stringBuilder.toString());
+            commandSender.sendMessage(getCommandSuccessMessage());
+            return;
+        }
+
         commandSender.sendMessage(TextComponent.of(prefix + "§7/rc list"));
         commandSender.sendMessage(TextComponent.of(prefix + "§7/rc copy <name>"));
         commandSender.sendMessage(TextComponent.of(prefix + "§7/rc start <group>"));
@@ -148,6 +159,7 @@ public class CommandReformCloud implements Command {
         commandSender.sendMessage(TextComponent.of(prefix + "§7/rc ofall <mainGroup> stop"));
         commandSender.sendMessage(TextComponent.of(prefix + "§7/rc execute <name> <command>"));
         commandSender.sendMessage(TextComponent.of(prefix + "§7/rc maintenance <group>"));
+        commandSender.sendMessage(TextComponent.of(prefix + "§7/rc cmd <command>"));
     }
 
     private TextComponent getCommandSuccessMessage() {
