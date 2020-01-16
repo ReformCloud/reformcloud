@@ -29,7 +29,11 @@ import java.util.logging.Level;
 
 public final class ColouredLoggerHandler extends LoggerBase {
 
-    private static String prompt = StringUtil.getConsolePrompt();
+    static {
+        prompt = Colours.coloured(StringUtil.getConsolePrompt());
+    }
+
+    private static String prompt;
 
     public ColouredLoggerHandler() throws IOException {
         Terminal terminal = TerminalLineHandler.newTerminal(true);
@@ -68,13 +72,13 @@ public final class ColouredLoggerHandler extends LoggerBase {
     @Nonnull
     @Override
     public String readLine() {
-        return lineReader.readLine(prompt);
+        return TerminalLineHandler.readLine(lineReader, prompt);
     }
 
     @Nonnull
     @Override
     public String readLineNoPrompt() {
-        return lineReader.readLine();
+        return TerminalLineHandler.readLine(lineReader, null);
     }
 
     @Nonnull
@@ -108,9 +112,7 @@ public final class ColouredLoggerHandler extends LoggerBase {
         handleLine(message);
 
         lineReader.getTerminal().puts(InfoCmp.Capability.carriage_return);
-        lineReader.getTerminal().writer().println(message);
-     //   lineReader.callWidget(LineReader.REDRAW_LINE);
-     //   lineReader.callWidget(LineReader.REDISPLAY);
+        lineReader.getTerminal().writer().print(message);
         lineReader.getTerminal().writer().flush();
     }
 
@@ -119,8 +121,9 @@ public final class ColouredLoggerHandler extends LoggerBase {
         message = Colours.stripColor(message);
         handleLine(message);
 
-        lineReader.getTerminal().writer().println(message);
-        lineReader.getTerminal().flush();
+        lineReader.getTerminal().puts(InfoCmp.Capability.carriage_return);
+        lineReader.getTerminal().writer().print(message);
+        lineReader.getTerminal().writer().flush();
     }
 
     @Nonnull

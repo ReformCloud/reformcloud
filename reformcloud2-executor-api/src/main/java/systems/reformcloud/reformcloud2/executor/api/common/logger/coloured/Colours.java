@@ -23,7 +23,7 @@ public enum Colours {
     DARK_RED("dark_red", '4', "\u001b[31m"),
     BLUE("blue", '9', "\u001b[34m");
 
-    public static final char COLOR_CHAR = '\u00A7';
+    private static final char COLOR_CHAR = '\u0026';
 
     private static final Pattern STRIP_PATTERN = Pattern.compile("(?i)" + COLOR_CHAR + "[0-9A-FK-OR]");
 

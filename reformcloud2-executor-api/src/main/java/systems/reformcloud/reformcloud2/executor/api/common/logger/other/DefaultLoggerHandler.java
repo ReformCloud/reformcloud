@@ -2,6 +2,7 @@ package systems.reformcloud.reformcloud2.executor.api.common.logger.other;
 
 import org.jline.reader.LineReader;
 import org.jline.terminal.Terminal;
+import org.jline.utils.InfoCmp;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.Debugger;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.HandlerBase;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.LoggerBase;
@@ -61,13 +62,13 @@ public final class DefaultLoggerHandler extends LoggerBase {
     @Nonnull
     @Override
     public String readLine() {
-        return lineReader.readLine(prompt);
+        return TerminalLineHandler.readLine(lineReader, prompt);
     }
 
     @Nonnull
     @Override
     public String readLineNoPrompt() {
-        return lineReader.readLine("");
+        return TerminalLineHandler.readLine(lineReader, null);
     }
 
     @Nonnull
@@ -99,7 +100,8 @@ public final class DefaultLoggerHandler extends LoggerBase {
     public void log(@Nonnull String message) {
         handleLine(message);
 
-        lineReader.getTerminal().writer().println(message);
+        lineReader.getTerminal().puts(InfoCmp.Capability.carriage_return);
+        lineReader.getTerminal().writer().print(message);
         lineReader.getTerminal().flush();
     }
 
@@ -107,7 +109,8 @@ public final class DefaultLoggerHandler extends LoggerBase {
     public void logRaw(@Nonnull String message) {
         handleLine(message);
 
-        lineReader.getTerminal().writer().println(message);
+        lineReader.getTerminal().puts(InfoCmp.Capability.carriage_return);
+        lineReader.getTerminal().writer().print(message);
         lineReader.getTerminal().flush();
     }
 

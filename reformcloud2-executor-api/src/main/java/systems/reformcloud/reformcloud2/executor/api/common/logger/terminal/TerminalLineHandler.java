@@ -1,12 +1,10 @@
 package systems.reformcloud.reformcloud2.executor.api.common.logger.terminal;
 
-import org.jline.reader.Completer;
-import org.jline.reader.LineReader;
-import org.jline.reader.LineReaderBuilder;
+import org.fusesource.jansi.AnsiConsole;
+import org.jline.reader.*;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
-
-import org.fusesource.jansi.AnsiConsole;
+import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -19,27 +17,38 @@ public final class TerminalLineHandler {
         throw new UnsupportedOperationException();
     }
 
+    @Nonnull
     public static Terminal newTerminal(boolean jansi) throws IOException {
         wrapStreams(jansi);
 
         return TerminalBuilder
                 .builder()
-                //.system(false)
-                //.streams(System.in, System.out)
                 .system(true)
                 .encoding(StandardCharsets.UTF_8)
                 .build();
     }
 
+    @Nonnull
     public static LineReader newLineReader(@Nonnull Terminal terminal, @Nullable Completer completer) {
         return LineReaderBuilder
                 .builder()
                 .completer(completer)
                 .terminal(terminal)
-                //.variable(LineReader.INDENTATION, 2)
                 .option(LineReader.Option.DISABLE_EVENT_EXPANSION, true)
                 .option(LineReader.Option.INSERT_TAB, false)
                 .build();
+    }
+
+    @Nonnull
+    public static String readLine(@Nonnull LineReader reader, @Nullable String prompt) {
+        try {
+            return reader.readLine(prompt);
+        } catch (final EndOfFileException ignored) {
+        } catch (final UserInterruptException ex) {
+            System.err.println(LanguageManager.get("logger.interrupt.not.supported"));
+        }
+
+        return "";
     }
 
     private static void wrapStreams(boolean colour) {
