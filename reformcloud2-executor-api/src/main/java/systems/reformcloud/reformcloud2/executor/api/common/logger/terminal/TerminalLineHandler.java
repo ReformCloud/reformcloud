@@ -35,7 +35,6 @@ public final class TerminalLineHandler {
                 .completer(completer)
                 .terminal(terminal)
                 .option(LineReader.Option.DISABLE_EVENT_EXPANSION, true)
-    //            .option(LineReader.Option.INSERT_TAB, false)
                 .build();
     }
 
@@ -49,6 +48,16 @@ public final class TerminalLineHandler {
         }
 
         return "";
+    }
+
+    public static void tryRedisplay(@Nonnull LineReader lineReader) {
+        if (!lineReader.isReading()) {
+            // We cannot call widgets while the line reader is not reading
+            return;
+        }
+
+        lineReader.callWidget(LineReader.REDRAW_LINE);
+        lineReader.callWidget(LineReader.REDISPLAY);
     }
 
     private static void wrapStreams(boolean colour) {

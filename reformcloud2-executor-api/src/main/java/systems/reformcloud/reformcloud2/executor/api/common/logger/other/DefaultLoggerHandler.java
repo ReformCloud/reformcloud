@@ -105,6 +105,8 @@ public final class DefaultLoggerHandler extends LoggerBase {
         lineReader.getTerminal().puts(InfoCmp.Capability.carriage_return);
         lineReader.getTerminal().writer().print(message);
         lineReader.getTerminal().flush();
+
+        TerminalLineHandler.tryRedisplay(lineReader);
     }
 
     @Override
@@ -114,6 +116,8 @@ public final class DefaultLoggerHandler extends LoggerBase {
         lineReader.getTerminal().puts(InfoCmp.Capability.carriage_return);
         lineReader.getTerminal().writer().print(message);
         lineReader.getTerminal().flush();
+
+        TerminalLineHandler.tryRedisplay(lineReader);
     }
 
     @Nonnull
