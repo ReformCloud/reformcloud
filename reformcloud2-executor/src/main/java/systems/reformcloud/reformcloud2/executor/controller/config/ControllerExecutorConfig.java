@@ -5,10 +5,9 @@ import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.MainGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
-import systems.reformcloud.reformcloud2.executor.api.common.groups.basic.DefaultMainGroup;
-import systems.reformcloud.reformcloud2.executor.api.common.groups.basic.DefaultProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.messages.IngameMessages;
-import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Version;
+import systems.reformcloud.reformcloud2.executor.api.common.groups.setup.GroupSetupHelper;
+import systems.reformcloud.reformcloud2.executor.api.common.groups.setup.GroupSetupVersion;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.setup.Setup;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.setup.basic.DefaultSetup;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.setup.basic.DefaultSetupQuestion;
@@ -116,65 +115,24 @@ public final class ControllerExecutorConfig {
                             Collections.singletonList(Collections.singletonMap(ip, 1809))
                     )).write(ControllerConfig.PATH);
                 }
-        )).addQuestion(new DefaultSetupQuestion(
-                "Please choose an installation type [(Java Proxy and Java Lobby) \"1\", (Pocket Proxy and Pocket Lobby) \"2\", (Nothing) \"3\"]",
-                "This installation type is not valid",
-                s -> {
-                    try {
-                        int i = Integer.parseInt(s);
-                        return i >= 1 && i <= 3;
-                    } catch (final Throwable throwable) {
-                        return false;
-                    }
-                },
-                s -> {
-                    MainGroup mainProxy = new DefaultMainGroup("Proxy", Collections.singletonList("Proxy"));
-                    MainGroup mainLobby = new DefaultMainGroup("Lobby", Collections.singletonList("Lobby"));
-
-                    ProcessGroup proxy = null;
-                    ProcessGroup lobby = null;
-
-                    switch (Integer.parseInt(s)) {
-                        case 1: {
-                             proxy = new DefaultProcessGroup(
-                                    "Proxy", 25565, Version.BUNGEECORD,
-                                    128, true, 512
-                            );
-                            lobby = new DefaultProcessGroup(
-                                    "Lobby", 41000, Version.PAPER_1_15_1,
-                                    512, false, 50
-                            );
-                            break;
-                        }
-
-                        case 2: {
-                            proxy = new DefaultProcessGroup(
-                                    "Proxy", 19132, Version.WATERDOG,
-                                    128, true, 512
-                            );
-                            lobby = new DefaultProcessGroup(
-                                    "Lobby", 41000, Version.NUKKIT_X,
-                                    512, false, 50
-                            );
-                            break;
-                        }
-
-                        case 3: {
-                            return;
-                        }
-                    }
-
-                    if (proxy == null) {
-                        throw new IllegalStateException("Lobby or Proxy group not initialized correctly");
-                    }
-
-                    this.mainGroupRegistry.createKey(mainProxy.getName(), mainProxy);
-                    this.mainGroupRegistry.createKey(mainLobby.getName(), mainLobby);
-
-                    this.subGroupRegistry.createKey(proxy.getName(), proxy);
-                    this.subGroupRegistry.createKey(lobby.getName(), lobby);
-                }
         )).startSetup(ControllerExecutor.getInstance().getLoggerBase());
+
+        System.out.println("Please choose a default installation type:");
+        GroupSetupHelper.printAvailable();
+
+        String result = ControllerExecutor.getInstance().getLoggerBase().readLineNoPrompt();
+        while (!result.trim().isEmpty()) {
+            GroupSetupVersion version = GroupSetupHelper.findByName(result);
+            if (version == null) {
+                System.out.println("This setup type is not supported");
+                result = ControllerExecutor.getInstance().getLoggerBase().readLineNoPrompt();
+                continue;
+            }
+
+            version.install(e -> subGroupRegistry.createKey(e.getName(), e), e -> mainGroupRegistry.createKey(e.getName(), e));
+            System.out.println("Finished installation of " + version.getName() + "!");
+            break;
+        }
     }
 
     @Nonnull
