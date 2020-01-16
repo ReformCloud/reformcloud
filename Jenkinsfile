@@ -19,15 +19,31 @@ pipeline {
             }
         }
 
-        stage('Prepare zip') {
+        stage('Prepare cloud zip') {
             steps {
-                echo "Creating zip...";
+                echo "Creating cloud zip...";
+
                 sh "rm -rf ReformCloud2.zip";
                 sh "mkdir -p results";
                 sh "cp -r .templates/* results/";
                 sh "cp reformcloud2-runner/target/runner.jar results/runner.jar";
+
                 zip archive: true, dir: 'results', glob: '', zipFile: 'ReformCloud2.zip';
+
                 sh "rm -rf results/";
+            }
+        }
+
+        stage('Prepare addons zip') {
+            steps {
+                sh "rm -rf ReformCloud2-Addons.zip";
+                sh "mkdir -p addons/";
+
+
+
+                zip archive: true, dir: 'addons', glob: '', zipFile: 'ReformCloud2-Addons.zip'
+
+                sh "rm -rf addons/";
             }
         }
 
@@ -35,6 +51,7 @@ pipeline {
             steps {
                 archiveArtifacts artifacts: 'ReformCloud2.zip'
                 archiveArtifacts artifacts: 'reformcloud2-runner/target/runner.jar'
+                //archiveArtifacts artifacts: 'ReformCloud2-Addons.zip'
             }
         }
     }
