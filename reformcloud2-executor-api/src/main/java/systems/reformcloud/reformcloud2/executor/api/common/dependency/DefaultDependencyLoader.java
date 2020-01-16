@@ -44,9 +44,6 @@ public final class DefaultDependencyLoader extends DependencyLoader {
                     "com.google.code.gson", "gson", PROPERTIES
             ), new DefaultDependency(
                     DefaultRepositories.MAVEN_CENTRAL,
-                    "org.yaml", "snakeyaml", PROPERTIES
-            ), new DefaultDependency(
-                    DefaultRepositories.MAVEN_CENTRAL,
                     "org.reflections", "reflections", PROPERTIES
             ), new DefaultDependency(
                     DefaultRepositories.MAVEN_CENTRAL,
