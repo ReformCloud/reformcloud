@@ -1,8 +1,9 @@
 package systems.reformcloud.reformcloud2.executor.api.common.logger.coloured;
 
-import jline.console.ConsoleReader;
-import org.fusesource.jansi.Ansi;
-import org.fusesource.jansi.AnsiConsole;
+import org.jline.reader.LineReader;
+import org.jline.terminal.Terminal;
+import org.jline.utils.InfoCmp;
+import systems.reformcloud.reformcloud2.executor.api.common.commands.manager.CommandManager;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.Debugger;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.HandlerBase;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.LoggerBase;
@@ -11,7 +12,9 @@ import systems.reformcloud.reformcloud2.executor.api.common.logger.coloured.debu
 import systems.reformcloud.reformcloud2.executor.api.common.logger.coloured.formatter.ColouredLogFormatter;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.coloured.formatter.LogFileFormatter;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.coloured.handler.ColouredConsoleHandler;
+import systems.reformcloud.reformcloud2.executor.api.common.logger.completer.JLine3Completer;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.stream.OutputStream;
+import systems.reformcloud.reformcloud2.executor.api.common.logger.terminal.TerminalLineHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.StringUtil;
 
 import javax.annotation.Nonnull;
@@ -28,17 +31,19 @@ import java.util.logging.Level;
 
 public final class ColouredLoggerHandler extends LoggerBase {
 
-    private static String prompt = StringUtil.getConsolePrompt();
+    static {
+        prompt = Colours.coloured(StringUtil.getConsolePrompt());
+    }
 
-    public ColouredLoggerHandler() throws IOException {
-        this.consoleReader = new ConsoleReader(System.in, System.out);
-        this.consoleReader.setExpandEvents(false);
+    private static String prompt;
+
+    public ColouredLoggerHandler(@Nonnull CommandManager commandManager) throws IOException {
+        Terminal terminal = TerminalLineHandler.newTerminal(true);
+        this.lineReader = TerminalLineHandler.newLineReader(terminal, new JLine3Completer(commandManager));
 
         if (!Files.exists(Paths.get("logs"))) {
             Files.createDirectories(Paths.get("logs"));
         }
-
-        AnsiConsole.systemInstall();
 
         FileHandler fileHandler = new FileHandler("logs/cloud.log", 70000000, 8, true);
         fileHandler.setLevel(Level.ALL);
@@ -54,7 +59,7 @@ public final class ColouredLoggerHandler extends LoggerBase {
         System.setErr(new PrintStream(new OutputStream(this, Level.SEVERE), true));
     }
 
-    private final ConsoleReader consoleReader;
+    private final LineReader lineReader;
 
     private final List<LoggerLineHandler> handlers = new ArrayList<>();
 
@@ -62,32 +67,20 @@ public final class ColouredLoggerHandler extends LoggerBase {
 
     @Nonnull
     @Override
-    public ConsoleReader getConsoleReader() {
-        return consoleReader;
+    public LineReader getLineReader() {
+        return lineReader;
     }
 
     @Nonnull
     @Override
     public String readLine() {
-        try {
-            return consoleReader.readLine(prompt);
-        } catch (final IOException ex) {
-            ex.printStackTrace();
-        }
-
-        return "";
+        return TerminalLineHandler.readLine(lineReader, prompt);
     }
 
     @Nonnull
     @Override
     public String readLineNoPrompt() {
-        try {
-            return consoleReader.readLine();
-        } catch (final IOException ex) {
-            ex.printStackTrace();
-        }
-
-        return "";
+        return TerminalLineHandler.readLine(lineReader, null);
     }
 
     @Nonnull
@@ -120,27 +113,23 @@ public final class ColouredLoggerHandler extends LoggerBase {
         message = Colours.coloured(message);
         handleLine(message);
 
-        try {
-            consoleReader.print(Ansi.ansi().eraseLine(Ansi.Erase.ALL).toString() + ConsoleReader.RESET_LINE + message + Ansi.ansi().reset().toString());
-            consoleReader.drawLine();
-            consoleReader.flush();
-        } catch (final IOException ex) {
-            ex.printStackTrace();
-        }
+        lineReader.getTerminal().puts(InfoCmp.Capability.carriage_return);
+        lineReader.getTerminal().writer().print(message);
+        lineReader.getTerminal().writer().flush();
+
+        TerminalLineHandler.tryRedisplay(lineReader);
     }
 
     @Override
     public void logRaw(@Nonnull String message) {
-        message = Colours.coloured(message);
+        message = Colours.stripColor(message);
         handleLine(message);
 
-        try {
-            consoleReader.print(message + Ansi.ansi().reset().toString());
-            consoleReader.drawLine();
-            consoleReader.flush();
-        } catch (final IOException ex) {
-            ex.printStackTrace();
-        }
+        lineReader.getTerminal().puts(InfoCmp.Capability.carriage_return);
+        lineReader.getTerminal().writer().print(message);
+        lineReader.getTerminal().writer().flush();
+
+        TerminalLineHandler.tryRedisplay(lineReader);
     }
 
     @Nonnull
@@ -163,10 +152,8 @@ public final class ColouredLoggerHandler extends LoggerBase {
 
     @Override
     public void close() throws Exception {
-        consoleReader.print(Colours.RESET.toString());
-        consoleReader.drawLine();
-        consoleReader.flush();
-        consoleReader.close();
+        lineReader.getTerminal().flush();
+        lineReader.getTerminal().close();
     }
 
     private void handleLine(String line) {
