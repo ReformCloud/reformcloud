@@ -421,12 +421,8 @@ public final class ControllerExecutor extends Controller {
 
         while (!Thread.currentThread().isInterrupted()) {
             try {
-                loggerBase.getConsoleReader().setPrompt("");
-                loggerBase.getConsoleReader().resetPromptLine("", "", 0);
-
                 line = loggerBase.readLine();
                 while (!line.trim().isEmpty() && running) {
-                    loggerBase.getConsoleReader().setPrompt("");
                     commandManager.dispatchCommand(console, AllowedCommandSources.ALL, line, System.out::println);
 
                     line = loggerBase.readLine();
