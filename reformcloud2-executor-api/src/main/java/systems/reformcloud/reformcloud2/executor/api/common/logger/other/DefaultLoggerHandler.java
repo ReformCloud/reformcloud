@@ -3,11 +3,13 @@ package systems.reformcloud.reformcloud2.executor.api.common.logger.other;
 import org.jline.reader.LineReader;
 import org.jline.terminal.Terminal;
 import org.jline.utils.InfoCmp;
+import systems.reformcloud.reformcloud2.executor.api.common.commands.manager.CommandManager;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.Debugger;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.HandlerBase;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.LoggerBase;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.LoggerLineHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.coloured.formatter.LogFileFormatter;
+import systems.reformcloud.reformcloud2.executor.api.common.logger.completer.JLine3Completer;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.other.debugger.DefaultDebugger;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.other.fornatter.DefaultLogFormatter;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.other.handler.DefaultConsoleHandler;
@@ -29,9 +31,9 @@ public final class DefaultLoggerHandler extends LoggerBase {
 
     private static String prompt = StringUtil.getConsolePrompt();
 
-    public DefaultLoggerHandler() throws IOException {
+    public DefaultLoggerHandler(@Nonnull CommandManager commandManager) throws IOException {
         Terminal terminal = TerminalLineHandler.newTerminal(false);
-        this.lineReader = TerminalLineHandler.newLineReader(terminal, null);
+        this.lineReader = TerminalLineHandler.newLineReader(terminal, new JLine3Completer(commandManager));
 
         FileHandler fileHandler = new FileHandler("logs/cloud.log", 70000000, 8, true);
         fileHandler.setLevel(Level.ALL);

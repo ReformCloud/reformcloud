@@ -142,9 +142,9 @@ public final class ControllerExecutor extends Controller {
 
         try {
             if (Boolean.getBoolean("reformcloud2.disable.colours")) {
-                this.loggerBase = new DefaultLoggerHandler();
+                this.loggerBase = new DefaultLoggerHandler(this.commandManager);
             } else {
-                this.loggerBase = new ColouredLoggerHandler();
+                this.loggerBase = new ColouredLoggerHandler(this.commandManager);
             }
         } catch (final IOException ex) {
             ex.printStackTrace();

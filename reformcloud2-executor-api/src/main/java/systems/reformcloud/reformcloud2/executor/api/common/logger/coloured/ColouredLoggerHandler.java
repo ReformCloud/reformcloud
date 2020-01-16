@@ -3,6 +3,7 @@ package systems.reformcloud.reformcloud2.executor.api.common.logger.coloured;
 import org.jline.reader.LineReader;
 import org.jline.terminal.Terminal;
 import org.jline.utils.InfoCmp;
+import systems.reformcloud.reformcloud2.executor.api.common.commands.manager.CommandManager;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.Debugger;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.HandlerBase;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.LoggerBase;
@@ -11,6 +12,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.logger.coloured.debu
 import systems.reformcloud.reformcloud2.executor.api.common.logger.coloured.formatter.ColouredLogFormatter;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.coloured.formatter.LogFileFormatter;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.coloured.handler.ColouredConsoleHandler;
+import systems.reformcloud.reformcloud2.executor.api.common.logger.completer.JLine3Completer;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.stream.OutputStream;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.terminal.TerminalLineHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.StringUtil;
@@ -35,9 +37,9 @@ public final class ColouredLoggerHandler extends LoggerBase {
 
     private static String prompt;
 
-    public ColouredLoggerHandler() throws IOException {
+    public ColouredLoggerHandler(@Nonnull CommandManager commandManager) throws IOException {
         Terminal terminal = TerminalLineHandler.newTerminal(true);
-        this.lineReader = TerminalLineHandler.newLineReader(terminal, null);
+        this.lineReader = TerminalLineHandler.newLineReader(terminal, new JLine3Completer(commandManager));
 
         if (!Files.exists(Paths.get("logs"))) {
             Files.createDirectories(Paths.get("logs"));

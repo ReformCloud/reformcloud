@@ -35,7 +35,7 @@ public final class TerminalLineHandler {
                 .completer(completer)
                 .terminal(terminal)
                 .option(LineReader.Option.DISABLE_EVENT_EXPANSION, true)
-                .option(LineReader.Option.INSERT_TAB, false)
+    //            .option(LineReader.Option.INSERT_TAB, false)
                 .build();
     }
 
