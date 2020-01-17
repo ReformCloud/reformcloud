@@ -39,7 +39,7 @@ pipeline {
                 sh "rm -rf ReformCloud2-Applications.zip";
                 sh "mkdir -p applications/";
 
-                sh "find reformcloud2-external/ -type f -name "reformcloud2-default-*.jar" -and -not -name "*-sources.jar" -and -not -name "*-javadoc.jar" -exec cp "{}" applications/ ';'";
+                sh "find reformcloud2-external/ -type f -name \"reformcloud2-default-*.jar\" -and -not -name \"*-sources.jar\" -and -not -name \"*-javadoc.jar\" -exec cp \"{}\" applications/ ';'";
                 zip archive: true, dir: 'applications', glob: '', zipFile: 'ReformCloud2-Applications.zip'
 
                 sh "rm -rf applications/";
