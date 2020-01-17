@@ -35,7 +35,7 @@ public interface ApplicationLoader {
     void disableApplications();
 
     /**
-     * Fetches all updates for all addons &amp; downloads them
+     * Fetches all updates for all applications &amp; downloads them
      */
     void fetchAllUpdates();
 

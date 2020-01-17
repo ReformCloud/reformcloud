@@ -44,7 +44,7 @@ public final class Runner {
                         + System.getProperty("reformcloud.runner.version") + "). Please not that this is " +
                         "not supported and no updates of the cloud will get applied.");
             } else if (Boolean.getBoolean("reformcloud.disable.updates")) {
-                System.out.println("You've disabled auto update for addons and the cloud itself");
+                System.out.println("You've disabled auto update for applications and the cloud itself");
             } else {
                 ApplicationUpdateApplier.applyUpdates();
                 newVersion = CloudVersionUpdater.update();
