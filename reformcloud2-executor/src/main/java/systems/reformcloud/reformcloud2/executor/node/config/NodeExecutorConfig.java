@@ -85,12 +85,16 @@ public class NodeExecutorConfig {
                         )).write(NodeConfig.PATH);
                     }
             )).addQuestion(new DefaultSetupQuestion(
-                    "Please copy the connection key for other nodes into the console (if there is any other node) or type \"null\"",
+                    "Please copy the connection key for other nodes into the console (if there is any other node), generate on using \"gen\" or type \"null\"",
                     "",
                     s -> true,
                     s -> {
                         if (s.equalsIgnoreCase("null")) {
                             return;
+                        }
+
+                        if (s.equalsIgnoreCase("gen")) {
+                            s = StringUtil.generateString(50);
                         }
 
                         new JsonConfiguration().add("key", s).write("reformcloud/files/.connection/connection.json");
