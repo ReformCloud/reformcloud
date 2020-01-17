@@ -85,7 +85,7 @@ public class NodeExecutorConfig {
                         )).write(NodeConfig.PATH);
                     }
             )).addQuestion(new DefaultSetupQuestion(
-                    "Please copy the connection key for other nodes into the console (if there is any other node), generate on using \"gen\" or type \"null\"",
+                    "Please copy the connection key for other nodes into the console (if there is any other node), generate one using \"gen\" or type \"null\"",
                     "",
                     s -> true,
                     s -> {
