@@ -40,7 +40,6 @@ import systems.reformcloud.reformcloud2.executor.api.velocity.plugins.PluginUpda
 
 import javax.annotation.Nonnull;
 import java.io.File;
-import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -128,7 +127,7 @@ public final class VelocityExecutor extends API implements PlayerAPIExecutor {
                 && processInformation.getTemplate().getVersion().getId() == 1) {
             ServerInfo serverInfo = new ServerInfo(
                     processInformation.getName(),
-                    new InetSocketAddress(processInformation.getNetworkInfo().getHost(), processInformation.getNetworkInfo().getPort())
+                    processInformation.getNetworkInfo().toInet()
             );
             proxyServer.registerServer(serverInfo);
             if (processInformation.isLobby()) {
