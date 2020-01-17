@@ -34,7 +34,7 @@ pipeline {
             }
         }
 
-        stage('Prepare addons zip') {
+        stage('Prepare applications zip') {
             steps {
                 sh "rm -rf ReformCloud2-Applications.zip";
                 sh "mkdir -p applications/";
