@@ -20,10 +20,6 @@ public final class NetworkInfo {
         return host;
     }
 
-    public void setHost(String host) {
-        this.host = host;
-    }
-
     public InetSocketAddress toInet() {
         return new InetSocketAddress(getHost(), getPort());
     }
