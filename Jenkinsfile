@@ -36,22 +36,21 @@ pipeline {
 
         stage('Prepare addons zip') {
             steps {
-                sh "rm -rf ReformCloud2-Addons.zip";
-                sh "mkdir -p addons/";
+                sh "rm -rf ReformCloud2-Applications.zip";
+                sh "mkdir -p applications/";
 
+                sh "find reformcloud2-external/ -type f -name "reformcloud2-default-*.jar" -and -not -name "*-sources.jar" -and -not -name "*-javadoc.jar" -exec cp "{}" applications/ ';'";
+                zip archive: true, dir: 'applications', glob: '', zipFile: 'ReformCloud2-Applications.zip'
 
-
-                zip archive: true, dir: 'addons', glob: '', zipFile: 'ReformCloud2-Addons.zip'
-
-                sh "rm -rf addons/";
+                sh "rm -rf applications/";
             }
         }
 
         stage('Archive') {
             steps {
                 archiveArtifacts artifacts: 'ReformCloud2.zip'
+                archiveArtifacts artifacts: 'ReformCloud2-Applications.zip'
                 archiveArtifacts artifacts: 'reformcloud2-runner/target/runner.jar'
-                //archiveArtifacts artifacts: 'ReformCloud2-Addons.zip'
             }
         }
     }
