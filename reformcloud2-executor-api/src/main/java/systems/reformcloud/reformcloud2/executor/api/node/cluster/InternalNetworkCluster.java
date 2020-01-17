@@ -1,5 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.api.node.cluster;
 
+import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Template;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.api.common.node.NodeInformation;
@@ -45,5 +46,5 @@ public interface InternalNetworkCluster {
 
     <T> T sendQueryToNode(String node, Packet query, Function<Packet, T> responseHandler);
 
-    NodeInformation findBestNodeForStartup(Template template);
+    NodeInformation findBestNodeForStartup(ProcessGroup group, Template template);
 }

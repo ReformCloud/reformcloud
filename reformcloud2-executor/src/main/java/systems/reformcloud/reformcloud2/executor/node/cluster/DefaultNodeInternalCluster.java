@@ -1,6 +1,7 @@
 package systems.reformcloud.reformcloud2.executor.node.cluster;
 
 import systems.reformcloud.reformcloud2.executor.api.common.base.Conditions;
+import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Template;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
@@ -104,9 +105,14 @@ public class DefaultNodeInternalCluster implements InternalNetworkCluster {
     }
 
     @Override
-    public NodeInformation findBestNodeForStartup(Template template) {
+    public NodeInformation findBestNodeForStartup(ProcessGroup group, Template template) {
         AtomicReference<NodeInformation> result = new AtomicReference<>();
         getConnectedNodes().forEach(e -> {
+            if (!group.getStartupConfiguration().isSearchBestClientAlone()
+                    && !group.getStartupConfiguration().getUseOnlyTheseClients().contains(e.getName())) {
+                return;
+            }
+
             if (result.get() == null) {
                 if (e.getUsedMemory() + template.getRuntimeConfiguration().getMaxMemory() < e.getMaxMemory()) {
                     result.set(e);

@@ -12,6 +12,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInfor
 import systems.reformcloud.reformcloud2.executor.api.node.cluster.InternalNetworkCluster;
 import systems.reformcloud.reformcloud2.executor.api.node.network.NodeNetworkManager;
 import systems.reformcloud.reformcloud2.executor.api.node.process.NodeProcessManager;
+import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
 import systems.reformcloud.reformcloud2.executor.node.network.packet.out.NodePacketOutStopProcess;
 import systems.reformcloud.reformcloud2.executor.node.network.packet.query.out.NodePacketOutQueryStartProcess;
 
@@ -70,10 +71,16 @@ public class DefaultNodeNetworkManager implements NodeNetworkManager {
             QUEUED_PROCESSES.put(processUniqueID, processGroup.getName());
 
             if (getCluster().noOtherNodes()) {
-                return localNodeProcessManager.startLocalProcess(processGroup, template, data, processUniqueID);
+                if (!processGroup.getStartupConfiguration().isSearchBestClientAlone()
+                        && processGroup.getStartupConfiguration().getUseOnlyTheseClients().contains(NodeExecutor.getInstance().getNodeConfig().getName())
+                ) {
+                    return localNodeProcessManager.startLocalProcess(processGroup, template, data, processUniqueID);
+                }
+
+                return null;
             }
 
-            NodeInformation best = getCluster().findBestNodeForStartup(template);
+            NodeInformation best = getCluster().findBestNodeForStartup(processGroup, template);
             if (best != null && best.canEqual(getCluster().getHeadNode())) {
                 return localNodeProcessManager.startLocalProcess(processGroup, template, data, processUniqueID);
             }
