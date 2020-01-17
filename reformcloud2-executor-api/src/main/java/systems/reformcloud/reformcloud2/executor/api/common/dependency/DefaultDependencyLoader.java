@@ -38,13 +38,10 @@ public final class DefaultDependencyLoader extends DependencyLoader {
                     "io.netty", "netty-all", PROPERTIES
             ), new DefaultDependency(
                     DefaultRepositories.MAVEN_CENTRAL,
-                    "jline", "jline", PROPERTIES
+                    "org.jline", "jline", PROPERTIES
             ), new DefaultDependency(
                     DefaultRepositories.MAVEN_CENTRAL,
                     "com.google.code.gson", "gson", PROPERTIES
-            ), new DefaultDependency(
-                    DefaultRepositories.MAVEN_CENTRAL,
-                    "org.yaml", "snakeyaml", PROPERTIES
             ), new DefaultDependency(
                     DefaultRepositories.MAVEN_CENTRAL,
                     "org.reflections", "reflections", PROPERTIES
@@ -54,6 +51,9 @@ public final class DefaultDependencyLoader extends DependencyLoader {
             ), new DefaultDependency(
                     DefaultRepositories.MAVEN_CENTRAL,
                     "org.javassist", "javassist", PROPERTIES
+            ), new DefaultDependency(
+                    DefaultRepositories.MAVEN_CENTRAL,
+                    "org.fusesource.jansi", "jansi", PROPERTIES
             )
     );
 

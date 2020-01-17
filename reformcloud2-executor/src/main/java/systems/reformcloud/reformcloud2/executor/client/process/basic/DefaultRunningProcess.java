@@ -1,8 +1,5 @@
 package systems.reformcloud.reformcloud2.executor.client.process.basic;
 
-import net.md_5.config.Configuration;
-import net.md_5.config.ConfigurationProvider;
-import net.md_5.config.YamlConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.client.process.RunningProcess;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
@@ -325,16 +322,13 @@ public final class DefaultRunningProcess implements RunningProcess {
     // ========================= //
     //Spigot
     private void rewriteSpigotConfig() {
-        try (InputStreamReader inputStreamReader = new InputStreamReader(Files.newInputStream(Paths.get(path + "/spigot.yml")), StandardCharsets.UTF_8)) {
-            Configuration configuration = ConfigurationProvider.getProvider(YamlConfiguration.class).load(inputStreamReader);
-            configuration.set("settings.bungeecord", true);
-
-            try (OutputStreamWriter outputStreamWriter = new OutputStreamWriter(Files.newOutputStream(Paths.get(path + "/spigot.yml")), StandardCharsets.UTF_8)) {
-                ConfigurationProvider.getProvider(YamlConfiguration.class).save(configuration, outputStreamWriter);
+        rewriteFile(new File(path + "/spigot.yml"), (UnaryOperator<String>) s -> {
+            if (s.trim().startsWith("bungeecord:")) {
+                s = "  bungeecord: true";
             }
-        } catch (final IOException ex) {
-            ex.printStackTrace();
-        }
+
+            return s;
+        });
     }
 
     // ========================= //
@@ -346,19 +340,25 @@ public final class DefaultRunningProcess implements RunningProcess {
     }
 
     private void rewriteGlowstoneConfig() {
-        try (InputStreamReader inputStreamReader = new InputStreamReader(Files.newInputStream(Paths.get(path + "/config/glowstone.yml")), StandardCharsets.UTF_8)) {
-            Configuration configuration = ConfigurationProvider.getProvider(YamlConfiguration.class).load(inputStreamReader);
-            configuration.set("server.ip", this.processInformation.getNetworkInfo().getHost());
-            configuration.set("server.port", this.processInformation.getNetworkInfo().getPort());
-            configuration.set("server.online-mode", false);
-            configuration.set("advanced.proxy-support", true);
-
-            try (OutputStreamWriter outputStreamWriter = new OutputStreamWriter(Files.newOutputStream(Paths.get(path + "/config/glowstone.yml")), StandardCharsets.UTF_8)) {
-                ConfigurationProvider.getProvider(YamlConfiguration.class).save(configuration, outputStreamWriter);
+        rewriteFile(new File(path + "/config/glowstone.yml"), (UnaryOperator<String>) s -> {
+            if (s.trim().startsWith("ip:")) {
+                s = "  ip: '" + this.processInformation.getNetworkInfo().getHost() +  "'";
             }
-        } catch (final IOException ex) {
-            ex.printStackTrace();
-        }
+
+            if (s.trim().startsWith("port:")) {
+                s = "  port: " + this.processInformation.getNetworkInfo().getPort();
+            }
+
+            if (s.trim().startsWith("online-mode:")) {
+                s = "  online-mode: false";
+            }
+
+            if (s.trim().startsWith("advanced.proxy-support:")) {
+                s = "  online-mode: false";
+            }
+
+            return s;
+        });
     }
 
     // ========================= //

@@ -113,9 +113,9 @@ public final class ClientExecutor extends Client {
 
         try {
             if (Boolean.getBoolean("reformcloud2.disable.colours")) {
-                this.loggerBase = new DefaultLoggerHandler();
+                this.loggerBase = new DefaultLoggerHandler(this.commandManager);
             } else {
-                this.loggerBase = new ColouredLoggerHandler();
+                this.loggerBase = new ColouredLoggerHandler(this.commandManager);
             }
         } catch (final IOException ex) {
             ex.printStackTrace();
@@ -267,12 +267,8 @@ public final class ClientExecutor extends Client {
 
         while (!Thread.currentThread().isInterrupted()) {
             try {
-                loggerBase.getConsoleReader().setPrompt("");
-                loggerBase.getConsoleReader().resetPromptLine("", "", 0);
-
                 line = loggerBase.readLine();
                 while (!line.trim().isEmpty() && running) {
-                    loggerBase.getConsoleReader().setPrompt("");
                     commandManager.dispatchCommand(console, AllowedCommandSources.ALL, line, System.out::println);
 
                     line = loggerBase.readLine();

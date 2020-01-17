@@ -226,9 +226,7 @@ public final class BungeeExecutor extends API implements PlayerAPIExecutor {
                 method.setAccessible(true);
                 return (ServerInfo) method.invoke(
                         ProxyServer.getInstance(), processInformation.getName(),
-                        new InetSocketAddress(
-                                processInformation.getNetworkInfo().getHost(),
-                                processInformation.getNetworkInfo().getPort()),
+                        processInformation.getNetworkInfo().toInet(),
                         "ReformCloud2", false,
                         processInformation.getTemplate().getVersion().getId() == 3,
                         "default");
@@ -240,8 +238,7 @@ public final class BungeeExecutor extends API implements PlayerAPIExecutor {
 
         return ProxyServer.getInstance().constructServerInfo(
                 processInformation.getName(),
-                new InetSocketAddress(processInformation.getNetworkInfo().getHost(),
-                        processInformation.getNetworkInfo().getPort()),
+                processInformation.getNetworkInfo().toInet(),
                 "ReformCloud2", false);
     }
 

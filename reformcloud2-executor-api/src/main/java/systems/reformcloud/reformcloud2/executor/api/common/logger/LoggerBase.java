@@ -1,10 +1,10 @@
 package systems.reformcloud.reformcloud2.executor.api.common.logger;
 
-import jline.console.ConsoleReader;
+import org.jline.reader.LineReader;
+import org.jline.utils.InfoCmp;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
-import java.io.IOException;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.logging.Logger;
@@ -19,17 +19,14 @@ public abstract class LoggerBase extends Logger implements AutoCloseable {
      * @return The current console reader of the cloud
      */
     @Nonnull
-    public abstract ConsoleReader getConsoleReader();
+    public abstract LineReader getLineReader();
 
     /**
      * Clears the screen of the console
      */
     public void clearScreen() {
-        try {
-            getConsoleReader().clearScreen();
-        } catch (final IOException ex) {
-            ex.printStackTrace();
-        }
+        getLineReader().getTerminal().puts(InfoCmp.Capability.clear_screen);
+        getLineReader().getTerminal().flush();
     }
 
     /**

@@ -4,10 +4,9 @@ import systems.reformcloud.reformcloud2.executor.api.common.CommonHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.MainGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
-import systems.reformcloud.reformcloud2.executor.api.common.groups.basic.DefaultMainGroup;
-import systems.reformcloud.reformcloud2.executor.api.common.groups.basic.DefaultProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.messages.IngameMessages;
-import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Version;
+import systems.reformcloud.reformcloud2.executor.api.common.groups.setup.GroupSetupHelper;
+import systems.reformcloud.reformcloud2.executor.api.common.groups.setup.GroupSetupVersion;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.setup.Setup;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.setup.basic.DefaultSetup;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.setup.basic.DefaultSetupQuestion;
@@ -96,65 +95,24 @@ public class NodeExecutorConfig {
 
                         new JsonConfiguration().add("key", s).write("reformcloud/files/.connection/connection.json");
                     }
-            )).addQuestion(new DefaultSetupQuestion(
-                    "Please choose an installation type [(Java Proxy and Java Lobby) \"1\", (Pocket Proxy and Pocket Lobby) \"2\", (Nothing) \"3\"]",
-                    "This installation type is not valid",
-                    s -> {
-                        try {
-                            int i = Integer.parseInt(s);
-                            return i >= 1 && i <= 3;
-                        } catch (final Throwable throwable) {
-                            return false;
-                        }
-                    },
-                    s -> {
-                        MainGroup mainProxy = new DefaultMainGroup("Proxy", Collections.singletonList("Proxy"));
-                        MainGroup mainLobby = new DefaultMainGroup("Lobby", Collections.singletonList("Lobby"));
-
-                        ProcessGroup proxy = null;
-                        ProcessGroup lobby = null;
-
-                        switch (Integer.parseInt(s)) {
-                            case 1: {
-                                proxy = new DefaultProcessGroup(
-                                        "Proxy", 25565, Version.BUNGEECORD,
-                                        128, true, 512
-                                );
-                                lobby = new DefaultProcessGroup(
-                                        "Lobby", 41000, Version.PAPER_1_15_1,
-                                        512, false, 50
-                                );
-                                break;
-                            }
-
-                            case 2: {
-                                proxy = new DefaultProcessGroup(
-                                        "Proxy", 19132, Version.WATERDOG,
-                                        128, true, 512
-                                );
-                                lobby = new DefaultProcessGroup(
-                                        "Lobby", 41000, Version.NUKKIT_X,
-                                        512, false, 50
-                                );
-                                break;
-                            }
-
-                            case 3: {
-                                return;
-                            }
-                        }
-
-                        if (proxy == null) {
-                            throw new IllegalStateException("Lobby or Proxy group not initialized correctly");
-                        }
-
-                        this.localMainGroupsRegistry.createKey(mainProxy.getName(), mainProxy);
-                        this.localMainGroupsRegistry.createKey(mainLobby.getName(), mainLobby);
-
-                        this.localSubGroupsRegistry.createKey(proxy.getName(), proxy);
-                        this.localSubGroupsRegistry.createKey(lobby.getName(), lobby);
-                    }
             )).startSetup(NodeExecutor.getInstance().getLoggerBase());
+
+            System.out.println("Please choose a default installation type:");
+            GroupSetupHelper.printAvailable();
+
+            String result = NodeExecutor.getInstance().getLoggerBase().readLineNoPrompt();
+            while (!result.trim().isEmpty()) {
+                GroupSetupVersion version = GroupSetupHelper.findByName(result);
+                if (version == null) {
+                    System.out.println("This setup type is not supported");
+                    result = NodeExecutor.getInstance().getLoggerBase().readLineNoPrompt();
+                    continue;
+                }
+
+                version.install(this::handleProcessGroupCreate, this::handleMainGroupCreate);
+                System.out.println("Finished installation of " + version.getName() + "!");
+                break;
+            }
 
             new JsonConfiguration().add("messages", new IngameMessages()).write(Paths.get("reformcloud/configs/messages.json"));
         }

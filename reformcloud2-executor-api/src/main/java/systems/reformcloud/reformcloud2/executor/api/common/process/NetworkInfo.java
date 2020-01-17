@@ -21,7 +21,7 @@ public final class NetworkInfo {
     }
 
     public InetSocketAddress toInet() {
-        return InetSocketAddress.createUnresolved(getHost(), getPort());
+        return new InetSocketAddress(getHost(), getPort());
     }
 
     public int getPort() {
