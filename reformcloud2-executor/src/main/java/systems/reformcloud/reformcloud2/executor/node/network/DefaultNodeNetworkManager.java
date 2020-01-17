@@ -71,9 +71,11 @@ public class DefaultNodeNetworkManager implements NodeNetworkManager {
             QUEUED_PROCESSES.put(processUniqueID, processGroup.getName());
 
             if (getCluster().noOtherNodes()) {
-                if (!processGroup.getStartupConfiguration().isSearchBestClientAlone()
-                        && processGroup.getStartupConfiguration().getUseOnlyTheseClients().contains(NodeExecutor.getInstance().getNodeConfig().getName())
-                ) {
+                if (processGroup.getStartupConfiguration().isSearchBestClientAlone()) {
+                    return localNodeProcessManager.startLocalProcess(processGroup, template, data, processUniqueID);
+                }
+
+                if (processGroup.getStartupConfiguration().getUseOnlyTheseClients().contains(NodeExecutor.getInstance().getNodeConfig().getName())) {
                     return localNodeProcessManager.startLocalProcess(processGroup, template, data, processUniqueID);
                 }
 
