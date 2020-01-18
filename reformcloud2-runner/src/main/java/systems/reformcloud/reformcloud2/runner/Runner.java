@@ -114,12 +114,12 @@ public final class Runner {
         }
 
         if (PROPERTIES.contains("reformcloud.type.id")) {
-            andThen.accept(write(PROPERTIES.getProperty("reformcloud.type.id")), PROPERTIES.getProperty("reformcloud.type.id"));
+            andThen.accept(write(PROPERTIES.getProperty("reformcloud.type.id"), version), PROPERTIES.getProperty("reformcloud.type.id"));
             return;
         }
 
         int type = getType();
-        andThen.accept(write(Integer.toString(type)), Integer.toString(type));
+        andThen.accept(write(Integer.toString(type), version), Integer.toString(type));
     }
 
     private static boolean isAPI() {
@@ -127,8 +127,8 @@ public final class Runner {
                 System.getProperty("reformcloud.executor.type").equals("3");
     }
 
-    private static String write(String id) {
-        String version = System.getProperty("reformcloud.runner.version");
+    private static String write(String id, String newVersion) {
+        String version = newVersion == null ? System.getProperty("reformcloud.runner.version") : newVersion;
 
         PROPERTIES.clear();
         PROPERTIES.setProperty("reformcloud.version", version);
