@@ -56,6 +56,8 @@ public final class Runner {
                     throw new RuntimeException("Executor file does not exists");
                 }
 
+                setSystemProperties(Runner.class.getPackage().getImplementationVersion());
+
                 ClassLoader classLoader = ClassPreparer.create(file.toPath(),
                         path -> {
                             URL[] urls = new URL[]{path.toUri().toURL()};

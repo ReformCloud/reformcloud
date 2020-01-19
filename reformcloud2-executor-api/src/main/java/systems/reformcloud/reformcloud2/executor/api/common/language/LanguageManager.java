@@ -58,7 +58,7 @@ public final class LanguageManager {
             if (languages.isEmpty()) {
                 message = def;
             } else {
-                message = languages.stream().findAny().get().messages().getProperty(key, def);
+                message = languages.get(0).messages().getProperty(key, def);
             }
         }
 
