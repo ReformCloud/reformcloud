@@ -27,7 +27,7 @@ public final class Runner {
 
     private static final Predicate<String> CONTROLLER_UNPACK_TEST = s -> s != null && (s.equalsIgnoreCase("controller") || s.equalsIgnoreCase("client") || s.equalsIgnoreCase("node"));
 
-    private static final Supplier<String> CHOOSE_INSTALL_MESSAGE = () -> "Please choose an executor: [\"controller\", \"client\", \"node\"]";
+    private static final Supplier<String> CHOOSE_INSTALL_MESSAGE = () -> "Please choose an executor: [\"controller\", \"client\", \"node\" (recommended)]";
 
     private static final Properties PROPERTIES = new Properties();
 
@@ -41,7 +41,7 @@ public final class Runner {
             String newVersion = null;
             if (System.getProperty("reformcloud.runner.version").endsWith("-SNAPSHOT")) {
                 System.out.println("You are running on a snapshot build ("
-                        + System.getProperty("reformcloud.runner.version") + "). Please not that this is " +
+                        + System.getProperty("reformcloud.runner.version") + "). Please note that this is " +
                         "not supported and no updates of the cloud will get applied.");
             } else if (Boolean.getBoolean("reformcloud.disable.updates")) {
                 System.out.println("You've disabled auto update for applications and the cloud itself");

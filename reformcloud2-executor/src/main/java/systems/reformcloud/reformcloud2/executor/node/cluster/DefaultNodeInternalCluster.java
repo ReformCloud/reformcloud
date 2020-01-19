@@ -121,6 +121,7 @@ public class DefaultNodeInternalCluster implements InternalNetworkCluster {
                 result.set(e);
             }
         });
+
         return result.get();
     }
 }

@@ -100,6 +100,8 @@ public class LocalNodeProcessManager implements NodeProcessManager {
     @Override
     public ProcessInformation queueProcess(ProcessGroup processGroup, Template template, JsonConfiguration data, NodeInformation node, UUID uniqueID) {
         ProcessInformation processInformation = constructCaInfo(processGroup, template, data, node, uniqueID);
+        this.handleProcessStart(processInformation);
+
         DefaultChannelManager.INSTANCE.get(node.getName()).ifPresent(e -> e.sendPacket(new NodePacketOutQueueProcess(
                 processGroup, template, data, uniqueID
         )));

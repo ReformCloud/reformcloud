@@ -9,6 +9,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.groups.template.back
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.common.node.NodeInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Trio;
 import systems.reformcloud.reformcloud2.executor.api.node.cluster.InternalNetworkCluster;
 import systems.reformcloud.reformcloud2.executor.api.node.network.NodeNetworkManager;
 import systems.reformcloud.reformcloud2.executor.api.node.process.NodeProcessManager;
@@ -17,14 +18,26 @@ import systems.reformcloud.reformcloud2.executor.node.network.packet.query.out.N
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class DefaultNodeNetworkManager implements NodeNetworkManager {
 
     private static final Map<UUID, String> QUEUED_PROCESSES = new ConcurrentHashMap<>();
 
+    private static final Queue<Trio<ProcessGroup, Template, JsonConfiguration>> LATER = new ConcurrentLinkedQueue<>();
+
     public DefaultNodeNetworkManager(NodeProcessManager processManager, InternalNetworkCluster cluster) {
         this.localNodeProcessManager = processManager;
         this.cluster = cluster;
+
+        Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
+            if (!LATER.isEmpty()) {
+                Trio<ProcessGroup, Template, JsonConfiguration> next = LATER.poll();
+                this.startProcess(next.getFirst(), next.getSecond(), next.getThird());
+            }
+        }, 0, 10, TimeUnit.SECONDS);
     }
 
     private final NodeProcessManager localNodeProcessManager;
@@ -76,6 +89,11 @@ public class DefaultNodeNetworkManager implements NodeNetworkManager {
             NodeInformation best = getCluster().findBestNodeForStartup(template);
             if (best != null && best.canEqual(getCluster().getHeadNode())) {
                 return localNodeProcessManager.startLocalProcess(processGroup, template, data, processUniqueID);
+            }
+
+            if (best == null) {
+                LATER.add(new Trio<>(processGroup, template, data));
+                return null;
             }
 
             return localNodeProcessManager.queueProcess(processGroup, template, data, best, processUniqueID);
