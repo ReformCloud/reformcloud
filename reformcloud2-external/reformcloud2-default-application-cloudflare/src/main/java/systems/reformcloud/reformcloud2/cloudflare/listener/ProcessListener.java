@@ -5,7 +5,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.Pro
 import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.ProcessStoppedEvent;
 import systems.reformcloud.reformcloud2.executor.api.common.event.handler.Listener;
 
-public class ProcessListener {
+public final class ProcessListener {
 
     @Listener
     public void handle(final ProcessStartedEvent event) {

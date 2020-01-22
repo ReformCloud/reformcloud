@@ -53,7 +53,10 @@ public final class LanguageManager {
     public static String getOrDefault(String key, String def, Object... replacements) {
         String message = usageLanguage.messages().getProperty(key);
         if (message == null) {
-            List<Language> languages = languagePerAddon.values().stream().filter(e -> e.messages().contains(key))
+            List<Language> languages = languagePerAddon
+                    .values()
+                    .stream()
+                    .filter(e -> e.messages().containsKey(key))
                     .collect(Collectors.toList());
             if (languages.isEmpty()) {
                 message = def;

@@ -35,7 +35,7 @@ public class ReformCloudApplication extends Application {
             ex.printStackTrace();
         }
 
-        if (CloudFlareHelper.init(dataFolder().getName())) {
+        if (CloudFlareHelper.init(dataFolder().getPath())) {
             System.err.println(LanguageManager.get("cloudflare-first-init"));
             return;
         }
