@@ -6,6 +6,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Runt
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Template;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Version;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.backend.basic.FileBackend;
+import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.common.node.NodeInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
@@ -35,7 +36,7 @@ public class DefaultNodeNetworkManager implements NodeNetworkManager {
         Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
             if (!LATER.isEmpty()) {
                 Trio<ProcessGroup, Template, JsonConfiguration> next = LATER.poll();
-                this.startProcess(next.getFirst(), next.getSecond(), next.getThird());
+                this.startProcessInternal(next.getFirst(), next.getSecond(), next.getThird(), false);
             }
         }, 0, 10, TimeUnit.SECONDS);
     }
@@ -66,6 +67,10 @@ public class DefaultNodeNetworkManager implements NodeNetworkManager {
 
     @Override
     public ProcessInformation startProcess(ProcessGroup processGroup, Template template, JsonConfiguration data) {
+        return startProcessInternal(processGroup, template, data, true);
+    }
+
+    private ProcessInformation startProcessInternal(ProcessGroup processGroup, Template template, JsonConfiguration data, boolean informUser) {
         if (processGroup == null) {
             return null;
         }
@@ -92,16 +97,21 @@ public class DefaultNodeNetworkManager implements NodeNetworkManager {
             }
 
             if (best == null) {
+                if (informUser) {
+                    System.out.println(LanguageManager.get("node-process-no-node-queued", processGroup.getName(), template.getName()));
+                }
+
                 LATER.add(new Trio<>(processGroup, template, data));
                 return null;
             }
 
+            best.addUsedMemory(template.getRuntimeConfiguration().getMaxMemory());
             return localNodeProcessManager.queueProcess(processGroup, template, data, best, processUniqueID);
         }
 
         return getCluster().sendQueryToHead(new NodePacketOutQueryStartProcess(processGroup, template, data),
                 packet -> packet.content().get("result", ProcessInformation.TYPE
-        ));
+                ));
     }
 
     @Override

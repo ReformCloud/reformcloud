@@ -18,6 +18,8 @@ public interface NodeProcessManager extends Updateable<ProcessInformation>, Iter
 
     ProcessInformation startLocalProcess(ProcessGroup processGroup, Template template, JsonConfiguration data, UUID uniqueID);
 
+    ProcessInformation startLocalProcess(ProcessInformation processInformation);
+
     ProcessInformation stopLocalProcess(String name);
 
     ProcessInformation stopLocalProcess(UUID uuid);

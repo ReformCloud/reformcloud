@@ -580,6 +580,10 @@ public class NodeExecutor extends Node {
 
     @Override
     public void reload() throws Exception {
+        reload(true);
+    }
+
+    public void reload(boolean informCluster) {
         final long current = System.currentTimeMillis();
         System.out.println(LanguageManager.get("runtime-try-reload"));
 
@@ -613,7 +617,9 @@ public class NodeExecutor extends Node {
 
         this.applicationLoader.enableApplications();
 
-        this.clusterSyncManager.doClusterReload();
+        if (informCluster) {
+            this.clusterSyncManager.doClusterReload();
+        }
 
         OnlinePercentCheckerTask.start();
         System.out.println(LanguageManager.get("runtime-reload-done", Long.toString(System.currentTimeMillis() - current)));

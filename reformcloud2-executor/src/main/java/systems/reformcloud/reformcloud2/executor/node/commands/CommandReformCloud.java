@@ -15,6 +15,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.PlayerA
 import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.StartupConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.StartupEnvironment;
 import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
+import systems.reformcloud.reformcloud2.executor.api.common.network.NetworkUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.StringUtil;
@@ -203,10 +204,7 @@ public final class CommandReformCloud extends GlobalCommand {
                         return true;
                     }
 
-                    for (int started = 1; started <= i; started++) {
-                        ExecutorAPI.getInstance().getAsyncAPI().getProcessAsyncAPI().startProcessAsync(processGroup.getName());
-                        AbsoluteThread.sleep(TimeUnit.MILLISECONDS, 20);
-                    }
+                    this.start(i, strings[1], null);
 
                     System.out.println(LanguageManager.get("command-rc-execute-success"));
                     return true;
@@ -225,10 +223,7 @@ public final class CommandReformCloud extends GlobalCommand {
                         return true;
                     }
 
-                    for (int started = 0; started <= i; started++) {
-                        ExecutorAPI.getInstance().getAsyncAPI().getProcessAsyncAPI().startProcessAsync(processGroup.getName(), strings[3]);
-                        AbsoluteThread.sleep(TimeUnit.MILLISECONDS, 20);
-                    }
+                    this.start(i, processGroup.getName(), strings[3]);
 
                     System.out.println(LanguageManager.get("command-rc-execute-success"));
                     return true;
@@ -783,5 +778,15 @@ public final class CommandReformCloud extends GlobalCommand {
         NodeConfig config = NodeExecutor.getInstance().getNodeConfig();
         return Links.filterToReference(config.getOtherNodes(), e -> Links.deepFilterToReference(e,
                 g -> g.getKey().equalsIgnoreCase(host) && g.getValue() == port).isPresent()).isPresent();
+    }
+
+    private void start(int i, String group, String template) {
+        NetworkUtil.EXECUTOR.execute(() -> {
+            for (int started = 1; started <= i; started++) {
+                System.out.println(started + "/" + i);
+                ExecutorAPI.getInstance().getAsyncAPI().getProcessAsyncAPI().startProcessAsync(group, template);
+                AbsoluteThread.sleep(20);
+            }
+        });
     }
 }

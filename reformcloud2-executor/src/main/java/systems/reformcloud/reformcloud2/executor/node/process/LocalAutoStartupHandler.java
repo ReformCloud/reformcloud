@@ -7,7 +7,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.Absol
 import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
 
 import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.concurrent.ConcurrentSkipListSet;
 
 public class LocalAutoStartupHandler extends AbsoluteThread {
 
@@ -20,7 +20,7 @@ public class LocalAutoStartupHandler extends AbsoluteThread {
         perPriorityStartup.addAll(NodeExecutor.getInstance().getClusterSyncManager().getProcessGroups());
     }
 
-    private final SortedSet<ProcessGroup> perPriorityStartup = new TreeSet<>((o1, o2) -> {
+    private final SortedSet<ProcessGroup> perPriorityStartup = new ConcurrentSkipListSet<>((o1, o2) -> {
         int o1Priority = o1.getStartupConfiguration().getStartupPriority();
         int o2Priority = o2.getStartupConfiguration().getStartupPriority();
 

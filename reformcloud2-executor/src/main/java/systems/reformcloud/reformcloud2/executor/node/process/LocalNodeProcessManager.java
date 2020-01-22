@@ -18,9 +18,10 @@ import systems.reformcloud.reformcloud2.executor.api.node.process.LocalNodeProce
 import systems.reformcloud.reformcloud2.executor.api.node.process.NodeProcessManager;
 import systems.reformcloud.reformcloud2.executor.controller.packet.out.event.ControllerEventProcessUpdated;
 import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
-import systems.reformcloud.reformcloud2.executor.node.network.packet.out.NodePacketOutQueueProcess;
+import systems.reformcloud.reformcloud2.executor.node.network.packet.out.PacketOutHeadNodeStartProcess;
 import systems.reformcloud.reformcloud2.executor.node.process.manager.LocalProcessManager;
 import systems.reformcloud.reformcloud2.executor.node.process.startup.LocalProcessQueue;
+import systems.reformcloud.reformcloud2.executor.node.util.ProcessCopyOnWriteArrayList;
 
 import javax.annotation.Nonnull;
 import java.util.*;
@@ -28,7 +29,7 @@ import java.util.stream.Collectors;
 
 public class LocalNodeProcessManager implements NodeProcessManager {
 
-    private final Collection<ProcessInformation> information = new ArrayList<>();
+    private final Collection<ProcessInformation> information = Collections.synchronizedCollection(new ProcessCopyOnWriteArrayList());
 
     @Override
     public ProcessInformation getLocalCloudProcess(String name) {
@@ -62,6 +63,13 @@ public class LocalNodeProcessManager implements NodeProcessManager {
                 data,
                 processGroup.getPlayerAccessConfiguration().getMaxPlayers()
         );
+
+        return this.startLocalProcess(processInformation);
+    }
+
+    @Override
+    public ProcessInformation startLocalProcess(ProcessInformation processInformation) {
+        this.handleProcessStart(processInformation);
         NodeInformation information = NodeExecutor.getInstance().getNodeNetworkManager().getCluster().getSelfNode();
         information.addUsedMemory(processInformation.getTemplate().getRuntimeConfiguration().getMaxMemory());
         NodeExecutor.getInstance().getClusterSyncManager().syncSelfInformation();
@@ -102,8 +110,8 @@ public class LocalNodeProcessManager implements NodeProcessManager {
         ProcessInformation processInformation = constructCaInfo(processGroup, template, data, node, uniqueID);
         this.handleProcessStart(processInformation);
 
-        DefaultChannelManager.INSTANCE.get(node.getName()).ifPresent(e -> e.sendPacket(new NodePacketOutQueueProcess(
-                processGroup, template, data, uniqueID
+        DefaultChannelManager.INSTANCE.get(node.getName()).ifPresent(e -> e.sendPacket(new PacketOutHeadNodeStartProcess(
+                processInformation
         )));
         return processInformation;
     }
@@ -253,24 +261,28 @@ public class LocalNodeProcessManager implements NodeProcessManager {
     }
 
     private int nextID(ProcessGroup processGroup) {
-        int id = 1;
-        Collection<Integer> ids = Links.newCollection(information, processInformation -> processInformation.getProcessGroup().getName().equals(processGroup.getName()), ProcessInformation::getId);
+        synchronized (information) {
+            int id = 1;
+            Collection<Integer> ids = Links.newCollection(information, processInformation -> processInformation.getProcessGroup().getName().equals(processGroup.getName()), ProcessInformation::getId);
 
-        while (ids.contains(id)) {
-            id++;
+            while (ids.contains(id)) {
+                id++;
+            }
+
+            return id;
         }
-
-        return id;
     }
 
     private int nextPort(int startPort) {
-        Collection<Integer> ports = information.stream().map(e -> e.getNetworkInfo().getPort()).collect(Collectors.toList());
-        while (ports.contains(startPort)) {
-            startPort++;
-        }
+        synchronized (information) {
+            Collection<Integer> ports = Links.newList(information).stream().map(e -> e.getNetworkInfo().getPort()).collect(Collectors.toList());
+            while (ports.contains(startPort)) {
+                startPort++;
+            }
 
-        startPort = PortUtil.checkPort(startPort);
-        return startPort;
+            startPort = PortUtil.checkPort(startPort);
+            return startPort;
+        }
     }
 
     private ProcessInformation constructCaInfo(ProcessGroup processGroup, Template template, JsonConfiguration data,

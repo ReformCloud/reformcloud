@@ -18,8 +18,8 @@ import systems.reformcloud.reformcloud2.executor.node.network.packet.out.NodePac
 import systems.reformcloud.reformcloud2.executor.node.network.packet.out.cluster.*;
 import systems.reformcloud.reformcloud2.executor.node.process.util.ProcessAction;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class DefaultClusterSyncManager implements ClusterSyncManager {
 
@@ -29,11 +29,11 @@ public class DefaultClusterSyncManager implements ClusterSyncManager {
 
     private final NodeNetworkClient nodeNetworkClient;
 
-    private final Collection<String> waiting = new ArrayList<>();
+    private final Collection<String> waiting = new CopyOnWriteArrayList<>();
 
-    private final Collection<ProcessGroup> processGroups = new ArrayList<>();
+    private final Collection<ProcessGroup> processGroups = new CopyOnWriteArrayList<>();
 
-    private final Collection<MainGroup> mainGroups = new ArrayList<>();
+    private final Collection<MainGroup> mainGroups = new CopyOnWriteArrayList<>();
 
     @Override
     public void syncSelfInformation() {
@@ -260,7 +260,7 @@ public class DefaultClusterSyncManager implements ClusterSyncManager {
     @Override
     public void handleClusterReload() {
         try {
-            NodeExecutor.getInstance().reload();
+            NodeExecutor.getInstance().reload(false);
         } catch (final Exception ex) {
             ex.printStackTrace();
         }
