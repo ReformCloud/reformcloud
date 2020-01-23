@@ -63,13 +63,6 @@ public final class ProcessQueue extends AbsoluteThread {
                     }
                 } else {
                     QUEUE.add(runningProcess);
-                    System.out.println(LanguageManager.get(
-                            "client-process-start-not-logic",
-                            runningProcess.getProcessInformation().getName(),
-                            CommonHelper.cpuUsageSystem(),
-                            ClientExecutor.getInstance().getClientConfig().getMaxCpu(),
-                            QUEUE.size()
-                    ));
                 }
             }
 
