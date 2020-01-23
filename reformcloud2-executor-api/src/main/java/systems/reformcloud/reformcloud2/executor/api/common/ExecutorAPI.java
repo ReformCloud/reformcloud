@@ -16,7 +16,7 @@ import java.util.Objects;
 public abstract class ExecutorAPI {
 
     /* The executor type which is currently running */
-    protected ExecutorType type;
+    protected ExecutorType type = ExecutorType.UNKNOWN;
 
     /* ========================== */
 

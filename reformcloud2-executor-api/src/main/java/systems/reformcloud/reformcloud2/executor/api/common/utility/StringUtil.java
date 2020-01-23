@@ -53,7 +53,15 @@ public final class StringUtil {
             "rc delete <sub | main> <name>"
     };
 
-    public static final String[] RC_COMMAND_HELP = loadHelpMessage();
+    private static String[] commandHelp;
+
+    public static String[] getCommandHelp() {
+        if (commandHelp == null) {
+            commandHelp = loadHelpMessage();
+        }
+
+        return commandHelp;
+    }
 
     private static String[] loadHelpMessage() {
         String[] strings;

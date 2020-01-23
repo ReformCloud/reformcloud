@@ -772,7 +772,7 @@ public final class CommandReformCloud extends GlobalCommand {
     }
 
     private void sendHelp(CommandSource commandSource) {
-        commandSource.sendMessages(StringUtil.RC_COMMAND_HELP);
+        commandSource.sendMessages(StringUtil.getCommandHelp());
     }
 
     private boolean existsNode(String host, int port) {
