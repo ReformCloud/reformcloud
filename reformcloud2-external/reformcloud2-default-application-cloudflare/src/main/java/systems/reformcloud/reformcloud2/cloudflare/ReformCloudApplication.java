@@ -51,6 +51,7 @@ public class ReformCloudApplication extends Application {
             return;
         }
 
+        CloudFlareHelper.handleStop();
         ExecutorAPI.getInstance().getEventManager().unregisterListener(LISTENER);
         ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getAllProcesses().forEach(CloudFlareHelper::deleteRecord);
     }

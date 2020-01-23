@@ -6,6 +6,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.system.SystemHelper;
 
 import javax.annotation.Nonnull;
@@ -29,6 +30,8 @@ public final class CloudFlareHelper {
     private static final String CLOUD_FLARE_API_URL = "https://api.cloudflare.com/client/v4/";
 
     private static final Map<UUID, String> CACHE = new ConcurrentHashMap<>();
+
+    private static final Map<String, String> A_RECORD_CACHE = new ConcurrentHashMap<>();
 
     private static CloudFlareConfig cloudFlareConfig;
 
@@ -67,6 +70,17 @@ public final class CloudFlareHelper {
     }
 
     private static String createSRVRecord(ProcessInformation target) {
+        if (!A_RECORD_CACHE.containsKey(target.getParent())) {
+            String recordID = createRecord(target, prepareARecord(target));
+            if (recordID != null) {
+                A_RECORD_CACHE.put(target.getParent(), recordID);
+            }
+        }
+
+        return createRecord(target, prepareConfig(target));
+    }
+
+    private static String createRecord(ProcessInformation target, JsonConfiguration configuration) {
         try {
             HttpURLConnection httpURLConnection = (HttpURLConnection) new URL(CLOUD_FLARE_API_URL + "zones/"
                     + cloudFlareConfig.getZoneId() + "/dns_records").openConnection();
@@ -79,7 +93,7 @@ public final class CloudFlareHelper {
             httpURLConnection.setRequestProperty("Content-Type", "application/json");
 
             try (DataOutputStream dataOutputStream = new DataOutputStream(httpURLConnection.getOutputStream())) {
-                dataOutputStream.writeBytes(prepareConfig(target).toPrettyString());
+                dataOutputStream.writeBytes(configuration.toPrettyString());
                 dataOutputStream.flush();
             }
 
@@ -90,13 +104,21 @@ public final class CloudFlareHelper {
                 httpURLConnection.disconnect();
 
                 if (result.getBoolean("success")) {
-                    JsonArray array = result.getJsonObject().get("result").getAsJsonArray();
-                    if (array.size() == 0) {
-                        return null;
+                    return result.getString("id");
+                } else {
+                    try {
+                        JsonArray array = result.getJsonObject().getAsJsonArray("errors");
+                        if (array.size() == 0) {
+                            return null;
+                        }
+
+                        if (array.get(0).getAsJsonObject().get("code").getAsLong() == 81057) {
+                            // The record already exists
+                            return null;
+                        }
+                    } catch (final Throwable ignored) {
                     }
 
-                    return array.get(0).getAsJsonObject().get("id").getAsString();
-                } else {
                     System.err.println(LanguageManager.get("cloudlfare-create-error", target.getName()));
                 }
             }
@@ -107,12 +129,21 @@ public final class CloudFlareHelper {
         return null;
     }
 
+    public static void handleStop() {
+        Streams.forEachValues(A_RECORD_CACHE, CloudFlareHelper::deleteRecord);
+        A_RECORD_CACHE.clear();
+    }
+
     public static void deleteRecord(ProcessInformation target) {
         String dnsID = CACHE.remove(target.getProcessUniqueID());
         if (dnsID == null) {
             return;
         }
 
+        deleteRecord(dnsID);
+    }
+
+    private static void deleteRecord(String dnsID) {
         try {
             HttpURLConnection httpURLConnection = (HttpURLConnection) new URL(CLOUD_FLARE_API_URL + "zones/"
                     + cloudFlareConfig.getZoneId() + "/dns_records/" + dnsID).openConnection();
@@ -153,7 +184,18 @@ public final class CloudFlareHelper {
                         .add("weight", 1)
                         .add("port", target.getNetworkInfo().getPort())
                         .add("target", target.getParent() + "." + cloudFlareConfig.getDomainName())
-                        .toPrettyString()
+                        .getJsonObject()
                 );
+    }
+
+    private static JsonConfiguration prepareARecord(ProcessInformation processInformation) {
+        return new JsonConfiguration()
+                .add("type", "A")
+                .add("name", processInformation.getParent() + "." + cloudFlareConfig.getDomainName())
+                .add("content", processInformation.getNetworkInfo().getHost())
+                .add("ttl", 1)
+                .add("proxied", false)
+                .add("data", new JsonConfiguration().getJsonObject());
+
     }
 }
