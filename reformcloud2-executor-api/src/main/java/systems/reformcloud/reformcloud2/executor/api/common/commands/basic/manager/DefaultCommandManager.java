@@ -7,7 +7,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.commands.dispatcher.
 import systems.reformcloud.reformcloud2.executor.api.common.commands.manager.CommandManager;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.source.CommandSource;
 import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -49,7 +49,7 @@ public final class DefaultCommandManager implements CommandManager {
     @Override
     public Command unregisterAndGetCommand(@Nonnull String line) {
         line = line.toLowerCase();
-        for (Command command : Links.newList(commands)) {
+        for (Command command : Streams.newList(commands)) {
             if (command.mainCommand().equals(line) || command.aliases().contains(line)) {
                 unregisterCommand(command);
                 return command;
@@ -140,7 +140,7 @@ public final class DefaultCommandManager implements CommandManager {
     @Nonnull
     @Override
     public List<Command> getCommands() {
-        return Links.unmodifiable(commands);
+        return Streams.unmodifiable(commands);
     }
 
     @Override

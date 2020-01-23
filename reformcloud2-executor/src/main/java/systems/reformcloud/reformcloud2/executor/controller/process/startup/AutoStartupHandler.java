@@ -2,7 +2,7 @@ package systems.reformcloud.reformcloud2.executor.controller.process.startup;
 
 import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
 import systems.reformcloud.reformcloud2.executor.controller.ControllerExecutor;
 
@@ -39,7 +39,7 @@ public final class AutoStartupHandler extends AbsoluteThread {
     @Override
     public void run() {
         while (!Thread.currentThread().isInterrupted()) {
-            Links.copySortedSet(perPriorityStartup).forEach(processGroup -> {
+            Streams.copySortedSet(perPriorityStartup).forEach(processGroup -> {
                 int started = ControllerExecutor.getInstance().getProcessManager().getOnlineAndWaitingProcessCount(processGroup.getName());
 
                 if (started < processGroup.getStartupConfiguration().getMinOnlineProcesses()) {

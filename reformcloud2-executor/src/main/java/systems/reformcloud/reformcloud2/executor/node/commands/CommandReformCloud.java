@@ -19,7 +19,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.NetworkUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.StringUtil;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
 import systems.reformcloud.reformcloud2.executor.api.node.process.LocalNodeProcess;
 import systems.reformcloud.reformcloud2.executor.controller.ControllerExecutor;
@@ -154,7 +154,7 @@ public final class CommandReformCloud extends GlobalCommand {
                 }
 
                 if (NodeExecutor.getInstance().getNodeConfig().getUniqueID().equals(processInformation.getNodeUniqueID())) {
-                    Links.filterToReference(LocalProcessManager.getNodeProcesses(),
+                    Streams.filterToReference(LocalProcessManager.getNodeProcesses(),
                             e -> e.getProcessInformation().getProcessUniqueID().equals(processInformation.getProcessUniqueID())
                     ).ifPresent(LocalNodeProcess::copy);
                 } else {
@@ -776,7 +776,7 @@ public final class CommandReformCloud extends GlobalCommand {
 
     private boolean existsNode(String host, int port) {
         NodeConfig config = NodeExecutor.getInstance().getNodeConfig();
-        return Links.filterToReference(config.getOtherNodes(), e -> Links.deepFilterToReference(e,
+        return Streams.filterToReference(config.getOtherNodes(), e -> Streams.deepFilterToReference(e,
                 g -> g.getKey().equalsIgnoreCase(host) && g.getValue() == port).isPresent()).isPresent();
     }
 

@@ -5,7 +5,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.commands.Command;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.permission.Permission;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.permission.PermissionResult;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.source.CommandSource;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -19,7 +19,7 @@ public abstract class GlobalCommand implements Command {
 
     public GlobalCommand(String command, String permission, String description, List<String> aliases) {
         this.mainCommand = command.toLowerCase();
-        this.aliases = Links.toLowerCase(aliases);
+        this.aliases = Streams.toLowerCase(aliases);
         this.description = description;
         if (permission != null) {
             this.permissionCheck = new DefaultPermission(permission.toLowerCase(), PermissionResult.DENIED);
@@ -30,7 +30,7 @@ public abstract class GlobalCommand implements Command {
 
     public GlobalCommand(String command, String description, List<String> aliases) {
         this.mainCommand = command.toLowerCase();
-        this.aliases = Links.toLowerCase(aliases);
+        this.aliases = Streams.toLowerCase(aliases);
         this.description = description;
         this.permissionCheck = new DefaultPermission(null, PermissionResult.ALLOWED);
     }

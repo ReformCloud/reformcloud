@@ -2,7 +2,7 @@ package systems.reformcloud.reformcloud2.executor.node.process;
 
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
 import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
 
@@ -45,7 +45,7 @@ public class LocalAutoStartupHandler extends AbsoluteThread {
             }
 
             try {
-                for (ProcessGroup processGroup : Links.copySortedSet(perPriorityStartup)) {
+                for (ProcessGroup processGroup : Streams.copySortedSet(perPriorityStartup)) {
                     int online = NodeExecutor.getInstance().getNodeNetworkManager().getCluster().getClusterManager()
                             .getOnlineAndWaiting(processGroup.getName());
                     if (processGroup.getStartupConfiguration().getMaxOnlineProcesses() != -1

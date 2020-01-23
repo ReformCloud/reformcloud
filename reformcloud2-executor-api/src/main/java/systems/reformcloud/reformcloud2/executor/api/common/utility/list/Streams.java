@@ -10,9 +10,9 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-public final class Links {
+public final class Streams {
 
-    private Links() {
+    private Streams() {
         throw new UnsupportedOperationException();
     }
 

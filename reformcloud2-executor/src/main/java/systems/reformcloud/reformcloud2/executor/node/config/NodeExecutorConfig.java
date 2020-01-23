@@ -26,7 +26,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links.newCollection;
+import static systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams.newCollection;
 
 public class NodeExecutorConfig {
 

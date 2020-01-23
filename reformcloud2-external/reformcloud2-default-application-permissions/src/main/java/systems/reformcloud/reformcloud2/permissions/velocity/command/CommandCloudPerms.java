@@ -6,7 +6,7 @@ import com.velocitypowered.api.proxy.Player;
 import net.kyori.text.TextComponent;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import systems.reformcloud.reformcloud2.executor.api.common.CommonHelper;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.optional.ReferencedOptional;
 import systems.reformcloud.reformcloud2.permissions.PermissionAPI;
 import systems.reformcloud.reformcloud2.permissions.util.group.NodeGroup;
@@ -43,7 +43,7 @@ public class CommandCloudPerms implements Command {
             }
 
             PermissionUser user = PermissionAPI.getInstance().getPermissionUtil().loadUser(uniqueID);
-            if (Links.filterToReference(user.getGroups(), e -> e.getGroupName().equals(strings[3]) && e.isValid()).isPresent()) {
+            if (Streams.filterToReference(user.getGroups(), e -> e.getGroupName().equals(strings[3]) && e.isValid()).isPresent()) {
                 commandSender.sendMessage(TextComponent.of("§cThe user " + strings[1] + " is already in group " + strings[3]));
                 return;
             }
@@ -75,7 +75,7 @@ public class CommandCloudPerms implements Command {
             }
 
             PermissionUser user = PermissionAPI.getInstance().getPermissionUtil().loadUser(uniqueID);
-            if (Links.filterToReference(user.getGroups(), e -> e.getGroupName().equals(strings[3]) && e.isValid()).isPresent()) {
+            if (Streams.filterToReference(user.getGroups(), e -> e.getGroupName().equals(strings[3]) && e.isValid()).isPresent()) {
                 commandSender.sendMessage(TextComponent.of("§cThe user " + strings[1] + " is already in group " + strings[3]));
                 return;
             }
@@ -108,7 +108,7 @@ public class CommandCloudPerms implements Command {
             }
 
             PermissionUser user = PermissionAPI.getInstance().getPermissionUtil().loadUser(uniqueID);
-            NodeGroup filter = Links.filter(user.getGroups(), e -> e.getGroupName().equals(strings[3]));
+            NodeGroup filter = Streams.filter(user.getGroups(), e -> e.getGroupName().equals(strings[3]));
             if (filter == null) {
                 commandSender.sendMessage(TextComponent.of("§cThe user " + strings[1] + " is not in group " + strings[3]));
                 return;
@@ -131,7 +131,7 @@ public class CommandCloudPerms implements Command {
             }
 
             PermissionUser user = PermissionAPI.getInstance().getPermissionUtil().loadUser(uniqueID);
-            if (Links.filterToReference(user.getPermissionNodes(),
+            if (Streams.filterToReference(user.getPermissionNodes(),
                     e -> e.getActualPermission().equalsIgnoreCase(strings[3])).isPresent()) {
                 commandSender.sendMessage(TextComponent.of("§cThe permission " + strings[3] + " is already set"));
                 return;
@@ -165,7 +165,7 @@ public class CommandCloudPerms implements Command {
             }
 
             PermissionUser user = PermissionAPI.getInstance().getPermissionUtil().loadUser(uniqueID);
-            if (Links.filterToReference(user.getPermissionNodes(),
+            if (Streams.filterToReference(user.getPermissionNodes(),
                     e -> e.getActualPermission().equalsIgnoreCase(strings[3])).isPresent()) {
                 commandSender.sendMessage(TextComponent.of("§cThe permission " + strings[3] + " is already set"));
                 return;
@@ -207,7 +207,7 @@ public class CommandCloudPerms implements Command {
             }
 
             PermissionUser user = PermissionAPI.getInstance().getPermissionUtil().loadUser(uniqueID);
-            ReferencedOptional<PermissionNode> perm = Links.filterToReference(user.getPermissionNodes(),
+            ReferencedOptional<PermissionNode> perm = Streams.filterToReference(user.getPermissionNodes(),
                     e -> e.getActualPermission().equalsIgnoreCase(strings[3]));
             if (!perm.isPresent()) {
                 commandSender.sendMessage(TextComponent.of("§cThe permission " + strings[3] + " is not set"));
@@ -231,7 +231,7 @@ public class CommandCloudPerms implements Command {
                 return;
             }
 
-            if (Links.filterToReference(group.getPermissionNodes(),
+            if (Streams.filterToReference(group.getPermissionNodes(),
                     e -> e.getActualPermission().equalsIgnoreCase(strings[3])).isPresent()) {
                 commandSender.sendMessage(TextComponent.of("§cThe permission " + strings[3] + " is already set for group " + strings[3]));
                 return;
@@ -264,7 +264,7 @@ public class CommandCloudPerms implements Command {
                 return;
             }
 
-            if (Links.filterToReference(group.getPermissionNodes(),
+            if (Streams.filterToReference(group.getPermissionNodes(),
                     e -> e.getActualPermission().equalsIgnoreCase(strings[3])).isPresent()) {
                 commandSender.sendMessage(TextComponent.of("§cThe permission " + strings[3] + " is already set for group " + strings[3]));
                 return;

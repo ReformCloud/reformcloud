@@ -6,7 +6,7 @@ import net.md_5.bungee.api.plugin.*;
 import org.yaml.snakeyaml.Yaml;
 import systems.reformcloud.reformcloud2.executor.api.common.base.Conditions;
 import systems.reformcloud.reformcloud2.executor.api.common.plugins.InstallablePlugin;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.system.DownloadHelper;
 import systems.reformcloud.reformcloud2.executor.api.executor.PluginExecutor;
 
@@ -93,7 +93,7 @@ public final class PluginExecutorContainer implements PluginExecutor {
                 description.setFile(pluginFile);
 
                 //depends
-                Collection<String> loaded = Links.apply(ProxyServer.getInstance().getPluginManager().getPlugins(), plugin1 -> plugin1.getDescription().getName());
+                Collection<String> loaded = Streams.apply(ProxyServer.getInstance().getPluginManager().getPlugins(), plugin1 -> plugin1.getDescription().getName());
                 for (String depend : description.getDepends()) {
                     Conditions.isTrue(loaded.contains(depend), depend + " required by " + description.getName() + " is not loaded");
                 }

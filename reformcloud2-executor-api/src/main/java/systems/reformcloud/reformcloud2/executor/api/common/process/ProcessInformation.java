@@ -6,7 +6,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Template;
 import systems.reformcloud.reformcloud2.executor.api.common.plugins.basic.DefaultPlugin;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.clone.Clone;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.name.Nameable;
 
 import javax.annotation.Nonnull;
@@ -173,11 +173,11 @@ public final class ProcessInformation implements Nameable, Clone<ProcessInformat
     }
 
     public void onLogout(@Nonnull UUID uniqueID) {
-        Links.filterToReference(onlinePlayers, player -> player.getUniqueID().equals(uniqueID)).ifPresent(player -> onlinePlayers.remove(player));
+        Streams.filterToReference(onlinePlayers, player -> player.getUniqueID().equals(uniqueID)).ifPresent(player -> onlinePlayers.remove(player));
     }
 
     public boolean isPlayerOnline(@Nonnull UUID uniqueID) {
-        return Links.filterToReference(onlinePlayers, player -> player.getUniqueID().equals(uniqueID)).isPresent();
+        return Streams.filterToReference(onlinePlayers, player -> player.getUniqueID().equals(uniqueID)).isPresent();
     }
 
     public ProcessInformation updateMaxPlayers(@Nullable Integer value) {

@@ -41,7 +41,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.plugins.InstallableP
 import systems.reformcloud.reformcloud2.executor.api.common.plugins.Plugin;
 import systems.reformcloud.reformcloud2.executor.api.common.plugins.basic.DefaultPlugin;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.defaults.DefaultTask;
 
@@ -930,7 +930,7 @@ public abstract class ExternalAPIImplementation extends ExecutorAPI implements
     @Override
     public Task<Collection<DefaultPlugin>> getPluginsAsync(@Nonnull String process, @Nonnull String author) {
         Task<Collection<DefaultPlugin>> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> task.complete(Links.allOf(getPlugins(process), plugin -> plugin.author().equals(author))));
+        Task.EXECUTOR.execute(() -> task.complete(Streams.allOf(getPlugins(process), plugin -> plugin.author().equals(author))));
         return task;
     }
 

@@ -6,7 +6,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.application.api.Appl
 import systems.reformcloud.reformcloud2.executor.api.common.application.updater.ApplicationUpdateRepository;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.system.SystemHelper;
 import systems.reformcloud.reformcloud2.signs.application.packets.in.PacketInCreateSign;
 import systems.reformcloud.reformcloud2.signs.application.packets.in.PacketInDeleteSign;
@@ -92,7 +92,7 @@ public class ReformCloudApplication extends Application {
             return;
         }
 
-        Links.filterToReference(signs, e -> e.getLocation().equals(cloudSign.getLocation())).ifPresent(signs::remove);
+        Streams.filterToReference(signs, e -> e.getLocation().equals(cloudSign.getLocation())).ifPresent(signs::remove);
         insert(signs);
     }
 

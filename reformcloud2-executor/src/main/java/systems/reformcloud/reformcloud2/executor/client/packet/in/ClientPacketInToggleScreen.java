@@ -4,7 +4,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.NetworkUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.handler.DefaultJsonNetworkHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.client.ClientExecutor;
 import systems.reformcloud.reformcloud2.executor.client.screen.ProcessScreen;
 
@@ -23,7 +23,7 @@ public final class ClientPacketInToggleScreen extends DefaultJsonNetworkHandler 
     public void handlePacket(@Nonnull PacketSender packetSender, @Nonnull Packet packet, @Nonnull Consumer<Packet> responses) {
         UUID uuid = packet.content().get("uuid", UUID.class);
 
-        Links.filterToReference(
+        Streams.filterToReference(
                 ClientExecutor.getInstance().getScreenManager().getPerProcessScreenLines(),
                 uuid::equals
         ).ifPresent(ProcessScreen::toggleScreen);

@@ -14,7 +14,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.logger.setup.basic.D
 import systems.reformcloud.reformcloud2.executor.api.common.registry.Registry;
 import systems.reformcloud.reformcloud2.executor.api.common.registry.basic.RegistryBuilder;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.StringUtil;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
 import systems.reformcloud.reformcloud2.executor.controller.ControllerExecutor;
 
@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links.newCollection;
+import static systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams.newCollection;
 import static systems.reformcloud.reformcloud2.executor.api.common.utility.system.SystemHelper.createDirectory;
 
 public final class ControllerExecutorConfig {
@@ -175,21 +175,21 @@ public final class ControllerExecutorConfig {
     }
 
     public void updateProcessGroup(ProcessGroup processGroup) {
-        Links.filterToReference(processGroups, group -> processGroup.getName().equals(group.getName())).ifPresent(group -> {
+        Streams.filterToReference(processGroups, group -> processGroup.getName().equals(group.getName())).ifPresent(group -> {
             processGroups.remove(group);
             processGroups.add(processGroup);
             this.subGroupRegistry.updateKey(processGroup.getName(), processGroup);
             ControllerExecutor.getInstance().getAutoStartupHandler().update();
         });
 
-        Links.allOf(ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getAllProcesses(), processInformation -> processInformation.getProcessGroup().getName().equals(processGroup.getName())).forEach(processInformation -> {
+        Streams.allOf(ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getAllProcesses(), processInformation -> processInformation.getProcessGroup().getName().equals(processGroup.getName())).forEach(processInformation -> {
             processInformation.setProcessGroup(processGroup);
             ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(processInformation);
         });
     }
 
     public void updateMainGroup(MainGroup mainGroup) {
-        Links.filterToReference(mainGroups, group -> group.getName().equals(mainGroup.getName())).ifPresent(group -> {
+        Streams.filterToReference(mainGroups, group -> group.getName().equals(mainGroup.getName())).ifPresent(group -> {
             mainGroups.remove(group);
             mainGroups.add(mainGroup);
             this.mainGroupRegistry.updateKey(mainGroup.getName(), mainGroup);

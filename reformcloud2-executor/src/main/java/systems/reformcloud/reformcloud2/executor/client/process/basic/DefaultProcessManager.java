@@ -3,7 +3,7 @@ package systems.reformcloud.reformcloud2.executor.client.process.basic;
 import systems.reformcloud.reformcloud2.executor.api.client.process.ProcessManager;
 import systems.reformcloud.reformcloud2.executor.api.client.process.RunningProcess;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.optional.ReferencedOptional;
 import systems.reformcloud.reformcloud2.executor.client.ClientExecutor;
 import systems.reformcloud.reformcloud2.executor.client.packet.out.ClientPacketOutProcessRegistered;
@@ -31,7 +31,7 @@ public final class DefaultProcessManager implements ProcessManager {
 
     @Override
     public void unregisterProcess(String name) {
-        Links.filterToReference(list, runningProcess -> runningProcess.getProcessInformation().getName().equals(name)).ifPresent(runningProcess -> {
+        Streams.filterToReference(list, runningProcess -> runningProcess.getProcessInformation().getName().equals(name)).ifPresent(runningProcess -> {
             list.remove(runningProcess);
             ClientExecutor.getInstance().getScreenManager().getPerProcessScreenLines().remove(runningProcess.getProcessInformation().getProcessUniqueID());
         });
@@ -39,12 +39,12 @@ public final class DefaultProcessManager implements ProcessManager {
 
     @Override
     public ReferencedOptional<RunningProcess> getProcess(UUID uniqueID) {
-        return Links.filterToReference(list, runningProcess -> runningProcess.getProcessInformation().getProcessUniqueID().equals(uniqueID));
+        return Streams.filterToReference(list, runningProcess -> runningProcess.getProcessInformation().getProcessUniqueID().equals(uniqueID));
     }
 
     @Override
     public ReferencedOptional<RunningProcess> getProcess(String name) {
-        return Links.filterToReference(list, runningProcess -> runningProcess.getProcessInformation().getName().equals(name));
+        return Streams.filterToReference(list, runningProcess -> runningProcess.getProcessInformation().getName().equals(name));
     }
 
     @Override
@@ -54,12 +54,12 @@ public final class DefaultProcessManager implements ProcessManager {
 
     @Override
     public void onProcessDisconnect(UUID uuid) {
-        Links.filterToReference(list, runningProcess -> runningProcess.getProcessInformation().getProcessUniqueID().equals(uuid)).ifPresent(RunningProcess::shutdown);
+        Streams.filterToReference(list, runningProcess -> runningProcess.getProcessInformation().getProcessUniqueID().equals(uuid)).ifPresent(RunningProcess::shutdown);
     }
 
     @Override
     public void stopAll() {
-        Links.newList(list).forEach(RunningProcess::shutdown);
+        Streams.newList(list).forEach(RunningProcess::shutdown);
         list.clear();
     }
 }

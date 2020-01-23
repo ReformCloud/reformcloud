@@ -31,7 +31,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.client.Netwo
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.defaults.DefaultPacketHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.handler.PacketHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.system.SystemHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
@@ -248,7 +248,7 @@ public final class BungeeExecutor extends API implements PlayerAPIExecutor {
         final List<ProcessInformation> lobbies = new ArrayList<>(LOBBY_SERVERS);
 
         if (proxiedPlayer != null && proxiedPlayer.getServer() != null) {
-            Links
+            Streams
                     .allOf(lobbies,
                             e
                                     -> e.getName().equals(
@@ -257,7 +257,7 @@ public final class BungeeExecutor extends API implements PlayerAPIExecutor {
         }
 
         // Filter all non java servers if this is a java proxy else all mcpe servers
-        Links
+        Streams
                 .others(lobbies,
                         e -> {
                             Version version = e.getTemplate().getVersion();
@@ -274,7 +274,7 @@ public final class BungeeExecutor extends API implements PlayerAPIExecutor {
 
         // Filter out all lobbies with join permission which the player does not
         // have
-        Links
+        Streams
                 .others(lobbies,
                         e -> {
                             final PlayerAccessConfiguration configuration =
@@ -290,7 +290,7 @@ public final class BungeeExecutor extends API implements PlayerAPIExecutor {
 
         // Filter out all lobbies which are in maintenance and not joinable for the
         // player
-        Links
+        Streams
                 .others(lobbies,
                         e -> {
                             final PlayerAccessConfiguration configuration =
@@ -305,7 +305,7 @@ public final class BungeeExecutor extends API implements PlayerAPIExecutor {
                 .forEach(lobbies::remove);
 
         // Filter out all full server which the player cannot access
-        Links
+        Streams
                 .others(lobbies,
                         e -> {
                             final PlayerAccessConfiguration configuration =

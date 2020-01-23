@@ -1,7 +1,7 @@
 package systems.reformcloud.reformcloud2.executor.api.common.process;
 
 import systems.reformcloud.reformcloud2.executor.api.common.CommonHelper;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -188,7 +188,7 @@ public final class ProcessRuntimeInformation {
                 CommonHelper.runtimeMXBean().getSystemProperties(),
                 CommonHelper.runtimeMXBean().getClassPath(),
                 CommonHelper.runtimeMXBean().isBootClassPathSupported() ? CommonHelper.runtimeMXBean().getBootClassPath() : "unknown",
-                Links.keyApply(Thread.getAllStackTraces(), ThreadInfo::create)
+                Streams.keyApply(Thread.getAllStackTraces(), ThreadInfo::create)
         );
     }
 

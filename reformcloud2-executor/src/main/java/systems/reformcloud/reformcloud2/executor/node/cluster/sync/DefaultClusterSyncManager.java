@@ -6,7 +6,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.channel.mana
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.api.common.node.NodeInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.node.cluster.ClusterSyncManager;
 import systems.reformcloud.reformcloud2.executor.api.node.cluster.SyncAction;
 import systems.reformcloud.reformcloud2.executor.controller.packet.out.event.ControllerEventProcessClosed;
@@ -94,12 +94,12 @@ public class DefaultClusterSyncManager implements ClusterSyncManager {
 
     @Override
     public boolean existsProcessGroup(String name) {
-        return Links.filterToReference(this.processGroups, e -> e.getName().equals(name)).isPresent();
+        return Streams.filterToReference(this.processGroups, e -> e.getName().equals(name)).isPresent();
     }
 
     @Override
     public boolean existsMainGroup(String name) {
-        return Links.filterToReference(this.mainGroups, e -> e.getName().equals(name)).isPresent();
+        return Streams.filterToReference(this.mainGroups, e -> e.getName().equals(name)).isPresent();
     }
 
     @Override
@@ -121,7 +121,7 @@ public class DefaultClusterSyncManager implements ClusterSyncManager {
 
     @Override
     public void syncProcessGroupUpdate(ProcessGroup processGroup) {
-        Links.filterToReference(this.processGroups, e -> e.getName().equals(processGroup.getName())).ifPresent(e -> {
+        Streams.filterToReference(this.processGroups, e -> e.getName().equals(processGroup.getName())).ifPresent(e -> {
             this.processGroups.remove(e);
             this.processGroups.add(processGroup);
             this.syncProcessGroups(processGroups, SyncAction.UPDATE);
@@ -133,7 +133,7 @@ public class DefaultClusterSyncManager implements ClusterSyncManager {
 
     @Override
     public void syncMainGroupUpdate(MainGroup mainGroup) {
-        Links.filterToReference(this.mainGroups, e -> e.getName().equals(mainGroup.getName())).ifPresent(e -> {
+        Streams.filterToReference(this.mainGroups, e -> e.getName().equals(mainGroup.getName())).ifPresent(e -> {
             this.mainGroups.remove(e);
             this.mainGroups.add(mainGroup);
             this.syncMainGroups(mainGroups, SyncAction.UPDATE);
@@ -144,7 +144,7 @@ public class DefaultClusterSyncManager implements ClusterSyncManager {
 
     @Override
     public void syncProcessGroupDelete(String name) {
-        Links.filterToReference(this.processGroups, e -> e.getName().equals(name)).ifPresent(e -> {
+        Streams.filterToReference(this.processGroups, e -> e.getName().equals(name)).ifPresent(e -> {
             this.processGroups.remove(e);
             this.syncProcessGroups(processGroups, SyncAction.DELETE);
 
@@ -155,7 +155,7 @@ public class DefaultClusterSyncManager implements ClusterSyncManager {
 
     @Override
     public void syncMainGroupDelete(String name) {
-        Links.filterToReference(this.mainGroups, e -> e.getName().equals(name)).ifPresent(e -> {
+        Streams.filterToReference(this.mainGroups, e -> e.getName().equals(name)).ifPresent(e -> {
             this.mainGroups.remove(e);
             this.syncMainGroups(mainGroups, SyncAction.DELETE);
 
@@ -179,7 +179,7 @@ public class DefaultClusterSyncManager implements ClusterSyncManager {
 
             case SYNC:
             case UPDATE: {
-                groups.forEach(newGroup -> Links.newList(this.processGroups).forEach(oldGroup -> {
+                groups.forEach(newGroup -> Streams.newList(this.processGroups).forEach(oldGroup -> {
                     if (newGroup.getName().equals(oldGroup.getName()) && !newGroup.equals(oldGroup)) {
                         this.processGroups.remove(oldGroup);
                         this.processGroups.add(newGroup);
@@ -189,13 +189,13 @@ public class DefaultClusterSyncManager implements ClusterSyncManager {
                 }));
 
                 if (action.equals(SyncAction.SYNC)) {
-                    processGroups.addAll(Links.allOf(groups, g -> processGroups.stream().noneMatch(e -> e.getName().equals(g.getName()))));
+                    processGroups.addAll(Streams.allOf(groups, g -> processGroups.stream().noneMatch(e -> e.getName().equals(g.getName()))));
                 }
                 break;
             }
 
             case DELETE: {
-                Links.allOf(processGroups, e -> groups.stream().noneMatch(g -> g.getName().equals(e.getName()))).forEach(e -> {
+                Streams.allOf(processGroups, e -> groups.stream().noneMatch(g -> g.getName().equals(e.getName()))).forEach(e -> {
                     this.processGroups.remove(e);
                     NodeExecutor.getInstance().getNodeExecutorConfig().handleProcessGroupDelete(e);
                 });
@@ -222,7 +222,7 @@ public class DefaultClusterSyncManager implements ClusterSyncManager {
 
             case SYNC:
             case UPDATE: {
-                groups.forEach(newGroup -> Links.newList(this.mainGroups).forEach(oldGroup -> {
+                groups.forEach(newGroup -> Streams.newList(this.mainGroups).forEach(oldGroup -> {
                     if (newGroup.getName().equals(oldGroup.getName()) && !newGroup.equals(oldGroup)) {
                         this.mainGroups.remove(oldGroup);
                         this.mainGroups.add(newGroup);
@@ -232,13 +232,13 @@ public class DefaultClusterSyncManager implements ClusterSyncManager {
                 }));
 
                 if (action.equals(SyncAction.SYNC)) {
-                    mainGroups.addAll(Links.allOf(groups, g -> mainGroups.stream().noneMatch(e -> e.getName().equals(g.getName()))));
+                    mainGroups.addAll(Streams.allOf(groups, g -> mainGroups.stream().noneMatch(e -> e.getName().equals(g.getName()))));
                 }
                 break;
             }
 
             case DELETE: {
-                Links.allOf(mainGroups, e -> groups.stream().noneMatch(g -> g.getName().equals(e.getName()))).forEach(e -> {
+                Streams.allOf(mainGroups, e -> groups.stream().noneMatch(g -> g.getName().equals(e.getName()))).forEach(e -> {
                     this.mainGroups.remove(e);
                     NodeExecutor.getInstance().getNodeExecutorConfig().handleMainGroupDelete(e);
                 });
@@ -250,7 +250,7 @@ public class DefaultClusterSyncManager implements ClusterSyncManager {
     @Override
     public void handleProcessInformationSync(Collection<ProcessInformation> information) {
         Collection<ProcessInformation> clusterProcesses = NodeExecutor.getInstance().getNodeNetworkManager().getNodeProcessHelper().getClusterProcesses();
-        Links.allOf(information, e -> clusterProcesses.stream().noneMatch(i -> i.getProcessUniqueID().equals(e.getProcessUniqueID())))
+        Streams.allOf(information, e -> clusterProcesses.stream().noneMatch(i -> i.getProcessUniqueID().equals(e.getProcessUniqueID())))
                 .forEach(e -> {
                     clusterProcesses.add(e);
                     sendToAllExcludedNodes(new ControllerEventProcessStarted(e));
@@ -292,7 +292,7 @@ public class DefaultClusterSyncManager implements ClusterSyncManager {
     }
 
     public static void sendToAllExcludedNodes(Packet packet) {
-        Links.allOf(DefaultChannelManager.INSTANCE.getAllSender(),
+        Streams.allOf(DefaultChannelManager.INSTANCE.getAllSender(),
                 e -> NodeExecutor.getInstance().getNodeNetworkManager().getCluster().getNode(e.getName()) == null
         ).forEach(e -> e.sendPacket(packet));
     }

@@ -4,7 +4,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.NetworkUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.handler.DefaultJsonNetworkHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.node.process.LocalNodeProcess;
 import systems.reformcloud.reformcloud2.executor.node.process.manager.LocalProcessManager;
 
@@ -22,7 +22,7 @@ public class PacketInNodeStopProcess extends DefaultJsonNetworkHandler {
     @Override
     public void handlePacket(@Nonnull PacketSender packetSender, @Nonnull Packet packet, @Nonnull Consumer<Packet> responses) {
         UUID uniqueID = packet.content().get("uniqueID", UUID.class);
-        LocalNodeProcess information = Links.filterToReference(LocalProcessManager.getNodeProcesses(),
+        LocalNodeProcess information = Streams.filterToReference(LocalProcessManager.getNodeProcesses(),
                 e -> e.getProcessInformation().getProcessUniqueID().equals(uniqueID)).orNothing();
 
         if (information == null) {

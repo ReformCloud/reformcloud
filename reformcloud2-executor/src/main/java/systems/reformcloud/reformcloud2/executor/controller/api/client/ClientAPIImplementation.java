@@ -3,7 +3,7 @@ package systems.reformcloud.reformcloud2.executor.controller.api.client;
 import systems.reformcloud.reformcloud2.executor.api.common.api.client.ClientAsyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.client.ClientSyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.client.ClientRuntimeInformation;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.defaults.DefaultTask;
 import systems.reformcloud.reformcloud2.executor.controller.process.ClientManager;
@@ -16,7 +16,7 @@ public class ClientAPIImplementation implements ClientSyncAPI, ClientAsyncAPI {
     @Override
     public Task<Boolean> isClientConnectedAsync(String name) {
         Task<Boolean> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> task.complete(Links.filterToReference(ClientManager.INSTANCE.getClientRuntimeInformation(), clientRuntimeInformation -> clientRuntimeInformation.getName().equals(name)).isPresent()));
+        Task.EXECUTOR.execute(() -> task.complete(Streams.filterToReference(ClientManager.INSTANCE.getClientRuntimeInformation(), clientRuntimeInformation -> clientRuntimeInformation.getName().equals(name)).isPresent()));
         return task;
     }
 
@@ -25,7 +25,7 @@ public class ClientAPIImplementation implements ClientSyncAPI, ClientAsyncAPI {
     public Task<String> getClientStartHostAsync(String name) {
         Task<String> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
-            ClientRuntimeInformation information = Links.filter(ClientManager.INSTANCE.getClientRuntimeInformation(), clientRuntimeInformation -> clientRuntimeInformation.getName().equals(name));
+            ClientRuntimeInformation information = Streams.filter(ClientManager.INSTANCE.getClientRuntimeInformation(), clientRuntimeInformation -> clientRuntimeInformation.getName().equals(name));
             if (information == null) {
                 task.complete(null);
             } else {
@@ -40,7 +40,7 @@ public class ClientAPIImplementation implements ClientSyncAPI, ClientAsyncAPI {
     public Task<Integer> getMaxMemoryAsync(String name) {
         Task<Integer> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
-            ClientRuntimeInformation information = Links.filter(ClientManager.INSTANCE.getClientRuntimeInformation(), clientRuntimeInformation -> clientRuntimeInformation.getName().equals(name));
+            ClientRuntimeInformation information = Streams.filter(ClientManager.INSTANCE.getClientRuntimeInformation(), clientRuntimeInformation -> clientRuntimeInformation.getName().equals(name));
             if (information == null) {
                 task.complete(null);
             } else {
@@ -55,7 +55,7 @@ public class ClientAPIImplementation implements ClientSyncAPI, ClientAsyncAPI {
     public Task<Integer> getMaxProcessesAsync(String name) {
         Task<Integer> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
-            ClientRuntimeInformation information = Links.filter(ClientManager.INSTANCE.getClientRuntimeInformation(), clientRuntimeInformation -> clientRuntimeInformation.getName().equals(name));
+            ClientRuntimeInformation information = Streams.filter(ClientManager.INSTANCE.getClientRuntimeInformation(), clientRuntimeInformation -> clientRuntimeInformation.getName().equals(name));
             if (information == null) {
                 task.complete(null);
             } else {
@@ -70,7 +70,7 @@ public class ClientAPIImplementation implements ClientSyncAPI, ClientAsyncAPI {
     public Task<ClientRuntimeInformation> getClientInformationAsync(String name) {
         Task<ClientRuntimeInformation> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
-            ClientRuntimeInformation information = Links.filter(ClientManager.INSTANCE.getClientRuntimeInformation(), clientRuntimeInformation -> clientRuntimeInformation.getName().equals(name));
+            ClientRuntimeInformation information = Streams.filter(ClientManager.INSTANCE.getClientRuntimeInformation(), clientRuntimeInformation -> clientRuntimeInformation.getName().equals(name));
             task.complete(information);
         });
         return task;

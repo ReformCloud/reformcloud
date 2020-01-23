@@ -7,7 +7,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonCo
 import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.defaults.DefaultTask;
 import systems.reformcloud.reformcloud2.executor.api.node.network.NodeNetworkManager;
@@ -46,7 +46,7 @@ public class ProcessAPIImplementation implements ProcessSyncAPI, ProcessAsyncAPI
     public Task<ProcessInformation> startProcessAsync(@Nonnull String groupName, String template, @Nonnull JsonConfiguration configurable) {
         Task<ProcessInformation> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
-            ProcessGroup group = Links.filterToReference(NodeExecutor.getInstance().getClusterSyncManager().getProcessGroups(), e -> e.getName().equals(groupName)).orNothing();
+            ProcessGroup group = Streams.filterToReference(NodeExecutor.getInstance().getClusterSyncManager().getProcessGroups(), e -> e.getName().equals(groupName)).orNothing();
             if (group == null) {
                 task.complete(null);
                 return;
@@ -54,7 +54,7 @@ public class ProcessAPIImplementation implements ProcessSyncAPI, ProcessAsyncAPI
 
             task.complete(nodeNetworkManager.startProcess(
                     group,
-                    Links.filterToReference(group.getTemplates(), e -> e.getName().equals(template)).orNothing(),
+                    Streams.filterToReference(group.getTemplates(), e -> e.getName().equals(template)).orNothing(),
                     configurable
             ));
         });
@@ -115,7 +115,7 @@ public class ProcessAPIImplementation implements ProcessSyncAPI, ProcessAsyncAPI
     @Override
     public Task<List<ProcessInformation>> getAllProcessesAsync() {
         Task<List<ProcessInformation>> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> task.complete(Links.newList(nodeNetworkManager.getNodeProcessHelper().getClusterProcesses())));
+        Task.EXECUTOR.execute(() -> task.complete(Streams.newList(nodeNetworkManager.getNodeProcessHelper().getClusterProcesses())));
         return task;
     }
 
@@ -123,7 +123,7 @@ public class ProcessAPIImplementation implements ProcessSyncAPI, ProcessAsyncAPI
     @Override
     public Task<List<ProcessInformation>> getProcessesAsync(@Nonnull String group) {
         Task<List<ProcessInformation>> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> task.complete(Links.newList(nodeNetworkManager.getNodeProcessHelper().getClusterProcesses(group))));
+        Task.EXECUTOR.execute(() -> task.complete(Streams.newList(nodeNetworkManager.getNodeProcessHelper().getClusterProcesses(group))));
         return task;
     }
 
@@ -139,7 +139,7 @@ public class ProcessAPIImplementation implements ProcessSyncAPI, ProcessAsyncAPI
             }
 
             if (NodeExecutor.getInstance().getNodeConfig().getUniqueID().equals(processInformation.getNodeUniqueID())) {
-                Links.filterToReference(LocalProcessManager.getNodeProcesses(),
+                Streams.filterToReference(LocalProcessManager.getNodeProcesses(),
                         e -> e.getProcessInformation().getProcessUniqueID().equals(processInformation.getProcessUniqueID())
                 ).ifPresent(e -> e.sendCommand(commandLine));
             } else {
@@ -157,7 +157,7 @@ public class ProcessAPIImplementation implements ProcessSyncAPI, ProcessAsyncAPI
     public Task<Integer> getGlobalOnlineCountAsync(@Nonnull Collection<String> ignoredProxies) {
         Task<Integer> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
-            int online = Links.allOf(nodeNetworkManager.getNodeProcessHelper().getClusterProcesses(),
+            int online = Streams.allOf(nodeNetworkManager.getNodeProcessHelper().getClusterProcesses(),
                     e -> !e.getTemplate().isServer() && !ignoredProxies.contains(e.getName())
             ).stream().mapToInt(ProcessInformation::getOnlineCount).sum();
             task.complete(online);
