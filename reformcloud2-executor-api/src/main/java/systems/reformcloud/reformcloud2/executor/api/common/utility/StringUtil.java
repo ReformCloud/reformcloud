@@ -1,5 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.api.common.utility;
 
+import systems.reformcloud.reformcloud2.executor.api.ExecutorType;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.application.LoadedApplication;
 import systems.reformcloud.reformcloud2.executor.api.common.base.Conditions;
@@ -9,6 +10,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Temp
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Version;
 import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -21,7 +23,7 @@ public final class StringUtil {
 
     public static final String RUNNER_DOWNLOAD_URL = "https://internal.reformcloud.systems/runner.jar";
 
-    public static final String[] RC_COMMAND_HELP = new String[] {
+    private static final String[] RC_COMMAND_BASIC_HELP = new String[] {
             "rc applications",
             "rc applications update",
             "rc applications update <name>",
@@ -30,20 +32,16 @@ public final class StringUtil {
             "rc screen <uuid | name> toggle",
             "rc list",
             "rc list <group>",
-            "rc clients",
             "rc listgroups <main | sub>",
             "rc versions",
-            "rc start internalclient",
             "rc start <group>",
             "rc start <group> <amount>",
             "rc start <group> <amount> <template>",
-            "rc stop internalclient",
             "rc stop <name>",
             "rc stop <uuid>",
             "rc stopall <subGroup>",
             "rc ofAll <mainGroup> <list | stop>",
             "rc execute <name | uuid> <command>",
-            "rc create internalclient <start-host>",
             "rc create main <name>",
             "rc create sub <name>",
             "rc create sub <name> <version>",
@@ -52,9 +50,30 @@ public final class StringUtil {
             "rc create sub <name> <version> <parent> <static> <lobby>",
             "rc create sub <name> <version> <parent> <static> <minonline> <maxonline>",
             "rc create sub <name> <version> <parent> <static> <lobby> <minonline> <maxonline>",
-            "rc delete <sub | main> <name>",
-            "rc delete internalclient"
+            "rc delete <sub | main> <name>"
     };
+
+    public static final String[] RC_COMMAND_HELP = loadHelpMessage();
+
+    private static String[] loadHelpMessage() {
+        String[] strings;
+
+        if (ExecutorAPI.getInstance().getType().equals(ExecutorType.NODE)) {
+            strings = new String[] {
+                    "rc create node <ip/domain-name> <port>"
+            };
+        } else {
+            strings = new String[] {
+                    "rc clients",
+                    "rc start internalclient",
+                    "rc stop internalclient",
+                    "rc create internalclient <start-host>",
+                    "rc delete internalclient"
+            };
+        }
+
+        return Streams.concat(RC_COMMAND_BASIC_HELP, strings);
+    }
 
     public static List<String> completeReformCommand(@Nonnull String[] currentArg, boolean isController) {
         List<String> completions = new ArrayList<>();

@@ -46,4 +46,10 @@ public final class StreamsTest {
         Collection<String> others = Streams.others(collection, e -> e.equals("test"));
         assertEquals(1, others.size());
     }
+
+    @Test
+    public void concatTest() {
+        String[] first = new String[]{"test", "test1"};
+        assertEquals(4, Streams.concat(first, first).length);
+    }
 }

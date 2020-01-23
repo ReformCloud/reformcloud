@@ -341,7 +341,8 @@ public final class CommandReformCloud extends GlobalCommand {
 
             case "create": {
                 if (strings[1].equalsIgnoreCase("node") && strings.length == 4) {
-                    if (strings[2].split("\\.").length != 4) {
+                    String ip = CommonHelper.getIpAddress(strings[2]);
+                    if (ip == null) {
                         System.out.println(LanguageManager.get("command-rc-node-ip-invalid", strings[2]));
                         return true;
                     }
@@ -352,13 +353,13 @@ public final class CommandReformCloud extends GlobalCommand {
                         return true;
                     }
 
-                    if (existsNode(strings[2], port)) {
+                    if (existsNode(ip, port)) {
                         System.out.println(LanguageManager.get("command-rc-node-already-exists", strings[2], strings[3]));
                         return true;
                     }
 
                     NodeExecutor.getInstance().getNodeConfig().getOtherNodes().add(
-                            Collections.singletonMap(strings[2], port)
+                            Collections.singletonMap(ip, port)
                     );
                     NodeExecutor.getInstance().getNodeConfig().save();
                     System.out.println(LanguageManager.get("command-rc-execute-success"));
