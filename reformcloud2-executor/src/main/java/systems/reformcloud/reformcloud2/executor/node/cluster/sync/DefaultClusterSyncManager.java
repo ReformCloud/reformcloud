@@ -1,5 +1,8 @@
 package systems.reformcloud.reformcloud2.executor.node.cluster.sync;
 
+import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.ProcessStartedEvent;
+import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.ProcessStoppedEvent;
+import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.ProcessUpdatedEvent;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.MainGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
@@ -48,6 +51,8 @@ public class DefaultClusterSyncManager implements ClusterSyncManager {
         NodeExecutor.getInstance().getNodeNetworkManager().getCluster().broadCastToCluster(new PacketOutProcessAction(
                 ProcessAction.START, processInformation
         ));
+
+        NodeExecutor.getInstance().getEventManager().callEvent(new ProcessStartedEvent(processInformation));
         sendToAllExcludedNodes(new ControllerEventProcessStarted(processInformation));
     }
 
@@ -56,6 +61,8 @@ public class DefaultClusterSyncManager implements ClusterSyncManager {
         NodeExecutor.getInstance().getNodeNetworkManager().getCluster().broadCastToCluster(new PacketOutProcessAction(
                 ProcessAction.UPDATE, processInformation
         ));
+
+        NodeExecutor.getInstance().getEventManager().callEvent(new ProcessUpdatedEvent(processInformation));
         sendToAllExcludedNodes(new ControllerEventProcessUpdated(processInformation));
     }
 
@@ -64,6 +71,8 @@ public class DefaultClusterSyncManager implements ClusterSyncManager {
         NodeExecutor.getInstance().getNodeNetworkManager().getCluster().broadCastToCluster(new PacketOutProcessAction(
                 ProcessAction.STOP, processInformation
         ));
+
+        NodeExecutor.getInstance().getEventManager().callEvent(new ProcessStoppedEvent(processInformation));
         sendToAllExcludedNodes(new ControllerEventProcessClosed(processInformation));
     }
 

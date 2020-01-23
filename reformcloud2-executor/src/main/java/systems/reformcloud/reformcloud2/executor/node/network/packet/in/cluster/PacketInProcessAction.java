@@ -1,5 +1,8 @@
 package systems.reformcloud.reformcloud2.executor.node.network.packet.in.cluster;
 
+import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.ProcessStartedEvent;
+import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.ProcessStoppedEvent;
+import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.ProcessUpdatedEvent;
 import systems.reformcloud.reformcloud2.executor.api.common.network.NetworkUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.handler.DefaultJsonNetworkHandler;
@@ -33,6 +36,8 @@ public class PacketInProcessAction extends DefaultJsonNetworkHandler {
                         information
                 );
                 NodeExecutor.getInstance().getNodeNetworkManager().getQueuedProcesses().remove(information.getProcessUniqueID());
+
+                NodeExecutor.getInstance().getEventManager().callEvent(new ProcessStartedEvent(information));
                 DefaultClusterSyncManager.sendToAllExcludedNodes(new ControllerEventProcessStarted(information));
                 break;
             }
@@ -41,6 +46,8 @@ public class PacketInProcessAction extends DefaultJsonNetworkHandler {
                 NodeExecutor.getInstance().getNodeNetworkManager().getNodeProcessHelper().handleProcessUpdate(
                         information
                 );
+
+                NodeExecutor.getInstance().getEventManager().callEvent(new ProcessUpdatedEvent(information));
                 DefaultClusterSyncManager.sendToAllExcludedNodes(new ControllerEventProcessUpdated(information));
                 break;
             }
@@ -49,6 +56,8 @@ public class PacketInProcessAction extends DefaultJsonNetworkHandler {
                 NodeExecutor.getInstance().getNodeNetworkManager().getNodeProcessHelper().handleProcessStop(
                         information
                 );
+
+                NodeExecutor.getInstance().getEventManager().callEvent(new ProcessStoppedEvent(information));
                 DefaultClusterSyncManager.sendToAllExcludedNodes(new ControllerEventProcessClosed(information));
                 break;
             }
