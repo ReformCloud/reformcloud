@@ -27,7 +27,7 @@ public final class Runner {
 
     private static final Predicate<String> CONTROLLER_UNPACK_TEST = s -> s != null && (s.equalsIgnoreCase("controller") || s.equalsIgnoreCase("client") || s.equalsIgnoreCase("node"));
 
-    private static final Supplier<String> CHOOSE_INSTALL_MESSAGE = () -> "Please choose an executor: [\"controller\", \"client\", \"node\"]";
+    private static final Supplier<String> CHOOSE_INSTALL_MESSAGE = () -> "Please choose an executor: [\"controller\", \"client\", \"node\" (recommended)]";
 
     private static final Properties PROPERTIES = new Properties();
 
@@ -41,10 +41,10 @@ public final class Runner {
             String newVersion = null;
             if (System.getProperty("reformcloud.runner.version").endsWith("-SNAPSHOT")) {
                 System.out.println("You are running on a snapshot build ("
-                        + System.getProperty("reformcloud.runner.version") + "). Please not that this is " +
+                        + System.getProperty("reformcloud.runner.version") + "). Please note that this is " +
                         "not supported and no updates of the cloud will get applied.");
             } else if (Boolean.getBoolean("reformcloud.disable.updates")) {
-                System.out.println("You've disabled auto update for addons and the cloud itself");
+                System.out.println("You've disabled auto update for applications and the cloud itself");
             } else {
                 ApplicationUpdateApplier.applyUpdates();
                 newVersion = CloudVersionUpdater.update();
@@ -55,6 +55,8 @@ public final class Runner {
                 if (!file.exists()) {
                     throw new RuntimeException("Executor file does not exists");
                 }
+
+                setSystemProperties(Runner.class.getPackage().getImplementationVersion());
 
                 ClassLoader classLoader = ClassPreparer.create(file.toPath(),
                         path -> {
@@ -114,12 +116,12 @@ public final class Runner {
         }
 
         if (PROPERTIES.contains("reformcloud.type.id")) {
-            andThen.accept(write(PROPERTIES.getProperty("reformcloud.type.id")), PROPERTIES.getProperty("reformcloud.type.id"));
+            andThen.accept(write(PROPERTIES.getProperty("reformcloud.type.id"), version), PROPERTIES.getProperty("reformcloud.type.id"));
             return;
         }
 
         int type = getType();
-        andThen.accept(write(Integer.toString(type)), Integer.toString(type));
+        andThen.accept(write(Integer.toString(type), version), Integer.toString(type));
     }
 
     private static boolean isAPI() {
@@ -127,8 +129,8 @@ public final class Runner {
                 System.getProperty("reformcloud.executor.type").equals("3");
     }
 
-    private static String write(String id) {
-        String version = System.getProperty("reformcloud.runner.version");
+    private static String write(String id, String newVersion) {
+        String version = newVersion == null ? System.getProperty("reformcloud.runner.version") : newVersion;
 
         PROPERTIES.clear();
         PROPERTIES.setProperty("reformcloud.version", version);

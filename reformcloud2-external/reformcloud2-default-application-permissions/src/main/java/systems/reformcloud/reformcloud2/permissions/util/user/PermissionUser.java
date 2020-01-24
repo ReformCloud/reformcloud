@@ -1,7 +1,7 @@
 package systems.reformcloud.reformcloud2.permissions.util.user;
 
 import com.google.gson.reflect.TypeToken;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.permissions.PermissionAPI;
 import systems.reformcloud.reformcloud2.permissions.util.basic.checks.WildcardCheck;
 import systems.reformcloud.reformcloud2.permissions.util.group.NodeGroup;
@@ -57,13 +57,13 @@ public class PermissionUser {
             return true;
         }
 
-        final PermissionNode node = Links.filter(permissionNodes,
+        final PermissionNode node = Streams.filter(permissionNodes,
                 e -> e.getActualPermission().equalsIgnoreCase(permission) && e.isValid());
         if (node != null) {
             return node.isSet();
         }
 
-        final PermissionNode star = Links.filter(permissionNodes,
+        final PermissionNode star = Streams.filter(permissionNodes,
                 e -> e.getActualPermission().equals("*") && e.isValid());
         if (star != null && star.isSet()) {
             return true;

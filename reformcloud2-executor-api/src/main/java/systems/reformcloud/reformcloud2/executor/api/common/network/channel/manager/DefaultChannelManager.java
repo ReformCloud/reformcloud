@@ -2,7 +2,7 @@ package systems.reformcloud.reformcloud2.executor.api.common.network.channel.man
 
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.NetworkChannel;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.optional.ReferencedOptional;
 
 import java.util.ArrayList;
@@ -24,7 +24,7 @@ public final class DefaultChannelManager implements ChannelManager {
     @Override
     public void unregisterChannel(PacketSender packetSender) {
         synchronized (senders) {
-            PacketSender current = Links.filter(senders, sender -> packetSender.getName().equals(sender.getName()));
+            PacketSender current = Streams.filter(senders, sender -> packetSender.getName().equals(sender.getName()));
             if (current == null) {
                 return;
             }
@@ -48,7 +48,7 @@ public final class DefaultChannelManager implements ChannelManager {
         }
 
         synchronized (senders) {
-            return Links.filterToReference(senders, packetSender -> packetSender.getName().equals(name));
+            return Streams.filterToReference(senders, packetSender -> packetSender.getName().equals(name));
         }
     }
 

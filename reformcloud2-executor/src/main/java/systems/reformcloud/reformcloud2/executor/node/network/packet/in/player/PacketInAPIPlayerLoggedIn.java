@@ -1,11 +1,13 @@
 package systems.reformcloud.reformcloud2.executor.node.network.packet.in.player;
 
+import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.PlayerLoginEvent;
 import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
 import systems.reformcloud.reformcloud2.executor.api.common.network.NetworkUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.handler.DefaultJsonNetworkHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.controller.packet.out.event.ControllerEventPlayerConnected;
+import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
 import systems.reformcloud.reformcloud2.executor.node.cluster.sync.DefaultClusterSyncManager;
 
 import javax.annotation.Nonnull;
@@ -27,6 +29,7 @@ public final class PacketInAPIPlayerLoggedIn extends DefaultJsonNetworkHandler {
                 packetSender.getName()
         ));
 
+        NodeExecutor.getInstance().getEventManager().callEvent(new PlayerLoginEvent(name));
         DefaultClusterSyncManager.sendToAllExcludedNodes(new ControllerEventPlayerConnected(name));
     }
 }

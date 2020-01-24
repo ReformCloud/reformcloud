@@ -5,7 +5,7 @@ import systems.reformcloud.reformcloud2.executor.api.ExecutorType;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.permissions.packets.api.out.APIPacketOutGroupAction;
 import systems.reformcloud.reformcloud2.permissions.packets.api.out.APIPacketOutUserAction;
 import systems.reformcloud.reformcloud2.permissions.packets.controller.out.ControllerPacketOutGroupAction;
@@ -326,7 +326,7 @@ public final class DefaultPermissionUtil implements PermissionUtil {
     @Override
     public void removeUserGroup(@Nonnull UUID uuid, @Nonnull String group) {
         final PermissionUser user = loadUser(uuid);
-        Links.filterToReference(user.getGroups(), e -> e.getGroupName().equals(group)).ifPresent(e -> {
+        Streams.filterToReference(user.getGroups(), e -> e.getGroupName().equals(group)).ifPresent(e -> {
             user.getGroups().remove(e);
             updateUser(user);
         });
@@ -389,7 +389,7 @@ public final class DefaultPermissionUtil implements PermissionUtil {
     @Override
     public void handleInternalPermissionGroupDelete(PermissionGroup permissionGroup) {
         CACHE.remove(permissionGroup.getName());
-        Links.filterToReference(CACHED_DEFAULT_GROUPS, e -> e.getName().equals(permissionGroup.getName()))
+        Streams.filterToReference(CACHED_DEFAULT_GROUPS, e -> e.getName().equals(permissionGroup.getName()))
                 .ifPresent(CACHED_DEFAULT_GROUPS::remove);
         ExecutorAPI.getInstance().getEventManager().callEvent(new PermissionGroupDeleteEvent(permissionGroup.getName()));
     }
@@ -441,14 +441,14 @@ public final class DefaultPermissionUtil implements PermissionUtil {
     }
 
     private void eraseUserCache(PermissionUser permissionUser) {
-        Links.allOf(permissionUser.getGroups(), e -> !e.isValid()).forEach(permissionUser.getGroups()::remove);
-        Links.allOf(permissionUser.getPermissionNodes(), e -> !e.isValid()).forEach(permissionUser.getPermissionNodes()::remove);
+        Streams.allOf(permissionUser.getGroups(), e -> !e.isValid()).forEach(permissionUser.getGroups()::remove);
+        Streams.allOf(permissionUser.getPermissionNodes(), e -> !e.isValid()).forEach(permissionUser.getPermissionNodes()::remove);
         updateUser(permissionUser);
     }
 
     private void eraseGroupCache(PermissionGroup permissionGroup) {
-        Links.allOf(permissionGroup.getPermissionNodes(), e -> !e.isValid()).forEach(permissionGroup.getPermissionNodes()::remove);
-        permissionGroup.getPerGroupPermissions().forEach((k, v) -> Links.allOf(v, e -> !e.isValid()).forEach(v::remove));
+        Streams.allOf(permissionGroup.getPermissionNodes(), e -> !e.isValid()).forEach(permissionGroup.getPermissionNodes()::remove);
+        permissionGroup.getPerGroupPermissions().forEach((k, v) -> Streams.allOf(v, e -> !e.isValid()).forEach(v::remove));
         updateGroup(permissionGroup);
     }
 

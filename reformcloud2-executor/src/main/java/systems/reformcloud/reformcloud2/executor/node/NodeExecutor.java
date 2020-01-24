@@ -60,7 +60,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.restapi.request.defa
 import systems.reformcloud.reformcloud2.executor.api.common.restapi.user.WebUser;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.StringUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.function.Double;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.system.SystemHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
@@ -334,7 +334,7 @@ public class NodeExecutor extends Node {
                         sender.setName(s);
                         clusterSyncManager.getWaitingConnections().remove(sender.getAddress());
 
-                        Links.filterToReference(nodeConfig.getOtherNodes(), e -> e.keySet().stream().anyMatch(c -> c.equals(
+                        Streams.filterToReference(nodeConfig.getOtherNodes(), e -> e.keySet().stream().anyMatch(c -> c.equals(
                                 sender.getAddress()
                         ))).ifPresent(e -> e.forEach((key, value) -> networkClient.connect(
                                 key, value, new DefaultAuth(
@@ -580,6 +580,10 @@ public class NodeExecutor extends Node {
 
     @Override
     public void reload() throws Exception {
+        reload(true);
+    }
+
+    public void reload(boolean informCluster) {
         final long current = System.currentTimeMillis();
         System.out.println(LanguageManager.get("runtime-try-reload"));
 
@@ -613,7 +617,9 @@ public class NodeExecutor extends Node {
 
         this.applicationLoader.enableApplications();
 
-        this.clusterSyncManager.doClusterReload();
+        if (informCluster) {
+            this.clusterSyncManager.doClusterReload();
+        }
 
         OnlinePercentCheckerTask.start();
         System.out.println(LanguageManager.get("runtime-reload-done", Long.toString(System.currentTimeMillis() - current)));
@@ -672,7 +678,7 @@ public class NodeExecutor extends Node {
 
             this.clusterSyncManager.syncMainGroups(this.nodeExecutorConfig.getMainGroups(), SyncAction.SYNC);
             this.clusterSyncManager.syncProcessGroups(this.nodeExecutorConfig.getProcessGroups(), SyncAction.SYNC);
-            this.clusterSyncManager.syncProcessInformation(Links.allOf(
+            this.clusterSyncManager.syncProcessInformation(Streams.allOf(
                     this.nodeNetworkManager.getNodeProcessHelper().getClusterProcesses(),
                     e -> this.nodeNetworkManager.getNodeProcessHelper().isLocal(e.getProcessUniqueID())
             ));

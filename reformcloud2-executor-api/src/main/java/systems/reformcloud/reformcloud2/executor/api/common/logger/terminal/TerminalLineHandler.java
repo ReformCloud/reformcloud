@@ -45,6 +45,7 @@ public final class TerminalLineHandler {
         } catch (final EndOfFileException ignored) {
         } catch (final UserInterruptException ex) {
             System.err.println(LanguageManager.get("logger.interrupt.not.supported"));
+            System.exit(-1);
         }
 
         return "";

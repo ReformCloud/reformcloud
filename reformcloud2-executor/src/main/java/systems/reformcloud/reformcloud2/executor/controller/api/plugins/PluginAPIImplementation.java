@@ -9,7 +9,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.plugins.Plugin;
 import systems.reformcloud.reformcloud2.executor.api.common.plugins.basic.DefaultInstallablePlugin;
 import systems.reformcloud.reformcloud2.executor.api.common.plugins.basic.DefaultPlugin;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.defaults.DefaultTask;
 import systems.reformcloud.reformcloud2.executor.controller.packet.out.api.ControllerPluginAction;
@@ -86,7 +86,7 @@ public class PluginAPIImplementation implements PluginSyncAPI, PluginAsyncAPI {
                 return;
             }
 
-            task.complete(Links.filter(processInformation.getPlugins(), defaultPlugin -> defaultPlugin.getName().equals(name)));
+            task.complete(Streams.filter(processInformation.getPlugins(), defaultPlugin -> defaultPlugin.getName().equals(name)));
         });
         return task;
     }
@@ -108,7 +108,7 @@ public class PluginAPIImplementation implements PluginSyncAPI, PluginAsyncAPI {
                 return;
             }
 
-            task.complete(Links.allOf(processInformation.getPlugins(), defaultPlugin -> defaultPlugin.author() != null && defaultPlugin.author().equals(author)));
+            task.complete(Streams.allOf(processInformation.getPlugins(), defaultPlugin -> defaultPlugin.author() != null && defaultPlugin.author().equals(author)));
         });
         return task;
     }

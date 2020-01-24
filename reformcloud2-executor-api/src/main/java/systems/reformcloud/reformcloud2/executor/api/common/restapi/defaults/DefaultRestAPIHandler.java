@@ -14,7 +14,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.restapi.RestAPIHandl
 import systems.reformcloud.reformcloud2.executor.api.common.restapi.request.RequestListenerHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.restapi.request.WebRequester;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.function.Double;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.operation.Operation;
 
 import java.net.URI;
@@ -69,7 +69,7 @@ public final class DefaultRestAPIHandler extends RestAPIHandler {
         }
 
         Map<UUID, Operation> operations = new HashMap<>();
-        Links.allOf(requestHandler.getHandlers(), e -> e.path().equals(path) && e.canAccess(auth.getSecond())).forEach(e -> e.handleRequest(auth.getSecond(), httpRequest, httpResponse -> {
+        Streams.allOf(requestHandler.getHandlers(), e -> e.path().equals(path) && e.canAccess(auth.getSecond())).forEach(e -> e.handleRequest(auth.getSecond(), httpRequest, httpResponse -> {
             Operation operation = new HttpOperation();
             operations.put(operation.identifier(), operation);
             channelHandlerContext.channel().writeAndFlush(

@@ -1,5 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.api.common.logger;
 
+import org.junit.Before;
 import org.junit.Test;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.manager.DefaultCommandManager;
 import systems.reformcloud.reformcloud2.executor.api.common.language.loading.LanguageWorker;
@@ -15,9 +16,13 @@ import static org.junit.Assert.assertNotNull;
 
 public final class LoggerTest {
 
+    @Before
+    public void initEnv() {
+        LanguageWorker.doLoad();
+    }
+
     @Test
     public void testLogger() throws IOException {
-        LanguageWorker.doLoad();
         LoggerBase loggerBase = new ColouredLoggerHandler(new DefaultCommandManager());
         assertNotNull(loggerBase);
         System.out.println("&6Hallo");

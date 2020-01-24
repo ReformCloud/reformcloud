@@ -9,7 +9,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Temp
 import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.PlayerAccessConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.StartupConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.StartupEnvironment;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.defaults.DefaultTask;
 import systems.reformcloud.reformcloud2.executor.controller.ControllerExecutor;
@@ -130,7 +130,7 @@ public class GroupAPIImplementation implements GroupAsyncAPI, GroupSyncAPI {
     @Override
     public Task<MainGroup> getMainGroupAsync(@Nonnull String name) {
         Task<MainGroup> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> task.complete(Links.filter(controllerExecutorConfig.getMainGroups(), mainGroup -> mainGroup.getName().equals(name))));
+        Task.EXECUTOR.execute(() -> task.complete(Streams.filter(controllerExecutorConfig.getMainGroups(), mainGroup -> mainGroup.getName().equals(name))));
         return task;
     }
 
@@ -138,7 +138,7 @@ public class GroupAPIImplementation implements GroupAsyncAPI, GroupSyncAPI {
     @Override
     public Task<ProcessGroup> getProcessGroupAsync(@Nonnull String name) {
         Task<ProcessGroup> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> task.complete(Links.filter(controllerExecutorConfig.getProcessGroups(), processGroup -> processGroup.getName().equals(name))));
+        Task.EXECUTOR.execute(() -> task.complete(Streams.filter(controllerExecutorConfig.getProcessGroups(), processGroup -> processGroup.getName().equals(name))));
         return task;
     }
 
@@ -147,7 +147,7 @@ public class GroupAPIImplementation implements GroupAsyncAPI, GroupSyncAPI {
     public Task<Void> deleteMainGroupAsync(@Nonnull String name) {
         Task<Void> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
-            Links.filterToReference(controllerExecutorConfig.getMainGroups(), mainGroup -> mainGroup.getName().equals(name)).ifPresent(controllerExecutorConfig::deleteMainGroup);
+            Streams.filterToReference(controllerExecutorConfig.getMainGroups(), mainGroup -> mainGroup.getName().equals(name)).ifPresent(controllerExecutorConfig::deleteMainGroup);
             task.complete(null);
         });
         return task;
@@ -158,7 +158,7 @@ public class GroupAPIImplementation implements GroupAsyncAPI, GroupSyncAPI {
     public Task<Void> deleteProcessGroupAsync(@Nonnull String name) {
         Task<Void> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
-            Links.filterToReference(controllerExecutorConfig.getProcessGroups(), processGroup -> processGroup.getName().equals(name)).ifPresent(controllerExecutorConfig::deleteProcessGroup);
+            Streams.filterToReference(controllerExecutorConfig.getProcessGroups(), processGroup -> processGroup.getName().equals(name)).ifPresent(controllerExecutorConfig::deleteProcessGroup);
             task.complete(null);
         });
         return task;

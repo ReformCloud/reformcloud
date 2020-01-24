@@ -472,6 +472,10 @@ public final class JsonConfiguration implements Configurable<JsonConfiguration> 
         return toPrettyString().getBytes(StandardCharsets.UTF_8);
     }
 
+    public JsonObject getJsonObject() {
+        return jsonObject;
+    }
+
     public static JsonConfiguration read(Path path) {
         if (!Files.exists(path)) {
             return new JsonConfiguration();

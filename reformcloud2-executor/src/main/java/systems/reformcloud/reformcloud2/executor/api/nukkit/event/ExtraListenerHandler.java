@@ -8,7 +8,7 @@ import cn.nukkit.plugin.Plugin;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.plugins.basic.DefaultPlugin;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.nukkit.NukkitExecutor;
 
 public final class ExtraListenerHandler implements Listener {
@@ -34,7 +34,7 @@ public final class ExtraListenerHandler implements Listener {
     public void handle(final PluginDisableEvent event) {
         final ProcessInformation processInformation = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation();
         Plugin plugin = event.getPlugin();
-        DefaultPlugin defaultPlugin = Links.filter(processInformation.getPlugins(), in -> in.getName().equals(plugin.getName()));
+        DefaultPlugin defaultPlugin = Streams.filter(processInformation.getPlugins(), in -> in.getName().equals(plugin.getName()));
         if (defaultPlugin != null) {
             processInformation.getPlugins().remove(defaultPlugin);
             processInformation.updateRuntimeInformation();

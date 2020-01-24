@@ -15,10 +15,11 @@ import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.PlayerA
 import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.StartupConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.StartupEnvironment;
 import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
+import systems.reformcloud.reformcloud2.executor.api.common.network.NetworkUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.StringUtil;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
 import systems.reformcloud.reformcloud2.executor.api.node.process.LocalNodeProcess;
 import systems.reformcloud.reformcloud2.executor.controller.ControllerExecutor;
@@ -153,7 +154,7 @@ public final class CommandReformCloud extends GlobalCommand {
                 }
 
                 if (NodeExecutor.getInstance().getNodeConfig().getUniqueID().equals(processInformation.getNodeUniqueID())) {
-                    Links.filterToReference(LocalProcessManager.getNodeProcesses(),
+                    Streams.filterToReference(LocalProcessManager.getNodeProcesses(),
                             e -> e.getProcessInformation().getProcessUniqueID().equals(processInformation.getProcessUniqueID())
                     ).ifPresent(LocalNodeProcess::copy);
                 } else {
@@ -203,10 +204,7 @@ public final class CommandReformCloud extends GlobalCommand {
                         return true;
                     }
 
-                    for (int started = 1; started <= i; started++) {
-                        ExecutorAPI.getInstance().getAsyncAPI().getProcessAsyncAPI().startProcessAsync(processGroup.getName());
-                        AbsoluteThread.sleep(TimeUnit.MILLISECONDS, 20);
-                    }
+                    this.start(i, strings[1], null);
 
                     System.out.println(LanguageManager.get("command-rc-execute-success"));
                     return true;
@@ -225,10 +223,7 @@ public final class CommandReformCloud extends GlobalCommand {
                         return true;
                     }
 
-                    for (int started = 0; started <= i; started++) {
-                        ExecutorAPI.getInstance().getAsyncAPI().getProcessAsyncAPI().startProcessAsync(processGroup.getName(), strings[3]);
-                        AbsoluteThread.sleep(TimeUnit.MILLISECONDS, 20);
-                    }
+                    this.start(i, processGroup.getName(), strings[3]);
 
                     System.out.println(LanguageManager.get("command-rc-execute-success"));
                     return true;
@@ -346,7 +341,8 @@ public final class CommandReformCloud extends GlobalCommand {
 
             case "create": {
                 if (strings[1].equalsIgnoreCase("node") && strings.length == 4) {
-                    if (strings[2].split("\\.").length != 4) {
+                    String ip = CommonHelper.getIpAddress(strings[2]);
+                    if (ip == null) {
                         System.out.println(LanguageManager.get("command-rc-node-ip-invalid", strings[2]));
                         return true;
                     }
@@ -357,13 +353,13 @@ public final class CommandReformCloud extends GlobalCommand {
                         return true;
                     }
 
-                    if (existsNode(strings[2], port)) {
+                    if (existsNode(ip, port)) {
                         System.out.println(LanguageManager.get("command-rc-node-already-exists", strings[2], strings[3]));
                         return true;
                     }
 
                     NodeExecutor.getInstance().getNodeConfig().getOtherNodes().add(
-                            Collections.singletonMap(strings[2], port)
+                            Collections.singletonMap(ip, port)
                     );
                     NodeExecutor.getInstance().getNodeConfig().save();
                     System.out.println(LanguageManager.get("command-rc-execute-success"));
@@ -776,12 +772,22 @@ public final class CommandReformCloud extends GlobalCommand {
     }
 
     private void sendHelp(CommandSource commandSource) {
-        commandSource.sendMessages(StringUtil.RC_COMMAND_HELP);
+        commandSource.sendMessages(StringUtil.getCommandHelp());
     }
 
     private boolean existsNode(String host, int port) {
         NodeConfig config = NodeExecutor.getInstance().getNodeConfig();
-        return Links.filterToReference(config.getOtherNodes(), e -> Links.deepFilterToReference(e,
+        return Streams.filterToReference(config.getOtherNodes(), e -> Streams.deepFilterToReference(e,
                 g -> g.getKey().equalsIgnoreCase(host) && g.getValue() == port).isPresent()).isPresent();
+    }
+
+    private void start(int i, String group, String template) {
+        NetworkUtil.EXECUTOR.execute(() -> {
+            for (int started = 1; started <= i; started++) {
+                System.out.println(started + "/" + i);
+                ExecutorAPI.getInstance().getAsyncAPI().getProcessAsyncAPI().startProcessAsync(group, template);
+                AbsoluteThread.sleep(20);
+            }
+        });
     }
 }

@@ -3,7 +3,7 @@ package systems.reformcloud.reformcloud2.executor.api.common.groups.template.bac
 import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Template;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.backend.TemplateBackend;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.system.SystemHelper;
 
 import javax.annotation.Nonnull;
@@ -40,7 +40,7 @@ public class FileBackend implements TemplateBackend {
 
     @Override
     public void loadGlobalTemplates(ProcessGroup group, Path target) {
-        Links.allOf(group.getTemplates(), Template::isGlobal).forEach(e -> loadTemplate(group.getName(), e.getName(), target));
+        Streams.allOf(group.getTemplates(), Template::isGlobal).forEach(e -> loadTemplate(group.getName(), e.getName(), target));
     }
 
     @Override

@@ -13,7 +13,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.dependency.DefaultDe
 import systems.reformcloud.reformcloud2.executor.api.common.dependency.Dependency;
 import systems.reformcloud.reformcloud2.executor.api.common.dependency.DependencyLoader;
 import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.system.DownloadHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.system.SystemHelper;
 
@@ -175,7 +175,7 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
 
     @Override
     public void fetchUpdates(@Nonnull String application) {
-        Links.filterToReference(this.applications,
+        Streams.filterToReference(this.applications,
                 e -> e.getApplication().getName().equalsIgnoreCase(application)).ifPresent(this::handleUpdate);
     }
 
@@ -252,7 +252,7 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
 
     @Override
     public boolean doSpecificApplicationUninstall(@Nonnull LoadedApplication loadedApplication) {
-        Application application = Links.filter(applications, application1 -> application1.getApplication().getName().equals(loadedApplication.getName()));
+        Application application = Streams.filter(applications, application1 -> application1.getApplication().getName().equals(loadedApplication.getName()));
         if (application == null) {
             return false;
         }
@@ -288,7 +288,7 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
 
     @Override
     public LoadedApplication getApplication(@Nonnull String name) {
-        return Links.filterAndApply(applications, app -> app.getApplication().getName().equals(name), Application::getApplication);
+        return Streams.filterAndApply(applications, app -> app.getApplication().getName().equals(name), Application::getApplication);
     }
 
     @Nonnull
@@ -300,7 +300,7 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
     @Nonnull
     @Override
     public List<LoadedApplication> getApplications() {
-        return Collections.unmodifiableList(Links.apply(applications, Application::getApplication));
+        return Collections.unmodifiableList(Streams.apply(applications, Application::getApplication));
     }
 
     @Override

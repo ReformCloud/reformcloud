@@ -4,7 +4,7 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.permission.PermissionResult;
 import systems.reformcloud.reformcloud2.executor.api.common.restapi.request.WebRequester;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 
 import javax.annotation.Nonnull;
 import java.util.Collection;
@@ -14,7 +14,7 @@ public class DefaultWebRequester implements WebRequester {
     public DefaultWebRequester(ChannelHandlerContext context, String name, Collection<String> permissions) {
         this.context = context;
         this.name = name;
-        this.permissions = Links.toLowerCase(permissions);
+        this.permissions = Streams.toLowerCase(permissions);
     }
 
     private final ChannelHandlerContext context;
@@ -37,7 +37,7 @@ public class DefaultWebRequester implements WebRequester {
     @Nonnull
     @Override
     public PermissionResult hasPermissionValue(@Nonnull String perm) {
-        String matched = Links.filter(permissions, permission -> {
+        String matched = Streams.filter(permissions, permission -> {
             if (permission.equals("*")) {
                 return true;
             }

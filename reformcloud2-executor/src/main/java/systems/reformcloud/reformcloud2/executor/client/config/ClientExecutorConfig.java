@@ -14,7 +14,7 @@ import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links.newCollection;
+import static systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams.newCollection;
 import static systems.reformcloud.reformcloud2.executor.api.common.utility.system.SystemHelper.createDirectory;
 
 public final class ClientExecutorConfig {

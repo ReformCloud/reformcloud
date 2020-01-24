@@ -10,9 +10,9 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-public final class Links {
+public final class Streams {
 
-    private Links() {
+    private Streams() {
         throw new UnsupportedOperationException();
     }
 
@@ -357,5 +357,20 @@ public final class Links {
         }
 
         return ReferencedOptional.empty();
+    }
+
+    /**
+     * Contacts two arrays
+     *
+     * @param first The base array which should get concatenated with the other
+     * @param second The array which should be added to the base array
+     * @param <T> The type of the arrays which should get concatenated
+     * @return The concatenated array of the first and second array
+     */
+    @Nonnull
+    public static <T> T[] concat(@Nonnull T[] first, @Nonnull T[] second) {
+        T[] result = Arrays.copyOf(first, first.length + second.length);
+        System.arraycopy(second, 0, result, first.length, second.length);
+        return result;
     }
 }

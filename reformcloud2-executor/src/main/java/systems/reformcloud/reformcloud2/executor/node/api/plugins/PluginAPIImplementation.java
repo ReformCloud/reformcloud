@@ -8,7 +8,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.plugins.Plugin;
 import systems.reformcloud.reformcloud2.executor.api.common.plugins.basic.DefaultInstallablePlugin;
 import systems.reformcloud.reformcloud2.executor.api.common.plugins.basic.DefaultPlugin;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.defaults.DefaultTask;
 import systems.reformcloud.reformcloud2.executor.api.node.network.NodeNetworkManager;
@@ -148,7 +148,7 @@ public class PluginAPIImplementation implements PluginSyncAPI, PluginAsyncAPI {
     @Override
     public Task<Plugin> getInstalledPluginAsync(@Nonnull ProcessInformation process, @Nonnull String name) {
         Task<Plugin> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> task.complete(Links.filterToReference(process.getPlugins(), e -> e.getName().equals(name)).orNothing()));
+        Task.EXECUTOR.execute(() -> task.complete(Streams.filterToReference(process.getPlugins(), e -> e.getName().equals(name)).orNothing()));
         return task;
     }
 
@@ -172,7 +172,7 @@ public class PluginAPIImplementation implements PluginSyncAPI, PluginAsyncAPI {
     @Override
     public Task<Collection<DefaultPlugin>> getPluginsAsync(@Nonnull ProcessInformation process, @Nonnull String author) {
         Task<Collection<DefaultPlugin>> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> task.complete(Links.allOf(process.getPlugins(), e -> e.author() != null && e.author().equals(author))));
+        Task.EXECUTOR.execute(() -> task.complete(Streams.allOf(process.getPlugins(), e -> e.author() != null && e.author().equals(author))));
         return task;
     }
 

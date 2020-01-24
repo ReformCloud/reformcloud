@@ -8,18 +8,19 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.channel.mana
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.handler.PacketHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.node.NodeInformation;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.node.cluster.ClusterManager;
 import systems.reformcloud.reformcloud2.executor.api.node.cluster.InternalNetworkCluster;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Objects;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 
 public class DefaultNodeInternalCluster implements InternalNetworkCluster {
 
-    private final Collection<NodeInformation> connectedNodes = new ArrayList<>();
+    private final Collection<NodeInformation> connectedNodes = new CopyOnWriteArrayList<>();
 
     public DefaultNodeInternalCluster(ClusterManager clusterManager, NodeInformation self, PacketHandler packetHandler) {
         this.clusterManager = clusterManager;
@@ -56,7 +57,7 @@ public class DefaultNodeInternalCluster implements InternalNetworkCluster {
 
     @Override
     public NodeInformation getNode(String name) {
-        return Links.filterToReference(connectedNodes, e -> e.getName().equals(name)).orNothing();
+        return Streams.filterToReference(connectedNodes, e -> e.getName().equals(name)).orNothing();
     }
 
     @Override
@@ -66,7 +67,7 @@ public class DefaultNodeInternalCluster implements InternalNetworkCluster {
 
     @Override
     public void handleNodeUpdate(NodeInformation nodeInformation) {
-        Links.filterToReference(connectedNodes, e -> e.getNodeUniqueID().equals(nodeInformation.getNodeUniqueID())).ifPresent(e -> {
+        Streams.filterToReference(connectedNodes, e -> e.getNodeUniqueID().equals(nodeInformation.getNodeUniqueID())).ifPresent(e -> {
             this.connectedNodes.add(nodeInformation);
             this.connectedNodes.remove(e);
         });
@@ -86,11 +87,8 @@ public class DefaultNodeInternalCluster implements InternalNetworkCluster {
         getConnectedNodes()
                 .stream()
                 .map(e -> DefaultChannelManager.INSTANCE.get(e.getName()).orNothing())
-                .forEach(e -> {
-                    if (e != null) {
-                        e.sendPacket(packet);
-                    }
-                });
+                .filter(Objects::nonNull)
+                .forEach(e -> e.sendPacket(packet));
     }
 
     @Override
@@ -107,6 +105,13 @@ public class DefaultNodeInternalCluster implements InternalNetworkCluster {
     @Override
     public NodeInformation findBestNodeForStartup(ProcessGroup group, Template template) {
         AtomicReference<NodeInformation> result = new AtomicReference<>();
+        if (self.getUsedMemory() + template.getRuntimeConfiguration().getMaxMemory() < self.getMaxMemory()) {
+            result.set(self);
+        }
+
+        System.out.println("Connected Nodes: " + getConnectedNodes().size());
+        System.out.println("Names: " + String.join(", ", getConnectedNodes().stream().map(NodeInformation::getName).toArray(String[]::new)));
+
         getConnectedNodes().forEach(e -> {
             if (!group.getStartupConfiguration().isSearchBestClientAlone()
                     && !group.getStartupConfiguration().getUseOnlyTheseClients().contains(e.getName())) {
@@ -122,11 +127,21 @@ public class DefaultNodeInternalCluster implements InternalNetworkCluster {
             }
 
             NodeInformation current = result.get();
-            if (e.getUsedMemory() + template.getRuntimeConfiguration().getMaxMemory() < e.getMaxMemory()
-                    && current.getMaxMemory() < e.getMaxMemory()) {
+            long memoryOnCurrentNode = calcMem(current.getUsedMemory(), template);
+            long memoryOnNewNode = calcMem(e.getUsedMemory(), template);
+
+            System.out.println("memory current: " + memoryOnCurrentNode + "/" + current.getMaxMemory() + " -- memory other " + memoryOnNewNode + "/" + e.getMaxMemory());
+
+            if (memoryOnNewNode <= e.getMaxMemory() && memoryOnCurrentNode > memoryOnNewNode
+                    && memoryOnCurrentNode <= current.getMaxMemory()) {
                 result.set(e);
             }
         });
+
         return result.get();
+    }
+
+    private long calcMem(long used, Template template) {
+        return used + template.getRuntimeConfiguration().getMaxMemory();
     }
 }
