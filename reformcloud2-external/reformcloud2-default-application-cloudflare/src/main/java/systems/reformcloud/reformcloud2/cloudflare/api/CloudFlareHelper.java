@@ -103,12 +103,13 @@ public final class CloudFlareHelper {
                 JsonConfiguration result = new JsonConfiguration(stream);
                 httpURLConnection.disconnect();
 
-                if (result.getBoolean("success")) {
-                    return result.getString("id");
+                if (result.getBoolean("success") && result.has("result")) {
+                    return result.get("result").getString("id");
                 } else {
                     try {
                         JsonArray array = result.getJsonObject().getAsJsonArray("errors");
                         if (array.size() == 0) {
+                            // CloudFlare sent us no errors?
                             return null;
                         }
 
