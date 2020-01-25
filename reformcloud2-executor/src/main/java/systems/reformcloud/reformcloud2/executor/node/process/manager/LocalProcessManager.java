@@ -3,15 +3,15 @@ package systems.reformcloud.reformcloud2.executor.node.process.manager;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.node.process.LocalNodeProcess;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.UUID;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public final class LocalProcessManager {
 
     private LocalProcessManager() { throw new UnsupportedOperationException(); }
 
-    private static final Collection<LocalNodeProcess> NODE_PROCESSES = new ArrayList<>();
+    private static final Collection<LocalNodeProcess> NODE_PROCESSES = new CopyOnWriteArrayList<>();
 
     public static void registerLocalProcess(LocalNodeProcess nodeProcess) {
         NODE_PROCESSES.add(nodeProcess);
