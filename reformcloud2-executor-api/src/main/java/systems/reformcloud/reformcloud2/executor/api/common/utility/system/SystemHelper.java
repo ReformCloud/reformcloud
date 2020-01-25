@@ -51,7 +51,8 @@ public final class SystemHelper {
     }
 
     public static void doCopy(String from, String target) {
-        try (FileInputStream fileInputStream = new FileInputStream(from); FileOutputStream fileOutputStream = new FileOutputStream(target)) {
+        try (FileInputStream fileInputStream = new FileInputStream(from);
+             FileOutputStream fileOutputStream = new FileOutputStream(target)) {
             byte[] buffer = new byte[1024];
             int length;
             while ((length = fileInputStream.read(buffer)) > 0) {
@@ -145,12 +146,6 @@ public final class SystemHelper {
             File destDir = new File(destinationPath);
             if (!destDir.exists()) {
                 createDirectory(destDir.toPath());
-            }
-
-            if (destDir.isDirectory()) {
-                deleteDirectory(destDir.toPath());
-            } else {
-                deleteFile(destDir);
             }
 
             byte[] buffer = new byte[0x1FFF];

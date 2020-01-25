@@ -235,17 +235,13 @@ public class BasicLocalNodeProcess implements LocalNodeProcess {
     //Sponge
     private boolean isLogicallySpongeVanilla() {
         Version version = processInformation.getTemplate().getVersion();
-        return version.equals(Version.SPONGEVANILLA_1_8_9)
-                || version.equals(Version.SPONGEVANILLA_1_9_4)
-                || version.equals(Version.SPONGEVANILLA_1_10_2)
-                || version.equals(Version.SPONGEVANILLA_1_11_2)
+        return version.equals(Version.SPONGEVANILLA_1_11_2)
                 || version.equals(Version.SPONGEVANILLA_1_12_2);
     }
 
     private boolean isLogicallySpongeForge() {
         Version version = processInformation.getTemplate().getVersion();
-        return version.equals(Version.SPONGEFORGE_1_8_9)
-                || version.equals(Version.SPONGEFORGE_1_10_2)
+        return version.equals(Version.SPONGEFORGE_1_10_2)
                 || version.equals(Version.SPONGEFORGE_1_11_2)
                 || version.equals(Version.SPONGEFORGE_1_12_2);
     }
@@ -384,17 +380,33 @@ public class BasicLocalNodeProcess implements LocalNodeProcess {
         createEula();
         createTemplateAndFiles();
 
+        if (isLogicallySpongeForge()) {
+            Version version = processInformation.getTemplate().getVersion();
+            String fileName = "reformcloud/files/" + version.getName().toLowerCase().replace(" ", "-") + ".zip";
+            String destPath = "reformcloud/files/" + version.getName().toLowerCase().replace(" ", "-");
+
+            if (!Files.exists(Paths.get(destPath))) {
+                DownloadHelper.downloadAndDisconnect(version.getUrl(), fileName);
+
+                SystemHelper.unZip(Paths.get(fileName).toFile(), destPath);
+                SystemHelper.rename(Paths.get(destPath + "/sponge.jar").toFile(), destPath + "/process.jar");
+                SystemHelper.deleteFile(new File(fileName));
+            }
+
+            SystemHelper.copyDirectory(Paths.get(destPath + "/mods"), Paths.get(path + "/mods"));
+        }
+
         if (isLogicallyGlowstone()) {
             SystemHelper.createDirectory(Paths.get(path + "/config"));
             SystemHelper.doInternalCopy(getClass().getClassLoader(), "files/java/glowstone/glowstone.yml", path + "/config/glowstone.yml");
             rewriteGlowstoneConfig();
         } else if (isLogicallySpongeVanilla()) {
             SystemHelper.createDirectory(Paths.get(path + "/config/sponge"));
-            SystemHelper.doInternalCopy(getClass().getClassLoader(), "files/java/sponge/vanilla/global.conf", path + "/config/sponge");
+            SystemHelper.doInternalCopy(getClass().getClassLoader(), "files/java/sponge/vanilla/global.conf", path + "/config/sponge/global.conf");
             rewriteSpongeConfig();
         } else if (isLogicallySpongeForge()) {
             SystemHelper.createDirectory(Paths.get(path + "/config/sponge"));
-            SystemHelper.doInternalCopy(getClass().getClassLoader(), "files/java/sponge/forge/global.conf", path + "/config/sponge");
+            SystemHelper.doInternalCopy(getClass().getClassLoader(), "files/java/sponge/forge/global.conf", path + "/config/sponge/global.conf");
             rewriteSpongeConfig();
         } else if (processInformation.getTemplate().getVersion().equals(Version.NUKKIT_X)) {
             SystemHelper.doInternalCopy(getClass().getClassLoader(), "files/mcpe/nukkit/server.properties", path + "/server.properties");
@@ -439,17 +451,6 @@ public class BasicLocalNodeProcess implements LocalNodeProcess {
             if (!Files.exists(Paths.get("reformcloud/files/" + Version.format(version)))) {
                 Version.downloadVersion(version);
             }
-        } else if (isLogicallySpongeForge()) {
-            Version version = processInformation.getTemplate().getVersion();
-            if (!Files.exists(Paths.get("reformcloud/files/" + version.getName() + ".zip"))) {
-                DownloadHelper.downloadAndDisconnect(
-                        version.getUrl(), "reformcloud/files/" + version.getName() + ".zip"
-                );
-            }
-
-            SystemHelper.doCopy("reformcloud/files/" + version.getName() + ".zip", path + "/version.zip");
-            SystemHelper.unZip(Paths.get(path + "/version.zip").toFile(), path.toString());
-            SystemHelper.rename(Paths.get(path + "/sponge.jar").toFile(), path + "/process.jar");
         }
     }
 

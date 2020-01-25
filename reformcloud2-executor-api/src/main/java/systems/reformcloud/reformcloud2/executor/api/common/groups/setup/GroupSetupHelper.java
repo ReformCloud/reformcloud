@@ -108,31 +108,9 @@ public final class GroupSetupHelper {
                             new MainGroup("Lobbies", Collections.singletonList("Lobby"))
                     }
             ), new BasicGroupSetupVersion(
-                    "java-proxy-spongevanilla-1.8.9",
-                    new ProcessGroup[] {
-                            new DefaultProcessGroup("Lobby", 41000, Version.SPONGEVANILLA_1_8_9,
-                                    512, false, 50, false, true),
-                            new DefaultProcessGroup("Proxy", 25565, Version.WATERFALL,
-                                    256, true, 512)
-                    }, new MainGroup[] {
-                            new MainGroup("Proxies", Collections.singletonList("Proxy")),
-                            new MainGroup("Lobbies", Collections.singletonList("Lobby"))
-                    }
-            ), new BasicGroupSetupVersion(
                     "java-proxy-spongevanilla-1.12.2",
                     new ProcessGroup[] {
                             new DefaultProcessGroup("Lobby", 41000, Version.SPONGEVANILLA_1_12_2,
-                                    512, false, 50, false, true),
-                            new DefaultProcessGroup("Proxy", 25565, Version.WATERFALL,
-                                    256, true, 512)
-                    }, new MainGroup[] {
-                            new MainGroup("Proxies", Collections.singletonList("Proxy")),
-                            new MainGroup("Lobbies", Collections.singletonList("Lobby"))
-                    }
-            ), new BasicGroupSetupVersion(
-                    "java-proxy-spongeforge-1.8.9",
-                    new ProcessGroup[] {
-                            new DefaultProcessGroup("Lobby", 41000, Version.SPONGEFORGE_1_8_9,
                                     512, false, 50, false, true),
                             new DefaultProcessGroup("Proxy", 25565, Version.WATERFALL,
                                     256, true, 512)
