@@ -784,7 +784,6 @@ public final class CommandReformCloud extends GlobalCommand {
     private void start(int i, String group, String template) {
         NetworkUtil.EXECUTOR.execute(() -> {
             for (int started = 1; started <= i; started++) {
-                System.out.println(started + "/" + i);
                 ExecutorAPI.getInstance().getAsyncAPI().getProcessAsyncAPI().startProcessAsync(group, template);
                 AbsoluteThread.sleep(20);
             }
