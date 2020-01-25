@@ -141,7 +141,7 @@ public final class GroupSetupHelper {
                             new MainGroup("Lobbies", Collections.singletonList("Lobby"))
                     }
             ), new BasicGroupSetupVersion(
-                    "java-proxy-spongeforge-1.8.9",
+                    "java-proxy-spongeforge-1.12.2",
                     new ProcessGroup[] {
                             new DefaultProcessGroup("Lobby", 41000, Version.SPONGEFORGE_1_12_2,
                                     512, false, 50, false, true),
