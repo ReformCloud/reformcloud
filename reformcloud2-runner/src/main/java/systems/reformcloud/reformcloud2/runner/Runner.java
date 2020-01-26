@@ -115,7 +115,7 @@ public final class Runner {
             return;
         }
 
-        if (PROPERTIES.contains("reformcloud.type.id")) {
+        if (PROPERTIES.containsKey("reformcloud.type.id")) {
             andThen.accept(write(PROPERTIES.getProperty("reformcloud.type.id"), version), PROPERTIES.getProperty("reformcloud.type.id"));
             return;
         }
