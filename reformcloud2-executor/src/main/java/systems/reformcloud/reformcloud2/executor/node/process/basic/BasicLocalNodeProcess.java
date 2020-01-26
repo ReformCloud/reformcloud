@@ -497,6 +497,11 @@ public class BasicLocalNodeProcess implements LocalNodeProcess {
                     this.processInformation.getTemplate().getName(),
                     this.path
             );
+
+            TemplateBackendManager.getOrDefault(this.processInformation.getTemplate().getBackend()).loadGlobalTemplates(
+                    this.processInformation.getProcessGroup(),
+                    this.path
+            );
         }
 
         SystemHelper.createDirectory(Paths.get(path + "/plugins"));

@@ -19,6 +19,7 @@
         <module>reformcloud2-default-application-web</module>
         <module>reformcloud2-default-application-proxy</module>
         <module>reformcloud2-default-application-cloudflare</module>
+        <module>reformcloud2-default-application-template-backends</module>
     </modules>
 
 </project>
