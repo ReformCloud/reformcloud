@@ -6,8 +6,10 @@ import systems.reformcloud.reformcloud2.executor.api.common.groups.template.back
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.backend.TemplateBackendManager;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.system.DownloadHelper;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.system.SystemHelper;
 
 import javax.annotation.Nonnull;
+import java.io.File;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -20,7 +22,7 @@ public final class URLTemplateBackend implements TemplateBackend {
     public static void load(String basePath) {
         if (!Files.exists(Paths.get(basePath + "/url.json"))) {
             new JsonConfiguration()
-                    .add("baseUrl", "https://workupload.com/")
+                    .add("baseUrl", "https://127.0.0.1/rc/templates")
                     .write(Paths.get(basePath + "/url.json"));
         }
 
@@ -60,7 +62,9 @@ public final class URLTemplateBackend implements TemplateBackend {
 
     @Override
     public void loadTemplate(String group, String template, Path target) {
-        DownloadHelper.downloadAndDisconnect(getBasePath() + group + "-" + template + ".zip", target.toString());
+        DownloadHelper.downloadAndDisconnect(getBasePath() + group + "-" + template + ".zip",  "reformcloud/files/temp/template.zip");
+        SystemHelper.unZip(new File("reformcloud/files/temp/template.zip"), target.toString());
+        SystemHelper.deleteFile(new File("reformcloud/files/temp/template.zip"));
     }
 
     @Override

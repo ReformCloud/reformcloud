@@ -17,7 +17,7 @@ public class TemplateBackendApplication extends Application {
     public static final DependencyLoader LOADER = new DefaultDependencyLoader();
 
     @Override
-    public void onEnable() {
+    public void onInstallable() {
         Properties properties = new Properties();
         properties.setProperty("commons-net", "3.6");
 

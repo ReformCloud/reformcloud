@@ -38,6 +38,8 @@ public final class DownloadHelper {
             try (InputStream inputStream = httpURLConnection.getInputStream()) {
                 inputStreamConsumer.accept(inputStream);
             }
+
+            httpURLConnection.disconnect();
         } catch (final IOException ex) {
             ex.printStackTrace();
         }
