@@ -102,7 +102,7 @@ public final class FTPTemplateBackend implements TemplateBackend {
             }
 
             for (FTPFile file : files) {
-                this.loadFiles(file, group + "/" + template + "/" + file.getName(), target);
+                this.loadFiles(file, group + "/" + template + "/" + file.getName(), Paths.get(target.toString(), file.getName()));
             }
         } catch (final IOException ex) {
             ex.printStackTrace();
@@ -129,6 +129,8 @@ public final class FTPTemplateBackend implements TemplateBackend {
                 this.ftpClient.retrieveFile(path, fileOutputStream);
             }
         }
+
+        this.ftpClient.changeWorkingDirectory("/" + this.config.getBaseDirectory());
     }
 
     @Override
@@ -153,10 +155,8 @@ public final class FTPTemplateBackend implements TemplateBackend {
         }
 
         try {
-            this.makeDirectory(group + "/" + template);
-
             for (File localFile : localFiles) {
-                this.writeFile(current.toString(), localFile);
+                this.writeFile(group + "/" + template, localFile);
             }
         } catch (final IOException ex) {
             ex.printStackTrace();
@@ -180,22 +180,21 @@ public final class FTPTemplateBackend implements TemplateBackend {
             try (InputStream inputStream = new FileInputStream(local)) {
                 this.ftpClient.storeFile(remotePath, inputStream);
             }
+
+            this.ftpClient.changeWorkingDirectory("/" + this.config.getBaseDirectory());
         }
     }
 
     private void makeDirectory(String path) throws IOException {
-        StringBuilder stringBuilder = new StringBuilder();
-
         for (String s : path.split("/")) {
-            stringBuilder.append(s).append("/");
-            String current = stringBuilder.toString();
-
-            if (!this.ftpClient.changeWorkingDirectory(current)) {
-                this.ftpClient.makeDirectory(current);
+            if (!this.ftpClient.changeWorkingDirectory(s)) {
+                this.ftpClient.makeDirectory(s);
             }
 
-            this.ftpClient.changeWorkingDirectory(this.config.getBaseDirectory());
+            this.ftpClient.changeWorkingDirectory(s);
         }
+
+        this.ftpClient.changeWorkingDirectory(this.config.getBaseDirectory());
     }
 
     @Override
