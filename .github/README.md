@@ -8,11 +8,11 @@ The cloud system supports java and bedrock edition.
 ### Currently supported minecraft-java-edition versions:
 | Version Name                        | Version ID      | Recommended Java Version     |
 |-------------------------------------|-----------------|------------------------------|
-| Bungeecord (Waterfall, Hexacord...) | 1.7.10 - 1.14.4 | Java 13                      | 
-| Velocity                            | 1.7.10 - 1.14.4 | Java 13                      |
-| Waterdog                            | 1.8 - 1.14.4    | Java 13                      | 
-| Spigot (Paper, Taco, Torch...)      | 1.7.10 - 1.14.4 | <1.12 Java 8 / >1.12 Java 13 |
-| Sponge                              | 1.7.10 - 1.12.2 | Java 8                       |
+| Bungeecord (Waterfall, Hexacord...) | 1.8 - 1.15.2    | Java 13                      |
+| Velocity                            | 1.8 - 1.15.2    | Java 13                      |
+| Waterdog                            | 1.8 - 1.15.2    | Java 13                      | 
+| Spigot (Paper, Taco, Torch...)      | 1.8 - 1.15.2    | <1.12 Java 8 / >1.12 Java 13 |
+| Sponge                              | 1.10.2 - 1.12.2 | Java 8                       |
 | Akarin                              | 1.12.2          | Java 8                       |
 
 ### Currently supported minecraft-pocket-edition versions:
