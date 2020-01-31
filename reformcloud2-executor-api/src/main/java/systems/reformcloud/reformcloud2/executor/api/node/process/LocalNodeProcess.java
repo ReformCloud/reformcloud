@@ -6,6 +6,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.utility.optional.Ref
 import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.concurrent.CompletableFuture;
 
 public interface LocalNodeProcess {
 
@@ -22,6 +23,8 @@ public interface LocalNodeProcess {
     boolean running();
 
     void copy();
+
+    CompletableFuture<Void> initTemplate();
 
     @Nonnull
     ReferencedOptional<Process> getProcess();

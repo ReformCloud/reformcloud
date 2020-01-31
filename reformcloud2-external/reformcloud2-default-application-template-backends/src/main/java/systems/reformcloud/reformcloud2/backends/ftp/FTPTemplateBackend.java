@@ -9,6 +9,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonCo
 import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.backend.TemplateBackend;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.backend.TemplateBackendManager;
+import systems.reformcloud.reformcloud2.executor.api.common.network.NetworkUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.system.SystemHelper;
 
@@ -17,6 +18,10 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.concurrent.BlockingDeque;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.TimeUnit;
 
 public final class FTPTemplateBackend implements TemplateBackend {
 
@@ -40,6 +45,8 @@ public final class FTPTemplateBackend implements TemplateBackend {
         TemplateBackendManager.unregisterBackend("FTP");
     }
 
+    private static final BlockingDeque<Runnable> TASKS = new LinkedBlockingDeque<>();
+
     private final FTPClient ftpClient;
 
     private final FTPConfig config;
@@ -48,19 +55,31 @@ public final class FTPTemplateBackend implements TemplateBackend {
         this.config = ftpConfig;
         this.ftpClient = ftpConfig.isSslEnabled() ? new FTPSClient() : new FTPClient();
 
-        try {
-            this.ftpClient.setAutodetectUTF8(true);
+        NetworkUtil.EXECUTOR.execute(() -> {
+            while (!Thread.interrupted()) {
+                try {
+                    Runnable runnable = TASKS.pollFirst(20, TimeUnit.SECONDS);
+                    boolean available = this.ftpClient.isAvailable();
 
-            this.ftpClient.connect(ftpConfig.getHost(), ftpConfig.getPort());
-            this.ftpClient.login(ftpConfig.getUser(), ftpConfig.getPassword());
+                    if (runnable == null) {
+                        try {
+                            this.ftpClient.disconnect();
+                        } catch (final Throwable ignored) {
+                        }
 
-            this.ftpClient.sendNoOp();
-            this.ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
+                        continue;
+                    }
 
-            this.makeDirectory(ftpConfig.getBaseDirectory());
-        } catch (final IOException ex) {
-            ex.printStackTrace();
-        }
+                    if (!available) {
+                        this.open(this.config);
+                    }
+
+                    runnable.run();
+                } catch (final InterruptedException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
     }
 
     @Override
@@ -76,37 +95,43 @@ public final class FTPTemplateBackend implements TemplateBackend {
         }
     }
 
+    @Nonnull
     @Override
-    public void createTemplate(String group, String template) {
+    public CompletableFuture<Void> createTemplate(String group, String template) {
         if (this.ftpClient == null || !this.ftpClient.isConnected()) {
-            return;
+            return CompletableFuture.completedFuture(null);
         }
 
-        try {
-            this.makeDirectory(group + "/" + template);
-        } catch (final IOException ex) {
-            ex.printStackTrace();
-        }
+        return future(() -> {
+            try {
+                this.makeDirectory(group + "/" + template);
+            } catch (final IOException ex) {
+                ex.printStackTrace();
+            }
+        });
     }
 
+    @Nonnull
     @Override
-    public void loadTemplate(String group, String template, Path target) {
+    public CompletableFuture<Void> loadTemplate(String group, String template, Path target) {
         if (this.ftpClient == null || !this.ftpClient.isConnected()) {
-            return;
+            return CompletableFuture.completedFuture(null);
         }
 
-        try {
-            FTPFile[] files = this.ftpClient.listFiles(group + "/" + template);
-            if (files == null || files.length == 0) {
-                return;
-            }
+        return future(() -> {
+            try {
+                FTPFile[] files = this.ftpClient.listFiles(group + "/" + template);
+                if (files == null || files.length == 0) {
+                    return;
+                }
 
-            for (FTPFile file : files) {
-                this.loadFiles(file, group + "/" + template + "/" + file.getName(), Paths.get(target.toString(), file.getName()));
+                for (FTPFile file : files) {
+                    this.loadFiles(file, group + "/" + template + "/" + file.getName(), Paths.get(target.toString(), file.getName()));
+                }
+            } catch (final IOException ex) {
+                ex.printStackTrace();
             }
-        } catch (final IOException ex) {
-            ex.printStackTrace();
-        }
+        });
     }
 
     private void loadFiles(FTPFile file, String path, Path target) throws IOException {
@@ -130,37 +155,43 @@ public final class FTPTemplateBackend implements TemplateBackend {
             }
         }
 
-        this.ftpClient.changeWorkingDirectory("/" + this.config.getBaseDirectory());
+        this.ftpClient.changeWorkingDirectory(this.config.getBaseDirectory());
     }
 
+    @Nonnull
     @Override
-    public void loadGlobalTemplates(ProcessGroup group, Path target) {
+    public CompletableFuture<Void> loadGlobalTemplates(ProcessGroup group, Path target) {
         if (this.ftpClient == null || !this.ftpClient.isConnected()) {
-            return;
+            return CompletableFuture.completedFuture(null);
         }
 
-        Streams.allOf(group.getTemplates(), e -> e.getBackend().equals(getName())
-                && e.isGlobal()).forEach(e -> this.loadTemplate(group.getName(), e.getName(), target));
+        return future(() ->
+            Streams.allOf(group.getTemplates(), e -> e.getBackend().equals(getName())
+                    && e.isGlobal()).forEach(e -> this.loadTemplate(group.getName(), e.getName(), target))
+        );
     }
 
+    @Nonnull
     @Override
-    public void deployTemplate(String group, String template, Path current) {
+    public CompletableFuture<Void> deployTemplate(String group, String template, Path current) {
         if (this.ftpClient == null || !this.ftpClient.isConnected()) {
-            return;
+            return CompletableFuture.completedFuture(null);
         }
 
         File[] localFiles = current.toFile().listFiles();
         if (localFiles == null || localFiles.length == 0) {
-            return;
+            return CompletableFuture.completedFuture(null);
         }
 
-        try {
-            for (File localFile : localFiles) {
-                this.writeFile(group + "/" + template, localFile);
+        return future(() -> {
+            try {
+                for (File localFile : localFiles) {
+                    this.writeFile(group + "/" + template, localFile);
+                }
+            } catch (final IOException ex) {
+                ex.printStackTrace();
             }
-        } catch (final IOException ex) {
-            ex.printStackTrace();
-        }
+        });
     }
 
     private void writeFile(String path, File local) throws IOException {
@@ -181,7 +212,7 @@ public final class FTPTemplateBackend implements TemplateBackend {
                 this.ftpClient.storeFile(remotePath, inputStream);
             }
 
-            this.ftpClient.changeWorkingDirectory("/" + this.config.getBaseDirectory());
+            this.ftpClient.changeWorkingDirectory(this.config.getBaseDirectory());
         }
     }
 
@@ -203,18 +234,20 @@ public final class FTPTemplateBackend implements TemplateBackend {
             return;
         }
 
-        try {
-            FTPFile[] files = this.ftpClient.mlistDir(group + "/" + template);
-            if (files == null || files.length == 0) {
-                return;
-            }
+        TASKS.offerLast(() -> {
+            try {
+                FTPFile[] files = this.ftpClient.mlistDir(group + "/" + template);
+                if (files == null || files.length == 0) {
+                    return;
+                }
 
-            for (FTPFile file : files) {
-                this.deleteAll(group + "/" + template, file);
+                for (FTPFile file : files) {
+                    this.deleteAll(group + "/" + template, file);
+                }
+            } catch (final IOException ex) {
+                ex.printStackTrace();
             }
-        } catch (final IOException ex) {
-            ex.printStackTrace();
-        }
+        });
     }
 
     private void deleteAll(String path, FTPFile file) throws IOException {
@@ -231,6 +264,33 @@ public final class FTPTemplateBackend implements TemplateBackend {
             }
         } else {
             this.ftpClient.deleteFile(filePath);
+        }
+    }
+
+    private static CompletableFuture<Void> future(@Nonnull Runnable runnable) {
+        CompletableFuture<Void> completableFuture = new CompletableFuture<>();
+        Runnable newRunnable = () -> {
+            runnable.run();
+            completableFuture.complete(null);
+        };
+        TASKS.offerLast(newRunnable);
+        return completableFuture;
+    }
+
+    private void open(FTPConfig ftpConfig) {
+        try {
+            this.ftpClient.setAutodetectUTF8(true);
+
+            this.ftpClient.connect(ftpConfig.getHost(), ftpConfig.getPort());
+            this.ftpClient.login(ftpConfig.getUser(), ftpConfig.getPassword());
+
+            this.ftpClient.sendNoOp();
+            this.ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
+            this.ftpClient.setControlKeepAliveTimeout(60);
+
+            this.makeDirectory(ftpConfig.getBaseDirectory());
+        } catch (final IOException ex) {
+            ex.printStackTrace();
         }
     }
 

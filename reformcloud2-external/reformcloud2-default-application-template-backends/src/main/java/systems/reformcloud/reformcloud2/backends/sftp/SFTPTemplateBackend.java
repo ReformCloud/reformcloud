@@ -6,6 +6,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonCo
 import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.backend.TemplateBackend;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.backend.TemplateBackendManager;
+import systems.reformcloud.reformcloud2.executor.api.common.network.NetworkUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.system.SystemHelper;
 
@@ -19,6 +20,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.concurrent.BlockingDeque;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.LinkedBlockingDeque;
 
 public final class SFTPTemplateBackend implements TemplateBackend {
 
@@ -36,11 +40,23 @@ public final class SFTPTemplateBackend implements TemplateBackend {
         }
 
         TemplateBackendManager.registerBackend(new SFTPTemplateBackend(config));
+        NetworkUtil.EXECUTOR.execute(() -> {
+            while (!Thread.interrupted()) {
+                try {
+                    Runnable runnable = TASKS.takeFirst();
+                    runnable.run();
+                } catch (final InterruptedException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
     }
 
     public static void unload() {
         TemplateBackendManager.unregisterBackend("SFTP");
     }
+
+    private static final BlockingDeque<Runnable> TASKS = new LinkedBlockingDeque<>();
 
     private Session session;
 
@@ -89,33 +105,27 @@ public final class SFTPTemplateBackend implements TemplateBackend {
         }
     }
 
+    @Nonnull
     @Override
-    public void createTemplate(String group, String template) {
+    public CompletableFuture<Void> createTemplate(String group, String template) {
         if (isDisconnected()) {
-            return;
+            return CompletableFuture.completedFuture(null);
         }
 
-        this.makeDirectory(this.config.getBaseDirectory() + group + "/" + template);
+        return future(() -> this.makeDirectory(this.config.getBaseDirectory() + group + "/" + template));
     }
 
+    @Nonnull
     @Override
-    public void loadTemplate(String group, String template, Path target) {
+    public CompletableFuture<Void> loadTemplate(String group, String template, Path target) {
         if (isDisconnected()) {
-            return;
+            return CompletableFuture.completedFuture(null);
         }
 
-        this.downloadDirectory(this.config.getBaseDirectory() + group + "/" + template, target.toString());
+        return future(() -> this.downloadDirectory(this.config.getBaseDirectory() + group + "/" + template, target.toString()));
     }
 
     public void downloadDirectory(String remotePath, String localPath) {
-        if (!remotePath.endsWith("/")) {
-            remotePath += "/";
-        }
-
-        if (!localPath.endsWith("/")) {
-            localPath += "/";
-        }
-
         try {
             Collection<ChannelSftp.LsEntry> entries = this.listFiles(remotePath);
             if (entries == null) {
@@ -139,31 +149,35 @@ public final class SFTPTemplateBackend implements TemplateBackend {
         }
     }
 
+    @Nonnull
     @Override
-    public void loadGlobalTemplates(ProcessGroup group, Path target) {
-        Streams.allOf(group.getTemplates(), e -> e.getBackend().equals(getName())
-                && e.isGlobal()).forEach(e -> this.loadTemplate(group.getName(), e.getName(), target));
+    public CompletableFuture<Void> loadGlobalTemplates(ProcessGroup group, Path target) {
+        return future(() -> Streams.allOf(group.getTemplates(), e -> e.getBackend().equals(getName())
+                && e.isGlobal()).forEach(e -> this.loadTemplate(group.getName(), e.getName(), target)));
     }
 
+    @Nonnull
     @Override
-    public void deployTemplate(String group, String template, Path current) {
+    public CompletableFuture<Void> deployTemplate(String group, String template, Path current) {
         if (isDisconnected()) {
-            return;
+            return CompletableFuture.completedFuture(null);
         }
 
-        try {
-            File[] files = current.toFile().listFiles();
-            if (files == null || files.length == 0) {
-                return;
-            }
+        return future(() -> {
+            try {
+                File[] files = current.toFile().listFiles();
+                if (files == null || files.length == 0) {
+                    return;
+                }
 
-            this.makeDirectory(this.config.getBaseDirectory() + group + "/" + template);
-            for (File file : files) {
-                this.upload(this.config.getBaseDirectory() + group + "/" + template, file);
+                this.makeDirectory(this.config.getBaseDirectory() + group + "/" + template);
+                for (File file : files) {
+                    this.upload(this.config.getBaseDirectory() + group + "/" + template, file);
+                }
+            } catch (final SftpException ex) {
+                ex.printStackTrace();
             }
-        } catch (final SftpException ex) {
-            ex.printStackTrace();
-        }
+        });
     }
 
     private void upload(String path, File file) throws SftpException {
@@ -214,14 +228,27 @@ public final class SFTPTemplateBackend implements TemplateBackend {
     }
 
     private void makeDirectory(String path) {
-        StringBuilder stringBuilder = new StringBuilder();
         for (String pathSegment : path.split("/")) {
-            stringBuilder.append(pathSegment);
-
             try {
-                this.channel.mkdir(stringBuilder.toString());
-            } catch (SftpException ignored) {
+                this.channel.cd(pathSegment);
+            } catch (final SftpException ex) {
+                try {
+                    this.channel.mkdir(pathSegment);
+                    this.channel.cd(pathSegment);
+                } catch (final SftpException exception) {
+                    exception.printStackTrace();
+                }
             }
+        }
+
+        this.goToBase();
+    }
+
+    private void goToBase() {
+        try {
+            this.channel.cd(this.config.getBaseDirectory().startsWith("/") ? this.config.getBaseDirectory() : "/" + this.config.getBaseDirectory());
+        } catch (final SftpException ex) {
+            ex.printStackTrace();
         }
     }
 
@@ -240,6 +267,16 @@ public final class SFTPTemplateBackend implements TemplateBackend {
         }
 
         return entries;
+    }
+
+    private static CompletableFuture<Void> future(@Nonnull Runnable runnable) {
+        CompletableFuture<Void> completableFuture = new CompletableFuture<>();
+        Runnable newRunnable = () -> {
+            runnable.run();
+            completableFuture.complete(null);
+        };
+        TASKS.offerLast(newRunnable);
+        return completableFuture;
     }
 
     @Nonnull

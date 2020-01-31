@@ -11,6 +11,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.concurrent.CompletableFuture;
 
 public class FileBackend implements TemplateBackend {
 
@@ -21,35 +22,44 @@ public class FileBackend implements TemplateBackend {
         return Files.exists(format(group, template));
     }
 
+    @Nonnull
     @Override
-    public void createTemplate(String group, String template) {
+    public CompletableFuture<Void> createTemplate(String group, String template) {
         if (!existsTemplate(group, template)) {
             SystemHelper.createDirectory(Paths.get("reformcloud/templates", group, template, "plugins"));
         }
+
+        return CompletableFuture.completedFuture(null);
     }
 
+    @Nonnull
     @Override
-    public void loadTemplate(String group, String template, Path target) {
+    public CompletableFuture<Void> loadTemplate(String group, String template, Path target) {
         if (!existsTemplate(group, template)) {
             createTemplate(group, template);
-            return;
+            return CompletableFuture.completedFuture(null);
         }
 
         SystemHelper.copyDirectory(format(group, template), target);
+        return CompletableFuture.completedFuture(null);
     }
 
+    @Nonnull
     @Override
-    public void loadGlobalTemplates(ProcessGroup group, Path target) {
+    public CompletableFuture<Void> loadGlobalTemplates(ProcessGroup group, Path target) {
         Streams.allOf(group.getTemplates(), Template::isGlobal).forEach(e -> loadTemplate(group.getName(), e.getName(), target));
+        return CompletableFuture.completedFuture(null);
     }
 
+    @Nonnull
     @Override
-    public void deployTemplate(String group, String template, Path current) {
+    public CompletableFuture<Void> deployTemplate(String group, String template, Path current) {
         if (!existsTemplate(group, template)) {
-            return;
+            return CompletableFuture.completedFuture(null);
         }
 
         SystemHelper.copyDirectory(current, format(group, template), Arrays.asList("log-out.log", "runner.jar"));
+        return CompletableFuture.completedFuture(null);
     }
 
     @Override

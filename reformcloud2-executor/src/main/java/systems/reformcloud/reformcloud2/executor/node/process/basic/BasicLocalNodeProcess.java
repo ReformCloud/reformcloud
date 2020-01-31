@@ -33,7 +33,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
@@ -44,6 +47,14 @@ public class BasicLocalNodeProcess implements LocalNodeProcess {
 
     public BasicLocalNodeProcess(ProcessInformation processInformation) {
         this.processInformation = processInformation;
+
+        if (processInformation.getProcessGroup().isStaticProcess()) {
+            this.path = Paths.get("reformcloud/static/" + processInformation.getName());
+            SystemHelper.createDirectory(Paths.get(path + "/plugins"));
+        } else {
+            this.path = Paths.get("reformcloud/temp/" + processInformation.getName() + "-" + processInformation.getProcessUniqueID());
+            SystemHelper.recreateDirectory(path);
+        }
     }
 
     private final ProcessInformation processInformation;
@@ -64,14 +75,6 @@ public class BasicLocalNodeProcess implements LocalNodeProcess {
     @Override
     public void prepare() {
         processInformation.setProcessState(ProcessState.PREPARED);
-
-        if (processInformation.getProcessGroup().isStaticProcess()) {
-            this.path = Paths.get("reformcloud/static/" + processInformation.getName());
-            SystemHelper.createDirectory(Paths.get(path + "/plugins"));
-        } else {
-            this.path = Paths.get("reformcloud/temp/" + processInformation.getName() + "-" + processInformation.getProcessUniqueID());
-            SystemHelper.recreateDirectory(path);
-        }
 
         int port = PortUtil.checkPort(processInformation.getNetworkInfo().getPort());
         processInformation.getNetworkInfo().setPort(port);
@@ -208,6 +211,28 @@ public class BasicLocalNodeProcess implements LocalNodeProcess {
                 this.processInformation.getTemplate().getName(),
                 this.path
         );
+    }
+
+    @Override
+    public CompletableFuture<Void> initTemplate() {
+        if (!processInformation.getProcessGroup().isStaticProcess()) {
+            try {
+                TemplateBackendManager.getOrDefault(this.processInformation.getTemplate().getBackend()).loadGlobalTemplates(
+                        this.processInformation.getProcessGroup(),
+                        this.path
+                ).get(5, TimeUnit.SECONDS);
+            } catch (final TimeoutException | InterruptedException | ExecutionException ex) {
+                System.err.println("Load of global templates took too long");
+            }
+
+            return TemplateBackendManager.getOrDefault(this.processInformation.getTemplate().getBackend()).loadTemplate(
+                    this.processInformation.getProcessGroup().getName(),
+                    this.processInformation.getTemplate().getName(),
+                    this.path
+            );
+        }
+
+        return CompletableFuture.completedFuture(null);
     }
 
     @Nonnull
@@ -491,19 +516,6 @@ public class BasicLocalNodeProcess implements LocalNodeProcess {
     }
 
     private void createTemplateAndFiles() {
-        if (!processInformation.getProcessGroup().isStaticProcess()) {
-            TemplateBackendManager.getOrDefault(this.processInformation.getTemplate().getBackend()).loadTemplate(
-                    this.processInformation.getProcessGroup().getName(),
-                    this.processInformation.getTemplate().getName(),
-                    this.path
-            );
-
-            TemplateBackendManager.getOrDefault(this.processInformation.getTemplate().getBackend()).loadGlobalTemplates(
-                    this.processInformation.getProcessGroup(),
-                    this.path
-            );
-        }
-
         SystemHelper.createDirectory(Paths.get(path + "/plugins"));
         SystemHelper.createDirectory(Paths.get(path + "/reformcloud/.connection"));
         new JsonConfiguration().add("key", NodeExecutor.getInstance().getNodeExecutorConfig().getCurrentNodeConnectionKey())

@@ -8,22 +8,26 @@ import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams
 import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
 import systems.reformcloud.reformcloud2.executor.client.ClientExecutor;
 
-import java.util.Queue;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.BlockingDeque;
+import java.util.concurrent.LinkedBlockingDeque;
 
 public final class ProcessQueue extends AbsoluteThread {
 
-    private static final Queue<RunningProcess> QUEUE = new ConcurrentLinkedQueue<>();
+    private static final BlockingDeque<RunningProcess> QUEUE = new LinkedBlockingDeque<>();
 
     public static void queue(ProcessInformation information) {
-        RunningProcess runningProcess = RunningProcessBuilder.build(information).prepare();
-        QUEUE.add(runningProcess);
+        RunningProcess runningProcess = RunningProcessBuilder.build(information);
         System.out.println(LanguageManager.get(
                 "client-process-now-in-queue",
                 runningProcess.getProcessInformation().getName(),
-                QUEUE.size()
+                QUEUE.size() + 1
         ));
+
+        runningProcess.initTemplate().thenAccept(e -> {
+            runningProcess.prepare();
+            QUEUE.offerLast(runningProcess);
+        });
     }
 
     /* ============== */
@@ -35,38 +39,35 @@ public final class ProcessQueue extends AbsoluteThread {
     @Override
     public void run() {
         while (!Thread.currentThread().isInterrupted()) {
-            if (!QUEUE.isEmpty()) {
-                RunningProcess runningProcess = QUEUE.poll();
-                if (runningProcess == null) {
-                    continue;
-                }
+            try {
+                RunningProcess process = QUEUE.takeFirst();
 
                 if (isStartupNowLogic()) {
                     System.out.println(LanguageManager.get(
                             "client-process-start",
-                            runningProcess.getProcessInformation().getName()
+                            process.getProcessInformation().getName()
                     ));
 
-                    if (runningProcess.bootstrap()) {
-                        ClientExecutor.getInstance().getProcessManager().registerProcess(runningProcess);
+                    if (process.bootstrap()) {
+                        ClientExecutor.getInstance().getProcessManager().registerProcess(process);
                         System.out.println(LanguageManager.get(
                                 "client-process-start-done",
-                                runningProcess.getProcessInformation().getName()
+                                process.getProcessInformation().getName()
                         ));
                     } else {
-                        QUEUE.add(runningProcess);
+                        QUEUE.offerLast(process);
                         System.out.println(LanguageManager.get(
                                 "client-process-start-failed",
-                                runningProcess.getProcessInformation().getName(),
+                                process.getProcessInformation().getName(),
                                 QUEUE.size()
                         ));
                     }
                 } else {
-                    QUEUE.add(runningProcess);
+                    QUEUE.add(process);
                 }
+            } catch (final InterruptedException ex) {
+                ex.printStackTrace();
             }
-
-            AbsoluteThread.sleep(100);
         }
     }
 

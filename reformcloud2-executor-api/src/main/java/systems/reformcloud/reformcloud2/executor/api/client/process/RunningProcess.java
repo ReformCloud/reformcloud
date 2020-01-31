@@ -5,6 +5,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.utility.optional.Ref
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.concurrent.CompletableFuture;
 
 public interface RunningProcess {
 
@@ -21,6 +22,8 @@ public interface RunningProcess {
     boolean running();
 
     void copy();
+
+    CompletableFuture<Void> initTemplate();
 
     ReferencedOptional<Process> getProcess();
 

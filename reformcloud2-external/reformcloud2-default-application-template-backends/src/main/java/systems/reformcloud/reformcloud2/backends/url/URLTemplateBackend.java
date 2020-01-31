@@ -16,6 +16,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.concurrent.CompletableFuture;
 
 public final class URLTemplateBackend implements TemplateBackend {
 
@@ -56,25 +57,33 @@ public final class URLTemplateBackend implements TemplateBackend {
         }
     }
 
+    @Nonnull
     @Override
-    public void createTemplate(String group, String template) {
+    public CompletableFuture<Void> createTemplate(String group, String template) {
+        return CompletableFuture.completedFuture(null);
     }
 
+    @Nonnull
     @Override
-    public void loadTemplate(String group, String template, Path target) {
+    public CompletableFuture<Void> loadTemplate(String group, String template, Path target) {
         DownloadHelper.downloadAndDisconnect(getBasePath() + group + "-" + template + ".zip",  "reformcloud/files/temp/template.zip");
         SystemHelper.unZip(new File("reformcloud/files/temp/template.zip"), target.toString());
         SystemHelper.deleteFile(new File("reformcloud/files/temp/template.zip"));
+        return CompletableFuture.completedFuture(null);
     }
 
+    @Nonnull
     @Override
-    public void loadGlobalTemplates(ProcessGroup group, Path target) {
+    public CompletableFuture<Void> loadGlobalTemplates(ProcessGroup group, Path target) {
         Streams.allOf(group.getTemplates(), e -> e.getBackend().equals(getName())
                 && e.isGlobal()).forEach(e -> this.loadTemplate(group.getName(), e.getName(), target));
+        return CompletableFuture.completedFuture(null);
     }
 
+    @Nonnull
     @Override
-    public void deployTemplate(String group, String template, Path current) {
+    public CompletableFuture<Void> deployTemplate(String group, String template, Path current) {
+        return CompletableFuture.completedFuture(null);
     }
 
     @Override

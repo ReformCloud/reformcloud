@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public final class RuntimeConfiguration {
 
@@ -52,6 +53,6 @@ public final class RuntimeConfiguration {
 
     /* Needs a null check because of add in version 2.0.2 */
     public Collection<String> getShutdownCommands() {
-        return shutdownCommands == null ? new ArrayList<>() : shutdownCommands;
+        return shutdownCommands == null ? new CopyOnWriteArrayList<>() : new CopyOnWriteArrayList<>(shutdownCommands);
     }
 }
