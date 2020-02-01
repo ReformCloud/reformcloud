@@ -55,16 +55,16 @@ After the setup: **start using reformcloud2!**
 [**Fork Project**](https://github.com/derklaro/reformcloud2/fork)
 
 ## Open Source Libraries
-| Library                                                             | Author                                               | License                                                                                    |
-|---------------------------------------------------------------------|------------------------------------------------------|--------------------------------------------------------------------------------------------|
-| [Netty](https://github.com/netty/netty/)                            | [The Netty Project](https://github.com/netty)        | [Apache Licence 2.0](https://github.com/netty/netty/blob/4.1/LICENSE.txt)                  |
-| [Gson](https://github.com/google/gson/)                             | [Google](https://github.com/google/)                 | [Apache License 2.0](https://github.com/google/gson/blob/master/LICENSE)                   |
-| [JLine 3](https://github.com/jline/jline3/)                         | [JLine](https://github.com/jline/)                   | [The 3-Clause BSD License](https://github.com/jline/jline3/blob/master/LICENSE.txt)        |
-| [Reflections](https://github.com/ronmamo/reflections/)              | [ronmamo](https://github.com/ronmamo/)               | No Licence                                                                                 |
-| [MongoDB Java Driver](https://github.com/mongodb/mongo-java-driver) | [MongoDB](https://github.com/mongodb/)               | [Apache License 2.0](https://github.com/mongodb/mongo-java-driver/blob/master/LICENSE.txt) |
-| [MySQL connector Java](https://github.com/mysql/mysql-connector-j)  | [MySQL](https://github.com/mysql/)                   | [Self written Licence](https://github.com/mysql/mysql-connector-j/blob/release/8.0/LICENSE)|
-| [H2](https://github.com/h2database/h2database/)                     | [h2database](https://github.com/h2database/)         | No Licence                                                                                 |
-| [Maven-Wrapper](https://github.com/takari/maven-wrapper)            | [takari](https://github.com/takari/)                 | [Apache License 2.0](https://github.com/takari/maven-wrapper/blob/master/LICENSE.txt)      |
+| Library                                                             | Author                                               | License                                                                                                       |
+|---------------------------------------------------------------------|------------------------------------------------------|---------------------------------------------------------------------------------------------------------------|
+| [Netty](https://github.com/netty/netty/)                            | [The Netty Project](https://github.com/netty)        | [Apache Licence 2.0](https://github.com/netty/netty/blob/4.1/LICENSE.txt)                                     |
+| [Gson](https://github.com/google/gson/)                             | [Google](https://github.com/google/)                 | [Apache License 2.0](https://github.com/google/gson/blob/master/LICENSE)                                      |
+| [JLine 3](https://github.com/jline/jline3/)                         | [JLine](https://github.com/jline/)                   | [The 3-Clause BSD License](https://github.com/jline/jline3/blob/master/LICENSE.txt)                           |
+| [Reflections](https://github.com/ronmamo/reflections/)              | [ronmamo](https://github.com/ronmamo/)               | [Do What The F*ck You Want To Public License](https://github.com/ronmamo/reflections/blob/master/COPYING.txt) |
+| [MongoDB Java Driver](https://github.com/mongodb/mongo-java-driver) | [MongoDB](https://github.com/mongodb/)               | [Apache License 2.0](https://github.com/mongodb/mongo-java-driver/blob/master/LICENSE.txt)                    |
+| [MySQL connector Java](https://github.com/mysql/mysql-connector-j)  | [MySQL](https://github.com/mysql/)                   | [Self written Licence](https://github.com/mysql/mysql-connector-j/blob/release/8.0/LICENSE)                   |
+| [H2](https://github.com/h2database/h2database/)                     | [h2database](https://github.com/h2database/)         | [Dual Licenced (MPL 2.0/EPL 1.0](https://github.com/h2database/h2database/blob/master/LICENSE.txt)            |
+| [Maven-Wrapper](https://github.com/takari/maven-wrapper)            | [takari](https://github.com/takari/)                 | [Apache License 2.0](https://github.com/takari/maven-wrapper/blob/master/LICENSE.txt)                         |
 ## Build this project
 ```
 git clone https://github.com/derklaro/reformcloud2.git
