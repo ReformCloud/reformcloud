@@ -69,8 +69,6 @@ public enum Version {
     /**
      * Paper Versions
      */
-    PAPER_1_7_10("Paper 1.7.10", "1.7.10",
-            "https://dl.reformcloud.systems/mcversions/paper/paper-1.7.10.jar", 1),
     PAPER_1_8_8("Paper 1.8.8-R0-1-SNAPSHOT", "1.8.8",
             "https://dl.reformcloud.systems/mcversions/paper/paper-1.8.8.jar", 1),
     PAPER_1_9_4("Paper 1.9.4", "1.9.4",
