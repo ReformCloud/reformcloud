@@ -1,11 +1,18 @@
 package systems.reformcloud.reformcloud2.permissions.application.command;
 
+import systems.reformcloud.reformcloud2.executor.api.ExecutorType;
 import systems.reformcloud.reformcloud2.executor.api.common.CommonHelper;
+import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.GlobalCommand;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.source.CommandSource;
+import systems.reformcloud.reformcloud2.executor.api.common.database.Database;
+import systems.reformcloud.reformcloud2.executor.api.common.database.DatabaseReader;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.optional.ReferencedOptional;
+import systems.reformcloud.reformcloud2.executor.controller.ControllerExecutor;
+import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
 import systems.reformcloud.reformcloud2.permissions.PermissionAPI;
+import systems.reformcloud.reformcloud2.permissions.util.basic.DefaultPermissionUtil;
 import systems.reformcloud.reformcloud2.permissions.util.group.NodeGroup;
 import systems.reformcloud.reformcloud2.permissions.util.group.PermissionGroup;
 import systems.reformcloud.reformcloud2.permissions.util.permission.PermissionNode;
@@ -14,13 +21,13 @@ import systems.reformcloud.reformcloud2.permissions.util.user.PermissionUser;
 import systems.reformcloud.reformcloud2.permissions.util.uuid.UUIDFetcher;
 
 import javax.annotation.Nonnull;
-import java.util.Arrays;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 public class CommandPerms extends GlobalCommand {
 
     private static final String[] HELP = new String[] {
+            "perms groups",
             "perms group [groupname]",
             "perms group [groupname] create",
             "perms group [groupname] create [default]",
@@ -56,6 +63,36 @@ public class CommandPerms extends GlobalCommand {
 
     @Override
     public boolean handleCommand(@Nonnull CommandSource commandSource, @Nonnull String[] strings) {
+
+        if (strings.length == 1 && strings[0].equalsIgnoreCase("groups")) {
+            DatabaseReader permissionTableReader = getDatabase().createForTable(DefaultPermissionUtil.PERMISSION_GROUP_TABLE);
+            if (permissionTableReader == null) {
+                commandSource.sendMessage("The table for the permission groups does not exists");
+                return true;
+            }
+
+            List<PermissionGroup> groups = new ArrayList<>();
+
+            permissionTableReader.forEach(jsonConfiguration -> {
+                PermissionGroup group = jsonConfiguration.get("group", PermissionGroup.TYPE);
+                if (group == null) {
+                    return;
+                }
+
+                groups.add(group);
+            });
+
+            groups.sort(Comparator.comparingInt(PermissionGroup::getPriority));
+            commandSource.sendMessage(String.format("Registered groups (%d): \n  -%s", groups.size(), String.join("\n  -",
+                    groups
+                            .stream()
+                            .map(e -> String.format("Name: %s | Priority: %d", e.getName(), e.getPriority()))
+                            .toArray(String[]::new))
+            ));
+
+            return true;
+        }
+
         if (strings.length == 2 && strings[0].equalsIgnoreCase("user")) {
             UUID uniqueID = UUIDFetcher.getUUIDFromName(strings[1]);
             if (uniqueID == null) {
@@ -773,4 +810,11 @@ public class CommandPerms extends GlobalCommand {
             }
         }
     }
+
+    public static Database<?> getDatabase() {
+        return ExecutorAPI.getInstance().getType().equals(ExecutorType.NODE)
+                ? NodeExecutor.getInstance().getDatabase()
+                : ControllerExecutor.getInstance().getDatabase();
+    }
+
 }

@@ -405,6 +405,10 @@ public final class ControllerExecutor extends Controller {
         return autoStartupHandler;
     }
 
+    public Database<?> getDatabase() {
+        return database;
+    }
+
     @Nonnull
     @Override
     public EventManager getEventManager() {

@@ -490,6 +490,10 @@ public class NodeExecutor extends Node {
         return localAutoStartupHandler;
     }
 
+    public Database<?> getDatabase() {
+        return database;
+    }
+
     @Nonnull
     public EventManager getEventManager() {
         return eventManager;

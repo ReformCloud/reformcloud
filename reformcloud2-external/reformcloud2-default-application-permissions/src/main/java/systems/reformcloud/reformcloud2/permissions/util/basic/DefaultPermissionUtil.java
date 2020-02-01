@@ -31,7 +31,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public final class DefaultPermissionUtil implements PermissionUtil {
 
-    private static final String PERMISSION_GROUP_TABLE = "reformcloud_internal_db_perm_group";
+    public static final String PERMISSION_GROUP_TABLE = "reformcloud_internal_db_perm_group";
 
     public static final String PERMISSION_PLAYER_TABLE = "reformcloud_internal_db_perm_player";
 
