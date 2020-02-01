@@ -68,6 +68,7 @@ import systems.reformcloud.reformcloud2.executor.api.node.Node;
 import systems.reformcloud.reformcloud2.executor.api.node.cluster.ClusterSyncManager;
 import systems.reformcloud.reformcloud2.executor.api.node.cluster.SyncAction;
 import systems.reformcloud.reformcloud2.executor.api.node.network.NodeNetworkManager;
+import systems.reformcloud.reformcloud2.executor.controller.packet.in.ControllerPacketInAPIAction;
 import systems.reformcloud.reformcloud2.executor.node.api.GeneralAPI;
 import systems.reformcloud.reformcloud2.executor.node.api.applications.ApplicationAPIImplementation;
 import systems.reformcloud.reformcloud2.executor.node.api.client.ClientAPIImplementation;
@@ -672,6 +673,7 @@ public class NodeExecutor extends Node {
         });
 
         new Reflections("systems.reformcloud.reformcloud2.executor.node.network.packet.query.in").getSubTypesOf(DefaultJsonNetworkHandler.class).forEach(packetHandler::registerHandler);
+        this.packetHandler.registerHandler(new ControllerPacketInAPIAction()); // External implementation which handles the api actions (we can re-use it)
     }
 
     private void sync(PacketSender sender) {

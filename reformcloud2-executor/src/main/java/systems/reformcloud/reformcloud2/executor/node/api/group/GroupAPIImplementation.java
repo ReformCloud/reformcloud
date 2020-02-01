@@ -138,6 +138,10 @@ public class GroupAPIImplementation implements GroupAsyncAPI, GroupSyncAPI {
         Task<ProcessGroup> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             this.clusterSyncManager.syncProcessGroupUpdate(processGroup);
+            ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcesses(processGroup.getName()).forEach(e -> {
+                e.setProcessGroup(processGroup);
+                ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(e);
+            });
             task.complete(processGroup);
         });
         return task;

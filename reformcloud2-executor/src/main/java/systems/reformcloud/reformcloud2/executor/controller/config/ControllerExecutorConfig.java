@@ -182,7 +182,7 @@ public final class ControllerExecutorConfig {
             ControllerExecutor.getInstance().getAutoStartupHandler().update();
         });
 
-        Streams.allOf(ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getAllProcesses(), processInformation -> processInformation.getProcessGroup().getName().equals(processGroup.getName())).forEach(processInformation -> {
+        ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcesses(processGroup.getName()).forEach(processInformation -> {
             processInformation.setProcessGroup(processGroup);
             ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(processInformation);
         });
