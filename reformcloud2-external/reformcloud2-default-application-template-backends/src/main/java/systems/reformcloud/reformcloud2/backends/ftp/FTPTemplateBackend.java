@@ -54,14 +54,19 @@ public final class FTPTemplateBackend implements TemplateBackend {
     private FTPTemplateBackend(FTPConfig ftpConfig) {
         this.config = ftpConfig;
         this.ftpClient = ftpConfig.isSslEnabled() ? new FTPSClient() : new FTPClient();
+        this.open(ftpConfig);
 
         NetworkUtil.EXECUTOR.execute(() -> {
             while (!Thread.interrupted()) {
                 try {
-                    Runnable runnable = TASKS.pollFirst(20, TimeUnit.SECONDS);
+                    Runnable runnable = TASKS.poll(20, TimeUnit.SECONDS);
                     boolean available = this.ftpClient.isAvailable();
 
                     if (runnable == null) {
+                        if (!available) {
+                            continue;
+                        }
+
                         try {
                             this.ftpClient.disconnect();
                         } catch (final Throwable ignored) {
@@ -84,7 +89,7 @@ public final class FTPTemplateBackend implements TemplateBackend {
 
     @Override
     public boolean existsTemplate(String group, String template) {
-        if (this.ftpClient == null || !this.ftpClient.isConnected()) {
+        if (this.ftpClient == null) {
             return false;
         }
 
@@ -98,7 +103,7 @@ public final class FTPTemplateBackend implements TemplateBackend {
     @Nonnull
     @Override
     public CompletableFuture<Void> createTemplate(String group, String template) {
-        if (this.ftpClient == null || !this.ftpClient.isConnected()) {
+        if (this.ftpClient == null) {
             return CompletableFuture.completedFuture(null);
         }
 
@@ -114,7 +119,7 @@ public final class FTPTemplateBackend implements TemplateBackend {
     @Nonnull
     @Override
     public CompletableFuture<Void> loadTemplate(String group, String template, Path target) {
-        if (this.ftpClient == null || !this.ftpClient.isConnected()) {
+        if (this.ftpClient == null) {
             return CompletableFuture.completedFuture(null);
         }
 
@@ -161,7 +166,7 @@ public final class FTPTemplateBackend implements TemplateBackend {
     @Nonnull
     @Override
     public CompletableFuture<Void> loadGlobalTemplates(ProcessGroup group, Path target) {
-        if (this.ftpClient == null || !this.ftpClient.isConnected()) {
+        if (this.ftpClient == null) {
             return CompletableFuture.completedFuture(null);
         }
 
@@ -174,7 +179,7 @@ public final class FTPTemplateBackend implements TemplateBackend {
     @Nonnull
     @Override
     public CompletableFuture<Void> deployTemplate(String group, String template, Path current) {
-        if (this.ftpClient == null || !this.ftpClient.isConnected()) {
+        if (this.ftpClient == null) {
             return CompletableFuture.completedFuture(null);
         }
 
@@ -230,7 +235,7 @@ public final class FTPTemplateBackend implements TemplateBackend {
 
     @Override
     public void deleteTemplate(String group, String template) {
-        if (this.ftpClient == null || !this.ftpClient.isConnected()) {
+        if (this.ftpClient == null) {
             return;
         }
 
