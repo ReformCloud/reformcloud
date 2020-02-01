@@ -9,10 +9,10 @@ import org.spongepowered.api.plugin.Dependency;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.service.ServiceManager;
 import org.spongepowered.api.service.permission.PermissionService;
-import systems.reformcloud.reformcloud2.permissions.PermissionAPI;
 import systems.reformcloud.reformcloud2.permissions.packets.PacketHelper;
 import systems.reformcloud.reformcloud2.permissions.sponge.listener.SpongePermissionListener;
 import systems.reformcloud.reformcloud2.permissions.sponge.service.SpongePermissionService;
+import systems.reformcloud.reformcloud2.permissions.util.PermissionPluginUtil;
 
 @Plugin(
         id = "reformcloud_2_perms",
@@ -30,8 +30,7 @@ public class SpongePermissionPlugin {
 
     @Listener
     public void handle(final GameStartedServerEvent event) {
-        PermissionAPI.handshake();
-        PacketHelper.addAPIPackets();
+        PermissionPluginUtil.awaitConnection();
         serviceManager.setProvider(this, PermissionService.class, new SpongePermissionService());
 
         Sponge.getEventManager().registerListeners(this, new SpongePermissionListener());
