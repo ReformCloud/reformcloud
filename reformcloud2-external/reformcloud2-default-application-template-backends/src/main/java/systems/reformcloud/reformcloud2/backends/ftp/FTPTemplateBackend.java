@@ -216,9 +216,9 @@ public final class FTPTemplateBackend implements TemplateBackend {
             try (InputStream inputStream = new FileInputStream(local)) {
                 this.ftpClient.storeFile(remotePath, inputStream);
             }
-
-            this.ftpClient.changeWorkingDirectory(this.config.getBaseDirectory());
         }
+
+        this.ftpClient.changeWorkingDirectory("/" + this.config.getBaseDirectory());
     }
 
     private void makeDirectory(String path) throws IOException {
