@@ -134,6 +134,13 @@ public final class SFTPTemplateBackend implements TemplateBackend {
 
             Path dir = Paths.get(localPath);
             SystemHelper.recreateDirectory(dir);
+            if (!localPath.endsWith("/")) {
+                localPath += "/";
+            }
+
+            if (!remotePath.endsWith("/")) {
+                remotePath += "/";
+            }
 
             for (ChannelSftp.LsEntry entry : entries) {
                 if (entry.getAttrs().isDir()) {
@@ -228,16 +235,13 @@ public final class SFTPTemplateBackend implements TemplateBackend {
     }
 
     private void makeDirectory(String path) {
+        StringBuilder builder = new StringBuilder();
         for (String pathSegment : path.split("/")) {
+            builder.append('/').append(pathSegment);
             try {
-                this.channel.cd(pathSegment);
-            } catch (final SftpException ex) {
-                try {
-                    this.channel.mkdir(pathSegment);
-                    this.channel.cd(pathSegment);
-                } catch (final SftpException exception) {
-                    exception.printStackTrace();
-                }
+                this.channel.mkdir(builder.toString());
+            } catch (final SftpException ignored) {
+                // dir already exists
             }
         }
 
@@ -263,6 +267,7 @@ public final class SFTPTemplateBackend implements TemplateBackend {
                 return 0;
             });
         } catch (SftpException exception) {
+            exception.printStackTrace();
             return null;
         }
 
