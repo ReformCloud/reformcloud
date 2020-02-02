@@ -60,7 +60,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.restapi.request.defa
 import systems.reformcloud.reformcloud2.executor.api.common.restapi.user.WebUser;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.StringUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.function.Double;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.system.SystemHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
@@ -68,6 +68,7 @@ import systems.reformcloud.reformcloud2.executor.api.node.Node;
 import systems.reformcloud.reformcloud2.executor.api.node.cluster.ClusterSyncManager;
 import systems.reformcloud.reformcloud2.executor.api.node.cluster.SyncAction;
 import systems.reformcloud.reformcloud2.executor.api.node.network.NodeNetworkManager;
+import systems.reformcloud.reformcloud2.executor.controller.packet.in.ControllerPacketInAPIAction;
 import systems.reformcloud.reformcloud2.executor.node.api.GeneralAPI;
 import systems.reformcloud.reformcloud2.executor.node.api.applications.ApplicationAPIImplementation;
 import systems.reformcloud.reformcloud2.executor.node.api.client.ClientAPIImplementation;
@@ -177,9 +178,9 @@ public class NodeExecutor extends Node {
 
         try {
             if (Boolean.getBoolean("reformcloud2.disable.colours")) {
-                this.loggerBase = new DefaultLoggerHandler();
+                this.loggerBase = new DefaultLoggerHandler(this.commandManager);
             } else {
-                this.loggerBase = new ColouredLoggerHandler();
+                this.loggerBase = new ColouredLoggerHandler(this.commandManager);
             }
         } catch (final IOException ex) {
             ex.printStackTrace();
@@ -334,7 +335,7 @@ public class NodeExecutor extends Node {
                         sender.setName(s);
                         clusterSyncManager.getWaitingConnections().remove(sender.getAddress());
 
-                        Links.filterToReference(nodeConfig.getOtherNodes(), e -> e.keySet().stream().anyMatch(c -> c.equals(
+                        Streams.filterToReference(nodeConfig.getOtherNodes(), e -> e.keySet().stream().anyMatch(c -> c.equals(
                                 sender.getAddress()
                         ))).ifPresent(e -> e.forEach((key, value) -> networkClient.connect(
                                 key, value, new DefaultAuth(
@@ -490,6 +491,10 @@ public class NodeExecutor extends Node {
         return localAutoStartupHandler;
     }
 
+    public Database<?> getDatabase() {
+        return database;
+    }
+
     @Nonnull
     public EventManager getEventManager() {
         return eventManager;
@@ -548,12 +553,8 @@ public class NodeExecutor extends Node {
 
         while (!Thread.currentThread().isInterrupted()) {
             try {
-                loggerBase.getConsoleReader().setPrompt("");
-                loggerBase.getConsoleReader().resetPromptLine("", "", 0);
-
                 line = loggerBase.readLine();
                 while (!line.trim().isEmpty() && running) {
-                    loggerBase.getConsoleReader().setPrompt("");
                     commandManager.dispatchCommand(this.console, AllowedCommandSources.ALL, line, System.out::println);
 
                     line = loggerBase.readLine();
@@ -584,6 +585,10 @@ public class NodeExecutor extends Node {
 
     @Override
     public void reload() throws Exception {
+        reload(true);
+    }
+
+    public void reload(boolean informCluster) {
         final long current = System.currentTimeMillis();
         System.out.println(LanguageManager.get("runtime-try-reload"));
 
@@ -617,7 +622,9 @@ public class NodeExecutor extends Node {
 
         this.applicationLoader.enableApplications();
 
-        this.clusterSyncManager.doClusterReload();
+        if (informCluster) {
+            this.clusterSyncManager.doClusterReload();
+        }
 
         OnlinePercentCheckerTask.start();
         System.out.println(LanguageManager.get("runtime-reload-done", Long.toString(System.currentTimeMillis() - current)));
@@ -666,6 +673,7 @@ public class NodeExecutor extends Node {
         });
 
         new Reflections("systems.reformcloud.reformcloud2.executor.node.network.packet.query.in").getSubTypesOf(DefaultJsonNetworkHandler.class).forEach(packetHandler::registerHandler);
+        this.packetHandler.registerHandler(new ControllerPacketInAPIAction()); // External implementation which handles the api actions (we can re-use it)
     }
 
     private void sync(PacketSender sender) {
@@ -676,7 +684,7 @@ public class NodeExecutor extends Node {
 
             this.clusterSyncManager.syncMainGroups(this.nodeExecutorConfig.getMainGroups(), SyncAction.SYNC);
             this.clusterSyncManager.syncProcessGroups(this.nodeExecutorConfig.getProcessGroups(), SyncAction.SYNC);
-            this.clusterSyncManager.syncProcessInformation(Links.allOf(
+            this.clusterSyncManager.syncProcessInformation(Streams.allOf(
                     this.nodeNetworkManager.getNodeProcessHelper().getClusterProcesses(),
                     e -> this.nodeNetworkManager.getNodeProcessHelper().isLocal(e.getProcessUniqueID())
             ));

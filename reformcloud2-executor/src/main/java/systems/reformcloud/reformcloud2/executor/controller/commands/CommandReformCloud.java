@@ -851,7 +851,13 @@ public final class CommandReformCloud extends GlobalCommand {
         return true;
     }
 
+    @Nonnull
+    @Override
+    public Collection<String> complete(@Nonnull CommandSource commandSource, @Nonnull String commandLine, @Nonnull String[] currentArg) {
+        return StringUtil.completeReformCommand(currentArg, true);
+    }
+
     private void sendHelp(CommandSource commandSource) {
-        commandSource.sendMessages(StringUtil.RC_COMMAND_HELP);
+        commandSource.sendMessages(StringUtil.getCommandHelp());
     }
 }

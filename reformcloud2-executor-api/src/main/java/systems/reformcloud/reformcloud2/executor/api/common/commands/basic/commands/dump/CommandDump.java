@@ -6,7 +6,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.Globa
 import systems.reformcloud.reformcloud2.executor.api.common.commands.source.CommandSource;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 
 import javax.annotation.Nonnull;
 import java.io.ByteArrayOutputStream;
@@ -159,10 +159,10 @@ public class CommandDump extends GlobalCommand {
                 .append(System.getProperty("java.vm.vendor"))
                 .append("\n\n");
 
-        Collection<String> jvmFlags = Links.allOf(CommonHelper.inputArguments(), e -> e.startsWith("-X"));
+        Collection<String> jvmFlags = Streams.allOf(CommonHelper.inputArguments(), e -> e.startsWith("-X"));
         Collection<String> systemEnvProperties = System.getenv().entrySet().stream().map(e -> e.getKey() + "=" + e.getValue())
                 .collect(Collectors.toList());
-        Collection<String> systemProperties = Links.allOf(CommonHelper.inputArguments(), e -> e.startsWith("-D"));
+        Collection<String> systemProperties = Streams.allOf(CommonHelper.inputArguments(), e -> e.startsWith("-D"));
 
         stringBuilder
                 .append("--- Java Runtime Info ---")

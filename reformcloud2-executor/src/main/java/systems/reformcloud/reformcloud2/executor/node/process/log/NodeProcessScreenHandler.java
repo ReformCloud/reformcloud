@@ -1,6 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.node.process.log;
 
-import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.optional.ReferencedOptional;
 
 import java.util.ArrayList;
@@ -20,11 +20,11 @@ public final class NodeProcessScreenHandler {
     }
 
     public static void unregisterScreen(UUID uniqueID) {
-        Links.filterToReference(SCREENS, e -> e.getUniqueID().equals(uniqueID)).ifPresent(SCREENS::remove);
+        Streams.filterToReference(SCREENS, e -> e.getUniqueID().equals(uniqueID)).ifPresent(SCREENS::remove);
     }
 
     public static ReferencedOptional<NodeProcessScreen> getScreen(UUID uniqueID) {
-        return Links.filterToReference(SCREENS, e -> e.getUniqueID().equals(uniqueID));
+        return Streams.filterToReference(SCREENS, e -> e.getUniqueID().equals(uniqueID));
     }
 
 }

@@ -51,7 +51,8 @@ public final class SystemHelper {
     }
 
     public static void doCopy(String from, String target) {
-        try (FileInputStream fileInputStream = new FileInputStream(from); FileOutputStream fileOutputStream = new FileOutputStream(target)) {
+        try (FileInputStream fileInputStream = new FileInputStream(from);
+             FileOutputStream fileOutputStream = new FileOutputStream(target)) {
             byte[] buffer = new byte[1024];
             int length;
             while ((length = fileInputStream.read(buffer)) > 0) {
@@ -141,22 +142,15 @@ public final class SystemHelper {
     }
 
     public static void unZip(File zippedPath, String destinationPath) {
-        try {
-            File destDir = new File(destinationPath);
-            if (!destDir.exists()) {
-                createDirectory(destDir.toPath());
-            }
+        byte[] buffer = new byte[0x1FFF];
+        File destDir = new File(destinationPath);
+        if (!destDir.exists()) {
+            createDirectory(destDir.toPath());
+        }
 
-            if (destDir.isDirectory()) {
-                deleteDirectory(destDir.toPath());
-            } else {
-                deleteFile(destDir);
-            }
-
-            byte[] buffer = new byte[0x1FFF];
-            ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream(zippedPath));
-            ZipEntry zipEntry = zipInputStream.getNextEntry();
-            while (zipEntry != null) {
+        try (ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream(zippedPath))) {
+            ZipEntry zipEntry;
+            while ((zipEntry = zipInputStream.getNextEntry()) != null) {
                 File newFile = new File(destinationPath + "/" + zipEntry.getName());
                 if (zipEntry.isDirectory()) {
                     createDirectory(newFile.toPath());
@@ -172,14 +166,9 @@ public final class SystemHelper {
                 }
 
                 zipInputStream.closeEntry();
-                zipEntry = zipInputStream.getNextEntry();
             }
-
-            zipInputStream.closeEntry();
-            zipInputStream.close();
         } catch (final IOException ex) {
             ex.printStackTrace();
         }
     }
-
 }

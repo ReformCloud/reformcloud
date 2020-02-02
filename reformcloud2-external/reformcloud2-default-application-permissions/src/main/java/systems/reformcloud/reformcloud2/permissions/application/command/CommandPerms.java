@@ -1,11 +1,18 @@
 package systems.reformcloud.reformcloud2.permissions.application.command;
 
+import systems.reformcloud.reformcloud2.executor.api.ExecutorType;
 import systems.reformcloud.reformcloud2.executor.api.common.CommonHelper;
+import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.GlobalCommand;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.source.CommandSource;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links;
+import systems.reformcloud.reformcloud2.executor.api.common.database.Database;
+import systems.reformcloud.reformcloud2.executor.api.common.database.DatabaseReader;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.optional.ReferencedOptional;
+import systems.reformcloud.reformcloud2.executor.controller.ControllerExecutor;
+import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
 import systems.reformcloud.reformcloud2.permissions.PermissionAPI;
+import systems.reformcloud.reformcloud2.permissions.util.basic.DefaultPermissionUtil;
 import systems.reformcloud.reformcloud2.permissions.util.group.NodeGroup;
 import systems.reformcloud.reformcloud2.permissions.util.group.PermissionGroup;
 import systems.reformcloud.reformcloud2.permissions.util.permission.PermissionNode;
@@ -14,13 +21,13 @@ import systems.reformcloud.reformcloud2.permissions.util.user.PermissionUser;
 import systems.reformcloud.reformcloud2.permissions.util.uuid.UUIDFetcher;
 
 import javax.annotation.Nonnull;
-import java.util.Arrays;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 public class CommandPerms extends GlobalCommand {
 
     private static final String[] HELP = new String[] {
+            "perms groups",
             "perms group [groupname]",
             "perms group [groupname] create",
             "perms group [groupname] create [default]",
@@ -56,6 +63,36 @@ public class CommandPerms extends GlobalCommand {
 
     @Override
     public boolean handleCommand(@Nonnull CommandSource commandSource, @Nonnull String[] strings) {
+
+        if (strings.length == 1 && strings[0].equalsIgnoreCase("groups")) {
+            DatabaseReader permissionTableReader = getDatabase().createForTable(DefaultPermissionUtil.PERMISSION_GROUP_TABLE);
+            if (permissionTableReader == null) {
+                commandSource.sendMessage("The table for the permission groups does not exists");
+                return true;
+            }
+
+            List<PermissionGroup> groups = new ArrayList<>();
+
+            permissionTableReader.forEach(jsonConfiguration -> {
+                PermissionGroup group = jsonConfiguration.get("group", PermissionGroup.TYPE);
+                if (group == null) {
+                    return;
+                }
+
+                groups.add(group);
+            });
+
+            groups.sort(Comparator.comparingInt(PermissionGroup::getPriority));
+            commandSource.sendMessage(String.format("Registered groups (%d): \n  -%s", groups.size(), String.join("\n  -",
+                    groups
+                            .stream()
+                            .map(e -> String.format("Name: %s | Priority: %d", e.getName(), e.getPriority()))
+                            .toArray(String[]::new))
+            ));
+
+            return true;
+        }
+
         if (strings.length == 2 && strings[0].equalsIgnoreCase("user")) {
             UUID uniqueID = UUIDFetcher.getUUIDFromName(strings[1]);
             if (uniqueID == null) {
@@ -134,7 +171,7 @@ public class CommandPerms extends GlobalCommand {
             }
 
             PermissionUser user = PermissionAPI.getInstance().getPermissionUtil().loadUser(uniqueID);
-            if (Links.filterToReference(user.getPermissionNodes(),
+            if (Streams.filterToReference(user.getPermissionNodes(),
                     e -> e.getActualPermission().equalsIgnoreCase(strings[3])).isPresent()) {
                 System.out.println("The permission " + strings[3] + " is already set");
                 return true;
@@ -168,7 +205,7 @@ public class CommandPerms extends GlobalCommand {
             }
 
             PermissionUser user = PermissionAPI.getInstance().getPermissionUtil().loadUser(uniqueID);
-            if (Links.filterToReference(user.getPermissionNodes(),
+            if (Streams.filterToReference(user.getPermissionNodes(),
                     e -> e.getActualPermission().equalsIgnoreCase(strings[3])).isPresent()) {
                 System.out.println("The permission " + strings[3] + " is already set");
                 return true;
@@ -210,7 +247,7 @@ public class CommandPerms extends GlobalCommand {
             }
 
             PermissionUser user = PermissionAPI.getInstance().getPermissionUtil().loadUser(uniqueID);
-            ReferencedOptional<PermissionNode> perm = Links.filterToReference(user.getPermissionNodes(),
+            ReferencedOptional<PermissionNode> perm = Streams.filterToReference(user.getPermissionNodes(),
                     e -> e.getActualPermission().equalsIgnoreCase(strings[3]));
             if (!perm.isPresent()) {
                 System.out.println("The permission " + strings[3] + " is not set");
@@ -240,7 +277,7 @@ public class CommandPerms extends GlobalCommand {
             }
 
             PermissionUser user = PermissionAPI.getInstance().getPermissionUtil().loadUser(uniqueID);
-            if (Links.filterToReference(user.getGroups(), e -> e.getGroupName().equals(strings[3]) && e.isValid()).isPresent()) {
+            if (Streams.filterToReference(user.getGroups(), e -> e.getGroupName().equals(strings[3]) && e.isValid()).isPresent()) {
                 System.out.println("The user " + strings[1] + " is already in group " + strings[3]);
                 return true;
             }
@@ -272,7 +309,7 @@ public class CommandPerms extends GlobalCommand {
             }
 
             PermissionUser user = PermissionAPI.getInstance().getPermissionUtil().loadUser(uniqueID);
-            if (Links.filterToReference(user.getGroups(), e -> e.getGroupName().equals(strings[3]) && e.isValid()).isPresent()) {
+            if (Streams.filterToReference(user.getGroups(), e -> e.getGroupName().equals(strings[3]) && e.isValid()).isPresent()) {
                 System.out.println("The user " + strings[1] + " is already in group " + strings[3]);
                 return true;
             }
@@ -306,7 +343,7 @@ public class CommandPerms extends GlobalCommand {
             }
 
             PermissionUser user = PermissionAPI.getInstance().getPermissionUtil().loadUser(uniqueID);
-            NodeGroup filter = Links.filter(user.getGroups(), e -> e.getGroupName().equals(strings[3]));
+            NodeGroup filter = Streams.filter(user.getGroups(), e -> e.getGroupName().equals(strings[3]));
             if (filter == null) {
                 System.out.println("The user " + strings[1] + " is not in group " + strings[3]);
                 return true;
@@ -494,7 +531,7 @@ public class CommandPerms extends GlobalCommand {
                 return true;
             }
 
-            if (Links.filterToReference(group.getPermissionNodes(),
+            if (Streams.filterToReference(group.getPermissionNodes(),
                     e -> e.getActualPermission().equalsIgnoreCase(strings[3])).isPresent()) {
                 System.out.println("The permission " + strings[3] + " is already set for group " + strings[3]);
                 return true;
@@ -527,7 +564,7 @@ public class CommandPerms extends GlobalCommand {
                 return true;
             }
 
-            if (Links.filterToReference(group.getPermissionNodes(),
+            if (Streams.filterToReference(group.getPermissionNodes(),
                     e -> e.getActualPermission().equalsIgnoreCase(strings[3])).isPresent()) {
                 System.out.println("The permission " + strings[3] + " is already set for group " + strings[3]);
                 return true;
@@ -569,7 +606,7 @@ public class CommandPerms extends GlobalCommand {
             }
 
             if (group.getPerGroupPermissions().containsKey(strings[3])
-                    && Links.filterToReference(group.getPerGroupPermissions().get(strings[3]),
+                    && Streams.filterToReference(group.getPerGroupPermissions().get(strings[3]),
                     e -> e.getActualPermission().equalsIgnoreCase(strings[3])).isPresent()) {
                 System.out.println("The permission " + strings[4] + " is already set for group " + strings[2] + " on " + strings[3]);
                 return true;
@@ -602,7 +639,7 @@ public class CommandPerms extends GlobalCommand {
             }
 
             if (group.getPerGroupPermissions().containsKey(strings[3])
-                    && Links.filterToReference(group.getPerGroupPermissions().get(strings[3]),
+                    && Streams.filterToReference(group.getPerGroupPermissions().get(strings[3]),
                     e -> e.getActualPermission().equalsIgnoreCase(strings[3])).isPresent()) {
                 System.out.println("The permission " + strings[4] + " is already set for group " + strings[2] + " on " + strings[3]);
                 return true;
@@ -642,7 +679,7 @@ public class CommandPerms extends GlobalCommand {
                 return true;
             }
 
-            PermissionNode filter = Links.filter(group.getPermissionNodes(),
+            PermissionNode filter = Streams.filter(group.getPermissionNodes(),
                     e -> e.getActualPermission().equalsIgnoreCase(strings[3]));
             if (filter == null) {
                 System.out.println("The permission " + strings[3] + " is not set");
@@ -670,7 +707,7 @@ public class CommandPerms extends GlobalCommand {
                 return true;
             }
 
-            PermissionNode filter = Links.filter(group.getPerGroupPermissions().get(strings[3]),
+            PermissionNode filter = Streams.filter(group.getPerGroupPermissions().get(strings[3]),
                     e -> e.getActualPermission().equalsIgnoreCase(strings[4]));
             if (filter == null) {
                 System.out.println("The permission " + strings[4] + " is not set for " + group.getName() + " on " + strings[3]);
@@ -773,4 +810,11 @@ public class CommandPerms extends GlobalCommand {
             }
         }
     }
+
+    public static Database<?> getDatabase() {
+        return ExecutorAPI.getInstance().getType().equals(ExecutorType.NODE)
+                ? NodeExecutor.getInstance().getDatabase()
+                : ControllerExecutor.getInstance().getDatabase();
+    }
+
 }

@@ -25,7 +25,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.client.Netwo
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.defaults.DefaultPacketHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.handler.PacketHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.system.SystemHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
@@ -40,7 +40,6 @@ import systems.reformcloud.reformcloud2.executor.api.velocity.plugins.PluginUpda
 
 import javax.annotation.Nonnull;
 import java.io.File;
-import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -128,7 +127,7 @@ public final class VelocityExecutor extends API implements PlayerAPIExecutor {
                 && processInformation.getTemplate().getVersion().getId() == 1) {
             ServerInfo serverInfo = new ServerInfo(
                     processInformation.getName(),
-                    new InetSocketAddress(processInformation.getNetworkInfo().getHost(), processInformation.getNetworkInfo().getPort())
+                    processInformation.getNetworkInfo().toInet()
             );
             proxyServer.registerServer(serverInfo);
             if (processInformation.isLobby()) {
@@ -176,11 +175,11 @@ public final class VelocityExecutor extends API implements PlayerAPIExecutor {
         final List<ProcessInformation> lobbies = new ArrayList<>(LOBBY_SERVERS);
 
         if (player != null && player.getCurrentServer().isPresent()) {
-            Links.allOf(lobbies, e -> e.getName().equals(player.getCurrentServer().get().getServerInfo().getName())).forEach(lobbies::remove);
+            Streams.allOf(lobbies, e -> e.getName().equals(player.getCurrentServer().get().getServerInfo().getName())).forEach(lobbies::remove);
         }
 
         // Filter all non java servers if this is a java proxy else all mcpe servers
-        Links.others(lobbies, e -> {
+        Streams.others(lobbies, e -> {
             Version version = e.getTemplate().getVersion();
             if (version.equals(Version.NUKKIT_X) && current.getTemplate().getVersion().equals(Version.WATERDOG_PE)) {
                 return true;
@@ -190,7 +189,7 @@ public final class VelocityExecutor extends API implements PlayerAPIExecutor {
         }).forEach(lobbies::remove);
 
         // Filter out all lobbies with join permission which the player does not have
-        Links.others(lobbies, e -> {
+        Streams.others(lobbies, e -> {
             final PlayerAccessConfiguration configuration = e.getProcessGroup().getPlayerAccessConfiguration();
             if (!configuration.isJoinOnlyPerPermission()) {
                 return true;
@@ -200,7 +199,7 @@ public final class VelocityExecutor extends API implements PlayerAPIExecutor {
         }).forEach(lobbies::remove);
 
         // Filter out all lobbies which are in maintenance and not joinable for the player
-        Links.others(lobbies, e -> {
+        Streams.others(lobbies, e -> {
             final PlayerAccessConfiguration configuration = e.getProcessGroup().getPlayerAccessConfiguration();
             if (!configuration.isMaintenance()) {
                 return true;
@@ -210,7 +209,7 @@ public final class VelocityExecutor extends API implements PlayerAPIExecutor {
         }).forEach(lobbies::remove);
 
         // Filter out all full server which the player cannot access
-        Links.others(lobbies, e -> {
+        Streams.others(lobbies, e -> {
             final PlayerAccessConfiguration configuration = e.getProcessGroup().getPlayerAccessConfiguration();
             if (!configuration.isUseCloudPlayerLimit()) {
                 return true;

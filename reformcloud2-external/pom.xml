@@ -5,7 +5,7 @@
     <parent>
         <artifactId>reformcloud2</artifactId>
         <groupId>systems.reformcloud.reformcloud2</groupId>
-        <version>2.0.2</version>
+        <version>2.0.3</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -18,7 +18,8 @@
         <module>reformcloud2-default-application-signs</module>
         <module>reformcloud2-default-application-web</module>
         <module>reformcloud2-default-application-proxy</module>
+        <module>reformcloud2-default-application-cloudflare</module>
+        <module>reformcloud2-default-application-template-backends</module>
     </modules>
-
 
 </project>

@@ -1,7 +1,7 @@
 package systems.reformcloud.reformcloud2.executor.node.cluster;
 
 import systems.reformcloud.reformcloud2.executor.api.common.node.NodeInformation;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.node.cluster.ClusterManager;
 import systems.reformcloud.reformcloud2.executor.api.node.cluster.InternalNetworkCluster;
 import systems.reformcloud.reformcloud2.executor.controller.packet.out.event.ControllerEventProcessClosed;
@@ -25,10 +25,10 @@ public class DefaultClusterManager implements ClusterManager {
 
     @Override
     public void handleNodeDisconnect(InternalNetworkCluster cluster, String name) {
-        Links.allOf(Links.newList(nodeInformation), e -> e.getName().equals(name)).forEach(e -> {
+        Streams.allOf(Streams.newList(nodeInformation), e -> e.getName().equals(name)).forEach(e -> {
             this.nodeInformation.remove(e);
             cluster.getConnectedNodes().remove(e);
-            Links.allOf(Links.newList(NodeExecutor.getInstance().getNodeNetworkManager().getNodeProcessHelper().getClusterProcesses()),
+            Streams.allOf(Streams.newList(NodeExecutor.getInstance().getNodeNetworkManager().getNodeProcessHelper().getClusterProcesses()),
                     i -> i.getNodeUniqueID().equals(e.getNodeUniqueID())
             ).forEach(i -> {
                 NodeExecutor.getInstance().getNodeNetworkManager().getNodeProcessHelper().handleProcessStop(i);
@@ -58,9 +58,9 @@ public class DefaultClusterManager implements ClusterManager {
 
     @Override
     public int getOnlineAndWaiting(String groupName) {
-        int onlineOrWaiting = Links.allOf(NodeExecutor.getInstance().getNodeNetworkManager().getNodeProcessHelper().getClusterProcesses(),
+        int onlineOrWaiting = Streams.allOf(NodeExecutor.getInstance().getNodeNetworkManager().getNodeProcessHelper().getClusterProcesses(),
                 e -> e.getProcessGroup().getName().equals(groupName)).size();
-        onlineOrWaiting += Links.deepFilter(NodeExecutor.getInstance().getNodeNetworkManager().getQueuedProcesses(),
+        onlineOrWaiting += Streams.deepFilter(NodeExecutor.getInstance().getNodeNetworkManager().getQueuedProcesses(),
                 v -> v.getValue().equals(groupName)).size();
         return onlineOrWaiting;
     }

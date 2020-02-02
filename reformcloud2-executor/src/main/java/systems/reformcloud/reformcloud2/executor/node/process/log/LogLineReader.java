@@ -1,6 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.node.process.log;
 
-import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
 import systems.reformcloud.reformcloud2.executor.node.process.manager.LocalProcessManager;
 
@@ -21,7 +21,7 @@ public class LogLineReader extends AbsoluteThread {
     @Override
     public void run() {
         while (!Thread.currentThread().isInterrupted()) {
-            Links.newList(LocalProcessManager.getNodeProcesses()).stream().filter(e -> e.getProcess().isPresent()).forEach(e -> {
+            Streams.newList(LocalProcessManager.getNodeProcesses()).stream().filter(e -> e.getProcess().isPresent()).forEach(e -> {
                 InputStream inputStream = e.getProcess().get().getInputStream();
                 try {
                     int len;

@@ -2,7 +2,7 @@ package systems.reformcloud.reformcloud2.executor.api.common.process.join;
 
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -23,7 +23,7 @@ public final class OnlyProxyJoinHelper {
     }
 
     public static boolean walkedOverProxy(UUID uuid, String name) {
-        JoinRequest joinRequest = Links.filter(JOIN_REQUESTS, joinRequest1 -> joinRequest1.getUniqueID().equals(uuid) && joinRequest1.getName().equals(name));
+        JoinRequest joinRequest = Streams.filter(JOIN_REQUESTS, joinRequest1 -> joinRequest1.getUniqueID().equals(uuid) && joinRequest1.getName().equals(name));
         if (joinRequest == null) {
             return false;
         }
@@ -32,7 +32,7 @@ public final class OnlyProxyJoinHelper {
     }
 
     public static void onDisconnect(UUID uuid) {
-        JoinRequest joinRequest = Links.filter(JOIN_REQUESTS, joinRequest1 -> joinRequest1.getUniqueID().equals(uuid));
+        JoinRequest joinRequest = Streams.filter(JOIN_REQUESTS, joinRequest1 -> joinRequest1.getUniqueID().equals(uuid));
         if (joinRequest != null) {
             JOIN_REQUESTS.remove(joinRequest);
         }

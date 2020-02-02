@@ -61,7 +61,8 @@ public final class FileDatabase extends Database<Path> {
                 Task<JsonConfiguration> task = new DefaultTask<>();
                 Task.EXECUTOR.execute(() -> {
                     for (File file : Objects.requireNonNull(new File(FileDatabase.this.table + "/" + table).listFiles(pathname -> pathname.isFile() && pathname.getName().endsWith(".json")))) {
-                        if (file.getName().startsWith(key)) {
+                        String[] split = file.getName().split("-");
+                        if (split.length > 0 && split[0].equals(key)) {
                             task.complete(JsonConfiguration.read(file));
                             return;
                         }

@@ -10,7 +10,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Temp
 import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.PlayerAccessConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.StartupConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.StartupEnvironment;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.defaults.DefaultTask;
 import systems.reformcloud.reformcloud2.executor.api.node.cluster.ClusterSyncManager;
@@ -138,6 +138,10 @@ public class GroupAPIImplementation implements GroupAsyncAPI, GroupSyncAPI {
         Task<ProcessGroup> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             this.clusterSyncManager.syncProcessGroupUpdate(processGroup);
+            ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcesses(processGroup.getName()).forEach(e -> {
+                e.setProcessGroup(processGroup);
+                ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(e);
+            });
             task.complete(processGroup);
         });
         return task;
@@ -147,7 +151,7 @@ public class GroupAPIImplementation implements GroupAsyncAPI, GroupSyncAPI {
     @Override
     public Task<MainGroup> getMainGroupAsync(@Nonnull String name) {
         Task<MainGroup> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> task.complete(Links.filterToReference(clusterSyncManager.getMainGroups(), e -> e.getName().equals(name)).orNothing()));
+        Task.EXECUTOR.execute(() -> task.complete(Streams.filterToReference(clusterSyncManager.getMainGroups(), e -> e.getName().equals(name)).orNothing()));
         return task;
     }
 
@@ -155,7 +159,7 @@ public class GroupAPIImplementation implements GroupAsyncAPI, GroupSyncAPI {
     @Override
     public Task<ProcessGroup> getProcessGroupAsync(@Nonnull String name) {
         Task<ProcessGroup> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> task.complete(Links.filterToReference(clusterSyncManager.getProcessGroups(), e -> e.getName().equals(name)).orNothing()));
+        Task.EXECUTOR.execute(() -> task.complete(Streams.filterToReference(clusterSyncManager.getProcessGroups(), e -> e.getName().equals(name)).orNothing()));
         return task;
     }
 
@@ -185,7 +189,7 @@ public class GroupAPIImplementation implements GroupAsyncAPI, GroupSyncAPI {
     @Override
     public Task<List<MainGroup>> getMainGroupsAsync() {
         Task<List<MainGroup>> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> task.complete(Links.newList(clusterSyncManager.getMainGroups())));
+        Task.EXECUTOR.execute(() -> task.complete(Streams.newList(clusterSyncManager.getMainGroups())));
         return task;
     }
 
@@ -193,7 +197,7 @@ public class GroupAPIImplementation implements GroupAsyncAPI, GroupSyncAPI {
     @Override
     public Task<List<ProcessGroup>> getProcessGroupsAsync() {
         Task<List<ProcessGroup>> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> task.complete(Links.newList(clusterSyncManager.getProcessGroups())));
+        Task.EXECUTOR.execute(() -> task.complete(Streams.newList(clusterSyncManager.getProcessGroups())));
         return task;
     }
 

@@ -5,7 +5,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.event.Event;
 import systems.reformcloud.reformcloud2.executor.api.common.event.EventManager;
 import systems.reformcloud.reformcloud2.executor.api.common.event.LoadedListener;
 import systems.reformcloud.reformcloud2.executor.api.common.event.handler.Listener;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 
 import javax.annotation.Nonnull;
 import java.lang.reflect.InvocationTargetException;
@@ -102,13 +102,13 @@ public final class DefaultEventManager implements EventManager {
 
     @Override
     public void unregisterAll() {
-        Links.forEachValues(done, loadedListeners -> Links.forEach(loadedListeners, loadedListener -> unregister(loadedListener.getListener())));
+        Streams.forEachValues(done, loadedListeners -> Streams.forEach(loadedListeners, loadedListener -> unregister(loadedListener.getListener())));
     }
 
     @Nonnull
     @Override
     public List<List<LoadedListener>> getListeners() {
-        return Collections.unmodifiableList(Links.getValues(done, aClass -> true));
+        return Collections.unmodifiableList(Streams.getValues(done, aClass -> true));
     }
 
     private Map<Class<?>, Map<Byte, Set<Method>>> find(Object listener) {

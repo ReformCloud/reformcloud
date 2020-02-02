@@ -4,7 +4,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.api.player.PlayerAsy
 import systems.reformcloud.reformcloud2.executor.api.common.api.player.PlayerSyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.defaults.DefaultTask;
 import systems.reformcloud.reformcloud2.executor.api.controller.process.ProcessManager;
@@ -289,10 +289,10 @@ public class PlayerAPIImplementation implements PlayerAsyncAPI, PlayerSyncAPI {
     }
 
     private ProcessInformation getPlayerOnProxy(UUID uniqueID) {
-        return Links.filter(processManager.getAllProcesses(), processInformation -> !processInformation.getTemplate().isServer() && Links.filterToReference(processInformation.getOnlinePlayers(), player -> player.getUniqueID().equals(uniqueID)).isPresent());
+        return Streams.filter(processManager.getAllProcesses(), processInformation -> !processInformation.getTemplate().isServer() && Streams.filterToReference(processInformation.getOnlinePlayers(), player -> player.getUniqueID().equals(uniqueID)).isPresent());
     }
 
     private ProcessInformation getPlayerOnServer(UUID uniqueID) {
-        return Links.filter(processManager.getAllProcesses(), processInformation -> processInformation.getTemplate().isServer() && Links.filterToReference(processInformation.getOnlinePlayers(), player -> player.getUniqueID().equals(uniqueID)).isPresent());
+        return Streams.filter(processManager.getAllProcesses(), processInformation -> processInformation.getTemplate().isServer() && Streams.filterToReference(processInformation.getOnlinePlayers(), player -> player.getUniqueID().equals(uniqueID)).isPresent());
     }
 }

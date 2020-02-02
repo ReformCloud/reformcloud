@@ -63,12 +63,12 @@ public enum Version {
             "https://dl.reformcloud.systems/mcversions/spigots/spigot-1.15.jar", 1),
     SPIGOT_1_15_1("Spigot 1.15.1", "1.15.1",
             "https://dl.reformcloud.systems/mcversions/spigots/spigot-1.15.1.jar", 1),
+    SPIGOT_1_15_2("Spigot 1.15.2", "1.15.2",
+            "https://dl.reformcloud.systems/mcversions/spigots/spigot-1.15.2.jar", 1),
 
     /**
      * Paper Versions
      */
-    PAPER_1_7_10("Paper 1.7.10", "1.7.10",
-            "https://dl.reformcloud.systems/mcversions/paper/paper-1.7.10.jar", 1),
     PAPER_1_8_8("Paper 1.8.8-R0-1-SNAPSHOT", "1.8.8",
             "https://dl.reformcloud.systems/mcversions/paper/paper-1.8.8.jar", 1),
     PAPER_1_9_4("Paper 1.9.4", "1.9.4",
@@ -87,16 +87,12 @@ public enum Version {
             "https://dl.reformcloud.systems/mcversions/paper/paper-1.15.jar", 1),
     PAPER_1_15_1("Paper 1.15.1", "1.15.1",
             "https://dl.reformcloud.systems/mcversions/paper/paper-1.15.1.jar", 1),
+    PAPER_1_15_2("Paper 1.15.2", "1.15.2",
+            "https://dl.reformcloud.systems/mcversions/paper/paper-1.15.2.jar", 1),
 
     /**
      * SpongeVanilla Versions
      */
-    SPONGEVANILLA_1_8_9("SpongeVanilla 1.8.9", "1.8.9",
-            "https://dl.reformcloud.systems/mcversions/spongevanilla/spongevanilla-1.8.9.jar", 1),
-    SPONGEVANILLA_1_9_4("SpongeVanilla 1.9.4", "1.9.4",
-            "https://dl.reformcloud.systems/mcversions/spongevanilla/spongevanilla-1.9.4.jar", 1),
-    SPONGEVANILLA_1_10_2("SpongeVanilla 1.10.2", "1.10.2",
-            "https://dl.reformcloud.systems/mcversions/spongevanilla/spongevanilla-1.10.2.jar", 1),
     SPONGEVANILLA_1_11_2("SpongeVanilla 1.11.2", "1.11.2",
             "https://dl.reformcloud.systems/mcversions/spongevanilla/spongevanilla-1.11.2.jar", 1),
     SPONGEVANILLA_1_12_2("SpongeVanilla 1.12.2", "1.12.2",
@@ -105,8 +101,6 @@ public enum Version {
     /**
      * SpongeForge Versions
      */
-    SPONGEFORGE_1_8_9("SpongeForge 1.8.9", "1.8.9",
-            "https://dl.reformcloud.systems/mcversions/forge/sponge-1.8.9.zip", 1),
     SPONGEFORGE_1_10_2("SpongeForge 1.10.2", "1.10.2",
             "https://dl.reformcloud.systems/mcversions/forge/sponge-1.10.2.zip", 1),
     SPONGEFORGE_1_11_2("SpongeForge 1.11.2", "1.11.2",
@@ -270,6 +264,12 @@ public enum Version {
     }
 
     public static String format(Version version) {
+        if (version.equals(Version.SPONGEFORGE_1_10_2)
+                || version.equals(Version.SPONGEFORGE_1_11_2)
+                || version.equals(Version.SPONGEFORGE_1_12_2)) {
+            return version.getName().toLowerCase().replace(" ", "-") + "/process.jar";
+        }
+
         return version.name.toLowerCase().replace(" ", "-") + ".jar";
     }
 }

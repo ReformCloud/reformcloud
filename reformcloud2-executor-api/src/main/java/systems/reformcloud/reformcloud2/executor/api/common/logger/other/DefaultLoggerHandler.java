@@ -1,16 +1,20 @@
 package systems.reformcloud.reformcloud2.executor.api.common.logger.other;
 
-import jline.console.ConsoleReader;
-import org.fusesource.jansi.Ansi;
+import org.jline.reader.LineReader;
+import org.jline.terminal.Terminal;
+import org.jline.utils.InfoCmp;
+import systems.reformcloud.reformcloud2.executor.api.common.commands.manager.CommandManager;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.Debugger;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.HandlerBase;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.LoggerBase;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.LoggerLineHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.coloured.formatter.LogFileFormatter;
+import systems.reformcloud.reformcloud2.executor.api.common.logger.completer.JLine3Completer;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.other.debugger.DefaultDebugger;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.other.fornatter.DefaultLogFormatter;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.other.handler.DefaultConsoleHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.stream.OutputStream;
+import systems.reformcloud.reformcloud2.executor.api.common.logger.terminal.TerminalLineHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.StringUtil;
 
 import javax.annotation.Nonnull;
@@ -27,9 +31,9 @@ public final class DefaultLoggerHandler extends LoggerBase {
 
     private static String prompt = StringUtil.getConsolePrompt();
 
-    public DefaultLoggerHandler() throws IOException {
-        this.consoleReader = new ConsoleReader(System.in, System.out);
-        this.consoleReader.setExpandEvents(false);
+    public DefaultLoggerHandler(@Nonnull CommandManager commandManager) throws IOException {
+        Terminal terminal = TerminalLineHandler.newTerminal(false);
+        this.lineReader = TerminalLineHandler.newLineReader(terminal, new JLine3Completer(commandManager));
 
         FileHandler fileHandler = new FileHandler("logs/cloud.log", 70000000, 8, true);
         fileHandler.setLevel(Level.ALL);
@@ -45,7 +49,7 @@ public final class DefaultLoggerHandler extends LoggerBase {
         System.setErr(new PrintStream(new OutputStream(this, Level.SEVERE), true));
     }
 
-    private final ConsoleReader consoleReader;
+    private final LineReader lineReader;
 
     private final Debugger debugger = new DefaultDebugger();
 
@@ -53,32 +57,20 @@ public final class DefaultLoggerHandler extends LoggerBase {
 
     @Nonnull
     @Override
-    public ConsoleReader getConsoleReader() {
-        return consoleReader;
+    public LineReader getLineReader() {
+        return lineReader;
     }
 
     @Nonnull
     @Override
     public String readLine() {
-        try {
-            return consoleReader.readLine(prompt);
-        } catch (final IOException ex) {
-            ex.printStackTrace();
-        }
-
-        return "";
+        return TerminalLineHandler.readLine(lineReader, prompt);
     }
 
     @Nonnull
     @Override
     public String readLineNoPrompt() {
-        try {
-            return consoleReader.readLine();
-        } catch (final IOException ex) {
-            ex.printStackTrace();
-        }
-
-        return "";
+        return TerminalLineHandler.readLine(lineReader, null);
     }
 
     @Nonnull
@@ -110,26 +102,22 @@ public final class DefaultLoggerHandler extends LoggerBase {
     public void log(@Nonnull String message) {
         handleLine(message);
 
-        try {
-            consoleReader.print(Ansi.ansi().eraseLine(Ansi.Erase.ALL).toString() + ConsoleReader.RESET_LINE + message + Ansi.ansi().reset().toString());
-            consoleReader.drawLine();
-            consoleReader.flush();
-        } catch (final IOException ex) {
-            ex.printStackTrace();
-        }
+        lineReader.getTerminal().puts(InfoCmp.Capability.carriage_return);
+        lineReader.getTerminal().writer().print(message);
+        lineReader.getTerminal().flush();
+
+        TerminalLineHandler.tryRedisplay(lineReader);
     }
 
     @Override
     public void logRaw(@Nonnull String message) {
         handleLine(message);
 
-        try {
-            consoleReader.print(message + Ansi.ansi().reset().toString());
-            consoleReader.drawLine();
-            consoleReader.flush();
-        } catch (final IOException ex) {
-            ex.printStackTrace();
-        }
+        lineReader.getTerminal().puts(InfoCmp.Capability.carriage_return);
+        lineReader.getTerminal().writer().print(message);
+        lineReader.getTerminal().flush();
+
+        TerminalLineHandler.tryRedisplay(lineReader);
     }
 
     @Nonnull
@@ -152,9 +140,8 @@ public final class DefaultLoggerHandler extends LoggerBase {
 
     @Override
     public void close() throws Exception {
-        consoleReader.drawLine();
-        consoleReader.flush();
-        consoleReader.close();
+        lineReader.getTerminal().flush();
+        lineReader.getTerminal().close();
     }
 
     private void handleLine(String line) {

@@ -8,7 +8,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.channel.Pack
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.handler.DefaultJsonNetworkHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.JsonPacket;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 
 import javax.annotation.Nonnull;
 import java.util.function.Consumer;
@@ -26,6 +26,6 @@ public final class ControllerQueryInGetApplications extends DefaultJsonNetworkHa
     }
 
     private static JsonConfiguration convert() {
-        return new JsonConfiguration().add("result", Links.apply(ExecutorAPI.getInstance().getSyncAPI().getApplicationSyncAPI().getApplications(), application -> new DefaultLoadedApplication(application.loader(), application.applicationConfig(), application.mainClass())));
+        return new JsonConfiguration().add("result", Streams.apply(ExecutorAPI.getInstance().getSyncAPI().getApplicationSyncAPI().getApplications(), application -> new DefaultLoadedApplication(application.loader(), application.applicationConfig(), application.mainClass())));
     }
 }

@@ -7,8 +7,8 @@ import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
 import com.velocitypowered.api.plugin.Dependency;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.proxy.ProxyServer;
-import systems.reformcloud.reformcloud2.permissions.PermissionAPI;
 import systems.reformcloud.reformcloud2.permissions.packets.PacketHelper;
+import systems.reformcloud.reformcloud2.permissions.util.PermissionPluginUtil;
 import systems.reformcloud.reformcloud2.permissions.velocity.command.CommandCloudPerms;
 import systems.reformcloud.reformcloud2.permissions.velocity.listener.VelocityPermissionListener;
 
@@ -35,8 +35,7 @@ public class VelocityPermissionPlugin {
         proxy.getEventManager().register(this, new VelocityPermissionListener());
         proxy.getCommandManager().register(new CommandCloudPerms(), "perms", "permissions", "cloudperms");
 
-        PermissionAPI.handshake();
-        PacketHelper.addAPIPackets();
+        PermissionPluginUtil.awaitConnection();
     }
 
     @Subscribe

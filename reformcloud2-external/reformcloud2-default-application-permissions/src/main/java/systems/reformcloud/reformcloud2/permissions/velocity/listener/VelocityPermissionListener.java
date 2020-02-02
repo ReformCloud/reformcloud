@@ -5,7 +5,7 @@ import com.velocitypowered.api.event.connection.DisconnectEvent;
 import com.velocitypowered.api.event.connection.LoginEvent;
 import com.velocitypowered.api.event.connection.PostLoginEvent;
 import com.velocitypowered.api.event.permission.PermissionsSetupEvent;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 import systems.reformcloud.reformcloud2.permissions.PermissionAPI;
 import systems.reformcloud.reformcloud2.permissions.util.group.NodeGroup;
@@ -27,7 +27,7 @@ public class VelocityPermissionListener {
         final PermissionUser permissionUser = PermissionAPI.getInstance().getPermissionUtil().loadUser(event.getPlayer().getUniqueId());
         Task.EXECUTOR.execute(() -> {
             PermissionAPI.getInstance().getPermissionUtil().getDefaultGroups().forEach(e -> {
-                if (Links.filterToReference(permissionUser.getGroups(), g -> g.getGroupName().equals(e.getName())).isPresent()) {
+                if (Streams.filterToReference(permissionUser.getGroups(), g -> g.getGroupName().equals(e.getName())).isPresent()) {
                     return;
                 }
 

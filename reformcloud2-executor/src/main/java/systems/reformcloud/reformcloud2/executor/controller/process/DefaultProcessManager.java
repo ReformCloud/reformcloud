@@ -16,7 +16,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.process.NetworkInfo;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessRuntimeInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Trio;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
 import systems.reformcloud.reformcloud2.executor.api.controller.process.ProcessManager;
@@ -61,13 +61,13 @@ public final class DefaultProcessManager implements ProcessManager {
     @Override
     public List<ProcessInformation> getAllProcesses() {
         synchronized (processInformation) {
-            return Links.newList(processInformation);
+            return Streams.newList(processInformation);
         }
     }
 
     @Override
     public List<ProcessInformation> getProcesses(String group) {
-        return Links.list(getAllProcesses(), processInformation -> processInformation.getProcessGroup().getName().equals(group));
+        return Streams.list(getAllProcesses(), processInformation -> processInformation.getProcessGroup().getName().equals(group));
     }
 
     @Override
@@ -80,7 +80,7 @@ public final class DefaultProcessManager implements ProcessManager {
     public ProcessInformation getProcess(String name) {
         requireNonNull(name);
         synchronized (processInformation) {
-            return Links.filter(processInformation, processInformation -> processInformation.getName().equals(name));
+            return Streams.filter(processInformation, processInformation -> processInformation.getName().equals(name));
         }
     }
 
@@ -88,7 +88,7 @@ public final class DefaultProcessManager implements ProcessManager {
     public ProcessInformation getProcess(UUID uniqueID) {
         requireNonNull(uniqueID);
         synchronized (processInformation) {
-            return Links.filter(processInformation, processInformation -> processInformation.getProcessUniqueID().equals(uniqueID));
+            return Streams.filter(processInformation, processInformation -> processInformation.getProcessUniqueID().equals(uniqueID));
         }
     }
 
@@ -105,14 +105,14 @@ public final class DefaultProcessManager implements ProcessManager {
 
     @Override
     public ProcessInformation startProcess(String groupName, String template, JsonConfiguration configurable) {
-        ProcessGroup processGroup = Links.filter(ControllerExecutor.getInstance().getControllerExecutorConfig().getProcessGroups(), processGroup1 -> processGroup1.getName().equals(groupName));
+        ProcessGroup processGroup = Streams.filter(ControllerExecutor.getInstance().getControllerExecutorConfig().getProcessGroups(), processGroup1 -> processGroup1.getName().equals(groupName));
         if (processGroup == null) {
             // In some cases the group got deleted but the update process is sync and this method get called async!
             // To prevent any issues just return at this point
             return null;
         }
 
-        Template found = Links.filter(processGroup.getTemplates(), test -> Objects.equals(test.getName(), template));
+        Template found = Streams.filter(processGroup.getTemplates(), test -> Objects.equals(test.getName(), template));
 
         ProcessInformation processInformation = create(processGroup, found, configurable);
         if (processInformation == null) {
@@ -150,7 +150,7 @@ public final class DefaultProcessManager implements ProcessManager {
 
     @Override
     public void onClientDisconnect(String clientName) {
-        Links.allOf(processInformation, processInformation -> processInformation.getParent().equals(clientName)).forEach(processInformation -> {
+        Streams.allOf(processInformation, processInformation -> processInformation.getParent().equals(clientName)).forEach(processInformation -> {
             synchronized (DefaultProcessManager.this.processInformation) {
                 DefaultProcessManager.this.processInformation.remove(processInformation);
             }
@@ -225,7 +225,7 @@ public final class DefaultProcessManager implements ProcessManager {
 
     private int nextID(ProcessGroup processGroup) {
         int id = 1;
-        Collection<Integer> ids = Links.newCollection(processInformation, processInformation -> processInformation.getProcessGroup().getName().equals(processGroup.getName()), ProcessInformation::getId);
+        Collection<Integer> ids = Streams.newCollection(processInformation, processInformation -> processInformation.getProcessGroup().getName().equals(processGroup.getName()), ProcessInformation::getId);
 
         while (ids.contains(id)) {
             id++;
@@ -236,7 +236,7 @@ public final class DefaultProcessManager implements ProcessManager {
 
     private int nextPort(ProcessGroup processGroup) {
         int port = processGroup.getStartupConfiguration().getStartPort();
-        Collection<Integer> ports = Links.newCollection(processInformation, processInformation -> processInformation.getNetworkInfo().getPort());
+        Collection<Integer> ports = Streams.newCollection(processInformation, processInformation -> processInformation.getNetworkInfo().getPort());
 
         while (ports.contains(port)) {
             port++;
@@ -248,8 +248,8 @@ public final class DefaultProcessManager implements ProcessManager {
     private ClientRuntimeInformation client(ProcessGroup processGroup, Template template) {
         if (processGroup.getStartupConfiguration().isSearchBestClientAlone()) {
             AtomicReference<ClientRuntimeInformation> best = new AtomicReference<>();
-            Links.newCollection(ClientManager.INSTANCE.getClientRuntimeInformation(), clientRuntimeInformation -> {
-                Collection<Integer> startedOn = Links.newCollection(processInformation, processInformation -> processInformation.getParent().equals(clientRuntimeInformation.getName()), processInformation -> processInformation.getTemplate().getRuntimeConfiguration().getMaxMemory());
+            Streams.newCollection(ClientManager.INSTANCE.getClientRuntimeInformation(), clientRuntimeInformation -> {
+                Collection<Integer> startedOn = Streams.newCollection(processInformation, processInformation -> processInformation.getParent().equals(clientRuntimeInformation.getName()), processInformation -> processInformation.getTemplate().getRuntimeConfiguration().getMaxMemory());
 
                 int usedMemory = 0;
                 for (Integer integer : startedOn) {
@@ -270,12 +270,12 @@ public final class DefaultProcessManager implements ProcessManager {
             return best.get();
         } else {
             AtomicReference<ClientRuntimeInformation> best = new AtomicReference<>();
-            Links.newCollection(ClientManager.INSTANCE.getClientRuntimeInformation(), clientRuntimeInformation -> {
+            Streams.newCollection(ClientManager.INSTANCE.getClientRuntimeInformation(), clientRuntimeInformation -> {
                 if (!processGroup.getStartupConfiguration().getUseOnlyTheseClients().contains(clientRuntimeInformation.getName())) {
                     return false;
                 }
 
-                Collection<Integer> startedOn = Links.newCollection(processInformation, processInformation -> processInformation.getParent().equals(clientRuntimeInformation.getName()), processInformation -> processInformation.getTemplate().getRuntimeConfiguration().getMaxMemory());
+                Collection<Integer> startedOn = Streams.newCollection(processInformation, processInformation -> processInformation.getParent().equals(clientRuntimeInformation.getName()), processInformation -> processInformation.getTemplate().getRuntimeConfiguration().getMaxMemory());
 
                 int usedMemory = 0;
                 for (Integer integer : startedOn) {
@@ -299,7 +299,7 @@ public final class DefaultProcessManager implements ProcessManager {
 
     @Override
     public Iterator<ProcessInformation> iterator() {
-        return Links.newList(processInformation).iterator();
+        return Streams.newList(processInformation).iterator();
     }
 
     @Override
@@ -310,7 +310,7 @@ public final class DefaultProcessManager implements ProcessManager {
                 return;
             }
 
-            Links.filterToReference(this.processInformation,
+            Streams.filterToReference(this.processInformation,
                     e -> e.getProcessUniqueID().equals(processInformation.getProcessUniqueID())).ifPresent(e -> {
                         this.processInformation.remove(e);
                         this.processInformation.add(processInformation);

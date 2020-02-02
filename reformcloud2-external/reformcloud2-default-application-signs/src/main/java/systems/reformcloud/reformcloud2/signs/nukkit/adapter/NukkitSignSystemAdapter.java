@@ -14,7 +14,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Links;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 import systems.reformcloud.reformcloud2.signs.listener.CloudListener;
 import systems.reformcloud.reformcloud2.signs.nukkit.commands.NukkitCommandSigns;
@@ -161,7 +161,7 @@ public class NukkitSignSystemAdapter implements SignSystemAdapter<BlockEntitySig
 
     @Override
     public void deleteSign(@Nonnull CloudLocation location) {
-        Links.filterToReference(cachedSigns, e -> e.getLocation().equals(location)).ifPresent(e ->
+        Streams.filterToReference(cachedSigns, e -> e.getLocation().equals(location)).ifPresent(e ->
                 DefaultChannelManager.INSTANCE.get("Controller").ifPresent(s -> s.sendPacket(new APIPacketOutDeleteSign(e)))
         );
     }
@@ -169,7 +169,7 @@ public class NukkitSignSystemAdapter implements SignSystemAdapter<BlockEntitySig
     @Nullable
     @Override
     public CloudSign getSignAt(@Nonnull CloudLocation location) {
-        return Links.filter(cachedSigns, e -> e.getLocation().equals(location));
+        return Streams.filter(cachedSigns, e -> e.getLocation().equals(location));
     }
 
     @Nonnull
@@ -200,7 +200,7 @@ public class NukkitSignSystemAdapter implements SignSystemAdapter<BlockEntitySig
 
     @Override
     public void handleInternalSignDelete(@Nonnull CloudSign cloudSign) {
-        Links.filterToReference(cachedSigns, e -> e.getLocation().equals(cloudSign.getLocation())).ifPresent(e -> {
+        Streams.filterToReference(cachedSigns, e -> e.getLocation().equals(cloudSign.getLocation())).ifPresent(e -> {
             this.cachedSigns.remove(e);
             removeAssign(e);
             updateAllSigns();

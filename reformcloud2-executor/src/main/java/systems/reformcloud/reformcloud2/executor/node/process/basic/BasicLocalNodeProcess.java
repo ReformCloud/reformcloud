@@ -1,8 +1,5 @@
 package systems.reformcloud.reformcloud2.executor.node.process.basic;
 
-import net.md_5.config.Configuration;
-import net.md_5.config.ConfigurationProvider;
-import net.md_5.config.YamlConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Version;
@@ -36,7 +33,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
@@ -47,6 +47,14 @@ public class BasicLocalNodeProcess implements LocalNodeProcess {
 
     public BasicLocalNodeProcess(ProcessInformation processInformation) {
         this.processInformation = processInformation;
+
+        if (processInformation.getProcessGroup().isStaticProcess()) {
+            this.path = Paths.get("reformcloud/static/" + processInformation.getName());
+            SystemHelper.createDirectory(Paths.get(path + "/plugins"));
+        } else {
+            this.path = Paths.get("reformcloud/temp/" + processInformation.getName() + "-" + processInformation.getProcessUniqueID());
+            SystemHelper.recreateDirectory(path);
+        }
     }
 
     private final ProcessInformation processInformation;
@@ -67,14 +75,6 @@ public class BasicLocalNodeProcess implements LocalNodeProcess {
     @Override
     public void prepare() {
         processInformation.setProcessState(ProcessState.PREPARED);
-
-        if (processInformation.getProcessGroup().isStaticProcess()) {
-            this.path = Paths.get("reformcloud/static/" + processInformation.getName());
-            SystemHelper.createDirectory(Paths.get(path + "/plugins"));
-        } else {
-            this.path = Paths.get("reformcloud/temp/" + processInformation.getName() + "-" + processInformation.getProcessUniqueID());
-            SystemHelper.recreateDirectory(path);
-        }
 
         int port = PortUtil.checkPort(processInformation.getNetworkInfo().getPort());
         processInformation.getNetworkInfo().setPort(port);
@@ -213,6 +213,28 @@ public class BasicLocalNodeProcess implements LocalNodeProcess {
         );
     }
 
+    @Override
+    public CompletableFuture<Void> initTemplate() {
+        if (!processInformation.getProcessGroup().isStaticProcess()) {
+            try {
+                TemplateBackendManager.getOrDefault(this.processInformation.getTemplate().getBackend()).loadGlobalTemplates(
+                        this.processInformation.getProcessGroup(),
+                        this.path
+                ).get(5, TimeUnit.SECONDS);
+            } catch (final TimeoutException | InterruptedException | ExecutionException ex) {
+                System.err.println("Load of global templates took too long");
+            }
+
+            return TemplateBackendManager.getOrDefault(this.processInformation.getTemplate().getBackend()).loadTemplate(
+                    this.processInformation.getProcessGroup().getName(),
+                    this.processInformation.getTemplate().getName(),
+                    this.path
+            );
+        }
+
+        return CompletableFuture.completedFuture(null);
+    }
+
     @Nonnull
     @Override
     public ReferencedOptional<Process> getProcess() {
@@ -238,17 +260,13 @@ public class BasicLocalNodeProcess implements LocalNodeProcess {
     //Sponge
     private boolean isLogicallySpongeVanilla() {
         Version version = processInformation.getTemplate().getVersion();
-        return version.equals(Version.SPONGEVANILLA_1_8_9)
-                || version.equals(Version.SPONGEVANILLA_1_9_4)
-                || version.equals(Version.SPONGEVANILLA_1_10_2)
-                || version.equals(Version.SPONGEVANILLA_1_11_2)
+        return version.equals(Version.SPONGEVANILLA_1_11_2)
                 || version.equals(Version.SPONGEVANILLA_1_12_2);
     }
 
     private boolean isLogicallySpongeForge() {
         Version version = processInformation.getTemplate().getVersion();
-        return version.equals(Version.SPONGEFORGE_1_8_9)
-                || version.equals(Version.SPONGEFORGE_1_10_2)
+        return version.equals(Version.SPONGEFORGE_1_10_2)
                 || version.equals(Version.SPONGEFORGE_1_11_2)
                 || version.equals(Version.SPONGEFORGE_1_12_2);
     }
@@ -339,34 +357,37 @@ public class BasicLocalNodeProcess implements LocalNodeProcess {
     }
 
     private void rewriteGlowstoneConfig() {
-        try (InputStreamReader inputStreamReader = new InputStreamReader(Files.newInputStream(Paths.get(path + "/config/glowstone.yml")), StandardCharsets.UTF_8)) {
-            Configuration configuration = ConfigurationProvider.getProvider(YamlConfiguration.class).load(inputStreamReader);
-            configuration.set("server.ip", this.processInformation.getNetworkInfo().getHost());
-            configuration.set("server.port", this.processInformation.getNetworkInfo().getPort());
-            configuration.set("server.online-mode", false);
-            configuration.set("advanced.proxy-support", true);
-
-            try (OutputStreamWriter outputStreamWriter = new OutputStreamWriter(Files.newOutputStream(Paths.get(path + "/config/glowstone.yml")), StandardCharsets.UTF_8)) {
-                ConfigurationProvider.getProvider(YamlConfiguration.class).save(configuration, outputStreamWriter);
+        rewriteFile(new File(path + "/config/glowstone.yml"), (UnaryOperator<String>) s -> {
+            if (s.trim().startsWith("ip:")) {
+                s = "  ip: '" + this.processInformation.getNetworkInfo().getHost() +  "'";
             }
-        } catch (final IOException ex) {
-            ex.printStackTrace();
-        }
+
+            if (s.trim().startsWith("port:")) {
+                s = "  port: " + this.processInformation.getNetworkInfo().getPort();
+            }
+
+            if (s.trim().startsWith("online-mode:")) {
+                s = "  online-mode: false";
+            }
+
+            if (s.trim().startsWith("advanced.proxy-support:")) {
+                s = "  online-mode: false";
+            }
+
+            return s;
+        });
     }
 
     // ========================= //
     //Spigot
     private void rewriteSpigotConfig() {
-        try (InputStreamReader inputStreamReader = new InputStreamReader(Files.newInputStream(Paths.get(path + "/spigot.yml")), StandardCharsets.UTF_8)) {
-            Configuration configuration = ConfigurationProvider.getProvider(YamlConfiguration.class).load(inputStreamReader);
-            configuration.set("settings.bungeecord", true);
-
-            try (OutputStreamWriter outputStreamWriter = new OutputStreamWriter(Files.newOutputStream(Paths.get(path + "/spigot.yml")), StandardCharsets.UTF_8)) {
-                ConfigurationProvider.getProvider(YamlConfiguration.class).save(configuration, outputStreamWriter);
+        rewriteFile(new File(path + "/spigot.yml"), (UnaryOperator<String>) s -> {
+            if (s.trim().startsWith("bungeecord:")) {
+                s = "  bungeecord: true";
             }
-        } catch (final IOException ex) {
-            ex.printStackTrace();
-        }
+
+            return s;
+        });
     }
 
     // ========================= //
@@ -384,17 +405,33 @@ public class BasicLocalNodeProcess implements LocalNodeProcess {
         createEula();
         createTemplateAndFiles();
 
+        if (isLogicallySpongeForge()) {
+            Version version = processInformation.getTemplate().getVersion();
+            String fileName = "reformcloud/files/" + version.getName().toLowerCase().replace(" ", "-") + ".zip";
+            String destPath = "reformcloud/files/" + version.getName().toLowerCase().replace(" ", "-");
+
+            if (!Files.exists(Paths.get(destPath))) {
+                DownloadHelper.downloadAndDisconnect(version.getUrl(), fileName);
+
+                SystemHelper.unZip(Paths.get(fileName).toFile(), destPath);
+                SystemHelper.rename(Paths.get(destPath + "/sponge.jar").toFile(), destPath + "/process.jar");
+                SystemHelper.deleteFile(new File(fileName));
+            }
+
+            SystemHelper.copyDirectory(Paths.get(destPath + "/mods"), Paths.get(path + "/mods"));
+        }
+
         if (isLogicallyGlowstone()) {
             SystemHelper.createDirectory(Paths.get(path + "/config"));
             SystemHelper.doInternalCopy(getClass().getClassLoader(), "files/java/glowstone/glowstone.yml", path + "/config/glowstone.yml");
             rewriteGlowstoneConfig();
         } else if (isLogicallySpongeVanilla()) {
             SystemHelper.createDirectory(Paths.get(path + "/config/sponge"));
-            SystemHelper.doInternalCopy(getClass().getClassLoader(), "files/java/sponge/vanilla/global.conf", path + "/config/sponge");
+            SystemHelper.doInternalCopy(getClass().getClassLoader(), "files/java/sponge/vanilla/global.conf", path + "/config/sponge/global.conf");
             rewriteSpongeConfig();
         } else if (isLogicallySpongeForge()) {
             SystemHelper.createDirectory(Paths.get(path + "/config/sponge"));
-            SystemHelper.doInternalCopy(getClass().getClassLoader(), "files/java/sponge/forge/global.conf", path + "/config/sponge");
+            SystemHelper.doInternalCopy(getClass().getClassLoader(), "files/java/sponge/forge/global.conf", path + "/config/sponge/global.conf");
             rewriteSpongeConfig();
         } else if (processInformation.getTemplate().getVersion().equals(Version.NUKKIT_X)) {
             SystemHelper.doInternalCopy(getClass().getClassLoader(), "files/mcpe/nukkit/server.properties", path + "/server.properties");
@@ -439,17 +476,6 @@ public class BasicLocalNodeProcess implements LocalNodeProcess {
             if (!Files.exists(Paths.get("reformcloud/files/" + Version.format(version)))) {
                 Version.downloadVersion(version);
             }
-        } else if (isLogicallySpongeForge()) {
-            Version version = processInformation.getTemplate().getVersion();
-            if (!Files.exists(Paths.get("reformcloud/files/" + version.getName() + ".zip"))) {
-                DownloadHelper.downloadAndDisconnect(
-                        version.getUrl(), "reformcloud/files/" + version.getName() + ".zip"
-                );
-            }
-
-            SystemHelper.doCopy("reformcloud/files/" + version.getName() + ".zip", path + "/version.zip");
-            SystemHelper.unZip(Paths.get(path + "/version.zip").toFile(), path.toString());
-            SystemHelper.rename(Paths.get(path + "/sponge.jar").toFile(), path + "/process.jar");
         }
     }
 
@@ -490,14 +516,6 @@ public class BasicLocalNodeProcess implements LocalNodeProcess {
     }
 
     private void createTemplateAndFiles() {
-        if (!processInformation.getProcessGroup().isStaticProcess()) {
-            TemplateBackendManager.getOrDefault(this.processInformation.getTemplate().getBackend()).loadTemplate(
-                    this.processInformation.getProcessGroup().getName(),
-                    this.processInformation.getTemplate().getName(),
-                    this.path
-            );
-        }
-
         SystemHelper.createDirectory(Paths.get(path + "/plugins"));
         SystemHelper.createDirectory(Paths.get(path + "/reformcloud/.connection"));
         new JsonConfiguration().add("key", NodeExecutor.getInstance().getNodeExecutorConfig().getCurrentNodeConnectionKey())
