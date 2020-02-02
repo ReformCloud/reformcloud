@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.TimeUnit;
 
 public final class SFTPTemplateBackend implements TemplateBackend {
 
@@ -40,16 +41,6 @@ public final class SFTPTemplateBackend implements TemplateBackend {
         }
 
         TemplateBackendManager.registerBackend(new SFTPTemplateBackend(config));
-        NetworkUtil.EXECUTOR.execute(() -> {
-            while (!Thread.interrupted()) {
-                try {
-                    Runnable runnable = TASKS.takeFirst();
-                    runnable.run();
-                } catch (final InterruptedException ex) {
-                    ex.printStackTrace();
-                }
-            }
-        });
     }
 
     public static void unload() {
@@ -66,25 +57,32 @@ public final class SFTPTemplateBackend implements TemplateBackend {
 
     private SFTPTemplateBackend(SFTPConfig config) {
         this.config = config;
+        this.open();
 
-        try {
-            this.session = new JSch().getSession(config.getUser(), config.getHost(), config.getPort());
-            this.session.setPassword(config.getPassword());
-            this.session.setConfig("StrictHostKeyChecking", "no");
-            this.session.connect(2500);
+        NetworkUtil.EXECUTOR.execute(() -> {
+            while (!Thread.interrupted()) {
+                try {
+                    Runnable runnable = TASKS.poll(20, TimeUnit.SECONDS);
+                    boolean available = !this.isDisconnected();
 
-            this.channel = (ChannelSftp) this.session.openChannel("sftp");
-            if (this.channel == null) {
-                this.session.disconnect();
-                this.session = null;
-                return;
+                    if (runnable == null) {
+                        if (available) {
+                            this.channel.disconnect();
+                        }
+
+                        continue;
+                    }
+
+                    if (!available) {
+                        this.open();
+                    }
+
+                    runnable.run();
+                } catch (final InterruptedException ex) {
+                    ex.printStackTrace();
+                }
             }
-
-            this.channel.connect();
-            this.channel.setFilenameEncoding(StandardCharsets.UTF_8.name());
-        } catch (final JSchException | SftpException ex) {
-            ex.printStackTrace();
-        }
+        });
     }
 
     private boolean isDisconnected() {
@@ -266,8 +264,7 @@ public final class SFTPTemplateBackend implements TemplateBackend {
 
                 return 0;
             });
-        } catch (SftpException exception) {
-            exception.printStackTrace();
+        } catch (final SftpException ex) {
             return null;
         }
 
@@ -282,6 +279,27 @@ public final class SFTPTemplateBackend implements TemplateBackend {
         };
         TASKS.offerLast(newRunnable);
         return completableFuture;
+    }
+
+    private void open() {
+        try {
+            this.session = new JSch().getSession(config.getUser(), config.getHost(), config.getPort());
+            this.session.setPassword(config.getPassword());
+            this.session.setConfig("StrictHostKeyChecking", "no");
+            this.session.connect(2500);
+
+            this.channel = (ChannelSftp) this.session.openChannel("sftp");
+            if (this.channel == null) {
+                this.session.disconnect();
+                this.session = null;
+                return;
+            }
+
+            this.channel.connect();
+            this.channel.setFilenameEncoding(StandardCharsets.UTF_8.name());
+        } catch (final JSchException | SftpException ex) {
+            ex.printStackTrace();
+        }
     }
 
     @Nonnull
