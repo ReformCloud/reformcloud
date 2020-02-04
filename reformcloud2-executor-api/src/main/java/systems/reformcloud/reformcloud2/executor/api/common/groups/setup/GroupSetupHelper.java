@@ -64,9 +64,9 @@ public final class GroupSetupHelper {
                             new MainGroup("Lobbies", Collections.singletonList("Lobby"))
                     }
             ), new BasicGroupSetupVersion(
-                    "java-bungee-lobby-1.15.1",
+                    "java-bungee-lobby-1.15.2",
                     new ProcessGroup[] {
-                            new DefaultProcessGroup("Lobby", 41000, Version.PAPER_1_15_1,
+                            new DefaultProcessGroup("Lobby", 41000, Version.PAPER_1_15_2,
                                     512, false, 50, false, true),
                             new DefaultProcessGroup("Proxy", 25565, Version.WATERFALL,
                                     256, true, 512)
@@ -77,7 +77,7 @@ public final class GroupSetupHelper {
             ), new BasicGroupSetupVersion(
                     "java-default",
                     new ProcessGroup[] {
-                            new DefaultProcessGroup("Lobby", 41000, Version.PAPER_1_15_1,
+                            new DefaultProcessGroup("Lobby", 41000, Version.PAPER_1_15_2,
                                     512, false, 50, false, true),
                             new DefaultProcessGroup("Proxy", 25565, Version.WATERFALL,
                                     256, true, 512)
