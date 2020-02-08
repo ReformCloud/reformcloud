@@ -1,6 +1,7 @@
 package systems.reformcloud.reformcloud2.executor.api.common.configuration;
 
 import com.google.gson.reflect.TypeToken;
+import de.derklaro.projects.deer.api.writer.FileWriter;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -13,7 +14,7 @@ import java.util.function.Predicate;
 /**
  * Represents any configuration used in the cloud system
  */
-public interface Configurable<V extends Configurable> {
+public interface Configurable<V extends Configurable> extends FileWriter {
 
     @Nonnull
     V add(@Nonnull String key, @Nullable V value);

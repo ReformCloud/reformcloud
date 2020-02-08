@@ -2,6 +2,7 @@ package systems.reformcloud.reformcloud2.executor.api.common.configuration;
 
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.base.Conditions;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.gson.InternalJsonParser;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.system.SystemHelper;
@@ -496,5 +497,11 @@ public final class JsonConfiguration implements Configurable<JsonConfiguration> 
 
     public static JsonConfiguration read(File path) {
         return read(path.toPath());
+    }
+
+    @NotNull
+    @Override
+    public String toWriteableString() {
+        return this.toPrettyString();
     }
 }
