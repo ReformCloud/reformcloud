@@ -320,6 +320,11 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
         }
 
         SystemHelper.createDirectory(Paths.get("reformcloud/.update/apps"));
+        String fileName = application.getApplication().applicationConfig().applicationFile().getName();
+        String[] split = fileName.split("-");
+        String name = fileName
+                .replace("-" + split[split.length - 1], "")
+                .replace(".jar", "");
 
         System.out.println(LanguageManager.get(
                 "application-download-update",
@@ -331,7 +336,7 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
         ));
         DownloadHelper.downloadAndDisconnect(
                 repository.getUpdate().getDownloadUrl(),
-                "reformcloud/.update/apps/" + application.getApplication().getName()
+                "reformcloud/.update/apps/" + name
                         + "-" + repository.getUpdate().getNewVersion() + ".jar"
         );
     }
