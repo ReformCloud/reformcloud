@@ -13,6 +13,8 @@ import systems.reformcloud.reformcloud2.executor.api.common.api.database.Databas
 import systems.reformcloud.reformcloud2.executor.api.common.api.database.DatabaseSyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.group.GroupAsyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.group.GroupSyncAPI;
+import systems.reformcloud.reformcloud2.executor.api.common.api.messaging.MessageAsyncAPI;
+import systems.reformcloud.reformcloud2.executor.api.common.api.messaging.MessageSyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.player.PlayerAsyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.player.PlayerSyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.plugins.PluginAsyncAPI;
@@ -80,6 +82,12 @@ public class GeneralAPI implements SyncAPI, AsyncAPI {
 
     @Nonnull
     @Override
+    public MessageAsyncAPI getMessageAsyncAPI() {
+        return externalAPIImplementation;
+    }
+
+    @Nonnull
+    @Override
     public ProcessSyncAPI getProcessSyncAPI() {
         return externalAPIImplementation;
     }
@@ -123,6 +131,12 @@ public class GeneralAPI implements SyncAPI, AsyncAPI {
     @Nonnull
     @Override
     public DatabaseSyncAPI getDatabaseSyncAPI() {
+        return externalAPIImplementation;
+    }
+
+    @Nonnull
+    @Override
+    public MessageSyncAPI getMessageSyncAPI() {
         return externalAPIImplementation;
     }
 }

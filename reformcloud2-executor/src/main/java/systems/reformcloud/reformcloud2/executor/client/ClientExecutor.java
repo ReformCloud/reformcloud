@@ -34,6 +34,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.channel.hand
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.common.network.client.DefaultNetworkClient;
 import systems.reformcloud.reformcloud2.executor.api.common.network.client.NetworkClient;
+import systems.reformcloud.reformcloud2.executor.api.common.network.messaging.ProxiedChannelMessageHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.defaults.DefaultPacketHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.handler.PacketHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
@@ -157,6 +158,7 @@ public final class ClientExecutor extends Client {
 
     private void registerNetworkHandlers() {
         new Reflections("systems.reformcloud.reformcloud2.executor.client.packet.in").getSubTypesOf(DefaultJsonNetworkHandler.class).forEach(packetHandler::registerHandler);
+        this.packetHandler.registerHandler(new ProxiedChannelMessageHandler());
     }
 
     private void registerDefaultCommands() {

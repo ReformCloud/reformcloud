@@ -16,6 +16,9 @@ import systems.reformcloud.reformcloud2.executor.api.common.api.database.Databas
 import systems.reformcloud.reformcloud2.executor.api.common.api.database.DatabaseSyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.group.GroupAsyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.group.GroupSyncAPI;
+import systems.reformcloud.reformcloud2.executor.api.common.api.messaging.MessageAsyncAPI;
+import systems.reformcloud.reformcloud2.executor.api.common.api.messaging.MessageSyncAPI;
+import systems.reformcloud.reformcloud2.executor.api.common.api.messaging.util.ErrorReportHandling;
 import systems.reformcloud.reformcloud2.executor.api.common.api.player.PlayerAsyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.player.PlayerSyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.plugins.PluginAsyncAPI;
@@ -35,6 +38,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.PlayerA
 import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.StartupConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.StartupEnvironment;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
+import systems.reformcloud.reformcloud2.executor.api.common.network.messaging.DefaultMessageJsonPacket;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.handler.PacketHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.plugins.InstallablePlugin;
@@ -47,31 +51,21 @@ import systems.reformcloud.reformcloud2.executor.api.common.utility.task.default
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
 public abstract class ExternalAPIImplementation extends ExecutorAPI implements
-        ProcessSyncAPI,
-        ProcessAsyncAPI,
-        ApplicationSyncAPI,
-        ApplicationAsyncAPI,
-        ClientSyncAPI,
-        ClientAsyncAPI,
-        ConsoleSyncAPI,
-        ConsoleAsyncAPI,
-        DatabaseSyncAPI,
-        DatabaseAsyncAPI,
-        GroupSyncAPI,
-        GroupAsyncAPI,
-        PlayerSyncAPI,
-        PlayerAsyncAPI,
-        PluginSyncAPI,
-        PluginAsyncAPI {
+        ProcessSyncAPI, ProcessAsyncAPI,
+        ApplicationSyncAPI, ApplicationAsyncAPI,
+        ClientSyncAPI, ClientAsyncAPI,
+        ConsoleSyncAPI, ConsoleAsyncAPI,
+        DatabaseSyncAPI, DatabaseAsyncAPI,
+        GroupSyncAPI, GroupAsyncAPI,
+        PlayerSyncAPI, PlayerAsyncAPI,
+        PluginSyncAPI, PluginAsyncAPI,
+        MessageSyncAPI, MessageAsyncAPI {
 
     public static final int EXTERNAL_PACKET_ID = 600;
 
@@ -1185,6 +1179,24 @@ public abstract class ExternalAPIImplementation extends ExecutorAPI implements
     @Override
     public PacketHandler getPacketHandler() {
         return packetHandler();
+    }
+
+    @Nonnull
+    @Override
+    public Task<Void> sendChannelMessageAsync(@Nonnull JsonConfiguration jsonConfiguration, @Nonnull ErrorReportHandling errorReportHandling, @Nonnull String... receivers) {
+        Task<Void> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(() -> {
+            DefaultChannelManager.INSTANCE.get("Controller").ifPresent(sender -> sender.sendPacket(
+                    new DefaultMessageJsonPacket(jsonConfiguration, Arrays.asList(receivers), errorReportHandling)
+            ));
+            task.complete(null);
+        });
+        return task;
+    }
+
+    @Override
+    public void sendChannelMessageSync(@Nonnull JsonConfiguration jsonConfiguration, @Nonnull ErrorReportHandling errorReportHandling, @Nonnull String... receivers) {
+        sendChannelMessageAsync(jsonConfiguration, errorReportHandling, receivers).awaitUninterruptedly();
     }
 
     @Nonnull

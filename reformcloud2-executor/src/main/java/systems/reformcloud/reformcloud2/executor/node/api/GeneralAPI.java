@@ -12,6 +12,8 @@ import systems.reformcloud.reformcloud2.executor.api.common.api.database.Databas
 import systems.reformcloud.reformcloud2.executor.api.common.api.database.DatabaseSyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.group.GroupAsyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.group.GroupSyncAPI;
+import systems.reformcloud.reformcloud2.executor.api.common.api.messaging.MessageAsyncAPI;
+import systems.reformcloud.reformcloud2.executor.api.common.api.messaging.MessageSyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.player.PlayerAsyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.player.PlayerSyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.plugins.PluginAsyncAPI;
@@ -23,6 +25,7 @@ import systems.reformcloud.reformcloud2.executor.node.api.client.ClientAPIImplem
 import systems.reformcloud.reformcloud2.executor.node.api.console.ConsoleAPIImplementation;
 import systems.reformcloud.reformcloud2.executor.node.api.database.DatabaseAPIImplementation;
 import systems.reformcloud.reformcloud2.executor.node.api.group.GroupAPIImplementation;
+import systems.reformcloud.reformcloud2.executor.node.api.message.ChannelMessageAPIImplementation;
 import systems.reformcloud.reformcloud2.executor.node.api.player.PlayerAPIImplementation;
 import systems.reformcloud.reformcloud2.executor.node.api.plugins.PluginAPIImplementation;
 import systems.reformcloud.reformcloud2.executor.node.api.process.ProcessAPIImplementation;
@@ -39,7 +42,8 @@ public class GeneralAPI implements SyncAPI, AsyncAPI {
             GroupAPIImplementation groupAPI,
             PlayerAPIImplementation playerAPI,
             PluginAPIImplementation pluginAPI,
-            ProcessAPIImplementation processAPI
+            ProcessAPIImplementation processAPI,
+            ChannelMessageAPIImplementation channelAPI
     ) {
         this.applicationAPI = applicationAPI;
         this.clientAPI = clientAPI;
@@ -49,6 +53,7 @@ public class GeneralAPI implements SyncAPI, AsyncAPI {
         this.playerAPI = playerAPI;
         this.pluginAPI = pluginAPI;
         this.processAPI = processAPI;
+        this.channelAPI = channelAPI;
     }
 
     private final ApplicationAPIImplementation applicationAPI;
@@ -66,6 +71,8 @@ public class GeneralAPI implements SyncAPI, AsyncAPI {
     private final PluginAPIImplementation pluginAPI;
 
     private final ProcessAPIImplementation processAPI;
+
+    private final ChannelMessageAPIImplementation channelAPI;
 
     @Nonnull
     @Override
@@ -117,6 +124,12 @@ public class GeneralAPI implements SyncAPI, AsyncAPI {
 
     @Nonnull
     @Override
+    public MessageAsyncAPI getMessageAsyncAPI() {
+        return this.channelAPI;
+    }
+
+    @Nonnull
+    @Override
     public ProcessSyncAPI getProcessSyncAPI() {
         return processAPI;
     }
@@ -161,5 +174,11 @@ public class GeneralAPI implements SyncAPI, AsyncAPI {
     @Override
     public DatabaseSyncAPI getDatabaseSyncAPI() {
         return databaseAPI;
+    }
+
+    @Nonnull
+    @Override
+    public MessageSyncAPI getMessageSyncAPI() {
+        return this.channelAPI;
     }
 }

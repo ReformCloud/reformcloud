@@ -22,6 +22,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.channel.Pack
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.common.network.client.DefaultNetworkClient;
 import systems.reformcloud.reformcloud2.executor.api.common.network.client.NetworkClient;
+import systems.reformcloud.reformcloud2.executor.api.common.network.messaging.ProxiedChannelMessageHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.defaults.DefaultPacketHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.handler.PacketHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
@@ -73,6 +74,7 @@ public final class VelocityExecutor extends API implements PlayerAPIExecutor {
         getEventManager().registerListener(this);
         proxyServer.getEventManager().register(launcher, new PlayerListenerHandler());
 
+        packetHandler.registerHandler(new ProxiedChannelMessageHandler());
         packetHandler.registerHandler(new APIPacketInAPIAction(this));
         packetHandler.registerHandler(new APIPacketInPluginAction(new PluginExecutorContainer()));
 
