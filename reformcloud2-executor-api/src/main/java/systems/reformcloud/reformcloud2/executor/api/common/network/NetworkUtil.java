@@ -55,6 +55,8 @@ public final class NetworkUtil {
 
     public static final int EXTERNAL_BUS = 50000;
 
+    public static final int MESSAGING_BUS = 60000;
+
     /* ============================ */
 
     public static final Executor EXECUTOR = Executors.newCachedThreadPool();

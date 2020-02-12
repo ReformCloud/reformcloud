@@ -6,6 +6,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.api.client.ClientAsy
 import systems.reformcloud.reformcloud2.executor.api.common.api.console.ConsoleAsyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.database.DatabaseAsyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.group.GroupAsyncAPI;
+import systems.reformcloud.reformcloud2.executor.api.common.api.messaging.MessageAsyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.player.PlayerAsyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.plugins.PluginAsyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.process.ProcessAsyncAPI;
@@ -66,4 +67,10 @@ public interface AsyncAPI {
      */
     @Nonnull
     DatabaseAsyncAPI getDatabaseAsyncAPI();
+
+    /**
+     * @return The current messaging async api instance
+     */
+    @Nonnull
+    MessageAsyncAPI getMessageAsyncAPI();
 }

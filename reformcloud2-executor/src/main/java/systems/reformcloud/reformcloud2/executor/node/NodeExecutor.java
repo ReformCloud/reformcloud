@@ -69,12 +69,14 @@ import systems.reformcloud.reformcloud2.executor.api.node.cluster.ClusterSyncMan
 import systems.reformcloud.reformcloud2.executor.api.node.cluster.SyncAction;
 import systems.reformcloud.reformcloud2.executor.api.node.network.NodeNetworkManager;
 import systems.reformcloud.reformcloud2.executor.controller.packet.in.ControllerPacketInAPIAction;
+import systems.reformcloud.reformcloud2.executor.controller.packet.in.ControllerPacketInHandleChannelMessage;
 import systems.reformcloud.reformcloud2.executor.node.api.GeneralAPI;
 import systems.reformcloud.reformcloud2.executor.node.api.applications.ApplicationAPIImplementation;
 import systems.reformcloud.reformcloud2.executor.node.api.client.ClientAPIImplementation;
 import systems.reformcloud.reformcloud2.executor.node.api.console.ConsoleAPIImplementation;
 import systems.reformcloud.reformcloud2.executor.node.api.database.DatabaseAPIImplementation;
 import systems.reformcloud.reformcloud2.executor.node.api.group.GroupAPIImplementation;
+import systems.reformcloud.reformcloud2.executor.node.api.message.ChannelMessageAPIImplementation;
 import systems.reformcloud.reformcloud2.executor.node.api.player.PlayerAPIImplementation;
 import systems.reformcloud.reformcloud2.executor.node.api.plugins.PluginAPIImplementation;
 import systems.reformcloud.reformcloud2.executor.node.api.process.ProcessAPIImplementation;
@@ -239,7 +241,8 @@ public class NodeExecutor extends Node {
                 new GroupAPIImplementation(this.clusterSyncManager),
                 new PlayerAPIImplementation(this.nodeNetworkManager),
                 new PluginAPIImplementation(this.nodeNetworkManager),
-                new ProcessAPIImplementation(this.nodeNetworkManager)
+                new ProcessAPIImplementation(this.nodeNetworkManager),
+                new ChannelMessageAPIImplementation()
         );
         this.syncAPI = generalAPI;
         this.asyncAPI = generalAPI;
@@ -673,7 +676,9 @@ public class NodeExecutor extends Node {
         });
 
         new Reflections("systems.reformcloud.reformcloud2.executor.node.network.packet.query.in").getSubTypesOf(DefaultJsonNetworkHandler.class).forEach(packetHandler::registerHandler);
+
         this.packetHandler.registerHandler(new ControllerPacketInAPIAction()); // External implementation which handles the api actions (we can re-use it)
+        this.packetHandler.registerHandler(new ControllerPacketInHandleChannelMessage()); // Implementation for the channel messaging api
     }
 
     private void sync(PacketSender sender) {

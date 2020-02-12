@@ -28,6 +28,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.channel.Pack
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.common.network.client.DefaultNetworkClient;
 import systems.reformcloud.reformcloud2.executor.api.common.network.client.NetworkClient;
+import systems.reformcloud.reformcloud2.executor.api.common.network.messaging.ProxiedChannelMessageHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.defaults.DefaultPacketHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.handler.PacketHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
@@ -81,24 +82,17 @@ public final class BungeeExecutor extends API implements PlayerAPIExecutor {
         getEventManager().registerListener(this);
 
         packetHandler.registerHandler(new APIPacketInAPIAction(this));
-        packetHandler.registerHandler(
-                new APIPacketInPluginAction(new PluginExecutorContainer()));
+        packetHandler.registerHandler(new APIPacketInPluginAction(new PluginExecutorContainer()));
+        packetHandler.registerHandler(new ProxiedChannelMessageHandler());
 
-        String connectionKey =
-                JsonConfiguration.read("reformcloud/.connection/key.json")
-                        .getString("key");
+        String connectionKey = JsonConfiguration.read("reformcloud/.connection/key.json").getString("key");
         SystemHelper.deleteFile(new File("reformcloud/.connection/key.json"));
-        JsonConfiguration connectionConfig =
-                JsonConfiguration.read("reformcloud/.connection/connection.json");
+        JsonConfiguration connectionConfig = JsonConfiguration.read("reformcloud/.connection/connection.json");
 
-        this.thisProcessInformation =
-                connectionConfig.get("startInfo", ProcessInformation.TYPE);
-        waterdog = thisProcessInformation.getTemplate().getVersion().equals(
-                Version.WATERDOG) ||
-                thisProcessInformation.getTemplate().getVersion().equals(
-                        Version.WATERDOG_PE);
-        waterdogPE = thisProcessInformation.getTemplate().getVersion().equals(
-                Version.WATERDOG_PE);
+        this.thisProcessInformation = connectionConfig.get("startInfo", ProcessInformation.TYPE);
+        waterdog = thisProcessInformation.getTemplate().getVersion().equals(Version.WATERDOG)
+                || thisProcessInformation.getTemplate().getVersion().equals(Version.WATERDOG_PE);
+        waterdogPE = thisProcessInformation.getTemplate().getVersion().equals(Version.WATERDOG_PE);
 
         this.networkClient.connect(
                 connectionConfig.getString("controller-host"),

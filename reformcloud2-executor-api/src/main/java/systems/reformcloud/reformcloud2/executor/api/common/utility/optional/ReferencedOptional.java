@@ -5,6 +5,7 @@ import javax.annotation.Nullable;
 import java.io.Serializable;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 public final class ReferencedOptional<T> implements Serializable {
 
@@ -17,7 +18,6 @@ public final class ReferencedOptional<T> implements Serializable {
         return new ReferencedOptional<>();
     }
 
-    @SuppressWarnings("unchecked")
     @Nonnull
     public static <T> ReferencedOptional<T> build(@Nullable T value) {
         return new ReferencedOptional<T>().update(value);
@@ -28,7 +28,7 @@ public final class ReferencedOptional<T> implements Serializable {
     private final AtomicReference<T> reference = new AtomicReference<>();
 
     @Nonnull
-    public ReferencedOptional update(@Nullable T newValue) {
+    public ReferencedOptional<T> update(@Nullable T newValue) {
         if (newValue != null) {
             reference.set(newValue);
         }
@@ -56,6 +56,16 @@ public final class ReferencedOptional<T> implements Serializable {
         }
 
         return value;
+    }
+
+    public void orElseDo(@Nonnull Predicate<T> predicate, @Nonnull Runnable ifFalse, @Nonnull Consumer<T> or) {
+        T value = reference.get();
+        if (!predicate.test(value)) {
+            ifFalse.run();
+            return;
+        }
+
+        or.accept(value);
     }
 
     public boolean isPresent() {

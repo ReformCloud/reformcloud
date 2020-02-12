@@ -62,6 +62,7 @@ import systems.reformcloud.reformcloud2.executor.controller.api.client.ClientAPI
 import systems.reformcloud.reformcloud2.executor.controller.api.console.ConsoleAPIImplementation;
 import systems.reformcloud.reformcloud2.executor.controller.api.database.DatabaseAPIImplementation;
 import systems.reformcloud.reformcloud2.executor.controller.api.group.GroupAPIImplementation;
+import systems.reformcloud.reformcloud2.executor.controller.api.message.ChannelMessageAPIImplementation;
 import systems.reformcloud.reformcloud2.executor.controller.api.player.PlayerAPIImplementation;
 import systems.reformcloud.reformcloud2.executor.controller.api.plugins.PluginAPIImplementation;
 import systems.reformcloud.reformcloud2.executor.controller.api.process.ProcessAPIImplementation;
@@ -187,7 +188,8 @@ public final class ControllerExecutor extends Controller {
                 new GroupAPIImplementation(),
                 new PlayerAPIImplementation(this.processManager),
                 new PluginAPIImplementation(),
-                new ProcessAPIImplementation(this.processManager)
+                new ProcessAPIImplementation(this.processManager),
+                new ChannelMessageAPIImplementation()
         );
         this.syncAPI = generalAPI;
         this.asyncAPI = generalAPI;
