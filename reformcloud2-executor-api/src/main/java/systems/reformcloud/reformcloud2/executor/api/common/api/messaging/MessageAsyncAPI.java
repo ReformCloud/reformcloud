@@ -13,7 +13,7 @@ public interface MessageAsyncAPI {
      *
      * @param receiver          The receiver of the channel message
      * @param jsonConfiguration The content which should get sent
-     * @return A task which will get completed when the message got sent to all senders
+     * @return A task which will get completed when the message got sent to all receivers
      */
     @Nonnull
     default Task<Void> sendChannelMessageAsync(@Nonnull String receiver, @Nonnull JsonConfiguration jsonConfiguration) {
@@ -25,7 +25,7 @@ public interface MessageAsyncAPI {
      *
      * @param jsonConfiguration The content which should get sent
      * @param receivers         The receivers of the channel message
-     * @return A task which will get completed when the message got sent to all senders
+     * @return A task which will get completed when the message got sent to all receivers
      */
     @Nonnull
     default Task<Void> sendChannelMessageAsync(@Nonnull JsonConfiguration jsonConfiguration, @Nonnull String... receivers) {
@@ -39,7 +39,7 @@ public interface MessageAsyncAPI {
      * @param jsonConfiguration   The content which should get sent
      * @param errorReportHandling The handling type of errors if a channel is not available in the network
      * @param receivers           The receivers of the channel message
-     * @return A task which will get completed when the message got sent to all senders
+     * @return A task which will get completed when the message got sent to all receivers
      */
     @Nonnull
     Task<Void> sendChannelMessageAsync(@Nonnull JsonConfiguration jsonConfiguration, @Nonnull ErrorReportHandling errorReportHandling, @Nonnull String... receivers);
