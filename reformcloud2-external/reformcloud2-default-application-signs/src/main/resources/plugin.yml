@@ -2,6 +2,7 @@ name: ReformCloud2Signs
 version: '2.0'
 author: derklaro
 main: systems.reformcloud.reformcloud2.signs.bukkit.BukkitPlugin
+api-version: '1.13'
 
 depend:
   - ReformCloud2SpigotExecutor
