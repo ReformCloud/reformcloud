@@ -134,7 +134,7 @@ public final class GroupSetupHelper {
                     new ProcessGroup[] {
                             new DefaultProcessGroup("Lobby", 41000, Version.NUKKIT_X,
                                     512, false, 50, false, true),
-                            new DefaultProcessGroup("Proxy", 25565, Version.WATERDOG_PE,
+                            new DefaultProcessGroup("Proxy", 19132, Version.WATERDOG_PE,
                                     256, true, 512)
                     }, new MainGroup[] {
                             new MainGroup("Proxies", Collections.singletonList("Proxy")),
