@@ -20,6 +20,7 @@
         <module>reformcloud2-default-application-proxy</module>
         <module>reformcloud2-default-application-cloudflare</module>
         <module>reformcloud2-default-application-template-backends</module>
+        <module>reformcloud2-default-placeholderapi-extension</module>
     </modules>
 
 </project>
