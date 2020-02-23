@@ -4,17 +4,18 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.channel.hand
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.handler.query.DefaultQueryNetworkHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.handler.PacketHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.query.QueryHandler;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public final class DefaultPacketHandler implements PacketHandler {
 
     private static final QueryHandler QUERY_HANDLER = new DefaultQueryHandler();
 
-    private final List<NetworkHandler> handlers = new ArrayList<>();
+    private final List<NetworkHandler> handlers = new CopyOnWriteArrayList<>();
 
     public DefaultPacketHandler() {
         this.registerHandler(new DefaultQueryNetworkHandler(QUERY_HANDLER));
@@ -49,23 +50,13 @@ public final class DefaultPacketHandler implements PacketHandler {
 
     @Override
     public void unregisterNetworkHandlers(int id) {
-        new ArrayList<>(handlers).forEach(networkHandler -> {
-            if (networkHandler.getHandlingPacketID() == id) {
-                handlers.remove(networkHandler);
-            }
-        });
+        Streams.allOf(handlers, e -> e.getHandlingPacketID() == id).forEach(handlers::remove);
     }
 
     @Nonnull
     @Override
     public List<NetworkHandler> getNetworkHandlers(int id) {
-        List<NetworkHandler> networkHandlers = new ArrayList<>();
-        handlers.forEach(networkHandler -> {
-            if (networkHandler.getHandlingPacketID() == id) {
-                networkHandlers.add(networkHandler);
-            }
-        });
-        return networkHandlers;
+        return Streams.list(handlers, e -> e.getHandlingPacketID() == id);
     }
 
     @Nonnull
