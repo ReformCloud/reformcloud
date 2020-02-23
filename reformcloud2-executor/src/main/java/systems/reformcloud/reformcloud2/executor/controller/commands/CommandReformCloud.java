@@ -19,6 +19,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageMan
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.StringUtil;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.system.DownloadHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.system.SystemHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
@@ -76,14 +77,38 @@ public final class CommandReformCloud extends GlobalCommand {
             }
             return true;
         } else if (strings.length == 1 && strings[0].equalsIgnoreCase("list")) {
-            ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getAllProcesses().forEach(processInformation -> System.out.println(
+            List<ProcessInformation> allProcesses = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getAllProcesses();
+
+            allProcesses.forEach(processInformation -> System.out.println(
                     "  => "
                             + processInformation.getName()
-                            + "/" + processInformation.getProcessUniqueID()
-                            + " " + processInformation.getOnlineCount() + "/"
-                            + processInformation.getMaxPlayers() + " "
+                            + " ("
+                            + processInformation.getDisplayName()
+                            + ")"
+                            + "/"
+                            + processInformation.getProcessUniqueID()
+                            + " | "
+                            + processInformation.getParent()
+                            + " | "
+                            + processInformation.getOnlineCount()
+                            + "/"
+                            + processInformation.getMaxPlayers()
+                            + " | "
+                            + processInformation.getProcessState().name()
+                            + " | "
                             + processInformation.getTemplate().getVersion()
+                            + " | "
+                            + processInformation.getNetworkInfo().toString()
             ));
+
+            System.out.println(LanguageManager.get(
+                    "command-rc-list",
+                    allProcesses.size(),
+                    allProcesses.stream().filter(e -> e.getNetworkInfo().isConnected()).count(),
+                    allProcesses.stream().filter(e -> e.getNetworkInfo().isConnected() && e.getProcessState().isReady()).count(),
+                    Streams.others(allProcesses, e -> e.getNetworkInfo().isConnected() && e.getProcessState().isReady()).size()
+            ));
+
             return true;
         } else if (strings.length == 1 && strings[0].equalsIgnoreCase("clients")) {
             System.out.println(LanguageManager.get("command-rc-connected-clients"));

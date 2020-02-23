@@ -12,5 +12,9 @@ public enum ProcessState {
 
     INVISIBLE,
 
-    STOPPED
+    STOPPED;
+
+    public boolean isReady() {
+        return equals(READY) || equals(FULL) || equals(INVISIBLE);
+    }
 }

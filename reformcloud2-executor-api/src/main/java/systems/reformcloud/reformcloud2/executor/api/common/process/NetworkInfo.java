@@ -39,4 +39,9 @@ public final class NetworkInfo {
     public void setConnected(boolean connected) {
         this.connected = connected;
     }
+
+    @Override
+    public String toString() {
+        return host + ":" + port;
+    }
 }
