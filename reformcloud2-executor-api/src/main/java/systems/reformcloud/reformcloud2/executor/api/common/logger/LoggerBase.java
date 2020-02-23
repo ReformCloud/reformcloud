@@ -95,6 +95,14 @@ public abstract class LoggerBase extends Logger implements AutoCloseable {
     public abstract LoggerBase addLogLineHandler(@Nonnull LoggerLineHandler handler);
 
     /**
+     * Removes a specific log line handler
+     *
+     * @param handler The handler which should get unregistered
+     * @return If the log line handler was found and unregistered
+     */
+    public abstract boolean removeLogLineHandler(@Nonnull LoggerLineHandler handler);
+
+    /**
      * Get the debugger of the cloud
      *
      * @return The current {@link Debugger} of the cloud
