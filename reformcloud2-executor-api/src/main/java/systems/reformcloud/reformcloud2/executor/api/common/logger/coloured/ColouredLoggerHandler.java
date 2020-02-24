@@ -115,6 +115,7 @@ public final class ColouredLoggerHandler extends LoggerBase {
         handleLine(message);
 
         lineReader.getTerminal().puts(InfoCmp.Capability.carriage_return);
+        lineReader.getTerminal().puts(InfoCmp.Capability.clr_eol);
         lineReader.getTerminal().writer().print(message);
         lineReader.getTerminal().writer().flush();
 
@@ -128,6 +129,7 @@ public final class ColouredLoggerHandler extends LoggerBase {
         handleLine(message);
 
         lineReader.getTerminal().puts(InfoCmp.Capability.carriage_return);
+        lineReader.getTerminal().puts(InfoCmp.Capability.clr_eol);
         lineReader.getTerminal().writer().print(message);
         lineReader.getTerminal().writer().flush();
 
