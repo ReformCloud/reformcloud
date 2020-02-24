@@ -157,6 +157,9 @@
                             <Main-Class>systems.reformcloud.reformcloud2.executor.ExecutorChooser</Main-Class>
                             <Version>${project.version}</Version>
                             <Implementation-Version>${project.version}</Implementation-Version>
+                            <!--suppress UnresolvedMavenProperty -->
+                            <!-- set by another plugin -->
+                            <Specification-Version>${describe}</Specification-Version>
                         </manifestEntries>
                     </archive>
                 </configuration>

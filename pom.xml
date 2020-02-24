@@ -81,6 +81,24 @@
         <defaultGoal>clean package</defaultGoal>
 
         <plugins>
+            <!-- plugin to describe version build -->
+            <plugin>
+                <groupId>net.md-5</groupId>
+                <artifactId>scriptus</artifactId>
+                <version>0.3.2</version>
+                <configuration>
+                    <format>%s</format>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>describe</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
             <!-- maven compiler plugin to set the target and source version (1.8) -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

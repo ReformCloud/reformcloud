@@ -15,28 +15,6 @@
         <finalName>runner</finalName>
 
         <plugins>
-            <!-- build helper to set the timezone of the build time -->
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>build-helper-maven-plugin</artifactId>
-                <version>3.0.0</version>
-                <executions>
-                    <execution>
-                        <id>build-spec-property</id>
-                        <goals>
-                            <goal>regex-property</goal>
-                        </goals>
-                        <configuration>
-                            <name>service.spec</name>
-                            <value>${project.version}</value>
-                            <regex>(.*)-(.*)</regex>
-                            <replacement>$2</replacement>
-                            <failIfNoMatch>false</failIfNoMatch>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
             <!-- maven shade plugin (central) -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -65,9 +43,9 @@
                             <Main-Class>systems.reformcloud.reformcloud2.runner.Runner</Main-Class>
                             <Version>${project.version}</Version>
                             <Implementation-Version>${project.version}</Implementation-Version>
-                            <!-- Set by the maven helper plugin (leave this alone) -->
                             <!--suppress UnresolvedMavenProperty -->
-                            <Specification-Version>${service.spec}</Specification-Version>
+                            <!-- set by another plugin -->
+                            <Specification-Version>${describe}</Specification-Version>
                         </manifestEntries>
                     </archive>
                 </configuration>

@@ -21,6 +21,14 @@ public final class CommandHelp extends GlobalCommand {
 
     @Override
     public boolean handleCommand(@Nonnull CommandSource commandSource, @Nonnull String[] strings) {
+        commandSource.sendMessage("ReformCloud git:runner:"
+                + System.getProperty("reformcloud.runner.version", "c-build")
+                + ":"
+                + CommandHelp.class.getPackage().getSpecificationVersion()
+                + " by derklaro and ReformCloud-Community"
+        );
+        commandSource.sendMessage(" ");
+
         commandManager.getCommands().forEach(command -> commandSource.sendMessage("   -> " + command.mainCommand() + " " + command.aliases()));
         return true;
     }
