@@ -61,7 +61,8 @@ public class GroupAPIImplementation implements GroupAsyncAPI, GroupSyncAPI {
     @Override
     public Task<ProcessGroup> createProcessGroupAsync(@Nonnull String name, @Nonnull List<Template> templates) {
         return createProcessGroupAsync(name, templates, new StartupConfiguration(
-                -1, 1, 1, 41000, StartupEnvironment.JAVA_RUNTIME, true, new ArrayList<>()
+                -1, 1, 1, templates.isEmpty() ? 41000 : templates.get(0).getVersion().getDefaultPort(),
+                StartupEnvironment.JAVA_RUNTIME, true, new ArrayList<>()
         ));
     }
 

@@ -514,7 +514,8 @@ public final class CommandReformCloud extends GlobalCommand {
                                                     new HashMap<>()
                                             ), version
                                     )), new StartupConfiguration(
-                                            -1, 1, 1, 41000, StartupEnvironment.JAVA_RUNTIME, true, new ArrayList<>()
+                                            -1, 1, 1, version.getDefaultPort(),
+                                            StartupEnvironment.JAVA_RUNTIME, true, new ArrayList<>()
                                     ),  new PlayerAccessConfiguration(
                                             "reformcloud.join.full",
                                             true,
@@ -564,7 +565,7 @@ public final class CommandReformCloud extends GlobalCommand {
                         if (processGroup == null) {
                             ProcessGroup processGroup1 = new DefaultProcessGroup(
                                     strings[2],
-                                    41000,
+                                    version.getDefaultPort(),
                                     version,
                                     512,
                                     false,
@@ -629,7 +630,8 @@ public final class CommandReformCloud extends GlobalCommand {
                                                     new HashMap<>()
                                             ), version
                                     )), new StartupConfiguration(
-                                            max, min, 1, 41000, StartupEnvironment.JAVA_RUNTIME, true, new ArrayList<>()
+                                            max, min, 1, version.getDefaultPort(),
+                                            StartupEnvironment.JAVA_RUNTIME, true, new ArrayList<>()
                                     ),  new PlayerAccessConfiguration(
                                             "reformcloud.join.full",
                                             true,
@@ -692,7 +694,7 @@ public final class CommandReformCloud extends GlobalCommand {
                     if (processGroup == null) {
                         ProcessGroup processGroup1 = new DefaultProcessGroup(
                                 strings[2],
-                                41000,
+                                version.getDefaultPort(),
                                 version,
                                 512,
                                 false,
@@ -763,6 +765,9 @@ public final class CommandReformCloud extends GlobalCommand {
                         }
 
                         NodeExecutor.getInstance().getClusterSyncManager().syncProcessGroupDelete(processGroup.getName());
+                        ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcesses(strings[2]).forEach(
+                                e -> ExecutorAPI.getInstance().getAsyncAPI().getProcessAsyncAPI().stopProcessAsync(e.getProcessUniqueID())
+                        );
                         System.out.println(LanguageManager.get("command-rc-execute-success"));
                         return true;
                     }
