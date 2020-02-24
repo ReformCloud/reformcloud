@@ -147,7 +147,9 @@ public interface ProcessSyncAPI {
      *
      * @param processInformation The process information which should be updated
      * @return A task which will be completed after the update of the {@link ProcessInformation}
+     * @deprecated We are in sync api. Has been moved to {@link ProcessAsyncAPI#updateAsync(ProcessInformation)}
      */
+    @Deprecated
     default Task<Void> updateAsync(@Nonnull ProcessInformation processInformation) {
         Task<Void> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {

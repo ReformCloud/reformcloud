@@ -1,8 +1,10 @@
 package systems.reformcloud.reformcloud2.executor.api.common.api.process;
 
+import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.task.defaults.DefaultTask;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -134,4 +136,19 @@ public interface ProcessAsyncAPI {
     @Nullable
     @CheckReturnValue
     Task<ProcessInformation> getThisProcessInformationAsync();
+
+    /**
+     * Updates a specific {@link ProcessInformation}
+     *
+     * @param processInformation The process information which should be updated
+     * @return A task which will be completed after the update of the {@link ProcessInformation}
+     */
+    default Task<Void> updateAsync(@Nonnull ProcessInformation processInformation) {
+        Task<Void> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(() -> {
+            ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(processInformation);
+            task.complete(null);
+        });
+        return task;
+    }
 }
