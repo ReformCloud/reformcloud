@@ -2,8 +2,6 @@ package systems.reformcloud.reformcloud2.executor.api.common.api.process;
 
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.task.defaults.DefaultTask;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -141,21 +139,4 @@ public interface ProcessSyncAPI {
      * @param processInformation The process information which should be updated
      */
     void update(@Nonnull ProcessInformation processInformation);
-
-    /**
-     * Updates a specific {@link ProcessInformation}
-     *
-     * @param processInformation The process information which should be updated
-     * @return A task which will be completed after the update of the {@link ProcessInformation}
-     * @deprecated We are in sync api. Has been moved to {@link ProcessAsyncAPI#updateAsync(ProcessInformation)}
-     */
-    @Deprecated
-    default Task<Void> updateAsync(@Nonnull ProcessInformation processInformation) {
-        Task<Void> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> {
-            update(processInformation);
-            task.complete(null);
-        });
-        return task;
-    }
 }
