@@ -10,10 +10,14 @@ import systems.reformcloud.reformcloud2.executor.client.packet.out.ClientPacketO
 import systems.reformcloud.reformcloud2.executor.client.screen.ProcessScreen;
 
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public final class DefaultProcessManager implements ProcessManager {
 
-    private final List<RunningProcess> list = new ArrayList<>();
+    private final List<RunningProcess> list = new CopyOnWriteArrayList<>();
 
     @Override
     public void registerProcess(RunningProcess runningProcess) {
@@ -59,7 +63,14 @@ public final class DefaultProcessManager implements ProcessManager {
 
     @Override
     public void stopAll() {
-        Streams.newList(list).forEach(RunningProcess::shutdown);
-        list.clear();
+        ExecutorService executorService = Executors.newCachedThreadPool();
+        this.list.forEach(e -> executorService.submit(() -> e.shutdown()));
+
+        try {
+            executorService.shutdown();
+            executorService.awaitTermination(10, TimeUnit.MINUTES);
+        } catch (final InterruptedException ex) {
+            ex.printStackTrace();
+        }
     }
 }

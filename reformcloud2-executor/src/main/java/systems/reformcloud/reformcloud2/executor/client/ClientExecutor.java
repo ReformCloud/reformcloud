@@ -4,7 +4,6 @@ import org.reflections.Reflections;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorType;
 import systems.reformcloud.reformcloud2.executor.api.client.Client;
 import systems.reformcloud.reformcloud2.executor.api.client.process.ProcessManager;
-import systems.reformcloud.reformcloud2.executor.api.client.process.RunningProcess;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.basic.ExternalEventBusHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.application.ApplicationLoader;
@@ -207,7 +206,7 @@ public final class ClientExecutor extends Client {
         this.packetHandler.getQueryHandler().clearQueries();
         this.networkClient.disconnect();
 
-        this.processManager.getAll().forEach(RunningProcess::shutdown);
+        this.processManager.stopAll();
 
         SystemHelper.deleteDirectory(Paths.get("reformcloud/temp"));
 
