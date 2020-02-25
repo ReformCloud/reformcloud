@@ -29,6 +29,7 @@ import systems.reformcloud.reformcloud2.executor.controller.ControllerExecutor;
 import systems.reformcloud.reformcloud2.executor.controller.packet.out.ControllerPacketOutCopyProcess;
 import systems.reformcloud.reformcloud2.executor.controller.packet.out.ControllerPacketOutToggleScreen;
 import systems.reformcloud.reformcloud2.executor.controller.process.ClientManager;
+import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
 
 import javax.annotation.Nonnull;
 import java.io.File;
@@ -795,13 +796,40 @@ public final class CommandReformCloud extends GlobalCommand {
 
             case "list": {
                 if (strings.length == 2) {
-                    ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcesses(strings[1]).forEach(processInformation -> System.out.println(
+                    List<ProcessInformation> allProcesses = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcesses(strings[1]);
+
+                    allProcesses.forEach(processInformation -> System.out.println(
                             "  => "
                                     + processInformation.getName()
-                                    + "/" + processInformation.getProcessUniqueID()
-                                    + " " + processInformation.getOnlineCount() + "/"
-                                    + processInformation.getMaxPlayers() + " "
+                                    + " ("
+                                    + processInformation.getDisplayName()
+                                    + ")"
+                                    + "/"
+                                    + processInformation.getProcessUniqueID()
+                                    + " | "
+                                    + processInformation.getParent()
+                                    + " ("
+                                    + (NodeExecutor.getInstance().getNodeConfig().getName().equals(processInformation.getParent())
+                                    ? "local" : "external")
+                                    + ")"
+                                    + " | "
+                                    + processInformation.getOnlineCount()
+                                    + "/"
+                                    + processInformation.getMaxPlayers()
+                                    + " | "
+                                    + processInformation.getProcessState().name()
+                                    + " | "
                                     + processInformation.getTemplate().getVersion()
+                                    + " | "
+                                    + processInformation.getNetworkInfo().toString()
+                    ));
+
+                    System.out.println(LanguageManager.get(
+                            "command-rc-list",
+                            allProcesses.size(),
+                            allProcesses.stream().filter(e -> e.getNetworkInfo().isConnected()).count(),
+                            allProcesses.stream().filter(e -> e.getNetworkInfo().isConnected() && e.getProcessState().isReady()).count(),
+                            Streams.others(allProcesses, e -> e.getNetworkInfo().isConnected() && e.getProcessState().isReady()).size()
                     ));
                 }
 
