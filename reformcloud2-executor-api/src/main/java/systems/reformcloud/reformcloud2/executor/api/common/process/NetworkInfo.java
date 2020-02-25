@@ -7,14 +7,14 @@ public final class NetworkInfo {
     public NetworkInfo(String host, int port, boolean connected) {
         this.host = host;
         this.port = port;
-        this.connected = connected;
+        this.connectTime = connected ? System.currentTimeMillis() : -1;
     }
 
     private String host;
 
     private int port;
 
-    private boolean connected;
+    private long connectTime;
 
     public String getHost() {
         return host;
@@ -33,11 +33,19 @@ public final class NetworkInfo {
     }
 
     public boolean isConnected() {
-        return connected;
+        return connectTime != -1;
     }
 
     public void setConnected(boolean connected) {
-        this.connected = connected;
+        if (connected) {
+            this.connectTime = System.currentTimeMillis();
+        } else {
+            this.connectTime = -1;
+        }
+    }
+
+    public long getConnectTime() {
+        return connectTime;
     }
 
     @Override
