@@ -5,13 +5,27 @@ import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Runt
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Template;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Version;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.backend.basic.FileBackend;
+import systems.reformcloud.reformcloud2.executor.api.common.groups.template.inclusion.Inclusion;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.PlayerAccessConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.StartupConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.StartupEnvironment;
 
+import java.util.ArrayList;
 import java.util.Collections;
 
 public final class DefaultProcessGroup extends ProcessGroup {
+
+    private static final Inclusion PROXY_INCLUSION = new Inclusion(
+            "reformcloud/global/proxies",
+            FileBackend.NAME,
+            Inclusion.InclusionLoadType.PAST
+    );
+
+    private static final Inclusion SERVER_INCLUSION = new Inclusion(
+            "reformcloud/global/servers",
+            FileBackend.NAME,
+            Inclusion.InclusionLoadType.PAST
+    );
 
     public DefaultProcessGroup(String name, int port, Version version, int maxMemory, boolean maintenance, int maxPlayers) {
         this(name, port, version, maxMemory, maintenance, maxPlayers, false, true);
@@ -40,7 +54,10 @@ public final class DefaultProcessGroup extends ProcessGroup {
                                 maxMemory,
                                 Collections.emptyList(),
                                 Collections.singletonMap("reformcloud2.developer", "derklaro")
-                        ), version
+                        ),
+                        version,
+                        new ArrayList<>(),
+                        Collections.singletonList(version.isServer() ? SERVER_INCLUSION : PROXY_INCLUSION)
                 )),  new PlayerAccessConfiguration(
                         "reformcloud.join.full",
                         maintenance,
@@ -77,7 +94,10 @@ public final class DefaultProcessGroup extends ProcessGroup {
                                 maxMemory,
                                 Collections.emptyList(),
                                 Collections.singletonMap("reformcloud2.developer", "derklaro")
-                        ), version
+                        ),
+                        version,
+                        new ArrayList<>(),
+                        Collections.singletonList(version.isServer() ? SERVER_INCLUSION : PROXY_INCLUSION)
                 )), new PlayerAccessConfiguration(
                         "reformcloud.join.full",
                         maintenance,

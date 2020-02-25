@@ -5,6 +5,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Version;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.backend.TemplateBackendManager;
+import systems.reformcloud.reformcloud2.executor.api.common.groups.template.inclusion.Inclusion;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState;
@@ -212,16 +213,52 @@ public final class DefaultRunningProcess implements RunningProcess {
                 TemplateBackendManager.getOrDefault(this.processInformation.getTemplate().getBackend()).loadGlobalTemplates(
                         this.processInformation.getProcessGroup(),
                         this.path
-                ).get(5, TimeUnit.SECONDS);
+                ).get(15, TimeUnit.SECONDS);
             } catch (final TimeoutException | InterruptedException | ExecutionException ex) {
                 System.err.println("Load of global templates took too long");
             }
 
-            return TemplateBackendManager.getOrDefault(this.processInformation.getTemplate().getBackend()).loadTemplate(
+            processInformation.getTemplate().getTemplateInclusionsOfType(Inclusion.InclusionLoadType.PRE).forEach(e -> {
+                String[] splitTemplate = e.getFirst().split("/");
+                if (splitTemplate.length != 2) {
+                    return;
+                }
+
+                TemplateBackendManager.getOrDefault(e.getSecond()).loadTemplate(
+                        splitTemplate[0],
+                        splitTemplate[1],
+                        this.path
+                ).getUninterruptedly(TimeUnit.SECONDS, 10);
+            });
+
+            processInformation.getTemplate().getPathInclusionsOfType(Inclusion.InclusionLoadType.PRE).forEach(e -> TemplateBackendManager.getOrDefault(e.getSecond()).loadPath(
+                    e.getFirst(),
+                    this.path
+            ).getUninterruptedly(TimeUnit.SECONDS, 10));
+
+            TemplateBackendManager.getOrDefault(this.processInformation.getTemplate().getBackend()).loadTemplate(
                     this.processInformation.getProcessGroup().getName(),
                     this.processInformation.getTemplate().getName(),
                     this.path
-            );
+            ).getUninterruptedly();
+
+            processInformation.getTemplate().getTemplateInclusionsOfType(Inclusion.InclusionLoadType.PAST).forEach(e -> {
+                String[] splitTemplate = e.getFirst().split("/");
+                if (splitTemplate.length != 2) {
+                    return;
+                }
+
+                TemplateBackendManager.getOrDefault(e.getSecond()).loadTemplate(
+                        splitTemplate[0],
+                        splitTemplate[1],
+                        this.path
+                ).getUninterruptedly(TimeUnit.SECONDS, 10);
+            });
+
+            processInformation.getTemplate().getPathInclusionsOfType(Inclusion.InclusionLoadType.PAST).forEach(e -> TemplateBackendManager.getOrDefault(e.getSecond()).loadPath(
+                    e.getFirst(),
+                    this.path
+            ).getUninterruptedly(TimeUnit.SECONDS, 10));
         }
 
         return CompletableFuture.completedFuture(null);
@@ -509,7 +546,6 @@ public final class DefaultRunningProcess implements RunningProcess {
         SystemHelper.createDirectory(Paths.get(path + "/plugins"));
         SystemHelper.createDirectory(Paths.get(path + "/reformcloud/.connection"));
         SystemHelper.doCopy("reformcloud/files/.connection/connection.json", path + "/reformcloud/.connection/key.json");
-        SystemHelper.copyDirectory(Paths.get("reformcloud/global"), path);
     }
 
     // ========================= //
