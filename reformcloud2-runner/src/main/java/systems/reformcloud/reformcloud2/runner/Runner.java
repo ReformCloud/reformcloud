@@ -186,6 +186,16 @@ public final class Runner {
     }
 
     private static void unpackExecutor() {
+        if (Boolean.getBoolean("reformcloud.dev.mode")) {
+            try {
+                Files.deleteIfExists(Paths.get("reformcloud/.bin/executor.jar"));
+            } catch (final IOException ex) {
+                ex.printStackTrace();
+            }
+
+            System.out.println("DEBUG: Running in development mode on git:" + Runner.class.getPackage().getSpecificationVersion());
+        }
+
         if (Files.exists(Paths.get("reformcloud/.bin/executor.jar"))) {
             return;
         }
