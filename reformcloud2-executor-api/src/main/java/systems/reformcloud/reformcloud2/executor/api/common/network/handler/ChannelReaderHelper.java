@@ -7,7 +7,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.channel.Pack
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.handler.DefaultJsonNetworkHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.WrappedByteInput;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.function.Double;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Duo;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.function.DoubleFunction;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -61,7 +61,7 @@ public final class ChannelReaderHelper extends SimpleChannelInboundHandler<Wrapp
             try {
                 Packet packet = DefaultJsonNetworkHandler.readPacket(-512, input.toObjectStream());
 
-                Double<String, Boolean> result = function.apply(packet);
+                Duo<String, Boolean> result = function.apply(packet);
                 if (result.getSecond()) {
                     auth.set(true);
                     PacketSender sender = onSuccess.apply(result.getFirst(), channelHandlerContext);
@@ -84,7 +84,7 @@ public final class ChannelReaderHelper extends SimpleChannelInboundHandler<Wrapp
                 Boolean access = packet.content().getOrDefault("access", false);
                 if (access) {
                     auth.set(true);
-                    Double<String, Boolean> result = function.apply(packet);
+                    Duo<String, Boolean> result = function.apply(packet);
                     channelReader.setSender(onSuccess.apply(result.getFirst(), channelHandlerContext));
                 } else {
                     channelHandlerContext.channel().close();

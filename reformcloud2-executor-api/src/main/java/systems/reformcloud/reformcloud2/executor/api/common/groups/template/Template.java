@@ -2,7 +2,7 @@ package systems.reformcloud.reformcloud2.executor.api.common.groups.template;
 
 import com.google.gson.reflect.TypeToken;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.inclusion.Inclusion;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.function.Double;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Duo;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.name.Nameable;
 
 import javax.annotation.Nonnull;
@@ -100,21 +100,21 @@ public final class Template implements Nameable {
         return pathInclusions == null ? new ArrayList<>() : pathInclusions;
     }
 
-    public Collection<Double<String, String>> getPathInclusionsOfType(@Nonnull Inclusion.InclusionLoadType type) {
+    public Collection<Duo<String, String>> getPathInclusionsOfType(@Nonnull Inclusion.InclusionLoadType type) {
         return this.getPathInclusions()
                 .stream()
                 .filter(e -> e.getInclusionLoadType().equals(type))
                 .filter(e -> e.getBackend() != null && e.getKey() != null)
-                .map(e -> new Double<>(e.getKey(), e.getBackend()))
+                .map(e -> new Duo<>(e.getKey(), e.getBackend()))
                 .collect(Collectors.toList());
     }
 
-    public Collection<Double<String, String>> getTemplateInclusionsOfType(@Nonnull Inclusion.InclusionLoadType type) {
+    public Collection<Duo<String, String>> getTemplateInclusionsOfType(@Nonnull Inclusion.InclusionLoadType type) {
         return this.getTemplateInclusions()
                 .stream()
                 .filter(e -> e.getInclusionLoadType().equals(type))
                 .filter(e -> e.getBackend() != null && e.getKey() != null)
-                .map(e -> new Double<>(e.getKey(), e.getBackend()))
+                .map(e -> new Duo<>(e.getKey(), e.getBackend()))
                 .collect(Collectors.toList());
     }
 }

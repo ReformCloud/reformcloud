@@ -59,7 +59,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.restapi.request.Requ
 import systems.reformcloud.reformcloud2.executor.api.common.restapi.request.defaults.DefaultRequestListenerHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.restapi.user.WebUser;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.StringUtil;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.function.Double;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Duo;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.system.SystemHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
@@ -72,7 +72,6 @@ import systems.reformcloud.reformcloud2.executor.controller.packet.in.Controller
 import systems.reformcloud.reformcloud2.executor.controller.packet.in.ControllerPacketInHandleChannelMessage;
 import systems.reformcloud.reformcloud2.executor.node.api.GeneralAPI;
 import systems.reformcloud.reformcloud2.executor.node.api.applications.ApplicationAPIImplementation;
-import systems.reformcloud.reformcloud2.executor.node.api.client.ClientAPIImplementation;
 import systems.reformcloud.reformcloud2.executor.node.api.console.ConsoleAPIImplementation;
 import systems.reformcloud.reformcloud2.executor.node.api.database.DatabaseAPIImplementation;
 import systems.reformcloud.reformcloud2.executor.node.api.group.GroupAPIImplementation;
@@ -235,7 +234,6 @@ public class NodeExecutor extends Node {
 
         GeneralAPI generalAPI = new GeneralAPI(
                 new ApplicationAPIImplementation(this.applicationLoader),
-                new ClientAPIImplementation(this.nodeNetworkManager),
                 new ConsoleAPIImplementation(this.commandManager),
                 new DatabaseAPIImplementation(this.database),
                 new GroupAPIImplementation(this.clusterSyncManager),
@@ -271,43 +269,43 @@ public class NodeExecutor extends Node {
                         DefaultAuth auth = packet.content().get("auth", Auth.TYPE);
                         if (auth == null) {
                             System.out.println(LanguageManager.get("network-channel-auth-failed", "unknown"));
-                            return new Double<>("unknown", false);
+                            return new Duo<>("unknown", false);
                         }
 
                         if (auth.type().equals(NetworkType.CLIENT)) {
-                            return new Double<>(auth.getName(), false);
+                            return new Duo<>(auth.getName(), false);
                         }
 
-                        AtomicReference<Double<String, Boolean>> result = new AtomicReference<>();
+                        AtomicReference<Duo<String, Boolean>> result = new AtomicReference<>();
                         if (auth.type().equals(NetworkType.NODE)) {
                             NodeInformation nodeInformation = auth.extra().get("info", NodeInformation.TYPE);
                             if (nodeInformation == null) {
-                                return new Double<>(auth.getName(), false);
+                                return new Duo<>(auth.getName(), false);
                             }
 
                             if (nodeExecutorConfig.getConnectionKey() == null || !auth.key().equals(nodeExecutorConfig.getConnectionKey())) {
                                 System.out.println(LanguageManager.get("network-channel-auth-failed", auth.getName()));
-                                return new Double<>(auth.getName(), false);
+                                return new Duo<>(auth.getName(), false);
                             }
 
                             this.nodeNetworkManager.getCluster().getClusterManager().handleConnect(
                                     this.nodeNetworkManager.getCluster(),
                                     nodeInformation,
-                                    (aBoolean, s) -> result.set(new Double<>(nodeInformation.getName(), aBoolean))
+                                    (aBoolean, s) -> result.set(new Duo<>(nodeInformation.getName(), aBoolean))
                             );
                         } else if (auth.type().equals(NetworkType.PROCESS)) {
                             ProcessInformation information = nodeNetworkManager.getNodeProcessHelper()
                                     .getLocalCloudProcess(auth.getName());
                             if (information == null) {
-                                return new Double<>(auth.getName(), false);
+                                return new Duo<>(auth.getName(), false);
                             }
 
                             if (!auth.key().equals(nodeExecutorConfig.getCurrentNodeConnectionKey())) {
                                 System.out.println(LanguageManager.get("network-channel-auth-failed", auth.getName()));
-                                return new Double<>(auth.getName(), false);
+                                return new Duo<>(auth.getName(), false);
                             }
 
-                            result.set(new Double<>(auth.getName(), true));
+                            result.set(new Duo<>(auth.getName(), true));
 
                             information.getNetworkInfo().setConnected(true);
                             information.setProcessState(ProcessState.READY);
@@ -508,14 +506,14 @@ public class NodeExecutor extends Node {
         return this.clusterSyncManager.isConnectedAndSyncWithCluster();
     }
 
-    public Double<String, Integer> getConnectHost() {
+    public Duo<String, Integer> getConnectHost() {
         if (this.nodeConfig.getNetworkListener().size() == 1) {
             Map.Entry<String, Integer> result = nodeConfig.getNetworkListener().get(0).entrySet().iterator().next();
-            return new Double<>(result.getKey(), result.getValue());
+            return new Duo<>(result.getKey(), result.getValue());
         }
 
         Map.Entry<String, Integer> result = nodeConfig.getNetworkListener().get(new Random().nextInt(nodeConfig.getNetworkListener().size())).entrySet().iterator().next();
-        return new Double<>(result.getKey(), result.getValue());
+        return new Duo<>(result.getKey(), result.getValue());
     }
 
     @Override
@@ -587,7 +585,7 @@ public class NodeExecutor extends Node {
     }
 
     @Override
-    public void reload() throws Exception {
+    public void reload() {
         reload(true);
     }
 

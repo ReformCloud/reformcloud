@@ -4,8 +4,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.api.AsyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.SyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.applications.ApplicationAsyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.applications.ApplicationSyncAPI;
-import systems.reformcloud.reformcloud2.executor.api.common.api.client.ClientAsyncAPI;
-import systems.reformcloud.reformcloud2.executor.api.common.api.client.ClientSyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.console.ConsoleAsyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.console.ConsoleSyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.database.DatabaseAsyncAPI;
@@ -21,7 +19,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.api.plugins.PluginSy
 import systems.reformcloud.reformcloud2.executor.api.common.api.process.ProcessAsyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.process.ProcessSyncAPI;
 import systems.reformcloud.reformcloud2.executor.node.api.applications.ApplicationAPIImplementation;
-import systems.reformcloud.reformcloud2.executor.node.api.client.ClientAPIImplementation;
 import systems.reformcloud.reformcloud2.executor.node.api.console.ConsoleAPIImplementation;
 import systems.reformcloud.reformcloud2.executor.node.api.database.DatabaseAPIImplementation;
 import systems.reformcloud.reformcloud2.executor.node.api.group.GroupAPIImplementation;
@@ -36,7 +33,6 @@ public class GeneralAPI implements SyncAPI, AsyncAPI {
 
     public GeneralAPI(
             ApplicationAPIImplementation applicationAPI,
-            ClientAPIImplementation clientAPI,
             ConsoleAPIImplementation consoleAPI,
             DatabaseAPIImplementation databaseAPI,
             GroupAPIImplementation groupAPI,
@@ -46,7 +42,6 @@ public class GeneralAPI implements SyncAPI, AsyncAPI {
             ChannelMessageAPIImplementation channelAPI
     ) {
         this.applicationAPI = applicationAPI;
-        this.clientAPI = clientAPI;
         this.consoleAPI = consoleAPI;
         this.databaseAPI = databaseAPI;
         this.groupAPI = groupAPI;
@@ -57,8 +52,6 @@ public class GeneralAPI implements SyncAPI, AsyncAPI {
     }
 
     private final ApplicationAPIImplementation applicationAPI;
-
-    private final ClientAPIImplementation clientAPI;
 
     private final ConsoleAPIImplementation consoleAPI;
 
@@ -112,12 +105,6 @@ public class GeneralAPI implements SyncAPI, AsyncAPI {
 
     @Nonnull
     @Override
-    public ClientAsyncAPI getClientAsyncAPI() {
-        return clientAPI;
-    }
-
-    @Nonnull
-    @Override
     public DatabaseAsyncAPI getDatabaseAsyncAPI() {
         return databaseAPI;
     }
@@ -162,12 +149,6 @@ public class GeneralAPI implements SyncAPI, AsyncAPI {
     @Override
     public PluginSyncAPI getPluginSyncAPI() {
         return pluginAPI;
-    }
-
-    @Nonnull
-    @Override
-    public ClientSyncAPI getClientSyncAPI() {
-        return clientAPI;
     }
 
     @Nonnull

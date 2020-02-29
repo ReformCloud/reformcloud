@@ -2,7 +2,6 @@ package systems.reformcloud.reformcloud2.executor.api.common.api;
 
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.applications.ApplicationAsyncAPI;
-import systems.reformcloud.reformcloud2.executor.api.common.api.client.ClientAsyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.console.ConsoleAsyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.database.DatabaseAsyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.group.GroupAsyncAPI;
@@ -55,12 +54,6 @@ public interface AsyncAPI {
      */
     @Nonnull
     PluginAsyncAPI getPluginAsyncAPI();
-
-    /**
-     * @return The current client async api instance
-     */
-    @Nonnull
-    ClientAsyncAPI getClientAsyncAPI();
 
     /**
      * @return The current database async api instance

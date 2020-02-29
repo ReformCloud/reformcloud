@@ -9,7 +9,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.groups.template.incl
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.Null;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.PortUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.StringUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.optional.ReferencedOptional;
@@ -131,7 +130,7 @@ public final class DefaultRunningProcess implements RunningProcess {
 
         command.addAll(this.processInformation.getTemplate().getRuntimeConfiguration().getProcessParameters());
         command.addAll(Arrays.asList(
-                "-cp", Null.devNull(),
+                "-cp", StringUtil.NULL_PATH,
                 "-javaagent:runner.jar",
                 "systems.reformcloud.reformcloud2.runner.Runner"
         ));

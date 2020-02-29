@@ -53,12 +53,11 @@ import systems.reformcloud.reformcloud2.executor.api.common.restapi.request.Requ
 import systems.reformcloud.reformcloud2.executor.api.common.restapi.request.defaults.DefaultRequestListenerHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.restapi.user.WebUser;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.StringUtil;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.function.Double;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Duo;
 import systems.reformcloud.reformcloud2.executor.api.controller.Controller;
 import systems.reformcloud.reformcloud2.executor.api.controller.process.ProcessManager;
 import systems.reformcloud.reformcloud2.executor.controller.api.GeneralAPI;
 import systems.reformcloud.reformcloud2.executor.controller.api.applications.ApplicationAPIImplementation;
-import systems.reformcloud.reformcloud2.executor.controller.api.client.ClientAPIImplementation;
 import systems.reformcloud.reformcloud2.executor.controller.api.console.ConsoleAPIImplementation;
 import systems.reformcloud.reformcloud2.executor.controller.api.database.DatabaseAPIImplementation;
 import systems.reformcloud.reformcloud2.executor.controller.api.group.GroupAPIImplementation;
@@ -182,7 +181,6 @@ public final class ControllerExecutor extends Controller {
 
         GeneralAPI generalAPI = new GeneralAPI(
                 new ApplicationAPIImplementation(this.applicationLoader),
-                new ClientAPIImplementation(),
                 new ConsoleAPIImplementation(this.commandManager),
                 new DatabaseAPIImplementation(this.database),
                 new GroupAPIImplementation(),
@@ -209,12 +207,12 @@ public final class ControllerExecutor extends Controller {
                 packet -> {
                     DefaultAuth auth = packet.content().get("auth", Auth.TYPE);
                     if (auth == null) {
-                        return new Double<>("", false);
+                        return new Duo<>("", false);
                     }
 
                     if (!auth.key().equals(controllerExecutorConfig.getConnectionKey())) {
                         System.out.println(LanguageManager.get("network-channel-auth-failed", auth.getName()));
-                        return new Double<>(auth.getName(), false);
+                        return new Duo<>(auth.getName(), false);
                     }
 
                     if (auth.type().equals(NetworkType.CLIENT)) {
@@ -224,7 +222,7 @@ public final class ControllerExecutor extends Controller {
                     } else {
                         ProcessInformation information = processManager.getProcess(auth.getName());
                         if (information == null) {
-                            return new Double<>(auth.getName(), false);
+                            return new Duo<>(auth.getName(), false);
                         }
 
                         information.getNetworkInfo().setConnected(true);
@@ -235,7 +233,7 @@ public final class ControllerExecutor extends Controller {
                     }
 
                     System.out.println(LanguageManager.get("network-channel-auth-success", auth.getName(), auth.parent()));
-                    return new Double<>(auth.getName(), true);
+                    return new Duo<>(auth.getName(), true);
                 }
         ))));
 

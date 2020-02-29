@@ -1,5 +1,7 @@
 package systems.reformcloud.reformcloud2.executor.api.common.utility.function;
 
+import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Duo;
+
 import javax.annotation.Nonnull;
 
 @FunctionalInterface
@@ -12,5 +14,5 @@ public interface DoubleFunction<S, V, F> {
      * @return The created double of the given object
      */
     @Nonnull
-    Double<V, F> apply(@Nonnull S s);
+    Duo<V, F> apply(@Nonnull S s);
 }
