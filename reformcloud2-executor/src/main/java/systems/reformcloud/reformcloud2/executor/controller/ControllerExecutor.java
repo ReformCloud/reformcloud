@@ -58,7 +58,6 @@ import systems.reformcloud.reformcloud2.executor.api.controller.Controller;
 import systems.reformcloud.reformcloud2.executor.api.controller.process.ProcessManager;
 import systems.reformcloud.reformcloud2.executor.controller.api.GeneralAPI;
 import systems.reformcloud.reformcloud2.executor.controller.api.applications.ApplicationAPIImplementation;
-import systems.reformcloud.reformcloud2.executor.controller.api.client.ClientAPIImplementation;
 import systems.reformcloud.reformcloud2.executor.controller.api.console.ConsoleAPIImplementation;
 import systems.reformcloud.reformcloud2.executor.controller.api.database.DatabaseAPIImplementation;
 import systems.reformcloud.reformcloud2.executor.controller.api.group.GroupAPIImplementation;
@@ -182,7 +181,6 @@ public final class ControllerExecutor extends Controller {
 
         GeneralAPI generalAPI = new GeneralAPI(
                 new ApplicationAPIImplementation(this.applicationLoader),
-                new ClientAPIImplementation(),
                 new ConsoleAPIImplementation(this.commandManager),
                 new DatabaseAPIImplementation(this.database),
                 new GroupAPIImplementation(),

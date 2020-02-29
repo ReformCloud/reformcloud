@@ -72,7 +72,6 @@ import systems.reformcloud.reformcloud2.executor.controller.packet.in.Controller
 import systems.reformcloud.reformcloud2.executor.controller.packet.in.ControllerPacketInHandleChannelMessage;
 import systems.reformcloud.reformcloud2.executor.node.api.GeneralAPI;
 import systems.reformcloud.reformcloud2.executor.node.api.applications.ApplicationAPIImplementation;
-import systems.reformcloud.reformcloud2.executor.node.api.client.ClientAPIImplementation;
 import systems.reformcloud.reformcloud2.executor.node.api.console.ConsoleAPIImplementation;
 import systems.reformcloud.reformcloud2.executor.node.api.database.DatabaseAPIImplementation;
 import systems.reformcloud.reformcloud2.executor.node.api.group.GroupAPIImplementation;
@@ -235,7 +234,6 @@ public class NodeExecutor extends Node {
 
         GeneralAPI generalAPI = new GeneralAPI(
                 new ApplicationAPIImplementation(this.applicationLoader),
-                new ClientAPIImplementation(this.nodeNetworkManager),
                 new ConsoleAPIImplementation(this.commandManager),
                 new DatabaseAPIImplementation(this.database),
                 new GroupAPIImplementation(this.clusterSyncManager),
@@ -587,7 +585,7 @@ public class NodeExecutor extends Node {
     }
 
     @Override
-    public void reload() throws Exception {
+    public void reload() {
         reload(true);
     }
 
