@@ -13,6 +13,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInfor
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 
 import javax.annotation.Nonnull;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -22,6 +23,8 @@ import java.util.stream.Collectors;
 public final class StringUtil {
 
     public static final String RUNNER_DOWNLOAD_URL = "https://internal.reformcloud.systems/runner.jar";
+
+    public static final String NULL_PATH = new File("reformcloud/.bin/dev/null").getAbsolutePath();
 
     private static final String[] RC_COMMAND_BASIC_HELP = new String[] {
             "rc applications",

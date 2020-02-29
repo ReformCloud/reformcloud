@@ -11,7 +11,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.netty
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.netty.PacketEncoder;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.netty.serialisation.LengthDeserializer;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.netty.serialisation.LengthSerializer;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.function.Double;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Duo;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.function.DoubleFunction;
 
 import java.util.function.Consumer;
@@ -20,10 +20,10 @@ public final class ClientInitializerHandler extends InitializerHandler {
 
     private static final DoubleFunction<Packet, String, Boolean> EMPTY_FUNCTION = packet -> {
         if (packet.content().has("name")) {
-            return new Double<>(packet.content().getString("name"), true);
+            return new Duo<>(packet.content().getString("name"), true);
         }
 
-        return new Double<>("Controller", true);
+        return new Duo<>("Controller", true);
     };
 
     private final Consumer<ChannelHandlerContext> DEFAULT_FAIL_HANDLER = new Consumer<ChannelHandlerContext>() {

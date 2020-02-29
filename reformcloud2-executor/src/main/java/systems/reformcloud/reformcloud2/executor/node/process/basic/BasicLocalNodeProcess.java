@@ -8,10 +8,9 @@ import systems.reformcloud.reformcloud2.executor.api.common.groups.template.incl
 import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.Null;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.PortUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.StringUtil;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.function.Double;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Duo;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.optional.ReferencedOptional;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.process.JavaProcessHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.system.DownloadHelper;
@@ -88,7 +87,7 @@ public class BasicLocalNodeProcess implements LocalNodeProcess {
         SystemHelper.doCopy("reformcloud/files/runner.jar", path + "/runner.jar");
         SystemHelper.doCopy("reformcloud/.bin/executor.jar", path + "/plugins/executor.jar");
 
-        Double<String, Integer> connection = NodeExecutor.getInstance().getConnectHost();
+        Duo<String, Integer> connection = NodeExecutor.getInstance().getConnectHost();
         new JsonConfiguration()
                 .add("controller-host", connection.getFirst())
                 .add("controller-port", connection.getSecond())
@@ -137,7 +136,7 @@ public class BasicLocalNodeProcess implements LocalNodeProcess {
 
         command.addAll(this.processInformation.getTemplate().getRuntimeConfiguration().getProcessParameters());
         command.addAll(Arrays.asList(
-                "-cp", Null.devNull(),
+                "-cp", StringUtil.NULL_PATH,
                 "-javaagent:runner.jar",
                 "systems.reformcloud.reformcloud2.runner.Runner"
         ));

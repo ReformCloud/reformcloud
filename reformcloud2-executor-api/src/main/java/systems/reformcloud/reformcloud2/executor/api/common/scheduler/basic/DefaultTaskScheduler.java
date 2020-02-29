@@ -4,8 +4,8 @@ import systems.reformcloud.reformcloud2.executor.api.common.scheduler.ScheduledT
 import systems.reformcloud.reformcloud2.executor.api.common.scheduler.TaskScheduler;
 
 import javax.annotation.Nonnull;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -13,9 +13,7 @@ public final class DefaultTaskScheduler implements TaskScheduler {
 
     private final AtomicInteger atomicInteger = new AtomicInteger();
 
-    private final Map<Integer, ScheduledTask> tasks = new HashMap<>();
-
-    private final Object object = new Object();
+    private final Map<Integer, ScheduledTask> tasks = new ConcurrentHashMap<>();
 
     @Override
     public void cancel(int id) {
@@ -46,10 +44,7 @@ public final class DefaultTaskScheduler implements TaskScheduler {
     @Override
     public ScheduledTask schedule(@Nonnull Runnable runnable, long delay, long period, @Nonnull TimeUnit timeUnit) {
         ScheduledTask scheduledTask = new DefaultTask(atomicInteger.getAndIncrement(), runnable, delay, period, timeUnit);
-        synchronized (object) {
-            tasks.put(scheduledTask.getID(), scheduledTask);
-        }
-
+        tasks.put(scheduledTask.getID(), scheduledTask);
         return scheduledTask;
     }
 }

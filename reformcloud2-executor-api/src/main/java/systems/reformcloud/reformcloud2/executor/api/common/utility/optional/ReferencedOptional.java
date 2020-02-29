@@ -7,6 +7,11 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
+/**
+ * Represents an extended optional for deeper use
+ *
+ * @param <T> The type of the object stored in the optional
+ */
 public final class ReferencedOptional<T> implements Serializable {
 
     private static final long serialVersionUID = 2358039311687874123L;
