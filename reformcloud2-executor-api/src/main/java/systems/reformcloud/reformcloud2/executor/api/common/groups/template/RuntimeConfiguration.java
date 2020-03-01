@@ -25,15 +25,15 @@ public final class RuntimeConfiguration {
         this.shutdownCommands = shutdownCommands;
     }
 
-    private int maxMemory;
+    private final int maxMemory;
 
-    private List<String> processParameters;
+    private final List<String> processParameters;
 
-    private List<String> jvmOptions;
+    private final List<String> jvmOptions;
 
-    private Map<String, String> systemProperties;
+    private final Map<String, String> systemProperties;
 
-    private Collection<String> shutdownCommands;
+    private final Collection<String> shutdownCommands;
 
     public int getMaxMemory() {
         return maxMemory;

@@ -16,9 +16,9 @@ public class MainGroup implements Nameable {
         this.subGroups = subGroups;
     }
 
-    private String name;
+    private final String name;
 
-    private List<String> subGroups;
+    private final List<String> subGroups;
 
     @Nonnull
     @Override

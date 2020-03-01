@@ -16,15 +16,15 @@ public final class DefaultInstallablePlugin extends InstallablePlugin {
         this.main = main;
     }
 
-    private String downloadURL;
+    private final String downloadURL;
 
-    private String name;
+    private final String name;
 
-    private String version;
+    private final String version;
 
-    private String author;
+    private final String author;
 
-    private String main;
+    private final String main;
 
     @Nonnull
     @Override

@@ -7,8 +7,8 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.channel.Pack
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.handler.DefaultJsonNetworkHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.WrappedByteInput;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Duo;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.function.DoubleFunction;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Duo;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiFunction;
@@ -24,7 +24,7 @@ public final class ChannelReaderHelper extends SimpleChannelInboundHandler<Wrapp
         this.onAuthFailure = onAuthFailure;
     }
 
-    private NetworkChannelReader channelReader;
+    private final NetworkChannelReader channelReader;
 
     private final DoubleFunction<Packet, String, Boolean> function;
 

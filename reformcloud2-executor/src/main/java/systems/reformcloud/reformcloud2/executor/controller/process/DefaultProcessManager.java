@@ -42,7 +42,7 @@ public final class DefaultProcessManager implements ProcessManager {
 
     private final Collection<ProcessInformation> processInformation = new ConcurrentLinkedQueue<>();
 
-    private Queue<Trio<ProcessGroup, Template, JsonConfiguration>> noClientTryLater = new ConcurrentLinkedQueue<>();
+    private final Queue<Trio<ProcessGroup, Template, JsonConfiguration>> noClientTryLater = new ConcurrentLinkedQueue<>();
 
     public DefaultProcessManager() {
         CompletableFuture.runAsync(() -> {

@@ -10,47 +10,47 @@ import java.util.Map;
 
 public final class ProcessRuntimeInformation {
 
-    private double cpuUsageSystem;
+    private final double cpuUsageSystem;
 
-    private double cpuUsageInternal;
+    private final double cpuUsageInternal;
 
-    private double loadAverageSystem;
+    private final double loadAverageSystem;
 
-    private int processorCount;
+    private final int processorCount;
 
-    private long memoryUsageSystem;
+    private final long memoryUsageSystem;
 
-    private long memoryUsageInternal;
+    private final long memoryUsageInternal;
 
-    private long nonHeapMemoryUsage;
+    private final long nonHeapMemoryUsage;
 
-    private long collectionMemoryUsage;
+    private final long collectionMemoryUsage;
 
-    private int loadedClasses;
+    private final int loadedClasses;
 
-    private long unloadedClasses;
+    private final long unloadedClasses;
 
-    private long totalLoadedClasses;
+    private final long totalLoadedClasses;
 
-    private String osVersion;
+    private final String osVersion;
 
-    private String javaVersion;
+    private final String javaVersion;
 
-    private String systemArchitecture;
+    private final String systemArchitecture;
 
-    private String[] startParameters;
+    private final String[] startParameters;
 
-    private int stacktraces;
+    private final int stacktraces;
 
-    private long[] deadLockedThreads;
+    private final long[] deadLockedThreads;
 
-    private Map<String, String> systemProperties;
+    private final Map<String, String> systemProperties;
 
-    private String classPath;
+    private final String classPath;
 
-    private String bootClassPath;
+    private final String bootClassPath;
 
-    private List<ThreadInfo> threadInfos;
+    private final List<ThreadInfo> threadInfos;
 
     private ProcessRuntimeInformation(double cpuUsageSystem, double cpuUsageInternal, double loadAverageSystem,
                                     int processorCount, long memoryUsageSystem, long memoryUsageInternal,

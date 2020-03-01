@@ -34,23 +34,23 @@ public final class Template implements Nameable {
         this.pathInclusions = pathInclusions;
     }
 
-    private int priority;
+    private final int priority;
 
-    private String name;
+    private final String name;
 
-    private boolean global;
+    private final boolean global;
 
-    private String backend;
+    private final String backend;
 
-    private String serverNameSplitter;
+    private final String serverNameSplitter;
 
-    private RuntimeConfiguration runtimeConfiguration;
+    private final RuntimeConfiguration runtimeConfiguration;
 
-    private Version version;
+    private final Version version;
 
-    private Collection<Inclusion> templateInclusions;
+    private final Collection<Inclusion> templateInclusions;
 
-    private Collection<Inclusion> pathInclusions;
+    private final Collection<Inclusion> pathInclusions;
 
     public int getPriority() {
         return priority;

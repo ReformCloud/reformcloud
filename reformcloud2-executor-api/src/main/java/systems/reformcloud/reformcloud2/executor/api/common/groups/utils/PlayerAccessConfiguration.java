@@ -19,23 +19,23 @@ public final class PlayerAccessConfiguration {
         this.maxPlayers = maxPlayers;
     }
 
-    private String fullJoinPermission;
+    private final String fullJoinPermission;
 
     private boolean maintenance;
 
-    private String maintenanceJoinPermission;
+    private final String maintenanceJoinPermission;
 
-    private boolean joinOnlyPerPermission;
+    private final boolean joinOnlyPerPermission;
 
-    private String joinPermission;
+    private final String joinPermission;
 
-    private boolean onlyProxyJoin;
+    private final boolean onlyProxyJoin;
 
-    private boolean playerControllerCommandReporting;
+    private final boolean playerControllerCommandReporting;
 
-    private boolean useCloudPlayerLimit;
+    private final boolean useCloudPlayerLimit;
 
-    private int maxPlayers;
+    private final int maxPlayers;
 
     @Nonnull
     public String getFullJoinPermission() {

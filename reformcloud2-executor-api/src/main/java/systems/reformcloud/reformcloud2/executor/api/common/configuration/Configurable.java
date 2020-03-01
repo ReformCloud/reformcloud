@@ -14,7 +14,7 @@ import java.util.function.Predicate;
 /**
  * Represents any configuration used in the cloud system
  */
-public interface Configurable<V extends Configurable> extends FileWriter {
+public interface Configurable<V extends Configurable<V>> extends FileWriter {
 
     @Nonnull
     V add(@Nonnull String key, @Nullable V value);

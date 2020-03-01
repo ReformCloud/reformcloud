@@ -101,7 +101,7 @@ public class SpongeSignSystemAdapter implements SignSystemAdapter<Sign> {
 
     private UUID taskID;
 
-    private Map<UUID, ProcessInformation> notAssigned = new ConcurrentHashMap<>();
+    private final Map<UUID, ProcessInformation> notAssigned = new ConcurrentHashMap<>();
 
     private final AtomicInteger[] counter = new AtomicInteger[] {
             new AtomicInteger(-1), // start

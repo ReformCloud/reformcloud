@@ -11,9 +11,8 @@ public interface ConsoleSyncAPI {
      * Sends a coloured line into the console
      *
      * @param line The line which should be sent
-     * @throws IllegalAccessException If coloured logging is not supported
      */
-    void sendColouredLine(@Nonnull String line) throws IllegalAccessException;
+    void sendColouredLine(@Nonnull String line);
 
     /**
      * Sends a raw line into the console

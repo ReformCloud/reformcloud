@@ -25,7 +25,7 @@ public abstract class Client extends ExternalAPIImplementation implements Reload
 
     protected abstract void bootstrap();
 
-    public abstract void shutdown() throws Exception;
+    public abstract void shutdown();
 
     public abstract CommandManager getCommandManager();
 

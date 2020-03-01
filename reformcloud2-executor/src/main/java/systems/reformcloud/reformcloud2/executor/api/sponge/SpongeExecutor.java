@@ -6,7 +6,6 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.title.Title;
 import org.spongepowered.api.world.Location;
-import org.spongepowered.api.world.World;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorType;
 import systems.reformcloud.reformcloud2.executor.api.api.API;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
@@ -210,7 +209,7 @@ public class SpongeExecutor extends API implements PlayerAPIExecutor {
     @Override
     public void executeTeleport(UUID player, String world, double x, double y, double z, float yaw, float pitch) {
         Sponge.getServer().getPlayer(player).ifPresent(e -> Sponge.getServer().getWorld(world).ifPresent(w ->
-            e.setLocationSafely(new Location<World>(w, x, y, z))
+            e.setLocationSafely(new Location<>(w, x, y, z))
         ));
     }
 

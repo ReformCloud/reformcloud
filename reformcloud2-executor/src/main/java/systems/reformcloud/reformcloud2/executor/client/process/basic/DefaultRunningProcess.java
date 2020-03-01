@@ -55,7 +55,7 @@ public final class DefaultRunningProcess implements RunningProcess {
 
     private final ProcessInformation processInformation;
 
-    private Path path;
+    private final Path path;
 
     private boolean prepared = false;
 

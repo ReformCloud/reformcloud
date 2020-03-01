@@ -310,13 +310,7 @@ public final class VelocityExecutor extends API implements PlayerAPIExecutor {
 
     @Override
     public void executeConnect(UUID player, String server) {
-        proxyServer.getPlayer(player).ifPresent(player1 -> {
-            if (isServerRegistered(server)) {
-                player1.createConnectionRequest(
-                        proxyServer.getServer(server).get()
-                ).fireAndForget();
-            }
-        });
+        proxyServer.getPlayer(player).ifPresent(player1 -> proxyServer.getServer(server).ifPresent(e -> player1.createConnectionRequest(e).fireAndForget()));
     }
 
     @Override

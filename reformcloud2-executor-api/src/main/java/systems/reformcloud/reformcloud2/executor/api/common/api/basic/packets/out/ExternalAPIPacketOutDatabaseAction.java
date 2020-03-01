@@ -25,6 +25,6 @@ public final class ExternalAPIPacketOutDatabaseAction extends JsonPacket {
             this.key = key;
         }
 
-        private String key;
+        private final String key;
     }
 }

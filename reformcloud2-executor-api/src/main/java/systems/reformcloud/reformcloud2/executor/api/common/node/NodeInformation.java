@@ -10,17 +10,17 @@ public class NodeInformation {
 
     public static final TypeToken<NodeInformation> TYPE = new TypeToken<NodeInformation>() {};
 
-    private String name;
+    private final String name;
 
-    private UUID nodeUniqueID;
+    private final UUID nodeUniqueID;
 
-    private long startupTime;
+    private final long startupTime;
 
     private long usedMemory;
 
-    private long maxMemory;
+    private final long maxMemory;
 
-    private Collection<NodeProcess> startedProcesses;
+    private final Collection<NodeProcess> startedProcesses;
 
     public NodeInformation(String name, UUID nodeUniqueID, long startupTime,
                            long usedMemory, long maxMemory, Collection<NodeProcess> startedProcesses) {

@@ -10,7 +10,7 @@ public final class NetworkInfo {
         this.connectTime = connected ? System.currentTimeMillis() : -1;
     }
 
-    private String host;
+    private final String host;
 
     private int port;
 

@@ -28,19 +28,19 @@ public class NodeConfig {
         this.otherNodes = otherNodes;
     }
 
-    private String name;
+    private final String name;
 
-    private UUID uniqueID;
+    private final UUID uniqueID;
 
-    private long maxMemory;
+    private final long maxMemory;
 
-    private String startHost;
+    private final String startHost;
 
-    private List<Map<String, Integer>> networkListener;
+    private final List<Map<String, Integer>> networkListener;
 
-    private List<Map<String, Integer>> httpNetworkListener;
+    private final List<Map<String, Integer>> httpNetworkListener;
 
-    private List<Map<String, Integer>> otherNodes;
+    private final List<Map<String, Integer>> otherNodes;
 
     public String getName() {
         return name;

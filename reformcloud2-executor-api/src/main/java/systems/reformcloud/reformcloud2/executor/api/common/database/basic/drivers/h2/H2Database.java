@@ -326,10 +326,10 @@ public class H2Database extends Database<Connection> {
             }
 
             @Override
+            @Nonnull
             public Iterator<JsonConfiguration> iterator() {
                 List<JsonConfiguration> list = new ArrayList<>();
                 try {
-                    AtomicInteger atomicInteger = new AtomicInteger();
                     PreparedStatement statement = connection.prepareStatement("SELECT `data` FROM `" + table + "`");
                     ResultSet resultSet = statement.executeQuery();
                     while (resultSet.next()) {

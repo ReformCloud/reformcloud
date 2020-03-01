@@ -95,9 +95,9 @@ public final class LanguageWorker {
             this.display = properties.getProperty("language.setting.display");
         }
 
-        private String name;
+        private final String name;
 
-        private String display;
+        private final String display;
 
         @Override
         public String getSource() {

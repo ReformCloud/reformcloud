@@ -90,7 +90,7 @@ public class NukkitSignSystemAdapter implements SignSystemAdapter<BlockEntitySig
 
     private int taskID = -1;
 
-    private Map<UUID, ProcessInformation> notAssigned = new ConcurrentHashMap<>();
+    private final Map<UUID, ProcessInformation> notAssigned = new ConcurrentHashMap<>();
 
     private final AtomicInteger[] counter = new AtomicInteger[] {
             new AtomicInteger(-1), // start

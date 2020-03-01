@@ -254,6 +254,7 @@ public final class MongoDatabase extends Database<com.mongodb.client.MongoDataba
             }
 
             @Override
+            @Nonnull
             public Iterator<JsonConfiguration> iterator() {
                 List<JsonConfiguration> list = new ArrayList<>();
                 mongoDatabase.getCollection(table).find().forEach((Consumer<Document>) document -> list.add(new JsonConfiguration(document.toJson())));

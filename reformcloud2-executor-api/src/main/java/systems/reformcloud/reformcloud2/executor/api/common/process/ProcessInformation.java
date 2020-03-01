@@ -49,35 +49,35 @@ public final class ProcessInformation implements Nameable, Clone<ProcessInformat
         this.maxPlayers = maxPlayers;
     }
 
-    private String processName;
+    private final String processName;
 
-    private String displayName;
+    private final String displayName;
 
-    private String parent;
+    private final String parent;
 
-    private UUID nodeUniqueID;
+    private final UUID nodeUniqueID;
 
-    private UUID processUniqueID;
+    private final UUID processUniqueID;
 
-    private int id;
+    private final int id;
 
     private int maxPlayers;
 
-    private SortedSet<Player> onlinePlayers = new TreeSet<>(Comparator.comparingLong(Player::getJoined));
+    private final SortedSet<Player> onlinePlayers = new TreeSet<>(Comparator.comparingLong(Player::getJoined));
 
     private ProcessState processState;
 
-    private NetworkInfo networkInfo;
+    private final NetworkInfo networkInfo;
 
     private ProcessGroup processGroup;
 
-    private Template template;
+    private final Template template;
 
     private ProcessRuntimeInformation processRuntimeInformation;
 
-    private List<DefaultPlugin> plugins;
+    private final List<DefaultPlugin> plugins;
 
-    private JsonConfiguration extra;
+    private final JsonConfiguration extra;
 
     @Nonnull
     public String getDisplayName() {

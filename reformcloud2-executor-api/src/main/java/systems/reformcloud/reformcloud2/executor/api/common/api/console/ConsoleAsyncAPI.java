@@ -13,11 +13,10 @@ public interface ConsoleAsyncAPI {
      *
      * @param line The line which should be sent
      * @return A task which will be completed if the action is completed (always {@code null})
-     * @throws IllegalAccessException If coloured logging is not supported
      */
     @Nonnull
     @CheckReturnValue
-    Task<Void> sendColouredLineAsync(@Nonnull String line) throws IllegalAccessException;
+    Task<Void> sendColouredLineAsync(@Nonnull String line);
 
     /**
      * Sends a raw line into the console

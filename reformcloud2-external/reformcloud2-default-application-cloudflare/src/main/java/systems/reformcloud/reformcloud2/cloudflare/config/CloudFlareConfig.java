@@ -14,15 +14,15 @@ public class CloudFlareConfig {
         this.subDomain = subDomain;
     }
 
-    private String email;
+    private final String email;
 
-    private String apiToken;
+    private final String apiToken;
 
-    private String domainName;
+    private final String domainName;
 
-    private String zoneId;
+    private final String zoneId;
 
-    private String subDomain;
+    private final String subDomain;
 
     public String getEmail() {
         return email;

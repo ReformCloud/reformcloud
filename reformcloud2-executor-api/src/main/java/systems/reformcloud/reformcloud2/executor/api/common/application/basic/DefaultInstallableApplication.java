@@ -11,9 +11,9 @@ public final class DefaultInstallableApplication implements InstallableApplicati
         this.name = name;
     }
 
-    private String url;
+    private final String url;
 
-    private String name;
+    private final String name;
 
     @Nonnull
     @Override

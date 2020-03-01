@@ -54,7 +54,7 @@ public final class SFTPTemplateBackend implements TemplateBackend {
 
     private ChannelSftp channel;
 
-    private SFTPConfig config;
+    private final SFTPConfig config;
 
     private SFTPTemplateBackend(SFTPConfig config) {
         this.config = config;

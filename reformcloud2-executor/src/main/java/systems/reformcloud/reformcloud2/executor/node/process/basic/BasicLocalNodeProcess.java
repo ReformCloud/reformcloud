@@ -59,7 +59,7 @@ public class BasicLocalNodeProcess implements LocalNodeProcess {
 
     private final ProcessInformation processInformation;
 
-    private Path path;
+    private final Path path;
 
     private boolean prepared = false;
 

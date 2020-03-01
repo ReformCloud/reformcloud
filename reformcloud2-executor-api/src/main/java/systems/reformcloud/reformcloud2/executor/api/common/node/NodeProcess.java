@@ -4,11 +4,11 @@ import java.util.UUID;
 
 public class NodeProcess {
 
-    private String group;
+    private final String group;
 
-    private String name;
+    private final String name;
 
-    private UUID uniqueID;
+    private final UUID uniqueID;
 
     public NodeProcess(String group, String name, UUID uniqueID) {
         this.group = group;

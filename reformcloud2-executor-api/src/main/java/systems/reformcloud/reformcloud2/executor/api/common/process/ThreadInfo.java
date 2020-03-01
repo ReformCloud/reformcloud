@@ -10,15 +10,15 @@ public final class ThreadInfo {
         this.state = state;
     }
 
-    private String name;
+    private final String name;
 
-    private long id;
+    private final long id;
 
-    private int priority;
+    private final int priority;
 
-    private boolean daemon;
+    private final boolean daemon;
 
-    private Thread.State state;
+    private final Thread.State state;
 
     public String getName() {
         return name;

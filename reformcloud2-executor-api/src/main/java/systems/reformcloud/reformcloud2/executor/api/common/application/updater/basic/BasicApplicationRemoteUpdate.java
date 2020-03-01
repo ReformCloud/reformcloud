@@ -4,9 +4,9 @@ import systems.reformcloud.reformcloud2.executor.api.common.application.updater.
 
 public class BasicApplicationRemoteUpdate implements ApplicationRemoteUpdate {
 
-    private String version;
+    private final String version;
 
-    private String downloadURL;
+    private final String downloadURL;
 
     public BasicApplicationRemoteUpdate(String version, String downloadURL) {
         this.version = version;

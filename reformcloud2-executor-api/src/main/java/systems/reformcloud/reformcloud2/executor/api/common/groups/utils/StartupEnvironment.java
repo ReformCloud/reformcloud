@@ -9,9 +9,9 @@ public enum StartupEnvironment {
         this.supported = supported;
     }
 
-    private String command;
+    private final String command;
 
-    private boolean supported;
+    private final boolean supported;
 
     public String getCommand() {
         return command;

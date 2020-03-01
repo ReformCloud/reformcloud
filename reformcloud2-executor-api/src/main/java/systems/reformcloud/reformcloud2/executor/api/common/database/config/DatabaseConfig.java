@@ -32,7 +32,7 @@ public final class DatabaseConfig {
         load();
     }
 
-    public void connect(Database database) {
+    public void connect(Database<?> database) {
         database.connect(
                 configuration.getString("host"),
                 configuration.getInteger("port"),

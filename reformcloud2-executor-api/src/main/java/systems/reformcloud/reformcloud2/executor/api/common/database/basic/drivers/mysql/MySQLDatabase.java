@@ -355,6 +355,7 @@ public final class MySQLDatabase extends Database<Connection> {
             }
 
             @Override
+            @Nonnull
             public Iterator<JsonConfiguration> iterator() {
                 List<JsonConfiguration> list = new ArrayList<>();
                 try {

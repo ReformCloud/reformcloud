@@ -38,19 +38,19 @@ public class ProcessGroup implements Nameable {
         this.canBeUsedAsLobby = asLobby;
     }
 
-    private String name;
+    private final String name;
 
-    private boolean showIdInName;
+    private final boolean showIdInName;
 
-    private StartupConfiguration startupConfiguration;
+    private final StartupConfiguration startupConfiguration;
 
-    private List<Template> templates;
+    private final List<Template> templates;
 
-    private PlayerAccessConfiguration playerAccessConfiguration;
+    private final PlayerAccessConfiguration playerAccessConfiguration;
 
-    private boolean staticProcess;
+    private final boolean staticProcess;
 
-    private boolean canBeUsedAsLobby;
+    private final boolean canBeUsedAsLobby;
 
     public boolean isShowIdInName() {
         return showIdInName;
