@@ -146,4 +146,7 @@ public interface Configurable<V extends Configurable> extends FileWriter {
     String toPrettyString();
 
     byte[] toPrettyBytes();
+
+    @Nonnull
+    V copy();
 }

@@ -1,26 +1,34 @@
 package systems.reformcloud.reformcloud2.executor.node.api.message;
 
+import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.messaging.MessageAsyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.messaging.MessageSyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.messaging.util.ErrorReportHandling;
+import systems.reformcloud.reformcloud2.executor.api.common.api.messaging.util.ReceiverType;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
+import systems.reformcloud.reformcloud2.executor.api.common.network.channel.NetworkChannel;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.common.network.messaging.DefaultMessageJsonPacket;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.optional.ReferencedOptional;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.defaults.DefaultTask;
 import systems.reformcloud.reformcloud2.executor.controller.packet.out.messaging.ProxiedChannelMessage;
 import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
 
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Objects;
 
 public class ChannelMessageAPIImplementation implements MessageSyncAPI, MessageAsyncAPI {
 
     @Nonnull
     @Override
-    public Task<Void> sendChannelMessageAsync(@Nonnull JsonConfiguration jsonConfiguration, @Nonnull ErrorReportHandling errorReportHandling, @Nonnull String... receivers) {
+    public Task<Void> sendChannelMessageAsync(@Nonnull JsonConfiguration jsonConfiguration, @Nonnull String baseChannel,
+                                              @Nonnull String subChannel, @Nonnull ErrorReportHandling errorReportHandling, @Nonnull String... receivers) {
         Task<Void> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             Arrays.stream(receivers).forEach(receiver -> DefaultChannelManager.INSTANCE.get(receiver).orElseDo(Objects::nonNull, () -> {
@@ -40,19 +48,78 @@ public class ChannelMessageAPIImplementation implements MessageSyncAPI, MessageA
                 }
             }, sender -> {
                 if (NodeExecutor.getInstance().getNodeNetworkManager().getCluster().getNode(sender.getName()) != null) {
-                    sender.sendPacket(new DefaultMessageJsonPacket(jsonConfiguration, Arrays.asList(receivers), errorReportHandling));
+                    sender.sendPacket(new DefaultMessageJsonPacket(jsonConfiguration, Arrays.asList(receivers), errorReportHandling, baseChannel, subChannel));
                     return;
                 }
 
-                sender.sendPacket(new ProxiedChannelMessage(jsonConfiguration));
+                sender.sendPacket(new ProxiedChannelMessage(jsonConfiguration, baseChannel, subChannel));
             }));
             task.complete(null);
         });
         return task;
     }
 
+    @Nonnull
     @Override
-    public void sendChannelMessageSync(@Nonnull JsonConfiguration jsonConfiguration, @Nonnull ErrorReportHandling errorReportHandling, @Nonnull String... receivers) {
-        sendChannelMessageAsync(jsonConfiguration, errorReportHandling, receivers).awaitUninterruptedly();
+    public Task<Void> sendChannelMessageAsync(@Nonnull JsonConfiguration configuration, @Nonnull String baseChannel, @Nonnull String subChannel, @Nonnull ReceiverType... receiverTypes) {
+        Task<Void> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(() -> {
+            Collection<NetworkChannel> channels = new ArrayList<>();
+            Arrays.stream(receiverTypes).forEach(type -> {
+                switch (type) {
+                    case PROXY: {
+                        Streams.allOf(ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getAllProcesses(),
+                                e -> !e.getTemplate().getVersion().isServer()
+                        ).stream()
+                                .map(e -> DefaultChannelManager.INSTANCE.get(e.getName()))
+                                .filter(ReferencedOptional::isPresent)
+                                .map(ReferencedOptional::get)
+                                .forEach(channels::add);
+                        break;
+                    }
+
+                    case SERVER: {
+                        Streams.allOf(ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getAllProcesses(),
+                                e -> e.getTemplate().getVersion().isServer()
+                        ).stream()
+                                .map(e -> DefaultChannelManager.INSTANCE.get(e.getName()))
+                                .filter(ReferencedOptional::isPresent)
+                                .map(ReferencedOptional::get)
+                                .forEach(channels::add);
+                        break;
+                    }
+
+                    case OTHERS: {
+                        NodeExecutor.getInstance().getNodeNetworkManager().getCluster().getConnectedNodes()
+                                .stream()
+                                .map(e -> DefaultChannelManager.INSTANCE.get(e.getName()))
+                                .filter(ReferencedOptional::isPresent)
+                                .map(ReferencedOptional::get)
+                                .forEach(channels::add);
+                        break;
+                    }
+                }
+            });
+            channels.forEach(e -> {
+                if (NodeExecutor.getInstance().getNodeNetworkManager().getCluster().getNode(e.getName()) != null) {
+                    e.sendPacket(new DefaultMessageJsonPacket(Arrays.asList(receiverTypes), configuration, baseChannel, subChannel));
+                    return;
+                }
+
+                e.sendPacket(new ProxiedChannelMessage(configuration, baseChannel, subChannel));
+            });
+            task.complete(null);
+        });
+        return task;
+    }
+
+    @Override
+    public void sendChannelMessageSync(@Nonnull JsonConfiguration jsonConfiguration, @Nonnull String baseChannel, @Nonnull String subChannel, @Nonnull ErrorReportHandling errorReportHandling, @Nonnull String... receivers) {
+        sendChannelMessageAsync(jsonConfiguration, baseChannel, subChannel, errorReportHandling, receivers).awaitUninterruptedly();
+    }
+
+    @Override
+    public void sendChannelMessageSync(@Nonnull JsonConfiguration configuration, @Nonnull String baseChannel, @Nonnull String subChannel, @Nonnull ReceiverType... receiverTypes) {
+        sendChannelMessageAsync(configuration, baseChannel, subChannel, receiverTypes).awaitUninterruptedly();
     }
 }

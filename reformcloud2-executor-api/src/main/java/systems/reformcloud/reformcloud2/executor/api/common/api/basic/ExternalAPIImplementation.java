@@ -19,6 +19,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.api.group.GroupSyncA
 import systems.reformcloud.reformcloud2.executor.api.common.api.messaging.MessageAsyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.messaging.MessageSyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.messaging.util.ErrorReportHandling;
+import systems.reformcloud.reformcloud2.executor.api.common.api.messaging.util.ReceiverType;
 import systems.reformcloud.reformcloud2.executor.api.common.api.player.PlayerAsyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.player.PlayerSyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.plugins.PluginAsyncAPI;
@@ -1183,11 +1184,26 @@ public abstract class ExternalAPIImplementation extends ExecutorAPI implements
 
     @Nonnull
     @Override
-    public Task<Void> sendChannelMessageAsync(@Nonnull JsonConfiguration jsonConfiguration, @Nonnull ErrorReportHandling errorReportHandling, @Nonnull String... receivers) {
+    public Task<Void> sendChannelMessageAsync(@Nonnull JsonConfiguration jsonConfiguration, @Nonnull String baseChannel,
+                                              @Nonnull String subChannel, @Nonnull ErrorReportHandling errorReportHandling, @Nonnull String... receivers) {
         Task<Void> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             DefaultChannelManager.INSTANCE.get("Controller").ifPresent(sender -> sender.sendPacket(
-                    new DefaultMessageJsonPacket(jsonConfiguration, Arrays.asList(receivers), errorReportHandling)
+                    new DefaultMessageJsonPacket(jsonConfiguration, Arrays.asList(receivers), errorReportHandling, baseChannel, subChannel)
+            ));
+            task.complete(null);
+        });
+        return task;
+    }
+
+    @Nonnull
+    @Override
+    public Task<Void> sendChannelMessageAsync(@Nonnull JsonConfiguration configuration, @Nonnull String baseChannel,
+                                              @Nonnull String subChannel, @Nonnull ReceiverType... receiverTypes) {
+        Task<Void> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(() -> {
+            DefaultChannelManager.INSTANCE.get("Controller").ifPresent(sender -> sender.sendPacket(
+                    new DefaultMessageJsonPacket(Arrays.asList(receiverTypes), configuration, baseChannel, subChannel)
             ));
             task.complete(null);
         });
@@ -1195,8 +1211,14 @@ public abstract class ExternalAPIImplementation extends ExecutorAPI implements
     }
 
     @Override
-    public void sendChannelMessageSync(@Nonnull JsonConfiguration jsonConfiguration, @Nonnull ErrorReportHandling errorReportHandling, @Nonnull String... receivers) {
-        sendChannelMessageAsync(jsonConfiguration, errorReportHandling, receivers).awaitUninterruptedly();
+    public void sendChannelMessageSync(@Nonnull JsonConfiguration jsonConfiguration, @Nonnull String baseChannel,
+                                       @Nonnull String subChannel, @Nonnull ErrorReportHandling errorReportHandling, @Nonnull String... receivers) {
+        sendChannelMessageAsync(jsonConfiguration, baseChannel, subChannel, errorReportHandling, receivers).awaitUninterruptedly();
+    }
+
+    @Override
+    public void sendChannelMessageSync(@Nonnull JsonConfiguration configuration, @Nonnull String baseChannel, @Nonnull String subChannel, @Nonnull ReceiverType... receiverTypes) {
+        sendChannelMessageAsync(configuration, baseChannel, subChannel, receiverTypes).awaitUninterruptedly();
     }
 
     @Nonnull

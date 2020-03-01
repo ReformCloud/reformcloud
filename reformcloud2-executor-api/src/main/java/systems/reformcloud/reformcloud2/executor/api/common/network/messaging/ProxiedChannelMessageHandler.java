@@ -19,6 +19,10 @@ public class ProxiedChannelMessageHandler extends DefaultJsonNetworkHandler {
 
     @Override
     public void handlePacket(@Nonnull PacketSender packetSender, @Nonnull Packet packet, @Nonnull Consumer<Packet> responses) {
-        ExecutorAPI.getInstance().getEventManager().callEvent(new ChannelMessageReceivedEvent(packet.content()));
+        ExecutorAPI.getInstance().getEventManager().callEvent(new ChannelMessageReceivedEvent(
+                packet.content().get("message"),
+                packet.content().getString("base"),
+                packet.content().getString("sub")
+        ));
     }
 }

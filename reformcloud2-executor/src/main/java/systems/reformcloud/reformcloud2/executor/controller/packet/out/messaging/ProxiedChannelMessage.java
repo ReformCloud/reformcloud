@@ -8,7 +8,11 @@ import javax.annotation.Nonnull;
 
 public class ProxiedChannelMessage extends JsonPacket {
 
-    public ProxiedChannelMessage(@Nonnull JsonConfiguration content) {
-        super(NetworkUtil.MESSAGING_BUS + 2, content);
+    public ProxiedChannelMessage(@Nonnull JsonConfiguration content, @Nonnull String baseChannel, @Nonnull String subChannel) {
+        super(NetworkUtil.MESSAGING_BUS + 2, new JsonConfiguration()
+                .add("message", content)
+                .add("base", baseChannel)
+                .add("sub", subChannel)
+        );
     }
 }

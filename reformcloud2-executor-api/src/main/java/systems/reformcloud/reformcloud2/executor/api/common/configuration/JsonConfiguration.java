@@ -473,6 +473,12 @@ public final class JsonConfiguration implements Configurable<JsonConfiguration> 
         return toPrettyString().getBytes(StandardCharsets.UTF_8);
     }
 
+    @Nonnull
+    @Override
+    public JsonConfiguration copy() {
+        return new JsonConfiguration(this.jsonObject.deepCopy());
+    }
+
     public JsonObject getJsonObject() {
         return jsonObject;
     }

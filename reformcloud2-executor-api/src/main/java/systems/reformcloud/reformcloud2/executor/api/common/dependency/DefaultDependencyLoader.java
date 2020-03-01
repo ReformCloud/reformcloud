@@ -1,5 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.api.common.dependency;
 
+import systems.reformcloud.reformcloud2.executor.api.common.base.Conditions;
 import systems.reformcloud.reformcloud2.executor.api.common.dependency.repo.DefaultRepositories;
 
 import javax.annotation.Nonnull;
@@ -22,6 +23,7 @@ public final class DefaultDependencyLoader extends DependencyLoader {
     static {
         Properties properties = new Properties();
         try (InputStream inputStream = DefaultDependencyLoader.class.getClassLoader().getResourceAsStream("internal/versions.properties")) {
+            Conditions.nonNull(inputStream, "The current build you are running on is broken, try another");
             properties.load(inputStream);
         } catch (final IOException ex) {
             ex.printStackTrace();
@@ -83,12 +85,11 @@ public final class DefaultDependencyLoader extends DependencyLoader {
 
         try {
             dependency.prepareIfUpdate();
-            if (Files.exists(path)) {
-                return path.toUri().toURL();
-            } else {
+            if (!Files.exists(path)) {
                 dependency.download();
-                return path.toUri().toURL();
             }
+
+            return path.toUri().toURL();
         } catch (final MalformedURLException ex) {
             ex.printStackTrace();
         }
