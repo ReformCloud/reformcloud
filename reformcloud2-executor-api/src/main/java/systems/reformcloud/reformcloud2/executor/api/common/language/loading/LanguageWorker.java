@@ -4,7 +4,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.base.Conditions;
 import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
 import systems.reformcloud.reformcloud2.executor.api.common.language.language.Language;
 import systems.reformcloud.reformcloud2.executor.api.common.language.language.source.LanguageSource;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.function.Double;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Duo;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
@@ -18,17 +18,17 @@ public final class LanguageWorker {
     private LanguageWorker() {}
 
     public static void doLoad() {
-        Double<String, LinkedList<Language>> in = detectLanguages();
+        Duo<String, LinkedList<Language>> in = detectLanguages();
         LanguageManager.load(in.getFirst(), in.getSecond().toArray(new Language[0]));
     }
 
     public static void doReload() {
-        Double<String, LinkedList<Language>> in = detectLanguages();
+        Duo<String, LinkedList<Language>> in = detectLanguages();
         LanguageManager.reload(in.getFirst(), in.getSecond().toArray(new Language[0]));
     }
 
-    private static Double<String, LinkedList<Language>> detectLanguages() {
-        Double<String, LinkedList<Language>> done = null;
+    private static Duo<String, LinkedList<Language>> detectLanguages() {
+        Duo<String, LinkedList<Language>> done = null;
 
         try {
             LinkedList<Language> out = new LinkedList<>();
@@ -74,7 +74,7 @@ public final class LanguageWorker {
                 atomicReference.set(out.getFirst());
             }
 
-            done = new Double<>(atomicReference.get().source().getSource(), out);
+            done = new Duo<>(atomicReference.get().source().getSource(), out);
         } catch (final Throwable ex) {
             ex.printStackTrace();
         }

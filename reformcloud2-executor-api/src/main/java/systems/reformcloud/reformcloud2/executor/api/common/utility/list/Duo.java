@@ -1,11 +1,13 @@
-package systems.reformcloud.reformcloud2.executor.api.common.utility.function;
+package systems.reformcloud.reformcloud2.executor.api.common.utility.list;
+
+import systems.reformcloud.reformcloud2.executor.api.common.utility.annotiations.UndefinedNullability;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public final class Double<F, S> {
+public final class Duo<F, S> {
 
-    public Double(@Nonnull F first, @Nullable S second) {
+    public Duo(@Nonnull F first, @Nullable S second) {
         this.first = first;
         this.second = second;
     }
@@ -25,7 +27,7 @@ public final class Double<F, S> {
     /**
      * @return The value of the this pair or {@code null} if the value is undefined
      */
-    @Nullable
+    @UndefinedNullability
     public S getSecond() {
         return second;
     }
