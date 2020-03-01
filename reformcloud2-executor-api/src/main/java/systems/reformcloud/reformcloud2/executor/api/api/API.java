@@ -1,6 +1,7 @@
 package systems.reformcloud.reformcloud2.executor.api.api;
 
 import io.netty.channel.ChannelHandlerContext;
+import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.basic.ExternalAPIImplementation;
 import systems.reformcloud.reformcloud2.executor.api.common.base.Conditions;
 import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
@@ -19,9 +20,26 @@ import java.io.ObjectInputStream;
 import java.net.InetSocketAddress;
 import java.util.Objects;
 
+/**
+ * This class can only get called if the environment is {@link systems.reformcloud.reformcloud2.executor.api.ExecutorType#API}.
+ * Check this by using {@link ExecutorAPI#getType()}. If the current instance is not an api instance
+ * just use the default cloud api based on {@link ExecutorAPI#getInstance()}.
+ */
 public abstract class API extends ExternalAPIImplementation {
 
-    public abstract ProcessInformation getThisProcessInformation();
+    /**
+     * @return The current process information the current api instance is using
+     */
+    @Nonnull
+    public abstract ProcessInformation getCurrentProcessInformation();
+
+    /**
+     * @return The current api instance the cloud is running on
+     */
+    @Nonnull
+    public static API getInstance() {
+        return (API) ExecutorAPI.getInstance();
+    }
 
     protected final NetworkChannelReader networkChannelReader = new NetworkChannelReader() {
 
@@ -44,9 +62,10 @@ public abstract class API extends ExternalAPIImplementation {
             Conditions.isTrue(packetSender == null);
             packetSender = Objects.requireNonNull(sender);
             if (packetSender.getName().equals("Controller")) {
-                getThisProcessInformation().getNetworkInfo().setConnected(true);
-                getThisProcessInformation().setProcessState(ProcessState.READY);
+                getCurrentProcessInformation().getNetworkInfo().setConnected(true);
+                getCurrentProcessInformation().setProcessState(ProcessState.READY);
             }
+
             DefaultChannelManager.INSTANCE.registerChannel(packetSender);
         }
 

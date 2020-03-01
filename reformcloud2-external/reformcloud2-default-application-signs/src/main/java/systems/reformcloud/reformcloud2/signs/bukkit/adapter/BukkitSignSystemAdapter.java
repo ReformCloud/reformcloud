@@ -12,6 +12,7 @@ import org.bukkit.command.PluginCommand;
 import org.bukkit.material.MaterialData;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
+import systems.reformcloud.reformcloud2.executor.api.api.API;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.base.Conditions;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
@@ -454,13 +455,13 @@ public class BukkitSignSystemAdapter implements SignSystemAdapter<Sign> {
     }
 
     private boolean isCurrent(ProcessInformation processInformation) {
-        ProcessInformation info = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation();
-        return info != null && info.getProcessUniqueID().equals(processInformation.getProcessUniqueID());
+        return API.getInstance().getCurrentProcessInformation().getProcessUniqueID().equals(processInformation.getProcessUniqueID());
     }
 
     private SignLayout getSelfLayout() {
-        return LayoutUtil.getLayoutFor(ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation().getProcessGroup().getName(), config).orElseThrow(
-                () -> new RuntimeException("No sign config present for context global or current group"));
+        return LayoutUtil
+                .getLayoutFor(API.getInstance().getCurrentProcessInformation().getProcessGroup().getName(), config)
+                .orElseThrow(() -> new RuntimeException("No sign config present for context global or current group"));
     }
 
     public static BukkitSignSystemAdapter getInstance() {

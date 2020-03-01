@@ -3,14 +3,17 @@ package systems.reformcloud.reformcloud2.commands.plugin.velocity.commands;
 import com.velocitypowered.api.command.Command;
 import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.proxy.Player;
+import com.velocitypowered.api.proxy.ServerConnection;
 import net.kyori.text.TextComponent;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import systems.reformcloud.reformcloud2.executor.api.api.API;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.velocity.VelocityExecutor;
 
 import javax.annotation.Nonnull;
 import java.util.List;
+import java.util.Optional;
 
 public class CommandLeave implements Command {
 
@@ -27,7 +30,14 @@ public class CommandLeave implements Command {
         }
 
         final Player player = (Player) commandSource;
-        if (ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation().isLobby()) {
+
+        Optional<ServerConnection> currentServer = player.getCurrentServer();
+        ProcessInformation process = null;
+        if (currentServer.isPresent()) {
+            process = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcess(currentServer.get().getServerInfo().getName());
+        }
+
+        if (!currentServer.isPresent() || process == null || process.isLobby()) {
             player.sendMessage(TextComponent.of(
                     VelocityExecutor.getInstance().getMessages().format(
                             VelocityExecutor.getInstance().getMessages().getAlreadyConnectedToHub()
@@ -36,16 +46,18 @@ public class CommandLeave implements Command {
             return;
         }
 
-        ProcessInformation lobby = VelocityExecutor.getBestLobbyForPlayer(VelocityExecutor.getInstance().getThisProcessInformation(),
+        ProcessInformation lobby = VelocityExecutor.getBestLobbyForPlayer(
+                API.getInstance().getCurrentProcessInformation(),
                 player,
-                player::hasPermission);
+                player::hasPermission
+        );
         if (lobby != null) {
             player.sendMessage(TextComponent.of(
                     VelocityExecutor.getInstance().getMessages().format(
                             VelocityExecutor.getInstance().getMessages().getConnectingToHub(), lobby.getName()
                     )
             ));
-            player.createConnectionRequest(VelocityExecutor.getInstance().getProxyServer().getServer(lobby.getName()).get()).fireAndForget();
+            VelocityExecutor.getInstance().getProxyServer().getServer(lobby.getName()).ifPresent(e -> player.createConnectionRequest(e).fireAndForget());
             return;
         }
 

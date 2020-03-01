@@ -5,6 +5,7 @@ import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
+import systems.reformcloud.reformcloud2.executor.api.api.API;
 import systems.reformcloud.reformcloud2.executor.api.bungee.BungeeExecutor;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
@@ -24,7 +25,8 @@ public class CommandLeave extends Command {
         }
 
         final ProxiedPlayer proxiedPlayer = (ProxiedPlayer) commandSender;
-        if (ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcess(proxiedPlayer.getServer().getInfo().getName()).isLobby()) {
+        ProcessInformation process = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcess(proxiedPlayer.getServer().getInfo().getName());
+        if (process == null || process.isLobby()) {
             proxiedPlayer.sendMessage(TextComponent.fromLegacyText(
                     BungeeExecutor.getInstance().getMessages().format(
                             BungeeExecutor.getInstance().getMessages().getAlreadyConnectedToHub()
@@ -33,9 +35,11 @@ public class CommandLeave extends Command {
             return;
         }
 
-        ProcessInformation lobby = BungeeExecutor.getBestLobbyForPlayer(BungeeExecutor.getInstance().getThisProcessInformation(),
+        ProcessInformation lobby = BungeeExecutor.getBestLobbyForPlayer(
+                API.getInstance().getCurrentProcessInformation(),
                 proxiedPlayer,
-                proxiedPlayer::hasPermission);
+                proxiedPlayer::hasPermission
+        );
         if (lobby != null) {
             proxiedPlayer.sendMessage(TextComponent.fromLegacyText(
                     BungeeExecutor.getInstance().getMessages().format(

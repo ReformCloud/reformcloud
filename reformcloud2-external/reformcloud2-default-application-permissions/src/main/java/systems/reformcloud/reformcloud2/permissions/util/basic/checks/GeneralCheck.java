@@ -1,6 +1,6 @@
 package systems.reformcloud.reformcloud2.permissions.util.basic.checks;
 
-import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
+import systems.reformcloud.reformcloud2.executor.api.api.API;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.permissions.util.group.PermissionGroup;
 import systems.reformcloud.reformcloud2.permissions.util.permission.PermissionNode;
@@ -22,8 +22,8 @@ public class GeneralCheck {
             return true;
         }
 
-        final ProcessInformation current = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation();
-        if (current == null || !permissionGroup.getPerGroupPermissions().containsKey(current.getProcessGroup().getName())) {
+        final ProcessInformation current = API.getInstance().getCurrentProcessInformation();
+        if (!permissionGroup.getPerGroupPermissions().containsKey(current.getProcessGroup().getName())) {
             return false;
         }
 

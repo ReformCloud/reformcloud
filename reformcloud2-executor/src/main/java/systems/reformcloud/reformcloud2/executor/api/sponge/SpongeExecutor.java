@@ -93,8 +93,9 @@ public class SpongeExecutor extends API implements PlayerAPIExecutor {
     }
 
     @Override
+    @Deprecated
     public ProcessInformation getThisProcessInformation() {
-        return thisProcessInformation;
+        return getCurrentProcessInformation();
     }
 
     @Override
@@ -116,6 +117,12 @@ public class SpongeExecutor extends API implements PlayerAPIExecutor {
     @Nonnull
     public SpongeLauncher getPlugin() {
         return plugin;
+    }
+
+    @Nonnull
+    @Override
+    public ProcessInformation getCurrentProcessInformation() {
+        return this.thisProcessInformation;
     }
 
     @Nonnull

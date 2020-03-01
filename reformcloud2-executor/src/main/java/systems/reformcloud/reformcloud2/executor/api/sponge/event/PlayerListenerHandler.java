@@ -5,6 +5,7 @@ import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
+import systems.reformcloud.reformcloud2.executor.api.api.API;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.PlayerAccessConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
@@ -21,16 +22,16 @@ public final class PlayerListenerHandler {
 
     @Listener (order = Order.LATE)
     public void handle(final ClientConnectionEvent.Login event) {
-        if (ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation().getProcessGroup().getPlayerAccessConfiguration().isOnlyProxyJoin()) {
+        if (API.getInstance().getCurrentProcessInformation().getProcessGroup().getPlayerAccessConfiguration().isOnlyProxyJoin()) {
             PacketSender packetSender = DefaultChannelManager.INSTANCE.get("Controller").orElse(null);
-            if (packetSender == null || !ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation().getNetworkInfo().isConnected()) {
+            if (packetSender == null || !API.getInstance().getCurrentProcessInformation().getNetworkInfo().isConnected()) {
                 event.setCancelled(true);
                 return;
             }
 
             Packet result = SpongeExecutor.getInstance().packetHandler().getQueryHandler().sendQueryAsync(packetSender, new APIPacketOutHasPlayerAccess(
                     event.getProfile().getUniqueId(),
-                    event.getProfile().getName().get()
+                    event.getProfile().getName().isPresent() ? event.getProfile().getName().get() : "unknown"
             )).getTask().getUninterruptedly(TimeUnit.SECONDS, 2);
             if (result != null && result.content().getBoolean("access")) {
                 event.setCancelled(false);
@@ -40,7 +41,7 @@ public final class PlayerListenerHandler {
         }
 
         final User player = event.getTargetUser();
-        final ProcessInformation current = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation();
+        final ProcessInformation current = API.getInstance().getCurrentProcessInformation();
         final PlayerAccessConfiguration configuration = current.getProcessGroup().getPlayerAccessConfiguration();
 
         if (configuration.isUseCloudPlayerLimit()
@@ -79,7 +80,7 @@ public final class PlayerListenerHandler {
 
     @Listener (order = Order.LATE)
     public void handle(final ClientConnectionEvent.Join event) {
-        final ProcessInformation current = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation();
+        final ProcessInformation current = API.getInstance().getCurrentProcessInformation();
         current.updateRuntimeInformation();
         SpongeExecutor.getInstance().setThisProcessInformation(current);
         ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(current);
@@ -87,7 +88,7 @@ public final class PlayerListenerHandler {
 
     @Listener (order = Order.FIRST)
     public void handle(final ClientConnectionEvent.Disconnect event) {
-        ProcessInformation current = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation();
+        ProcessInformation current = API.getInstance().getCurrentProcessInformation();
         if (!current.isPlayerOnline(event.getTargetEntity().getUniqueId())) {
             return;
         }

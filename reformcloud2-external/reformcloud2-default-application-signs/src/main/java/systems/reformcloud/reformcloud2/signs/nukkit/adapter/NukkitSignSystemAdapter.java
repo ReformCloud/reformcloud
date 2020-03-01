@@ -10,6 +10,7 @@ import cn.nukkit.plugin.Plugin;
 import cn.nukkit.plugin.PluginBase;
 import cn.nukkit.utils.TextFormat;
 import com.google.gson.reflect.TypeToken;
+import systems.reformcloud.reformcloud2.executor.api.api.API;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
@@ -223,8 +224,7 @@ public class NukkitSignSystemAdapter implements SignSystemAdapter<BlockEntitySig
     }
 
     private boolean isCurrent(ProcessInformation processInformation) {
-        ProcessInformation info = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation();
-        return info != null && info.getProcessUniqueID().equals(processInformation.getProcessUniqueID());
+        return API.getInstance().getCurrentProcessInformation().getProcessUniqueID().equals(processInformation.getProcessUniqueID());
     }
 
     private void doSync(Runnable runnable) {
@@ -397,8 +397,9 @@ public class NukkitSignSystemAdapter implements SignSystemAdapter<BlockEntitySig
     }
 
     private SignLayout getSelfLayout() {
-        return LayoutUtil.getLayoutFor(ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation().getProcessGroup().getName(), config).orElseThrow(
-                () -> new RuntimeException("No sign config present for context global or current group"));
+        return LayoutUtil
+                .getLayoutFor(API.getInstance().getCurrentProcessInformation().getProcessGroup().getName(), config)
+                .orElseThrow(() -> new RuntimeException("No sign config present for context global or current group"));
     }
 
     private void start() {

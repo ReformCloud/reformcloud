@@ -93,6 +93,12 @@ public final class SpigotExecutor extends API implements PlayerAPIExecutor {
     }
 
     @Nonnull
+    @Override
+    public ProcessInformation getCurrentProcessInformation() {
+        return this.thisProcessInformation;
+    }
+
+    @Nonnull
     public static SpigotExecutor getInstance() {
         return instance;
     }
@@ -119,8 +125,9 @@ public final class SpigotExecutor extends API implements PlayerAPIExecutor {
     }
 
     @Override
+    @Deprecated
     public ProcessInformation getThisProcessInformation() {
-        return thisProcessInformation;
+        return getCurrentProcessInformation();
     }
 
     private void awaitConnectionAndUpdate() {

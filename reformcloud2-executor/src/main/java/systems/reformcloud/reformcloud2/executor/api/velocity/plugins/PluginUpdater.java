@@ -1,6 +1,7 @@
 package systems.reformcloud.reformcloud2.executor.api.velocity.plugins;
 
 import com.velocitypowered.api.plugin.PluginContainer;
+import systems.reformcloud.reformcloud2.executor.api.api.API;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.plugins.basic.DefaultPlugin;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
@@ -21,9 +22,9 @@ public final class PluginUpdater extends AbsoluteThread {
     public void run() {
         while (!Thread.currentThread().isInterrupted()) {
             Collection<PluginContainer> plugins = VelocityExecutor.getInstance().getProxyServer().getPluginManager().getPlugins();
-            if (plugins.size() != ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation().getPlugins().size()) {
-                ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation().updateRuntimeInformation();
-                ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation().getPlugins().clear();
+            if (plugins.size() != API.getInstance().getCurrentProcessInformation().getPlugins().size()) {
+                API.getInstance().getCurrentProcessInformation().updateRuntimeInformation();
+                API.getInstance().getCurrentProcessInformation().getPlugins().clear();
                 plugins.forEach(plugin -> {
                     List<String> depends = new ArrayList<>();
                     List<String> softDepends = new ArrayList<>();
@@ -35,8 +36,8 @@ public final class PluginUpdater extends AbsoluteThread {
                         }
                     });
 
-                    ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation().getPlugins().add(new DefaultPlugin(
-                            plugin.getDescription().getVersion().get(),
+                    API.getInstance().getCurrentProcessInformation().getPlugins().add(new DefaultPlugin(
+                            plugin.getDescription().getVersion().isPresent() ? plugin.getDescription().getVersion().get() : "unknown",
                             plugin.getDescription().getAuthors().get(0),
                             null,
                             depends,
@@ -45,7 +46,7 @@ public final class PluginUpdater extends AbsoluteThread {
                             plugin.getDescription().getId()
                     ));
                 });
-                ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation());
+                ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(API.getInstance().getCurrentProcessInformation());
             }
 
             AbsoluteThread.sleep(TimeUnit.SECONDS, 5);

@@ -109,13 +109,20 @@ public final class NukkitExecutor extends API implements PlayerAPIExecutor {
     }
 
     @Nonnull
+    @Override
+    public ProcessInformation getCurrentProcessInformation() {
+        return this.thisProcessInformation;
+    }
+
+    @Nonnull
     public static NukkitExecutor getInstance() {
         return instance;
     }
 
     @Override
+    @Deprecated
     public ProcessInformation getThisProcessInformation() {
-        return thisProcessInformation;
+        return getCurrentProcessInformation();
     }
 
     public void setThisProcessInformation(ProcessInformation thisProcessInformation) {

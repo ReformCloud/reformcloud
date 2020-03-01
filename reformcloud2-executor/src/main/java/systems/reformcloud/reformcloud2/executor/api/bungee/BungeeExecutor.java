@@ -126,6 +126,12 @@ public final class BungeeExecutor extends API implements PlayerAPIExecutor {
     }
 
     @Nonnull
+    @Override
+    public ProcessInformation getCurrentProcessInformation() {
+        return this.thisProcessInformation;
+    }
+
+    @Nonnull
     public static BungeeExecutor getInstance() {
         return instance;
     }
@@ -276,8 +282,9 @@ public final class BungeeExecutor extends API implements PlayerAPIExecutor {
     }
 
     @Override
+    @Deprecated
     public ProcessInformation getThisProcessInformation() {
-        return thisProcessInformation;
+        return getCurrentProcessInformation();
     }
 
     public void setThisProcessInformation(ProcessInformation thisProcessInformation) {

@@ -5,6 +5,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.event.server.PluginEnableEvent;
 import org.bukkit.plugin.Plugin;
+import systems.reformcloud.reformcloud2.executor.api.api.API;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.plugins.basic.DefaultPlugin;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
@@ -25,14 +26,14 @@ public final class ExtraListenerHandler implements Listener {
                 plugin.isEnabled(),
                 plugin.getName()
         );
-        ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation().getPlugins().add(defaultPlugin);
-        ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation().updateRuntimeInformation();
-        ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation());
+        API.getInstance().getCurrentProcessInformation().getPlugins().add(defaultPlugin);
+        API.getInstance().getCurrentProcessInformation().updateRuntimeInformation();
+        ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(API.getInstance().getCurrentProcessInformation());
     }
 
     @EventHandler
     public void handle(final PluginDisableEvent event) {
-        final ProcessInformation processInformation = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation();
+        final ProcessInformation processInformation = API.getInstance().getCurrentProcessInformation();
         Plugin plugin = event.getPlugin();
         DefaultPlugin defaultPlugin = Streams.filter(processInformation.getPlugins(), in -> in.getName().equals(plugin.getName()));
         if (defaultPlugin != null) {

@@ -8,7 +8,7 @@ import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.server.ServerPing;
 import net.kyori.text.Component;
 import net.kyori.text.TextComponent;
-import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
+import systems.reformcloud.reformcloud2.executor.api.api.API;
 import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.ProcessUpdatedEvent;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
@@ -117,9 +117,9 @@ public class VelocityListener {
 
         // ====
 
-        ProcessInformation info = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation();
-        int max = info == null ? 0 : info.getMaxPlayers();
-        int online = info == null ? 0 : info.getOnlineCount();
+        ProcessInformation info = API.getInstance().getCurrentProcessInformation();
+        int max = info.getMaxPlayers();
+        int online = info.getOnlineCount();
 
         // ====
 
@@ -181,8 +181,7 @@ public class VelocityListener {
     }
 
     public static MotdConfiguration getCurrentMotdConfig() {
-        boolean maintenance = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation() != null
-                && ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation().getProcessGroup().getPlayerAccessConfiguration().isMaintenance();
+        boolean maintenance = API.getInstance().getCurrentProcessInformation().getProcessGroup().getPlayerAccessConfiguration().isMaintenance();
         return maintenance
                 ? PluginConfigHandler.getConfiguration().getMotdMaintenanceConfig().get(ATOMIC_INTEGERS[2].get())
                 : PluginConfigHandler.getConfiguration().getMotdDefaultConfig().get(ATOMIC_INTEGERS[1].get());
@@ -203,11 +202,7 @@ public class VelocityListener {
             return null;
         }
 
-        ProcessInformation current = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation();
-        if (current == null) {
-            return text;
-        }
-
+        ProcessInformation current = API.getInstance().getCurrentProcessInformation();
         return text
                 .replace("%proxy_name%", current.getName())
                 .replace("%proxy_display_name%", current.getDisplayName())
@@ -230,9 +225,9 @@ public class VelocityListener {
     /* ==================================== */
 
     private static String replaceTabList(Player player, String line) {
-        ProcessInformation info = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation();
-        int max = info == null ? 0 : info.getMaxPlayers();
-        int online = info == null ? 0 : info.getOnlineCount();
+        ProcessInformation info = API.getInstance().getCurrentProcessInformation();
+        int max = info.getMaxPlayers();
+        int online = info.getOnlineCount();
 
         return line
                 .replace("%player_server%", player.getCurrentServer().isPresent()

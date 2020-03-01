@@ -3,7 +3,7 @@ package systems.reformcloud.reformcloud2.signs.bukkit.adapter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Sign;
-import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
+import systems.reformcloud.reformcloud2.executor.api.api.API;
 import systems.reformcloud.reformcloud2.executor.api.common.base.Conditions;
 import systems.reformcloud.reformcloud2.signs.util.converter.SignConverter;
 import systems.reformcloud.reformcloud2.signs.util.sign.CloudLocation;
@@ -52,11 +52,9 @@ public class BukkitSignConverter implements SignConverter<Sign> {
 
     private CloudLocation accumulate(Location location) {
         Conditions.isTrue(location.getWorld() != null);
-        Conditions.isTrue(ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation() != null);
-
         return new CloudLocation(
                 location.getWorld().getName(),
-                ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation().getProcessGroup().getName(),
+                API.getInstance().getCurrentProcessInformation().getProcessGroup().getName(),
                 location.getX(),
                 location.getY(),
                 location.getZ(),

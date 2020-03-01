@@ -119,6 +119,12 @@ public final class VelocityExecutor extends API implements PlayerAPIExecutor {
     }
 
     @Nonnull
+    @Override
+    public ProcessInformation getCurrentProcessInformation() {
+        return this.thisProcessInformation;
+    }
+
+    @Nonnull
     public static VelocityExecutor getInstance() {
         return instance;
     }
@@ -243,8 +249,9 @@ public final class VelocityExecutor extends API implements PlayerAPIExecutor {
     }
 
     @Override
+    @Deprecated
     public ProcessInformation getThisProcessInformation() {
-        return thisProcessInformation;
+        return getCurrentProcessInformation();
     }
 
     public IngameMessages getMessages() {

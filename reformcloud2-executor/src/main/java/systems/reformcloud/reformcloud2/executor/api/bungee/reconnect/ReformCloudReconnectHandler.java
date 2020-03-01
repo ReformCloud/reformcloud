@@ -4,6 +4,7 @@ import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.ReconnectHandler;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+import systems.reformcloud.reformcloud2.executor.api.api.API;
 import systems.reformcloud.reformcloud2.executor.api.bungee.BungeeExecutor;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 
@@ -12,7 +13,7 @@ public class ReformCloudReconnectHandler implements ReconnectHandler {
     @Override
     public ServerInfo getServer(ProxiedPlayer proxiedPlayer) {
         ProcessInformation information = BungeeExecutor.getBestLobbyForPlayer(
-                BungeeExecutor.getInstance().getThisProcessInformation(),
+                API.getInstance().getCurrentProcessInformation(),
                 proxiedPlayer,
                 proxiedPlayer::hasPermission
         );

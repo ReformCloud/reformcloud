@@ -1101,6 +1101,7 @@ public abstract class ExternalAPIImplementation extends ExecutorAPI implements
 
     @Nonnull
     @Override
+    @Deprecated
     public Task<ProcessInformation> getThisProcessInformationAsync() {
         Task<ProcessInformation> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> task.complete(getThisProcessInformation()));
