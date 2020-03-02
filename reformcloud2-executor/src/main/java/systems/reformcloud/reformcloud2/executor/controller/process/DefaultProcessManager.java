@@ -44,6 +44,8 @@ public final class DefaultProcessManager implements ProcessManager {
 
     private final Queue<Trio<ProcessGroup, Template, JsonConfiguration>> noClientTryLater = new ConcurrentLinkedQueue<>();
 
+    private final Object startLock = new Object();
+
     public DefaultProcessManager() {
         CompletableFuture.runAsync(() -> {
             while (!Thread.currentThread().isInterrupted()) {
@@ -105,26 +107,28 @@ public final class DefaultProcessManager implements ProcessManager {
 
     @Override
     public ProcessInformation startProcess(String groupName, String template, JsonConfiguration configurable) {
-        ProcessGroup processGroup = Streams.filter(ControllerExecutor.getInstance().getControllerExecutorConfig().getProcessGroups(), processGroup1 -> processGroup1.getName().equals(groupName));
-        if (processGroup == null) {
-            // In some cases the group got deleted but the update process is sync and this method get called async!
-            // To prevent any issues just return at this point
-            return null;
+        synchronized (startLock) {
+            ProcessGroup processGroup = Streams.filter(ControllerExecutor.getInstance().getControllerExecutorConfig().getProcessGroups(), processGroup1 -> processGroup1.getName().equals(groupName));
+            if (processGroup == null) {
+                // In some cases the group got deleted but the update process is sync and this method get called async!
+                // To prevent any issues just return at this point
+                return null;
+            }
+
+            Template found = Streams.filter(processGroup.getTemplates(), test -> Objects.equals(test.getName(), template));
+
+            ProcessInformation processInformation = create(processGroup, found, configurable);
+            if (processInformation == null) {
+                return null;
+            }
+
+            this.processInformation.add(processInformation);
+            DefaultChannelManager.INSTANCE.get(processInformation.getParent()).ifPresent(packetSender -> packetSender.sendPacket(new ControllerPacketOutStartProcess(processInformation)));
+            //Send event packet to notify processes
+            DefaultChannelManager.INSTANCE.getAllSender().forEach(packetSender -> packetSender.sendPacket(new ControllerEventProcessStarted(processInformation)));
+            ControllerExecutor.getInstance().getEventManager().callEvent(new ProcessStartedEvent(processInformation));
+            return processInformation;
         }
-
-        Template found = Streams.filter(processGroup.getTemplates(), test -> Objects.equals(test.getName(), template));
-
-        ProcessInformation processInformation = create(processGroup, found, configurable);
-        if (processInformation == null) {
-            return null;
-        }
-
-        this.processInformation.add(processInformation);
-        DefaultChannelManager.INSTANCE.get(processInformation.getParent()).ifPresent(packetSender -> packetSender.sendPacket(new ControllerPacketOutStartProcess(processInformation)));
-        //Send event packet to notify processes
-        DefaultChannelManager.INSTANCE.getAllSender().forEach(packetSender -> packetSender.sendPacket(new ControllerEventProcessStarted(processInformation)));
-        ControllerExecutor.getInstance().getEventManager().callEvent(new ProcessStartedEvent(processInformation));
-        return processInformation;
     }
 
     @Override

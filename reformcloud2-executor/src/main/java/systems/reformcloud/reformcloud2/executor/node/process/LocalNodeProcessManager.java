@@ -31,6 +31,8 @@ public class LocalNodeProcessManager implements NodeProcessManager {
 
     private final Collection<ProcessInformation> information = Collections.synchronizedCollection(new ProcessCopyOnWriteArrayList());
 
+    private final Object startLock = new Object();
+
     @Override
     public ProcessInformation getLocalCloudProcess(String name) {
         return Streams.filterToReference(information, e -> e.getName().equals(name) && isLocal(e.getProcessUniqueID())).orNothing();
@@ -43,28 +45,30 @@ public class LocalNodeProcessManager implements NodeProcessManager {
 
     @Override
     public ProcessInformation startLocalProcess(ProcessGroup processGroup, Template template, JsonConfiguration data, UUID processUniqueID) {
-        int id = nextID(processGroup);
-        ProcessInformation processInformation = new ProcessInformation(
-                processGroup.getName() + template.getServerNameSplitter() + id,
-                processGroup.getName() + (processGroup.isShowIdInName() ? (template.getServerNameSplitter() + id) : ""),
-                NodeExecutor.getInstance().getNodeConfig().getName(),
-                NodeExecutor.getInstance().getNodeConfig().getUniqueID(),
-                processUniqueID,
-                id,
-                ProcessState.PREPARED,
-                new NetworkInfo(
-                        NodeExecutor.getInstance().getNodeConfig().getStartHost(),
-                        nextPort(processGroup.getStartupConfiguration().getStartPort()),
-                        false
-                ), processGroup,
-                template,
-                ProcessRuntimeInformation.empty(),
-                new ArrayList<>(),
-                data,
-                processGroup.getPlayerAccessConfiguration().getMaxPlayers()
-        );
+        synchronized (startLock) {
+            int id = nextID(processGroup);
+            ProcessInformation processInformation = new ProcessInformation(
+                    processGroup.getName() + template.getServerNameSplitter() + id,
+                    processGroup.getName() + (processGroup.isShowIdInName() ? (template.getServerNameSplitter() + id) : ""),
+                    NodeExecutor.getInstance().getNodeConfig().getName(),
+                    NodeExecutor.getInstance().getNodeConfig().getUniqueID(),
+                    processUniqueID,
+                    id,
+                    ProcessState.PREPARED,
+                    new NetworkInfo(
+                            NodeExecutor.getInstance().getNodeConfig().getStartHost(),
+                            nextPort(processGroup.getStartupConfiguration().getStartPort()),
+                            false
+                    ), processGroup,
+                    template,
+                    ProcessRuntimeInformation.empty(),
+                    new ArrayList<>(),
+                    data,
+                    processGroup.getPlayerAccessConfiguration().getMaxPlayers()
+            );
 
-        return this.startLocalProcess(processInformation);
+            return this.startLocalProcess(processInformation);
+        }
     }
 
     @Override
@@ -107,13 +111,15 @@ public class LocalNodeProcessManager implements NodeProcessManager {
 
     @Override
     public ProcessInformation queueProcess(ProcessGroup processGroup, Template template, JsonConfiguration data, NodeInformation node, UUID uniqueID) {
-        ProcessInformation processInformation = constructCaInfo(processGroup, template, data, node, uniqueID);
-        this.handleProcessStart(processInformation);
+        synchronized (startLock) {
+            ProcessInformation processInformation = constructCaInfo(processGroup, template, data, node, uniqueID);
+            this.handleProcessStart(processInformation);
 
-        DefaultChannelManager.INSTANCE.get(node.getName()).ifPresent(e -> e.sendPacket(new PacketOutHeadNodeStartProcess(
-                processInformation
-        )));
-        return processInformation;
+            DefaultChannelManager.INSTANCE.get(node.getName()).ifPresent(e -> e.sendPacket(new PacketOutHeadNodeStartProcess(
+                    processInformation
+            )));
+            return processInformation;
+        }
     }
 
     @Override
@@ -261,28 +267,24 @@ public class LocalNodeProcessManager implements NodeProcessManager {
     }
 
     private int nextID(ProcessGroup processGroup) {
-        synchronized (information) {
-            int id = 1;
-            Collection<Integer> ids = Streams.newCollection(information, processInformation -> processInformation.getProcessGroup().getName().equals(processGroup.getName()), ProcessInformation::getId);
+        int id = 1;
+        Collection<Integer> ids = Streams.newCollection(information, processInformation -> processInformation.getProcessGroup().getName().equals(processGroup.getName()), ProcessInformation::getId);
 
-            while (ids.contains(id)) {
-                id++;
-            }
-
-            return id;
+        while (ids.contains(id)) {
+            id++;
         }
+
+        return id;
     }
 
     private int nextPort(int startPort) {
-        synchronized (information) {
-            Collection<Integer> ports = Streams.newList(information).stream().map(e -> e.getNetworkInfo().getPort()).collect(Collectors.toList());
-            while (ports.contains(startPort)) {
-                startPort++;
-            }
-
-            startPort = PortUtil.checkPort(startPort);
-            return startPort;
+        Collection<Integer> ports = Streams.newList(information).stream().map(e -> e.getNetworkInfo().getPort()).collect(Collectors.toList());
+        while (ports.contains(startPort)) {
+            startPort++;
         }
+
+        startPort = PortUtil.checkPort(startPort);
+        return startPort;
     }
 
     private ProcessInformation constructCaInfo(ProcessGroup processGroup, Template template, JsonConfiguration data,
