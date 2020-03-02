@@ -79,7 +79,7 @@ public final class ChannelReaderHelper extends SimpleChannelInboundHandler<Wrapp
         //client auth success
         if (input.getPacketID() == -511 && !auth.get()) {
             try {
-                Packet packet = DefaultJsonNetworkHandler.readPacket(-512, input.toObjectStream());
+                Packet packet = DefaultJsonNetworkHandler.readPacket(-511, input.toObjectStream());
 
                 Boolean access = packet.content().getOrDefault("access", false);
                 if (access) {

@@ -299,7 +299,7 @@ public final class ClientExecutor extends Client {
             return;
         }
 
-        AtomicInteger atomicInteger = new AtomicInteger(0);
+        AtomicInteger atomicInteger = new AtomicInteger(1);
         boolean isConnected = false;
         while (atomicInteger.get() <= 10) {
             System.out.println(LanguageManager.get(
@@ -313,7 +313,7 @@ public final class ClientExecutor extends Client {
                 break;
             }
 
-            AbsoluteThread.sleep(TimeUnit.MILLISECONDS, 500);
+            AbsoluteThread.sleep(TimeUnit.MILLISECONDS, 100);
         }
 
         if (isConnected) {
@@ -330,7 +330,7 @@ public final class ClientExecutor extends Client {
                     clientExecutorConfig.getClientConnectionConfig().getHost(),
                     Integer.toString(clientExecutorConfig.getClientConnectionConfig().getPort())
             ));
-            AbsoluteThread.sleep(TimeUnit.SECONDS, 5);
+            AbsoluteThread.sleep(TimeUnit.SECONDS, 1);
             System.exit(-1);
         }
     }
@@ -347,7 +347,7 @@ public final class ClientExecutor extends Client {
                         new JsonConfiguration().add("info", clientRuntimeInformation)
                 ), createChannelReader(() -> {
                     processManager.stopAll();
-                    AbsoluteThread.sleep(TimeUnit.MILLISECONDS, 500);
+                    AbsoluteThread.sleep(TimeUnit.MILLISECONDS, 100);
 
                     if (GLOBAL_CONNECTION_STATUS.get()) {
                         GLOBAL_CONNECTION_STATUS.set(false);

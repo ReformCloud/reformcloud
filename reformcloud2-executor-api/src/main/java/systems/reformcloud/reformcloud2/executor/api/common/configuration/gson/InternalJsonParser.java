@@ -27,8 +27,7 @@ public final class InternalJsonParser {
 
     @Nonnull
     public static JsonElement parseReader(Reader reader) throws JsonSyntaxException {
-        try {
-            JsonReader jsonReader = new JsonReader(reader);
+        try (JsonReader jsonReader = new JsonReader(reader)) {
             JsonElement element = parseReader(jsonReader);
 
             if (!element.isJsonNull() && jsonReader.peek() != JsonToken.END_DOCUMENT) {
