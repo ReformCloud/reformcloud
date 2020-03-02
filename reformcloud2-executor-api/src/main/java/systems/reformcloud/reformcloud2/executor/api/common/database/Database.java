@@ -77,7 +77,7 @@ public abstract class Database<V> {
     /**
      * @return The type parameter depending to the database type
      */
-    @Nullable
+    @Nonnull
     @CheckReturnValue
     public abstract V get();
 }

@@ -271,4 +271,8 @@ public final class StringUtil {
                 .replace("%version%", System.getProperty("reformcloud.runner.version", "c-build"))
                 .replace("%user_name%", System.getProperty("user.name", "unknown")) + " ";
     }
+
+    public static String formatError(@Nonnull String error) {
+        return String.format("Unable to process action %s. Please report this DIRECTLY to reformcloud it is a fatal error", error);
+    }
 }

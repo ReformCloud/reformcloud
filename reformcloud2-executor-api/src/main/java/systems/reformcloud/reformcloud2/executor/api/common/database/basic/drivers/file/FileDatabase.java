@@ -201,6 +201,7 @@ public final class FileDatabase extends Database<Path> {
         });
     }
 
+    @Nonnull
     @Override
     public Path get() {
         return Paths.get(table);

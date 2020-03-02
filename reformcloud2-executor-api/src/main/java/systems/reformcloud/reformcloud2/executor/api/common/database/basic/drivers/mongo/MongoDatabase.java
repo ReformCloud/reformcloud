@@ -4,11 +4,13 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.model.Filters;
 import org.bson.Document;
+import systems.reformcloud.reformcloud2.executor.api.common.base.Conditions;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.database.Database;
 import systems.reformcloud.reformcloud2.executor.api.common.database.DatabaseReader;
 import systems.reformcloud.reformcloud2.executor.api.common.dependency.DefaultDependency;
 import systems.reformcloud.reformcloud2.executor.api.common.dependency.repo.DefaultRepositories;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.StringUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.maps.AbsentMap;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.defaults.DefaultTask;
@@ -37,6 +39,7 @@ public final class MongoDatabase extends Database<com.mongodb.client.MongoDataba
                 "mongo-java-driver",
                 properties
         ));
+        Conditions.nonNull(dependency, StringUtil.formatError("dependency load for mongo database"));
         DEPENDENCY_LOADER.addDependency(dependency);
     }
 
@@ -263,6 +266,7 @@ public final class MongoDatabase extends Database<com.mongodb.client.MongoDataba
         });
     }
 
+    @Nonnull
     @Override
     public com.mongodb.client.MongoDatabase get() {
         return mongoDatabase;
