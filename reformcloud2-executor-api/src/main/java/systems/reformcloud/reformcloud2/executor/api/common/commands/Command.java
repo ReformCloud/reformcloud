@@ -53,6 +53,13 @@ public interface Command extends TabCompleter {
     AllowedCommandSources sources();
 
     /**
+     * Describes the command to the command sender
+     *
+     * @param source The source who sent the command
+     */
+    void describeCommandToSender(@Nonnull CommandSource source);
+
+    /**
      * Handles the command
      *
      * @param commandSource The command source of the command

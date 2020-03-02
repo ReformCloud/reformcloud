@@ -11,10 +11,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.client.ClientRuntime
 import systems.reformcloud.reformcloud2.executor.api.common.client.basic.DefaultClientRuntimeInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.AllowedCommandSources;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.ConsoleCommandSource;
-import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.CommandClear;
-import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.CommandHelp;
-import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.CommandReload;
-import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.CommandStop;
+import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.*;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.dump.CommandDump;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.dump.basic.DefaultDumpUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.manager.DefaultCommandManager;
@@ -65,7 +62,6 @@ import systems.reformcloud.reformcloud2.executor.controller.api.message.ChannelM
 import systems.reformcloud.reformcloud2.executor.controller.api.player.PlayerAPIImplementation;
 import systems.reformcloud.reformcloud2.executor.controller.api.plugins.PluginAPIImplementation;
 import systems.reformcloud.reformcloud2.executor.controller.api.process.ProcessAPIImplementation;
-import systems.reformcloud.reformcloud2.executor.controller.commands.CommandReformCloud;
 import systems.reformcloud.reformcloud2.executor.controller.config.ControllerConfig;
 import systems.reformcloud.reformcloud2.executor.controller.config.ControllerExecutorConfig;
 import systems.reformcloud.reformcloud2.executor.controller.process.ClientManager;
@@ -445,8 +441,9 @@ public final class ControllerExecutor extends Controller {
     private void loadCommands() {
         this.commandManager
                 .register(new CommandDump(new DefaultDumpUtil()))
-                .register(CommandStop.class)
-                .register(new CommandReformCloud())
+                .register(new CommandLaunch())
+                .register(new CommandStop())
+                .register(new CommandCreate())
                 .register(new CommandReload(this))
                 .register(new CommandClear(loggerBase))
                 .register(new CommandHelp(commandManager));

@@ -8,14 +8,15 @@ import systems.reformcloud.reformcloud2.executor.api.common.commands.source.Comm
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public abstract class GlobalCommand implements Command {
 
     public static final String DEFAULT_DESCRIPTION = "A reformcloud2 provided command";
+
+    public GlobalCommand(String command, String permission, String description, String... aliases) {
+        this(command, permission, description, Arrays.asList(aliases));
+    }
 
     public GlobalCommand(String command, String permission, String description, List<String> aliases) {
         this.mainCommand = command.toLowerCase();
@@ -84,6 +85,11 @@ public abstract class GlobalCommand implements Command {
     @Override
     public AllowedCommandSources sources() {
         return AllowedCommandSources.ALL;
+    }
+
+    @Override
+    public void describeCommandToSender(@Nonnull CommandSource source) {
+        source.sendMessage(description);
     }
 
     @Nonnull

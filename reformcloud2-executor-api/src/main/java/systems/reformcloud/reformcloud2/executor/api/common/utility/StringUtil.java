@@ -14,10 +14,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams
 
 import javax.annotation.Nonnull;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public final class StringUtil {
@@ -45,6 +42,7 @@ public final class StringUtil {
             "rc stopall <subGroup>",
             "rc ofAll <mainGroup> <list | stop>",
             "rc execute <name | uuid> <command>",
+            /* DONE
             "rc create main <name>",
             "rc create sub <name>",
             "rc create sub <name> <version>",
@@ -53,6 +51,7 @@ public final class StringUtil {
             "rc create sub <name> <version> <parent> <static> <lobby>",
             "rc create sub <name> <version> <parent> <static> <minonline> <maxonline>",
             "rc create sub <name> <version> <parent> <static> <lobby> <minonline> <maxonline>",
+            */
             "rc delete <sub | main> <name>"
     };
 
@@ -274,5 +273,29 @@ public final class StringUtil {
 
     public static String formatError(@Nonnull String error) {
         return String.format("Unable to process action %s. Please report this DIRECTLY to reformcloud it is a fatal error", error);
+    }
+
+    @Nonnull
+    public static Properties calcProperties(@Nonnull String[] strings, int from) {
+        Properties properties = new Properties();
+        if (strings.length < from) {
+            return properties;
+        }
+
+        String[] copy = Arrays.copyOfRange(strings, from, strings.length);
+        for (String string : copy) {
+            if (!string.startsWith("--") && !string.contains("=")) {
+                continue;
+            }
+
+            String[] split = string.replaceFirst("--", "").split("=");
+            if (split.length != 2) {
+                continue;
+            }
+
+            properties.setProperty(split[0], split[1]);
+        }
+
+        return properties;
     }
 }

@@ -2,16 +2,19 @@ package systems.reformcloud.reformcloud2.executor.api.common.commands.basic.comm
 
 import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.GlobalCommand;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.source.CommandSource;
+import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
 
 import javax.annotation.Nonnull;
-import java.util.Arrays;
 
 public final class CommandStop extends GlobalCommand {
 
     public CommandStop() {
-        super("stop", "reformcloud.command.permissions", "The stop command", Arrays.asList(
-                "exit", "close", "end"
-        ));
+        super("stop", "reformcloud.command.permissions", "The stop command", "exit", "close", "end");
+    }
+
+    @Override
+    public void describeCommandToSender(@Nonnull CommandSource source) {
+        source.sendMessage(LanguageManager.get("command-stop-description"));
     }
 
     @Override
