@@ -41,7 +41,7 @@ public interface QueryHandler {
      * Converts a packet to a query packet
      *
      * @param packet The packet which should get converted
-     * @param uuid The uuid of the packet which should be used
+     * @param uuid   The uuid of the packet which should be used
      * @return The packet which got converted
      */
     @Nonnull

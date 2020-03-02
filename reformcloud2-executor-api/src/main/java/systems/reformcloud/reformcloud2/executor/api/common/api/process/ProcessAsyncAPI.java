@@ -30,7 +30,7 @@ public interface ProcessAsyncAPI {
      * Starts a process
      *
      * @param groupName The name of the group which should be started from
-     * @param template The template which should be used
+     * @param template  The template which should be used
      * @return A task which which will be completed with the created {@link ProcessInformation}
      */
     @Nonnull
@@ -40,8 +40,8 @@ public interface ProcessAsyncAPI {
     /**
      * Starts a process
      *
-     * @param groupName The name of the group which should be started from
-     * @param template The template which should be used
+     * @param groupName    The name of the group which should be started from
+     * @param template     The template which should be used
      * @param configurable The data for the process
      * @return A task which which will be completed with the created {@link ProcessInformation}
      */
@@ -111,7 +111,7 @@ public interface ProcessAsyncAPI {
     /**
      * Executes a command on a process
      *
-     * @param name The name of the process
+     * @param name        The name of the process
      * @param commandLine The command line with should be executed
      * @return A task which will be completed after the packet sent
      */

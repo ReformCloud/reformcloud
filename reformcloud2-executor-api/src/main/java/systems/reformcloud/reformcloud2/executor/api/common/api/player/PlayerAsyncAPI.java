@@ -13,7 +13,7 @@ public interface PlayerAsyncAPI {
     /**
      * Sends a message to a player
      *
-     * @param player The uuid of the player which should receive the message
+     * @param player  The uuid of the player which should receive the message
      * @param message The message which should be sent
      * @return A task which will be completed after the completion of the packet sent
      */
@@ -24,7 +24,7 @@ public interface PlayerAsyncAPI {
     /**
      * Kicks a player from the network
      *
-     * @param player The uuid of the player which should be kicked
+     * @param player  The uuid of the player which should be kicked
      * @param message The kick message
      * @return A task which will be completed after the completion of the packet sent
      */
@@ -35,7 +35,7 @@ public interface PlayerAsyncAPI {
     /**
      * Kicks a player from a specific server
      *
-     * @param player The player which should be kicked
+     * @param player  The player which should be kicked
      * @param message The kick message
      * @return A task which will be completed after the completion of the packet sent
      */
@@ -47,9 +47,9 @@ public interface PlayerAsyncAPI {
      * Plays a sound to a player
      *
      * @param player The uuid of the player which should hear the sound
-     * @param sound The sound which should be played
-     * @param f1 The volume of the sound
-     * @param f2 The pitch of the sound
+     * @param sound  The sound which should be played
+     * @param f1     The volume of the sound
+     * @param f2     The pitch of the sound
      * @return A task which will be completed after the completion of the packet sent
      */
     @Nonnull
@@ -59,12 +59,12 @@ public interface PlayerAsyncAPI {
     /**
      * Sends a title to a player
      *
-     * @param player The uuid of the player which should receive the title
-     * @param title The title which should be shown
+     * @param player   The uuid of the player which should receive the title
+     * @param title    The title which should be shown
      * @param subTitle The subtitle which should be shown
-     * @param fadeIn The fadein time of the title
-     * @param stay The stay time, how long the title should stay
-     * @param fadeOut The fadeout time of the title
+     * @param fadeIn   The fadein time of the title
+     * @param stay     The stay time, how long the title should stay
+     * @param fadeOut  The fadeout time of the title
      * @return A task which will be completed after the completion of the packet sent
      */
     @Nonnull
@@ -74,7 +74,7 @@ public interface PlayerAsyncAPI {
     /**
      * Sets a player effect
      *
-     * @param player The uuid of the player who should get the effect
+     * @param player       The uuid of the player who should get the effect
      * @param entityEffect The entity effect which should be played
      * @return A task which will be completed after the completion of the packet sent
      */
@@ -87,8 +87,8 @@ public interface PlayerAsyncAPI {
      *
      * @param player The uuid of the player which should be sent
      * @param effect The effect which should be played
-     * @param data A bit needed for some effects
-     * @param <T> The data depending to the effect
+     * @param data   A bit needed for some effects
+     * @param <T>    The data depending to the effect
      * @return A task which will be completed after the completion of the packet sent
      */
     @Nonnull
@@ -109,12 +109,12 @@ public interface PlayerAsyncAPI {
      * Teleports a player
      *
      * @param player The uuid of the player which should be teleported
-     * @param world The name of the world where the player should be teleported to
-     * @param x The x coordinate of the new location
-     * @param y The y coordinate of the new location
-     * @param z The z coordinate of the new location
-     * @param yaw The yaw of the new location
-     * @param pitch The pitch of the new location
+     * @param world  The name of the world where the player should be teleported to
+     * @param x      The x coordinate of the new location
+     * @param y      The y coordinate of the new location
+     * @param z      The z coordinate of the new location
+     * @param yaw    The yaw of the new location
+     * @param pitch  The pitch of the new location
      * @return A task which will be completed after the completion of the packet sent
      */
     @Nonnull
@@ -158,7 +158,7 @@ public interface PlayerAsyncAPI {
      * Sets a player resource pack
      *
      * @param player The player who should get the resource pack
-     * @param pack The url of the resource pack
+     * @param pack   The url of the resource pack
      * @return A task which will be completed after the completion of the packet sent
      */
     @Nonnull

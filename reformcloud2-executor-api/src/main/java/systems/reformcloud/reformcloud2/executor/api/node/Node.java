@@ -22,20 +22,13 @@ import java.util.function.Consumer;
 
 public abstract class Node extends ExecutorAPI implements ReloadableRuntime {
 
-    public static void setInstance(Node instance) {
-        Conditions.isTrue(Node.instance == null);
-        Node.instance = instance;
-    }
-
-    private static Node instance;
-
     protected abstract void bootstrap();
 
     public abstract void shutdown() throws Exception;
 
     @Nonnull
     public static Node getInstance() {
-        return instance == null ? (Node) ExecutorAPI.getInstance() : instance;
+        return (Node) ExecutorAPI.getInstance();
     }
 
     @Nonnull

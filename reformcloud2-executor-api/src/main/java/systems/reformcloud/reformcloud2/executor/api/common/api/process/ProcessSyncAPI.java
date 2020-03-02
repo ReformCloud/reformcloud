@@ -26,7 +26,7 @@ public interface ProcessSyncAPI {
      * Starts a process
      *
      * @param groupName The name of the group which should be started from
-     * @param template The template which should be used
+     * @param template  The template which should be used
      * @return The created {@link ProcessInformation}
      */
     @Nullable
@@ -35,8 +35,8 @@ public interface ProcessSyncAPI {
     /**
      * Starts a process
      *
-     * @param groupName The name of the group which should be started from
-     * @param template The template which should be used
+     * @param groupName    The name of the group which should be started from
+     * @param template     The template which should be used
      * @param configurable The data for the process
      * @return The created {@link ProcessInformation}
      */
@@ -104,7 +104,7 @@ public interface ProcessSyncAPI {
     /**
      * Executes a command on a process
      *
-     * @param name The name of the process
+     * @param name        The name of the process
      * @param commandLine The command line with should be executed
      */
     void executeProcessCommand(@Nonnull String name, @Nonnull String commandLine);

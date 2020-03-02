@@ -16,7 +16,7 @@ public interface PluginAsyncAPI {
      * Installs a plugin on a process
      *
      * @param process The process where the plugin should be installed
-     * @param plugin The plugin which should be installed
+     * @param plugin  The plugin which should be installed
      * @return A task which will be completed after the packet sent
      */
     @Nonnull
@@ -27,7 +27,7 @@ public interface PluginAsyncAPI {
      * Installs a plugin on a process
      *
      * @param process The {@link ProcessInformation} of the process where the plugin should be installed
-     * @param plugin The plugin which should be installed
+     * @param plugin  The plugin which should be installed
      * @return A task which will be completed after the packet sent
      */
     @Nonnull
@@ -38,7 +38,7 @@ public interface PluginAsyncAPI {
      * Unloads a plugin on a process
      *
      * @param process The process where the plugin should be unloaded
-     * @param plugin The plugin which should be unloaded
+     * @param plugin  The plugin which should be unloaded
      * @return A task which will be completed after the packet sent
      */
     @Nonnull
@@ -49,7 +49,7 @@ public interface PluginAsyncAPI {
      * Unloads a plugin on a process
      *
      * @param process The {@link ProcessInformation} of the process where the plugin should be unloaded
-     * @param plugin The plugin which should be unloaded
+     * @param plugin  The plugin which should be unloaded
      * @return A task which will be completed after the packet sent
      */
     @Nonnull
@@ -60,7 +60,7 @@ public interface PluginAsyncAPI {
      * Get an installed plugin on a process
      *
      * @param process The process where the plugin should be searched on
-     * @param name The name of the plugin
+     * @param name    The name of the plugin
      * @return A task which will be completed with the installed plugin or {@code null} if the process is not installed
      */
     @Nonnull
@@ -71,7 +71,7 @@ public interface PluginAsyncAPI {
      * Get an installed plugin on a process
      *
      * @param process The {@link ProcessInformation} of the process where the plugin should be searched on
-     * @param name The name of the plugin
+     * @param name    The name of the plugin
      * @return A task which will be completed with the installed plugin or {@code null} if the process is not installed
      */
     @Nonnull
@@ -82,7 +82,7 @@ public interface PluginAsyncAPI {
      * Gets all installed plugins on a process by a specific author
      *
      * @param process The process where the plugins should be searched on
-     * @param author The author of the plugin
+     * @param author  The author of the plugin
      * @return A task which will be completed with all plugins by the author
      */
     @Nonnull
@@ -93,7 +93,7 @@ public interface PluginAsyncAPI {
      * Gets all installed plugins on a process by a specific author
      *
      * @param process The {@link ProcessInformation} of the process where the plugins should be searched on
-     * @param author The author of the plugin
+     * @param author  The author of the plugin
      * @return A task which will be completed with all plugins by the author
      */
     @Nonnull

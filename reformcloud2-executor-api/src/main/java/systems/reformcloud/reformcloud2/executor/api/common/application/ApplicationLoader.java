@@ -65,11 +65,10 @@ public interface ApplicationLoader {
     /**
      * Finds the {@link LoadedApplication} by the name and unloads it
      *
-     * @see #getApplication(String)
-     * @see #doSpecificApplicationUninstall(LoadedApplication)
-     *
      * @param application The name oof the application which should get unloaded
      * @return If the application was loaded and got unloaded
+     * @see #getApplication(String)
+     * @see #doSpecificApplicationUninstall(LoadedApplication)
      */
     boolean doSpecificApplicationUninstall(@Nonnull String application);
 
@@ -85,9 +84,9 @@ public interface ApplicationLoader {
     /**
      * The name of a loaded application
      *
-     * @see LoadedApplication#getName()
      * @param loadedApplication The application from which the name is needed
      * @return The name of the application
+     * @see LoadedApplication#getName()
      */
     @Nonnull
     String getApplicationName(@Nonnull LoadedApplication loadedApplication);

@@ -36,8 +36,8 @@ public abstract class LoggerBase extends Logger implements AutoCloseable {
     public abstract String readLine();
 
     /**
-     * @see #readLine()
      * @return Reads the current line without a prompt
+     * @see #readLine()
      */
     @Nonnull
     public abstract String readLineNoPrompt();
@@ -45,7 +45,7 @@ public abstract class LoggerBase extends Logger implements AutoCloseable {
     /**
      * Reads the console input and waits for the correct input
      *
-     * @param predicate The predicate which should check if the console input is correct
+     * @param predicate           The predicate which should check if the console input is correct
      * @param invalidInputMessage The runnable if the input is invalid it get called
      * @return The string which was given in the console
      */
@@ -58,9 +58,9 @@ public abstract class LoggerBase extends Logger implements AutoCloseable {
     /**
      * Reads the console input and waits for the correct input
      *
-     * @param function The function which handles the console input and converts it into the needed object
+     * @param function            The function which handles the console input and converts it into the needed object
      * @param invalidInputMessage The runnable if the input is invalid it get called
-     * @param <T> The type parameter of the current needed object
+     * @param <T>                 The type parameter of the current needed object
      * @return The result of {@link Function#apply(Object)} to the given function
      */
     @Nonnull

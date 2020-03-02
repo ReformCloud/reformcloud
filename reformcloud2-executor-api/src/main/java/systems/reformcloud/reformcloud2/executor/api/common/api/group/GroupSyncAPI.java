@@ -25,7 +25,7 @@ public interface GroupSyncAPI {
     /**
      * Creates a new main group
      *
-     * @param name The name of the group
+     * @param name      The name of the group
      * @param subgroups The subgroups of the new main group
      * @return The created main group
      */
@@ -44,7 +44,7 @@ public interface GroupSyncAPI {
     /**
      * Creates a new process group
      *
-     * @param name The name of the new group
+     * @param name      The name of the new group
      * @param templates The templates which should be used for the new group
      * @return The created process group
      */
@@ -54,8 +54,8 @@ public interface GroupSyncAPI {
     /**
      * Creates a new process group
      *
-     * @param name The name of the new group
-     * @param templates The templates which should be used for the new group
+     * @param name                 The name of the new group
+     * @param templates            The templates which should be used for the new group
      * @param startupConfiguration The startup config of the new process group
      * @return The created process group
      */
@@ -69,9 +69,9 @@ public interface GroupSyncAPI {
     /**
      * Creates a new process group
      *
-     * @param name The name of the new group
-     * @param templates The templates which should be used for the new group
-     * @param startupConfiguration The startup config of the new process group
+     * @param name                      The name of the new group
+     * @param templates                 The templates which should be used for the new group
+     * @param startupConfiguration      The startup config of the new process group
      * @param playerAccessConfiguration The new player access configuration of the process group
      * @return The created process group
      */
@@ -86,11 +86,11 @@ public interface GroupSyncAPI {
     /**
      * Creates a new process group
      *
-     * @param name The name of the new group
-     * @param templates The templates which should be used for the new group
-     * @param startupConfiguration The startup config of the new process group
+     * @param name                      The name of the new group
+     * @param templates                 The templates which should be used for the new group
+     * @param startupConfiguration      The startup config of the new process group
      * @param playerAccessConfiguration The new player access configuration of the process group
-     * @param staticGroup {@code true} if the process group should be static
+     * @param staticGroup               {@code true} if the process group should be static
      * @return The created process group
      */
     @Nonnull

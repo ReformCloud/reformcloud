@@ -157,7 +157,6 @@ public class NodeExecutor extends Node {
     private RequestListenerHandler requestListenerHandler;
 
     NodeExecutor() {
-        Node.setInstance(this);
         ExecutorAPI.setInstance(this);
         super.type = ExecutorType.NODE;
 

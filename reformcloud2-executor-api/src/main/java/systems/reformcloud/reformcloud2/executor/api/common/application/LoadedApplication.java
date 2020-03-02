@@ -15,7 +15,8 @@ import javax.annotation.Nullable;
  */
 public interface LoadedApplication extends Nameable {
 
-    TypeToken<DefaultLoadedApplication> TYPE = new TypeToken<DefaultLoadedApplication>() {};
+    TypeToken<DefaultLoadedApplication> TYPE = new TypeToken<DefaultLoadedApplication>() {
+    };
 
     /**
      * @return The application loader which has loaded the application
@@ -55,8 +56,8 @@ public interface LoadedApplication extends Nameable {
     void setApplicationStatus(@Nonnull ApplicationStatus status);
 
     /**
-     * @see #applicationConfig()
      * @return The name of the application
+     * @see #applicationConfig()
      */
     @Nonnull
     @Override

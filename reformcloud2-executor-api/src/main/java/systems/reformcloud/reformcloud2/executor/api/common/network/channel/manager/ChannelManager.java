@@ -30,9 +30,8 @@ public interface ChannelManager {
     /**
      * @param name The name of the packet sender who should be found
      * @return A {@link ReferencedOptional} which is
-     *  a) empty if the packet sender is not registered
-     *  b) contains the packet sender if the channel is registered
-     *
+     * a) empty if the packet sender is not registered
+     * b) contains the packet sender if the channel is registered
      * @see ReferencedOptional#isPresent()
      * @see ReferencedOptional#ifPresent(Consumer)
      */

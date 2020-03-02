@@ -16,8 +16,8 @@ public interface Registry {
      * Creates a new key in the registry
      *
      * @param keyName The name of the key
-     * @param t The object which should get inserted in a json config
-     * @param <T> The type of the object
+     * @param t       The object which should get inserted in a json config
+     * @param <T>     The type of the object
      * @return The object which should get inserted or the value which is already inserted
      */
     @Nonnull
@@ -27,7 +27,7 @@ public interface Registry {
      * Gets a key from the registry
      *
      * @param keyName The name of the key which should get
-     * @param <T> The type of the object
+     * @param <T>     The type of the object
      * @return The key in the registry or {@code null}
      */
     @Nullable
@@ -43,9 +43,9 @@ public interface Registry {
     /**
      * Updates a key in the registry
      *
-     * @param key The key which should get updates
+     * @param key      The key which should get updates
      * @param newValue The value which should get updated
-     * @param <T> The type of the new value
+     * @param <T>      The type of the new value
      * @return The value which should get updated
      */
     @Nullable
@@ -55,7 +55,7 @@ public interface Registry {
      * Reads all keys from the registry
      *
      * @param function The function which should apply a json config to the object
-     * @param <T> The type of the object
+     * @param <T>      The type of the object
      * @return A collection of all objects in the database
      */
     @Nonnull

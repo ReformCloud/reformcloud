@@ -33,8 +33,8 @@ public interface ConsoleAsyncAPI {
      *
      * @param commandLine The command line which should be executed
      * @return A task which will be completed with the result of the command or {@code null} if the command is
-     *  a) not registered
-     *  b) doesn't sent any result to the handler
+     * a) not registered
+     * b) doesn't sent any result to the handler
      */
     @Nonnull
     @CheckReturnValue

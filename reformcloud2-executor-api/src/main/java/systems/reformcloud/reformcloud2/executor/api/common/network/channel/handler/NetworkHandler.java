@@ -18,8 +18,8 @@ public interface NetworkHandler extends PacketReader {
      * Gets called when a packet with the given id is received
      *
      * @param packetSender The packet sender who sent the packet
-     * @param packet The packet itself which got sent
-     * @param responses The response which should be sent to the sender
+     * @param packet       The packet itself which got sent
+     * @param responses    The response which should be sent to the sender
      */
     void handlePacket(@Nonnull PacketSender packetSender, @Nonnull Packet packet, @Nonnull Consumer<Packet> responses);
 }

@@ -19,11 +19,11 @@ public abstract class Database<V> {
     /**
      * Connects to the database
      *
-     * @param host The host of the database
-     * @param port The port of the database
+     * @param host     The host of the database
+     * @param port     The port of the database
      * @param userName The user which should be used
      * @param password The password of the user
-     * @param table The table which the cloud system should use
+     * @param table    The table which the cloud system should use
      */
     public abstract void connect(
             @Nonnull String host,

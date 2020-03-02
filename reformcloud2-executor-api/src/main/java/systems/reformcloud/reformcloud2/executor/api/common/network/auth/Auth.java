@@ -11,7 +11,8 @@ import javax.annotation.Nullable;
 public interface Auth extends Nameable {
 
     /* The type of this interface ( default implementation ) */
-    TypeToken<DefaultAuth> TYPE = new TypeToken<DefaultAuth>() {};
+    TypeToken<DefaultAuth> TYPE = new TypeToken<DefaultAuth>() {
+    };
 
     /**
      * @return The authentication key of the current auth

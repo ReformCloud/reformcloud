@@ -22,9 +22,8 @@ public abstract class InitializerHandler extends ChannelInitializer<Channel> {
     private final Consumer<PacketSender> senderConsumer;
 
     /**
-     * @see NetworkUtil#newReader(PacketHandler, Consumer)
-     *
      * @return A new {@link NetworkChannelReader} with the given values
+     * @see NetworkUtil#newReader(PacketHandler, Consumer)
      */
     @Nonnull
     protected final NetworkChannelReader newHandler() {

@@ -19,7 +19,8 @@ import java.util.List;
  */
 public interface Command extends TabCompleter {
 
-    TypeToken<GlobalCommand> TYPE = new TypeToken<GlobalCommand>() {};
+    TypeToken<GlobalCommand> TYPE = new TypeToken<GlobalCommand>() {
+    };
 
     /**
      * @return The main command name
@@ -55,7 +56,7 @@ public interface Command extends TabCompleter {
      * Handles the command
      *
      * @param commandSource The command source of the command
-     * @param strings The parameters given in the command
+     * @param strings       The parameters given in the command
      * @return If the command execute was successful
      */
     boolean handleCommand(@Nonnull CommandSource commandSource, @Nonnull String[] strings);

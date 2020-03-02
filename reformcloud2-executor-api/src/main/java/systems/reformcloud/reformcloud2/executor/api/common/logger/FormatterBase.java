@@ -16,11 +16,10 @@ public abstract class FormatterBase extends Formatter {
     /**
      * Formats an exception to a string writer
      *
-     * @see Throwable
-     * @see StringWriter
-     *
      * @param throwable The throwable which should get converted
      * @return A string writer containing the stacktrace
+     * @see Throwable
+     * @see StringWriter
      */
     @Nonnull
     protected StringWriter format(@Nonnull Throwable throwable) {

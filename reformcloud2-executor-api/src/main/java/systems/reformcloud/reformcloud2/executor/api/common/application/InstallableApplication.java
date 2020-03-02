@@ -11,7 +11,8 @@ import javax.annotation.Nonnull;
  */
 public interface InstallableApplication extends Nameable {
 
-    TypeToken<DefaultInstallableApplication> TYPE = new TypeToken<DefaultInstallableApplication>() {};
+    TypeToken<DefaultInstallableApplication> TYPE = new TypeToken<DefaultInstallableApplication>() {
+    };
 
     /**
      * @return The download url of the application

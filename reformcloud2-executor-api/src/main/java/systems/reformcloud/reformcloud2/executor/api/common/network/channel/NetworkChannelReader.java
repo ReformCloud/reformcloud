@@ -46,7 +46,7 @@ public interface NetworkChannelReader {
      * Gets called when a packet comes into the channel
      *
      * @param context The context of the channel where the packet is from
-     * @param input The sent content by the sender
+     * @param input   The sent content by the sender
      */
     void read(ChannelHandlerContext context, WrappedByteInput input);
 
@@ -54,7 +54,7 @@ public interface NetworkChannelReader {
      * Handles the exceptions which will occur in the channel
      *
      * @param context The context of the channel the exception occurred in
-     * @param cause The cause why the exception occurred
+     * @param cause   The cause why the exception occurred
      */
     default void exceptionCaught(ChannelHandlerContext context, Throwable cause) {
         if (!(cause instanceof IOException)) {

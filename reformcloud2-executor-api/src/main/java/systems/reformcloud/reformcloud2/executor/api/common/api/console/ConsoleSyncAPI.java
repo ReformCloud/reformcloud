@@ -26,8 +26,8 @@ public interface ConsoleSyncAPI {
      *
      * @param commandLine The command line which should be executed
      * @return The result of the command or {@code null} if the command is
-     *  a) not registered
-     *  b) doesn't sent any result to the handler
+     * a) not registered
+     * b) doesn't sent any result to the handler
      */
     @Nullable
     String dispatchCommandAndGetResult(@Nonnull String commandLine);

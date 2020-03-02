@@ -13,6 +13,7 @@ public interface ProcessManager extends Iterable<ProcessInformation>, Updateable
     /**
      * Gets all currently running processes
      * <p>
+     *
      * @return All running processes
      */
     List<ProcessInformation> getAllProcesses();
@@ -20,6 +21,7 @@ public interface ProcessManager extends Iterable<ProcessInformation>, Updateable
     /**
      * Gets all running processes of a specific group
      * <p>
+     *
      * @param group The name of the group
      * @return A list which contains all process information about the running process
      * @see ProcessInformation
@@ -29,6 +31,7 @@ public interface ProcessManager extends Iterable<ProcessInformation>, Updateable
     /**
      * Gets the current online and waiting process count of a specific group
      * <p>
+     *
      * @param group The name of the group which should be filtered (required to be non-null)
      * @return The online and waiting process count of an specific group
      */
@@ -37,17 +40,19 @@ public interface ProcessManager extends Iterable<ProcessInformation>, Updateable
     /**
      * Gets a specific process by the name
      * <p>
+     *
      * @param name The name of the process
      * @return The filtered process information or {@code null} if the process does not exists
      * @see ProcessInformation
      * @see #getProcess(UUID)
-      */
+     */
     @Nullable
     ProcessInformation getProcess(String name);
 
     /**
      * Gets a specific process by the process uniqueID
      * <p>
+     *
      * @param uniqueID The unique id of the process
      * @return The current process information or {@code null} if the process does not exists
      * @see ProcessInformation
@@ -59,6 +64,7 @@ public interface ProcessManager extends Iterable<ProcessInformation>, Updateable
     /**
      * Starts a process of the specified group and filters automatically the best template
      * <p>
+     *
      * @param groupName The name of the group which is required to be non-null
      * @return The process information about the created process
      * @see ProcessInformation
@@ -70,8 +76,9 @@ public interface ProcessManager extends Iterable<ProcessInformation>, Updateable
     /**
      * Starts a process with the given template name
      * <p>
+     *
      * @param groupName The name if tge group which is required to be non-null
-     * @param template The name of the template which must not exists using default template instead
+     * @param template  The name of the template which must not exists using default template instead
      * @return The process information of the created process
      * @see ProcessInformation
      * @see #startProcess(String, String, JsonConfiguration)
@@ -82,8 +89,9 @@ public interface ProcessManager extends Iterable<ProcessInformation>, Updateable
     /**
      * Starts a process with the given template name and the json configuration as extra data for the process object
      * <p>
-     * @param groupName The name if tge group which is required to be non-null
-     * @param template The name of the template which must not exists using default template instead
+     *
+     * @param groupName    The name if tge group which is required to be non-null
+     * @param template     The name of the template which must not exists using default template instead
      * @param configurable The extra data which you can read on the process (can be {@code null})
      * @return The process information of the created process
      * @see ProcessInformation
@@ -94,6 +102,7 @@ public interface ProcessManager extends Iterable<ProcessInformation>, Updateable
     /**
      * Stops a specific process and returns the last known process information
      * <p>
+     *
      * @param name The name of the running process which is required to be non-null
      * @return The last known process information or {@code null} if the process is unknown
      * @see ProcessInformation
@@ -105,6 +114,7 @@ public interface ProcessManager extends Iterable<ProcessInformation>, Updateable
     /**
      * Stops a specific process and returns the last known process information
      * <p>
+     *
      * @param uniqueID The unique process id which is required to be non-null
      * @return The last known process information or {@code null} if the process is unknown
      * @see #stopProcess(String)
@@ -116,6 +126,7 @@ public interface ProcessManager extends Iterable<ProcessInformation>, Updateable
      * This method will be called when a client disconnects, to remove all running processes and
      * let the cloud move them to the next client
      * <p>
+     *
      * @param clientName The name of the client which is disconnected
      * @see #onChannelClose(String)
      */
@@ -124,6 +135,7 @@ public interface ProcessManager extends Iterable<ProcessInformation>, Updateable
     /**
      * This method gets called when a channel closes
      * <p>
+     *
      * @param name The name of the channel sender
      * @see #onClientDisconnect(String)
      */
@@ -132,6 +144,7 @@ public interface ProcessManager extends Iterable<ProcessInformation>, Updateable
     /**
      * Unregisters a specific by the given uuid
      * <p>
+     *
      * @param uniqueID The uniqueID of the process information which will be used to identify the process
      * @see ProcessInformation#getProcessUniqueID()
      */
