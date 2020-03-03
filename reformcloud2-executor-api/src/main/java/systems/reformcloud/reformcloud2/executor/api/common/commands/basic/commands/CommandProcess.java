@@ -131,7 +131,7 @@ public final class CommandProcess extends GlobalCommand {
         builder.append(" > Template     - ").append(information.getTemplate().getName()).append("/")
                 .append(information.getTemplate().getBackend()).append("\n");
         builder.append("\n");
-        builder.append(" > Ready:       - ").append(information.getProcessState().isReady() ? "&ayes&r" : "&cno&r").append("\n");
+        builder.append(" > Ready        - ").append(information.getProcessState().isReady() ? "&ayes&r" : "&cno&r").append("\n");
         builder.append(" > State        - ").append(information.getProcessState().name()).append("\n");
         builder.append(" > Connected    - ").append(information.getNetworkInfo().isConnected() ? "&ayes&r" : "&cno&r").append("\n");
         builder.append(" > Address      - ").append(information.getNetworkInfo().getHost())
