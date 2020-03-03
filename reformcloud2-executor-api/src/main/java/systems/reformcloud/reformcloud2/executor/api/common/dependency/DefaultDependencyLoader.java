@@ -64,7 +64,8 @@ public final class DefaultDependencyLoader extends DependencyLoader {
     @Override
     public void loadDependencies() {
         DEFAULT_DEPENDENCIES.forEach(dependency -> {
-            System.out.println("Preloading dependency " + dependency.getArtifactID() + " from repo " + dependency.getRepository().getName() + "...");
+            System.out.println("Preloading dependency " + dependency.getArtifactID() + " " + dependency.getVersion()
+                    + " from repo " + dependency.getRepository().getName() + "...");
             urls.add(loadDependency(dependency));
         });
     }
