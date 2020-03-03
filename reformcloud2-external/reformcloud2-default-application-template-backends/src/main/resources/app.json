@@ -2,6 +2,6 @@
   "name": "TemplateBackendApplication",
   "author": "derklaro",
   "main": "systems.reformcloud.reformcloud2.backends.TemplateBackendApplication",
-  "version": "2.0.4-SNAPSHOT",
-  "impl-version": "2.0.4-SNAPSHOT"
+  "version": "2.1.0-SNAPSHOT",
+  "impl-version": "2.1.0-SNAPSHOT"
 }
