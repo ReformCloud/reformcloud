@@ -153,7 +153,7 @@ public final class CommandProcess extends GlobalCommand {
 
         if (!information.getTemplate().getPathInclusions().isEmpty()) {
             for (Inclusion pathInclusion : information.getTemplate().getPathInclusions()) {
-                builder.append("   > ").append(pathInclusion.getKey()).append("/").append(pathInclusion.getBackend()).append("\n");
+                builder.append("   > ").append(pathInclusion.getKey()).append(" FROM ").append(pathInclusion.getBackend()).append("\n");
             }
         }
 
