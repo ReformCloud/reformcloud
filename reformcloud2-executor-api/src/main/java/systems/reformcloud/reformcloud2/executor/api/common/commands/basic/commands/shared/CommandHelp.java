@@ -1,4 +1,4 @@
-package systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands;
+package systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.shared;
 
 import systems.reformcloud.reformcloud2.executor.api.common.commands.Command;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.GlobalCommand;

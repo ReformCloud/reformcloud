@@ -11,11 +11,11 @@ import systems.reformcloud.reformcloud2.executor.api.common.application.basic.De
 import systems.reformcloud.reformcloud2.executor.api.common.client.basic.DefaultClientRuntimeInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.AllowedCommandSources;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.ConsoleCommandSource;
-import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.CommandClear;
-import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.CommandHelp;
-import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.CommandReload;
-import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.CommandStop;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.dump.CommandDump;
+import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.shared.CommandClear;
+import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.shared.CommandHelp;
+import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.shared.CommandReload;
+import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.shared.CommandStop;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.manager.DefaultCommandManager;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.manager.CommandManager;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.source.CommandSource;

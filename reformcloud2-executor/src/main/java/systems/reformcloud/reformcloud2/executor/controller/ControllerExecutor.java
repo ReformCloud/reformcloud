@@ -11,9 +11,15 @@ import systems.reformcloud.reformcloud2.executor.api.common.client.ClientRuntime
 import systems.reformcloud.reformcloud2.executor.api.common.client.basic.DefaultClientRuntimeInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.AllowedCommandSources;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.ConsoleCommandSource;
-import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.*;
+import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.CommandCreate;
+import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.CommandLaunch;
+import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.CommandProcess;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.dump.CommandDump;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.dump.basic.DefaultDumpUtil;
+import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.shared.CommandClear;
+import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.shared.CommandHelp;
+import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.shared.CommandReload;
+import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.shared.CommandStop;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.manager.DefaultCommandManager;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.manager.CommandManager;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.source.CommandSource;
@@ -36,7 +42,9 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.auth.Auth;
 import systems.reformcloud.reformcloud2.executor.api.common.network.auth.NetworkType;
 import systems.reformcloud.reformcloud2.executor.api.common.network.auth.defaults.DefaultAuth;
 import systems.reformcloud.reformcloud2.executor.api.common.network.auth.defaults.DefaultServerAuthHandler;
+import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.handler.DefaultJsonNetworkHandler;
+import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.defaults.DefaultPacketHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.handler.PacketHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.server.DefaultNetworkServer;
@@ -51,6 +59,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.restapi.request.defa
 import systems.reformcloud.reformcloud2.executor.api.common.restapi.user.WebUser;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.StringUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Duo;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.optional.ReferencedOptional;
 import systems.reformcloud.reformcloud2.executor.api.controller.Controller;
 import systems.reformcloud.reformcloud2.executor.api.controller.process.ProcessManager;
 import systems.reformcloud.reformcloud2.executor.controller.api.GeneralAPI;
@@ -64,6 +73,8 @@ import systems.reformcloud.reformcloud2.executor.controller.api.plugins.PluginAP
 import systems.reformcloud.reformcloud2.executor.controller.api.process.ProcessAPIImplementation;
 import systems.reformcloud.reformcloud2.executor.controller.config.ControllerConfig;
 import systems.reformcloud.reformcloud2.executor.controller.config.ControllerExecutorConfig;
+import systems.reformcloud.reformcloud2.executor.controller.packet.out.ControllerPacketOutCopyProcess;
+import systems.reformcloud.reformcloud2.executor.controller.packet.out.ControllerPacketOutToggleScreen;
 import systems.reformcloud.reformcloud2.executor.controller.process.ClientManager;
 import systems.reformcloud.reformcloud2.executor.controller.process.DefaultProcessManager;
 import systems.reformcloud.reformcloud2.executor.controller.process.startup.AutoStartupHandler;
@@ -440,6 +451,13 @@ public final class ControllerExecutor extends Controller {
 
     private void loadCommands() {
         this.commandManager
+                .register(new CommandProcess(target -> {
+                    ReferencedOptional<PacketSender> optional = DefaultChannelManager.INSTANCE.get(target.getParent());
+                    optional.ifPresent(packetSender -> packetSender.sendPacket(new ControllerPacketOutToggleScreen(target.getProcessUniqueID())));
+                    return optional.isPresent();
+                }, e -> DefaultChannelManager.INSTANCE.get(e.getParent()).ifPresent(packetSender -> packetSender.sendPacket(
+                        new ControllerPacketOutCopyProcess(e.getProcessUniqueID())
+                ))))
                 .register(new CommandDump(new DefaultDumpUtil()))
                 .register(new CommandLaunch())
                 .register(new CommandStop())

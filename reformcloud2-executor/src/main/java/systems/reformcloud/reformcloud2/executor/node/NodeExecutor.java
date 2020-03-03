@@ -11,8 +11,14 @@ import systems.reformcloud.reformcloud2.executor.api.common.application.Applicat
 import systems.reformcloud.reformcloud2.executor.api.common.application.basic.DefaultApplicationLoader;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.AllowedCommandSources;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.ConsoleCommandSource;
-import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.*;
+import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.CommandCreate;
+import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.CommandLaunch;
+import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.CommandProcess;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.dump.CommandDump;
+import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.shared.CommandClear;
+import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.shared.CommandHelp;
+import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.shared.CommandReload;
+import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.shared.CommandStop;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.manager.DefaultCommandManager;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.manager.CommandManager;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.source.CommandSource;
@@ -58,6 +64,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.restapi.user.WebUser
 import systems.reformcloud.reformcloud2.executor.api.common.utility.StringUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Duo;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.optional.ReferencedOptional;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.system.SystemHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
@@ -65,8 +72,10 @@ import systems.reformcloud.reformcloud2.executor.api.node.Node;
 import systems.reformcloud.reformcloud2.executor.api.node.cluster.ClusterSyncManager;
 import systems.reformcloud.reformcloud2.executor.api.node.cluster.SyncAction;
 import systems.reformcloud.reformcloud2.executor.api.node.network.NodeNetworkManager;
+import systems.reformcloud.reformcloud2.executor.api.node.process.LocalNodeProcess;
 import systems.reformcloud.reformcloud2.executor.controller.packet.in.ControllerPacketInAPIAction;
 import systems.reformcloud.reformcloud2.executor.controller.packet.in.ControllerPacketInHandleChannelMessage;
+import systems.reformcloud.reformcloud2.executor.controller.packet.out.ControllerPacketOutCopyProcess;
 import systems.reformcloud.reformcloud2.executor.node.api.GeneralAPI;
 import systems.reformcloud.reformcloud2.executor.node.api.applications.ApplicationAPIImplementation;
 import systems.reformcloud.reformcloud2.executor.node.api.console.ConsoleAPIImplementation;
@@ -84,9 +93,12 @@ import systems.reformcloud.reformcloud2.executor.node.config.NodeExecutorConfig;
 import systems.reformcloud.reformcloud2.executor.node.dump.NodeDumpUtil;
 import systems.reformcloud.reformcloud2.executor.node.network.DefaultNodeNetworkManager;
 import systems.reformcloud.reformcloud2.executor.node.network.client.NodeNetworkClient;
+import systems.reformcloud.reformcloud2.executor.node.network.packet.out.screen.NodePacketOutToggleScreen;
 import systems.reformcloud.reformcloud2.executor.node.process.LocalAutoStartupHandler;
 import systems.reformcloud.reformcloud2.executor.node.process.LocalNodeProcessManager;
 import systems.reformcloud.reformcloud2.executor.node.process.log.LogLineReader;
+import systems.reformcloud.reformcloud2.executor.node.process.log.NodeProcessScreen;
+import systems.reformcloud.reformcloud2.executor.node.process.log.NodeProcessScreenHandler;
 import systems.reformcloud.reformcloud2.executor.node.process.manager.LocalProcessManager;
 import systems.reformcloud.reformcloud2.executor.node.process.startup.LocalProcessQueue;
 import systems.reformcloud.reformcloud2.executor.node.process.watchdog.WatchdogThread;
@@ -648,6 +660,27 @@ public class NodeExecutor extends Node {
 
     private void loadCommands() {
         this.commandManager
+                .register(new CommandProcess(target -> {
+                    if (target.getNodeUniqueID().equals(NodeExecutor.getInstance().getNodeConfig().getUniqueID())) {
+                        ReferencedOptional<NodeProcessScreen> screen = NodeProcessScreenHandler.getScreen(target.getProcessUniqueID());
+                        return screen.isPresent() && screen.get().toggleFor(NodeExecutor.getInstance().getNodeConfig().getName());
+                    } else {
+                        ReferencedOptional<PacketSender> optional = DefaultChannelManager.INSTANCE.get(target.getParent());
+                        optional.ifPresent(packetSender -> packetSender.sendPacket(new NodePacketOutToggleScreen(target.getProcessUniqueID())));
+                        return optional.isPresent();
+                    }
+                }, target -> {
+                    if (NodeExecutor.getInstance().getNodeConfig().getUniqueID().equals(target.getNodeUniqueID())) {
+                        Streams.filterToReference(
+                                LocalProcessManager.getNodeProcesses(),
+                                e -> e.getProcessInformation().getProcessUniqueID().equals(target.getProcessUniqueID())
+                        ).ifPresent(LocalNodeProcess::copy);
+                    } else {
+                        DefaultChannelManager.INSTANCE.get(target.getParent()).ifPresent(packetSender -> packetSender.sendPacket(
+                                new ControllerPacketOutCopyProcess(target.getProcessUniqueID())
+                        ));
+                    }
+                }))
                 .register(new CommandDump(new NodeDumpUtil()))
                 .register(new CommandCreate())
                 .register(new CommandLaunch())

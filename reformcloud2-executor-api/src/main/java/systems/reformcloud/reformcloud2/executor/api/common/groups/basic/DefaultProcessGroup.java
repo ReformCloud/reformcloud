@@ -12,6 +12,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.Startup
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 public final class DefaultProcessGroup extends ProcessGroup {
 
@@ -108,6 +109,47 @@ public final class DefaultProcessGroup extends ProcessGroup {
                         true,
                         true,
                         50
+                ), staticServer, lobby);
+    }
+
+    public DefaultProcessGroup(String name, int port, Version version,
+                               int maxMemory, boolean maintenance, int min, int max, int priority,
+                               boolean staticServer, boolean lobby, List<String> clients, int maxPlayers) {
+        super(
+                name,
+                true,
+                new StartupConfiguration(
+                        max,
+                        min,
+                        priority,
+                        port,
+                        StartupEnvironment.JAVA_RUNTIME,
+                        clients.isEmpty(),
+                        clients
+                ), Collections.singletonList(new Template(
+                        0,
+                        "default",
+                        false,
+                        FileBackend.NAME,
+                        "#",
+                        new RuntimeConfiguration(
+                                maxMemory,
+                                Collections.emptyList(),
+                                Collections.singletonMap("reformcloud2.developer", "derklaro")
+                        ),
+                        version,
+                        new ArrayList<>(),
+                        Collections.singletonList(version.isServer() ? SERVER_INCLUSION : PROXY_INCLUSION)
+                )), new PlayerAccessConfiguration(
+                        "reformcloud.join.full",
+                        maintenance,
+                        "reformcloud.join.maintenance",
+                        false,
+                        null,
+                        true,
+                        true,
+                        true,
+                        maxPlayers
                 ), staticServer, lobby);
     }
 }

@@ -1,6 +1,7 @@
 package systems.reformcloud.reformcloud2.executor.api.common;
 
 import com.sun.management.OperatingSystemMXBean;
+import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessRuntimeInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.optional.ReferencedOptional;
 
 import javax.annotation.Nonnull;
@@ -13,6 +14,9 @@ import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.text.DateFormat;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -26,6 +30,10 @@ public final class CommonHelper {
     }
 
     public static final Executor EXECUTOR = Executors.newCachedThreadPool();
+
+    public static final DateFormat DATE_FORMAT = new SimpleDateFormat("dd.MM.yyyy kk:mm:ss");
+
+    public static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("##.###");
 
     public static MemoryMXBean memoryMXBean() {
         return ManagementFactory.getMemoryMXBean();
@@ -62,7 +70,7 @@ public final class CommonHelper {
                 return;
             }
 
-            atomicLong.addAndGet(memoryPoolMXBean.getCollectionUsage().getUsed());
+            atomicLong.addAndGet(memoryPoolMXBean.getCollectionUsage().getUsed() / ProcessRuntimeInformation.MEGABYTE);
         });
 
         return atomicLong.get();

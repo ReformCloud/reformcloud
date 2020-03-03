@@ -25,20 +25,23 @@ public final class CommandCreate extends GlobalCommand {
     @Override
     public void describeCommandToSender(@Nonnull CommandSource source) {
         source.sendMessages((
-                "create new pg <name> <version>  | Creates a new process group\n" +
-                        " --start-port=[port]            | Sets the start port of the new process group\n" +
-                        " --max-memory=[memory]          | Sets the max-memory of the process group (default: 512)\n" +
-                        " --min-process-count=[min]      | Sets the min process count for the group (default: 1)\n" +
-                        " --max-process-count=[max]      | Sets the max process count for the group (default: -1)\n" +
-                        " --static=[static]              | Marks the process as a static process (default: false)\n" +
-                        " --lobby=[lobby]                | Marks the process as a lobby (default: false)\n" +
-                        " --maintenance=[maintenance]    | Enables the maintenance mode for the group (default: enabled on proxies)\n" +
-                        " --main-groups=[Group1;Group2]  | Sets the default main groups the group should be in"
+                "create new pg <name> <version>     | Creates a new process group\n" +
+                        " --start-port=[port]               | Sets the start port of the new process group\n" +
+                        " --max-memory=[memory]             | Sets the max-memory of the process group (default: 512)\n" +
+                        " --min-process-count=[min]         | Sets the min process count for the group (default: 1)\n" +
+                        " --max-process-count=[max]         | Sets the max process count for the group (default: -1)\n" +
+                        " --max-players=[max]               | Sets the max player count for the processes (default: proxies: 512, servers: 20)\n" +
+                        " --start-priority=[priority]       | Sets the startup priority for the group to start (default: 0)\n" +
+                        " --static=[static]                 | Marks the process as a static process (default: false)\n" +
+                        " --lobby=[lobby]                   | Marks the process as a lobby (default: false)\n" +
+                        " --maintenance=[maintenance]       | Enables the maintenance mode for the group (default: enabled on proxies)\n" +
+                        " --main-groups=[Group1;Group2]     | Sets the default main groups the group should be in\n" +
+                        " --startup-pickers=[Client1;Node2] | Sets the clients on which the processes should start only"
         ).split("\n"));
         source.sendMessage(" ");
         source.sendMessages((
-                "create new mg <name>            | Creates a new main group\n" +
-                        " --sub-groups=[Group1;Group2]   | Sets the default sub groups which should get added to the group"
+                "create new mg <name>               | Creates a new main group\n" +
+                        " --sub-groups=[Group1;Group2]      | Sets the default sub groups which should get added to the group"
         ).split("\n"));
     }
 
@@ -124,9 +127,12 @@ public final class CommandCreate extends GlobalCommand {
         int memory = 512;
         int min = 1;
         int max = -1;
+        int maxPlayers = version.isServer() ? 20 : 512;
+        int priority = 0;
         boolean staticProcess = false;
         boolean lobby = false;
         boolean maintenance = !version.isServer();
+        List<String> clients = new ArrayList<>();
 
         if (properties.containsKey("start-port")) {
             Integer startPort = CommonHelper.fromString(properties.getProperty("start-port"));
@@ -136,6 +142,26 @@ public final class CommandCreate extends GlobalCommand {
             }
 
             port = startPort;
+        }
+
+        if (properties.containsKey("max-players")) {
+            Integer maxPlayerCount = CommonHelper.fromString(properties.getProperty("max-players"));
+            if (maxPlayerCount == null || maxPlayerCount <= 0) {
+                source.sendMessage(LanguageManager.get("command-integer-failed", 0, properties.getProperty("max-players")));
+                return;
+            }
+
+            maxPlayers = maxPlayerCount;
+        }
+
+        if (properties.containsKey("start-priority")) {
+            Integer startPriority = CommonHelper.fromString(properties.getProperty("start-priority"));
+            if (startPriority == null) {
+                source.sendMessage(LanguageManager.get("command-integer-failed-no-limit", properties.getProperty("start-priority")));
+                return;
+            }
+
+            priority = startPriority;
         }
 
         if (properties.containsKey("max-memory")) {
@@ -224,6 +250,20 @@ public final class CommandCreate extends GlobalCommand {
             });
         }
 
+        if (properties.containsKey("startup-pickers")) {
+            String[] startPickers = properties.getProperty("startup-pickers").contains(";")
+                    ? properties.getProperty("startup-pickers").split(";")
+                    : new String[]{properties.getProperty("startup-pickers")};
+
+            for (String picker : startPickers) {
+                if (clients.contains(picker)) {
+                    continue;
+                }
+
+                clients.add(picker);
+            }
+        }
+
         ExecutorAPI.getInstance().getSyncAPI().getGroupSyncAPI().createProcessGroup(new DefaultProcessGroup(
                 name,
                 port,
@@ -232,8 +272,11 @@ public final class CommandCreate extends GlobalCommand {
                 maintenance,
                 min,
                 max,
+                priority,
                 staticProcess,
-                lobby
+                lobby,
+                clients,
+                maxPlayers
         ));
         source.sendMessage(LanguageManager.get("command-create-pg", name, version.getName()));
     }

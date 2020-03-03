@@ -28,20 +28,24 @@ public final class StringUtil {
             "rc applications update",
             "rc applications update <name>",
             "rc maintenance <group>",
-            "rc copy <uuid | name>",
-            "rc screen <uuid | name> toggle",
+            // "rc copy <uuid | name>",
+            // "rc screen <uuid | name> toggle",
             "rc list",
             "rc list <group>",
             "rc listgroups <main | sub>",
             "rc versions",
+            /* DONE
             "rc start <group>",
             "rc start <group> <amount>",
             "rc start <group> <amount> <template>",
+            */
+            /* DONE
             "rc stop <name>",
             "rc stop <uuid>",
+             */
             "rc stopall <subGroup>",
             "rc ofAll <mainGroup> <list | stop>",
-            "rc execute <name | uuid> <command>",
+            // "rc execute <name | uuid> <command>",
             /* DONE
             "rc create main <name>",
             "rc create sub <name>",

@@ -10,6 +10,8 @@ import java.util.Map;
 
 public final class ProcessRuntimeInformation {
 
+    public static final long MEGABYTE = 1024L * 1024L;
+
     private final double cpuUsageSystem;
 
     private final double cpuUsageInternal;
@@ -167,14 +169,15 @@ public final class ProcessRuntimeInformation {
     }
 
     public static ProcessRuntimeInformation create() {
+        long[] longs = CommonHelper.threadMXBean().findDeadlockedThreads();
         return new ProcessRuntimeInformation(
                 CommonHelper.operatingSystemMXBean().getSystemCpuLoad() * 100,
                 CommonHelper.operatingSystemMXBean().getProcessCpuLoad() * 100,
                 CommonHelper.operatingSystemMXBean().getSystemLoadAverage() * 100,
                 Runtime.getRuntime().availableProcessors(),
                 Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory(),
-                CommonHelper.memoryMXBean().getHeapMemoryUsage().getUsed(),
-                CommonHelper.memoryMXBean().getNonHeapMemoryUsage().getUsed(),
+                CommonHelper.memoryMXBean().getHeapMemoryUsage().getUsed() / MEGABYTE,
+                CommonHelper.memoryMXBean().getNonHeapMemoryUsage().getUsed() / MEGABYTE,
                 CommonHelper.memoryPoolMXBeanCollectionUsage(),
                 CommonHelper.classLoadingMXBean().getLoadedClassCount(),
                 CommonHelper.classLoadingMXBean().getUnloadedClassCount(),
@@ -184,7 +187,7 @@ public final class ProcessRuntimeInformation {
                 System.getProperty("os.arch"),
                 CommonHelper.runtimeMXBean().getInputArguments().toArray(new String[0]),
                 Thread.getAllStackTraces().size(),
-                CommonHelper.threadMXBean().findDeadlockedThreads(),
+                longs == null ? new long[0] : longs,
                 CommonHelper.runtimeMXBean().getSystemProperties(),
                 CommonHelper.runtimeMXBean().getClassPath(),
                 CommonHelper.runtimeMXBean().isBootClassPathSupported() ? CommonHelper.runtimeMXBean().getBootClassPath() : "unknown",

@@ -77,7 +77,6 @@ public final class ReferencedOptional<T> implements Serializable {
         return get() != null;
     }
 
-    @Nullable
     public T get() {
         return reference.get();
     }
