@@ -20,11 +20,9 @@ import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams.newCollection;
 
@@ -69,7 +67,20 @@ public class NodeExecutorConfig {
         createDirectories();
         if (!Files.exists(NodeConfig.PATH)) {
             firstStartup.set(true);
+            AtomicReference<String> nodeName = new AtomicReference<>();
             setup.addQuestion(new DefaultSetupQuestion(
+                    "Please enter the name of the node (for example: \"Node-58ec0489\" or \"Node-1\") leave blank to use a random name",
+                    "",
+                    s -> true,
+                    e -> {
+                        String name = e;
+                        if (e.trim().isEmpty()) {
+                            name = "Node-" + UUID.randomUUID().toString().split("-")[0];
+                        }
+
+                        nodeName.set(name);
+                    }
+            )).addQuestion(new DefaultSetupQuestion(
                     "Please enter the start host or domain name of the node",
                     "Please enter your real address or domain name",
                     e -> CommonHelper.getIpAddress(e.trim()) != null,
@@ -77,6 +88,7 @@ public class NodeExecutorConfig {
                         String ip = CommonHelper.getIpAddress(e.trim());
 
                         new JsonConfiguration().add("config", new NodeConfig(
+                                nodeName.get(),
                                 CommonHelper.calculateMaxMemory(),
                                 ip,
                                 Collections.singletonList(Collections.singletonMap(ip, 1809)),

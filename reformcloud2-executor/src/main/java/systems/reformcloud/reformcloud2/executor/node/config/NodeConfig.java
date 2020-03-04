@@ -17,9 +17,9 @@ public class NodeConfig {
 
     static final Path PATH = Paths.get("reformcloud/config.json");
 
-    NodeConfig(long maxMemory, String startHost, List<Map<String, Integer>> networkListener,
+    NodeConfig(String name, long maxMemory, String startHost, List<Map<String, Integer>> networkListener,
                List<Map<String, Integer>> httpNetworkListener, List<Map<String, Integer>> otherNodes) {
-        this.name = "Node-" + UUID.randomUUID().toString().split("-")[0];
+        this.name = name;
         this.uniqueID = UUID.randomUUID();
         this.maxMemory = maxMemory;
         this.startHost = startHost;
