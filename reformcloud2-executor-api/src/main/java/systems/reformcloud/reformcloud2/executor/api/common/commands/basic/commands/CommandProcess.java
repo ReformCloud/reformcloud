@@ -39,7 +39,7 @@ public final class CommandProcess extends GlobalCommand {
                 " --group=[group]                              | Lists all processes of the specified group\n" +
                 " \n" +
                 "process <name | uniqueID> [info]              | Shows information about a process\n" +
-                " --full=[full]                                | Shows the full extra data submitted to the process\n" +
+                " --full=[full]                                | Shows the full extra data submitted to the process (default: false)\n" +
                 " \n" +
                 "process <name | uniqueID> [stop]              | Stops the process\n" +
                 "process <name | uniqueID> [screen]            | Toggles the screen logging of the process to the console\n" +
