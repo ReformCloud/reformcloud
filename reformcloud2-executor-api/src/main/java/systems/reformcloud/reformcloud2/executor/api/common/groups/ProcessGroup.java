@@ -52,7 +52,7 @@ public class ProcessGroup implements Nameable {
 
     private boolean staticProcess;
 
-    private final boolean canBeUsedAsLobby;
+    private boolean canBeUsedAsLobby;
 
     public boolean isShowIdInName() {
         return showIdInName;
@@ -83,6 +83,10 @@ public class ProcessGroup implements Nameable {
 
     public boolean isCanBeUsedAsLobby() {
         return canBeUsedAsLobby;
+    }
+
+    public void setCanBeUsedAsLobby(boolean canBeUsedAsLobby) {
+        this.canBeUsedAsLobby = canBeUsedAsLobby;
     }
 
     public void setTemplates(List<Template> templates) {

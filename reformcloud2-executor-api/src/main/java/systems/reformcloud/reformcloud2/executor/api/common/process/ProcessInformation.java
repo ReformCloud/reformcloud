@@ -180,6 +180,10 @@ public final class ProcessInformation implements Nameable, Clone<ProcessInformat
         return Streams.filterToReference(onlinePlayers, player -> player.getUniqueID().equals(uniqueID)).isPresent();
     }
 
+    public boolean isPlayerOnline(@Nonnull String name) {
+        return Streams.filterToReference(onlinePlayers, player -> player.getName().equals(name)).isPresent();
+    }
+
     public ProcessInformation updateMaxPlayers(@Nullable Integer value) {
         if (processGroup.getPlayerAccessConfiguration().isUseCloudPlayerLimit()) {
             this.maxPlayers = processGroup.getPlayerAccessConfiguration().getMaxPlayers();

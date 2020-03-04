@@ -20,23 +20,34 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.channel.Pack
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState;
-import systems.reformcloud.reformcloud2.executor.api.packets.out.APIPacketOutCreateLoginRequest;
-import systems.reformcloud.reformcloud2.executor.api.packets.out.APIPacketOutLogoutPlayer;
-import systems.reformcloud.reformcloud2.executor.api.packets.out.APIPacketOutPlayerCommandExecute;
-import systems.reformcloud.reformcloud2.executor.api.packets.out.APIPacketOutPlayerLoggedIn;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
+import systems.reformcloud.reformcloud2.executor.api.packets.out.*;
 import systems.reformcloud.reformcloud2.executor.api.velocity.VelocityExecutor;
 
 import java.util.Optional;
 
 public final class PlayerListenerHandler {
 
-    @Subscribe (order = PostOrder.FIRST)
+    @Subscribe(order = PostOrder.FIRST)
     public void handle(final ServerPreConnectEvent event) {
         final Player player = event.getPlayer();
+        if (player.getCurrentServer().isPresent()) {
+            if (event.getResult().getServer().isPresent()) {
+                DefaultChannelManager.INSTANCE.get("Controller").ifPresent(sender -> sender.sendPacket(new APIBungeePacketOutPlayerServerSwitch(
+                        event.getPlayer().getUniqueId(),
+                        event.getResult().getServer().get().getServerInfo().getName()
+                )));
+                AbsoluteThread.sleep(20);
+            }
+
+            return;
+        }
+
         ProcessInformation lobby = VelocityExecutor.getBestLobbyForPlayer(
                 API.getInstance().getCurrentProcessInformation(),
                 player,
-                player::hasPermission);
+                player::hasPermission
+        );
         if (lobby != null) {
             Optional<RegisteredServer> server = VelocityExecutor.getInstance().getProxyServer().getServer(lobby.getName());
             if (!server.isPresent()) {
@@ -44,6 +55,11 @@ public final class PlayerListenerHandler {
                 return;
             }
 
+            DefaultChannelManager.INSTANCE.get("Controller").ifPresent(sender -> sender.sendPacket(new APIBungeePacketOutPlayerServerSwitch(
+                    event.getPlayer().getUniqueId(),
+                    server.get().getServerInfo().getName()
+            )));
+            AbsoluteThread.sleep(20);
             event.setResult(ServerPreConnectEvent.ServerResult.allowed(server.get()));
             return;
         }
@@ -51,7 +67,7 @@ public final class PlayerListenerHandler {
         event.setResult(ServerPreConnectEvent.ServerResult.denied());
     }
 
-    @Subscribe (order = PostOrder.FIRST)
+    @Subscribe(order = PostOrder.FIRST)
     public void handle(final LoginEvent event) {
         PacketSender sender = DefaultChannelManager.INSTANCE.get("Controller").orElse(null);
         if (sender == null) {
@@ -114,7 +130,7 @@ public final class PlayerListenerHandler {
         CommonHelper.EXECUTOR.execute(() -> DefaultChannelManager.INSTANCE.get("Controller").ifPresent(packetSender -> packetSender.sendPacket(new APIPacketOutPlayerLoggedIn(event.getPlayer().getUsername()))));
     }
 
-    @Subscribe (order = PostOrder.FIRST)
+    @Subscribe(order = PostOrder.FIRST)
     public void handle(final KickedFromServerEvent event) {
         Player player = event.getPlayer();
         ProcessInformation lobby = VelocityExecutor.getBestLobbyForPlayer(
@@ -135,11 +151,11 @@ public final class PlayerListenerHandler {
         }
 
         event.setResult(KickedFromServerEvent.DisconnectPlayer.create(TextComponent.of(VelocityExecutor.getInstance().getMessages().format(
-                        VelocityExecutor.getInstance().getMessages().getNoHubServerAvailable()
+                VelocityExecutor.getInstance().getMessages().getNoHubServerAvailable()
         ))));
     }
 
-    @Subscribe (order = PostOrder.FIRST)
+    @Subscribe(order = PostOrder.FIRST)
     public void handle(final DisconnectEvent event) {
         DefaultChannelManager.INSTANCE.get("Controller").ifPresent(packetSender -> packetSender.sendPacket(new APIPacketOutLogoutPlayer(
                 event.getPlayer().getUniqueId(),

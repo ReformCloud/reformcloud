@@ -24,6 +24,6 @@ public final class ControllerQueryHasPlayerAccess extends DefaultJsonNetworkHand
         UUID uuid = packet.content().get("uuid", UUID.class);
         String name = packet.content().getString("name");
 
-        responses.accept(new JsonPacket(-1, new JsonConfiguration().add("access", OnlyProxyJoinHelper.walkedOverProxy(uuid, name))));
+        responses.accept(new JsonPacket(-1, new JsonConfiguration().add("access", OnlyProxyJoinHelper.walkedOverProxy(uuid, name, packetSender.getName()))));
     }
 }

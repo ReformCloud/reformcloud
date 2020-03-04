@@ -17,6 +17,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.channel.Pack
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
 import systems.reformcloud.reformcloud2.executor.api.packets.out.*;
 
 public final class PlayerListenerHandler implements Listener {
@@ -33,22 +34,19 @@ public final class PlayerListenerHandler implements Listener {
             );
             if (lobby != null) {
                 event.setTarget(ProxyServer.getInstance().getServerInfo(lobby.getName()));
-                return;
+            } else {
+                proxiedPlayer.disconnect(TextComponent.fromLegacyText(BungeeExecutor.getInstance().getMessages().format(
+                        BungeeExecutor.getInstance().getMessages().getNoHubServerAvailable()
+                )));
+                event.setCancelled(true);
             }
-
-            proxiedPlayer.disconnect(TextComponent.fromLegacyText(BungeeExecutor.getInstance().getMessages().format(
-                    BungeeExecutor.getInstance().getMessages().getNoHubServerAvailable()
-            )));
-            event.setCancelled(true);
         }
-    }
 
-    @EventHandler
-    public void handle(final ServerConnectedEvent event) {
         DefaultChannelManager.INSTANCE.get("Controller").ifPresent(sender -> sender.sendPacket(new APIBungeePacketOutPlayerServerSwitch(
                 event.getPlayer().getUniqueId(),
-                event.getServer().getInfo().getName()
+                event.getTarget().getName()
         )));
+        AbsoluteThread.sleep(20);
     }
 
     @EventHandler(priority = EventPriority.LOWEST)

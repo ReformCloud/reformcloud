@@ -41,6 +41,7 @@ public final class CommandGroup extends GlobalCommand {
                         "group <sub> <name> [edit]                      | Edits the specified group\n" +
                         " --maintenance=[maintenance]                   | Enables or disables the maintenance mode\n" +
                         " --static=[static]                             | Enables or disables the deleting of the process after the stop\n" +
+                        " --lobby=[lobby]                               | Sets if the group can be used as lobby\n" +
                         " --max-players=[max]                           | Sets the max player count for the process\n" +
                         " --min-process-count=[min]                     | Sets the min process count for the process\n" +
                         " --max-process-count=[max]                     | Sets the max process count for the process\n" +
@@ -144,6 +145,21 @@ public final class CommandGroup extends GlobalCommand {
                         "command-group-edit",
                         "static",
                         processGroup.isStaticProcess()
+                ));
+            }
+
+            if (properties.containsKey("lobby")) {
+                Boolean isLobby = CommonHelper.booleanFromString(properties.getProperty("lobby"));
+                if (isLobby == null) {
+                    source.sendMessage(LanguageManager.get("command-required-boolean", properties.getProperty("lobby")));
+                    return;
+                }
+
+                processGroup.setCanBeUsedAsLobby(isLobby);
+                source.sendMessage(LanguageManager.get(
+                        "command-group-edit",
+                        "lobby",
+                        isLobby
                 ));
             }
 
