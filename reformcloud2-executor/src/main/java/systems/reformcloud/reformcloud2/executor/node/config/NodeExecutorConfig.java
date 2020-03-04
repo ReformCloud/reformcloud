@@ -75,7 +75,7 @@ public class NodeExecutorConfig {
                     s -> true,
                     e -> {
                         String name = e;
-                        if (e.trim().isEmpty()) {
+                        if (e.trim().equals("null")) {
                             name = "Node-" + UUID.randomUUID().toString().split("-")[0];
                         }
 
