@@ -98,7 +98,7 @@ public final class CommandProcess extends GlobalCommand {
             return true;
         }
 
-        if (strings.length == 1 || strings[1].equalsIgnoreCase("info")) {
+        if (strings.length >= 2 && strings[1].equalsIgnoreCase("info")) {
             if (properties.containsKey("full")) {
                 Boolean full = CommonHelper.booleanFromString(properties.getProperty("full"));
                 if (full == null) {
@@ -185,7 +185,7 @@ public final class CommandProcess extends GlobalCommand {
         if (full) {
             builder.append(" ").append("\n");
             builder.append(" > Properties").append("\n");
-            builder.append(information.getExtra().toPrettyString()).append("\n");
+            builder.append("  ").append(information.getExtra().toPrettyString()).append("\n");
         }
 
         source.sendMessages(builder.toString().split("\n"));
