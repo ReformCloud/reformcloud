@@ -11,10 +11,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.client.ClientRuntime
 import systems.reformcloud.reformcloud2.executor.api.common.client.basic.DefaultClientRuntimeInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.AllowedCommandSources;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.ConsoleCommandSource;
-import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.CommandCreate;
-import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.CommandGroup;
-import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.CommandLaunch;
-import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.CommandProcess;
+import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.*;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.dump.CommandDump;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.dump.basic.DefaultDumpUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.shared.CommandClear;
@@ -460,6 +457,7 @@ public final class ControllerExecutor extends Controller {
                         new ControllerPacketOutCopyProcess(e.getProcessUniqueID())
                 ))))
                 .register(new CommandGroup())
+                .register(new CommandApplication())
                 .register(new CommandDump(new DefaultDumpUtil()))
                 .register(new CommandLaunch())
                 .register(new CommandStop())

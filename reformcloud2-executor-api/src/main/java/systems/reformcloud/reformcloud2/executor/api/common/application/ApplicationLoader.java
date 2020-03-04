@@ -1,5 +1,7 @@
 package systems.reformcloud.reformcloud2.executor.api.common.application;
 
+import systems.reformcloud.reformcloud2.executor.api.common.application.api.Application;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
@@ -55,7 +57,7 @@ public interface ApplicationLoader {
     boolean doSpecificApplicationInstall(@Nonnull InstallableApplication application);
 
     /**
-     * Unloads a specific aplpication
+     * Unloads a specific application
      *
      * @param loadedApplication The application which should get unloaded
      * @return If the application was loaded and got unloaded
@@ -103,4 +105,7 @@ public interface ApplicationLoader {
      * @param applicationHandler The handler which should get registered
      */
     void addApplicationHandler(@Nonnull ApplicationHandler applicationHandler);
+
+    @Nullable
+    Application getInternalApplication(@Nonnull String name);
 }

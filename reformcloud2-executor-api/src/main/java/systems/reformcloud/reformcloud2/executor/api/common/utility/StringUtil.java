@@ -24,9 +24,9 @@ public final class StringUtil {
     public static final String NULL_PATH = new File("reformcloud/.bin/dev/null").getAbsolutePath();
 
     private static final String[] RC_COMMAND_BASIC_HELP = new String[] {
-            "rc applications",
-            "rc applications update",
-            "rc applications update <name>",
+            //"rc applications",
+            //"rc applications update",
+            //"rc applications update <name>",
             // "rc maintenance <group>",
             // "rc copy <uuid | name>",
             // "rc screen <uuid | name> toggle",

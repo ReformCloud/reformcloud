@@ -18,6 +18,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.utility.system.Downl
 import systems.reformcloud.reformcloud2.executor.api.common.utility.system.SystemHelper;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -306,6 +307,12 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
     @Override
     public void addApplicationHandler(@Nonnull ApplicationHandler applicationHandler) {
         applicationHandlers.add(applicationHandler);
+    }
+
+    @Nullable
+    @Override
+    public Application getInternalApplication(@Nonnull String name) {
+        return Streams.filter(this.applications, e -> e.getApplication().getName().equals(name));
     }
 
     private void handleUpdate(Application application) {
