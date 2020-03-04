@@ -166,7 +166,7 @@ public enum Version {
     TRAVERTINE("Travertine", "1.7-1.14",
             "https://papermc.io/ci/job/Travertine/lastSuccessfulBuild/artifact/Travertine-Proxy/bootstrap/target/Travertine.jar", 2, 25565),
     VELOCITY("Velocity", "1.8-1.14",
-            "https://ci.velocitypowered.com/job/velocity/lastSuccessfulBuild/artifact/proxy/build/libs/velocity-proxy-1.0.5-SNAPSHOT-all.jar", 2, 25565),
+            "https://ci.velocitypowered.com/job/velocity/lastSuccessfulBuild/artifact/proxy/build/libs/velocity-proxy-1.0.6-SNAPSHOT-all.jar", 2, 25565),
 
     /**
      * MCPE server
