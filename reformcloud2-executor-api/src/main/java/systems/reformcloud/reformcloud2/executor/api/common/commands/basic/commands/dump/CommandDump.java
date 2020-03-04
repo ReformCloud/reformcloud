@@ -41,7 +41,7 @@ public class CommandDump extends GlobalCommand {
     public boolean handleCommand(@Nonnull CommandSource commandSource, @Nonnull String[] strings) {
         commandSource.sendMessage(LanguageManager.get("command-dump-creating"));
         String dump = createFullDump();
-        commandSource.sendMessage(LanguageManager.get("command-sump-created", pasteDump(dump)));
+        commandSource.sendMessage(LanguageManager.get("command-dump-created", pasteDump(dump)));
         return true;
     }
 
