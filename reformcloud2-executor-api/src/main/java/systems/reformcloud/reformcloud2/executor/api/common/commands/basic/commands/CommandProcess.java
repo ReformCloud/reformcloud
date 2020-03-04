@@ -42,7 +42,7 @@ public final class CommandProcess extends GlobalCommand {
                 "process <name | uniqueID> [stop]              | Stops the process\n" +
                 "process <name | uniqueID> [screen]            | Toggles the screen logging of the process to the console\n" +
                 "process <name | uniqueID> [copy]              | Copies the specified process is the currently running template\n" +
-                "process <name | uniqueID> [execute] [command] | Sends the specified command to the process"
+                "process <name | uniqueID> [execute] <command> | Sends the specified command to the process"
         ).split("\n"));
     }
 
