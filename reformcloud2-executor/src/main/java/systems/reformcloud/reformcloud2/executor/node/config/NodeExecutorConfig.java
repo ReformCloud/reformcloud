@@ -7,6 +7,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.messages.IngameMessages;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.setup.GroupSetupHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.setup.GroupSetupVersion;
+import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.setup.Setup;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.setup.basic.DefaultSetup;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.setup.basic.DefaultSetupQuestion;
@@ -69,7 +70,7 @@ public class NodeExecutorConfig {
             firstStartup.set(true);
             AtomicReference<String> nodeName = new AtomicReference<>();
             setup.addQuestion(new DefaultSetupQuestion(
-                    "Please enter the name of the node (for example: \"Node-58ec0489\" or \"Node-1\") leave blank to use a random name",
+                    LanguageManager.get("node-setup-question-node-name"),
                     "",
                     s -> true,
                     e -> {
@@ -81,8 +82,8 @@ public class NodeExecutorConfig {
                         nodeName.set(name);
                     }
             )).addQuestion(new DefaultSetupQuestion(
-                    "Please enter the start host or domain name of the node",
-                    "Please enter your real address or domain name",
+                    LanguageManager.get("node-setup-question-node-address"),
+                    LanguageManager.get("node-setup-question-node-address-wrong"),
                     e -> CommonHelper.getIpAddress(e.trim()) != null,
                     e -> {
                         String ip = CommonHelper.getIpAddress(e.trim());
@@ -97,7 +98,7 @@ public class NodeExecutorConfig {
                         )).write(NodeConfig.PATH);
                     }
             )).addQuestion(new DefaultSetupQuestion(
-                    "Please copy the connection key for other nodes into the console (if there is any other node), generate one using \"gen\" or type \"null\"",
+                    LanguageManager.get("node-setup-question-connection-key"),
                     "",
                     s -> true,
                     s -> {
@@ -113,20 +114,20 @@ public class NodeExecutorConfig {
                     }
             )).startSetup(NodeExecutor.getInstance().getLoggerBase());
 
-            System.out.println("Please choose a default installation type:");
+            System.out.println(LanguageManager.get("general-setup-choose-default-installation"));
             GroupSetupHelper.printAvailable();
 
             String result = NodeExecutor.getInstance().getLoggerBase().readLineNoPrompt();
             while (!result.trim().isEmpty()) {
                 GroupSetupVersion version = GroupSetupHelper.findByName(result);
                 if (version == null) {
-                    System.out.println("This setup type is not supported");
+                    System.out.println(LanguageManager.get("general-setup-choose-default-installation-wrong"));
                     result = NodeExecutor.getInstance().getLoggerBase().readLineNoPrompt();
                     continue;
                 }
 
                 version.install(this::handleProcessGroupCreate, this::handleMainGroupCreate);
-                System.out.println("Finished installation of " + version.getName() + "!");
+                System.out.println(LanguageManager.get("general-setup-default-installation-done", version.getName()));
                 break;
             }
 
