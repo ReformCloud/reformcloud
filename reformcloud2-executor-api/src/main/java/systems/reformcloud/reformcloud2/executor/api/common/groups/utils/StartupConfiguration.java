@@ -27,21 +27,21 @@ public final class StartupConfiguration {
         this.useOnlyTheseClients = useOnlyTheseClients;
     }
 
-    private final int maxOnlineProcesses;
+    private int maxOnlineProcesses;
 
-    private final int minOnlineProcesses;
+    private int minOnlineProcesses;
 
-    private final int startupPriority;
+    private int startupPriority;
 
-    private final int startPort;
+    private int startPort;
 
     private final StartupEnvironment startupEnvironment;
 
     private final AutomaticStartupConfiguration automaticStartupConfiguration;
 
-    private final boolean searchBestClientAlone;
+    private boolean searchBestClientAlone;
 
-    private final List<String> useOnlyTheseClients;
+    private List<String> useOnlyTheseClients;
 
     public int getMaxOnlineProcesses() {
         return maxOnlineProcesses;
@@ -75,6 +75,27 @@ public final class StartupConfiguration {
     @Nonnull
     public List<String> getUseOnlyTheseClients() {
         return useOnlyTheseClients;
+    }
+
+    public void setMaxOnlineProcesses(int maxOnlineProcesses) {
+        this.maxOnlineProcesses = maxOnlineProcesses;
+    }
+
+    public void setMinOnlineProcesses(int minOnlineProcesses) {
+        this.minOnlineProcesses = minOnlineProcesses;
+    }
+
+    public void setStartPort(int startPort) {
+        this.startPort = startPort;
+    }
+
+    public void setStartupPriority(int startupPriority) {
+        this.startupPriority = startupPriority;
+    }
+
+    public void setUseOnlyTheseClients(List<String> useOnlyTheseClients) {
+        this.useOnlyTheseClients = useOnlyTheseClients;
+        this.searchBestClientAlone = useOnlyTheseClients.isEmpty();
     }
 
     @Override

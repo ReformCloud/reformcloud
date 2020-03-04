@@ -6,12 +6,11 @@ import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageMan
 import systems.reformcloud.reformcloud2.executor.api.common.logger.LoggerBase;
 
 import javax.annotation.Nonnull;
-import java.util.Collections;
 
 public final class CommandClear extends GlobalCommand {
 
     public CommandClear(LoggerBase loggerBase) {
-        super("clear", "reformcloud.command.clear", "Clears the console", Collections.emptyList());
+        super("clear", "reformcloud.command.clear", "Clears the console", "cls");
         this.loggerBase = loggerBase;
     }
 

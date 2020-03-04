@@ -12,6 +12,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.application.basic.De
 import systems.reformcloud.reformcloud2.executor.api.common.commands.AllowedCommandSources;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.ConsoleCommandSource;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.CommandCreate;
+import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.CommandGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.CommandLaunch;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.CommandProcess;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.dump.CommandDump;
@@ -681,6 +682,7 @@ public class NodeExecutor extends Node {
                         ));
                     }
                 }))
+                .register(new CommandGroup())
                 .register(new CommandDump(new NodeDumpUtil()))
                 .register(new CommandCreate())
                 .register(new CommandLaunch())

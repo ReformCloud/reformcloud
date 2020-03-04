@@ -16,13 +16,13 @@ import java.util.List;
 
 public final class DefaultProcessGroup extends ProcessGroup {
 
-    private static final Inclusion PROXY_INCLUSION = new Inclusion(
+    public static final Inclusion PROXY_INCLUSION = new Inclusion(
             "reformcloud/global/proxies",
             FileBackend.NAME,
             Inclusion.InclusionLoadType.PAST
     );
 
-    private static final Inclusion SERVER_INCLUSION = new Inclusion(
+    public static final Inclusion SERVER_INCLUSION = new Inclusion(
             "reformcloud/global/servers",
             FileBackend.NAME,
             Inclusion.InclusionLoadType.PAST

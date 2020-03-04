@@ -110,7 +110,7 @@ public final class CommandCreate extends GlobalCommand {
         }
 
         String name = strings[2];
-        Version version = CommonHelper.findEnumField(Version.class, strings[3]).orNothing();
+        Version version = CommonHelper.findEnumField(Version.class, strings[3].toUpperCase()).orNothing();
         if (version == null) {
             source.sendMessage(LanguageManager.get("command-create-version-not-found", strings[3]));
             return;

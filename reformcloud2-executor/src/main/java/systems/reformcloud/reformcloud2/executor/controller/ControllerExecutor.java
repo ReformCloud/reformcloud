@@ -12,6 +12,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.client.basic.Default
 import systems.reformcloud.reformcloud2.executor.api.common.commands.AllowedCommandSources;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.ConsoleCommandSource;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.CommandCreate;
+import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.CommandGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.CommandLaunch;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.CommandProcess;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.dump.CommandDump;
@@ -458,6 +459,7 @@ public final class ControllerExecutor extends Controller {
                 }, e -> DefaultChannelManager.INSTANCE.get(e.getParent()).ifPresent(packetSender -> packetSender.sendPacket(
                         new ControllerPacketOutCopyProcess(e.getProcessUniqueID())
                 ))))
+                .register(new CommandGroup())
                 .register(new CommandDump(new DefaultDumpUtil()))
                 .register(new CommandLaunch())
                 .register(new CommandStop())

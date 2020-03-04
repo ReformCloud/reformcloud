@@ -27,13 +27,13 @@ public final class StringUtil {
             "rc applications",
             "rc applications update",
             "rc applications update <name>",
-            "rc maintenance <group>",
+            // "rc maintenance <group>",
             // "rc copy <uuid | name>",
             // "rc screen <uuid | name> toggle",
-            "rc list",
-            "rc list <group>",
-            "rc listgroups <main | sub>",
-            "rc versions",
+            // "rc list",
+            // "rc list <group>",
+            // "rc listgroups <main | sub>",
+            // "rc versions",
             /* DONE
             "rc start <group>",
             "rc start <group> <amount>",
@@ -43,8 +43,8 @@ public final class StringUtil {
             "rc stop <name>",
             "rc stop <uuid>",
              */
-            "rc stopall <subGroup>",
-            "rc ofAll <mainGroup> <list | stop>",
+            // "rc stopall <subGroup>",
+            // "rc ofAll <mainGroup> <list | stop>",
             // "rc execute <name | uuid> <command>",
             /* DONE
             "rc create main <name>",
@@ -56,7 +56,7 @@ public final class StringUtil {
             "rc create sub <name> <version> <parent> <static> <minonline> <maxonline>",
             "rc create sub <name> <version> <parent> <static> <lobby> <minonline> <maxonline>",
             */
-            "rc delete <sub | main> <name>"
+            // "rc delete <sub | main> <name>"
     };
 
     private static String[] commandHelp;

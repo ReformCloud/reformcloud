@@ -18,7 +18,7 @@ public class MainGroup implements Nameable {
 
     private final String name;
 
-    private final List<String> subGroups;
+    private List<String> subGroups;
 
     @Nonnull
     @Override
@@ -28,6 +28,10 @@ public class MainGroup implements Nameable {
 
     public List<String> getSubGroups() {
         return subGroups;
+    }
+
+    public void setSubGroups(List<String> subGroups) {
+        this.subGroups = subGroups;
     }
 
     @Override
