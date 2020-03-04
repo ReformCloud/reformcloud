@@ -456,6 +456,7 @@ public final class ControllerExecutor extends Controller {
                 }, e -> DefaultChannelManager.INSTANCE.get(e.getParent()).ifPresent(packetSender -> packetSender.sendPacket(
                         new ControllerPacketOutCopyProcess(e.getProcessUniqueID())
                 ))))
+                .register(new CommandPlayers())
                 .register(new CommandGroup())
                 .register(new CommandApplication())
                 .register(new CommandDump(new DefaultDumpUtil()))

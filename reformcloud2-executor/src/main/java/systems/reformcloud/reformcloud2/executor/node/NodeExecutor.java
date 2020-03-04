@@ -679,6 +679,7 @@ public class NodeExecutor extends Node {
                         ));
                     }
                 }))
+                .register(new CommandPlayers())
                 .register(new CommandGroup())
                 .register(new CommandApplication())
                 .register(new CommandDump(new NodeDumpUtil()))
