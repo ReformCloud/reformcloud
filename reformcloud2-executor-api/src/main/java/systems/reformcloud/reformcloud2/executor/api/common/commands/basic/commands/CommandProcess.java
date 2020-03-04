@@ -39,6 +39,8 @@ public final class CommandProcess extends GlobalCommand {
                 " --group=[group]                              | Lists all processes of the specified group\n" +
                 " \n" +
                 "process <name | uniqueID> [info]              | Shows information about a process\n" +
+                " --full=[full]                                | Shows the full extra data submitted to the process\n" +
+                " \n" +
                 "process <name | uniqueID> [stop]              | Stops the process\n" +
                 "process <name | uniqueID> [screen]            | Toggles the screen logging of the process to the console\n" +
                 "process <name | uniqueID> [copy]              | Copies the specified process is the currently running template\n" +
@@ -96,8 +98,19 @@ public final class CommandProcess extends GlobalCommand {
             return true;
         }
 
-        if (strings.length == 1 || (strings.length == 2 && strings[1].equalsIgnoreCase("info"))) {
-            this.describeProcessToSender(commandSource, target);
+        if (strings.length == 1 || strings[1].equalsIgnoreCase("info")) {
+            if (properties.containsKey("full")) {
+                Boolean full = CommonHelper.booleanFromString(properties.getProperty("full"));
+                if (full == null) {
+                    commandSource.sendMessage(LanguageManager.get("command-required-boolean", properties.getProperty("full")));
+                    return true;
+                }
+
+                this.describeProcessToSender(commandSource, target, full);
+                return true;
+            }
+
+            this.describeProcessToSender(commandSource, target, false);
             return true;
         }
 
@@ -120,7 +133,7 @@ public final class CommandProcess extends GlobalCommand {
         return true;
     }
 
-    private void describeProcessToSender(CommandSource source, ProcessInformation information) {
+    private void describeProcessToSender(CommandSource source, ProcessInformation information, boolean full) {
         StringBuilder builder = new StringBuilder();
 
         builder.append(" > Name         - ").append(information.getName()).append("\n");
@@ -168,6 +181,12 @@ public final class CommandProcess extends GlobalCommand {
         builder.append("  > Non-Heap     - ").append(information.getProcessRuntimeInformation().getNonHeapMemoryUsage()).append("MB").append("\n");
         builder.append("  > Threads      - ").append(information.getProcessRuntimeInformation().getThreadInfos().size()).append("\n");
         builder.append("  > Dead Threads - ").append(information.getProcessRuntimeInformation().getDeadLockedThreads().length);
+
+        if (full) {
+            builder.append(" ").append("\n");
+            builder.append(" > Properties").append("\n");
+            builder.append(information.getExtra().toPrettyString()).append("\n");
+        }
 
         source.sendMessages(builder.toString().split("\n"));
     }
