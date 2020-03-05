@@ -2,7 +2,7 @@ package systems.reformcloud.reformcloud2.executor.api.common.network.handler;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
-import systems.reformcloud.reformcloud2.executor.api.common.network.auth.challenge.ChallengeAuthHandler;
+import systems.reformcloud.reformcloud2.executor.api.common.network.challenge.ChallengeAuthHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.NetworkChannelReader;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.netty.PacketDecoder;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.netty.PacketEncoder;

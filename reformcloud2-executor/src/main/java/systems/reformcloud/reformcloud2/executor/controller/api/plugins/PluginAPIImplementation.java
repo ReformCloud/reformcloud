@@ -12,7 +12,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInfor
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.defaults.DefaultTask;
-import systems.reformcloud.reformcloud2.executor.controller.packet.out.api.ControllerPluginAction;
+import systems.reformcloud.reformcloud2.executor.controller.network.packets.out.api.ControllerPluginAction;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;

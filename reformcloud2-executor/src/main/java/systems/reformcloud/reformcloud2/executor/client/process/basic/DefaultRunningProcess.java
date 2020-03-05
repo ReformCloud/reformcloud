@@ -17,8 +17,8 @@ import systems.reformcloud.reformcloud2.executor.api.common.utility.system.Downl
 import systems.reformcloud.reformcloud2.executor.api.common.utility.system.SystemHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
 import systems.reformcloud.reformcloud2.executor.client.ClientExecutor;
-import systems.reformcloud.reformcloud2.executor.client.packet.out.ClientPacketOutProcessPrepared;
-import systems.reformcloud.reformcloud2.executor.client.packet.out.ClientPacketOutProcessStopped;
+import systems.reformcloud.reformcloud2.executor.client.network.packet.out.ClientPacketOutProcessPrepared;
+import systems.reformcloud.reformcloud2.executor.client.network.packet.out.ClientPacketOutProcessStopped;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;

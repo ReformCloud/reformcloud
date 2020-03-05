@@ -8,6 +8,7 @@ import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.proxy.ProxyServer;
 import net.kyori.text.TextComponent;
 import systems.reformcloud.reformcloud2.executor.api.common.language.loading.LanguageWorker;
+import systems.reformcloud.reformcloud2.executor.api.common.network.challenge.security.ChallengeSecurity;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.StringUtil;
 
 @Plugin(
@@ -27,6 +28,7 @@ public final class VelocityLauncher {
     public VelocityLauncher(ProxyServer proxyServer) {
         LanguageWorker.doLoad();
         StringUtil.sendHeader();
+        ChallengeSecurity.init();
 
         this.proxyServer = proxyServer;
     }

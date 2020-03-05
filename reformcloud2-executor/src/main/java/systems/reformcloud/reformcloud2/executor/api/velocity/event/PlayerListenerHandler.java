@@ -21,7 +21,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.channel.mana
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
-import systems.reformcloud.reformcloud2.executor.api.packets.out.*;
+import systems.reformcloud.reformcloud2.executor.api.network.packets.out.*;
 import systems.reformcloud.reformcloud2.executor.api.velocity.VelocityExecutor;
 
 import java.util.Optional;

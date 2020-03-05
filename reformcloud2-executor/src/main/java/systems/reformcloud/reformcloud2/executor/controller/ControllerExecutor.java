@@ -8,7 +8,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.api.SyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.application.ApplicationLoader;
 import systems.reformcloud.reformcloud2.executor.api.common.application.basic.DefaultApplicationLoader;
 import systems.reformcloud.reformcloud2.executor.api.common.client.ClientRuntimeInformation;
-import systems.reformcloud.reformcloud2.executor.api.common.client.basic.DefaultClientRuntimeInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.AllowedCommandSources;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.ConsoleCommandSource;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.*;
@@ -36,10 +35,8 @@ import systems.reformcloud.reformcloud2.executor.api.common.language.loading.Lan
 import systems.reformcloud.reformcloud2.executor.api.common.logger.LoggerBase;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.coloured.ColouredLoggerHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.other.DefaultLoggerHandler;
-import systems.reformcloud.reformcloud2.executor.api.common.network.auth.Auth;
-import systems.reformcloud.reformcloud2.executor.api.common.network.auth.NetworkType;
-import systems.reformcloud.reformcloud2.executor.api.common.network.auth.defaults.DefaultAuth;
-import systems.reformcloud.reformcloud2.executor.api.common.network.auth.defaults.DefaultServerAuthHandler;
+import systems.reformcloud.reformcloud2.executor.api.common.network.challenge.shared.ServerChallengeAuthHandler;
+import systems.reformcloud.reformcloud2.executor.api.common.network.challenge.shared.SharedChallengeProvider;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.handler.DefaultJsonNetworkHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
@@ -47,8 +44,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.defau
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.handler.PacketHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.server.DefaultNetworkServer;
 import systems.reformcloud.reformcloud2.executor.api.common.network.server.NetworkServer;
-import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
-import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState;
 import systems.reformcloud.reformcloud2.executor.api.common.restapi.auth.basic.DefaultWebServerAuth;
 import systems.reformcloud.reformcloud2.executor.api.common.restapi.http.server.DefaultWebServer;
 import systems.reformcloud.reformcloud2.executor.api.common.restapi.http.server.WebServer;
@@ -56,7 +51,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.restapi.request.Requ
 import systems.reformcloud.reformcloud2.executor.api.common.restapi.request.defaults.DefaultRequestListenerHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.restapi.user.WebUser;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.StringUtil;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Duo;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.optional.ReferencedOptional;
 import systems.reformcloud.reformcloud2.executor.api.controller.Controller;
 import systems.reformcloud.reformcloud2.executor.api.controller.process.ProcessManager;
@@ -71,8 +65,10 @@ import systems.reformcloud.reformcloud2.executor.controller.api.plugins.PluginAP
 import systems.reformcloud.reformcloud2.executor.controller.api.process.ProcessAPIImplementation;
 import systems.reformcloud.reformcloud2.executor.controller.config.ControllerConfig;
 import systems.reformcloud.reformcloud2.executor.controller.config.ControllerExecutorConfig;
-import systems.reformcloud.reformcloud2.executor.controller.packet.out.ControllerPacketOutCopyProcess;
-import systems.reformcloud.reformcloud2.executor.controller.packet.out.ControllerPacketOutToggleScreen;
+import systems.reformcloud.reformcloud2.executor.controller.network.channel.ControllerNetworkChannelReader;
+import systems.reformcloud.reformcloud2.executor.controller.network.channel.ControllerNetworkSuccessHandler;
+import systems.reformcloud.reformcloud2.executor.controller.network.packets.out.ControllerPacketOutCopyProcess;
+import systems.reformcloud.reformcloud2.executor.controller.network.packets.out.ControllerPacketOutToggleScreen;
 import systems.reformcloud.reformcloud2.executor.controller.process.ClientManager;
 import systems.reformcloud.reformcloud2.executor.controller.process.DefaultProcessManager;
 import systems.reformcloud.reformcloud2.executor.controller.process.startup.AutoStartupHandler;
@@ -203,7 +199,17 @@ public final class ControllerExecutor extends Controller {
         applicationLoader.installApplications();
 
         this.controllerConfig = controllerExecutorConfig.getControllerConfig();
-        this.controllerConfig.getNetworkListener().forEach(stringIntegerMap -> stringIntegerMap.forEach((s, integer) -> ControllerExecutor.this.networkServer.bind(s, integer, new DefaultServerAuthHandler(
+        this.controllerConfig.getNetworkListener().forEach(e -> e.forEach((host, port) -> ControllerExecutor.this.networkServer.bind(
+                host,
+                port,
+                () -> new ControllerNetworkChannelReader(this.packetHandler),
+                new ServerChallengeAuthHandler(new SharedChallengeProvider(this.controllerExecutorConfig.getConnectionKey()), new ControllerNetworkSuccessHandler())
+        )));
+
+
+
+
+                /*new DefaultServerAuthHandler(
                 packetHandler,
                 packetSender -> {
                     ClientManager.INSTANCE.disconnectClient(packetSender.getName());
@@ -240,7 +246,7 @@ public final class ControllerExecutor extends Controller {
                     System.out.println(LanguageManager.get("network-channel-auth-success", auth.getName(), auth.parent()));
                     return new Duo<>(auth.getName(), true);
                 }
-        ))));
+        ))));*/
 
         applicationLoader.loadApplications();
 
@@ -259,8 +265,8 @@ public final class ControllerExecutor extends Controller {
         }
 
         this.controllerExecutorConfig.getControllerConfig().getHttpNetworkListener().forEach(map -> map.forEach((host, port) -> {
-                this.webServer.add(host, port, this.requestListenerHandler);
-            })
+                    this.webServer.add(host, port, this.requestListenerHandler);
+                })
         );
 
         applicationLoader.enableApplications();
@@ -355,11 +361,6 @@ public final class ControllerExecutor extends Controller {
         }
 
         return instance;
-    }
-
-    @Nonnull
-    public ApplicationLoader getApplicationLoader() {
-        return applicationLoader;
     }
 
     @Nonnull
@@ -469,6 +470,19 @@ public final class ControllerExecutor extends Controller {
     }
 
     private void loadPacketHandlers() {
-        new Reflections("systems.reformcloud.reformcloud2.executor.controller.packet.in").getSubTypesOf(DefaultJsonNetworkHandler.class).forEach(packetHandler::registerHandler);
+        new Reflections("systems.reformcloud.reformcloud2.executor.controller.network.packets.in").getSubTypesOf(DefaultJsonNetworkHandler.class).forEach(packetHandler::registerHandler);
+    }
+
+    public void handleChannelDisconnect(PacketSender packetSender) {
+        ClientRuntimeInformation clientRuntimeInformation = ClientManager.INSTANCE.getClientRuntimeInformation()
+                .stream()
+                .filter(e -> e.getName().equals(packetSender.getName()))
+                .findFirst()
+                .orElse(null);
+        if (clientRuntimeInformation != null) {
+            ClientManager.INSTANCE.disconnectClient(clientRuntimeInformation.getName());
+        } else {
+            this.processManager.onChannelClose(packetSender.getName());
+        }
     }
 }

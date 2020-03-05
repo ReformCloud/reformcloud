@@ -16,8 +16,8 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.channel.mana
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState;
+import systems.reformcloud.reformcloud2.executor.api.network.packets.out.APIPacketOutHasPlayerAccess;
 import systems.reformcloud.reformcloud2.executor.api.nukkit.NukkitExecutor;
-import systems.reformcloud.reformcloud2.executor.api.packets.out.APIPacketOutHasPlayerAccess;
 
 import java.util.concurrent.TimeUnit;
 

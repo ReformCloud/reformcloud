@@ -1,11 +1,14 @@
 package systems.reformcloud.reformcloud2.executor.node.network.channel;
 
 import io.netty.channel.ChannelHandlerContext;
+import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
-import systems.reformcloud.reformcloud2.executor.api.common.network.auth.challenge.shared.ClientChallengeAuthHandler;
+import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
+import systems.reformcloud.reformcloud2.executor.api.common.network.challenge.shared.ClientChallengeAuthHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.JsonPacket;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
+import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
 import systems.reformcloud.reformcloud2.executor.node.network.client.NodeNetworkClient;
@@ -23,6 +26,8 @@ public class NodeNetworkSuccessHandler implements BiConsumer<ChannelHandlerConte
         if (process == null) {
             // Node
             result.add("name", NodeExecutor.getInstance().getNodeExecutorConfig().getSelf().getName());
+        } else {
+            result.add("name", "Controller");
         }
 
         channelHandlerContext.channel().writeAndFlush(new JsonPacket(-511, result)).syncUninterruptibly();
@@ -43,6 +48,12 @@ public class NodeNetworkSuccessHandler implements BiConsumer<ChannelHandlerConte
                     )
             )));
             NodeExecutor.getInstance().sync(packet.content().getString("name"));
+        } else {
+            process.getNetworkInfo().setConnected(true);
+            process.setProcessState(ProcessState.READY);
+            ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(process);
+
+            System.out.println(LanguageManager.get("process-connected", process.getName(), process.getParent()));
         }
     }
 }

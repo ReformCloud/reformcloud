@@ -4,7 +4,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.node.NodeInformation
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.node.cluster.ClusterManager;
 import systems.reformcloud.reformcloud2.executor.api.node.cluster.InternalNetworkCluster;
-import systems.reformcloud.reformcloud2.executor.controller.packet.out.event.ControllerEventProcessClosed;
+import systems.reformcloud.reformcloud2.executor.controller.network.packets.out.event.ControllerEventProcessClosed;
 import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
 import systems.reformcloud.reformcloud2.executor.node.cluster.sync.DefaultClusterSyncManager;
 

@@ -160,7 +160,7 @@ public final class Runner {
             s = console.readLine();
         }
 
-        return s.equalsIgnoreCase("controller") ? 1 : s.equalsIgnoreCase("node") ? 4 :  2;
+        return s.equalsIgnoreCase("controller") ? 1 : s.equalsIgnoreCase("node") ? 4 : 2;
     }
 
     private static void readProperties() {

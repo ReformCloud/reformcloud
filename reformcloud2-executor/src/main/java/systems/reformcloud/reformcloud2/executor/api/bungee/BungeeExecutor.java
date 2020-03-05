@@ -20,8 +20,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.event.handler.Listen
 import systems.reformcloud.reformcloud2.executor.api.common.groups.messages.IngameMessages;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Version;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.PlayerAccessConfiguration;
-import systems.reformcloud.reformcloud2.executor.api.common.network.auth.NetworkType;
-import systems.reformcloud.reformcloud2.executor.api.common.network.auth.defaults.DefaultAuth;
+import systems.reformcloud.reformcloud2.executor.api.common.network.challenge.shared.ClientChallengeAuthHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.common.network.client.DefaultNetworkClient;
@@ -35,8 +34,9 @@ import systems.reformcloud.reformcloud2.executor.api.common.utility.system.Syste
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
 import systems.reformcloud.reformcloud2.executor.api.executor.PlayerAPIExecutor;
-import systems.reformcloud.reformcloud2.executor.api.packets.in.APIPacketInAPIAction;
-import systems.reformcloud.reformcloud2.executor.api.packets.out.APIBungeePacketOutRequestIngameMessages;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.APINetworkChannelReader;
+import systems.reformcloud.reformcloud2.executor.api.network.packets.in.APIPacketInAPIAction;
+import systems.reformcloud.reformcloud2.executor.api.network.packets.out.APIBungeePacketOutRequestIngameMessages;
 
 import javax.annotation.Nonnull;
 import java.io.File;
@@ -86,6 +86,11 @@ public final class BungeeExecutor extends API implements PlayerAPIExecutor {
         JsonConfiguration connectionConfig = JsonConfiguration.read("reformcloud/.connection/connection.json");
 
         this.thisProcessInformation = connectionConfig.get("startInfo", ProcessInformation.TYPE);
+        if (this.thisProcessInformation == null) {
+            System.exit(0);
+            return;
+        }
+
         waterdog = thisProcessInformation.getTemplate().getVersion().equals(Version.WATERDOG)
                 || thisProcessInformation.getTemplate().getVersion().equals(Version.WATERDOG_PE);
         waterdogPE = thisProcessInformation.getTemplate().getVersion().equals(Version.WATERDOG_PE);
@@ -93,13 +98,14 @@ public final class BungeeExecutor extends API implements PlayerAPIExecutor {
         this.networkClient.connect(
                 connectionConfig.getString("controller-host"),
                 connectionConfig.getInteger("controller-port"),
-                new DefaultAuth(
+                () -> new APINetworkChannelReader(this.packetHandler),
+                new ClientChallengeAuthHandler(
                         connectionKey,
-                        thisProcessInformation.getParent(),
-                        NetworkType.PROCESS,
                         thisProcessInformation.getName(),
-                        new JsonConfiguration()
-                ), networkChannelReader
+                        () -> new JsonConfiguration(),
+                        context -> {
+                        } // unused here
+                )
         );
 
         ExecutorAPI.setInstance(this);
@@ -163,7 +169,9 @@ public final class BungeeExecutor extends API implements PlayerAPIExecutor {
                     new APIBungeePacketOutRequestIngameMessages()
             ).onComplete(packet -> {
                 IngameMessages ingameMessages = packet.content().get("messages", IngameMessages.TYPE);
-                setMessages(ingameMessages);
+                if (ingameMessages != null) {
+                    setMessages(ingameMessages);
+                }
             }));
         });
     }
@@ -300,7 +308,7 @@ public final class BungeeExecutor extends API implements PlayerAPIExecutor {
     }
 
     @Listener
-    public void handleThisUpdate(final ProcessUpdatedEvent event) {
+    public void handle(final ProcessUpdatedEvent event) {
         if (event.getProcessInformation().getProcessUniqueID().equals(thisProcessInformation.getProcessUniqueID())) {
             thisProcessInformation = event.getProcessInformation();
         }

@@ -558,7 +558,7 @@ public class BasicLocalNodeProcess implements LocalNodeProcess {
     private void createTemplateAndFiles() {
         SystemHelper.createDirectory(Paths.get(path + "/plugins"));
         SystemHelper.createDirectory(Paths.get(path + "/reformcloud/.connection"));
-        new JsonConfiguration().add("key", NodeExecutor.getInstance().getNodeExecutorConfig().getCurrentNodeConnectionKey())
+        new JsonConfiguration().add("key", NodeExecutor.getInstance().getNodeExecutorConfig().getConnectionKey())
                 .write(path + "/reformcloud/.connection/key.json");
     }
 
