@@ -1,6 +1,5 @@
 package systems.reformcloud.reformcloud2.executor.node;
 
-import io.netty.channel.ChannelHandlerContext;
 import org.reflections.Reflections;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorType;
 import systems.reformcloud.reformcloud2.executor.api.common.CommonHelper;
@@ -36,23 +35,18 @@ import systems.reformcloud.reformcloud2.executor.api.common.language.loading.Lan
 import systems.reformcloud.reformcloud2.executor.api.common.logger.LoggerBase;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.coloured.ColouredLoggerHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.other.DefaultLoggerHandler;
-import systems.reformcloud.reformcloud2.executor.api.common.network.auth.Auth;
-import systems.reformcloud.reformcloud2.executor.api.common.network.auth.NetworkType;
-import systems.reformcloud.reformcloud2.executor.api.common.network.auth.defaults.DefaultAuth;
-import systems.reformcloud.reformcloud2.executor.api.common.network.auth.defaults.DefaultServerAuthHandler;
+import systems.reformcloud.reformcloud2.executor.api.common.network.auth.challenge.shared.ClientChallengeAuthHandler;
+import systems.reformcloud.reformcloud2.executor.api.common.network.auth.challenge.shared.ServerChallengeAuthHandler;
+import systems.reformcloud.reformcloud2.executor.api.common.network.auth.challenge.shared.SharedChallengeProvider;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
-import systems.reformcloud.reformcloud2.executor.api.common.network.channel.defaults.DefaultPacketSender;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.handler.DefaultJsonNetworkHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.common.network.client.NetworkClient;
-import systems.reformcloud.reformcloud2.executor.api.common.network.packet.JsonPacket;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.defaults.DefaultPacketHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.handler.PacketHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.server.DefaultNetworkServer;
 import systems.reformcloud.reformcloud2.executor.api.common.network.server.NetworkServer;
 import systems.reformcloud.reformcloud2.executor.api.common.node.NodeInformation;
-import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
-import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState;
 import systems.reformcloud.reformcloud2.executor.api.common.restapi.auth.basic.DefaultWebServerAuth;
 import systems.reformcloud.reformcloud2.executor.api.common.restapi.http.server.DefaultWebServer;
 import systems.reformcloud.reformcloud2.executor.api.common.restapi.http.server.WebServer;
@@ -90,6 +84,8 @@ import systems.reformcloud.reformcloud2.executor.node.config.NodeConfig;
 import systems.reformcloud.reformcloud2.executor.node.config.NodeExecutorConfig;
 import systems.reformcloud.reformcloud2.executor.node.dump.NodeDumpUtil;
 import systems.reformcloud.reformcloud2.executor.node.network.DefaultNodeNetworkManager;
+import systems.reformcloud.reformcloud2.executor.node.network.channel.NodeNetworkChannelReader;
+import systems.reformcloud.reformcloud2.executor.node.network.channel.NodeNetworkSuccessHandler;
 import systems.reformcloud.reformcloud2.executor.node.network.client.NodeNetworkClient;
 import systems.reformcloud.reformcloud2.executor.node.network.packet.out.screen.NodePacketOutToggleScreen;
 import systems.reformcloud.reformcloud2.executor.node.process.LocalAutoStartupHandler;
@@ -108,9 +104,6 @@ import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Random;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
 
 public class NodeExecutor extends Node {
 
@@ -263,12 +256,18 @@ public class NodeExecutor extends Node {
 
         this.loadPacketHandlers();
 
-        this.nodeConfig.getNetworkListener().forEach(e -> e.forEach((ip, port) -> {
-            this.networkServer.bind(ip, port, new DefaultServerAuthHandler(
+        this.nodeConfig.getNetworkListener().forEach(e -> e.forEach((ip, port) -> this.networkServer.bind(
+                ip,
+                port,
+                () -> new NodeNetworkChannelReader(this.packetHandler),
+                new ServerChallengeAuthHandler(new SharedChallengeProvider(this.nodeExecutorConfig.getConnectionKey()), new NodeNetworkSuccessHandler())))
+        );
+            /*
+            new DefaultServerAuthHandler(
                     packetHandler,
                     packetSender -> this.nodeNetworkManager.getCluster().getClusterManager().handleNodeDisconnect(
-                                this.nodeNetworkManager.getCluster(),
-                                packetSender.getName()
+                            this.nodeNetworkManager.getCluster(),
+                            packetSender.getName()
                     ),
                     packet -> {
                         DefaultAuth auth = packet.content().get("auth", Auth.TYPE);
@@ -380,6 +379,8 @@ public class NodeExecutor extends Node {
             });
         }));
 
+             */
+
         this.nodeConfig.getHttpNetworkListener().forEach(map -> map.forEach((host, port) -> {
                     this.webServer.add(host, port, this.requestListenerHandler);
                 })
@@ -403,25 +404,15 @@ public class NodeExecutor extends Node {
                 System.out.println(LanguageManager.get("network-node-try-connect-with-no-key"));
             } else {
                 this.nodeConfig.getOtherNodes().forEach(e -> e.forEach((ip, port) -> {
-                    if (this.networkClient.connect(ip, port, new DefaultAuth(
-                            this.nodeExecutorConfig.getConnectionKey(),
-                            null,
-                            NetworkType.NODE,
-                            this.nodeNetworkManager.getCluster().getSelfNode().getName(),
-                            new JsonConfiguration().add("info", this.nodeNetworkManager.getCluster().getSelfNode())
-                    ), createReader(sender -> {
-                        NodeInformation information = this.nodeNetworkManager.getCluster().getNode(sender.getName());
-                        if (information == null) {
-                            this.nodeNetworkManager.getNodeProcessHelper().handleProcessDisconnect(sender.getName());
-                        } else {
-                            this.nodeNetworkManager.getCluster().getClusterManager().handleNodeDisconnect(
-                                    this.nodeNetworkManager.getCluster(),
-                                    sender.getName()
-                            );
-                        }
-
-                        NodeNetworkClient.CONNECTIONS.remove(sender.getAddress());
-                    }))) {
+                    if (this.networkClient.connect(ip, port,
+                            () -> new NodeNetworkChannelReader(NodeExecutor.getInstance().getPacketHandler()),
+                            new ClientChallengeAuthHandler(
+                                    NodeExecutor.getInstance().getNodeExecutorConfig().getConnectionKey(),
+                                    NodeExecutor.getInstance().getNodeConfig().getName(),
+                                    () -> new JsonConfiguration().add("info", NodeExecutor.getInstance().getNodeNetworkManager().getCluster().getSelfNode()),
+                                    context -> NodeNetworkClient.CONNECTIONS.remove(((InetSocketAddress) context.channel().remoteAddress()).getAddress().getHostAddress())
+                            ))
+                    ) {
                         System.out.println(LanguageManager.get(
                                 "network-node-connection-to-other-node-success", ip, Integer.toString(port)
                         ));
@@ -709,9 +700,9 @@ public class NodeExecutor extends Node {
         this.packetHandler.registerHandler(new ControllerPacketInHandleChannelMessage()); // Implementation for the channel messaging api
     }
 
-    private void sync(PacketSender sender) {
+    public void sync(String name) {
         Task.EXECUTOR.execute(() -> {
-            while (!DefaultChannelManager.INSTANCE.get(sender.getName()).isPresent()) {
+            while (!DefaultChannelManager.INSTANCE.get(name).isPresent()) {
                 AbsoluteThread.sleep(20);
             }
 
@@ -727,5 +718,21 @@ public class NodeExecutor extends Node {
     private void sendGroups() {
         this.nodeExecutorConfig.getMainGroups().forEach(mainGroup -> System.out.println(LanguageManager.get("loading-main-group", mainGroup.getName())));
         this.nodeExecutorConfig.getProcessGroups().forEach(processGroup -> System.out.println(LanguageManager.get("loading-process-group", processGroup.getName())));
+    }
+
+    public void handleChannelDisconnect(@Nonnull PacketSender packetSender) {
+        NodeInformation information = nodeNetworkManager.getCluster().getNode(packetSender.getName());
+        if (information == null) {
+            nodeNetworkManager.getNodeProcessHelper().handleProcessDisconnect(packetSender.getName());
+        } else {
+            nodeNetworkManager.getCluster().getClusterManager().handleNodeDisconnect(
+                    nodeNetworkManager.getCluster(),
+                    packetSender.getName()
+            );
+        }
+    }
+
+    public NetworkClient getNetworkClient() {
+        return networkClient;
     }
 }

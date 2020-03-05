@@ -1,7 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.api.common.network;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.epoll.Epoll;
 import io.netty.channel.epoll.EpollEventLoopGroup;
@@ -14,28 +13,16 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.util.concurrent.DefaultThreadFactory;
 import io.netty.util.concurrent.MultithreadEventExecutorGroup;
-import systems.reformcloud.reformcloud2.executor.api.common.base.Conditions;
-import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
-import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
-import systems.reformcloud.reformcloud2.executor.api.common.network.channel.NetworkChannelReader;
-import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
-import systems.reformcloud.reformcloud2.executor.api.common.network.channel.defaults.DefaultPacketSender;
-import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
-import systems.reformcloud.reformcloud2.executor.api.common.network.packet.JsonPacket;
-import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
-import systems.reformcloud.reformcloud2.executor.api.common.network.packet.WrappedByteInput;
-import systems.reformcloud.reformcloud2.executor.api.common.network.packet.handler.PacketHandler;
 
-import javax.annotation.Nonnull;
-import java.io.ObjectInputStream;
-import java.net.InetSocketAddress;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
 
 public final class NetworkUtil {
+
+    private NetworkUtil() {
+        throw new UnsupportedOperationException();
+    }
 
     /* ============================= */
 
@@ -60,14 +47,6 @@ public final class NetworkUtil {
     /* ============================ */
 
     public static final Executor EXECUTOR = Executors.newCachedThreadPool();
-
-    public static final Consumer<ChannelHandlerContext> DEFAULT_AUTH_FAILURE_HANDLER = context -> context.channel().writeAndFlush(new JsonPacket(-511, new JsonConfiguration().add("access", false))).syncUninterruptibly().channel().close();
-
-    public static final BiFunction<String, ChannelHandlerContext, PacketSender> DEFAULT_SUCCESS_HANDLER = (s, context) -> {
-        PacketSender packetSender = new DefaultPacketSender(context);
-        packetSender.setName(s);
-        return packetSender;
-    };
 
     private static final boolean EPOLL = Epoll.isAvailable();
 
@@ -141,68 +120,6 @@ public final class NetworkUtil {
         return bytes;
     }
 
-    public static NetworkChannelReader newReader(PacketHandler packetHandler, Consumer<PacketSender> consumer) {
-        return new NetworkChannelReader() {
-            private PacketSender sender;
-
-            @Nonnull
-            @Override
-            public PacketHandler getPacketHandler() {
-                return packetHandler;
-            }
-
-            @Nonnull
-            @Override
-            public PacketSender sender() {
-                return sender;
-            }
-
-            @Override
-            public void setSender(PacketSender sender) {
-                Conditions.isTrue(this.sender == null);
-                this.sender = sender;
-                DefaultChannelManager.INSTANCE.registerChannel(sender);
-            }
-
-            @Override
-            public void channelActive(ChannelHandlerContext context) {
-                if (sender == null) {
-                    String address = ((InetSocketAddress) context.channel().remoteAddress()).getAddress().getHostAddress();
-                    System.out.println(LanguageManager.get("network-channel-connected", address));
-                }
-            }
-
-            @Override
-            public void channelInactive(ChannelHandlerContext context) {
-                if (sender != null) {
-                    DefaultChannelManager.INSTANCE.unregisterChannel(sender);
-                    consumer.accept(sender);
-                    System.out.println(LanguageManager.get("network-channel-disconnected", sender.getName()));
-                }
-            }
-
-            @Override
-            public void read(ChannelHandlerContext context, WrappedByteInput input) {
-                NetworkUtil.EXECUTOR.execute(() ->
-                    getPacketHandler().getNetworkHandlers(input.getPacketID()).forEach(networkHandler -> {
-                        try (ObjectInputStream stream = input.toObjectStream()) {
-                            Packet packet = networkHandler.read(input.getPacketID(), stream);
-
-                            networkHandler.handlePacket(sender, packet, out -> {
-                                if (packet.queryUniqueID() != null) {
-                                    out.setQueryID(packet.queryUniqueID());
-                                    sender.sendPacket(out);
-                                }
-                            });
-                        } catch (final Exception ex) {
-                            ex.printStackTrace();
-                        }
-                    })
-                );
-            }
-        };
-    }
-
     public static int getVarIntSize(int readable) {
         if ((readable & -128) == 0) {
             return 1;
@@ -215,9 +132,5 @@ public final class NetworkUtil {
         }
 
         return 5;
-    }
-
-    private NetworkUtil() {
-        throw new UnsupportedOperationException();
     }
 }

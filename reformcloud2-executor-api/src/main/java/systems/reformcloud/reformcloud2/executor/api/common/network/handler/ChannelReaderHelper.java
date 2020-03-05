@@ -2,37 +2,25 @@ package systems.reformcloud.reformcloud2.executor.api.common.network.handler;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import systems.reformcloud.reformcloud2.executor.api.common.network.auth.challenge.ChallengeAuthHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.NetworkChannelReader;
-import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.handler.DefaultJsonNetworkHandler;
+import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.WrappedByteInput;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.function.DoubleFunction;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Duo;
-
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
 
 public final class ChannelReaderHelper extends SimpleChannelInboundHandler<WrappedByteInput> {
 
-    ChannelReaderHelper(NetworkChannelReader channelReader, DoubleFunction<Packet, String, Boolean> function,
-                        BiFunction<String, ChannelHandlerContext, PacketSender> onAuthSuccess, Consumer<ChannelHandlerContext> onAuthFailure) {
+    public ChannelReaderHelper(NetworkChannelReader channelReader, ChallengeAuthHandler authHandler) {
         this.channelReader = channelReader;
-        this.function = function;
-        this.onSuccess = onAuthSuccess;
-        this.onAuthFailure = onAuthFailure;
+        this.authHandler = authHandler;
     }
 
     private final NetworkChannelReader channelReader;
 
-    private final DoubleFunction<Packet, String, Boolean> function;
+    private final ChallengeAuthHandler authHandler;
 
-    private final BiFunction<String, ChannelHandlerContext, PacketSender> onSuccess;
-
-    private final Consumer<ChannelHandlerContext> onAuthFailure;
-
-    private final AtomicBoolean auth = new AtomicBoolean(false);
+    private boolean auth = false;
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
@@ -41,6 +29,10 @@ public final class ChannelReaderHelper extends SimpleChannelInboundHandler<Wrapp
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
+        if (!this.auth) {
+            this.authHandler.handleChannelActive(ctx);
+        }
+
         channelReader.channelActive(ctx);
     }
 
@@ -56,47 +48,25 @@ public final class ChannelReaderHelper extends SimpleChannelInboundHandler<Wrapp
 
     @Override
     protected void channelRead0(ChannelHandlerContext channelHandlerContext, WrappedByteInput input) {
-        //controller auth
-        if (input.getPacketID() == -512 && !auth.get()) {
+        if (!auth) {
             try {
                 Packet packet = DefaultJsonNetworkHandler.readPacket(-512, input.toObjectStream());
-
-                Duo<String, Boolean> result = function.apply(packet);
-                if (result.getSecond()) {
-                    auth.set(true);
-                    PacketSender sender = onSuccess.apply(result.getFirst(), channelHandlerContext);
-                    channelReader.setSender(sender);
-                } else {
-                    onAuthFailure.accept(channelHandlerContext);
+                String name = packet.content().getOrDefault("name", (String) null);
+                if (name == null || DefaultChannelManager.INSTANCE.get(name).isPresent()) {
+                    System.out.println("Unknown connect from channel (Name=" + name + "). If the name is null, that might be an attack");
+                    channelHandlerContext.channel().close().syncUninterruptibly();
+                    return;
                 }
-            } catch (final Exception ex) {
-                ex.printStackTrace();
+
+                this.auth = this.authHandler.handle(channelHandlerContext, packet, name);
+
+                if (this.auth) {
+                    this.channelReader.setChannelHandlerContext(channelHandlerContext, name);
+                }
+            } catch (final Throwable throwable) {
+                channelHandlerContext.channel().close().syncUninterruptibly();
             }
 
-            return;
-        }
-
-        //client auth success
-        if (input.getPacketID() == -511 && !auth.get()) {
-            try {
-                Packet packet = DefaultJsonNetworkHandler.readPacket(-511, input.toObjectStream());
-
-                Boolean access = packet.content().getOrDefault("access", false);
-                if (access) {
-                    auth.set(true);
-                    Duo<String, Boolean> result = function.apply(packet);
-                    channelReader.setSender(onSuccess.apply(result.getFirst(), channelHandlerContext));
-                } else {
-                    channelHandlerContext.channel().close();
-                }
-            } catch (final Exception ex) {
-                ex.printStackTrace();
-            }
-
-            return;
-        }
-
-        if (!auth.get()) {
             return;
         }
 

@@ -21,12 +21,7 @@ public interface NetworkChannelReader {
     @Nonnull
     PacketSender sender();
 
-    /**
-     * Sets a new sender
-     *
-     * @param sender The sender which should get used
-     */
-    void setSender(PacketSender sender);
+    void setChannelHandlerContext(@Nonnull ChannelHandlerContext channelHandlerContext, @Nonnull String name);
 
     /**
      * Gets called when a channel opens

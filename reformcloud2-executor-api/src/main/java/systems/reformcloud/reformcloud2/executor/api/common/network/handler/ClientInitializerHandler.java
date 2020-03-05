@@ -1,48 +1,26 @@
 package systems.reformcloud.reformcloud2.executor.api.common.network.handler;
 
 import io.netty.channel.Channel;
-import io.netty.channel.ChannelHandlerContext;
-import systems.reformcloud.reformcloud2.executor.api.common.network.NetworkUtil;
+import io.netty.channel.ChannelInitializer;
+import systems.reformcloud.reformcloud2.executor.api.common.network.auth.challenge.ChallengeAuthHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.NetworkChannelReader;
-import systems.reformcloud.reformcloud2.executor.api.common.network.client.NetworkClient;
-import systems.reformcloud.reformcloud2.executor.api.common.network.init.InitializerHandler;
-import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.netty.PacketDecoder;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.netty.PacketEncoder;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.netty.serialisation.LengthDeserializer;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.netty.serialisation.LengthSerializer;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Duo;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.function.DoubleFunction;
 
-import java.util.function.Consumer;
+import java.util.function.Supplier;
 
-public final class ClientInitializerHandler extends InitializerHandler {
+public final class ClientInitializerHandler extends ChannelInitializer<Channel> {
 
-    private static final DoubleFunction<Packet, String, Boolean> EMPTY_FUNCTION = packet -> {
-        if (packet.content().has("name")) {
-            return new Duo<>(packet.content().getString("name"), true);
-        }
-
-        return new Duo<>("Controller", true);
-    };
-
-    private final Consumer<ChannelHandlerContext> DEFAULT_FAIL_HANDLER = new Consumer<ChannelHandlerContext>() {
-        @Override
-        public void accept(ChannelHandlerContext context) {
-            context.channel().close();
-            networkClient.disconnect();
-        }
-    };
-
-    public ClientInitializerHandler(NetworkChannelReader channelReader, NetworkClient networkClient) {
-        super(null, null);
-        this.networkClient = networkClient;
-        this.channelReader = channelReader;
+    public ClientInitializerHandler(Supplier<NetworkChannelReader> supplier, ChallengeAuthHandler challengeAuthHandler) {
+        this.supplier = supplier;
+        this.challengeAuthHandler = challengeAuthHandler;
     }
 
-    private final NetworkClient networkClient;
+    private final Supplier<NetworkChannelReader> supplier;
 
-    private final NetworkChannelReader channelReader;
+    private final ChallengeAuthHandler challengeAuthHandler;
 
     @Override
     protected void initChannel(Channel channel) {
@@ -51,11 +29,6 @@ public final class ClientInitializerHandler extends InitializerHandler {
                 .addLast("decoder", new PacketDecoder())
                 .addLast("serializer", new LengthSerializer())
                 .addLast("encoder", new PacketEncoder())
-                .addLast("handler", new ChannelReaderHelper(
-                        channelReader,
-                        EMPTY_FUNCTION,
-                        NetworkUtil.DEFAULT_SUCCESS_HANDLER,
-                        DEFAULT_FAIL_HANDLER
-                ));
+                .addLast("handler", new ChannelReaderHelper(supplier.get(), challengeAuthHandler));
     }
 }
