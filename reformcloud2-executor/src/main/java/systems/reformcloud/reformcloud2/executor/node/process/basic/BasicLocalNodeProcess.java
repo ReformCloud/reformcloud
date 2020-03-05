@@ -337,6 +337,8 @@ public class BasicLocalNodeProcess implements LocalNodeProcess {
                 s = "  host: " + NodeExecutor.getInstance().getNodeConfig().getStartHost() + ":" + processInformation.getNetworkInfo().getPort();
             } else if (s.startsWith("ip_forward:")) {
                 s = "ip_forward: true";
+            } else if (s.startsWith("- query_port: ")) {
+                s = "- query_port: " + processInformation.getNetworkInfo().getPort();
             }
 
             return s;
@@ -356,6 +358,8 @@ public class BasicLocalNodeProcess implements LocalNodeProcess {
                 s = "use_xuid_for_uuid: true";
             } else if (s.startsWith("  raknet:")) {
                 s = "  raknet: " + processInformation.getTemplate().getVersion().equals(Version.WATERDOG_PE);
+            } else if (s.startsWith("- query_port:")) {
+                s = "- query_port: " + processInformation.getNetworkInfo().getPort();
             }
 
             return s;
@@ -395,7 +399,7 @@ public class BasicLocalNodeProcess implements LocalNodeProcess {
     private void rewriteGlowstoneConfig() {
         rewriteFile(new File(path + "/config/glowstone.yml"), (UnaryOperator<String>) s -> {
             if (s.trim().startsWith("ip:")) {
-                s = "  ip: '" + this.processInformation.getNetworkInfo().getHost() +  "'";
+                s = "  ip: '" + this.processInformation.getNetworkInfo().getHost() + "'";
             }
 
             if (s.trim().startsWith("port:")) {

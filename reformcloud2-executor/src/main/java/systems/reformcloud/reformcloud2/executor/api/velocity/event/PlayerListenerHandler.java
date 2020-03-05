@@ -31,40 +31,32 @@ public final class PlayerListenerHandler {
     @Subscribe(order = PostOrder.FIRST)
     public void handle(final ServerPreConnectEvent event) {
         final Player player = event.getPlayer();
-        if (player.getCurrentServer().isPresent()) {
-            if (event.getResult().getServer().isPresent()) {
-                DefaultChannelManager.INSTANCE.get("Controller").ifPresent(sender -> sender.sendPacket(new APIBungeePacketOutPlayerServerSwitch(
-                        event.getPlayer().getUniqueId(),
-                        event.getResult().getServer().get().getServerInfo().getName()
-                )));
-                AbsoluteThread.sleep(20);
-            }
+        if (!player.getCurrentServer().isPresent()) {
+            ProcessInformation lobby = VelocityExecutor.getBestLobbyForPlayer(
+                    API.getInstance().getCurrentProcessInformation(),
+                    player,
+                    player::hasPermission
+            );
+            if (lobby != null) {
+                Optional<RegisteredServer> server = VelocityExecutor.getInstance().getProxyServer().getServer(lobby.getName());
+                if (!server.isPresent()) {
+                    event.setResult(ServerPreConnectEvent.ServerResult.denied());
+                    return;
+                }
 
-            return;
+                event.setResult(ServerPreConnectEvent.ServerResult.allowed(server.get()));
+            } else {
+                event.setResult(ServerPreConnectEvent.ServerResult.denied());
+            }
         }
 
-        ProcessInformation lobby = VelocityExecutor.getBestLobbyForPlayer(
-                API.getInstance().getCurrentProcessInformation(),
-                player,
-                player::hasPermission
-        );
-        if (lobby != null) {
-            Optional<RegisteredServer> server = VelocityExecutor.getInstance().getProxyServer().getServer(lobby.getName());
-            if (!server.isPresent()) {
-                event.setResult(ServerPreConnectEvent.ServerResult.denied());
-                return;
-            }
-
+        if (event.getResult().getServer().isPresent()) {
             DefaultChannelManager.INSTANCE.get("Controller").ifPresent(sender -> sender.sendPacket(new APIBungeePacketOutPlayerServerSwitch(
                     event.getPlayer().getUniqueId(),
-                    server.get().getServerInfo().getName()
+                    event.getResult().getServer().get().getServerInfo().getName()
             )));
             AbsoluteThread.sleep(20);
-            event.setResult(ServerPreConnectEvent.ServerResult.allowed(server.get()));
-            return;
         }
-
-        event.setResult(ServerPreConnectEvent.ServerResult.denied());
     }
 
     @Subscribe(order = PostOrder.FIRST)

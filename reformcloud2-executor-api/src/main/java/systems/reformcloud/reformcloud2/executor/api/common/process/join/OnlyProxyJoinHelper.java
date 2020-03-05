@@ -4,7 +4,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -28,7 +27,7 @@ public final class OnlyProxyJoinHelper {
     }
 
     public static void handleServerSwitch(UUID uuid, String serverName) {
-        JoinRequest request = getRequest(uuid, null);
+        JoinRequest request = getRequest(uuid);
         if (request == null) {
             return;
         }
@@ -47,28 +46,20 @@ public final class OnlyProxyJoinHelper {
     }
 
     public static void onDisconnect(UUID uuid) {
-        JoinRequest joinRequest = getRequest(uuid, null);
+        JoinRequest joinRequest = getRequest(uuid);
         if (joinRequest != null) {
             JOIN_REQUESTS.remove(joinRequest);
         }
     }
 
-    private static JoinRequest getRequest(UUID uuid, @Nullable String name) {
-        return Streams.filter(JOIN_REQUESTS, joinRequest1 -> joinRequest1.getUniqueID().equals(uuid) && (name == null || joinRequest1.getName().equals(name)));
+    private static JoinRequest getRequest(UUID uuid) {
+        return Streams.filter(JOIN_REQUESTS, joinRequest1 -> joinRequest1.getUniqueID().equals(uuid));
     }
 
     private static Collection<ProcessInformation> getProxy(UUID uniqueID, String name) {
         return ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getAllProcesses()
                 .stream()
                 .filter(e -> !e.getTemplate().isServer())
-                .filter(e -> e.isPlayerOnline(uniqueID) || e.isPlayerOnline(name))
-                .collect(Collectors.toList());
-    }
-
-    private static Collection<ProcessInformation> getServer(UUID uniqueID, String name) {
-        return ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getAllProcesses()
-                .stream()
-                .filter(e -> e.getTemplate().isServer())
                 .filter(e -> e.isPlayerOnline(uniqueID) || e.isPlayerOnline(name))
                 .collect(Collectors.toList());
     }

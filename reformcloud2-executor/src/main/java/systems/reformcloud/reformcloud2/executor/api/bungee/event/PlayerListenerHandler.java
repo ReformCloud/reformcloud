@@ -42,11 +42,13 @@ public final class PlayerListenerHandler implements Listener {
             }
         }
 
-        DefaultChannelManager.INSTANCE.get("Controller").ifPresent(sender -> sender.sendPacket(new APIBungeePacketOutPlayerServerSwitch(
-                event.getPlayer().getUniqueId(),
-                event.getTarget().getName()
-        )));
-        AbsoluteThread.sleep(20);
+        if (!event.isCancelled()) {
+            DefaultChannelManager.INSTANCE.get("Controller").ifPresent(sender -> sender.sendPacket(new APIBungeePacketOutPlayerServerSwitch(
+                    event.getPlayer().getUniqueId(),
+                    event.getTarget().getName()
+            )));
+            AbsoluteThread.sleep(20);
+        }
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
