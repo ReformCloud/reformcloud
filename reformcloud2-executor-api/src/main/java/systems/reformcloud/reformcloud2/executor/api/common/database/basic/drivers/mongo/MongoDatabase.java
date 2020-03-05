@@ -35,7 +35,7 @@ public final class MongoDatabase extends Database<com.mongodb.client.MongoDataba
 
     public MongoDatabase() {
         Properties properties = new Properties();
-        properties.setProperty("mongo-java-driver", "3.12.1");
+        properties.setProperty("mongo-java-driver", "3.12.2");
 
         URL dependency = DEPENDENCY_LOADER.loadDependency(new DefaultDependency(
                 DefaultRepositories.MAVEN_CENTRAL,
