@@ -20,9 +20,6 @@ public final class ChallengeSecurity {
         throw new UnsupportedOperationException();
     }
 
-    public static void init() {
-    }
-
     static {
         Security.addProvider(new BouncyCastleProvider());
     }
