@@ -5,6 +5,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.restapi.request.Requ
 import systems.reformcloud.reformcloud2.executor.api.common.restapi.request.RequestListenerHandler;
 
 import javax.annotation.Nonnull;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -42,8 +43,8 @@ public final class DefaultRequestListenerHandler implements RequestListenerHandl
     @Override
     public RequestListenerHandler registerListener(@Nonnull Class<? extends RequestHandler> requestHandler) {
         try {
-            return registerListener(requestHandler.newInstance());
-        } catch (final InstantiationException | IllegalAccessException ex) {
+            return registerListener(requestHandler.getDeclaredConstructor().newInstance());
+        } catch (final IllegalAccessException | NoSuchMethodException | InvocationTargetException | InstantiationException ex) {
             ex.printStackTrace();
         }
         return this;

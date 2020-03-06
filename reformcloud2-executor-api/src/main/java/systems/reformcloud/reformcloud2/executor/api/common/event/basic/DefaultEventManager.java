@@ -27,8 +27,8 @@ public final class DefaultEventManager implements EventManager {
     @Override
     public void callEvent(Class<? extends Event> event) {
         try {
-            callEvent(event.newInstance());
-        } catch (final IllegalAccessException | InstantiationException ex) {
+            callEvent(event.getDeclaredConstructor().newInstance());
+        } catch (final IllegalAccessException | NoSuchMethodException | InvocationTargetException | InstantiationException ex) {
             ex.printStackTrace();
         }
     }
@@ -79,8 +79,8 @@ public final class DefaultEventManager implements EventManager {
     @Override
     public void registerListener(Class<?> listener) {
         try {
-            this.register(listener.newInstance());
-        } catch (final InstantiationException | IllegalAccessException ex) {
+            this.register(listener.getDeclaredConstructor().newInstance());
+        } catch (final IllegalAccessException | NoSuchMethodException | InvocationTargetException | InstantiationException ex) {
             ex.printStackTrace();
         }
     }

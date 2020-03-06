@@ -11,6 +11,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.function.Consumer;
 
@@ -33,8 +34,8 @@ public final class DefaultCommandManager implements CommandManager {
     @Override
     public CommandManager register(@Nonnull Class<? extends Command> command) {
         try {
-            register(command.newInstance());
-        } catch (final InstantiationException | IllegalAccessException ex) {
+            register(command.getDeclaredConstructor().newInstance());
+        } catch (final IllegalAccessException | NoSuchMethodException | InvocationTargetException | InstantiationException ex) {
             ex.printStackTrace();
         }
 
