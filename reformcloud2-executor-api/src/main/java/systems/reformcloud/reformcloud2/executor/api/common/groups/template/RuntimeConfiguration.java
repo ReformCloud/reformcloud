@@ -25,7 +25,7 @@ public final class RuntimeConfiguration {
         this.shutdownCommands = shutdownCommands;
     }
 
-    private final int maxMemory;
+    private int maxMemory;
 
     private final List<String> processParameters;
 
@@ -37,6 +37,10 @@ public final class RuntimeConfiguration {
 
     public int getMaxMemory() {
         return maxMemory;
+    }
+
+    public void setMaxMemory(int maxMemory) {
+        this.maxMemory = maxMemory;
     }
 
     public List<String> getProcessParameters() {

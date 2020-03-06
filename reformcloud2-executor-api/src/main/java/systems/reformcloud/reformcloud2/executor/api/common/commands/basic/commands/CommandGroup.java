@@ -46,6 +46,7 @@ public final class CommandGroup extends GlobalCommand {
                         " --min-process-count=[min]                     | Sets the min process count for the process\n" +
                         " --max-process-count=[max]                     | Sets the max process count for the process\n" +
                         " --start-port=[port]                           | Sets the start port of the group\n" +
+                        " --max-memory=[default/memory]                 | Sets the max memory of the template (format: <template-name>/<max-memory>)\n" +
                         " --start-priority=[priority]                   | Sets the start priority for the group\n" +
                         " --startup-pickers=[Client1;Node2]             | Sets the startup pickers for the group\n" +
                         " --add-startup-pickers=[Client1;Node2]         | Adds the specified startup pickers to the group\n" +
@@ -176,6 +177,27 @@ public final class CommandGroup extends GlobalCommand {
                         "max-players",
                         processGroup.getPlayerAccessConfiguration().getMaxPlayers()
                 ));
+            }
+
+            if (properties.containsKey("max-memory")) {
+                String[] split = properties.getProperty("max-memory").split("/");
+                if (split.length == 2) {
+                    Integer maxMemory = CommonHelper.fromString(split[1]);
+                    if (maxMemory == null || maxMemory <= 50) {
+                        source.sendMessage(LanguageManager.get("command-integer-failed", 50, split[1]));
+                        return;
+                    }
+
+                    Template template = processGroup.getTemplate(split[0]);
+                    if (template != null) {
+                        template.getRuntimeConfiguration().setMaxMemory(maxMemory);
+                        source.sendMessage(LanguageManager.get(
+                                "command-group-edit",
+                                "max-memory",
+                                split[0] + "/" + maxMemory
+                        ));
+                    }
+                }
             }
 
             if (properties.containsKey("min-process-count")) {
@@ -341,6 +363,10 @@ public final class CommandGroup extends GlobalCommand {
             }
 
             ExecutorAPI.getInstance().getSyncAPI().getGroupSyncAPI().updateProcessGroup(processGroup);
+            ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcesses(processGroup.getName()).forEach(e -> {
+                e.setProcessGroup(processGroup);
+                ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(e);
+            });
             return;
         }
 
