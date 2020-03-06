@@ -43,7 +43,7 @@ import java.util.function.UnaryOperator;
 
 public class BasicLocalNodeProcess implements LocalNodeProcess {
 
-    private static final String LIB_PATH = new File(".").getAbsolutePath();
+    private static final String LIB_PATH = Paths.get("").toAbsolutePath().toString();
 
     public BasicLocalNodeProcess(ProcessInformation processInformation) {
         this.processInformation = processInformation;

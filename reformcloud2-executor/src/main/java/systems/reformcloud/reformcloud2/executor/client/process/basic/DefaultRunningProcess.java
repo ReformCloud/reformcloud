@@ -39,7 +39,7 @@ import java.util.function.UnaryOperator;
 
 public final class DefaultRunningProcess implements RunningProcess {
 
-    private static final String LIB_PATH = new File(".").getAbsolutePath();
+    private static final String LIB_PATH = Paths.get("").toAbsolutePath().toString();
 
     public DefaultRunningProcess(ProcessInformation processInformation) {
         this.processInformation = processInformation;
