@@ -36,7 +36,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.logger.LoggerBase;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.coloured.ColouredLoggerHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.other.DefaultLoggerHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.challenge.shared.ClientChallengeAuthHandler;
-import systems.reformcloud.reformcloud2.executor.api.common.network.challenge.shared.ServerChallengeAuthHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.challenge.shared.SharedChallengeProvider;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.handler.DefaultJsonNetworkHandler;
@@ -84,6 +83,7 @@ import systems.reformcloud.reformcloud2.executor.node.config.NodeConfig;
 import systems.reformcloud.reformcloud2.executor.node.config.NodeExecutorConfig;
 import systems.reformcloud.reformcloud2.executor.node.dump.NodeDumpUtil;
 import systems.reformcloud.reformcloud2.executor.node.network.DefaultNodeNetworkManager;
+import systems.reformcloud.reformcloud2.executor.node.network.auth.NodeChallengeAuthHandler;
 import systems.reformcloud.reformcloud2.executor.node.network.channel.NodeNetworkChannelReader;
 import systems.reformcloud.reformcloud2.executor.node.network.channel.NodeNetworkSuccessHandler;
 import systems.reformcloud.reformcloud2.executor.node.network.client.NodeNetworkClient;
@@ -260,7 +260,7 @@ public class NodeExecutor extends Node {
                 ip,
                 port,
                 () -> new NodeNetworkChannelReader(this.packetHandler),
-                new ServerChallengeAuthHandler(new SharedChallengeProvider(this.nodeExecutorConfig.getConnectionKey()), new NodeNetworkSuccessHandler())))
+                new NodeChallengeAuthHandler(new SharedChallengeProvider(this.nodeExecutorConfig.getConnectionKey()), new NodeNetworkSuccessHandler())))
         );
 
         this.nodeConfig.getHttpNetworkListener().forEach(map -> map.forEach((host, port) -> {

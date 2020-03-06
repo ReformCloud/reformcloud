@@ -41,10 +41,8 @@ public final class ChallengeSecurity {
     @Nullable
     public static String decodeChallengeRequest(@Nonnull String key, @Nonnull byte[] request) {
         byte[] keyBytes = Arrays.copyOf(key.getBytes(), 256 / 8);
-        System.out.println(1);
 
         SecretKeySpec secretKeySpec = new SecretKeySpec(keyBytes, "AES");
-        System.out.println(2);
         try {
             return decryptChallengeRequest0(request, secretKeySpec);
         } catch (final GeneralSecurityException ex) {
@@ -66,17 +64,12 @@ public final class ChallengeSecurity {
     }
 
     private static String decryptChallengeRequest0(byte[] input, SecretKeySpec secretKeySpec) throws GeneralSecurityException {
-        System.out.println(3);
         Cipher cipher = Cipher.getInstance("AES/ECB/PKCS7Padding", "BC");
-        System.out.println(4);
         cipher.init(Cipher.DECRYPT_MODE, secretKeySpec);
-        System.out.println(5);
+
         byte[] plainText = new byte[cipher.getOutputSize(input.length)];
-        System.out.println(6);
         int ptLength = cipher.update(input, 0, input.length, plainText, 0);
-        System.out.println(7);
         cipher.doFinal(plainText, ptLength);
-        System.out.println(8);
         return new String(plainText, StandardCharsets.UTF_8).trim();
     }
 

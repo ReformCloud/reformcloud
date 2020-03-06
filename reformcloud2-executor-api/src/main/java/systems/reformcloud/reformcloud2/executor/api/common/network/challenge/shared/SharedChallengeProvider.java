@@ -46,7 +46,7 @@ public final class SharedChallengeProvider implements ChallengeProvider {
 
     private void removeLater(String sender) {
         Task.EXECUTOR.execute(() -> {
-            AbsoluteThread.sleep(TimeUnit.SECONDS, 10);
+            AbsoluteThread.sleep(TimeUnit.SECONDS, 30);
             this.runningChallenges.remove(sender);
         });
     }

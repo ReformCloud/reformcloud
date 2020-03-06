@@ -18,10 +18,7 @@ public final class PacketDecoder extends ByteToMessageDecoder {
 
         try {
             int id = NetworkUtil.read(byteBuf);
-
-            list.add(new DefaultWrappedByteInput(
-                    id, NetworkUtil.readBytes(byteBuf)
-            ));
+            list.add(new DefaultWrappedByteInput(id, NetworkUtil.readBytes(byteBuf)));
         } catch (final Throwable throwable) {
             throwable.printStackTrace();
         }

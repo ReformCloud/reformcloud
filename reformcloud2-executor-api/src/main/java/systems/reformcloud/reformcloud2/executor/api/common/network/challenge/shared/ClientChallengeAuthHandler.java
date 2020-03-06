@@ -33,23 +33,16 @@ public final class ClientChallengeAuthHandler implements ChallengeAuthHandler {
         if (input.packetID() == -512) {
             // challenge from server
             byte[] bytes = input.content().get("challenge", byte[].class);
-            System.out.println("Received challenge ");
-            ChallengeSecurity.hash("");
             if (bytes == null) {
                 channelHandlerContext.channel().close().syncUninterruptibly();
                 return false;
             }
 
-            System.out.println("Valid");
-
             String result = ChallengeSecurity.decodeChallengeRequest(this.key, bytes);
             if (result == null) {
-                System.out.println("result null");
                 channelHandlerContext.channel().close().syncUninterruptibly();
                 return false;
             }
-
-            System.out.println("decoded");
 
             String hashed = ChallengeSecurity.hash(result);
             if (hashed == null) {
@@ -57,10 +50,8 @@ public final class ClientChallengeAuthHandler implements ChallengeAuthHandler {
                 return false;
             }
 
-            System.out.println("sending result");
-
             channelHandlerContext.channel().writeAndFlush(new JsonPacket(
-                    -511, supplier.get().add("result", hashed)
+                    -511, supplier.get().add("result", hashed).add("name", this.name)
             )).syncUninterruptibly();
             return false;
         }

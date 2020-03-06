@@ -22,6 +22,8 @@ public final class ChannelReaderHelper extends SimpleChannelInboundHandler<Wrapp
 
     private boolean auth = false;
 
+    private boolean wasActive = false;
+
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         channelReader.exceptionCaught(ctx, cause);
@@ -29,7 +31,8 @@ public final class ChannelReaderHelper extends SimpleChannelInboundHandler<Wrapp
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
-        if (!this.auth) {
+        if (!this.auth && !this.wasActive) {
+            this.wasActive = true;
             this.authHandler.handleChannelActive(ctx);
         }
 
@@ -39,6 +42,8 @@ public final class ChannelReaderHelper extends SimpleChannelInboundHandler<Wrapp
     @Override
     public void channelInactive(ChannelHandlerContext ctx) {
         channelReader.channelInactive(ctx);
+        this.wasActive = false;
+        this.auth = false;
     }
 
     @Override
@@ -50,7 +55,7 @@ public final class ChannelReaderHelper extends SimpleChannelInboundHandler<Wrapp
     protected void channelRead0(ChannelHandlerContext channelHandlerContext, WrappedByteInput input) {
         if (!auth) {
             try {
-                Packet packet = DefaultJsonNetworkHandler.readPacket(-512, input.toObjectStream());
+                Packet packet = DefaultJsonNetworkHandler.readPacket(input.getPacketID(), input.toObjectStream());
                 String name = packet.content().getOrDefault("name", (String) null);
                 if (name == null || DefaultChannelManager.INSTANCE.get(name).isPresent()) {
                     System.out.println("Unknown connect from channel (Name=" + name + "). If the name is null, that might be an attack");

@@ -21,6 +21,15 @@ public interface NetworkChannelReader {
     @Nonnull
     PacketSender sender();
 
+    /**
+     * Sets the context of the channel and the name if the current channel.
+     * <br>
+     * This method can only get called once. If you call it twice it will throws an exception.
+     *
+     * @param channelHandlerContext The context of the channel which should get registered
+     * @param name                  The name of the channel which should get registered
+     * @see systems.reformcloud.reformcloud2.executor.api.common.network.handler.ChannelReaderHelper Gets called there
+     */
     void setChannelHandlerContext(@Nonnull ChannelHandlerContext channelHandlerContext, @Nonnull String name);
 
     /**

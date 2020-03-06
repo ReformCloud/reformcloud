@@ -47,6 +47,7 @@ public final class DefaultNetworkClient implements NetworkClient {
                     .addListener(ChannelFutureListener.CLOSE_ON_FAILURE)
                     .addListener(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE)
                     .channel();
+            connectTask.complete(true);
         } catch (final Exception ex) {
             ex.printStackTrace();
             connectTask.complete(false);

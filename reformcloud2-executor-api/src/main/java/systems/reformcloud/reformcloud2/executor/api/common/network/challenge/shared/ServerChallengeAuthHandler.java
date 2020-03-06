@@ -9,13 +9,23 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packe
 
 import javax.annotation.Nonnull;
 import java.util.function.BiConsumer;
+import java.util.function.Function;
 
-public final class ServerChallengeAuthHandler implements ChallengeAuthHandler {
+public class ServerChallengeAuthHandler implements ChallengeAuthHandler {
 
     public ServerChallengeAuthHandler(ChallengeProvider provider, BiConsumer<ChannelHandlerContext, Packet> afterSuccess) {
         this.provider = provider;
         this.afterSuccess = afterSuccess;
+        this.name = ignored -> "Controller";
     }
+
+    public ServerChallengeAuthHandler(ChallengeProvider provider, BiConsumer<ChannelHandlerContext, Packet> afterSuccess, Function<String, String> name) {
+        this.provider = provider;
+        this.afterSuccess = afterSuccess;
+        this.name = name;
+    }
+
+    private final Function<String, String> name;
 
     private final ChallengeProvider provider;
 
@@ -31,9 +41,8 @@ public final class ServerChallengeAuthHandler implements ChallengeAuthHandler {
                 throw new RuntimeException("Unexpected issue while generating challenge for sender " + name);
             }
 
-            System.out.println("created challenge for " + name);
             channelHandlerContext.channel().writeAndFlush(new JsonPacket(
-                    -512, new JsonConfiguration().add("challenge", challenge).add("name", "Controller")
+                    -512, new JsonConfiguration().add("challenge", challenge).add("name", this.name.apply(name))
             )).syncUninterruptibly();
             return false;
         }
@@ -41,20 +50,15 @@ public final class ServerChallengeAuthHandler implements ChallengeAuthHandler {
         if (input.packetID() == -511) {
             // result of challenge
             String challengeResult = input.content().getOrDefault("result", (String) null);
-            System.out.println("Received result from " + name);
             if (challengeResult == null) {
                 channelHandlerContext.channel().close().syncUninterruptibly();
                 return false;
             }
 
-            System.out.println("result sent");
-
             if (this.provider.checkResult(name, challengeResult)) {
                 this.afterSuccess.accept(channelHandlerContext, input);
                 return true;
             }
-
-            System.out.println("Check failed");
 
             channelHandlerContext.channel().close().syncUninterruptibly();
             return false;

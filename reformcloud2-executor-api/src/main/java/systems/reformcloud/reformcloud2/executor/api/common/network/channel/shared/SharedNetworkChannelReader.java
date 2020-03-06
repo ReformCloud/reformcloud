@@ -40,7 +40,7 @@ public abstract class SharedNetworkChannelReader implements NetworkChannelReader
 
     @Override
     public void setChannelHandlerContext(@Nonnull ChannelHandlerContext channelHandlerContext, @Nonnull String name) {
-        Conditions.isTrue(this.packetHandler == null, "Cannot redefine packet sender");
+        Conditions.isTrue(this.packetSender == null, "Cannot redefine packet sender");
         this.packetSender = new DefaultPacketSender(channelHandlerContext);
         this.packetSender.setName(name);
         DefaultChannelManager.INSTANCE.registerChannel(this.packetSender);
