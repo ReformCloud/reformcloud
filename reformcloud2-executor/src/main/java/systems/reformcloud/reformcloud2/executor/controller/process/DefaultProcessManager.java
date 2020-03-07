@@ -115,9 +115,8 @@ public final class DefaultProcessManager implements ProcessManager {
                 return null;
             }
 
-            Template found = Streams.filter(processGroup.getTemplates(), test -> Objects.equals(test.getName(), template));
-
-            ProcessInformation processInformation = create(processGroup, found, configurable);
+            Template found = Streams.filter(processGroup.getTemplates(), test -> template.equals(test.getName()));
+            ProcessInformation processInformation = this.create(processGroup, found, configurable);
             if (processInformation == null) {
                 return null;
             }

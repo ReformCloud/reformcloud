@@ -1,4 +1,4 @@
-package systems.reformcloud.reformcloud2.executor.client.packet.in;
+package systems.reformcloud.reformcloud2.executor.client.network.packet.in;
 
 import systems.reformcloud.reformcloud2.executor.api.client.process.RunningProcess;
 import systems.reformcloud.reformcloud2.executor.api.common.network.NetworkUtil;
