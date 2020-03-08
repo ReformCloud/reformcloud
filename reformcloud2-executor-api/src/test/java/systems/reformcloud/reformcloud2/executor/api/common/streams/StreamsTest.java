@@ -1,4 +1,4 @@
-package systems.reformcloud.reformcloud2.executor.api.common;
+package systems.reformcloud.reformcloud2.executor.api.common.streams;
 
 import org.junit.Before;
 import org.junit.Test;
