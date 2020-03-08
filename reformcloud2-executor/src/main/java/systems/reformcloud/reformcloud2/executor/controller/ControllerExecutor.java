@@ -63,6 +63,7 @@ import systems.reformcloud.reformcloud2.executor.controller.api.message.ChannelM
 import systems.reformcloud.reformcloud2.executor.controller.api.player.PlayerAPIImplementation;
 import systems.reformcloud.reformcloud2.executor.controller.api.plugins.PluginAPIImplementation;
 import systems.reformcloud.reformcloud2.executor.controller.api.process.ProcessAPIImplementation;
+import systems.reformcloud.reformcloud2.executor.controller.commands.CommandClients;
 import systems.reformcloud.reformcloud2.executor.controller.config.ControllerConfig;
 import systems.reformcloud.reformcloud2.executor.controller.config.ControllerExecutorConfig;
 import systems.reformcloud.reformcloud2.executor.controller.network.channel.ControllerNetworkChannelReader;
@@ -205,48 +206,6 @@ public final class ControllerExecutor extends Controller {
                 () -> new ControllerNetworkChannelReader(this.packetHandler),
                 new ServerChallengeAuthHandler(new SharedChallengeProvider(this.controllerExecutorConfig.getConnectionKey()), new ControllerNetworkSuccessHandler())
         )));
-
-
-
-
-                /*new DefaultServerAuthHandler(
-                packetHandler,
-                packetSender -> {
-                    ClientManager.INSTANCE.disconnectClient(packetSender.getName());
-                    processManager.onChannelClose(packetSender.getName());
-                },
-                packet -> {
-                    DefaultAuth auth = packet.content().get("auth", Auth.TYPE);
-                    if (auth == null) {
-                        return new Duo<>("", false);
-                    }
-
-                    if (!auth.key().equals(controllerExecutorConfig.getConnectionKey())) {
-                        System.out.println(LanguageManager.get("network-channel-auth-failed", auth.getName()));
-                        return new Duo<>(auth.getName(), false);
-                    }
-
-                    if (auth.type().equals(NetworkType.CLIENT)) {
-                        System.out.println(LanguageManager.get("client-connected", auth.getName()));
-                        DefaultClientRuntimeInformation runtimeInformation = auth.extra().get("info", ClientRuntimeInformation.TYPE);
-                        ClientManager.INSTANCE.connectClient(runtimeInformation);
-                    } else {
-                        ProcessInformation information = processManager.getProcess(auth.getName());
-                        if (information == null) {
-                            return new Duo<>(auth.getName(), false);
-                        }
-
-                        information.getNetworkInfo().setConnected(true);
-                        information.setProcessState(ProcessState.READY);
-                        processManager.update(information);
-
-                        System.out.println(LanguageManager.get("process-connected", auth.getName(), auth.parent()));
-                    }
-
-                    System.out.println(LanguageManager.get("network-channel-auth-success", auth.getName(), auth.parent()));
-                    return new Duo<>(auth.getName(), true);
-                }
-        ))));*/
 
         applicationLoader.loadApplications();
 
@@ -457,6 +416,7 @@ public final class ControllerExecutor extends Controller {
                 }, e -> DefaultChannelManager.INSTANCE.get(e.getParent()).ifPresent(packetSender -> packetSender.sendPacket(
                         new ControllerPacketOutCopyProcess(e.getProcessUniqueID())
                 ))))
+                .register(new CommandClients())
                 .register(new CommandPlayers())
                 .register(new CommandGroup())
                 .register(new CommandApplication())

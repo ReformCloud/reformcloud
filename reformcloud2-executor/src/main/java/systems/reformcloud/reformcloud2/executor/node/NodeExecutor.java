@@ -79,6 +79,7 @@ import systems.reformcloud.reformcloud2.executor.node.api.process.ProcessAPIImpl
 import systems.reformcloud.reformcloud2.executor.node.cluster.DefaultClusterManager;
 import systems.reformcloud.reformcloud2.executor.node.cluster.DefaultNodeInternalCluster;
 import systems.reformcloud.reformcloud2.executor.node.cluster.sync.DefaultClusterSyncManager;
+import systems.reformcloud.reformcloud2.executor.node.commands.CommandCluster;
 import systems.reformcloud.reformcloud2.executor.node.config.NodeConfig;
 import systems.reformcloud.reformcloud2.executor.node.config.NodeExecutorConfig;
 import systems.reformcloud.reformcloud2.executor.node.dump.NodeDumpUtil;
@@ -552,6 +553,7 @@ public class NodeExecutor extends Node {
                         ));
                     }
                 }))
+                .register(new CommandCluster())
                 .register(new CommandPlayers())
                 .register(new CommandGroup())
                 .register(new CommandApplication())

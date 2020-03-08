@@ -122,7 +122,7 @@
             <plugin>
                 <groupId>de.derklaro</groupId>
                 <artifactId>dependency-list-maven-plugin</artifactId>
-                <version>1.1</version>
+                <version>1.2</version>
                 <configuration>
                     <excludedScopes>
                         <excludedScope>test</excludedScope>
@@ -144,6 +144,7 @@
                     <overrideExistingFile>true</overrideExistingFile>
                     <resolveDependenciesOfDependencies>true</resolveDependenciesOfDependencies>
                     <includeOptionalDependencies>false</includeOptionalDependencies>
+                    <createParentFiles>true</createParentFiles>
                 </configuration>
                 <executions>
                     <execution>
