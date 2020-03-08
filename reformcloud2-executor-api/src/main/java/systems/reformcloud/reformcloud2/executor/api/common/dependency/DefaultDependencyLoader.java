@@ -56,6 +56,9 @@ public final class DefaultDependencyLoader extends DependencyLoader {
             ), new DefaultDependency(
                     DefaultRepositories.MAVEN_CENTRAL,
                     "org.fusesource.jansi", "jansi", PROPERTIES
+            ), new DefaultDependency(
+                    DefaultRepositories.MAVEN_CENTRAL,
+                    "org.bouncycastle", "bcprov-jdk15on", PROPERTIES
             )
     );
 

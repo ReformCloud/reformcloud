@@ -21,12 +21,12 @@ import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Trio;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
 import systems.reformcloud.reformcloud2.executor.api.controller.process.ProcessManager;
 import systems.reformcloud.reformcloud2.executor.controller.ControllerExecutor;
-import systems.reformcloud.reformcloud2.executor.controller.packet.out.ControllerPacketOutProcessDisconnected;
-import systems.reformcloud.reformcloud2.executor.controller.packet.out.ControllerPacketOutStartProcess;
-import systems.reformcloud.reformcloud2.executor.controller.packet.out.ControllerPacketOutStopProcess;
-import systems.reformcloud.reformcloud2.executor.controller.packet.out.event.ControllerEventProcessClosed;
-import systems.reformcloud.reformcloud2.executor.controller.packet.out.event.ControllerEventProcessStarted;
-import systems.reformcloud.reformcloud2.executor.controller.packet.out.event.ControllerEventProcessUpdated;
+import systems.reformcloud.reformcloud2.executor.controller.network.packets.out.ControllerPacketOutProcessDisconnected;
+import systems.reformcloud.reformcloud2.executor.controller.network.packets.out.ControllerPacketOutStartProcess;
+import systems.reformcloud.reformcloud2.executor.controller.network.packets.out.ControllerPacketOutStopProcess;
+import systems.reformcloud.reformcloud2.executor.controller.network.packets.out.event.ControllerEventProcessClosed;
+import systems.reformcloud.reformcloud2.executor.controller.network.packets.out.event.ControllerEventProcessStarted;
+import systems.reformcloud.reformcloud2.executor.controller.network.packets.out.event.ControllerEventProcessUpdated;
 
 import javax.annotation.Nonnull;
 import java.util.*;
@@ -115,9 +115,8 @@ public final class DefaultProcessManager implements ProcessManager {
                 return null;
             }
 
-            Template found = Streams.filter(processGroup.getTemplates(), test -> Objects.equals(test.getName(), template));
-
-            ProcessInformation processInformation = create(processGroup, found, configurable);
+            Template found = Streams.filter(processGroup.getTemplates(), test -> template == null || template.equals(test.getName()));
+            ProcessInformation processInformation = this.create(processGroup, found, configurable);
             if (processInformation == null) {
                 return null;
             }

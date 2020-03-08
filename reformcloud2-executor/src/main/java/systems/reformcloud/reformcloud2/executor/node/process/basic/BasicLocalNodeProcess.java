@@ -43,7 +43,7 @@ import java.util.function.UnaryOperator;
 
 public class BasicLocalNodeProcess implements LocalNodeProcess {
 
-    private static final String LIB_PATH = new File(".").getAbsolutePath();
+    private static final String LIB_PATH = Paths.get("").toAbsolutePath().toString();
 
     public BasicLocalNodeProcess(ProcessInformation processInformation) {
         this.processInformation = processInformation;
@@ -558,7 +558,7 @@ public class BasicLocalNodeProcess implements LocalNodeProcess {
     private void createTemplateAndFiles() {
         SystemHelper.createDirectory(Paths.get(path + "/plugins"));
         SystemHelper.createDirectory(Paths.get(path + "/reformcloud/.connection"));
-        new JsonConfiguration().add("key", NodeExecutor.getInstance().getNodeExecutorConfig().getCurrentNodeConnectionKey())
+        new JsonConfiguration().add("key", NodeExecutor.getInstance().getNodeExecutorConfig().getConnectionKey())
                 .write(path + "/reformcloud/.connection/key.json");
     }
 

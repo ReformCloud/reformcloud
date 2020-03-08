@@ -17,8 +17,8 @@ import systems.reformcloud.reformcloud2.executor.api.common.utility.system.Downl
 import systems.reformcloud.reformcloud2.executor.api.common.utility.system.SystemHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
 import systems.reformcloud.reformcloud2.executor.client.ClientExecutor;
-import systems.reformcloud.reformcloud2.executor.client.packet.out.ClientPacketOutProcessPrepared;
-import systems.reformcloud.reformcloud2.executor.client.packet.out.ClientPacketOutProcessStopped;
+import systems.reformcloud.reformcloud2.executor.client.network.packet.out.ClientPacketOutProcessPrepared;
+import systems.reformcloud.reformcloud2.executor.client.network.packet.out.ClientPacketOutProcessStopped;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -39,7 +39,7 @@ import java.util.function.UnaryOperator;
 
 public final class DefaultRunningProcess implements RunningProcess {
 
-    private static final String LIB_PATH = new File(".").getAbsolutePath();
+    private static final String LIB_PATH = Paths.get("").toAbsolutePath().toString();
 
     public DefaultRunningProcess(ProcessInformation processInformation) {
         this.processInformation = processInformation;

@@ -160,7 +160,7 @@ public final class Runner {
             s = console.readLine();
         }
 
-        return s.equalsIgnoreCase("controller") ? 1 : s.equalsIgnoreCase("node") ? 4 :  2;
+        return s.equalsIgnoreCase("controller") ? 1 : s.equalsIgnoreCase("node") ? 4 : 2;
     }
 
     private static void readProperties() {
@@ -241,10 +241,9 @@ public final class Runner {
             return;
         }
 
-        String libPath = System.getProperty("reformcloud.lib.path") + "/reformcloud/.bin/libs/";
-        File file = new File(libPath);
+        File file = new File(System.getProperty("reformcloud.lib.path") + "/reformcloud/.bin/libs/");
         if (!file.exists() || !file.isDirectory()) {
-            throw new RuntimeException("Bad lib path given " + libPath);
+            throw new RuntimeException("Bad lib path given " + System.getProperty("reformcloud.lib.path"));
         }
 
         try {
@@ -254,9 +253,10 @@ public final class Runner {
                     continue;
                 }
 
-                inst.appendToSystemClassLoaderSearch(new JarFile(file));
+                inst.appendToSystemClassLoaderSearch(new JarFile(dependency));
             }
-        } catch (final Throwable ignored) {
+        } catch (final Throwable throwable) {
+            throwable.printStackTrace();
         }
     }
 

@@ -14,7 +14,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams
 import systems.reformcloud.reformcloud2.executor.api.common.utility.optional.ReferencedOptional;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.defaults.DefaultTask;
-import systems.reformcloud.reformcloud2.executor.controller.packet.out.messaging.ProxiedChannelMessage;
+import systems.reformcloud.reformcloud2.executor.controller.network.packets.out.messaging.ProxiedChannelMessage;
 import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
 
 import javax.annotation.Nonnull;

@@ -9,7 +9,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInfor
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.defaults.DefaultTask;
 import systems.reformcloud.reformcloud2.executor.api.controller.process.ProcessManager;
-import systems.reformcloud.reformcloud2.executor.controller.packet.out.api.ControllerExecuteCommand;
+import systems.reformcloud.reformcloud2.executor.controller.network.packets.out.api.ControllerExecuteCommand;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

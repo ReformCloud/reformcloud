@@ -50,8 +50,6 @@ public class NodeExecutorConfig {
 
     private String connectionKey;
 
-    private String currentNodeConnectionKey;
-
     private final List<MainGroup> mainGroups = new ArrayList<>();
 
     private final List<ProcessGroup> processGroups = new ArrayList<>();
@@ -102,10 +100,6 @@ public class NodeExecutorConfig {
                     "",
                     s -> true,
                     s -> {
-                        if (s.equalsIgnoreCase("null")) {
-                            return;
-                        }
-
                         if (s.equalsIgnoreCase("gen")) {
                             s = StringUtil.generateString(50);
                         }
@@ -139,8 +133,6 @@ public class NodeExecutorConfig {
         this.self = this.nodeConfig.prepare();
         this.connectionKey = JsonConfiguration.read("reformcloud/files/.connection/connection.json").getOrDefault("key", (String) null);
         this.loadGroups();
-
-        this.currentNodeConnectionKey = StringUtil.generateString(64);
     }
 
     private void loadGroups() {
@@ -199,10 +191,6 @@ public class NodeExecutorConfig {
 
     public String getConnectionKey() {
         return connectionKey;
-    }
-
-    public String getCurrentNodeConnectionKey() {
-        return currentNodeConnectionKey;
     }
 
     public boolean isFirstStartup() {

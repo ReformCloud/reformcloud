@@ -14,8 +14,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.event.EventManager;
 import systems.reformcloud.reformcloud2.executor.api.common.event.basic.DefaultEventManager;
 import systems.reformcloud.reformcloud2.executor.api.common.event.handler.Listener;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.messages.IngameMessages;
-import systems.reformcloud.reformcloud2.executor.api.common.network.auth.NetworkType;
-import systems.reformcloud.reformcloud2.executor.api.common.network.auth.defaults.DefaultAuth;
+import systems.reformcloud.reformcloud2.executor.api.common.network.challenge.shared.ClientChallengeAuthHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.common.network.client.DefaultNetworkClient;
@@ -24,13 +23,15 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.messaging.Pr
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.defaults.DefaultPacketHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.handler.PacketHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
+import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.system.SystemHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
 import systems.reformcloud.reformcloud2.executor.api.executor.PlayerAPIExecutor;
-import systems.reformcloud.reformcloud2.executor.api.packets.in.APIPacketInAPIAction;
-import systems.reformcloud.reformcloud2.executor.api.packets.in.APIPacketInPluginAction;
-import systems.reformcloud.reformcloud2.executor.api.packets.out.APIBungeePacketOutRequestIngameMessages;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.APINetworkChannelReader;
+import systems.reformcloud.reformcloud2.executor.api.network.packets.in.APIPacketInAPIAction;
+import systems.reformcloud.reformcloud2.executor.api.network.packets.in.APIPacketInPluginAction;
+import systems.reformcloud.reformcloud2.executor.api.network.packets.out.APIBungeePacketOutRequestIngameMessages;
 import systems.reformcloud.reformcloud2.executor.api.spigot.plugins.PluginExecutorContainer;
 
 import javax.annotation.Nonnull;
@@ -67,18 +68,23 @@ public final class SpigotExecutor extends API implements PlayerAPIExecutor {
         SystemHelper.deleteFile(new File("reformcloud/.connection/key.json"));
         JsonConfiguration connectionConfig = JsonConfiguration.read("reformcloud/.connection/connection.json");
 
-        ProcessInformation startInfo = this.thisProcessInformation = connectionConfig.get("startInfo", ProcessInformation.TYPE);
+        this.thisProcessInformation = connectionConfig.get("startInfo", ProcessInformation.TYPE);
+        if (thisProcessInformation == null) {
+            System.exit(0);
+            return;
+        }
 
         this.networkClient.connect(
                 connectionConfig.getString("controller-host"),
                 connectionConfig.getInteger("controller-port"),
-                new DefaultAuth(
+                () -> new APINetworkChannelReader(this.packetHandler),
+                new ClientChallengeAuthHandler(
                         connectionKey,
-                        startInfo.getParent(),
-                        NetworkType.PROCESS,
-                        startInfo.getName(),
-                        new JsonConfiguration()
-                ), networkChannelReader
+                        thisProcessInformation.getName(),
+                        () -> new JsonConfiguration(),
+                        context -> {
+                        } // unused here
+                )
         );
         ExecutorAPI.setInstance(this);
         awaitConnectionAndUpdate();
@@ -118,7 +124,7 @@ public final class SpigotExecutor extends API implements PlayerAPIExecutor {
     }
 
     @Listener
-    public void handleThisUpdate(final ProcessUpdatedEvent event) {
+    public void handle(final ProcessUpdatedEvent event) {
         if (event.getProcessInformation().getProcessUniqueID().equals(thisProcessInformation.getProcessUniqueID())) {
             thisProcessInformation = event.getProcessInformation();
         }
@@ -139,6 +145,8 @@ public final class SpigotExecutor extends API implements PlayerAPIExecutor {
             }
 
             thisProcessInformation.updateMaxPlayers(Bukkit.getMaxPlayers());
+            thisProcessInformation.getNetworkInfo().setConnected(true);
+            thisProcessInformation.setProcessState(ProcessState.READY);
             thisProcessInformation.updateRuntimeInformation();
             ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(thisProcessInformation);
 

@@ -7,7 +7,7 @@ import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.socket.ServerSocketChannel;
 import systems.reformcloud.reformcloud2.executor.api.common.network.NetworkUtil;
-import systems.reformcloud.reformcloud2.executor.api.common.network.auth.challenge.ChallengeAuthHandler;
+import systems.reformcloud.reformcloud2.executor.api.common.network.challenge.ChallengeAuthHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.NetworkChannelReader;
 import systems.reformcloud.reformcloud2.executor.api.common.network.handler.ServerInitializerHandler;
 
@@ -39,7 +39,7 @@ public final class DefaultNetworkServer implements NetworkServer {
                         .childOption(ChannelOption.IP_TOS, 0x18)
                         .childOption(ChannelOption.TCP_NODELAY, true)
 
-                        .childHandler(new ServerInitializerHandler(readerHelper.get(), challengeAuthHandler))
+                        .childHandler(new ServerInitializerHandler(readerHelper, challengeAuthHandler))
 
                         .bind(host, port)
 
