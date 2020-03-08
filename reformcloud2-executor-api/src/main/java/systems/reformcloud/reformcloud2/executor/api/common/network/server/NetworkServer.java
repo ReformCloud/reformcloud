@@ -1,6 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.api.common.network.server;
 
-import systems.reformcloud.reformcloud2.executor.api.common.network.auth.challenge.ChallengeAuthHandler;
+import systems.reformcloud.reformcloud2.executor.api.common.network.challenge.ChallengeAuthHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.NetworkChannelReader;
 
 import javax.annotation.Nonnull;

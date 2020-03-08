@@ -109,9 +109,6 @@ public class DefaultNodeInternalCluster implements InternalNetworkCluster {
             result.set(self);
         }
 
-        System.out.println("Connected Nodes: " + getConnectedNodes().size());
-        System.out.println("Names: " + String.join(", ", getConnectedNodes().stream().map(NodeInformation::getName).toArray(String[]::new)));
-
         getConnectedNodes().forEach(e -> {
             if (!group.getStartupConfiguration().isSearchBestClientAlone()
                     && !group.getStartupConfiguration().getUseOnlyTheseClients().contains(e.getName())) {
@@ -129,8 +126,6 @@ public class DefaultNodeInternalCluster implements InternalNetworkCluster {
             NodeInformation current = result.get();
             long memoryOnCurrentNode = calcMem(current.getUsedMemory(), template);
             long memoryOnNewNode = calcMem(e.getUsedMemory(), template);
-
-            System.out.println("memory current: " + memoryOnCurrentNode + "/" + current.getMaxMemory() + " -- memory other " + memoryOnNewNode + "/" + e.getMaxMemory());
 
             if (memoryOnNewNode <= e.getMaxMemory() && memoryOnCurrentNode > memoryOnNewNode
                     && memoryOnCurrentNode <= current.getMaxMemory()) {

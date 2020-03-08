@@ -6,10 +6,13 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.channel.mana
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.optional.ReferencedOptional;
 import systems.reformcloud.reformcloud2.executor.client.ClientExecutor;
-import systems.reformcloud.reformcloud2.executor.client.packet.out.ClientPacketOutProcessRegistered;
+import systems.reformcloud.reformcloud2.executor.client.network.packet.out.ClientPacketOutProcessRegistered;
 import systems.reformcloud.reformcloud2.executor.client.screen.ProcessScreen;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;

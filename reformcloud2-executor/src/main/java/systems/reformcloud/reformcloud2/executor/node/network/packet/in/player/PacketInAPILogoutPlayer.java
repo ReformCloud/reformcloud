@@ -7,7 +7,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.channel.Pack
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.handler.DefaultJsonNetworkHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.api.common.process.join.OnlyProxyJoinHelper;
-import systems.reformcloud.reformcloud2.executor.controller.packet.out.event.ControllerEventLogoutPlayer;
+import systems.reformcloud.reformcloud2.executor.controller.network.packets.out.event.ControllerEventLogoutPlayer;
 import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
 import systems.reformcloud.reformcloud2.executor.node.cluster.sync.DefaultClusterSyncManager;
 
