@@ -366,6 +366,7 @@ public final class CommandGroup extends GlobalCommand {
             ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcesses(processGroup.getName()).forEach(e -> {
                 e.setProcessGroup(processGroup);
                 ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(e);
+                System.out.println(LanguageManager.get("command-group-edited-running-process", e.getName()));
             });
             return;
         }
