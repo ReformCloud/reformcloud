@@ -23,6 +23,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams.newCollection;
@@ -66,7 +67,11 @@ public class NodeExecutorConfig {
         createDirectories();
         if (!Files.exists(NodeConfig.PATH)) {
             firstStartup.set(true);
+
             AtomicReference<String> nodeName = new AtomicReference<>();
+            AtomicReference<String> networkAddress = new AtomicReference<>();
+            AtomicInteger networkPort = new AtomicInteger();
+
             setup.addQuestion(new DefaultSetupQuestion(
                     LanguageManager.get("node-setup-question-node-name"),
                     "",
@@ -83,15 +88,41 @@ public class NodeExecutorConfig {
                     LanguageManager.get("node-setup-question-node-address"),
                     LanguageManager.get("node-setup-question-node-address-wrong"),
                     e -> CommonHelper.getIpAddress(e.trim()) != null,
+                    e -> networkAddress.set(CommonHelper.getIpAddress(e.trim()))
+            )).addQuestion(new DefaultSetupQuestion(
+                    LanguageManager.get("node-setup-question-node-network-port"),
+                    LanguageManager.get("node-setup-question-integer", 0, 65535),
                     e -> {
-                        String ip = CommonHelper.getIpAddress(e.trim());
+                        Integer integer = CommonHelper.fromString(e);
+                        return integer != null && integer > 0 && integer < 65535;
+                    },
+                    e -> {
+                        Integer integer = CommonHelper.fromString(e);
+                        if (integer == null) {
+                            throw new RuntimeException(e);
+                        }
+
+                        networkPort.set(integer);
+                    }
+            )).addQuestion(new DefaultSetupQuestion(
+                    LanguageManager.get("node-setup-question-node-web-port"),
+                    LanguageManager.get("node-setup-question-integer", 0, 65535),
+                    e -> {
+                        Integer integer = CommonHelper.fromString(e);
+                        return integer != null && integer > 0 && integer < 65535;
+                    },
+                    e -> {
+                        Integer integer = CommonHelper.fromString(e);
+                        if (integer == null) {
+                            throw new RuntimeException(e);
+                        }
 
                         new JsonConfiguration().add("config", new NodeConfig(
                                 nodeName.get(),
                                 CommonHelper.calculateMaxMemory(),
-                                ip,
-                                Collections.singletonList(Collections.singletonMap(ip, 1809)),
-                                Collections.singletonList(Collections.singletonMap(ip, 2008)),
+                                networkAddress.get(),
+                                Collections.singletonList(Collections.singletonMap(networkAddress.get(), networkPort.get())),
+                                Collections.singletonList(Collections.singletonMap(networkAddress.get(), integer)),
                                 Collections.emptyList()
                         )).write(NodeConfig.PATH);
                     }
