@@ -1,72 +1,25 @@
 package systems.reformcloud.reformcloud2.executor.api.common.dependency;
 
-import systems.reformcloud.reformcloud2.executor.api.common.base.Conditions;
-import systems.reformcloud.reformcloud2.executor.api.common.dependency.repo.DefaultRepositories;
+import systems.reformcloud.reformcloud2.executor.api.common.dependency.util.DependencyParser;
 
 import javax.annotation.Nonnull;
-import java.io.IOException;
-import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Properties;
 
 public final class DefaultDependencyLoader extends DependencyLoader {
 
     private static final String path = System.getProperty("reformcloud.lib.path");
 
-    static {
-        Properties properties = new Properties();
-        try (InputStream inputStream = DefaultDependencyLoader.class.getClassLoader().getResourceAsStream("internal/versions.properties")) {
-            Conditions.nonNull(inputStream, "The current build you are running on is broken, try another");
-            properties.load(inputStream);
-        } catch (final IOException ex) {
-            ex.printStackTrace();
-        }
-
-        PROPERTIES = properties;
-    }
-
-    private static final Properties PROPERTIES;
-
-    private static final List<Dependency> DEFAULT_DEPENDENCIES = Arrays.asList(
-            new DefaultDependency(
-                    DefaultRepositories.MAVEN_CENTRAL,
-                    "io.netty", "netty-all", PROPERTIES
-            ), new DefaultDependency(
-                    DefaultRepositories.MAVEN_CENTRAL,
-                    "org.jline", "jline", PROPERTIES
-            ), new DefaultDependency(
-                    DefaultRepositories.MAVEN_CENTRAL,
-                    "com.google.code.gson", "gson", PROPERTIES
-            ), new DefaultDependency(
-                    DefaultRepositories.MAVEN_CENTRAL,
-                    "org.reflections", "reflections", PROPERTIES
-            ), new DefaultDependency(
-                    DefaultRepositories.MAVEN_CENTRAL,
-                    "com.google.guava", "guava", PROPERTIES
-            ), new DefaultDependency(
-                    DefaultRepositories.MAVEN_CENTRAL,
-                    "org.javassist", "javassist", PROPERTIES
-            ), new DefaultDependency(
-                    DefaultRepositories.MAVEN_CENTRAL,
-                    "org.fusesource.jansi", "jansi", PROPERTIES
-            ), new DefaultDependency(
-                    DefaultRepositories.MAVEN_CENTRAL,
-                    "org.bouncycastle", "bcprov-jdk15on", PROPERTIES
-            )
-    );
-
     private final List<URL> urls = new ArrayList<>();
 
     @Override
     public void loadDependencies() {
-        DEFAULT_DEPENDENCIES.forEach(dependency -> {
+        DependencyParser.getAllMavenCentralDependencies().forEach(dependency -> {
             System.out.println("Preloading dependency " + dependency.getArtifactID() + " " + dependency.getVersion()
                     + " from repo " + dependency.getRepository().getName() + "...");
             urls.add(loadDependency(dependency));

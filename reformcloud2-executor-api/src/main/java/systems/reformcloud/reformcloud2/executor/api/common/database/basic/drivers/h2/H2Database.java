@@ -6,8 +6,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.base.Conditions;
 import systems.reformcloud.reformcloud2.executor.api.common.database.Database;
 import systems.reformcloud.reformcloud2.executor.api.common.database.DatabaseReader;
 import systems.reformcloud.reformcloud2.executor.api.common.database.sql.SQLDatabaseReader;
-import systems.reformcloud.reformcloud2.executor.api.common.dependency.DefaultDependency;
-import systems.reformcloud.reformcloud2.executor.api.common.dependency.repo.DefaultRepositories;
+import systems.reformcloud.reformcloud2.executor.api.common.dependency.util.MavenCentralDependency;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.StringUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.maps.AbsentMap;
 
@@ -19,21 +18,16 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Map;
-import java.util.Properties;
 
 public class H2Database extends Database<Connection> {
 
     private final Map<String, DatabaseReader> perTableReader = new AbsentMap<>();
 
     public H2Database() {
-        Properties properties = new Properties();
-        properties.put("h2", "1.4.200");
-
-        URL url = DEPENDENCY_LOADER.loadDependency(new DefaultDependency(
-                DefaultRepositories.MAVEN_CENTRAL,
+        URL url = DEPENDENCY_LOADER.loadDependency(new MavenCentralDependency(
                 "com.h2database",
                 "h2",
-                properties
+                "1.4.200"
         ));
         Conditions.nonNull(url, StringUtil.formatError("dependency load for h2 database"));
         DEPENDENCY_LOADER.addDependency(url);

@@ -2,9 +2,13 @@ package systems.reformcloud.reformcloud2.executor.api.common.database.basic.driv
 
 import de.derklaro.projects.deer.api.basic.Filters;
 import de.derklaro.projects.deer.api.provider.DatabaseProvider;
+import systems.reformcloud.reformcloud2.executor.api.common.base.Conditions;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.database.Database;
 import systems.reformcloud.reformcloud2.executor.api.common.database.DatabaseReader;
+import systems.reformcloud.reformcloud2.executor.api.common.dependency.DefaultDependency;
+import systems.reformcloud.reformcloud2.executor.api.common.dependency.repo.DefaultRepositories;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.StringUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.maps.AbsentMap;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.defaults.DefaultTask;
@@ -12,6 +16,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.utility.task.default
 import javax.annotation.Nonnull;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -26,6 +31,8 @@ public final class FileDatabase extends Database<Path> {
     private final Map<String, DatabaseReader> perTableReader = new AbsentMap<>();
 
     public FileDatabase() {
+        this.initDependencies();
+
         try {
             Class.forName("de.derklaro.projects.deer.executor.BasicDatabaseDriver");
         } catch (final ClassNotFoundException ex) {
@@ -68,9 +75,9 @@ public final class FileDatabase extends Database<Path> {
     public DatabaseReader createForTable(String table) {
         return perTableReader.putIfAbsent(table, new DatabaseReader() {
 
-            private final de.derklaro.projects.deer.api.Database<JsonConfiguration> database = DatabaseProvider.getDatabaseDriver().getDatabase(
+            private final de.derklaro.projects.deer.api.Database<SerializableJsonConfiguration> database = DatabaseProvider.getDatabaseDriver().getDatabase(
                     new File(FileDatabase.this.table, table),
-                    JsonConfiguration::read,
+                    SerializableJsonConfiguration::new,
                     1
             );
 
@@ -78,7 +85,7 @@ public final class FileDatabase extends Database<Path> {
             @Override
             public Task<JsonConfiguration> find(@Nonnull String key) {
                 Task<JsonConfiguration> task = new DefaultTask<>();
-                Task.EXECUTOR.execute(() -> task.complete(database.getEntry(Filters.keyEq(key)).orElse(new JsonConfiguration())));
+                Task.EXECUTOR.execute(() -> task.complete(database.getEntry(Filters.keyEq(key)).orElse(new SerializableJsonConfiguration())));
                 return task;
             }
 
@@ -86,7 +93,7 @@ public final class FileDatabase extends Database<Path> {
             @Override
             public Task<JsonConfiguration> findIfAbsent(@Nonnull String identifier) {
                 Task<JsonConfiguration> task = new DefaultTask<>();
-                Task.EXECUTOR.execute(() -> task.complete(database.getEntry(Filters.anyValueMatch(identifier)).orElse(new JsonConfiguration())));
+                Task.EXECUTOR.execute(() -> task.complete(database.getEntry(Filters.anyValueMatch(identifier)).orElse(new SerializableJsonConfiguration())));
                 return task;
             }
 
@@ -95,13 +102,13 @@ public final class FileDatabase extends Database<Path> {
             public Task<JsonConfiguration> insert(@Nonnull String key, String identifier, @Nonnull JsonConfiguration data) {
                 Task<JsonConfiguration> task = new DefaultTask<>();
                 Task.EXECUTOR.execute(() -> {
-                    Optional<JsonConfiguration> optional = database.getEntry(Filters.keyEq(key));
+                    Optional<SerializableJsonConfiguration> optional = database.getEntry(Filters.keyEq(key));
                     if (optional.isPresent()) {
                         task.complete(optional.get());
                         return;
                     }
 
-                    database.insert(key, new String[]{identifier}, data);
+                    database.insert(key, new String[]{identifier}, new SerializableJsonConfiguration(data));
                     task.complete(data);
                 });
                 return task;
@@ -112,7 +119,7 @@ public final class FileDatabase extends Database<Path> {
             public Task<Boolean> update(@Nonnull String key, @Nonnull JsonConfiguration newData) {
                 Task<Boolean> task = new DefaultTask<>();
                 Task.EXECUTOR.execute(() -> {
-                    database.updateKey(Filters.keyEq(key), newData);
+                    database.updateKey(Filters.keyEq(key), new SerializableJsonConfiguration(newData));
                     task.complete(true);
                 });
                 return task;
@@ -123,7 +130,7 @@ public final class FileDatabase extends Database<Path> {
             public Task<Boolean> updateIfAbsent(@Nonnull String identifier, @Nonnull JsonConfiguration newData) {
                 Task<Boolean> task = new DefaultTask<>();
                 Task.EXECUTOR.execute(() -> {
-                    database.updateKey(Filters.anyValueMatch(identifier), newData);
+                    database.updateKey(Filters.anyValueMatch(identifier), new SerializableJsonConfiguration(newData));
                     task.complete(true);
                 });
                 return task;
@@ -205,5 +212,25 @@ public final class FileDatabase extends Database<Path> {
     @Override
     public Path get() {
         return Paths.get(table);
+    }
+
+    private void initDependencies() {
+        URL url = DEPENDENCY_LOADER.loadDependency(new DefaultDependency(
+                DefaultRepositories.REFORMCLOUD,
+                "de.derklaro.projects.deer",
+                "project-deer-executor",
+                "1.0-SNAPSHOT"
+        ));
+        Conditions.nonNull(url, StringUtil.formatError("dependency executor load for file database"));
+        DEPENDENCY_LOADER.addDependency(url);
+
+        URL apiUrl = DEPENDENCY_LOADER.loadDependency(new DefaultDependency(
+                DefaultRepositories.REFORMCLOUD,
+                "de.derklaro.projects.deer",
+                "project-deer-api",
+                "1.0-SNAPSHOT"
+        ));
+        Conditions.nonNull(apiUrl, StringUtil.formatError("dependency api load for file database"));
+        DEPENDENCY_LOADER.addDependency(apiUrl);
     }
 }

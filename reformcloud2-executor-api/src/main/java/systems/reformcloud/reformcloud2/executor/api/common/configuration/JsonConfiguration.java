@@ -19,7 +19,7 @@ import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.util.function.Predicate;
 
-public final class JsonConfiguration implements Configurable<JsonConfiguration> {
+public class JsonConfiguration implements Configurable<JsonConfiguration> {
 
     public static final ThreadLocal<Gson> GSON = ThreadLocal.withInitial(
             () -> new GsonBuilder()
@@ -73,6 +73,15 @@ public final class JsonConfiguration implements Configurable<JsonConfiguration> 
 
         Conditions.isTrue(jsonElement.isJsonObject(), "JsonElement has to be a json object");
         this.jsonObject = jsonElement.getAsJsonObject();
+    }
+
+    public JsonConfiguration(File file) {
+        try (InputStream stream = Files.newInputStream(file.toPath())) {
+            this.jsonObject = new JsonConfiguration(stream).getJsonObject();
+        } catch (final IOException ex) {
+            ex.printStackTrace();
+            this.jsonObject = new JsonObject();
+        }
     }
 
     public JsonConfiguration(JsonObject jsonObject) {
@@ -514,11 +523,5 @@ public final class JsonConfiguration implements Configurable<JsonConfiguration> 
 
     public static JsonConfiguration read(File path) {
         return read(path.toPath());
-    }
-
-    @Nonnull
-    @Override
-    public String toWriteableString() {
-        return this.toPrettyString();
     }
 }

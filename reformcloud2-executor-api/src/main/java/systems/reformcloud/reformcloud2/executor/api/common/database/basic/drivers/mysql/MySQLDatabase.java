@@ -4,8 +4,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.base.Conditions;
 import systems.reformcloud.reformcloud2.executor.api.common.database.Database;
 import systems.reformcloud.reformcloud2.executor.api.common.database.DatabaseReader;
 import systems.reformcloud.reformcloud2.executor.api.common.database.sql.SQLDatabaseReader;
-import systems.reformcloud.reformcloud2.executor.api.common.dependency.DefaultDependency;
-import systems.reformcloud.reformcloud2.executor.api.common.dependency.repo.DefaultRepositories;
+import systems.reformcloud.reformcloud2.executor.api.common.dependency.util.MavenCentralDependency;
 import systems.reformcloud.reformcloud2.executor.api.common.scheduler.TaskScheduler;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.StringUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.maps.AbsentMap;
@@ -18,7 +17,6 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.Map;
-import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
 public final class MySQLDatabase extends Database<Connection> {
@@ -29,14 +27,10 @@ public final class MySQLDatabase extends Database<Connection> {
             "&useLegacyDatetimeCode=false&serverTimezone=UTC";
 
     public MySQLDatabase() {
-        Properties properties = new Properties();
-        properties.setProperty("mysql-connector-java", "8.0.19");
-
-        URL dependency = DEPENDENCY_LOADER.loadDependency(new DefaultDependency(
-                DefaultRepositories.MAVEN_CENTRAL,
+        URL dependency = DEPENDENCY_LOADER.loadDependency(new MavenCentralDependency(
                 "mysql",
                 "mysql-connector-java",
-                properties
+                "8.0.19"
         ));
         Conditions.nonNull(dependency, StringUtil.formatError("dependency load for MySQL database"));
         DEPENDENCY_LOADER.addDependency(dependency);

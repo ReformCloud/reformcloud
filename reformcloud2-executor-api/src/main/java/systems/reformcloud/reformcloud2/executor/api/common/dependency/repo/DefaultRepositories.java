@@ -18,6 +18,20 @@ public final class DefaultRepositories {
         }
     };
 
+    public static final Repository REFORMCLOUD = new Repository() {
+        @Nonnull
+        @Override
+        public String getName() {
+            return "ReformCloud-Central";
+        }
+
+        @Nonnull
+        @Override
+        public String getURL() {
+            return "https://repo.reformcloud.systems/";
+        }
+    };
+
     public static final Repository SONATYPE = new Repository() {
         @Nonnull
         @Override
