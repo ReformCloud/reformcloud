@@ -10,7 +10,6 @@ import systems.reformcloud.reformcloud2.executor.node.cluster.sync.DefaultCluste
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.function.BiConsumer;
 
 public class DefaultClusterManager implements ClusterManager {
 
@@ -44,16 +43,14 @@ public class DefaultClusterManager implements ClusterManager {
     }
 
     @Override
-    public void handleConnect(InternalNetworkCluster cluster, NodeInformation nodeInformation, BiConsumer<Boolean, String> result) {
+    public void handleConnect(InternalNetworkCluster cluster, NodeInformation nodeInformation) {
         if (this.nodeInformation.stream().anyMatch(e -> e.getName().equals(nodeInformation.getName()))) {
-            result.accept(false, "A node with this name is already connected");
             return;
         }
 
         this.nodeInformation.add(nodeInformation);
         cluster.getConnectedNodes().add(nodeInformation);
-        recalculateHead();
-        result.accept(true, null);
+        this.recalculateHead();
     }
 
     @Override

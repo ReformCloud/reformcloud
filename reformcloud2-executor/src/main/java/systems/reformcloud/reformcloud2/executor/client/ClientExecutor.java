@@ -199,7 +199,7 @@ public final class ClientExecutor extends Client {
     @Override
     public void shutdown() {
         this.watchdogThread.interrupt();
-        processQueue.interrupt();
+        this.processQueue.interrupt();
         this.screenManager.interrupt();
 
         this.packetHandler.clearHandlers();

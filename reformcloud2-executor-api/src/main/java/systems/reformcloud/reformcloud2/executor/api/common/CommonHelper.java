@@ -5,15 +5,9 @@ import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessRunti
 import systems.reformcloud.reformcloud2.executor.api.common.utility.optional.ReferencedOptional;
 
 import javax.annotation.Nonnull;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStreamWriter;
 import java.lang.management.*;
 import java.lang.ref.WeakReference;
 import java.net.InetAddress;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -21,7 +15,6 @@ import java.util.*;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.function.Function;
 
 public final class CommonHelper {
 
@@ -108,23 +101,8 @@ public final class CommonHelper {
         }
     }
 
-    public static void rewriteProperties(String path, String saveComment, Function<String, String> function) {
-        if (!Files.exists(Paths.get(path))) {
-            return;
-        }
-
-        try (InputStream inputStream = Files.newInputStream(Paths.get(path))) {
-            Properties properties = new Properties();
-            properties.load(inputStream);
-
-            properties.stringPropertyNames().forEach(s -> properties.setProperty(s, function.apply(s)));
-
-            try (OutputStreamWriter outputStreamWriter = new OutputStreamWriter(Files.newOutputStream(Paths.get(path)), StandardCharsets.UTF_8)) {
-                properties.store(outputStreamWriter, saveComment);
-            }
-        } catch (final IOException ex) {
-            ex.printStackTrace();
-        }
+    public static int longToInt(long in) {
+        return in > Integer.MAX_VALUE ? Integer.MAX_VALUE : in < Integer.MIN_VALUE ? Integer.MIN_VALUE : (int) in;
     }
 
     public static int calculateMaxMemory() {

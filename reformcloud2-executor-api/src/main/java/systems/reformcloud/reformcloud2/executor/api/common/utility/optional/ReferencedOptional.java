@@ -46,11 +46,21 @@ public final class ReferencedOptional<T> implements Serializable {
         return orElse(null);
     }
 
-    public void ifPresent(@Nonnull Consumer<T> consumer) {
+    public ReferencedOptional<T> ifPresent(@Nonnull Consumer<T> consumer) {
         T value = reference.get();
         if (value != null) {
             consumer.accept(value);
         }
+
+        return this;
+    }
+
+    public ReferencedOptional<T> ifEmpty(@Nonnull Consumer<Void> consumer) {
+        if (isEmpty()) {
+            consumer.accept(null);
+        }
+
+        return this;
     }
 
     @Nullable
@@ -75,6 +85,10 @@ public final class ReferencedOptional<T> implements Serializable {
 
     public boolean isPresent() {
         return get() != null;
+    }
+
+    public boolean isEmpty() {
+        return get() == null;
     }
 
     public T get() {

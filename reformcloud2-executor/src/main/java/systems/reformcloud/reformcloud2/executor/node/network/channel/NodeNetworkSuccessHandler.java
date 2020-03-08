@@ -4,14 +4,14 @@ import io.netty.channel.ChannelHandlerContext;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
-import systems.reformcloud.reformcloud2.executor.api.common.network.challenge.shared.ClientChallengeAuthHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.JsonPacket;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
+import systems.reformcloud.reformcloud2.executor.api.common.node.NodeInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
-import systems.reformcloud.reformcloud2.executor.node.network.client.NodeNetworkClient;
+import systems.reformcloud.reformcloud2.executor.node.network.packet.out.NodePacketOutConnectionInitDone;
 
 import java.net.InetSocketAddress;
 import java.util.function.BiConsumer;
@@ -34,24 +34,38 @@ public class NodeNetworkSuccessHandler implements BiConsumer<ChannelHandlerConte
 
         if (process == null) {
             String address = ((InetSocketAddress) channelHandlerContext.channel().remoteAddress()).getAddress().getHostAddress();
-            Streams.filterToReference(NodeExecutor.getInstance().getNodeConfig().getOtherNodes(), e -> e.keySet().stream().anyMatch(c -> c.equals(
+            if (Streams.filterToReference(NodeExecutor.getInstance().getNodeConfig().getOtherNodes(), e -> e.keySet().stream().anyMatch(c -> c.equals(
                     address
-            ))).ifPresent(e -> e.forEach((key, value) -> NodeExecutor.getInstance().getNetworkClient().connect(
-                    key,
-                    value,
-                    () -> new NodeNetworkChannelReader(NodeExecutor.getInstance().getPacketHandler()),
-                    new ClientChallengeAuthHandler(
-                            NodeExecutor.getInstance().getNodeExecutorConfig().getConnectionKey(),
-                            NodeExecutor.getInstance().getNodeConfig().getName(),
-                            () -> new JsonConfiguration().add("info", NodeExecutor.getInstance().getNodeNetworkManager().getCluster().getSelfNode()),
-                            context -> NodeNetworkClient.CONNECTIONS.remove(address)
-                    )
-            )));
+            ))).isEmpty()) {
+                System.out.println(LanguageManager.get("network-node-connection-from-unknown-node", address));
+                channelHandlerContext.channel().close().syncUninterruptibly();
+                return;
+            }
+
+            NodeInformation nodeInformation = packet.content().get("info", NodeInformation.TYPE);
+            if (nodeInformation == null) {
+                System.out.println(LanguageManager.get("network-node-connection-from-unknown-node", address));
+                channelHandlerContext.channel().close().syncUninterruptibly();
+                return;
+            }
+
+            NodeExecutor.getInstance().getNodeNetworkManager().getCluster().getClusterManager().handleConnect(
+                    NodeExecutor.getInstance().getNodeNetworkManager().getCluster(),
+                    nodeInformation
+            );
+
+            channelHandlerContext.channel().writeAndFlush(new NodePacketOutConnectionInitDone(
+                    NodeExecutor.getInstance().getNodeNetworkManager().getCluster().getSelfNode()
+            )).syncUninterruptibly();
+            NodeExecutor.getInstance().getClusterSyncManager().getWaitingConnections().remove(address);
             NodeExecutor.getInstance().sync(packet.content().getString("name"));
+
+            System.out.println(LanguageManager.get("network-node-other-node-connected", nodeInformation.getName(), address));
         } else {
             process.getNetworkInfo().setConnected(true);
             process.setProcessState(ProcessState.READY);
             ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(process);
+            NodeExecutor.getInstance().getNodeNetworkManager().getNodeProcessHelper().handleProcessConnection(process);
 
             System.out.println(LanguageManager.get("process-connected", process.getName(), process.getParent()));
         }

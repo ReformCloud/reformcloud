@@ -198,7 +198,9 @@ public class DefaultClusterSyncManager implements ClusterSyncManager {
                 }));
 
                 if (action.equals(SyncAction.SYNC)) {
-                    processGroups.addAll(Streams.allOf(groups, g -> processGroups.stream().noneMatch(e -> e.getName().equals(g.getName()))));
+                    Collection<ProcessGroup> processGroups = Streams.allOf(groups, g -> this.processGroups.stream().noneMatch(e -> e.getName().equals(g.getName())));
+                    this.processGroups.addAll(processGroups);
+                    processGroups.forEach(e -> NodeExecutor.getInstance().getNodeExecutorConfig().handleProcessGroupCreate(e));
                 }
                 break;
             }
@@ -241,7 +243,9 @@ public class DefaultClusterSyncManager implements ClusterSyncManager {
                 }));
 
                 if (action.equals(SyncAction.SYNC)) {
-                    mainGroups.addAll(Streams.allOf(groups, g -> mainGroups.stream().noneMatch(e -> e.getName().equals(g.getName()))));
+                    Collection<MainGroup> mainGroups = Streams.allOf(groups, g -> this.mainGroups.stream().noneMatch(e -> e.getName().equals(g.getName())));
+                    this.mainGroups.addAll(mainGroups);
+                    mainGroups.forEach(e -> NodeExecutor.getInstance().getNodeExecutorConfig().handleMainGroupCreate(e));
                 }
                 break;
             }

@@ -584,7 +584,7 @@ public class NodeExecutor extends Node {
 
     public void sync(String name) {
         Task.EXECUTOR.execute(() -> {
-            while (!DefaultChannelManager.INSTANCE.get(name).isPresent()) {
+            while (DefaultChannelManager.INSTANCE.get(name).isEmpty()) {
                 AbsoluteThread.sleep(20);
             }
 
