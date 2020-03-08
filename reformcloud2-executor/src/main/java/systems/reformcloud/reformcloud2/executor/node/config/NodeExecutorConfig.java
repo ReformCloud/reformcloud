@@ -101,7 +101,7 @@ public class NodeExecutorConfig {
                     s -> true,
                     s -> {
                         if (s.equalsIgnoreCase("gen")) {
-                            s = StringUtil.generateString(50);
+                            s = StringUtil.generateString(1);
                         }
 
                         new JsonConfiguration().add("key", s).write("reformcloud/files/.connection/connection.json");

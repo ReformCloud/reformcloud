@@ -99,7 +99,7 @@ public final class ControllerExecutorConfig {
     }
 
     private void firstSetup() {
-        new JsonConfiguration().add("key", StringUtil.generateString(50)).write(Paths.get(
+        new JsonConfiguration().add("key", StringUtil.generateString(1)).write(Paths.get(
                 "reformcloud/.bin/connection.json"
         ));
         new JsonConfiguration().add("messages", new IngameMessages()).write(Paths.get("reformcloud/configs/messages.json"));
