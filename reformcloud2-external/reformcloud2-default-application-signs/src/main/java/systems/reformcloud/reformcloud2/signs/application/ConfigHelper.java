@@ -20,7 +20,14 @@ final class ConfigHelper {
     }
 
     static void createDefault(String path) {
-        SignConfig config = new SignConfig(Collections.singletonList(createDefaultLayout()), 1);
+        SignConfig config = new SignConfig(
+                1,
+                Collections.singletonList(createDefaultLayout()),
+                false,
+                "reformcloud.knockback.bypass",
+                1.0D,
+                0.8D
+        );
         new JsonConfiguration()
                 .add("config", config)
                 .write(path + "/layout.json");

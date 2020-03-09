@@ -1,11 +1,15 @@
 package systems.reformcloud.reformcloud2.signs.nukkit.adapter;
 
+import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockSignPost;
 import cn.nukkit.blockentity.BlockEntitySign;
 import cn.nukkit.command.PluginCommand;
 import cn.nukkit.level.Location;
+import cn.nukkit.math.AxisAlignedBB;
+import cn.nukkit.math.SimpleAxisAlignedBB;
+import cn.nukkit.math.Vector3;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.plugin.PluginBase;
 import cn.nukkit.utils.TextFormat;
@@ -92,7 +96,7 @@ public class NukkitSignSystemAdapter implements SignSystemAdapter<BlockEntitySig
 
     private final Map<UUID, ProcessInformation> notAssigned = new ConcurrentHashMap<>();
 
-    private final AtomicInteger[] counter = new AtomicInteger[] {
+    private final AtomicInteger[] counter = new AtomicInteger[]{
             new AtomicInteger(-1), // start
             new AtomicInteger(-1), // connecting
             new AtomicInteger(-1), // empty
@@ -414,6 +418,29 @@ public class NukkitSignSystemAdapter implements SignSystemAdapter<BlockEntitySig
             ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getAllProcesses().forEach(this::handleProcessStart);
             runTasks();
         });
+
+        double distance = this.config.getKnockBackDistance();
+        this.plugin.getServer().getScheduler().scheduleDelayedRepeatingTask(this.plugin, () -> {
+            for (CloudSign cachedSign : this.cachedSigns) {
+                BlockEntitySign sign = this.getSignConverter().from(cachedSign);
+                if (sign == null) {
+                    continue;
+                }
+
+                Location location = sign.getLocation();
+                AxisAlignedBB axisAlignedBB = new SimpleAxisAlignedBB(location, location).expand(distance, distance, distance);
+                Arrays.stream(location.getLevel().getNearbyEntities(axisAlignedBB))
+                        .filter(e -> e instanceof Player && !((Player) e).hasPermission(this.config.getKnockBackBypassPermission()))
+                        .forEach(e -> {
+                            Vector3 vector3 = e.getPosition()
+                                    .subtract(location)
+                                    .normalize()
+                                    .multiply(this.config.getKnockBackStrength());
+                            vector3.y = 0.2D;
+                            e.setMotion(vector3);
+                        });
+            }
+        }, 20, 5);
     }
 
     private void restartTask() {
