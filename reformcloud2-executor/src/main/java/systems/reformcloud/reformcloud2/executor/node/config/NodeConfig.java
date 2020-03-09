@@ -13,7 +13,8 @@ import java.util.UUID;
 
 public class NodeConfig {
 
-    static final TypeToken<NodeConfig> TYPE = new TypeToken<NodeConfig>() {};
+    static final TypeToken<NodeConfig> TYPE = new TypeToken<NodeConfig>() {
+    };
 
     static final Path PATH = Paths.get("reformcloud/config.json");
 
@@ -74,7 +75,7 @@ public class NodeConfig {
         return new NodeInformation(
                 name,
                 uniqueID,
-                System.nanoTime(),
+                System.currentTimeMillis(),
                 0L,
                 maxMemory,
                 new ArrayList<>()

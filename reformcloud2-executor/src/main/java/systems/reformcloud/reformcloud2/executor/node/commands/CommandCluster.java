@@ -55,6 +55,10 @@ public final class CommandCluster extends GlobalCommand {
 
         if (strings.length == 2 && strings[0].equalsIgnoreCase("info")) {
             NodeInformation info = NodeExecutor.getInstance().getNodeNetworkManager().getCluster().getNode(strings[1]);
+            if (info == null && strings[1].equals(NodeExecutor.getInstance().getNodeNetworkManager().getCluster().getSelfNode().getName())) {
+                info = NodeExecutor.getInstance().getNodeNetworkManager().getCluster().getSelfNode();
+            }
+
             if (info == null) {
                 commandSource.sendMessage(LanguageManager.get("command-cluster-node-not-connected", strings[1]));
                 return true;
