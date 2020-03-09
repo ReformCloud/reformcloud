@@ -38,8 +38,8 @@ public interface Dependency {
 
     /**
      * @return The path where the dependency is
-     *  a) saved
-     *  b) should be saved to
+     * a) saved
+     * b) should be saved to
      */
     @Nonnull
     Path getPath();

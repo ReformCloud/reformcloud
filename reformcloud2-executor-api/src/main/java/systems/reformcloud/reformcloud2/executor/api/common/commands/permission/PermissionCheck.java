@@ -8,7 +8,7 @@ public interface PermissionCheck {
      * Checks if a user has an specific permission
      *
      * @param permissionHolder The permission holder which should be checked
-     * @param permission The permission which should be checked
+     * @param permission       The permission which should be checked
      * @return The {@link PermissionResult} of the permission check
      */
     @Nonnull
@@ -18,7 +18,7 @@ public interface PermissionCheck {
      * Checks if a user has an specific permission
      *
      * @param permissionHolder The permission holder which should be checked
-     * @param permission The permission which should be checked
+     * @param permission       The permission which should be checked
      * @return The {@link PermissionResult} of the permission check
      */
     @Nonnull

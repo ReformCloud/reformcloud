@@ -9,8 +9,6 @@ import systems.reformcloud.reformcloud2.executor.api.ExecutorType;
 import systems.reformcloud.reformcloud2.executor.api.api.API;
 import systems.reformcloud.reformcloud2.executor.api.bungee.event.PlayerListenerHandler;
 import systems.reformcloud.reformcloud2.executor.api.bungee.event.ProcessEventHandler;
-import systems.reformcloud.reformcloud2.executor.api.bungee.plugins.PluginExecutorContainer;
-import systems.reformcloud.reformcloud2.executor.api.bungee.plugins.PluginUpdater;
 import systems.reformcloud.reformcloud2.executor.api.bungee.reconnect.ReformCloudReconnectHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.basic.ExternalEventBusHandler;
@@ -22,29 +20,30 @@ import systems.reformcloud.reformcloud2.executor.api.common.event.handler.Listen
 import systems.reformcloud.reformcloud2.executor.api.common.groups.messages.IngameMessages;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Version;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.PlayerAccessConfiguration;
-import systems.reformcloud.reformcloud2.executor.api.common.network.auth.NetworkType;
-import systems.reformcloud.reformcloud2.executor.api.common.network.auth.defaults.DefaultAuth;
+import systems.reformcloud.reformcloud2.executor.api.common.network.challenge.shared.ClientChallengeAuthHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.common.network.client.DefaultNetworkClient;
 import systems.reformcloud.reformcloud2.executor.api.common.network.client.NetworkClient;
+import systems.reformcloud.reformcloud2.executor.api.common.network.messaging.ProxiedChannelMessageHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.defaults.DefaultPacketHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.handler.PacketHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
+import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.system.SystemHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
 import systems.reformcloud.reformcloud2.executor.api.executor.PlayerAPIExecutor;
-import systems.reformcloud.reformcloud2.executor.api.packets.in.APIPacketInAPIAction;
-import systems.reformcloud.reformcloud2.executor.api.packets.in.APIPacketInPluginAction;
-import systems.reformcloud.reformcloud2.executor.api.packets.out.APIBungeePacketOutRequestIngameMessages;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.APINetworkChannelReader;
+import systems.reformcloud.reformcloud2.executor.api.network.packets.in.APIPacketInAPIAction;
+import systems.reformcloud.reformcloud2.executor.api.network.packets.out.APIBungeePacketOutRequestIngameMessages;
 
 import javax.annotation.Nonnull;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -81,35 +80,33 @@ public final class BungeeExecutor extends API implements PlayerAPIExecutor {
         getEventManager().registerListener(this);
 
         packetHandler.registerHandler(new APIPacketInAPIAction(this));
-        packetHandler.registerHandler(
-                new APIPacketInPluginAction(new PluginExecutorContainer()));
+        packetHandler.registerHandler(new ProxiedChannelMessageHandler());
 
-        String connectionKey =
-                JsonConfiguration.read("reformcloud/.connection/key.json")
-                        .getString("key");
+        String connectionKey = JsonConfiguration.read("reformcloud/.connection/key.json").getString("key");
         SystemHelper.deleteFile(new File("reformcloud/.connection/key.json"));
-        JsonConfiguration connectionConfig =
-                JsonConfiguration.read("reformcloud/.connection/connection.json");
+        JsonConfiguration connectionConfig = JsonConfiguration.read("reformcloud/.connection/connection.json");
 
-        this.thisProcessInformation =
-                connectionConfig.get("startInfo", ProcessInformation.TYPE);
-        waterdog = thisProcessInformation.getTemplate().getVersion().equals(
-                Version.WATERDOG) ||
-                thisProcessInformation.getTemplate().getVersion().equals(
-                        Version.WATERDOG_PE);
-        waterdogPE = thisProcessInformation.getTemplate().getVersion().equals(
-                Version.WATERDOG_PE);
+        this.thisProcessInformation = connectionConfig.get("startInfo", ProcessInformation.TYPE);
+        if (this.thisProcessInformation == null) {
+            System.exit(0);
+            return;
+        }
+
+        waterdog = thisProcessInformation.getTemplate().getVersion().equals(Version.WATERDOG)
+                || thisProcessInformation.getTemplate().getVersion().equals(Version.WATERDOG_PE);
+        waterdogPE = thisProcessInformation.getTemplate().getVersion().equals(Version.WATERDOG_PE);
 
         this.networkClient.connect(
                 connectionConfig.getString("controller-host"),
                 connectionConfig.getInteger("controller-port"),
-                new DefaultAuth(
+                () -> new APINetworkChannelReader(this.packetHandler),
+                new ClientChallengeAuthHandler(
                         connectionKey,
-                        thisProcessInformation.getParent(),
-                        NetworkType.PROCESS,
                         thisProcessInformation.getName(),
-                        new JsonConfiguration()
-                ), networkChannelReader
+                        () -> new JsonConfiguration(),
+                        context -> {
+                        } // unused here
+                )
         );
 
         ExecutorAPI.setInstance(this);
@@ -136,102 +133,91 @@ public final class BungeeExecutor extends API implements PlayerAPIExecutor {
     }
 
     @Nonnull
+    @Override
+    public ProcessInformation getCurrentProcessInformation() {
+        return this.thisProcessInformation;
+    }
+
+    @Nonnull
     public static BungeeExecutor getInstance() {
         return instance;
     }
 
     // ===============
+
     static void clearHandlers() {
-        ProxyServer.getInstance().getConfig().getListeners().forEach(
-                listenerInfo -> listenerInfo.getServerPriority().clear());
+        ProxyServer.getInstance().getConfig().getListeners().forEach(listenerInfo -> listenerInfo.getServerPriority().clear());
         ProxyServer.getInstance().getConfig().getServers().clear();
     }
 
     private void awaitConnectionAndUpdate() {
         Task.EXECUTOR.execute(() -> {
-            PacketSender packetSender =
-                    DefaultChannelManager.INSTANCE.get("Controller").orElse(null);
+            PacketSender packetSender = DefaultChannelManager.INSTANCE.get("Controller").orElse(null);
             while (packetSender == null) {
-                packetSender =
-                        DefaultChannelManager.INSTANCE.get("Controller").orElse(null);
-                AbsoluteThread.sleep(100);
+                packetSender = DefaultChannelManager.INSTANCE.get("Controller").orElse(null);
+                AbsoluteThread.sleep(20);
             }
 
-            AbsoluteThread.sleep(100);
-
             getAllProcesses().forEach(BungeeExecutor::registerServer);
-            ProxyServer.getInstance().getPluginManager().registerListener(
-                    plugin, new PlayerListenerHandler());
-            new PluginUpdater();
+            ProxyServer.getInstance().getPluginManager().registerListener(plugin, new PlayerListenerHandler());
 
-            thisProcessInformation.updateMaxPlayers(
-                    ProxyServer.getInstance().getConfig().getPlayerLimit());
+            thisProcessInformation.updateMaxPlayers(ProxyServer.getInstance().getConfig().getPlayerLimit());
             thisProcessInformation.updateRuntimeInformation();
-            ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(
-                    thisProcessInformation);
+            thisProcessInformation.getNetworkInfo().setConnected(true);
+            thisProcessInformation.setProcessState(ProcessState.READY);
+            ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(thisProcessInformation);
 
-            DefaultChannelManager.INSTANCE.get("Controller")
-                    .ifPresent(controller
-                            -> packetHandler.getQueryHandler()
-                            .sendQueryAsync(
-                                    controller,
-                                    new APIBungeePacketOutRequestIngameMessages())
-                            .onComplete(packet -> {
-                                IngameMessages ingameMessages =
-                                        packet.content().get("messages",
-                                                IngameMessages.TYPE);
-                                setMessages(ingameMessages);
-                            }));
+            DefaultChannelManager.INSTANCE.get("Controller").ifPresent(controller -> packetHandler.getQueryHandler().sendQueryAsync(
+                    controller,
+                    new APIBungeePacketOutRequestIngameMessages()
+            ).onComplete(packet -> {
+                IngameMessages ingameMessages = packet.content().get("messages", IngameMessages.TYPE);
+                if (ingameMessages != null) {
+                    setMessages(ingameMessages);
+                }
+            }));
         });
     }
 
     public static void registerServer(ProcessInformation processInformation) {
-        if (!ProxyServer.getInstance().getServers().containsKey(
-                processInformation.getName()) &&
-                processInformation.getNetworkInfo().isConnected() &&
-                processInformation.getTemplate().isServer()) {
+        if (!ProxyServer.getInstance().getServers().containsKey(processInformation.getName())
+                && processInformation.getNetworkInfo().isConnected()
+                && processInformation.getTemplate().isServer()
+        ) {
             ServerInfo serverInfo = constructServerInfo(processInformation);
             if (serverInfo == null) {
                 return;
             }
 
-            ProxyServer.getInstance().getServers().put(processInformation.getName(),
-                    serverInfo);
+            ProxyServer.getInstance().getServers().put(processInformation.getName(), serverInfo);
 
             if (processInformation.isLobby()) {
                 LOBBY_SERVERS.add(processInformation);
-                ProxyServer.getInstance().getConfig().getListeners().forEach(
-                        listenerInfo
-                                -> listenerInfo.getServerPriority().add(
-                                processInformation.getName()));
+                ProxyServer.getInstance().getConfig().getListeners().forEach(listenerInfo -> listenerInfo.getServerPriority().add(processInformation.getName()));
             }
         }
     }
 
-    private static ServerInfo
-    constructServerInfo(ProcessInformation processInformation) {
+    private static ServerInfo constructServerInfo(ProcessInformation processInformation) {
         if (waterdog) {
-            if (waterdogPE &&
-                    processInformation.getTemplate().getVersion().getId() != 3) {
+            if (waterdogPE && processInformation.getTemplate().getVersion().getId() != 3) {
                 return null;
-            } else if (!waterdogPE &&
-                    processInformation.getTemplate().getVersion().getId() == 3) {
+            } else if (!waterdogPE && processInformation.getTemplate().getVersion().getId() == 3) {
                 return null;
             }
 
             try {
-                Method method = ProxyServer.class.getMethod(
-                        "constructServerInfo", String.class, InetSocketAddress.class,
-                        String.class, boolean.class, boolean.class, String.class);
+                Method method = ProxyServer.class.getMethod("constructServerInfo", String.class, SocketAddress.class, String.class, boolean.class, boolean.class, String.class);
                 method.setAccessible(true);
-                return (ServerInfo) method.invoke(
-                        ProxyServer.getInstance(), processInformation.getName(),
+                return (ServerInfo) method.invoke(ProxyServer.getInstance(),
+                        processInformation.getName(),
                         processInformation.getNetworkInfo().toInet(),
-                        "ReformCloud2", false,
+                        "ReformCloud2",
+                        false,
                         processInformation.getTemplate().getVersion().getId() == 3,
-                        "default");
-            } catch (final InvocationTargetException | IllegalAccessException |
-                    NoSuchMethodException ex) {
+                        "default"
+                );
+            } catch (final InvocationTargetException | IllegalAccessException | NoSuchMethodException ex) {
                 ex.printStackTrace();
             }
         }
@@ -242,85 +228,58 @@ public final class BungeeExecutor extends API implements PlayerAPIExecutor {
                 "ReformCloud2", false);
     }
 
-    public static ProcessInformation
-    getBestLobbyForPlayer(ProcessInformation current, ProxiedPlayer proxiedPlayer,
-                          Function<String, Boolean> permissionCheck) {
+    public static ProcessInformation getBestLobbyForPlayer(ProcessInformation current, ProxiedPlayer proxiedPlayer, Function<String, Boolean> permissionCheck) {
         final List<ProcessInformation> lobbies = new ArrayList<>(LOBBY_SERVERS);
 
         if (proxiedPlayer != null && proxiedPlayer.getServer() != null) {
-            Streams
-                    .allOf(lobbies,
-                            e
-                                    -> e.getName().equals(
-                                    proxiedPlayer.getServer().getInfo().getName()))
-                    .forEach(lobbies::remove);
+            Streams.allOf(lobbies, e -> e.getName().equals(proxiedPlayer.getServer().getInfo().getName())).forEach(lobbies::remove);
         }
 
         // Filter all non java servers if this is a java proxy else all mcpe servers
-        Streams
-                .others(lobbies,
-                        e -> {
-                            Version version = e.getTemplate().getVersion();
-                            if (version.equals(Version.NUKKIT_X) &&
-                                    current.getTemplate().getVersion().equals(
-                                            Version.WATERDOG_PE)) {
-                                return true;
-                            }
+        Streams.others(lobbies, e -> {
+            Version version = e.getTemplate().getVersion();
+            if (version.equals(Version.NUKKIT_X) && current.getTemplate().getVersion().equals(Version.WATERDOG_PE)) {
+                return true;
+            }
 
-                            return version.getId() == 1 &&
-                                    current.getTemplate().getVersion().getId() == 2;
-                        })
-                .forEach(lobbies::remove);
+            return version.getId() == 1 && current.getTemplate().getVersion().getId() == 2;
+        }).forEach(lobbies::remove);
 
         // Filter out all lobbies with join permission which the player does not
         // have
-        Streams
-                .others(lobbies,
-                        e -> {
-                            final PlayerAccessConfiguration configuration =
-                                    e.getProcessGroup().getPlayerAccessConfiguration();
-                            if (!configuration.isJoinOnlyPerPermission()) {
-                                return true;
-                            }
+        Streams.others(lobbies, e -> {
+            final PlayerAccessConfiguration configuration = e.getProcessGroup().getPlayerAccessConfiguration();
+            if (!configuration.isJoinOnlyPerPermission()) {
+                return true;
+            }
 
-                            return permissionCheck.apply(
-                                    configuration.getJoinPermission());
-                        })
-                .forEach(lobbies::remove);
+            return permissionCheck.apply(configuration.getJoinPermission());
+        }).forEach(lobbies::remove);
 
         // Filter out all lobbies which are in maintenance and not joinable for the
         // player
-        Streams
-                .others(lobbies,
-                        e -> {
-                            final PlayerAccessConfiguration configuration =
-                                    e.getProcessGroup().getPlayerAccessConfiguration();
-                            if (!configuration.isMaintenance()) {
-                                return true;
-                            }
+        Streams.others(lobbies, e -> {
+            final PlayerAccessConfiguration configuration = e.getProcessGroup().getPlayerAccessConfiguration();
+            if (!configuration.isMaintenance()) {
+                return true;
+            }
 
-                            return permissionCheck.apply(
-                                    configuration.getMaintenanceJoinPermission());
-                        })
-                .forEach(lobbies::remove);
+            return permissionCheck.apply(configuration.getMaintenanceJoinPermission());
+        }).forEach(lobbies::remove);
 
         // Filter out all full server which the player cannot access
-        Streams
-                .others(lobbies,
-                        e -> {
-                            final PlayerAccessConfiguration configuration =
-                                    e.getProcessGroup().getPlayerAccessConfiguration();
-                            if (!configuration.isUseCloudPlayerLimit()) {
-                                return true;
-                            }
+        Streams.others(lobbies, e -> {
+            final PlayerAccessConfiguration configuration = e.getProcessGroup().getPlayerAccessConfiguration();
+            if (!configuration.isUseCloudPlayerLimit()) {
+                return true;
+            }
 
-                            if (e.getOnlineCount() < configuration.getMaxPlayers()) {
-                                return true;
-                            }
+            if (e.getOnlineCount() < configuration.getMaxPlayers()) {
+                return true;
+            }
 
-                            return permissionCheck.apply("reformcloud.join.full");
-                        })
-                .forEach(lobbies::remove);
+            return permissionCheck.apply("reformcloud.join.full");
+        }).forEach(lobbies::remove);
 
         if (lobbies.isEmpty()) {
             return null;
@@ -334,12 +293,12 @@ public final class BungeeExecutor extends API implements PlayerAPIExecutor {
     }
 
     @Override
+    @Deprecated
     public ProcessInformation getThisProcessInformation() {
-        return thisProcessInformation;
+        return getCurrentProcessInformation();
     }
 
-    public void
-    setThisProcessInformation(ProcessInformation thisProcessInformation) {
+    public void setThisProcessInformation(ProcessInformation thisProcessInformation) {
         this.thisProcessInformation = thisProcessInformation;
     }
 
@@ -352,9 +311,8 @@ public final class BungeeExecutor extends API implements PlayerAPIExecutor {
     }
 
     @Listener
-    public void handleThisUpdate(final ProcessUpdatedEvent event) {
-        if (event.getProcessInformation().getProcessUniqueID().equals(
-                thisProcessInformation.getProcessUniqueID())) {
+    public void handle(final ProcessUpdatedEvent event) {
+        if (event.getProcessInformation().getProcessUniqueID().equals(thisProcessInformation.getProcessUniqueID())) {
             thisProcessInformation = event.getProcessInformation();
         }
     }
@@ -383,8 +341,7 @@ public final class BungeeExecutor extends API implements PlayerAPIExecutor {
     }
 
     @Override
-    public void executeSendTitle(UUID player, String title, String subTitle,
-                                 int fadeIn, int stay, int fadeOut) {
+    public void executeSendTitle(UUID player, String title, String subTitle, int fadeIn, int stay, int fadeOut) {
         ProxiedPlayer proxiedPlayer = ProxyServer.getInstance().getPlayer(player);
         if (proxiedPlayer != null) {
             ProxyServer.getInstance()
@@ -414,8 +371,7 @@ public final class BungeeExecutor extends API implements PlayerAPIExecutor {
     }
 
     @Override
-    public void executeTeleport(UUID player, String world, double x, double y,
-                                double z, float yaw, float pitch) {
+    public void executeTeleport(UUID player, String world, double x, double y, double z, float yaw, float pitch) {
         throw new UnsupportedOperationException("Not supported on proxy server");
     }
 

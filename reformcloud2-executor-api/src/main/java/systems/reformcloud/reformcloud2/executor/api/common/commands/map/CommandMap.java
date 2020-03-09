@@ -35,7 +35,7 @@ public interface CommandMap extends CommandDispatcher {
      * Registers an command
      *
      * @param noPermissionMessage The no permission message for the command
-     * @param command The command which should get registered
+     * @param command             The command which should get registered
      */
     void register(@Nonnull String noPermissionMessage, @Nonnull Command command);
 }

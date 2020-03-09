@@ -35,7 +35,7 @@ public enum Colours {
 
     private final String name;
 
-    private String ansiCode;
+    private final String ansiCode;
 
     private final char index;
 

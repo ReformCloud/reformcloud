@@ -8,8 +8,8 @@ public interface EventManager {
     /**
      * Calls an event
      *
-     * @see #callEvent(Event)
      * @param event The class of the event which get instantiated and then called
+     * @see #callEvent(Event)
      */
     void callEvent(Class<? extends Event> event);
 
@@ -23,8 +23,8 @@ public interface EventManager {
     /**
      * Calls an event async
      *
-     * @see #callEventAsync(Event)
      * @param event The class of the event which get instantiated and then called
+     * @see #callEventAsync(Event)
      */
     void callEventAsync(Class<? extends Event> event);
 
@@ -45,8 +45,8 @@ public interface EventManager {
     /**
      * Registers a listener
      *
-     * @see #registerListener(Object)
      * @param listener The listener class which will get instantiated and then registered
+     * @see #registerListener(Object)
      */
     void registerListener(Class<?> listener);
 
@@ -60,8 +60,8 @@ public interface EventManager {
     /**
      * Registers a listener async
      *
-     * @see #registerListenerAsync(Object)
      * @param listener The listener class which will get instantiated and then registered
+     * @see #registerListenerAsync(Object)
      */
     void registerListenerAsync(Class<?> listener);
 

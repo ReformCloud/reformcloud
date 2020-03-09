@@ -13,13 +13,13 @@ public final class DefaultClientRuntimeInformation implements ClientRuntimeInfor
         this.name = name;
     }
 
-    private String startHost;
+    private final String startHost;
 
-    private int maxMemory;
+    private final int maxMemory;
 
-    private int maxProcesses;
+    private final int maxProcesses;
 
-    private String name;
+    private final String name;
 
     @Nonnull
     @Override

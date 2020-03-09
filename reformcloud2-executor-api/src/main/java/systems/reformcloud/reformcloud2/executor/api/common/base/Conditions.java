@@ -10,7 +10,7 @@ public final class Conditions {
     /**
      * Assumes that the given argument is true
      *
-     * @param test The argument which should be checked
+     * @param test    The argument which should be checked
      * @param message The message which will be printed if the argument is {@code false}
      */
     public static void isTrue(boolean test, @Nullable Object message) {
@@ -31,9 +31,9 @@ public final class Conditions {
     /**
      * Assumes that the given argument is true
      *
-     * @param test The argument which should be checked
+     * @param test    The argument which should be checked
      * @param message The message which will be printed if the argument is {@code false}
-     * @param args The arguments which should be filled in in the message
+     * @param args    The arguments which should be filled in in the message
      */
     public static void isTrue(boolean test, @Nonnull String message, @Nullable Object... args) {
         if (!test) {
@@ -53,7 +53,7 @@ public final class Conditions {
     /**
      * Checks if the given object is non-null
      *
-     * @param obj The object which should get checked
+     * @param obj     The object which should get checked
      * @param message The message which will be the stacktrace or {@code null}
      */
     public static void nonNull(@Nullable Object obj, @Nullable Object message) {

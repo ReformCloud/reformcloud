@@ -5,13 +5,35 @@
     <parent>
         <artifactId>reformcloud2</artifactId>
         <groupId>systems.reformcloud.reformcloud2</groupId>
-        <version>2.0.3</version>
+        <version>2.1.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>reformcloud2-executor-api</artifactId>
 
+    <repositories>
+        <repository>
+            <id>reformcloud-central</id>
+            <url>https://repo.reformcloud.systems/</url>
+        </repository>
+    </repositories>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>reformcloud</id>
+            <url>https://repo.reformcloud.systems/</url>
+        </pluginRepository>
+    </pluginRepositories>
+
     <dependencies>
+        <!-- https://github.com/derklaro/project-deer -->
+        <dependency>
+            <groupId>de.derklaro.projects.deer</groupId>
+            <artifactId>project-deer-executor</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+
         <!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
         <dependency>
             <groupId>com.google.code.gson</groupId>
@@ -25,7 +47,7 @@
         <dependency>
             <groupId>org.jline</groupId>
             <artifactId>jline</artifactId>
-            <version>3.13.3</version>
+            <version>3.14.0</version>
             <scope>provided</scope>
         </dependency>
 
@@ -33,7 +55,7 @@
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-all</artifactId>
-            <version>4.1.45.Final</version>
+            <version>4.1.46.Final</version>
             <scope>provided</scope>
         </dependency>
 
@@ -65,7 +87,7 @@
         <dependency>
             <groupId>org.mongodb</groupId>
             <artifactId>mongo-java-driver</artifactId>
-            <version>3.12.1</version>
+            <version>3.12.2</version>
             <scope>provided</scope>
         </dependency>
 
@@ -84,5 +106,55 @@
             <version>1.4.200</version>
             <scope>provided</scope>
         </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.bouncycastle/bcprov-jdk15on -->
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcprov-jdk15on</artifactId>
+            <version>1.64</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <!-- https://github.com/derklaro/maven-dependency-list-plugin -->
+            <plugin>
+                <groupId>de.derklaro</groupId>
+                <artifactId>dependency-list-maven-plugin</artifactId>
+                <version>1.2</version>
+                <configuration>
+                    <excludedScopes>
+                        <excludedScope>test</excludedScope>
+                        <excludedScope>compile</excludedScope>
+                    </excludedScopes>
+
+                    <excludes>
+                        <exclude>*:h2</exclude>
+                        <exclude>*:mongo-java-driver</exclude>
+                        <exclude>*:mysql-connector-java</exclude>
+                        <exclude>de.derklaro.projects.deer:*</exclude>
+                        <exclude>*:annotations-java5</exclude>
+                    </excludes>
+
+                    <outputFileName>
+                        reformcloud2-executor-api/src/main/resources/internal/dependencies.txt
+                    </outputFileName>
+
+                    <overrideExistingFile>true</overrideExistingFile>
+                    <resolveDependenciesOfDependencies>true</resolveDependenciesOfDependencies>
+                    <includeOptionalDependencies>false</includeOptionalDependencies>
+                    <createParentFiles>true</createParentFiles>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>dependency-list</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>

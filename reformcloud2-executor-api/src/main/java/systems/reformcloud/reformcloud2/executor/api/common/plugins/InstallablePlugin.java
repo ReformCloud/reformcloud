@@ -13,7 +13,8 @@ import javax.annotation.Nonnull;
  */
 public abstract class InstallablePlugin extends Plugin {
 
-    public static final TypeToken<DefaultInstallablePlugin> INSTALLABLE_TYPE = new TypeToken<DefaultInstallablePlugin>() {};
+    public static final TypeToken<DefaultInstallablePlugin> INSTALLABLE_TYPE = new TypeToken<DefaultInstallablePlugin>() {
+    };
 
     /**
      * @return The download url of the plugin

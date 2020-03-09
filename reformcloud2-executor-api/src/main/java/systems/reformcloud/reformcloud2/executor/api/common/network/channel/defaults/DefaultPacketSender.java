@@ -14,7 +14,7 @@ public class DefaultPacketSender extends PacketSender {
         this.connectionTime = System.currentTimeMillis();
     }
 
-    private ChannelHandlerContext channel;
+    private final ChannelHandlerContext channel;
 
     private final long connectionTime;
 

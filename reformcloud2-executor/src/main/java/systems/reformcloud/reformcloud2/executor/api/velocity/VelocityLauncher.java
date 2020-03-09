@@ -31,7 +31,7 @@ public final class VelocityLauncher {
         this.proxyServer = proxyServer;
     }
 
-    private ProxyServer proxyServer;
+    private final ProxyServer proxyServer;
 
     @Subscribe
     public void handleInit(ProxyInitializeEvent event) {

@@ -16,7 +16,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
 import systems.reformcloud.reformcloud2.executor.api.node.process.LocalNodeProcess;
 import systems.reformcloud.reformcloud2.executor.api.node.process.NodeProcessManager;
-import systems.reformcloud.reformcloud2.executor.controller.packet.out.event.ControllerEventProcessUpdated;
+import systems.reformcloud.reformcloud2.executor.controller.network.packets.out.event.ControllerEventProcessUpdated;
 import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
 import systems.reformcloud.reformcloud2.executor.node.network.packet.out.PacketOutHeadNodeStartProcess;
 import systems.reformcloud.reformcloud2.executor.node.process.manager.LocalProcessManager;
@@ -42,7 +42,7 @@ public class LocalNodeProcessManager implements NodeProcessManager {
     }
 
     @Override
-    public ProcessInformation startLocalProcess(ProcessGroup processGroup, Template template, JsonConfiguration data, UUID processUniqueID) {
+    public synchronized ProcessInformation startLocalProcess(ProcessGroup processGroup, Template template, JsonConfiguration data, UUID processUniqueID) {
         int id = nextID(processGroup);
         ProcessInformation processInformation = new ProcessInformation(
                 processGroup.getName() + template.getServerNameSplitter() + id,
@@ -63,7 +63,6 @@ public class LocalNodeProcessManager implements NodeProcessManager {
                 data,
                 processGroup.getPlayerAccessConfiguration().getMaxPlayers()
         );
-
         return this.startLocalProcess(processInformation);
     }
 
@@ -106,7 +105,7 @@ public class LocalNodeProcessManager implements NodeProcessManager {
     }
 
     @Override
-    public ProcessInformation queueProcess(ProcessGroup processGroup, Template template, JsonConfiguration data, NodeInformation node, UUID uniqueID) {
+    public synchronized ProcessInformation queueProcess(ProcessGroup processGroup, Template template, JsonConfiguration data, NodeInformation node, UUID uniqueID) {
         ProcessInformation processInformation = constructCaInfo(processGroup, template, data, node, uniqueID);
         this.handleProcessStart(processInformation);
 
@@ -261,32 +260,28 @@ public class LocalNodeProcessManager implements NodeProcessManager {
     }
 
     private int nextID(ProcessGroup processGroup) {
-        synchronized (information) {
-            int id = 1;
-            Collection<Integer> ids = Streams.newCollection(information, processInformation -> processInformation.getProcessGroup().getName().equals(processGroup.getName()), ProcessInformation::getId);
+        int id = 1;
+        Collection<Integer> ids = Streams.newCollection(information, processInformation -> processInformation.getProcessGroup().getName().equals(processGroup.getName()), ProcessInformation::getId);
 
-            while (ids.contains(id)) {
-                id++;
-            }
-
-            return id;
+        while (ids.contains(id)) {
+            id++;
         }
+
+        return id;
     }
 
     private int nextPort(int startPort) {
-        synchronized (information) {
-            Collection<Integer> ports = Streams.newList(information).stream().map(e -> e.getNetworkInfo().getPort()).collect(Collectors.toList());
-            while (ports.contains(startPort)) {
-                startPort++;
-            }
-
-            startPort = PortUtil.checkPort(startPort);
-            return startPort;
+        Collection<Integer> ports = Streams.newList(information).stream().map(e -> e.getNetworkInfo().getPort()).collect(Collectors.toList());
+        while (ports.contains(startPort)) {
+            startPort++;
         }
+
+        startPort = PortUtil.checkPort(startPort);
+        return startPort;
     }
 
     private ProcessInformation constructCaInfo(ProcessGroup processGroup, Template template, JsonConfiguration data,
-                                 NodeInformation node, UUID uniqueID) {
+                                               NodeInformation node, UUID uniqueID) {
         int id = nextID(processGroup);
         return new ProcessInformation(
                 processGroup.getName() + template.getServerNameSplitter() + id,

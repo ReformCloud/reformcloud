@@ -2,26 +2,29 @@ package systems.reformcloud.reformcloud2.executor.api.common.groups.template.bac
 
 import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.name.Nameable;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 
 import javax.annotation.Nonnull;
 import java.nio.file.Path;
-import java.util.concurrent.CompletableFuture;
 
 public interface TemplateBackend extends Nameable {
 
     boolean existsTemplate(String group, String template);
 
     @Nonnull
-    CompletableFuture<Void> createTemplate(String group, String template);
+    Task<Void> createTemplate(String group, String template);
 
     @Nonnull
-    CompletableFuture<Void> loadTemplate(String group, String template, Path target);
+    Task<Void> loadTemplate(String group, String template, Path target);
 
     @Nonnull
-    CompletableFuture<Void> loadGlobalTemplates(ProcessGroup group, Path target);
+    Task<Void> loadGlobalTemplates(ProcessGroup group, Path target);
 
     @Nonnull
-    CompletableFuture<Void> deployTemplate(String group, String template, Path current);
+    Task<Void> loadPath(String path, Path target);
+
+    @Nonnull
+    Task<Void> deployTemplate(String group, String template, Path current);
 
     void deleteTemplate(String group, String template);
 }

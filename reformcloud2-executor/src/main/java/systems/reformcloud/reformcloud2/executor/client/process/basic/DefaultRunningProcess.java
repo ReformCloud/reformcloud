@@ -5,10 +5,10 @@ import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Version;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.backend.TemplateBackendManager;
+import systems.reformcloud.reformcloud2.executor.api.common.groups.template.inclusion.Inclusion;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.Null;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.PortUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.StringUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.optional.ReferencedOptional;
@@ -17,8 +17,8 @@ import systems.reformcloud.reformcloud2.executor.api.common.utility.system.Downl
 import systems.reformcloud.reformcloud2.executor.api.common.utility.system.SystemHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
 import systems.reformcloud.reformcloud2.executor.client.ClientExecutor;
-import systems.reformcloud.reformcloud2.executor.client.packet.out.ClientPacketOutProcessPrepared;
-import systems.reformcloud.reformcloud2.executor.client.packet.out.ClientPacketOutProcessStopped;
+import systems.reformcloud.reformcloud2.executor.client.network.packet.out.ClientPacketOutProcessPrepared;
+import systems.reformcloud.reformcloud2.executor.client.network.packet.out.ClientPacketOutProcessStopped;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -39,7 +39,7 @@ import java.util.function.UnaryOperator;
 
 public final class DefaultRunningProcess implements RunningProcess {
 
-    private static final String LIB_PATH = new File(".").getAbsolutePath();
+    private static final String LIB_PATH = Paths.get("").toAbsolutePath().toString();
 
     public DefaultRunningProcess(ProcessInformation processInformation) {
         this.processInformation = processInformation;
@@ -55,7 +55,7 @@ public final class DefaultRunningProcess implements RunningProcess {
 
     private final ProcessInformation processInformation;
 
-    private Path path;
+    private final Path path;
 
     private boolean prepared = false;
 
@@ -130,7 +130,7 @@ public final class DefaultRunningProcess implements RunningProcess {
 
         command.addAll(this.processInformation.getTemplate().getRuntimeConfiguration().getProcessParameters());
         command.addAll(Arrays.asList(
-                "-cp", Null.devNull(),
+                "-cp", StringUtil.NULL_PATH,
                 "-javaagent:runner.jar",
                 "systems.reformcloud.reformcloud2.runner.Runner"
         ));
@@ -212,16 +212,52 @@ public final class DefaultRunningProcess implements RunningProcess {
                 TemplateBackendManager.getOrDefault(this.processInformation.getTemplate().getBackend()).loadGlobalTemplates(
                         this.processInformation.getProcessGroup(),
                         this.path
-                ).get(5, TimeUnit.SECONDS);
+                ).get(15, TimeUnit.SECONDS);
             } catch (final TimeoutException | InterruptedException | ExecutionException ex) {
                 System.err.println("Load of global templates took too long");
             }
 
-            return TemplateBackendManager.getOrDefault(this.processInformation.getTemplate().getBackend()).loadTemplate(
+            processInformation.getTemplate().getTemplateInclusionsOfType(Inclusion.InclusionLoadType.PRE).forEach(e -> {
+                String[] splitTemplate = e.getFirst().split("/");
+                if (splitTemplate.length != 2) {
+                    return;
+                }
+
+                TemplateBackendManager.getOrDefault(e.getSecond()).loadTemplate(
+                        splitTemplate[0],
+                        splitTemplate[1],
+                        this.path
+                ).getUninterruptedly(TimeUnit.SECONDS, 10);
+            });
+
+            processInformation.getTemplate().getPathInclusionsOfType(Inclusion.InclusionLoadType.PRE).forEach(e -> TemplateBackendManager.getOrDefault(e.getSecond()).loadPath(
+                    e.getFirst(),
+                    this.path
+            ).getUninterruptedly(TimeUnit.SECONDS, 10));
+
+            TemplateBackendManager.getOrDefault(this.processInformation.getTemplate().getBackend()).loadTemplate(
                     this.processInformation.getProcessGroup().getName(),
                     this.processInformation.getTemplate().getName(),
                     this.path
-            );
+            ).getUninterruptedly();
+
+            processInformation.getTemplate().getTemplateInclusionsOfType(Inclusion.InclusionLoadType.PAST).forEach(e -> {
+                String[] splitTemplate = e.getFirst().split("/");
+                if (splitTemplate.length != 2) {
+                    return;
+                }
+
+                TemplateBackendManager.getOrDefault(e.getSecond()).loadTemplate(
+                        splitTemplate[0],
+                        splitTemplate[1],
+                        this.path
+                ).getUninterruptedly(TimeUnit.SECONDS, 10);
+            });
+
+            processInformation.getTemplate().getPathInclusionsOfType(Inclusion.InclusionLoadType.PAST).forEach(e -> TemplateBackendManager.getOrDefault(e.getSecond()).loadPath(
+                    e.getFirst(),
+                    this.path
+            ).getUninterruptedly(TimeUnit.SECONDS, 10));
         }
 
         return CompletableFuture.completedFuture(null);
@@ -291,6 +327,8 @@ public final class DefaultRunningProcess implements RunningProcess {
                 s = "  host: " + ClientExecutor.getInstance().getClientConfig().getStartHost() + ":" + processInformation.getNetworkInfo().getPort();
             } else if (s.startsWith("ip_forward:")) {
                 s = "ip_forward: true";
+            } else if (s.startsWith("- query_port: ")) {
+                s = "- query_port: " + processInformation.getNetworkInfo().getPort();
             }
 
             return s;
@@ -310,6 +348,8 @@ public final class DefaultRunningProcess implements RunningProcess {
                 s = "use_xuid_for_uuid: true";
             } else if (s.startsWith("  raknet:")) {
                 s = "  raknet: " + processInformation.getTemplate().getVersion().equals(Version.WATERDOG_PE);
+            } else if (s.startsWith("- query_port:")) {
+                s = "- query_port: " + processInformation.getNetworkInfo().getPort();
             }
 
             return s;
@@ -361,7 +401,7 @@ public final class DefaultRunningProcess implements RunningProcess {
     private void rewriteGlowstoneConfig() {
         rewriteFile(new File(path + "/config/glowstone.yml"), (UnaryOperator<String>) s -> {
             if (s.trim().startsWith("ip:")) {
-                s = "  ip: '" + this.processInformation.getNetworkInfo().getHost() +  "'";
+                s = "  ip: '" + this.processInformation.getNetworkInfo().getHost() + "'";
             }
 
             if (s.trim().startsWith("port:")) {
@@ -509,7 +549,6 @@ public final class DefaultRunningProcess implements RunningProcess {
         SystemHelper.createDirectory(Paths.get(path + "/plugins"));
         SystemHelper.createDirectory(Paths.get(path + "/reformcloud/.connection"));
         SystemHelper.doCopy("reformcloud/files/.connection/connection.json", path + "/reformcloud/.connection/key.json");
-        SystemHelper.copyDirectory(Paths.get("reformcloud/global"), path);
     }
 
     // ========================= //

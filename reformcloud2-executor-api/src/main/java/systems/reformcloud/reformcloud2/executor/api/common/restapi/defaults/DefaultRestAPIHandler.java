@@ -9,20 +9,18 @@ import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.Configurable;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
-import systems.reformcloud.reformcloud2.executor.api.common.restapi.HttpOperation;
 import systems.reformcloud.reformcloud2.executor.api.common.restapi.RestAPIHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.restapi.request.RequestListenerHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.restapi.request.WebRequester;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.function.Double;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Duo;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.operation.Operation;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Collection;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import static io.netty.channel.ChannelFutureListener.CLOSE;
 
@@ -59,8 +57,8 @@ public final class DefaultRestAPIHandler extends RestAPIHandler {
         Configurable<JsonConfiguration> configurable = new JsonConfiguration()
                 .add("name", httpHeaders.get("-XUser"))
                 .add("token", httpHeaders.get("-XToken"));
-        Double<Boolean, WebRequester> auth = tryAuth(channelHandlerContext, configurable);
-        if (!auth.getFirst()) {
+        Duo<Boolean, WebRequester> auth = tryAuth(channelHandlerContext, configurable);
+        if (!auth.getFirst() || auth.getSecond() == null) {
             channelHandlerContext.channel().writeAndFlush(new DefaultFullHttpResponse(
                     httpRequest.protocolVersion(),
                     HttpResponseStatus.UNAUTHORIZED
@@ -68,17 +66,17 @@ public final class DefaultRestAPIHandler extends RestAPIHandler {
             return;
         }
 
-        Map<UUID, Operation> operations = new HashMap<>();
+        Collection<UUID> collection = new CopyOnWriteArrayList<>();
         Streams.allOf(requestHandler.getHandlers(), e -> e.path().equals(path) && e.canAccess(auth.getSecond())).forEach(e -> e.handleRequest(auth.getSecond(), httpRequest, httpResponse -> {
-            Operation operation = new HttpOperation();
-            operations.put(operation.identifier(), operation);
+            UUID next = UUID.randomUUID();
+            collection.add(next);
             channelHandlerContext.channel().writeAndFlush(
                     httpResponse
-            ).addListener((ChannelFutureListener) channelFuture -> operations.remove(operation.identifier()).complete());
+            ).addListener((ChannelFutureListener) channelFuture -> collection.remove(next));
         }));
 
         channelHandlerContext.channel().closeFuture().addListener((ChannelFutureListener) channelFuture -> CompletableFuture.runAsync(() -> {
-            while (!operations.isEmpty()) {
+            while (!collection.isEmpty()) {
                 try {
                     Thread.sleep(0, 500000);
                 } catch (final InterruptedException ex) {
@@ -90,7 +88,7 @@ public final class DefaultRestAPIHandler extends RestAPIHandler {
         }));
     }
 
-    private Double<Boolean, WebRequester> tryAuth(ChannelHandlerContext channelHandlerContext, Configurable<JsonConfiguration> configurable) {
+    private Duo<Boolean, WebRequester> tryAuth(ChannelHandlerContext channelHandlerContext, Configurable<JsonConfiguration> configurable) {
         return requestHandler.authHandler().handleAuth(configurable, channelHandlerContext);
     }
 }

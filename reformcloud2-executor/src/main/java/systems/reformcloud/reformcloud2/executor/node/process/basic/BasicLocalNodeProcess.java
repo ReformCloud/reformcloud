@@ -4,13 +4,13 @@ import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Version;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.backend.TemplateBackendManager;
+import systems.reformcloud.reformcloud2.executor.api.common.groups.template.inclusion.Inclusion;
 import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.Null;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.PortUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.StringUtil;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.function.Double;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Duo;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.optional.ReferencedOptional;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.process.JavaProcessHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.system.DownloadHelper;
@@ -43,7 +43,7 @@ import java.util.function.UnaryOperator;
 
 public class BasicLocalNodeProcess implements LocalNodeProcess {
 
-    private static final String LIB_PATH = new File(".").getAbsolutePath();
+    private static final String LIB_PATH = Paths.get("").toAbsolutePath().toString();
 
     public BasicLocalNodeProcess(ProcessInformation processInformation) {
         this.processInformation = processInformation;
@@ -59,7 +59,7 @@ public class BasicLocalNodeProcess implements LocalNodeProcess {
 
     private final ProcessInformation processInformation;
 
-    private Path path;
+    private final Path path;
 
     private boolean prepared = false;
 
@@ -87,7 +87,7 @@ public class BasicLocalNodeProcess implements LocalNodeProcess {
         SystemHelper.doCopy("reformcloud/files/runner.jar", path + "/runner.jar");
         SystemHelper.doCopy("reformcloud/.bin/executor.jar", path + "/plugins/executor.jar");
 
-        Double<String, Integer> connection = NodeExecutor.getInstance().getConnectHost();
+        Duo<String, Integer> connection = NodeExecutor.getInstance().getConnectHost();
         new JsonConfiguration()
                 .add("controller-host", connection.getFirst())
                 .add("controller-port", connection.getSecond())
@@ -136,7 +136,7 @@ public class BasicLocalNodeProcess implements LocalNodeProcess {
 
         command.addAll(this.processInformation.getTemplate().getRuntimeConfiguration().getProcessParameters());
         command.addAll(Arrays.asList(
-                "-cp", Null.devNull(),
+                "-cp", StringUtil.NULL_PATH,
                 "-javaagent:runner.jar",
                 "systems.reformcloud.reformcloud2.runner.Runner"
         ));
@@ -220,16 +220,52 @@ public class BasicLocalNodeProcess implements LocalNodeProcess {
                 TemplateBackendManager.getOrDefault(this.processInformation.getTemplate().getBackend()).loadGlobalTemplates(
                         this.processInformation.getProcessGroup(),
                         this.path
-                ).get(5, TimeUnit.SECONDS);
+                ).get(15, TimeUnit.SECONDS);
             } catch (final TimeoutException | InterruptedException | ExecutionException ex) {
                 System.err.println("Load of global templates took too long");
             }
 
-            return TemplateBackendManager.getOrDefault(this.processInformation.getTemplate().getBackend()).loadTemplate(
+            processInformation.getTemplate().getTemplateInclusionsOfType(Inclusion.InclusionLoadType.PRE).forEach(e -> {
+                String[] splitTemplate = e.getFirst().split("/");
+                if (splitTemplate.length != 2) {
+                    return;
+                }
+
+                TemplateBackendManager.getOrDefault(e.getSecond()).loadTemplate(
+                        splitTemplate[0],
+                        splitTemplate[1],
+                        this.path
+                ).getUninterruptedly(TimeUnit.SECONDS, 10);
+            });
+
+            processInformation.getTemplate().getPathInclusionsOfType(Inclusion.InclusionLoadType.PRE).forEach(e -> TemplateBackendManager.getOrDefault(e.getSecond()).loadPath(
+                    e.getFirst(),
+                    this.path
+            ).getUninterruptedly(TimeUnit.SECONDS, 10));
+
+            TemplateBackendManager.getOrDefault(this.processInformation.getTemplate().getBackend()).loadTemplate(
                     this.processInformation.getProcessGroup().getName(),
                     this.processInformation.getTemplate().getName(),
                     this.path
-            );
+            ).getUninterruptedly();
+
+            processInformation.getTemplate().getTemplateInclusionsOfType(Inclusion.InclusionLoadType.PAST).forEach(e -> {
+                String[] splitTemplate = e.getFirst().split("/");
+                if (splitTemplate.length != 2) {
+                    return;
+                }
+
+                TemplateBackendManager.getOrDefault(e.getSecond()).loadTemplate(
+                        splitTemplate[0],
+                        splitTemplate[1],
+                        this.path
+                ).getUninterruptedly(TimeUnit.SECONDS, 10);
+            });
+
+            processInformation.getTemplate().getPathInclusionsOfType(Inclusion.InclusionLoadType.PAST).forEach(e -> TemplateBackendManager.getOrDefault(e.getSecond()).loadPath(
+                    e.getFirst(),
+                    this.path
+            ).getUninterruptedly(TimeUnit.SECONDS, 10));
         }
 
         return CompletableFuture.completedFuture(null);
@@ -301,6 +337,8 @@ public class BasicLocalNodeProcess implements LocalNodeProcess {
                 s = "  host: " + NodeExecutor.getInstance().getNodeConfig().getStartHost() + ":" + processInformation.getNetworkInfo().getPort();
             } else if (s.startsWith("ip_forward:")) {
                 s = "ip_forward: true";
+            } else if (s.startsWith("- query_port: ")) {
+                s = "- query_port: " + processInformation.getNetworkInfo().getPort();
             }
 
             return s;
@@ -320,6 +358,8 @@ public class BasicLocalNodeProcess implements LocalNodeProcess {
                 s = "use_xuid_for_uuid: true";
             } else if (s.startsWith("  raknet:")) {
                 s = "  raknet: " + processInformation.getTemplate().getVersion().equals(Version.WATERDOG_PE);
+            } else if (s.startsWith("- query_port:")) {
+                s = "- query_port: " + processInformation.getNetworkInfo().getPort();
             }
 
             return s;
@@ -359,7 +399,7 @@ public class BasicLocalNodeProcess implements LocalNodeProcess {
     private void rewriteGlowstoneConfig() {
         rewriteFile(new File(path + "/config/glowstone.yml"), (UnaryOperator<String>) s -> {
             if (s.trim().startsWith("ip:")) {
-                s = "  ip: '" + this.processInformation.getNetworkInfo().getHost() +  "'";
+                s = "  ip: '" + this.processInformation.getNetworkInfo().getHost() + "'";
             }
 
             if (s.trim().startsWith("port:")) {
@@ -518,9 +558,8 @@ public class BasicLocalNodeProcess implements LocalNodeProcess {
     private void createTemplateAndFiles() {
         SystemHelper.createDirectory(Paths.get(path + "/plugins"));
         SystemHelper.createDirectory(Paths.get(path + "/reformcloud/.connection"));
-        new JsonConfiguration().add("key", NodeExecutor.getInstance().getNodeExecutorConfig().getCurrentNodeConnectionKey())
+        new JsonConfiguration().add("key", NodeExecutor.getInstance().getNodeExecutorConfig().getConnectionKey())
                 .write(path + "/reformcloud/.connection/key.json");
-        SystemHelper.copyDirectory(Paths.get("reformcloud/global"), path);
     }
 
     // ========================= //

@@ -10,7 +10,9 @@ import com.velocitypowered.api.event.player.KickedFromServerEvent;
 import com.velocitypowered.api.event.player.PlayerChatEvent;
 import com.velocitypowered.api.event.player.ServerPreConnectEvent;
 import com.velocitypowered.api.proxy.Player;
+import com.velocitypowered.api.proxy.server.RegisteredServer;
 import net.kyori.text.TextComponent;
+import systems.reformcloud.reformcloud2.executor.api.api.API;
 import systems.reformcloud.reformcloud2.executor.api.common.CommonHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.PlayerAccessConfiguration;
@@ -18,31 +20,46 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.channel.Pack
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState;
-import systems.reformcloud.reformcloud2.executor.api.packets.out.APIPacketOutCreateLoginRequest;
-import systems.reformcloud.reformcloud2.executor.api.packets.out.APIPacketOutLogoutPlayer;
-import systems.reformcloud.reformcloud2.executor.api.packets.out.APIPacketOutPlayerCommandExecute;
-import systems.reformcloud.reformcloud2.executor.api.packets.out.APIPacketOutPlayerLoggedIn;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
+import systems.reformcloud.reformcloud2.executor.api.network.packets.out.*;
 import systems.reformcloud.reformcloud2.executor.api.velocity.VelocityExecutor;
+
+import java.util.Optional;
 
 public final class PlayerListenerHandler {
 
-    @Subscribe (order = PostOrder.FIRST)
-    public void handleConnect(final ServerPreConnectEvent event) {
+    @Subscribe(order = PostOrder.FIRST)
+    public void handle(final ServerPreConnectEvent event) {
         final Player player = event.getPlayer();
-        ProcessInformation lobby = VelocityExecutor.getBestLobbyForPlayer(VelocityExecutor.getInstance().getThisProcessInformation(),
-                player,
-                player::hasPermission);
-        if (lobby != null) {
-            event.setResult(ServerPreConnectEvent.ServerResult.allowed(
-                    VelocityExecutor.getInstance().getProxyServer().getServer(lobby.getName()).get()
-            ));
-            return;
+        if (!player.getCurrentServer().isPresent()) {
+            ProcessInformation lobby = VelocityExecutor.getBestLobbyForPlayer(
+                    API.getInstance().getCurrentProcessInformation(),
+                    player,
+                    player::hasPermission
+            );
+            if (lobby != null) {
+                Optional<RegisteredServer> server = VelocityExecutor.getInstance().getProxyServer().getServer(lobby.getName());
+                if (!server.isPresent()) {
+                    event.setResult(ServerPreConnectEvent.ServerResult.denied());
+                    return;
+                }
+
+                event.setResult(ServerPreConnectEvent.ServerResult.allowed(server.get()));
+            } else {
+                event.setResult(ServerPreConnectEvent.ServerResult.denied());
+            }
         }
 
-        event.setResult(ServerPreConnectEvent.ServerResult.denied());
+        if (event.getResult().getServer().isPresent()) {
+            DefaultChannelManager.INSTANCE.get("Controller").ifPresent(sender -> sender.sendPacket(new APIBungeePacketOutPlayerServerSwitch(
+                    event.getPlayer().getUniqueId(),
+                    event.getResult().getServer().get().getServerInfo().getName()
+            )));
+            AbsoluteThread.sleep(20);
+        }
     }
 
-    @Subscribe (order = PostOrder.FIRST)
+    @Subscribe(order = PostOrder.FIRST)
     public void handle(final LoginEvent event) {
         PacketSender sender = DefaultChannelManager.INSTANCE.get("Controller").orElse(null);
         if (sender == null) {
@@ -50,7 +67,7 @@ public final class PlayerListenerHandler {
             return;
         }
 
-        if (ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation().getProcessGroup().getPlayerAccessConfiguration().isOnlyProxyJoin()) {
+        if (API.getInstance().getCurrentProcessInformation().getProcessGroup().getPlayerAccessConfiguration().isOnlyProxyJoin()) {
             Player player = event.getPlayer();
             sender.sendPacket(new APIPacketOutCreateLoginRequest(
                     player.getUniqueId(),
@@ -62,7 +79,7 @@ public final class PlayerListenerHandler {
     @Subscribe
     public void handle(final PostLoginEvent event) {
         final Player player = event.getPlayer();
-        final ProcessInformation current = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation();
+        final ProcessInformation current = API.getInstance().getCurrentProcessInformation();
         final PlayerAccessConfiguration configuration = current.getProcessGroup().getPlayerAccessConfiguration();
 
         if (configuration.isUseCloudPlayerLimit()
@@ -105,25 +122,32 @@ public final class PlayerListenerHandler {
         CommonHelper.EXECUTOR.execute(() -> DefaultChannelManager.INSTANCE.get("Controller").ifPresent(packetSender -> packetSender.sendPacket(new APIPacketOutPlayerLoggedIn(event.getPlayer().getUsername()))));
     }
 
-    @Subscribe (order = PostOrder.FIRST)
+    @Subscribe(order = PostOrder.FIRST)
     public void handle(final KickedFromServerEvent event) {
         Player player = event.getPlayer();
-        ProcessInformation lobby = VelocityExecutor.getBestLobbyForPlayer(VelocityExecutor.getInstance().getThisProcessInformation(),
+        ProcessInformation lobby = VelocityExecutor.getBestLobbyForPlayer(
+                API.getInstance().getCurrentProcessInformation(),
                 player,
                 player::hasPermission);
         if (lobby != null) {
-            event.setResult(KickedFromServerEvent.RedirectPlayer.create(
-                    VelocityExecutor.getInstance().getProxyServer().getServer(lobby.getName()).get()
-            ));
+            Optional<RegisteredServer> server = VelocityExecutor.getInstance().getProxyServer().getServer(lobby.getName());
+            if (!server.isPresent()) {
+                event.setResult(KickedFromServerEvent.DisconnectPlayer.create(TextComponent.of(VelocityExecutor.getInstance().getMessages().format(
+                        VelocityExecutor.getInstance().getMessages().getNoHubServerAvailable()
+                ))));
+                return;
+            }
+
+            event.setResult(KickedFromServerEvent.RedirectPlayer.create(server.get()));
             return;
         }
 
         event.setResult(KickedFromServerEvent.DisconnectPlayer.create(TextComponent.of(VelocityExecutor.getInstance().getMessages().format(
-                        VelocityExecutor.getInstance().getMessages().getNoHubServerAvailable()
+                VelocityExecutor.getInstance().getMessages().getNoHubServerAvailable()
         ))));
     }
 
-    @Subscribe (order = PostOrder.FIRST)
+    @Subscribe(order = PostOrder.FIRST)
     public void handle(final DisconnectEvent event) {
         DefaultChannelManager.INSTANCE.get("Controller").ifPresent(packetSender -> packetSender.sendPacket(new APIPacketOutLogoutPlayer(
                 event.getPlayer().getUniqueId(),
@@ -131,7 +155,7 @@ public final class PlayerListenerHandler {
         )));
 
         CommonHelper.EXECUTOR.execute(() -> {
-            ProcessInformation current = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation();
+            ProcessInformation current = API.getInstance().getCurrentProcessInformation();
             if (VelocityExecutor.getInstance().getProxyServer().getPlayerCount() < current.getMaxPlayers()
                     && !current.getProcessState().equals(ProcessState.READY)
                     && !current.getProcessState().equals(ProcessState.INVISIBLE)) {
@@ -147,7 +171,7 @@ public final class PlayerListenerHandler {
 
     @Subscribe
     public void handle(final PlayerChatEvent event) {
-        if (ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation().getProcessGroup().getPlayerAccessConfiguration().isPlayerControllerCommandReporting()
+        if (API.getInstance().getCurrentProcessInformation().getProcessGroup().getPlayerAccessConfiguration().isPlayerControllerCommandReporting()
                 && event.getMessage().startsWith("/")) {
             DefaultChannelManager.INSTANCE.get("Controller").ifPresent(packetSender -> packetSender.sendPacket(new APIPacketOutPlayerCommandExecute(
                     event.getPlayer().getUsername(),

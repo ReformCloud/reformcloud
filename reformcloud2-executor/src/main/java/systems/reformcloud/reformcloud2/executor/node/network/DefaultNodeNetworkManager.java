@@ -97,6 +97,7 @@ public class DefaultNodeNetworkManager implements NodeNetworkManager {
                     return localNodeProcessManager.startLocalProcess(processGroup, template, data, processUniqueID);
                 }
 
+                LATER.add(new Trio<>(processGroup, template, data));
                 return null;
             }
 

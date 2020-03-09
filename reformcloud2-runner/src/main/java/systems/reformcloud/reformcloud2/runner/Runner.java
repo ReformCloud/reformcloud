@@ -160,7 +160,7 @@ public final class Runner {
             s = console.readLine();
         }
 
-        return s.equalsIgnoreCase("controller") ? 1 : s.equalsIgnoreCase("node") ? 4 :  2;
+        return s.equalsIgnoreCase("controller") ? 1 : s.equalsIgnoreCase("node") ? 4 : 2;
     }
 
     private static void readProperties() {
@@ -186,6 +186,16 @@ public final class Runner {
     }
 
     private static void unpackExecutor() {
+        if (Boolean.getBoolean("reformcloud.dev.mode")) {
+            try {
+                Files.deleteIfExists(Paths.get("reformcloud/.bin/executor.jar"));
+            } catch (final IOException ex) {
+                ex.printStackTrace();
+            }
+
+            System.out.println("DEBUG: Running in development mode on git:" + Runner.class.getPackage().getSpecificationVersion());
+        }
+
         if (Files.exists(Paths.get("reformcloud/.bin/executor.jar"))) {
             return;
         }
@@ -231,10 +241,9 @@ public final class Runner {
             return;
         }
 
-        String libPath = System.getProperty("reformcloud.lib.path") + "/reformcloud/.bin/libs/";
-        File file = new File(libPath);
+        File file = new File(System.getProperty("reformcloud.lib.path") + "/reformcloud/.bin/libs/");
         if (!file.exists() || !file.isDirectory()) {
-            throw new RuntimeException("Bad lib path given " + libPath);
+            throw new RuntimeException("Bad lib path given " + System.getProperty("reformcloud.lib.path"));
         }
 
         try {
@@ -244,9 +253,10 @@ public final class Runner {
                     continue;
                 }
 
-                inst.appendToSystemClassLoaderSearch(new JarFile(file));
+                inst.appendToSystemClassLoaderSearch(new JarFile(dependency));
             }
-        } catch (final Throwable ignored) {
+        } catch (final Throwable throwable) {
+            throwable.printStackTrace();
         }
     }
 

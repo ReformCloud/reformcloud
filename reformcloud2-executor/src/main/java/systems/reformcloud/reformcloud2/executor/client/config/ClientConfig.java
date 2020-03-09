@@ -24,15 +24,15 @@ public final class ClientConfig {
         this.name = name;
     }
 
-    private int maxMemory;
+    private final int maxMemory;
 
-    private int maxProcesses;
+    private final int maxProcesses;
 
-    private double maxCpu;
+    private final double maxCpu;
 
-    private String startHost;
+    private final String startHost;
 
-    private String name;
+    private final String name;
 
     public int getMaxMemory() {
         return maxMemory;

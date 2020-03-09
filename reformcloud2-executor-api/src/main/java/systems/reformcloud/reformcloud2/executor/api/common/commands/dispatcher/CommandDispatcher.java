@@ -12,10 +12,10 @@ public interface CommandDispatcher extends EventDispatcher {
     /**
      * Dispatches a command line
      *
-     * @param commandSource The command source where the command is from
+     * @param commandSource  The command source where the command is from
      * @param commandSources The {@link AllowedCommandSources} of the command
-     * @param commandLine The command line which should be executed
-     * @param result The result handler of the method
+     * @param commandLine    The command line which should be executed
+     * @param result         The result handler of the method
      */
     void dispatchCommand(
             @Nonnull CommandSource commandSource,

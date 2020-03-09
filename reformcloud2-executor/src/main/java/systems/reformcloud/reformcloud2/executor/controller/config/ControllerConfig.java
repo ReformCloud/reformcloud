@@ -20,11 +20,11 @@ public final class ControllerConfig {
         this.httpNetworkListener = httpNetworkListener;
     }
 
-    private int maxProcesses;
+    private final int maxProcesses;
 
-    private List<Map<String, Integer>> networkListener;
+    private final List<Map<String, Integer>> networkListener;
 
-    private List<Map<String, Integer>> httpNetworkListener;
+    private final List<Map<String, Integer>> httpNetworkListener;
 
     public int getMaxProcesses() {
         return maxProcesses;

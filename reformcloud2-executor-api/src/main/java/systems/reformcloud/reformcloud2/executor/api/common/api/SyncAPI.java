@@ -2,10 +2,10 @@ package systems.reformcloud.reformcloud2.executor.api.common.api;
 
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.applications.ApplicationSyncAPI;
-import systems.reformcloud.reformcloud2.executor.api.common.api.client.ClientSyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.console.ConsoleSyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.database.DatabaseSyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.group.GroupSyncAPI;
+import systems.reformcloud.reformcloud2.executor.api.common.api.messaging.MessageSyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.player.PlayerSyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.plugins.PluginSyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.process.ProcessSyncAPI;
@@ -56,14 +56,14 @@ public interface SyncAPI {
     PluginSyncAPI getPluginSyncAPI();
 
     /**
-     * @return The current client sync api instance
-     */
-    @Nonnull
-    ClientSyncAPI getClientSyncAPI();
-
-    /**
      * @return The current database sync api instance
      */
     @Nonnull
     DatabaseSyncAPI getDatabaseSyncAPI();
+
+    /**
+     * @return The current messaging sync api instance
+     */
+    @Nonnull
+    MessageSyncAPI getMessageSyncAPI();
 }

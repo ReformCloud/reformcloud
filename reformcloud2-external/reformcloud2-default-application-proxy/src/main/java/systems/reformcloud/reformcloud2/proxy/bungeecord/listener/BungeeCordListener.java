@@ -11,7 +11,7 @@ import net.md_5.bungee.api.event.ProxyPingEvent;
 import net.md_5.bungee.api.event.ServerSwitchEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
-import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
+import systems.reformcloud.reformcloud2.executor.api.api.API;
 import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.ProcessUpdatedEvent;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
@@ -39,15 +39,20 @@ public class BungeeCordListener implements Listener {
                     return;
                 }
 
+                TabListConfiguration currentTabConfig = getCurrentTabConfig();
+                if (currentTabConfig == null) {
+                    continue;
+                }
+
                 if (PluginConfigHandler.getConfiguration().getTabListConfigurations().size() <= ATOMIC_INTEGERS[0].get()) {
                     ATOMIC_INTEGERS[0].set(0);
                     initTab();
-                    AbsoluteThread.sleep(TimeUnit.SECONDS.toMillis(getCurrentTabConfig().getWaitUntilNextInSeconds()));
+                    AbsoluteThread.sleep(TimeUnit.SECONDS.toMillis(currentTabConfig.getWaitUntilNextInSeconds()));
                     continue;
                 }
 
                 initTab();
-                AbsoluteThread.sleep(TimeUnit.SECONDS.toMillis(getCurrentTabConfig().getWaitUntilNextInSeconds()));
+                AbsoluteThread.sleep(TimeUnit.SECONDS.toMillis(currentTabConfig.getWaitUntilNextInSeconds()));
                 ATOMIC_INTEGERS[0].incrementAndGet();
             }
         });
@@ -120,9 +125,9 @@ public class BungeeCordListener implements Listener {
 
         // ====
 
-        ProcessInformation info = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation();
-        int max = info == null ? 0 : info.getMaxPlayers();
-        int online = info == null ? 0 : info.getOnlineCount();
+        ProcessInformation info = API.getInstance().getCurrentProcessInformation();
+        int max = info.getMaxPlayers();
+        int online = info.getOnlineCount();
 
         // ====
 
@@ -189,8 +194,7 @@ public class BungeeCordListener implements Listener {
     }
 
     public static MotdConfiguration getCurrentMotdConfig() {
-        boolean maintenance = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation() != null
-                && ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation().getProcessGroup().getPlayerAccessConfiguration().isMaintenance();
+        boolean maintenance = API.getInstance().getCurrentProcessInformation().getProcessGroup().getPlayerAccessConfiguration().isMaintenance();
         return maintenance
                 ? PluginConfigHandler.getConfiguration().getMotdMaintenanceConfig().get(ATOMIC_INTEGERS[2].get())
                 : PluginConfigHandler.getConfiguration().getMotdDefaultConfig().get(ATOMIC_INTEGERS[1].get());
@@ -211,11 +215,7 @@ public class BungeeCordListener implements Listener {
             return null;
         }
 
-        ProcessInformation current = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation();
-        if (current == null) {
-            return ChatColor.translateAlternateColorCodes('&', text);
-        }
-
+        ProcessInformation current = API.getInstance().getCurrentProcessInformation();
         return ChatColor.translateAlternateColorCodes('&', text)
                 .replace("%proxy_name%", current.getName())
                 .replace("%proxy_display_name%", current.getDisplayName())
@@ -238,9 +238,9 @@ public class BungeeCordListener implements Listener {
     /* ==================================== */
 
     private static String replaceTabList(ProxiedPlayer player, String line) {
-        ProcessInformation info = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation();
-        int max = info == null ? 0 : info.getMaxPlayers();
-        int online = info == null ? 0 : info.getOnlineCount();
+        ProcessInformation info = API.getInstance().getCurrentProcessInformation();
+        int max = info.getMaxPlayers();
+        int online = info.getOnlineCount();
 
         return ChatColor.translateAlternateColorCodes('&', line)
                 .replace("%player_server%", player.getServer() != null

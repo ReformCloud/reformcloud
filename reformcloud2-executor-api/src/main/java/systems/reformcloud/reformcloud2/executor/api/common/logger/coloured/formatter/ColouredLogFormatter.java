@@ -1,17 +1,14 @@
 package systems.reformcloud.reformcloud2.executor.api.common.logger.coloured.formatter;
 
+import systems.reformcloud.reformcloud2.executor.api.common.CommonHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.FormatterBase;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.LoggerBase;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.coloured.Colours;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 
 public final class ColouredLogFormatter extends FormatterBase {
-
-    private static final DateFormat DATE_FORMAT = new SimpleDateFormat("dd.MM.yyyy kk:mm:ss");
 
     public ColouredLogFormatter(LoggerBase loggerBase) {
         super(loggerBase);
@@ -23,7 +20,7 @@ public final class ColouredLogFormatter extends FormatterBase {
                 .append(Colours.GRAY.toString())
                 .append("[")
                 .append(Colours.WHITE.toString())
-                .append(DATE_FORMAT.format(record.getMillis()))
+                .append(CommonHelper.DATE_FORMAT.format(record.getMillis()))
                 .append(Colours.GRAY.toString())
                 .append(" ")
                 .append(getByLevel(record.getLevel()).toString())

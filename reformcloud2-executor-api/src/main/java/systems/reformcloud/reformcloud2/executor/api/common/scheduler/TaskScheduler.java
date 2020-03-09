@@ -37,7 +37,7 @@ public interface TaskScheduler {
      * Schedules a task
      *
      * @param runnable The runnable of the task
-     * @param delay The delay between the executions
+     * @param delay    The delay between the executions
      * @param timeUnit The {@link TimeUnit} of the delay
      * @return The created task
      */
@@ -48,8 +48,8 @@ public interface TaskScheduler {
      * Schedules a task
      *
      * @param runnable The runnable of the task
-     * @param delay The delay between the executions
-     * @param period The delay before the first execution
+     * @param delay    The delay between the executions
+     * @param period   The delay before the first execution
      * @param timeUnit The {@link TimeUnit} of the delay
      * @return The created task
      */

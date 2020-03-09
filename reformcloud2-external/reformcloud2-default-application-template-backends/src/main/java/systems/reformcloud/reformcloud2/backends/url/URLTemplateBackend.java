@@ -7,6 +7,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.groups.template.back
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.system.DownloadHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.system.SystemHelper;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 
 import javax.annotation.Nonnull;
 import java.io.File;
@@ -16,7 +17,6 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.concurrent.CompletableFuture;
 
 public final class URLTemplateBackend implements TemplateBackend {
 
@@ -59,31 +59,40 @@ public final class URLTemplateBackend implements TemplateBackend {
 
     @Nonnull
     @Override
-    public CompletableFuture<Void> createTemplate(String group, String template) {
-        return CompletableFuture.completedFuture(null);
+    public Task<Void> createTemplate(String group, String template) {
+        return Task.completedTask(null);
     }
 
     @Nonnull
     @Override
-    public CompletableFuture<Void> loadTemplate(String group, String template, Path target) {
+    public Task<Void> loadTemplate(String group, String template, Path target) {
         DownloadHelper.downloadAndDisconnect(getBasePath() + group + "-" + template + ".zip",  "reformcloud/files/temp/template.zip");
         SystemHelper.unZip(new File("reformcloud/files/temp/template.zip"), target.toString());
         SystemHelper.deleteFile(new File("reformcloud/files/temp/template.zip"));
-        return CompletableFuture.completedFuture(null);
+        return Task.completedTask(null);
     }
 
     @Nonnull
     @Override
-    public CompletableFuture<Void> loadGlobalTemplates(ProcessGroup group, Path target) {
+    public Task<Void> loadGlobalTemplates(ProcessGroup group, Path target) {
         Streams.allOf(group.getTemplates(), e -> e.getBackend().equals(getName())
                 && e.isGlobal()).forEach(e -> this.loadTemplate(group.getName(), e.getName(), target));
-        return CompletableFuture.completedFuture(null);
+        return Task.completedTask(null);
     }
 
     @Nonnull
     @Override
-    public CompletableFuture<Void> deployTemplate(String group, String template, Path current) {
-        return CompletableFuture.completedFuture(null);
+    public Task<Void> loadPath(String path, Path target) {
+        DownloadHelper.downloadAndDisconnect(getBasePath() + path,  "reformcloud/files/temp/template.zip");
+        SystemHelper.unZip(new File("reformcloud/files/temp/template.zip"), target.toString());
+        SystemHelper.deleteFile(new File("reformcloud/files/temp/template.zip"));
+        return Task.completedTask(null);
+    }
+
+    @Nonnull
+    @Override
+    public Task<Void> deployTemplate(String group, String template, Path current) {
+        return Task.completedTask(null);
     }
 
     @Override

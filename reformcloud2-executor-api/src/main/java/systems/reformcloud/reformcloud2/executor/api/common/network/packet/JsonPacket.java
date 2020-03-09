@@ -25,13 +25,13 @@ public class JsonPacket implements Packet {
         this.extra = extra;
     }
 
-    private int id;
+    private final int id;
 
     private UUID uid;
 
     private JsonConfiguration content;
 
-    private byte[] extra;
+    private final byte[] extra;
 
     @Override
     public int packetID() {

@@ -13,11 +13,10 @@ public interface ConsoleAsyncAPI {
      *
      * @param line The line which should be sent
      * @return A task which will be completed if the action is completed (always {@code null})
-     * @throws IllegalAccessException If coloured logging is not supported
      */
     @Nonnull
     @CheckReturnValue
-    Task<Void> sendColouredLineAsync(@Nonnull String line) throws IllegalAccessException;
+    Task<Void> sendColouredLineAsync(@Nonnull String line);
 
     /**
      * Sends a raw line into the console
@@ -34,8 +33,8 @@ public interface ConsoleAsyncAPI {
      *
      * @param commandLine The command line which should be executed
      * @return A task which will be completed with the result of the command or {@code null} if the command is
-     *  a) not registered
-     *  b) doesn't sent any result to the handler
+     * a) not registered
+     * b) doesn't sent any result to the handler
      */
     @Nonnull
     @CheckReturnValue

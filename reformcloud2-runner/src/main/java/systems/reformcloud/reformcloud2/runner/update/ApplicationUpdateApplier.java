@@ -47,7 +47,7 @@ public final class ApplicationUpdateApplier {
                 .replace(".jar", "");
 
         for (File file : files) {
-            if (file.getName().startsWith(name)) {
+            if (file.getName().startsWith(name) && !file.isDirectory() && file.getName().endsWith(".jar")) {
                 delete(file);
                 return true;
             }

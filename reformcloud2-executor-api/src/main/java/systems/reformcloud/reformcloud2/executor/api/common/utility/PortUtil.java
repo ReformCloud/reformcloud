@@ -16,11 +16,12 @@ public final class PortUtil {
      * @return The next free port
      */
     public static int checkPort(int startPort) {
-        while (isPortInUse(startPort)) {
+        startPort = Math.max(startPort, 0);
+        while (isPortInUse(startPort) && startPort < 65536) {
             startPort++;
         }
 
-        return startPort;
+        return Math.min(startPort, 65535);
     }
 
     private static boolean isPortInUse(int port) {

@@ -10,11 +10,11 @@ public class AutomaticStartupConfiguration {
         this.checkIntervalInSeconds = checkIntervalInSeconds;
     }
 
-    private boolean enabled;
+    private final boolean enabled;
 
-    private int maxPercentOfPlayers;
+    private final int maxPercentOfPlayers;
 
-    private long checkIntervalInSeconds;
+    private final long checkIntervalInSeconds;
 
     public boolean isEnabled() {
         return enabled;

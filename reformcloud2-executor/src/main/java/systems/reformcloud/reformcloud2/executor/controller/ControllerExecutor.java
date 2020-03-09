@@ -8,15 +8,15 @@ import systems.reformcloud.reformcloud2.executor.api.common.api.SyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.application.ApplicationLoader;
 import systems.reformcloud.reformcloud2.executor.api.common.application.basic.DefaultApplicationLoader;
 import systems.reformcloud.reformcloud2.executor.api.common.client.ClientRuntimeInformation;
-import systems.reformcloud.reformcloud2.executor.api.common.client.basic.DefaultClientRuntimeInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.AllowedCommandSources;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.ConsoleCommandSource;
-import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.CommandClear;
-import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.CommandHelp;
-import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.CommandReload;
-import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.CommandStop;
+import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.*;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.dump.CommandDump;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.dump.basic.DefaultDumpUtil;
+import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.shared.CommandClear;
+import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.shared.CommandHelp;
+import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.shared.CommandReload;
+import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.shared.CommandStop;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.manager.DefaultCommandManager;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.manager.CommandManager;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.source.CommandSource;
@@ -35,17 +35,15 @@ import systems.reformcloud.reformcloud2.executor.api.common.language.loading.Lan
 import systems.reformcloud.reformcloud2.executor.api.common.logger.LoggerBase;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.coloured.ColouredLoggerHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.other.DefaultLoggerHandler;
-import systems.reformcloud.reformcloud2.executor.api.common.network.auth.Auth;
-import systems.reformcloud.reformcloud2.executor.api.common.network.auth.NetworkType;
-import systems.reformcloud.reformcloud2.executor.api.common.network.auth.defaults.DefaultAuth;
-import systems.reformcloud.reformcloud2.executor.api.common.network.auth.defaults.DefaultServerAuthHandler;
+import systems.reformcloud.reformcloud2.executor.api.common.network.challenge.shared.ServerChallengeAuthHandler;
+import systems.reformcloud.reformcloud2.executor.api.common.network.challenge.shared.SharedChallengeProvider;
+import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.handler.DefaultJsonNetworkHandler;
+import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.defaults.DefaultPacketHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.handler.PacketHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.server.DefaultNetworkServer;
 import systems.reformcloud.reformcloud2.executor.api.common.network.server.NetworkServer;
-import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
-import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState;
 import systems.reformcloud.reformcloud2.executor.api.common.restapi.auth.basic.DefaultWebServerAuth;
 import systems.reformcloud.reformcloud2.executor.api.common.restapi.http.server.DefaultWebServer;
 import systems.reformcloud.reformcloud2.executor.api.common.restapi.http.server.WebServer;
@@ -53,21 +51,25 @@ import systems.reformcloud.reformcloud2.executor.api.common.restapi.request.Requ
 import systems.reformcloud.reformcloud2.executor.api.common.restapi.request.defaults.DefaultRequestListenerHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.restapi.user.WebUser;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.StringUtil;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.function.Double;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.optional.ReferencedOptional;
 import systems.reformcloud.reformcloud2.executor.api.controller.Controller;
 import systems.reformcloud.reformcloud2.executor.api.controller.process.ProcessManager;
 import systems.reformcloud.reformcloud2.executor.controller.api.GeneralAPI;
 import systems.reformcloud.reformcloud2.executor.controller.api.applications.ApplicationAPIImplementation;
-import systems.reformcloud.reformcloud2.executor.controller.api.client.ClientAPIImplementation;
 import systems.reformcloud.reformcloud2.executor.controller.api.console.ConsoleAPIImplementation;
 import systems.reformcloud.reformcloud2.executor.controller.api.database.DatabaseAPIImplementation;
 import systems.reformcloud.reformcloud2.executor.controller.api.group.GroupAPIImplementation;
+import systems.reformcloud.reformcloud2.executor.controller.api.message.ChannelMessageAPIImplementation;
 import systems.reformcloud.reformcloud2.executor.controller.api.player.PlayerAPIImplementation;
 import systems.reformcloud.reformcloud2.executor.controller.api.plugins.PluginAPIImplementation;
 import systems.reformcloud.reformcloud2.executor.controller.api.process.ProcessAPIImplementation;
-import systems.reformcloud.reformcloud2.executor.controller.commands.CommandReformCloud;
+import systems.reformcloud.reformcloud2.executor.controller.commands.CommandClients;
 import systems.reformcloud.reformcloud2.executor.controller.config.ControllerConfig;
 import systems.reformcloud.reformcloud2.executor.controller.config.ControllerExecutorConfig;
+import systems.reformcloud.reformcloud2.executor.controller.network.channel.ControllerNetworkChannelReader;
+import systems.reformcloud.reformcloud2.executor.controller.network.channel.ControllerNetworkSuccessHandler;
+import systems.reformcloud.reformcloud2.executor.controller.network.packets.out.ControllerPacketOutCopyProcess;
+import systems.reformcloud.reformcloud2.executor.controller.network.packets.out.ControllerPacketOutToggleScreen;
 import systems.reformcloud.reformcloud2.executor.controller.process.ClientManager;
 import systems.reformcloud.reformcloud2.executor.controller.process.DefaultProcessManager;
 import systems.reformcloud.reformcloud2.executor.controller.process.startup.AutoStartupHandler;
@@ -181,13 +183,13 @@ public final class ControllerExecutor extends Controller {
 
         GeneralAPI generalAPI = new GeneralAPI(
                 new ApplicationAPIImplementation(this.applicationLoader),
-                new ClientAPIImplementation(),
                 new ConsoleAPIImplementation(this.commandManager),
                 new DatabaseAPIImplementation(this.database),
                 new GroupAPIImplementation(),
                 new PlayerAPIImplementation(this.processManager),
                 new PluginAPIImplementation(),
-                new ProcessAPIImplementation(this.processManager)
+                new ProcessAPIImplementation(this.processManager),
+                new ChannelMessageAPIImplementation()
         );
         this.syncAPI = generalAPI;
         this.asyncAPI = generalAPI;
@@ -198,44 +200,12 @@ public final class ControllerExecutor extends Controller {
         applicationLoader.installApplications();
 
         this.controllerConfig = controllerExecutorConfig.getControllerConfig();
-        this.controllerConfig.getNetworkListener().forEach(stringIntegerMap -> stringIntegerMap.forEach((s, integer) -> ControllerExecutor.this.networkServer.bind(s, integer, new DefaultServerAuthHandler(
-                packetHandler,
-                packetSender -> {
-                    ClientManager.INSTANCE.disconnectClient(packetSender.getName());
-                    processManager.onChannelClose(packetSender.getName());
-                },
-                packet -> {
-                    DefaultAuth auth = packet.content().get("auth", Auth.TYPE);
-                    if (auth == null) {
-                        return new Double<>("", false);
-                    }
-
-                    if (!auth.key().equals(controllerExecutorConfig.getConnectionKey())) {
-                        System.out.println(LanguageManager.get("network-channel-auth-failed", auth.getName()));
-                        return new Double<>(auth.getName(), false);
-                    }
-
-                    if (auth.type().equals(NetworkType.CLIENT)) {
-                        System.out.println(LanguageManager.get("client-connected", auth.getName()));
-                        DefaultClientRuntimeInformation runtimeInformation = auth.extra().get("info", ClientRuntimeInformation.TYPE);
-                        ClientManager.INSTANCE.connectClient(runtimeInformation);
-                    } else {
-                        ProcessInformation information = processManager.getProcess(auth.getName());
-                        if (information == null) {
-                            return new Double<>(auth.getName(), false);
-                        }
-
-                        information.getNetworkInfo().setConnected(true);
-                        information.setProcessState(ProcessState.READY);
-                        processManager.update(information);
-
-                        System.out.println(LanguageManager.get("process-connected", auth.getName(), auth.parent()));
-                    }
-
-                    System.out.println(LanguageManager.get("network-channel-auth-success", auth.getName(), auth.parent()));
-                    return new Double<>(auth.getName(), true);
-                }
-        ))));
+        this.controllerConfig.getNetworkListener().forEach(e -> e.forEach((host, port) -> ControllerExecutor.this.networkServer.bind(
+                host,
+                port,
+                () -> new ControllerNetworkChannelReader(this.packetHandler),
+                new ServerChallengeAuthHandler(new SharedChallengeProvider(this.controllerExecutorConfig.getConnectionKey()), new ControllerNetworkSuccessHandler())
+        )));
 
         applicationLoader.loadApplications();
 
@@ -254,8 +224,8 @@ public final class ControllerExecutor extends Controller {
         }
 
         this.controllerExecutorConfig.getControllerConfig().getHttpNetworkListener().forEach(map -> map.forEach((host, port) -> {
-                this.webServer.add(host, port, this.requestListenerHandler);
-            })
+                    this.webServer.add(host, port, this.requestListenerHandler);
+                })
         );
 
         applicationLoader.enableApplications();
@@ -353,11 +323,6 @@ public final class ControllerExecutor extends Controller {
     }
 
     @Nonnull
-    public ApplicationLoader getApplicationLoader() {
-        return applicationLoader;
-    }
-
-    @Nonnull
     @Override
     public SyncAPI getSyncAPI() {
         return syncAPI;
@@ -444,15 +409,40 @@ public final class ControllerExecutor extends Controller {
 
     private void loadCommands() {
         this.commandManager
+                .register(new CommandProcess(target -> {
+                    ReferencedOptional<PacketSender> optional = DefaultChannelManager.INSTANCE.get(target.getParent());
+                    optional.ifPresent(packetSender -> packetSender.sendPacket(new ControllerPacketOutToggleScreen(target.getProcessUniqueID())));
+                    return optional.isPresent();
+                }, e -> DefaultChannelManager.INSTANCE.get(e.getParent()).ifPresent(packetSender -> packetSender.sendPacket(
+                        new ControllerPacketOutCopyProcess(e.getProcessUniqueID())
+                ))))
+                .register(new CommandClients())
+                .register(new CommandPlayers())
+                .register(new CommandGroup())
+                .register(new CommandApplication())
                 .register(new CommandDump(new DefaultDumpUtil()))
-                .register(CommandStop.class)
-                .register(new CommandReformCloud())
+                .register(new CommandLaunch())
+                .register(new CommandStop())
+                .register(new CommandCreate())
                 .register(new CommandReload(this))
                 .register(new CommandClear(loggerBase))
                 .register(new CommandHelp(commandManager));
     }
 
     private void loadPacketHandlers() {
-        new Reflections("systems.reformcloud.reformcloud2.executor.controller.packet.in").getSubTypesOf(DefaultJsonNetworkHandler.class).forEach(packetHandler::registerHandler);
+        new Reflections("systems.reformcloud.reformcloud2.executor.controller.network.packets.in").getSubTypesOf(DefaultJsonNetworkHandler.class).forEach(packetHandler::registerHandler);
+    }
+
+    public void handleChannelDisconnect(PacketSender packetSender) {
+        ClientRuntimeInformation clientRuntimeInformation = ClientManager.INSTANCE.getClientRuntimeInformation()
+                .stream()
+                .filter(e -> e.getName().equals(packetSender.getName()))
+                .findFirst()
+                .orElse(null);
+        if (clientRuntimeInformation != null) {
+            ClientManager.INSTANCE.disconnectClient(clientRuntimeInformation.getName());
+        } else {
+            this.processManager.onChannelClose(packetSender.getName());
+        }
     }
 }

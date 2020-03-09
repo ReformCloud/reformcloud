@@ -1,9 +1,8 @@
 package systems.reformcloud.reformcloud2.executor.api.common.api.process;
 
+import systems.reformcloud.reformcloud2.executor.api.api.API;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.task.defaults.DefaultTask;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -27,7 +26,7 @@ public interface ProcessSyncAPI {
      * Starts a process
      *
      * @param groupName The name of the group which should be started from
-     * @param template The template which should be used
+     * @param template  The template which should be used
      * @return The created {@link ProcessInformation}
      */
     @Nullable
@@ -36,8 +35,8 @@ public interface ProcessSyncAPI {
     /**
      * Starts a process
      *
-     * @param groupName The name of the group which should be started from
-     * @param template The template which should be used
+     * @param groupName    The name of the group which should be started from
+     * @param template     The template which should be used
      * @param configurable The data for the process
      * @return The created {@link ProcessInformation}
      */
@@ -105,7 +104,7 @@ public interface ProcessSyncAPI {
     /**
      * Executes a command on a process
      *
-     * @param name The name of the process
+     * @param name        The name of the process
      * @param commandLine The command line with should be executed
      */
     void executeProcessCommand(@Nonnull String name, @Nonnull String commandLine);
@@ -122,8 +121,10 @@ public interface ProcessSyncAPI {
      * Get the current process information
      *
      * @return The current {@link ProcessInformation} or {@code null} if the runtime is not a process
+     * @deprecated Has been moved to {@link API#getCurrentProcessInformation()}. Will be removed in a further release
      */
     @Nullable
+    @Deprecated
     ProcessInformation getThisProcessInformation();
 
     /**
@@ -141,19 +142,4 @@ public interface ProcessSyncAPI {
      * @param processInformation The process information which should be updated
      */
     void update(@Nonnull ProcessInformation processInformation);
-
-    /**
-     * Updates a specific {@link ProcessInformation}
-     *
-     * @param processInformation The process information which should be updated
-     * @return A task which will be completed after the update of the {@link ProcessInformation}
-     */
-    default Task<Void> updateAsync(@Nonnull ProcessInformation processInformation) {
-        Task<Void> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> {
-            update(processInformation);
-            task.complete(null);
-        });
-        return task;
-    }
 }

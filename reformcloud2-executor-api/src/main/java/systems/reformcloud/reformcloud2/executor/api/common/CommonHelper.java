@@ -1,6 +1,7 @@
 package systems.reformcloud.reformcloud2.executor.api.common;
 
 import com.sun.management.OperatingSystemMXBean;
+import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessRuntimeInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.optional.ReferencedOptional;
 
 import javax.annotation.Nonnull;
@@ -13,6 +14,9 @@ import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.text.DateFormat;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -26,6 +30,10 @@ public final class CommonHelper {
     }
 
     public static final Executor EXECUTOR = Executors.newCachedThreadPool();
+
+    public static final DateFormat DATE_FORMAT = new SimpleDateFormat("dd.MM.yyyy kk:mm:ss");
+
+    public static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("##.###");
 
     public static MemoryMXBean memoryMXBean() {
         return ManagementFactory.getMemoryMXBean();
@@ -62,7 +70,7 @@ public final class CommonHelper {
                 return;
             }
 
-            atomicLong.addAndGet(memoryPoolMXBean.getCollectionUsage().getUsed());
+            atomicLong.addAndGet(memoryPoolMXBean.getCollectionUsage().getUsed() / ProcessRuntimeInformation.MEGABYTE);
         });
 
         return atomicLong.get();
@@ -100,6 +108,26 @@ public final class CommonHelper {
         }
     }
 
+    public static int longToInt(long in) {
+        return in > Integer.MAX_VALUE ? Integer.MAX_VALUE : in < Integer.MIN_VALUE ? Integer.MIN_VALUE : (int) in;
+    }
+
+    public static int calculateMaxMemory() {
+        return (int) ((operatingSystemMXBean().getTotalPhysicalMemorySize() / 1048576) - 2048);
+    }
+
+    public static String getIpAddress(@Nonnull String input) {
+        if (input.split("\\.").length == 4) {
+            return input;
+        }
+
+        try {
+            return InetAddress.getByName(input).getHostAddress();
+        } catch (final Throwable throwable) {
+            return null;
+        }
+    }
+
     public static void rewriteProperties(String path, String saveComment, Function<String, String> function) {
         if (!Files.exists(Paths.get(path))) {
             return;
@@ -116,22 +144,6 @@ public final class CommonHelper {
             }
         } catch (final IOException ex) {
             ex.printStackTrace();
-        }
-    }
-
-    public static int calculateMaxMemory() {
-        return (int) ((operatingSystemMXBean().getTotalPhysicalMemorySize() / 1048576) - 2048);
-    }
-
-    public static String getIpAddress(@Nonnull String input) {
-        if (input.split("\\.").length == 4) {
-            return input;
-        }
-
-        try {
-            return InetAddress.getByName(input).getHostAddress();
-        } catch (final Throwable throwable) {
-            return null;
         }
     }
 

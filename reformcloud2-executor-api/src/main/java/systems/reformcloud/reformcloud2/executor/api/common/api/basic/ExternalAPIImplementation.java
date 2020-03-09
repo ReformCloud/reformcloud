@@ -8,14 +8,16 @@ import systems.reformcloud.reformcloud2.executor.api.common.api.applications.App
 import systems.reformcloud.reformcloud2.executor.api.common.api.applications.ApplicationSyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.applications.api.GeneralAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.basic.packets.out.*;
-import systems.reformcloud.reformcloud2.executor.api.common.api.client.ClientAsyncAPI;
-import systems.reformcloud.reformcloud2.executor.api.common.api.client.ClientSyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.console.ConsoleAsyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.console.ConsoleSyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.database.DatabaseAsyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.database.DatabaseSyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.group.GroupAsyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.group.GroupSyncAPI;
+import systems.reformcloud.reformcloud2.executor.api.common.api.messaging.MessageAsyncAPI;
+import systems.reformcloud.reformcloud2.executor.api.common.api.messaging.MessageSyncAPI;
+import systems.reformcloud.reformcloud2.executor.api.common.api.messaging.util.ErrorReportHandling;
+import systems.reformcloud.reformcloud2.executor.api.common.api.messaging.util.ReceiverType;
 import systems.reformcloud.reformcloud2.executor.api.common.api.player.PlayerAsyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.player.PlayerSyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.plugins.PluginAsyncAPI;
@@ -25,7 +27,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.api.process.ProcessS
 import systems.reformcloud.reformcloud2.executor.api.common.application.InstallableApplication;
 import systems.reformcloud.reformcloud2.executor.api.common.application.LoadedApplication;
 import systems.reformcloud.reformcloud2.executor.api.common.application.basic.DefaultLoadedApplication;
-import systems.reformcloud.reformcloud2.executor.api.common.client.ClientRuntimeInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.Command;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.MainGroup;
@@ -35,6 +36,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.PlayerA
 import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.StartupConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.StartupEnvironment;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
+import systems.reformcloud.reformcloud2.executor.api.common.network.messaging.DefaultMessageJsonPacket;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.handler.PacketHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.plugins.InstallablePlugin;
@@ -47,31 +49,20 @@ import systems.reformcloud.reformcloud2.executor.api.common.utility.task.default
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
 public abstract class ExternalAPIImplementation extends ExecutorAPI implements
-        ProcessSyncAPI,
-        ProcessAsyncAPI,
-        ApplicationSyncAPI,
-        ApplicationAsyncAPI,
-        ClientSyncAPI,
-        ClientAsyncAPI,
-        ConsoleSyncAPI,
-        ConsoleAsyncAPI,
-        DatabaseSyncAPI,
-        DatabaseAsyncAPI,
-        GroupSyncAPI,
-        GroupAsyncAPI,
-        PlayerSyncAPI,
-        PlayerAsyncAPI,
-        PluginSyncAPI,
-        PluginAsyncAPI {
+        ProcessSyncAPI, ProcessAsyncAPI,
+        ApplicationSyncAPI, ApplicationAsyncAPI,
+        ConsoleSyncAPI, ConsoleAsyncAPI,
+        DatabaseSyncAPI, DatabaseAsyncAPI,
+        GroupSyncAPI, GroupAsyncAPI,
+        PlayerSyncAPI, PlayerAsyncAPI,
+        PluginSyncAPI, PluginAsyncAPI,
+        MessageSyncAPI, MessageAsyncAPI {
 
     public static final int EXTERNAL_PACKET_ID = 600;
 
@@ -116,24 +107,27 @@ public abstract class ExternalAPIImplementation extends ExecutorAPI implements
     @Override
     public Task<List<LoadedApplication>> getApplicationsAsync() {
         Task<List<LoadedApplication>> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> sendPacketQuery(new ExternalAPIPacketOutGetApplications(), packet -> task.complete(new ArrayList<>(packet.content().get("result", new TypeToken<List<DefaultLoadedApplication>>() {
-        })))));
+        Task.EXECUTOR.execute(() -> sendPacketQuery(new ExternalAPIPacketOutGetApplications(), packet -> task.complete(new ArrayList<>(packet.content().getOrDefault("result", new TypeToken<List<DefaultLoadedApplication>>() {
+        }.getType(), new ArrayList<>())))));
         return task;
     }
 
     @Override
     public boolean loadApplication(@Nonnull InstallableApplication application) {
-        return loadApplicationAsync(application).getUninterruptedly();
+        Boolean result = loadApplicationAsync(application).getUninterruptedly();
+        return result == null ? false : result;
     }
 
     @Override
     public boolean unloadApplication(@Nonnull LoadedApplication application) {
-        return unloadApplicationAsync(application).getUninterruptedly();
+        Boolean result = unloadApplicationAsync(application).getUninterruptedly();
+        return result == null ? false : result;
     }
 
     @Override
     public boolean unloadApplication(@Nonnull String application) {
-        return unloadApplicationAsync(application).getUninterruptedly();
+        Boolean result = unloadApplicationAsync(application).getUninterruptedly();
+        return result == null ? false : result;
     }
 
     @Override
@@ -144,71 +138,6 @@ public abstract class ExternalAPIImplementation extends ExecutorAPI implements
     @Override
     public List<LoadedApplication> getApplications() {
         return getApplicationsAsync().getUninterruptedly();
-    }
-
-    @Nonnull
-    @Override
-    public Task<Boolean> isClientConnectedAsync(String name) {
-        Task<Boolean> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> task.complete(getClientInformationAsync(name).getUninterruptedly(TimeUnit.SECONDS, 5) != null));
-        return task;
-    }
-
-    @Nonnull
-    @Override
-    public Task<String> getClientStartHostAsync(String name) {
-        Task<String> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> task.complete(getClientInformationAsync(name).getUninterruptedly(TimeUnit.SECONDS, 5).startHost()));
-        return task;
-    }
-
-    @Nonnull
-    @Override
-    public Task<Integer> getMaxMemoryAsync(String name) {
-        Task<Integer> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> task.complete(getClientInformationAsync(name).getUninterruptedly(TimeUnit.SECONDS, 5).maxMemory()));
-        return task;
-    }
-
-    @Nonnull
-    @Override
-    public Task<Integer> getMaxProcessesAsync(String name) {
-        Task<Integer> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> task.complete(getClientInformationAsync(name).getUninterruptedly(TimeUnit.SECONDS, 5).maxProcessCount()));
-        return task;
-    }
-
-    @Nonnull
-    @Override
-    public Task<ClientRuntimeInformation> getClientInformationAsync(String name) {
-        Task<ClientRuntimeInformation> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> sendPacketQuery(new ExternalAPIPacketOutGetClientRuntimeInformation(name), packet -> task.complete(packet.content().get("result", ClientRuntimeInformation.TYPE))));
-        return task;
-    }
-
-    @Override
-    public boolean isClientConnected(@Nonnull String name) {
-        return isClientConnectedAsync(name).getUninterruptedly();
-    }
-
-    @Override
-    public String getClientStartHost(@Nonnull String name) {
-        return getClientStartHostAsync(name).getUninterruptedly();
-    }
-
-    @Override
-    public int getMaxMemory(@Nonnull String name) {
-        return getMaxMemoryAsync(name).getUninterruptedly();
-    }
-
-    @Override
-    public int getMaxProcesses(@Nonnull String name) {
-        return getMaxProcessesAsync(name).getUninterruptedly();
-    }
-
-    @Override
-    public ClientRuntimeInformation getClientInformation(@Nonnull String name) {
-        return getClientInformationAsync(name).getUninterruptedly();
     }
 
     @Nonnull
@@ -279,7 +208,8 @@ public abstract class ExternalAPIImplementation extends ExecutorAPI implements
 
     @Override
     public boolean isCommandRegistered(@Nonnull String name) {
-        return isCommandRegisteredAsync(name).getUninterruptedly();
+        Boolean result = isCommandRegisteredAsync(name).getUninterruptedly();
+        return result == null ? false : result;
     }
 
     @Nonnull
@@ -396,12 +326,14 @@ public abstract class ExternalAPIImplementation extends ExecutorAPI implements
 
     @Override
     public boolean update(@Nonnull String table, @Nonnull String key, @Nonnull JsonConfiguration newData) {
-        return updateAsync(table, key, newData).getUninterruptedly();
+        Boolean result = updateAsync(table, key, newData).getUninterruptedly();
+        return result == null ? false : result;
     }
 
     @Override
     public boolean updateIfAbsent(@Nonnull String table, @Nonnull String identifier, @Nonnull JsonConfiguration newData) {
-        return updateIfAbsentAsync(table, identifier, newData).getUninterruptedly();
+        Boolean result = updateIfAbsentAsync(table, identifier, newData).getUninterruptedly();
+        return result == null ? false : result;
     }
 
     @Override
@@ -416,22 +348,26 @@ public abstract class ExternalAPIImplementation extends ExecutorAPI implements
 
     @Override
     public boolean createDatabase(@Nonnull String name) {
-        return createDatabaseAsync(name).getUninterruptedly();
+        Boolean result = createDatabaseAsync(name).getUninterruptedly();
+        return result == null ? false : result;
     }
 
     @Override
     public boolean deleteDatabase(@Nonnull String name) {
-        return deleteDatabaseAsync(name).getUninterruptedly();
+        Boolean result = deleteDatabaseAsync(name).getUninterruptedly();
+        return result == null ? false : result;
     }
 
     @Override
     public boolean contains(@Nonnull String table, @Nonnull String key) {
-        return containsAsync(table, key).getUninterruptedly();
+        Boolean result = containsAsync(table, key).getUninterruptedly();
+        return result == null ? false : result;
     }
 
     @Override
     public int size(@Nonnull String table) {
-        return sizeAsync(table).getUninterruptedly();
+        Integer result = sizeAsync(table).getUninterruptedly();
+        return result == null ? 0 : result;
     }
 
     @Nonnull
@@ -584,61 +520,61 @@ public abstract class ExternalAPIImplementation extends ExecutorAPI implements
     @Nonnull
     @Override
     public MainGroup createMainGroup(@Nonnull String name) {
-        return createMainGroupAsync(name).getUninterruptedly();
+        return Objects.requireNonNull(createMainGroupAsync(name).getUninterruptedly());
     }
 
     @Nonnull
     @Override
     public MainGroup createMainGroup(@Nonnull String name, @Nonnull List<String> subgroups) {
-        return createMainGroupAsync(name, subgroups).getUninterruptedly();
+        return Objects.requireNonNull(createMainGroupAsync(name, subgroups).getUninterruptedly());
     }
 
     @Nonnull
     @Override
     public ProcessGroup createProcessGroup(@Nonnull String name) {
-        return createProcessGroupAsync(name).getUninterruptedly();
+        return Objects.requireNonNull(createProcessGroupAsync(name).getUninterruptedly());
     }
 
     @Nonnull
     @Override
     public ProcessGroup createProcessGroup(@Nonnull String name, @Nonnull List<Template> templates) {
-        return createProcessGroupAsync(name, templates).getUninterruptedly();
+        return Objects.requireNonNull(createProcessGroupAsync(name, templates).getUninterruptedly());
     }
 
     @Nonnull
     @Override
     public ProcessGroup createProcessGroup(@Nonnull String name, @Nonnull List<Template> templates, @Nonnull StartupConfiguration startupConfiguration) {
-        return createProcessGroupAsync(name, templates, startupConfiguration).getUninterruptedly();
+        return Objects.requireNonNull(createProcessGroupAsync(name, templates, startupConfiguration).getUninterruptedly());
     }
 
     @Nonnull
     @Override
     public ProcessGroup createProcessGroup(@Nonnull String name, @Nonnull List<Template> templates, @Nonnull StartupConfiguration startupConfiguration, @Nonnull PlayerAccessConfiguration playerAccessConfiguration) {
-        return createProcessGroupAsync(name, templates, startupConfiguration, playerAccessConfiguration).getUninterruptedly();
+        return Objects.requireNonNull(createProcessGroupAsync(name, templates, startupConfiguration, playerAccessConfiguration).getUninterruptedly());
     }
 
     @Nonnull
     @Override
     public ProcessGroup createProcessGroup(@Nonnull String name, @Nonnull List<Template> templates, @Nonnull StartupConfiguration startupConfiguration, @Nonnull PlayerAccessConfiguration playerAccessConfiguration, boolean staticGroup) {
-        return createProcessGroupAsync(name, templates, startupConfiguration, playerAccessConfiguration, staticGroup).getUninterruptedly();
+        return Objects.requireNonNull(createProcessGroupAsync(name, templates, startupConfiguration, playerAccessConfiguration, staticGroup).getUninterruptedly());
     }
 
     @Nonnull
     @Override
     public ProcessGroup createProcessGroup(@Nonnull ProcessGroup processGroup) {
-        return createProcessGroupAsync(processGroup).getUninterruptedly();
+        return Objects.requireNonNull(createProcessGroupAsync(processGroup).getUninterruptedly());
     }
 
     @Nonnull
     @Override
     public MainGroup updateMainGroup(@Nonnull MainGroup mainGroup) {
-        return updateMainGroupAsync(mainGroup).getUninterruptedly();
+        return Objects.requireNonNull(updateMainGroupAsync(mainGroup).getUninterruptedly());
     }
 
     @Nonnull
     @Override
     public ProcessGroup updateProcessGroup(@Nonnull ProcessGroup processGroup) {
-        return updateProcessGroupAsync(processGroup).getUninterruptedly();
+        return Objects.requireNonNull(updateProcessGroupAsync(processGroup).getUninterruptedly());
     }
 
     @Nullable
@@ -666,13 +602,15 @@ public abstract class ExternalAPIImplementation extends ExecutorAPI implements
     @Nonnull
     @Override
     public List<MainGroup> getMainGroups() {
-        return getMainGroupsAsync().getUninterruptedly();
+        List<MainGroup> result = getMainGroupsAsync().getUninterruptedly();
+        return result == null ? new ArrayList<>() : result;
     }
 
     @Nonnull
     @Override
     public List<ProcessGroup> getProcessGroups() {
-        return getProcessGroupsAsync().getUninterruptedly();
+        List<ProcessGroup> result = getProcessGroupsAsync().getUninterruptedly();
+        return result == null ? new ArrayList<>() : result;
     }
 
     @Nonnull
@@ -930,7 +868,7 @@ public abstract class ExternalAPIImplementation extends ExecutorAPI implements
     @Override
     public Task<Collection<DefaultPlugin>> getPluginsAsync(@Nonnull String process, @Nonnull String author) {
         Task<Collection<DefaultPlugin>> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> task.complete(Streams.allOf(getPlugins(process), plugin -> plugin.author().equals(author))));
+        Task.EXECUTOR.execute(() -> task.complete(Streams.allOf(getPlugins(process), plugin -> plugin.author() != null && plugin.author().equals(author))));
         return task;
     }
 
@@ -988,25 +926,29 @@ public abstract class ExternalAPIImplementation extends ExecutorAPI implements
     @Nonnull
     @Override
     public Collection<DefaultPlugin> getPlugins(@Nonnull String process, @Nonnull String author) {
-        return getPluginsAsync(process, author).getUninterruptedly();
+        Collection<DefaultPlugin> result = getPluginsAsync(process, author).getUninterruptedly();
+        return result == null ? new ArrayList<>() : result;
     }
 
     @Nonnull
     @Override
     public Collection<DefaultPlugin> getPlugins(@Nonnull ProcessInformation process, @Nonnull String author) {
-        return getPluginsAsync(process, author).getUninterruptedly();
+        Collection<DefaultPlugin> result = getPluginsAsync(process, author).getUninterruptedly();
+        return result == null ? new ArrayList<>() : result;
     }
 
     @Nonnull
     @Override
     public Collection<DefaultPlugin> getPlugins(@Nonnull String process) {
-        return getPluginsAsync(process).getUninterruptedly();
+        Collection<DefaultPlugin> result = getPluginsAsync(process).getUninterruptedly();
+        return result == null ? new ArrayList<>() : result;
     }
 
     @Nonnull
     @Override
     public Collection<DefaultPlugin> getPlugins(@Nonnull ProcessInformation processInformation) {
-        return getPluginsAsync(processInformation).getUninterruptedly();
+        Collection<DefaultPlugin> result = getPluginsAsync(processInformation).getUninterruptedly();
+        return result == null ? new ArrayList<>() : result;
     }
 
     @Nonnull
@@ -1149,13 +1091,15 @@ public abstract class ExternalAPIImplementation extends ExecutorAPI implements
     @Nonnull
     @Override
     public List<ProcessInformation> getAllProcesses() {
-        return getAllProcessesAsync().getUninterruptedly();
+        List<ProcessInformation> result = getAllProcessesAsync().getUninterruptedly();
+        return result == null ? new ArrayList<>() : result;
     }
 
     @Nonnull
     @Override
     public List<ProcessInformation> getProcesses(@Nonnull String group) {
-        return getProcessesAsync(group).getUninterruptedly();
+        List<ProcessInformation> result = getProcessesAsync(group).getUninterruptedly();
+        return result == null ? new ArrayList<>() : result;
     }
 
     @Override
@@ -1165,7 +1109,8 @@ public abstract class ExternalAPIImplementation extends ExecutorAPI implements
 
     @Override
     public int getGlobalOnlineCount(@Nonnull Collection<String> ignoredProxies) {
-        return getGlobalOnlineCountAsync(ignoredProxies).getUninterruptedly();
+        Integer result = getGlobalOnlineCountAsync(ignoredProxies).getUninterruptedly();
+        return result == null ? 0 : result;
     }
 
     @Override
@@ -1175,6 +1120,7 @@ public abstract class ExternalAPIImplementation extends ExecutorAPI implements
 
     @Nonnull
     @Override
+    @Deprecated
     public Task<ProcessInformation> getThisProcessInformationAsync() {
         Task<ProcessInformation> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> task.complete(getThisProcessInformation()));
@@ -1185,6 +1131,45 @@ public abstract class ExternalAPIImplementation extends ExecutorAPI implements
     @Override
     public PacketHandler getPacketHandler() {
         return packetHandler();
+    }
+
+    @Nonnull
+    @Override
+    public Task<Void> sendChannelMessageAsync(@Nonnull JsonConfiguration jsonConfiguration, @Nonnull String baseChannel,
+                                              @Nonnull String subChannel, @Nonnull ErrorReportHandling errorReportHandling, @Nonnull String... receivers) {
+        Task<Void> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(() -> {
+            DefaultChannelManager.INSTANCE.get("Controller").ifPresent(sender -> sender.sendPacket(
+                    new DefaultMessageJsonPacket(jsonConfiguration, Arrays.asList(receivers), errorReportHandling, baseChannel, subChannel)
+            ));
+            task.complete(null);
+        });
+        return task;
+    }
+
+    @Nonnull
+    @Override
+    public Task<Void> sendChannelMessageAsync(@Nonnull JsonConfiguration configuration, @Nonnull String baseChannel,
+                                              @Nonnull String subChannel, @Nonnull ReceiverType... receiverTypes) {
+        Task<Void> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(() -> {
+            DefaultChannelManager.INSTANCE.get("Controller").ifPresent(sender -> sender.sendPacket(
+                    new DefaultMessageJsonPacket(Arrays.asList(receiverTypes), configuration, baseChannel, subChannel)
+            ));
+            task.complete(null);
+        });
+        return task;
+    }
+
+    @Override
+    public void sendChannelMessageSync(@Nonnull JsonConfiguration jsonConfiguration, @Nonnull String baseChannel,
+                                       @Nonnull String subChannel, @Nonnull ErrorReportHandling errorReportHandling, @Nonnull String... receivers) {
+        sendChannelMessageAsync(jsonConfiguration, baseChannel, subChannel, errorReportHandling, receivers).awaitUninterruptedly();
+    }
+
+    @Override
+    public void sendChannelMessageSync(@Nonnull JsonConfiguration configuration, @Nonnull String baseChannel, @Nonnull String subChannel, @Nonnull ReceiverType... receiverTypes) {
+        sendChannelMessageAsync(configuration, baseChannel, subChannel, receiverTypes).awaitUninterruptedly();
     }
 
     @Nonnull

@@ -111,9 +111,11 @@ public final class ColouredLoggerHandler extends LoggerBase {
     @Override
     public void log(@Nonnull String message) {
         message = Colours.coloured(message);
+        message += '\r';
         handleLine(message);
 
         lineReader.getTerminal().puts(InfoCmp.Capability.carriage_return);
+        lineReader.getTerminal().puts(InfoCmp.Capability.clr_eol);
         lineReader.getTerminal().writer().print(message);
         lineReader.getTerminal().writer().flush();
 
@@ -123,9 +125,11 @@ public final class ColouredLoggerHandler extends LoggerBase {
     @Override
     public void logRaw(@Nonnull String message) {
         message = Colours.stripColor(message);
+        message += '\r';
         handleLine(message);
 
         lineReader.getTerminal().puts(InfoCmp.Capability.carriage_return);
+        lineReader.getTerminal().puts(InfoCmp.Capability.clr_eol);
         lineReader.getTerminal().writer().print(message);
         lineReader.getTerminal().writer().flush();
 
@@ -137,6 +141,11 @@ public final class ColouredLoggerHandler extends LoggerBase {
     public LoggerBase addLogLineHandler(@Nonnull LoggerLineHandler handler) {
         this.handlers.add(handler);
         return this;
+    }
+
+    @Override
+    public boolean removeLogLineHandler(@Nonnull LoggerLineHandler handler) {
+        return this.handlers.remove(handler);
     }
 
     @Nonnull

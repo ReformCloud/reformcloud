@@ -8,6 +8,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.messages.IngameMessages;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.setup.GroupSetupHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.setup.GroupSetupVersion;
+import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.setup.Setup;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.setup.basic.DefaultSetup;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.setup.basic.DefaultSetupQuestion;
@@ -98,13 +99,14 @@ public final class ControllerExecutorConfig {
     }
 
     private void firstSetup() {
-        new JsonConfiguration().add("key", StringUtil.generateString(50)).write(Paths.get(
+        new JsonConfiguration().add("key", StringUtil.generateString(1)).write(Paths.get(
                 "reformcloud/.bin/connection.json"
         ));
         new JsonConfiguration().add("messages", new IngameMessages()).write(Paths.get("reformcloud/configs/messages.json"));
 
-        setup.addQuestion(new DefaultSetupQuestion("Please write the ip address or domain name of the server",
-                "Please write your real ip or domain name",
+        setup.addQuestion(new DefaultSetupQuestion(
+                LanguageManager.get("controller-setup-question-controller-address"),
+                LanguageManager.get("controller-setup-question-controller-address-wrong"),
                 s -> CommonHelper.getIpAddress(s.trim()) != null,
                 s -> {
                     String ip = CommonHelper.getIpAddress(s.trim());
@@ -117,20 +119,20 @@ public final class ControllerExecutorConfig {
                 }
         )).startSetup(ControllerExecutor.getInstance().getLoggerBase());
 
-        System.out.println("Please choose a default installation type:");
+        System.out.println(LanguageManager.get("general-setup-choose-default-installation"));
         GroupSetupHelper.printAvailable();
 
         String result = ControllerExecutor.getInstance().getLoggerBase().readLineNoPrompt();
         while (!result.trim().isEmpty()) {
             GroupSetupVersion version = GroupSetupHelper.findByName(result);
             if (version == null) {
-                System.out.println("This setup type is not supported");
+                System.out.println(LanguageManager.get("general-setup-choose-default-installation-wrong"));
                 result = ControllerExecutor.getInstance().getLoggerBase().readLineNoPrompt();
                 continue;
             }
 
             version.install(e -> subGroupRegistry.createKey(e.getName(), e), e -> mainGroupRegistry.createKey(e.getName(), e));
-            System.out.println("Finished installation of " + version.getName() + "!");
+            System.out.println(LanguageManager.get("general-setup-default-installation-done", version.getName()));
             break;
         }
     }

@@ -36,6 +36,7 @@ public final class CloudFlareHelper {
     private static CloudFlareConfig cloudFlareConfig;
 
     public static boolean init(@Nonnull String baseFolder) {
+
         if (Files.notExists(Paths.get(baseFolder + "/config.json"))) {
             SystemHelper.createDirectory(Paths.get(baseFolder));
             new JsonConfiguration()

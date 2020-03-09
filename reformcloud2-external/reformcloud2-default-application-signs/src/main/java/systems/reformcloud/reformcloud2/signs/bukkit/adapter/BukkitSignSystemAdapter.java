@@ -3,15 +3,18 @@ package systems.reformcloud.reformcloud2.signs.bukkit.adapter;
 import com.google.gson.reflect.TypeToken;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
 import org.bukkit.block.data.Directional;
 import org.bukkit.command.PluginCommand;
+import org.bukkit.entity.Player;
 import org.bukkit.material.MaterialData;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
+import systems.reformcloud.reformcloud2.executor.api.api.API;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.base.Conditions;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
@@ -41,6 +44,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class BukkitSignSystemAdapter implements SignSystemAdapter<Sign> {
@@ -75,13 +79,15 @@ public class BukkitSignSystemAdapter implements SignSystemAdapter<Sign> {
 
     private final Plugin plugin;
 
-    private final List<CloudSign> cachedSigns = new LinkedList<>();
+    private final List<CloudSign> cachedSigns = new CopyOnWriteArrayList<>();
 
     private int taskID = -1;
 
-    private Map<UUID, ProcessInformation> notAssigned = new ConcurrentHashMap<>();
+    private int knockBackTaskID = -1;
 
-    private final AtomicInteger[] counter = new AtomicInteger[] {
+    private final Map<UUID, ProcessInformation> notAssigned = new ConcurrentHashMap<>();
+
+    private final AtomicInteger[] counter = new AtomicInteger[]{
             new AtomicInteger(-1), // start
             new AtomicInteger(-1), // connecting
             new AtomicInteger(-1), // empty
@@ -152,7 +158,7 @@ public class BukkitSignSystemAdapter implements SignSystemAdapter<Sign> {
     @Override
     public void deleteSign(@Nonnull CloudLocation location) {
         Streams.filterToReference(cachedSigns, e -> e.getLocation().equals(location)).ifPresent(e ->
-            DefaultChannelManager.INSTANCE.get("Controller").ifPresent(s -> s.sendPacket(new APIPacketOutDeleteSign(e)))
+                DefaultChannelManager.INSTANCE.get("Controller").ifPresent(s -> s.sendPacket(new APIPacketOutDeleteSign(e)))
         );
     }
 
@@ -444,6 +450,12 @@ public class BukkitSignSystemAdapter implements SignSystemAdapter<Sign> {
     private void restartTask() {
         if (taskID != -1) {
             Bukkit.getScheduler().cancelTask(taskID);
+            taskID = -1;
+        }
+
+        if (knockBackTaskID != -1) {
+            Bukkit.getScheduler().cancelTask(knockBackTaskID);
+            knockBackTaskID = -1;
         }
 
         runTasks();
@@ -451,16 +463,43 @@ public class BukkitSignSystemAdapter implements SignSystemAdapter<Sign> {
 
     private void runTasks() {
         taskID = Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, this::updateAllSigns, 0, 20 * config.getUpdateInterval()).getTaskId();
+
+        double distance = this.config.getKnockBackDistance();
+        knockBackTaskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
+            for (CloudSign cachedSign : this.cachedSigns) {
+                Sign bukkitSign = this.getSignConverter().from(cachedSign);
+                if (bukkitSign == null) {
+                    continue;
+                }
+
+                Location location = bukkitSign.getLocation();
+                if (location.getWorld() == null) {
+                    continue;
+                }
+
+                location.getWorld()
+                        .getNearbyEntities(location, distance, distance, distance)
+                        .stream()
+                        .filter(e -> e instanceof Player && !e.hasPermission(this.config.getKnockBackBypassPermission()))
+                        .forEach(e -> e.setVelocity(e.getLocation()
+                                .toVector()
+                                .subtract(location.toVector())
+                                .normalize()
+                                .multiply(this.config.getKnockBackStrength())
+                                .setY(0.2D)
+                        ));
+            }
+        }, 20, 5);
     }
 
     private boolean isCurrent(ProcessInformation processInformation) {
-        ProcessInformation info = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation();
-        return info != null && info.getProcessUniqueID().equals(processInformation.getProcessUniqueID());
+        return API.getInstance().getCurrentProcessInformation().getProcessUniqueID().equals(processInformation.getProcessUniqueID());
     }
 
     private SignLayout getSelfLayout() {
-        return LayoutUtil.getLayoutFor(ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation().getProcessGroup().getName(), config).orElseThrow(
-                () -> new RuntimeException("No sign config present for context global or current group"));
+        return LayoutUtil
+                .getLayoutFor(API.getInstance().getCurrentProcessInformation().getProcessGroup().getName(), config)
+                .orElseThrow(() -> new RuntimeException("No sign config present for context global or current group"));
     }
 
     public static BukkitSignSystemAdapter getInstance() {

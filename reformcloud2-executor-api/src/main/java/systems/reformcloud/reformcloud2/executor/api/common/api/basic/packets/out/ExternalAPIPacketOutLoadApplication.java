@@ -13,6 +13,6 @@ public final class ExternalAPIPacketOutLoadApplication extends JsonPacket {
     }
 
     private static DefaultInstallableApplication convert(InstallableApplication application) {
-        return new DefaultInstallableApplication(application.url(), application.loader(), application.getName());
+        return new DefaultInstallableApplication(application.url(), application.getName());
     }
 }

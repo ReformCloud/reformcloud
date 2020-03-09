@@ -65,8 +65,7 @@ public final class ProcessQueue extends AbsoluteThread {
                 } else {
                     QUEUE.add(process);
                 }
-            } catch (final InterruptedException ex) {
-                ex.printStackTrace();
+            } catch (final InterruptedException ignored) {
             }
         }
     }

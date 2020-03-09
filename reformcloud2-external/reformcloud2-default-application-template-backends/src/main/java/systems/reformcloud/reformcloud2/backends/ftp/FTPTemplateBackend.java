@@ -12,6 +12,8 @@ import systems.reformcloud.reformcloud2.executor.api.common.groups.template.back
 import systems.reformcloud.reformcloud2.executor.api.common.network.NetworkUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.system.SystemHelper;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.task.defaults.DefaultTask;
 
 import javax.annotation.Nonnull;
 import java.io.*;
@@ -19,7 +21,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.concurrent.BlockingDeque;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
 
@@ -102,9 +103,9 @@ public final class FTPTemplateBackend implements TemplateBackend {
 
     @Nonnull
     @Override
-    public CompletableFuture<Void> createTemplate(String group, String template) {
+    public Task<Void> createTemplate(String group, String template) {
         if (this.ftpClient == null) {
-            return CompletableFuture.completedFuture(null);
+            return Task.completedTask(null);
         }
 
         return future(() -> {
@@ -118,9 +119,9 @@ public final class FTPTemplateBackend implements TemplateBackend {
 
     @Nonnull
     @Override
-    public CompletableFuture<Void> loadTemplate(String group, String template, Path target) {
+    public Task<Void> loadTemplate(String group, String template, Path target) {
         if (this.ftpClient == null) {
-            return CompletableFuture.completedFuture(null);
+            return Task.completedTask(null);
         }
 
         return future(() -> {
@@ -165,9 +166,9 @@ public final class FTPTemplateBackend implements TemplateBackend {
 
     @Nonnull
     @Override
-    public CompletableFuture<Void> loadGlobalTemplates(ProcessGroup group, Path target) {
+    public Task<Void> loadGlobalTemplates(ProcessGroup group, Path target) {
         if (this.ftpClient == null) {
-            return CompletableFuture.completedFuture(null);
+            return Task.completedTask(null);
         }
 
         return future(() ->
@@ -178,14 +179,37 @@ public final class FTPTemplateBackend implements TemplateBackend {
 
     @Nonnull
     @Override
-    public CompletableFuture<Void> deployTemplate(String group, String template, Path current) {
+    public Task<Void> loadPath(String path, Path target) {
         if (this.ftpClient == null) {
-            return CompletableFuture.completedFuture(null);
+            return Task.completedTask(null);
+        }
+
+        return future(() -> {
+            try {
+                FTPFile[] files = this.ftpClient.listFiles(path);
+                if (files == null || files.length == 0) {
+                    return;
+                }
+
+                for (FTPFile file : files) {
+                    this.loadFiles(file, path + "/" + file.getName(), Paths.get(target.toString(), file.getName()));
+                }
+            } catch (final IOException ex) {
+                ex.printStackTrace();
+            }
+        });
+    }
+
+    @Nonnull
+    @Override
+    public Task<Void> deployTemplate(String group, String template, Path current) {
+        if (this.ftpClient == null) {
+            return Task.completedTask(null);
         }
 
         File[] localFiles = current.toFile().listFiles();
         if (localFiles == null || localFiles.length == 0) {
-            return CompletableFuture.completedFuture(null);
+            return Task.completedTask(null);
         }
 
         return future(() -> {
@@ -272,8 +296,8 @@ public final class FTPTemplateBackend implements TemplateBackend {
         }
     }
 
-    private static CompletableFuture<Void> future(@Nonnull Runnable runnable) {
-        CompletableFuture<Void> completableFuture = new CompletableFuture<>();
+    private static Task<Void> future(@Nonnull Runnable runnable) {
+        Task<Void> completableFuture = new DefaultTask<>();
         Runnable newRunnable = () -> {
             runnable.run();
             completableFuture.complete(null);

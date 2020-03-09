@@ -4,9 +4,11 @@ import com.google.gson.reflect.TypeToken;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Template;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.PlayerAccessConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.StartupConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.name.Nameable;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Objects;
 
@@ -38,15 +40,15 @@ public class ProcessGroup implements Nameable {
         this.canBeUsedAsLobby = asLobby;
     }
 
-    private String name;
+    private final String name;
 
-    private boolean showIdInName;
+    private final boolean showIdInName;
 
-    private StartupConfiguration startupConfiguration;
+    private final StartupConfiguration startupConfiguration;
 
     private List<Template> templates;
 
-    private PlayerAccessConfiguration playerAccessConfiguration;
+    private final PlayerAccessConfiguration playerAccessConfiguration;
 
     private boolean staticProcess;
 
@@ -75,8 +77,25 @@ public class ProcessGroup implements Nameable {
         return staticProcess;
     }
 
+    public void setStaticProcess(boolean staticProcess) {
+        this.staticProcess = staticProcess;
+    }
+
     public boolean isCanBeUsedAsLobby() {
         return canBeUsedAsLobby;
+    }
+
+    public void setCanBeUsedAsLobby(boolean canBeUsedAsLobby) {
+        this.canBeUsedAsLobby = canBeUsedAsLobby;
+    }
+
+    public void setTemplates(List<Template> templates) {
+        this.templates = templates;
+    }
+
+    @Nullable
+    public Template getTemplate(@Nonnull String name) {
+        return Streams.filter(this.getTemplates(), e -> e.getName().equals(name));
     }
 
     @Nonnull

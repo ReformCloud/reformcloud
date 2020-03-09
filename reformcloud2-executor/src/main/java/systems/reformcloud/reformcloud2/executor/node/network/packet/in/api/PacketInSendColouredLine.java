@@ -17,10 +17,6 @@ public final class PacketInSendColouredLine extends DefaultJsonNetworkHandler {
 
     @Override
     public void handlePacket(@Nonnull PacketSender packetSender, @Nonnull Packet packet, @Nonnull Consumer<Packet> responses) {
-        try {
-            ExecutorAPI.getInstance().getSyncAPI().getConsoleSyncAPI().sendColouredLine(packet.content().getString("line"));
-        } catch (final IllegalAccessException ignored) {
-            //Ignore this because it is not caused by a direct controller mistake (but eg by developer not the owner)
-        }
+        ExecutorAPI.getInstance().getSyncAPI().getConsoleSyncAPI().sendColouredLine(packet.content().getString("line"));
     }
 }

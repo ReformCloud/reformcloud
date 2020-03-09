@@ -9,6 +9,8 @@ import systems.reformcloud.reformcloud2.executor.api.common.groups.template.back
 import systems.reformcloud.reformcloud2.executor.api.common.network.NetworkUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.system.SystemHelper;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.task.defaults.DefaultTask;
 
 import javax.annotation.Nonnull;
 import java.io.File;
@@ -21,7 +23,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.BlockingDeque;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
 
@@ -53,7 +54,7 @@ public final class SFTPTemplateBackend implements TemplateBackend {
 
     private ChannelSftp channel;
 
-    private SFTPConfig config;
+    private final SFTPConfig config;
 
     private SFTPTemplateBackend(SFTPConfig config) {
         this.config = config;
@@ -105,9 +106,9 @@ public final class SFTPTemplateBackend implements TemplateBackend {
 
     @Nonnull
     @Override
-    public CompletableFuture<Void> createTemplate(String group, String template) {
+    public Task<Void> createTemplate(String group, String template) {
         if (isDisconnected()) {
-            return CompletableFuture.completedFuture(null);
+            return Task.completedTask(null);
         }
 
         return future(() -> this.makeDirectory(this.config.getBaseDirectory() + group + "/" + template));
@@ -115,9 +116,9 @@ public final class SFTPTemplateBackend implements TemplateBackend {
 
     @Nonnull
     @Override
-    public CompletableFuture<Void> loadTemplate(String group, String template, Path target) {
+    public Task<Void> loadTemplate(String group, String template, Path target) {
         if (isDisconnected()) {
-            return CompletableFuture.completedFuture(null);
+            return Task.completedTask(null);
         }
 
         return future(() -> this.downloadDirectory(this.config.getBaseDirectory() + group + "/" + template, target.toString()));
@@ -156,16 +157,26 @@ public final class SFTPTemplateBackend implements TemplateBackend {
 
     @Nonnull
     @Override
-    public CompletableFuture<Void> loadGlobalTemplates(ProcessGroup group, Path target) {
+    public Task<Void> loadGlobalTemplates(ProcessGroup group, Path target) {
         return future(() -> Streams.allOf(group.getTemplates(), e -> e.getBackend().equals(getName())
                 && e.isGlobal()).forEach(e -> this.loadTemplate(group.getName(), e.getName(), target)));
     }
 
     @Nonnull
     @Override
-    public CompletableFuture<Void> deployTemplate(String group, String template, Path current) {
+    public Task<Void> loadPath(String path, Path target) {
         if (isDisconnected()) {
-            return CompletableFuture.completedFuture(null);
+            return Task.completedTask(null);
+        }
+
+        return future(() -> this.downloadDirectory(this.config.getBaseDirectory() + path, target.toString()));
+    }
+
+    @Nonnull
+    @Override
+    public Task<Void> deployTemplate(String group, String template, Path current) {
+        if (isDisconnected()) {
+            return Task.completedTask(null);
         }
 
         return future(() -> {
@@ -271,8 +282,8 @@ public final class SFTPTemplateBackend implements TemplateBackend {
         return entries;
     }
 
-    private static CompletableFuture<Void> future(@Nonnull Runnable runnable) {
-        CompletableFuture<Void> completableFuture = new CompletableFuture<>();
+    private static Task<Void> future(@Nonnull Runnable runnable) {
+        Task<Void> completableFuture = new DefaultTask<>();
         Runnable newRunnable = () -> {
             runnable.run();
             completableFuture.complete(null);

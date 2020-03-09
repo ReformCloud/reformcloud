@@ -15,8 +15,8 @@ public interface TabCompleter {
      * Completes a command
      *
      * @param commandSource The command source of the command
-     * @param commandLine The command line with was given by the user
-     * @param currentArg The current arguments
+     * @param commandLine   The command line with was given by the user
+     * @param currentArg    The current arguments
      * @return The completed command arguments
      */
     @Nonnull

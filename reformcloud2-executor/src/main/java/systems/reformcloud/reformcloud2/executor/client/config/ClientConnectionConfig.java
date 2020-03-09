@@ -12,9 +12,9 @@ public final class ClientConnectionConfig {
         this.port = port;
     }
 
-    private String host;
+    private final String host;
 
-    private int port;
+    private final int port;
 
     public String getHost() {
         return host;

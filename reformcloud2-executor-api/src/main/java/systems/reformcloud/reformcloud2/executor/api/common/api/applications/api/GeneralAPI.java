@@ -5,14 +5,14 @@ import systems.reformcloud.reformcloud2.executor.api.common.api.SyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.applications.ApplicationAsyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.applications.ApplicationSyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.basic.ExternalAPIImplementation;
-import systems.reformcloud.reformcloud2.executor.api.common.api.client.ClientAsyncAPI;
-import systems.reformcloud.reformcloud2.executor.api.common.api.client.ClientSyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.console.ConsoleAsyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.console.ConsoleSyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.database.DatabaseAsyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.database.DatabaseSyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.group.GroupAsyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.group.GroupSyncAPI;
+import systems.reformcloud.reformcloud2.executor.api.common.api.messaging.MessageAsyncAPI;
+import systems.reformcloud.reformcloud2.executor.api.common.api.messaging.MessageSyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.player.PlayerAsyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.player.PlayerSyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.plugins.PluginAsyncAPI;
@@ -68,13 +68,13 @@ public class GeneralAPI implements SyncAPI, AsyncAPI {
 
     @Nonnull
     @Override
-    public ClientAsyncAPI getClientAsyncAPI() {
+    public DatabaseAsyncAPI getDatabaseAsyncAPI() {
         return externalAPIImplementation;
     }
 
     @Nonnull
     @Override
-    public DatabaseAsyncAPI getDatabaseAsyncAPI() {
+    public MessageAsyncAPI getMessageAsyncAPI() {
         return externalAPIImplementation;
     }
 
@@ -116,13 +116,13 @@ public class GeneralAPI implements SyncAPI, AsyncAPI {
 
     @Nonnull
     @Override
-    public ClientSyncAPI getClientSyncAPI() {
+    public DatabaseSyncAPI getDatabaseSyncAPI() {
         return externalAPIImplementation;
     }
 
     @Nonnull
     @Override
-    public DatabaseSyncAPI getDatabaseSyncAPI() {
+    public MessageSyncAPI getMessageSyncAPI() {
         return externalAPIImplementation;
     }
 }

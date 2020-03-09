@@ -5,7 +5,13 @@ import javax.annotation.Nullable;
 import java.io.Serializable;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
+/**
+ * Represents an extended optional for deeper use
+ *
+ * @param <T> The type of the object stored in the optional
+ */
 public final class ReferencedOptional<T> implements Serializable {
 
     private static final long serialVersionUID = 2358039311687874123L;
@@ -17,7 +23,6 @@ public final class ReferencedOptional<T> implements Serializable {
         return new ReferencedOptional<>();
     }
 
-    @SuppressWarnings("unchecked")
     @Nonnull
     public static <T> ReferencedOptional<T> build(@Nullable T value) {
         return new ReferencedOptional<T>().update(value);
@@ -28,7 +33,7 @@ public final class ReferencedOptional<T> implements Serializable {
     private final AtomicReference<T> reference = new AtomicReference<>();
 
     @Nonnull
-    public ReferencedOptional update(@Nullable T newValue) {
+    public ReferencedOptional<T> update(@Nullable T newValue) {
         if (newValue != null) {
             reference.set(newValue);
         }
@@ -41,11 +46,21 @@ public final class ReferencedOptional<T> implements Serializable {
         return orElse(null);
     }
 
-    public void ifPresent(@Nonnull Consumer<T> consumer) {
+    public ReferencedOptional<T> ifPresent(@Nonnull Consumer<T> consumer) {
         T value = reference.get();
         if (value != null) {
             consumer.accept(value);
         }
+
+        return this;
+    }
+
+    public ReferencedOptional<T> ifEmpty(@Nonnull Consumer<Void> consumer) {
+        if (isEmpty()) {
+            consumer.accept(null);
+        }
+
+        return this;
     }
 
     @Nullable
@@ -58,11 +73,24 @@ public final class ReferencedOptional<T> implements Serializable {
         return value;
     }
 
+    public void orElseDo(@Nonnull Predicate<T> predicate, @Nonnull Runnable ifFalse, @Nonnull Consumer<T> or) {
+        T value = reference.get();
+        if (!predicate.test(value)) {
+            ifFalse.run();
+            return;
+        }
+
+        or.accept(value);
+    }
+
     public boolean isPresent() {
         return get() != null;
     }
 
-    @Nullable
+    public boolean isEmpty() {
+        return get() == null;
+    }
+
     public T get() {
         return reference.get();
     }

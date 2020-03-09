@@ -4,11 +4,12 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.model.Filters;
 import org.bson.Document;
+import systems.reformcloud.reformcloud2.executor.api.common.base.Conditions;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.database.Database;
 import systems.reformcloud.reformcloud2.executor.api.common.database.DatabaseReader;
-import systems.reformcloud.reformcloud2.executor.api.common.dependency.DefaultDependency;
-import systems.reformcloud.reformcloud2.executor.api.common.dependency.repo.DefaultRepositories;
+import systems.reformcloud.reformcloud2.executor.api.common.dependency.util.MavenCentralDependency;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.StringUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.maps.AbsentMap;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.defaults.DefaultTask;
@@ -25,18 +26,19 @@ import java.util.function.Consumer;
 
 public final class MongoDatabase extends Database<com.mongodb.client.MongoDatabase> {
 
+    private static final String KEY_NAME = "_key";
+
+    private static final String ID_NAME = "_identifier";
+
     private final Map<String, DatabaseReader> perTableReader = new AbsentMap<>();
 
     public MongoDatabase() {
-        Properties properties = new Properties();
-        properties.setProperty("mongo-java-driver", "3.12.1");
-
-        URL dependency = DEPENDENCY_LOADER.loadDependency(new DefaultDependency(
-                DefaultRepositories.MAVEN_CENTRAL,
+        URL dependency = DEPENDENCY_LOADER.loadDependency(new MavenCentralDependency(
                 "org.mongodb",
                 "mongo-java-driver",
-                properties
+                "3.12.2"
         ));
+        Conditions.nonNull(dependency, StringUtil.formatError("dependency load for mongo database"));
         DEPENDENCY_LOADER.addDependency(dependency);
     }
 
@@ -120,12 +122,12 @@ public final class MongoDatabase extends Database<com.mongodb.client.MongoDataba
             public Task<JsonConfiguration> find(@Nonnull String key) {
                 Task<JsonConfiguration> task = new DefaultTask<>();
                 Task.EXECUTOR.execute(() -> {
-                    Document document = mongoDatabase.getCollection(table).find(Filters.eq("%%%%key", key)).first();
+                    Document document = mongoDatabase.getCollection(table).find(Filters.eq(KEY_NAME, key)).first();
                     if (document == null) {
                         task.complete(null);
                     } else {
                         JsonConfiguration configuration = new JsonConfiguration(document.toJson());
-                        configuration.remove("%%%%key").remove("%%%%identifier");
+                        configuration.remove(KEY_NAME).remove(ID_NAME);
                         task.complete(configuration);
                     }
                 });
@@ -137,12 +139,12 @@ public final class MongoDatabase extends Database<com.mongodb.client.MongoDataba
             public Task<JsonConfiguration> findIfAbsent(@Nonnull String identifier) {
                 Task<JsonConfiguration> task = new DefaultTask<>();
                 Task.EXECUTOR.execute(() -> {
-                    Document document = mongoDatabase.getCollection(table).find(Filters.eq("%%%%identifier", identifier)).first();
+                    Document document = mongoDatabase.getCollection(table).find(Filters.eq(ID_NAME, identifier)).first();
                     if (document == null) {
                         task.complete(null);
                     } else {
                         JsonConfiguration configuration = new JsonConfiguration(document.toJson());
-                        configuration.remove("%%%%key").remove("%%%%identifier");
+                        configuration.remove(KEY_NAME).remove(ID_NAME);
                         task.complete(configuration);
                     }
                 });
@@ -154,9 +156,9 @@ public final class MongoDatabase extends Database<com.mongodb.client.MongoDataba
             public Task<JsonConfiguration> insert(@Nonnull String key, String identifier, @Nonnull JsonConfiguration data) {
                 Task<JsonConfiguration> task = new DefaultTask<>();
                 Task.EXECUTOR.execute(() -> {
-                    Document document = mongoDatabase.getCollection(table).find(Filters.eq("%%%%identifier", identifier)).first();
+                    Document document = mongoDatabase.getCollection(table).find(Filters.eq(ID_NAME, identifier)).first();
                     if (document == null) {
-                        data.add("%%%%key", key).add("%%%%identifier", identifier != null ? identifier : UUID.randomUUID().toString());
+                        data.add(KEY_NAME, key).add(ID_NAME, identifier != null ? identifier : UUID.randomUUID().toString());
                         mongoDatabase.getCollection(table).insertOne(JsonConfiguration.GSON.get().fromJson(data.toPrettyString(), Document.class));
                         task.complete(data);
                     } else {
@@ -171,13 +173,13 @@ public final class MongoDatabase extends Database<com.mongodb.client.MongoDataba
             public Task<Boolean> update(@Nonnull String key, @Nonnull JsonConfiguration newData) {
                 Task<Boolean> task = new DefaultTask<>();
                 Task.EXECUTOR.execute(() -> {
-                    Document document = mongoDatabase.getCollection(table).find(Filters.eq("%%%%key", key)).first();
+                    Document document = mongoDatabase.getCollection(table).find(Filters.eq(KEY_NAME, key)).first();
                     if (document == null) {
                         task.complete(false);
                     } else {
                         JsonConfiguration configuration = new JsonConfiguration(document.toJson());
                         remove(key).awaitUninterruptedly();
-                        insert(key, configuration.getString("%%%%identifier"), newData).awaitUninterruptedly();
+                        insert(key, configuration.getString(ID_NAME), newData).awaitUninterruptedly();
                         task.complete(true);
                     }
                 });
@@ -189,13 +191,13 @@ public final class MongoDatabase extends Database<com.mongodb.client.MongoDataba
             public Task<Boolean> updateIfAbsent(@Nonnull String identifier, @Nonnull JsonConfiguration newData) {
                 Task<Boolean> task = new DefaultTask<>();
                 Task.EXECUTOR.execute(() -> {
-                    Document document = mongoDatabase.getCollection(table).find(Filters.eq("%%%%identifier", identifier)).first();
+                    Document document = mongoDatabase.getCollection(table).find(Filters.eq(ID_NAME, identifier)).first();
                     if (document == null) {
                         task.complete(false);
                     } else {
                         JsonConfiguration configuration = new JsonConfiguration(document.toJson());
-                        remove(configuration.getString("%%%%key")).awaitUninterruptedly();
-                        insert(configuration.getString("%%%%key"), identifier, newData).awaitUninterruptedly();
+                        remove(configuration.getString(KEY_NAME)).awaitUninterruptedly();
+                        insert(configuration.getString(KEY_NAME), identifier, newData).awaitUninterruptedly();
                         task.complete(true);
                     }
                 });
@@ -207,7 +209,7 @@ public final class MongoDatabase extends Database<com.mongodb.client.MongoDataba
             public Task<Void> remove(@Nonnull String key) {
                 Task<Void> task = new DefaultTask<>();
                 Task.EXECUTOR.execute(() -> {
-                    mongoDatabase.getCollection(table).deleteOne(Filters.eq("%%%%key", key));
+                    mongoDatabase.getCollection(table).deleteOne(Filters.eq(KEY_NAME, key));
                     task.complete(null);
                 });
                 return task;
@@ -218,7 +220,7 @@ public final class MongoDatabase extends Database<com.mongodb.client.MongoDataba
             public Task<Void> removeIfAbsent(@Nonnull String identifier) {
                 Task<Void> task = new DefaultTask<>();
                 Task.EXECUTOR.execute(() -> {
-                    mongoDatabase.getCollection(table).deleteOne(Filters.eq("%%%%identifier", identifier));
+                    mongoDatabase.getCollection(table).deleteOne(Filters.eq(ID_NAME, identifier));
                     task.complete(null);
                 });
                 return task;
@@ -229,7 +231,7 @@ public final class MongoDatabase extends Database<com.mongodb.client.MongoDataba
             public Task<Boolean> contains(@Nonnull String key) {
                 Task<Boolean> task = new DefaultTask<>();
                 Task.EXECUTOR.execute(() -> {
-                    Document document = mongoDatabase.getCollection(table).find(Filters.eq("%%%%key", key)).first();
+                    Document document = mongoDatabase.getCollection(table).find(Filters.eq(KEY_NAME, key)).first();
                     task.complete(document != null);
                 });
                 return task;
@@ -254,6 +256,7 @@ public final class MongoDatabase extends Database<com.mongodb.client.MongoDataba
             }
 
             @Override
+            @Nonnull
             public Iterator<JsonConfiguration> iterator() {
                 List<JsonConfiguration> list = new ArrayList<>();
                 mongoDatabase.getCollection(table).find().forEach((Consumer<Document>) document -> list.add(new JsonConfiguration(document.toJson())));
@@ -262,6 +265,7 @@ public final class MongoDatabase extends Database<com.mongodb.client.MongoDataba
         });
     }
 
+    @Nonnull
     @Override
     public com.mongodb.client.MongoDatabase get() {
         return mongoDatabase;

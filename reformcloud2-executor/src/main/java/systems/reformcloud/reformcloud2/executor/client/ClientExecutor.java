@@ -4,7 +4,6 @@ import org.reflections.Reflections;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorType;
 import systems.reformcloud.reformcloud2.executor.api.client.Client;
 import systems.reformcloud.reformcloud2.executor.api.client.process.ProcessManager;
-import systems.reformcloud.reformcloud2.executor.api.client.process.RunningProcess;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.basic.ExternalEventBusHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.application.ApplicationLoader;
@@ -12,11 +11,11 @@ import systems.reformcloud.reformcloud2.executor.api.common.application.basic.De
 import systems.reformcloud.reformcloud2.executor.api.common.client.basic.DefaultClientRuntimeInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.AllowedCommandSources;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.ConsoleCommandSource;
-import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.CommandClear;
-import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.CommandHelp;
-import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.CommandReload;
-import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.CommandStop;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.dump.CommandDump;
+import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.shared.CommandClear;
+import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.shared.CommandHelp;
+import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.shared.CommandReload;
+import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.shared.CommandStop;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.manager.DefaultCommandManager;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.manager.CommandManager;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.source.CommandSource;
@@ -28,12 +27,12 @@ import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageMan
 import systems.reformcloud.reformcloud2.executor.api.common.logger.LoggerBase;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.coloured.ColouredLoggerHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.other.DefaultLoggerHandler;
-import systems.reformcloud.reformcloud2.executor.api.common.network.auth.NetworkType;
-import systems.reformcloud.reformcloud2.executor.api.common.network.auth.defaults.DefaultAuth;
+import systems.reformcloud.reformcloud2.executor.api.common.network.challenge.shared.ClientChallengeAuthHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.handler.DefaultJsonNetworkHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.common.network.client.DefaultNetworkClient;
 import systems.reformcloud.reformcloud2.executor.api.common.network.client.NetworkClient;
+import systems.reformcloud.reformcloud2.executor.api.common.network.messaging.ProxiedChannelMessageHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.defaults.DefaultPacketHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.handler.PacketHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
@@ -42,6 +41,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.Absol
 import systems.reformcloud.reformcloud2.executor.client.config.ClientConfig;
 import systems.reformcloud.reformcloud2.executor.client.config.ClientExecutorConfig;
 import systems.reformcloud.reformcloud2.executor.client.dump.ClientDumpUtil;
+import systems.reformcloud.reformcloud2.executor.client.network.channel.ClientNetworkChannelReader;
 import systems.reformcloud.reformcloud2.executor.client.packet.out.ClientPacketOutNotifyRuntimeUpdate;
 import systems.reformcloud.reformcloud2.executor.client.process.ProcessQueue;
 import systems.reformcloud.reformcloud2.executor.client.process.basic.DefaultProcessManager;
@@ -156,7 +156,8 @@ public final class ClientExecutor extends Client {
     }
 
     private void registerNetworkHandlers() {
-        new Reflections("systems.reformcloud.reformcloud2.executor.client.packet.in").getSubTypesOf(DefaultJsonNetworkHandler.class).forEach(packetHandler::registerHandler);
+        new Reflections("systems.reformcloud.reformcloud2.executor.client.network.packet.in").getSubTypesOf(DefaultJsonNetworkHandler.class).forEach(packetHandler::registerHandler);
+        this.packetHandler.registerHandler(new ProxiedChannelMessageHandler());
     }
 
     private void registerDefaultCommands() {
@@ -198,14 +199,14 @@ public final class ClientExecutor extends Client {
     @Override
     public void shutdown() {
         this.watchdogThread.interrupt();
-        processQueue.interrupt();
+        this.processQueue.interrupt();
         this.screenManager.interrupt();
 
         this.packetHandler.clearHandlers();
         this.packetHandler.getQueryHandler().clearQueries();
         this.networkClient.disconnect();
 
-        this.processManager.getAll().forEach(RunningProcess::shutdown);
+        this.processManager.stopAll();
 
         SystemHelper.deleteDirectory(Paths.get("reformcloud/temp"));
 
@@ -298,7 +299,7 @@ public final class ClientExecutor extends Client {
             return;
         }
 
-        AtomicInteger atomicInteger = new AtomicInteger(0);
+        AtomicInteger atomicInteger = new AtomicInteger(1);
         boolean isConnected = false;
         while (atomicInteger.get() <= 10) {
             System.out.println(LanguageManager.get(
@@ -312,7 +313,7 @@ public final class ClientExecutor extends Client {
                 break;
             }
 
-            AbsoluteThread.sleep(TimeUnit.MILLISECONDS, 500);
+            AbsoluteThread.sleep(TimeUnit.MILLISECONDS, 100);
         }
 
         if (isConnected) {
@@ -329,7 +330,7 @@ public final class ClientExecutor extends Client {
                     clientExecutorConfig.getClientConnectionConfig().getHost(),
                     Integer.toString(clientExecutorConfig.getClientConnectionConfig().getPort())
             ));
-            AbsoluteThread.sleep(TimeUnit.SECONDS, 5);
+            AbsoluteThread.sleep(TimeUnit.SECONDS, 1);
             System.exit(-1);
         }
     }
@@ -338,23 +339,25 @@ public final class ClientExecutor extends Client {
         return this.networkClient.connect(
                 clientExecutorConfig.getClientConnectionConfig().getHost(),
                 clientExecutorConfig.getClientConnectionConfig().getPort(),
-                new DefaultAuth(
-                        clientExecutorConfig.getConnectionKey(),
-                        null,
-                        NetworkType.CLIENT,
-                        clientConfig.getName(),
-                        new JsonConfiguration().add("info", clientRuntimeInformation)
-                ), createChannelReader(() -> {
-                    processManager.stopAll();
-                    AbsoluteThread.sleep(TimeUnit.MILLISECONDS, 500);
-
-                    if (GLOBAL_CONNECTION_STATUS.get()) {
-                        GLOBAL_CONNECTION_STATUS.set(false);
-                        System.out.println(LanguageManager.get("network-client-connection-lost"));
-                        doConnect();
-                    }
-                })
+                () -> new ClientNetworkChannelReader(this.packetHandler),
+                new ClientChallengeAuthHandler(
+                        this.clientExecutorConfig.getConnectionKey(),
+                        this.clientConfig.getName(),
+                        () -> new JsonConfiguration().add("info", this.clientRuntimeInformation),
+                        context -> {} // unused here
+                )
         );
+    }
+
+    public void handleDisconnect() {
+        this.processManager.stopAll();
+        AbsoluteThread.sleep(TimeUnit.MILLISECONDS, 100);
+
+        if (GLOBAL_CONNECTION_STATUS.get()) {
+            GLOBAL_CONNECTION_STATUS.set(false);
+            System.out.println(LanguageManager.get("network-client-connection-lost"));
+            doConnect();
+        }
     }
 
     @Override

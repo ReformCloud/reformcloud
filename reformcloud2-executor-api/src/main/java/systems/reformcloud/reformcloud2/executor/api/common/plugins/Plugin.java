@@ -16,7 +16,8 @@ import java.util.List;
  */
 public abstract class Plugin implements Nameable {
 
-    public static final TypeToken<DefaultPlugin> TYPE = new TypeToken<DefaultPlugin>() {};
+    public static final TypeToken<DefaultPlugin> TYPE = new TypeToken<DefaultPlugin>() {
+    };
 
     /**
      * @return The version of the plugin

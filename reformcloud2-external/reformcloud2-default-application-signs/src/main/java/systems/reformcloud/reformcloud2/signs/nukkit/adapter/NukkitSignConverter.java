@@ -3,7 +3,7 @@ package systems.reformcloud.reformcloud2.signs.nukkit.adapter;
 import cn.nukkit.Server;
 import cn.nukkit.blockentity.BlockEntitySign;
 import cn.nukkit.level.Location;
-import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
+import systems.reformcloud.reformcloud2.executor.api.api.API;
 import systems.reformcloud.reformcloud2.executor.api.common.base.Conditions;
 import systems.reformcloud.reformcloud2.signs.util.converter.SignConverter;
 import systems.reformcloud.reformcloud2.signs.util.sign.CloudLocation;
@@ -54,17 +54,15 @@ public class NukkitSignConverter implements SignConverter<BlockEntitySign> {
     }
 
     private CloudLocation accumulate(Location location) {
-        Conditions.isTrue(ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation() != null);
         Conditions.isTrue(location.getLevel() != null);
-
         return new CloudLocation(
                 location.getLevel().getName(),
-                ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation().getProcessGroup().getName(),
+                API.getInstance().getCurrentProcessInformation().getName(),
                 location.getX(),
                 location.getY(),
                 location.getZ(),
-                new BigDecimal(location.getYaw()).floatValue(),
-                new BigDecimal(location.getPitch()).floatValue()
+                BigDecimal.valueOf(location.getYaw()).floatValue(),
+                BigDecimal.valueOf(location.getPitch()).floatValue()
         );
     }
 }

@@ -6,7 +6,7 @@ import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.plugin.Plugin;
-import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
+import systems.reformcloud.reformcloud2.executor.api.api.API;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.permissions.PermissionAPI;
 import systems.reformcloud.reformcloud2.permissions.util.group.NodeGroup;
@@ -98,7 +98,7 @@ public class DefaultPermissible extends PermissibleBase {
         this.perms = new HashSet<>();
 
         final PermissionUser permissionUser = PermissionAPI.getInstance().getPermissionUtil().loadUser(uuid);
-        final ProcessInformation current = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation();
+        final ProcessInformation current = API.getInstance().getCurrentProcessInformation();
 
         permissionUser.getPermissionNodes().stream().filter(PermissionNode::isValid)
                 .forEach(e -> perms.add(new PermissionAttachmentInfo(
@@ -128,18 +128,16 @@ public class DefaultPermissible extends PermissibleBase {
                             null,
                             e.isSet()
                     )));
-                    if (current != null) {
-                        Collection<PermissionNode> nodes = g.getPerGroupPermissions().get(current.getProcessGroup().getName());
-                        if (nodes != null) {
-                            nodes.stream().filter(PermissionNode::isValid).forEach(e -> perms.add(new PermissionAttachmentInfo(
-                                    this,
-                                    e.getActualPermission(),
-                                    null,
-                                    e.isSet()
-                            )));
-                        }
+                    Collection<PermissionNode> nodes = g.getPerGroupPermissions().get(current.getProcessGroup().getName());
+                    if (nodes != null) {
+                        nodes.stream().filter(PermissionNode::isValid).forEach(e -> perms.add(new PermissionAttachmentInfo(
+                                this,
+                                e.getActualPermission(),
+                                null,
+                                e.isSet()
+                        )));
                     }
-                });
+        });
 
         return perms;
     }

@@ -5,7 +5,7 @@
     <parent>
         <artifactId>reformcloud2</artifactId>
         <groupId>systems.reformcloud.reformcloud2</groupId>
-        <version>2.0.3</version>
+        <version>2.1.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -49,7 +49,7 @@
         <dependency>
             <groupId>systems.reformcloud.reformcloud2</groupId>
             <artifactId>reformcloud2-executor-api</artifactId>
-            <version>2.0.3</version>
+            <version>2.1.0</version>
             <scope>compile</scope>
             <type>jar</type>
         </dependency>
@@ -59,7 +59,7 @@
         <dependency>
             <groupId>org.jline</groupId>
             <artifactId>jline</artifactId>
-            <version>3.13.3</version>
+            <version>3.14.0</version>
             <scope>provided</scope>
         </dependency>
 
@@ -133,7 +133,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.2.1</version>
+                <version>3.2.2</version>
                 <executions>
                     <execution>
                         <!-- shade while package -->
@@ -141,6 +141,40 @@
                         <goals>
                             <goal>shade</goal>
                         </goals>
+                        <configuration>
+                            <filters>
+                                <filter>
+                                    <artifact>de.derklaro.projects.deer:project-deer-executor</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/*.MF</exclude>
+                                    </excludes>
+                                </filter>
+                                <filter>
+                                    <artifact>de.derklaro.projects.deer:project-deer-api</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/*.MF</exclude>
+                                    </excludes>
+                                </filter>
+                                <filter>
+                                    <artifact>org.jetbrains:annotations-java5</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/*.MF</exclude>
+                                    </excludes>
+                                </filter>
+                                <filter>
+                                    <artifact>systems.reformcloud.reformcloud2:reformcloud2-executor-api</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/*.MF</exclude>
+                                    </excludes>
+                                </filter>
+                                <filter>
+                                    <artifact>com.google.code.findbugs:jsr305</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/*.MF</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
@@ -157,6 +191,9 @@
                             <Main-Class>systems.reformcloud.reformcloud2.executor.ExecutorChooser</Main-Class>
                             <Version>${project.version}</Version>
                             <Implementation-Version>${project.version}</Implementation-Version>
+                            <!--suppress UnresolvedMavenProperty -->
+                            <!-- set by another plugin -->
+                            <Specification-Version>${describe}</Specification-Version>
                         </manifestEntries>
                     </archive>
                 </configuration>

@@ -15,6 +15,7 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
+import systems.reformcloud.reformcloud2.executor.api.api.API;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
@@ -100,7 +101,7 @@ public class SpongeSignSystemAdapter implements SignSystemAdapter<Sign> {
 
     private UUID taskID;
 
-    private Map<UUID, ProcessInformation> notAssigned = new ConcurrentHashMap<>();
+    private final Map<UUID, ProcessInformation> notAssigned = new ConcurrentHashMap<>();
 
     private final AtomicInteger[] counter = new AtomicInteger[] {
             new AtomicInteger(-1), // start
@@ -230,8 +231,7 @@ public class SpongeSignSystemAdapter implements SignSystemAdapter<Sign> {
     }
 
     private boolean isCurrent(ProcessInformation processInformation) {
-        ProcessInformation info = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation();
-        return info != null && info.getProcessUniqueID().equals(processInformation.getProcessUniqueID());
+        return API.getInstance().getCurrentProcessInformation().getProcessUniqueID().equals(processInformation.getProcessUniqueID());
     }
 
     private void assign(ProcessInformation processInformation) {
@@ -440,8 +440,9 @@ public class SpongeSignSystemAdapter implements SignSystemAdapter<Sign> {
     }
 
     private SignLayout getSelfLayout() {
-        return LayoutUtil.getLayoutFor(ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation().getProcessGroup().getName(), config).orElseThrow(
-                () -> new RuntimeException("No sign config present for context global or current group"));
+        return LayoutUtil
+                .getLayoutFor(API.getInstance().getCurrentProcessInformation().getProcessGroup().getName(), config)
+                .orElseThrow(() -> new RuntimeException("No sign config present for context global or current group"));
     }
 
     public static SpongeSignSystemAdapter getInstance() {

@@ -10,13 +10,17 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Properties;
 
-public final class DefaultDependency implements Dependency {
+public class DefaultDependency implements Dependency {
 
     public DefaultDependency(Repository repository, String groupID, String artifactID, Properties properties) {
+        this(repository, groupID, artifactID, properties.getProperty(artifactID));
+    }
+
+    public DefaultDependency(Repository repository, String groupID, String artifactID, String version) {
         this.repository = repository;
         this.groupID = groupID;
         this.artifactID = artifactID;
-        this.version = properties.getProperty(artifactID);
+        this.version = version;
     }
 
     private final Repository repository;

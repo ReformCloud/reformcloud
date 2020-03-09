@@ -5,13 +5,14 @@ import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageMan
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.process.JavaProcessHelper;
 
-import java.util.ArrayList;
+import javax.annotation.Nonnull;
 import java.util.Collection;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 
 public final class ClientManager {
 
-    private final Collection<ClientRuntimeInformation> clientRuntimeInformation = new ArrayList<>();
+    private final Collection<ClientRuntimeInformation> clientRuntimeInformation = new CopyOnWriteArrayList<>();
 
     /**
      * Represents the internal client process
@@ -62,6 +63,10 @@ public final class ClientManager {
 
     public void setProcess(Process process) {
         this.process = process;
+    }
+
+    public ClientRuntimeInformation getClientInfo(@Nonnull String name) {
+        return Streams.filter(this.clientRuntimeInformation, e -> e.getName().equals(name));
     }
 
     public Collection<ClientRuntimeInformation> getClientRuntimeInformation() {

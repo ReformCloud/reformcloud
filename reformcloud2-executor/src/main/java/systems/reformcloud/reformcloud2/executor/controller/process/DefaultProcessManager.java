@@ -21,12 +21,13 @@ import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Trio;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
 import systems.reformcloud.reformcloud2.executor.api.controller.process.ProcessManager;
 import systems.reformcloud.reformcloud2.executor.controller.ControllerExecutor;
-import systems.reformcloud.reformcloud2.executor.controller.packet.out.ControllerPacketOutProcessDisconnected;
-import systems.reformcloud.reformcloud2.executor.controller.packet.out.ControllerPacketOutStartProcess;
-import systems.reformcloud.reformcloud2.executor.controller.packet.out.ControllerPacketOutStopProcess;
-import systems.reformcloud.reformcloud2.executor.controller.packet.out.event.ControllerEventProcessClosed;
-import systems.reformcloud.reformcloud2.executor.controller.packet.out.event.ControllerEventProcessStarted;
-import systems.reformcloud.reformcloud2.executor.controller.packet.out.event.ControllerEventProcessUpdated;
+import systems.reformcloud.reformcloud2.executor.controller.network.packets.out.ControllerPacketOutProcessDisconnected;
+import systems.reformcloud.reformcloud2.executor.controller.network.packets.out.ControllerPacketOutStartProcess;
+import systems.reformcloud.reformcloud2.executor.controller.network.packets.out.ControllerPacketOutStopProcess;
+import systems.reformcloud.reformcloud2.executor.controller.network.packets.out.event.ControllerEventProcessClosed;
+import systems.reformcloud.reformcloud2.executor.controller.network.packets.out.event.ControllerEventProcessStarted;
+import systems.reformcloud.reformcloud2.executor.controller.network.packets.out.event.ControllerEventProcessUpdated;
+import systems.reformcloud.reformcloud2.executor.node.util.ProcessCopyOnWriteArrayList;
 
 import javax.annotation.Nonnull;
 import java.util.*;
@@ -40,9 +41,9 @@ import static java.util.Objects.requireNonNull;
 
 public final class DefaultProcessManager implements ProcessManager {
 
-    private final Collection<ProcessInformation> processInformation = new ConcurrentLinkedQueue<>();
+    private final Collection<ProcessInformation> processInformation = Collections.synchronizedCollection(new ProcessCopyOnWriteArrayList());
 
-    private Queue<Trio<ProcessGroup, Template, JsonConfiguration>> noClientTryLater = new ConcurrentLinkedQueue<>();
+    private final Queue<Trio<ProcessGroup, Template, JsonConfiguration>> noClientTryLater = new ConcurrentLinkedQueue<>();
 
     public DefaultProcessManager() {
         CompletableFuture.runAsync(() -> {
@@ -60,9 +61,7 @@ public final class DefaultProcessManager implements ProcessManager {
 
     @Override
     public List<ProcessInformation> getAllProcesses() {
-        synchronized (processInformation) {
-            return Streams.newList(processInformation);
-        }
+        return Streams.newList(processInformation);
     }
 
     @Override
@@ -79,17 +78,13 @@ public final class DefaultProcessManager implements ProcessManager {
     @Override
     public ProcessInformation getProcess(String name) {
         requireNonNull(name);
-        synchronized (processInformation) {
-            return Streams.filter(processInformation, processInformation -> processInformation.getName().equals(name));
-        }
+        return Streams.filter(processInformation, processInformation -> processInformation.getName().equals(name));
     }
 
     @Override
     public ProcessInformation getProcess(UUID uniqueID) {
         requireNonNull(uniqueID);
-        synchronized (processInformation) {
-            return Streams.filter(processInformation, processInformation -> processInformation.getProcessUniqueID().equals(uniqueID));
-        }
+        return Streams.filter(processInformation, processInformation -> processInformation.getProcessUniqueID().equals(uniqueID));
     }
 
     @Override
@@ -104,7 +99,7 @@ public final class DefaultProcessManager implements ProcessManager {
     }
 
     @Override
-    public ProcessInformation startProcess(String groupName, String template, JsonConfiguration configurable) {
+    public synchronized ProcessInformation startProcess(String groupName, String template, JsonConfiguration configurable) {
         ProcessGroup processGroup = Streams.filter(ControllerExecutor.getInstance().getControllerExecutorConfig().getProcessGroups(), processGroup1 -> processGroup1.getName().equals(groupName));
         if (processGroup == null) {
             // In some cases the group got deleted but the update process is sync and this method get called async!
@@ -112,9 +107,8 @@ public final class DefaultProcessManager implements ProcessManager {
             return null;
         }
 
-        Template found = Streams.filter(processGroup.getTemplates(), test -> Objects.equals(test.getName(), template));
-
-        ProcessInformation processInformation = create(processGroup, found, configurable);
+        Template found = Streams.filter(processGroup.getTemplates(), test -> template == null || template.equals(test.getName()));
+        ProcessInformation processInformation = this.create(processGroup, found, configurable);
         if (processInformation == null) {
             return null;
         }
@@ -151,10 +145,7 @@ public final class DefaultProcessManager implements ProcessManager {
     @Override
     public void onClientDisconnect(String clientName) {
         Streams.allOf(processInformation, processInformation -> processInformation.getParent().equals(clientName)).forEach(processInformation -> {
-            synchronized (DefaultProcessManager.this.processInformation) {
-                DefaultProcessManager.this.processInformation.remove(processInformation);
-            }
-
+            DefaultProcessManager.this.processInformation.remove(processInformation);
             notifyDisconnect(processInformation);
         });
     }
@@ -177,7 +168,7 @@ public final class DefaultProcessManager implements ProcessManager {
             });
 
             if (bestTemplate.get() == null) {
-                bestTemplate.set(new Template(0, "default", false, FileBackend.NAME,"#", new RuntimeConfiguration(
+                bestTemplate.set(new Template(0, "default", false, FileBackend.NAME, "#", new RuntimeConfiguration(
                         512, new ArrayList<>(), new HashMap<>()
                 ), Version.PAPER_1_8_8));
 
@@ -312,8 +303,8 @@ public final class DefaultProcessManager implements ProcessManager {
 
             Streams.filterToReference(this.processInformation,
                     e -> e.getProcessUniqueID().equals(processInformation.getProcessUniqueID())).ifPresent(e -> {
-                        this.processInformation.remove(e);
-                        this.processInformation.add(processInformation);
+                this.processInformation.remove(e);
+                this.processInformation.add(processInformation);
             });
         }
 
@@ -349,9 +340,7 @@ public final class DefaultProcessManager implements ProcessManager {
         }
 
         notifyDisconnect(information);
-        synchronized (processInformation) {
-            processInformation.remove(information);
-        }
+        processInformation.remove(information);
     }
 
     // ==========================

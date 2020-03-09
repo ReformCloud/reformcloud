@@ -18,31 +18,49 @@ public final class OnlyProxyJoinHelper {
 
     private static final List<JoinRequest> JOIN_REQUESTS = new ArrayList<>();
 
-    public static void createRequest(UUID uuid, String name) {
-        JOIN_REQUESTS.add(new JoinRequest(uuid, name));
+    static {
+        ExecutorAPI.getInstance().getEventManager().registerListener(new ServerSwitchListener());
     }
 
-    public static boolean walkedOverProxy(UUID uuid, String name) {
-        JoinRequest joinRequest = Streams.filter(JOIN_REQUESTS, joinRequest1 -> joinRequest1.getUniqueID().equals(uuid) && joinRequest1.getName().equals(name));
-        if (joinRequest == null) {
+    public static void createRequest(UUID uuid, String name) {
+        JOIN_REQUESTS.add(new JoinRequest(uuid, name, null));
+    }
+
+    public static void handleServerSwitch(UUID uuid, String serverName) {
+        JoinRequest request = getRequest(uuid);
+        if (request == null) {
+            return;
+        }
+
+        request.setCurrentServer(serverName);
+    }
+
+    public static boolean walkedOverProxy(UUID uuid, String name, String senderName) {
+        List<JoinRequest> requests = JOIN_REQUESTS.stream().filter(e -> e.getUniqueID().equals(uuid) || e.getName().equals(name)).collect(Collectors.toList());
+        if (requests.size() != 1) {
             return false;
         }
 
-        return getOf(uuid).size() == 1; // Checks if the player is only on one proxy
+        // Check if the player is on no other server than the server who sent the request itself
+        return getProxy(uuid, name).size() == 1 && senderName.equals(requests.get(0).getCurrentServer());
     }
 
     public static void onDisconnect(UUID uuid) {
-        JoinRequest joinRequest = Streams.filter(JOIN_REQUESTS, joinRequest1 -> joinRequest1.getUniqueID().equals(uuid));
+        JoinRequest joinRequest = getRequest(uuid);
         if (joinRequest != null) {
             JOIN_REQUESTS.remove(joinRequest);
         }
     }
 
-    private static Collection<ProcessInformation> getOf(UUID uniqueID) {
+    private static JoinRequest getRequest(UUID uuid) {
+        return Streams.filter(JOIN_REQUESTS, joinRequest1 -> joinRequest1.getUniqueID().equals(uuid));
+    }
+
+    private static Collection<ProcessInformation> getProxy(UUID uniqueID, String name) {
         return ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getAllProcesses()
                 .stream()
                 .filter(e -> !e.getTemplate().isServer())
-                .filter(e -> e.isPlayerOnline(uniqueID))
+                .filter(e -> e.isPlayerOnline(uniqueID) || e.isPlayerOnline(name))
                 .collect(Collectors.toList());
     }
 }

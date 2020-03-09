@@ -10,7 +10,7 @@ public interface PacketReader {
     /**
      * Reads the given input stream and converts it to a packet
      *
-     * @param id The id of the packet which is incoming
+     * @param id          The id of the packet which is incoming
      * @param inputStream The stream from which the serialized data can get read
      * @return The de-serialized packet from the stream
      * @throws Exception If an exception occurs during the read

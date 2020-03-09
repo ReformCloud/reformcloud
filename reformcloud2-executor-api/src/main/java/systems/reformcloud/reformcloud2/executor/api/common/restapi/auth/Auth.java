@@ -4,7 +4,7 @@ import io.netty.channel.ChannelHandlerContext;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.Configurable;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.restapi.request.WebRequester;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.function.Double;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Duo;
 
 import javax.annotation.Nonnull;
 
@@ -18,5 +18,5 @@ public interface Auth {
      * @return A double with the key value {@code true} if the auth was successful and as value the {@link WebRequester} if the auth was successful
      */
     @Nonnull
-    Double<Boolean, WebRequester> handleAuth(@Nonnull Configurable<JsonConfiguration> configurable, @Nonnull ChannelHandlerContext channelHandlerContext);
+    Duo<Boolean, WebRequester> handleAuth(@Nonnull Configurable<JsonConfiguration> configurable, @Nonnull ChannelHandlerContext channelHandlerContext);
 }

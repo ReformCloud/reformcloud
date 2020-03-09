@@ -1,5 +1,7 @@
 package systems.reformcloud.reformcloud2.executor.api.common.application;
 
+import systems.reformcloud.reformcloud2.executor.api.common.application.api.Application;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
@@ -55,7 +57,7 @@ public interface ApplicationLoader {
     boolean doSpecificApplicationInstall(@Nonnull InstallableApplication application);
 
     /**
-     * Unloads a specific aplpication
+     * Unloads a specific application
      *
      * @param loadedApplication The application which should get unloaded
      * @return If the application was loaded and got unloaded
@@ -65,11 +67,10 @@ public interface ApplicationLoader {
     /**
      * Finds the {@link LoadedApplication} by the name and unloads it
      *
-     * @see #getApplication(String)
-     * @see #doSpecificApplicationUninstall(LoadedApplication)
-     *
      * @param application The name oof the application which should get unloaded
      * @return If the application was loaded and got unloaded
+     * @see #getApplication(String)
+     * @see #doSpecificApplicationUninstall(LoadedApplication)
      */
     boolean doSpecificApplicationUninstall(@Nonnull String application);
 
@@ -85,9 +86,9 @@ public interface ApplicationLoader {
     /**
      * The name of a loaded application
      *
-     * @see LoadedApplication#getName()
      * @param loadedApplication The application from which the name is needed
      * @return The name of the application
+     * @see LoadedApplication#getName()
      */
     @Nonnull
     String getApplicationName(@Nonnull LoadedApplication loadedApplication);
@@ -104,4 +105,7 @@ public interface ApplicationLoader {
      * @param applicationHandler The handler which should get registered
      */
     void addApplicationHandler(@Nonnull ApplicationHandler applicationHandler);
+
+    @Nullable
+    Application getInternalApplication(@Nonnull String name);
 }

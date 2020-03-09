@@ -22,7 +22,7 @@ public class SpongePermissionDescriptionBuilder implements PermissionDescription
 
     private Text description;
 
-    private PluginContainer pluginContainer;
+    private final PluginContainer pluginContainer;
 
     @Override
     @Nonnull

@@ -11,7 +11,8 @@ import javax.annotation.Nonnull;
  */
 public interface ClientRuntimeInformation extends Nameable {
 
-    TypeToken<DefaultClientRuntimeInformation> TYPE = new TypeToken<DefaultClientRuntimeInformation>() {};
+    TypeToken<DefaultClientRuntimeInformation> TYPE = new TypeToken<DefaultClientRuntimeInformation>() {
+    };
 
     /**
      * @return The start host of the client

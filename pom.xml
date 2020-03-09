@@ -7,7 +7,7 @@
     <groupId>systems.reformcloud.reformcloud2</groupId>
     <artifactId>reformcloud2</artifactId>
     <packaging>pom</packaging>
-    <version>2.0.3</version>
+    <version>2.1.0</version>
 
     <licenses>
         <license>
@@ -81,6 +81,24 @@
         <defaultGoal>clean package</defaultGoal>
 
         <plugins>
+            <!-- plugin to describe version build -->
+            <plugin>
+                <groupId>net.md-5</groupId>
+                <artifactId>scriptus</artifactId>
+                <version>0.3.2</version>
+                <configuration>
+                    <format>%s</format>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>describe</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
             <!-- maven compiler plugin to set the target and source version (1.8) -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -96,7 +114,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>3.1.0</version>
+                <version>3.1.1</version>
                 <configuration>
                     <configLocation>checkstyle.xml</configLocation>
                     <encoding>UTF-8</encoding>

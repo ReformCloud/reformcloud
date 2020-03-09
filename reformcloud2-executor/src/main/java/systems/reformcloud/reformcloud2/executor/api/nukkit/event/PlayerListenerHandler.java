@@ -8,6 +8,7 @@ import cn.nukkit.event.Listener;
 import cn.nukkit.event.player.PlayerJoinEvent;
 import cn.nukkit.event.player.PlayerLoginEvent;
 import cn.nukkit.event.player.PlayerQuitEvent;
+import systems.reformcloud.reformcloud2.executor.api.api.API;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.PlayerAccessConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
@@ -15,16 +16,16 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.channel.mana
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState;
+import systems.reformcloud.reformcloud2.executor.api.network.packets.out.APIPacketOutHasPlayerAccess;
 import systems.reformcloud.reformcloud2.executor.api.nukkit.NukkitExecutor;
-import systems.reformcloud.reformcloud2.executor.api.packets.out.APIPacketOutHasPlayerAccess;
 
 import java.util.concurrent.TimeUnit;
 
 public final class PlayerListenerHandler implements Listener {
 
-    @EventHandler (priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.LOWEST)
     public void handle(final PlayerLoginEvent event) {
-        if (ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation().getProcessGroup().getPlayerAccessConfiguration().isOnlyProxyJoin()) {
+        if (API.getInstance().getCurrentProcessInformation().getProcessGroup().getPlayerAccessConfiguration().isOnlyProxyJoin()) {
             PacketSender packetSender = DefaultChannelManager.INSTANCE.get("Controller").orElse(null);
             if (packetSender == null) {
                 event.setCancelled(true);
@@ -47,10 +48,10 @@ public final class PlayerListenerHandler implements Listener {
         }
     }
 
-    @EventHandler (priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.LOWEST)
     public void handle(final PlayerJoinEvent event) {
         final Player player = event.getPlayer();
-        final ProcessInformation current = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation();
+        final ProcessInformation current = API.getInstance().getCurrentProcessInformation();
         final PlayerAccessConfiguration configuration = current.getProcessGroup().getPlayerAccessConfiguration();
 
         if (configuration.isUseCloudPlayerLimit()
@@ -101,10 +102,10 @@ public final class PlayerListenerHandler implements Listener {
         ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(current);
     }
 
-    @EventHandler (priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.LOWEST)
     public void handle(final PlayerQuitEvent event) {
-        ProcessInformation current = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation();
-        if (current == null || !current.isPlayerOnline(event.getPlayer().getUniqueId())) {
+        ProcessInformation current = API.getInstance().getCurrentProcessInformation();
+        if (!current.isPlayerOnline(event.getPlayer().getUniqueId())) {
             return;
         }
 

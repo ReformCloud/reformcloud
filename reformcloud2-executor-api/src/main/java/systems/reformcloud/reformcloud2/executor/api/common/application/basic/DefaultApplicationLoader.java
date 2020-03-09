@@ -18,6 +18,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.utility.system.Downl
 import systems.reformcloud.reformcloud2.executor.api.common.utility.system.SystemHelper;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -308,6 +309,12 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
         applicationHandlers.add(applicationHandler);
     }
 
+    @Nullable
+    @Override
+    public Application getInternalApplication(@Nonnull String name) {
+        return Streams.filter(this.applications, e -> e.getApplication().getName().equals(name));
+    }
+
     private void handleUpdate(Application application) {
         // Do not fetch updates on development builds
         if (System.getProperty("reformcloud.runner.specification").equals("SNAPSHOT")) {
@@ -320,6 +327,11 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
         }
 
         SystemHelper.createDirectory(Paths.get("reformcloud/.update/apps"));
+        String fileName = application.getApplication().applicationConfig().applicationFile().getName();
+        String[] split = fileName.split("-");
+        String name = fileName
+                .replace("-" + split[split.length - 1], "")
+                .replace(".jar", "");
 
         System.out.println(LanguageManager.get(
                 "application-download-update",
@@ -331,7 +343,7 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
         ));
         DownloadHelper.downloadAndDisconnect(
                 repository.getUpdate().getDownloadUrl(),
-                "reformcloud/.update/apps/" + application.getApplication().getName()
+                "reformcloud/.update/apps/" + name
                         + "-" + repository.getUpdate().getNewVersion() + ".jar"
         );
     }

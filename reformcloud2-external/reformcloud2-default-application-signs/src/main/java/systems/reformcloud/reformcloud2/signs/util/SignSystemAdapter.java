@@ -16,9 +16,9 @@ public interface SignSystemAdapter<T> {
 
     // ====
 
-    AtomicReference<SignSystemAdapter> instance = new AtomicReference<>();
+    AtomicReference<SignSystemAdapter<?>> instance = new AtomicReference<>();
 
-    static SignSystemAdapter getInstance() {
+    static SignSystemAdapter<?> getInstance() {
         return instance.get();
     }
 

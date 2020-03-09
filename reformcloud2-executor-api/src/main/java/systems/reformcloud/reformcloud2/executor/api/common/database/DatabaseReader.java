@@ -38,9 +38,9 @@ public interface DatabaseReader extends Iterable<JsonConfiguration>, Nameable {
     /**
      * Inserts a json document into the database
      *
-     * @param key The key of the {@link JsonConfiguration}
+     * @param key        The key of the {@link JsonConfiguration}
      * @param identifier The id of the {@link JsonConfiguration}
-     * @param data The {@link JsonConfiguration} which should be inserted
+     * @param data       The {@link JsonConfiguration} which should be inserted
      * @return The {@link JsonConfiguration} after the insert of the document
      */
     @Nonnull
@@ -50,7 +50,7 @@ public interface DatabaseReader extends Iterable<JsonConfiguration>, Nameable {
     /**
      * Updates a document in the database
      *
-     * @param key The key of the document
+     * @param key     The key of the document
      * @param newData The new document which should be inserted
      * @return A task which will be completed with {@code true} if the operation was successful else {@code false}
      */
@@ -62,7 +62,7 @@ public interface DatabaseReader extends Iterable<JsonConfiguration>, Nameable {
      * Updates a document in the database
      *
      * @param identifier The id of the document
-     * @param newData The new document which should be inserted
+     * @param newData    The new document which should be inserted
      * @return A task which will be completed with {@code true} if the operation was successful else {@code false}
      */
     @Nonnull

@@ -13,7 +13,7 @@ import java.util.function.Predicate;
 /**
  * Represents any configuration used in the cloud system
  */
-public interface Configurable<V extends Configurable> {
+public interface Configurable<V extends Configurable<V>> {
 
     @Nonnull
     V add(@Nonnull String key, @Nullable V value);
@@ -145,4 +145,7 @@ public interface Configurable<V extends Configurable> {
     String toPrettyString();
 
     byte[] toPrettyBytes();
+
+    @Nonnull
+    V copy();
 }

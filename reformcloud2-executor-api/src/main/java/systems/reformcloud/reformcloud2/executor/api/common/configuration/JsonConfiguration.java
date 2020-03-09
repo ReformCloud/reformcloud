@@ -1,9 +1,11 @@
 package systems.reformcloud.reformcloud2.executor.api.common.configuration;
 
 import com.google.gson.*;
+import com.google.gson.internal.bind.TypeAdapters;
 import com.google.gson.reflect.TypeToken;
 import systems.reformcloud.reformcloud2.executor.api.common.base.Conditions;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.gson.InternalJsonParser;
+import systems.reformcloud.reformcloud2.executor.api.common.configuration.gson.JsonConfigurationTypeAdapter;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.system.SystemHelper;
 
 import javax.annotation.Nonnull;
@@ -14,11 +16,21 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.DateFormat;
 import java.util.function.Predicate;
 
-public final class JsonConfiguration implements Configurable<JsonConfiguration> {
+public class JsonConfiguration implements Configurable<JsonConfiguration> {
 
-    public static final ThreadLocal<Gson> GSON = ThreadLocal.withInitial(() -> new GsonBuilder().setPrettyPrinting().serializeNulls().disableHtmlEscaping().create());
+    public static final ThreadLocal<Gson> GSON = ThreadLocal.withInitial(
+            () -> new GsonBuilder()
+                    .setPrettyPrinting()
+                    .serializeNulls()
+                    .disableHtmlEscaping()
+                    .serializeSpecialFloatingPointValues()
+                    .setDateFormat(DateFormat.LONG)
+                    .registerTypeAdapterFactory(TypeAdapters.newTypeHierarchyFactory(JsonConfiguration.class, new JsonConfigurationTypeAdapter()))
+                    .create()
+    );
 
     public JsonConfiguration() {
     }
@@ -61,6 +73,15 @@ public final class JsonConfiguration implements Configurable<JsonConfiguration> 
 
         Conditions.isTrue(jsonElement.isJsonObject(), "JsonElement has to be a json object");
         this.jsonObject = jsonElement.getAsJsonObject();
+    }
+
+    public JsonConfiguration(File file) {
+        try (InputStream stream = Files.newInputStream(file.toPath())) {
+            this.jsonObject = new JsonConfiguration(stream).getJsonObject();
+        } catch (final IOException ex) {
+            ex.printStackTrace();
+            this.jsonObject = new JsonObject();
+        }
     }
 
     public JsonConfiguration(JsonObject jsonObject) {
@@ -470,6 +491,12 @@ public final class JsonConfiguration implements Configurable<JsonConfiguration> 
     @Override
     public byte[] toPrettyBytes() {
         return toPrettyString().getBytes(StandardCharsets.UTF_8);
+    }
+
+    @Nonnull
+    @Override
+    public JsonConfiguration copy() {
+        return new JsonConfiguration(this.jsonObject.deepCopy());
     }
 
     public JsonObject getJsonObject() {

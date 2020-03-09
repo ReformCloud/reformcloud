@@ -6,6 +6,9 @@ import systems.reformcloud.reformcloud2.executor.api.node.process.LocalNodeProce
 import java.util.Collection;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public final class LocalProcessManager {
 
@@ -26,7 +29,14 @@ public final class LocalProcessManager {
     }
 
     public static void close() {
-        Streams.newList(NODE_PROCESSES).forEach(LocalNodeProcess::shutdown);
-        NODE_PROCESSES.clear();
+        ExecutorService executorService = Executors.newCachedThreadPool();
+        NODE_PROCESSES.forEach(e -> executorService.submit(() -> e.shutdown()));
+
+        try {
+            executorService.shutdown();
+            executorService.awaitTermination(10, TimeUnit.MINUTES);
+        } catch (final InterruptedException ex) {
+            ex.printStackTrace();
+        }
     }
 }

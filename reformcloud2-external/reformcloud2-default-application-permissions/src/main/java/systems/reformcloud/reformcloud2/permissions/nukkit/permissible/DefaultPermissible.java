@@ -6,7 +6,7 @@ import cn.nukkit.permission.Permission;
 import cn.nukkit.permission.PermissionAttachment;
 import cn.nukkit.permission.PermissionAttachmentInfo;
 import cn.nukkit.plugin.Plugin;
-import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
+import systems.reformcloud.reformcloud2.executor.api.api.API;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.permissions.PermissionAPI;
 import systems.reformcloud.reformcloud2.permissions.util.group.NodeGroup;
@@ -88,7 +88,7 @@ public class DefaultPermissible extends PermissibleBase {
         this.perms = new ConcurrentHashMap<>();
 
         final PermissionUser permissionUser = PermissionAPI.getInstance().getPermissionUtil().loadUser(uuid);
-        final ProcessInformation current = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation();
+        final ProcessInformation current = API.getInstance().getCurrentProcessInformation();
 
         permissionUser.getPermissionNodes().stream().filter(PermissionNode::isValid)
                 .forEach(e -> perms.put(e.getActualPermission(), new PermissionAttachmentInfo(
@@ -118,16 +118,14 @@ public class DefaultPermissible extends PermissibleBase {
                     null,
                     e.isSet()
             )));
-            if (current != null) {
-                Collection<PermissionNode> nodes = g.getPerGroupPermissions().get(current.getProcessGroup().getName());
-                if (nodes != null) {
-                    nodes.stream().filter(PermissionNode::isValid).forEach(e -> perms.put(e.getActualPermission(), new PermissionAttachmentInfo(
-                            this,
-                            e.getActualPermission(),
-                            null,
-                            e.isSet()
-                    )));
-                }
+            Collection<PermissionNode> nodes = g.getPerGroupPermissions().get(current.getProcessGroup().getName());
+            if (nodes != null) {
+                nodes.stream().filter(PermissionNode::isValid).forEach(e -> perms.put(e.getActualPermission(), new PermissionAttachmentInfo(
+                        this,
+                        e.getActualPermission(),
+                        null,
+                        e.isSet()
+                )));
             }
         });
 

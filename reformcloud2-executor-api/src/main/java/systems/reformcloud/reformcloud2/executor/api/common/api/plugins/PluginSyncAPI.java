@@ -21,7 +21,7 @@ public interface PluginSyncAPI {
      * Installs a plugin on a process
      *
      * @param process The process where the plugin should be installed
-     * @param plugin The plugin which should be installed
+     * @param plugin  The plugin which should be installed
      */
     void installPlugin(@Nonnull String process, @Nonnull InstallablePlugin plugin);
 
@@ -29,7 +29,7 @@ public interface PluginSyncAPI {
      * Installs a plugin on a process
      *
      * @param process The {@link ProcessInformation} of the process where the plugin should be installed
-     * @param plugin The plugin which should be installed
+     * @param plugin  The plugin which should be installed
      */
     void installPlugin(@Nonnull ProcessInformation process, @Nonnull InstallablePlugin plugin);
 
@@ -37,7 +37,7 @@ public interface PluginSyncAPI {
      * Unloads a plugin on a process
      *
      * @param process The process where the plugin should be unloaded
-     * @param plugin The plugin which should be unloaded
+     * @param plugin  The plugin which should be unloaded
      */
     void unloadPlugin(@Nonnull String process, @Nonnull Plugin plugin);
 
@@ -45,7 +45,7 @@ public interface PluginSyncAPI {
      * Unloads a plugin on a process
      *
      * @param process The {@link ProcessInformation} of the process where the plugin should be unloaded
-     * @param plugin The plugin which should be unloaded
+     * @param plugin  The plugin which should be unloaded
      */
     void unloadPlugin(@Nonnull ProcessInformation process, @Nonnull Plugin plugin);
 
@@ -53,7 +53,7 @@ public interface PluginSyncAPI {
      * Get an installed plugin on a process
      *
      * @param process The process where the plugin should be searched on
-     * @param name The name of the plugin
+     * @param name    The name of the plugin
      * @return The installed plugin or {@code null} if the process is not installed
      */
     @Nullable
@@ -63,7 +63,7 @@ public interface PluginSyncAPI {
      * Get an installed plugin on a process
      *
      * @param process The {@link ProcessInformation} of the process where the plugin should be searched on
-     * @param name The name of the plugin
+     * @param name    The name of the plugin
      * @return The installed plugin or {@code null} if the process is not installed
      */
     @Nullable
@@ -73,7 +73,7 @@ public interface PluginSyncAPI {
      * Gets all installed plugins on a process by a specific author
      *
      * @param process The process where the plugins should be searched on
-     * @param author The author of the plugin
+     * @param author  The author of the plugin
      * @return All plugins by the author
      */
     @Nonnull
@@ -83,7 +83,7 @@ public interface PluginSyncAPI {
      * Gets all installed plugins on a process by a specific author
      *
      * @param process The {@link ProcessInformation} of the process where the plugins should be searched on
-     * @param author The author of the plugin
+     * @param author  The author of the plugin
      * @return All plugins by the author
      */
     @Nonnull

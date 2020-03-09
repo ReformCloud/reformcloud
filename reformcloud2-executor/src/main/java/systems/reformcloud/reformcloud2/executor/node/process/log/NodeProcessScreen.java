@@ -25,10 +25,10 @@ public class NodeProcessScreen {
 
     private final Collection<String> enabledFrom = new ArrayList<>();
 
-    public void toggleFor(String name) {
+    public boolean toggleFor(String name) {
         if (enabledFrom.contains(name)) {
             enabledFrom.remove(name);
-            return;
+            return false;
         }
 
         enabledFrom.add(name);
@@ -42,6 +42,8 @@ public class NodeProcessScreen {
                     uniqueID, queue
             )));
         }
+
+        return true;
     }
 
     void addScreenLine(String line) {

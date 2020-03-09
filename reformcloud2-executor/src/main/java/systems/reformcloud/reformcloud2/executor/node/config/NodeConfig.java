@@ -6,20 +6,21 @@ import systems.reformcloud.reformcloud2.executor.api.common.node.NodeInformation
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class NodeConfig {
 
-    static final TypeToken<NodeConfig> TYPE = new TypeToken<NodeConfig>() {};
+    static final TypeToken<NodeConfig> TYPE = new TypeToken<NodeConfig>() {
+    };
 
     static final Path PATH = Paths.get("reformcloud/config.json");
 
-    NodeConfig(long maxMemory, String startHost, List<Map<String, Integer>> networkListener,
+    NodeConfig(String name, long maxMemory, String startHost, List<Map<String, Integer>> networkListener,
                List<Map<String, Integer>> httpNetworkListener, List<Map<String, Integer>> otherNodes) {
-        this.name = "Node-" + UUID.randomUUID().toString().split("-")[0];
+        this.name = name;
         this.uniqueID = UUID.randomUUID();
         this.maxMemory = maxMemory;
         this.startHost = startHost;
@@ -28,19 +29,19 @@ public class NodeConfig {
         this.otherNodes = otherNodes;
     }
 
-    private String name;
+    private final String name;
 
-    private UUID uniqueID;
+    private final UUID uniqueID;
 
-    private long maxMemory;
+    private final long maxMemory;
 
-    private String startHost;
+    private final String startHost;
 
-    private List<Map<String, Integer>> networkListener;
+    private final List<Map<String, Integer>> networkListener;
 
-    private List<Map<String, Integer>> httpNetworkListener;
+    private final List<Map<String, Integer>> httpNetworkListener;
 
-    private List<Map<String, Integer>> otherNodes;
+    private final List<Map<String, Integer>> otherNodes;
 
     public String getName() {
         return name;
@@ -74,10 +75,10 @@ public class NodeConfig {
         return new NodeInformation(
                 name,
                 uniqueID,
-                System.nanoTime(),
+                System.currentTimeMillis(),
                 0L,
                 maxMemory,
-                new ArrayList<>()
+                new CopyOnWriteArrayList<>()
         );
     }
 
