@@ -6,10 +6,10 @@ import systems.reformcloud.reformcloud2.executor.api.common.node.NodeInformation
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class NodeConfig {
 
@@ -78,7 +78,7 @@ public class NodeConfig {
                 System.currentTimeMillis(),
                 0L,
                 maxMemory,
-                new ArrayList<>()
+                new CopyOnWriteArrayList<>()
         );
     }
 

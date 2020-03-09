@@ -39,10 +39,10 @@ public final class CommandClients extends GlobalCommand {
                         "clients info <name>    | Shows information about a connected client\n" +
                         " \n" +
                         "clients internal       | Base command to show the status of the internal client\n" +
-                        " --start               | Starts the internal client" +
-                        " --stop                | Stops the internal client\n" +
-                        " --create              | Creates the internal client\n" +
-                        " --delete              | Deletes the internal client"
+                        " --start=true          | Starts the internal client\n" +
+                        " --stop=true           | Stops the internal client\n" +
+                        " --create=true         | Creates the internal client\n" +
+                        " --delete=true         | Deletes the internal client"
         ).split("\n"));
     }
 
@@ -185,6 +185,7 @@ public final class CommandClients extends GlobalCommand {
         SystemHelper.createDirectory(Paths.get("reformcloud/.client/reformcloud/.bin"));
         SystemHelper.createDirectory(Paths.get("reformcloud/.client/reformcloud/files/.connection"));
         SystemHelper.doCopy("reformcloud/.bin/config.properties", "reformcloud/.client/reformcloud/.bin/config.properties");
+        SystemHelper.doCopy("reformcloud/.bin/executor.jar", "reformcloud/.client/reformcloud/.bin/executor.jar");
         SystemHelper.doCopy("reformcloud/.bin/connection.json", "reformcloud/.client/reformcloud/files/.connection/connection.json");
         CommonHelper.rewriteProperties(
                 "reformcloud/.client/reformcloud/.bin/config.properties",

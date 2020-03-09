@@ -88,7 +88,7 @@ public final class CommandCluster extends GlobalCommand {
 
             NodeExecutor.getInstance().getNodeConfig().getOtherNodes().add(Collections.singletonMap(ip, port));
             NodeExecutor.getInstance().getNodeConfig().save();
-            commandSource.sendMessage(LanguageManager.get("command-cluster-created-node", ip, port));
+            commandSource.sendMessage(LanguageManager.get("command-cluster-created-node", ip, strings[2]));
             return true;
         }
 
@@ -141,9 +141,11 @@ public final class CommandCluster extends GlobalCommand {
         stringBuilder.append(" ").append("\n");
         stringBuilder.append(" > Started processes (").append(information.getStartedProcesses().size()).append(")").append("\n");
         for (NodeProcess startedProcess : information.getStartedProcesses()) {
+            stringBuilder.append("\n");
             stringBuilder.append("  > Name      - ").append(startedProcess.getName()).append("\n");
             stringBuilder.append("  > UniqueID  - ").append(startedProcess.getUniqueID()).append("\n");
             stringBuilder.append("  > Group     - ").append(startedProcess.getGroup()).append("\n");
+            stringBuilder.append(" ");
         }
 
         source.sendMessages(stringBuilder.toString().split("\n"));

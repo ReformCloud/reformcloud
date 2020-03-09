@@ -5,6 +5,7 @@ import com.google.gson.reflect.TypeToken;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class NodeInformation {
 
@@ -29,7 +30,7 @@ public class NodeInformation {
         this.startupTime = startupTime;
         this.usedMemory = usedMemory;
         this.maxMemory = maxMemory;
-        this.startedProcesses = startedProcesses;
+        this.startedProcesses = new CopyOnWriteArrayList<>(startedProcesses);
     }
 
     public String getName() {
