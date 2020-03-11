@@ -90,7 +90,7 @@ public final class FTPTemplateBackend implements TemplateBackend {
     }
 
     @Override
-    public boolean existsTemplate(String group, String template) {
+    public boolean existsTemplate(@Nonnull String group, @Nonnull String template) {
         if (this.ftpClient == null) {
             return false;
         }
@@ -103,7 +103,7 @@ public final class FTPTemplateBackend implements TemplateBackend {
     }
 
     @Override
-    public void createTemplate(String group, String template) {
+    public void createTemplate(@Nonnull String group, @Nonnull String template) {
         if (this.ftpClient == null) {
             return;
         }
@@ -119,7 +119,7 @@ public final class FTPTemplateBackend implements TemplateBackend {
 
     @Nonnull
     @Override
-    public Task<Void> loadTemplate(String group, String template, Path target) {
+    public Task<Void> loadTemplate(@Nonnull String group, @Nonnull String template, @Nonnull Path target) {
         if (this.ftpClient == null) {
             return Task.completedTask(null);
         }
@@ -166,7 +166,7 @@ public final class FTPTemplateBackend implements TemplateBackend {
 
     @Nonnull
     @Override
-    public Task<Void> loadGlobalTemplates(ProcessGroup group, Path target) {
+    public Task<Void> loadGlobalTemplates(@Nonnull ProcessGroup group, @Nonnull Path target) {
         if (this.ftpClient == null) {
             return Task.completedTask(null);
         }
@@ -179,7 +179,7 @@ public final class FTPTemplateBackend implements TemplateBackend {
 
     @Nonnull
     @Override
-    public Task<Void> loadPath(String path, Path target) {
+    public Task<Void> loadPath(@Nonnull String path, @Nonnull Path target) {
         if (this.ftpClient == null) {
             return Task.completedTask(null);
         }
@@ -201,7 +201,7 @@ public final class FTPTemplateBackend implements TemplateBackend {
     }
 
     @Override
-    public void deployTemplate(String group, String template, Path current) {
+    public void deployTemplate(@Nonnull String group, @Nonnull String template, @Nonnull Path current) {
         if (this.ftpClient == null) {
             return;
         }
@@ -257,7 +257,7 @@ public final class FTPTemplateBackend implements TemplateBackend {
     }
 
     @Override
-    public void deleteTemplate(String group, String template) {
+    public void deleteTemplate(@Nonnull String group, @Nonnull String template) {
         if (this.ftpClient == null) {
             return;
         }
