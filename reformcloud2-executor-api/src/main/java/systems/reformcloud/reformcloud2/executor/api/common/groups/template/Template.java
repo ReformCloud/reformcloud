@@ -13,7 +13,8 @@ import java.util.stream.Collectors;
 
 public final class Template implements Nameable {
 
-    public static final TypeToken<Template> TYPE = new TypeToken<Template>() {};
+    public static final TypeToken<Template> TYPE = new TypeToken<Template>() {
+    };
 
     public Template(int priority, String name, boolean global, String backend, String serverNameSplitter,
                     RuntimeConfiguration runtimeConfiguration, Version version) {
@@ -23,9 +24,16 @@ public final class Template implements Nameable {
     public Template(int priority, String name, boolean global, String backend, String serverNameSplitter,
                     RuntimeConfiguration runtimeConfiguration, Version version, Collection<Inclusion> templateInclusions,
                     Collection<Inclusion> pathInclusions) {
+        this(priority, name, global, false, backend, serverNameSplitter, runtimeConfiguration, version, templateInclusions, pathInclusions);
+    }
+
+    public Template(int priority, String name, boolean global, boolean autoCopyOnStop, String backend, String serverNameSplitter,
+                    RuntimeConfiguration runtimeConfiguration, Version version, Collection<Inclusion> templateInclusions,
+                    Collection<Inclusion> pathInclusions) {
         this.priority = priority;
         this.name = name;
         this.global = global;
+        this.autoCopyOnStop = autoCopyOnStop;
         this.backend = backend;
         this.serverNameSplitter = serverNameSplitter;
         this.runtimeConfiguration = runtimeConfiguration;
@@ -39,6 +47,8 @@ public final class Template implements Nameable {
     private final String name;
 
     private final boolean global;
+
+    private final boolean autoCopyOnStop;
 
     private final String backend;
 
@@ -64,6 +74,10 @@ public final class Template implements Nameable {
 
     public boolean isGlobal() {
         return global;
+    }
+
+    public boolean isAutoCopyOnStop() {
+        return autoCopyOnStop;
     }
 
     @Nonnull
