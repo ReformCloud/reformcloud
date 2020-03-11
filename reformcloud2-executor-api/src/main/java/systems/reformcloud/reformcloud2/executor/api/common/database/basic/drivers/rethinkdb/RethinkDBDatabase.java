@@ -2,17 +2,33 @@ package systems.reformcloud.reformcloud2.executor.api.common.database.basic.driv
 
 import com.rethinkdb.RethinkDB;
 import com.rethinkdb.net.Connection;
+import systems.reformcloud.reformcloud2.executor.api.common.base.Conditions;
 import systems.reformcloud.reformcloud2.executor.api.common.database.Database;
 import systems.reformcloud.reformcloud2.executor.api.common.database.DatabaseReader;
+import systems.reformcloud.reformcloud2.executor.api.common.dependency.DefaultDependency;
+import systems.reformcloud.reformcloud2.executor.api.common.dependency.repo.DefaultRepositories;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.StringUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.maps.AbsentMap;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.net.URL;
 import java.util.Map;
 
 public final class RethinkDBDatabase extends Database<RethinkDB> {
 
     private final Map<String, DatabaseReader> perTableReader = new AbsentMap<>();
+
+    public RethinkDBDatabase() {
+        URL dependency = DEPENDENCY_LOADER.loadDependency(new DefaultDependency(
+                DefaultRepositories.MAVEN_CENTRAL,
+                "com.rethinkdb",
+                "rethinkdb-driver",
+                "2.4.1"
+        ));
+        Conditions.nonNull(dependency, StringUtil.formatError("dependency load for rethink database"));
+        DEPENDENCY_LOADER.addDependency(dependency);
+    }
 
     private Connection connection;
 
