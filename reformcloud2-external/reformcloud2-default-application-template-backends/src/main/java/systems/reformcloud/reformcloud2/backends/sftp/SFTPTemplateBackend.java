@@ -36,7 +36,8 @@ public final class SFTPTemplateBackend implements TemplateBackend {
                     )).write(Paths.get(baseDirectory, "sftp.json"));
         }
 
-        SFTPConfig config = JsonConfiguration.read(Paths.get(baseDirectory, "sftp.json")).get("config", new TypeToken<SFTPConfig>() {});
+        SFTPConfig config = JsonConfiguration.read(Paths.get(baseDirectory, "sftp.json")).get("config", new TypeToken<SFTPConfig>() {
+        });
         if (config == null || !config.isEnabled()) {
             return;
         }
@@ -91,7 +92,7 @@ public final class SFTPTemplateBackend implements TemplateBackend {
     }
 
     @Override
-    public boolean existsTemplate(String group, String template) {
+    public boolean existsTemplate(@Nonnull String group, @Nonnull String template) {
         if (isDisconnected()) {
             return false;
         }
@@ -104,19 +105,18 @@ public final class SFTPTemplateBackend implements TemplateBackend {
         }
     }
 
-    @Nonnull
     @Override
-    public Task<Void> createTemplate(String group, String template) {
+    public void createTemplate(@Nonnull String group, @Nonnull String template) {
         if (isDisconnected()) {
-            return Task.completedTask(null);
+            return;
         }
 
-        return future(() -> this.makeDirectory(this.config.getBaseDirectory() + group + "/" + template));
+        future(() -> this.makeDirectory(this.config.getBaseDirectory() + group + "/" + template));
     }
 
     @Nonnull
     @Override
-    public Task<Void> loadTemplate(String group, String template, Path target) {
+    public Task<Void> loadTemplate(@Nonnull String group, @Nonnull String template, @Nonnull Path target) {
         if (isDisconnected()) {
             return Task.completedTask(null);
         }
@@ -157,14 +157,14 @@ public final class SFTPTemplateBackend implements TemplateBackend {
 
     @Nonnull
     @Override
-    public Task<Void> loadGlobalTemplates(ProcessGroup group, Path target) {
+    public Task<Void> loadGlobalTemplates(@Nonnull ProcessGroup group, @Nonnull Path target) {
         return future(() -> Streams.allOf(group.getTemplates(), e -> e.getBackend().equals(getName())
                 && e.isGlobal()).forEach(e -> this.loadTemplate(group.getName(), e.getName(), target)));
     }
 
     @Nonnull
     @Override
-    public Task<Void> loadPath(String path, Path target) {
+    public Task<Void> loadPath(@Nonnull String path, @Nonnull Path target) {
         if (isDisconnected()) {
             return Task.completedTask(null);
         }
@@ -172,14 +172,13 @@ public final class SFTPTemplateBackend implements TemplateBackend {
         return future(() -> this.downloadDirectory(this.config.getBaseDirectory() + path, target.toString()));
     }
 
-    @Nonnull
     @Override
-    public Task<Void> deployTemplate(String group, String template, Path current) {
+    public void deployTemplate(@Nonnull String group, @Nonnull String template, @Nonnull Path current) {
         if (isDisconnected()) {
-            return Task.completedTask(null);
+            return;
         }
 
-        return future(() -> {
+        future(() -> {
             try {
                 File[] files = current.toFile().listFiles();
                 if (files == null || files.length == 0) {
@@ -214,7 +213,7 @@ public final class SFTPTemplateBackend implements TemplateBackend {
     }
 
     @Override
-    public void deleteTemplate(String group, String template) {
+    public void deleteTemplate(@Nonnull String group, @Nonnull String template) {
         if (isDisconnected()) {
             return;
         }

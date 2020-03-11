@@ -34,7 +34,8 @@ public final class FTPTemplateBackend implements TemplateBackend {
                     )).write(Paths.get(basePath, "ftp.json"));
         }
 
-        FTPConfig config = JsonConfiguration.read(Paths.get(basePath, "ftp.json")).get("config", new TypeToken<FTPConfig>() {});
+        FTPConfig config = JsonConfiguration.read(Paths.get(basePath, "ftp.json")).get("config", new TypeToken<FTPConfig>() {
+        });
         if (config == null || !config.isEnabled()) {
             return;
         }
@@ -89,7 +90,7 @@ public final class FTPTemplateBackend implements TemplateBackend {
     }
 
     @Override
-    public boolean existsTemplate(String group, String template) {
+    public boolean existsTemplate(@Nonnull String group, @Nonnull String template) {
         if (this.ftpClient == null) {
             return false;
         }
@@ -101,14 +102,13 @@ public final class FTPTemplateBackend implements TemplateBackend {
         }
     }
 
-    @Nonnull
     @Override
-    public Task<Void> createTemplate(String group, String template) {
+    public void createTemplate(@Nonnull String group, @Nonnull String template) {
         if (this.ftpClient == null) {
-            return Task.completedTask(null);
+            return;
         }
 
-        return future(() -> {
+        future(() -> {
             try {
                 this.makeDirectory(group + "/" + template);
             } catch (final IOException ex) {
@@ -119,7 +119,7 @@ public final class FTPTemplateBackend implements TemplateBackend {
 
     @Nonnull
     @Override
-    public Task<Void> loadTemplate(String group, String template, Path target) {
+    public Task<Void> loadTemplate(@Nonnull String group, @Nonnull String template, @Nonnull Path target) {
         if (this.ftpClient == null) {
             return Task.completedTask(null);
         }
@@ -166,20 +166,20 @@ public final class FTPTemplateBackend implements TemplateBackend {
 
     @Nonnull
     @Override
-    public Task<Void> loadGlobalTemplates(ProcessGroup group, Path target) {
+    public Task<Void> loadGlobalTemplates(@Nonnull ProcessGroup group, @Nonnull Path target) {
         if (this.ftpClient == null) {
             return Task.completedTask(null);
         }
 
         return future(() ->
-            Streams.allOf(group.getTemplates(), e -> e.getBackend().equals(getName())
-                    && e.isGlobal()).forEach(e -> this.loadTemplate(group.getName(), e.getName(), target))
+                Streams.allOf(group.getTemplates(), e -> e.getBackend().equals(getName())
+                        && e.isGlobal()).forEach(e -> this.loadTemplate(group.getName(), e.getName(), target))
         );
     }
 
     @Nonnull
     @Override
-    public Task<Void> loadPath(String path, Path target) {
+    public Task<Void> loadPath(@Nonnull String path, @Nonnull Path target) {
         if (this.ftpClient == null) {
             return Task.completedTask(null);
         }
@@ -200,19 +200,18 @@ public final class FTPTemplateBackend implements TemplateBackend {
         });
     }
 
-    @Nonnull
     @Override
-    public Task<Void> deployTemplate(String group, String template, Path current) {
+    public void deployTemplate(@Nonnull String group, @Nonnull String template, @Nonnull Path current) {
         if (this.ftpClient == null) {
-            return Task.completedTask(null);
+            return;
         }
 
         File[] localFiles = current.toFile().listFiles();
         if (localFiles == null || localFiles.length == 0) {
-            return Task.completedTask(null);
+            return;
         }
 
-        return future(() -> {
+        future(() -> {
             try {
                 for (File localFile : localFiles) {
                     this.writeFile(group + "/" + template, localFile);
@@ -258,7 +257,7 @@ public final class FTPTemplateBackend implements TemplateBackend {
     }
 
     @Override
-    public void deleteTemplate(String group, String template) {
+    public void deleteTemplate(@Nonnull String group, @Nonnull String template) {
         if (this.ftpClient == null) {
             return;
         }

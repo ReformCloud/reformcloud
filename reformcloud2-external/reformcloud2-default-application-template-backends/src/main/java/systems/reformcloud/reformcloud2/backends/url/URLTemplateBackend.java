@@ -41,7 +41,7 @@ public final class URLTemplateBackend implements TemplateBackend {
     private final String basePath;
 
     @Override
-    public boolean existsTemplate(String group, String template) {
+    public boolean existsTemplate(@Nonnull String group, @Nonnull String template) {
         try {
             HttpURLConnection connection = (HttpURLConnection) new URL(getBasePath() + group + "-" + template + ".zip").openConnection();
             connection.setRequestProperty(
@@ -57,16 +57,14 @@ public final class URLTemplateBackend implements TemplateBackend {
         }
     }
 
-    @Nonnull
     @Override
-    public Task<Void> createTemplate(String group, String template) {
-        return Task.completedTask(null);
+    public void createTemplate(@Nonnull String group, @Nonnull String template) {
     }
 
     @Nonnull
     @Override
-    public Task<Void> loadTemplate(String group, String template, Path target) {
-        DownloadHelper.downloadAndDisconnect(getBasePath() + group + "-" + template + ".zip",  "reformcloud/files/temp/template.zip");
+    public Task<Void> loadTemplate(@Nonnull String group, @Nonnull String template, @Nonnull Path target) {
+        DownloadHelper.downloadAndDisconnect(getBasePath() + group + "-" + template + ".zip", "reformcloud/files/temp/template.zip");
         SystemHelper.unZip(new File("reformcloud/files/temp/template.zip"), target.toString());
         SystemHelper.deleteFile(new File("reformcloud/files/temp/template.zip"));
         return Task.completedTask(null);
@@ -74,7 +72,7 @@ public final class URLTemplateBackend implements TemplateBackend {
 
     @Nonnull
     @Override
-    public Task<Void> loadGlobalTemplates(ProcessGroup group, Path target) {
+    public Task<Void> loadGlobalTemplates(@Nonnull ProcessGroup group, @Nonnull Path target) {
         Streams.allOf(group.getTemplates(), e -> e.getBackend().equals(getName())
                 && e.isGlobal()).forEach(e -> this.loadTemplate(group.getName(), e.getName(), target));
         return Task.completedTask(null);
@@ -82,21 +80,19 @@ public final class URLTemplateBackend implements TemplateBackend {
 
     @Nonnull
     @Override
-    public Task<Void> loadPath(String path, Path target) {
-        DownloadHelper.downloadAndDisconnect(getBasePath() + path,  "reformcloud/files/temp/template.zip");
+    public Task<Void> loadPath(@Nonnull String path, @Nonnull Path target) {
+        DownloadHelper.downloadAndDisconnect(getBasePath() + path, "reformcloud/files/temp/template.zip");
         SystemHelper.unZip(new File("reformcloud/files/temp/template.zip"), target.toString());
         SystemHelper.deleteFile(new File("reformcloud/files/temp/template.zip"));
         return Task.completedTask(null);
     }
 
-    @Nonnull
     @Override
-    public Task<Void> deployTemplate(String group, String template, Path current) {
-        return Task.completedTask(null);
+    public void deployTemplate(@Nonnull String group, @Nonnull String template, @Nonnull Path current) {
     }
 
     @Override
-    public void deleteTemplate(String group, String template) {
+    public void deleteTemplate(@Nonnull String group, @Nonnull String template) {
     }
 
     private String getBasePath() {

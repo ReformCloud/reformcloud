@@ -159,6 +159,14 @@ public final class DefaultRunningProcess implements RunningProcess {
         int exitValue = JavaProcessHelper.shutdown(process, true, true,
                 TimeUnit.SECONDS.toMillis(10), getShutdownCommands());
 
+        if (processInformation.getTemplate().isAutoCopyOnStop()) {
+            TemplateBackendManager.getOrDefault(this.processInformation.getTemplate().getBackend()).deployTemplate(
+                    this.processInformation.getProcessGroup().getName(),
+                    this.processInformation.getTemplate().getName(),
+                    this.path
+            );
+        }
+
         if (!processInformation.getProcessGroup().isStaticProcess()) {
             SystemHelper.deleteDirectory(path);
         }
