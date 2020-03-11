@@ -64,6 +64,7 @@ After the setup: **start using reformcloud2!**
 | [MongoDB Java Driver](https://github.com/mongodb/mongo-java-driver) | [MongoDB](https://github.com/mongodb/)               | [Apache License 2.0](https://github.com/mongodb/mongo-java-driver/blob/master/LICENSE.txt)                    |
 | [MySQL connector Java](https://github.com/mysql/mysql-connector-j)  | [MySQL](https://github.com/mysql/)                   | [Self written Licence](https://github.com/mysql/mysql-connector-j/blob/release/8.0/LICENSE)                   |
 | [H2](https://github.com/h2database/h2database/)                     | [h2database](https://github.com/h2database/)         | [Dual Licenced (MPL 2.0/EPL 1.0](https://github.com/h2database/h2database/blob/master/LICENSE.txt)            |
+| [RethinkDB](https://github.com/rethinkdb/rethinkdb)                 | [rethinkdb](https://github.com/rethinkdb)            | [Apache License 2.0](https://github.com/rethinkdb/rethinkdb/blob/next/LICENSE)                                |
 | [Maven-Wrapper](https://github.com/takari/maven-wrapper)            | [takari](https://github.com/takari/)                 | [Apache License 2.0](https://github.com/takari/maven-wrapper/blob/master/LICENSE.txt)                         |
 ## Build this project
 ```

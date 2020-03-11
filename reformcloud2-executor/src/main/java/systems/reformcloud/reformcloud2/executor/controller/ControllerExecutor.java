@@ -26,6 +26,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.database.basic.drive
 import systems.reformcloud.reformcloud2.executor.api.common.database.basic.drivers.h2.H2Database;
 import systems.reformcloud.reformcloud2.executor.api.common.database.basic.drivers.mongo.MongoDatabase;
 import systems.reformcloud.reformcloud2.executor.api.common.database.basic.drivers.mysql.MySQLDatabase;
+import systems.reformcloud.reformcloud2.executor.api.common.database.basic.drivers.rethinkdb.RethinkDBDatabase;
 import systems.reformcloud.reformcloud2.executor.api.common.database.config.DatabaseConfig;
 import systems.reformcloud.reformcloud2.executor.api.common.event.EventManager;
 import systems.reformcloud.reformcloud2.executor.api.common.event.basic.DefaultEventManager;
@@ -176,6 +177,12 @@ public final class ControllerExecutor extends Controller {
 
             case MYSQL: {
                 this.database = new MySQLDatabase();
+                this.databaseConfig.connect(this.database);
+                break;
+            }
+
+            case RETHINK_DB: {
+                this.database = new RethinkDBDatabase();
                 this.databaseConfig.connect(this.database);
                 break;
             }

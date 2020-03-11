@@ -149,21 +149,6 @@ public class SQLDatabaseReader implements DatabaseReader {
 
     @Nonnull
     @Override
-    public Task<Integer> size() {
-        Task<Integer> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> {
-            int count = 0;
-            for (JsonConfiguration ignored : this) {
-                count++;
-            }
-
-            task.complete(count);
-        });
-        return task;
-    }
-
-    @Nonnull
-    @Override
     public Iterator<JsonConfiguration> iterator() {
         Collection<JsonConfiguration> list = new ArrayList<>();
         try (PreparedStatement statement = prepareStatement("SELECT `data` FROM `" + table + "`", database)) {
