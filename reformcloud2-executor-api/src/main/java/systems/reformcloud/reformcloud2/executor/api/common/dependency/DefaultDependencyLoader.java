@@ -9,20 +9,22 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public final class DefaultDependencyLoader extends DependencyLoader {
 
-    private static final String path = System.getProperty("reformcloud.lib.path");
+    private static final String LOADING = "Preloading dependency %s %s from repo %s...";
+
+    private static final String PATH = System.getProperty("reformcloud.lib.path");
 
     private final List<URL> urls = new ArrayList<>();
 
     @Override
     public void loadDependencies() {
-        DependencyParser.getAllMavenCentralDependencies().forEach(dependency -> {
-            System.out.println("Preloading dependency " + dependency.getArtifactID() + " " + dependency.getVersion()
-                    + " from repo " + dependency.getRepository().getName() + "...");
-            urls.add(loadDependency(dependency));
+        DependencyParser.getAllDependencies("internal/dependencies.txt", new HashMap<>()).forEach(e -> {
+            System.out.println(String.format(LOADING, e.getArtifactID(), e.getVersion(), e.getRepository().getName()));
+            urls.add(loadDependency(e));
         });
     }
 
@@ -34,8 +36,8 @@ public final class DefaultDependencyLoader extends DependencyLoader {
     @Override
     public URL loadDependency(@Nonnull Dependency dependency) {
         Path path;
-        if (DefaultDependencyLoader.path != null) {
-            path = Paths.get(DefaultDependencyLoader.path + "/" + dependency.getPath());
+        if (DefaultDependencyLoader.PATH != null) {
+            path = Paths.get(DefaultDependencyLoader.PATH + "/" + dependency.getPath());
         } else {
             path = dependency.getPath();
         }

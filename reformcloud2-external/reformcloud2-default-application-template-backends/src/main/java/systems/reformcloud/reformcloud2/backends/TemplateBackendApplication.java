@@ -4,13 +4,13 @@ import systems.reformcloud.reformcloud2.backends.ftp.FTPTemplateBackend;
 import systems.reformcloud.reformcloud2.backends.sftp.SFTPTemplateBackend;
 import systems.reformcloud.reformcloud2.backends.url.URLTemplateBackend;
 import systems.reformcloud.reformcloud2.executor.api.common.application.api.Application;
-import systems.reformcloud.reformcloud2.executor.api.common.dependency.DefaultDependency;
+import systems.reformcloud.reformcloud2.executor.api.common.base.Conditions;
 import systems.reformcloud.reformcloud2.executor.api.common.dependency.DefaultDependencyLoader;
 import systems.reformcloud.reformcloud2.executor.api.common.dependency.DependencyLoader;
-import systems.reformcloud.reformcloud2.executor.api.common.dependency.repo.DefaultRepositories;
+import systems.reformcloud.reformcloud2.executor.api.common.dependency.util.DependencyParser;
 
 import java.net.URL;
-import java.util.Properties;
+import java.util.HashMap;
 
 public class TemplateBackendApplication extends Application {
 
@@ -18,33 +18,14 @@ public class TemplateBackendApplication extends Application {
 
     @Override
     public void onLoad() {
-        Properties properties = new Properties();
-        properties.setProperty("commons-net", "3.6");
+        DependencyParser.getAllDependencies("dependencies.txt", new HashMap<>()).forEach(e -> {
+            URL dependencyURL = TemplateBackendApplication.LOADER.loadDependency(e);
+            Conditions.nonNull(dependencyURL, "Dependency load for " + e.getArtifactID() + " failed");
+            TemplateBackendApplication.LOADER.addDependency(dependencyURL);
+        });
 
-        URL url = TemplateBackendApplication.LOADER.loadDependency(new DefaultDependency(
-                DefaultRepositories.MAVEN_CENTRAL,
-                "commons-net",
-                "commons-net",
-                properties
-        ));
-        if (url != null) {
-            TemplateBackendApplication.LOADER.addDependency(url);
-            FTPTemplateBackend.load(dataFolder().getPath());
-        }
-
-        properties.setProperty("jsch", "0.1.55");
-
-        url = TemplateBackendApplication.LOADER.loadDependency(new DefaultDependency(
-                DefaultRepositories.MAVEN_CENTRAL,
-                "com.jcraft",
-                "jsch",
-                properties
-        ));
-        if (url != null) {
-            TemplateBackendApplication.LOADER.addDependency(url);
-            SFTPTemplateBackend.load(dataFolder().getPath());
-        }
-
+        FTPTemplateBackend.load(dataFolder().getPath());
+        SFTPTemplateBackend.load(dataFolder().getPath());
         URLTemplateBackend.load(dataFolder().getPath());
     }
 
