@@ -15,7 +15,7 @@ public class WildcardCheck {
             final String actual = e.getActualPermission();
             if (actual.length() > 1
                     && actual.endsWith("*")
-                    && perm.startsWith(actual.substring(0, perm.length() - 1))
+                    && perm.startsWith(actual.substring(0, actual.length() - 1))
                     && e.isValid()) {
                 return e.isSet();
             }
