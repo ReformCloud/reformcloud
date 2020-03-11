@@ -8,7 +8,8 @@ import systems.reformcloud.reformcloud2.executor.api.common.base.Conditions;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.database.Database;
 import systems.reformcloud.reformcloud2.executor.api.common.database.DatabaseReader;
-import systems.reformcloud.reformcloud2.executor.api.common.dependency.util.MavenCentralDependency;
+import systems.reformcloud.reformcloud2.executor.api.common.dependency.DefaultDependency;
+import systems.reformcloud.reformcloud2.executor.api.common.dependency.repo.DefaultRepositories;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.StringUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.maps.AbsentMap;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
@@ -33,7 +34,8 @@ public final class MongoDatabase extends Database<com.mongodb.client.MongoDataba
     private final Map<String, DatabaseReader> perTableReader = new AbsentMap<>();
 
     public MongoDatabase() {
-        URL dependency = DEPENDENCY_LOADER.loadDependency(new MavenCentralDependency(
+        URL dependency = DEPENDENCY_LOADER.loadDependency(new DefaultDependency(
+                DefaultRepositories.MAVEN_CENTRAL,
                 "org.mongodb",
                 "mongo-java-driver",
                 "3.12.2"
