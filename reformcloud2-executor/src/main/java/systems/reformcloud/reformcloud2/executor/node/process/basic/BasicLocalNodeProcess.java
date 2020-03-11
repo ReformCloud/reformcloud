@@ -176,6 +176,14 @@ public class BasicLocalNodeProcess implements LocalNodeProcess {
         NodeExecutor.getInstance().getNodeNetworkManager().getNodeProcessHelper().handleLocalProcessStop(processInformation);
         LocalProcessManager.unregisterProcesses(processInformation.getProcessUniqueID());
 
+        if (processInformation.getTemplate().isAutoCopyOnStop()) {
+            TemplateBackendManager.getOrDefault(this.processInformation.getTemplate().getBackend()).deployTemplate(
+                    this.processInformation.getProcessGroup().getName(),
+                    this.processInformation.getTemplate().getName(),
+                    this.path
+            );
+        }
+
         if (!processInformation.getProcessGroup().isStaticProcess()) {
             SystemHelper.deleteDirectory(path);
         }

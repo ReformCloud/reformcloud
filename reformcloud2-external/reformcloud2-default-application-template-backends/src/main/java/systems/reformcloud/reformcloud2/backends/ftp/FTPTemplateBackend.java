@@ -34,7 +34,8 @@ public final class FTPTemplateBackend implements TemplateBackend {
                     )).write(Paths.get(basePath, "ftp.json"));
         }
 
-        FTPConfig config = JsonConfiguration.read(Paths.get(basePath, "ftp.json")).get("config", new TypeToken<FTPConfig>() {});
+        FTPConfig config = JsonConfiguration.read(Paths.get(basePath, "ftp.json")).get("config", new TypeToken<FTPConfig>() {
+        });
         if (config == null || !config.isEnabled()) {
             return;
         }
@@ -101,14 +102,13 @@ public final class FTPTemplateBackend implements TemplateBackend {
         }
     }
 
-    @Nonnull
     @Override
-    public Task<Void> createTemplate(String group, String template) {
+    public void createTemplate(String group, String template) {
         if (this.ftpClient == null) {
-            return Task.completedTask(null);
+            return;
         }
 
-        return future(() -> {
+        future(() -> {
             try {
                 this.makeDirectory(group + "/" + template);
             } catch (final IOException ex) {
@@ -172,8 +172,8 @@ public final class FTPTemplateBackend implements TemplateBackend {
         }
 
         return future(() ->
-            Streams.allOf(group.getTemplates(), e -> e.getBackend().equals(getName())
-                    && e.isGlobal()).forEach(e -> this.loadTemplate(group.getName(), e.getName(), target))
+                Streams.allOf(group.getTemplates(), e -> e.getBackend().equals(getName())
+                        && e.isGlobal()).forEach(e -> this.loadTemplate(group.getName(), e.getName(), target))
         );
     }
 
@@ -200,19 +200,18 @@ public final class FTPTemplateBackend implements TemplateBackend {
         });
     }
 
-    @Nonnull
     @Override
-    public Task<Void> deployTemplate(String group, String template, Path current) {
+    public void deployTemplate(String group, String template, Path current) {
         if (this.ftpClient == null) {
-            return Task.completedTask(null);
+            return;
         }
 
         File[] localFiles = current.toFile().listFiles();
         if (localFiles == null || localFiles.length == 0) {
-            return Task.completedTask(null);
+            return;
         }
 
-        return future(() -> {
+        future(() -> {
             try {
                 for (File localFile : localFiles) {
                     this.writeFile(group + "/" + template, localFile);

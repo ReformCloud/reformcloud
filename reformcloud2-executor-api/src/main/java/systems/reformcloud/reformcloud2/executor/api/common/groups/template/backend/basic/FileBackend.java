@@ -23,14 +23,11 @@ public class FileBackend implements TemplateBackend {
         return Files.exists(format(group, template));
     }
 
-    @Nonnull
     @Override
-    public Task<Void> createTemplate(String group, String template) {
+    public void createTemplate(String group, String template) {
         if (!existsTemplate(group, template)) {
             SystemHelper.createDirectory(Paths.get("reformcloud/templates", group, template, "plugins"));
         }
-
-        return Task.completedTask(null);
     }
 
     @Nonnull
@@ -63,15 +60,11 @@ public class FileBackend implements TemplateBackend {
         return Task.completedTask(null);
     }
 
-    @Nonnull
     @Override
-    public Task<Void> deployTemplate(String group, String template, Path current) {
-        if (!existsTemplate(group, template)) {
-            return Task.completedTask(null);
+    public void deployTemplate(String group, String template, Path current) {
+        if (existsTemplate(group, template)) {
+            SystemHelper.copyDirectory(current, format(group, template), Arrays.asList("log-out.log", "runner.jar"));
         }
-
-        SystemHelper.copyDirectory(current, format(group, template), Arrays.asList("log-out.log", "runner.jar"));
-        return Task.completedTask(null);
     }
 
     @Override

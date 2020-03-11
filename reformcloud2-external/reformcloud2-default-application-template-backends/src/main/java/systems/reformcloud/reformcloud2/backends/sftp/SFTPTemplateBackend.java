@@ -36,7 +36,8 @@ public final class SFTPTemplateBackend implements TemplateBackend {
                     )).write(Paths.get(baseDirectory, "sftp.json"));
         }
 
-        SFTPConfig config = JsonConfiguration.read(Paths.get(baseDirectory, "sftp.json")).get("config", new TypeToken<SFTPConfig>() {});
+        SFTPConfig config = JsonConfiguration.read(Paths.get(baseDirectory, "sftp.json")).get("config", new TypeToken<SFTPConfig>() {
+        });
         if (config == null || !config.isEnabled()) {
             return;
         }
@@ -104,14 +105,13 @@ public final class SFTPTemplateBackend implements TemplateBackend {
         }
     }
 
-    @Nonnull
     @Override
-    public Task<Void> createTemplate(String group, String template) {
+    public void createTemplate(String group, String template) {
         if (isDisconnected()) {
-            return Task.completedTask(null);
+            return;
         }
 
-        return future(() -> this.makeDirectory(this.config.getBaseDirectory() + group + "/" + template));
+        future(() -> this.makeDirectory(this.config.getBaseDirectory() + group + "/" + template));
     }
 
     @Nonnull
@@ -172,14 +172,13 @@ public final class SFTPTemplateBackend implements TemplateBackend {
         return future(() -> this.downloadDirectory(this.config.getBaseDirectory() + path, target.toString()));
     }
 
-    @Nonnull
     @Override
-    public Task<Void> deployTemplate(String group, String template, Path current) {
+    public void deployTemplate(String group, String template, Path current) {
         if (isDisconnected()) {
-            return Task.completedTask(null);
+            return;
         }
 
-        return future(() -> {
+        future(() -> {
             try {
                 File[] files = current.toFile().listFiles();
                 if (files == null || files.length == 0) {

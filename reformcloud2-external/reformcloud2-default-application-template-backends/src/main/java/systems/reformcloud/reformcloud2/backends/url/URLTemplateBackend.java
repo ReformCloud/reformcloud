@@ -57,16 +57,14 @@ public final class URLTemplateBackend implements TemplateBackend {
         }
     }
 
-    @Nonnull
     @Override
-    public Task<Void> createTemplate(String group, String template) {
-        return Task.completedTask(null);
+    public void createTemplate(String group, String template) {
     }
 
     @Nonnull
     @Override
     public Task<Void> loadTemplate(String group, String template, Path target) {
-        DownloadHelper.downloadAndDisconnect(getBasePath() + group + "-" + template + ".zip",  "reformcloud/files/temp/template.zip");
+        DownloadHelper.downloadAndDisconnect(getBasePath() + group + "-" + template + ".zip", "reformcloud/files/temp/template.zip");
         SystemHelper.unZip(new File("reformcloud/files/temp/template.zip"), target.toString());
         SystemHelper.deleteFile(new File("reformcloud/files/temp/template.zip"));
         return Task.completedTask(null);
@@ -83,16 +81,14 @@ public final class URLTemplateBackend implements TemplateBackend {
     @Nonnull
     @Override
     public Task<Void> loadPath(String path, Path target) {
-        DownloadHelper.downloadAndDisconnect(getBasePath() + path,  "reformcloud/files/temp/template.zip");
+        DownloadHelper.downloadAndDisconnect(getBasePath() + path, "reformcloud/files/temp/template.zip");
         SystemHelper.unZip(new File("reformcloud/files/temp/template.zip"), target.toString());
         SystemHelper.deleteFile(new File("reformcloud/files/temp/template.zip"));
         return Task.completedTask(null);
     }
 
-    @Nonnull
     @Override
-    public Task<Void> deployTemplate(String group, String template, Path current) {
-        return Task.completedTask(null);
+    public void deployTemplate(String group, String template, Path current) {
     }
 
     @Override

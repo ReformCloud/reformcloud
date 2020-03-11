@@ -11,8 +11,7 @@ public interface TemplateBackend extends Nameable {
 
     boolean existsTemplate(String group, String template);
 
-    @Nonnull
-    Task<Void> createTemplate(String group, String template);
+    void createTemplate(String group, String template);
 
     @Nonnull
     Task<Void> loadTemplate(String group, String template, Path target);
@@ -23,8 +22,7 @@ public interface TemplateBackend extends Nameable {
     @Nonnull
     Task<Void> loadPath(String path, Path target);
 
-    @Nonnull
-    Task<Void> deployTemplate(String group, String template, Path current);
+    void deployTemplate(String group, String template, Path current);
 
     void deleteTemplate(String group, String template);
 }
