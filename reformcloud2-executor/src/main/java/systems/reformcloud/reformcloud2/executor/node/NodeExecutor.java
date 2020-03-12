@@ -46,6 +46,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.handl
 import systems.reformcloud.reformcloud2.executor.api.common.network.server.DefaultNetworkServer;
 import systems.reformcloud.reformcloud2.executor.api.common.network.server.NetworkServer;
 import systems.reformcloud.reformcloud2.executor.api.common.node.NodeInformation;
+import systems.reformcloud.reformcloud2.executor.api.common.process.running.RunningProcess;
 import systems.reformcloud.reformcloud2.executor.api.common.restapi.auth.basic.DefaultWebServerAuth;
 import systems.reformcloud.reformcloud2.executor.api.common.restapi.http.server.DefaultWebServer;
 import systems.reformcloud.reformcloud2.executor.api.common.restapi.http.server.WebServer;
@@ -63,7 +64,6 @@ import systems.reformcloud.reformcloud2.executor.api.node.Node;
 import systems.reformcloud.reformcloud2.executor.api.node.cluster.ClusterSyncManager;
 import systems.reformcloud.reformcloud2.executor.api.node.cluster.SyncAction;
 import systems.reformcloud.reformcloud2.executor.api.node.network.NodeNetworkManager;
-import systems.reformcloud.reformcloud2.executor.api.node.process.LocalNodeProcess;
 import systems.reformcloud.reformcloud2.executor.controller.network.packets.in.ControllerPacketInAPIAction;
 import systems.reformcloud.reformcloud2.executor.controller.network.packets.in.ControllerPacketInHandleChannelMessage;
 import systems.reformcloud.reformcloud2.executor.controller.network.packets.out.ControllerPacketOutCopyProcess;
@@ -91,6 +91,9 @@ import systems.reformcloud.reformcloud2.executor.node.network.client.NodeNetwork
 import systems.reformcloud.reformcloud2.executor.node.network.packet.out.screen.NodePacketOutToggleScreen;
 import systems.reformcloud.reformcloud2.executor.node.process.LocalAutoStartupHandler;
 import systems.reformcloud.reformcloud2.executor.node.process.LocalNodeProcessManager;
+import systems.reformcloud.reformcloud2.executor.node.process.listeners.RunningProcessPreparedListener;
+import systems.reformcloud.reformcloud2.executor.node.process.listeners.RunningProcessStartedListener;
+import systems.reformcloud.reformcloud2.executor.node.process.listeners.RunningProcessStoppedListener;
 import systems.reformcloud.reformcloud2.executor.node.process.log.LogLineReader;
 import systems.reformcloud.reformcloud2.executor.node.process.log.NodeProcessScreen;
 import systems.reformcloud.reformcloud2.executor.node.process.log.NodeProcessScreenHandler;
@@ -250,6 +253,10 @@ public class NodeExecutor extends Node {
         this.applicationLoader.installApplications();
 
         TemplateBackendManager.registerDefaults();
+
+        ExecutorAPI.getInstance().getEventManager().registerListener(new RunningProcessPreparedListener());
+        ExecutorAPI.getInstance().getEventManager().registerListener(new RunningProcessStartedListener());
+        ExecutorAPI.getInstance().getEventManager().registerListener(new RunningProcessStoppedListener());
 
         this.logLineReader = new LogLineReader();
         this.watchdogThread = new WatchdogThread();
@@ -546,7 +553,7 @@ public class NodeExecutor extends Node {
                         Streams.filterToReference(
                                 LocalProcessManager.getNodeProcesses(),
                                 e -> e.getProcessInformation().getProcessUniqueID().equals(target.getProcessUniqueID())
-                        ).ifPresent(LocalNodeProcess::copy);
+                        ).ifPresent(RunningProcess::copy);
                     } else {
                         DefaultChannelManager.INSTANCE.get(target.getParent()).ifPresent(packetSender -> packetSender.sendPacket(
                                 new ControllerPacketOutCopyProcess(target.getProcessUniqueID())

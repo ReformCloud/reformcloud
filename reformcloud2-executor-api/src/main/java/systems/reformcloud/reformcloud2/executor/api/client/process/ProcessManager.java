@@ -1,5 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.api.client.process;
 
+import systems.reformcloud.reformcloud2.executor.api.common.process.running.RunningProcess;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.optional.ReferencedOptional;
 
 import java.util.Collection;

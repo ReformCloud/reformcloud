@@ -5,6 +5,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Template;
 import systems.reformcloud.reformcloud2.executor.api.common.node.NodeInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
+import systems.reformcloud.reformcloud2.executor.api.common.process.running.RunningProcess;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.update.Updateable;
 
 import java.util.Collection;
@@ -26,7 +27,7 @@ public interface NodeProcessManager extends Updateable<ProcessInformation>, Iter
 
     ProcessInformation queueProcess(ProcessGroup processGroup, Template template, JsonConfiguration data, NodeInformation node, UUID uniqueID);
 
-    void registerLocalProcess(LocalNodeProcess process);
+    void registerLocalProcess(RunningProcess process);
 
     void unregisterLocalProcess(UUID uniqueID);
 

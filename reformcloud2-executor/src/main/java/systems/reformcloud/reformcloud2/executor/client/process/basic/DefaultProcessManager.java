@@ -1,8 +1,8 @@
 package systems.reformcloud.reformcloud2.executor.client.process.basic;
 
 import systems.reformcloud.reformcloud2.executor.api.client.process.ProcessManager;
-import systems.reformcloud.reformcloud2.executor.api.client.process.RunningProcess;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
+import systems.reformcloud.reformcloud2.executor.api.common.process.running.RunningProcess;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.optional.ReferencedOptional;
 import systems.reformcloud.reformcloud2.executor.client.ClientExecutor;

@@ -10,11 +10,11 @@ import systems.reformcloud.reformcloud2.executor.api.common.process.NetworkInfo;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessRuntimeInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState;
+import systems.reformcloud.reformcloud2.executor.api.common.process.running.RunningProcess;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.PortUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
-import systems.reformcloud.reformcloud2.executor.api.node.process.LocalNodeProcess;
 import systems.reformcloud.reformcloud2.executor.api.node.process.NodeProcessManager;
 import systems.reformcloud.reformcloud2.executor.controller.network.packets.out.event.ControllerEventProcessUpdated;
 import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
@@ -78,7 +78,7 @@ public class LocalNodeProcessManager implements NodeProcessManager {
 
     @Override
     public ProcessInformation stopLocalProcess(String name) {
-        List<LocalNodeProcess> processes = LocalProcessManager.getNodeProcesses()
+        List<RunningProcess> processes = LocalProcessManager.getNodeProcesses()
                 .stream()
                 .filter(e -> e.getProcessInformation().getName().equals(name))
                 .collect(Collectors.toList());
@@ -86,13 +86,13 @@ public class LocalNodeProcessManager implements NodeProcessManager {
             return null;
         }
 
-        processes.forEach(LocalNodeProcess::shutdown);
+        processes.forEach(RunningProcess::shutdown);
         return processes.get(0).getProcessInformation();
     }
 
     @Override
     public ProcessInformation stopLocalProcess(UUID uuid) {
-        List<LocalNodeProcess> processes = LocalProcessManager.getNodeProcesses()
+        List<RunningProcess> processes = LocalProcessManager.getNodeProcesses()
                 .stream()
                 .filter(e -> e.getProcessInformation().getProcessUniqueID().equals(uuid))
                 .collect(Collectors.toList());
@@ -100,7 +100,7 @@ public class LocalNodeProcessManager implements NodeProcessManager {
             return null;
         }
 
-        processes.forEach(LocalNodeProcess::shutdown);
+        processes.forEach(RunningProcess::shutdown);
         return processes.get(0).getProcessInformation();
     }
 
@@ -116,7 +116,7 @@ public class LocalNodeProcessManager implements NodeProcessManager {
     }
 
     @Override
-    public void registerLocalProcess(LocalNodeProcess process) {
+    public void registerLocalProcess(RunningProcess process) {
         this.information.add(process.getProcessInformation());
     }
 

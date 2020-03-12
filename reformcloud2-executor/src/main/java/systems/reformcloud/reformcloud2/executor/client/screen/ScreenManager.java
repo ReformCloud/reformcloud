@@ -1,6 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.client.screen;
 
-import systems.reformcloud.reformcloud2.executor.api.client.process.RunningProcess;
+import systems.reformcloud.reformcloud2.executor.api.common.process.running.RunningProcess;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
 import systems.reformcloud.reformcloud2.executor.client.ClientExecutor;
 
@@ -33,7 +33,7 @@ public final class ScreenManager extends AbsoluteThread {
 
     private synchronized void readLog(RunningProcess runningProcess) {
         if (!runningProcess.getProcess().isPresent()
-                || !runningProcess.running()
+                || !runningProcess.isAlive()
                 || runningProcess.getProcess().get().getInputStream() == null) {
             return;
         }
