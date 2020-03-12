@@ -9,6 +9,7 @@ import systems.reformcloud.reformcloud2.executor.client.ClientExecutor;
 import systems.reformcloud.reformcloud2.executor.client.network.packet.out.ClientPacketOutProcessRegistered;
 import systems.reformcloud.reformcloud2.executor.client.screen.ProcessScreen;
 
+import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -23,7 +24,7 @@ public final class DefaultProcessManager implements ProcessManager {
     private final List<RunningProcess> list = new CopyOnWriteArrayList<>();
 
     @Override
-    public void registerProcess(RunningProcess runningProcess) {
+    public void registerProcess(@Nonnull RunningProcess runningProcess) {
         list.add(runningProcess);
         ClientExecutor.getInstance().getScreenManager().getPerProcessScreenLines().put(
                 runningProcess.getProcessInformation().getProcessUniqueID(),
@@ -37,30 +38,33 @@ public final class DefaultProcessManager implements ProcessManager {
     }
 
     @Override
-    public void unregisterProcess(String name) {
+    public void unregisterProcess(@Nonnull String name) {
         Streams.filterToReference(list, runningProcess -> runningProcess.getProcessInformation().getName().equals(name)).ifPresent(runningProcess -> {
             list.remove(runningProcess);
             ClientExecutor.getInstance().getScreenManager().getPerProcessScreenLines().remove(runningProcess.getProcessInformation().getProcessUniqueID());
         });
     }
 
+    @Nonnull
     @Override
-    public ReferencedOptional<RunningProcess> getProcess(UUID uniqueID) {
+    public ReferencedOptional<RunningProcess> getProcess(@Nonnull UUID uniqueID) {
         return Streams.filterToReference(list, runningProcess -> runningProcess.getProcessInformation().getProcessUniqueID().equals(uniqueID));
     }
 
+    @Nonnull
     @Override
     public ReferencedOptional<RunningProcess> getProcess(String name) {
         return Streams.filterToReference(list, runningProcess -> runningProcess.getProcessInformation().getName().equals(name));
     }
 
+    @Nonnull
     @Override
     public Collection<RunningProcess> getAll() {
         return Collections.unmodifiableCollection(list);
     }
 
     @Override
-    public void onProcessDisconnect(UUID uuid) {
+    public void onProcessDisconnect(@Nonnull UUID uuid) {
         Streams.filterToReference(list, runningProcess -> runningProcess.getProcessInformation().getProcessUniqueID().equals(uuid)).ifPresent(RunningProcess::shutdown);
     }
 
