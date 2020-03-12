@@ -39,7 +39,7 @@ public class CommandReformCloud extends Command {
         if (strings.length == 2) {
             switch (strings[0].toLowerCase()) {
                 case "copy": {
-                    ExecutorAPI.getInstance().getSyncAPI().getConsoleSyncAPI().dispatchCommandAndGetResult("rc copy " + strings[1]);
+                    ExecutorAPI.getInstance().getSyncAPI().getConsoleSyncAPI().dispatchCommandAndGetResult("p " + strings[1] + " copy");
                     commandSender.sendMessage(getCommandSuccessMessage());
                     return;
                 }
@@ -69,8 +69,9 @@ public class CommandReformCloud extends Command {
                         return;
                     }
 
-                    processGroup.getPlayerAccessConfiguration().toggleMaintenance();
-                    ExecutorAPI.getInstance().getSyncAPI().getGroupSyncAPI().updateProcessGroup(processGroup);
+                    ExecutorAPI.getInstance().getSyncAPI().getConsoleSyncAPI().dispatchCommandAndGetResult(
+                            "g sub " + strings[1] + " edit --maintenance=false"
+                    );
                     commandSender.sendMessage(getCommandSuccessMessage());
                     return;
                 }
