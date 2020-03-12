@@ -25,6 +25,15 @@
         </developer>
     </developers>
 
+    <contributors>
+        <contributor>
+            <name>Lukas B.</name>
+            <email>info@reformcloud.systems</email>
+            <organization>reformcloudproject</organization>
+            <organizationUrl>https://reformcloud.systems</organizationUrl>
+        </contributor>
+    </contributors>
+
     <scm>
         <connection>scm:git:git://github.com/derklaro/reformcloud2.git</connection>
         <developerConnection>scm:git:ssh://github.com/derklaro/reformcloud2.git</developerConnection>
