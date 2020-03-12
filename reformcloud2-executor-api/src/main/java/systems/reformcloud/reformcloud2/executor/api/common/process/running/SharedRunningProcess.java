@@ -199,7 +199,7 @@ public abstract class SharedRunningProcess implements RunningProcess {
                 this.getShutdownCommands()
         );
 
-        if (this.startupInformation.getTemplate().isAutoCopyOnStop()) {
+        if (this.startupInformation.getTemplate().isAutoReleaseOnClose()) {
             TemplateBackendManager.getOrDefault(this.startupInformation.getTemplate().getBackend()).deployTemplate(
                     this.startupInformation.getProcessGroup().getName(),
                     this.startupInformation.getTemplate().getName(),
