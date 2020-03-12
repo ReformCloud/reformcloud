@@ -64,6 +64,7 @@ Please choose an executor: ["controller", "client", "node" (recommended)]
 ```
 
 **Controller (Master)**: Manages all processes and clients (Wrapper), exists only once in the network
+
 **Client (Wrapper)**: Is like a slave for the controller and starts the processes, can exists multiple 
 times in a network setup
 
@@ -154,7 +155,7 @@ Because of this you don't need to provide any repository.
 ```
 
 ## Contributors
-***Thanks to all these wonderful peoples***
+***Thanks to all these wonderful people***
 
 <table>
     <tr>
