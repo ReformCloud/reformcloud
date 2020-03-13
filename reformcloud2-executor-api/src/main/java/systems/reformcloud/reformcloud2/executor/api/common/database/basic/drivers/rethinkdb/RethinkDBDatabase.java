@@ -62,12 +62,20 @@ public final class RethinkDBDatabase extends Database<RethinkDB> {
 
     @Override
     public boolean createDatabase(String name) {
+        if (this.get().dbList().filter(table -> table.g(name)).run(connection).hasNext()) {
+            return false;
+        }
+
         this.get().tableCreate(name).run(connection);
         return true;
     }
 
     @Override
     public boolean deleteDatabase(String name) {
+        if (!this.get().dbList().filter(table -> table.g(name)).run(connection).hasNext()) {
+            return false;
+        }
+
         this.get().tableDrop(name).run(connection);
         return true;
     }
