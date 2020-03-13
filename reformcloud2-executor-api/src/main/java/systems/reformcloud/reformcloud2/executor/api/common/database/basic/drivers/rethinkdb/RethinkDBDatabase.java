@@ -1,6 +1,7 @@
 package systems.reformcloud.reformcloud2.executor.api.common.database.basic.drivers.rethinkdb;
 
 import com.rethinkdb.RethinkDB;
+import com.rethinkdb.gen.exc.ReqlError;
 import com.rethinkdb.net.Connection;
 import systems.reformcloud.reformcloud2.executor.api.common.base.Conditions;
 import systems.reformcloud.reformcloud2.executor.api.common.database.Database;
@@ -62,23 +63,22 @@ public final class RethinkDBDatabase extends Database<RethinkDB> {
 
     @Override
     public boolean createDatabase(String name) {
-        //if (this.get().tableList().filter(table -> table.g(name)).run(connection).forEach(e -> System.out.println(e instanceof Table))) {
-        //    return false;
-        //}
-
-        this.get().tableList().run(connection).forEach(e -> System.out.println(e.getClass().getName()));
-        this.get().tableCreate(name).run(connection);
-        return true;
+        try {
+            this.get().tableCreate(name).run(connection);
+            return true;
+        } catch (final ReqlError error) {
+            return false;
+        }
     }
 
     @Override
     public boolean deleteDatabase(String name) {
-        if (!this.get().tableList().filter(table -> table.g(name)).run(connection).hasNext()) {
+        try {
+            this.get().tableDrop(name).run(connection);
+            return true;
+        } catch (final ReqlError error) {
             return false;
         }
-
-        this.get().tableDrop(name).run(connection);
-        return true;
     }
 
     @Nullable
