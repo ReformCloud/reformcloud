@@ -1,7 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.api.common.database.basic.drivers.rethinkdb;
 
 import com.rethinkdb.RethinkDB;
-import com.rethinkdb.gen.exc.ReqlError;
 import com.rethinkdb.net.Connection;
 import systems.reformcloud.reformcloud2.executor.api.common.base.Conditions;
 import systems.reformcloud.reformcloud2.executor.api.common.database.Database;
@@ -66,7 +65,7 @@ public final class RethinkDBDatabase extends Database<RethinkDB> {
         try {
             this.get().tableCreate(name).run(connection);
             return true;
-        } catch (final ReqlError error) {
+        } catch (final Throwable error) {
             return false;
         }
     }
@@ -76,7 +75,7 @@ public final class RethinkDBDatabase extends Database<RethinkDB> {
         try {
             this.get().tableDrop(name).run(connection);
             return true;
-        } catch (final ReqlError error) {
+        } catch (final Throwable error) {
             return false;
         }
     }
