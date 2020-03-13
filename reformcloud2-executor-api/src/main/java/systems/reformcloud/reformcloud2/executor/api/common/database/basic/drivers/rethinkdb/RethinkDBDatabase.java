@@ -62,7 +62,7 @@ public final class RethinkDBDatabase extends Database<RethinkDB> {
 
     @Override
     public boolean createDatabase(String name) {
-        if (this.get().dbList().filter(table -> table.g(name)).run(connection).hasNext()) {
+        if (this.get().tableList().filter(table -> table.g(name)).run(connection).hasNext()) {
             return false;
         }
 
@@ -72,7 +72,7 @@ public final class RethinkDBDatabase extends Database<RethinkDB> {
 
     @Override
     public boolean deleteDatabase(String name) {
-        if (!this.get().dbList().filter(table -> table.g(name)).run(connection).hasNext()) {
+        if (!this.get().tableList().filter(table -> table.g(name)).run(connection).hasNext()) {
             return false;
         }
 
