@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Objects;
@@ -130,7 +131,7 @@ public abstract class SharedRunningProcess implements RunningProcess {
                 "Trying to start a process which is not prepared and ready to start"
         );
 
-        Collection<String> command = Arrays.asList(
+        Collection<String> command = new ArrayList<>(Arrays.asList(
                 this.startupInformation.getProcessGroup().getStartupConfiguration().getStartupEnvironment().getCommand(),
                 "-XX:+UseG1GC",
                 "-XX:MaxGCPauseMillis=50",
@@ -147,7 +148,7 @@ public abstract class SharedRunningProcess implements RunningProcess {
                 )).getAbsolutePath(),
 
                 "-Xmx" + this.startupInformation.getTemplate().getRuntimeConfiguration().getMaxMemory() + "M"
-        );
+        ));
 
         command.addAll(this.startupInformation.getTemplate().getRuntimeConfiguration().getJvmOptions());
         this.startupInformation.getTemplate().getRuntimeConfiguration().getSystemProperties().forEach(
