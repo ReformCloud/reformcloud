@@ -4,12 +4,14 @@ pipeline {
         jdk "1.8.0_222"
     }
 
-    environment {
-        PROJECT_VERSION = readMavenPom().getVersion()
-        IS_SNAPSHOT = readMavenPom().getVersion().endsWith("-SNAPSHOT");
-    }
-
     stages {
+        stage('Update environment') {
+            steps {
+                env.PROJECT_VERSION = readMavenPom().getVersion();
+                env.IS_SNAPSHOT = readMavenPom().getVersion().endsWith("-SNAPSHOT");
+            }
+        }
+
         stage('Update snapshot version') {
             when {
                 branch 'indev';
