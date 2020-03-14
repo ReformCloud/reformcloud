@@ -5,18 +5,21 @@ pipeline {
     }
 
     environment {
-        PROJECT_VERSION = getProjectVersion();
-        IS_SNAPSHOT = getProjectVersion().endsWith("-SNAPSHOT")
+        PROJECT_VERSION = getProjectVersion().replace("-SNAPSHOT", "");
+        IS_SNAPSHOT = getProjectVersion().endsWith("-SNAPSHOT");
     }
 
     stages {
         stage('Update snapshot version') {
             when {
-                branch 'indev';
+                allOf {
+                    branch 'indev'
+                    environment name:'IS_SNAPSHOT', value: 'true'
+                }
             }
 
             steps {
-                sh 'mvn versions:set -DnewVersion="${PROJECT_VERSION}-${BUILD_NUMBER}"';
+                sh 'mvn versions:set -DnewVersion="${PROJECT_VERSION}.${BUILD_NUMBER}-SNAPSHOT"';
             }
         }
 
