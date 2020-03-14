@@ -41,7 +41,7 @@ public final class DependencyParser {
         Collection<String> out = new ArrayList<>();
 
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(
-                Objects.requireNonNull(DependencyParser.class.getClassLoader().getResourceAsStream("internal/dependencies.txt"))))
+                Objects.requireNonNull(DependencyParser.class.getClassLoader().getResourceAsStream(internalFilePath))))
         ) {
             String line;
             while ((line = reader.readLine()) != null) {
