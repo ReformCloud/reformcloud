@@ -15,7 +15,7 @@ pipeline {
                 branch 'indev';
             }
 
-            script {
+            steps {
                 sh 'mvn versions:set -DnewVersion=${env.PROJECT_VERSION}-${currentBuild.number}'
             }
         }
@@ -51,7 +51,7 @@ pipeline {
                 }
             }
 
-            script {
+            steps {
                 echo "Deploy new release...";
             }
         }
@@ -63,7 +63,7 @@ pipeline {
                 }
             }
 
-            script {
+            steps {
                 echo "Deploy new snapshot...";
             }
         }
