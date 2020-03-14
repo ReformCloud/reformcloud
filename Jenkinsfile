@@ -16,7 +16,7 @@ pipeline {
             }
 
             steps {
-                sh 'mvn versions:set -DnewVersion="${env.PROJECT_VERSION}-${currentBuild.number}"'
+                sh 'mvn versions:set -DnewVersion="${env.PROJECT_VERSION}-${env.BUILD_NUMBER}"'
             }
         }
 
