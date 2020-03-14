@@ -4,18 +4,67 @@ pipeline {
         jdk "1.8.0_222"
     }
 
+    environment {
+        PROJECT_VERSION = getProjectVersion()
+        IS_SNAPSHOT = getProjectVersion().endsWith("-SNAPSHOT")
+    }
+
     stages {
+        stage('Update snapshot version') {
+            when {
+                branch 'indev';
+            }
+
+            script {
+                sh 'mvn versions:set -DnewVersion=${env.PROJECT_VERSION}-${currentBuild.number}'
+            }
+        }
+
+        stage('Validate') {
+            steps {
+                sh 'mvn validate';
+            }
+        }
+
         stage('Clean') {
             steps {
-                echo "Cleaning up...";
                 sh 'mvn clean';
             }
         }
 
         stage('Build') {
             steps {
-                echo "Building project...";
                 sh 'mvn package';
+            }
+        }
+
+        stage('Verify') {
+            steps {
+                sh 'mvn verify';
+            }
+        }
+
+        stage('Deploy release') {
+            when {
+                expression {
+                    env.BRANCH_NAME == 'master' && IS_SNAPSHOT == false
+                }
+            }
+
+            script {
+                echo "Deploy new release...";
+            }
+        }
+
+        stage('Deploy snapshot') {
+            when {
+                expression {
+                    env.BRANCH_NAME == 'indev' && IS_SNAPSHOT == true
+                }
+            }
+
+            script {
+                echo "Deploy new snapshot...";
             }
         }
 
@@ -54,4 +103,8 @@ pipeline {
             }
         }
     }
+}
+
+def getProjectVersion() {
+  return sh(script: "mvn help:evaluate -Dexpression=project.version -q -DforceStdout | grep -v '\\['  | tail -1", returnStdout: true).trim()
 }

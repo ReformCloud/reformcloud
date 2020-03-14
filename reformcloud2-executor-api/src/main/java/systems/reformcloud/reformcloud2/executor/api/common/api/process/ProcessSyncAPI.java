@@ -91,7 +91,6 @@ public interface ProcessSyncAPI {
     @Nonnull
     List<ProcessInformation> getAllProcesses();
 
-
     /**
      * Get all processes of a specific group
      *
