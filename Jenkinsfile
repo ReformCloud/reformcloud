@@ -20,7 +20,7 @@ pipeline {
             }
 
             steps {
-                echo '${env.PROJECT_VERSION}';
+                echo '${PROJECT_VERSION}';
                 sh 'mvn versions:set -DnewVersion="${env.PROJECT_VERSION}"';
             }
         }
