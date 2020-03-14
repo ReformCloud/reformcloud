@@ -5,8 +5,8 @@ pipeline {
     }
 
     environment {
-        PROJECT_VERSION = getProjectVersion()
-        IS_SNAPSHOT = getProjectVersion().endsWith("-SNAPSHOT")
+        PROJECT_VERSION = readMavenPom().getVersion()
+        IS_SNAPSHOT = readMavenPom().getVersion().endsWith("-SNAPSHOT");
     }
 
     stages {
