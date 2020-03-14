@@ -7,8 +7,10 @@ pipeline {
     stages {
         stage('Update environment') {
             steps {
-                env.PROJECT_VERSION = readMavenPom().getVersion();
-                env.IS_SNAPSHOT = readMavenPom().getVersion().endsWith("-SNAPSHOT");
+                script {
+                    env.PROJECT_VERSION = readMavenPom().getVersion();
+                    env.IS_SNAPSHOT = readMavenPom().getVersion().endsWith("-SNAPSHOT");
+                }
             }
         }
 
