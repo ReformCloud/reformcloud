@@ -8,7 +8,7 @@ pipeline {
         stage('Update environment') {
             steps {
                 script {
-                    env.PROJECT_VERSION = readMavenPom().getVersion();
+                    env.PROJECT_VERSION = getProjectVersion();
                     env.IS_SNAPSHOT = readMavenPom().getVersion().endsWith("-SNAPSHOT");
                 }
             }
@@ -20,7 +20,7 @@ pipeline {
             }
 
             steps {
-                echo '${PROJECT_VERSION}';
+                echo '${env.PROJECT_VERSION}';
                 sh 'mvn versions:set -DnewVersion="${env.PROJECT_VERSION}"';
             }
         }
@@ -111,5 +111,5 @@ pipeline {
 }
 
 def getProjectVersion() {
-  return sh(script: "mvn help:evaluate -Dexpression=project.version -q -DforceStdout  | tail -1", returnStdout: true).trim()
+  return sh(script: "mvn help:evaluate -Dexpression=project.version -q -DforceStdout  | tail -1", returnStdout: true)
 }
