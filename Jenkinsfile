@@ -8,7 +8,7 @@ pipeline {
         stage('Update environment') {
             steps {
                 script {
-                    env.PROJECT_VERSION = getProjectVersion();
+                    env.PROJECT_VERSION = "2.1.0-SNAPSHOT"
                     env.IS_SNAPSHOT = readMavenPom().getVersion().endsWith("-SNAPSHOT");
                 }
             }
@@ -21,7 +21,7 @@ pipeline {
 
             steps {
                 echo '${env.PROJECT_VERSION}';
-                sh 'mvn versions:set -DnewVersion="${env.PROJECT_VERSION}"';
+                sh 'mvn versions:set -DnewVersion="${env.PROJECT_VERSION}-${BUILD_NUMBER}"';
             }
         }
 
