@@ -16,7 +16,7 @@ pipeline {
             }
 
             steps {
-                sh 'mvn versions:set -DnewVersion="${BUILD_NUMBER}"'
+                sh 'mvn versions:set -DnewVersion="${env.PROJECT_VERSION}-${BUILD_NUMBER}"'
             }
         }
 
@@ -106,5 +106,5 @@ pipeline {
 }
 
 def getProjectVersion() {
-  return sh(script: "mvn help:evaluate -Dexpression=project.version -q -DforceStdout | grep -v '\\['  | tail -1", returnStdout: true).trim()
+  return sh(script: "mvn help:evaluate -Dexpression=project.version -q -DforceStdout  | tail -1", returnStdout: true).trim()
 }
