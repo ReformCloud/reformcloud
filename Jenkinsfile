@@ -16,7 +16,6 @@ pipeline {
             }
 
             steps {
-                echo '${PROJECT_VERSION}';
                 sh 'mvn versions:set -DnewVersion="${PROJECT_VERSION}-${BUILD_NUMBER}"';
             }
         }
@@ -47,8 +46,9 @@ pipeline {
 
         stage('Deploy release') {
             when {
-                expression {
-                    env.BRANCH_NAME == 'master' && IS_SNAPSHOT == false
+                allOf {
+                    branch 'master'
+                    environment name:'IS_SNAPSHOT', value: 'false'
                 }
             }
 
@@ -59,8 +59,9 @@ pipeline {
 
         stage('Deploy snapshot') {
             when {
-                expression {
-                    env.BRANCH_NAME == 'indev' && IS_SNAPSHOT == true
+                allOf {
+                    branch 'indev'
+                    environment name:'IS_SNAPSHOT', value: 'true'
                 }
             }
 
