@@ -57,6 +57,7 @@ pipeline {
 
             steps {
                 echo "Deploy new release...";
+                sh 'mvn clean deploy -P deploy';
             }
         }
 
@@ -70,6 +71,7 @@ pipeline {
 
             steps {
                 echo "Deploy new snapshot...";
+                sh 'mvn clean deploy -P deploy';
             }
         }
 
