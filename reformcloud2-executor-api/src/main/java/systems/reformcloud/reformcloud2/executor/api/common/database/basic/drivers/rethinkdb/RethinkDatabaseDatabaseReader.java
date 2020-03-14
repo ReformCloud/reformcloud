@@ -1,6 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.api.common.database.basic.drivers.rethinkdb;
 
-import com.google.gson.JsonObject;
+import com.google.gson.JsonElement;
 import com.rethinkdb.RethinkDB;
 import com.rethinkdb.net.Connection;
 import com.rethinkdb.net.Result;
@@ -14,6 +14,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.utility.task.default
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class RethinkDatabaseDatabaseReader implements DatabaseReader {
@@ -51,7 +52,7 @@ public class RethinkDatabaseDatabaseReader implements DatabaseReader {
     public Task<JsonConfiguration> insert(@Nonnull String key, @Nullable String identifier, @Nonnull JsonConfiguration data) {
         Task<JsonConfiguration> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
-            this.parent.get().table(this.table).insert(data.getJsonObject()).run(this.connection);
+            this.parent.get().table(this.table).insert(data.asMap()).run(this.connection);
             task.complete(data);
         });
         return task;
@@ -91,14 +92,15 @@ public class RethinkDatabaseDatabaseReader implements DatabaseReader {
 
     @NotNull
     @Override
+    @SuppressWarnings("unchecked")
     public Iterator<JsonConfiguration> iterator() {
         return this.parent
                 .get()
                 .table(this.table)
                 .run(this.connection)
                 .stream()
-                .filter(e -> e instanceof JsonObject)
-                .map(e ->  new JsonConfiguration((JsonObject) e))
+                .filter(e -> e instanceof Map)
+                .map(e -> JsonConfiguration.fromMap((Map<String, JsonElement>) e))
                 .collect(Collectors.toList())
                 .iterator();
     }
@@ -109,6 +111,7 @@ public class RethinkDatabaseDatabaseReader implements DatabaseReader {
         return this.table;
     }
 
+    @SuppressWarnings("unchecked")
     private Task<JsonConfiguration> get(String keyName, String expected) {
         Task<JsonConfiguration> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
@@ -119,8 +122,8 @@ public class RethinkDatabaseDatabaseReader implements DatabaseReader {
                     .run(this.connection);
             if (result.hasNext()) {
                 Object next = result.first();
-                if (next instanceof JsonObject) {
-                    task.complete(new JsonConfiguration((JsonObject) next));
+                if (next instanceof Map) {
+                    task.complete(JsonConfiguration.fromMap((Map<String, JsonElement>) next));
                     return;
                 }
             }
@@ -136,7 +139,7 @@ public class RethinkDatabaseDatabaseReader implements DatabaseReader {
         Task.EXECUTOR.execute(() -> task.complete(this.parent.get()
                 .table(this.table)
                 .filter(row -> row.g(keyName).eq(expected))
-                .update(newData.getJsonObject())
+                .update(newData.asMap())
                 .run(connection)
                 .hasNext())
         );

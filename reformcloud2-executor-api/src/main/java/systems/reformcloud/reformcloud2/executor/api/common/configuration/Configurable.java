@@ -8,12 +8,13 @@ import javax.annotation.Nullable;
 import java.io.File;
 import java.lang.reflect.Type;
 import java.nio.file.Path;
+import java.util.Map;
 import java.util.function.Predicate;
 
 /**
  * Represents any configuration used in the cloud system
  */
-public interface Configurable<V extends Configurable<V>> {
+public interface Configurable<X, V extends Configurable<X, V>> {
 
     @Nonnull
     V add(@Nonnull String key, @Nullable V value);
@@ -144,7 +145,11 @@ public interface Configurable<V extends Configurable<V>> {
     @Nonnull
     String toPrettyString();
 
+    @Nonnull
     byte[] toPrettyBytes();
+
+    @Nonnull
+    Map<String, X> asMap();
 
     @Nonnull
     V copy();

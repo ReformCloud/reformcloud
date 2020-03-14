@@ -17,9 +17,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.DateFormat;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Predicate;
 
-public class JsonConfiguration implements Configurable<JsonConfiguration> {
+public class JsonConfiguration implements Configurable<JsonElement, JsonConfiguration> {
 
     public static final ThreadLocal<Gson> GSON = ThreadLocal.withInitial(
             () -> new GsonBuilder()
@@ -488,9 +490,21 @@ public class JsonConfiguration implements Configurable<JsonConfiguration> {
         return GSON.get().toJson(jsonObject);
     }
 
+    @Nonnull
     @Override
     public byte[] toPrettyBytes() {
         return toPrettyString().getBytes(StandardCharsets.UTF_8);
+    }
+
+    @Nonnull
+    @Override
+    public Map<String, JsonElement> asMap() {
+        Map<String, JsonElement> out = new HashMap<>();
+        for (Map.Entry<String, JsonElement> stringJsonElementEntry : this.jsonObject.entrySet()) {
+            out.put(stringJsonElementEntry.getKey(), stringJsonElementEntry.getValue());
+        }
+
+        return out;
     }
 
     @Nonnull
@@ -515,6 +529,16 @@ public class JsonConfiguration implements Configurable<JsonConfiguration> {
         }
 
         return new JsonConfiguration();
+    }
+
+    public static JsonConfiguration fromMap(@Nonnull Map<String, JsonElement> map) {
+        JsonConfiguration out = new JsonConfiguration();
+
+        for (Map.Entry<String, JsonElement> stringJsonElementEntry : map.entrySet()) {
+            out.getJsonObject().add(stringJsonElementEntry.getKey(), stringJsonElementEntry.getValue());
+        }
+
+        return out;
     }
 
     public static JsonConfiguration read(String path) {
