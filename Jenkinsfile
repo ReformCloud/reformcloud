@@ -5,7 +5,8 @@ pipeline {
     }
 
     environment {
-        PROJECT_VERSION = "2.1.0-SNAPSHOT"
+        PROJECT_VERSION = getProjectVersion();
+        IS_SNAPSHOT = getProjectVersion().endsWith("-SNAPSHOT")
     }
 
     stages {
