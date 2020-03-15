@@ -165,7 +165,7 @@ public class RethinkDatabaseDatabaseReader implements DatabaseReader {
     private Task<Void> delete(String keyName, String expected) {
         Task<Void> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
-            this.parent.get().table(this.table).filter(row -> row.g(keyName).eq(expected)).delete().run(this.connection);
+            this.parent.get().table(this.table).filter(this.parent.get().hashMap(keyName, expected)).delete().run(this.connection);
             task.complete(null);
         });
         return task;
