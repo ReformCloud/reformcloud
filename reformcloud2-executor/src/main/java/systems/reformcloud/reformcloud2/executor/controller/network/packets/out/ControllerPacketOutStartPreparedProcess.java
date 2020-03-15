@@ -5,9 +5,9 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.NetworkUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.JsonPacket;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 
-public final class ControllerPacketOutStartProcess extends JsonPacket {
+public class ControllerPacketOutStartPreparedProcess extends JsonPacket {
 
-    public ControllerPacketOutStartProcess(ProcessInformation processInformation, boolean start) {
-        super(NetworkUtil.CONTROLLER_INFORMATION_BUS + 2, new JsonConfiguration().add("info", processInformation).add("start", start));
+    public ControllerPacketOutStartPreparedProcess(ProcessInformation information) {
+        super(NetworkUtil.CONTROLLER_INFORMATION_BUS + 14, new JsonConfiguration().add("info", information));
     }
 }

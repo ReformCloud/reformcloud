@@ -25,7 +25,20 @@ public final class ProcessQueue extends AbsoluteThread {
                 QUEUE.size() + 1
         ));
 
-        runningProcess.prepare().onComplete(e -> QUEUE.offerLast(runningProcess));
+        runningProcess.prepare().onComplete(e -> {
+            runningProcess.handleEnqueue();
+            QUEUE.offerLast(runningProcess);
+        });
+    }
+
+    public static void queue(RunningProcess process) {
+        System.out.println(LanguageManager.get(
+                "client-process-now-in-queue",
+                process.getProcessInformation().getName(),
+                QUEUE.size() + 1
+        ));
+        process.handleEnqueue();
+        QUEUE.offerLast(process);
     }
 
     /* ============== */

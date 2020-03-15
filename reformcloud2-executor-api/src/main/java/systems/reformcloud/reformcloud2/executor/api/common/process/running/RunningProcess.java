@@ -23,6 +23,11 @@ public interface RunningProcess {
     Task<Void> prepare();
 
     /**
+     * Handles the queue of the process into the process queue of a node/client
+     */
+    void handleEnqueue();
+
+    /**
      * Starts the current process
      *
      * @return If the process got started successfully

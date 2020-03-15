@@ -5,30 +5,25 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.channel.Pack
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.handler.DefaultJsonNetworkHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
-import systems.reformcloud.reformcloud2.executor.api.common.process.running.RunningProcess;
+import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState;
 import systems.reformcloud.reformcloud2.executor.client.ClientExecutor;
 import systems.reformcloud.reformcloud2.executor.client.process.ProcessQueue;
-import systems.reformcloud.reformcloud2.executor.client.process.basic.DefaultRunningProcess;
 
 import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 
-public final class ClientPacketInStartProcess extends DefaultJsonNetworkHandler {
+public class ClientPacketInStartPreparedProcess extends DefaultJsonNetworkHandler {
 
     @Override
     public int getHandlingPacketID() {
-        return NetworkUtil.CONTROLLER_INFORMATION_BUS + 2;
+        return NetworkUtil.CONTROLLER_INFORMATION_BUS + 14;
     }
 
     @Override
     public void handlePacket(@Nonnull PacketSender packetSender, @Nonnull Packet packet, @Nonnull Consumer<Packet> responses) {
-        ProcessInformation processInformation = packet.content().get("info", ProcessInformation.TYPE);
-        if (packet.content().getBoolean("start")) {
-            ProcessQueue.queue(processInformation);
-        } else {
-            RunningProcess process = new DefaultRunningProcess(processInformation);
-            process.prepare();
-            ClientExecutor.getInstance().getProcessManager().registerProcess(process);
+        ProcessInformation information = packet.content().get("info", ProcessInformation.TYPE);
+        if (information != null && information.getProcessState().equals(ProcessState.PREPARED)) {
+            ClientExecutor.getInstance().getProcessManager().getProcess(information.getProcessUniqueID()).ifPresent(ProcessQueue::queue);
         }
     }
 }

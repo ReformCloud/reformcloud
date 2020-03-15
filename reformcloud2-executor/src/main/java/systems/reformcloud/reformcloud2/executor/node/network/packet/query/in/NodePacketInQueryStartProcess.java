@@ -26,8 +26,8 @@ public class NodePacketInQueryStartProcess extends DefaultJsonNetworkHandler {
         Template template = packet.content().get("template", Template.TYPE);
         JsonConfiguration data = packet.content().get("data");
 
-        responses.accept(new JsonPacket(-1, new JsonConfiguration().add("result", NodeExecutor.getInstance().getNodeNetworkManager().startProcess(
-                group, template, data
+        responses.accept(new JsonPacket(-1, new JsonConfiguration().add("result", NodeExecutor.getInstance().getNodeNetworkManager().prepareProcess(
+                group, template, data, packet.content().getBoolean("start")
         ))));
     }
 }

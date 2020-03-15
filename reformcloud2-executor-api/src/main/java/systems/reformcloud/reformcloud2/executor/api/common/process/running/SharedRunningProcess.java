@@ -125,9 +125,15 @@ public abstract class SharedRunningProcess implements RunningProcess {
     }
 
     @Override
+    public void handleEnqueue() {
+        this.startupInformation.setProcessState(ProcessState.READY_TO_START);
+        ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(this.startupInformation);
+    }
+
+    @Override
     public boolean bootstrap() {
         Conditions.isTrue(
-                this.startupInformation.getProcessState().equals(ProcessState.PREPARED),
+                this.startupInformation.getProcessState().equals(ProcessState.READY_TO_START),
                 "Trying to start a process which is not prepared and ready to start"
         );
 

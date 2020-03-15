@@ -24,7 +24,16 @@ public class LocalProcessQueue extends AbsoluteThread {
         int size = QUEUE.size();
         System.out.println(LanguageManager.get("client-process-now-in-queue", processInformation.getName(), size +1));
 
-        localNodeProcess.prepare().onComplete(e -> QUEUE.offerLast(localNodeProcess));
+        localNodeProcess.prepare().onComplete(e -> {
+            localNodeProcess.handleEnqueue();
+            QUEUE.offerLast(localNodeProcess);
+        });
+    }
+
+    public static void queue(RunningProcess process) {
+        System.out.println(LanguageManager.get("client-process-now-in-queue", process.getProcessInformation().getName(), QUEUE.size() +1));
+        process.handleEnqueue();
+        QUEUE.offerLast(process);
     }
 
     @Override

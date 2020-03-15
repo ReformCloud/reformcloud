@@ -40,19 +40,22 @@ public interface NodeProcessManager extends Updateable<ProcessInformation>, Iter
      * @param template     The template which should get used as the main template
      * @param data         The extra data for the process api
      * @param uniqueID     The unique id of the process which should get used
+     * @param start        If the process should get started after the prepare
      * @return A new created process information with the provided data
      */
     @Nonnull
-    ProcessInformation startLocalProcess(@Nonnull ProcessGroup processGroup, @Nonnull Template template, @Nonnull JsonConfiguration data, @Nonnull UUID uniqueID);
+    ProcessInformation prepareLocalProcess(@Nonnull ProcessGroup processGroup, @Nonnull Template template,
+                                           @Nonnull JsonConfiguration data, @Nonnull UUID uniqueID, boolean start);
 
     /**
      * Starts a running processes based on the given process information
      *
      * @param processInformation The process information which is the base of the process
+     * @param start              If the process should get started after the prepare
      * @return The process information which got modified
      */
     @Nonnull
-    ProcessInformation startLocalProcess(@Nonnull ProcessInformation processInformation);
+    ProcessInformation prepareLocalProcess(@Nonnull ProcessInformation processInformation, boolean start);
 
     /**
      * Stops a local process
@@ -80,10 +83,13 @@ public interface NodeProcessManager extends Updateable<ProcessInformation>, Iter
      * @param data         The extra data for the process api
      * @param node         The node on which the process should get started
      * @param uniqueID     The unique id of the process which should get used
+     * @param start        If the process should get started after the prepare
      * @return A new created process information with the provided data
      */
     @Nonnull
-    ProcessInformation queueProcess(@Nonnull ProcessGroup processGroup, @Nonnull Template template, @Nonnull JsonConfiguration data, @Nonnull NodeInformation node, @Nonnull UUID uniqueID);
+    ProcessInformation queueProcess(@Nonnull ProcessGroup processGroup, @Nonnull Template template,
+                                    @Nonnull JsonConfiguration data, @Nonnull NodeInformation node,
+                                    @Nonnull UUID uniqueID, boolean start);
 
     /**
      * Registers the running process as a local running process

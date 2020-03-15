@@ -17,12 +17,13 @@ import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInfor
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessRuntimeInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState;
 import systems.reformcloud.reformcloud2.executor.api.common.process.util.MemoryCalculator;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Quad;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Trio;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
 import systems.reformcloud.reformcloud2.executor.api.controller.process.ProcessManager;
 import systems.reformcloud.reformcloud2.executor.controller.ControllerExecutor;
 import systems.reformcloud.reformcloud2.executor.controller.network.packets.out.ControllerPacketOutProcessDisconnected;
+import systems.reformcloud.reformcloud2.executor.controller.network.packets.out.ControllerPacketOutStartPreparedProcess;
 import systems.reformcloud.reformcloud2.executor.controller.network.packets.out.ControllerPacketOutStartProcess;
 import systems.reformcloud.reformcloud2.executor.controller.network.packets.out.ControllerPacketOutStopProcess;
 import systems.reformcloud.reformcloud2.executor.controller.network.packets.out.event.ControllerEventProcessClosed;
@@ -44,14 +45,19 @@ public final class DefaultProcessManager implements ProcessManager {
 
     private final Collection<ProcessInformation> processInformation = Collections.synchronizedCollection(new ProcessCopyOnWriteArrayList());
 
-    private final Queue<Trio<ProcessGroup, Template, JsonConfiguration>> noClientTryLater = new ConcurrentLinkedQueue<>();
+    private final Queue<Quad<ProcessGroup, Template, JsonConfiguration, Boolean>> noClientTryLater = new ConcurrentLinkedQueue<>();
 
     public DefaultProcessManager() {
         CompletableFuture.runAsync(() -> {
             while (!Thread.currentThread().isInterrupted()) {
                 if (!noClientTryLater.isEmpty()) {
-                    Trio<ProcessGroup, Template, JsonConfiguration> trio = noClientTryLater.peek();
-                    startProcess(trio.getFirst().getName(), trio.getSecond().getName(), trio.getThird());
+                    Quad<ProcessGroup, Template, JsonConfiguration, Boolean> trio = noClientTryLater.peek();
+                    if (trio.getFourth()) {
+                        startProcess(trio.getFirst().getName(), trio.getSecond().getName(), trio.getThird());
+                    } else {
+                        prepareProcess(trio.getFirst().getName(), trio.getSecond().getName(), trio.getThird());
+                    }
+
                     noClientTryLater.remove(trio);
                 }
 
@@ -109,16 +115,48 @@ public final class DefaultProcessManager implements ProcessManager {
         }
 
         Template found = Streams.filter(processGroup.getTemplates(), test -> template == null || template.equals(test.getName()));
-        ProcessInformation processInformation = this.create(processGroup, found, configurable);
+        ProcessInformation processInformation = this.create(processGroup, found, configurable, true);
         if (processInformation == null) {
             return null;
         }
 
         this.processInformation.add(processInformation);
-        DefaultChannelManager.INSTANCE.get(processInformation.getParent()).ifPresent(packetSender -> packetSender.sendPacket(new ControllerPacketOutStartProcess(processInformation)));
+        DefaultChannelManager.INSTANCE.get(processInformation.getParent()).ifPresent(packetSender -> packetSender.sendPacket(new ControllerPacketOutStartProcess(processInformation, true)));
         //Send event packet to notify processes
         DefaultChannelManager.INSTANCE.getAllSender().forEach(packetSender -> packetSender.sendPacket(new ControllerEventProcessStarted(processInformation)));
         ControllerExecutor.getInstance().getEventManager().callEvent(new ProcessStartedEvent(processInformation));
+        return processInformation;
+    }
+
+    @Nonnull
+    @Override
+    public ProcessInformation startProcess(@Nonnull ProcessInformation processInformation) {
+        if (processInformation.getProcessState().equals(ProcessState.PREPARED)) {
+            DefaultChannelManager.INSTANCE.get(processInformation.getParent()).ifPresent(
+                    e -> e.sendPacket(new ControllerPacketOutStartPreparedProcess(processInformation))
+            );
+        }
+
+        return processInformation;
+    }
+
+    @Override
+    public synchronized ProcessInformation prepareProcess(String groupName, String template, JsonConfiguration configurable) {
+        ProcessGroup processGroup = Streams.filter(ControllerExecutor.getInstance().getControllerExecutorConfig().getProcessGroups(), processGroup1 -> processGroup1.getName().equals(groupName));
+        if (processGroup == null) {
+            // In some cases the group got deleted but the update process is sync and this method get called async!
+            // To prevent any issues just return at this point
+            return null;
+        }
+
+        Template found = Streams.filter(processGroup.getTemplates(), test -> template == null || template.equals(test.getName()));
+        ProcessInformation processInformation = this.create(processGroup, found, configurable, false);
+        if (processInformation == null) {
+            return null;
+        }
+
+        this.processInformation.add(processInformation);
+        DefaultChannelManager.INSTANCE.get(processInformation.getParent()).ifPresent(packetSender -> packetSender.sendPacket(new ControllerPacketOutStartProcess(processInformation, false)));
         return processInformation;
     }
 
@@ -151,7 +189,7 @@ public final class DefaultProcessManager implements ProcessManager {
         });
     }
 
-    private ProcessInformation create(ProcessGroup processGroup, Template template, JsonConfiguration extra) {
+    private ProcessInformation create(ProcessGroup processGroup, Template template, JsonConfiguration extra, boolean start) {
         if (extra == null) {
             extra = new JsonConfiguration();
         }
@@ -182,7 +220,7 @@ public final class DefaultProcessManager implements ProcessManager {
 
         ClientRuntimeInformation client = client(processGroup, template);
         if (client == null) {
-            noClientTryLater.add(new Trio<>(processGroup, template, extra));
+            noClientTryLater.add(new Quad<>(processGroup, template, extra, start));
             return null;
         }
 
@@ -206,7 +244,7 @@ public final class DefaultProcessManager implements ProcessManager {
                 UUID.randomUUID(),
                 MemoryCalculator.calcMemory(processGroup.getName(), template),
                 id,
-                ProcessState.PREPARED,
+                ProcessState.CREATED,
                 new NetworkInfo(
                         client.startHost(),
                         port,

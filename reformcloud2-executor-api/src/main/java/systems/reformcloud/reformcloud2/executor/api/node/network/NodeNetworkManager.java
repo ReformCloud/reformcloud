@@ -20,7 +20,11 @@ public interface NodeNetworkManager {
 
     ProcessInformation getCloudProcess(UUID uuid);
 
+    ProcessInformation prepareProcess(ProcessGroup processGroup, Template template, JsonConfiguration data, boolean start);
+
     ProcessInformation startProcess(ProcessGroup processGroup, Template template, JsonConfiguration data);
+
+    ProcessInformation startProcess(ProcessInformation processInformation);
 
     void stopProcess(String name);
 

@@ -2,7 +2,11 @@ package systems.reformcloud.reformcloud2.executor.api.common.process;
 
 public enum ProcessState {
 
+    CREATED,
+
     PREPARED,
+
+    READY_TO_START,
 
     STARTED,
 

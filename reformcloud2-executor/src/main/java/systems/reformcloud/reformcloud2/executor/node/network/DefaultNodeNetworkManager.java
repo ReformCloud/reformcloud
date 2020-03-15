@@ -10,13 +10,17 @@ import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageMan
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.common.node.NodeInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Trio;
+import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Quad;
 import systems.reformcloud.reformcloud2.executor.api.node.cluster.InternalNetworkCluster;
 import systems.reformcloud.reformcloud2.executor.api.node.network.NodeNetworkManager;
 import systems.reformcloud.reformcloud2.executor.api.node.process.NodeProcessManager;
 import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
+import systems.reformcloud.reformcloud2.executor.node.network.packet.out.NodePacketOutStartPreparedProcess;
 import systems.reformcloud.reformcloud2.executor.node.network.packet.out.NodePacketOutStopProcess;
 import systems.reformcloud.reformcloud2.executor.node.network.packet.query.out.NodePacketOutQueryStartProcess;
+import systems.reformcloud.reformcloud2.executor.node.process.manager.LocalProcessManager;
+import systems.reformcloud.reformcloud2.executor.node.process.startup.LocalProcessQueue;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -28,7 +32,7 @@ public class DefaultNodeNetworkManager implements NodeNetworkManager {
 
     private static final Map<UUID, String> QUEUED_PROCESSES = new ConcurrentHashMap<>();
 
-    private static final Queue<Trio<ProcessGroup, Template, JsonConfiguration>> LATER = new ConcurrentLinkedQueue<>();
+    private static final Queue<Quad<ProcessGroup, Template, JsonConfiguration, Boolean>> LATER = new ConcurrentLinkedQueue<>();
 
     public DefaultNodeNetworkManager(NodeProcessManager processManager, InternalNetworkCluster cluster) {
         this.localNodeProcessManager = processManager;
@@ -36,8 +40,8 @@ public class DefaultNodeNetworkManager implements NodeNetworkManager {
 
         Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
             if (!LATER.isEmpty()) {
-                Trio<ProcessGroup, Template, JsonConfiguration> next = LATER.poll();
-                this.startProcessInternal(next.getFirst(), next.getSecond(), next.getThird(), false);
+                Quad<ProcessGroup, Template, JsonConfiguration, Boolean> next = LATER.poll();
+                this.startProcessInternal(next.getFirst(), next.getSecond(), next.getThird(), false, next.getFourth());
             }
         }, 0, 10, TimeUnit.SECONDS);
     }
@@ -67,11 +71,35 @@ public class DefaultNodeNetworkManager implements NodeNetworkManager {
     }
 
     @Override
-    public ProcessInformation startProcess(ProcessGroup processGroup, Template template, JsonConfiguration data) {
-        return startProcessInternal(processGroup, template, data, true);
+    public ProcessInformation prepareProcess(ProcessGroup processGroup, Template template, JsonConfiguration data, boolean start) {
+        return this.startProcessInternal(processGroup, template, data, true, start);
     }
 
-    private ProcessInformation startProcessInternal(ProcessGroup processGroup, Template template, JsonConfiguration data, boolean informUser) {
+    @Override
+    public ProcessInformation startProcess(ProcessGroup processGroup, Template template, JsonConfiguration data) {
+        return startProcessInternal(processGroup, template, data, true, true);
+    }
+
+    @Override
+    public ProcessInformation startProcess(ProcessInformation processInformation) {
+        DefaultChannelManager.INSTANCE.get(processInformation.getParent()).ifPresent(
+                e -> e.sendPacket(new NodePacketOutStartPreparedProcess(processInformation))
+        ).ifEmpty(e -> {
+            if (processInformation.getNodeUniqueID() != null
+                    && processInformation.getNodeUniqueID().equals(cluster.getSelfNode().getNodeUniqueID())
+                    && processInformation.getProcessState().equals(ProcessState.PREPARED)) {
+                LocalProcessManager.getNodeProcesses()
+                        .stream()
+                        .filter(p -> p.getProcessInformation().getProcessUniqueID().equals(processInformation.getProcessUniqueID()))
+                        .findFirst()
+                        .ifPresent(LocalProcessQueue::queue);
+            }
+        });
+
+        return processInformation;
+    }
+
+    private ProcessInformation startProcessInternal(ProcessGroup processGroup, Template template, JsonConfiguration data, boolean informUser, boolean start) {
         if (processGroup == null) {
             return null;
         }
@@ -90,20 +118,20 @@ public class DefaultNodeNetworkManager implements NodeNetworkManager {
 
             if (getCluster().noOtherNodes()) {
                 if (processGroup.getStartupConfiguration().isSearchBestClientAlone()) {
-                    return localNodeProcessManager.startLocalProcess(processGroup, template, data, processUniqueID);
+                    return localNodeProcessManager.prepareLocalProcess(processGroup, template, data, processUniqueID, start);
                 }
 
                 if (processGroup.getStartupConfiguration().getUseOnlyTheseClients().contains(NodeExecutor.getInstance().getNodeConfig().getName())) {
-                    return localNodeProcessManager.startLocalProcess(processGroup, template, data, processUniqueID);
+                    return localNodeProcessManager.prepareLocalProcess(processGroup, template, data, processUniqueID, start);
                 }
 
-                LATER.add(new Trio<>(processGroup, template, data));
+                LATER.add(new Quad<>(processGroup, template, data, start));
                 return null;
             }
 
             NodeInformation best = getCluster().findBestNodeForStartup(processGroup, template);
             if (best != null && best.canEqual(getCluster().getHeadNode())) {
-                return localNodeProcessManager.startLocalProcess(processGroup, template, data, processUniqueID);
+                return localNodeProcessManager.prepareLocalProcess(processGroup, template, data, processUniqueID, start);
             }
 
             if (best == null) {
@@ -111,15 +139,15 @@ public class DefaultNodeNetworkManager implements NodeNetworkManager {
                     System.out.println(LanguageManager.get("node-process-no-node-queued", processGroup.getName(), template.getName()));
                 }
 
-                LATER.add(new Trio<>(processGroup, template, data));
+                LATER.add(new Quad<>(processGroup, template, data, start));
                 return null;
             }
 
             best.addUsedMemory(template.getRuntimeConfiguration().getMaxMemory());
-            return localNodeProcessManager.queueProcess(processGroup, template, data, best, processUniqueID);
+            return localNodeProcessManager.queueProcess(processGroup, template, data, best, processUniqueID, start);
         }
 
-        return getCluster().sendQueryToHead(new NodePacketOutQueryStartProcess(processGroup, template, data),
+        return getCluster().sendQueryToHead(new NodePacketOutQueryStartProcess(processGroup, template, data, start),
                 packet -> packet.content().get("result", ProcessInformation.TYPE
                 ));
     }

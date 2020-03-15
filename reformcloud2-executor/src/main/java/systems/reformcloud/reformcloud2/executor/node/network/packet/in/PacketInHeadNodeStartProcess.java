@@ -20,6 +20,8 @@ public class PacketInHeadNodeStartProcess extends DefaultJsonNetworkHandler {
     @Override
     public void handlePacket(@Nonnull PacketSender packetSender, @Nonnull Packet packet, @Nonnull Consumer<Packet> responses) {
         ProcessInformation target = packet.content().get("info", ProcessInformation.TYPE);
-        NodeExecutor.getInstance().getNodeNetworkManager().getNodeProcessHelper().startLocalProcess(target);
+        NodeExecutor.getInstance().getNodeNetworkManager().getNodeProcessHelper().prepareLocalProcess(
+                target, packet.content().getBoolean("start")
+        );
     }
 }

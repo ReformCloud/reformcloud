@@ -4,6 +4,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonCo
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.update.Updateable;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.UUID;
@@ -98,6 +99,27 @@ public interface ProcessManager extends Iterable<ProcessInformation>, Updateable
      */
     @Nullable
     ProcessInformation startProcess(String groupName, String template, JsonConfiguration configurable);
+
+    /**
+     * Starts a prepared process
+     *
+     * @param processInformation The information of the prepared process
+     * @return The process information after the start call
+     */
+    @Nonnull
+    ProcessInformation startProcess(@Nonnull ProcessInformation processInformation);
+
+    /**
+     * Prepares a process with the given template name and the json configuration as extra data for the process object
+     * <p>
+     * @param groupName    The name if tge group which is required to be non-null
+     * @param template     The name of the template which must not exists using default template instead
+     * @param configurable The extra data which you can read on the process (can be {@code null})
+     * @return The process information of the created process
+     * @see ProcessInformation
+     */
+    @Nullable
+    ProcessInformation prepareProcess(String groupName, String template, JsonConfiguration configurable);
 
     /**
      * Stops a specific process and returns the last known process information
