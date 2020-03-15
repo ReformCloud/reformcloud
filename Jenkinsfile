@@ -1,7 +1,12 @@
 pipeline {
     agent any
+
     tools {
         jdk "1.8.0_222"
+    }
+
+    options {
+        buildDiscarder logRotator(numToKeepStr: '10')
     }
 
     environment {
