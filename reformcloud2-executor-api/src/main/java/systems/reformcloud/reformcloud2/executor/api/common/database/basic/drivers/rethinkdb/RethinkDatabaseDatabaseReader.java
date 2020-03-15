@@ -132,7 +132,7 @@ public class RethinkDatabaseDatabaseReader implements DatabaseReader {
             Result<Object> result = this.parent
                     .get()
                     .table(this.table)
-                    .filter(row -> row.g(keyName).eq(expected))
+                    .filter(this.parent.get().hashMap(keyName, expected))
                     .run(this.connection);
             if (result.hasNext()) {
                 Object next = result.first();
