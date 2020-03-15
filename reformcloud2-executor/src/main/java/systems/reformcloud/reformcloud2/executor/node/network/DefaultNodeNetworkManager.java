@@ -95,7 +95,7 @@ public class DefaultNodeNetworkManager implements NodeNetworkManager {
     }
 
     @Override
-    public ProcessInformation startProcess(ProcessInformation processInformation) {
+    public synchronized ProcessInformation startProcess(ProcessInformation processInformation) {
         if (getCluster().isSelfNodeHead()) {
             processInformation.setProcessState(ProcessState.POLLED);
             ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(processInformation);

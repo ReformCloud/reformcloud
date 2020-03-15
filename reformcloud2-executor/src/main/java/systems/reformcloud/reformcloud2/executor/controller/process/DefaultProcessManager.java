@@ -150,7 +150,7 @@ public final class DefaultProcessManager implements ProcessManager {
 
     @Nonnull
     @Override
-    public ProcessInformation startProcess(@Nonnull ProcessInformation processInformation) {
+    public synchronized ProcessInformation startProcess(@Nonnull ProcessInformation processInformation) {
         if (processInformation.getProcessState().equals(ProcessState.PREPARED)) {
             DefaultChannelManager.INSTANCE.get(processInformation.getParent()).ifPresent(
                     e -> e.sendPacket(new ControllerPacketOutStartPreparedProcess(processInformation))
