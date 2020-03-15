@@ -154,7 +154,7 @@ Because of this you don't need to provide any repository.
 ```xml
     <dependency>
         <groupId>systems.reformcloud.reformcloud2</groupId>
-        <!-- replace with needed artifact for example 'reformcloud2-executor" or 'reformcloud2-default-application-permissions' -->
+        <!-- replace with needed artifact for example 'reformcloud2-executor' or 'reformcloud2-default-application-permissions' -->
         <artifactId>reformcloud2-executor-api</artifactId>
         <version>2.1.0</version>
         <scope>provided</scope>
