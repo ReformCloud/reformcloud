@@ -147,7 +147,7 @@ public abstract class SharedRunningProcess implements RunningProcess {
                         this.startupInformation.getTemplate().getVersion()
                 )).getAbsolutePath(),
 
-                "-Xmx" + this.startupInformation.getTemplate().getRuntimeConfiguration().getMaxMemory() + "M"
+                "-Xmx" + this.startupInformation.getMaxMemory() + "M"
         ));
 
         command.addAll(this.startupInformation.getTemplate().getRuntimeConfiguration().getJvmOptions());

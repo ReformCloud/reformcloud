@@ -11,6 +11,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInfor
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessRuntimeInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState;
 import systems.reformcloud.reformcloud2.executor.api.common.process.running.RunningProcess;
+import systems.reformcloud.reformcloud2.executor.api.common.process.util.MemoryCalculator;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.PortUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
@@ -54,6 +55,7 @@ public class LocalNodeProcessManager implements NodeProcessManager {
                 NodeExecutor.getInstance().getNodeConfig().getName(),
                 NodeExecutor.getInstance().getNodeConfig().getUniqueID(),
                 processUniqueID,
+                MemoryCalculator.calcMemory(processGroup.getName(), template),
                 id,
                 ProcessState.PREPARED,
                 new NetworkInfo(
@@ -302,6 +304,7 @@ public class LocalNodeProcessManager implements NodeProcessManager {
                 node.getName(),
                 node.getNodeUniqueID(),
                 uniqueID,
+                MemoryCalculator.calcMemory(processGroup.getName(), template),
                 id,
                 ProcessState.PREPARED,
                 new NetworkInfo(

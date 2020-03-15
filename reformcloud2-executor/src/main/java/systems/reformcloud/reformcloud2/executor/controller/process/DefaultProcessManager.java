@@ -16,6 +16,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.process.NetworkInfo;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessRuntimeInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState;
+import systems.reformcloud.reformcloud2.executor.api.common.process.util.MemoryCalculator;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Trio;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
@@ -203,6 +204,7 @@ public final class DefaultProcessManager implements ProcessManager {
                 client.getName(),
                 null,
                 UUID.randomUUID(),
+                MemoryCalculator.calcMemory(processGroup.getName(), template),
                 id,
                 ProcessState.PREPARED,
                 new NetworkInfo(
