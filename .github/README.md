@@ -112,7 +112,7 @@ and ***describe the bug/proposal as detailed as possible*** and **look into your
 and answer upcoming questions**.
 
 # Support our work
-If you like reformcloud and want to support our work you can **star** the project, leave a (positive)
+If you like reformcloud and want to support our work you can **star** :star2: the project, leave a (positive)
 review on [SpigotMC](https://www.spigotmc.org/resources/reformcloud-v2.63950/) or join our 
 [Discord](https://discord.gg/uskXdVZ).
 
