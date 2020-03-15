@@ -1,5 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.controller.process;
 
+import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.ProcessStartedEvent;
 import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.ProcessStoppedEvent;
 import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.ProcessUpdatedEvent;
@@ -77,9 +78,13 @@ public final class DefaultProcessManager implements ProcessManager {
     }
 
     @Override
-    public Integer getOnlineAndWaitingProcessCount(String group) {
-        int out = noClientTryLater.stream().filter(e -> e.getFirst().getName().equals(group)).mapToInt(value -> 1).sum();
-        return getProcesses(group).size() + out;
+    public Long getOnlineAndWaitingProcessCount(String group) {
+        return getProcesses(group).stream().filter(e -> e.getProcessState().isValid()).count() + getWaitingProcesses(group);
+    }
+
+    @Override
+    public Integer getWaitingProcesses(String group) {
+        return noClientTryLater.stream().filter(e -> e.getFirst().getName().equals(group)).mapToInt(value -> 1).sum();
     }
 
     @Override
@@ -112,6 +117,17 @@ public final class DefaultProcessManager implements ProcessManager {
             // In some cases the group got deleted but the update process is sync and this method get called async!
             // To prevent any issues just return at this point
             return null;
+        }
+
+        List<ProcessInformation> preparedProcesses = this.getPreparedProcesses(groupName);
+        if (!preparedProcesses.isEmpty()) {
+            System.out.println(LanguageManager.get(
+                    "process-start-already-prepared-process",
+                    processGroup.getName(),
+                    preparedProcesses.get(0).getName()
+            ));
+            this.startProcess(preparedProcesses.get(0));
+            return preparedProcesses.get(0);
         }
 
         Template found = Streams.filter(processGroup.getTemplates(), test -> template == null || template.equals(test.getName()));
@@ -387,5 +403,11 @@ public final class DefaultProcessManager implements ProcessManager {
     private void notifyDisconnect(ProcessInformation processInformation) {
         DefaultChannelManager.INSTANCE.getAllSender().forEach(packetSender -> packetSender.sendPacket(new ControllerEventProcessClosed(processInformation)));
         ControllerExecutor.getInstance().getEventManager().callEvent(new ProcessStoppedEvent(processInformation));
+    }
+
+    private List<ProcessInformation> getPreparedProcesses(String group) {
+        return Streams.list(ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcesses(group),
+                e -> e.getProcessState().equals(ProcessState.PREPARED)
+        );
     }
 }

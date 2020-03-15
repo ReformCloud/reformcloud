@@ -36,7 +36,16 @@ public interface ProcessManager extends Iterable<ProcessInformation>, Updateable
      * @param group The name of the group which should be filtered (required to be non-null)
      * @return The online and waiting process count of an specific group
      */
-    Integer getOnlineAndWaitingProcessCount(String group);
+    Long getOnlineAndWaitingProcessCount(String group);
+
+    /**
+     * Gets the current waiting process count of a specific group
+     * <p>
+     *
+     * @param group The name of the group which should be filtered (required to be non-null)
+     * @return The online and waiting process count of an specific group
+     */
+    Integer getWaitingProcesses(String group);
 
     /**
      * Gets a specific process by the name

@@ -1,5 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.node.network;
 
+import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.RuntimeConfiguration;
@@ -12,6 +13,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.node.NodeInformation
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Quad;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.node.cluster.InternalNetworkCluster;
 import systems.reformcloud.reformcloud2.executor.api.node.network.NodeNetworkManager;
 import systems.reformcloud.reformcloud2.executor.api.node.process.NodeProcessManager;
@@ -77,7 +79,18 @@ public class DefaultNodeNetworkManager implements NodeNetworkManager {
 
     @Override
     public ProcessInformation startProcess(ProcessGroup processGroup, Template template, JsonConfiguration data) {
-        return startProcessInternal(processGroup, template, data, true, true);
+        List<ProcessInformation> preparedProcesses = this.getPreparedProcesses(processGroup.getName());
+        if (!preparedProcesses.isEmpty()) {
+            System.out.println(LanguageManager.get(
+                    "process-start-already-prepared-process",
+                    processGroup.getName(),
+                    preparedProcesses.get(0).getName()
+            ));
+            this.startProcess(preparedProcesses.get(0));
+            return preparedProcesses.get(0);
+        }
+
+        return this.startProcessInternal(processGroup, template, data, true, true);
     }
 
     @Override
@@ -180,6 +193,12 @@ public class DefaultNodeNetworkManager implements NodeNetworkManager {
     @Override
     public Map<UUID, String> getQueuedProcesses() {
         return QUEUED_PROCESSES;
+    }
+
+    private List<ProcessInformation> getPreparedProcesses(String group) {
+        return Streams.list(ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcesses(group),
+                e -> e.getProcessState().equals(ProcessState.PREPARED)
+        );
     }
 
     private Template randomTemplate(ProcessGroup processGroup) {

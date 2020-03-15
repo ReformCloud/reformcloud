@@ -30,7 +30,7 @@ public final class LocalProcessManager {
 
     public static void close() {
         ExecutorService executorService = Executors.newCachedThreadPool();
-        NODE_PROCESSES.forEach(e -> executorService.submit(() -> e.shutdown()));
+        NODE_PROCESSES.stream().filter(e -> e.getProcess().isPresent()).forEach(e -> executorService.submit(() -> e.shutdown()));
 
         try {
             executorService.shutdown();

@@ -71,7 +71,7 @@ public final class DefaultProcessManager implements ProcessManager {
     @Override
     public void stopAll() {
         ExecutorService executorService = Executors.newCachedThreadPool();
-        this.list.forEach(e -> executorService.submit(() -> e.shutdown()));
+        this.list.stream().filter(e -> e.getProcess().isPresent()).forEach(e -> executorService.submit(() -> e.shutdown()));
 
         try {
             executorService.shutdown();
