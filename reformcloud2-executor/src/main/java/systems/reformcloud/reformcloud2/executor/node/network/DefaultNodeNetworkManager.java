@@ -20,6 +20,7 @@ import systems.reformcloud.reformcloud2.executor.api.node.process.NodeProcessMan
 import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
 import systems.reformcloud.reformcloud2.executor.node.network.packet.out.NodePacketOutStartPreparedProcess;
 import systems.reformcloud.reformcloud2.executor.node.network.packet.out.NodePacketOutStopProcess;
+import systems.reformcloud.reformcloud2.executor.node.network.packet.out.NodePacketOutToHeadStartPreparedProcess;
 import systems.reformcloud.reformcloud2.executor.node.network.packet.query.out.NodePacketOutQueryStartProcess;
 import systems.reformcloud.reformcloud2.executor.node.process.manager.LocalProcessManager;
 import systems.reformcloud.reformcloud2.executor.node.process.startup.LocalProcessQueue;
@@ -95,19 +96,28 @@ public class DefaultNodeNetworkManager implements NodeNetworkManager {
 
     @Override
     public ProcessInformation startProcess(ProcessInformation processInformation) {
-        DefaultChannelManager.INSTANCE.get(processInformation.getParent()).ifPresent(
-                e -> e.sendPacket(new NodePacketOutStartPreparedProcess(processInformation))
-        ).ifEmpty(e -> {
-            if (processInformation.getNodeUniqueID() != null
-                    && processInformation.getNodeUniqueID().equals(cluster.getSelfNode().getNodeUniqueID())
-                    && processInformation.getProcessState().equals(ProcessState.PREPARED)) {
-                LocalProcessManager.getNodeProcesses()
-                        .stream()
-                        .filter(p -> p.getProcessInformation().getProcessUniqueID().equals(processInformation.getProcessUniqueID()))
-                        .findFirst()
-                        .ifPresent(LocalProcessQueue::queue);
-            }
-        });
+        if (getCluster().isSelfNodeHead()) {
+            processInformation.setProcessState(ProcessState.POLLED);
+            ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(processInformation);
+
+            DefaultChannelManager.INSTANCE.get(processInformation.getParent()).ifPresent(
+                    e -> e.sendPacket(new NodePacketOutStartPreparedProcess(processInformation))
+            ).ifEmpty(e -> {
+                if (processInformation.getNodeUniqueID() != null
+                        && processInformation.getNodeUniqueID().equals(cluster.getSelfNode().getNodeUniqueID())
+                        && processInformation.getProcessState().equals(ProcessState.PREPARED)) {
+                    LocalProcessManager.getNodeProcesses()
+                            .stream()
+                            .filter(p -> p.getProcessInformation().getProcessUniqueID().equals(processInformation.getProcessUniqueID()))
+                            .findFirst()
+                            .ifPresent(LocalProcessQueue::queue);
+                }
+            });
+        } else {
+            DefaultChannelManager.INSTANCE.get(this.cluster.getHeadNode().getName()).ifPresent(
+                    e -> e.sendPacket(new NodePacketOutToHeadStartPreparedProcess(processInformation))
+            );
+        }
 
         return processInformation;
     }

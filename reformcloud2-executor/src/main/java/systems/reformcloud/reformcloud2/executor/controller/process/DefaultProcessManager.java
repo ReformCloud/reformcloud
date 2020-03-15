@@ -126,6 +126,10 @@ public final class DefaultProcessManager implements ProcessManager {
                     processGroup.getName(),
                     preparedProcesses.get(0).getName()
             ));
+
+            preparedProcesses.get(0).setProcessState(ProcessState.POLLED);
+            ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(preparedProcesses.get(0));
+
             this.startProcess(preparedProcesses.get(0));
             return preparedProcesses.get(0);
         }
