@@ -48,51 +48,61 @@ public class LocalAutoStartupHandler extends AbsoluteThread {
                 continue;
             }
 
-            try {
-                for (ProcessGroup processGroup : Streams.copySortedSet(perPriorityStartup)) {
-                    int online = NodeExecutor.getInstance().getNodeNetworkManager().getCluster().getClusterManager()
-                            .getOnlineAndWaiting(processGroup.getName());
-                    int waiting = NodeExecutor.getInstance().getNodeNetworkManager().getCluster().getClusterManager()
-                            .getWaiting(processGroup.getName());
+            handleProcessStarts();
+            handleProcessPrepare();
+            AbsoluteThread.sleep(50);
+        }
+    }
 
-                    List<ProcessInformation> preparedProcesses = this.getPreparedProcesses(processGroup.getName());
+    private void handleProcessPrepare() {
+        for (ProcessGroup processGroup : Streams.copySortedSet(perPriorityStartup)) {
+            int waiting = NodeExecutor.getInstance().getNodeNetworkManager().getCluster().getClusterManager()
+                    .getWaiting(processGroup.getName());
+            List<ProcessInformation> preparedProcesses = this.getPreparedProcesses(processGroup.getName());
 
-                    if (preparedProcesses.size() + waiting < processGroup.getStartupConfiguration().getAlwaysPreparedProcesses()) {
-                        for (int i = preparedProcesses.size() + waiting; i < processGroup.getStartupConfiguration().getAlwaysPreparedProcesses(); i++) {
-                            System.out.println(LanguageManager.get("process-preparing-new-process", processGroup.getName()));
-                            ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().prepareProcess(processGroup.getName());
-                        }
-                    }
-
-                    if (processGroup.getStartupConfiguration().getMaxOnlineProcesses() != -1
-                            && processGroup.getStartupConfiguration().getMaxOnlineProcesses() <= online) {
-                        continue;
-                    }
-
-                    if (processGroup.getStartupConfiguration().getMinOnlineProcesses() < 0
-                            || processGroup.getStartupConfiguration().getMinOnlineProcesses() <= online) {
-                        continue;
-                    }
-
-                    if (!preparedProcesses.isEmpty()) {
-                        System.out.println(LanguageManager.get(
-                                "process-start-already-prepared-process",
-                                processGroup.getName(),
-                                preparedProcesses.get(0).getName()
-                        ));
-                        ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().startProcess(preparedProcesses.get(0));
-                        continue;
-                    }
-
-                    System.out.println(LanguageManager.get("process-start-creating-new-process", processGroup.getName()));
-                    ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().startProcess(processGroup.getName());
+            if (preparedProcesses.size() + waiting < processGroup.getStartupConfiguration().getAlwaysPreparedProcesses()) {
+                for (int i = preparedProcesses.size() + waiting; i < processGroup.getStartupConfiguration().getAlwaysPreparedProcesses(); i++) {
+                    System.out.println(LanguageManager.get("process-preparing-new-process", processGroup.getName()));
+                    ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().prepareProcess(processGroup.getName());
                     AbsoluteThread.sleep(100);
                 }
-            } catch (final Throwable throwable) {
-                throwable.printStackTrace();
             }
+        }
+    }
 
-            AbsoluteThread.sleep(50);
+    private void handleProcessStarts() {
+        try {
+            for (ProcessGroup processGroup : Streams.copySortedSet(perPriorityStartup)) {
+                int online = NodeExecutor.getInstance().getNodeNetworkManager().getCluster().getClusterManager()
+                        .getOnlineAndWaiting(processGroup.getName());
+                List<ProcessInformation> preparedProcesses = this.getPreparedProcesses(processGroup.getName());
+
+                if (processGroup.getStartupConfiguration().getMaxOnlineProcesses() != -1
+                        && processGroup.getStartupConfiguration().getMaxOnlineProcesses() <= online) {
+                    continue;
+                }
+
+                if (processGroup.getStartupConfiguration().getMinOnlineProcesses() < 0
+                        || processGroup.getStartupConfiguration().getMinOnlineProcesses() <= online) {
+                    continue;
+                }
+
+                if (!preparedProcesses.isEmpty()) {
+                    System.out.println(LanguageManager.get(
+                            "process-start-already-prepared-process",
+                            processGroup.getName(),
+                            preparedProcesses.get(0).getName()
+                    ));
+                    ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().startProcess(preparedProcesses.get(0));
+                    continue;
+                }
+
+                System.out.println(LanguageManager.get("process-start-creating-new-process", processGroup.getName()));
+                ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().startProcess(processGroup.getName());
+                AbsoluteThread.sleep(100);
+            }
+        } catch (final Throwable throwable) {
+            throwable.printStackTrace();
         }
     }
 

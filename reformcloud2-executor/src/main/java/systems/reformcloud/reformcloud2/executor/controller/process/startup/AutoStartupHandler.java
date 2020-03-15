@@ -80,6 +80,7 @@ public final class AutoStartupHandler extends AbsoluteThread {
                     for (int i = preparedProcesses.size() + waiting; i < processGroup.getStartupConfiguration().getAlwaysPreparedProcesses(); i++) {
                         System.out.println(LanguageManager.get("process-preparing-new-process", processGroup.getName()));
                         ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().prepareProcess(processGroup.getName());
+                        AbsoluteThread.sleep(100);
                     }
                 }
             });
