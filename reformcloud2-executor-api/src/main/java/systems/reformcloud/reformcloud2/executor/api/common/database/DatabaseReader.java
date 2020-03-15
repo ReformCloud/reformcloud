@@ -3,6 +3,7 @@ package systems.reformcloud.reformcloud2.executor.api.common.database;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.name.Nameable;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.task.defaults.DefaultTask;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -104,5 +105,15 @@ public interface DatabaseReader extends Iterable<JsonConfiguration>, Nameable {
      */
     @Nonnull
     @CheckReturnValue
-    Task<Integer> size();
+    default Task<Integer> size() {
+        Task<Integer> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(() -> {
+            int count = 0;
+            for (JsonConfiguration ignored : this) {
+                count++;
+            }
+            task.complete(count);
+        });
+        return task;
+    }
 }

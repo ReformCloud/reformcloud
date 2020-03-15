@@ -1,7 +1,6 @@
 package systems.reformcloud.reformcloud2.web.tokens;
 
 import io.netty.channel.ChannelHandlerContext;
-import systems.reformcloud.reformcloud2.executor.api.common.configuration.Configurable;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.restapi.auth.Auth;
 import systems.reformcloud.reformcloud2.executor.api.common.restapi.request.WebRequester;
@@ -21,7 +20,7 @@ public class TokenWebServerAuth implements Auth {
 
     @Nonnull
     @Override
-    public Duo<Boolean, WebRequester> handleAuth(@Nonnull Configurable<JsonConfiguration> configurable, @Nonnull ChannelHandlerContext channelHandlerContext) {
+    public Duo<Boolean, WebRequester> handleAuth(@Nonnull JsonConfiguration configurable, @Nonnull ChannelHandlerContext channelHandlerContext) {
         String token = configurable.getOrDefault("token", (String) null);
         if (token == null) {
             if (TokenDatabase.isSetupDone()) {

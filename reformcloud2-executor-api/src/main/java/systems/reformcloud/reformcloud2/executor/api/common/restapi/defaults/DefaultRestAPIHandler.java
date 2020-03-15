@@ -7,7 +7,6 @@ import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpResponseStatus;
-import systems.reformcloud.reformcloud2.executor.api.common.configuration.Configurable;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.restapi.RestAPIHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.restapi.request.RequestListenerHandler;
@@ -54,7 +53,7 @@ public final class DefaultRestAPIHandler extends RestAPIHandler {
             return;
         }
 
-        Configurable<JsonConfiguration> configurable = new JsonConfiguration()
+        JsonConfiguration configurable = new JsonConfiguration()
                 .add("name", httpHeaders.get("-XUser"))
                 .add("token", httpHeaders.get("-XToken"));
         Duo<Boolean, WebRequester> auth = tryAuth(channelHandlerContext, configurable);
@@ -88,7 +87,7 @@ public final class DefaultRestAPIHandler extends RestAPIHandler {
         }));
     }
 
-    private Duo<Boolean, WebRequester> tryAuth(ChannelHandlerContext channelHandlerContext, Configurable<JsonConfiguration> configurable) {
+    private Duo<Boolean, WebRequester> tryAuth(ChannelHandlerContext channelHandlerContext, JsonConfiguration configurable) {
         return requestHandler.authHandler().handleAuth(configurable, channelHandlerContext);
     }
 }

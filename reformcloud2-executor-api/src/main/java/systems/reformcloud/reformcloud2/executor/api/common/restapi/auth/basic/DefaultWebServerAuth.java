@@ -2,7 +2,6 @@ package systems.reformcloud.reformcloud2.executor.api.common.restapi.auth.basic;
 
 import io.netty.channel.ChannelHandlerContext;
 import systems.reformcloud.reformcloud2.executor.api.common.api.database.DatabaseSyncAPI;
-import systems.reformcloud.reformcloud2.executor.api.common.configuration.Configurable;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.restapi.auth.Auth;
 import systems.reformcloud.reformcloud2.executor.api.common.restapi.request.WebRequester;
@@ -22,7 +21,7 @@ public class DefaultWebServerAuth implements Auth {
 
     @Nonnull
     @Override
-    public Duo<Boolean, WebRequester> handleAuth(@Nonnull Configurable<JsonConfiguration> configurable, @Nonnull ChannelHandlerContext channelHandlerContext) {
+    public Duo<Boolean, WebRequester> handleAuth(@Nonnull JsonConfiguration configurable, @Nonnull ChannelHandlerContext channelHandlerContext) {
         String userName = configurable.getString("name");
         String token = configurable.getString("token");
         if (userName.trim().isEmpty() || token.trim().isEmpty()) {
