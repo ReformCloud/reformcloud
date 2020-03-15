@@ -61,20 +61,6 @@ pipeline {
             }
         }
 
-        stage('Deploy snapshot') {
-            when {
-                allOf {
-                    branch 'indev'
-                    environment name:'IS_SNAPSHOT', value: 'true'
-                }
-            }
-
-            steps {
-                echo "Deploy new snapshot...";
-                sh 'mvn clean deploy -P deploy';
-            }
-        }
-
         stage('Prepare cloud zip') {
             steps {
                 echo "Creating cloud zip...";
