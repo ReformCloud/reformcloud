@@ -44,7 +44,7 @@ public class BungeeCordListener implements Listener {
                     continue;
                 }
 
-                if (PluginConfigHandler.getConfiguration().getTabListConfigurations().size() <= ATOMIC_INTEGERS[0].get()) {
+                if ((PluginConfigHandler.getConfiguration().getTabListConfigurations().size() - 1) == ATOMIC_INTEGERS[0].get()) {
                     ATOMIC_INTEGERS[0].set(0);
                     initTab();
                     AbsoluteThread.sleep(TimeUnit.SECONDS.toMillis(currentTabConfig.getWaitUntilNextInSeconds()));
@@ -67,7 +67,7 @@ public class BungeeCordListener implements Listener {
                     return;
                 }
 
-                if (PluginConfigHandler.getConfiguration().getMotdDefaultConfig().size() <= ATOMIC_INTEGERS[1].get()) {
+                if ((PluginConfigHandler.getConfiguration().getMotdDefaultConfig().size() - 1) == ATOMIC_INTEGERS[1].get()) {
                     ATOMIC_INTEGERS[1].set(0);
                     AbsoluteThread.sleep(TimeUnit.SECONDS.toMillis(getDefaultConfig().getWaitUntilNextInSeconds()));
                     continue;
@@ -88,7 +88,7 @@ public class BungeeCordListener implements Listener {
                     return;
                 }
 
-                if (PluginConfigHandler.getConfiguration().getMotdMaintenanceConfig().size() <= ATOMIC_INTEGERS[2].get()) {
+                if ((PluginConfigHandler.getConfiguration().getMotdMaintenanceConfig().size() - 1) == ATOMIC_INTEGERS[2].get()) {
                     ATOMIC_INTEGERS[2].set(0);
                     AbsoluteThread.sleep(TimeUnit.SECONDS.toMillis(getMaintenanceConfig().getWaitUntilNextInSeconds()));
                     continue;
