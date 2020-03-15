@@ -32,8 +32,8 @@ public final class JavaProcessHelper {
                 try {
                     outputStream.write(e.getBytes(StandardCharsets.UTF_8));
                     outputStream.flush();
-                } catch (final IOException ex) {
-                    ex.printStackTrace();
+                } catch (final IOException ignored) {
+                    // Ignore - pipe may be closed already
                 }
             });
 
