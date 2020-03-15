@@ -100,6 +100,10 @@ public final class StartupConfiguration {
         this.minOnlineProcesses = minOnlineProcesses;
     }
 
+    public void setAlwaysPreparedProcesses(int alwaysPreparedProcesses) {
+        this.alwaysPreparedProcesses = alwaysPreparedProcesses;
+    }
+
     public void setStartPort(int startPort) {
         this.startPort = startPort;
     }
