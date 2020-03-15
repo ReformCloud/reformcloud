@@ -1,6 +1,7 @@
 package systems.reformcloud.reformcloud2.executor.api.common.database.basic.drivers.rethinkdb;
 
 import com.rethinkdb.RethinkDB;
+import com.rethinkdb.model.MapObject;
 import com.rethinkdb.net.Connection;
 import com.rethinkdb.net.Result;
 import org.jetbrains.annotations.NotNull;
@@ -12,7 +13,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.utility.task.default
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -52,7 +52,7 @@ public class RethinkDatabaseDatabaseReader implements DatabaseReader {
     public Task<JsonConfiguration> insert(@Nonnull String key, @Nullable String identifier, @Nonnull JsonConfiguration data) {
         Task<JsonConfiguration> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
-            this.parent.get().table(this.table).insert(Collections.singletonMap("values", data.toPrettyString())).run(this.connection);
+            this.parent.get().table(this.table).insert(this.asMap(key, identifier, data)).run(this.connection);
             task.complete(data);
         });
         return task;
@@ -111,9 +111,23 @@ public class RethinkDatabaseDatabaseReader implements DatabaseReader {
         return this.table;
     }
 
-    @SuppressWarnings("unchecked")
     private Task<JsonConfiguration> get(String keyName, String expected) {
         Task<JsonConfiguration> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(() -> {
+            MapObject<String, String> map = this.getMapObject(keyName, expected).getUninterruptedly();
+            if (map != null) {
+                task.complete(new JsonConfiguration(map.get("values")));
+                return;
+            }
+
+            task.complete(null);
+        });
+        return task;
+    }
+
+    @SuppressWarnings("unchecked")
+    private Task<MapObject<String, String>> getMapObject(String keyName, String expected) {
+        Task<MapObject<String, String>> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             Result<Object> result = this.parent
                     .get()
@@ -123,7 +137,7 @@ public class RethinkDatabaseDatabaseReader implements DatabaseReader {
             if (result.hasNext()) {
                 Object next = result.first();
                 if (next instanceof Map) {
-                    task.complete(new JsonConfiguration(((Map<String, String >) next).get("values")));
+                    task.complete((MapObject<String, String>) next);
                     return;
                 }
             }
@@ -136,13 +150,15 @@ public class RethinkDatabaseDatabaseReader implements DatabaseReader {
 
     private Task<Boolean> update(String keyName, String expected, JsonConfiguration newData) {
         Task<Boolean> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> task.complete(this.parent.get()
-                .table(this.table)
-                .filter(row -> row.g(keyName).eq(expected))
-                .update(Collections.singletonMap("values", newData.toPrettyString()))
-                .run(connection)
-                .hasNext())
-        );
+        Task.EXECUTOR.execute(() -> {
+            MapObject<String, String> map = this.getMapObject(keyName, expected).getUninterruptedly();
+            if (map != null) {
+                this.delete(keyName, expected).awaitUninterruptedly();
+                this.insert(map.get(KEY_NAME), map.get(ID_NAME), newData).awaitUninterruptedly();
+            }
+
+            task.complete(map != null);
+        });
         return task;
     }
 
@@ -153,5 +169,13 @@ public class RethinkDatabaseDatabaseReader implements DatabaseReader {
             task.complete(null);
         });
         return task;
+    }
+
+    private MapObject<Object, Object> asMap(String key, String identifier, JsonConfiguration configuration) {
+        return this.parent.get()
+                .hashMap()
+                .with(KEY_NAME, key == null ? "" : key)
+                .with(ID_NAME, identifier == null ? "" : identifier)
+                .with("values", configuration.toPrettyString());
     }
 }
