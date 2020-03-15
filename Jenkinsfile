@@ -100,12 +100,12 @@ pipeline {
                 archiveArtifacts artifacts: 'reformcloud2-runner/target/runner.jar'
             }
         }
+    }
 
-        post {
-            always {
-                withCredentials([string(credentialsId: 'discord-webhook', variable: 'url')]) {
-                    discordSend description: 'New build of ReformCloud', footer: 'Update', link: BUILD_URL, successful: currentBuild.resultIsBetterOrEqualTo('SUCCESS'), title: JOB_NAME, webhookURL: url
-                }
+    post {
+        always {
+            withCredentials([string(credentialsId: 'discord-webhook', variable: 'url')]) {
+                discordSend description: 'New build of ReformCloud', footer: 'Update', link: BUILD_URL, successful: currentBuild.resultIsBetterOrEqualTo('SUCCESS'), title: JOB_NAME, webhookURL: url
             }
         }
     }
