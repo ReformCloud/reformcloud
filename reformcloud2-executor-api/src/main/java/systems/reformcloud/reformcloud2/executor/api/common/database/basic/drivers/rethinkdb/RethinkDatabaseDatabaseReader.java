@@ -114,7 +114,7 @@ public class RethinkDatabaseDatabaseReader implements DatabaseReader {
     private Task<JsonConfiguration> get(String keyName, String expected) {
         Task<JsonConfiguration> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
-            MapObject<String, String> map = this.getMapObject(keyName, expected).getUninterruptedly();
+            Map<String, String> map = this.getMapObject(keyName, expected).getUninterruptedly();
             if (map != null) {
                 task.complete(new JsonConfiguration(map.get("values")));
                 return;
@@ -126,8 +126,8 @@ public class RethinkDatabaseDatabaseReader implements DatabaseReader {
     }
 
     @SuppressWarnings("unchecked")
-    private Task<MapObject<String, String>> getMapObject(String keyName, String expected) {
-        Task<MapObject<String, String>> task = new DefaultTask<>();
+    private Task<Map<String, String>> getMapObject(String keyName, String expected) {
+        Task<Map<String, String>> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             Result<Object> result = this.parent
                     .get()
@@ -137,7 +137,7 @@ public class RethinkDatabaseDatabaseReader implements DatabaseReader {
             if (result.hasNext()) {
                 Object next = result.first();
                 if (next instanceof Map) {
-                    task.complete((MapObject<String, String>) next);
+                    task.complete((Map<String, String>) next);
                     return;
                 }
             }
@@ -151,7 +151,7 @@ public class RethinkDatabaseDatabaseReader implements DatabaseReader {
     private Task<Boolean> update(String keyName, String expected, JsonConfiguration newData) {
         Task<Boolean> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
-            MapObject<String, String> map = this.getMapObject(keyName, expected).getUninterruptedly();
+            Map<String, String> map = this.getMapObject(keyName, expected).getUninterruptedly();
             if (map != null) {
                 this.delete(keyName, expected).awaitUninterruptedly();
                 this.insert(map.get(KEY_NAME), map.get(ID_NAME), newData).awaitUninterruptedly();
