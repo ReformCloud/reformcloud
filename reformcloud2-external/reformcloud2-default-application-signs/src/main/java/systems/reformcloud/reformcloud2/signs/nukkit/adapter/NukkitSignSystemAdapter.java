@@ -419,6 +419,7 @@ public class NukkitSignSystemAdapter implements SignSystemAdapter<BlockEntitySig
             runTasks();
         });
 
+        // Thanks to juliarn for his help (https://github.com/juliarn)
         double distance = this.config.getKnockBackDistance();
         this.plugin.getServer().getScheduler().scheduleDelayedRepeatingTask(this.plugin, () -> {
             for (CloudSign cachedSign : this.cachedSigns) {
