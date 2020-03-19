@@ -20,6 +20,7 @@ import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 public class ProcessAPIImplementation implements ProcessSyncAPI, ProcessAsyncAPI {
 
@@ -56,6 +57,47 @@ public class ProcessAPIImplementation implements ProcessSyncAPI, ProcessAsyncAPI
                     group,
                     Streams.filterToReference(group.getTemplates(), e -> e.getName().equals(template)).orNothing(),
                     configurable
+            ));
+        });
+        return task;
+    }
+
+    @Nonnull
+    @Override
+    public Task<ProcessInformation> startProcessAsync(@Nonnull ProcessInformation processInformation) {
+        Task<ProcessInformation> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(() -> task.complete(nodeNetworkManager.startProcess(processInformation)));
+        return task;
+    }
+
+    @Nonnull
+    @Override
+    public Task<ProcessInformation> prepareProcessAsync(@Nonnull String groupName) {
+        return this.prepareProcessAsync(groupName, null);
+    }
+
+    @Nonnull
+    @Override
+    public Task<ProcessInformation> prepareProcessAsync(@Nonnull String groupName, @Nullable String template) {
+        return this.prepareProcessAsync(groupName, template, new JsonConfiguration());
+    }
+
+    @Nonnull
+    @Override
+    public Task<ProcessInformation> prepareProcessAsync(@Nonnull String groupName, @Nullable String template, @Nonnull JsonConfiguration configurable) {
+        Task<ProcessInformation> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(() -> {
+            ProcessGroup group = Streams.filterToReference(NodeExecutor.getInstance().getClusterSyncManager().getProcessGroups(), e -> e.getName().equals(groupName)).orNothing();
+            if (group == null) {
+                task.complete(null);
+                return;
+            }
+
+            task.complete(nodeNetworkManager.prepareProcess(
+                    group,
+                    Streams.filterToReference(group.getTemplates(), e -> e.getName().equals(template)).orNothing(),
+                    configurable,
+                    false
             ));
         });
         return task;
@@ -189,6 +231,31 @@ public class ProcessAPIImplementation implements ProcessSyncAPI, ProcessAsyncAPI
     @Override
     public ProcessInformation startProcess(@Nonnull String groupName, String template, @Nonnull JsonConfiguration configurable) {
         return startProcessAsync(groupName, template, configurable).getUninterruptedly();
+    }
+
+    @Nonnull
+    @Override
+    public ProcessInformation startProcess(@Nonnull ProcessInformation processInformation) {
+        ProcessInformation result = this.startProcessAsync(processInformation).getUninterruptedly(TimeUnit.SECONDS, 5);
+        return result == null ? processInformation : result;
+    }
+
+    @Nullable
+    @Override
+    public ProcessInformation prepareProcess(@Nonnull String groupName) {
+        return this.prepareProcess(groupName, null);
+    }
+
+    @Nullable
+    @Override
+    public ProcessInformation prepareProcess(@Nonnull String groupName, @Nullable String template) {
+        return this.prepareProcess(groupName, template, new JsonConfiguration());
+    }
+
+    @Nullable
+    @Override
+    public ProcessInformation prepareProcess(@Nonnull String groupName, @Nullable String template, @Nonnull JsonConfiguration configurable) {
+        return this.prepareProcessAsync(groupName, template, configurable).getUninterruptedly(TimeUnit.SECONDS, 10);
     }
 
     @Override

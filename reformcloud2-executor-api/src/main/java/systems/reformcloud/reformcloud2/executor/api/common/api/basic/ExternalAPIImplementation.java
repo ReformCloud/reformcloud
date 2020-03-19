@@ -75,6 +75,59 @@ public abstract class ExternalAPIImplementation extends ExecutorAPI implements
 
     @Nonnull
     @Override
+    public Task<ProcessInformation> startProcessAsync(@Nonnull ProcessInformation processInformation) {
+        Task<ProcessInformation> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(() -> sendPacketQuery(new ExternalAPIPacketOutStartProcess(processInformation), packet -> task.complete(packet.content().get("result", ProcessInformation.TYPE))));
+        return task;
+    }
+
+    @Nonnull
+    @Override
+    public Task<ProcessInformation> prepareProcessAsync(@Nonnull String groupName) {
+        return this.prepareProcessAsync(groupName, null);
+    }
+
+    @Nonnull
+    @Override
+    public Task<ProcessInformation> prepareProcessAsync(@Nonnull String groupName, @Nullable String template) {
+        return this.prepareProcessAsync(groupName, template, new JsonConfiguration());
+    }
+
+    @Nonnull
+    @Override
+    public Task<ProcessInformation> prepareProcessAsync(@Nonnull String groupName, @Nullable String template, @Nonnull JsonConfiguration configurable) {
+        Task<ProcessInformation> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(() -> sendPacketQuery(new ExternalAPIPacketOutStartProcess(groupName, template, configurable, false), packet -> task.complete(packet.content().get("result", ProcessInformation.TYPE))));
+        return task;
+    }
+
+    @Nonnull
+    @Override
+    public ProcessInformation startProcess(@Nonnull ProcessInformation processInformation) {
+        ProcessInformation information = this.startProcessAsync(processInformation).getUninterruptedly(TimeUnit.SECONDS, 5);
+        return information == null ? processInformation : information;
+    }
+
+    @Nullable
+    @Override
+    public ProcessInformation prepareProcess(@Nonnull String groupName) {
+        return this.prepareProcess(groupName, null);
+    }
+
+    @Nullable
+    @Override
+    public ProcessInformation prepareProcess(@Nonnull String groupName, @Nullable String template) {
+        return this.prepareProcess(groupName, template, new JsonConfiguration());
+    }
+
+    @Nullable
+    @Override
+    public ProcessInformation prepareProcess(@Nonnull String groupName, @Nullable String template, @Nonnull JsonConfiguration configurable) {
+        return this.prepareProcessAsync(groupName, template, configurable).getUninterruptedly(TimeUnit.SECONDS, 10);
+    }
+
+    @Nonnull
+    @Override
     public Task<Boolean> loadApplicationAsync(@Nonnull InstallableApplication application) {
         Task<Boolean> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> sendPacketQuery(new ExternalAPIPacketOutLoadApplication(application), packet -> task.complete(packet.content().getBoolean("installed"))));
@@ -967,7 +1020,7 @@ public abstract class ExternalAPIImplementation extends ExecutorAPI implements
     @Override
     public Task<ProcessInformation> startProcessAsync(@Nonnull String groupName, String template, @Nonnull JsonConfiguration configurable) {
         Task<ProcessInformation> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> sendPacketQuery(new ExternalAPIPacketOutStartProcess(groupName, template, configurable), packet -> task.complete(packet.content().get("result", ProcessInformation.TYPE))));
+        Task.EXECUTOR.execute(() -> sendPacketQuery(new ExternalAPIPacketOutStartProcess(groupName, template, configurable, true), packet -> task.complete(packet.content().get("result", ProcessInformation.TYPE))));
         return task;
     }
 

@@ -7,6 +7,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.commands.source.Comm
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.inclusion.Inclusion;
 import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
+import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.StringUtil;
 
 import javax.annotation.Nonnull;
@@ -41,6 +42,7 @@ public final class CommandProcess extends GlobalCommand {
                 "process <name | uniqueID> [info]              | Shows information about a process\n" +
                 " --full=[full]                                | Shows the full extra data submitted to the process (default: false)\n" +
                 " \n" +
+                "process <name | uniqueID> [start]             | Starts a process which is prepared\n" +
                 "process <name | uniqueID> [stop]              | Stops the process\n" +
                 "process <name | uniqueID> [screen]            | Toggles the screen logging of the process to the console\n" +
                 "process <name | uniqueID> [copy]              | Copies the specified process is the currently running template\n" +
@@ -117,6 +119,17 @@ public final class CommandProcess extends GlobalCommand {
         if (strings.length == 2 && (strings[1].equalsIgnoreCase("stop") || strings[1].equalsIgnoreCase("kill"))) {
             ExecutorAPI.getInstance().getAsyncAPI().getProcessAsyncAPI().stopProcessAsync(target.getProcessUniqueID()).onComplete(info -> {});
             commandSource.sendMessage(LanguageManager.get("command-process-stop-proceed", strings[0]));
+            return true;
+        }
+
+        if (strings.length == 2 && strings[1].equalsIgnoreCase("start")) {
+            if (!target.getProcessState().equals(ProcessState.PREPARED)) {
+                commandSource.sendMessage(LanguageManager.get("command-process-process-not-prepared", strings[0]));
+                return true;
+            }
+
+            ExecutorAPI.getInstance().getAsyncAPI().getProcessAsyncAPI().startProcessAsync(target).onComplete(e -> {});
+            commandSource.sendMessage(LanguageManager.get("command-process-starting-prepared", strings[0]));
             return true;
         }
 

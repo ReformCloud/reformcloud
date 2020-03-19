@@ -45,6 +45,8 @@ import systems.reformcloud.reformcloud2.executor.client.network.channel.ClientNe
 import systems.reformcloud.reformcloud2.executor.client.packet.out.ClientPacketOutNotifyRuntimeUpdate;
 import systems.reformcloud.reformcloud2.executor.client.process.ProcessQueue;
 import systems.reformcloud.reformcloud2.executor.client.process.basic.DefaultProcessManager;
+import systems.reformcloud.reformcloud2.executor.client.process.listeners.RunningProcessPreparedListener;
+import systems.reformcloud.reformcloud2.executor.client.process.listeners.RunningProcessStoppedListener;
 import systems.reformcloud.reformcloud2.executor.client.screen.ScreenManager;
 import systems.reformcloud.reformcloud2.executor.client.watchdog.WatchdogThread;
 
@@ -120,6 +122,9 @@ public final class ClientExecutor extends Client {
         } catch (final IOException ex) {
             ex.printStackTrace();
         }
+
+        ExecutorAPI.getInstance().getEventManager().registerListener(new RunningProcessPreparedListener());
+        ExecutorAPI.getInstance().getEventManager().registerListener(new RunningProcessStoppedListener());
 
         this.clientExecutorConfig = new ClientExecutorConfig();
         this.clientConfig = clientExecutorConfig.getClientConfig();
@@ -344,7 +349,8 @@ public final class ClientExecutor extends Client {
                         this.clientExecutorConfig.getConnectionKey(),
                         this.clientConfig.getName(),
                         () -> new JsonConfiguration().add("info", this.clientRuntimeInformation),
-                        context -> {} // unused here
+                        context -> {
+                        } // unused here
                 )
         );
     }

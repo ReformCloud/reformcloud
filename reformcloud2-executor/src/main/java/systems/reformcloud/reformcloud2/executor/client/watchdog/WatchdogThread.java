@@ -18,7 +18,7 @@ public final class WatchdogThread extends AbsoluteThread {
     public void run() {
         while (!Thread.currentThread().isInterrupted()) {
             Streams.newList(ClientExecutor.getInstance().getProcessManager().getAll()).forEach(runningProcess -> {
-                if (!runningProcess.running()
+                if (!runningProcess.isAlive()
                         && runningProcess.getStartupTime() != -1
                         && runningProcess.getStartupTime() + TimeUnit.SECONDS.toMillis(30) < System.currentTimeMillis()) {
                     runningProcess.shutdown();

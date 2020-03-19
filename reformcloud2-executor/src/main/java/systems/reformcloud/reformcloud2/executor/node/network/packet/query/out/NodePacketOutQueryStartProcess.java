@@ -8,11 +8,12 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.JsonP
 
 public class NodePacketOutQueryStartProcess extends JsonPacket {
 
-    public NodePacketOutQueryStartProcess(ProcessGroup processGroup, Template template, JsonConfiguration data) {
+    public NodePacketOutQueryStartProcess(ProcessGroup processGroup, Template template, JsonConfiguration data, boolean start) {
         super(NetworkUtil.NODE_TO_NODE_QUERY_BUS + 1, new JsonConfiguration()
                 .add("group", processGroup)
                 .add("template", template)
                 .add("data", data)
+                .add("start", start)
         );
     }
 }

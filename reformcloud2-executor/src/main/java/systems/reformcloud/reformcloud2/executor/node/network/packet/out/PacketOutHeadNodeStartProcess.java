@@ -7,7 +7,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInfor
 
 public class PacketOutHeadNodeStartProcess extends JsonPacket {
 
-    public PacketOutHeadNodeStartProcess(ProcessInformation processInformation) {
-        super(NetworkUtil.NODE_TO_NODE_BUS + 11, new JsonConfiguration().add("info", processInformation));
+    public PacketOutHeadNodeStartProcess(ProcessInformation processInformation, boolean start) {
+        super(NetworkUtil.NODE_TO_NODE_BUS + 11, new JsonConfiguration().add("info", processInformation).add("start", start));
     }
 }

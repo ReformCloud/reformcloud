@@ -18,7 +18,13 @@ public final class RuntimeConfiguration {
 
     public RuntimeConfiguration(int maxMemory, List<String> processParameters, List<String> jvmOptions,
                                 Map<String, String> systemProperties, Collection<String> shutdownCommands) {
+        this(maxMemory, -1, processParameters, jvmOptions, systemProperties, shutdownCommands);
+    }
+
+    public RuntimeConfiguration(int maxMemory, int dynamicMemory, List<String> processParameters, List<String> jvmOptions,
+                                Map<String, String> systemProperties, Collection<String> shutdownCommands) {
         this.maxMemory = maxMemory;
+        this.dynamicMemory = dynamicMemory;
         this.processParameters = processParameters;
         this.jvmOptions = jvmOptions;
         this.systemProperties = systemProperties;
@@ -26,6 +32,8 @@ public final class RuntimeConfiguration {
     }
 
     private int maxMemory;
+
+    private int dynamicMemory;
 
     private final List<String> processParameters;
 
@@ -37,6 +45,10 @@ public final class RuntimeConfiguration {
 
     public int getMaxMemory() {
         return maxMemory;
+    }
+
+    public int getDynamicMemory() {
+        return dynamicMemory;
     }
 
     public void setMaxMemory(int maxMemory) {

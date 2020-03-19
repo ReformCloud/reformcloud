@@ -50,6 +50,48 @@ public interface ProcessAsyncAPI {
     Task<ProcessInformation> startProcessAsync(@Nonnull String groupName, @Nullable String template, @Nonnull JsonConfiguration configurable);
 
     /**
+     * Starts a prepared process
+     *
+     * @param processInformation The process information of the prepared process
+     * @return The process information after the start call
+     */
+    @Nonnull
+    Task<ProcessInformation> startProcessAsync(@Nonnull ProcessInformation processInformation);
+
+    /**
+     * Prepares a process but does not start it
+     *
+     * @param groupName The name of the group which should be started from
+     * @return A task which which will be completed with the created {@link ProcessInformation}
+     */
+    @Nonnull
+    @CheckReturnValue
+    Task<ProcessInformation> prepareProcessAsync(@Nonnull String groupName);
+
+    /**
+     * Prepares a process but does not start it
+     *
+     * @param groupName The name of the group which should be started from
+     * @param template  The template which should be used
+     * @return A task which which will be completed with the created {@link ProcessInformation}
+     */
+    @Nonnull
+    @CheckReturnValue
+    Task<ProcessInformation> prepareProcessAsync(@Nonnull String groupName, @Nullable String template);
+
+    /**
+     * Prepares a process but does not start it
+     *
+     * @param groupName    The name of the group which should be started from
+     * @param template     The template which should be used
+     * @param configurable The data for the process
+     * @return A task which which will be completed with the created {@link ProcessInformation}
+     */
+    @Nonnull
+    @CheckReturnValue
+    Task<ProcessInformation> prepareProcessAsync(@Nonnull String groupName, @Nullable String template, @Nonnull JsonConfiguration configurable);
+
+    /**
      * Stops a process
      *
      * @param name The name of the process

@@ -1,7 +1,7 @@
 package systems.reformcloud.reformcloud2.executor.node.process.manager;
 
+import systems.reformcloud.reformcloud2.executor.api.common.process.running.RunningProcess;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
-import systems.reformcloud.reformcloud2.executor.api.node.process.LocalNodeProcess;
 
 import java.util.Collection;
 import java.util.UUID;
@@ -14,9 +14,9 @@ public final class LocalProcessManager {
 
     private LocalProcessManager() { throw new UnsupportedOperationException(); }
 
-    private static final Collection<LocalNodeProcess> NODE_PROCESSES = new CopyOnWriteArrayList<>();
+    private static final Collection<RunningProcess> NODE_PROCESSES = new CopyOnWriteArrayList<>();
 
-    public static void registerLocalProcess(LocalNodeProcess nodeProcess) {
+    public static void registerLocalProcess(RunningProcess nodeProcess) {
         NODE_PROCESSES.add(nodeProcess);
     }
 
@@ -24,13 +24,13 @@ public final class LocalProcessManager {
         Streams.filterToReference(NODE_PROCESSES, e -> e.getProcessInformation().getProcessUniqueID().equals(uniqueID)).ifPresent(NODE_PROCESSES::remove);
     }
 
-    public static Collection<LocalNodeProcess> getNodeProcesses() {
+    public static Collection<RunningProcess> getNodeProcesses() {
         return NODE_PROCESSES;
     }
 
     public static void close() {
         ExecutorService executorService = Executors.newCachedThreadPool();
-        NODE_PROCESSES.forEach(e -> executorService.submit(() -> e.shutdown()));
+        NODE_PROCESSES.stream().filter(e -> e.getProcess().isPresent()).forEach(e -> executorService.submit(() -> e.shutdown()));
 
         try {
             executorService.shutdown();

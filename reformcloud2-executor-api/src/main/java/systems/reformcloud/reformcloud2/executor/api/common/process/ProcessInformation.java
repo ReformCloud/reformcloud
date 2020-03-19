@@ -23,6 +23,7 @@ public final class ProcessInformation implements Nameable, Clone<ProcessInformat
             @Nonnull String parent,
             @Nullable UUID nodeUniqueID,
             @Nonnull UUID processUniqueID,
+            @Nullable Integer maxMemory,
             int id,
             @Nonnull ProcessState processState,
             @Nonnull NetworkInfo networkInfo,
@@ -39,6 +40,7 @@ public final class ProcessInformation implements Nameable, Clone<ProcessInformat
         this.nodeUniqueID = nodeUniqueID;
         this.processUniqueID = processUniqueID;
         this.id = id;
+        this.maxMemory = maxMemory;
         this.processState = processState;
         this.networkInfo = networkInfo;
         this.processGroup = processGroup;
@@ -60,6 +62,8 @@ public final class ProcessInformation implements Nameable, Clone<ProcessInformat
     private final UUID processUniqueID;
 
     private final int id;
+
+    private final Integer maxMemory;
 
     private int maxPlayers;
 
@@ -100,6 +104,10 @@ public final class ProcessInformation implements Nameable, Clone<ProcessInformat
 
     public int getId() {
         return id;
+    }
+
+    public Integer getMaxMemory() {
+        return maxMemory == null ? this.getTemplate().getRuntimeConfiguration().getMaxMemory() : maxMemory;
     }
 
     public int getMaxPlayers() {
@@ -205,7 +213,7 @@ public final class ProcessInformation implements Nameable, Clone<ProcessInformat
         try {
             return (ProcessInformation) super.clone();
         } catch (final CloneNotSupportedException ex) {
-            return new ProcessInformation(processName, displayName, parent, nodeUniqueID, processUniqueID, id,
+            return new ProcessInformation(processName, displayName, parent, nodeUniqueID, processUniqueID, maxMemory, id,
                     processState, networkInfo, processGroup, template, processRuntimeInformation, plugins, extra, maxPlayers);
         }
     }

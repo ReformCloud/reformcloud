@@ -27,13 +27,13 @@ public final class Template implements Nameable {
         this(priority, name, global, false, backend, serverNameSplitter, runtimeConfiguration, version, templateInclusions, pathInclusions);
     }
 
-    public Template(int priority, String name, boolean global, boolean autoCopyOnStop, String backend, String serverNameSplitter,
+    public Template(int priority, String name, boolean global, boolean autoReleaseOnClose, String backend, String serverNameSplitter,
                     RuntimeConfiguration runtimeConfiguration, Version version, Collection<Inclusion> templateInclusions,
                     Collection<Inclusion> pathInclusions) {
         this.priority = priority;
         this.name = name;
         this.global = global;
-        this.autoCopyOnStop = autoCopyOnStop;
+        this.autoReleaseOnClose = autoReleaseOnClose;
         this.backend = backend;
         this.serverNameSplitter = serverNameSplitter;
         this.runtimeConfiguration = runtimeConfiguration;
@@ -48,7 +48,7 @@ public final class Template implements Nameable {
 
     private final boolean global;
 
-    private final boolean autoCopyOnStop;
+    private final boolean autoReleaseOnClose;
 
     private final String backend;
 
@@ -76,8 +76,8 @@ public final class Template implements Nameable {
         return global;
     }
 
-    public boolean isAutoCopyOnStop() {
-        return autoCopyOnStop;
+    public boolean isAutoReleaseOnClose() {
+        return autoReleaseOnClose;
     }
 
     @Nonnull
