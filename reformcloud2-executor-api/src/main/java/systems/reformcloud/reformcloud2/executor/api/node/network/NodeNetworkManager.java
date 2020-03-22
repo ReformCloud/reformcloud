@@ -1,9 +1,7 @@
 package systems.reformcloud.reformcloud2.executor.api.node.network;
 
-import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
-import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
-import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Template;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
+import systems.reformcloud.reformcloud2.executor.api.common.process.api.ProcessConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.node.cluster.InternalNetworkCluster;
 import systems.reformcloud.reformcloud2.executor.api.node.process.NodeProcessManager;
 
@@ -20,9 +18,9 @@ public interface NodeNetworkManager {
 
     ProcessInformation getCloudProcess(UUID uuid);
 
-    ProcessInformation prepareProcess(ProcessGroup processGroup, Template template, JsonConfiguration data, boolean start);
+    ProcessInformation prepareProcess(ProcessConfiguration configuration, boolean start);
 
-    ProcessInformation startProcess(ProcessGroup processGroup, Template template, JsonConfiguration data);
+    ProcessInformation startProcess(ProcessConfiguration configuration);
 
     ProcessInformation startProcess(ProcessInformation processInformation);
 

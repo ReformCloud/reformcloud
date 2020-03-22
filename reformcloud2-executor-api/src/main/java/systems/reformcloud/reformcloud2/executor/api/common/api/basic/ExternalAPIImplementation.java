@@ -43,6 +43,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.plugins.InstallableP
 import systems.reformcloud.reformcloud2.executor.api.common.plugins.Plugin;
 import systems.reformcloud.reformcloud2.executor.api.common.plugins.basic.DefaultPlugin;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
+import systems.reformcloud.reformcloud2.executor.api.common.process.api.ProcessConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.defaults.DefaultTask;
@@ -83,21 +84,9 @@ public abstract class ExternalAPIImplementation extends ExecutorAPI implements
 
     @Nonnull
     @Override
-    public Task<ProcessInformation> prepareProcessAsync(@Nonnull String groupName) {
-        return this.prepareProcessAsync(groupName, null);
-    }
-
-    @Nonnull
-    @Override
-    public Task<ProcessInformation> prepareProcessAsync(@Nonnull String groupName, @Nullable String template) {
-        return this.prepareProcessAsync(groupName, template, new JsonConfiguration());
-    }
-
-    @Nonnull
-    @Override
-    public Task<ProcessInformation> prepareProcessAsync(@Nonnull String groupName, @Nullable String template, @Nonnull JsonConfiguration configurable) {
+    public Task<ProcessInformation> prepareProcessAsync(@Nonnull ProcessConfiguration configuration) {
         Task<ProcessInformation> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> sendPacketQuery(new ExternalAPIPacketOutStartProcess(groupName, template, configurable, false), packet -> task.complete(packet.content().get("result", ProcessInformation.TYPE))));
+        Task.EXECUTOR.execute(() -> sendPacketQuery(new ExternalAPIPacketOutStartProcess(configuration, false), packet -> task.complete(packet.content().get("result", ProcessInformation.TYPE))));
         return task;
     }
 
@@ -110,20 +99,8 @@ public abstract class ExternalAPIImplementation extends ExecutorAPI implements
 
     @Nullable
     @Override
-    public ProcessInformation prepareProcess(@Nonnull String groupName) {
-        return this.prepareProcess(groupName, null);
-    }
-
-    @Nullable
-    @Override
-    public ProcessInformation prepareProcess(@Nonnull String groupName, @Nullable String template) {
-        return this.prepareProcess(groupName, template, new JsonConfiguration());
-    }
-
-    @Nullable
-    @Override
-    public ProcessInformation prepareProcess(@Nonnull String groupName, @Nullable String template, @Nonnull JsonConfiguration configurable) {
-        return this.prepareProcessAsync(groupName, template, configurable).getUninterruptedly(TimeUnit.SECONDS, 10);
+    public ProcessInformation prepareProcess(@Nonnull ProcessConfiguration configuration) {
+        return this.prepareProcessAsync(configuration).getUninterruptedly(TimeUnit.SECONDS, 5);
     }
 
     @Nonnull
@@ -1006,21 +983,9 @@ public abstract class ExternalAPIImplementation extends ExecutorAPI implements
 
     @Nonnull
     @Override
-    public Task<ProcessInformation> startProcessAsync(@Nonnull String groupName) {
-        return startProcessAsync(groupName, null);
-    }
-
-    @Nonnull
-    @Override
-    public Task<ProcessInformation> startProcessAsync(@Nonnull String groupName, String template) {
-        return startProcessAsync(groupName, template, new JsonConfiguration());
-    }
-
-    @Nonnull
-    @Override
-    public Task<ProcessInformation> startProcessAsync(@Nonnull String groupName, String template, @Nonnull JsonConfiguration configurable) {
+    public Task<ProcessInformation> startProcessAsync(@Nonnull ProcessConfiguration processConfiguration) {
         Task<ProcessInformation> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> sendPacketQuery(new ExternalAPIPacketOutStartProcess(groupName, template, configurable, true), packet -> task.complete(packet.content().get("result", ProcessInformation.TYPE))));
+        Task.EXECUTOR.execute(() -> sendPacketQuery(new ExternalAPIPacketOutStartProcess(processConfiguration, true), packet -> task.complete(packet.content().get("result", ProcessInformation.TYPE))));
         return task;
     }
 
@@ -1105,20 +1070,8 @@ public abstract class ExternalAPIImplementation extends ExecutorAPI implements
 
     @Nullable
     @Override
-    public ProcessInformation startProcess(@Nonnull String groupName) {
-        return startProcessAsync(groupName).getUninterruptedly();
-    }
-
-    @Nullable
-    @Override
-    public ProcessInformation startProcess(@Nonnull String groupName, String template) {
-        return startProcessAsync(groupName, template).getUninterruptedly();
-    }
-
-    @Nullable
-    @Override
-    public ProcessInformation startProcess(@Nonnull String groupName, String template, @Nonnull JsonConfiguration configurable) {
-        return startProcessAsync(groupName, template, configurable).getUninterruptedly();
+    public ProcessInformation startProcess(@Nonnull ProcessConfiguration processConfiguration) {
+        return startProcessAsync(processConfiguration).getUninterruptedly();
     }
 
     @Override

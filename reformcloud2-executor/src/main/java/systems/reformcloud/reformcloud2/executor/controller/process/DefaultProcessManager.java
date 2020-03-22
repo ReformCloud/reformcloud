@@ -5,7 +5,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.Pro
 import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.ProcessStoppedEvent;
 import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.ProcessUpdatedEvent;
 import systems.reformcloud.reformcloud2.executor.api.common.client.ClientRuntimeInformation;
-import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.RuntimeConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Template;
@@ -17,8 +16,9 @@ import systems.reformcloud.reformcloud2.executor.api.common.process.NetworkInfo;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessRuntimeInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState;
+import systems.reformcloud.reformcloud2.executor.api.common.process.api.ProcessConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.process.util.MemoryCalculator;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Quad;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Duo;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
 import systems.reformcloud.reformcloud2.executor.api.controller.process.ProcessManager;
@@ -46,20 +46,20 @@ public final class DefaultProcessManager implements ProcessManager {
 
     private final Collection<ProcessInformation> processInformation = Collections.synchronizedCollection(new ProcessCopyOnWriteArrayList());
 
-    private final Queue<Quad<ProcessGroup, Template, JsonConfiguration, Boolean>> noClientTryLater = new ConcurrentLinkedQueue<>();
+    private final Queue<Duo<ProcessConfiguration, Boolean>> noClientTryLater = new ConcurrentLinkedQueue<>();
 
     public DefaultProcessManager() {
         CompletableFuture.runAsync(() -> {
             while (!Thread.currentThread().isInterrupted()) {
                 if (!noClientTryLater.isEmpty()) {
-                    Quad<ProcessGroup, Template, JsonConfiguration, Boolean> trio = noClientTryLater.peek();
-                    if (trio.getFourth()) {
-                        startProcess(trio.getFirst().getName(), trio.getSecond().getName(), trio.getThird());
+                    Duo<ProcessConfiguration, Boolean> duo = noClientTryLater.peek();
+                    if (duo.getSecond()) {
+                        startProcess(duo.getFirst());
                     } else {
-                        prepareProcess(trio.getFirst().getName(), trio.getSecond().getName(), trio.getThird());
+                        prepareProcess(duo.getFirst());
                     }
 
-                    noClientTryLater.remove(trio);
+                    noClientTryLater.remove(duo);
                 }
 
                 AbsoluteThread.sleep(TimeUnit.MILLISECONDS, 200);
@@ -84,7 +84,7 @@ public final class DefaultProcessManager implements ProcessManager {
 
     @Override
     public Integer getWaitingProcesses(String group) {
-        return noClientTryLater.stream().filter(e -> e.getFirst().getName().equals(group)).mapToInt(value -> 1).sum();
+        return noClientTryLater.stream().filter(e -> e.getFirst().getBase().getName().equals(group)).mapToInt(value -> 1).sum();
     }
 
     @Override
@@ -100,30 +100,12 @@ public final class DefaultProcessManager implements ProcessManager {
     }
 
     @Override
-    public ProcessInformation startProcess(String groupName) {
-        requireNonNull(groupName);
-        return startProcess(groupName, null);
-    }
-
-    @Override
-    public ProcessInformation startProcess(String groupName, String template) {
-        return startProcess(groupName, template, null);
-    }
-
-    @Override
-    public synchronized ProcessInformation startProcess(String groupName, String template, JsonConfiguration configurable) {
-        ProcessGroup processGroup = Streams.filter(ControllerExecutor.getInstance().getControllerExecutorConfig().getProcessGroups(), processGroup1 -> processGroup1.getName().equals(groupName));
-        if (processGroup == null) {
-            // In some cases the group got deleted but the update process is sync and this method get called async!
-            // To prevent any issues just return at this point
-            return null;
-        }
-
-        List<ProcessInformation> preparedProcesses = this.getPreparedProcesses(groupName);
+    public synchronized ProcessInformation startProcess(@Nonnull ProcessConfiguration configuration) {
+        List<ProcessInformation> preparedProcesses = this.getPreparedProcesses(configuration.getBase().getName());
         if (!preparedProcesses.isEmpty()) {
             System.out.println(LanguageManager.get(
                     "process-start-already-prepared-process",
-                    processGroup.getName(),
+                    configuration.getBase().getName(),
                     preparedProcesses.get(0).getName()
             ));
 
@@ -134,8 +116,7 @@ public final class DefaultProcessManager implements ProcessManager {
             return preparedProcesses.get(0);
         }
 
-        Template found = Streams.filter(processGroup.getTemplates(), test -> template == null || template.equals(test.getName()));
-        ProcessInformation processInformation = this.create(processGroup, found, configurable, true);
+        ProcessInformation processInformation = this.create(configuration, true);
         if (processInformation == null) {
             return null;
         }
@@ -161,16 +142,8 @@ public final class DefaultProcessManager implements ProcessManager {
     }
 
     @Override
-    public synchronized ProcessInformation prepareProcess(String groupName, String template, JsonConfiguration configurable) {
-        ProcessGroup processGroup = Streams.filter(ControllerExecutor.getInstance().getControllerExecutorConfig().getProcessGroups(), processGroup1 -> processGroup1.getName().equals(groupName));
-        if (processGroup == null) {
-            // In some cases the group got deleted but the update process is sync and this method get called async!
-            // To prevent any issues just return at this point
-            return null;
-        }
-
-        Template found = Streams.filter(processGroup.getTemplates(), test -> template == null || template.equals(test.getName()));
-        ProcessInformation processInformation = this.create(processGroup, found, configurable, false);
+    public synchronized ProcessInformation prepareProcess(@Nonnull ProcessConfiguration configuration) {
+        ProcessInformation processInformation = this.create(configuration, false);
         if (processInformation == null) {
             return null;
         }
@@ -209,14 +182,11 @@ public final class DefaultProcessManager implements ProcessManager {
         });
     }
 
-    private ProcessInformation create(ProcessGroup processGroup, Template template, JsonConfiguration extra, boolean start) {
-        if (extra == null) {
-            extra = new JsonConfiguration();
-        }
-
+    private ProcessInformation create(ProcessConfiguration configuration, boolean start) {
+        Template template = configuration.getTemplate();
         if (template == null) {
             AtomicReference<Template> bestTemplate = new AtomicReference<>();
-            processGroup.getTemplates().forEach(template1 -> {
+            configuration.getBase().getTemplates().forEach(template1 -> {
                 if (bestTemplate.get() == null) {
                     bestTemplate.set(template1);
                 } else {
@@ -231,45 +201,80 @@ public final class DefaultProcessManager implements ProcessManager {
                         512, new ArrayList<>(), new HashMap<>()
                 ), Version.PAPER_1_8_8));
 
-                System.err.println("Starting up process " + processGroup.getName() + " with default template because no template is set up");
+                System.err.println("Starting up process " + configuration.getBase().getName() + " with default template because no template is set up");
                 Thread.dumpStack();
             }
 
             template = bestTemplate.get();
         }
 
-        ClientRuntimeInformation client = client(processGroup, template);
+        ClientRuntimeInformation client = this.client(
+                configuration.getBase(),
+                configuration.getMaxMemory() == null ? template.getRuntimeConfiguration().getMaxMemory() : configuration.getMaxMemory()
+        );
         if (client == null) {
-            noClientTryLater.add(new Quad<>(processGroup, template, extra, start));
+            noClientTryLater.add(new Duo<>(configuration, start));
             return null;
         }
 
-        int id = nextID(processGroup);
-        int port = nextPort(processGroup);
-        StringBuilder stringBuilder = new StringBuilder().append(processGroup.getName());
+        int id = configuration.getId() == -1 ? this.nextID(configuration.getBase()) : configuration.getId();
+        int port = configuration.getPort() == null ? nextPort(configuration.getBase()) : configuration.getPort();
+        UUID uniqueID = configuration.getUniqueId();
 
-        if (processGroup.isShowIdInName()) {
-            if (template.getServerNameSplitter() != null) {
-                stringBuilder.append(template.getServerNameSplitter());
+        String displayName = configuration.getDisplayName();
+        if (displayName == null) {
+            StringBuilder stringBuilder = new StringBuilder().append(configuration.getBase().getName());
+            if (configuration.getBase().isShowIdInName()) {
+                if (template.getServerNameSplitter() != null) {
+                    stringBuilder.append(template.getServerNameSplitter());
+                }
+
+                stringBuilder.append(id);
             }
 
-            stringBuilder.append(id);
+            displayName = stringBuilder.toString();
+        }
+
+        for (ProcessInformation allProcess : this.getAllProcesses()) {
+            if (allProcess.getId() == id) {
+                id = nextID(configuration.getBase());
+            }
+
+            if (allProcess.getNetworkInfo().getPort() == port) {
+                port = nextPort(configuration.getBase());
+            }
+
+            if (allProcess.getProcessUniqueID().equals(uniqueID)) {
+                uniqueID = UUID.randomUUID();
+            }
+
+            if (allProcess.getDisplayName().equals(displayName)) {
+                displayName += UUID.randomUUID().toString().split("-")[0];
+            }
         }
 
         ProcessInformation processInformation = new ProcessInformation(
-                processGroup.getName() + template.getServerNameSplitter() + id,
-                stringBuilder.substring(0),
+                configuration.getBase().getName() + template.getServerNameSplitter() + id,
+                displayName,
                 client.getName(),
                 null,
-                UUID.randomUUID(),
-                MemoryCalculator.calcMemory(processGroup.getName(), template),
+                uniqueID,
+                configuration.getMaxMemory() == null
+                        ? MemoryCalculator.calcMemory(configuration.getBase().getName(), template)
+                        : configuration.getMaxMemory(),
                 id,
                 ProcessState.CREATED,
                 new NetworkInfo(
                         client.startHost(),
                         port,
                         false
-                ), processGroup, template, ProcessRuntimeInformation.empty(), new ArrayList<>(), extra, 0
+                ), configuration.getBase(),
+                template,
+                ProcessRuntimeInformation.empty(),
+                new ArrayList<>(),
+                configuration.getExtra(),
+                configuration.getMaxPlayers(),
+                configuration.getInclusions()
         );
         return processInformation.updateMaxPlayers(null);
     }
@@ -296,7 +301,7 @@ public final class DefaultProcessManager implements ProcessManager {
         return port;
     }
 
-    private ClientRuntimeInformation client(ProcessGroup processGroup, Template template) {
+    private ClientRuntimeInformation client(ProcessGroup processGroup, int maxMemory) {
         if (processGroup.getStartupConfiguration().isSearchBestClientAlone()) {
             AtomicReference<ClientRuntimeInformation> best = new AtomicReference<>();
             Streams.newCollection(ClientManager.INSTANCE.getClientRuntimeInformation(), clientRuntimeInformation -> {
@@ -308,7 +313,7 @@ public final class DefaultProcessManager implements ProcessManager {
                 }
 
                 if (startedOn.size() < clientRuntimeInformation.maxProcessCount() || clientRuntimeInformation.maxProcessCount() == -1) {
-                    return clientRuntimeInformation.maxMemory() > (usedMemory + template.getRuntimeConfiguration().getMaxMemory());
+                    return clientRuntimeInformation.maxMemory() > (usedMemory + maxMemory);
                 }
 
                 return false;
@@ -334,7 +339,7 @@ public final class DefaultProcessManager implements ProcessManager {
                 }
 
                 if (startedOn.size() < clientRuntimeInformation.maxProcessCount() || clientRuntimeInformation.maxProcessCount() == -1) {
-                    return clientRuntimeInformation.maxMemory() > (usedMemory + template.getRuntimeConfiguration().getMaxMemory());
+                    return clientRuntimeInformation.maxMemory() > (usedMemory + maxMemory);
                 }
 
                 return false;

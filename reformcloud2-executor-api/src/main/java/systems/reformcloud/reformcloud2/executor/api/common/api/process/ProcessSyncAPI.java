@@ -3,9 +3,13 @@ package systems.reformcloud.reformcloud2.executor.api.common.api.process;
 import systems.reformcloud.reformcloud2.executor.api.api.API;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
+import systems.reformcloud.reformcloud2.executor.api.common.process.api.ProcessConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.common.process.api.ProcessConfigurationBuilder;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Duo;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
@@ -20,7 +24,9 @@ public interface ProcessSyncAPI {
      * @return The created {@link ProcessInformation}
      */
     @Nullable
-    ProcessInformation startProcess(@Nonnull String groupName);
+    default ProcessInformation startProcess(@Nonnull String groupName) {
+        return this.startProcess(groupName, null);
+    }
 
     /**
      * Starts a process
@@ -30,7 +36,9 @@ public interface ProcessSyncAPI {
      * @return The created {@link ProcessInformation}
      */
     @Nullable
-    ProcessInformation startProcess(@Nonnull String groupName, @Nullable String template);
+    default ProcessInformation startProcess(@Nonnull String groupName, @Nullable String template) {
+        return this.startProcess(groupName, template, new JsonConfiguration());
+    }
 
     /**
      * Starts a process
@@ -41,11 +49,95 @@ public interface ProcessSyncAPI {
      * @return The created {@link ProcessInformation}
      */
     @Nullable
-    ProcessInformation startProcess(
-            @Nonnull String groupName,
-            @Nullable String template,
-            @Nonnull JsonConfiguration configurable
-    );
+    default ProcessInformation startProcess(@Nonnull String groupName, @Nullable String template, @Nonnull JsonConfiguration configurable) {
+        return this.startProcess(groupName, template, configurable, UUID.randomUUID());
+    }
+
+    @Nullable
+    default ProcessInformation startProcess(@Nonnull String groupName, @Nullable String template,
+                                            @Nonnull JsonConfiguration configurable, @Nonnull UUID uniqueID) {
+        return this.startProcess(groupName, template, configurable, uniqueID, null);
+    }
+
+    @Nullable
+    default ProcessInformation startProcess(@Nonnull String groupName, @Nullable String template,
+                                            @Nonnull JsonConfiguration configurable, @Nonnull UUID uniqueID,
+                                            @Nullable String displayName) {
+        return this.startProcess(groupName, template, configurable, uniqueID, displayName, null);
+    }
+
+    @Nullable
+    default ProcessInformation startProcess(@Nonnull String groupName, @Nullable String template,
+                                            @Nonnull JsonConfiguration configurable, @Nonnull UUID uniqueID,
+                                            @Nullable String displayName, @Nullable Integer maxMemory) {
+        return this.startProcess(groupName, template, configurable, uniqueID, displayName, maxMemory, null);
+    }
+
+    @Nullable
+    default ProcessInformation startProcess(@Nonnull String groupName, @Nullable String template,
+                                            @Nonnull JsonConfiguration configurable, @Nonnull UUID uniqueID,
+                                            @Nullable String displayName, @Nullable Integer maxMemory,
+                                            @Nullable Integer port) {
+        return this.startProcess(groupName, template, configurable, uniqueID, displayName, maxMemory, port, null);
+    }
+
+    @Nullable
+    default ProcessInformation startProcess(@Nonnull String groupName, @Nullable String template,
+                                            @Nonnull JsonConfiguration configurable, @Nonnull UUID uniqueID,
+                                            @Nullable String displayName, @Nullable Integer maxMemory,
+                                            @Nullable Integer port, @Nullable Integer id) {
+        return this.startProcess(groupName, template, configurable, uniqueID, displayName, maxMemory, port, id, null);
+    }
+
+    @Nullable
+    default ProcessInformation startProcess(@Nonnull String groupName, @Nullable String template,
+                                            @Nonnull JsonConfiguration configurable, @Nonnull UUID uniqueID,
+                                            @Nullable String displayName, @Nullable Integer maxMemory,
+                                            @Nullable Integer port, @Nullable Integer id, @Nullable Integer maxPlayers) {
+        return this.startProcess(groupName, template, configurable, uniqueID, displayName, maxMemory, port, id, maxPlayers, new ArrayList<>());
+    }
+
+    @Nullable
+    default ProcessInformation startProcess(@Nonnull String groupName, @Nullable String template,
+                                            @Nonnull JsonConfiguration configurable, @Nonnull UUID uniqueID,
+                                            @Nullable String displayName, @Nullable Integer maxMemory,
+                                            @Nullable Integer port, @Nullable Integer id, @Nullable Integer maxPlayers,
+                                            @Nonnull Collection<Duo<String, String>> inclusions) {
+        ProcessConfigurationBuilder builder = ProcessConfigurationBuilder
+                .newBuilder(groupName)
+                .extra(configurable)
+                .uniqueId(uniqueID)
+                .inclusions(inclusions);
+
+        if (template != null) {
+            builder.template(template);
+        }
+
+        if (id != null && id > 0) {
+            builder.id(id);
+        }
+
+        if (displayName != null) {
+            builder.displayName(displayName);
+        }
+
+        if (maxMemory != null && maxMemory > 100) {
+            builder.maxMemory(maxMemory);
+        }
+
+        if (port != null && port > 0) {
+            builder.port(port);
+        }
+
+        if (maxPlayers != null && maxPlayers > 0) {
+            builder.maxPlayers(maxPlayers);
+        }
+
+        return this.startProcess(builder.build());
+    }
+
+    @Nullable
+    ProcessInformation startProcess(@Nonnull ProcessConfiguration configuration);
 
     /**
      * Starts a prepared process
@@ -56,42 +148,106 @@ public interface ProcessSyncAPI {
     @Nonnull
     ProcessInformation startProcess(@Nonnull ProcessInformation processInformation);
 
-    /**
-     * Prepares a process but does not start it
-     *
-     * @param groupName The name of the group which should be started from
-     * @return The created {@link ProcessInformation}
-     * @see #startProcess(ProcessInformation)
-     */
     @Nullable
-    ProcessInformation prepareProcess(@Nonnull String groupName);
+    default ProcessInformation prepareProcess(@Nonnull String groupName) {
+        return this.prepareProcess(groupName, null);
+    }
 
-    /**
-     * Prepares a process but does not start it
-     *
-     * @param groupName The name of the group which should be started from
-     * @param template  The template which should be used
-     * @return The created {@link ProcessInformation}
-     * @see #startProcess(ProcessInformation)
-     */
     @Nullable
-    ProcessInformation prepareProcess(@Nonnull String groupName, @Nullable String template);
+    default ProcessInformation prepareProcess(@Nonnull String groupName, @Nullable String template) {
+        return this.prepareProcess(groupName, template, new JsonConfiguration());
+    }
 
-    /**
-     * Prepares a process but does not start it
-     *
-     * @param groupName    The name of the group which should be started from
-     * @param template     The template which should be used
-     * @param configurable The data for the process
-     * @return The created {@link ProcessInformation}
-     * @see #startProcess(ProcessInformation)
-     */
     @Nullable
-    ProcessInformation prepareProcess(
-            @Nonnull String groupName,
-            @Nullable String template,
-            @Nonnull JsonConfiguration configurable
-    );
+    default ProcessInformation prepareProcess(@Nonnull String groupName, @Nullable String template, @Nonnull JsonConfiguration configurable) {
+        return this.prepareProcess(groupName, template, configurable, UUID.randomUUID());
+    }
+
+    @Nullable
+    default ProcessInformation prepareProcess(@Nonnull String groupName, @Nullable String template,
+                                              @Nonnull JsonConfiguration configurable, @Nonnull UUID uniqueID) {
+        return this.prepareProcess(groupName, template, configurable, uniqueID, null);
+    }
+
+    @Nullable
+    default ProcessInformation prepareProcess(@Nonnull String groupName, @Nullable String template,
+                                              @Nonnull JsonConfiguration configurable, @Nonnull UUID uniqueID,
+                                              @Nullable String displayName) {
+        return this.prepareProcess(groupName, template, configurable, uniqueID, displayName, null);
+    }
+
+    @Nullable
+    default ProcessInformation prepareProcess(@Nonnull String groupName, @Nullable String template,
+                                              @Nonnull JsonConfiguration configurable, @Nonnull UUID uniqueID,
+                                              @Nullable String displayName, @Nullable Integer maxMemory) {
+        return this.prepareProcess(groupName, template, configurable, uniqueID, displayName, maxMemory, null);
+    }
+
+    @Nullable
+    default ProcessInformation prepareProcess(@Nonnull String groupName, @Nullable String template,
+                                              @Nonnull JsonConfiguration configurable, @Nonnull UUID uniqueID,
+                                              @Nullable String displayName, @Nullable Integer maxMemory,
+                                              @Nullable Integer port) {
+        return this.prepareProcess(groupName, template, configurable, uniqueID, displayName, maxMemory, port, null);
+    }
+
+    @Nullable
+    default ProcessInformation prepareProcess(@Nonnull String groupName, @Nullable String template,
+                                              @Nonnull JsonConfiguration configurable, @Nonnull UUID uniqueID,
+                                              @Nullable String displayName, @Nullable Integer maxMemory,
+                                              @Nullable Integer port, @Nullable Integer id) {
+        return this.prepareProcess(groupName, template, configurable, uniqueID, displayName, maxMemory, port, id, null);
+    }
+
+    @Nullable
+    default ProcessInformation prepareProcess(@Nonnull String groupName, @Nullable String template,
+                                              @Nonnull JsonConfiguration configurable, @Nonnull UUID uniqueID,
+                                              @Nullable String displayName, @Nullable Integer maxMemory,
+                                              @Nullable Integer port, @Nullable Integer id, @Nullable Integer maxPlayers) {
+        return this.prepareProcess(groupName, template, configurable, uniqueID, displayName, maxMemory, port, id, maxPlayers, new ArrayList<>());
+    }
+
+    @Nullable
+    default ProcessInformation prepareProcess(@Nonnull String groupName, @Nullable String template,
+                                              @Nonnull JsonConfiguration configurable, @Nonnull UUID uniqueID,
+                                              @Nullable String displayName, @Nullable Integer maxMemory,
+                                              @Nullable Integer port, @Nullable Integer id, @Nullable Integer maxPlayers,
+                                              @Nonnull Collection<Duo<String, String>> inclusions) {
+        ProcessConfigurationBuilder builder = ProcessConfigurationBuilder
+                .newBuilder(groupName)
+                .extra(configurable)
+                .uniqueId(uniqueID)
+                .inclusions(inclusions);
+
+        if (template != null) {
+            builder.template(template);
+        }
+
+        if (id != null && id > 0) {
+            builder.id(id);
+        }
+
+        if (displayName != null) {
+            builder.displayName(displayName);
+        }
+
+        if (maxMemory != null && maxMemory > 100) {
+            builder.maxMemory(maxMemory);
+        }
+
+        if (port != null && port > 0) {
+            builder.port(port);
+        }
+
+        if (maxPlayers != null && maxPlayers > 0) {
+            builder.maxPlayers(maxPlayers);
+        }
+
+        return this.prepareProcess(builder.build());
+    }
+
+    @Nullable
+    ProcessInformation prepareProcess(@Nonnull ProcessConfiguration configuration);
 
     /**
      * Stops a process

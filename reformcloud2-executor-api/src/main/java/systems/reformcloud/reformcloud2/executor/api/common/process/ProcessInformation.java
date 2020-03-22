@@ -6,6 +6,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Template;
 import systems.reformcloud.reformcloud2.executor.api.common.plugins.basic.DefaultPlugin;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.clone.Clone;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Duo;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.name.Nameable;
 
@@ -15,7 +16,8 @@ import java.util.*;
 
 public final class ProcessInformation implements Nameable, Clone<ProcessInformation> {
 
-    public static final TypeToken<ProcessInformation> TYPE = new TypeToken<ProcessInformation>() {};
+    public static final TypeToken<ProcessInformation> TYPE = new TypeToken<ProcessInformation>() {
+    };
 
     public ProcessInformation(
             @Nonnull String processName,
@@ -32,7 +34,8 @@ public final class ProcessInformation implements Nameable, Clone<ProcessInformat
             @Nonnull ProcessRuntimeInformation processRuntimeInformation,
             @Nonnull List<DefaultPlugin> plugins,
             @Nonnull JsonConfiguration extra,
-            int maxPlayers
+            @Nullable Integer maxPlayers,
+            @Nonnull Collection<Duo<String, String>> preInclusions
     ) {
         this.processName = processName;
         this.displayName = displayName;
@@ -49,6 +52,7 @@ public final class ProcessInformation implements Nameable, Clone<ProcessInformat
         this.plugins = plugins;
         this.extra = extra;
         this.maxPlayers = maxPlayers;
+        this.preInclusions = preInclusions;
     }
 
     private final String processName;
@@ -65,7 +69,7 @@ public final class ProcessInformation implements Nameable, Clone<ProcessInformat
 
     private final Integer maxMemory;
 
-    private int maxPlayers;
+    private Integer maxPlayers;
 
     private final SortedSet<Player> onlinePlayers = new TreeSet<>(Comparator.comparingLong(Player::getJoined));
 
@@ -82,6 +86,8 @@ public final class ProcessInformation implements Nameable, Clone<ProcessInformat
     private final List<DefaultPlugin> plugins;
 
     private final JsonConfiguration extra;
+
+    private final Collection<Duo<String, String>> preInclusions;
 
     @Nonnull
     public String getDisplayName() {
@@ -192,7 +198,15 @@ public final class ProcessInformation implements Nameable, Clone<ProcessInformat
         return Streams.filterToReference(onlinePlayers, player -> player.getName().equals(name)).isPresent();
     }
 
+    public Collection<Duo<String, String>> getPreInclusions() {
+        return preInclusions;
+    }
+
     public ProcessInformation updateMaxPlayers(@Nullable Integer value) {
+        if (this.maxPlayers != null) {
+            return this;
+        }
+
         if (processGroup.getPlayerAccessConfiguration().isUseCloudPlayerLimit()) {
             this.maxPlayers = processGroup.getPlayerAccessConfiguration().getMaxPlayers();
         } else {
@@ -214,7 +228,7 @@ public final class ProcessInformation implements Nameable, Clone<ProcessInformat
             return (ProcessInformation) super.clone();
         } catch (final CloneNotSupportedException ex) {
             return new ProcessInformation(processName, displayName, parent, nodeUniqueID, processUniqueID, maxMemory, id,
-                    processState, networkInfo, processGroup, template, processRuntimeInformation, plugins, extra, maxPlayers);
+                    processState, networkInfo, processGroup, template, processRuntimeInformation, plugins, extra, maxPlayers, preInclusions);
         }
     }
 

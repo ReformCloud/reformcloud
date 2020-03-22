@@ -1,8 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.node.network;
 
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
-import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.RuntimeConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Template;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Version;
@@ -12,7 +10,8 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.channel.mana
 import systems.reformcloud.reformcloud2.executor.api.common.node.NodeInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Quad;
+import systems.reformcloud.reformcloud2.executor.api.common.process.api.ProcessConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Duo;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.node.cluster.InternalNetworkCluster;
 import systems.reformcloud.reformcloud2.executor.api.node.network.NodeNetworkManager;
@@ -30,12 +29,13 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class DefaultNodeNetworkManager implements NodeNetworkManager {
 
     private static final Map<UUID, String> QUEUED_PROCESSES = new ConcurrentHashMap<>();
 
-    private static final Queue<Quad<ProcessGroup, Template, JsonConfiguration, Boolean>> LATER = new ConcurrentLinkedQueue<>();
+    private static final Queue<Duo<ProcessConfiguration, Boolean>> LATER = new ConcurrentLinkedQueue<>();
 
     public DefaultNodeNetworkManager(NodeProcessManager processManager, InternalNetworkCluster cluster) {
         this.localNodeProcessManager = processManager;
@@ -43,8 +43,8 @@ public class DefaultNodeNetworkManager implements NodeNetworkManager {
 
         Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
             if (!LATER.isEmpty()) {
-                Quad<ProcessGroup, Template, JsonConfiguration, Boolean> next = LATER.poll();
-                this.startProcessInternal(next.getFirst(), next.getSecond(), next.getThird(), false, next.getFourth());
+                Duo<ProcessConfiguration, Boolean> duo = LATER.poll();
+                this.startProcessInternal(duo.getFirst(), false, duo.getSecond());
             }
         }, 0, 10, TimeUnit.SECONDS);
     }
@@ -74,24 +74,24 @@ public class DefaultNodeNetworkManager implements NodeNetworkManager {
     }
 
     @Override
-    public ProcessInformation prepareProcess(ProcessGroup processGroup, Template template, JsonConfiguration data, boolean start) {
-        return this.startProcessInternal(processGroup, template, data, true, start);
+    public ProcessInformation prepareProcess(ProcessConfiguration configuration, boolean start) {
+        return this.startProcessInternal(configuration, true, start);
     }
 
     @Override
-    public ProcessInformation startProcess(ProcessGroup processGroup, Template template, JsonConfiguration data) {
-        List<ProcessInformation> preparedProcesses = this.getPreparedProcesses(processGroup.getName());
+    public ProcessInformation startProcess(ProcessConfiguration configuration) {
+        List<ProcessInformation> preparedProcesses = this.getPreparedProcesses(configuration.getBase().getName());
         if (!preparedProcesses.isEmpty()) {
             System.out.println(LanguageManager.get(
                     "process-start-already-prepared-process",
-                    processGroup.getName(),
+                    configuration.getBase().getName(),
                     preparedProcesses.get(0).getName()
             ));
             this.startProcess(preparedProcesses.get(0));
             return preparedProcesses.get(0);
         }
 
-        return this.startProcessInternal(processGroup, template, data, true, true);
+        return this.startProcessInternal(configuration, true, true);
     }
 
     @Override
@@ -122,55 +122,78 @@ public class DefaultNodeNetworkManager implements NodeNetworkManager {
         return processInformation;
     }
 
-    private ProcessInformation startProcessInternal(ProcessGroup processGroup, Template template, JsonConfiguration data, boolean informUser, boolean start) {
-        if (processGroup == null) {
-            return null;
-        }
-
+    private ProcessInformation startProcessInternal(ProcessConfiguration configuration, boolean informUser, boolean start) {
+        Template template = configuration.getTemplate();
         if (template == null) {
-            template = randomTemplate(processGroup);
-        }
+            AtomicReference<Template> bestTemplate = new AtomicReference<>();
+            configuration.getBase().getTemplates().forEach(template1 -> {
+                if (bestTemplate.get() == null) {
+                    bestTemplate.set(template1);
+                } else {
+                    if (bestTemplate.get().getPriority() < template1.getPriority()) {
+                        bestTemplate.set(template1);
+                    }
+                }
+            });
 
-        if (data == null) {
-            data = new JsonConfiguration();
+            if (bestTemplate.get() == null) {
+                bestTemplate.set(new Template(0, "default", false, FileBackend.NAME, "#", new RuntimeConfiguration(
+                        512, new ArrayList<>(), new HashMap<>()
+                ), Version.PAPER_1_8_8));
+
+                System.err.println("Starting up process " + configuration.getBase().getName() + " with default template because no template is set up");
+                Thread.dumpStack();
+            }
+
+            template = bestTemplate.get();
         }
 
         if (getCluster().isSelfNodeHead()) {
-            final UUID processUniqueID = UUID.randomUUID();
-            QUEUED_PROCESSES.put(processUniqueID, processGroup.getName());
+            QUEUED_PROCESSES.put(configuration.getUniqueId(), configuration.getBase().getName());
 
             if (getCluster().noOtherNodes()) {
-                if (processGroup.getStartupConfiguration().isSearchBestClientAlone()) {
-                    return localNodeProcessManager.prepareLocalProcess(processGroup, template, data, processUniqueID, start);
+                if (configuration.getBase().getStartupConfiguration().isSearchBestClientAlone()) {
+                    return localNodeProcessManager.prepareLocalProcess(configuration, template, start);
                 }
 
-                if (processGroup.getStartupConfiguration().getUseOnlyTheseClients().contains(NodeExecutor.getInstance().getNodeConfig().getName())) {
-                    return localNodeProcessManager.prepareLocalProcess(processGroup, template, data, processUniqueID, start);
+                if (configuration.getBase().getStartupConfiguration().getUseOnlyTheseClients()
+                        .contains(NodeExecutor.getInstance().getNodeConfig().getName())) {
+                    return localNodeProcessManager.prepareLocalProcess(configuration, template, start);
                 }
 
-                LATER.add(new Quad<>(processGroup, template, data, start));
+                LATER.add(new Duo<>(configuration, start));
                 return null;
             }
 
-            NodeInformation best = getCluster().findBestNodeForStartup(processGroup, template);
+            int maxMemory = configuration.getMaxMemory() == null ? template.getRuntimeConfiguration().getMaxMemory()
+                    : configuration.getMaxMemory();
+
+            NodeInformation best = getCluster().findBestNodeForStartup(
+                    configuration.getBase(),
+                    maxMemory
+            );
             if (best != null && best.canEqual(getCluster().getHeadNode())) {
-                return localNodeProcessManager.prepareLocalProcess(processGroup, template, data, processUniqueID, start);
+                return localNodeProcessManager.prepareLocalProcess(configuration, template, start);
             }
 
             if (best == null) {
                 if (informUser) {
-                    System.out.println(LanguageManager.get("node-process-no-node-queued", processGroup.getName(), template.getName()));
+                    System.out.println(LanguageManager.get(
+                            "node-process-no-node-queued",
+                            configuration.getBase().getName(),
+                            template.getName()
+                    ));
                 }
 
-                LATER.add(new Quad<>(processGroup, template, data, start));
+                LATER.add(new Duo<>(configuration, start));
                 return null;
             }
 
-            best.addUsedMemory(template.getRuntimeConfiguration().getMaxMemory());
-            return localNodeProcessManager.queueProcess(processGroup, template, data, best, processUniqueID, start);
+            best.addUsedMemory(maxMemory);
+            return localNodeProcessManager.queueProcess(configuration, template, best, start);
         }
 
-        return getCluster().sendQueryToHead(new NodePacketOutQueryStartProcess(processGroup, template, data, start),
+        return getCluster().sendQueryToHead(new NodePacketOutQueryStartProcess(configuration, start),
                 packet -> packet.content().get("result", ProcessInformation.TYPE
                 ));
     }
@@ -209,19 +232,5 @@ public class DefaultNodeNetworkManager implements NodeNetworkManager {
         return Streams.list(ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcesses(group),
                 e -> e.getProcessState().equals(ProcessState.PREPARED)
         );
-    }
-
-    private Template randomTemplate(ProcessGroup processGroup) {
-        if (processGroup.getTemplates().isEmpty()) {
-            return new Template(0, "default", false, FileBackend.NAME, "#", new RuntimeConfiguration(
-                    512, new ArrayList<>(), new HashMap<>()
-            ), Version.PAPER_1_8_8);
-        }
-
-        if (processGroup.getTemplates().size() == 1) {
-            return processGroup.getTemplates().get(0);
-        }
-
-        return processGroup.getTemplates().get(new Random().nextInt(processGroup.getTemplates().size()));
     }
 }

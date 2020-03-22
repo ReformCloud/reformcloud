@@ -2,7 +2,6 @@ package systems.reformcloud.reformcloud2.executor.node.cluster;
 
 import systems.reformcloud.reformcloud2.executor.api.common.base.Conditions;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
-import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Template;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
@@ -103,9 +102,9 @@ public class DefaultNodeInternalCluster implements InternalNetworkCluster {
     }
 
     @Override
-    public NodeInformation findBestNodeForStartup(ProcessGroup group, Template template) {
+    public NodeInformation findBestNodeForStartup(ProcessGroup group, int maxMemory) {
         AtomicReference<NodeInformation> result = new AtomicReference<>();
-        if (self.getUsedMemory() + template.getRuntimeConfiguration().getMaxMemory() < self.getMaxMemory()) {
+        if (self.getUsedMemory() + maxMemory < self.getMaxMemory()) {
             result.set(self);
         }
 
@@ -116,7 +115,7 @@ public class DefaultNodeInternalCluster implements InternalNetworkCluster {
             }
 
             if (result.get() == null) {
-                if (e.getUsedMemory() + template.getRuntimeConfiguration().getMaxMemory() < e.getMaxMemory()) {
+                if (e.getUsedMemory() + maxMemory < e.getMaxMemory()) {
                     result.set(e);
                 }
 
@@ -124,8 +123,8 @@ public class DefaultNodeInternalCluster implements InternalNetworkCluster {
             }
 
             NodeInformation current = result.get();
-            long memoryOnCurrentNode = calcMem(current.getUsedMemory(), template);
-            long memoryOnNewNode = calcMem(e.getUsedMemory(), template);
+            long memoryOnCurrentNode = current.getUsedMemory() + maxMemory;
+            long memoryOnNewNode = current.getUsedMemory() + maxMemory;
 
             if (memoryOnNewNode <= e.getMaxMemory() && memoryOnCurrentNode > memoryOnNewNode
                     && memoryOnCurrentNode <= current.getMaxMemory()) {
@@ -134,9 +133,5 @@ public class DefaultNodeInternalCluster implements InternalNetworkCluster {
         });
 
         return result.get();
-    }
-
-    private long calcMem(long used, Template template) {
-        return used + template.getRuntimeConfiguration().getMaxMemory();
     }
 }

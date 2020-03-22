@@ -66,7 +66,7 @@ public final class AutoStartupHandler extends AbsoluteThread {
                                     ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().startProcess(prepared);
                                 } else {
                                     System.out.println(LanguageManager.get("process-start-creating-new-process", processGroup.getName()));
-                                    ControllerExecutor.getInstance().getProcessManager().startProcess(processGroup.getName());
+                                    ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().startProcess(processGroup.getName());
                                     AbsoluteThread.sleep(100);
                                 }
                             }

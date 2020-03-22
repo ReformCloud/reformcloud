@@ -1,6 +1,5 @@
 package systems.reformcloud.reformcloud2.executor.node.process;
 
-import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Template;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
@@ -10,6 +9,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.process.NetworkInfo;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessRuntimeInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState;
+import systems.reformcloud.reformcloud2.executor.api.common.process.api.ProcessConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.process.running.RunningProcess;
 import systems.reformcloud.reformcloud2.executor.api.common.process.util.MemoryCalculator;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.PortUtil;
@@ -48,30 +48,11 @@ public class LocalNodeProcessManager implements NodeProcessManager {
 
     @Nonnull
     @Override
-    public synchronized ProcessInformation prepareLocalProcess(@Nonnull ProcessGroup processGroup, @Nonnull Template template,
-                                                               @Nonnull JsonConfiguration data, @Nonnull UUID processUniqueID, boolean start) {
-        int id = nextID(processGroup);
-        ProcessInformation processInformation = new ProcessInformation(
-                processGroup.getName() + template.getServerNameSplitter() + id,
-                processGroup.getName() + (processGroup.isShowIdInName() ? (template.getServerNameSplitter() + id) : ""),
-                NodeExecutor.getInstance().getNodeConfig().getName(),
-                NodeExecutor.getInstance().getNodeConfig().getUniqueID(),
-                processUniqueID,
-                MemoryCalculator.calcMemory(processGroup.getName(), template),
-                id,
-                ProcessState.CREATED,
-                new NetworkInfo(
-                        NodeExecutor.getInstance().getNodeConfig().getStartHost(),
-                        nextPort(processGroup.getStartupConfiguration().getStartPort()),
-                        false
-                ), processGroup,
-                template,
-                ProcessRuntimeInformation.empty(),
-                new ArrayList<>(),
-                data,
-                processGroup.getPlayerAccessConfiguration().getMaxPlayers()
-        );
-        return this.prepareLocalProcess(processInformation, start);
+    public synchronized ProcessInformation prepareLocalProcess(@Nonnull ProcessConfiguration configuration,
+                                                               @Nonnull Template template, boolean start) {
+        return this.prepareLocalProcess(this.constructInfo(
+                configuration, template, NodeExecutor.getInstance().getNodeNetworkManager().getCluster().getSelfNode()
+        ), start);
     }
 
     @Nonnull
@@ -123,10 +104,10 @@ public class LocalNodeProcessManager implements NodeProcessManager {
 
     @Nonnull
     @Override
-    public synchronized ProcessInformation queueProcess(@Nonnull ProcessGroup processGroup, @Nonnull Template template,
-                                                        @Nonnull JsonConfiguration data, @Nonnull NodeInformation node,
-                                                        @Nonnull UUID uniqueID, boolean start) {
-        ProcessInformation processInformation = constructCaInfo(processGroup, template, data, node, uniqueID);
+    public synchronized ProcessInformation queueProcess(@Nonnull ProcessConfiguration configuration,
+                                                        @Nonnull Template template, @Nonnull NodeInformation node,
+                                                        boolean start) {
+        ProcessInformation processInformation = constructInfo(configuration, template, node);
         this.handleProcessStart(processInformation);
 
         DefaultChannelManager.INSTANCE.get(node.getName()).ifPresent(e -> e.sendPacket(new PacketOutHeadNodeStartProcess(
@@ -305,28 +286,67 @@ public class LocalNodeProcessManager implements NodeProcessManager {
         return startPort;
     }
 
-    private ProcessInformation constructCaInfo(ProcessGroup processGroup, Template template, JsonConfiguration data,
-                                               NodeInformation node, UUID uniqueID) {
-        int id = nextID(processGroup);
-        return new ProcessInformation(
-                processGroup.getName() + template.getServerNameSplitter() + id,
-                processGroup.getName() + (processGroup.isShowIdInName() ? (template.getServerNameSplitter() + id) : ""),
+    private ProcessInformation constructInfo(ProcessConfiguration configuration, Template template, NodeInformation node) {
+        int id = configuration.getId() == -1 ? this.nextID(configuration.getBase()) : configuration.getId();
+        int port = configuration.getPort() == null ? nextPort(configuration.getBase().getStartupConfiguration().getStartPort())
+                : configuration.getPort();
+        UUID uniqueID = configuration.getUniqueId();
+
+        String displayName = configuration.getDisplayName();
+        if (displayName == null) {
+            StringBuilder stringBuilder = new StringBuilder().append(configuration.getBase().getName());
+            if (configuration.getBase().isShowIdInName()) {
+                if (template.getServerNameSplitter() != null) {
+                    stringBuilder.append(template.getServerNameSplitter());
+                }
+
+                stringBuilder.append(id);
+            }
+
+            displayName = stringBuilder.toString();
+        }
+
+        for (ProcessInformation allProcess : this.getClusterProcesses()) {
+            if (allProcess.getId() == id) {
+                id = nextID(configuration.getBase());
+            }
+
+            if (allProcess.getNetworkInfo().getPort() == port) {
+                port = nextPort(configuration.getBase().getStartupConfiguration().getStartPort());
+            }
+
+            if (allProcess.getProcessUniqueID().equals(uniqueID)) {
+                uniqueID = UUID.randomUUID();
+            }
+
+            if (allProcess.getDisplayName().equals(displayName)) {
+                displayName += UUID.randomUUID().toString().split("-")[0];
+            }
+        }
+
+        ProcessInformation processInformation = new ProcessInformation(
+                configuration.getBase().getName() + template.getServerNameSplitter() + id,
+                displayName,
                 node.getName(),
                 node.getNodeUniqueID(),
                 uniqueID,
-                MemoryCalculator.calcMemory(processGroup.getName(), template),
+                configuration.getMaxMemory() == null
+                        ? MemoryCalculator.calcMemory(configuration.getBase().getName(), template)
+                        : configuration.getMaxMemory(),
                 id,
                 ProcessState.CREATED,
                 new NetworkInfo(
-                        null,
-                        -1,
+                        NodeExecutor.getInstance().getNodeConfig().getStartHost(),
+                        port,
                         false
-                ), processGroup,
+                ), configuration.getBase(),
                 template,
                 ProcessRuntimeInformation.empty(),
                 new ArrayList<>(),
-                data,
-                processGroup.getPlayerAccessConfiguration().getMaxPlayers()
+                configuration.getExtra(),
+                configuration.getMaxPlayers(),
+                configuration.getInclusions()
         );
+        return processInformation.updateMaxPlayers(null);
     }
 }

@@ -3,10 +3,9 @@ package systems.reformcloud.reformcloud2.executor.node.api.process;
 import systems.reformcloud.reformcloud2.executor.api.common.api.process.ProcessAsyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.process.ProcessSyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.base.Conditions;
-import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
-import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
+import systems.reformcloud.reformcloud2.executor.api.common.process.api.ProcessConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.defaults.DefaultTask;
@@ -32,33 +31,9 @@ public class ProcessAPIImplementation implements ProcessSyncAPI, ProcessAsyncAPI
 
     @Nonnull
     @Override
-    public Task<ProcessInformation> startProcessAsync(@Nonnull String groupName) {
-        return startProcessAsync(groupName, null);
-    }
-
-    @Nonnull
-    @Override
-    public Task<ProcessInformation> startProcessAsync(@Nonnull String groupName, String template) {
-        return startProcessAsync(groupName, template, new JsonConfiguration());
-    }
-
-    @Nonnull
-    @Override
-    public Task<ProcessInformation> startProcessAsync(@Nonnull String groupName, String template, @Nonnull JsonConfiguration configurable) {
+    public Task<ProcessInformation> startProcessAsync(@Nonnull ProcessConfiguration configuration) {
         Task<ProcessInformation> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> {
-            ProcessGroup group = Streams.filterToReference(NodeExecutor.getInstance().getClusterSyncManager().getProcessGroups(), e -> e.getName().equals(groupName)).orNothing();
-            if (group == null) {
-                task.complete(null);
-                return;
-            }
-
-            task.complete(nodeNetworkManager.startProcess(
-                    group,
-                    Streams.filterToReference(group.getTemplates(), e -> e.getName().equals(template)).orNothing(),
-                    configurable
-            ));
-        });
+        Task.EXECUTOR.execute(() -> task.complete(nodeNetworkManager.startProcess(configuration)));
         return task;
     }
 
@@ -72,34 +47,9 @@ public class ProcessAPIImplementation implements ProcessSyncAPI, ProcessAsyncAPI
 
     @Nonnull
     @Override
-    public Task<ProcessInformation> prepareProcessAsync(@Nonnull String groupName) {
-        return this.prepareProcessAsync(groupName, null);
-    }
-
-    @Nonnull
-    @Override
-    public Task<ProcessInformation> prepareProcessAsync(@Nonnull String groupName, @Nullable String template) {
-        return this.prepareProcessAsync(groupName, template, new JsonConfiguration());
-    }
-
-    @Nonnull
-    @Override
-    public Task<ProcessInformation> prepareProcessAsync(@Nonnull String groupName, @Nullable String template, @Nonnull JsonConfiguration configurable) {
+    public Task<ProcessInformation> prepareProcessAsync(@Nonnull ProcessConfiguration configuration) {
         Task<ProcessInformation> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> {
-            ProcessGroup group = Streams.filterToReference(NodeExecutor.getInstance().getClusterSyncManager().getProcessGroups(), e -> e.getName().equals(groupName)).orNothing();
-            if (group == null) {
-                task.complete(null);
-                return;
-            }
-
-            task.complete(nodeNetworkManager.prepareProcess(
-                    group,
-                    Streams.filterToReference(group.getTemplates(), e -> e.getName().equals(template)).orNothing(),
-                    configurable,
-                    false
-            ));
-        });
+        Task.EXECUTOR.execute(() -> task.complete(nodeNetworkManager.prepareProcess(configuration, false)));
         return task;
     }
 
@@ -217,20 +167,8 @@ public class ProcessAPIImplementation implements ProcessSyncAPI, ProcessAsyncAPI
 
     @Nullable
     @Override
-    public ProcessInformation startProcess(@Nonnull String groupName) {
-        return startProcessAsync(groupName).getUninterruptedly();
-    }
-
-    @Nullable
-    @Override
-    public ProcessInformation startProcess(@Nonnull String groupName, String template) {
-        return startProcessAsync(groupName, template).getUninterruptedly();
-    }
-
-    @Nullable
-    @Override
-    public ProcessInformation startProcess(@Nonnull String groupName, String template, @Nonnull JsonConfiguration configurable) {
-        return startProcessAsync(groupName, template, configurable).getUninterruptedly();
+    public ProcessInformation startProcess(@Nonnull ProcessConfiguration configuration) {
+        return this.startProcessAsync(configuration).getUninterruptedly(TimeUnit.SECONDS, 5);
     }
 
     @Nonnull
@@ -242,20 +180,8 @@ public class ProcessAPIImplementation implements ProcessSyncAPI, ProcessAsyncAPI
 
     @Nullable
     @Override
-    public ProcessInformation prepareProcess(@Nonnull String groupName) {
-        return this.prepareProcess(groupName, null);
-    }
-
-    @Nullable
-    @Override
-    public ProcessInformation prepareProcess(@Nonnull String groupName, @Nullable String template) {
-        return this.prepareProcess(groupName, template, new JsonConfiguration());
-    }
-
-    @Nullable
-    @Override
-    public ProcessInformation prepareProcess(@Nonnull String groupName, @Nullable String template, @Nonnull JsonConfiguration configurable) {
-        return this.prepareProcessAsync(groupName, template, configurable).getUninterruptedly(TimeUnit.SECONDS, 10);
+    public ProcessInformation prepareProcess(@Nonnull ProcessConfiguration configuration) {
+        return this.prepareProcessAsync(configuration).getUninterruptedly(TimeUnit.SECONDS, 5);
     }
 
     @Override

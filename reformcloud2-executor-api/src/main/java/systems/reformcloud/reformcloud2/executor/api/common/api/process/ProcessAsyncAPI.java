@@ -4,12 +4,16 @@ import systems.reformcloud.reformcloud2.executor.api.api.API;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
+import systems.reformcloud.reformcloud2.executor.api.common.process.api.ProcessConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.common.process.api.ProcessConfigurationBuilder;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Duo;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.defaults.DefaultTask;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
@@ -24,7 +28,9 @@ public interface ProcessAsyncAPI {
      */
     @Nonnull
     @CheckReturnValue
-    Task<ProcessInformation> startProcessAsync(@Nonnull String groupName);
+    default Task<ProcessInformation> startProcessAsync(@Nonnull String groupName) {
+        return this.startProcessAsync(groupName, null);
+    }
 
     /**
      * Starts a process
@@ -35,7 +41,9 @@ public interface ProcessAsyncAPI {
      */
     @Nonnull
     @CheckReturnValue
-    Task<ProcessInformation> startProcessAsync(@Nonnull String groupName, @Nullable String template);
+    default Task<ProcessInformation> startProcessAsync(@Nonnull String groupName, @Nullable String template) {
+        return this.startProcessAsync(groupName, template, new JsonConfiguration());
+    }
 
     /**
      * Starts a process
@@ -47,7 +55,103 @@ public interface ProcessAsyncAPI {
      */
     @Nonnull
     @CheckReturnValue
-    Task<ProcessInformation> startProcessAsync(@Nonnull String groupName, @Nullable String template, @Nonnull JsonConfiguration configurable);
+    default Task<ProcessInformation> startProcessAsync(@Nonnull String groupName, @Nullable String template, @Nonnull JsonConfiguration configurable) {
+        return this.startProcessAsync(groupName, template, configurable, UUID.randomUUID());
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    default Task<ProcessInformation> startProcessAsync(@Nonnull String groupName, @Nullable String template,
+                                                       @Nonnull JsonConfiguration configurable, @Nonnull UUID uniqueID) {
+        return this.startProcessAsync(groupName, template, configurable, uniqueID, null);
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    default Task<ProcessInformation> startProcessAsync(@Nonnull String groupName, @Nullable String template,
+                                                       @Nonnull JsonConfiguration configurable, @Nonnull UUID uniqueID,
+                                                       @Nullable String displayName) {
+        return this.startProcessAsync(groupName, template, configurable, uniqueID, displayName, null);
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    default Task<ProcessInformation> startProcessAsync(@Nonnull String groupName, @Nullable String template,
+                                                       @Nonnull JsonConfiguration configurable, @Nonnull UUID uniqueID,
+                                                       @Nullable String displayName, @Nullable Integer maxMemory) {
+        return this.startProcessAsync(groupName, template, configurable, uniqueID, displayName, maxMemory, null);
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    default Task<ProcessInformation> startProcessAsync(@Nonnull String groupName, @Nullable String template,
+                                                       @Nonnull JsonConfiguration configurable, @Nonnull UUID uniqueID,
+                                                       @Nullable String displayName, @Nullable Integer maxMemory,
+                                                       @Nullable Integer port) {
+        return this.startProcessAsync(groupName, template, configurable, uniqueID, displayName, maxMemory, port, null);
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    default Task<ProcessInformation> startProcessAsync(@Nonnull String groupName, @Nullable String template,
+                                                       @Nonnull JsonConfiguration configurable, @Nonnull UUID uniqueID,
+                                                       @Nullable String displayName, @Nullable Integer maxMemory,
+                                                       @Nullable Integer port, @Nullable Integer id) {
+        return this.startProcessAsync(groupName, template, configurable, uniqueID, displayName, maxMemory, port, id, null);
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    default Task<ProcessInformation> startProcessAsync(@Nonnull String groupName, @Nullable String template,
+                                                       @Nonnull JsonConfiguration configurable, @Nonnull UUID uniqueID,
+                                                       @Nullable String displayName, @Nullable Integer maxMemory,
+                                                       @Nullable Integer port, @Nullable Integer id, @Nullable Integer maxPlayers) {
+        return this.startProcessAsync(groupName, template, configurable, uniqueID, displayName, maxMemory, port, id, maxPlayers, new ArrayList<>());
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    default Task<ProcessInformation> startProcessAsync(@Nonnull String groupName, @Nullable String template,
+                                                       @Nonnull JsonConfiguration configurable, @Nonnull UUID uniqueID,
+                                                       @Nullable String displayName, @Nullable Integer maxMemory,
+                                                       @Nullable Integer port, @Nullable Integer id, @Nullable Integer maxPlayers,
+                                                       @Nonnull Collection<Duo<String, String>> inclusions) {
+        ProcessConfigurationBuilder builder = ProcessConfigurationBuilder
+                .newBuilder(groupName)
+                .extra(configurable)
+                .uniqueId(uniqueID)
+                .inclusions(inclusions);
+
+        if (template != null) {
+            builder.template(template);
+        }
+
+        if (id != null && id > 0) {
+            builder.id(id);
+        }
+
+        if (displayName != null) {
+            builder.displayName(displayName);
+        }
+
+        if (maxMemory != null && maxMemory > 100) {
+            builder.maxMemory(maxMemory);
+        }
+
+        if (port != null && port > 0) {
+            builder.port(port);
+        }
+
+        if (maxPlayers != null && maxPlayers > 0) {
+            builder.maxPlayers(maxPlayers);
+        }
+
+        return this.startProcessAsync(builder.build());
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    Task<ProcessInformation> startProcessAsync(@Nonnull ProcessConfiguration configuration);
 
     /**
      * Starts a prepared process
@@ -56,40 +160,120 @@ public interface ProcessAsyncAPI {
      * @return The process information after the start call
      */
     @Nonnull
+    @CheckReturnValue
     Task<ProcessInformation> startProcessAsync(@Nonnull ProcessInformation processInformation);
 
-    /**
-     * Prepares a process but does not start it
-     *
-     * @param groupName The name of the group which should be started from
-     * @return A task which which will be completed with the created {@link ProcessInformation}
-     */
     @Nonnull
     @CheckReturnValue
-    Task<ProcessInformation> prepareProcessAsync(@Nonnull String groupName);
+    default Task<ProcessInformation> prepareProcessAsync(@Nonnull String groupName) {
+        return this.prepareProcessAsync(groupName, null);
+    }
 
-    /**
-     * Prepares a process but does not start it
-     *
-     * @param groupName The name of the group which should be started from
-     * @param template  The template which should be used
-     * @return A task which which will be completed with the created {@link ProcessInformation}
-     */
     @Nonnull
     @CheckReturnValue
-    Task<ProcessInformation> prepareProcessAsync(@Nonnull String groupName, @Nullable String template);
+    default Task<ProcessInformation> prepareProcessAsync(@Nonnull String groupName, @Nullable String template) {
+        return this.prepareProcessAsync(groupName, template, new JsonConfiguration());
+    }
 
-    /**
-     * Prepares a process but does not start it
-     *
-     * @param groupName    The name of the group which should be started from
-     * @param template     The template which should be used
-     * @param configurable The data for the process
-     * @return A task which which will be completed with the created {@link ProcessInformation}
-     */
     @Nonnull
     @CheckReturnValue
-    Task<ProcessInformation> prepareProcessAsync(@Nonnull String groupName, @Nullable String template, @Nonnull JsonConfiguration configurable);
+    default Task<ProcessInformation> prepareProcessAsync(@Nonnull String groupName, @Nullable String template, @Nonnull JsonConfiguration configurable) {
+        return this.prepareProcessAsync(groupName, template, configurable, UUID.randomUUID());
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    default Task<ProcessInformation> prepareProcessAsync(@Nonnull String groupName, @Nullable String template,
+                                                         @Nonnull JsonConfiguration configurable, @Nonnull UUID uniqueID) {
+        return this.prepareProcessAsync(groupName, template, configurable, uniqueID, null);
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    default Task<ProcessInformation> prepareProcessAsync(@Nonnull String groupName, @Nullable String template,
+                                                         @Nonnull JsonConfiguration configurable, @Nonnull UUID uniqueID,
+                                                         @Nullable String displayName) {
+        return this.prepareProcessAsync(groupName, template, configurable, uniqueID, displayName, null);
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    default Task<ProcessInformation> prepareProcessAsync(@Nonnull String groupName, @Nullable String template,
+                                                         @Nonnull JsonConfiguration configurable, @Nonnull UUID uniqueID,
+                                                         @Nullable String displayName, @Nullable Integer maxMemory) {
+        return this.prepareProcessAsync(groupName, template, configurable, uniqueID, displayName, maxMemory, null);
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    default Task<ProcessInformation> prepareProcessAsync(@Nonnull String groupName, @Nullable String template,
+                                                         @Nonnull JsonConfiguration configurable, @Nonnull UUID uniqueID,
+                                                         @Nullable String displayName, @Nullable Integer maxMemory,
+                                                         @Nullable Integer port) {
+        return this.prepareProcessAsync(groupName, template, configurable, uniqueID, displayName, maxMemory, port, null);
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    default Task<ProcessInformation> prepareProcessAsync(@Nonnull String groupName, @Nullable String template,
+                                                         @Nonnull JsonConfiguration configurable, @Nonnull UUID uniqueID,
+                                                         @Nullable String displayName, @Nullable Integer maxMemory,
+                                                         @Nullable Integer port, @Nullable Integer id) {
+        return this.prepareProcessAsync(groupName, template, configurable, uniqueID, displayName, maxMemory, port, id, null);
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    default Task<ProcessInformation> prepareProcessAsync(@Nonnull String groupName, @Nullable String template,
+                                                         @Nonnull JsonConfiguration configurable, @Nonnull UUID uniqueID,
+                                                         @Nullable String displayName, @Nullable Integer maxMemory,
+                                                         @Nullable Integer port, @Nullable Integer id, @Nullable Integer maxPlayers) {
+        return this.prepareProcessAsync(groupName, template, configurable, uniqueID, displayName, maxMemory, port, id, maxPlayers, new ArrayList<>());
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    default Task<ProcessInformation> prepareProcessAsync(@Nonnull String groupName, @Nullable String template,
+                                                         @Nonnull JsonConfiguration configurable, @Nonnull UUID uniqueID,
+                                                         @Nullable String displayName, @Nullable Integer maxMemory,
+                                                         @Nullable Integer port, @Nullable Integer id, @Nullable Integer maxPlayers,
+                                                         @Nonnull Collection<Duo<String, String>> inclusions) {
+        ProcessConfigurationBuilder builder = ProcessConfigurationBuilder
+                .newBuilder(groupName)
+                .extra(configurable)
+                .uniqueId(uniqueID)
+                .inclusions(inclusions);
+
+        if (template != null) {
+            builder.template(template);
+        }
+
+        if (id != null && id > 0) {
+            builder.id(id);
+        }
+
+        if (displayName != null) {
+            builder.displayName(displayName);
+        }
+
+        if (maxMemory != null && maxMemory > 100) {
+            builder.maxMemory(maxMemory);
+        }
+
+        if (port != null && port > 0) {
+            builder.port(port);
+        }
+
+        if (maxPlayers != null && maxPlayers > 0) {
+            builder.maxPlayers(maxPlayers);
+        }
+
+        return this.prepareProcessAsync(builder.build());
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    Task<ProcessInformation> prepareProcessAsync(@Nonnull ProcessConfiguration configuration);
 
     /**
      * Stops a process

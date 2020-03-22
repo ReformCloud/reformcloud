@@ -1,10 +1,9 @@
 package systems.reformcloud.reformcloud2.executor.api.node.process;
 
-import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
-import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Template;
 import systems.reformcloud.reformcloud2.executor.api.common.node.NodeInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
+import systems.reformcloud.reformcloud2.executor.api.common.process.api.ProcessConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.process.running.RunningProcess;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.update.Updateable;
 
@@ -36,16 +35,13 @@ public interface NodeProcessManager extends Updateable<ProcessInformation>, Iter
     /**
      * Creates a new running process based in the provided group and template
      *
-     * @param processGroup The group on which the process is based
-     * @param template     The template which should get used as the main template
-     * @param data         The extra data for the process api
-     * @param uniqueID     The unique id of the process which should get used
-     * @param start        If the process should get started after the prepare
+     * @param configuration The configuration of the new process
+     * @param template      The template which should be used for the process
+     * @param start         If the process should get started after the prepare
      * @return A new created process information with the provided data
      */
     @Nonnull
-    ProcessInformation prepareLocalProcess(@Nonnull ProcessGroup processGroup, @Nonnull Template template,
-                                           @Nonnull JsonConfiguration data, @Nonnull UUID uniqueID, boolean start);
+    ProcessInformation prepareLocalProcess(@Nonnull ProcessConfiguration configuration, @Nonnull Template template, boolean start);
 
     /**
      * Starts a running processes based on the given process information
@@ -78,18 +74,13 @@ public interface NodeProcessManager extends Updateable<ProcessInformation>, Iter
     /**
      * Queues a specific process on another node
      *
-     * @param processGroup The group on which the process is based
-     * @param template     The template which should get used as the main template
-     * @param data         The extra data for the process api
-     * @param node         The node on which the process should get started
-     * @param uniqueID     The unique id of the process which should get used
-     * @param start        If the process should get started after the prepare
+     * @param configuration The configuration of the process
+     * @param node          The node on which the process should get started
+     * @param start         If the process should get started after the prepare
      * @return A new created process information with the provided data
      */
     @Nonnull
-    ProcessInformation queueProcess(@Nonnull ProcessGroup processGroup, @Nonnull Template template,
-                                    @Nonnull JsonConfiguration data, @Nonnull NodeInformation node,
-                                    @Nonnull UUID uniqueID, boolean start);
+    ProcessInformation queueProcess(@Nonnull ProcessConfiguration configuration, @Nonnull Template template, @Nonnull NodeInformation node, boolean start);
 
     /**
      * Registers the running process as a local running process
