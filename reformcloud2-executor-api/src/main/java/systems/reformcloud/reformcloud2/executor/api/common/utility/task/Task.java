@@ -19,7 +19,7 @@ public abstract class Task<V> extends CompletableFuture<V> {
      * Creates a new already completed task
      *
      * @param value The value of the completed task
-     * @param <U> The object parameter of the task
+     * @param <U>   The object parameter of the task
      * @return The completed task
      */
     @Nonnull
@@ -38,7 +38,7 @@ public abstract class Task<V> extends CompletableFuture<V> {
      * Waits blocking on the current thread for a result until a timeout occurred
      *
      * @param timeUnit The time unit in which should get wait
-     * @param time The time until the timeout occurs
+     * @param time     The time until the timeout occurs
      */
     public abstract void awaitUninterruptedly(@Nonnull TimeUnit timeUnit, long time);
 
@@ -50,11 +50,11 @@ public abstract class Task<V> extends CompletableFuture<V> {
     @Nullable
     public abstract V getUninterruptedly();
 
-     /**
+    /**
      * Waits blocking on the current thread for a result until a timeout occurred
      *
      * @param timeUnit The time unit in which should get wait
-     * @param time The time until the timeout occurs
+     * @param time     The time until the timeout occurs
      * @return The return value of the code
      */
     @Nullable

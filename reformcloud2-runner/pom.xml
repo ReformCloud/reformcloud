@@ -49,7 +49,8 @@
                 <configuration>
                     <archive>
                         <manifestEntries>
-                            <Premain-Class>systems.reformcloud.reformcloud2.runner.Runner</Premain-Class>
+                            <Premain-Class>systems.reformcloud.reformcloud2.runner.Runner
+                            </Premain-Class>
                             <Main-Class>systems.reformcloud.reformcloud2.runner.Runner</Main-Class>
                             <Version>${project.version}</Version>
                             <Implementation-Version>${project.version}</Implementation-Version>
@@ -76,9 +77,11 @@
 
                         <!-- Copies the final executor file to the resource directory -->
                         <configuration>
+                            <failOnError>false</failOnError>
                             <target name="copy executor">
-                                <copy file="${basedir}/../reformcloud2-executor/target/executor.jar"
-                                      tofile="${basedir}/src/main/resources/files/executor.jar"
+                                <copy
+                                        file="${basedir}/../reformcloud2-executor/target/executor.jar"
+                                        tofile="${basedir}/src/main/resources/files/executor.jar"
                                 />
                             </target>
                         </configuration>
