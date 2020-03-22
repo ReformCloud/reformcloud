@@ -36,19 +36,26 @@ public class Application {
         this.appClassLoader = loader;
     }
 
-    public void onInstallable() {}
+    public void onInstallable() {
+    }
 
-    public void onInstalled() {}
+    public void onInstalled() {
+    }
 
-    public void onLoad() {}
+    public void onLoad() {
+    }
 
-    public void onEnable() {}
+    public void onEnable() {
+    }
 
-    public void onPreDisable() {}
+    public void onPreDisable() {
+    }
 
-    public void onDisable() {}
+    public void onDisable() {
+    }
 
-    public void onUninstall() {}
+    public void onUninstall() {
+    }
 
     public static Application self() {
         return self;

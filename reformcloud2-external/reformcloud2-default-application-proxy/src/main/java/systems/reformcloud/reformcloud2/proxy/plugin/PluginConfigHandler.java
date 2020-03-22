@@ -34,7 +34,7 @@ public final class PluginConfigHandler {
         });
     }
 
-    private static void setConfiguration(ProxyConfiguration configuration) {
+    public static void setConfiguration(ProxyConfiguration configuration) {
         PluginConfigHandler.configuration = configuration;
     }
 
