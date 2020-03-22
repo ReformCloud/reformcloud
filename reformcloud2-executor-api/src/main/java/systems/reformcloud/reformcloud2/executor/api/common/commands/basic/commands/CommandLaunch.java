@@ -23,9 +23,10 @@ public final class CommandLaunch extends GlobalCommand {
     @Override
     public void describeCommandToSender(@Nonnull CommandSource source) {
         source.sendMessages((
-                "launch <group-name>    | Creates a new process bases on the group\n" +
-                        " --template=[template] | Uses a specific template for the startup (default: random)\n" +
-                        " --amount=[amount]     | Starts the specified amount of processes (default: 1)"
+                "launch <group-name>            | Creates a new process bases on the group\n" +
+                        " --template=[template]         | Uses a specific template for the startup (default: random)\n" +
+                        " --amount=[amount]             | Starts the specified amount of processes (default: 1)\n" +
+                        " --prepare-only=[prepare-only] | Prepares the process but does not start it (default: false)"
         ).split("\n"));
     }
 
@@ -45,6 +46,7 @@ public final class CommandLaunch extends GlobalCommand {
         Properties properties = StringUtil.calcProperties(strings, 1);
         String template = base.getTemplates().isEmpty() ? "default" : base.getTemplates().get(new Random().nextInt(base.getTemplates().size())).getName();
         int amount = 1;
+        boolean prepareOnly = false;
 
         if (properties.containsKey("template")) {
             Template baseTemplate = Streams.filter(base.getTemplates(), e -> e.getName().equals(properties.getProperty("template")));
@@ -66,11 +68,30 @@ public final class CommandLaunch extends GlobalCommand {
             amount = amountToStart;
         }
 
-        for (int i = 1; i <= amount; i++) {
-            ExecutorAPI.getInstance().getAsyncAPI().getProcessAsyncAPI().startProcessAsync(base.getName(), template).onComplete(info -> {
-            });
+        if (properties.containsKey("prepare-only")) {
+            Boolean prepare = CommonHelper.booleanFromString(properties.getProperty("prepare-only"));
+            if (prepare == null) {
+                commandSource.sendMessage(LanguageManager.get("command-required-boolean", properties.getProperty("prepare-only")));
+                return true;
+            }
+
+            prepareOnly = prepare;
         }
-        commandSource.sendMessage(LanguageManager.get("command-launch-started-processes", amount, base.getName(), template));
+
+        if (prepareOnly) {
+            for (int i = 1; i <= amount; i++) {
+                ExecutorAPI.getInstance().getAsyncAPI().getProcessAsyncAPI().prepareProcessAsync(base.getName(), template).onComplete(info -> {
+                });
+            }
+            commandSource.sendMessage(LanguageManager.get("command-launch-prepared-processes", amount, base.getName(), template));
+        } else {
+            for (int i = 1; i <= amount; i++) {
+                ExecutorAPI.getInstance().getAsyncAPI().getProcessAsyncAPI().startProcessAsync(base.getName(), template).onComplete(info -> {
+                });
+            }
+            commandSource.sendMessage(LanguageManager.get("command-launch-started-processes", amount, base.getName(), template));
+        }
+
         return true;
     }
 }

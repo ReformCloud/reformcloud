@@ -1,9 +1,9 @@
 package systems.reformcloud.reformcloud2.executor.client.dump;
 
-import systems.reformcloud.reformcloud2.executor.api.client.process.RunningProcess;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.dump.DumpUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.dump.basic.DefaultDumpUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
+import systems.reformcloud.reformcloud2.executor.api.common.process.running.RunningProcess;
 import systems.reformcloud.reformcloud2.executor.client.ClientExecutor;
 
 import java.text.DateFormat;
@@ -51,7 +51,7 @@ public class ClientDumpUtil implements DumpUtil {
                 stringBuilder
                         .append("\n")
                         .append("Running: ")
-                        .append(e.running())
+                        .append(e.isAlive())
                         .append("\n\n");
             });
         } else {

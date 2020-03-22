@@ -48,6 +48,52 @@ public interface ProcessSyncAPI {
     );
 
     /**
+     * Starts a prepared process
+     *
+     * @param processInformation The process information of the prepared process
+     * @return The process information after the start call
+     */
+    @Nonnull
+    ProcessInformation startProcess(@Nonnull ProcessInformation processInformation);
+
+    /**
+     * Prepares a process but does not start it
+     *
+     * @param groupName The name of the group which should be started from
+     * @return The created {@link ProcessInformation}
+     * @see #startProcess(ProcessInformation)
+     */
+    @Nullable
+    ProcessInformation prepareProcess(@Nonnull String groupName);
+
+    /**
+     * Prepares a process but does not start it
+     *
+     * @param groupName The name of the group which should be started from
+     * @param template  The template which should be used
+     * @return The created {@link ProcessInformation}
+     * @see #startProcess(ProcessInformation)
+     */
+    @Nullable
+    ProcessInformation prepareProcess(@Nonnull String groupName, @Nullable String template);
+
+    /**
+     * Prepares a process but does not start it
+     *
+     * @param groupName    The name of the group which should be started from
+     * @param template     The template which should be used
+     * @param configurable The data for the process
+     * @return The created {@link ProcessInformation}
+     * @see #startProcess(ProcessInformation)
+     */
+    @Nullable
+    ProcessInformation prepareProcess(
+            @Nonnull String groupName,
+            @Nullable String template,
+            @Nonnull JsonConfiguration configurable
+    );
+
+    /**
      * Stops a process
      *
      * @param name The name of the process

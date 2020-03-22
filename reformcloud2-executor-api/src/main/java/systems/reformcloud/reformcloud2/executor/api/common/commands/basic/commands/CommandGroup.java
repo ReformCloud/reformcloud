@@ -45,6 +45,7 @@ public final class CommandGroup extends GlobalCommand {
                         " --max-players=[max]                           | Sets the max player count for the process\n" +
                         " --min-process-count=[min]                     | Sets the min process count for the process\n" +
                         " --max-process-count=[max]                     | Sets the max process count for the process\n" +
+                        " --always-prepared-process-count=[count]       | Sets the count of processes which should always be prepared\n" +
                         " --start-port=[port]                           | Sets the start port of the group\n" +
                         " --max-memory=[default/memory]                 | Sets the max memory of the template (format: <template-name>/<max-memory>)\n" +
                         " --start-priority=[priority]                   | Sets the start priority for the group\n" +
@@ -227,6 +228,21 @@ public final class CommandGroup extends GlobalCommand {
                         "command-group-edit",
                         "max-process-count",
                         processGroup.getStartupConfiguration().getMaxOnlineProcesses()
+                ));
+            }
+
+            if (properties.containsKey("always-prepared-process-count")) {
+                Integer alwaysPreparedCount = CommonHelper.fromString(properties.getProperty("always-prepared-process-count"));
+                if (alwaysPreparedCount == null || alwaysPreparedCount < 0) {
+                    source.sendMessage(LanguageManager.get("command-integer-failed", -1, properties.getProperty("always-prepared-process-count")));
+                    return;
+                }
+
+                processGroup.getStartupConfiguration().setAlwaysPreparedProcesses(alwaysPreparedCount);
+                source.sendMessage(LanguageManager.get(
+                        "command-group-edit",
+                        "always-prepared-process-count",
+                        processGroup.getStartupConfiguration().getAlwaysPreparedProcesses()
                 ));
             }
 

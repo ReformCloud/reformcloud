@@ -3,7 +3,7 @@ package systems.reformcloud.reformcloud2.executor.node.dump;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.dump.DumpUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.dump.basic.DefaultDumpUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
-import systems.reformcloud.reformcloud2.executor.api.node.process.LocalNodeProcess;
+import systems.reformcloud.reformcloud2.executor.api.common.process.running.RunningProcess;
 import systems.reformcloud.reformcloud2.executor.node.process.manager.LocalProcessManager;
 
 import java.text.DateFormat;
@@ -23,7 +23,7 @@ public class NodeDumpUtil implements DumpUtil {
     }
 
     private static void dumpProcessInfos(StringBuilder stringBuilder) {
-        Collection<LocalNodeProcess> nodeProcesses = LocalProcessManager.getNodeProcesses();
+        Collection<RunningProcess> nodeProcesses = LocalProcessManager.getNodeProcesses();
         stringBuilder.append("--- Registered Node Processes (").append(nodeProcesses.size()).append(") ---");
         stringBuilder.append("\n");
 
@@ -51,7 +51,7 @@ public class NodeDumpUtil implements DumpUtil {
                 stringBuilder
                         .append("\n")
                         .append("Running: ")
-                        .append(e.running())
+                        .append(e.isAlive())
                         .append("\n\n");
             });
         } else {

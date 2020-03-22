@@ -4,8 +4,8 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.NetworkUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.handler.DefaultJsonNetworkHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
+import systems.reformcloud.reformcloud2.executor.api.common.process.running.RunningProcess;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
-import systems.reformcloud.reformcloud2.executor.api.node.process.LocalNodeProcess;
 import systems.reformcloud.reformcloud2.executor.node.process.manager.LocalProcessManager;
 
 import javax.annotation.Nonnull;
@@ -23,7 +23,7 @@ public class PacketInNodeExecuteCommand extends DefaultJsonNetworkHandler {
         String name = packet.content().getString("name");
         String command = packet.content().getString("command");
 
-        LocalNodeProcess nodeProcess = Streams.filterToReference(LocalProcessManager.getNodeProcesses(), e -> e.getProcessInformation().getName().equals(name)).orNothing();
+        RunningProcess nodeProcess = Streams.filterToReference(LocalProcessManager.getNodeProcesses(), e -> e.getProcessInformation().getName().equals(name)).orNothing();
         if (nodeProcess == null) {
             return;
         }

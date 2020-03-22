@@ -1,12 +1,13 @@
 package systems.reformcloud.reformcloud2.executor.client.process;
 
-import systems.reformcloud.reformcloud2.executor.api.client.process.RunningProcess;
 import systems.reformcloud.reformcloud2.executor.api.common.CommonHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
+import systems.reformcloud.reformcloud2.executor.api.common.process.running.RunningProcess;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
 import systems.reformcloud.reformcloud2.executor.client.ClientExecutor;
+import systems.reformcloud.reformcloud2.executor.client.process.basic.DefaultRunningProcess;
 
 import java.util.UUID;
 import java.util.concurrent.BlockingDeque;
@@ -17,17 +18,27 @@ public final class ProcessQueue extends AbsoluteThread {
     private static final BlockingDeque<RunningProcess> QUEUE = new LinkedBlockingDeque<>();
 
     public static void queue(ProcessInformation information) {
-        RunningProcess runningProcess = RunningProcessBuilder.build(information);
+        RunningProcess runningProcess = new DefaultRunningProcess(information);
         System.out.println(LanguageManager.get(
                 "client-process-now-in-queue",
                 runningProcess.getProcessInformation().getName(),
                 QUEUE.size() + 1
         ));
 
-        runningProcess.initTemplate().thenAccept(e -> {
-            runningProcess.prepare();
+        runningProcess.prepare().onComplete(e -> {
+            runningProcess.handleEnqueue();
             QUEUE.offerLast(runningProcess);
         });
+    }
+
+    public static void queue(RunningProcess process) {
+        System.out.println(LanguageManager.get(
+                "client-process-now-in-queue",
+                process.getProcessInformation().getName(),
+                QUEUE.size() + 1
+        ));
+        process.handleEnqueue();
+        QUEUE.offerLast(process);
     }
 
     /* ============== */
