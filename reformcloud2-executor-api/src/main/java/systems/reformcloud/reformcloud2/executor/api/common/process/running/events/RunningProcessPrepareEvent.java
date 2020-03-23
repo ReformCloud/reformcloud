@@ -7,9 +7,9 @@ import javax.annotation.Nonnull;
 /**
  * This event will only get called on clients and nodes!
  */
-public class RunningProcessPreparedEvent extends RunningProcessEvent {
+public class RunningProcessPrepareEvent extends RunningProcessEvent {
 
-    public RunningProcessPreparedEvent(@Nonnull RunningProcess runningProcess) {
+    public RunningProcessPrepareEvent(@Nonnull RunningProcess runningProcess) {
         super(runningProcess);
     }
 }

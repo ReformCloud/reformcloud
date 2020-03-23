@@ -1,11 +1,13 @@
 package systems.reformcloud.reformcloud2.executor.api.common.process;
 
 import com.google.gson.reflect.TypeToken;
+import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Template;
 import systems.reformcloud.reformcloud2.executor.api.common.plugins.basic.DefaultPlugin;
 import systems.reformcloud.reformcloud2.executor.api.common.process.api.ProcessInclusion;
+import systems.reformcloud.reformcloud2.executor.api.common.process.event.ProcessInformationConfigureEvent;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.clone.Clone;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.name.Nameable;
@@ -53,6 +55,8 @@ public final class ProcessInformation implements Nameable, Clone<ProcessInformat
         this.extra = extra;
         this.maxPlayers = maxPlayers;
         this.preInclusions = preInclusions;
+
+        ExecutorAPI.getInstance().getEventManager().callEvent(new ProcessInformationConfigureEvent(this));
     }
 
     private final String processName;

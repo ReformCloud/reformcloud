@@ -2,6 +2,7 @@ package systems.reformcloud.reformcloud2.executor.api.common.utility.system;
 
 import systems.reformcloud.reformcloud2.executor.api.common.base.Conditions;
 
+import javax.annotation.Nullable;
 import java.io.*;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -42,7 +43,11 @@ public final class SystemHelper {
         Conditions.isTrue(file.renameTo(new File(newName)));
     }
 
-    public static void createDirectory(Path path) {
+    public static void createDirectory(@Nullable Path path) {
+        if (path == null) {
+            return;
+        }
+
         try {
             Files.createDirectories(path);
         } catch (final IOException ex) {

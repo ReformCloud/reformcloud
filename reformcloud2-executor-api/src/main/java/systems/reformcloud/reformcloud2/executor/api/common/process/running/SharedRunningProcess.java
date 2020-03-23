@@ -8,9 +8,10 @@ import systems.reformcloud.reformcloud2.executor.api.common.groups.template.back
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.inclusion.Inclusion;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState;
-import systems.reformcloud.reformcloud2.executor.api.common.process.running.events.RunningProcessPreparedEvent;
+import systems.reformcloud.reformcloud2.executor.api.common.process.running.events.RunningProcessPrepareEvent;
 import systems.reformcloud.reformcloud2.executor.api.common.process.running.events.RunningProcessStartedEvent;
 import systems.reformcloud.reformcloud2.executor.api.common.process.running.events.RunningProcessStoppedEvent;
+import systems.reformcloud.reformcloud2.executor.api.common.process.running.inclusions.InclusionLoader;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.PortUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.StringUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Duo;
@@ -83,6 +84,8 @@ public abstract class SharedRunningProcess implements RunningProcess {
     public Task<Void> prepare() {
         Task<Void> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
+            ExecutorAPI.getInstance().getEventManager().callEvent(new RunningProcessPrepareEvent(this));
+
             this.startupInformation.getNetworkInfo().setPort(PortUtil.checkPort(
                     this.startupInformation.getNetworkInfo().getPort()
             ));
@@ -92,6 +95,8 @@ public abstract class SharedRunningProcess implements RunningProcess {
             if (!Files.exists(Paths.get("reformcloud/files/runner.jar"))) {
                 DownloadHelper.downloadAndDisconnect(StringUtil.RUNNER_DOWNLOAD_URL, "reformcloud/files/runner.jar");
             }
+
+            InclusionLoader.loadInclusions(this.path, this.startupInformation.getPreInclusions());
 
             SystemHelper.createDirectory(Paths.get(path + "/plugins"));
             SystemHelper.createDirectory(Paths.get(path + "/reformcloud/.connection"));
@@ -117,8 +122,6 @@ public abstract class SharedRunningProcess implements RunningProcess {
 
             this.startupInformation.setProcessState(ProcessState.PREPARED);
             ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(this.startupInformation);
-
-            ExecutorAPI.getInstance().getEventManager().callEvent(new RunningProcessPreparedEvent(this));
             task.complete(null);
         });
         return task;
