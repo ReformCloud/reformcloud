@@ -2,6 +2,7 @@ package systems.reformcloud.reformcloud2.executor.api.common.process.running.mat
 
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.process.api.ProcessConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.common.process.api.ProcessInclusion;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -32,6 +33,24 @@ public final class PreparedProcessFilter {
                 || configuration.getTemplate().getName().equals(information.getTemplate().getName()))
                 && (configuration.getMaxMemory() == null || configuration.getMaxMemory().equals(information.getMaxMemory()))
                 && configuration.getExtra().toPrettyString().equals(information.getExtra().toPrettyString())
-                && (configuration.getDisplayName() == null || information.getDisplayName().equals(configuration.getDisplayName()));
+                && (configuration.getDisplayName() == null || information.getDisplayName().equals(configuration.getDisplayName()))
+                && matchesAllInclusions(information, configuration);
+    }
+
+    private static boolean matchesAllInclusions(@Nonnull ProcessInformation processInformation,
+                                                @Nonnull ProcessConfiguration configuration) {
+        if (processInformation.getPreInclusions().size() != configuration.getInclusions().size()) {
+            return false;
+        }
+
+        for (ProcessInclusion inclusion : configuration.getInclusions()) {
+            if (processInformation.getPreInclusions().stream().noneMatch(
+                    e -> e.getName().equals(inclusion.getName()) && e.getUrl().equals(inclusion.getUrl())
+            )) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }
