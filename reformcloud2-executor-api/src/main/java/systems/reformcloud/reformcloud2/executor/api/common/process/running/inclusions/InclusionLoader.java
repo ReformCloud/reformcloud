@@ -5,9 +5,11 @@ import systems.reformcloud.reformcloud2.executor.api.common.utility.system.Downl
 import systems.reformcloud.reformcloud2.executor.api.common.utility.system.SystemHelper;
 
 import javax.annotation.Nonnull;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.Collection;
 import java.util.HashMap;
 
@@ -42,6 +44,19 @@ public final class InclusionLoader {
             );
         });
 
-        SystemHelper.copyDirectory(Paths.get("reformcloud/files/inclusions"), processPath);
+        inclusions.forEach(inclusion -> {
+            Path path = Paths.get("reformcloud/files/inclusions", inclusion.getName());
+            if (Files.notExists(path)) {
+                return;
+            }
+
+            Path target = Paths.get(processPath.toString(), inclusion.getName());
+            try {
+                SystemHelper.createDirectory(target.getParent());
+                Files.copy(path, target, StandardCopyOption.REPLACE_EXISTING);
+            } catch (final IOException ex) {
+                ex.printStackTrace();
+            }
+        });
     }
 }
