@@ -7,12 +7,16 @@ import systems.reformcloud.reformcloud2.executor.api.common.commands.source.Comm
 import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Template;
 import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
+import systems.reformcloud.reformcloud2.executor.api.common.process.api.ProcessConfigurationBuilder;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.StringUtil;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Duo;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Properties;
-import java.util.Random;
+import java.util.UUID;
 
 public final class CommandLaunch extends GlobalCommand {
 
@@ -25,6 +29,13 @@ public final class CommandLaunch extends GlobalCommand {
         source.sendMessages((
                 "launch <group-name>            | Creates a new process bases on the group\n" +
                         " --template=[template]         | Uses a specific template for the startup (default: random)\n" +
+                        " --unique-id=[unique-id]       | Sets the unique id of the new process (default: random)\n" +
+                        " --display-name=[display-name] | Sets the display name of the new process (default: none)\n" +
+                        " --max-memory=[memory]         | Sets the maximum amount of memory for the new process (default: group-based)\n" +
+                        " --port=[port]                 | Sets the port of the new process (default: group-based)\n" +
+                        " --id=[id]                     | Sets the id of the new process (default: chosen from amount of online processes)\n" +
+                        " --max-players=[max-players]   | Sets the maximum amount of players for the process (default: group-based)\n" +
+                        " --inclusions=[url,name;...]   | Sets the inclusions of the process (default: none)\n" +
                         " --amount=[amount]             | Starts the specified amount of processes (default: 1)\n" +
                         " --prepare-only=[prepare-only] | Prepares the process but does not start it (default: false)"
         ).split("\n"));
@@ -43,10 +54,11 @@ public final class CommandLaunch extends GlobalCommand {
             return true;
         }
 
+        ProcessConfigurationBuilder builder = ProcessConfigurationBuilder.newBuilder(base);
         Properties properties = StringUtil.calcProperties(strings, 1);
-        String template = base.getTemplates().isEmpty() ? "default" : base.getTemplates().get(new Random().nextInt(base.getTemplates().size())).getName();
-        int amount = 1;
+
         boolean prepareOnly = false;
+        int amount = 1;
 
         if (properties.containsKey("template")) {
             Template baseTemplate = Streams.filter(base.getTemplates(), e -> e.getName().equals(properties.getProperty("template")));
@@ -55,17 +67,65 @@ public final class CommandLaunch extends GlobalCommand {
                 return true;
             }
 
-            template = baseTemplate.getName();
+            builder.template(baseTemplate);
         }
 
-        if (properties.containsKey("amount")) {
-            Integer amountToStart = CommonHelper.fromString(properties.getProperty("amount"));
-            if (amountToStart == null || amountToStart <= 0) {
-                commandSource.sendMessage(LanguageManager.get("command-integer-failed", 0, properties.getProperty("amount")));
+        if (properties.containsKey("unique-id")) {
+            UUID uniqueID = CommonHelper.tryParse(properties.getProperty("unique-id"));
+            if (uniqueID == null) {
+                commandSource.sendMessage(LanguageManager.get("command-unique-id-failed", properties.getProperty("unique-id")));
                 return true;
             }
 
-            amount = amountToStart;
+            builder.uniqueId(uniqueID);
+        }
+
+        if (properties.containsKey("display-name")) {
+            builder.displayName(properties.getProperty("display-name"));
+        }
+
+        if (properties.containsKey("max-memory")) {
+            Integer maxMemory = CommonHelper.fromString(properties.getProperty("max-memory"));
+            if (maxMemory == null || maxMemory <= 100) {
+                commandSource.sendMessage(LanguageManager.get("command-integer-failed", 100, properties.getProperty("max-memory")));
+                return true;
+            }
+
+            builder.maxMemory(maxMemory);
+        }
+
+        if (properties.containsKey("port")) {
+            Integer port = CommonHelper.fromString(properties.getProperty("port"));
+            if (port == null || port <= 0) {
+                commandSource.sendMessage(LanguageManager.get("command-integer-failed", 0, properties.getProperty("port")));
+                return true;
+            }
+
+            builder.port(port);
+        }
+
+        if (properties.containsKey("id")) {
+            Integer id = CommonHelper.fromString(properties.getProperty("id"));
+            if (id == null || id <= 0) {
+                commandSource.sendMessage(LanguageManager.get("command-integer-failed", 0, properties.getProperty("id")));
+                return true;
+            }
+
+            builder.id(id);
+        }
+
+        if (properties.containsKey("max-players")) {
+            Integer maxPlayers = CommonHelper.fromString(properties.getProperty("max-players"));
+            if (maxPlayers == null || maxPlayers <= 0) {
+                commandSource.sendMessage(LanguageManager.get("command-integer-failed", 0, properties.getProperty("max-players")));
+                return true;
+            }
+
+            builder.maxPlayers(maxPlayers);
+        }
+
+        if (properties.containsKey("inclusions")) {
+            builder.inclusions(parseInclusions(properties.getProperty("inclusions")));
         }
 
         if (properties.containsKey("prepare-only")) {
@@ -78,20 +138,45 @@ public final class CommandLaunch extends GlobalCommand {
             prepareOnly = prepare;
         }
 
+        if (properties.containsKey("amount")) {
+            Integer amountToStart = CommonHelper.fromString(properties.getProperty("amount"));
+            if (amountToStart == null || amountToStart <= 0) {
+                commandSource.sendMessage(LanguageManager.get("command-integer-failed", 0, properties.getProperty("amount")));
+                return true;
+            }
+
+            amount = amountToStart;
+        }
+
         if (prepareOnly) {
             for (int i = 1; i <= amount; i++) {
-                ExecutorAPI.getInstance().getAsyncAPI().getProcessAsyncAPI().prepareProcessAsync(base.getName(), template).onComplete(info -> {
+                ExecutorAPI.getInstance().getAsyncAPI().getProcessAsyncAPI().prepareProcessAsync(builder.build()).onComplete(info -> {
                 });
             }
-            commandSource.sendMessage(LanguageManager.get("command-launch-prepared-processes", amount, base.getName(), template));
+            commandSource.sendMessage(LanguageManager.get("command-launch-prepared-processes", amount, base.getName()));
         } else {
             for (int i = 1; i <= amount; i++) {
-                ExecutorAPI.getInstance().getAsyncAPI().getProcessAsyncAPI().startProcessAsync(base.getName(), template).onComplete(info -> {
+                ExecutorAPI.getInstance().getAsyncAPI().getProcessAsyncAPI().startProcessAsync(builder.build()).onComplete(info -> {
                 });
             }
-            commandSource.sendMessage(LanguageManager.get("command-launch-started-processes", amount, base.getName(), template));
+            commandSource.sendMessage(LanguageManager.get("command-launch-started-processes", amount, base.getName()));
         }
 
         return true;
+    }
+
+    @Nonnull
+    private static Collection<Duo<String, String>> parseInclusions(@Nonnull String from) {
+        Collection<Duo<String, String>> out = new ArrayList<>();
+        for (String inclusion : from.split(";")) {
+            String[] parts = inclusion.split(",");
+            if (parts.length != 2) {
+                continue;
+            }
+
+            out.add(new Duo<>(parts[0], parts[1]));
+        }
+
+        return out;
     }
 }

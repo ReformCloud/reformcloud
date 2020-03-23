@@ -11,6 +11,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.node.NodeInformation
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState;
 import systems.reformcloud.reformcloud2.executor.api.common.process.api.ProcessConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.common.process.running.matcher.PreparedProcessFilter;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Duo;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.node.cluster.InternalNetworkCluster;
@@ -80,15 +81,17 @@ public class DefaultNodeNetworkManager implements NodeNetworkManager {
 
     @Override
     public ProcessInformation startProcess(ProcessConfiguration configuration) {
-        List<ProcessInformation> preparedProcesses = this.getPreparedProcesses(configuration.getBase().getName());
-        if (!preparedProcesses.isEmpty()) {
+        ProcessInformation matching = PreparedProcessFilter.findMayMatchingProcess(
+                configuration, this.getPreparedProcesses(configuration.getBase().getName())
+        );
+        if (matching != null) {
             System.out.println(LanguageManager.get(
                     "process-start-already-prepared-process",
                     configuration.getBase().getName(),
-                    preparedProcesses.get(0).getName()
+                    matching.getName()
             ));
-            this.startProcess(preparedProcesses.get(0));
-            return preparedProcesses.get(0);
+            this.startProcess(matching);
+            return matching;
         }
 
         return this.startProcessInternal(configuration, true, true);

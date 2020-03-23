@@ -17,6 +17,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInfor
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessRuntimeInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState;
 import systems.reformcloud.reformcloud2.executor.api.common.process.api.ProcessConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.common.process.running.matcher.PreparedProcessFilter;
 import systems.reformcloud.reformcloud2.executor.api.common.process.util.MemoryCalculator;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Duo;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
@@ -101,19 +102,17 @@ public final class DefaultProcessManager implements ProcessManager {
 
     @Override
     public synchronized ProcessInformation startProcess(@Nonnull ProcessConfiguration configuration) {
-        List<ProcessInformation> preparedProcesses = this.getPreparedProcesses(configuration.getBase().getName());
-        if (!preparedProcesses.isEmpty()) {
+        ProcessInformation matching = PreparedProcessFilter.findMayMatchingProcess(
+                configuration, this.getPreparedProcesses(configuration.getBase().getName())
+        );
+        if (matching != null) {
             System.out.println(LanguageManager.get(
                     "process-start-already-prepared-process",
                     configuration.getBase().getName(),
-                    preparedProcesses.get(0).getName()
+                    matching.getName()
             ));
-
-            preparedProcesses.get(0).setProcessState(ProcessState.POLLED);
-            ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(preparedProcesses.get(0));
-
-            this.startProcess(preparedProcesses.get(0));
-            return preparedProcesses.get(0);
+            this.startProcess(matching);
+            return matching;
         }
 
         ProcessInformation processInformation = this.create(configuration, true);
