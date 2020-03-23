@@ -1,0 +1,21 @@
+# Represents the global execution script for the reformcloud runner
+# Modify this file only if you are able to use reform script
+
+# Header printing
+PRINTLN    __       __                        ___ _                 _ ____
+PRINTLN   /__\ ___ / _| ___  _ __ _ __ ___   / __\ | ___  _   _  __| |___ \
+PRINTLN  / \/// _ \ |_ / _ \| '__| '_ ` _ \ / /  | |/ _ \| | | |/ _` | __) |
+PRINTLN / _  \  __/  _| (_) | |  | | | | | / /___| | (_) | |_| | (_| |/ __/
+PRINTLN \/ \_/\___|_|  \___/|_|  |_| |_| |_\____/|_|\___/ \__,_|\__,_|_____| git:_%_git_commit_%_
+PRINTLN
+PRINTLN                   Not just a cloud system, but an experience.
+
+# Check if setup is required
+IF _%_setup_required_%_ THEN(EXECUTE startSetup()) OR()
+
+# Executes the setup for the runner
+TASK startSetup()
+TASK PRINTLN Please choose an executor: "node" (recommended), "controller", "client"
+TASK PRINTLN For more information check out the README on GitHub: _%_github_url_%_
+TASK SETUP
+TASK END

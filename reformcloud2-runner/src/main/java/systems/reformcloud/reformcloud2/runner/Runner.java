@@ -1,29 +1,8 @@
 package systems.reformcloud.reformcloud2.runner;
 
-import systems.reformcloud.reformcloud2.runner.classloading.ClassPreparer;
-import systems.reformcloud.reformcloud2.runner.classloading.RunnerClassLoader;
-import systems.reformcloud.reformcloud2.runner.update.ApplicationUpdateApplier;
-import systems.reformcloud.reformcloud2.runner.update.CloudVersionUpdater;
-
-import java.io.*;
-import java.lang.instrument.Instrumentation;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.util.Objects;
-import java.util.Properties;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
-import java.util.jar.JarFile;
-
 public final class Runner {
+
+        /*
 
     private static final Predicate<String> CONTROLLER_UNPACK_TEST = s -> s != null && (s.equalsIgnoreCase("controller") || s.equalsIgnoreCase("client") || s.equalsIgnoreCase("node"));
 
@@ -31,7 +10,6 @@ public final class Runner {
 
     private static final Properties PROPERTIES = new Properties();
 
-    /* ================================== */
 
     public static synchronized void main(String[] args) {
         if (!isAPI()) {
@@ -216,8 +194,6 @@ public final class Runner {
         System.setProperty("reformcloud.executor.type", id);
     }
 
-    /* ================== */
-
     private static void runIfProcessExists(Consumer<Path> consumer) {
         String fileName = System.getProperty("reformcloud.process.path");
         if (fileName == null || !Files.exists(Paths.get(fileName))) {
@@ -272,4 +248,6 @@ public final class Runner {
             return null;
         }
     }
+
+     */
 }

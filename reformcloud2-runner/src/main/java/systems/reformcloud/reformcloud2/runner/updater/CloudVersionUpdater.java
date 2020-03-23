@@ -1,4 +1,4 @@
-package systems.reformcloud.reformcloud2.runner.update;
+package systems.reformcloud.reformcloud2.runner.updater;
 
 import java.io.IOException;
 import java.io.InputStream;
