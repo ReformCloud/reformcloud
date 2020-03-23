@@ -9,6 +9,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.NetworkUtil;
 import systems.reformcloud.reformcloud2.executor.controller.ControllerExecutor;
 import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
 import systems.reformcloud.reformcloud2.proxy.application.command.CommandProxy;
+import systems.reformcloud.reformcloud2.proxy.application.listener.ProcessInclusionHandler;
 import systems.reformcloud.reformcloud2.proxy.application.network.PacketQueryInRequestConfig;
 import systems.reformcloud.reformcloud2.proxy.application.updater.ProxyAddonUpdater;
 
@@ -28,6 +29,7 @@ public class ProxyApplication extends Application {
         this.getCommandManager().register(new CommandProxy());
 
         ExecutorAPI.getInstance().getPacketHandler().registerHandler(new PacketQueryInRequestConfig());
+        ExecutorAPI.getInstance().getEventManager().registerListener(new ProcessInclusionHandler());
     }
 
     @Override

@@ -1,6 +1,7 @@
 package systems.reformcloud.reformcloud2.commands.application;
 
 import com.google.gson.reflect.TypeToken;
+import systems.reformcloud.reformcloud2.commands.application.listener.ProcessInclusionHandler;
 import systems.reformcloud.reformcloud2.commands.application.packet.in.PacketInGetCommandsConfig;
 import systems.reformcloud.reformcloud2.commands.application.update.CommandAddonUpdater;
 import systems.reformcloud.reformcloud2.commands.config.CommandsConfig;
@@ -19,9 +20,16 @@ import java.util.Arrays;
 
 public class ReformCloudApplication extends Application {
 
+    private static ReformCloudApplication instance;
+
     private static CommandsConfig commandsConfig;
 
     private static final ApplicationUpdateRepository REPOSITORY = new CommandAddonUpdater();
+
+    @Override
+    public void onLoad() {
+        instance = this;
+    }
 
     @Override
     public void onEnable() {
@@ -35,8 +43,10 @@ public class ReformCloudApplication extends Application {
                     )).write(path);
         }
 
-        commandsConfig = JsonConfiguration.read(path).get("config", new TypeToken<CommandsConfig>() {});
+        commandsConfig = JsonConfiguration.read(path).get("config", new TypeToken<CommandsConfig>() {
+        });
         ExecutorAPI.getInstance().getPacketHandler().registerHandler(new PacketInGetCommandsConfig());
+        ExecutorAPI.getInstance().getEventManager().registerListener(new ProcessInclusionHandler());
     }
 
     @Override
@@ -52,5 +62,9 @@ public class ReformCloudApplication extends Application {
 
     public static CommandsConfig getCommandsConfig() {
         return commandsConfig;
+    }
+
+    public static ReformCloudApplication getInstance() {
+        return instance;
     }
 }

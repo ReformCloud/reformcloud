@@ -8,6 +8,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonCo
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.system.SystemHelper;
+import systems.reformcloud.reformcloud2.signs.application.listener.ProcessInclusionHandler;
 import systems.reformcloud.reformcloud2.signs.application.packets.in.PacketInCreateSign;
 import systems.reformcloud.reformcloud2.signs.application.packets.in.PacketInDeleteSign;
 import systems.reformcloud.reformcloud2.signs.application.packets.in.PacketInGetSignConfig;
@@ -26,7 +27,14 @@ public class ReformCloudApplication extends Application {
 
     private static SignConfig signConfig;
 
+    private static ReformCloudApplication instance;
+
     private static final ApplicationUpdateRepository REPOSITORY = new SignsUpdater();
+
+    @Override
+    public void onLoad() {
+        instance = this;
+    }
 
     @Override
     public void onEnable() {
@@ -50,6 +58,7 @@ public class ReformCloudApplication extends Application {
                 new PacketInDeleteSign(),
                 new PacketInGetSignConfig()
         );
+        ExecutorAPI.getInstance().getEventManager().registerListener(new ProcessInclusionHandler());
 
         signConfig = ConfigHelper.read(dataFolder().getPath());
         DefaultChannelManager.INSTANCE.getAllSender().forEach(e -> e.sendPacket(new PacketOutReloadConfig(signConfig)));
@@ -69,6 +78,10 @@ public class ReformCloudApplication extends Application {
     }
 
     // ====
+
+    public static ReformCloudApplication getInstance() {
+        return instance;
+    }
 
     public static SignConfig getSignConfig() {
         return signConfig;
