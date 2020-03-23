@@ -3,7 +3,6 @@ package systems.reformcloud.reformcloud2.executor.api.common.process.api;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Template;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Duo;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -14,7 +13,7 @@ public class ProcessConfiguration {
 
     ProcessConfiguration(ProcessGroup base, UUID uniqueId, String displayName,
                          Integer maxMemory, Integer port, Template template, JsonConfiguration extra,
-                         int id, int maxPlayers, Collection<Duo<String, String>> inclusions) {
+                         int id, int maxPlayers, Collection<ProcessInclusion> inclusions) {
         this.base = base;
         this.uniqueId = uniqueId == null ? UUID.randomUUID() : uniqueId;
         this.displayName = displayName;
@@ -45,7 +44,7 @@ public class ProcessConfiguration {
 
     private final int maxPlayers;
 
-    private final Collection<Duo<String, String>> inclusions;
+    private final Collection<ProcessInclusion> inclusions;
 
     @Nonnull
     public ProcessGroup getBase() {
@@ -91,7 +90,7 @@ public class ProcessConfiguration {
     }
 
     @Nonnull
-    public Collection<Duo<String, String>> getInclusions() {
+    public Collection<ProcessInclusion> getInclusions() {
         return inclusions;
     }
 }

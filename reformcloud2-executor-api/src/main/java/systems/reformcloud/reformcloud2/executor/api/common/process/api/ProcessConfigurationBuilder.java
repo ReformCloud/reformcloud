@@ -8,7 +8,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Runt
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Template;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Version;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.backend.basic.FileBackend;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Duo;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 
 import javax.annotation.Nonnull;
@@ -56,7 +55,7 @@ public final class ProcessConfigurationBuilder {
 
     private int maxPlayers;
 
-    private Collection<Duo<String, String>> inclusions = new ArrayList<>();
+    private Collection<ProcessInclusion> inclusions = new ArrayList<>();
 
     @Nonnull
     public ProcessConfigurationBuilder uniqueId(@Nonnull UUID uniqueID) {
@@ -131,7 +130,7 @@ public final class ProcessConfigurationBuilder {
     }
 
     @Nonnull
-    public ProcessConfigurationBuilder inclusions(@Nonnull Collection<Duo<String, String>> inclusions) {
+    public ProcessConfigurationBuilder inclusions(@Nonnull Collection<ProcessInclusion> inclusions) {
         Conditions.nonNull(inclusions, "Unable to set null inclusions");
 
         this.inclusions = inclusions;
@@ -139,7 +138,7 @@ public final class ProcessConfigurationBuilder {
     }
 
     @Nonnull
-    public ProcessConfigurationBuilder inclusion(@Nonnull Duo<String, String> inclusion) {
+    public ProcessConfigurationBuilder inclusion(@Nonnull ProcessInclusion inclusion) {
         Conditions.nonNull(inclusion, "Unable to add null inclusion");
 
         this.inclusions.add(inclusion);
@@ -161,7 +160,6 @@ public final class ProcessConfigurationBuilder {
                 this.inclusions
         );
     }
-
 
     private Template randomTemplate() {
         if (this.base.getTemplates().isEmpty()) {

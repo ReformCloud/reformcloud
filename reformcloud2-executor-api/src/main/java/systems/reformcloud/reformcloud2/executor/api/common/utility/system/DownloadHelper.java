@@ -1,6 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.api.common.utility.system;
 
-import java.io.IOException;
+import javax.annotation.Nonnull;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -16,14 +16,25 @@ public final class DownloadHelper {
         throw new UnsupportedOperationException();
     }
 
-    public static void downloadAndDisconnect(String url, String target) {
+    public static void downloadAndDisconnect(@Nonnull String url, @Nonnull String target) {
         openConnection(url, stream -> {
             SystemHelper.createDirectory(Paths.get(target).getParent());
             SystemHelper.doCopy(stream, Paths.get(target), StandardCopyOption.REPLACE_EXISTING);
         });
     }
 
-    public static void openConnection(String url, Map<String, String> headers, Consumer<InputStream> inputStreamConsumer) {
+    public static void openConnection(@Nonnull String url, @Nonnull Consumer<InputStream> consumer) {
+        openConnection(url, new HashMap<>(), consumer);
+    }
+
+    public static void openConnection(@Nonnull String url, @Nonnull Map<String, String> headers,
+                                      @Nonnull Consumer<InputStream> inputStreamConsumer) {
+        openConnection(url, headers, inputStreamConsumer, ex -> ex.printStackTrace());
+    }
+
+    public static void openConnection(@Nonnull String url, @Nonnull Map<String, String> headers,
+                                      @Nonnull Consumer<InputStream> inputStreamConsumer,
+                                      @Nonnull Consumer<Throwable> exceptionConsumer) {
         try {
             HttpURLConnection httpURLConnection = (HttpURLConnection) new URL(url).openConnection();
             httpURLConnection.setRequestProperty(
@@ -40,12 +51,8 @@ public final class DownloadHelper {
             }
 
             httpURLConnection.disconnect();
-        } catch (final IOException ex) {
-            ex.printStackTrace();
+        } catch (final Throwable throwable) {
+            exceptionConsumer.accept(throwable);
         }
-    }
-
-    public static void openConnection(String url, Consumer<InputStream> consumer) {
-        openConnection(url, new HashMap<>(), consumer);
     }
 }

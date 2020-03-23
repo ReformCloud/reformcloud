@@ -8,8 +8,8 @@ import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Template;
 import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
 import systems.reformcloud.reformcloud2.executor.api.common.process.api.ProcessConfigurationBuilder;
+import systems.reformcloud.reformcloud2.executor.api.common.process.api.ProcessInclusion;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.StringUtil;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Duo;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 
 import javax.annotation.Nonnull;
@@ -166,15 +166,15 @@ public final class CommandLaunch extends GlobalCommand {
     }
 
     @Nonnull
-    private static Collection<Duo<String, String>> parseInclusions(@Nonnull String from) {
-        Collection<Duo<String, String>> out = new ArrayList<>();
+    private static Collection<ProcessInclusion> parseInclusions(@Nonnull String from) {
+        Collection<ProcessInclusion> out = new ArrayList<>();
         for (String inclusion : from.split(";")) {
             String[] parts = inclusion.split(",");
             if (parts.length != 2) {
                 continue;
             }
 
-            out.add(new Duo<>(parts[0], parts[1]));
+            out.add(new ProcessInclusion(parts[0], parts[1]));
         }
 
         return out;

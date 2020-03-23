@@ -5,8 +5,8 @@ import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonCo
 import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Template;
 import systems.reformcloud.reformcloud2.executor.api.common.plugins.basic.DefaultPlugin;
+import systems.reformcloud.reformcloud2.executor.api.common.process.api.ProcessInclusion;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.clone.Clone;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Duo;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.name.Nameable;
 
@@ -35,7 +35,7 @@ public final class ProcessInformation implements Nameable, Clone<ProcessInformat
             @Nonnull List<DefaultPlugin> plugins,
             @Nonnull JsonConfiguration extra,
             @Nullable Integer maxPlayers,
-            @Nonnull Collection<Duo<String, String>> preInclusions
+            @Nonnull Collection<ProcessInclusion> preInclusions
     ) {
         this.processName = processName;
         this.displayName = displayName;
@@ -87,7 +87,7 @@ public final class ProcessInformation implements Nameable, Clone<ProcessInformat
 
     private final JsonConfiguration extra;
 
-    private final Collection<Duo<String, String>> preInclusions;
+    private final Collection<ProcessInclusion> preInclusions;
 
     @Nonnull
     public String getDisplayName() {
@@ -198,7 +198,7 @@ public final class ProcessInformation implements Nameable, Clone<ProcessInformat
         return Streams.filterToReference(onlinePlayers, player -> player.getName().equals(name)).isPresent();
     }
 
-    public Collection<Duo<String, String>> getPreInclusions() {
+    public Collection<ProcessInclusion> getPreInclusions() {
         return preInclusions;
     }
 

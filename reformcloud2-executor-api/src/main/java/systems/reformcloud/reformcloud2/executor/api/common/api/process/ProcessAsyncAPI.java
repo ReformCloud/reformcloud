@@ -6,7 +6,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonCo
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.process.api.ProcessConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.process.api.ProcessConfigurationBuilder;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Duo;
+import systems.reformcloud.reformcloud2.executor.api.common.process.api.ProcessInclusion;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.defaults.DefaultTask;
 
@@ -115,7 +115,7 @@ public interface ProcessAsyncAPI {
                                                        @Nonnull JsonConfiguration configurable, @Nonnull UUID uniqueID,
                                                        @Nullable String displayName, @Nullable Integer maxMemory,
                                                        @Nullable Integer port, @Nullable Integer id, @Nullable Integer maxPlayers,
-                                                       @Nonnull Collection<Duo<String, String>> inclusions) {
+                                                       @Nonnull Collection<ProcessInclusion> inclusions) {
         ProcessConfigurationBuilder builder = ProcessConfigurationBuilder
                 .newBuilder(groupName)
                 .extra(configurable)
@@ -237,7 +237,7 @@ public interface ProcessAsyncAPI {
                                                          @Nonnull JsonConfiguration configurable, @Nonnull UUID uniqueID,
                                                          @Nullable String displayName, @Nullable Integer maxMemory,
                                                          @Nullable Integer port, @Nullable Integer id, @Nullable Integer maxPlayers,
-                                                         @Nonnull Collection<Duo<String, String>> inclusions) {
+                                                         @Nonnull Collection<ProcessInclusion> inclusions) {
         ProcessConfigurationBuilder builder = ProcessConfigurationBuilder
                 .newBuilder(groupName)
                 .extra(configurable)
