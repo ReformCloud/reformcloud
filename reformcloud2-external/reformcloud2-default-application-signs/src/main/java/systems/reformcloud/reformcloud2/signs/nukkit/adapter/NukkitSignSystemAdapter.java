@@ -397,6 +397,7 @@ public class NukkitSignSystemAdapter implements SignSystemAdapter<BlockEntitySig
             return;
         }
 
+        block = Block.get(block.getId(), Math.max(0, layout.getSubID()));
         location.getLevel().setBlock(location, block, true, true);
     }
 
