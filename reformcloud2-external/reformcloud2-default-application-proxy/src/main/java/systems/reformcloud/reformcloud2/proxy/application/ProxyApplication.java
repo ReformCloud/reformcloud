@@ -22,6 +22,11 @@ public class ProxyApplication extends Application {
     private static ProxyApplication instance;
 
     @Override
+    public void onInstallable() {
+        ExecutorAPI.getInstance().getEventManager().registerListener(new ProcessInclusionHandler());
+    }
+
+    @Override
     public void onLoad() {
         instance = this;
 
@@ -29,7 +34,6 @@ public class ProxyApplication extends Application {
         this.getCommandManager().register(new CommandProxy());
 
         ExecutorAPI.getInstance().getPacketHandler().registerHandler(new PacketQueryInRequestConfig());
-        ExecutorAPI.getInstance().getEventManager().registerListener(new ProcessInclusionHandler());
     }
 
     @Override

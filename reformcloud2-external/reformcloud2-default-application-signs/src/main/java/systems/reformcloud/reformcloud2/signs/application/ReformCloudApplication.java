@@ -32,6 +32,11 @@ public class ReformCloudApplication extends Application {
     private static final ApplicationUpdateRepository REPOSITORY = new SignsUpdater();
 
     @Override
+    public void onInstallable() {
+        ExecutorAPI.getInstance().getEventManager().registerListener(new ProcessInclusionHandler());
+    }
+
+    @Override
     public void onLoad() {
         instance = this;
     }
@@ -58,7 +63,6 @@ public class ReformCloudApplication extends Application {
                 new PacketInDeleteSign(),
                 new PacketInGetSignConfig()
         );
-        ExecutorAPI.getInstance().getEventManager().registerListener(new ProcessInclusionHandler());
 
         signConfig = ConfigHelper.read(dataFolder().getPath());
         DefaultChannelManager.INSTANCE.getAllSender().forEach(e -> e.sendPacket(new PacketOutReloadConfig(signConfig)));

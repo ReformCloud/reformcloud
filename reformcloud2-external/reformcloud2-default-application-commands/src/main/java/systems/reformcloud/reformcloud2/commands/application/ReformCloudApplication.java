@@ -27,6 +27,11 @@ public class ReformCloudApplication extends Application {
     private static final ApplicationUpdateRepository REPOSITORY = new CommandAddonUpdater();
 
     @Override
+    public void onInstallable() {
+        ExecutorAPI.getInstance().getEventManager().registerListener(new ProcessInclusionHandler());
+    }
+
+    @Override
     public void onLoad() {
         instance = this;
     }
@@ -46,7 +51,6 @@ public class ReformCloudApplication extends Application {
         commandsConfig = JsonConfiguration.read(path).get("config", new TypeToken<CommandsConfig>() {
         });
         ExecutorAPI.getInstance().getPacketHandler().registerHandler(new PacketInGetCommandsConfig());
-        ExecutorAPI.getInstance().getEventManager().registerListener(new ProcessInclusionHandler());
     }
 
     @Override

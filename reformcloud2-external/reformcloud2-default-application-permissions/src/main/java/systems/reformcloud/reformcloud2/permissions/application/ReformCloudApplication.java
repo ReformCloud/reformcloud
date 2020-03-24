@@ -22,6 +22,11 @@ public class ReformCloudApplication extends Application {
     private static ReformCloudApplication instance;
 
     @Override
+    public void onInstallable() {
+        ExecutorAPI.getInstance().getEventManager().registerListener(new ProcessInclusionHandler());
+    }
+
+    @Override
     public void onLoad() {
         instance = this;
     }
@@ -32,7 +37,6 @@ public class ReformCloudApplication extends Application {
         PermissionAPI.handshake();
 
         getCommandManager().register(new CommandPerms());
-        ExecutorAPI.getInstance().getEventManager().registerListener(new ProcessInclusionHandler());
     }
 
     @Override
