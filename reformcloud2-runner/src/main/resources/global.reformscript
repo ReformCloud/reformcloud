@@ -1,0 +1,58 @@
+# Represents the global execution script for the reformcloud runner
+# Modify this file only if you are able to use reform script
+# Do not remove something from this file it might be required for the workflow to run
+
+# Header printing
+PRINTLN    __       __                        ___ _                 _ ____
+PRINTLN   /__\ ___ / _| ___  _ __ _ __ ___   / __\ | ___  _   _  __| |___ \
+PRINTLN  / \/// _ \ |_ / _ \| '__| '_ ` _ \ / /  | |/ _ \| | | |/ _` | __) |
+PRINTLN / _  \  __/  _| (_) | |  | | | | | / /___| | (_) | |_| | (_| |/ __/
+PRINTLN \/ \_/\___|_|  \___/|_|  |_| |_| |_\____/|_|\___/ \__,_|\__,_|_____| git: _%_git_commit_%_
+PRINTLN
+PRINTLN                   Not just a cloud system, but an experience.
+PRINTLN
+
+# Default system env variables (if you want to unset them write '# ' in front of the line)
+# VARIABLE reformcloud.dev.mode=true
+# VARIABLE reformcloud.lib.path=.
+# VARIABLE reformcloud.disable.native=true
+# VARIABLE reformcloud.executor.debug=true
+# VARIABLE reformcloud.disable.colours=true
+# VARIABLE reformcloud.indev.builds=true
+# VARIABLE reformcloud.executor.type=-1
+# VARIABLE reformcloud.runner.version=2.0.1-SNAPSHOT
+VARIABLE reformcloud.indev.build.url=https://ci.reformcloud.systems/job/reformcloud/job/reformcloud2/job/indev/lastSuccessfulBuild/artifact/reformcloud2-executor/target/executor.jar
+VARIABLE reformcloud.version.url=https://internal.reformcloud.systems/version.properties
+VARIABLE reformcloud.auto.update=true
+
+# Check if env is defined
+IF _%_env_set_%_ THEN() OR(EXECUTE:checkIfSetupRequired())
+
+# Write env to file and check for updates if required
+IF _%_env_not_api_%_ THEN(CHECK_FOR_UPDATES) OR()
+
+# Check if dev mode is enabled and apply updates if needed
+CHECK_IF_DEV_MODE
+
+# Checks if it's needed to apply snapshot builds
+CHECK_IF_SNAPSHOT_APPLY
+
+# Set the required system properties for the application to run
+SET_SYSTEM_PROPERTIES
+
+# Finally start the application
+START_APPLICATION
+
+# Check if setup is required
+TASK checkIfSetupRequired()
+TASK IF _%_setup_required_%_ THEN(EXECUTE:startSetup()) OR()
+TASK END
+
+# Executes the setup for the runner
+TASK startSetup()
+TASK PRINTLN Please choose an executor: "node" (recommended), "controller", "client"
+TASK PRINTLN For more information check out the README on GitHub: _%_github_url_%_
+TASK SETUP
+TASK WRITE_ENV
+TASK UNPACK_APPLICATION
+TASK END

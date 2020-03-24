@@ -1,275 +1,103 @@
 package systems.reformcloud.reformcloud2.runner;
 
-import systems.reformcloud.reformcloud2.runner.classloading.ClassPreparer;
-import systems.reformcloud.reformcloud2.runner.classloading.RunnerClassLoader;
-import systems.reformcloud.reformcloud2.runner.update.ApplicationUpdateApplier;
-import systems.reformcloud.reformcloud2.runner.update.CloudVersionUpdater;
+import systems.reformcloud.reformcloud2.runner.commands.*;
+import systems.reformcloud.reformcloud2.runner.reformscript.InterpretedReformScript;
+import systems.reformcloud.reformcloud2.runner.reformscript.ReformScriptInterpreter;
+import systems.reformcloud.reformcloud2.runner.reformscript.basic.RunnerReformScriptInterpreter;
+import systems.reformcloud.reformcloud2.runner.updater.Updater;
+import systems.reformcloud.reformcloud2.runner.updater.basic.ApplicationsUpdater;
+import systems.reformcloud.reformcloud2.runner.updater.basic.CloudVersionUpdater;
+import systems.reformcloud.reformcloud2.runner.util.RunnerUtils;
+import systems.reformcloud.reformcloud2.runner.variables.*;
 
-import java.io.*;
-import java.lang.instrument.Instrumentation;
-import java.lang.reflect.InvocationTargetException;
+import javax.annotation.Nonnull;
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.util.Objects;
-import java.util.Properties;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
 import java.util.jar.JarFile;
 
 public final class Runner {
 
-    private static final Predicate<String> CONTROLLER_UNPACK_TEST = s -> s != null && (s.equalsIgnoreCase("controller") || s.equalsIgnoreCase("client") || s.equalsIgnoreCase("node"));
+    private final ReformScriptInterpreter interpreter = new RunnerReformScriptInterpreter();
 
-    private static final Supplier<String> CHOOSE_INSTALL_MESSAGE = () -> "Please choose an executor: [\"controller\", \"client\", \"node\" (recommended)]";
+    private final Updater applicationsUpdater;
 
-    private static final Properties PROPERTIES = new Properties();
+    private final Updater cloudVersionUpdater;
 
-    /* ================================== */
+    private final String[] args;
 
-    public static synchronized void main(String[] args) {
-        if (!isAPI()) {
-            readProperties();
-            setSystemProperties(Runner.class.getPackage().getImplementationVersion());
+    Runner(@Nonnull String[] args) {
+        this.interpreter
+                .registerInterpreterCommand(new CheckForUpdatesCommand(this))
+                .registerInterpreterCommand(new CheckIfDevModeCommand())
+                .registerInterpreterCommand(new CheckIfSnapshotApplyCommand())
+                .registerInterpreterCommand(new ExecuteCommand())
+                .registerInterpreterCommand(new IfCommand())
+                .registerInterpreterCommand(new PrintlnCommand())
+                .registerInterpreterCommand(new SetSystemPropertiesCommand())
+                .registerInterpreterCommand(new SetupCommand())
+                .registerInterpreterCommand(new StartApplicationCommand(this))
+                .registerInterpreterCommand(new UnpackApplicationCommand())
+                .registerInterpreterCommand(new VariableCommand())
+                .registerInterpreterCommand(new WriteEnvCommand())
 
-            String newVersion = null;
-            if (System.getProperty("reformcloud.runner.version").endsWith("-SNAPSHOT")) {
-                System.out.println("You are running on a snapshot build ("
-                        + System.getProperty("reformcloud.runner.version") + "). Please note that this is " +
-                        "not supported and no updates of the cloud will get applied.");
-            } else if (Boolean.getBoolean("reformcloud.disable.updates")) {
-                System.out.println("You've disabled auto update for applications and the cloud itself");
-            } else {
-                ApplicationUpdateApplier.applyUpdates();
-                newVersion = CloudVersionUpdater.update();
-            }
+                .registerInterpreterVariable(new EnvNotAPIVariable())
+                .registerInterpreterVariable(new EnvSetVariable())
+                .registerInterpreterVariable(new GitCommitVariable())
+                .registerInterpreterVariable(new GithubUrlVariable())
+                .registerInterpreterVariable(new SetupRequiredVariable());
 
-            startSetup((version, id) -> {
-                final File file = new File("reformcloud/.bin/executor.jar");
-                if (!file.exists()) {
-                    throw new RuntimeException("Executor file does not exists");
-                }
-
-                setSystemProperties(Runner.class.getPackage().getImplementationVersion());
-
-                ClassLoader classLoader = ClassPreparer.create(file.toPath(),
-                        path -> {
-                            URL[] urls = new URL[]{path.toUri().toURL()};
-                            return new RunnerClassLoader(urls);
-                        });
-                if (!(classLoader instanceof URLClassLoader)) {
-                    throw new RuntimeException("ClassLoader has to be an url class loader");
-                }
-
-                try (JarFile jarFile = new JarFile(file)) {
-                    String main = jarFile.getManifest().getMainAttributes().getValue("Main-Class");
-                    Method invoke = classLoader.loadClass(main).getMethod("main", String[].class);
-
-                    if (id.equals("1") || id.equals("2") || id.equals("4")) {
-                        createInvoke(id);
-                    } else {
-                        throw new RuntimeException("Unknown id provided by config detected");
-                    }
-
-                    invokeMethod(invoke, args, classLoader);
-                } catch (final Exception ex) {
-                    ex.printStackTrace();
-                }
-            }, newVersion);
-        } else {
-            runIfProcessExists(path -> {
-                ClassLoader classLoader = ClassPreparer.create(path, path1 -> {
-                    URL[] urls = new URL[]{path1.toUri().toURL()};
-                    return new RunnerClassLoader(urls);
-                });
-                if (!(classLoader instanceof URLClassLoader)) {
-                    throw new RuntimeException("ClassLoader has to be an url class loader");
-                }
-
-                try (JarFile jarFile = new JarFile(path.toFile())) {
-                    String main = jarFile.getManifest().getMainAttributes().getValue("Main-Class");
-                    Method invoke = classLoader.loadClass(main).getMethod("main", String[].class);
-
-                    invokeMethod(invoke, args, classLoader);
-                } catch (final Exception ex) {
-                    ex.printStackTrace();
-                }
-            });
-        }
+        this.applicationsUpdater = new ApplicationsUpdater(RunnerUtils.APP_UPDATE_FOLDER);
+        this.cloudVersionUpdater = new CloudVersionUpdater(RunnerUtils.GLOBAL_SCRIPT_FILE);
+        this.args = args;
     }
 
-    private static void startSetup(BiConsumer<String, String> andThen, String version) {
-        unpackExecutor();
-
-        if (Files.exists(Paths.get("reformcloud/.bin/config.properties")) && version == null) {
-            andThen.accept(
-                    PROPERTIES.getProperty("reformcloud.version"),
-                    PROPERTIES.getProperty("reformcloud.type.id")
-            );
-            return;
+    public void bootstrap() {
+        if (!RunnerUtils.GLOBAL_SCRIPT_FILE.exists()) {
+            RunnerUtils.copyCompiledFile("global.reformscript", RunnerUtils.GLOBAL_SCRIPT_FILE);
         }
 
-        if (PROPERTIES.containsKey("reformcloud.type.id")) {
-            andThen.accept(write(PROPERTIES.getProperty("reformcloud.type.id"), version), PROPERTIES.getProperty("reformcloud.type.id"));
-            return;
+        InterpretedReformScript global = this.interpreter.interpret(RunnerUtils.GLOBAL_SCRIPT_FILE);
+        if (global == null) {
+            throw new RuntimeException("Unable to interpret global reform script! Please recheck the syntax");
         }
 
-        int type = getType();
-        andThen.accept(write(Integer.toString(type), version), Integer.toString(type));
+        global.execute();
     }
 
-    private static boolean isAPI() {
-        return System.getProperty("reformcloud.executor.type") != null &&
-                System.getProperty("reformcloud.executor.type").equals("3");
-    }
-
-    private static String write(String id, String newVersion) {
-        String version = newVersion == null ? System.getProperty("reformcloud.runner.version") : newVersion;
-
-        PROPERTIES.clear();
-        PROPERTIES.setProperty("reformcloud.version", version);
-        PROPERTIES.setProperty("reformcloud.type.id", id);
-
-        try (OutputStream outputStream = Files.newOutputStream(Paths.get("reformcloud/.bin/config.properties"))) {
-            PROPERTIES.store(outputStream, "ReformCloud runner configuration");
-        } catch (final IOException ex) {
-            ex.printStackTrace();
+    public void startApplication() {
+        Path applicationFile = System.getProperties().containsKey("reformcloud.process.path")
+                ? Paths.get(System.getProperty("reformcloud.process.path")) : RunnerUtils.EXECUTOR_PATH;
+        if (!Files.exists(applicationFile) || Files.isDirectory(applicationFile)) {
+            throw new UnsupportedOperationException("Unable to start non-executable file: " + applicationFile.toString());
         }
 
-        return version;
+        this.startApplication0(applicationFile);
     }
 
-    private static int getType() {
-        Integer type = getType0();
-        if (type != null) {
-            return type;
-        }
-
-        System.out.println(CHOOSE_INSTALL_MESSAGE.get());
-
-        Console console = System.console();
-        String s = console.readLine();
-        while (s == null || s.trim().isEmpty() || !CONTROLLER_UNPACK_TEST.test(s)) {
-            System.out.println(CHOOSE_INSTALL_MESSAGE.get());
-            s = console.readLine();
-        }
-
-        return s.equalsIgnoreCase("controller") ? 1 : s.equalsIgnoreCase("node") ? 4 : 2;
-    }
-
-    private static void readProperties() {
-        if (Files.exists(Paths.get("reformcloud/.bin/config.properties"))) {
-            try (InputStream inputStream = Files.newInputStream(Paths.get("reformcloud/.bin/config.properties"))) {
-                PROPERTIES.load(inputStream);
-            } catch (final IOException ex) {
-                ex.printStackTrace();
-            }
-        }
-    }
-
-    private static void setSystemProperties(String defaultValue) {
-        System.setProperty(
-                "reformcloud.runner.version",
-                PROPERTIES.getProperty("reformcloud.version", defaultValue)
-        );
-
-        System.setProperty(
-                "reformcloud.runner.specification",
-                System.getProperty("reformcloud.runner.version").endsWith("-SNAPSHOT") ? "SNAPSHOT" : "RELEASE"
-        );
-    }
-
-    private static void unpackExecutor() {
-        if (Boolean.getBoolean("reformcloud.dev.mode")) {
-            try {
-                Files.deleteIfExists(Paths.get("reformcloud/.bin/executor.jar"));
-            } catch (final IOException ex) {
-                ex.printStackTrace();
-            }
-
-            System.out.println("DEBUG: Running in development mode on git:" + Runner.class.getPackage().getSpecificationVersion());
-        }
-
-        if (Files.exists(Paths.get("reformcloud/.bin/executor.jar"))) {
-            return;
-        }
-
-        try (InputStream inputStream = Runner.class.getClassLoader().getResourceAsStream("files/executor.jar")) {
-            if (inputStream == null) {
-                throw new IllegalStateException("Could not find \"executor.jar\" in \"runner.jar\". This is not a bug of reformcloud.");
-            }
-
-            Files.createDirectories(Paths.get("reformcloud/.bin/libs"));
-            Files.copy(inputStream, Paths.get("reformcloud/.bin/executor.jar"), StandardCopyOption.REPLACE_EXISTING);
-        } catch (final Exception ex) {
-            ex.printStackTrace();
-        }
-    }
-
-    private static void createInvoke(String id) {
-        System.setProperty("reformcloud.executor.type", id);
-    }
-
-    /* ================== */
-
-    private static void runIfProcessExists(Consumer<Path> consumer) {
-        String fileName = System.getProperty("reformcloud.process.path");
-        if (fileName == null || !Files.exists(Paths.get(fileName))) {
-            throw new RuntimeException("Cannot find process jar to execute");
-        }
-
-        consumer.accept(Paths.get(fileName));
-    }
-
-    private static void invokeMethod(Method method, Object args, ClassLoader classLoader) {
-        try {
+    private void startApplication0(@Nonnull Path applicationFilePath) {
+        try (JarFile file = new JarFile(applicationFilePath.toFile())) {
+            URLClassLoader classLoader = new RunnerClassLoader(new URL[]{applicationFilePath.toUri().toURL()});
             Thread.currentThread().setContextClassLoader(classLoader);
-            method.invoke(null, args);
-        } catch (final InvocationTargetException | IllegalAccessException ex) {
-            ex.printStackTrace();
+
+            String mainClass = file.getManifest().getMainAttributes().getValue("Main-Class");
+            Method main = classLoader.loadClass(mainClass).getMethod("main", String[].class);
+
+            main.invoke(null, (Object) this.args);
+        } catch (final IOException | ReflectiveOperationException ex) {
+            throw new RuntimeException(ex);
         }
     }
 
-    public static void premain(String string, Instrumentation inst) {
-        if (System.getProperty("reformcloud.lib.path") == null || System.getProperty("reformcloud.process.path") == null) {
-            return;
-        }
-
-        File file = new File(System.getProperty("reformcloud.lib.path") + "/reformcloud/.bin/libs/");
-        if (!file.exists() || !file.isDirectory()) {
-            throw new RuntimeException("Bad lib path given " + System.getProperty("reformcloud.lib.path"));
-        }
-
-        try {
-            inst.appendToSystemClassLoaderSearch(new JarFile(new File(System.getProperty("reformcloud.process.path"))));
-            for (File dependency : Objects.requireNonNull(file.listFiles())) {
-                if (!dependency.getName().endsWith(".jar") || !dependency.isFile()) {
-                    continue;
-                }
-
-                inst.appendToSystemClassLoaderSearch(new JarFile(dependency));
-            }
-        } catch (final Throwable throwable) {
-            throwable.printStackTrace();
-        }
+    public Updater getApplicationsUpdater() {
+        return applicationsUpdater;
     }
 
-    private static Integer getType0() {
-        try {
-            int type = Integer.parseInt(System.getProperty("runner.type"));
-            if (type > 4 || type == 3 || type < 1) {
-                throw new IllegalArgumentException("Illegal runner type given");
-            }
-
-            return type;
-        } catch (final Throwable ignored) {
-            return null;
-        }
+    public Updater getCloudVersionUpdater() {
+        return cloudVersionUpdater;
     }
 }

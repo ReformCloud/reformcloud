@@ -15,25 +15,7 @@ public final class StringUtil {
 
     public static final String NULL_PATH = new File("reformcloud/.bin/dev/null").getAbsolutePath();
 
-    public static void sendHeader() {
-        if (Boolean.getBoolean("reformcloud.disable.header.show")) {
-            System.out.println();
-            return;
-        }
-
-        System.out.println(
-                        "\n" +
-                        "    __       __                        ___ _                 _ ____  \n" +
-                        "   /__\\ ___ / _| ___  _ __ _ __ ___   / __\\ | ___  _   _  __| |___ \\ \n" +
-                        "  / \\/// _ \\ |_ / _ \\| '__| '_ ` _ \\ / /  | |/ _ \\| | | |/ _` | __) |\n" +
-                        " / _  \\  __/  _| (_) | |  | | | | | / /___| | (_) | |_| | (_| |/ __/\n" +
-                        " \\/ \\_/\\___|_|  \\___/|_|  |_| |_| |_\\____/|_|\\___/ \\__,_|\\__,_|_____| git:"
-                                + StringUtil.class.getPackage().getSpecificationVersion() + "\n" +
-                        " \n" +
-                        "                   Not just a cloud system, but an experience.\n"
-        );
-    }
-
+    @Nonnull
     public static String generateString(int times) {
         Conditions.isTrue(times > 0);
         StringBuilder stringBuilder = new StringBuilder();
@@ -44,6 +26,7 @@ public final class StringUtil {
         return stringBuilder.toString();
     }
 
+    @Nonnull
     public static String getConsolePrompt() {
         return LanguageManager.get("logger.console.prompt")
                 .replace("%version%", System.getProperty("reformcloud.runner.version", "c-build"))
