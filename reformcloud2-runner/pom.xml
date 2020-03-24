@@ -49,8 +49,8 @@
                 <configuration>
                     <archive>
                         <manifestEntries>
-                            <Premain-Class>systems.reformcloud.reformcloud2.runner.Runner</Premain-Class>
-                            <Main-Class>systems.reformcloud.reformcloud2.runner.Runner</Main-Class>
+                            <Premain-Class>systems.reformcloud.reformcloud2.runner.instrumentation.RunnerPremain</Premain-Class>
+                            <Main-Class>systems.reformcloud.reformcloud2.runner.RunnerExecutor</Main-Class>
                             <Version>${project.version}</Version>
                             <Implementation-Version>${project.version}</Implementation-Version>
                             <!--suppress UnresolvedMavenProperty -->

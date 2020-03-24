@@ -1,6 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.api.common.dependency;
 
-import systems.reformcloud.reformcloud2.runner.classloading.RunnerClassLoader;
+import systems.reformcloud.reformcloud2.runner.RunnerClassLoader;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

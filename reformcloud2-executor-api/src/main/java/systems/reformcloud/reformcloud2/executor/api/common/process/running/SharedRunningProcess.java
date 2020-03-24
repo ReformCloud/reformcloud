@@ -153,6 +153,7 @@ public abstract class SharedRunningProcess implements RunningProcess {
                 "-DIReallyKnowWhatIAmDoingISwear=true",
                 "-Djline.terminal=jline.UnsupportedTerminal",
 
+                "-Dreformcloud.runner.version=" + System.getProperty("reformcloud.runner.version"),
                 "-Dreformcloud.executor.type=3",
                 "-Dreformcloud.lib.path=" + LIB_PATH,
                 "-Dreformcloud.process.path=" + new File("reformcloud/files/" + Version.format(
@@ -171,7 +172,7 @@ public abstract class SharedRunningProcess implements RunningProcess {
         command.addAll(Arrays.asList(
                 "-cp", StringUtil.NULL_PATH,
                 "-javaagent:runner.jar",
-                "systems.reformcloud.reformcloud2.runner.Runner"
+                "systems.reformcloud.reformcloud2.runner.RunnerExecutor"
         ));
 
         if (this.startupInformation.getTemplate().getVersion().getId() == 1) {
