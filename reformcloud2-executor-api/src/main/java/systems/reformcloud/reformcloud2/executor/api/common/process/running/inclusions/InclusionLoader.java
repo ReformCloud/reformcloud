@@ -47,7 +47,6 @@ public final class InclusionLoader {
         inclusions.forEach(inclusion -> {
             Path path = Paths.get("reformcloud/files/inclusions", inclusion.getName());
             if (Files.notExists(path)) {
-                System.out.println("NOT EXISTS " + path.toString());
                 return;
             }
 
