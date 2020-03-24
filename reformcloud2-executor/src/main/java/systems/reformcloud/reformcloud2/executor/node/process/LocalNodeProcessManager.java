@@ -286,7 +286,7 @@ public class LocalNodeProcessManager implements NodeProcessManager {
         return startPort;
     }
 
-    private ProcessInformation constructInfo(ProcessConfiguration configuration, Template template, NodeInformation node) {
+    private synchronized ProcessInformation constructInfo(ProcessConfiguration configuration, Template template, NodeInformation node) {
         int id = configuration.getId() == -1 ? this.nextID(configuration.getBase()) : configuration.getId();
         int port = configuration.getPort() == null ? nextPort(configuration.getBase().getStartupConfiguration().getStartPort())
                 : configuration.getPort();
