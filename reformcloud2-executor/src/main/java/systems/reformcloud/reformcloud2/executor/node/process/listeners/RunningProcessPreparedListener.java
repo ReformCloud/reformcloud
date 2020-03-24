@@ -1,7 +1,7 @@
 package systems.reformcloud.reformcloud2.executor.node.process.listeners;
 
 import systems.reformcloud.reformcloud2.executor.api.common.event.handler.Listener;
-import systems.reformcloud.reformcloud2.executor.api.common.process.running.events.RunningProcessPrepareEvent;
+import systems.reformcloud.reformcloud2.executor.api.common.process.running.events.RunningProcessPreparedEvent;
 import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
 import systems.reformcloud.reformcloud2.executor.node.network.packet.out.NodePacketOutProcessPrepared;
 import systems.reformcloud.reformcloud2.executor.node.process.manager.LocalProcessManager;
@@ -9,7 +9,7 @@ import systems.reformcloud.reformcloud2.executor.node.process.manager.LocalProce
 public class RunningProcessPreparedListener {
 
     @Listener
-    public void handle(final RunningProcessPrepareEvent event) {
+    public void handle(final RunningProcessPreparedEvent event) {
         NodeExecutor.getInstance().getNodeNetworkManager().getCluster().broadCastToCluster(new NodePacketOutProcessPrepared(
                 event.getRunningProcess().getProcessInformation().getName(),
                 event.getRunningProcess().getProcessInformation().getProcessUniqueID(),

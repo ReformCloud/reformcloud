@@ -6,8 +6,6 @@ public enum ProcessState {
 
     PREPARED,
 
-    POLLED,
-
     READY_TO_START,
 
     STARTED,
@@ -21,7 +19,7 @@ public enum ProcessState {
     STOPPED;
 
     public boolean isValid() {
-        return equals(CREATED) || equals(POLLED) || equals(READY_TO_START) || equals(STARTED) || equals(READY) || equals(FULL) || equals(INVISIBLE);
+        return equals(CREATED) || equals(READY_TO_START) || equals(STARTED) || equals(READY) || equals(FULL) || equals(INVISIBLE);
     }
 
     public boolean isReady() {

@@ -9,6 +9,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.groups.template.incl
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState;
 import systems.reformcloud.reformcloud2.executor.api.common.process.running.events.RunningProcessPrepareEvent;
+import systems.reformcloud.reformcloud2.executor.api.common.process.running.events.RunningProcessPreparedEvent;
 import systems.reformcloud.reformcloud2.executor.api.common.process.running.events.RunningProcessStartedEvent;
 import systems.reformcloud.reformcloud2.executor.api.common.process.running.events.RunningProcessStoppedEvent;
 import systems.reformcloud.reformcloud2.executor.api.common.process.running.inclusions.InclusionLoader;
@@ -122,6 +123,8 @@ public abstract class SharedRunningProcess implements RunningProcess {
 
             this.startupInformation.setProcessState(ProcessState.PREPARED);
             ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(this.startupInformation);
+
+            ExecutorAPI.getInstance().getEventManager().callEvent(new RunningProcessPreparedEvent(this));
             task.complete(null);
         });
         return task;

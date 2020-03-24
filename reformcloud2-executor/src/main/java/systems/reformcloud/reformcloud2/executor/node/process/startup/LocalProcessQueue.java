@@ -8,6 +8,7 @@ import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
 import systems.reformcloud.reformcloud2.executor.node.process.basic.BasicLocalNodeProcess;
 import systems.reformcloud.reformcloud2.executor.node.process.manager.LocalProcessManager;
 
+import javax.annotation.Nonnull;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.LinkedBlockingDeque;
 
@@ -19,7 +20,7 @@ public class LocalProcessQueue extends AbsoluteThread {
         enableDaemon().updatePriority(Thread.MIN_PRIORITY).start();
     }
 
-    public static void queue(ProcessInformation processInformation) {
+    public static void queue(@Nonnull ProcessInformation processInformation) {
         RunningProcess localNodeProcess = new BasicLocalNodeProcess(processInformation);
         int size = QUEUE.size();
         System.out.println(LanguageManager.get("client-process-now-in-queue", processInformation.getName(), size +1));
@@ -30,8 +31,9 @@ public class LocalProcessQueue extends AbsoluteThread {
         });
     }
 
-    public static void queue(RunningProcess process) {
-        System.out.println(LanguageManager.get("client-process-now-in-queue", process.getProcessInformation().getName(), QUEUE.size() +1));
+    public static void queue(@Nonnull RunningProcess process) {
+        System.out.println(LanguageManager.get("client-process-now-in-queue",
+                process.getProcessInformation().getName(), QUEUE.size() +1));
         process.handleEnqueue();
         QUEUE.offerLast(process);
     }

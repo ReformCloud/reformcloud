@@ -84,7 +84,7 @@ public class DefaultNodeNetworkManager implements NodeNetworkManager {
         ProcessInformation matching = PreparedProcessFilter.findMayMatchingProcess(
                 configuration, this.getPreparedProcesses(configuration.getBase().getName())
         );
-        if (matching != null) {
+        if (matching != null && matching.getProcessState().equals(ProcessState.PREPARED)) {
             System.out.println(LanguageManager.get(
                     "process-start-already-prepared-process",
                     configuration.getBase().getName(),
@@ -100,9 +100,6 @@ public class DefaultNodeNetworkManager implements NodeNetworkManager {
     @Override
     public synchronized ProcessInformation startProcess(ProcessInformation processInformation) {
         if (getCluster().isSelfNodeHead()) {
-            processInformation.setProcessState(ProcessState.POLLED);
-            ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(processInformation);
-
             DefaultChannelManager.INSTANCE.get(processInformation.getParent()).ifPresent(
                     e -> e.sendPacket(new NodePacketOutStartPreparedProcess(processInformation))
             ).ifEmpty(e -> {
@@ -116,6 +113,9 @@ public class DefaultNodeNetworkManager implements NodeNetworkManager {
                             .ifPresent(LocalProcessQueue::queue);
                 }
             });
+
+            processInformation.setProcessState(ProcessState.READY_TO_START);
+            ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(processInformation);
         } else {
             DefaultChannelManager.INSTANCE.get(this.cluster.getHeadNode().getName()).ifPresent(
                     e -> e.sendPacket(new NodePacketOutToHeadStartPreparedProcess(processInformation))
