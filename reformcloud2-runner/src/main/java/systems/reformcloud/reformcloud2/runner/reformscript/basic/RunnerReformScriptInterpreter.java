@@ -58,7 +58,7 @@ public final class RunnerReformScriptInterpreter implements ReformScriptInterpre
     public InterpreterVariable getVariable(@Nonnull String variable) {
         return this.variables
                 .stream()
-                .filter(e -> e.wrap().equals(variable.toLowerCase())
+                .filter(e -> variable.toLowerCase().contains(e.wrap())
                         || (e.wrap().endsWith("*_%_") && e.wrap().startsWith(variable)))
                 .findFirst()
                 .orElse(null);
@@ -68,13 +68,13 @@ public final class RunnerReformScriptInterpreter implements ReformScriptInterpre
     @Override
     public InterpretedReformScript interpret(@Nonnull Path script) {
         try {
-            Collection<String> allLines = new CopyOnWriteArrayList<>(Files.readAllLines(script));
+            List<String> allLines = new CopyOnWriteArrayList<>(Files.readAllLines(script));
             Collection<String> comments = allLines
                     .stream()
                     .filter(e -> e.startsWith(COMMENT_LINE_START))
                     .collect(Collectors.toList());
 
-            return this.interpret(allLines, comments);
+            return this.interpret(script, allLines, comments);
         } catch (final IOException ex) {
             RunnerUtils.handleError("Unable to read reform script located at " + script.toString(), ex);
         }
@@ -83,12 +83,13 @@ public final class RunnerReformScriptInterpreter implements ReformScriptInterpre
     }
 
     @Nullable
-    private InterpretedReformScript interpret(@Nonnull Collection<String> allLines, @Nonnull Collection<String> comments) {
-        Map<String, Map.Entry<Integer, InterpreterCommand>> commandsPerLine = new HashMap<>();
+    private InterpretedReformScript interpret(@Nonnull Path path, @Nonnull List<String> allLines,
+                                              @Nonnull Collection<String> comments) {
+        Map<String, Map.Entry<Integer, InterpreterCommand>> commandsPerLine = new LinkedHashMap<>();
         int cursorPosition = 0;
 
         for (String line : allLines) {
-            if (comments.contains(line)) {
+            if (comments.contains(line) || line.trim().isEmpty()) {
                 cursorPosition++;
                 continue;
             }
@@ -105,12 +106,15 @@ public final class RunnerReformScriptInterpreter implements ReformScriptInterpre
                     continue;
                 }
 
-                allLines.remove(line);
-                allLines.add(this.replaceLineVariables(line, allLines));
+                int index = allLines.indexOf(line);
+                if (index != -1) {
+                    allLines.remove(index);
+                    allLines.add(index, line = this.replaceLineVariables(line, allLines));
+                }
 
                 commandsPerLine.put(line, new KeyValueHolder<>(cursorPosition, command));
             } catch (final IllegalArgumentException ex) {
-                RunnerUtils.handleError("Unable to handle script line " + cursorPosition, ex);
+                RunnerUtils.handleError("Unable to handle script line " + cursorPosition + ": " + line, ex);
             }
 
             cursorPosition++;
@@ -121,7 +125,7 @@ public final class RunnerReformScriptInterpreter implements ReformScriptInterpre
             return null;
         }
 
-        return new RunnerInterpretedReformScript(this, allLines, tasks, commandsPerLine);
+        return new RunnerInterpretedReformScript(this, path, allLines, tasks, commandsPerLine);
     }
 
     @Nullable
@@ -165,7 +169,7 @@ public final class RunnerReformScriptInterpreter implements ReformScriptInterpre
 
         Collection<String> linesToParse = allLines
                 .stream()
-                .filter(e -> e.toUpperCase().startsWith(TASK_LINE_START))
+                .filter(e -> e.startsWith(TASK_LINE_START))
                 .collect(Collectors.toList());
 
         List<String> task = new CopyOnWriteArrayList<>();
@@ -201,7 +205,7 @@ public final class RunnerReformScriptInterpreter implements ReformScriptInterpre
         }
 
         String taskOpener = taskLines.remove(0);
-        Map<String, InterpreterCommand> commandsPerLine = new HashMap<>();
+        Map<String, InterpreterCommand> commandsPerLine = new LinkedHashMap<>();
 
         for (String taskLine : taskLines) {
             try {
@@ -210,8 +214,11 @@ public final class RunnerReformScriptInterpreter implements ReformScriptInterpre
                     continue;
                 }
 
-                taskLines.remove(taskLine);
-                taskLines.add(this.replaceLineVariables(taskLine, allLines));
+                int index = taskLines.indexOf(taskLine);
+                if (index != -1) {
+                    taskLines.remove(index);
+                    taskLines.add(index, taskLine = this.replaceLineVariables(taskLine, allLines));
+                }
 
                 commandsPerLine.put(taskLine, command);
             } catch (final IllegalArgumentException ex) {
@@ -219,6 +226,6 @@ public final class RunnerReformScriptInterpreter implements ReformScriptInterpre
             }
         }
 
-        return new RunnerInterpreterTask(taskOpener.replaceFirst(TASK_LINE_START, ""), commandsPerLine);
+        return new RunnerInterpreterTask(taskOpener, commandsPerLine);
     }
 }

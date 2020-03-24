@@ -7,20 +7,25 @@ import systems.reformcloud.reformcloud2.runner.reformscript.utils.InterpreterTas
 import systems.reformcloud.reformcloud2.runner.util.RunnerUtils;
 
 import javax.annotation.Nonnull;
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Map;
 
 public final class RunnerInterpretedReformScript implements InterpretedReformScript {
 
     RunnerInterpretedReformScript(@Nonnull ReformScriptInterpreter parent,
+                                  @Nonnull Path file,
                                   @Nonnull Collection<String> allLines,
                                   @Nonnull Collection<InterpreterTask> tasks,
                                   @Nonnull Map<String, Map.Entry<Integer, InterpreterCommand>> commandsPerLine) {
         this.parent = parent;
+        this.file = file;
         this.allLines = allLines;
         this.tasks = tasks;
         this.commandsPerLine = commandsPerLine;
     }
+
+    private final Path file;
 
     private final ReformScriptInterpreter parent;
 
@@ -40,6 +45,12 @@ public final class RunnerInterpretedReformScript implements InterpretedReformScr
     @Override
     public Collection<InterpreterTask> getAllTasks() {
         return this.tasks;
+    }
+
+    @Nonnull
+    @Override
+    public Path getScriptPath() {
+        return this.file;
     }
 
     @Override

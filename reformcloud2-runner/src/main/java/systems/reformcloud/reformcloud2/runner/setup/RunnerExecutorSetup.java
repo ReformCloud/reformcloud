@@ -4,7 +4,6 @@ import systems.reformcloud.reformcloud2.runner.util.RunnerUtils;
 
 import javax.annotation.Nonnull;
 import java.io.Console;
-import java.nio.file.Files;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -15,25 +14,19 @@ public final class RunnerExecutorSetup {
     }
 
     /**
-     * @return If the runner executor setup is required for the current process
-     */
-    public static boolean isSetupRequired() {
-        return Files.notExists(RunnerUtils.EXECUTOR_PATH);
-    }
-
-    /**
      * Executes the runner executor setup
      */
     public static void executeSetup() {
-        System.out.println("Please choose an executor: \"node\" (recommended), \"controller\", \"client\"");
-        System.out.println("For more information check out the README on GitHub: " + RunnerUtils.README_URL);
-
         String executor = readFromConsoleOrFromSystemProperties(
                 s -> RunnerUtils.AVAILABLE_EXECUTORS.contains(s.toLowerCase()),
                 s -> {
                     System.out.println("The executor " + s + " is not available.");
                     System.out.println("Please choose one of these: " + String.join(", ", RunnerUtils.AVAILABLE_EXECUTORS));
                 });
+        System.setProperty(
+                "reformcloud.executor.type",
+                Integer.toString(getIDFromType(executor))
+        );
     }
 
     @Nonnull
@@ -52,6 +45,14 @@ public final class RunnerExecutorSetup {
         }
 
         return s;
+    }
+
+    private static int getIDFromType(@Nonnull String type) {
+        if (type.equalsIgnoreCase("node")) {
+            return 4;
+        }
+
+        return type.equalsIgnoreCase("controller") ? 1 : 2;
     }
 
 }

@@ -33,7 +33,7 @@ public final class IfCommand extends InterpreterCommand {
     }
 
     private void then(@Nonnull String[] splitLine, @Nonnull InterpretedReformScript script, @Nonnull Collection<String> allLines) {
-        String then = RunnerUtils.replaceLast(splitLine[1].replaceFirst("THEN\\(", ""), ")", "");
+        String then = RunnerUtils.replaceLast(splitLine[1].replaceFirst("THEN\\(", ""), "\\)", "");
         if (then.trim().isEmpty()) {
             return;
         }
@@ -42,7 +42,7 @@ public final class IfCommand extends InterpreterCommand {
     }
 
     private void or(@Nonnull String[] splitLine, @Nonnull InterpretedReformScript script, @Nonnull Collection<String> allLines) {
-        String or = RunnerUtils.replaceLast(splitLine[1].replaceFirst("OR\\(", ""), ")", "");
+        String or = RunnerUtils.replaceLast(splitLine[2].replaceFirst("OR\\(", ""), "\\)", "");
         if (or.trim().isEmpty()) {
             return;
         }
@@ -52,13 +52,14 @@ public final class IfCommand extends InterpreterCommand {
 
     private void executeCommands(@Nonnull String part, @Nonnull InterpretedReformScript script, @Nonnull Collection<String> allLines) {
         for (String parts : part.split(";")) {
-            String[] arguments = parts.split(" ");
+            String[] arguments = parts.split(":");
             InterpreterCommand command = script.getInterpreter().getCommand(arguments[0]);
             if (command == null) {
                 continue;
             }
 
-            for (int i = 1; i <= arguments.length; i++) {
+            parts = parts.replaceFirst(command.getCommand(), "").replaceFirst(":", "");
+            for (int i = 1; i < arguments.length; i++) {
                 InterpreterVariable variable = script.getInterpreter().getVariable(arguments[i]);
                 if (variable == null) {
                     continue;

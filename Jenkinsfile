@@ -98,6 +98,7 @@ pipeline {
                 archiveArtifacts artifacts: 'ReformCloud2.zip'
                 archiveArtifacts artifacts: 'ReformCloud2-Applications.zip'
                 archiveArtifacts artifacts: 'reformcloud2-runner/target/runner.jar'
+                archiveArtifacts artifacts: 'reformcloud2-executor/target/executor.jar'
             }
         }
     }

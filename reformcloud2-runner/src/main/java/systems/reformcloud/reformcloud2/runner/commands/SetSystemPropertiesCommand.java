@@ -6,15 +6,17 @@ import systems.reformcloud.reformcloud2.runner.reformscript.utils.InterpreterCom
 import javax.annotation.Nonnull;
 import java.util.Collection;
 
-public final class PrintlnCommand extends InterpreterCommand {
+public final class SetSystemPropertiesCommand extends InterpreterCommand {
 
-    public PrintlnCommand() {
-        super("println");
+    public SetSystemPropertiesCommand() {
+        super("set_system_properties");
     }
 
     @Override
     public void execute(@Nonnull String cursorLine, @Nonnull InterpretedReformScript script, @Nonnull Collection<String> allLines) {
-        String line = cursorLine.replaceFirst(getCommand(), "");
-        System.out.println(line.trim().isEmpty() ? "" : line.replaceFirst(" ", ""));
+        System.setProperty(
+                "reformcloud.runner.specification",
+                System.getProperty("reformcloud.runner.version").endsWith("-SNAPSHOT") ? "SNAPSHOT" : "RELEASE"
+        );
     }
 }

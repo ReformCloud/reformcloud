@@ -4,19 +4,17 @@ import systems.reformcloud.reformcloud2.runner.reformscript.utils.InterpreterVar
 import systems.reformcloud.reformcloud2.runner.util.RunnerUtils;
 
 import javax.annotation.Nonnull;
-import java.nio.file.Files;
 import java.util.Collection;
 
-public final class SetupRequiredVariable extends InterpreterVariable {
+public final class GithubUrlVariable extends InterpreterVariable {
 
-    public SetupRequiredVariable() {
-        super("setup_required");
+    public GithubUrlVariable() {
+        super("github_url");
     }
 
     @Nonnull
     @Override
     public String unwrap(@Nonnull String cursorLine, @Nonnull Collection<String> fullLines) {
-        Integer integer = Integer.getInteger("reformcloud.executor.type");
-        return Boolean.toString((integer == null || integer != 3) && Files.notExists(RunnerUtils.EXECUTOR_PATH));
+        return RunnerUtils.REPO_BASE_URL;
     }
 }

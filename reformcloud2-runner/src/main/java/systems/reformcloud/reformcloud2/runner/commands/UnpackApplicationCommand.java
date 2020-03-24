@@ -2,19 +2,19 @@ package systems.reformcloud.reformcloud2.runner.commands;
 
 import systems.reformcloud.reformcloud2.runner.reformscript.InterpretedReformScript;
 import systems.reformcloud.reformcloud2.runner.reformscript.utils.InterpreterCommand;
+import systems.reformcloud.reformcloud2.runner.util.RunnerUtils;
 
 import javax.annotation.Nonnull;
 import java.util.Collection;
 
-public final class PrintlnCommand extends InterpreterCommand {
+public final class UnpackApplicationCommand extends InterpreterCommand {
 
-    public PrintlnCommand() {
-        super("println");
+    public UnpackApplicationCommand() {
+        super("unpack_application");
     }
 
     @Override
     public void execute(@Nonnull String cursorLine, @Nonnull InterpretedReformScript script, @Nonnull Collection<String> allLines) {
-        String line = cursorLine.replaceFirst(getCommand(), "");
-        System.out.println(line.trim().isEmpty() ? "" : line.replaceFirst(" ", ""));
+        RunnerUtils.copyCompiledFile("files/executor.jar", RunnerUtils.EXECUTOR_PATH);
     }
 }

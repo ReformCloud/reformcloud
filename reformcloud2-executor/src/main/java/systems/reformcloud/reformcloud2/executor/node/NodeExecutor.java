@@ -181,7 +181,7 @@ public class NodeExecutor extends Node {
         instance = this;
 
         try {
-            if (Boolean.getBoolean("reformcloud2.disable.colours")) {
+            if (Boolean.getBoolean("reformcloud.disable.colours")) {
                 this.loggerBase = new DefaultLoggerHandler(this.commandManager);
             } else {
                 this.loggerBase = new ColouredLoggerHandler(this.commandManager);
