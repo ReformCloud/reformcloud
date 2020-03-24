@@ -28,7 +28,8 @@ public final class ProcessInclusionHandler {
     }
 
     private void includeSelfFile(@Nonnull ProcessInformation processInformation) {
-        if (!processInformation.getTemplate().getVersion().isServer()) {
+        if (!processInformation.getTemplate().getVersion().isServer()
+                || !processInformation.getProcessGroup().isCanBeUsedAsLobby()) {
             return;
         }
 
