@@ -307,11 +307,6 @@ public abstract class SharedRunningProcess implements RunningProcess {
      */
     protected void loadPathInclusions(@Nonnull Inclusion.InclusionLoadType loadType) {
         this.startupInformation.getTemplate().getPathInclusionsOfType(loadType).forEach(e -> {
-            String[] splitTemplate = e.getFirst().split("/");
-            if (splitTemplate.length != 2) {
-                return;
-            }
-
             TemplateBackendManager.getOrDefault(e.getSecond()).loadPath(
                     e.getFirst(),
                     this.path
