@@ -72,7 +72,7 @@ public final class Runner {
     public void startApplication() {
         Path applicationFile = System.getProperties().containsKey("reformcloud.process.path")
                 ? Paths.get(System.getProperty("reformcloud.process.path")) : RunnerUtils.EXECUTOR_PATH;
-        if (!Files.isExecutable(applicationFile)) {
+        if (!Files.exists(applicationFile) || Files.isDirectory(applicationFile)) {
             throw new UnsupportedOperationException("Unable to start non-executable file: " + applicationFile.toString());
         }
 

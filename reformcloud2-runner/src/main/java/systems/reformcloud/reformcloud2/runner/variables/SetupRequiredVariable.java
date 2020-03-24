@@ -17,6 +17,7 @@ public final class SetupRequiredVariable extends InterpreterVariable {
     @Override
     public String unwrap(@Nonnull String cursorLine, @Nonnull Collection<String> fullLines) {
         Integer integer = Integer.getInteger("reformcloud.executor.type");
-        return Boolean.toString((integer == null || integer != 3) && Files.notExists(RunnerUtils.EXECUTOR_PATH));
+        return Boolean.toString((integer == null || integer != 3) || Files.notExists(RunnerUtils.EXECUTOR_PATH)
+                || !RunnerUtils.GLOBAL_SCRIPT_FILE.exists());
     }
 }

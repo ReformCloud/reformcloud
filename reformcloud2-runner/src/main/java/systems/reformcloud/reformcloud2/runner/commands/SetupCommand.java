@@ -15,6 +15,10 @@ public final class SetupCommand extends InterpreterCommand {
 
     @Override
     public void execute(@Nonnull String cursorLine, @Nonnull InterpretedReformScript script, @Nonnull Collection<String> allLines) {
+        if (Integer.getInteger("reformcloud.executor.type") != null) {
+            return;
+        }
+
         RunnerExecutorSetup.executeSetup();
     }
 }

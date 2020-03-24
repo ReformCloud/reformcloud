@@ -6,10 +6,7 @@ import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.DirectoryStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.*;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -140,7 +137,7 @@ public final class RunnerUtils {
                 Files.createDirectories(to.getParent());
             }
 
-            Files.copy(stream, to);
+            Files.copy(stream, to, StandardCopyOption.REPLACE_EXISTING);
         } catch (final IOException ex) {
             ex.printStackTrace();
         }
@@ -243,7 +240,7 @@ public final class RunnerUtils {
                 Files.createDirectories(to.getParent());
             }
 
-            Files.copy(from, to);
+            Files.copy(from, to, StandardCopyOption.REPLACE_EXISTING);
         } catch (final IOException ex) {
             throw new RuntimeException(ex);
         }
