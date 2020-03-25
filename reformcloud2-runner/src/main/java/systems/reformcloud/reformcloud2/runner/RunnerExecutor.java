@@ -9,7 +9,6 @@ public final class RunnerExecutor {
     public static synchronized void main(@Nonnull String[] args) {
         System.setProperty("file.encoding", "UTF-8");
         System.setProperty("io.netty.noPreferDirect", "true");
-        System.setProperty("client.encoding.override", "UTF-8");
 
         checkForAdministratorAndWarn();
 
