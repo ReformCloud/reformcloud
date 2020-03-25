@@ -173,14 +173,19 @@ public final class SFTPTemplateBackend implements TemplateBackend {
     }
 
     @Override
-    public void deployTemplate(@Nonnull String group, @Nonnull String template, @Nonnull Path current) {
+    public void deployTemplate(@Nonnull String group, @Nonnull String template, @Nonnull Path current, @Nonnull Collection<String> collection) {
         if (isDisconnected()) {
             return;
         }
 
         future(() -> {
             try {
-                File[] files = current.toFile().listFiles();
+                File[] files = current.toFile().listFiles(e -> {
+                    String full = e.getAbsolutePath()
+                            .replaceFirst(current.toFile().getAbsolutePath(), "")
+                            .replaceFirst("\\\\", "");
+                    return !collection.contains(full);
+                });
                 if (files == null || files.length == 0) {
                     return;
                 }

@@ -12,7 +12,7 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
+import java.util.Collection;
 
 public class FileBackend implements TemplateBackend {
 
@@ -61,9 +61,9 @@ public class FileBackend implements TemplateBackend {
     }
 
     @Override
-    public void deployTemplate(@Nonnull String group, @Nonnull String template, @Nonnull Path current) {
+    public void deployTemplate(@Nonnull String group, @Nonnull String template, @Nonnull Path current, @Nonnull Collection<String> collection) {
         if (existsTemplate(group, template)) {
-            SystemHelper.copyDirectory(current, format(group, template), Arrays.asList("log-out.log", "runner.jar"));
+            SystemHelper.copyDirectory(current, format(group, template), collection);
         }
     }
 

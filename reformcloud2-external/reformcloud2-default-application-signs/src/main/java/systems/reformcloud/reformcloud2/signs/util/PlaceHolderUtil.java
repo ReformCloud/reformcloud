@@ -26,6 +26,7 @@ public final class PlaceHolderUtil {
                 Boolean.toString(processInformation.getProcessGroup().getPlayerAccessConfiguration().isJoinOnlyPerPermission()));
         line = line.replace("%lobby%", Boolean.toString(processInformation.getProcessGroup().isCanBeUsedAsLobby()));
         line = line.replace("%static%", Boolean.toString(processInformation.getProcessGroup().isCanBeUsedAsLobby()));
+        line = line.replace("%motd%", processInformation.getMotd());
         return function.apply(line);
     }
 }

@@ -20,6 +20,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collection;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
@@ -201,12 +202,17 @@ public final class FTPTemplateBackend implements TemplateBackend {
     }
 
     @Override
-    public void deployTemplate(@Nonnull String group, @Nonnull String template, @Nonnull Path current) {
+    public void deployTemplate(@Nonnull String group, @Nonnull String template, @Nonnull Path current, @Nonnull Collection<String> collection) {
         if (this.ftpClient == null) {
             return;
         }
 
-        File[] localFiles = current.toFile().listFiles();
+        File[] localFiles = current.toFile().listFiles(e -> {
+            String full = e.getAbsolutePath()
+                    .replaceFirst(current.toFile().getAbsolutePath(), "")
+                    .replaceFirst("\\\\", "");
+            return !collection.contains(full);
+        });
         if (localFiles == null || localFiles.length == 0) {
             return;
         }

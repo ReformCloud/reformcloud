@@ -17,6 +17,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collection;
 
 public final class URLTemplateBackend implements TemplateBackend {
 
@@ -88,7 +89,7 @@ public final class URLTemplateBackend implements TemplateBackend {
     }
 
     @Override
-    public void deployTemplate(@Nonnull String group, @Nonnull String template, @Nonnull Path current) {
+    public void deployTemplate(@Nonnull String group, @Nonnull String template, @Nonnull Path current, @Nonnull Collection<String> collection) {
     }
 
     @Override

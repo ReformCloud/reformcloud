@@ -75,6 +75,8 @@ public final class ProcessInformation implements Nameable, Clone<ProcessInformat
 
     private Integer maxPlayers;
 
+    private String motd = "";
+
     private final SortedSet<Player> onlinePlayers = new TreeSet<>(Comparator.comparingLong(Player::getJoined));
 
     private ProcessState processState;
@@ -122,6 +124,14 @@ public final class ProcessInformation implements Nameable, Clone<ProcessInformat
 
     public int getMaxPlayers() {
         return maxPlayers;
+    }
+
+    public String getMotd() {
+        return motd;
+    }
+
+    public void setMotd(@Nullable String motd) {
+        this.motd = motd == null ? "" : motd;
     }
 
     public int getOnlineCount() {

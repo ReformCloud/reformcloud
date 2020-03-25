@@ -8,6 +8,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.groups.template.back
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.inclusion.Inclusion;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState;
+import systems.reformcloud.reformcloud2.executor.api.common.process.api.ProcessInclusion;
 import systems.reformcloud.reformcloud2.executor.api.common.process.running.events.RunningProcessPrepareEvent;
 import systems.reformcloud.reformcloud2.executor.api.common.process.running.events.RunningProcessPreparedEvent;
 import systems.reformcloud.reformcloud2.executor.api.common.process.running.events.RunningProcessStartedEvent;
@@ -35,6 +36,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 public abstract class SharedRunningProcess implements RunningProcess {
 
@@ -91,13 +93,20 @@ public abstract class SharedRunningProcess implements RunningProcess {
                     this.startupInformation.getNetworkInfo().getPort()
             ));
 
+            this.loadTemplateInclusions(Inclusion.InclusionLoadType.PRE);
+            this.loadPathInclusions(Inclusion.InclusionLoadType.PRE);
+
+            this.initGlobalTemplateAndCurrentTemplate();
+            InclusionLoader.loadInclusions(this.path, this.startupInformation.getPreInclusions());
+
+            this.loadTemplateInclusions(Inclusion.InclusionLoadType.PAST);
+            this.loadPathInclusions(Inclusion.InclusionLoadType.PAST);
+
             this.chooseStartupEnvironmentAndPrepare();
 
             if (!Files.exists(Paths.get("reformcloud/files/runner.jar"))) {
                 DownloadHelper.downloadAndDisconnect(StringUtil.RUNNER_DOWNLOAD_URL, "reformcloud/files/runner.jar");
             }
-
-            InclusionLoader.loadInclusions(this.path, this.startupInformation.getPreInclusions());
 
             SystemHelper.createDirectory(Paths.get(path + "/plugins"));
             SystemHelper.createDirectory(Paths.get(path + "/reformcloud/.connection"));
@@ -112,14 +121,6 @@ public abstract class SharedRunningProcess implements RunningProcess {
                     .add("controller-port", connectHost.getSecond())
                     .add("startInfo", this.startupInformation)
                     .write(path + "/reformcloud/.connection/connection.json");
-
-            this.loadTemplateInclusions(Inclusion.InclusionLoadType.PRE);
-            this.loadPathInclusions(Inclusion.InclusionLoadType.PRE);
-
-            this.initGlobalTemplateAndCurrentTemplate();
-
-            this.loadTemplateInclusions(Inclusion.InclusionLoadType.PAST);
-            this.loadPathInclusions(Inclusion.InclusionLoadType.PAST);
 
             this.startupInformation.setProcessState(ProcessState.PREPARED);
             ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(this.startupInformation);
@@ -217,7 +218,8 @@ public abstract class SharedRunningProcess implements RunningProcess {
             TemplateBackendManager.getOrDefault(this.startupInformation.getTemplate().getBackend()).deployTemplate(
                     this.startupInformation.getProcessGroup().getName(),
                     this.startupInformation.getTemplate().getName(),
-                    this.path
+                    this.path,
+                    this.startupInformation.getPreInclusions().stream().map(ProcessInclusion::getName).collect(Collectors.toList())
             );
         }
 
@@ -233,7 +235,8 @@ public abstract class SharedRunningProcess implements RunningProcess {
         TemplateBackendManager.getOrDefault(this.startupInformation.getTemplate().getBackend()).deployTemplate(
                 this.startupInformation.getProcessGroup().getName(),
                 this.startupInformation.getTemplate().getName(),
-                this.path
+                this.path,
+                this.startupInformation.getPreInclusions().stream().map(ProcessInclusion::getName).collect(Collectors.toList())
         );
     }
 

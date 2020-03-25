@@ -7,6 +7,8 @@ import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 
 import javax.annotation.Nonnull;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * Represents a template backend which manages the template for all groups
@@ -69,7 +71,20 @@ public interface TemplateBackend extends Nameable {
      * @param template The name of the template which should get deployed
      * @param current  The current operating path which should get deployed
      */
-    void deployTemplate(@Nonnull String group, @Nonnull String template, @Nonnull Path current);
+    default void deployTemplate(@Nonnull String group, @Nonnull String template, @Nonnull Path current) {
+        this.deployTemplate(group, template, current, new ArrayList<>());
+    }
+
+    /**
+     * Deploys the specified template of the specified group from the current operating path
+     *
+     * @param group    The group in which the template is located
+     * @param template The name of the template which should get deployed
+     * @param current  The current operating path which should get deployed
+     * @param excluded The file names of the excluded files which should not get deployed
+     */
+    void deployTemplate(@Nonnull String group, @Nonnull String template,
+                        @Nonnull Path current, @Nonnull Collection<String> excluded);
 
     /**
      * Deletes the specified template
