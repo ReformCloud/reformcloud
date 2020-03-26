@@ -1,6 +1,9 @@
 package systems.reformcloud.reformcloud2.executor.api.common.utility.system;
 
+import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
+
 import javax.annotation.Nonnull;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -17,10 +20,20 @@ public final class DownloadHelper {
     }
 
     public static void downloadAndDisconnect(@Nonnull String url, @Nonnull String target) {
-        openConnection(url, stream -> {
-            SystemHelper.createDirectory(Paths.get(target).getParent());
-            SystemHelper.doCopy(stream, Paths.get(target), StandardCopyOption.REPLACE_EXISTING);
-        });
+        openURLConnection(url, new HashMap<>(), connection -> {
+            System.out.println(LanguageManager.get("runtime-download-file", url, getSize(connection.getContentLengthLong())));
+            long start = System.currentTimeMillis();
+
+            try (InputStream stream = connection.getInputStream()) {
+                SystemHelper.createDirectory(Paths.get(target).getParent());
+                SystemHelper.doCopy(stream, Paths.get(target), StandardCopyOption.REPLACE_EXISTING);
+            } catch (final IOException ex) {
+                ex.printStackTrace();
+            }
+
+            System.out.println(LanguageManager.get("runtime-download-file-completed",
+                    url, System.currentTimeMillis() - start));
+        }, throwable -> throwable.printStackTrace());
     }
 
     public static void openConnection(@Nonnull String url, @Nonnull Consumer<InputStream> consumer) {
@@ -35,6 +48,18 @@ public final class DownloadHelper {
     public static void openConnection(@Nonnull String url, @Nonnull Map<String, String> headers,
                                       @Nonnull Consumer<InputStream> inputStreamConsumer,
                                       @Nonnull Consumer<Throwable> exceptionConsumer) {
+        openURLConnection(url, headers, httpURLConnection -> {
+            try (InputStream stream = httpURLConnection.getInputStream()) {
+                inputStreamConsumer.accept(stream);
+            } catch (final IOException ex) {
+                ex.printStackTrace();
+            }
+        }, exceptionConsumer);
+    }
+
+    public static void openURLConnection(@Nonnull String url, @Nonnull Map<String, String> headers,
+                                         @Nonnull Consumer<HttpURLConnection> connectionConsumer,
+                                         @Nonnull Consumer<Throwable> exceptionConsumer) {
         try {
             HttpURLConnection httpURLConnection = (HttpURLConnection) new URL(url).openConnection();
             httpURLConnection.setRequestProperty(
@@ -45,14 +70,23 @@ public final class DownloadHelper {
             httpURLConnection.setDoOutput(false);
             httpURLConnection.setUseCaches(false);
             httpURLConnection.connect();
-
-            try (InputStream inputStream = httpURLConnection.getInputStream()) {
-                inputStreamConsumer.accept(inputStream);
-            }
-
+            connectionConsumer.accept(httpURLConnection);
             httpURLConnection.disconnect();
         } catch (final Throwable throwable) {
             exceptionConsumer.accept(throwable);
         }
+    }
+
+    @Nonnull
+    private static String getSize(long size) {
+        if (size >= 1048576L) {
+            return Math.round((float) size / 1048576.0F) + "MB";
+        }
+
+        if (size >= 1024) {
+            return Math.round((float) size / 1024.0F) + "KB";
+        }
+
+        return Math.round(size) + "B";
     }
 }

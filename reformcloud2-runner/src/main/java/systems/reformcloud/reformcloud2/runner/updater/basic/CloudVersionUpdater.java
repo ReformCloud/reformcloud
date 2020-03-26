@@ -5,9 +5,7 @@ import systems.reformcloud.reformcloud2.runner.util.RunnerUtils;
 
 import javax.annotation.Nonnull;
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.util.Properties;
 
 public final class CloudVersionUpdater implements Updater {
@@ -48,23 +46,10 @@ public final class CloudVersionUpdater implements Updater {
 
     @Override
     public void applyUpdates() {
-        RunnerUtils.openConnection("https://internal.reformcloud.systems/executor.jar", inputStream -> {
-            try {
-                Files.copy(inputStream, RunnerUtils.EXECUTOR_PATH, StandardCopyOption.REPLACE_EXISTING);
-            } catch (final IOException ex) {
-                ex.printStackTrace();
-            }
-        });
+        RunnerUtils.downloadFile("https://internal.reformcloud.systems/executor.jar", RunnerUtils.EXECUTOR_PATH);
 
         if (Files.exists(RunnerUtils.RUNNER_FILES_FILE)) {
-            System.out.println("Applied update to executor.jar, updating runner.jar...");
-            RunnerUtils.openConnection("https://internal.reformcloud.systems/runner.jar", inputStream -> {
-                try {
-                    Files.copy(inputStream, RunnerUtils.RUNNER_FILES_FILE, StandardCopyOption.REPLACE_EXISTING);
-                } catch (final IOException ex) {
-                    ex.printStackTrace();
-                }
-            });
+            RunnerUtils.downloadFile("https://internal.reformcloud.systems/runner.jar", RunnerUtils.RUNNER_FILES_FILE);
         }
     }
 
