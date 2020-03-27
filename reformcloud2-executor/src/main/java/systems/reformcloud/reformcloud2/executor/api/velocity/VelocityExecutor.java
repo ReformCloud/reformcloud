@@ -2,6 +2,7 @@ package systems.reformcloud.reformcloud2.executor.api.velocity;
 
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
+import com.velocitypowered.api.proxy.server.RegisteredServer;
 import com.velocitypowered.api.proxy.server.ServerInfo;
 import net.kyori.text.TextComponent;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorType;
@@ -42,10 +43,7 @@ import systems.reformcloud.reformcloud2.executor.api.velocity.plugins.PluginUpda
 
 import javax.annotation.Nonnull;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Function;
 
 public final class VelocityExecutor extends API implements PlayerAPIExecutor {
@@ -136,9 +134,16 @@ public final class VelocityExecutor extends API implements PlayerAPIExecutor {
     }
 
     public void handleProcessUpdate(ProcessInformation processInformation) {
-        if (!isServerRegistered(processInformation.getName())
-                && processInformation.getNetworkInfo().isConnected()
-                && processInformation.getTemplate().getVersion().getId() == 1) {
+        Optional<RegisteredServer> server = this.proxyServer.getServer(processInformation.getName());
+        if (server.isPresent()) {
+            if (server.get().getServerInfo().getAddress().getPort() == processInformation.getNetworkInfo().getPort()) {
+                return;
+            }
+
+            handleProcessRemove(processInformation);
+        }
+
+        if (processInformation.getNetworkInfo().isConnected() && processInformation.getTemplate().getVersion().getId() == 1) {
             ServerInfo serverInfo = new ServerInfo(
                     processInformation.getName(),
                     processInformation.getNetworkInfo().toInet()

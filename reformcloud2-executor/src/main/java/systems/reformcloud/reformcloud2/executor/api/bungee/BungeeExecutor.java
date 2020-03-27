@@ -43,6 +43,7 @@ import javax.annotation.Nonnull;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.ArrayList;
 import java.util.List;
@@ -179,22 +180,42 @@ public final class BungeeExecutor extends API implements PlayerAPIExecutor {
         });
     }
 
-    public static void registerServer(ProcessInformation processInformation) {
-        if (!ProxyServer.getInstance().getServers().containsKey(processInformation.getName())
-                && processInformation.getNetworkInfo().isConnected()
-                && processInformation.getTemplate().isServer()
-        ) {
+    public static void registerServer(@Nonnull ProcessInformation processInformation) {
+        ServerInfo oldInfo = ProxyServer.getInstance().getServerInfo(processInformation.getName());
+        if (oldInfo != null) {
+            if (!(oldInfo.getSocketAddress() instanceof InetSocketAddress)) {
+                return;
+            }
+
+            int port = ((InetSocketAddress) oldInfo.getSocketAddress()).getPort();
+            if (processInformation.getNetworkInfo().getPort() == port) {
+                return;
+            }
+
+            unregisterServer(processInformation);
+        }
+
+        if (processInformation.getNetworkInfo().isConnected() && processInformation.getTemplate().isServer()) {
             ServerInfo serverInfo = constructServerInfo(processInformation);
             if (serverInfo == null) {
                 return;
             }
 
             ProxyServer.getInstance().getServers().put(processInformation.getName(), serverInfo);
-
             if (processInformation.isLobby()) {
                 LOBBY_SERVERS.add(processInformation);
                 ProxyServer.getInstance().getConfig().getListeners().forEach(listenerInfo -> listenerInfo.getServerPriority().add(processInformation.getName()));
             }
+        }
+    }
+
+    public static void unregisterServer(ProcessInformation processInformation) {
+        ProxyServer.getInstance().getServers().remove(processInformation.getName());
+        if (processInformation.isLobby()) {
+            BungeeExecutor.LOBBY_SERVERS.remove(processInformation);
+            ProxyServer.getInstance().getConfig().getListeners().forEach(
+                    listenerInfo -> listenerInfo.getServerPriority().remove(processInformation.getName())
+            );
         }
     }
 
