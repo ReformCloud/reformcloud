@@ -53,12 +53,31 @@ public interface ProcessSyncAPI {
         return this.startProcess(groupName, template, configurable, UUID.randomUUID());
     }
 
+    /**
+     * Starts a process
+     *
+     * @param groupName    The name of the group which should be started from
+     * @param template     The template which should be used
+     * @param configurable The data for the process
+     * @param uniqueID     The unique id which should get used for the process
+     * @return The created {@link ProcessInformation}
+     */
     @Nullable
     default ProcessInformation startProcess(@Nonnull String groupName, @Nullable String template,
                                             @Nonnull JsonConfiguration configurable, @Nonnull UUID uniqueID) {
         return this.startProcess(groupName, template, configurable, uniqueID, null);
     }
 
+    /**
+     * Starts a process
+     *
+     * @param groupName    The name of the group which should be started from
+     * @param template     The template which should be used
+     * @param configurable The data for the process
+     * @param uniqueID     The unique id which should get used for the process
+     * @param displayName  The display name of the new process
+     * @return The created {@link ProcessInformation}
+     */
     @Nullable
     default ProcessInformation startProcess(@Nonnull String groupName, @Nullable String template,
                                             @Nonnull JsonConfiguration configurable, @Nonnull UUID uniqueID,
@@ -66,6 +85,17 @@ public interface ProcessSyncAPI {
         return this.startProcess(groupName, template, configurable, uniqueID, displayName, null);
     }
 
+    /**
+     * Starts a process
+     *
+     * @param groupName    The name of the group which should be started from
+     * @param template     The template which should be used
+     * @param configurable The data for the process
+     * @param uniqueID     The unique id which should get used for the process
+     * @param displayName  The display name of the new process
+     * @param maxMemory    The maximum amount of memory which the new process is allowed to use
+     * @return The created {@link ProcessInformation}
+     */
     @Nullable
     default ProcessInformation startProcess(@Nonnull String groupName, @Nullable String template,
                                             @Nonnull JsonConfiguration configurable, @Nonnull UUID uniqueID,
@@ -73,6 +103,18 @@ public interface ProcessSyncAPI {
         return this.startProcess(groupName, template, configurable, uniqueID, displayName, maxMemory, null);
     }
 
+    /**
+     * Starts a process
+     *
+     * @param groupName    The name of the group which should be started from
+     * @param template     The template which should be used
+     * @param configurable The data for the process
+     * @param uniqueID     The unique id which should get used for the process
+     * @param displayName  The display name of the new process
+     * @param maxMemory    The maximum amount of memory which the new process is allowed to use
+     * @param port         The port of the new process (If it's already in use a random port will be used)
+     * @return The created {@link ProcessInformation}
+     */
     @Nullable
     default ProcessInformation startProcess(@Nonnull String groupName, @Nullable String template,
                                             @Nonnull JsonConfiguration configurable, @Nonnull UUID uniqueID,
@@ -81,6 +123,21 @@ public interface ProcessSyncAPI {
         return this.startProcess(groupName, template, configurable, uniqueID, displayName, maxMemory, port, null);
     }
 
+    /**
+     * Starts a process
+     *
+     * @param groupName    The name of the group which should be started from
+     * @param template     The template which should be used
+     * @param configurable The data for the process
+     * @param uniqueID     The unique id which should get used for the process
+     * @param displayName  The display name of the new process
+     * @param maxMemory    The maximum amount of memory which the new process is allowed to use
+     * @param port         The port of the new process (If it's already in use a random port will be used)
+     * @param id           The id of the process (for example {@code 1}). The name of the process will also use
+     *                     the given id (for {@code 1} it might be {@code Lobby-1}). If the id is already taken
+     *                     a random id will get used
+     * @return The created {@link ProcessInformation}
+     */
     @Nullable
     default ProcessInformation startProcess(@Nonnull String groupName, @Nullable String template,
                                             @Nonnull JsonConfiguration configurable, @Nonnull UUID uniqueID,
@@ -89,6 +146,22 @@ public interface ProcessSyncAPI {
         return this.startProcess(groupName, template, configurable, uniqueID, displayName, maxMemory, port, id, null);
     }
 
+    /**
+     * Starts a process
+     *
+     * @param groupName    The name of the group which should be started from
+     * @param template     The template which should be used
+     * @param configurable The data for the process
+     * @param uniqueID     The unique id which should get used for the process
+     * @param displayName  The display name of the new process
+     * @param maxMemory    The maximum amount of memory which the new process is allowed to use
+     * @param port         The port of the new process (If it's already in use a random port will be used)
+     * @param id           The id of the process (for example {@code 1}). The name of the process will also use
+     *                     the given id (for {@code 1} it might be {@code Lobby-1}). If the id is already taken
+     *                     a random id will get used
+     * @param maxPlayers   The maximum amount of player which are allowed to join the process
+     * @return The created {@link ProcessInformation}
+     */
     @Nullable
     default ProcessInformation startProcess(@Nonnull String groupName, @Nullable String template,
                                             @Nonnull JsonConfiguration configurable, @Nonnull UUID uniqueID,
@@ -97,6 +170,23 @@ public interface ProcessSyncAPI {
         return this.startProcess(groupName, template, configurable, uniqueID, displayName, maxMemory, port, id, maxPlayers, new ArrayList<>());
     }
 
+    /**
+     * Starts a process
+     *
+     * @param groupName    The name of the group which should be started from
+     * @param template     The template which should be used
+     * @param configurable The data for the process
+     * @param uniqueID     The unique id which should get used for the process
+     * @param displayName  The display name of the new process
+     * @param maxMemory    The maximum amount of memory which the new process is allowed to use
+     * @param port         The port of the new process (If it's already in use a random port will be used)
+     * @param id           The id of the process (for example {@code 1}). The name of the process will also use
+     *                     the given id (for {@code 1} it might be {@code Lobby-1}). If the id is already taken
+     *                     a random id will get used
+     * @param maxPlayers   The maximum amount of player which are allowed to join the process
+     * @param inclusions   The inclusions which should get loaded before the start of the process
+     * @return The created {@link ProcessInformation}
+     */
     @Nullable
     default ProcessInformation startProcess(@Nonnull String groupName, @Nullable String template,
                                             @Nonnull JsonConfiguration configurable, @Nonnull UUID uniqueID,
@@ -136,6 +226,13 @@ public interface ProcessSyncAPI {
         return this.startProcess(builder.build());
     }
 
+    /**
+     * Starts a process based on the given configuration
+     *
+     * @param configuration The configuration which is the base for the new process
+     * @return The created {@link ProcessInformation}
+     * @see ProcessConfigurationBuilder#newBuilder(String)
+     */
     @Nullable
     ProcessInformation startProcess(@Nonnull ProcessConfiguration configuration);
 
@@ -148,27 +245,67 @@ public interface ProcessSyncAPI {
     @Nonnull
     ProcessInformation startProcess(@Nonnull ProcessInformation processInformation);
 
+    /**
+     * Prepares a process
+     *
+     * @param groupName The name of the group which should be started from
+     * @return The created {@link ProcessInformation}
+     */
     @Nullable
     default ProcessInformation prepareProcess(@Nonnull String groupName) {
         return this.prepareProcess(groupName, null);
     }
 
+    /**
+     * Prepares a process
+     *
+     * @param groupName The name of the group which should be started from
+     * @param template  The template which should be used
+     * @return The created {@link ProcessInformation}
+     */
     @Nullable
     default ProcessInformation prepareProcess(@Nonnull String groupName, @Nullable String template) {
         return this.prepareProcess(groupName, template, new JsonConfiguration());
     }
 
+    /**
+     * Prepares a process
+     *
+     * @param groupName    The name of the group which should be started from
+     * @param template     The template which should be used
+     * @param configurable The data for the process
+     * @return The created {@link ProcessInformation}
+     */
     @Nullable
     default ProcessInformation prepareProcess(@Nonnull String groupName, @Nullable String template, @Nonnull JsonConfiguration configurable) {
         return this.prepareProcess(groupName, template, configurable, UUID.randomUUID());
     }
 
+    /**
+     * Prepares a process
+     *
+     * @param groupName    The name of the group which should be started from
+     * @param template     The template which should be used
+     * @param configurable The data for the process
+     * @param uniqueID     The unique id which should get used for the process
+     * @return The created {@link ProcessInformation}
+     */
     @Nullable
     default ProcessInformation prepareProcess(@Nonnull String groupName, @Nullable String template,
                                               @Nonnull JsonConfiguration configurable, @Nonnull UUID uniqueID) {
         return this.prepareProcess(groupName, template, configurable, uniqueID, null);
     }
 
+    /**
+     * Prepares a process
+     *
+     * @param groupName    The name of the group which should be started from
+     * @param template     The template which should be used
+     * @param configurable The data for the process
+     * @param uniqueID     The unique id which should get used for the process
+     * @param displayName  The display name of the new process
+     * @return The created {@link ProcessInformation}
+     */
     @Nullable
     default ProcessInformation prepareProcess(@Nonnull String groupName, @Nullable String template,
                                               @Nonnull JsonConfiguration configurable, @Nonnull UUID uniqueID,
@@ -176,6 +313,17 @@ public interface ProcessSyncAPI {
         return this.prepareProcess(groupName, template, configurable, uniqueID, displayName, null);
     }
 
+    /**
+     * Prepares a process
+     *
+     * @param groupName    The name of the group which should be started from
+     * @param template     The template which should be used
+     * @param configurable The data for the process
+     * @param uniqueID     The unique id which should get used for the process
+     * @param displayName  The display name of the new process
+     * @param maxMemory    The maximum amount of memory which the new process is allowed to use
+     * @return The created {@link ProcessInformation}
+     */
     @Nullable
     default ProcessInformation prepareProcess(@Nonnull String groupName, @Nullable String template,
                                               @Nonnull JsonConfiguration configurable, @Nonnull UUID uniqueID,
@@ -183,6 +331,18 @@ public interface ProcessSyncAPI {
         return this.prepareProcess(groupName, template, configurable, uniqueID, displayName, maxMemory, null);
     }
 
+    /**
+     * Prepares a process
+     *
+     * @param groupName    The name of the group which should be started from
+     * @param template     The template which should be used
+     * @param configurable The data for the process
+     * @param uniqueID     The unique id which should get used for the process
+     * @param displayName  The display name of the new process
+     * @param maxMemory    The maximum amount of memory which the new process is allowed to use
+     * @param port         The port of the new process (If it's already in use a random port will be used)
+     * @return The created {@link ProcessInformation}
+     */
     @Nullable
     default ProcessInformation prepareProcess(@Nonnull String groupName, @Nullable String template,
                                               @Nonnull JsonConfiguration configurable, @Nonnull UUID uniqueID,
@@ -191,6 +351,21 @@ public interface ProcessSyncAPI {
         return this.prepareProcess(groupName, template, configurable, uniqueID, displayName, maxMemory, port, null);
     }
 
+    /**
+     * Prepares a process
+     *
+     * @param groupName    The name of the group which should be started from
+     * @param template     The template which should be used
+     * @param configurable The data for the process
+     * @param uniqueID     The unique id which should get used for the process
+     * @param displayName  The display name of the new process
+     * @param maxMemory    The maximum amount of memory which the new process is allowed to use
+     * @param port         The port of the new process (If it's already in use a random port will be used)
+     * @param id           The id of the process (for example {@code 1}). The name of the process will also use
+     *                     the given id (for {@code 1} it might be {@code Lobby-1}). If the id is already taken
+     *                     a random id will get used
+     * @return The created {@link ProcessInformation}
+     */
     @Nullable
     default ProcessInformation prepareProcess(@Nonnull String groupName, @Nullable String template,
                                               @Nonnull JsonConfiguration configurable, @Nonnull UUID uniqueID,
@@ -199,6 +374,22 @@ public interface ProcessSyncAPI {
         return this.prepareProcess(groupName, template, configurable, uniqueID, displayName, maxMemory, port, id, null);
     }
 
+    /**
+     * Prepares a process
+     *
+     * @param groupName    The name of the group which should be started from
+     * @param template     The template which should be used
+     * @param configurable The data for the process
+     * @param uniqueID     The unique id which should get used for the process
+     * @param displayName  The display name of the new process
+     * @param maxMemory    The maximum amount of memory which the new process is allowed to use
+     * @param port         The port of the new process (If it's already in use a random port will be used)
+     * @param id           The id of the process (for example {@code 1}). The name of the process will also use
+     *                     the given id (for {@code 1} it might be {@code Lobby-1}). If the id is already taken
+     *                     a random id will get used
+     * @param maxPlayers   The maximum amount of player which are allowed to join the process
+     * @return The created {@link ProcessInformation}
+     */
     @Nullable
     default ProcessInformation prepareProcess(@Nonnull String groupName, @Nullable String template,
                                               @Nonnull JsonConfiguration configurable, @Nonnull UUID uniqueID,
@@ -207,6 +398,23 @@ public interface ProcessSyncAPI {
         return this.prepareProcess(groupName, template, configurable, uniqueID, displayName, maxMemory, port, id, maxPlayers, new ArrayList<>());
     }
 
+    /**
+     * Prepares a process
+     *
+     * @param groupName    The name of the group which should be started from
+     * @param template     The template which should be used
+     * @param configurable The data for the process
+     * @param uniqueID     The unique id which should get used for the process
+     * @param displayName  The display name of the new process
+     * @param maxMemory    The maximum amount of memory which the new process is allowed to use
+     * @param port         The port of the new process (If it's already in use a random port will be used)
+     * @param id           The id of the process (for example {@code 1}). The name of the process will also use
+     *                     the given id (for {@code 1} it might be {@code Lobby-1}). If the id is already taken
+     *                     a random id will get used
+     * @param maxPlayers   The maximum amount of player which are allowed to join the process
+     * @param inclusions   The inclusions which should get loaded before the start of the process
+     * @return The created {@link ProcessInformation}
+     */
     @Nullable
     default ProcessInformation prepareProcess(@Nonnull String groupName, @Nullable String template,
                                               @Nonnull JsonConfiguration configurable, @Nonnull UUID uniqueID,
@@ -246,6 +454,13 @@ public interface ProcessSyncAPI {
         return this.prepareProcess(builder.build());
     }
 
+    /**
+     * Prepares a process based on the given configuration
+     *
+     * @param configuration The configuration which is the base for the new process
+     * @return The created {@link ProcessInformation}
+     * @see ProcessConfigurationBuilder#newBuilder(String)
+     */
     @Nullable
     ProcessInformation prepareProcess(@Nonnull ProcessConfiguration configuration);
 

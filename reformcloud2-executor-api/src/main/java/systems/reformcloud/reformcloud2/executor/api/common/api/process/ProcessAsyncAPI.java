@@ -59,6 +59,15 @@ public interface ProcessAsyncAPI {
         return this.startProcessAsync(groupName, template, configurable, UUID.randomUUID());
     }
 
+    /**
+     * Starts a process
+     *
+     * @param groupName    The name of the group which should be started from
+     * @param template     The template which should be used
+     * @param configurable The data for the process
+     * @param uniqueID     The unique id which should get used for the process
+     * @return A task which which will be completed with the created {@link ProcessInformation}
+     */
     @Nonnull
     @CheckReturnValue
     default Task<ProcessInformation> startProcessAsync(@Nonnull String groupName, @Nullable String template,
@@ -66,6 +75,16 @@ public interface ProcessAsyncAPI {
         return this.startProcessAsync(groupName, template, configurable, uniqueID, null);
     }
 
+    /**
+     * Starts a process
+     *
+     * @param groupName    The name of the group which should be started from
+     * @param template     The template which should be used
+     * @param configurable The data for the process
+     * @param uniqueID     The unique id which should get used for the process
+     * @param displayName  The display name of the new process
+     * @return A task which which will be completed with the created {@link ProcessInformation}
+     */
     @Nonnull
     @CheckReturnValue
     default Task<ProcessInformation> startProcessAsync(@Nonnull String groupName, @Nullable String template,
@@ -74,6 +93,17 @@ public interface ProcessAsyncAPI {
         return this.startProcessAsync(groupName, template, configurable, uniqueID, displayName, null);
     }
 
+    /**
+     * Starts a process
+     *
+     * @param groupName    The name of the group which should be started from
+     * @param template     The template which should be used
+     * @param configurable The data for the process
+     * @param uniqueID     The unique id which should get used for the process
+     * @param displayName  The display name of the new process
+     * @param maxMemory    The maximum amount of memory which the new process is allowed to use
+     * @return A task which which will be completed with the created {@link ProcessInformation}
+     */
     @Nonnull
     @CheckReturnValue
     default Task<ProcessInformation> startProcessAsync(@Nonnull String groupName, @Nullable String template,
@@ -82,6 +112,18 @@ public interface ProcessAsyncAPI {
         return this.startProcessAsync(groupName, template, configurable, uniqueID, displayName, maxMemory, null);
     }
 
+    /**
+     * Starts a process
+     *
+     * @param groupName    The name of the group which should be started from
+     * @param template     The template which should be used
+     * @param configurable The data for the process
+     * @param uniqueID     The unique id which should get used for the process
+     * @param displayName  The display name of the new process
+     * @param maxMemory    The maximum amount of memory which the new process is allowed to use
+     * @param port         The port of the new process (If it's already in use a random port will be used)
+     * @return A task which which will be completed with the created {@link ProcessInformation}
+     */
     @Nonnull
     @CheckReturnValue
     default Task<ProcessInformation> startProcessAsync(@Nonnull String groupName, @Nullable String template,
@@ -91,6 +133,21 @@ public interface ProcessAsyncAPI {
         return this.startProcessAsync(groupName, template, configurable, uniqueID, displayName, maxMemory, port, null);
     }
 
+    /**
+     * Starts a process
+     *
+     * @param groupName    The name of the group which should be started from
+     * @param template     The template which should be used
+     * @param configurable The data for the process
+     * @param uniqueID     The unique id which should get used for the process
+     * @param displayName  The display name of the new process
+     * @param maxMemory    The maximum amount of memory which the new process is allowed to use
+     * @param port         The port of the new process (If it's already in use a random port will be used)
+     * @param id           The id of the process (for example {@code 1}). The name of the process will also use
+     *                     the given id (for {@code 1} it might be {@code Lobby-1}). If the id is already taken
+     *                     a random id will get used
+     * @return A task which which will be completed with the created {@link ProcessInformation}
+     */
     @Nonnull
     @CheckReturnValue
     default Task<ProcessInformation> startProcessAsync(@Nonnull String groupName, @Nullable String template,
@@ -100,6 +157,22 @@ public interface ProcessAsyncAPI {
         return this.startProcessAsync(groupName, template, configurable, uniqueID, displayName, maxMemory, port, id, null);
     }
 
+    /**
+     * Starts a process
+     *
+     * @param groupName    The name of the group which should be started from
+     * @param template     The template which should be used
+     * @param configurable The data for the process
+     * @param uniqueID     The unique id which should get used for the process
+     * @param displayName  The display name of the new process
+     * @param maxMemory    The maximum amount of memory which the new process is allowed to use
+     * @param port         The port of the new process (If it's already in use a random port will be used)
+     * @param id           The id of the process (for example {@code 1}). The name of the process will also use
+     *                     the given id (for {@code 1} it might be {@code Lobby-1}). If the id is already taken
+     *                     a random id will get used
+     * @param maxPlayers   The maximum amount of player which are allowed to join the process
+     * @return A task which which will be completed with the created {@link ProcessInformation}
+     */
     @Nonnull
     @CheckReturnValue
     default Task<ProcessInformation> startProcessAsync(@Nonnull String groupName, @Nullable String template,
@@ -109,6 +182,23 @@ public interface ProcessAsyncAPI {
         return this.startProcessAsync(groupName, template, configurable, uniqueID, displayName, maxMemory, port, id, maxPlayers, new ArrayList<>());
     }
 
+    /**
+     * Starts a process
+     *
+     * @param groupName    The name of the group which should be started from
+     * @param template     The template which should be used
+     * @param configurable The data for the process
+     * @param uniqueID     The unique id which should get used for the process
+     * @param displayName  The display name of the new process
+     * @param maxMemory    The maximum amount of memory which the new process is allowed to use
+     * @param port         The port of the new process (If it's already in use a random port will be used)
+     * @param id           The id of the process (for example {@code 1}). The name of the process will also use
+     *                     the given id (for {@code 1} it might be {@code Lobby-1}). If the id is already taken
+     *                     a random id will get used
+     * @param maxPlayers   The maximum amount of player which are allowed to join the process
+     * @param inclusions   The inclusions which should get loaded before the start of the process
+     * @return A task which which will be completed with the created {@link ProcessInformation}
+     */
     @Nonnull
     @CheckReturnValue
     default Task<ProcessInformation> startProcessAsync(@Nonnull String groupName, @Nullable String template,
@@ -149,6 +239,13 @@ public interface ProcessAsyncAPI {
         return this.startProcessAsync(builder.build());
     }
 
+    /**
+     * Starts a process based on the given configuration
+     *
+     * @param configuration The configuration which is the base for the new process
+     * @return A task which which will be completed with the created {@link ProcessInformation}
+     * @see ProcessConfigurationBuilder#newBuilder(String)
+     */
     @Nonnull
     @CheckReturnValue
     Task<ProcessInformation> startProcessAsync(@Nonnull ProcessConfiguration configuration);
@@ -157,30 +254,60 @@ public interface ProcessAsyncAPI {
      * Starts a prepared process
      *
      * @param processInformation The process information of the prepared process
-     * @return The process information after the start call
+     * @return A task which which will be completed with the {@link ProcessInformation}
      */
     @Nonnull
     @CheckReturnValue
     Task<ProcessInformation> startProcessAsync(@Nonnull ProcessInformation processInformation);
 
+    /**
+     * Prepares a process
+     *
+     * @param groupName    The name of the group which should be started from
+     * @return A task which which will be completed with the created {@link ProcessInformation}
+     */
     @Nonnull
     @CheckReturnValue
     default Task<ProcessInformation> prepareProcessAsync(@Nonnull String groupName) {
         return this.prepareProcessAsync(groupName, null);
     }
 
+    /**
+     * Prepares a process
+     *
+     * @param groupName    The name of the group which should be started from
+     * @param template     The template which should be used
+     * @return A task which which will be completed with the created {@link ProcessInformation}
+     */
     @Nonnull
     @CheckReturnValue
     default Task<ProcessInformation> prepareProcessAsync(@Nonnull String groupName, @Nullable String template) {
         return this.prepareProcessAsync(groupName, template, new JsonConfiguration());
     }
 
+    /**
+     * Prepares a process
+     *
+     * @param groupName    The name of the group which should be started from
+     * @param template     The template which should be used
+     * @param configurable The data for the process
+     * @return A task which which will be completed with the created {@link ProcessInformation}
+     */
     @Nonnull
     @CheckReturnValue
     default Task<ProcessInformation> prepareProcessAsync(@Nonnull String groupName, @Nullable String template, @Nonnull JsonConfiguration configurable) {
         return this.prepareProcessAsync(groupName, template, configurable, UUID.randomUUID());
     }
 
+    /**
+     * Prepares a process
+     *
+     * @param groupName    The name of the group which should be started from
+     * @param template     The template which should be used
+     * @param configurable The data for the process
+     * @param uniqueID     The unique id which should get used for the process
+     * @return A task which which will be completed with the created {@link ProcessInformation}
+     */
     @Nonnull
     @CheckReturnValue
     default Task<ProcessInformation> prepareProcessAsync(@Nonnull String groupName, @Nullable String template,
@@ -188,6 +315,16 @@ public interface ProcessAsyncAPI {
         return this.prepareProcessAsync(groupName, template, configurable, uniqueID, null);
     }
 
+    /**
+     * Prepares a process
+     *
+     * @param groupName    The name of the group which should be started from
+     * @param template     The template which should be used
+     * @param configurable The data for the process
+     * @param uniqueID     The unique id which should get used for the process
+     * @param displayName  The display name of the new process
+     * @return A task which which will be completed with the created {@link ProcessInformation}
+     */
     @Nonnull
     @CheckReturnValue
     default Task<ProcessInformation> prepareProcessAsync(@Nonnull String groupName, @Nullable String template,
@@ -196,6 +333,17 @@ public interface ProcessAsyncAPI {
         return this.prepareProcessAsync(groupName, template, configurable, uniqueID, displayName, null);
     }
 
+    /**
+     * Prepares a process
+     *
+     * @param groupName    The name of the group which should be started from
+     * @param template     The template which should be used
+     * @param configurable The data for the process
+     * @param uniqueID     The unique id which should get used for the process
+     * @param displayName  The display name of the new process
+     * @param maxMemory    The maximum amount of memory which the new process is allowed to use
+     * @return A task which which will be completed with the created {@link ProcessInformation}
+     */
     @Nonnull
     @CheckReturnValue
     default Task<ProcessInformation> prepareProcessAsync(@Nonnull String groupName, @Nullable String template,
@@ -204,6 +352,18 @@ public interface ProcessAsyncAPI {
         return this.prepareProcessAsync(groupName, template, configurable, uniqueID, displayName, maxMemory, null);
     }
 
+    /**
+     * Prepares a process
+     *
+     * @param groupName    The name of the group which should be started from
+     * @param template     The template which should be used
+     * @param configurable The data for the process
+     * @param uniqueID     The unique id which should get used for the process
+     * @param displayName  The display name of the new process
+     * @param maxMemory    The maximum amount of memory which the new process is allowed to use
+     * @param port         The port of the new process (If it's already in use a random port will be used)
+     * @return A task which which will be completed with the created {@link ProcessInformation}
+     */
     @Nonnull
     @CheckReturnValue
     default Task<ProcessInformation> prepareProcessAsync(@Nonnull String groupName, @Nullable String template,
@@ -213,6 +373,21 @@ public interface ProcessAsyncAPI {
         return this.prepareProcessAsync(groupName, template, configurable, uniqueID, displayName, maxMemory, port, null);
     }
 
+    /**
+     * Prepares a process
+     *
+     * @param groupName    The name of the group which should be started from
+     * @param template     The template which should be used
+     * @param configurable The data for the process
+     * @param uniqueID     The unique id which should get used for the process
+     * @param displayName  The display name of the new process
+     * @param maxMemory    The maximum amount of memory which the new process is allowed to use
+     * @param port         The port of the new process (If it's already in use a random port will be used)
+     * @param id           The id of the process (for example {@code 1}). The name of the process will also use
+     *                     the given id (for {@code 1} it might be {@code Lobby-1}). If the id is already taken
+     *                     a random id will get used
+     * @return A task which which will be completed with the created {@link ProcessInformation}
+     */
     @Nonnull
     @CheckReturnValue
     default Task<ProcessInformation> prepareProcessAsync(@Nonnull String groupName, @Nullable String template,
@@ -222,6 +397,22 @@ public interface ProcessAsyncAPI {
         return this.prepareProcessAsync(groupName, template, configurable, uniqueID, displayName, maxMemory, port, id, null);
     }
 
+    /**
+     * Prepares a process
+     *
+     * @param groupName    The name of the group which should be started from
+     * @param template     The template which should be used
+     * @param configurable The data for the process
+     * @param uniqueID     The unique id which should get used for the process
+     * @param displayName  The display name of the new process
+     * @param maxMemory    The maximum amount of memory which the new process is allowed to use
+     * @param port         The port of the new process (If it's already in use a random port will be used)
+     * @param id           The id of the process (for example {@code 1}). The name of the process will also use
+     *                     the given id (for {@code 1} it might be {@code Lobby-1}). If the id is already taken
+     *                     a random id will get used
+     * @param maxPlayers   The maximum amount of player which are allowed to join the process
+     * @return A task which which will be completed with the created {@link ProcessInformation}
+     */
     @Nonnull
     @CheckReturnValue
     default Task<ProcessInformation> prepareProcessAsync(@Nonnull String groupName, @Nullable String template,
@@ -231,6 +422,23 @@ public interface ProcessAsyncAPI {
         return this.prepareProcessAsync(groupName, template, configurable, uniqueID, displayName, maxMemory, port, id, maxPlayers, new ArrayList<>());
     }
 
+    /**
+     * Prepares a process
+     *
+     * @param groupName    The name of the group which should be started from
+     * @param template     The template which should be used
+     * @param configurable The data for the process
+     * @param uniqueID     The unique id which should get used for the process
+     * @param displayName  The display name of the new process
+     * @param maxMemory    The maximum amount of memory which the new process is allowed to use
+     * @param port         The port of the new process (If it's already in use a random port will be used)
+     * @param id           The id of the process (for example {@code 1}). The name of the process will also use
+     *                     the given id (for {@code 1} it might be {@code Lobby-1}). If the id is already taken
+     *                     a random id will get used
+     * @param maxPlayers   The maximum amount of player which are allowed to join the process
+     * @param inclusions   The inclusions which should get loaded before the start of the process
+     * @return A task which which will be completed with the created {@link ProcessInformation}
+     */
     @Nonnull
     @CheckReturnValue
     default Task<ProcessInformation> prepareProcessAsync(@Nonnull String groupName, @Nullable String template,
@@ -271,6 +479,13 @@ public interface ProcessAsyncAPI {
         return this.prepareProcessAsync(builder.build());
     }
 
+    /**
+     * Prepares a process based on the given configuration
+     *
+     * @param configuration The configuration which is the base for the new process
+     * @return A task which which will be completed with the created {@link ProcessInformation}
+     * @see ProcessConfigurationBuilder#newBuilder(String)
+     */
     @Nonnull
     @CheckReturnValue
     Task<ProcessInformation> prepareProcessAsync(@Nonnull ProcessConfiguration configuration);
