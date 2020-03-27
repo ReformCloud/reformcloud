@@ -157,8 +157,8 @@ public class DefaultClusterSyncManager implements ClusterSyncManager {
             this.processGroups.remove(e);
             this.syncProcessGroups(processGroups, SyncAction.DELETE);
 
-            NodeExecutor.getInstance().getNodeExecutorConfig().handleProcessGroupDelete(e);
             NodeExecutor.getInstance().getLocalAutoStartupHandler().update();
+            NodeExecutor.getInstance().getNodeExecutorConfig().handleProcessGroupDelete(e);
         });
     }
 
