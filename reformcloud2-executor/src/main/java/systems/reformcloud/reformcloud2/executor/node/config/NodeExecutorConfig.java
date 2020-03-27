@@ -1,6 +1,7 @@
 package systems.reformcloud.reformcloud2.executor.node.config;
 
 import systems.reformcloud.reformcloud2.executor.api.common.CommonHelper;
+import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.MainGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
@@ -192,6 +193,10 @@ public class NodeExecutorConfig {
 
     public void handleProcessGroupDelete(ProcessGroup processGroup) {
         this.localSubGroupsRegistry.deleteKey(processGroup.getName());
+
+        ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcesses(processGroup.getName()).forEach(
+                e -> ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().stopProcess(e.getProcessUniqueID())
+        );
     }
 
     public void handleMainGroupDelete(MainGroup mainGroup) {

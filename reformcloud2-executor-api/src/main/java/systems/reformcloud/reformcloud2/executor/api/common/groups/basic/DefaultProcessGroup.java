@@ -6,6 +6,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Temp
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Version;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.backend.basic.FileBackend;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.inclusion.Inclusion;
+import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.AutomaticStartupConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.PlayerAccessConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.StartupConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.StartupEnvironment;
@@ -113,7 +114,7 @@ public final class DefaultProcessGroup extends ProcessGroup {
     }
 
     public DefaultProcessGroup(String name, int port, Version version,
-                               int maxMemory, boolean maintenance, int min, int max, int priority,
+                               int maxMemory, boolean maintenance, int min, int max, int prepared, int priority,
                                boolean staticServer, boolean lobby, List<String> clients, int maxPlayers) {
         super(
                 name,
@@ -121,9 +122,11 @@ public final class DefaultProcessGroup extends ProcessGroup {
                 new StartupConfiguration(
                         max,
                         min,
+                        prepared,
                         priority,
                         port,
                         StartupEnvironment.JAVA_RUNTIME,
+                        AutomaticStartupConfiguration.defaults(),
                         clients.isEmpty(),
                         clients
                 ), Collections.singletonList(new Template(

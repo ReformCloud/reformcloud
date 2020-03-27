@@ -30,6 +30,7 @@ public final class CommandCreate extends GlobalCommand {
                         " --max-memory=[memory]             | Sets the max-memory of the process group (default: 512)\n" +
                         " --min-process-count=[min]         | Sets the min process count for the group (default: 1)\n" +
                         " --max-process-count=[max]         | Sets the max process count for the group (default: -1)\n" +
+                        " --always-prepared=[prepared]      | Sets the amount of processes which should always be preared (default: 1)\n" +
                         " --max-players=[max]               | Sets the max player count for the processes (default: proxies: 512, servers: 20)\n" +
                         " --start-priority=[priority]       | Sets the startup priority for the group to start (default: 0)\n" +
                         " --static=[static]                 | Marks the process as a static process (default: false)\n" +
@@ -127,6 +128,7 @@ public final class CommandCreate extends GlobalCommand {
         int memory = 512;
         int min = 1;
         int max = -1;
+        int prepared = 1;
         int maxPlayers = version.isServer() ? 20 : 512;
         int priority = 0;
         boolean staticProcess = false;
@@ -192,6 +194,16 @@ public final class CommandCreate extends GlobalCommand {
             }
 
             max = maxProcessCount;
+        }
+
+        if (properties.containsKey("always-prepared")) {
+            Integer alwaysPrepared = CommonHelper.fromString(properties.getProperty("always-prepared"));
+            if (alwaysPrepared == null || alwaysPrepared <= -1) {
+                source.sendMessage(LanguageManager.get("command-integer-failed", -1, properties.getProperty("always-prepared")));
+                return;
+            }
+
+            prepared = alwaysPrepared;
         }
 
         if (properties.containsKey("static")) {
@@ -272,6 +284,7 @@ public final class CommandCreate extends GlobalCommand {
                 maintenance,
                 min,
                 max,
+                prepared,
                 priority,
                 staticProcess,
                 lobby,
