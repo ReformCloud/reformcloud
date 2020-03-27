@@ -37,7 +37,6 @@ public class CommandLeave extends Command {
 
         ProcessInformation lobby = BungeeExecutor.getBestLobbyForPlayer(
                 API.getInstance().getCurrentProcessInformation(),
-                proxiedPlayer,
                 proxiedPlayer::hasPermission
         );
         if (lobby != null) {

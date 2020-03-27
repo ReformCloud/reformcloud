@@ -64,7 +64,8 @@ public class DefaultClusterManager implements ClusterManager {
 
     @Override
     public int getWaiting(String groupName) {
-        return Streams.deepFilter(NodeExecutor.getInstance().getNodeNetworkManager().getQueuedProcesses(), v -> v.getValue().equals(groupName)).size();
+        return Streams.deepFilter(NodeExecutor.getInstance().getNodeNetworkManager().getQueuedProcesses(),
+                v -> v.getValue().equals(groupName)).size();
     }
 
     @Override

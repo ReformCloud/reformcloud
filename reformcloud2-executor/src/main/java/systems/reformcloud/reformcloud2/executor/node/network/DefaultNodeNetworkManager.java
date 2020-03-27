@@ -75,12 +75,12 @@ public class DefaultNodeNetworkManager implements NodeNetworkManager {
     }
 
     @Override
-    public ProcessInformation prepareProcess(ProcessConfiguration configuration, boolean start) {
+    public synchronized ProcessInformation prepareProcess(ProcessConfiguration configuration, boolean start) {
         return this.startProcessInternal(configuration, true, start);
     }
 
     @Override
-    public ProcessInformation startProcess(ProcessConfiguration configuration) {
+    public synchronized ProcessInformation startProcess(ProcessConfiguration configuration) {
         ProcessInformation matching = PreparedProcessFilter.findMayMatchingProcess(
                 configuration, this.getPreparedProcesses(configuration.getBase().getName())
         );
@@ -125,7 +125,7 @@ public class DefaultNodeNetworkManager implements NodeNetworkManager {
         return processInformation;
     }
 
-    private ProcessInformation startProcessInternal(ProcessConfiguration configuration, boolean informUser, boolean start) {
+    private synchronized ProcessInformation startProcessInternal(ProcessConfiguration configuration, boolean informUser, boolean start) {
         Template template = configuration.getTemplate();
         if (template == null) {
             AtomicReference<Template> bestTemplate = new AtomicReference<>();

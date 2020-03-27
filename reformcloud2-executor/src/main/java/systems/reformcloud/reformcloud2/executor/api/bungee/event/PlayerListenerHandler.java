@@ -29,7 +29,6 @@ public final class PlayerListenerHandler implements Listener {
         if (proxiedPlayer.getServer() == null) {
             ProcessInformation lobby = BungeeExecutor.getBestLobbyForPlayer(
                     API.getInstance().getCurrentProcessInformation(),
-                    proxiedPlayer,
                     proxiedPlayer::hasPermission
             );
             if (lobby != null) {
@@ -130,7 +129,6 @@ public final class PlayerListenerHandler implements Listener {
         ProxiedPlayer proxiedPlayer = event.getPlayer();
         ProcessInformation lobby = BungeeExecutor.getBestLobbyForPlayer(
                 API.getInstance().getCurrentProcessInformation(),
-                proxiedPlayer,
                 proxiedPlayer::hasPermission);
         if (lobby != null) {
             event.setCancelServer(ProxyServer.getInstance().getServerInfo(lobby.getName()));

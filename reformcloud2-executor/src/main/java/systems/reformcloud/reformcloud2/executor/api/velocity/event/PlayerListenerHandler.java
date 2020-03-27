@@ -34,7 +34,6 @@ public final class PlayerListenerHandler {
         if (!player.getCurrentServer().isPresent()) {
             ProcessInformation lobby = VelocityExecutor.getBestLobbyForPlayer(
                     API.getInstance().getCurrentProcessInformation(),
-                    player,
                     player::hasPermission
             );
             if (lobby != null) {
@@ -127,7 +126,6 @@ public final class PlayerListenerHandler {
         Player player = event.getPlayer();
         ProcessInformation lobby = VelocityExecutor.getBestLobbyForPlayer(
                 API.getInstance().getCurrentProcessInformation(),
-                player,
                 player::hasPermission);
         if (lobby != null) {
             Optional<RegisteredServer> server = VelocityExecutor.getInstance().getProxyServer().getServer(lobby.getName());

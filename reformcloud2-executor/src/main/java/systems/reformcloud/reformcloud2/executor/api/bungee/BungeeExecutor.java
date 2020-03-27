@@ -40,6 +40,7 @@ import systems.reformcloud.reformcloud2.executor.api.network.packets.in.APIPacke
 import systems.reformcloud.reformcloud2.executor.api.network.packets.out.APIBungeePacketOutRequestIngameMessages;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -219,7 +220,8 @@ public final class BungeeExecutor extends API implements PlayerAPIExecutor {
         }
     }
 
-    private static ServerInfo constructServerInfo(ProcessInformation processInformation) {
+    @Nullable
+    private static ServerInfo constructServerInfo(@Nonnull ProcessInformation processInformation) {
         if (waterdog) {
             if (waterdogPE && processInformation.getTemplate().getVersion().getId() != 3) {
                 return null;
@@ -249,12 +251,8 @@ public final class BungeeExecutor extends API implements PlayerAPIExecutor {
                 "ReformCloud2", false);
     }
 
-    public static ProcessInformation getBestLobbyForPlayer(ProcessInformation current, ProxiedPlayer proxiedPlayer, Function<String, Boolean> permissionCheck) {
+    public static ProcessInformation getBestLobbyForPlayer(ProcessInformation current, Function<String, Boolean> permissionCheck) {
         final List<ProcessInformation> lobbies = new ArrayList<>(LOBBY_SERVERS);
-
-        if (proxiedPlayer != null && proxiedPlayer.getServer() != null) {
-            Streams.allOf(lobbies, e -> e.getName().equals(proxiedPlayer.getServer().getInfo().getName())).forEach(lobbies::remove);
-        }
 
         // Filter all non java servers if this is a java proxy else all mcpe servers
         Streams.others(lobbies, e -> {
