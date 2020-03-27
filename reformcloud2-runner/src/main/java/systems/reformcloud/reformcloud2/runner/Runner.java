@@ -8,7 +8,10 @@ import systems.reformcloud.reformcloud2.runner.updater.Updater;
 import systems.reformcloud.reformcloud2.runner.updater.basic.ApplicationsUpdater;
 import systems.reformcloud.reformcloud2.runner.updater.basic.CloudVersionUpdater;
 import systems.reformcloud.reformcloud2.runner.util.RunnerUtils;
-import systems.reformcloud.reformcloud2.runner.variables.*;
+import systems.reformcloud.reformcloud2.runner.variables.EnvNotAPIVariable;
+import systems.reformcloud.reformcloud2.runner.variables.EnvSetVariable;
+import systems.reformcloud.reformcloud2.runner.variables.GitCommitVariable;
+import systems.reformcloud.reformcloud2.runner.variables.SetupRequiredVariable;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
@@ -48,7 +51,6 @@ public final class Runner {
                 .registerInterpreterVariable(new EnvNotAPIVariable())
                 .registerInterpreterVariable(new EnvSetVariable())
                 .registerInterpreterVariable(new GitCommitVariable())
-                .registerInterpreterVariable(new GithubUrlVariable())
                 .registerInterpreterVariable(new SetupRequiredVariable());
 
         this.applicationsUpdater = new ApplicationsUpdater(RunnerUtils.APP_UPDATE_FOLDER);

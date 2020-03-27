@@ -17,6 +17,9 @@ public final class RunnerExecutorSetup {
      * Executes the runner executor setup
      */
     public static void executeSetup() {
+        System.out.println("Please choose an executor: \"node\" (recommended), \"controller\", \"client\"");
+        System.out.println("For more information check out the README on GitHub: " + RunnerUtils.REPO_BASE_URL);
+
         String executor = readFromConsoleOrFromSystemProperties(
                 s -> RunnerUtils.AVAILABLE_EXECUTORS.contains(s.toLowerCase()),
                 s -> {

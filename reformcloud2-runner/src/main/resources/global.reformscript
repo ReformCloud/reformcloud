@@ -50,8 +50,6 @@ TASK END
 
 # Executes the setup for the runner
 TASK startSetup()
-TASK PRINTLN Please choose an executor: "node" (recommended), "controller", "client"
-TASK PRINTLN For more information check out the README on GitHub: _%_github_url_%_
 TASK SETUP
 TASK WRITE_ENV
 TASK UNPACK_APPLICATION
