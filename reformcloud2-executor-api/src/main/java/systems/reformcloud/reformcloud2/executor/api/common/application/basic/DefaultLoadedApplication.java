@@ -1,12 +1,11 @@
 package systems.reformcloud.reformcloud2.executor.api.common.application.basic;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.application.ApplicationConfig;
 import systems.reformcloud.reformcloud2.executor.api.common.application.ApplicationLoader;
 import systems.reformcloud.reformcloud2.executor.api.common.application.ApplicationStatus;
 import systems.reformcloud.reformcloud2.executor.api.common.application.LoadedApplication;
-
-import javax.annotation.Nonnull;
 
 public final class DefaultLoadedApplication implements LoadedApplication {
 
@@ -25,25 +24,25 @@ public final class DefaultLoadedApplication implements LoadedApplication {
 
     private ApplicationStatus applicationStatus;
 
-    @Nonnull
+    @NotNull
     @Override
     public ApplicationLoader loader() {
         return loader;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public ExecutorAPI api() {
         return ExecutorAPI.getInstance();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public ApplicationConfig applicationConfig() {
         return application;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public ApplicationStatus applicationStatus() {
         return applicationStatus;
@@ -55,7 +54,7 @@ public final class DefaultLoadedApplication implements LoadedApplication {
     }
 
     @Override
-    public void setApplicationStatus(@Nonnull ApplicationStatus status) {
+    public void setApplicationStatus(@NotNull ApplicationStatus status) {
         this.applicationStatus = status;
     }
 }

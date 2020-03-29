@@ -1,13 +1,13 @@
 package systems.reformcloud.reformcloud2.permissions.util.user;
 
 import com.google.gson.reflect.TypeToken;
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.permissions.PermissionAPI;
 import systems.reformcloud.reformcloud2.permissions.util.basic.checks.WildcardCheck;
 import systems.reformcloud.reformcloud2.permissions.util.group.NodeGroup;
 import systems.reformcloud.reformcloud2.permissions.util.permission.PermissionNode;
 
-import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.UUID;
 
@@ -16,9 +16,9 @@ public class PermissionUser {
     public static final TypeToken<PermissionUser> TYPE = new TypeToken<PermissionUser>() {};
 
     public PermissionUser(
-            @Nonnull UUID uuid,
-            @Nonnull Collection<PermissionNode> permissionNodes,
-            @Nonnull Collection<NodeGroup> groups
+            @NotNull UUID uuid,
+            @NotNull Collection<PermissionNode> permissionNodes,
+            @NotNull Collection<NodeGroup> groups
     ) {
         this.uuid = uuid;
         this.permissionNodes = permissionNodes;
@@ -31,17 +31,17 @@ public class PermissionUser {
 
     private final Collection<NodeGroup> groups;
 
-    @Nonnull
+    @NotNull
     public UUID getUniqueID() {
         return uuid;
     }
 
-    @Nonnull
+    @NotNull
     public Collection<PermissionNode> getPermissionNodes() {
         return permissionNodes;
     }
 
-    @Nonnull
+    @NotNull
     public Collection<NodeGroup> getGroups() {
         return groups;
     }

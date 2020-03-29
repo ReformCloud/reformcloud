@@ -1,5 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.node.api.database;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.api.database.DatabaseAsyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.database.DatabaseSyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
@@ -8,7 +9,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.database.DatabaseRea
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.defaults.DefaultTask;
 
-import javax.annotation.Nonnull;
 import java.util.function.Function;
 
 public class DatabaseAPIImplementation implements DatabaseAsyncAPI, DatabaseSyncAPI {
@@ -19,9 +19,9 @@ public class DatabaseAPIImplementation implements DatabaseAsyncAPI, DatabaseSync
 
     private final Database<?> database;
 
-    @Nonnull
+    @NotNull
     @Override
-    public Task<JsonConfiguration> findAsync(@Nonnull String table, @Nonnull String key, String identifier) {
+    public Task<JsonConfiguration> findAsync(@NotNull String table, @NotNull String key, String identifier) {
         Task<JsonConfiguration> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             DatabaseReader databaseReader = this.database.createForTable(table);
@@ -42,9 +42,9 @@ public class DatabaseAPIImplementation implements DatabaseAsyncAPI, DatabaseSync
         return task;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public <T> Task<T> findAsync(@Nonnull String table, @Nonnull String key, String identifier, @Nonnull Function<JsonConfiguration, T> function) {
+    public <T> Task<T> findAsync(@NotNull String table, @NotNull String key, String identifier, @NotNull Function<JsonConfiguration, T> function) {
         Task<T> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             JsonConfiguration jsonConfiguration = findAsync(table, key, identifier).getUninterruptedly();
@@ -57,9 +57,9 @@ public class DatabaseAPIImplementation implements DatabaseAsyncAPI, DatabaseSync
         return task;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public Task<Void> insertAsync(@Nonnull String table, @Nonnull String key, String identifier, @Nonnull JsonConfiguration data) {
+    public Task<Void> insertAsync(@NotNull String table, @NotNull String key, String identifier, @NotNull JsonConfiguration data) {
         Task<Void> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             DatabaseReader databaseReader = database.createForTable(table);
@@ -74,9 +74,9 @@ public class DatabaseAPIImplementation implements DatabaseAsyncAPI, DatabaseSync
         return task;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public Task<Boolean> updateAsync(@Nonnull String table, @Nonnull String key, @Nonnull JsonConfiguration newData) {
+    public Task<Boolean> updateAsync(@NotNull String table, @NotNull String key, @NotNull JsonConfiguration newData) {
         DatabaseReader databaseReader = database.createForTable(table);
         if (databaseReader == null) {
             return Task.completedTask(false);
@@ -85,9 +85,9 @@ public class DatabaseAPIImplementation implements DatabaseAsyncAPI, DatabaseSync
         return databaseReader.update(key, newData);
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public Task<Boolean> updateIfAbsentAsync(@Nonnull String table, @Nonnull String identifier, @Nonnull JsonConfiguration newData) {
+    public Task<Boolean> updateIfAbsentAsync(@NotNull String table, @NotNull String identifier, @NotNull JsonConfiguration newData) {
         DatabaseReader databaseReader = database.createForTable(table);
         if (databaseReader == null) {
             return Task.completedTask(null);
@@ -96,9 +96,9 @@ public class DatabaseAPIImplementation implements DatabaseAsyncAPI, DatabaseSync
         return databaseReader.updateIfAbsent(identifier, newData);
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public Task<Void> removeAsync(@Nonnull String table, @Nonnull String key) {
+    public Task<Void> removeAsync(@NotNull String table, @NotNull String key) {
         DatabaseReader databaseReader = database.createForTable(table);
         if (databaseReader == null) {
             return Task.completedTask(null);
@@ -107,9 +107,9 @@ public class DatabaseAPIImplementation implements DatabaseAsyncAPI, DatabaseSync
         return databaseReader.remove(key);
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public Task<Void> removeIfAbsentAsync(@Nonnull String table, @Nonnull String identifier) {
+    public Task<Void> removeIfAbsentAsync(@NotNull String table, @NotNull String identifier) {
         DatabaseReader databaseReader = database.createForTable(table);
         if (databaseReader == null) {
             return Task.completedTask(null);
@@ -118,25 +118,25 @@ public class DatabaseAPIImplementation implements DatabaseAsyncAPI, DatabaseSync
         return databaseReader.removeIfAbsent(identifier);
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public Task<Boolean> createDatabaseAsync(@Nonnull String name) {
+    public Task<Boolean> createDatabaseAsync(@NotNull String name) {
         Task<Boolean> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> task.complete(database.createDatabase(name)));
         return task;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public Task<Boolean> deleteDatabaseAsync(@Nonnull String name) {
+    public Task<Boolean> deleteDatabaseAsync(@NotNull String name) {
         Task<Boolean> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> task.complete(database.deleteDatabase(name)));
         return task;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public Task<Boolean> containsAsync(@Nonnull String table, @Nonnull String key) {
+    public Task<Boolean> containsAsync(@NotNull String table, @NotNull String key) {
         DatabaseReader databaseReader = database.createForTable(table);
         if (databaseReader == null) {
             return Task.completedTask(null);
@@ -145,9 +145,9 @@ public class DatabaseAPIImplementation implements DatabaseAsyncAPI, DatabaseSync
         return databaseReader.contains(key);
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public Task<Integer> sizeAsync(@Nonnull String table) {
+    public Task<Integer> sizeAsync(@NotNull String table) {
         DatabaseReader databaseReader = database.createForTable(table);
         if (databaseReader == null) {
             return Task.completedTask(null);
@@ -157,62 +157,62 @@ public class DatabaseAPIImplementation implements DatabaseAsyncAPI, DatabaseSync
     }
 
     @Override
-    public JsonConfiguration find(@Nonnull String table, @Nonnull String key, String identifier) {
+    public JsonConfiguration find(@NotNull String table, @NotNull String key, String identifier) {
         return findAsync(table, key, identifier).getUninterruptedly();
     }
 
     @Override
-    public <T> T find(@Nonnull String table, @Nonnull String key, String identifier, @Nonnull Function<JsonConfiguration, T> function) {
+    public <T> T find(@NotNull String table, @NotNull String key, String identifier, @NotNull Function<JsonConfiguration, T> function) {
         return findAsync(table, key, identifier, function).getUninterruptedly();
     }
 
     @Override
-    public void insert(@Nonnull String table, @Nonnull String key, String identifier, @Nonnull JsonConfiguration data) {
+    public void insert(@NotNull String table, @NotNull String key, String identifier, @NotNull JsonConfiguration data) {
         insertAsync(table, key, identifier, data).awaitUninterruptedly();
     }
 
     @Override
-    public boolean update(@Nonnull String table, @Nonnull String key, @Nonnull JsonConfiguration newData) {
+    public boolean update(@NotNull String table, @NotNull String key, @NotNull JsonConfiguration newData) {
         Boolean result = updateAsync(table, key, newData).getUninterruptedly();
         return result == null ? false : result;
     }
 
     @Override
-    public boolean updateIfAbsent(@Nonnull String table, @Nonnull String identifier, @Nonnull JsonConfiguration newData) {
+    public boolean updateIfAbsent(@NotNull String table, @NotNull String identifier, @NotNull JsonConfiguration newData) {
         Boolean result = updateIfAbsentAsync(table, identifier, newData).getUninterruptedly();
         return result == null ? false : result;
     }
 
     @Override
-    public void remove(@Nonnull String table, @Nonnull String key) {
+    public void remove(@NotNull String table, @NotNull String key) {
         removeAsync(table, key).awaitUninterruptedly();
     }
 
     @Override
-    public void removeIfAbsent(@Nonnull String table, @Nonnull String identifier) {
+    public void removeIfAbsent(@NotNull String table, @NotNull String identifier) {
         removeIfAbsentAsync(table, identifier).awaitUninterruptedly();
     }
 
     @Override
-    public boolean createDatabase(@Nonnull String name) {
+    public boolean createDatabase(@NotNull String name) {
         Boolean result = createDatabaseAsync(name).getUninterruptedly();
         return result == null ? false : result;
     }
 
     @Override
-    public boolean deleteDatabase(@Nonnull String name) {
+    public boolean deleteDatabase(@NotNull String name) {
         Boolean result = deleteDatabaseAsync(name).getUninterruptedly();
         return result == null ? false : result;
     }
 
     @Override
-    public boolean contains(@Nonnull String table, @Nonnull String key) {
+    public boolean contains(@NotNull String table, @NotNull String key) {
         Boolean result = containsAsync(table, key).getUninterruptedly();
         return result == null ? false : result;
     }
 
     @Override
-    public int size(@Nonnull String table) {
+    public int size(@NotNull String table) {
         Integer result = sizeAsync(table).getUninterruptedly();
         return result == null ? 0 : result;
     }

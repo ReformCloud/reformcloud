@@ -1,11 +1,11 @@
 package systems.reformcloud.reformcloud2.executor.api.common.dependency.util;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.dependency.DefaultDependency;
 import systems.reformcloud.reformcloud2.executor.api.common.dependency.Dependency;
 import systems.reformcloud.reformcloud2.executor.api.common.dependency.repo.DefaultRepositories;
 import systems.reformcloud.reformcloud2.executor.api.common.dependency.repo.Repository;
 
-import javax.annotation.Nonnull;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -20,7 +20,7 @@ public final class DependencyParser {
         throw new UnsupportedOperationException();
     }
 
-    public static Collection<Dependency> getAllDependencies(@Nonnull String internalFilePath, @Nonnull Map<String, Repository> repositoryGetter) {
+    public static Collection<Dependency> getAllDependencies(@NotNull String internalFilePath, @NotNull Map<String, Repository> repositoryGetter) {
         Collection<Dependency> out = new ArrayList<>();
         for (String dependencyString : getDependenciesFromFile(internalFilePath)) {
             String[] split = dependencyString.split(":");

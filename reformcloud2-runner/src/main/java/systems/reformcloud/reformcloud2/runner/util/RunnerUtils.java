@@ -1,7 +1,8 @@
 package systems.reformcloud.reformcloud2.runner.util;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -69,7 +70,7 @@ public final class RunnerUtils {
      * @param message   The message of the error which contains some extra information
      * @param throwable The exception itself which should get handled
      */
-    public static void handleError(@Nonnull String message, @Nonnull Throwable throwable) {
+    public static void handleError(@NotNull String message, @NotNull Throwable throwable) {
         System.err.println(" * " + message);
         System.err.println(" * Do not report this as an error to reformcloud!");
         System.err.println(" * Just contact the support of reformcloud to get further help about this");
@@ -86,7 +87,7 @@ public final class RunnerUtils {
      *
      * @param line The message line which should get debugged if debug logging is enabled
      */
-    public static void debug(@Nonnull String line) {
+    public static void debug(@NotNull String line) {
         if (Boolean.getBoolean("reformcloud.dev.mode")) {
             System.out.println("DEBUG: " + line);
         }
@@ -100,8 +101,8 @@ public final class RunnerUtils {
      * @param replacement The replacement which should replace the last occurrence
      * @return The newly formatted string
      */
-    @Nonnull
-    public static String replaceLast(@Nonnull String text, @Nonnull String regex, @Nonnull String replacement) {
+    @NotNull
+    public static String replaceLast(@NotNull String text, @NotNull String regex, @NotNull String replacement) {
         return text.replaceFirst("(?s)(.*)" + regex, "$1" + replacement);
     }
 
@@ -111,7 +112,7 @@ public final class RunnerUtils {
      * @param from The location of the compiled file which should get copied
      * @param to   The target of the file which should get copied
      */
-    public static void copyCompiledFile(@Nonnull String from, @Nonnull File to) {
+    public static void copyCompiledFile(@NotNull String from, @NotNull File to) {
         copyCompiledFile(from, to.toPath());
     }
 
@@ -121,7 +122,7 @@ public final class RunnerUtils {
      * @param from The location of the compiled file which should get copied
      * @param to   The target of the file which should get copied
      */
-    public static void copyCompiledFile(@Nonnull String from, @Nonnull Path to) {
+    public static void copyCompiledFile(@NotNull String from, @NotNull Path to) {
         try (InputStream stream = RunnerUtils.class.getClassLoader().getResourceAsStream(from)) {
             if (stream == null) {
                 throw new RuntimeException("Unable to find compiled default reformscript. Please validate");
@@ -143,8 +144,8 @@ public final class RunnerUtils {
      * @param url The url behind which the properties are located
      * @return The loaded properties from the input stream
      */
-    @Nonnull
-    public static Properties loadProperties(@Nonnull String url) {
+    @NotNull
+    public static Properties loadProperties(@NotNull String url) {
         Properties properties = new Properties();
         openConnection(url, stream -> {
             try {
@@ -162,7 +163,7 @@ public final class RunnerUtils {
      * @param url                 The url which should get opened
      * @param inputStreamConsumer The consumer which should accept the input stream of the connection
      */
-    public static void openConnection(@Nonnull String url, @Nonnull Consumer<InputStream> inputStreamConsumer) {
+    public static void openConnection(@NotNull String url, @NotNull Consumer<InputStream> inputStreamConsumer) {
         openURLConnection(url, httpURLConnection -> {
             try (InputStream stream = httpURLConnection.getInputStream()) {
                 inputStreamConsumer.accept(stream);
@@ -178,7 +179,7 @@ public final class RunnerUtils {
      * @param url    The url of the file
      * @param target The target path where the file should get saved to
      */
-    public static void downloadFile(@Nonnull String url, @Nonnull Path target) {
+    public static void downloadFile(@NotNull String url, @NotNull Path target) {
         openURLConnection(url, connection -> {
             System.out.println(String.format(RunnerUtils.FILE_DOWNLOAD_FORMAT, url, RunnerUtils.getSize(connection.getContentLengthLong())));
             long start = System.currentTimeMillis();
@@ -199,7 +200,7 @@ public final class RunnerUtils {
      * @param url                The url which should get opened
      * @param connectionConsumer The consumer which should accept the connection which was established
      */
-    public static void openURLConnection(@Nonnull String url, @Nonnull Consumer<HttpURLConnection> connectionConsumer) {
+    public static void openURLConnection(@NotNull String url, @NotNull Consumer<HttpURLConnection> connectionConsumer) {
         try {
             HttpURLConnection httpURLConnection = (HttpURLConnection) new URL(url).openConnection();
             httpURLConnection.setRequestProperty(
@@ -226,7 +227,7 @@ public final class RunnerUtils {
      * @return The path of the filer which passes the filer or {@code null} if no file passes the filter
      */
     @Nullable
-    public static Path findFile(@Nonnull Path folderToSearch, @Nonnull Predicate<Path> filter, @Nonnull DirectoryStream.Filter<Path> pathFilter) {
+    public static Path findFile(@NotNull Path folderToSearch, @NotNull Predicate<Path> filter, @NotNull DirectoryStream.Filter<Path> pathFilter) {
         if (!Files.exists(folderToSearch) || !Files.isDirectory(folderToSearch)) {
             throw new RuntimeException("Tried to search in a folder which does not exists or is not a folder");
         }
@@ -249,7 +250,7 @@ public final class RunnerUtils {
      *
      * @param path The path of the file which should get deleted
      */
-    public static void deleteFileIfExists(@Nonnull Path path) {
+    public static void deleteFileIfExists(@NotNull Path path) {
         try {
             Files.deleteIfExists(path);
         } catch (final IOException ex) {
@@ -263,7 +264,7 @@ public final class RunnerUtils {
      * @param from The source location of the file
      * @param to   The target location of the file
      */
-    public static void copy(@Nonnull Path from, @Nonnull Path to) {
+    public static void copy(@NotNull Path from, @NotNull Path to) {
         try {
             if (to.getParent() != null && !Files.exists(to.getParent())) {
                 Files.createDirectories(to.getParent());
@@ -281,7 +282,7 @@ public final class RunnerUtils {
      * @param path     The path of the file which should get re written
      * @param operator The handler for each line in the file to replace a line
      */
-    public static void rewriteFile(@Nonnull Path path, @Nonnull UnaryOperator<String> operator) {
+    public static void rewriteFile(@NotNull Path path, @NotNull UnaryOperator<String> operator) {
         try {
             List<String> list = Files.readAllLines(path);
             List<String> newLine = new ArrayList<>();
@@ -305,7 +306,7 @@ public final class RunnerUtils {
      * @param size The size as long of the stream
      * @return The formatted size as result
      */
-    @Nonnull
+    @NotNull
     public static String getSize(long size) {
         if (size >= 1048576L) {
             return Math.round((float) size / 1048576.0F) + "MB";

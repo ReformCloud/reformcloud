@@ -35,7 +35,7 @@ public class ClientDumpUtil implements DumpUtil {
                         .append(processInformation.getName())
                         .append("\n")
                         .append("UniqueID: ")
-                        .append(processInformation.getProcessUniqueID())
+                        .append(processInformation.getProcessDetail().getProcessUniqueID())
                         .append("\n")
                         .append("Startup Time: ")
                         .append(e.getStartupTime() == -1 ? "unknown" : DATE_FORMAT.format(e.getStartupTime()));

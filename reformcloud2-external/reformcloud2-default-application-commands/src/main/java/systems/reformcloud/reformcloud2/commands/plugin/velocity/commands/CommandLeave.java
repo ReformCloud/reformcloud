@@ -5,26 +5,25 @@ import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ServerConnection;
 import net.kyori.text.TextComponent;
-import org.checkerframework.checker.nullness.qual.NonNull;
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.api.API;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.velocity.VelocityExecutor;
 
-import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.Optional;
 
 public class CommandLeave implements Command {
 
-    public CommandLeave(@Nonnull List<String> aliases) {
+    public CommandLeave(@NotNull List<String> aliases) {
         this.aliases = aliases;
     }
 
     private final List<String> aliases;
 
     @Override
-    public void execute(CommandSource commandSource, @NonNull String[] strings) {
+    public void execute(CommandSource commandSource, @NotNull String[] strings) {
         if (!(commandSource instanceof Player)) {
             return;
         }
@@ -53,10 +52,11 @@ public class CommandLeave implements Command {
         if (lobby != null) {
             player.sendMessage(TextComponent.of(
                     VelocityExecutor.getInstance().getMessages().format(
-                            VelocityExecutor.getInstance().getMessages().getConnectingToHub(), lobby.getName()
+                            VelocityExecutor.getInstance().getMessages().getConnectingToHub(), lobby.getProcessDetail().getName()
                     )
             ));
-            VelocityExecutor.getInstance().getProxyServer().getServer(lobby.getName()).ifPresent(e -> player.createConnectionRequest(e).fireAndForget());
+            VelocityExecutor.getInstance().getProxyServer().getServer(lobby.getProcessDetail().getName())
+                    .ifPresent(e -> player.createConnectionRequest(e).fireAndForget());
             return;
         }
 
@@ -67,7 +67,7 @@ public class CommandLeave implements Command {
         ));
     }
 
-    @Nonnull
+    @NotNull
     public List<String> getAliases() {
         return aliases;
     }

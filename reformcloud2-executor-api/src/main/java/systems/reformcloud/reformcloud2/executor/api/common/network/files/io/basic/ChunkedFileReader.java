@@ -1,8 +1,8 @@
 package systems.reformcloud.reformcloud2.executor.api.common.network.files.io.basic;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.network.files.io.FileReader;
 
-import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -10,7 +10,7 @@ import java.nio.file.Path;
 
 public class ChunkedFileReader implements FileReader {
 
-    public ChunkedFileReader(@Nonnull Path path) {
+    public ChunkedFileReader(@NotNull Path path) {
         try {
             this.inputStream = Files.newInputStream(path);
         } catch (final IOException ex) {
@@ -18,7 +18,7 @@ public class ChunkedFileReader implements FileReader {
         }
     }
 
-    public ChunkedFileReader(@Nonnull InputStream inputStream) {
+    public ChunkedFileReader(@NotNull InputStream inputStream) {
         this.inputStream = inputStream;
     }
 
@@ -34,13 +34,13 @@ public class ChunkedFileReader implements FileReader {
         return -1;
     }
 
-    @Nonnull
+    @NotNull
     public byte[] newByteArray() {
         return new byte[256000];
     }
 
     @Override
-    public int read(@Nonnull byte[] bytes) {
+    public int read(@NotNull byte[] bytes) {
         return readNextChunk(bytes);
     }
 }

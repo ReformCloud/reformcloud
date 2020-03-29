@@ -1,9 +1,9 @@
 package systems.reformcloud.reformcloud2.executor.api.common.utility;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.base.Conditions;
 import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
 
-import javax.annotation.Nonnull;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Properties;
@@ -15,7 +15,7 @@ public final class StringUtil {
 
     public static final String NULL_PATH = new File("reformcloud/.bin/dev/null").getAbsolutePath();
 
-    @Nonnull
+    @NotNull
     public static String generateString(int times) {
         Conditions.isTrue(times > 0);
         StringBuilder stringBuilder = new StringBuilder();
@@ -26,19 +26,19 @@ public final class StringUtil {
         return stringBuilder.toString();
     }
 
-    @Nonnull
+    @NotNull
     public static String getConsolePrompt() {
         return LanguageManager.get("logger.console.prompt")
                 .replace("%version%", System.getProperty("reformcloud.runner.version", "c-build"))
                 .replace("%user_name%", System.getProperty("user.name", "unknown")) + " ";
     }
 
-    public static String formatError(@Nonnull String error) {
+    public static String formatError(@NotNull String error) {
         return String.format("Unable to process action %s. Please report this DIRECTLY to reformcloud it is a fatal error", error);
     }
 
-    @Nonnull
-    public static Properties calcProperties(@Nonnull String[] strings, int from) {
+    @NotNull
+    public static Properties calcProperties(@NotNull String[] strings, int from) {
         Properties properties = new Properties();
         if (strings.length < from) {
             return properties;

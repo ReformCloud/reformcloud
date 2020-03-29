@@ -3,7 +3,7 @@ package systems.reformcloud.reformcloud2.commands.plugin.velocity.commands;
 import com.velocitypowered.api.command.Command;
 import com.velocitypowered.api.command.CommandSource;
 import net.kyori.text.TextComponent;
-import org.checkerframework.checker.nullness.qual.NonNull;
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.CommonHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.MainGroup;
@@ -11,29 +11,28 @@ import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
 import systems.reformcloud.reformcloud2.executor.api.velocity.VelocityExecutor;
 
-import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class CommandReformCloud implements Command {
 
-    public CommandReformCloud(@Nonnull List<String> aliases) {
+    public CommandReformCloud(@NotNull List<String> aliases) {
         this.aliases = aliases;
     }
 
     private final List<String> aliases;
 
     @Override
-    public void execute(CommandSource commandSender, @NonNull String[] strings) {
+    public void execute(CommandSource commandSender, @NotNull String[] strings) {
         final String prefix = VelocityExecutor.getInstance().getMessages().getPrefix() + " ";
 
         if (strings.length == 1 && strings[0].equalsIgnoreCase("list")) {
             ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getAllProcesses().forEach(e -> commandSender.sendMessage(TextComponent.of(
-                    "=> " + e.getName()
-                            + "/ Display: " + e.getDisplayName()
-                            + "/ UniqueID: " + e.getProcessUniqueID()
-                            + "/ Parent: " + e.getParent()
+                    "=> " + e.getProcessDetail().getName()
+                            + "/ Display: " + e.getProcessDetail().getDisplayName()
+                            + "/ UniqueID: " + e.getProcessDetail().getProcessUniqueID()
+                            + "/ Parent: " + e.getProcessDetail().getParentName()
                             + "/ Connected: " + e.getNetworkInfo().isConnected()
             )));
             return;
@@ -60,7 +59,9 @@ public class CommandReformCloud implements Command {
                 }
 
                 case "stopall": {
-                    ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcesses(strings[1]).forEach(e -> ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().stopProcess(e.getName()));
+                    ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcesses(strings[1]).forEach(
+                            e -> ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().stopProcess(e.getProcessDetail().getName())
+                    );
                     commandSender.sendMessage(getCommandSuccessMessage());
                     return;
                 }
@@ -117,7 +118,7 @@ public class CommandReformCloud implements Command {
                             }
 
                             ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcesses(processGroup.getName()).forEach(processInformation -> {
-                                ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().stopProcess(processInformation.getProcessUniqueID());
+                                ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().stopProcess(processInformation.getProcessDetail().getProcessUniqueID());
                                 AbsoluteThread.sleep(TimeUnit.MILLISECONDS, 10);
                             });
                         });
@@ -169,13 +170,13 @@ public class CommandReformCloud implements Command {
         return TextComponent.of(message);
     }
 
-    @Nonnull
+    @NotNull
     public List<String> getAliases() {
         return aliases;
     }
 
     @Override
-    public boolean hasPermission(CommandSource source, @NonNull String[] args) {
+    public boolean hasPermission(CommandSource source, @NotNull String[] args) {
         return source.hasPermission("reformcloud.command.reformcloud");
     }
 }

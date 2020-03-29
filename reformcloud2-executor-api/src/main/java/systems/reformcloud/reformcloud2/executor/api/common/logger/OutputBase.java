@@ -1,11 +1,12 @@
 package systems.reformcloud.reformcloud2.executor.api.common.logger;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import java.io.ByteArrayOutputStream;
 
 public abstract class OutputBase extends ByteArrayOutputStream {
 
-    public OutputBase(@Nonnull LoggerBase loggerBase) {
+    public OutputBase(@NotNull LoggerBase loggerBase) {
         this.loggerBase = loggerBase;
     }
 

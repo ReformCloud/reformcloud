@@ -83,7 +83,7 @@ public final class ProcessQueue extends AbsoluteThread {
 
     public static ProcessInformation removeFromQueue(UUID uuid) {
         synchronized (QUEUE) {
-            RunningProcess process = Streams.filterToReference(QUEUE, e -> e.getProcessInformation().getProcessUniqueID().equals(uuid)).orNothing();
+            RunningProcess process = Streams.filterToReference(QUEUE, e -> e.getProcessInformation().getProcessDetail().getProcessUniqueID().equals(uuid)).orNothing();
             if (process == null) {
                 return null;
             }

@@ -1,11 +1,11 @@
 package systems.reformcloud.reformcloud2.executor.node.network.client;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.network.challenge.ChallengeAuthHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.NetworkChannelReader;
 import systems.reformcloud.reformcloud2.executor.api.common.network.client.DefaultNetworkClient;
 import systems.reformcloud.reformcloud2.executor.api.common.network.client.NetworkClient;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.function.Supplier;
@@ -17,7 +17,7 @@ public class NodeNetworkClient implements NetworkClient {
     public static final Collection<String> CONNECTIONS = new ArrayList<>();
 
     @Override
-    public boolean connect(@Nonnull String host, int port, @Nonnull Supplier<NetworkChannelReader> supplier, @Nonnull ChallengeAuthHandler challengeAuthHandler) {
+    public boolean connect(@NotNull String host, int port, @NotNull Supplier<NetworkChannelReader> supplier, @NotNull ChallengeAuthHandler challengeAuthHandler) {
         if (CONNECTIONS.stream().anyMatch(host::equals)) {
             return false;
         }

@@ -1,6 +1,7 @@
 package systems.reformcloud.reformcloud2.permissions.util.unit;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.Calendar;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;

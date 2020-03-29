@@ -1,10 +1,10 @@
 package systems.reformcloud.reformcloud2.executor.api.common.network.channel.handler;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.serialisation.PacketReader;
 
-import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 
 public interface NetworkHandler extends PacketReader {
@@ -21,5 +21,5 @@ public interface NetworkHandler extends PacketReader {
      * @param packet       The packet itself which got sent
      * @param responses    The response which should be sent to the sender
      */
-    void handlePacket(@Nonnull PacketSender packetSender, @Nonnull Packet packet, @Nonnull Consumer<Packet> responses);
+    void handlePacket(@NotNull PacketSender packetSender, @NotNull Packet packet, @NotNull Consumer<Packet> responses);
 }

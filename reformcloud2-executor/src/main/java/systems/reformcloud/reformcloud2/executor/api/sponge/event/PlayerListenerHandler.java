@@ -20,7 +20,7 @@ import java.util.concurrent.TimeUnit;
 
 public final class PlayerListenerHandler {
 
-    @Listener (order = Order.LATE)
+    @Listener(order = Order.LATE)
     public void handle(final ClientConnectionEvent.Login event) {
         if (API.getInstance().getCurrentProcessInformation().getProcessGroup().getPlayerAccessConfiguration().isOnlyProxyJoin()) {
             PacketSender packetSender = DefaultChannelManager.INSTANCE.get("Controller").orElse(null);
@@ -45,7 +45,7 @@ public final class PlayerListenerHandler {
         final PlayerAccessConfiguration configuration = current.getProcessGroup().getPlayerAccessConfiguration();
 
         if (configuration.isUseCloudPlayerLimit()
-                && configuration.getMaxPlayers() < current.getOnlineCount() + 1
+                && configuration.getMaxPlayers() < current.getProcessPlayerManager().getOnlineCount() + 1
                 && !player.hasPermission(configuration.getFullJoinPermission())) {
             event.setCancelled(true);
             return;
@@ -61,24 +61,24 @@ public final class PlayerListenerHandler {
             return;
         }
 
-        if (current.getProcessState().equals(ProcessState.FULL) && !player.hasPermission(configuration.getFullJoinPermission())) {
+        if (current.getProcessDetail().getProcessState().equals(ProcessState.FULL) && !player.hasPermission(configuration.getFullJoinPermission())) {
             event.setCancelled(true);
             return;
         }
 
-        if (!current.onLogin(player.getUniqueId(), player.getName())) {
+        if (!current.getProcessPlayerManager().onLogin(player.getUniqueId(), player.getName())) {
             event.setCancelled(true);
             return;
         }
 
-        if (Sponge.getServer().getOnlinePlayers().size() >= current.getMaxPlayers()
-                && !current.getProcessState().equals(ProcessState.FULL)
-                && !current.getProcessState().equals(ProcessState.INVISIBLE)) {
-            current.setProcessState(ProcessState.FULL);
+        if (Sponge.getServer().getOnlinePlayers().size() >= current.getProcessDetail().getMaxPlayers()
+                && !current.getProcessDetail().getProcessState().equals(ProcessState.FULL)
+                && !current.getProcessDetail().getProcessState().equals(ProcessState.INVISIBLE)) {
+            current.getProcessDetail().setProcessState(ProcessState.FULL);
         }
     }
 
-    @Listener (order = Order.LATE)
+    @Listener(order = Order.LATE)
     public void handle(final ClientConnectionEvent.Join event) {
         final ProcessInformation current = API.getInstance().getCurrentProcessInformation();
         current.updateRuntimeInformation();
@@ -86,21 +86,21 @@ public final class PlayerListenerHandler {
         ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(current);
     }
 
-    @Listener (order = Order.FIRST)
+    @Listener(order = Order.FIRST)
     public void handle(final ClientConnectionEvent.Disconnect event) {
         ProcessInformation current = API.getInstance().getCurrentProcessInformation();
-        if (!current.isPlayerOnline(event.getTargetEntity().getUniqueId())) {
+        if (!current.getProcessPlayerManager().isPlayerOnlineOnCurrentProcess(event.getTargetEntity().getUniqueId())) {
             return;
         }
 
-        if (Sponge.getServer().getOnlinePlayers().size() < current.getMaxPlayers()
-                && !current.getProcessState().equals(ProcessState.READY)
-                && !current.getProcessState().equals(ProcessState.INVISIBLE)) {
-            current.setProcessState(ProcessState.READY);
+        if (Sponge.getServer().getOnlinePlayers().size() < current.getProcessDetail().getMaxPlayers()
+                && !current.getProcessDetail().getProcessState().equals(ProcessState.READY)
+                && !current.getProcessDetail().getProcessState().equals(ProcessState.INVISIBLE)) {
+            current.getProcessDetail().setProcessState(ProcessState.READY);
         }
 
         current.updateRuntimeInformation();
-        current.onLogout(event.getTargetEntity().getUniqueId());
+        current.getProcessPlayerManager().onLogout(event.getTargetEntity().getUniqueId());
         SpongeExecutor.getInstance().setThisProcessInformation(current);
         ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(current);
     }

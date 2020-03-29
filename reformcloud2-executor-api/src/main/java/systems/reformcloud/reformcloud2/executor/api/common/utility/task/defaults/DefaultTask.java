@@ -1,9 +1,9 @@
 package systems.reformcloud.reformcloud2.executor.api.common.utility.task.defaults;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.excepetion.TaskCompletionException;
 
-import javax.annotation.Nonnull;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -46,7 +46,7 @@ public final class DefaultTask<V> extends Task<V> {
     }
 
     @Override
-    public void awaitUninterruptedly(@Nonnull TimeUnit timeUnit, long time) {
+    public void awaitUninterruptedly(@NotNull TimeUnit timeUnit, long time) {
         this.get(time, timeUnit);
     }
 
@@ -60,9 +60,9 @@ public final class DefaultTask<V> extends Task<V> {
         return this.get(time, timeUnit);
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public Task<V> onFailure(@Nonnull Consumer<TaskCompletionException> consumer) {
+    public Task<V> onFailure(@NotNull Consumer<TaskCompletionException> consumer) {
         this.failureConsumer = Objects.requireNonNull(consumer);
         return this;
     }

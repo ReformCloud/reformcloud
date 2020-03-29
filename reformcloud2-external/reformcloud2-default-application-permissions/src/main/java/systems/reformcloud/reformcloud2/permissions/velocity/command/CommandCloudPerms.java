@@ -4,7 +4,7 @@ import com.velocitypowered.api.command.Command;
 import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.proxy.Player;
 import net.kyori.text.TextComponent;
-import org.checkerframework.checker.nullness.qual.NonNull;
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.CommonHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.optional.ReferencedOptional;
@@ -17,7 +17,6 @@ import systems.reformcloud.reformcloud2.permissions.util.user.PermissionUser;
 import systems.reformcloud.reformcloud2.permissions.util.uuid.UUIDFetcher;
 import systems.reformcloud.reformcloud2.permissions.velocity.VelocityPermissionPlugin;
 
-import javax.annotation.Nonnull;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -25,7 +24,7 @@ import java.util.concurrent.TimeUnit;
 public class CommandCloudPerms implements Command {
 
     @Override
-    public void execute(CommandSource commandSender, @NonNull String[] strings) {
+    public void execute(CommandSource commandSender, @NotNull String[] strings) {
         if (strings.length == 4
                 && strings[0].equalsIgnoreCase("user")
                 && strings[2].equalsIgnoreCase("addgroup")
@@ -87,7 +86,7 @@ public class CommandCloudPerms implements Command {
             }
 
             long timeOut = System.currentTimeMillis()
-                    +  InternalTimeUnit.convert(parseUnitFromString(strings[5]), givenTimeOut);
+                    + InternalTimeUnit.convert(parseUnitFromString(strings[5]), givenTimeOut);
             user.getGroups().add(new NodeGroup(
                     System.currentTimeMillis(),
                     timeOut,
@@ -283,7 +282,7 @@ public class CommandCloudPerms implements Command {
             }
 
             long timeOut = System.currentTimeMillis()
-                    +  InternalTimeUnit.convert(parseUnitFromString(strings[6]), givenTimeOut);
+                    + InternalTimeUnit.convert(parseUnitFromString(strings[6]), givenTimeOut);
             group.getPermissionNodes().add(new PermissionNode(
                     System.currentTimeMillis(),
                     timeOut,
@@ -307,7 +306,7 @@ public class CommandCloudPerms implements Command {
     }
 
     @Override
-    public boolean hasPermission(CommandSource source, @NonNull String[] args) {
+    public boolean hasPermission(CommandSource source, @NotNull String[] args) {
         return source.hasPermission("reformcloud.command.cloudperms");
     }
 
@@ -316,7 +315,7 @@ public class CommandCloudPerms implements Command {
         return player.isPresent() ? player.get().getUniqueId() : UUIDFetcher.getUUIDFromName(name);
     }
 
-    private static TimeUnit parseUnitFromString(@Nonnull String s) {
+    private static TimeUnit parseUnitFromString(@NotNull String s) {
         switch (s.toLowerCase()) {
             case "s":
                 return TimeUnit.SECONDS;

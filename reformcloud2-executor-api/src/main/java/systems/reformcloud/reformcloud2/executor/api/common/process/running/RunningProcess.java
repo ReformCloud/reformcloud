@@ -1,10 +1,10 @@
 package systems.reformcloud.reformcloud2.executor.api.common.process.running;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.optional.ReferencedOptional;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 
-import javax.annotation.Nonnull;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collection;
@@ -19,7 +19,7 @@ public interface RunningProcess {
      *
      * @return A task which will get completed when the complete process is prepared
      */
-    @Nonnull
+    @NotNull
     Task<Void> prepare();
 
     /**
@@ -47,13 +47,13 @@ public interface RunningProcess {
     /**
      * @return An optional which is either empty if the process is not started or contains the current process
      */
-    @Nonnull
+    @NotNull
     ReferencedOptional<Process> getProcess();
 
     /**
      * @return The process information of the current service
      */
-    @Nonnull
+    @NotNull
     ProcessInformation getProcessInformation();
 
     /**
@@ -61,7 +61,7 @@ public interface RunningProcess {
      *
      * @param line The command line which should get sent
      */
-    void sendCommand(@Nonnull String line);
+    void sendCommand(@NotNull String line);
 
     /**
      * @return If the process is started an currently alive
@@ -76,15 +76,15 @@ public interface RunningProcess {
     /**
      * @return The path in which the process (should) operate
      */
-    @Nonnull
+    @NotNull
     Path getPath();
 
     /**
      * @return All shutdown commands for the current process
      */
-    @Nonnull
+    @NotNull
     default String[] getShutdownCommands() {
-        Collection<String> commands = getProcessInformation().getTemplate().getRuntimeConfiguration().getShutdownCommands();
+        Collection<String> commands = getProcessInformation().getProcessDetail().getTemplate().getRuntimeConfiguration().getShutdownCommands();
         commands.addAll(Arrays.asList("stop", "end"));
         return commands.stream().map(e -> e + "\n").toArray(String[]::new);
     }

@@ -1,6 +1,6 @@
 package systems.reformcloud.reformcloud2.runner.updater;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Represents an updater which can update the file or the system
@@ -25,7 +25,7 @@ public interface Updater {
     /**
      * @return The name of the current updater
      */
-    @Nonnull
+    @NotNull
     String getName();
 
 }

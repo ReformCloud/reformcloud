@@ -1,12 +1,12 @@
 package systems.reformcloud.reformcloud2.signs.application.updater;
 
+import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.common.application.updater.ApplicationRemoteUpdate;
 import systems.reformcloud.reformcloud2.executor.api.common.application.updater.basic.BasicApplicationRemoteUpdate;
 import systems.reformcloud.reformcloud2.executor.api.common.application.updater.basic.DefaultApplicationUpdateRepository;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.system.DownloadHelper;
 import systems.reformcloud.reformcloud2.signs.application.ReformCloudApplication;
 
-import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.Properties;
 

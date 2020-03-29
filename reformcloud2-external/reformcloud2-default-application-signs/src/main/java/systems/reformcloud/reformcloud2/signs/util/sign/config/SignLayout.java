@@ -1,25 +1,25 @@
 package systems.reformcloud.reformcloud2.signs.util.sign.config;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.signs.util.sign.config.util.LayoutContext;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.Serializable;
 import java.util.List;
 
 public class SignLayout implements Serializable, Cloneable {
 
     public SignLayout(
-            @Nonnull LayoutContext context,
+            @NotNull LayoutContext context,
             @Nullable String target,
             boolean searchingLayoutWhenFull,
             boolean showMaintenanceProcessesOnSigns,
-            @Nonnull List<SignSubLayout> searchingLayouts,
-            @Nonnull List<SignSubLayout> waitingForConnectLayout,
-            @Nonnull List<SignSubLayout> emptyLayout,
-            @Nonnull List<SignSubLayout> onlineLayout,
-            @Nonnull List<SignSubLayout> fullLayout,
-            @Nonnull List<SignSubLayout> maintenanceLayout) {
+            @NotNull List<SignSubLayout> searchingLayouts,
+            @NotNull List<SignSubLayout> waitingForConnectLayout,
+            @NotNull List<SignSubLayout> emptyLayout,
+            @NotNull List<SignSubLayout> onlineLayout,
+            @NotNull List<SignSubLayout> fullLayout,
+            @NotNull List<SignSubLayout> maintenanceLayout) {
         this.context = context;
         this.target = target;
         this.searchingLayoutWhenFull = searchingLayoutWhenFull;

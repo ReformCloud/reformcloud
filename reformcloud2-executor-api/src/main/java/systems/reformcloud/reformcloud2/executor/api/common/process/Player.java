@@ -1,13 +1,12 @@
 package systems.reformcloud.reformcloud2.executor.api.common.process;
 
-import javax.annotation.Nonnull;
-import javax.annotation.concurrent.Immutable;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.UUID;
 
-@Immutable
 public final class Player implements Comparable<Player> {
 
-    Player(@Nonnull UUID uniqueID, @Nonnull String name) {
+    public Player(@NotNull UUID uniqueID, @NotNull String name) {
         this.uniqueID = uniqueID;
         this.name = name;
     }
@@ -18,12 +17,12 @@ public final class Player implements Comparable<Player> {
 
     private final long joined = System.currentTimeMillis();
 
-    @Nonnull
+    @NotNull
     public UUID getUniqueID() {
         return uniqueID;
     }
 
-    @Nonnull
+    @NotNull
     public String getName() {
         return name;
     }
@@ -33,7 +32,7 @@ public final class Player implements Comparable<Player> {
     }
 
     @Override
-    public int compareTo(@Nonnull Player o) {
+    public int compareTo(@NotNull Player o) {
         return Long.compare(getJoined(), o.getJoined());
     }
 }

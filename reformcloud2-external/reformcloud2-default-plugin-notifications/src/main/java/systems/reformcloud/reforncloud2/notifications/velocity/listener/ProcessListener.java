@@ -37,7 +37,7 @@ public class ProcessListener {
     public void handle(final ProcessUpdatedEvent event) {
         ProcessInformation processInformation = event.getProcessInformation();
         if (isNotify(processInformation)) {
-            STARTED.add(processInformation.getProcessUniqueID());
+            STARTED.add(processInformation.getProcessDetail().getProcessUniqueID());
             this.publishNotification(
                     VelocityExecutor.getInstance().getMessages().getProcessConnected(),
                     processInformation.getName()
@@ -51,7 +51,7 @@ public class ProcessListener {
                 VelocityExecutor.getInstance().getMessages().getProcessStopped(),
                 event.getProcessInformation().getName()
         );
-        STARTED.remove(event.getProcessInformation().getProcessUniqueID());
+        STARTED.remove(event.getProcessInformation().getProcessDetail().getProcessUniqueID());
     }
 
     private void publishNotification(String message, Object... replacements) {
@@ -64,7 +64,7 @@ public class ProcessListener {
     }
 
     private boolean isNotify(ProcessInformation information) {
-        return !STARTED.contains(information.getProcessUniqueID())
+        return !STARTED.contains(information.getProcessDetail().getProcessUniqueID())
                 && !VelocityPlugin.proxyServer.getServer(information.getName()).isPresent()
                 && information.getNetworkInfo().isConnected();
     }

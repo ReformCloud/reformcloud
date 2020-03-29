@@ -10,10 +10,10 @@ public class RunningProcessStoppedListener {
 
     @Listener
     public void handle(final RunningProcessStoppedEvent event) {
-        NodeProcessScreenHandler.unregisterScreen(event.getRunningProcess().getProcessInformation().getProcessUniqueID());
+        NodeProcessScreenHandler.unregisterScreen(event.getRunningProcess().getProcessInformation().getProcessDetail().getProcessUniqueID());
         NodeExecutor.getInstance().getClusterSyncManager().syncProcessStop(event.getRunningProcess().getProcessInformation());
-        NodeExecutor.getInstance().getNodeNetworkManager().getNodeProcessHelper().unregisterLocalProcess(event.getRunningProcess().getProcessInformation().getProcessUniqueID());
+        NodeExecutor.getInstance().getNodeNetworkManager().getNodeProcessHelper().unregisterLocalProcess(event.getRunningProcess().getProcessInformation().getProcessDetail().getProcessUniqueID());
         NodeExecutor.getInstance().getNodeNetworkManager().getNodeProcessHelper().handleLocalProcessStop(event.getRunningProcess().getProcessInformation());
-        LocalProcessManager.unregisterProcesses(event.getRunningProcess().getProcessInformation().getProcessUniqueID());
+        LocalProcessManager.unregisterProcesses(event.getRunningProcess().getProcessInformation().getProcessDetail().getProcessUniqueID());
     }
 }

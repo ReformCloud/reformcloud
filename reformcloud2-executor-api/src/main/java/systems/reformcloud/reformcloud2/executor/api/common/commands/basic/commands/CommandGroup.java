@@ -1,5 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.CommonHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.GlobalCommand;
@@ -17,7 +18,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.utility.StringUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
 
-import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -31,7 +31,7 @@ public final class CommandGroup extends GlobalCommand {
     }
 
     @Override
-    public void describeCommandToSender(@Nonnull CommandSource source) {
+    public void describeCommandToSender(@NotNull CommandSource source) {
         source.sendMessages((
                 "group <list>                                   | Shows all registered main and process groups\n" +
                         "group <sub | main> <name> [info]               | Shows information about a specific group\n" +
@@ -67,7 +67,7 @@ public final class CommandGroup extends GlobalCommand {
     }
 
     @Override
-    public boolean handleCommand(@Nonnull CommandSource commandSource, @Nonnull String[] strings) {
+    public boolean handleCommand(@NotNull CommandSource commandSource, @NotNull String[] strings) {
         if (strings.length == 1 && strings[0].equalsIgnoreCase("list")) {
             this.listGroupsToSender(commandSource);
             return true;
@@ -103,7 +103,7 @@ public final class CommandGroup extends GlobalCommand {
         if (strings.length == 3 && strings[2].equalsIgnoreCase("stop")) {
             List<ProcessInformation> processes = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcesses(processGroup.getName());
             source.sendMessage(LanguageManager.get("command-group-stopping-all", processGroup.getName()));
-            processes.forEach(e -> ExecutorAPI.getInstance().getAsyncAPI().getProcessAsyncAPI().stopProcessAsync(e.getProcessUniqueID()).onComplete(f -> {
+            processes.forEach(e -> ExecutorAPI.getInstance().getAsyncAPI().getProcessAsyncAPI().stopProcessAsync(e.getProcessDetail().getProcessUniqueID()).onComplete(f -> {
             }));
             return;
         }
@@ -412,7 +412,7 @@ public final class CommandGroup extends GlobalCommand {
             for (String subGroup : mainGroup.getSubGroups()) {
                 Collection<ProcessInformation> running = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcesses(subGroup);
                 source.sendMessage(LanguageManager.get("command-group-stopping-all", subGroup));
-                running.forEach(e -> ExecutorAPI.getInstance().getAsyncAPI().getProcessAsyncAPI().stopProcessAsync(e.getProcessUniqueID()).onComplete(f -> {
+                running.forEach(e -> ExecutorAPI.getInstance().getAsyncAPI().getProcessAsyncAPI().stopProcessAsync(e.getProcessDetail().getProcessUniqueID()).onComplete(f -> {
                 }));
                 AbsoluteThread.sleep(50);
             }

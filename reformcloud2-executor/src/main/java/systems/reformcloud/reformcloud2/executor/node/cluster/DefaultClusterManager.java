@@ -56,7 +56,7 @@ public class DefaultClusterManager implements ClusterManager {
     @Override
     public int getOnlineAndWaiting(String groupName) {
         int onlineOrWaiting = Streams.allOf(NodeExecutor.getInstance().getNodeNetworkManager().getNodeProcessHelper().getClusterProcesses(),
-                e -> e.getProcessGroup().getName().equals(groupName) && e.getProcessState().isValid()).size();
+                e -> e.getProcessGroup().getName().equals(groupName) && e.getProcessDetail().getProcessState().isValid()).size();
         onlineOrWaiting += Streams.deepFilter(NodeExecutor.getInstance().getNodeNetworkManager().getQueuedProcesses(),
                 v -> v.getValue().equals(groupName)).size();
         return onlineOrWaiting;

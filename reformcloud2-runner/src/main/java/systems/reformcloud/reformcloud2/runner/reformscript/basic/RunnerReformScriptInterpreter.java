@@ -1,5 +1,7 @@
 package systems.reformcloud.reformcloud2.runner.reformscript.basic;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.runner.reformscript.InterpretedReformScript;
 import systems.reformcloud.reformcloud2.runner.reformscript.ReformScriptInterpreter;
 import systems.reformcloud.reformcloud2.runner.reformscript.utils.InterpreterCommand;
@@ -8,8 +10,6 @@ import systems.reformcloud.reformcloud2.runner.reformscript.utils.InterpreterVar
 import systems.reformcloud.reformcloud2.runner.util.KeyValueHolder;
 import systems.reformcloud.reformcloud2.runner.util.RunnerUtils;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -29,23 +29,23 @@ public final class RunnerReformScriptInterpreter implements ReformScriptInterpre
 
     private final Collection<InterpreterVariable> variables = new CopyOnWriteArrayList<>();
 
-    @Nonnull
+    @NotNull
     @Override
-    public ReformScriptInterpreter registerInterpreterCommand(@Nonnull InterpreterCommand command) {
+    public ReformScriptInterpreter registerInterpreterCommand(@NotNull InterpreterCommand command) {
         this.commands.add(command);
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public ReformScriptInterpreter registerInterpreterVariable(@Nonnull InterpreterVariable variable) {
+    public ReformScriptInterpreter registerInterpreterVariable(@NotNull InterpreterVariable variable) {
         this.variables.add(variable);
         return this;
     }
 
     @Nullable
     @Override
-    public InterpreterCommand getCommand(@Nonnull String command) {
+    public InterpreterCommand getCommand(@NotNull String command) {
         return this.commands
                 .stream()
                 .filter(e -> e.getCommand().equals(command.toUpperCase()))
@@ -55,7 +55,7 @@ public final class RunnerReformScriptInterpreter implements ReformScriptInterpre
 
     @Nullable
     @Override
-    public InterpreterVariable getVariable(@Nonnull String variable) {
+    public InterpreterVariable getVariable(@NotNull String variable) {
         return this.variables
                 .stream()
                 .filter(e -> variable.toLowerCase().contains(e.wrap())
@@ -66,7 +66,7 @@ public final class RunnerReformScriptInterpreter implements ReformScriptInterpre
 
     @Nullable
     @Override
-    public InterpretedReformScript interpret(@Nonnull Path script) {
+    public InterpretedReformScript interpret(@NotNull Path script) {
         try {
             List<String> allLines = new CopyOnWriteArrayList<>(Files.readAllLines(script));
             Collection<String> comments = allLines
@@ -83,8 +83,8 @@ public final class RunnerReformScriptInterpreter implements ReformScriptInterpre
     }
 
     @Nullable
-    private InterpretedReformScript interpret(@Nonnull Path path, @Nonnull List<String> allLines,
-                                              @Nonnull Collection<String> comments) {
+    private InterpretedReformScript interpret(@NotNull Path path, @NotNull List<String> allLines,
+                                              @NotNull Collection<String> comments) {
         Map<String, Map.Entry<Integer, InterpreterCommand>> commandsPerLine = new LinkedHashMap<>();
         int cursorPosition = 0;
 
@@ -129,7 +129,7 @@ public final class RunnerReformScriptInterpreter implements ReformScriptInterpre
     }
 
     @Nullable
-    private InterpreterCommand getCommandOfLine(@Nonnull String line) throws IllegalArgumentException {
+    private InterpreterCommand getCommandOfLine(@NotNull String line) throws IllegalArgumentException {
         String[] arguments = line.split(" ");
         if (arguments.length == 0) {
             return null;
@@ -143,8 +143,8 @@ public final class RunnerReformScriptInterpreter implements ReformScriptInterpre
         return result;
     }
 
-    @Nonnull
-    private String replaceLineVariables(@Nonnull String line, @Nonnull Collection<String> allLines) {
+    @NotNull
+    private String replaceLineVariables(@NotNull String line, @NotNull Collection<String> allLines) {
         String[] arguments = line.split(" ");
         if (arguments.length <= 1) {
             return line;
@@ -163,8 +163,8 @@ public final class RunnerReformScriptInterpreter implements ReformScriptInterpre
         return line;
     }
 
-    @Nonnull
-    private Collection<InterpreterTask> parseTasks(@Nonnull Collection<String> allLines) throws IllegalArgumentException {
+    @NotNull
+    private Collection<InterpreterTask> parseTasks(@NotNull Collection<String> allLines) throws IllegalArgumentException {
         Collection<InterpreterTask> tasks = new ArrayList<>();
 
         Collection<String> linesToParse = allLines
@@ -199,7 +199,7 @@ public final class RunnerReformScriptInterpreter implements ReformScriptInterpre
     }
 
     @Nullable
-    private InterpreterTask parseTask(@Nonnull List<String> taskLines, @Nonnull Collection<String> allLines) {
+    private InterpreterTask parseTask(@NotNull List<String> taskLines, @NotNull Collection<String> allLines) {
         if (taskLines.isEmpty()) {
             return null;
         }

@@ -6,6 +6,7 @@ import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.api.API;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.permissions.PermissionAPI;
@@ -14,7 +15,6 @@ import systems.reformcloud.reformcloud2.permissions.util.group.PermissionGroup;
 import systems.reformcloud.reformcloud2.permissions.util.permission.PermissionNode;
 import systems.reformcloud.reformcloud2.permissions.util.user.PermissionUser;
 
-import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.stream.Stream;
 
@@ -39,39 +39,39 @@ public class DefaultPermissible extends PermissibleBase {
     }
 
     @Override
-    public boolean isPermissionSet(@Nonnull String name) {
+    public boolean isPermissionSet(@NotNull String name) {
         return has(name);
     }
 
     @Override
-    public boolean isPermissionSet(@Nonnull Permission perm) {
+    public boolean isPermissionSet(@NotNull Permission perm) {
         return has(perm.getName());
     }
 
     @Override
-    public boolean hasPermission(@Nonnull String name) {
+    public boolean hasPermission(@NotNull String name) {
         return has(name);
     }
 
     @Override
-    public boolean hasPermission(@Nonnull Permission perm) {
+    public boolean hasPermission(@NotNull Permission perm) {
         return has(perm.getName());
     }
 
     @Override
-    @Nonnull
-    public PermissionAttachment addAttachment(@Nonnull Plugin plugin, @Nonnull String name, boolean value) {
+    @NotNull
+    public PermissionAttachment addAttachment(@NotNull Plugin plugin, @NotNull String name, boolean value) {
         return new PermissionAttachment(plugin, this);
     }
 
     @Override
-    @Nonnull
-    public PermissionAttachment addAttachment(@Nonnull Plugin plugin) {
+    @NotNull
+    public PermissionAttachment addAttachment(@NotNull Plugin plugin) {
         return new PermissionAttachment(plugin, this);
     }
 
     @Override
-    public void removeAttachment(@Nonnull PermissionAttachment attachment) {
+    public void removeAttachment(@NotNull PermissionAttachment attachment) {
     }
 
     @Override
@@ -83,17 +83,17 @@ public class DefaultPermissible extends PermissibleBase {
     }
 
     @Override
-    public PermissionAttachment addAttachment(@Nonnull Plugin plugin, @Nonnull String name, boolean value, int ticks) {
+    public PermissionAttachment addAttachment(@NotNull Plugin plugin, @NotNull String name, boolean value, int ticks) {
         return new PermissionAttachment(plugin, this);
     }
 
     @Override
-    public PermissionAttachment addAttachment(@Nonnull Plugin plugin, int ticks) {
+    public PermissionAttachment addAttachment(@NotNull Plugin plugin, int ticks) {
         return new PermissionAttachment(plugin, this);
     }
 
     @Override
-    @Nonnull
+    @NotNull
     public Set<PermissionAttachmentInfo> getEffectivePermissions() {
         this.perms = new HashSet<>();
 

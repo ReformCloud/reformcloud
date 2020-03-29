@@ -1,5 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.node.api.plugins;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.api.plugins.PluginAsyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.plugins.PluginSyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
@@ -14,7 +15,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.utility.task.default
 import systems.reformcloud.reformcloud2.executor.api.node.network.NodeNetworkManager;
 import systems.reformcloud.reformcloud2.executor.node.network.packet.out.api.NodePluginAction;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -28,9 +28,9 @@ public class PluginAPIImplementation implements PluginSyncAPI, PluginAsyncAPI {
 
     private final NodeNetworkManager nodeNetworkManager;
 
-    @Nonnull
+    @NotNull
     @Override
-    public Task<Void> installPluginAsync(@Nonnull String process, @Nonnull InstallablePlugin plugin) {
+    public Task<Void> installPluginAsync(@NotNull String process, @NotNull InstallablePlugin plugin) {
         Task<Void> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             ProcessInformation information = this.nodeNetworkManager.getNodeProcessHelper().getClusterProcess(process);
@@ -44,12 +44,12 @@ public class PluginAPIImplementation implements PluginSyncAPI, PluginAsyncAPI {
         return task;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public Task<Void> installPluginAsync(@Nonnull ProcessInformation process, @Nonnull InstallablePlugin plugin) {
+    public Task<Void> installPluginAsync(@NotNull ProcessInformation process, @NotNull InstallablePlugin plugin) {
         Task<Void> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
-            if (this.nodeNetworkManager.getCluster().getSelfNode().getName().equals(process.getParent())) {
+            if (this.nodeNetworkManager.getCluster().getSelfNode().getName().equals(process.getProcessDetail().getParentName())) {
                 DefaultChannelManager.INSTANCE.get(process.getName()).ifPresent(e -> e.sendPacket(new NodePluginAction(
                         NodePluginAction.Action.INSTALL, process.getName(), new DefaultInstallablePlugin(
                         plugin.getDownloadURL(),
@@ -59,7 +59,7 @@ public class PluginAPIImplementation implements PluginSyncAPI, PluginAsyncAPI {
                         plugin.main()
                 ))));
             } else {
-                DefaultChannelManager.INSTANCE.get(process.getParent()).ifPresent(e -> e.sendPacket(new NodePluginAction(
+                DefaultChannelManager.INSTANCE.get(process.getProcessDetail().getParentName()).ifPresent(e -> e.sendPacket(new NodePluginAction(
                         NodePluginAction.Action.INSTALL, process.getName(), new DefaultInstallablePlugin(
                         plugin.getDownloadURL(),
                         plugin.getName(),
@@ -74,9 +74,9 @@ public class PluginAPIImplementation implements PluginSyncAPI, PluginAsyncAPI {
         return task;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public Task<Void> unloadPluginAsync(@Nonnull String process, @Nonnull Plugin plugin) {
+    public Task<Void> unloadPluginAsync(@NotNull String process, @NotNull Plugin plugin) {
         Task<Void> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             ProcessInformation information = this.nodeNetworkManager.getNodeProcessHelper().getClusterProcess(process);
@@ -90,12 +90,12 @@ public class PluginAPIImplementation implements PluginSyncAPI, PluginAsyncAPI {
         return task;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public Task<Void> unloadPluginAsync(@Nonnull ProcessInformation process, @Nonnull Plugin plugin) {
+    public Task<Void> unloadPluginAsync(@NotNull ProcessInformation process, @NotNull Plugin plugin) {
         Task<Void> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
-            if (this.nodeNetworkManager.getCluster().getSelfNode().getName().equals(process.getParent())) {
+            if (this.nodeNetworkManager.getCluster().getSelfNode().getName().equals(process.getProcessDetail().getParentName())) {
                 DefaultChannelManager.INSTANCE.get(process.getName()).ifPresent(e -> e.sendPacket(new NodePluginAction(
                         NodePluginAction.Action.UNINSTALL,
                         process.getName(),
@@ -109,7 +109,7 @@ public class PluginAPIImplementation implements PluginSyncAPI, PluginAsyncAPI {
                                 plugin.getName()
                         ))));
             } else {
-                DefaultChannelManager.INSTANCE.get(process.getParent()).ifPresent(e -> e.sendPacket(new NodePluginAction(
+                DefaultChannelManager.INSTANCE.get(process.getProcessDetail().getParentName()).ifPresent(e -> e.sendPacket(new NodePluginAction(
                         NodePluginAction.Action.UNINSTALL,
                         process.getName(),
                         new DefaultPlugin(
@@ -128,9 +128,9 @@ public class PluginAPIImplementation implements PluginSyncAPI, PluginAsyncAPI {
         return task;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public Task<Plugin> getInstalledPluginAsync(@Nonnull String process, @Nonnull String name) {
+    public Task<Plugin> getInstalledPluginAsync(@NotNull String process, @NotNull String name) {
         Task<Plugin> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             ProcessInformation information = this.nodeNetworkManager.getNodeProcessHelper().getClusterProcess(process);
@@ -144,17 +144,17 @@ public class PluginAPIImplementation implements PluginSyncAPI, PluginAsyncAPI {
         return task;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public Task<Plugin> getInstalledPluginAsync(@Nonnull ProcessInformation process, @Nonnull String name) {
+    public Task<Plugin> getInstalledPluginAsync(@NotNull ProcessInformation process, @NotNull String name) {
         Task<Plugin> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> task.complete(Streams.filterToReference(process.getPlugins(), e -> e.getName().equals(name)).orNothing()));
         return task;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public Task<Collection<DefaultPlugin>> getPluginsAsync(@Nonnull String process, @Nonnull String author) {
+    public Task<Collection<DefaultPlugin>> getPluginsAsync(@NotNull String process, @NotNull String author) {
         Task<Collection<DefaultPlugin>> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             ProcessInformation information = this.nodeNetworkManager.getNodeProcessHelper().getClusterProcess(process);
@@ -168,17 +168,17 @@ public class PluginAPIImplementation implements PluginSyncAPI, PluginAsyncAPI {
         return task;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public Task<Collection<DefaultPlugin>> getPluginsAsync(@Nonnull ProcessInformation process, @Nonnull String author) {
+    public Task<Collection<DefaultPlugin>> getPluginsAsync(@NotNull ProcessInformation process, @NotNull String author) {
         Task<Collection<DefaultPlugin>> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> task.complete(Streams.allOf(process.getPlugins(), e -> e.author() != null && e.author().equals(author))));
         return task;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public Task<Collection<DefaultPlugin>> getPluginsAsync(@Nonnull String process) {
+    public Task<Collection<DefaultPlugin>> getPluginsAsync(@NotNull String process) {
         Task<Collection<DefaultPlugin>> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             ProcessInformation information = this.nodeNetworkManager.getNodeProcessHelper().getClusterProcess(process);
@@ -192,68 +192,68 @@ public class PluginAPIImplementation implements PluginSyncAPI, PluginAsyncAPI {
         return task;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public Task<Collection<DefaultPlugin>> getPluginsAsync(@Nonnull ProcessInformation processInformation) {
+    public Task<Collection<DefaultPlugin>> getPluginsAsync(@NotNull ProcessInformation processInformation) {
         Task<Collection<DefaultPlugin>> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> task.complete(Collections.unmodifiableList(processInformation.getPlugins())));
         return task;
     }
 
     @Override
-    public void installPlugin(@Nonnull String process, @Nonnull InstallablePlugin plugin) {
+    public void installPlugin(@NotNull String process, @NotNull InstallablePlugin plugin) {
         installPluginAsync(process, plugin).awaitUninterruptedly();
     }
 
     @Override
-    public void installPlugin(@Nonnull ProcessInformation process, @Nonnull InstallablePlugin plugin) {
+    public void installPlugin(@NotNull ProcessInformation process, @NotNull InstallablePlugin plugin) {
         installPluginAsync(process, plugin).awaitUninterruptedly();
     }
 
     @Override
-    public void unloadPlugin(@Nonnull String process, @Nonnull Plugin plugin) {
+    public void unloadPlugin(@NotNull String process, @NotNull Plugin plugin) {
         unloadPluginAsync(process, plugin).awaitUninterruptedly();
     }
 
     @Override
-    public void unloadPlugin(@Nonnull ProcessInformation process, @Nonnull Plugin plugin) {
+    public void unloadPlugin(@NotNull ProcessInformation process, @NotNull Plugin plugin) {
         unloadPluginAsync(process, plugin).awaitUninterruptedly();
     }
 
     @Override
-    public Plugin getInstalledPlugin(@Nonnull String process, @Nonnull String name) {
+    public Plugin getInstalledPlugin(@NotNull String process, @NotNull String name) {
         return getInstalledPluginAsync(process, name).getUninterruptedly();
     }
 
     @Override
-    public Plugin getInstalledPlugin(@Nonnull ProcessInformation process, @Nonnull String name) {
+    public Plugin getInstalledPlugin(@NotNull ProcessInformation process, @NotNull String name) {
         return getInstalledPluginAsync(process, name).getUninterruptedly();
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public Collection<DefaultPlugin> getPlugins(@Nonnull String process, @Nonnull String author) {
+    public Collection<DefaultPlugin> getPlugins(@NotNull String process, @NotNull String author) {
         Collection<DefaultPlugin> result = getPluginsAsync(process, author).getUninterruptedly(TimeUnit.SECONDS, 5);
         return result == null ? new ArrayList<>() : result;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public Collection<DefaultPlugin> getPlugins(@Nonnull ProcessInformation process, @Nonnull String author) {
+    public Collection<DefaultPlugin> getPlugins(@NotNull ProcessInformation process, @NotNull String author) {
         Collection<DefaultPlugin> result = getPluginsAsync(process, author).getUninterruptedly(TimeUnit.SECONDS, 5);
         return result == null ? new ArrayList<>() : result;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public Collection<DefaultPlugin> getPlugins(@Nonnull String process) {
+    public Collection<DefaultPlugin> getPlugins(@NotNull String process) {
         Collection<DefaultPlugin> result = getPluginsAsync(process).getUninterruptedly(TimeUnit.SECONDS, 5);
         return result == null ? new ArrayList<>() : result;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public Collection<DefaultPlugin> getPlugins(@Nonnull ProcessInformation processInformation) {
+    public Collection<DefaultPlugin> getPlugins(@NotNull ProcessInformation processInformation) {
         Collection<DefaultPlugin> result = getPluginsAsync(processInformation).getUninterruptedly(TimeUnit.SECONDS, 5);
         return result == null ? new ArrayList<>() : result;
     }

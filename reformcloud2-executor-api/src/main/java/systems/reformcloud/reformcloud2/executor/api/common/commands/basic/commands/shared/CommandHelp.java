@@ -1,12 +1,11 @@
 package systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.shared;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.Command;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.GlobalCommand;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.manager.CommandManager;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.source.CommandSource;
 import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
-
-import javax.annotation.Nonnull;
 
 public final class CommandHelp extends GlobalCommand {
 
@@ -18,12 +17,12 @@ public final class CommandHelp extends GlobalCommand {
     private final CommandManager commandManager;
 
     @Override
-    public void describeCommandToSender(@Nonnull CommandSource source) {
+    public void describeCommandToSender(@NotNull CommandSource source) {
         source.sendMessage(LanguageManager.get("command-help-description"));
     }
 
     @Override
-    public boolean handleCommand(@Nonnull CommandSource commandSource, @Nonnull String[] strings) {
+    public boolean handleCommand(@NotNull CommandSource commandSource, @NotNull String[] strings) {
         if (strings.length != 1) {
             commandSource.sendMessage("ReformCloud git:runner:"
                     + System.getProperty("reformcloud.runner.version", "c-build")

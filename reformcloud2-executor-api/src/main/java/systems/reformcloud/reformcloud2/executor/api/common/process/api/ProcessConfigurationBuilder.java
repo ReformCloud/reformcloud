@@ -1,5 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.api.common.process.api;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.base.Conditions;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
@@ -10,20 +11,19 @@ import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Vers
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.backend.basic.FileBackend;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 
-import javax.annotation.Nonnull;
 import java.util.*;
 
 public final class ProcessConfigurationBuilder {
 
-    @Nonnull
-    public static ProcessConfigurationBuilder newBuilder(@Nonnull String processGroupName) {
+    @NotNull
+    public static ProcessConfigurationBuilder newBuilder(@NotNull String processGroupName) {
         ProcessGroup group = ExecutorAPI.getInstance().getSyncAPI().getGroupSyncAPI().getProcessGroup(processGroupName);
         Conditions.nonNull(group, "Unable to find group with name " + processGroupName);
         return newBuilder(group);
     }
 
-    @Nonnull
-    public static ProcessConfigurationBuilder newBuilder(@Nonnull ProcessGroup processGroup) {
+    @NotNull
+    public static ProcessConfigurationBuilder newBuilder(@NotNull ProcessGroup processGroup) {
         return new ProcessConfigurationBuilder(processGroup);
     }
 
@@ -32,7 +32,7 @@ public final class ProcessConfigurationBuilder {
     /**
      * Use {@link #newBuilder(String)} )} instead
      */
-    private ProcessConfigurationBuilder(@Nonnull ProcessGroup processGroup) {
+    private ProcessConfigurationBuilder(@NotNull ProcessGroup processGroup) {
         this.base = processGroup;
         this.maxPlayers = processGroup.getPlayerAccessConfiguration().getMaxPlayers();
     }
@@ -57,15 +57,15 @@ public final class ProcessConfigurationBuilder {
 
     private Collection<ProcessInclusion> inclusions = new ArrayList<>();
 
-    @Nonnull
-    public ProcessConfigurationBuilder uniqueId(@Nonnull UUID uniqueID) {
+    @NotNull
+    public ProcessConfigurationBuilder uniqueId(@NotNull UUID uniqueID) {
         Conditions.nonNull(uniqueID, "Unable to set null unique id");
 
         this.uniqueID = uniqueID;
         return this;
     }
 
-    @Nonnull
+    @NotNull
     public ProcessConfigurationBuilder id(int processId) {
         Conditions.isTrue(processId > 0, "Unable to start process with id smaller than 0");
 
@@ -73,15 +73,15 @@ public final class ProcessConfigurationBuilder {
         return this;
     }
 
-    @Nonnull
-    public ProcessConfigurationBuilder displayName(@Nonnull String displayName) {
+    @NotNull
+    public ProcessConfigurationBuilder displayName(@NotNull String displayName) {
         Conditions.nonNull(displayName, "Unable to set null display name");
 
         this.displayName = displayName;
         return this;
     }
 
-    @Nonnull
+    @NotNull
     public ProcessConfigurationBuilder maxMemory(int maxMemory) {
         Conditions.isTrue(maxMemory > 100, "Unable to start process with memory lower than 100MB");
 
@@ -89,7 +89,7 @@ public final class ProcessConfigurationBuilder {
         return this;
     }
 
-    @Nonnull
+    @NotNull
     public ProcessConfigurationBuilder port(int port) {
         Conditions.isTrue(port > 0, "Unable to use port smaller than 0");
 
@@ -97,31 +97,31 @@ public final class ProcessConfigurationBuilder {
         return this;
     }
 
-    @Nonnull
-    public ProcessConfigurationBuilder template(@Nonnull Template template) {
+    @NotNull
+    public ProcessConfigurationBuilder template(@NotNull Template template) {
         Conditions.nonNull(template, "Unable to use null template");
 
         this.template = template;
         return this;
     }
 
-    @Nonnull
-    public ProcessConfigurationBuilder template(@Nonnull String template) {
+    @NotNull
+    public ProcessConfigurationBuilder template(@NotNull String template) {
         Conditions.nonNull(template, "Unable to use null template");
 
         this.template = Streams.filterToReference(this.base.getTemplates(), e -> e.getName().equals(template)).orElse(this.randomTemplate());
         return this;
     }
 
-    @Nonnull
-    public ProcessConfigurationBuilder extra(@Nonnull JsonConfiguration extra) {
+    @NotNull
+    public ProcessConfigurationBuilder extra(@NotNull JsonConfiguration extra) {
         Conditions.nonNull(extra, "Unable to set null extra data");
 
         this.extra = extra;
         return this;
     }
 
-    @Nonnull
+    @NotNull
     public ProcessConfigurationBuilder maxPlayers(int maxPlayers) {
         Conditions.isTrue(maxPlayers > 0, "Unable to set max players to a value lower or equal to 0");
 
@@ -129,23 +129,23 @@ public final class ProcessConfigurationBuilder {
         return this;
     }
 
-    @Nonnull
-    public ProcessConfigurationBuilder inclusions(@Nonnull Collection<ProcessInclusion> inclusions) {
+    @NotNull
+    public ProcessConfigurationBuilder inclusions(@NotNull Collection<ProcessInclusion> inclusions) {
         Conditions.nonNull(inclusions, "Unable to set null inclusions");
 
         this.inclusions = inclusions;
         return this;
     }
 
-    @Nonnull
-    public ProcessConfigurationBuilder inclusion(@Nonnull ProcessInclusion inclusion) {
+    @NotNull
+    public ProcessConfigurationBuilder inclusion(@NotNull ProcessInclusion inclusion) {
         Conditions.nonNull(inclusion, "Unable to add null inclusion");
 
         this.inclusions.add(inclusion);
         return this;
     }
 
-    @Nonnull
+    @NotNull
     public ProcessConfiguration build() {
         return new ProcessConfiguration(
                 this.base,

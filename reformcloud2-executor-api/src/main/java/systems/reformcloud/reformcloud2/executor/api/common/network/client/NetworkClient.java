@@ -1,18 +1,18 @@
 package systems.reformcloud.reformcloud2.executor.api.common.network.client;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.network.challenge.ChallengeAuthHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.NetworkChannelReader;
 
-import javax.annotation.Nonnull;
 import java.util.function.Supplier;
 
 public interface NetworkClient {
 
     boolean connect(
-            @Nonnull String host,
+            @NotNull String host,
             int port,
-            @Nonnull Supplier<NetworkChannelReader> supplier,
-            @Nonnull ChallengeAuthHandler challengeAuthHandler
+            @NotNull Supplier<NetworkChannelReader> supplier,
+            @NotNull ChallengeAuthHandler challengeAuthHandler
     );
 
     /**

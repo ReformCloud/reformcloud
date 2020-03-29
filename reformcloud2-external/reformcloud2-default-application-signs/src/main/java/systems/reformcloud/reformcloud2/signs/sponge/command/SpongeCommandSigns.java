@@ -1,5 +1,6 @@
 package systems.reformcloud.reformcloud2.signs.sponge.command;
 
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.block.BlockType;
 import org.spongepowered.api.block.BlockTypes;
 import org.spongepowered.api.block.tileentity.Sign;
@@ -16,14 +17,13 @@ import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.signs.sponge.adapter.SpongeSignSystemAdapter;
 import systems.reformcloud.reformcloud2.signs.util.sign.CloudSign;
 
-import javax.annotation.Nonnull;
 import java.util.Optional;
 
 public class SpongeCommandSigns implements CommandExecutor {
 
     @Override
-    @Nonnull
-    public CommandResult execute(@Nonnull CommandSource src, @Nonnull CommandContext args) {
+    @NotNull
+    public CommandResult execute(@NotNull CommandSource src, @NotNull CommandContext args) {
         if (!(src instanceof Player)) {
             return CommandResult.success();
         }

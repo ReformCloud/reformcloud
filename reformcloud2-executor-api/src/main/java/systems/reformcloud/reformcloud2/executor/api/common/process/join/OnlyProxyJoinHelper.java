@@ -59,8 +59,8 @@ public final class OnlyProxyJoinHelper {
     private static Collection<ProcessInformation> getProxy(UUID uniqueID, String name) {
         return ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getAllProcesses()
                 .stream()
-                .filter(e -> !e.getTemplate().isServer())
-                .filter(e -> e.isPlayerOnline(uniqueID) || e.isPlayerOnline(name))
+                .filter(e -> !e.getProcessDetail().getTemplate().isServer())
+                .filter(e -> e.getProcessPlayerManager().isPlayerOnlineOnCurrentProcess(uniqueID) || e.getProcessPlayerManager().isPlayerOnlineOnCurrentProcess(name))
                 .collect(Collectors.toList());
     }
 }

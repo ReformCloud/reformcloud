@@ -1,5 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.controller.config;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.CommonHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
@@ -19,7 +20,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams
 import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
 import systems.reformcloud.reformcloud2.executor.controller.ControllerExecutor;
 
-import javax.annotation.Nonnull;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -137,7 +137,7 @@ public final class ControllerExecutorConfig {
         }
     }
 
-    @Nonnull
+    @NotNull
     public MainGroup createMainGroup(MainGroup mainGroup) {
         MainGroup mainGroup1 = mainGroups.stream().filter(group -> mainGroup.getName().equals(group.getName())).findFirst().orElse(null);
         if (mainGroup1 == null) {
@@ -148,7 +148,7 @@ public final class ControllerExecutorConfig {
         return mainGroup;
     }
 
-    @Nonnull
+    @NotNull
     public ProcessGroup createProcessGroup(ProcessGroup processGroup) {
         ProcessGroup processGroup1 = processGroups.stream().filter(group -> processGroup.getName().equals(group.getName())).findFirst().orElse(null);
         if (processGroup1 == null) {
@@ -171,7 +171,7 @@ public final class ControllerExecutorConfig {
         ControllerExecutor.getInstance().getAutoStartupHandler().update();
 
         ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcesses(processGroup.getName()).forEach(processInformation -> {
-            ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().stopProcess(processInformation.getProcessUniqueID());
+            ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().stopProcess(processInformation.getProcessDetail().getProcessUniqueID());
             AbsoluteThread.sleep(TimeUnit.MILLISECONDS, 10);
         });
     }

@@ -1,5 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.client;
 
+import org.jetbrains.annotations.NotNull;
 import org.reflections.Reflections;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorType;
 import systems.reformcloud.reformcloud2.executor.api.client.Client;
@@ -50,7 +51,6 @@ import systems.reformcloud.reformcloud2.executor.client.process.listeners.Runnin
 import systems.reformcloud.reformcloud2.executor.client.screen.ScreenManager;
 import systems.reformcloud.reformcloud2.executor.client.watchdog.WatchdogThread;
 
-import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.concurrent.TimeUnit;
@@ -132,7 +132,8 @@ public final class ClientExecutor extends Client {
                 clientConfig.getStartHost(),
                 clientConfig.getMaxMemory(),
                 clientConfig.getMaxProcesses(),
-                clientConfig.getName()
+                clientConfig.getName(),
+                clientConfig.getUniqueID()
         );
 
         applicationLoader.detectApplications();
@@ -184,7 +185,8 @@ public final class ClientExecutor extends Client {
                 clientConfig.getStartHost(),
                 clientConfig.getMaxMemory(),
                 clientConfig.getMaxProcesses(),
-                clientConfig.getName()
+                clientConfig.getName(),
+                clientConfig.getUniqueID()
         );
         this.packetHandler.clearHandlers();
         this.packetHandler.getQueryHandler().clearQueries();
@@ -233,7 +235,7 @@ public final class ClientExecutor extends Client {
         return packetHandler;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public PacketHandler getPacketHandler() {
         return packetHandler;
@@ -263,7 +265,7 @@ public final class ClientExecutor extends Client {
         return clientExecutorConfig;
     }
 
-    @Nonnull
+    @NotNull
     public EventManager getEventManager() {
         return ExternalEventBusHandler.getInstance().getEventManager();
     }
@@ -291,7 +293,8 @@ public final class ClientExecutor extends Client {
                     clientConfig.getStartHost(),
                     clientConfig.getMaxMemory(),
                     clientConfig.getMaxProcesses(),
-                    clientConfig.getName()
+                    clientConfig.getName(),
+                    clientConfig.getUniqueID()
             );
 
             packetSender.sendPacket(new ClientPacketOutNotifyRuntimeUpdate(information));

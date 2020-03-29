@@ -1,5 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.api.common.database.basic.drivers.mysql;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.base.Conditions;
 import systems.reformcloud.reformcloud2.executor.api.common.database.Database;
 import systems.reformcloud.reformcloud2.executor.api.common.database.DatabaseReader;
@@ -10,7 +11,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.scheduler.TaskSchedu
 import systems.reformcloud.reformcloud2.executor.api.common.utility.StringUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.maps.AbsentMap;
 
-import javax.annotation.Nonnull;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -51,7 +51,7 @@ public final class MySQLDatabase extends Database<Connection> {
     private Connection connection;
 
     @Override
-    public void connect(@Nonnull String host, int port, @Nonnull String userName, @Nonnull String password, @Nonnull String table) {
+    public void connect(@NotNull String host, int port, @NotNull String userName, @NotNull String password, @NotNull String table) {
         if (!isConnected()) {
             this.host = host;
             this.port = port;
@@ -135,7 +135,7 @@ public final class MySQLDatabase extends Database<Connection> {
         return this.perTableReader.putIfAbsent(table, new SQLDatabaseReader(table, this));
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Connection get() {
         return connection;

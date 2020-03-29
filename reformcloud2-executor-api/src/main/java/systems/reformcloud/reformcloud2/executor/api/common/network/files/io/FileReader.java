@@ -1,12 +1,12 @@
 package systems.reformcloud.reformcloud2.executor.api.common.network.files.io;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 public interface FileReader {
 
-    int read(@Nonnull byte[] bytes);
+    int read(@NotNull byte[] bytes);
 
-    @Nonnull
+    @NotNull
     byte[] newByteArray();
 
 }

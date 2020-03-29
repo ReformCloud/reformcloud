@@ -1,6 +1,7 @@
 package systems.reformcloud.reformcloud2.commands.application;
 
 import com.google.gson.reflect.TypeToken;
+import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.commands.application.listener.ProcessInclusionHandler;
 import systems.reformcloud.reformcloud2.commands.application.packet.in.PacketInGetCommandsConfig;
 import systems.reformcloud.reformcloud2.commands.application.update.CommandAddonUpdater;
@@ -12,7 +13,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonCo
 import systems.reformcloud.reformcloud2.executor.api.common.network.NetworkUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.system.SystemHelper;
 
-import javax.annotation.Nullable;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;

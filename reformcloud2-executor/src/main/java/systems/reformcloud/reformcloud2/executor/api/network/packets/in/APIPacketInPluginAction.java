@@ -1,5 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.api.network.packets.in;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.handler.DefaultJsonNetworkHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
@@ -9,7 +10,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.plugins.basic.Defaul
 import systems.reformcloud.reformcloud2.executor.api.common.plugins.basic.DefaultPlugin;
 import systems.reformcloud.reformcloud2.executor.api.executor.PluginExecutor;
 
-import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 
 public final class APIPacketInPluginAction extends DefaultJsonNetworkHandler {
@@ -26,7 +26,7 @@ public final class APIPacketInPluginAction extends DefaultJsonNetworkHandler {
     }
 
     @Override
-    public void handlePacket(@Nonnull PacketSender packetSender, @Nonnull Packet packet, @Nonnull Consumer<Packet> responses) {
+    public void handlePacket(@NotNull PacketSender packetSender, @NotNull Packet packet, @NotNull Consumer<Packet> responses) {
         if (packet.content().has("installable")) {
             DefaultInstallablePlugin plugin = packet.content().get("installable", InstallablePlugin.INSTALLABLE_TYPE);
             pluginExecutor.installPlugin(plugin);

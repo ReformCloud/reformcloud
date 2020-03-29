@@ -1,6 +1,7 @@
 package systems.reformcloud.reformcloud2.signs.application;
 
 import com.google.gson.reflect.TypeToken;
+import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.application.api.Application;
 import systems.reformcloud.reformcloud2.executor.api.common.application.updater.ApplicationUpdateRepository;
@@ -19,7 +20,6 @@ import systems.reformcloud.reformcloud2.signs.util.SignSystemAdapter;
 import systems.reformcloud.reformcloud2.signs.util.sign.CloudSign;
 import systems.reformcloud.reformcloud2.signs.util.sign.config.SignConfig;
 
-import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Collections;
 

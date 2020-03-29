@@ -1,10 +1,10 @@
 package systems.reformcloud.reformcloud2.executor.api.common.network.files.io;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 public interface FileWriter {
 
-    void write(@Nonnull byte[] bytes);
+    void write(@NotNull byte[] bytes);
 
     void finish();
 }

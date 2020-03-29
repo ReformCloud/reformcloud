@@ -8,8 +8,8 @@ import com.google.gson.internal.Streams;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.MalformedJsonException;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
@@ -20,12 +20,12 @@ public final class InternalJsonParser {
         throw new UnsupportedOperationException();
     }
 
-    @Nonnull
+    @NotNull
     public static JsonElement parseString(String json) throws JsonSyntaxException {
         return parseReader(new StringReader(json));
     }
 
-    @Nonnull
+    @NotNull
     public static JsonElement parseReader(Reader reader) throws JsonSyntaxException {
         try (JsonReader jsonReader = new JsonReader(reader)) {
             JsonElement element = parseReader(jsonReader);
@@ -42,7 +42,7 @@ public final class InternalJsonParser {
         }
     }
 
-    @Nonnull
+    @NotNull
     private static JsonElement parseReader(JsonReader reader) throws JsonIOException, JsonSyntaxException {
         final boolean lenient = reader.isLenient();
         reader.setLenient(true);

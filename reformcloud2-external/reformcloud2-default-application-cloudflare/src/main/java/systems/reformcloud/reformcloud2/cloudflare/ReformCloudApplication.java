@@ -1,5 +1,6 @@
 package systems.reformcloud.reformcloud2.cloudflare;
 
+import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.cloudflare.api.CloudFlareHelper;
 import systems.reformcloud.reformcloud2.cloudflare.listener.ProcessListener;
 import systems.reformcloud.reformcloud2.cloudflare.update.CloudFlareAddonUpdater;
@@ -9,7 +10,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.application.language
 import systems.reformcloud.reformcloud2.executor.api.common.application.updater.ApplicationUpdateRepository;
 import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
 
-import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;

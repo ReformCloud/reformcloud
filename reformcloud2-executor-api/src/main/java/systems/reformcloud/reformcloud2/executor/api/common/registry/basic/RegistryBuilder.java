@@ -1,11 +1,11 @@
 package systems.reformcloud.reformcloud2.executor.api.common.registry.basic;
 
 import com.google.gson.reflect.TypeToken;
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.registry.Registry;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.system.SystemHelper;
 
-import javax.annotation.Nonnull;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -35,9 +35,9 @@ public final class RegistryBuilder {
 
         private final Path folder;
 
-        @Nonnull
+        @NotNull
         @Override
-        public <T> T createKey(@Nonnull String keyName, @Nonnull T t) {
+        public <T> T createKey(@NotNull String keyName, @NotNull T t) {
             Path target = Paths.get(folder + "/" + keyName + ".json");
             if (Files.exists(target)) {
                 return null;
@@ -50,7 +50,7 @@ public final class RegistryBuilder {
         }
 
         @Override
-        public <T> T getKey(@Nonnull String keyName) {
+        public <T> T getKey(@NotNull String keyName) {
             Path target = Paths.get(folder + "/" + keyName + ".json");
             if (Files.exists(target)) {
                 return null;
@@ -60,13 +60,13 @@ public final class RegistryBuilder {
         }
 
         @Override
-        public void deleteKey(@Nonnull String key) {
+        public void deleteKey(@NotNull String key) {
             Path target = Paths.get(folder + "/" + key + ".json");
             SystemHelper.deleteFile(target.toFile());
         }
 
         @Override
-        public <T> T updateKey(@Nonnull String key, @Nonnull T newValue) {
+        public <T> T updateKey(@NotNull String key, @NotNull T newValue) {
             Path target = Paths.get(folder + "/" + key + ".json");
             if (!Files.exists(target)) {
                 return null;
@@ -78,9 +78,9 @@ public final class RegistryBuilder {
             return newValue;
         }
 
-        @Nonnull
+        @NotNull
         @Override
-        public <T> Collection<T> readKeys(@Nonnull Function<JsonConfiguration, T> function) {
+        public <T> Collection<T> readKeys(@NotNull Function<JsonConfiguration, T> function) {
             if (!Files.exists(folder)) {
                 return Collections.emptyList();
             }

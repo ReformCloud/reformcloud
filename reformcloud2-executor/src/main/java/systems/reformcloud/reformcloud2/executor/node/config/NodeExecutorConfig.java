@@ -195,7 +195,7 @@ public class NodeExecutorConfig {
         this.localSubGroupsRegistry.deleteKey(processGroup.getName());
 
         ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcesses(processGroup.getName()).forEach(
-                e -> ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().stopProcess(e.getProcessUniqueID())
+                e -> ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().stopProcess(e.getProcessDetail().getProcessUniqueID())
         );
     }
 

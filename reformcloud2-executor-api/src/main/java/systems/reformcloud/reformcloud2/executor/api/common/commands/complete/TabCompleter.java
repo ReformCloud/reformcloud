@@ -1,8 +1,8 @@
 package systems.reformcloud.reformcloud2.executor.api.common.commands.complete;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.source.CommandSource;
 
-import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -19,8 +19,8 @@ public interface TabCompleter {
      * @param currentArg    The current arguments
      * @return The completed command arguments
      */
-    @Nonnull
-    Collection<String> complete(@Nonnull CommandSource commandSource, @Nonnull String commandLine, @Nonnull String[] currentArg);
+    @NotNull
+    Collection<String> complete(@NotNull CommandSource commandSource, @NotNull String commandLine, @NotNull String[] currentArg);
 
     /**
      * Creates a collection of strings of an array
@@ -28,8 +28,8 @@ public interface TabCompleter {
      * @param strings The array which should get converted
      * @return The created collection of the given array
      */
-    @Nonnull
-    default Collection<String> convert(@Nonnull String... strings) {
+    @NotNull
+    default Collection<String> convert(@NotNull String... strings) {
         return Arrays.asList(strings);
     }
 }

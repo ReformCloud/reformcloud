@@ -1,5 +1,6 @@
 package systems.reformcloud.reformcloud2.runner;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.runner.commands.*;
 import systems.reformcloud.reformcloud2.runner.reformscript.InterpretedReformScript;
 import systems.reformcloud.reformcloud2.runner.reformscript.ReformScriptInterpreter;
@@ -13,7 +14,6 @@ import systems.reformcloud.reformcloud2.runner.variables.EnvSetVariable;
 import systems.reformcloud.reformcloud2.runner.variables.GitCommitVariable;
 import systems.reformcloud.reformcloud2.runner.variables.SetupRequiredVariable;
 
-import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.URL;
@@ -33,7 +33,7 @@ public final class Runner {
 
     private final String[] args;
 
-    Runner(@Nonnull String[] args) {
+    Runner(@NotNull String[] args) {
         this.interpreter
                 .registerInterpreterCommand(new CheckForUpdatesCommand(this))
                 .registerInterpreterCommand(new CheckIfDevModeCommand())
@@ -81,7 +81,7 @@ public final class Runner {
         this.startApplication0(applicationFile);
     }
 
-    private void startApplication0(@Nonnull Path applicationFilePath) {
+    private void startApplication0(@NotNull Path applicationFilePath) {
         try (JarFile file = new JarFile(applicationFilePath.toFile())) {
             URLClassLoader classLoader = new RunnerClassLoader(new URL[]{applicationFilePath.toUri().toURL()});
             Thread.currentThread().setContextClassLoader(classLoader);

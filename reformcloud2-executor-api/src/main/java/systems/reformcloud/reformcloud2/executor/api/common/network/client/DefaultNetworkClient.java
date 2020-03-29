@@ -15,7 +15,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.handler.Clie
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.defaults.DefaultTask;
 
-import javax.annotation.Nonnull;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
@@ -28,7 +27,7 @@ public final class DefaultNetworkClient implements NetworkClient {
     private Channel channel;
 
     @Override
-    public boolean connect(@Nonnull String host, int port, @Nonnull Supplier<NetworkChannelReader> supplier, @NotNull ChallengeAuthHandler challengeAuthHandler) {
+    public boolean connect(@NotNull String host, int port, @NotNull Supplier<NetworkChannelReader> supplier, @NotNull ChallengeAuthHandler challengeAuthHandler) {
         final Task<Boolean> connectTask = new DefaultTask<>();
 
         try {

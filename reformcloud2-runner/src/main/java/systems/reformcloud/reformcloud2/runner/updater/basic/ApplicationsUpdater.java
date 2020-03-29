@@ -1,11 +1,11 @@
 package systems.reformcloud.reformcloud2.runner.updater.basic;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.runner.updater.Updater;
 import systems.reformcloud.reformcloud2.runner.util.JarFileDirectoryStreamFilter;
 import systems.reformcloud.reformcloud2.runner.util.KeyValueHolder;
 import systems.reformcloud.reformcloud2.runner.util.RunnerUtils;
 
-import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
@@ -30,7 +30,7 @@ public final class ApplicationsUpdater implements Updater {
      *
      * @param applicationUpdatesPath The path where the update files of the update files are located
      */
-    public ApplicationsUpdater(@Nonnull Path applicationUpdatesPath) {
+    public ApplicationsUpdater(@NotNull Path applicationUpdatesPath) {
         this.applicationUpdatesPath = applicationUpdatesPath;
         this.oldToNewUpdates = new ArrayList<>();
     }
@@ -72,7 +72,7 @@ public final class ApplicationsUpdater implements Updater {
         }
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String getName() {
         return "application";

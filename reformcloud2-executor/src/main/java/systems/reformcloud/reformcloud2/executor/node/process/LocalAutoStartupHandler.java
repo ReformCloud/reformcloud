@@ -108,7 +108,7 @@ public class LocalAutoStartupHandler extends AbsoluteThread {
 
     private List<ProcessInformation> getPreparedProcesses(String group) {
         return Streams.list(ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcesses(group),
-                e -> e.getProcessState().equals(ProcessState.PREPARED)
+                e -> e.getProcessDetail().getProcessState().equals(ProcessState.PREPARED)
         );
     }
 }

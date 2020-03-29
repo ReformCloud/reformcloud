@@ -3,6 +3,7 @@ package systems.reformcloud.reformcloud2.commands.plugin.bungeecord;
 import com.google.gson.reflect.TypeToken;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.plugin.Plugin;
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.commands.config.CommandsConfig;
 import systems.reformcloud.reformcloud2.commands.plugin.CommandConfigHandler;
 import systems.reformcloud.reformcloud2.commands.plugin.bungeecord.commands.CommandLeave;
@@ -12,8 +13,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.network.NetworkUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
-
-import javax.annotation.Nonnull;
 
 public class BungeecordPlugin extends Plugin {
 
@@ -55,7 +54,7 @@ public class BungeecordPlugin extends Plugin {
         private CommandReformCloud reformCloud;
 
         @Override
-        public void handleCommandConfigRelease(@Nonnull CommandsConfig commandsConfig) {
+        public void handleCommandConfigRelease(@NotNull CommandsConfig commandsConfig) {
             unregisterAllCommands();
             if (commandsConfig.isLeaveCommandEnabled() && commandsConfig.getLeaveCommands().size() > 0) {
                 String name = commandsConfig.getLeaveCommands().get(0);

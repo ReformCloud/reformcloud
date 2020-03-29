@@ -1,10 +1,9 @@
 package systems.reformcloud.reformcloud2.web.tokens;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 public final class TokenDatabase {
 
@@ -32,7 +31,7 @@ public final class TokenDatabase {
     }
 
     @Nullable
-    public static String trySetup(@Nonnull byte[] body) {
+    public static String trySetup(@NotNull byte[] body) {
         if (isSetupDone() || configuration != null) {
             return null;
         }

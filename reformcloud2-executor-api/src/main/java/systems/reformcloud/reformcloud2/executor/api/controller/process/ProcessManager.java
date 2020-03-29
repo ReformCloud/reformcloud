@@ -1,11 +1,11 @@
 package systems.reformcloud.reformcloud2.executor.api.controller.process;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.process.api.ProcessConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.update.Updateable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.List;
 import java.util.UUID;
 
@@ -79,7 +79,7 @@ public interface ProcessManager extends Iterable<ProcessInformation>, Updateable
      * @return The process information about the created process
      */
     @Nullable
-    ProcessInformation startProcess(@Nonnull ProcessConfiguration processConfiguration);
+    ProcessInformation startProcess(@NotNull ProcessConfiguration processConfiguration);
 
     /**
      * Starts a prepared process
@@ -87,8 +87,8 @@ public interface ProcessManager extends Iterable<ProcessInformation>, Updateable
      * @param processInformation The information of the prepared process
      * @return The process information after the start call
      */
-    @Nonnull
-    ProcessInformation startProcess(@Nonnull ProcessInformation processInformation);
+    @NotNull
+    ProcessInformation startProcess(@NotNull ProcessInformation processInformation);
 
     /**
      * Prepares a process with the given template name and the json configuration as extra data for the process object
@@ -99,7 +99,7 @@ public interface ProcessManager extends Iterable<ProcessInformation>, Updateable
      * @see ProcessInformation
      */
     @Nullable
-    ProcessInformation prepareProcess(@Nonnull ProcessConfiguration processConfiguration);
+    ProcessInformation prepareProcess(@NotNull ProcessConfiguration processConfiguration);
 
     /**
      * Stops a specific process and returns the last known process information
@@ -148,7 +148,7 @@ public interface ProcessManager extends Iterable<ProcessInformation>, Updateable
      * <p>
      *
      * @param uniqueID The uniqueID of the process information which will be used to identify the process
-     * @see ProcessInformation#getProcessUniqueID()
+     * @see ProcessInformation#getProcessDetail().getProcessUniqueID()
      */
     void unregisterProcess(UUID uniqueID);
 }

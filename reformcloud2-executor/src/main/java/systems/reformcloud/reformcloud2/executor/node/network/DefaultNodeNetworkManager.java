@@ -84,7 +84,7 @@ public class DefaultNodeNetworkManager implements NodeNetworkManager {
         ProcessInformation matching = PreparedProcessFilter.findMayMatchingProcess(
                 configuration, this.getPreparedProcesses(configuration.getBase().getName())
         );
-        if (matching != null && matching.getProcessState().equals(ProcessState.PREPARED)) {
+        if (matching != null && matching.getProcessDetail().getProcessState().equals(ProcessState.PREPARED)) {
             System.out.println(LanguageManager.get(
                     "process-start-already-prepared-process",
                     configuration.getBase().getName(),
@@ -100,21 +100,21 @@ public class DefaultNodeNetworkManager implements NodeNetworkManager {
     @Override
     public synchronized ProcessInformation startProcess(ProcessInformation processInformation) {
         if (getCluster().isSelfNodeHead()) {
-            DefaultChannelManager.INSTANCE.get(processInformation.getParent()).ifPresent(
+            DefaultChannelManager.INSTANCE.get(processInformation.getProcessDetail().getParentName()).ifPresent(
                     e -> e.sendPacket(new NodePacketOutStartPreparedProcess(processInformation))
             ).ifEmpty(e -> {
                 if (processInformation.getNodeUniqueID() != null
                         && processInformation.getNodeUniqueID().equals(cluster.getSelfNode().getNodeUniqueID())
-                        && processInformation.getProcessState().equals(ProcessState.PREPARED)) {
+                        && processInformation.getProcessDetail().getProcessState().equals(ProcessState.PREPARED)) {
                     LocalProcessManager.getNodeProcesses()
                             .stream()
-                            .filter(p -> p.getProcessInformation().getProcessUniqueID().equals(processInformation.getProcessUniqueID()))
+                            .filter(p -> p.getProcessInformation().getProcessDetail().getProcessUniqueID().equals(processInformation.getProcessDetail().getProcessUniqueID()))
                             .findFirst()
                             .ifPresent(LocalProcessQueue::queue);
                 }
             });
 
-            processInformation.setProcessState(ProcessState.READY_TO_START);
+            processInformation.getProcessDetail().setProcessState(ProcessState.READY_TO_START);
             ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(processInformation);
         } else {
             DefaultChannelManager.INSTANCE.get(this.cluster.getHeadNode().getName()).ifPresent(
@@ -208,7 +208,7 @@ public class DefaultNodeNetworkManager implements NodeNetworkManager {
             return;
         }
 
-        stopProcess(information.getProcessUniqueID());
+        stopProcess(information.getProcessDetail().getProcessUniqueID());
     }
 
     @Override
@@ -223,7 +223,7 @@ public class DefaultNodeNetworkManager implements NodeNetworkManager {
             return;
         }
 
-        DefaultChannelManager.INSTANCE.get(information.getParent()).ifPresent(e -> e.sendPacket(new NodePacketOutStopProcess(uuid)));
+        DefaultChannelManager.INSTANCE.get(information.getProcessDetail().getParentName()).ifPresent(e -> e.sendPacket(new NodePacketOutStopProcess(uuid)));
     }
 
     @Override
@@ -233,7 +233,7 @@ public class DefaultNodeNetworkManager implements NodeNetworkManager {
 
     private List<ProcessInformation> getPreparedProcesses(String group) {
         return Streams.list(ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcesses(group),
-                e -> e.getProcessState().equals(ProcessState.PREPARED)
+                e -> e.getProcessDetail().getProcessState().equals(ProcessState.PREPARED)
         );
     }
 }

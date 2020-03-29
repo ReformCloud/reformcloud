@@ -1,11 +1,11 @@
 package systems.reformcloud.reformcloud2.executor.api.common.network.files;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.network.NetworkUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.util.UUID;
@@ -38,13 +38,13 @@ public class ChunkedFilePacket implements Packet {
         return null;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public JsonConfiguration content() {
         return new JsonConfiguration();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public byte[] extra() {
         return new byte[0];
@@ -77,7 +77,7 @@ public class ChunkedFilePacket implements Packet {
     }
 
     @Override
-    public void write(@Nonnull ObjectOutputStream objectOutputStream) throws IOException {
+    public void write(@NotNull ObjectOutputStream objectOutputStream) throws IOException {
         objectOutputStream.writeUTF(uniqueID.toString());
         objectOutputStream.writeUTF(path);
         objectOutputStream.writeInt(readLength);

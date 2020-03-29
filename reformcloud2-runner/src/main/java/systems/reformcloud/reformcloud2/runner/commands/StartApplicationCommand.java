@@ -1,15 +1,15 @@
 package systems.reformcloud.reformcloud2.runner.commands;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.runner.Runner;
 import systems.reformcloud.reformcloud2.runner.reformscript.InterpretedReformScript;
 import systems.reformcloud.reformcloud2.runner.reformscript.utils.InterpreterCommand;
 
-import javax.annotation.Nonnull;
 import java.util.Collection;
 
 public final class StartApplicationCommand extends InterpreterCommand {
 
-    public StartApplicationCommand(@Nonnull Runner runner) {
+    public StartApplicationCommand(@NotNull Runner runner) {
         super("start_application");
         this.runner = runner;
     }
@@ -17,7 +17,7 @@ public final class StartApplicationCommand extends InterpreterCommand {
     private final Runner runner;
 
     @Override
-    public void execute(@Nonnull String cursorLine, @Nonnull InterpretedReformScript script, @Nonnull Collection<String> allLines) {
+    public void execute(@NotNull String cursorLine, @NotNull InterpretedReformScript script, @NotNull Collection<String> allLines) {
         this.runner.startApplication();
     }
 }

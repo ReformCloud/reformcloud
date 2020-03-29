@@ -1,10 +1,9 @@
 package systems.reformcloud.reformcloud2.executor.api.common.logger;
 
+import org.jetbrains.annotations.NotNull;
 import org.jline.reader.LineReader;
 import org.jline.utils.InfoCmp;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.logging.Logger;
@@ -18,7 +17,7 @@ public abstract class LoggerBase extends Logger implements AutoCloseable {
     /**
      * @return The current console reader of the cloud
      */
-    @Nonnull
+    @NotNull
     public abstract LineReader getLineReader();
 
     /**
@@ -32,14 +31,14 @@ public abstract class LoggerBase extends Logger implements AutoCloseable {
     /**
      * @return Reads the current line of the console
      */
-    @Nonnull
+    @NotNull
     public abstract String readLine();
 
     /**
      * @return Reads the current line without a prompt
      * @see #readLine()
      */
-    @Nonnull
+    @NotNull
     public abstract String readLineNoPrompt();
 
     /**
@@ -49,10 +48,10 @@ public abstract class LoggerBase extends Logger implements AutoCloseable {
      * @param invalidInputMessage The runnable if the input is invalid it get called
      * @return The string which was given in the console
      */
-    @Nonnull
+    @NotNull
     public abstract String readString(
-            @Nonnull Predicate<String> predicate,
-            @Nonnull Runnable invalidInputMessage
+            @NotNull Predicate<String> predicate,
+            @NotNull Runnable invalidInputMessage
     );
 
     /**
@@ -63,11 +62,10 @@ public abstract class LoggerBase extends Logger implements AutoCloseable {
      * @param <T>                 The type parameter of the current needed object
      * @return The result of {@link Function#apply(Object)} to the given function
      */
-    @Nonnull
-    @CheckReturnValue
+    @NotNull
     public abstract <T> T read(
-            @Nonnull Function<String, T> function,
-            @Nonnull Runnable invalidInputMessage
+            @NotNull Function<String, T> function,
+            @NotNull Runnable invalidInputMessage
     );
 
     /**
@@ -75,7 +73,7 @@ public abstract class LoggerBase extends Logger implements AutoCloseable {
      *
      * @param message The message which should be logged into the console
      */
-    public abstract void log(@Nonnull String message);
+    public abstract void log(@NotNull String message);
 
     /**
      * Logs a message to the console, also available with {@link System#out};
@@ -83,7 +81,7 @@ public abstract class LoggerBase extends Logger implements AutoCloseable {
      *
      * @param message The message which should be logged into the console
      */
-    public abstract void logRaw(@Nonnull String message);
+    public abstract void logRaw(@NotNull String message);
 
     /**
      * Adds a log line handler
@@ -91,8 +89,8 @@ public abstract class LoggerBase extends Logger implements AutoCloseable {
      * @param handler The handler which should get registered
      * @return The current instance of this class
      */
-    @Nonnull
-    public abstract LoggerBase addLogLineHandler(@Nonnull LoggerLineHandler handler);
+    @NotNull
+    public abstract LoggerBase addLogLineHandler(@NotNull LoggerLineHandler handler);
 
     /**
      * Removes a specific log line handler
@@ -100,14 +98,14 @@ public abstract class LoggerBase extends Logger implements AutoCloseable {
      * @param handler The handler which should get unregistered
      * @return If the log line handler was found and unregistered
      */
-    public abstract boolean removeLogLineHandler(@Nonnull LoggerLineHandler handler);
+    public abstract boolean removeLogLineHandler(@NotNull LoggerLineHandler handler);
 
     /**
      * Get the debugger of the cloud
      *
      * @return The current {@link Debugger} of the cloud
      */
-    @Nonnull
+    @NotNull
     public abstract Debugger getDebugger();
 
     /**

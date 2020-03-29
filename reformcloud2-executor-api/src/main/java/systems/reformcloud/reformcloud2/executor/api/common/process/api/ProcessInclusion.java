@@ -1,10 +1,10 @@
 package systems.reformcloud.reformcloud2.executor.api.common.process.api;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 public class ProcessInclusion {
 
-    public ProcessInclusion(@Nonnull String url, @Nonnull String name) {
+    public ProcessInclusion(@NotNull String url, @NotNull String name) {
         this.url = url;
         this.name = name;
     }
@@ -13,12 +13,12 @@ public class ProcessInclusion {
 
     private final String name;
 
-    @Nonnull
+    @NotNull
     public String getUrl() {
         return url;
     }
 
-    @Nonnull
+    @NotNull
     public String getName() {
         return name;
     }

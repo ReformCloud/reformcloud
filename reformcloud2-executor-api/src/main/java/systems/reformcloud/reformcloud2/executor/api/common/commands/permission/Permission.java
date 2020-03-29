@@ -1,18 +1,18 @@
 package systems.reformcloud.reformcloud2.executor.api.common.commands.permission;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 public interface Permission {
 
     /**
      * @return The plain permission
      */
-    @Nonnull
+    @NotNull
     String permission();
 
     /**
      * @return The default {@link PermissionResult}
      */
-    @Nonnull
+    @NotNull
     PermissionResult defaultResult();
 }

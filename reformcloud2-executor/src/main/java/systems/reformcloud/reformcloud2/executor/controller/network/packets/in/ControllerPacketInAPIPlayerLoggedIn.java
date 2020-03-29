@@ -1,5 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.controller.network.packets.in;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.PlayerLoginEvent;
 import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
@@ -11,7 +12,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packe
 import systems.reformcloud.reformcloud2.executor.controller.ControllerExecutor;
 import systems.reformcloud.reformcloud2.executor.controller.network.packets.out.event.ControllerEventPlayerConnected;
 
-import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 
 public final class ControllerPacketInAPIPlayerLoggedIn extends DefaultJsonNetworkHandler {
@@ -22,7 +22,7 @@ public final class ControllerPacketInAPIPlayerLoggedIn extends DefaultJsonNetwor
     }
 
     @Override
-    public void handlePacket(@Nonnull PacketSender packetSender, @Nonnull Packet packet, @Nonnull Consumer<Packet> responses) {
+    public void handlePacket(@NotNull PacketSender packetSender, @NotNull Packet packet, @NotNull Consumer<Packet> responses) {
         String name = packet.content().getString("name");
         System.out.println(LanguageManager.get(
                 "player-logged-in",

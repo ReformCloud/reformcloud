@@ -1,10 +1,10 @@
 package systems.reformcloud.reformcloud2.executor.api.common.network.packet.query;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.UUID;
 
 public interface QueryHandler {
@@ -34,7 +34,7 @@ public interface QueryHandler {
      * @param packet The packet itself which will be converted to q query packet
      * @return The query request which got created
      */
-    @Nonnull
+    @NotNull
     QueryRequest<Packet> sendQueryAsync(PacketSender sender, Packet packet);
 
     /**
@@ -44,7 +44,7 @@ public interface QueryHandler {
      * @param uuid   The uuid of the packet which should be used
      * @return The packet which got converted
      */
-    @Nonnull
+    @NotNull
     Packet convertToQuery(Packet packet, UUID uuid);
 
     /**

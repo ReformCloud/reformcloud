@@ -1,9 +1,9 @@
 package systems.reformcloud.reformcloud2.runner.updater.basic;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.runner.updater.Updater;
 import systems.reformcloud.reformcloud2.runner.util.RunnerUtils;
 
-import javax.annotation.Nonnull;
 import java.io.File;
 import java.nio.file.Files;
 import java.util.Properties;
@@ -15,7 +15,7 @@ public final class CloudVersionUpdater implements Updater {
      *
      * @param globalReformScriptFile The location of the reform script
      */
-    public CloudVersionUpdater(@Nonnull File globalReformScriptFile) {
+    public CloudVersionUpdater(@NotNull File globalReformScriptFile) {
         this.globalReformScriptFile = globalReformScriptFile;
     }
 
@@ -53,13 +53,13 @@ public final class CloudVersionUpdater implements Updater {
         }
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String getName() {
         return "cloud";
     }
 
-    private void rewriteGlobalFile(@Nonnull String currentVersion) {
+    private void rewriteGlobalFile(@NotNull String currentVersion) {
         System.setProperty("reformcloud.runner.version", currentVersion);
 
         RunnerUtils.rewriteFile(this.globalReformScriptFile.toPath(), s -> {

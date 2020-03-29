@@ -1,6 +1,7 @@
 package systems.reformcloud.reformcloud2.executor.api.common.database.basic.drivers.file;
 
 import de.derklaro.projects.deer.api.provider.DatabaseProvider;
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.base.Conditions;
 import systems.reformcloud.reformcloud2.executor.api.common.database.Database;
 import systems.reformcloud.reformcloud2.executor.api.common.database.DatabaseReader;
@@ -9,7 +10,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.dependency.repo.Defa
 import systems.reformcloud.reformcloud2.executor.api.common.utility.StringUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.maps.AbsentMap;
 
-import javax.annotation.Nonnull;
 import java.io.File;
 import java.net.URL;
 import java.nio.file.Path;
@@ -33,7 +33,7 @@ public final class FileDatabase extends Database<Path> {
     }
 
     @Override
-    public void connect(@Nonnull String host, int port, @Nonnull String userName, @Nonnull String password, @Nonnull String table) {
+    public void connect(@NotNull String host, int port, @NotNull String userName, @NotNull String password, @NotNull String table) {
         this.table = "reformcloud/.database/" + table;
     }
 
@@ -68,7 +68,7 @@ public final class FileDatabase extends Database<Path> {
         return perTableReader.putIfAbsent(table, new FileDatabaseReader(this.table, table));
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Path get() {
         return Paths.get(table);

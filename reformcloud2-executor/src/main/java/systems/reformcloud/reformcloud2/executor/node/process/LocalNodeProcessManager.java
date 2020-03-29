@@ -1,5 +1,7 @@
 package systems.reformcloud.reformcloud2.executor.node.process;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Template;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
@@ -7,9 +9,8 @@ import systems.reformcloud.reformcloud2.executor.api.common.node.NodeInformation
 import systems.reformcloud.reformcloud2.executor.api.common.node.NodeProcess;
 import systems.reformcloud.reformcloud2.executor.api.common.process.NetworkInfo;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
-import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessRuntimeInformation;
-import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState;
 import systems.reformcloud.reformcloud2.executor.api.common.process.api.ProcessConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.common.process.detail.ProcessDetail;
 import systems.reformcloud.reformcloud2.executor.api.common.process.running.RunningProcess;
 import systems.reformcloud.reformcloud2.executor.api.common.process.util.MemoryCalculator;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.PortUtil;
@@ -25,8 +26,6 @@ import systems.reformcloud.reformcloud2.executor.node.process.manager.LocalProce
 import systems.reformcloud.reformcloud2.executor.node.process.startup.LocalProcessQueue;
 import systems.reformcloud.reformcloud2.executor.node.util.ProcessCopyOnWriteArrayList;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -36,31 +35,35 @@ public class LocalNodeProcessManager implements NodeProcessManager {
 
     @Nullable
     @Override
-    public ProcessInformation getLocalCloudProcess(@Nonnull String name) {
-        return Streams.filterToReference(information, e -> e.getName().equals(name) && isLocal(e.getProcessUniqueID())).orNothing();
+    public ProcessInformation getLocalCloudProcess(@NotNull String name) {
+        return Streams.filterToReference(information, e -> e.getName().equals(name) && isLocal(e.getProcessDetail().getProcessUniqueID())).orNothing();
     }
 
     @Nullable
     @Override
-    public ProcessInformation getLocalCloudProcess(@Nonnull UUID uuid) {
-        return Streams.filterToReference(information, e -> e.getProcessUniqueID().equals(uuid) && isLocal(e.getProcessUniqueID())).orNothing();
+    public ProcessInformation getLocalCloudProcess(@NotNull UUID uuid) {
+        return Streams.filterToReference(information, e -> e.getProcessDetail().getProcessUniqueID().equals(uuid) && isLocal(e.getProcessDetail().getProcessUniqueID())).orNothing();
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public synchronized ProcessInformation prepareLocalProcess(@Nonnull ProcessConfiguration configuration,
-                                                               @Nonnull Template template, boolean start) {
+    public synchronized ProcessInformation prepareLocalProcess(@NotNull ProcessConfiguration configuration,
+                                                               @NotNull Template template, boolean start) {
         return this.prepareLocalProcess(this.constructInfo(
                 configuration, template, NodeExecutor.getInstance().getNodeNetworkManager().getCluster().getSelfNode()
         ), start);
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public ProcessInformation prepareLocalProcess(@Nonnull ProcessInformation processInformation, boolean start) {
+    public ProcessInformation prepareLocalProcess(@NotNull ProcessInformation processInformation, boolean start) {
+        processInformation.toWrapped().acceptAndUpdate(
+                e -> e.getNetworkInfo().setHost(NodeExecutor.getInstance().getNodeConfig().getStartHost())
+        );
+
         this.handleProcessStart(processInformation);
         NodeInformation information = NodeExecutor.getInstance().getNodeNetworkManager().getCluster().getSelfNode();
-        information.addUsedMemory(processInformation.getTemplate().getRuntimeConfiguration().getMaxMemory());
+        information.addUsedMemory(processInformation.getProcessDetail().getMaxMemory());
         NodeExecutor.getInstance().getClusterSyncManager().syncSelfInformation();
         if (start) {
             LocalProcessQueue.queue(processInformation);
@@ -74,7 +77,7 @@ public class LocalNodeProcessManager implements NodeProcessManager {
 
     @Nullable
     @Override
-    public ProcessInformation stopLocalProcess(@Nonnull String name) {
+    public ProcessInformation stopLocalProcess(@NotNull String name) {
         List<RunningProcess> processes = LocalProcessManager.getNodeProcesses()
                 .stream()
                 .filter(e -> e.getProcessInformation().getName().equals(name))
@@ -89,10 +92,10 @@ public class LocalNodeProcessManager implements NodeProcessManager {
 
     @Nullable
     @Override
-    public ProcessInformation stopLocalProcess(@Nonnull UUID uuid) {
+    public ProcessInformation stopLocalProcess(@NotNull UUID uuid) {
         List<RunningProcess> processes = LocalProcessManager.getNodeProcesses()
                 .stream()
-                .filter(e -> e.getProcessInformation().getProcessUniqueID().equals(uuid))
+                .filter(e -> e.getProcessInformation().getProcessDetail().getProcessUniqueID().equals(uuid))
                 .collect(Collectors.toList());
         if (processes.isEmpty()) {
             return null;
@@ -102,10 +105,10 @@ public class LocalNodeProcessManager implements NodeProcessManager {
         return processes.get(0).getProcessInformation();
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public synchronized ProcessInformation queueProcess(@Nonnull ProcessConfiguration configuration,
-                                                        @Nonnull Template template, @Nonnull NodeInformation node,
+    public synchronized ProcessInformation queueProcess(@NotNull ProcessConfiguration configuration,
+                                                        @NotNull Template template, @NotNull NodeInformation node,
                                                         boolean start) {
         ProcessInformation processInformation = constructInfo(configuration, template, node);
         this.handleProcessStart(processInformation);
@@ -117,41 +120,41 @@ public class LocalNodeProcessManager implements NodeProcessManager {
     }
 
     @Override
-    public void registerLocalProcess(@Nonnull RunningProcess process) {
+    public void registerLocalProcess(@NotNull RunningProcess process) {
         this.information.add(process.getProcessInformation());
     }
 
     @Override
-    public void unregisterLocalProcess(@Nonnull UUID uniqueID) {
-        Streams.filterToReference(information, e -> e.getProcessUniqueID().equals(uniqueID)).ifPresent(information::remove);
+    public void unregisterLocalProcess(@NotNull UUID uniqueID) {
+        Streams.filterToReference(information, e -> e.getProcessDetail().getProcessUniqueID().equals(uniqueID)).ifPresent(information::remove);
     }
 
     @Override
-    public void handleLocalProcessStart(@Nonnull ProcessInformation processInformation) {
+    public void handleLocalProcessStart(@NotNull ProcessInformation processInformation) {
         handleProcessStart(processInformation);
         NodeInformation information = NodeExecutor.getInstance().getNodeNetworkManager().getCluster().getSelfNode();
         information.getStartedProcesses().add(new NodeProcess(
                 processInformation.getProcessGroup().getName(),
                 processInformation.getName(),
-                processInformation.getProcessUniqueID()
+                processInformation.getProcessDetail().getProcessUniqueID()
         ));
         NodeExecutor.getInstance().getClusterSyncManager().syncSelfInformation();
     }
 
     @Override
-    public void handleLocalProcessStop(@Nonnull ProcessInformation processInformation) {
+    public void handleLocalProcessStop(@NotNull ProcessInformation processInformation) {
         handleProcessStop(processInformation);
         NodeInformation information = NodeExecutor.getInstance().getNodeNetworkManager().getCluster().getSelfNode();
-        information.removeUsedMemory(processInformation.getTemplate().getRuntimeConfiguration().getMaxMemory());
-        Streams.filterToReference(information.getStartedProcesses(), e -> e.getUniqueID().equals(processInformation.getProcessUniqueID()))
+        information.removeUsedMemory(processInformation.getProcessDetail().getMaxMemory());
+        Streams.filterToReference(information.getStartedProcesses(), e -> e.getUniqueID().equals(processInformation.getProcessDetail().getProcessUniqueID()))
                 .ifPresent(information.getStartedProcesses()::remove);
         NodeExecutor.getInstance().getClusterSyncManager().syncSelfInformation();
     }
 
     @Override
-    public void handleProcessStart(@Nonnull ProcessInformation processInformation) {
+    public void handleProcessStart(@NotNull ProcessInformation processInformation) {
         ProcessInformation information = Streams.filterToReference(this.information,
-                e -> e.getProcessUniqueID().equals(processInformation.getProcessUniqueID())).orNothing();
+                e -> e.getProcessDetail().getProcessUniqueID().equals(processInformation.getProcessDetail().getProcessUniqueID())).orNothing();
         if (information == null) {
             this.information.add(processInformation);
             return;
@@ -162,15 +165,15 @@ public class LocalNodeProcessManager implements NodeProcessManager {
     }
 
     @Override
-    public void handleProcessUpdate(@Nonnull ProcessInformation processInformation) {
-        Streams.filterToReference(this.information, e -> e.getProcessUniqueID().equals(processInformation.getProcessUniqueID())).ifPresent(e -> {
+    public void handleProcessUpdate(@NotNull ProcessInformation processInformation) {
+        Streams.filterToReference(this.information, e -> e.getProcessDetail().getProcessUniqueID().equals(processInformation.getProcessDetail().getProcessUniqueID())).ifPresent(e -> {
             this.information.remove(e);
             this.information.add(processInformation);
         });
     }
 
     @Override
-    public void handleProcessConnection(@Nonnull ProcessInformation processInformation) {
+    public void handleProcessConnection(@NotNull ProcessInformation processInformation) {
         Task.EXECUTOR.execute(() -> {
             while (!DefaultChannelManager.INSTANCE.get(processInformation.getName()).isPresent()) {
                 AbsoluteThread.sleep(5);
@@ -181,12 +184,12 @@ public class LocalNodeProcessManager implements NodeProcessManager {
     }
 
     @Override
-    public void handleProcessStop(@Nonnull ProcessInformation processInformation) {
-        Streams.filterToReference(information, e -> e.getProcessUniqueID().equals(processInformation.getProcessUniqueID())).ifPresent(information::remove);
+    public void handleProcessStop(@NotNull ProcessInformation processInformation) {
+        Streams.filterToReference(information, e -> e.getProcessDetail().getProcessUniqueID().equals(processInformation.getProcessDetail().getProcessUniqueID())).ifPresent(information::remove);
     }
 
     @Override
-    public void handleProcessDisconnect(@Nonnull String name) {
+    public void handleProcessDisconnect(@NotNull String name) {
         ProcessInformation information = getLocalCloudProcess(name);
         if (information == null) {
             return;
@@ -197,32 +200,32 @@ public class LocalNodeProcessManager implements NodeProcessManager {
     }
 
     @Override
-    public boolean isLocal(@Nonnull String name) {
+    public boolean isLocal(@NotNull String name) {
         return Streams.filterToReference(information, e -> e.getName().equals(name)
                 && e.getNodeUniqueID().equals(NodeExecutor.getInstance().getNodeNetworkManager().getCluster().getSelfNode().getNodeUniqueID()))
                 .isPresent();
     }
 
     @Override
-    public boolean isLocal(@Nonnull UUID uniqueID) {
-        return Streams.filterToReference(information, e -> e.getProcessUniqueID().equals(uniqueID)
+    public boolean isLocal(@NotNull UUID uniqueID) {
+        return Streams.filterToReference(information, e -> e.getProcessDetail().getProcessUniqueID().equals(uniqueID)
                 && e.getNodeUniqueID().equals(NodeExecutor.getInstance().getNodeNetworkManager().getCluster().getSelfNode().getNodeUniqueID()))
                 .isPresent();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Collection<ProcessInformation> getClusterProcesses() {
         return information;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public Collection<ProcessInformation> getClusterProcesses(@Nonnull String group) {
+    public Collection<ProcessInformation> getClusterProcesses(@NotNull String group) {
         return Streams.allOf(information, e -> e.getProcessGroup().getName().equals(group));
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Collection<ProcessInformation> getLocalProcesses() {
         return Streams.allOf(getClusterProcesses(), e -> e.getNodeUniqueID().equals(
@@ -232,31 +235,31 @@ public class LocalNodeProcessManager implements NodeProcessManager {
 
     @Nullable
     @Override
-    public ProcessInformation getClusterProcess(@Nonnull String name) {
+    public ProcessInformation getClusterProcess(@NotNull String name) {
         return Streams.filterToReference(information, e -> e.getName().equals(name)).orNothing();
     }
 
     @Nullable
     @Override
-    public ProcessInformation getClusterProcess(@Nonnull UUID uniqueID) {
-        return Streams.filterToReference(information, e -> e.getProcessUniqueID().equals(uniqueID)).orNothing();
+    public ProcessInformation getClusterProcess(@NotNull UUID uniqueID) {
+        return Streams.filterToReference(information, e -> e.getProcessDetail().getProcessUniqueID().equals(uniqueID)).orNothing();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Iterator<ProcessInformation> iterator() {
         return Streams.newList(information).iterator();
     }
 
     @Override
-    public void update(@Nonnull ProcessInformation processInformation) {
+    public void update(@NotNull ProcessInformation processInformation) {
         handleProcessUpdate(processInformation);
         NodeExecutor.getInstance().getClusterSyncManager().syncProcessUpdate(processInformation);
     }
 
     private void removeProcess(ProcessInformation information) {
         NodeProcess nodeProcess = Streams.filter(NodeExecutor.getInstance().getNodeNetworkManager()
-                .getCluster().getSelfNode().getStartedProcesses(), e -> e.getUniqueID().equals(information.getProcessUniqueID()));
+                .getCluster().getSelfNode().getStartedProcesses(), e -> e.getUniqueID().equals(information.getProcessDetail().getProcessUniqueID()));
         if (nodeProcess == null) {
             return;
         }
@@ -307,7 +310,7 @@ public class LocalNodeProcessManager implements NodeProcessManager {
         }
 
         for (ProcessInformation allProcess : this.getClusterProcesses()) {
-            if (allProcess.getId() == id) {
+            if (allProcess.getProcessDetail().getId() == id) {
                 id = nextID(configuration.getBase());
             }
 
@@ -315,37 +318,33 @@ public class LocalNodeProcessManager implements NodeProcessManager {
                 port = nextPort(configuration.getBase().getStartupConfiguration().getStartPort());
             }
 
-            if (allProcess.getProcessUniqueID().equals(uniqueID)) {
+            if (allProcess.getProcessDetail().getProcessUniqueID().equals(uniqueID)) {
                 uniqueID = UUID.randomUUID();
             }
 
-            if (allProcess.getDisplayName().equals(displayName)) {
+            if (allProcess.getProcessDetail().getDisplayName().equals(displayName)) {
                 displayName += UUID.randomUUID().toString().split("-")[0];
             }
         }
 
         ProcessInformation processInformation = new ProcessInformation(
-                configuration.getBase().getName() + template.getServerNameSplitter() + id,
-                displayName,
-                node.getName(),
-                node.getNodeUniqueID(),
-                uniqueID,
-                configuration.getMaxMemory() == null
-                        ? MemoryCalculator.calcMemory(configuration.getBase().getName(), template)
-                        : configuration.getMaxMemory(),
-                id,
-                ProcessState.CREATED,
+                new ProcessDetail(
+                        uniqueID,
+                        node.getNodeUniqueID(),
+                        node.getName(),
+                        configuration.getBase().getName() + template.getServerNameSplitter() + id,
+                        displayName,
+                        id,
+                        template,
+                        configuration.getMaxMemory() == null
+                                ? MemoryCalculator.calcMemory(configuration.getBase().getName(), template)
+                                : configuration.getMaxMemory()
+                ),
                 new NetworkInfo(
                         NodeExecutor.getInstance().getNodeConfig().getStartHost(),
                         port,
                         false
-                ), configuration.getBase(),
-                template,
-                ProcessRuntimeInformation.empty(),
-                new ArrayList<>(),
-                configuration.getExtra(),
-                configuration.getMaxPlayers(),
-                configuration.getInclusions()
+                ), configuration.getBase(), configuration.getExtra(), configuration.getInclusions()
         );
         return processInformation.updateMaxPlayers(null);
     }

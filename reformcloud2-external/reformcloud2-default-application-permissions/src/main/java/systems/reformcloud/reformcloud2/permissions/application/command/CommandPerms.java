@@ -1,5 +1,6 @@
 package systems.reformcloud.reformcloud2.permissions.application.command;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorType;
 import systems.reformcloud.reformcloud2.executor.api.common.CommonHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
@@ -20,7 +21,6 @@ import systems.reformcloud.reformcloud2.permissions.util.unit.InternalTimeUnit;
 import systems.reformcloud.reformcloud2.permissions.util.user.PermissionUser;
 import systems.reformcloud.reformcloud2.permissions.util.uuid.UUIDFetcher;
 
-import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -62,7 +62,7 @@ public class CommandPerms extends GlobalCommand {
     }
 
     @Override
-    public boolean handleCommand(@Nonnull CommandSource commandSource, @Nonnull String[] strings) {
+    public boolean handleCommand(@NotNull CommandSource commandSource, @NotNull String[] strings) {
 
         if (strings.length == 1 && strings[0].equalsIgnoreCase("groups")) {
             DatabaseReader permissionTableReader = getDatabase().createForTable(DefaultPermissionUtil.PERMISSION_GROUP_TABLE);
@@ -795,7 +795,7 @@ public class CommandPerms extends GlobalCommand {
         return true;
     }
 
-    private static TimeUnit parseUnitFromString(@Nonnull String s) {
+    private static TimeUnit parseUnitFromString(@NotNull String s) {
         switch (s.toLowerCase()) {
             case "s":
                 return TimeUnit.SECONDS;

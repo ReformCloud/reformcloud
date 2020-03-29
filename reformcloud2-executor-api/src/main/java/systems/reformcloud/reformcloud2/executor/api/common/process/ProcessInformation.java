@@ -1,264 +1,284 @@
 package systems.reformcloud.reformcloud2.executor.api.common.process;
 
 import com.google.gson.reflect.TypeToken;
+import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Template;
 import systems.reformcloud.reformcloud2.executor.api.common.plugins.basic.DefaultPlugin;
 import systems.reformcloud.reformcloud2.executor.api.common.process.api.ProcessInclusion;
+import systems.reformcloud.reformcloud2.executor.api.common.process.detail.ProcessDetail;
+import systems.reformcloud.reformcloud2.executor.api.common.process.detail.ProcessPlayerManager;
+import systems.reformcloud.reformcloud2.executor.api.common.process.detail.ProcessUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.process.event.ProcessInformationConfigureEvent;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.annotiations.ReplacedWith;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.clone.Clone;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.name.Nameable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public final class ProcessInformation implements Nameable, Clone<ProcessInformation> {
 
     public static final TypeToken<ProcessInformation> TYPE = new TypeToken<ProcessInformation>() {
     };
 
+    @ApiStatus.Internal
     public ProcessInformation(
-            @Nonnull String processName,
-            @Nonnull String displayName,
-            @Nonnull String parent,
-            @Nullable UUID nodeUniqueID,
-            @Nonnull UUID processUniqueID,
-            @Nullable Integer maxMemory,
-            int id,
-            @Nonnull ProcessState processState,
-            @Nonnull NetworkInfo networkInfo,
-            @Nonnull ProcessGroup processGroup,
-            @Nonnull Template template,
-            @Nonnull ProcessRuntimeInformation processRuntimeInformation,
-            @Nonnull List<DefaultPlugin> plugins,
-            @Nonnull JsonConfiguration extra,
-            @Nullable Integer maxPlayers,
-            @Nonnull Collection<ProcessInclusion> preInclusions
+            @NotNull ProcessDetail processDetail, @NotNull NetworkInfo networkInfo, @NotNull ProcessGroup processGroup,
+            @NotNull JsonConfiguration extra, @NotNull Collection<ProcessInclusion> preInclusions
     ) {
-        this.processName = processName;
-        this.displayName = displayName;
-        this.parent = parent;
-        this.nodeUniqueID = nodeUniqueID;
-        this.processUniqueID = processUniqueID;
-        this.id = id;
-        this.maxMemory = maxMemory;
-        this.processState = processState;
+        this.processDetail = processDetail;
         this.networkInfo = networkInfo;
         this.processGroup = processGroup;
-        this.template = template;
-        this.processRuntimeInformation = processRuntimeInformation;
-        this.plugins = plugins;
         this.extra = extra;
-        this.maxPlayers = maxPlayers;
         this.preInclusions = preInclusions;
 
         ExecutorAPI.getInstance().getEventManager().callEvent(new ProcessInformationConfigureEvent(this));
     }
 
-    private final String processName;
+    private final ProcessPlayerManager processPlayerManager = new ProcessPlayerManager();
 
-    private final String displayName;
-
-    private final String parent;
-
-    private final UUID nodeUniqueID;
-
-    private final UUID processUniqueID;
-
-    private final int id;
-
-    private final Integer maxMemory;
-
-    private Integer maxPlayers;
-
-    private String motd = "";
-
-    private final SortedSet<Player> onlinePlayers = new TreeSet<>(Comparator.comparingLong(Player::getJoined));
-
-    private ProcessState processState;
+    private final ProcessDetail processDetail;
 
     private final NetworkInfo networkInfo;
 
-    private ProcessGroup processGroup;
-
-    private final Template template;
-
-    private ProcessRuntimeInformation processRuntimeInformation;
-
-    private final List<DefaultPlugin> plugins;
-
     private final JsonConfiguration extra;
+
+    private final List<DefaultPlugin> plugins = new CopyOnWriteArrayList<>();
 
     private final Collection<ProcessInclusion> preInclusions;
 
-    @Nonnull
-    public String getDisplayName() {
-        return displayName;
+    private ProcessGroup processGroup;
+
+    public ProcessPlayerManager getProcessPlayerManager() {
+        return processPlayerManager;
     }
 
-    @Nonnull
-    public String getParent() {
-        return parent;
+    public ProcessDetail getProcessDetail() {
+        return processDetail;
     }
 
-    public UUID getNodeUniqueID() {
-        return nodeUniqueID;
+    public boolean isLobby() {
+        return this.processDetail.getTemplate().isServer() && processGroup.isCanBeUsedAsLobby();
     }
 
-    @Nonnull
-    public UUID getProcessUniqueID() {
-        return processUniqueID;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public Integer getMaxMemory() {
-        return maxMemory == null ? this.getTemplate().getRuntimeConfiguration().getMaxMemory() : maxMemory;
-    }
-
-    public int getMaxPlayers() {
-        return maxPlayers;
-    }
-
-    public String getMotd() {
-        return motd;
-    }
-
-    public void setMotd(@Nullable String motd) {
-        this.motd = motd == null ? "" : motd;
-    }
-
-    public int getOnlineCount() {
-        return onlinePlayers.size();
-    }
-
-    @Nonnull
-    public SortedSet<Player> getOnlinePlayers() {
-        return onlinePlayers;
-    }
-
-    @Nonnull
-    public ProcessState getProcessState() {
-        return processState;
-    }
-
-    @Nonnull
+    @NotNull
     public NetworkInfo getNetworkInfo() {
         return networkInfo;
     }
 
-    @Nonnull
+    @NotNull
     public ProcessGroup getProcessGroup() {
         return processGroup;
     }
 
-    @Nonnull
-    public Template getTemplate() {
-        return template;
-    }
-
-    @Nonnull
-    public ProcessRuntimeInformation getProcessRuntimeInformation() {
-        return processRuntimeInformation;
-    }
-
-    @Nonnull
+    @NotNull
     public List<DefaultPlugin> getPlugins() {
         return plugins;
     }
 
-    @Nonnull
+    @NotNull
     public JsonConfiguration getExtra() {
         return extra;
     }
 
-    @Nonnull
-    @Override
-    public String getName() {
-        return processName;
-    }
-
-    public void setProcessState(@Nonnull ProcessState processState) {
-        this.processState = processState;
-    }
-
-    public void setProcessGroup(@Nonnull ProcessGroup processGroup) {
-        this.processGroup = processGroup;
-    }
-
-    public boolean onLogin(@Nonnull UUID playerUuid, @Nonnull String playerName) {
-        return onlinePlayers.add(new Player(playerUuid, playerName));
-    }
-
-    public boolean isLobby() {
-        return template.isServer() && processGroup.isCanBeUsedAsLobby();
-    }
-
-    public void onLogout(@Nonnull UUID uniqueID) {
-        Streams.filterToReference(onlinePlayers, player -> player.getUniqueID().equals(uniqueID)).ifPresent(player -> onlinePlayers.remove(player));
-    }
-
-    public boolean isPlayerOnline(@Nonnull UUID uniqueID) {
-        return Streams.filterToReference(onlinePlayers, player -> player.getUniqueID().equals(uniqueID)).isPresent();
-    }
-
-    public boolean isPlayerOnline(@Nonnull String name) {
-        return Streams.filterToReference(onlinePlayers, player -> player.getName().equals(name)).isPresent();
-    }
-
+    @NotNull
     public Collection<ProcessInclusion> getPreInclusions() {
         return preInclusions;
     }
 
-    public ProcessInformation updateMaxPlayers(@Nullable Integer value) {
-        if (this.maxPlayers != null) {
-            return this;
-        }
+    public void setProcessGroup(@NotNull ProcessGroup processGroup) {
+        this.processGroup = processGroup;
+    }
 
+    @NotNull
+    public ProcessInformation updateMaxPlayers(@Nullable Integer value) {
         if (processGroup.getPlayerAccessConfiguration().isUseCloudPlayerLimit()) {
-            this.maxPlayers = processGroup.getPlayerAccessConfiguration().getMaxPlayers();
+            this.processDetail.setMaxPlayers(processGroup.getPlayerAccessConfiguration().getMaxPlayers());
         } else {
             if (value != null) {
-                this.maxPlayers = value;
+                this.processDetail.setMaxPlayers(value);
             }
         }
+
         return this;
     }
 
     public void updateRuntimeInformation() {
-        this.processRuntimeInformation = ProcessRuntimeInformation.create();
+        this.processDetail.setProcessRuntimeInformation(ProcessRuntimeInformation.create());
+    }
+
+    @NotNull
+    public ProcessUtil toWrapped() {
+        return new ProcessUtil(this);
+    }
+
+    @NotNull
+    @ApiStatus.ScheduledForRemoval(inVersion = "2.3")
+    @Deprecated
+    @ReplacedWith("#getProcessDetail#getProcessState")
+    public ProcessState getProcessState() {
+        return this.processDetail.getProcessState();
+    }
+
+    @NotNull
+    @ApiStatus.ScheduledForRemoval(inVersion = "2.3")
+    @Deprecated
+    @ReplacedWith("#getProcessDetail#getProcessRuntimeInformation")
+    public ProcessRuntimeInformation getProcessRuntimeInformation() {
+        return this.processDetail.getProcessRuntimeInformation();
+    }
+
+    @ApiStatus.ScheduledForRemoval(inVersion = "2.3")
+    @Deprecated
+    @ReplacedWith("#getProcessDetail#setProcessState")
+    public void setProcessState(@NotNull ProcessState processState) {
+        this.processDetail.setProcessState(processState);
+    }
+
+    @NotNull
+    @ApiStatus.ScheduledForRemoval(inVersion = "2.3")
+    @Deprecated
+    @ReplacedWith("#getProcessDetail#getTemplate")
+    public Template getTemplate() {
+        return this.processDetail.getTemplate();
+    }
+
+    @ApiStatus.ScheduledForRemoval(inVersion = "2.3")
+    @Deprecated
+    @ReplacedWith("#getProcessDetail#getMaxPlayers")
+    public int getMaxPlayers() {
+        return this.processDetail.getMaxPlayers();
+    }
+
+    @NotNull
+    @ApiStatus.ScheduledForRemoval(inVersion = "2.3")
+    @Deprecated
+    @ReplacedWith("#getProcessDetail#getMaxMemory")
+    public Integer getMaxMemory() {
+        return this.processDetail.getMaxMemory();
+    }
+
+    @NotNull
+    @ApiStatus.ScheduledForRemoval(inVersion = "2.3")
+    @Deprecated
+    @ReplacedWith("#getProcessDetail#getDisplayName")
+    public String getDisplayName() {
+        return this.processDetail.getDisplayName();
+    }
+
+    @NotNull
+    @ApiStatus.ScheduledForRemoval(inVersion = "2.3")
+    @Deprecated
+    @ReplacedWith("#getProcessDetail#getParentName")
+    public String getParent() {
+        return this.processDetail.getParentName();
+    }
+
+    @Contract(pure = true)
+    @ApiStatus.ScheduledForRemoval(inVersion = "2.3")
+    @Deprecated
+    @ReplacedWith("#getProcessDetail#getParentUniqueID")
+    @NotNull
+    public UUID getNodeUniqueID() {
+        return this.processDetail.getParentUniqueID();
+    }
+
+    @NotNull
+    @ApiStatus.ScheduledForRemoval(inVersion = "2.3")
+    @Deprecated
+    @ReplacedWith("#getProcessDetail#getProcessDetail().getProcessUniqueID")
+    public UUID getProcessUniqueID() {
+        return this.processDetail.getProcessUniqueID();
+    }
+
+    @ApiStatus.ScheduledForRemoval(inVersion = "2.3")
+    @Deprecated
+    @ReplacedWith("#getProcessDetail#getId")
+    public int getId() {
+        return this.processDetail.getId();
+    }
+
+    @ApiStatus.ScheduledForRemoval(inVersion = "2.3")
+    @Deprecated
+    @ReplacedWith("#getProcessPlayerManager#getOnlineCount")
+    public int getOnlineCount() {
+        return this.processPlayerManager.getOnlineCount();
+    }
+
+    @NotNull
+    @ApiStatus.ScheduledForRemoval(inVersion = "2.3")
+    @Deprecated
+    @ReplacedWith("#getProcessPlayerManager#getOnlinePlayers")
+    public SortedSet<Player> getOnlinePlayers() {
+        return new TreeSet<>(this.processPlayerManager.getOnlinePlayers());
+    }
+
+    @NotNull
+    @ApiStatus.ScheduledForRemoval(inVersion = "2.3")
+    @Deprecated
+    @Override
+    @ReplacedWith("#getProcessDetail#getName")
+    public String getName() {
+        return this.processDetail.getName();
+    }
+
+    @ApiStatus.ScheduledForRemoval(inVersion = "2.3")
+    @Deprecated
+    @ReplacedWith("#getProcessPlayerManager#onLogin")
+    public boolean onLogin(@NotNull UUID playerUuid, @NotNull String playerName) {
+        return this.processPlayerManager.onLogin(playerUuid, playerName);
+    }
+
+    @ApiStatus.ScheduledForRemoval(inVersion = "2.3")
+    @Deprecated
+    @ReplacedWith("#getProcessPlayerManager#onLogout")
+    public void onLogout(@NotNull UUID uniqueID) {
+        this.processPlayerManager.onLogout(uniqueID);
+    }
+
+    @ApiStatus.ScheduledForRemoval(inVersion = "2.3")
+    @Deprecated
+    @ReplacedWith("#getProcessPlayerManager#isPlayerOnlineOnCurrentProcess")
+    public boolean isPlayerOnline(@NotNull UUID uniqueID) {
+        return this.processPlayerManager.isPlayerOnlineOnCurrentProcess(uniqueID);
+    }
+
+    @ApiStatus.ScheduledForRemoval(inVersion = "2.3")
+    @Deprecated
+    @ReplacedWith("#getProcessPlayerManager#isPlayerOnlineOnCurrentProcess")
+    public boolean isPlayerOnline(@NotNull String name) {
+        return this.processPlayerManager.isPlayerOnlineOnCurrentProcess(name);
     }
 
     @Override
-    @Nonnull
+    @Nullable
     public ProcessInformation clone() {
         try {
             return (ProcessInformation) super.clone();
         } catch (final CloneNotSupportedException ex) {
-            return new ProcessInformation(processName, displayName, parent, nodeUniqueID, processUniqueID, maxMemory, id,
-                    processState, networkInfo, processGroup, template, processRuntimeInformation, plugins, extra, maxPlayers, preInclusions);
+            return null;
         }
     }
 
     @Override
-    public boolean equals(@Nonnull Object obj) {
+    public boolean equals(@NotNull Object obj) {
         if (!(obj instanceof ProcessInformation)) {
             return false;
         }
 
         ProcessInformation compare = (ProcessInformation) obj;
-        return Objects.equals(compare.getProcessUniqueID(), getProcessUniqueID());
+        return Objects.equals(compare.getProcessDetail().getProcessUniqueID(), getProcessDetail().getProcessUniqueID());
     }
 
     @Override
-    @Nonnull
+    @NotNull
     public String toString() {
-        return getName() + "/" + getProcessUniqueID();
+        return getName() + "/" + getProcessDetail().getProcessUniqueID();
     }
 }

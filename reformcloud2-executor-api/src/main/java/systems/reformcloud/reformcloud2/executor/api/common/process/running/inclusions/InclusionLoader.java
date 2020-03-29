@@ -1,10 +1,10 @@
 package systems.reformcloud.reformcloud2.executor.api.common.process.running.inclusions;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.process.api.ProcessInclusion;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.system.DownloadHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.system.SystemHelper;
 
-import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -19,7 +19,7 @@ public final class InclusionLoader {
         throw new UnsupportedOperationException();
     }
 
-    public static void loadInclusions(@Nonnull Path processPath, @Nonnull Collection<ProcessInclusion> inclusions) {
+    public static void loadInclusions(@NotNull Path processPath, @NotNull Collection<ProcessInclusion> inclusions) {
         inclusions.forEach(inclusion -> {
             Path target = Paths.get("reformcloud/files/inclusions", inclusion.getName());
             if (Files.exists(target)) {

@@ -1,10 +1,10 @@
 package systems.reformcloud.reformcloud2.executor.api.common.network.channel.defaults;
 
 import io.netty.channel.ChannelHandlerContext;
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 
-import javax.annotation.Nonnull;
 import java.net.InetSocketAddress;
 
 public class DefaultPacketSender extends PacketSender {
@@ -25,13 +25,13 @@ public class DefaultPacketSender extends PacketSender {
         return connectionTime;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String getAddress() {
         return getEthernetAddress().getAddress().getHostAddress();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public InetSocketAddress getEthernetAddress() {
         return (InetSocketAddress) channel.channel().remoteAddress();
@@ -84,18 +84,18 @@ public class DefaultPacketSender extends PacketSender {
         channel.close();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String getName() {
         return name;
     }
 
     @Override
-    public void setName(@Nonnull String newName) {
+    public void setName(@NotNull String newName) {
         this.name = newName;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public ChannelHandlerContext getChannelContext() {
         return this.channel;

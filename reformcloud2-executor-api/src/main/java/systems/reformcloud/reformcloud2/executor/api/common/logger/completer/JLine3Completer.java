@@ -1,5 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.api.common.logger.completer;
 
+import org.jetbrains.annotations.NotNull;
 import org.jline.reader.Candidate;
 import org.jline.reader.Completer;
 import org.jline.reader.LineReader;
@@ -9,7 +10,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.Conso
 import systems.reformcloud.reformcloud2.executor.api.common.commands.manager.CommandManager;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.source.CommandSource;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 
 public class JLine3Completer implements Completer {
 
-    public JLine3Completer(@Nonnull CommandManager commandManager) {
+    public JLine3Completer(@NotNull CommandManager commandManager) {
         this.commandManager = commandManager;
         this.consoleCommandSource = new ConsoleCommandSource(commandManager);
     }

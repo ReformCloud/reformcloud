@@ -1,5 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.controller.network.packets.in;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.PlayerServerSwitchEvent;
 import systems.reformcloud.reformcloud2.executor.api.common.network.NetworkUtil;
@@ -10,7 +11,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packe
 import systems.reformcloud.reformcloud2.executor.controller.ControllerExecutor;
 import systems.reformcloud.reformcloud2.executor.controller.network.packets.out.event.ControllerEventPlayerServerSwitch;
 
-import javax.annotation.Nonnull;
 import java.util.UUID;
 import java.util.function.Consumer;
 
@@ -22,7 +22,7 @@ public class ControllerPacketInPlayerServerSwitch extends DefaultJsonNetworkHand
     }
 
     @Override
-    public void handlePacket(@Nonnull PacketSender packetSender, @Nonnull Packet packet, @Nonnull Consumer<Packet> responses) {
+    public void handlePacket(@NotNull PacketSender packetSender, @NotNull Packet packet, @NotNull Consumer<Packet> responses) {
         UUID uuid = packet.content().get("uuid", UUID.class);
         String target = packet.content().getString("target");
 

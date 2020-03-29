@@ -1,5 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.node.process.startup;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.process.running.RunningProcess;
@@ -8,7 +9,6 @@ import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
 import systems.reformcloud.reformcloud2.executor.node.process.basic.BasicLocalNodeProcess;
 import systems.reformcloud.reformcloud2.executor.node.process.manager.LocalProcessManager;
 
-import javax.annotation.Nonnull;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.LinkedBlockingDeque;
 
@@ -20,7 +20,7 @@ public class LocalProcessQueue extends AbsoluteThread {
         enableDaemon().updatePriority(Thread.MIN_PRIORITY).start();
     }
 
-    public static void queue(@Nonnull ProcessInformation processInformation) {
+    public static void queue(@NotNull ProcessInformation processInformation) {
         RunningProcess localNodeProcess = new BasicLocalNodeProcess(processInformation);
         int size = QUEUE.size();
         System.out.println(LanguageManager.get("client-process-now-in-queue", processInformation.getName(), size +1));
@@ -31,7 +31,7 @@ public class LocalProcessQueue extends AbsoluteThread {
         });
     }
 
-    public static void queue(@Nonnull RunningProcess process) {
+    public static void queue(@NotNull RunningProcess process) {
         System.out.println(LanguageManager.get("client-process-now-in-queue",
                 process.getProcessInformation().getName(), QUEUE.size() +1));
         process.handleEnqueue();
@@ -48,7 +48,7 @@ public class LocalProcessQueue extends AbsoluteThread {
 
             try {
                 RunningProcess process = QUEUE.takeFirst();
-                if (isMemoryFree(process.getProcessInformation().getTemplate().getRuntimeConfiguration().getMaxMemory())
+                if (isMemoryFree(process.getProcessInformation().getProcessDetail().getMaxMemory())
                         && process.bootstrap()) {
                     System.out.println(LanguageManager.get("node-process-start", process.getProcessInformation().getName()));
                     AbsoluteThread.sleep(50);
@@ -64,7 +64,7 @@ public class LocalProcessQueue extends AbsoluteThread {
 
     private boolean isMemoryFree(int memory) {
         int current = LocalProcessManager.getNodeProcesses().stream()
-                .mapToInt(e -> e.getProcessInformation().getTemplate().getRuntimeConfiguration().getMaxMemory()).sum() + memory;
+                .mapToInt(e -> e.getProcessInformation().getProcessDetail().getMaxMemory()).sum() + memory;
         return NodeExecutor.getInstance().getNodeConfig().getMaxMemory() >= current;
     }
 }

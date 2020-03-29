@@ -1,5 +1,6 @@
 package systems.reformcloud.reformcloud2.permissions.application;
 
+import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorType;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.application.api.Application;
@@ -12,8 +13,6 @@ import systems.reformcloud.reformcloud2.permissions.application.command.CommandP
 import systems.reformcloud.reformcloud2.permissions.application.listener.ProcessInclusionHandler;
 import systems.reformcloud.reformcloud2.permissions.application.updater.PermissionsAddonUpdater;
 import systems.reformcloud.reformcloud2.permissions.packets.PacketHelper;
-
-import javax.annotation.Nullable;
 
 public class ReformCloudApplication extends Application {
 

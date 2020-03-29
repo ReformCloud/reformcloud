@@ -1,5 +1,7 @@
 package systems.reformcloud.reformcloud2.executor.api.sponge;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.effect.sound.SoundType;
 import org.spongepowered.api.entity.living.player.Player;
@@ -35,8 +37,6 @@ import systems.reformcloud.reformcloud2.executor.api.network.packets.in.APIPacke
 import systems.reformcloud.reformcloud2.executor.api.network.packets.out.APIBungeePacketOutRequestIngameMessages;
 import systems.reformcloud.reformcloud2.executor.api.sponge.event.PlayerListenerHandler;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.File;
 import java.util.UUID;
 
@@ -83,7 +83,7 @@ public class SpongeExecutor extends API implements PlayerAPIExecutor {
                 () -> new APINetworkChannelReader(this.packetHandler),
                 new ClientChallengeAuthHandler(
                         connectionKey,
-                        thisProcessInformation.getName(),
+                        thisProcessInformation.getProcessDetail().getName(),
                         () -> new JsonConfiguration(),
                         context -> {
                         } // unused here
@@ -108,40 +108,40 @@ public class SpongeExecutor extends API implements PlayerAPIExecutor {
         return packetHandler;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public EventManager getEventManager() {
         return ExternalEventBusHandler.getInstance().getEventManager();
     }
 
-    @Nonnull
+    @NotNull
     public NetworkClient getNetworkClient() {
         return networkClient;
     }
 
-    @Nonnull
+    @NotNull
     public SpongeLauncher getPlugin() {
         return plugin;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public ProcessInformation getCurrentProcessInformation() {
         return this.thisProcessInformation;
     }
 
-    @Nonnull
+    @NotNull
     public static SpongeExecutor getInstance() {
         return instance;
     }
 
-    public void setThisProcessInformation(@Nonnull ProcessInformation thisProcessInformation) {
+    public void setThisProcessInformation(@NotNull ProcessInformation thisProcessInformation) {
         this.thisProcessInformation = thisProcessInformation;
     }
 
     @Listener
     public void handle(final ProcessUpdatedEvent event) {
-        if (event.getProcessInformation().getProcessUniqueID().equals(thisProcessInformation.getProcessUniqueID())) {
+        if (event.getProcessInformation().getProcessDetail().getProcessUniqueID().equals(thisProcessInformation.getProcessDetail().getProcessUniqueID())) {
             thisProcessInformation = event.getProcessInformation();
         }
     }
@@ -157,7 +157,7 @@ public class SpongeExecutor extends API implements PlayerAPIExecutor {
             thisProcessInformation.updateMaxPlayers(Sponge.getServer().getMaxPlayers());
             thisProcessInformation.updateRuntimeInformation();
             thisProcessInformation.getNetworkInfo().setConnected(true);
-            thisProcessInformation.setProcessState(ProcessState.READY);
+            thisProcessInformation.getProcessDetail().setProcessState(ProcessState.READY);
             ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(thisProcessInformation);
 
             DefaultChannelManager.INSTANCE.get("Controller").ifPresent(controller -> packetHandler.getQueryHandler().sendQueryAsync(controller, new APIBungeePacketOutRequestIngameMessages()).onComplete(packet -> {

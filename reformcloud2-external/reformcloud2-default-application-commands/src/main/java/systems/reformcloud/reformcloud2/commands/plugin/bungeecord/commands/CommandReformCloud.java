@@ -28,9 +28,9 @@ public class CommandReformCloud extends Command {
         if (strings.length == 1 && strings[0].equalsIgnoreCase("list")) {
             ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getAllProcesses().forEach(e -> commandSender.sendMessage(TextComponent.fromLegacyText(
                     "=> " + e.getName()
-                            + "/ Display: " + e.getDisplayName()
-                            + "/ UniqueID: " + e.getProcessUniqueID()
-                            + "/ Parent: " + e.getParent()
+                            + "/ Display: " + e.getProcessDetail().getDisplayName()
+                            + "/ UniqueID: " + e.getProcessDetail().getProcessUniqueID()
+                            + "/ Parent: " + e.getProcessDetail().getParentName()
                             + "/ Connected: " + e.getNetworkInfo().isConnected()
             )));
             return;
@@ -114,7 +114,7 @@ public class CommandReformCloud extends Command {
                             }
 
                             ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcesses(processGroup.getName()).forEach(processInformation -> {
-                                ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().stopProcess(processInformation.getProcessUniqueID());
+                                ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().stopProcess(processInformation.getProcessDetail().getProcessUniqueID());
                                 AbsoluteThread.sleep(TimeUnit.MILLISECONDS, 10);
                             });
                         });

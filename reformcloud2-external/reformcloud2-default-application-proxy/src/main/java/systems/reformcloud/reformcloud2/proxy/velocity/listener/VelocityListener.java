@@ -118,8 +118,8 @@ public class VelocityListener {
         // ====
 
         ProcessInformation info = API.getInstance().getCurrentProcessInformation();
-        int max = info.getMaxPlayers();
-        int online = info.getOnlineCount();
+        int max = info.getProcessDetail().getMaxPlayers();
+        int online = info.getProcessPlayerManager().getOnlineCount();
 
         // ====
 
@@ -205,13 +205,13 @@ public class VelocityListener {
         ProcessInformation current = API.getInstance().getCurrentProcessInformation();
         return text
                 .replace("%proxy_name%", current.getName())
-                .replace("%proxy_display_name%", current.getDisplayName())
-                .replace("%proxy_unique_id%", current.getProcessUniqueID().toString())
-                .replace("%proxy_id%", Integer.toString(current.getId()))
-                .replace("%proxy_online_players%", Integer.toString(current.getOnlineCount()))
-                .replace("%proxy_max_players%", Integer.toString(current.getMaxPlayers()))
+                .replace("%proxy_display_name%", current.getProcessDetail().getDisplayName())
+                .replace("%proxy_unique_id%", current.getProcessDetail().getProcessUniqueID().toString())
+                .replace("%proxy_id%", Integer.toString(current.getProcessDetail().getId()))
+                .replace("%proxy_online_players%", Integer.toString(current.getProcessPlayerManager().getOnlineCount()))
+                .replace("%proxy_max_players%", Integer.toString(current.getProcessDetail().getMaxPlayers()))
                 .replace("%proxy_group%", current.getProcessGroup().getName())
-                .replace("%proxy_parent%", current.getParent());
+                .replace("%proxy_parent%", current.getProcessDetail().getParentName());
     }
 
     private static String[] replaceAll(String[] in) {
@@ -226,8 +226,8 @@ public class VelocityListener {
 
     private static String replaceTabList(Player player, String line) {
         ProcessInformation info = API.getInstance().getCurrentProcessInformation();
-        int max = info.getMaxPlayers();
-        int online = info.getOnlineCount();
+        int max = info.getProcessDetail().getMaxPlayers();
+        int online = info.getProcessPlayerManager().getOnlineCount();
 
         return line
                 .replace("%player_server%", player.getCurrentServer().isPresent()

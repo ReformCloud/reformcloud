@@ -12,7 +12,7 @@ public final class ProcessListener {
 
     @Listener
     public void handle(final ProcessStartedEvent event) {
-        if (event.getProcessInformation().getTemplate().isServer()) {
+        if (event.getProcessInformation().getProcessDetail().getTemplate().isServer()) {
             return;
         }
 

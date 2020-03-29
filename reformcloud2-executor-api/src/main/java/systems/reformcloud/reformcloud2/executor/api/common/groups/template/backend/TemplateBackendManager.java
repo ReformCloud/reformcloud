@@ -1,10 +1,10 @@
 package systems.reformcloud.reformcloud2.executor.api.common.groups.template.backend;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.backend.basic.FileBackend;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -28,8 +28,8 @@ public final class TemplateBackendManager {
      * @param name The name of the template which should get loaded
      * @return The template with the given name or the default file backend
      */
-    @Nonnull
-    public static TemplateBackend getOrDefault(@Nonnull String name) {
+    @NotNull
+    public static TemplateBackend getOrDefault(@NotNull String name) {
         TemplateBackend backend = Streams.filterToReference(LOADED, e -> e.getName().equalsIgnoreCase(name)).orNothing();
         return backend != null ? backend : new FileBackend();
     }
@@ -41,7 +41,7 @@ public final class TemplateBackendManager {
      * @return The template backend with the given name or {@code null}
      */
     @Nullable
-    public static TemplateBackend get(@Nonnull String name) {
+    public static TemplateBackend get(@NotNull String name) {
         return Streams.filterToReference(LOADED, e -> e.getName().equalsIgnoreCase(name)).orNothing();
     }
 
@@ -50,7 +50,7 @@ public final class TemplateBackendManager {
      *
      * @param templateBackend The template backend which should get registered
      */
-    public static void registerBackend(@Nonnull TemplateBackend templateBackend) {
+    public static void registerBackend(@NotNull TemplateBackend templateBackend) {
         Streams.filterToReference(LOADED, e -> e.getName().equalsIgnoreCase(templateBackend.getName())).ifEmpty(e -> LOADED.add(templateBackend));
     }
 
@@ -59,7 +59,7 @@ public final class TemplateBackendManager {
      *
      * @param name The name of the backend which should get unregistered
      */
-    public static void unregisterBackend(@Nonnull String name) {
+    public static void unregisterBackend(@NotNull String name) {
         Streams.filterToReference(LOADED, e -> e.getName().equalsIgnoreCase(name)).ifPresent(LOADED::remove);
     }
 

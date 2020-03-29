@@ -1,5 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.api.common;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorType;
 import systems.reformcloud.reformcloud2.executor.api.common.api.AsyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.SyncAPI;
@@ -7,7 +8,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.base.Conditions;
 import systems.reformcloud.reformcloud2.executor.api.common.event.EventManager;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.handler.PacketHandler;
 
-import javax.annotation.Nonnull;
 import java.util.Objects;
 
 /**
@@ -30,7 +30,7 @@ public abstract class ExecutorAPI {
      *
      * @param instance The new instance of the executor api
      */
-    protected static void setInstance(@Nonnull ExecutorAPI instance) {
+    protected static void setInstance(@NotNull ExecutorAPI instance) {
         Conditions.isTrue(ExecutorAPI.instance == null, "Executor api instance is already defined");
         ExecutorAPI.instance = Objects.requireNonNull(instance, "instance");
     }
@@ -38,7 +38,7 @@ public abstract class ExecutorAPI {
     /**
      * @return The current instance of this class
      */
-    @Nonnull
+    @NotNull
     public static ExecutorAPI getInstance() {
         return instance;
     }
@@ -48,13 +48,13 @@ public abstract class ExecutorAPI {
     /**
      * @return The current sync api instance of the api
      */
-    @Nonnull
+    @NotNull
     public abstract SyncAPI getSyncAPI();
 
     /**
      * @return The current async api instance
      */
-    @Nonnull
+    @NotNull
     public abstract AsyncAPI getAsyncAPI();
 
     /* ========================== */
@@ -62,13 +62,13 @@ public abstract class ExecutorAPI {
     /**
      * @return The current packet handler of the cloud
      */
-    @Nonnull
+    @NotNull
     public abstract PacketHandler getPacketHandler();
 
     /**
      * @return The current event manger of the cloud
      */
-    @Nonnull
+    @NotNull
     public abstract EventManager getEventManager();
 
     /* ========================== */
@@ -83,7 +83,7 @@ public abstract class ExecutorAPI {
     /**
      * @return The current type which the cloud is executing
      */
-    @Nonnull
+    @NotNull
     public ExecutorType getType() {
         return type;
     }

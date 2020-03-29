@@ -1,13 +1,13 @@
 package systems.reformcloud.reformcloud2.executor.api.common.network.challenge.shared;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.common.network.challenge.provider.ChallengeProvider;
 import systems.reformcloud.reformcloud2.executor.api.common.network.challenge.security.ChallengeSecurity;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.StringUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
@@ -24,7 +24,7 @@ public final class SharedChallengeProvider implements ChallengeProvider {
 
     @Nullable
     @Override
-    public byte[] createChallenge(@Nonnull String sender) {
+    public byte[] createChallenge(@NotNull String sender) {
         String challenge = StringUtil.generateString(5);
         String hashedChallenge = ChallengeSecurity.hash(challenge);
         byte[] result = ChallengeSecurity.encryptChallengeRequest(this.authKey, challenge);
@@ -39,7 +39,7 @@ public final class SharedChallengeProvider implements ChallengeProvider {
     }
 
     @Override
-    public boolean checkResult(@Nonnull String sender, @Nonnull String challengeResult) {
+    public boolean checkResult(@NotNull String sender, @NotNull String challengeResult) {
         String expected = runningChallenges.get(sender);
         return expected != null && expected.equals(challengeResult);
     }

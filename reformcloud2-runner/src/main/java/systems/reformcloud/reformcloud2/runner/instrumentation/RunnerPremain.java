@@ -1,8 +1,8 @@
 package systems.reformcloud.reformcloud2.runner.instrumentation;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.runner.util.JarFileDirectoryStreamFilter;
 
-import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.lang.instrument.Instrumentation;
 import java.nio.file.DirectoryStream;
@@ -13,7 +13,7 @@ import java.util.jar.JarFile;
 
 public final class RunnerPremain {
 
-    public static void premain(@Nonnull String agentArgs, @Nonnull Instrumentation instrumentation) {
+    public static void premain(@NotNull String agentArgs, @NotNull Instrumentation instrumentation) {
         if (System.getProperty("reformcloud.lib.path") == null || System.getProperty("reformcloud.process.path") == null) {
             return;
         }

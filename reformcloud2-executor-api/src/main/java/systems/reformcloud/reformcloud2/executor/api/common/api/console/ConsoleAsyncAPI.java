@@ -1,10 +1,8 @@
 package systems.reformcloud.reformcloud2.executor.api.common.api.console;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.Command;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
-
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
 
 public interface ConsoleAsyncAPI {
 
@@ -14,9 +12,8 @@ public interface ConsoleAsyncAPI {
      * @param line The line which should be sent
      * @return A task which will be completed if the action is completed (always {@code null})
      */
-    @Nonnull
-    @CheckReturnValue
-    Task<Void> sendColouredLineAsync(@Nonnull String line);
+    @NotNull
+    Task<Void> sendColouredLineAsync(@NotNull String line);
 
     /**
      * Sends a raw line into the console
@@ -24,9 +21,8 @@ public interface ConsoleAsyncAPI {
      * @param line The line which should be sent
      * @return A task which will be completed if the action is completed (always {@code null})
      */
-    @Nonnull
-    @CheckReturnValue
-    Task<Void> sendRawLineAsync(@Nonnull String line);
+    @NotNull
+    Task<Void> sendRawLineAsync(@NotNull String line);
 
     /**
      * Dispatches a command into the console and waits for a result
@@ -36,9 +32,8 @@ public interface ConsoleAsyncAPI {
      * a) not registered
      * b) doesn't sent any result to the handler
      */
-    @Nonnull
-    @CheckReturnValue
-    Task<String> dispatchCommandAndGetResultAsync(@Nonnull String commandLine);
+    @NotNull
+    Task<String> dispatchCommandAndGetResultAsync(@NotNull String commandLine);
 
     /**
      * Gets a command which is registered
@@ -46,9 +41,8 @@ public interface ConsoleAsyncAPI {
      * @param name The name of the command
      * @return A task which will be completed with the command or {@code null} if the command is not registered
      */
-    @Nonnull
-    @CheckReturnValue
-    Task<Command> getCommandAsync(@Nonnull String name);
+    @NotNull
+    Task<Command> getCommandAsync(@NotNull String name);
 
     /**
      * Checks if a specific command is registered
@@ -56,7 +50,6 @@ public interface ConsoleAsyncAPI {
      * @param name The name of the command
      * @return A task which will be completed with {@code true} if the command is registered or else {@code false}
      */
-    @Nonnull
-    @CheckReturnValue
-    Task<Boolean> isCommandRegisteredAsync(@Nonnull String name);
+    @NotNull
+    Task<Boolean> isCommandRegisteredAsync(@NotNull String name);
 }

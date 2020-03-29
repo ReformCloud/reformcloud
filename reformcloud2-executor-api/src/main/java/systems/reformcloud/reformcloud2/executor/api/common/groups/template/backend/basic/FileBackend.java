@@ -1,5 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.api.common.groups.template.backend.basic;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Template;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.backend.TemplateBackend;
@@ -7,7 +8,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams
 import systems.reformcloud.reformcloud2.executor.api.common.utility.system.SystemHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 
-import javax.annotation.Nonnull;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -19,20 +19,20 @@ public class FileBackend implements TemplateBackend {
     public static final String NAME = "FILE";
 
     @Override
-    public boolean existsTemplate(@Nonnull String group, @Nonnull String template) {
+    public boolean existsTemplate(@NotNull String group, @NotNull String template) {
         return Files.exists(format(group, template));
     }
 
     @Override
-    public void createTemplate(@Nonnull String group, @Nonnull String template) {
+    public void createTemplate(@NotNull String group, @NotNull String template) {
         if (!existsTemplate(group, template)) {
             SystemHelper.createDirectory(Paths.get("reformcloud/templates", group, template, "plugins"));
         }
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public Task<Void> loadTemplate(@Nonnull String group, @Nonnull String template, @Nonnull Path target) {
+    public Task<Void> loadTemplate(@NotNull String group, @NotNull String template, @NotNull Path target) {
         if (!existsTemplate(group, template)) {
             createTemplate(group, template);
             return Task.completedTask(null);
@@ -42,16 +42,16 @@ public class FileBackend implements TemplateBackend {
         return Task.completedTask(null);
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public Task<Void> loadGlobalTemplates(@Nonnull ProcessGroup group, @Nonnull Path target) {
+    public Task<Void> loadGlobalTemplates(@NotNull ProcessGroup group, @NotNull Path target) {
         Streams.allOf(group.getTemplates(), Template::isGlobal).forEach(e -> loadTemplate(group.getName(), e.getName(), target));
         return Task.completedTask(null);
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public Task<Void> loadPath(@Nonnull String path, @Nonnull Path target) {
+    public Task<Void> loadPath(@NotNull String path, @NotNull Path target) {
         File from = new File(path);
         if (from.isDirectory()) {
             SystemHelper.copyDirectory(from.toPath(), target);
@@ -61,14 +61,14 @@ public class FileBackend implements TemplateBackend {
     }
 
     @Override
-    public void deployTemplate(@Nonnull String group, @Nonnull String template, @Nonnull Path current, @Nonnull Collection<String> collection) {
+    public void deployTemplate(@NotNull String group, @NotNull String template, @NotNull Path current, @NotNull Collection<String> collection) {
         if (existsTemplate(group, template)) {
             SystemHelper.copyDirectory(current, format(group, template), collection);
         }
     }
 
     @Override
-    public void deleteTemplate(@Nonnull String group, @Nonnull String template) {
+    public void deleteTemplate(@NotNull String group, @NotNull String template) {
         if (!existsTemplate(group, template)) {
             return;
         }
@@ -76,7 +76,7 @@ public class FileBackend implements TemplateBackend {
         SystemHelper.deleteDirectory(format(group, template));
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String getName() {
         return NAME;

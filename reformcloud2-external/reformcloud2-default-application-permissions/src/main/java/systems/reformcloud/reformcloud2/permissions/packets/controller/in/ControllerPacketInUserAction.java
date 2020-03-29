@@ -1,5 +1,6 @@
 package systems.reformcloud.reformcloud2.permissions.packets.controller.in;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
@@ -11,7 +12,6 @@ import systems.reformcloud.reformcloud2.permissions.packets.util.PermissionActio
 import systems.reformcloud.reformcloud2.permissions.util.basic.DefaultPermissionUtil;
 import systems.reformcloud.reformcloud2.permissions.util.user.PermissionUser;
 
-import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 
 public class ControllerPacketInUserAction extends DefaultJsonNetworkHandler {
@@ -21,7 +21,7 @@ public class ControllerPacketInUserAction extends DefaultJsonNetworkHandler {
     }
 
     @Override
-    public void handlePacket(@Nonnull PacketSender packetSender, @Nonnull Packet packet, @Nonnull Consumer<Packet> responses) {
+    public void handlePacket(@NotNull PacketSender packetSender, @NotNull Packet packet, @NotNull Consumer<Packet> responses) {
         final PermissionUser permissionUser = packet.content().get("user", PermissionUser.TYPE);
         final PermissionAction action = packet.content().get("action", PermissionAction.class);
 

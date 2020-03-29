@@ -3,13 +3,13 @@ package systems.reformcloud.reformcloud2.executor.api.common.database.basic.driv
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 import org.bson.Document;
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.database.Database;
 import systems.reformcloud.reformcloud2.executor.api.common.database.DatabaseReader;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.defaults.DefaultTask;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -31,21 +31,21 @@ public class MongoDatabaseReader implements DatabaseReader {
 
     private final Database<MongoDatabase> parent;
 
-    @Nonnull
+    @NotNull
     @Override
-    public Task<JsonConfiguration> find(@Nonnull String key) {
+    public Task<JsonConfiguration> find(@NotNull String key) {
         return this.get(KEY_NAME, key);
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public Task<JsonConfiguration> findIfAbsent(@Nonnull String identifier) {
+    public Task<JsonConfiguration> findIfAbsent(@NotNull String identifier) {
         return this.get(ID_NAME, identifier);
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public Task<JsonConfiguration> insert(@Nonnull String key, String identifier, @Nonnull JsonConfiguration data) {
+    public Task<JsonConfiguration> insert(@NotNull String key, String identifier, @NotNull JsonConfiguration data) {
         Task<JsonConfiguration> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             Document document = this.parent.get().getCollection(table).find(Filters.eq(ID_NAME, identifier)).first();
@@ -60,9 +60,9 @@ public class MongoDatabaseReader implements DatabaseReader {
         return task;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public Task<Boolean> update(@Nonnull String key, @Nonnull JsonConfiguration newData) {
+    public Task<Boolean> update(@NotNull String key, @NotNull JsonConfiguration newData) {
         Task<Boolean> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             Document document = this.parent.get().getCollection(table).find(Filters.eq(KEY_NAME, key)).first();
@@ -78,9 +78,9 @@ public class MongoDatabaseReader implements DatabaseReader {
         return task;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public Task<Boolean> updateIfAbsent(@Nonnull String identifier, @Nonnull JsonConfiguration newData) {
+    public Task<Boolean> updateIfAbsent(@NotNull String identifier, @NotNull JsonConfiguration newData) {
         Task<Boolean> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             Document document = this.parent.get().getCollection(table).find(Filters.eq(ID_NAME, identifier)).first();
@@ -96,9 +96,9 @@ public class MongoDatabaseReader implements DatabaseReader {
         return task;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public Task<Void> remove(@Nonnull String key) {
+    public Task<Void> remove(@NotNull String key) {
         Task<Void> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             this.parent.get().getCollection(table).deleteOne(Filters.eq(KEY_NAME, key));
@@ -107,9 +107,9 @@ public class MongoDatabaseReader implements DatabaseReader {
         return task;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public Task<Void> removeIfAbsent(@Nonnull String identifier) {
+    public Task<Void> removeIfAbsent(@NotNull String identifier) {
         Task<Void> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             this.parent.get().getCollection(table).deleteOne(Filters.eq(ID_NAME, identifier));
@@ -118,9 +118,9 @@ public class MongoDatabaseReader implements DatabaseReader {
         return task;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public Task<Boolean> contains(@Nonnull String key) {
+    public Task<Boolean> contains(@NotNull String key) {
         Task<Boolean> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             Document document = this.parent.get().getCollection(table).find(Filters.eq(KEY_NAME, key)).first();
@@ -129,14 +129,14 @@ public class MongoDatabaseReader implements DatabaseReader {
         return task;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String getName() {
         return table;
     }
 
     @Override
-    @Nonnull
+    @NotNull
     public Iterator<JsonConfiguration> iterator() {
         List<JsonConfiguration> list = new ArrayList<>();
         this.parent.get().getCollection(table).find().forEach((Consumer<Document>) document -> list.add(new JsonConfiguration(document.toJson())));

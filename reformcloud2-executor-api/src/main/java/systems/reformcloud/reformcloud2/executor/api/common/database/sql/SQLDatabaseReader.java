@@ -1,13 +1,13 @@
 package systems.reformcloud.reformcloud2.executor.api.common.database.sql;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.database.Database;
 import systems.reformcloud.reformcloud2.executor.api.common.database.DatabaseReader;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.defaults.DefaultTask;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,21 +31,21 @@ public class SQLDatabaseReader implements DatabaseReader {
 
     private final Database<Connection> database;
 
-    @Nonnull
+    @NotNull
     @Override
-    public Task<JsonConfiguration> find(@Nonnull String key) {
+    public Task<JsonConfiguration> find(@NotNull String key) {
         return this.get("key", key);
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public Task<JsonConfiguration> findIfAbsent(@Nonnull String identifier) {
+    public Task<JsonConfiguration> findIfAbsent(@NotNull String identifier) {
         return this.get("identifier", identifier);
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public Task<JsonConfiguration> insert(@Nonnull String key, @Nullable String identifier, @Nonnull JsonConfiguration data) {
+    public Task<JsonConfiguration> insert(@NotNull String key, @Nullable String identifier, @NotNull JsonConfiguration data) {
         Task<JsonConfiguration> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             Boolean has = this.contains(key).getUninterruptedly(TimeUnit.SECONDS, 5);
@@ -69,9 +69,9 @@ public class SQLDatabaseReader implements DatabaseReader {
         return task;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public Task<Boolean> update(@Nonnull String key, @Nonnull JsonConfiguration newData) {
+    public Task<Boolean> update(@NotNull String key, @NotNull JsonConfiguration newData) {
         Task<Boolean> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             try (PreparedStatement statement = prepareStatement("UPDATE `" + table + "` SET `data` = ? WHERE `key` = ?", database)) {
@@ -87,9 +87,9 @@ public class SQLDatabaseReader implements DatabaseReader {
         return task;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public Task<Boolean> updateIfAbsent(@Nonnull String identifier, @Nonnull JsonConfiguration newData) {
+    public Task<Boolean> updateIfAbsent(@NotNull String identifier, @NotNull JsonConfiguration newData) {
         Task<Boolean> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             try (PreparedStatement statement = prepareStatement("UPDATE `" + table + "` SET `data` = ? WHERE `identifier` = ?", database)) {
@@ -105,9 +105,9 @@ public class SQLDatabaseReader implements DatabaseReader {
         return task;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public Task<Void> remove(@Nonnull String key) {
+    public Task<Void> remove(@NotNull String key) {
        Task<Void> task = new DefaultTask<>();
        Task.EXECUTOR.execute(() -> {
            try (PreparedStatement statement = prepareStatement("DELETE FROM `" + table + "` WHERE `key` = ?", database)) {
@@ -122,9 +122,9 @@ public class SQLDatabaseReader implements DatabaseReader {
        return task;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public Task<Void> removeIfAbsent(@Nonnull String identifier) {
+    public Task<Void> removeIfAbsent(@NotNull String identifier) {
         Task<Void> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             try (PreparedStatement statement = prepareStatement("DELETE FROM `" + table + "` WHERE `identifier` = ?", database)) {
@@ -139,15 +139,15 @@ public class SQLDatabaseReader implements DatabaseReader {
         return task;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public Task<Boolean> contains(@Nonnull String key) {
+    public Task<Boolean> contains(@NotNull String key) {
         Task<Boolean> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> task.complete(this.find(key).getUninterruptedly() != null));
         return task;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Iterator<JsonConfiguration> iterator() {
         Collection<JsonConfiguration> list = new ArrayList<>();
@@ -170,7 +170,7 @@ public class SQLDatabaseReader implements DatabaseReader {
         return list.iterator();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String getName() {
         return this.table;
@@ -207,8 +207,8 @@ public class SQLDatabaseReader implements DatabaseReader {
         return task;
     }
 
-    @Nonnull
-    public static PreparedStatement prepareStatement(@Nonnull String sql, @Nonnull Database<Connection> database) throws SQLException {
+    @NotNull
+    public static PreparedStatement prepareStatement(@NotNull String sql, @NotNull Database<Connection> database) throws SQLException {
         return database.get().prepareStatement(sql);
     }
 }

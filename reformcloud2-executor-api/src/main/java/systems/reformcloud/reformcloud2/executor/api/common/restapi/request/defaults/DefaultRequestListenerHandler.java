@@ -1,10 +1,10 @@
 package systems.reformcloud.reformcloud2.executor.api.common.restapi.request.defaults;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.restapi.auth.Auth;
 import systems.reformcloud.reformcloud2.executor.api.common.restapi.request.RequestHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.restapi.request.RequestListenerHandler;
 
-import javax.annotation.Nonnull;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -22,26 +22,26 @@ public final class DefaultRequestListenerHandler implements RequestListenerHandl
     private final List<RequestHandler> requestHandlers = new ArrayList<>();
 
     @Override
-    public void setAuth(@Nonnull Auth auth) {
+    public void setAuth(@NotNull Auth auth) {
         this.auth = auth;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Auth authHandler() {
         return auth;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public RequestListenerHandler registerListener(@Nonnull RequestHandler requestHandler) {
+    public RequestListenerHandler registerListener(@NotNull RequestHandler requestHandler) {
         requestHandlers.add(requestHandler);
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public RequestListenerHandler registerListener(@Nonnull Class<? extends RequestHandler> requestHandler) {
+    public RequestListenerHandler registerListener(@NotNull Class<? extends RequestHandler> requestHandler) {
         try {
             return registerListener(requestHandler.getDeclaredConstructor().newInstance());
         } catch (final IllegalAccessException | NoSuchMethodException | InvocationTargetException | InstantiationException ex) {
@@ -51,11 +51,11 @@ public final class DefaultRequestListenerHandler implements RequestListenerHandl
     }
 
     @Override
-    public void unregisterHandler(@Nonnull RequestHandler requestHandler) {
+    public void unregisterHandler(@NotNull RequestHandler requestHandler) {
         this.requestHandlers.remove(requestHandler);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Collection<RequestHandler> getHandlers() {
         return Collections.unmodifiableList(requestHandlers);

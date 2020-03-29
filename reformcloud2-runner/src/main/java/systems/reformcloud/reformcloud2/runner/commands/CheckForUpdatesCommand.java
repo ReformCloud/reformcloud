@@ -1,15 +1,15 @@
 package systems.reformcloud.reformcloud2.runner.commands;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.runner.Runner;
 import systems.reformcloud.reformcloud2.runner.reformscript.InterpretedReformScript;
 import systems.reformcloud.reformcloud2.runner.reformscript.utils.InterpreterCommand;
 
-import javax.annotation.Nonnull;
 import java.util.Collection;
 
 public final class CheckForUpdatesCommand extends InterpreterCommand {
 
-    public CheckForUpdatesCommand(@Nonnull Runner runner) {
+    public CheckForUpdatesCommand(@NotNull Runner runner) {
         super("check_for_updates");
         this.runner = runner;
     }
@@ -17,7 +17,7 @@ public final class CheckForUpdatesCommand extends InterpreterCommand {
     private final Runner runner;
 
     @Override
-    public void execute(@Nonnull String cursorLine, @Nonnull InterpretedReformScript script, @Nonnull Collection<String> allLines) {
+    public void execute(@NotNull String cursorLine, @NotNull InterpretedReformScript script, @NotNull Collection<String> allLines) {
         if (Integer.getInteger("reformcloud.executor.type", 0) == 3
                 || !Boolean.getBoolean("reformcloud.auto.update")
                 || Boolean.getBoolean("reformcloud.indev.builds")

@@ -1,6 +1,7 @@
 package systems.reformcloud.reformcloud2.executor.api.common.network.channel;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import java.net.InetSocketAddress;
 
 public abstract class PacketSender implements NetworkChannel {
@@ -13,13 +14,13 @@ public abstract class PacketSender implements NetworkChannel {
     /**
      * @return The ip-address if the channel
      */
-    @Nonnull
+    @NotNull
     public abstract String getAddress();
 
     /**
      * @return The socket address of the channel
      */
-    @Nonnull
+    @NotNull
     public abstract InetSocketAddress getEthernetAddress();
 
     /**

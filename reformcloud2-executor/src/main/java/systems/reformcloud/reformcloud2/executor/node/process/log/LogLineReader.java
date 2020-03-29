@@ -35,7 +35,7 @@ public class LogLineReader extends AbsoluteThread {
                         return;
                     }
 
-                    NodeProcessScreenHandler.getScreen(e.getProcessInformation().getProcessUniqueID()).ifPresent(s -> {
+                    NodeProcessScreenHandler.getScreen(e.getProcessInformation().getProcessDetail().getProcessUniqueID()).ifPresent(s -> {
                         for (String in : text.split("\r")) {
                             for (String string : in.split("\n")) {
                                 if (!string.trim().isEmpty()) {

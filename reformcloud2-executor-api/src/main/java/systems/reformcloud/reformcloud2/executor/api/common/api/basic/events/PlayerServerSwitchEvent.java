@@ -1,13 +1,13 @@
 package systems.reformcloud.reformcloud2.executor.api.common.api.basic.events;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.event.Event;
 
-import javax.annotation.Nonnull;
 import java.util.UUID;
 
 public class PlayerServerSwitchEvent extends Event {
 
-    public PlayerServerSwitchEvent(@Nonnull UUID uuid, @Nonnull String targetServer) {
+    public PlayerServerSwitchEvent(@NotNull UUID uuid, @NotNull String targetServer) {
         this.uuid = uuid;
         this.targetServer = targetServer;
     }
@@ -16,12 +16,12 @@ public class PlayerServerSwitchEvent extends Event {
 
     private final String targetServer;
 
-    @Nonnull
+    @NotNull
     public UUID getUuid() {
         return uuid;
     }
 
-    @Nonnull
+    @NotNull
     public String getTargetServer() {
         return targetServer;
     }

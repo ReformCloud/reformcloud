@@ -1,6 +1,7 @@
 package systems.reformcloud.reformcloud2.executor.api.common.restapi.auth.basic;
 
 import io.netty.channel.ChannelHandlerContext;
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.api.database.DatabaseSyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.restapi.auth.Auth;
@@ -8,8 +9,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.restapi.request.WebR
 import systems.reformcloud.reformcloud2.executor.api.common.restapi.request.defaults.DefaultWebRequester;
 import systems.reformcloud.reformcloud2.executor.api.common.restapi.user.WebUser;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Duo;
-
-import javax.annotation.Nonnull;
 
 public class DefaultWebServerAuth implements Auth {
 
@@ -19,9 +18,9 @@ public class DefaultWebServerAuth implements Auth {
 
     private final DatabaseSyncAPI api;
 
-    @Nonnull
+    @NotNull
     @Override
-    public Duo<Boolean, WebRequester> handleAuth(@Nonnull JsonConfiguration configurable, @Nonnull ChannelHandlerContext channelHandlerContext) {
+    public Duo<Boolean, WebRequester> handleAuth(@NotNull JsonConfiguration configurable, @NotNull ChannelHandlerContext channelHandlerContext) {
         String userName = configurable.getString("name");
         String token = configurable.getString("token");
         if (userName.trim().isEmpty() || token.trim().isEmpty()) {

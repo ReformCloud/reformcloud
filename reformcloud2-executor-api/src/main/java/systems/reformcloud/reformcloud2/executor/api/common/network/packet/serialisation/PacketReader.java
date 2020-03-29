@@ -1,8 +1,8 @@
 package systems.reformcloud.reformcloud2.executor.api.common.network.packet.serialisation;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 
-import javax.annotation.Nonnull;
 import java.io.ObjectInputStream;
 
 public interface PacketReader {
@@ -15,6 +15,6 @@ public interface PacketReader {
      * @return The de-serialized packet from the stream
      * @throws Exception If an exception occurs during the read
      */
-    @Nonnull
-    Packet read(int id, @Nonnull ObjectInputStream inputStream) throws Exception;
+    @NotNull
+    Packet read(int id, @NotNull ObjectInputStream inputStream) throws Exception;
 }

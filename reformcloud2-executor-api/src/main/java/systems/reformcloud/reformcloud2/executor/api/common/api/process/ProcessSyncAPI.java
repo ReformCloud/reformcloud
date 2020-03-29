@@ -1,5 +1,8 @@
 package systems.reformcloud.reformcloud2.executor.api.common.api.process;
 
+import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.api.API;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
@@ -7,8 +10,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.process.api.ProcessC
 import systems.reformcloud.reformcloud2.executor.api.common.process.api.ProcessConfigurationBuilder;
 import systems.reformcloud.reformcloud2.executor.api.common.process.api.ProcessInclusion;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -24,7 +25,7 @@ public interface ProcessSyncAPI {
      * @return The created {@link ProcessInformation}
      */
     @Nullable
-    default ProcessInformation startProcess(@Nonnull String groupName) {
+    default ProcessInformation startProcess(@NotNull String groupName) {
         return this.startProcess(groupName, null);
     }
 
@@ -36,7 +37,7 @@ public interface ProcessSyncAPI {
      * @return The created {@link ProcessInformation}
      */
     @Nullable
-    default ProcessInformation startProcess(@Nonnull String groupName, @Nullable String template) {
+    default ProcessInformation startProcess(@NotNull String groupName, @Nullable String template) {
         return this.startProcess(groupName, template, new JsonConfiguration());
     }
 
@@ -49,7 +50,7 @@ public interface ProcessSyncAPI {
      * @return The created {@link ProcessInformation}
      */
     @Nullable
-    default ProcessInformation startProcess(@Nonnull String groupName, @Nullable String template, @Nonnull JsonConfiguration configurable) {
+    default ProcessInformation startProcess(@NotNull String groupName, @Nullable String template, @NotNull JsonConfiguration configurable) {
         return this.startProcess(groupName, template, configurable, UUID.randomUUID());
     }
 
@@ -63,8 +64,8 @@ public interface ProcessSyncAPI {
      * @return The created {@link ProcessInformation}
      */
     @Nullable
-    default ProcessInformation startProcess(@Nonnull String groupName, @Nullable String template,
-                                            @Nonnull JsonConfiguration configurable, @Nonnull UUID uniqueID) {
+    default ProcessInformation startProcess(@NotNull String groupName, @Nullable String template,
+                                            @NotNull JsonConfiguration configurable, @NotNull UUID uniqueID) {
         return this.startProcess(groupName, template, configurable, uniqueID, null);
     }
 
@@ -79,8 +80,8 @@ public interface ProcessSyncAPI {
      * @return The created {@link ProcessInformation}
      */
     @Nullable
-    default ProcessInformation startProcess(@Nonnull String groupName, @Nullable String template,
-                                            @Nonnull JsonConfiguration configurable, @Nonnull UUID uniqueID,
+    default ProcessInformation startProcess(@NotNull String groupName, @Nullable String template,
+                                            @NotNull JsonConfiguration configurable, @NotNull UUID uniqueID,
                                             @Nullable String displayName) {
         return this.startProcess(groupName, template, configurable, uniqueID, displayName, null);
     }
@@ -97,8 +98,8 @@ public interface ProcessSyncAPI {
      * @return The created {@link ProcessInformation}
      */
     @Nullable
-    default ProcessInformation startProcess(@Nonnull String groupName, @Nullable String template,
-                                            @Nonnull JsonConfiguration configurable, @Nonnull UUID uniqueID,
+    default ProcessInformation startProcess(@NotNull String groupName, @Nullable String template,
+                                            @NotNull JsonConfiguration configurable, @NotNull UUID uniqueID,
                                             @Nullable String displayName, @Nullable Integer maxMemory) {
         return this.startProcess(groupName, template, configurable, uniqueID, displayName, maxMemory, null);
     }
@@ -116,8 +117,8 @@ public interface ProcessSyncAPI {
      * @return The created {@link ProcessInformation}
      */
     @Nullable
-    default ProcessInformation startProcess(@Nonnull String groupName, @Nullable String template,
-                                            @Nonnull JsonConfiguration configurable, @Nonnull UUID uniqueID,
+    default ProcessInformation startProcess(@NotNull String groupName, @Nullable String template,
+                                            @NotNull JsonConfiguration configurable, @NotNull UUID uniqueID,
                                             @Nullable String displayName, @Nullable Integer maxMemory,
                                             @Nullable Integer port) {
         return this.startProcess(groupName, template, configurable, uniqueID, displayName, maxMemory, port, null);
@@ -139,8 +140,8 @@ public interface ProcessSyncAPI {
      * @return The created {@link ProcessInformation}
      */
     @Nullable
-    default ProcessInformation startProcess(@Nonnull String groupName, @Nullable String template,
-                                            @Nonnull JsonConfiguration configurable, @Nonnull UUID uniqueID,
+    default ProcessInformation startProcess(@NotNull String groupName, @Nullable String template,
+                                            @NotNull JsonConfiguration configurable, @NotNull UUID uniqueID,
                                             @Nullable String displayName, @Nullable Integer maxMemory,
                                             @Nullable Integer port, @Nullable Integer id) {
         return this.startProcess(groupName, template, configurable, uniqueID, displayName, maxMemory, port, id, null);
@@ -163,8 +164,8 @@ public interface ProcessSyncAPI {
      * @return The created {@link ProcessInformation}
      */
     @Nullable
-    default ProcessInformation startProcess(@Nonnull String groupName, @Nullable String template,
-                                            @Nonnull JsonConfiguration configurable, @Nonnull UUID uniqueID,
+    default ProcessInformation startProcess(@NotNull String groupName, @Nullable String template,
+                                            @NotNull JsonConfiguration configurable, @NotNull UUID uniqueID,
                                             @Nullable String displayName, @Nullable Integer maxMemory,
                                             @Nullable Integer port, @Nullable Integer id, @Nullable Integer maxPlayers) {
         return this.startProcess(groupName, template, configurable, uniqueID, displayName, maxMemory, port, id, maxPlayers, new ArrayList<>());
@@ -188,11 +189,11 @@ public interface ProcessSyncAPI {
      * @return The created {@link ProcessInformation}
      */
     @Nullable
-    default ProcessInformation startProcess(@Nonnull String groupName, @Nullable String template,
-                                            @Nonnull JsonConfiguration configurable, @Nonnull UUID uniqueID,
+    default ProcessInformation startProcess(@NotNull String groupName, @Nullable String template,
+                                            @NotNull JsonConfiguration configurable, @NotNull UUID uniqueID,
                                             @Nullable String displayName, @Nullable Integer maxMemory,
                                             @Nullable Integer port, @Nullable Integer id, @Nullable Integer maxPlayers,
-                                            @Nonnull Collection<ProcessInclusion> inclusions) {
+                                            @NotNull Collection<ProcessInclusion> inclusions) {
         ProcessConfigurationBuilder builder = ProcessConfigurationBuilder
                 .newBuilder(groupName)
                 .extra(configurable)
@@ -234,7 +235,7 @@ public interface ProcessSyncAPI {
      * @see ProcessConfigurationBuilder#newBuilder(String)
      */
     @Nullable
-    ProcessInformation startProcess(@Nonnull ProcessConfiguration configuration);
+    ProcessInformation startProcess(@NotNull ProcessConfiguration configuration);
 
     /**
      * Starts a prepared process
@@ -242,8 +243,8 @@ public interface ProcessSyncAPI {
      * @param processInformation The process information of the prepared process
      * @return The process information after the start call
      */
-    @Nonnull
-    ProcessInformation startProcess(@Nonnull ProcessInformation processInformation);
+    @NotNull
+    ProcessInformation startProcess(@NotNull ProcessInformation processInformation);
 
     /**
      * Prepares a process
@@ -252,7 +253,7 @@ public interface ProcessSyncAPI {
      * @return The created {@link ProcessInformation}
      */
     @Nullable
-    default ProcessInformation prepareProcess(@Nonnull String groupName) {
+    default ProcessInformation prepareProcess(@NotNull String groupName) {
         return this.prepareProcess(groupName, null);
     }
 
@@ -264,7 +265,7 @@ public interface ProcessSyncAPI {
      * @return The created {@link ProcessInformation}
      */
     @Nullable
-    default ProcessInformation prepareProcess(@Nonnull String groupName, @Nullable String template) {
+    default ProcessInformation prepareProcess(@NotNull String groupName, @Nullable String template) {
         return this.prepareProcess(groupName, template, new JsonConfiguration());
     }
 
@@ -277,7 +278,7 @@ public interface ProcessSyncAPI {
      * @return The created {@link ProcessInformation}
      */
     @Nullable
-    default ProcessInformation prepareProcess(@Nonnull String groupName, @Nullable String template, @Nonnull JsonConfiguration configurable) {
+    default ProcessInformation prepareProcess(@NotNull String groupName, @Nullable String template, @NotNull JsonConfiguration configurable) {
         return this.prepareProcess(groupName, template, configurable, UUID.randomUUID());
     }
 
@@ -291,8 +292,8 @@ public interface ProcessSyncAPI {
      * @return The created {@link ProcessInformation}
      */
     @Nullable
-    default ProcessInformation prepareProcess(@Nonnull String groupName, @Nullable String template,
-                                              @Nonnull JsonConfiguration configurable, @Nonnull UUID uniqueID) {
+    default ProcessInformation prepareProcess(@NotNull String groupName, @Nullable String template,
+                                              @NotNull JsonConfiguration configurable, @NotNull UUID uniqueID) {
         return this.prepareProcess(groupName, template, configurable, uniqueID, null);
     }
 
@@ -307,8 +308,8 @@ public interface ProcessSyncAPI {
      * @return The created {@link ProcessInformation}
      */
     @Nullable
-    default ProcessInformation prepareProcess(@Nonnull String groupName, @Nullable String template,
-                                              @Nonnull JsonConfiguration configurable, @Nonnull UUID uniqueID,
+    default ProcessInformation prepareProcess(@NotNull String groupName, @Nullable String template,
+                                              @NotNull JsonConfiguration configurable, @NotNull UUID uniqueID,
                                               @Nullable String displayName) {
         return this.prepareProcess(groupName, template, configurable, uniqueID, displayName, null);
     }
@@ -325,8 +326,8 @@ public interface ProcessSyncAPI {
      * @return The created {@link ProcessInformation}
      */
     @Nullable
-    default ProcessInformation prepareProcess(@Nonnull String groupName, @Nullable String template,
-                                              @Nonnull JsonConfiguration configurable, @Nonnull UUID uniqueID,
+    default ProcessInformation prepareProcess(@NotNull String groupName, @Nullable String template,
+                                              @NotNull JsonConfiguration configurable, @NotNull UUID uniqueID,
                                               @Nullable String displayName, @Nullable Integer maxMemory) {
         return this.prepareProcess(groupName, template, configurable, uniqueID, displayName, maxMemory, null);
     }
@@ -344,8 +345,8 @@ public interface ProcessSyncAPI {
      * @return The created {@link ProcessInformation}
      */
     @Nullable
-    default ProcessInformation prepareProcess(@Nonnull String groupName, @Nullable String template,
-                                              @Nonnull JsonConfiguration configurable, @Nonnull UUID uniqueID,
+    default ProcessInformation prepareProcess(@NotNull String groupName, @Nullable String template,
+                                              @NotNull JsonConfiguration configurable, @NotNull UUID uniqueID,
                                               @Nullable String displayName, @Nullable Integer maxMemory,
                                               @Nullable Integer port) {
         return this.prepareProcess(groupName, template, configurable, uniqueID, displayName, maxMemory, port, null);
@@ -367,8 +368,8 @@ public interface ProcessSyncAPI {
      * @return The created {@link ProcessInformation}
      */
     @Nullable
-    default ProcessInformation prepareProcess(@Nonnull String groupName, @Nullable String template,
-                                              @Nonnull JsonConfiguration configurable, @Nonnull UUID uniqueID,
+    default ProcessInformation prepareProcess(@NotNull String groupName, @Nullable String template,
+                                              @NotNull JsonConfiguration configurable, @NotNull UUID uniqueID,
                                               @Nullable String displayName, @Nullable Integer maxMemory,
                                               @Nullable Integer port, @Nullable Integer id) {
         return this.prepareProcess(groupName, template, configurable, uniqueID, displayName, maxMemory, port, id, null);
@@ -391,8 +392,8 @@ public interface ProcessSyncAPI {
      * @return The created {@link ProcessInformation}
      */
     @Nullable
-    default ProcessInformation prepareProcess(@Nonnull String groupName, @Nullable String template,
-                                              @Nonnull JsonConfiguration configurable, @Nonnull UUID uniqueID,
+    default ProcessInformation prepareProcess(@NotNull String groupName, @Nullable String template,
+                                              @NotNull JsonConfiguration configurable, @NotNull UUID uniqueID,
                                               @Nullable String displayName, @Nullable Integer maxMemory,
                                               @Nullable Integer port, @Nullable Integer id, @Nullable Integer maxPlayers) {
         return this.prepareProcess(groupName, template, configurable, uniqueID, displayName, maxMemory, port, id, maxPlayers, new ArrayList<>());
@@ -416,11 +417,11 @@ public interface ProcessSyncAPI {
      * @return The created {@link ProcessInformation}
      */
     @Nullable
-    default ProcessInformation prepareProcess(@Nonnull String groupName, @Nullable String template,
-                                              @Nonnull JsonConfiguration configurable, @Nonnull UUID uniqueID,
+    default ProcessInformation prepareProcess(@NotNull String groupName, @Nullable String template,
+                                              @NotNull JsonConfiguration configurable, @NotNull UUID uniqueID,
                                               @Nullable String displayName, @Nullable Integer maxMemory,
                                               @Nullable Integer port, @Nullable Integer id, @Nullable Integer maxPlayers,
-                                              @Nonnull Collection<ProcessInclusion> inclusions) {
+                                              @NotNull Collection<ProcessInclusion> inclusions) {
         ProcessConfigurationBuilder builder = ProcessConfigurationBuilder
                 .newBuilder(groupName)
                 .extra(configurable)
@@ -462,7 +463,7 @@ public interface ProcessSyncAPI {
      * @see ProcessConfigurationBuilder#newBuilder(String)
      */
     @Nullable
-    ProcessInformation prepareProcess(@Nonnull ProcessConfiguration configuration);
+    ProcessInformation prepareProcess(@NotNull ProcessConfiguration configuration);
 
     /**
      * Stops a process
@@ -471,7 +472,7 @@ public interface ProcessSyncAPI {
      * @return The last known {@link ProcessInformation}
      */
     @Nullable
-    ProcessInformation stopProcess(@Nonnull String name);
+    ProcessInformation stopProcess(@NotNull String name);
 
     /**
      * Stops a process
@@ -480,7 +481,7 @@ public interface ProcessSyncAPI {
      * @return The last {@link ProcessInformation}
      */
     @Nullable
-    ProcessInformation stopProcess(@Nonnull UUID uniqueID);
+    ProcessInformation stopProcess(@NotNull UUID uniqueID);
 
     /**
      * Gets a process
@@ -489,7 +490,7 @@ public interface ProcessSyncAPI {
      * @return The {@link ProcessInformation} of the process or {@code null} if the process does not exists
      */
     @Nullable
-    ProcessInformation getProcess(@Nonnull String name);
+    ProcessInformation getProcess(@NotNull String name);
 
     /**
      * Gets a process
@@ -498,14 +499,14 @@ public interface ProcessSyncAPI {
      * @return The {@link ProcessInformation} of the process or {@code null} if the process does not exists
      */
     @Nullable
-    ProcessInformation getProcess(@Nonnull UUID uniqueID);
+    ProcessInformation getProcess(@NotNull UUID uniqueID);
 
     /**
      * Get all processes
      *
      * @return All started processes
      */
-    @Nonnull
+    @NotNull
     List<ProcessInformation> getAllProcesses();
 
     /**
@@ -514,8 +515,8 @@ public interface ProcessSyncAPI {
      * @param group The group which should be searched for
      * @return All started processes of the specified groups
      */
-    @Nonnull
-    List<ProcessInformation> getProcesses(@Nonnull String group);
+    @NotNull
+    List<ProcessInformation> getProcesses(@NotNull String group);
 
     /**
      * Executes a command on a process
@@ -523,7 +524,7 @@ public interface ProcessSyncAPI {
      * @param name        The name of the process
      * @param commandLine The command line with should be executed
      */
-    void executeProcessCommand(@Nonnull String name, @Nonnull String commandLine);
+    void executeProcessCommand(@NotNull String name, @NotNull String commandLine);
 
     /**
      * Gets the global online count
@@ -531,7 +532,7 @@ public interface ProcessSyncAPI {
      * @param ignoredProxies The ignored proxies
      * @return The global online count
      */
-    int getGlobalOnlineCount(@Nonnull Collection<String> ignoredProxies);
+    int getGlobalOnlineCount(@NotNull Collection<String> ignoredProxies);
 
     /**
      * Get the current process information
@@ -540,6 +541,7 @@ public interface ProcessSyncAPI {
      * @deprecated Has been moved to {@link API#getCurrentProcessInformation()}. Will be removed in a further release
      */
     @Nullable
+    @ApiStatus.ScheduledForRemoval(inVersion = "2.3")
     @Deprecated
     ProcessInformation getThisProcessInformation();
 
@@ -548,7 +550,7 @@ public interface ProcessSyncAPI {
      *
      * @param action The consumer which will accept by each {@link ProcessInformation}
      */
-    default void forEach(@Nonnull Consumer<ProcessInformation> action) {
+    default void forEach(@NotNull Consumer<ProcessInformation> action) {
         getAllProcesses().forEach(action);
     }
 
@@ -557,5 +559,5 @@ public interface ProcessSyncAPI {
      *
      * @param processInformation The process information which should be updated
      */
-    void update(@Nonnull ProcessInformation processInformation);
+    void update(@NotNull ProcessInformation processInformation);
 }

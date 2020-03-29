@@ -1,5 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.controller.network.packets.in.query;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.basic.ExternalAPIImplementation;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
@@ -8,7 +9,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.channel.hand
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.JsonPacket;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 
-import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 
 public final class ControllerQueryGetCommand extends DefaultJsonNetworkHandler {
@@ -19,7 +19,7 @@ public final class ControllerQueryGetCommand extends DefaultJsonNetworkHandler {
     }
 
     @Override
-    public void handlePacket(@Nonnull PacketSender packetSender, @Nonnull Packet packet, @Nonnull Consumer<Packet> responses) {
+    public void handlePacket(@NotNull PacketSender packetSender, @NotNull Packet packet, @NotNull Consumer<Packet> responses) {
         String name = packet.content().getString("name");
         responses.accept(new JsonPacket(-1, new JsonConfiguration().add("result", ExecutorAPI.getInstance().getSyncAPI().getConsoleSyncAPI().getCommand(name))));
     }

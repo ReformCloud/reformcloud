@@ -1,6 +1,8 @@
 package systems.reformcloud.reformcloud2.executor.api.common.application.basic;
 
 import com.google.gson.reflect.TypeToken;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.common.application.*;
 import systems.reformcloud.reformcloud2.executor.api.common.application.api.Application;
 import systems.reformcloud.reformcloud2.executor.api.common.application.builder.ApplicationConfigBuilder;
@@ -17,8 +19,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams
 import systems.reformcloud.reformcloud2.executor.api.common.utility.system.DownloadHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.system.SystemHelper;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -175,13 +175,13 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
     }
 
     @Override
-    public void fetchUpdates(@Nonnull String application) {
+    public void fetchUpdates(@NotNull String application) {
         Streams.filterToReference(this.applications,
                 e -> e.getApplication().getName().equalsIgnoreCase(application)).ifPresent(this::handleUpdate);
     }
 
     @Override
-    public boolean doSpecificApplicationInstall(@Nonnull InstallableApplication application) {
+    public boolean doSpecificApplicationInstall(@NotNull InstallableApplication application) {
         DownloadHelper.downloadAndDisconnect(application.url(), "reformcloud/applications/" + application.getName() + ".jar");
         File file = new File("reformcloud/applications/" + application.getName() + ".jar");
         if (!file.exists()) {
@@ -252,7 +252,7 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
     }
 
     @Override
-    public boolean doSpecificApplicationUninstall(@Nonnull LoadedApplication loadedApplication) {
+    public boolean doSpecificApplicationUninstall(@NotNull LoadedApplication loadedApplication) {
         Application application = Streams.filter(applications, application1 -> application1.getApplication().getName().equals(loadedApplication.getName()));
         if (application == null) {
             return false;
@@ -278,7 +278,7 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
     }
 
     @Override
-    public boolean doSpecificApplicationUninstall(@Nonnull String application) {
+    public boolean doSpecificApplicationUninstall(@NotNull String application) {
         LoadedApplication app = getApplication(application);
         if (app == null) {
             return false;
@@ -288,30 +288,30 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
     }
 
     @Override
-    public LoadedApplication getApplication(@Nonnull String name) {
+    public LoadedApplication getApplication(@NotNull String name) {
         return Streams.filterAndApply(applications, app -> app.getApplication().getName().equals(name), Application::getApplication);
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public String getApplicationName(@Nonnull LoadedApplication loadedApplication) {
+    public String getApplicationName(@NotNull LoadedApplication loadedApplication) {
         return loadedApplication.getName();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public List<LoadedApplication> getApplications() {
         return Collections.unmodifiableList(Streams.apply(applications, Application::getApplication));
     }
 
     @Override
-    public void addApplicationHandler(@Nonnull ApplicationHandler applicationHandler) {
+    public void addApplicationHandler(@NotNull ApplicationHandler applicationHandler) {
         applicationHandlers.add(applicationHandler);
     }
 
     @Nullable
     @Override
-    public Application getInternalApplication(@Nonnull String name) {
+    public Application getInternalApplication(@NotNull String name) {
         return Streams.filter(this.applications, e -> e.getApplication().getName().equals(name));
     }
 

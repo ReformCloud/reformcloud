@@ -1,9 +1,9 @@
 package systems.reformcloud.reformcloud2.executor.api.common.application;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.dependency.Dependency;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.name.Nameable;
 
-import javax.annotation.Nonnull;
 import java.io.File;
 import java.util.jar.JarEntry;
 
@@ -17,54 +17,54 @@ public interface ApplicationConfig extends Nameable {
     /**
      * @return The version of the application
      */
-    @Nonnull
+    @NotNull
     String version();
 
     /**
      * @return The author of the application
      */
-    @Nonnull
+    @NotNull
     String author();
 
     /**
      * @return The main class of the application
      */
-    @Nonnull
+    @NotNull
     String main();
 
     /**
      * @return All needed dependencies for an application
      */
-    @Nonnull
+    @NotNull
     Dependency[] dependencies();
 
     /**
      * @return The description of the application
      */
-    @Nonnull
+    @NotNull
     String description();
 
     /**
      * @return The website of an application
      */
-    @Nonnull
+    @NotNull
     String website();
 
     /**
      * @return The api version which the application is using
      */
-    @Nonnull
+    @NotNull
     String implementedVersion();
 
     /**
      * @return The file from which the application is loaded
      */
-    @Nonnull
+    @NotNull
     File applicationFile();
 
     /**
      * @return The {@link JarEntry} from which the application config is loaded
      */
-    @Nonnull
+    @NotNull
     JarEntry applicationConfigFile();
 }

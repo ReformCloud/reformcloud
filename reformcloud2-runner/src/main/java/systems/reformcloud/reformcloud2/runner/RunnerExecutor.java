@@ -1,10 +1,10 @@
 package systems.reformcloud.reformcloud2.runner;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 public final class RunnerExecutor {
 
-    public static synchronized void main(@Nonnull String[] args) {
+    public static synchronized void main(@NotNull String[] args) {
         System.setProperty("file.encoding", "UTF-8");
         System.setProperty("io.netty.noPreferDirect", "true");
 

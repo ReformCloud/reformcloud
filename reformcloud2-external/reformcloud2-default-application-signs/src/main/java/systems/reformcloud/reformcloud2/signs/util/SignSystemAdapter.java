@@ -1,13 +1,13 @@
 package systems.reformcloud.reformcloud2.signs.util;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.signs.util.converter.SignConverter;
 import systems.reformcloud.reformcloud2.signs.util.sign.CloudLocation;
 import systems.reformcloud.reformcloud2.signs.util.sign.CloudSign;
 import systems.reformcloud.reformcloud2.signs.util.sign.config.SignConfig;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.concurrent.atomic.AtomicReference;
 
 public interface SignSystemAdapter<T> {
@@ -29,21 +29,21 @@ public interface SignSystemAdapter<T> {
      *
      * @param processInformation The process info of the process which started
      */
-    void handleProcessStart(@Nonnull ProcessInformation processInformation);
+    void handleProcessStart(@NotNull ProcessInformation processInformation);
 
     /**
      * Handles a process update to the signs
      *
      * @param processInformation The process info which should get updated
      */
-    void handleProcessUpdate(@Nonnull ProcessInformation processInformation);
+    void handleProcessUpdate(@NotNull ProcessInformation processInformation);
 
     /**
      * Handles a process stop to the signs
      *
      * @param processInformation The process info of the process which stopped
      */
-    void handleProcessStop(@Nonnull ProcessInformation processInformation);
+    void handleProcessStop(@NotNull ProcessInformation processInformation);
 
     /**
      * Creates a new sign
@@ -52,15 +52,15 @@ public interface SignSystemAdapter<T> {
      * @param group The group for which the sign should be
      * @return The created cloud sign or the which already exists
      */
-    @Nonnull
-    CloudSign createSign(@Nonnull T t, @Nonnull String group);
+    @NotNull
+    CloudSign createSign(@NotNull T t, @NotNull String group);
 
     /**
      * Deletes a sign
      *
      * @param location The cloud location of the sign which should get deleted
      */
-    void deleteSign(@Nonnull CloudLocation location);
+    void deleteSign(@NotNull CloudLocation location);
 
     /**
      * Gets a sign at a current location
@@ -69,23 +69,23 @@ public interface SignSystemAdapter<T> {
      * @return The sign at the location or {@code null} if the sign does not exists
      */
     @Nullable
-    CloudSign getSignAt(@Nonnull CloudLocation location);
+    CloudSign getSignAt(@NotNull CloudLocation location);
 
     /**
      * @return The converter for all objects from the implementation to the cloud
      */
-    @Nonnull
+    @NotNull
     SignConverter<T> getSignConverter();
 
-    boolean canConnect(@Nonnull CloudSign cloudSign);
+    boolean canConnect(@NotNull CloudSign cloudSign);
 
     // ===================================
     // The following methods are not documented because they are for internal use only
     // ===================================
 
-    void handleInternalSignCreate(@Nonnull CloudSign cloudSign);
+    void handleInternalSignCreate(@NotNull CloudSign cloudSign);
 
-    void handleInternalSignDelete(@Nonnull CloudSign cloudSign);
+    void handleInternalSignDelete(@NotNull CloudSign cloudSign);
 
-    void handleSignConfigUpdate(@Nonnull SignConfig config);
+    void handleSignConfigUpdate(@NotNull SignConfig config);
 }

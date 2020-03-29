@@ -1,5 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.node;
 
+import org.jetbrains.annotations.NotNull;
 import org.reflections.Reflections;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorType;
 import systems.reformcloud.reformcloud2.executor.api.common.CommonHelper;
@@ -102,7 +103,6 @@ import systems.reformcloud.reformcloud2.executor.node.process.manager.LocalProce
 import systems.reformcloud.reformcloud2.executor.node.process.startup.LocalProcessQueue;
 import systems.reformcloud.reformcloud2.executor.node.process.watchdog.WatchdogThread;
 
-import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.file.Paths;
@@ -340,18 +340,18 @@ public class NodeExecutor extends Node {
         this.runConsole();
     }
 
-    @Nonnull
+    @NotNull
     public static NodeExecutor getInstance() {
         return instance;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public SyncAPI getSyncAPI() {
         return syncAPI;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public AsyncAPI getAsyncAPI() {
         return asyncAPI;
@@ -389,7 +389,7 @@ public class NodeExecutor extends Node {
         return database;
     }
 
-    @Nonnull
+    @NotNull
     public EventManager getEventManager() {
         return eventManager;
     }
@@ -459,19 +459,19 @@ public class NodeExecutor extends Node {
         }
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public NetworkServer getNetworkServer() {
         return networkServer;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public CommandManager getCommandManager() {
         return commandManager;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public PacketHandler getPacketHandler() {
         return packetHandler;
@@ -548,22 +548,22 @@ public class NodeExecutor extends Node {
         this.commandManager
                 .register(new CommandProcess(target -> {
                     if (target.getNodeUniqueID().equals(NodeExecutor.getInstance().getNodeConfig().getUniqueID())) {
-                        ReferencedOptional<NodeProcessScreen> screen = NodeProcessScreenHandler.getScreen(target.getProcessUniqueID());
+                        ReferencedOptional<NodeProcessScreen> screen = NodeProcessScreenHandler.getScreen(target.getProcessDetail().getProcessUniqueID());
                         return screen.isPresent() && screen.get().toggleFor(NodeExecutor.getInstance().getNodeConfig().getName());
                     } else {
-                        ReferencedOptional<PacketSender> optional = DefaultChannelManager.INSTANCE.get(target.getParent());
-                        optional.ifPresent(packetSender -> packetSender.sendPacket(new NodePacketOutToggleScreen(target.getProcessUniqueID())));
+                        ReferencedOptional<PacketSender> optional = DefaultChannelManager.INSTANCE.get(target.getProcessDetail().getParentName());
+                        optional.ifPresent(packetSender -> packetSender.sendPacket(new NodePacketOutToggleScreen(target.getProcessDetail().getProcessUniqueID())));
                         return optional.isPresent();
                     }
                 }, target -> {
                     if (NodeExecutor.getInstance().getNodeConfig().getUniqueID().equals(target.getNodeUniqueID())) {
                         Streams.filterToReference(
                                 LocalProcessManager.getNodeProcesses(),
-                                e -> e.getProcessInformation().getProcessUniqueID().equals(target.getProcessUniqueID())
+                                e -> e.getProcessInformation().getProcessDetail().getProcessUniqueID().equals(target.getProcessDetail().getProcessUniqueID())
                         ).ifPresent(RunningProcess::copy);
                     } else {
-                        DefaultChannelManager.INSTANCE.get(target.getParent()).ifPresent(packetSender -> packetSender.sendPacket(
-                                new ControllerPacketOutCopyProcess(target.getProcessUniqueID())
+                        DefaultChannelManager.INSTANCE.get(target.getProcessDetail().getParentName()).ifPresent(packetSender -> packetSender.sendPacket(
+                                new ControllerPacketOutCopyProcess(target.getProcessDetail().getProcessUniqueID())
                         ));
                     }
                 }))
@@ -608,7 +608,7 @@ public class NodeExecutor extends Node {
             this.clusterSyncManager.syncProcessGroups(this.nodeExecutorConfig.getProcessGroups(), SyncAction.SYNC);
             this.clusterSyncManager.syncProcessInformation(Streams.allOf(
                     this.nodeNetworkManager.getNodeProcessHelper().getClusterProcesses(),
-                    e -> this.nodeNetworkManager.getNodeProcessHelper().isLocal(e.getProcessUniqueID())
+                    e -> this.nodeNetworkManager.getNodeProcessHelper().isLocal(e.getProcessDetail().getProcessUniqueID())
             ));
         });
     }
@@ -618,7 +618,7 @@ public class NodeExecutor extends Node {
         this.nodeExecutorConfig.getProcessGroups().forEach(processGroup -> System.out.println(LanguageManager.get("loading-process-group", processGroup.getName())));
     }
 
-    public void handleChannelDisconnect(@Nonnull PacketSender packetSender) {
+    public void handleChannelDisconnect(@NotNull PacketSender packetSender) {
         NodeInformation information = nodeNetworkManager.getCluster().getNode(packetSender.getName());
         if (information == null) {
             nodeNetworkManager.getNodeProcessHelper().handleProcessDisconnect(packetSender.getName());

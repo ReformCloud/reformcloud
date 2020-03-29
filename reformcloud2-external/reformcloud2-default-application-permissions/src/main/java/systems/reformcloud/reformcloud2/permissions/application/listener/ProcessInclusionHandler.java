@@ -1,5 +1,6 @@
 package systems.reformcloud.reformcloud2.permissions.application.listener;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorType;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.event.handler.Listener;
@@ -8,8 +9,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.process.api.ProcessI
 import systems.reformcloud.reformcloud2.executor.api.common.process.event.ProcessInformationConfigureEvent;
 import systems.reformcloud.reformcloud2.executor.api.common.process.running.events.RunningProcessPrepareEvent;
 import systems.reformcloud.reformcloud2.permissions.application.ReformCloudApplication;
-
-import javax.annotation.Nonnull;
 
 public final class ProcessInclusionHandler {
 
@@ -27,7 +26,7 @@ public final class ProcessInclusionHandler {
         }
     }
 
-    private void includeSelfFile(@Nonnull ProcessInformation processInformation) {
+    private void includeSelfFile(@NotNull ProcessInformation processInformation) {
         processInformation.getPreInclusions().add(new ProcessInclusion(
                 "https://dl.reformcloud.systems/addonsv2/reformcloud2-default-application-permissions-"
                         + ReformCloudApplication.getInstance().getApplication().applicationConfig().version() + ".jar",

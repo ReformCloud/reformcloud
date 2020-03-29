@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.level.Location;
 import cn.nukkit.plugin.Plugin;
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorType;
 import systems.reformcloud.reformcloud2.executor.api.api.API;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
@@ -34,7 +35,6 @@ import systems.reformcloud.reformcloud2.executor.api.network.packets.in.APIPacke
 import systems.reformcloud.reformcloud2.executor.api.network.packets.out.APIBungeePacketOutRequestIngameMessages;
 import systems.reformcloud.reformcloud2.executor.api.nukkit.plugins.PluginsExecutorContainer;
 
-import javax.annotation.Nonnull;
 import java.io.File;
 import java.util.UUID;
 
@@ -99,12 +99,12 @@ public final class NukkitExecutor extends API implements PlayerAPIExecutor {
         return plugin;
     }
 
-    @Nonnull
+    @NotNull
     public IngameMessages getMessages() {
         return messages;
     }
 
-    @Nonnull
+    @NotNull
     public EventManager getEventManager() {
         return ExternalEventBusHandler.getInstance().getEventManager();
     }
@@ -114,13 +114,13 @@ public final class NukkitExecutor extends API implements PlayerAPIExecutor {
         return packetHandler;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public ProcessInformation getCurrentProcessInformation() {
         return this.thisProcessInformation;
     }
 
-    @Nonnull
+    @NotNull
     public static NukkitExecutor getInstance() {
         return instance;
     }
@@ -146,7 +146,7 @@ public final class NukkitExecutor extends API implements PlayerAPIExecutor {
             thisProcessInformation.updateMaxPlayers(Server.getInstance().getMaxPlayers());
             thisProcessInformation.updateRuntimeInformation();
             thisProcessInformation.getNetworkInfo().setConnected(true);
-            thisProcessInformation.setProcessState(ProcessState.READY);
+            thisProcessInformation.getProcessDetail().setProcessState(ProcessState.READY);
             ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(thisProcessInformation);
 
             DefaultChannelManager.INSTANCE.get("Controller").ifPresent(controller -> packetHandler.getQueryHandler().sendQueryAsync(controller, new APIBungeePacketOutRequestIngameMessages()).onComplete(packet -> {
@@ -160,7 +160,7 @@ public final class NukkitExecutor extends API implements PlayerAPIExecutor {
 
     @Listener
     public void handle(final ProcessUpdatedEvent event) {
-        if (event.getProcessInformation().getProcessUniqueID().equals(thisProcessInformation.getProcessUniqueID())) {
+        if (event.getProcessInformation().getProcessDetail().getProcessUniqueID().equals(thisProcessInformation.getProcessDetail().getProcessUniqueID())) {
             thisProcessInformation = event.getProcessInformation();
         }
     }

@@ -1,6 +1,7 @@
 package systems.reformcloud.reformcloud2.executor.controller.network.packets.in;
 
 import com.google.gson.reflect.TypeToken;
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
 import systems.reformcloud.reformcloud2.executor.api.common.network.NetworkUtil;
@@ -9,7 +10,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.channel.hand
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 
-import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -22,7 +22,7 @@ public class ControllerPacketInScreenEnabled extends DefaultJsonNetworkHandler {
     }
 
     @Override
-    public void handlePacket(@Nonnull PacketSender packetSender, @Nonnull Packet packet, @Nonnull Consumer<Packet> responses) {
+    public void handlePacket(@NotNull PacketSender packetSender, @NotNull Packet packet, @NotNull Consumer<Packet> responses) {
         UUID uniqueID = packet.content().get("uniqueID", UUID.class);
         Collection<String> lines = packet.content().get("lines", new TypeToken<Collection<String>>() {});
 

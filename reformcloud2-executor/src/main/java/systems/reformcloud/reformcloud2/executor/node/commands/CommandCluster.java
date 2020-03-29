@@ -1,5 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.node.commands;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.CommonHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.GlobalCommand;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.source.CommandSource;
@@ -8,7 +9,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.node.NodeInformation
 import systems.reformcloud.reformcloud2.executor.api.common.node.NodeProcess;
 import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
 
-import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
@@ -20,7 +20,7 @@ public final class CommandCluster extends GlobalCommand {
     }
 
     @Override
-    public void describeCommandToSender(@Nonnull CommandSource source) {
+    public void describeCommandToSender(@NotNull CommandSource source) {
         source.sendMessages((
                 "cluster list                      | Lists all connected nodes and all other nodes from the config\n" +
                         "cluster me                        | Shows information about the current node\n" +
@@ -32,7 +32,7 @@ public final class CommandCluster extends GlobalCommand {
     }
 
     @Override
-    public boolean handleCommand(@Nonnull CommandSource commandSource, @Nonnull String[] strings) {
+    public boolean handleCommand(@NotNull CommandSource commandSource, @NotNull String[] strings) {
         if (strings.length == 0) {
             this.describeCommandToSender(commandSource);
             return true;

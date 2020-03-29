@@ -1,9 +1,9 @@
 package systems.reformcloud.reformcloud2.executor.api.common.network.server;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.network.challenge.ChallengeAuthHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.NetworkChannelReader;
 
-import javax.annotation.Nonnull;
 import java.util.function.Supplier;
 
 public interface NetworkServer {
@@ -17,9 +17,9 @@ public interface NetworkServer {
      * @param challengeAuthHandler The auth handler for new network components
      */
     void bind(
-            @Nonnull String host,
+            @NotNull String host,
             int port,
-            @Nonnull Supplier<NetworkChannelReader> readerHelper, @Nonnull ChallengeAuthHandler challengeAuthHandler
+            @NotNull Supplier<NetworkChannelReader> readerHelper, @NotNull ChallengeAuthHandler challengeAuthHandler
     );
 
     /**

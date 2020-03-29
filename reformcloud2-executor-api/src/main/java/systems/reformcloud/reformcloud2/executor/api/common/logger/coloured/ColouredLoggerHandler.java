@@ -1,5 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.api.common.logger.coloured;
 
+import org.jetbrains.annotations.NotNull;
 import org.jline.reader.LineReader;
 import org.jline.terminal.Terminal;
 import org.jline.utils.InfoCmp;
@@ -17,7 +18,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.logger.stream.Output
 import systems.reformcloud.reformcloud2.executor.api.common.logger.terminal.TerminalLineHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.StringUtil;
 
-import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.file.Files;
@@ -37,7 +37,7 @@ public final class ColouredLoggerHandler extends LoggerBase {
 
     private static String prompt;
 
-    public ColouredLoggerHandler(@Nonnull CommandManager commandManager) throws IOException {
+    public ColouredLoggerHandler(@NotNull CommandManager commandManager) throws IOException {
         Terminal terminal = TerminalLineHandler.newTerminal(true);
         this.lineReader = TerminalLineHandler.newLineReader(terminal, new JLine3Completer(commandManager));
 
@@ -65,27 +65,27 @@ public final class ColouredLoggerHandler extends LoggerBase {
 
     private final Debugger debugger = new ColouredDebugger();
 
-    @Nonnull
+    @NotNull
     @Override
     public LineReader getLineReader() {
         return lineReader;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String readLine() {
         return TerminalLineHandler.readLine(lineReader, prompt);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String readLineNoPrompt() {
         return TerminalLineHandler.readLine(lineReader, null);
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public String readString(@Nonnull Predicate<String> predicate, @Nonnull Runnable invalidInputMessage) {
+    public String readString(@NotNull Predicate<String> predicate, @NotNull Runnable invalidInputMessage) {
         String line = readLine();
         while (!predicate.test(line)) {
             invalidInputMessage.run();
@@ -95,9 +95,9 @@ public final class ColouredLoggerHandler extends LoggerBase {
         return line;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public <T> T read(@Nonnull Function<String, T> function, @Nonnull Runnable invalidInputMessage) {
+    public <T> T read(@NotNull Function<String, T> function, @NotNull Runnable invalidInputMessage) {
         String line = readLine();
         T result;
         while ((result = function.apply(line)) == null) {
@@ -109,7 +109,7 @@ public final class ColouredLoggerHandler extends LoggerBase {
     }
 
     @Override
-    public void log(@Nonnull String message) {
+    public void log(@NotNull String message) {
         message = Colours.coloured(message);
         message += '\r';
         handleLine(message);
@@ -123,7 +123,7 @@ public final class ColouredLoggerHandler extends LoggerBase {
     }
 
     @Override
-    public void logRaw(@Nonnull String message) {
+    public void logRaw(@NotNull String message) {
         message = Colours.stripColor(message);
         message += '\r';
         handleLine(message);
@@ -136,19 +136,19 @@ public final class ColouredLoggerHandler extends LoggerBase {
         TerminalLineHandler.tryRedisplay(lineReader);
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public LoggerBase addLogLineHandler(@Nonnull LoggerLineHandler handler) {
+    public LoggerBase addLogLineHandler(@NotNull LoggerLineHandler handler) {
         this.handlers.add(handler);
         return this;
     }
 
     @Override
-    public boolean removeLogLineHandler(@Nonnull LoggerLineHandler handler) {
+    public boolean removeLogLineHandler(@NotNull LoggerLineHandler handler) {
         return this.handlers.remove(handler);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Debugger getDebugger() {
         return debugger;

@@ -1,9 +1,9 @@
 package systems.reformcloud.reformcloud2.executor.api.common.network.packet.handler;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.handler.NetworkHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.query.QueryHandler;
 
-import javax.annotation.Nonnull;
 import java.util.List;
 
 public interface PacketHandler {
@@ -49,19 +49,19 @@ public interface PacketHandler {
      * @param id The id which should get filtered
      * @return All registered network handlers handling the given id
      */
-    @Nonnull
+    @NotNull
     List<NetworkHandler> getNetworkHandlers(int id);
 
     /**
      * @return All registered network handlers
      */
-    @Nonnull
+    @NotNull
     List<NetworkHandler> getAllNetworkHandlers();
 
     /**
      * @return The query handler of the current instance
      */
-    @Nonnull
+    @NotNull
     QueryHandler getQueryHandler();
 
     /**

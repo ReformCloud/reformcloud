@@ -2,6 +2,7 @@ package systems.reformcloud.reformcloud2.executor.api.common.database.basic.driv
 
 import org.h2.Driver;
 import org.h2.store.fs.FileUtils;
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.base.Conditions;
 import systems.reformcloud.reformcloud2.executor.api.common.database.Database;
 import systems.reformcloud.reformcloud2.executor.api.common.database.DatabaseReader;
@@ -11,7 +12,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.dependency.repo.Defa
 import systems.reformcloud.reformcloud2.executor.api.common.utility.StringUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.maps.AbsentMap;
 
-import javax.annotation.Nonnull;
 import java.io.File;
 import java.net.URL;
 import java.sql.Connection;
@@ -39,7 +39,7 @@ public class H2Database extends Database<Connection> {
     private Connection connection;
 
     @Override
-    public void connect(@Nonnull String host, int port, @Nonnull String userName, @Nonnull String password, @Nonnull String table) {
+    public void connect(@NotNull String host, int port, @NotNull String userName, @NotNull String password, @NotNull String table) {
         if (!isConnected()) {
             try {
                 Driver.load();
@@ -105,7 +105,7 @@ public class H2Database extends Database<Connection> {
         return perTableReader.putIfAbsent(table, new SQLDatabaseReader(table, this));
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Connection get() {
         return connection;

@@ -1,10 +1,11 @@
 package systems.reformcloud.reformcloud2.executor.api.common.client;
 
 import com.google.gson.reflect.TypeToken;
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.client.basic.DefaultClientRuntimeInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.name.Nameable;
 
-import javax.annotation.Nonnull;
+import java.util.UUID;
 
 /**
  * This class represents any connected to a controller
@@ -17,8 +18,14 @@ public interface ClientRuntimeInformation extends Nameable {
     /**
      * @return The start host of the client
      */
-    @Nonnull
+    @NotNull
     String startHost();
+
+    /**
+     * @return The unique id of the client
+     */
+    @NotNull
+    UUID uniqueID();
 
     /**
      * @return The max memory of the client

@@ -1,10 +1,10 @@
 package systems.reformcloud.reformcloud2.executor.api.common.network.packet;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.serialisation.PacketWriter;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.UUID;
 
 public interface Packet extends PacketWriter {
@@ -23,13 +23,13 @@ public interface Packet extends PacketWriter {
     /**
      * @return The content of the packet
      */
-    @Nonnull
+    @NotNull
     JsonConfiguration content();
 
     /**
      * @return The extra content of this packet
      */
-    @Nonnull
+    @NotNull
     byte[] extra();
 
     /**

@@ -1,8 +1,7 @@
 package systems.reformcloud.reformcloud2.executor.api.common.network.packet.defaults;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.WrappedByteInput;
-
-import javax.annotation.Nonnull;
 
 public class DefaultWrappedByteInput implements WrappedByteInput {
 
@@ -20,7 +19,7 @@ public class DefaultWrappedByteInput implements WrappedByteInput {
         return this.id;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public byte[] getContent() {
         return this.bytes;

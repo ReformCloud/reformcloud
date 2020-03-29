@@ -1,12 +1,12 @@
 package systems.reformcloud.reformcloud2.executor.api.common.network.files;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.base.Conditions;
 import systems.reformcloud.reformcloud2.executor.api.common.network.NetworkUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.handler.NetworkHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 
-import javax.annotation.Nonnull;
 import java.io.ObjectInputStream;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -19,7 +19,7 @@ public abstract class ChunkedFilePacketHandler implements NetworkHandler {
     }
 
     @Override
-    public final void handlePacket(@Nonnull PacketSender packetSender, @Nonnull Packet packet, @Nonnull Consumer<Packet> responses) {
+    public final void handlePacket(@NotNull PacketSender packetSender, @NotNull Packet packet, @NotNull Consumer<Packet> responses) {
         Conditions.isTrue(packet instanceof ChunkedFilePacket);
 
         ChunkedFilePacket chunkedFilePacket = (ChunkedFilePacket) packet;
@@ -31,9 +31,9 @@ public abstract class ChunkedFilePacketHandler implements NetworkHandler {
         );
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public Packet read(int id, @Nonnull ObjectInputStream inputStream) throws Exception {
+    public Packet read(int id, @NotNull ObjectInputStream inputStream) throws Exception {
         UUID uniqueID = UUID.fromString(inputStream.readUTF());
         String path = inputStream.readUTF();
         int length = inputStream.readInt();

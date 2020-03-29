@@ -1,6 +1,7 @@
 package systems.reformcloud.reformcloud2.executor.api.common.application.factory;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.concurrent.ThreadFactory;
 
 public final class ApplicationThreadFactory implements ThreadFactory {
@@ -12,7 +13,7 @@ public final class ApplicationThreadFactory implements ThreadFactory {
     private final ThreadGroup threadGroup;
 
     @Override
-    public Thread newThread(@Nonnull Runnable r) {
+    public Thread newThread(@NotNull Runnable r) {
         return new Thread(threadGroup, r);
     }
 }

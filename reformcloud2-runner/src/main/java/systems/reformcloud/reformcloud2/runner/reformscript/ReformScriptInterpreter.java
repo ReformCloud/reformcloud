@@ -1,10 +1,10 @@
 package systems.reformcloud.reformcloud2.runner.reformscript;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.runner.reformscript.utils.InterpreterCommand;
 import systems.reformcloud.reformcloud2.runner.reformscript.utils.InterpreterVariable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.File;
 import java.nio.file.Path;
 
@@ -21,8 +21,8 @@ public interface ReformScriptInterpreter {
      * @param command The command which should be registered
      * @return The same reform script interpreter instance as used to call the method
      */
-    @Nonnull
-    ReformScriptInterpreter registerInterpreterCommand(@Nonnull InterpreterCommand command);
+    @NotNull
+    ReformScriptInterpreter registerInterpreterCommand(@NotNull InterpreterCommand command);
 
     /**
      * Registers a variable which should be replaced if the variable pattern appears in the script code
@@ -30,8 +30,8 @@ public interface ReformScriptInterpreter {
      * @param variable The variable which should be registered
      * @return The same reform script interpreter instance as used to call the method
      */
-    @Nonnull
-    ReformScriptInterpreter registerInterpreterVariable(@Nonnull InterpreterVariable variable);
+    @NotNull
+    ReformScriptInterpreter registerInterpreterVariable(@NotNull InterpreterVariable variable);
 
     /**
      * Get the command by the given name
@@ -40,7 +40,7 @@ public interface ReformScriptInterpreter {
      * @return The command by the given name or {@code null} if the command is unknown
      */
     @Nullable
-    InterpreterCommand getCommand(@Nonnull String command);
+    InterpreterCommand getCommand(@NotNull String command);
 
     /**
      * Get the variable by the given name
@@ -49,7 +49,7 @@ public interface ReformScriptInterpreter {
      * @return The variable by the name or {@code null} if the variable is unknown
      */
     @Nullable
-    InterpreterVariable getVariable(@Nonnull String variable);
+    InterpreterVariable getVariable(@NotNull String variable);
 
     /**
      * Interprets the given file as a reform script
@@ -58,7 +58,7 @@ public interface ReformScriptInterpreter {
      * @return The interpreted script or {@code null} if the interpreter cannot understand the file content
      */
     @Nullable
-    default InterpretedReformScript interpret(@Nonnull File script) {
+    default InterpretedReformScript interpret(@NotNull File script) {
         return this.interpret(script.toPath());
     }
 
@@ -69,6 +69,6 @@ public interface ReformScriptInterpreter {
      * @return The interpreted script or {@code null} if the interpreter cannot understand the file content
      */
     @Nullable
-    InterpretedReformScript interpret(@Nonnull Path script);
+    InterpretedReformScript interpret(@NotNull Path script);
 
 }

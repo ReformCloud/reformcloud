@@ -1,9 +1,9 @@
 package systems.reformcloud.reformcloud2.executor.api.client.process;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.process.running.RunningProcess;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.optional.ReferencedOptional;
 
-import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.UUID;
 
@@ -14,14 +14,14 @@ public interface ProcessManager {
      *
      * @param runningProcess The process which should get registered
      */
-    void registerProcess(@Nonnull RunningProcess runningProcess);
+    void registerProcess(@NotNull RunningProcess runningProcess);
 
     /**
      * Unregisters a process by the name
      *
      * @param name The name of the process which should get unregistered
      */
-    void unregisterProcess(@Nonnull String name);
+    void unregisterProcess(@NotNull String name);
 
     /**
      * Gets a specific process which is started in the client by the unique id
@@ -31,8 +31,8 @@ public interface ProcessManager {
      * @see ReferencedOptional#isEmpty()
      * @see ReferencedOptional#isPresent()
      */
-    @Nonnull
-    ReferencedOptional<RunningProcess> getProcess(@Nonnull UUID uniqueID);
+    @NotNull
+    ReferencedOptional<RunningProcess> getProcess(@NotNull UUID uniqueID);
 
     /**
      * Gets a specific process which is started in the client by the name
@@ -42,13 +42,13 @@ public interface ProcessManager {
      * @see ReferencedOptional#isEmpty()
      * @see ReferencedOptional#isPresent()
      */
-    @Nonnull
+    @NotNull
     ReferencedOptional<RunningProcess> getProcess(String name);
 
     /**
      * @return All processes which are registered in the client
      */
-    @Nonnull
+    @NotNull
     Collection<RunningProcess> getAll();
 
     /**
@@ -56,7 +56,7 @@ public interface ProcessManager {
      *
      * @param uuid The unique id of the process which is disconnected
      */
-    void onProcessDisconnect(@Nonnull UUID uuid);
+    void onProcessDisconnect(@NotNull UUID uuid);
 
     /**
      * Stops all currently running processes

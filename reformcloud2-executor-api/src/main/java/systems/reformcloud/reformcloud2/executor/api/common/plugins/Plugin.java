@@ -1,12 +1,12 @@
 package systems.reformcloud.reformcloud2.executor.api.common.plugins;
 
 import com.google.gson.reflect.TypeToken;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.common.plugins.basic.DefaultPlugin;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.name.Nameable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.List;
 
 /**
@@ -22,7 +22,7 @@ public abstract class Plugin implements Nameable {
     /**
      * @return The version of the plugin
      */
-    @Nonnull
+    @NotNull
     public abstract String version();
 
     /**
@@ -34,7 +34,7 @@ public abstract class Plugin implements Nameable {
     /**
      * @return The main class of the plugin
      */
-    @Nonnull
+    @NotNull
     public abstract String main();
 
     /**

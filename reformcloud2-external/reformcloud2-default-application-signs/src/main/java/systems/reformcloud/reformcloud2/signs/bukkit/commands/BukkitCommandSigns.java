@@ -6,20 +6,19 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.signs.bukkit.adapter.BukkitSignSystemAdapter;
 import systems.reformcloud.reformcloud2.signs.util.sign.CloudSign;
-
-import javax.annotation.Nonnull;
 
 public class BukkitCommandSigns implements CommandExecutor {
 
     @Override
     public boolean onCommand(
-            @Nonnull CommandSender commandSender,
-            @Nonnull Command command,
-            @Nonnull String s,
-            @Nonnull String[] strings
+            @NotNull CommandSender commandSender,
+            @NotNull Command command,
+            @NotNull String s,
+            @NotNull String[] strings
     ) {
         if (!(commandSender.hasPermission("reformcloud.command.signs")) || !(commandSender instanceof Player)) {
             return true;

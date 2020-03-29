@@ -168,7 +168,7 @@
                                     </excludes>
                                 </filter>
                                 <filter>
-                                    <artifact>com.google.code.findbugs:jsr305</artifact>
+                                    <artifact>org.jetbrains:annotations</artifact>
                                     <excludes>
                                         <exclude>META-INF/*.MF</exclude>
                                     </excludes>

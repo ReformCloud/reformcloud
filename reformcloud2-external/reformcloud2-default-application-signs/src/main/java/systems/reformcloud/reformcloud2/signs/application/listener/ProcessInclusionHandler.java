@@ -1,5 +1,6 @@
 package systems.reformcloud.reformcloud2.signs.application.listener;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorType;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.event.handler.Listener;
@@ -8,8 +9,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.process.api.ProcessI
 import systems.reformcloud.reformcloud2.executor.api.common.process.event.ProcessInformationConfigureEvent;
 import systems.reformcloud.reformcloud2.executor.api.common.process.running.events.RunningProcessPrepareEvent;
 import systems.reformcloud.reformcloud2.signs.application.ReformCloudApplication;
-
-import javax.annotation.Nonnull;
 
 public final class ProcessInclusionHandler {
 
@@ -27,8 +26,8 @@ public final class ProcessInclusionHandler {
         }
     }
 
-    private void includeSelfFile(@Nonnull ProcessInformation processInformation) {
-        if (!processInformation.getTemplate().getVersion().isServer()
+    private void includeSelfFile(@NotNull ProcessInformation processInformation) {
+        if (!processInformation.getProcessDetail().getTemplate().getVersion().isServer()
                 || !processInformation.getProcessGroup().isCanBeUsedAsLobby()) {
             return;
         }

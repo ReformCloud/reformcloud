@@ -1,10 +1,10 @@
 package systems.reformcloud.reformcloud2.executor.api.common;
 
 import com.sun.management.OperatingSystemMXBean;
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessRuntimeInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.optional.ReferencedOptional;
 
-import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
@@ -116,7 +116,7 @@ public final class CommonHelper {
         return (int) ((operatingSystemMXBean().getTotalPhysicalMemorySize() / 1048576) - 2048);
     }
 
-    public static String getIpAddress(@Nonnull String input) {
+    public static String getIpAddress(@NotNull String input) {
         if (input.split("\\.").length == 4) {
             return input;
         }

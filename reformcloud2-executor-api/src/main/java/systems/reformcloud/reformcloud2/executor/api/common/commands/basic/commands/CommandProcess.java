@@ -1,5 +1,7 @@
 package systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.common.CommonHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.GlobalCommand;
@@ -10,8 +12,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInfor
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.StringUtil;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Properties;
@@ -23,7 +23,7 @@ import static systems.reformcloud.reformcloud2.executor.api.common.CommonHelper.
 
 public final class CommandProcess extends GlobalCommand {
 
-    public CommandProcess(@Nonnull Function<ProcessInformation, Boolean> screenToggle, @Nonnull Consumer<ProcessInformation> copy) {
+    public CommandProcess(@NotNull Function<ProcessInformation, Boolean> screenToggle, @NotNull Consumer<ProcessInformation> copy) {
         super("process", "reformcloud.command.process", "The process management command", "p", "processes");
         this.screenToggle = screenToggle;
         this.copy = copy;
@@ -34,7 +34,7 @@ public final class CommandProcess extends GlobalCommand {
     private final Consumer<ProcessInformation> copy;
 
     @Override
-    public void describeCommandToSender(@Nonnull CommandSource source) {
+    public void describeCommandToSender(@NotNull CommandSource source) {
         source.sendMessages((
                 "process list                                  | Lists all processes\n" +
                 " --group=[group]                              | Lists all processes of the specified group\n" +
@@ -51,7 +51,7 @@ public final class CommandProcess extends GlobalCommand {
     }
 
     @Override
-    public boolean handleCommand(@Nonnull CommandSource commandSource, @Nonnull String[] strings) {
+    public boolean handleCommand(@NotNull CommandSource commandSource, @NotNull String[] strings) {
         if (strings.length == 0) {
             this.describeCommandToSender(commandSource);
             return true;
@@ -68,7 +68,7 @@ public final class CommandProcess extends GlobalCommand {
 
             commandSource.sendMessage(LanguageManager.get("command-process-process-list-prefix", processes.size()));
             processes.forEach(
-                    e -> commandSource.sendMessage("  - " + e.getName() + "/" + e.getProcessUniqueID())
+                    e -> commandSource.sendMessage("  - " + e.getName() + "/" + e.getProcessDetail().getProcessUniqueID())
             );
             return true;
         }
@@ -93,8 +93,8 @@ public final class CommandProcess extends GlobalCommand {
             commandSource.sendMessage(LanguageManager.get(
                     "command-process-process-copied",
                     strings[0],
-                    target.getTemplate().getName(),
-                    target.getTemplate().getBackend())
+                    target.getProcessDetail().getTemplate().getName(),
+                    target.getProcessDetail().getTemplate().getBackend())
             );
             copy.accept(target);
             return true;
@@ -117,13 +117,13 @@ public final class CommandProcess extends GlobalCommand {
         }
 
         if (strings.length == 2 && (strings[1].equalsIgnoreCase("stop") || strings[1].equalsIgnoreCase("kill"))) {
-            ExecutorAPI.getInstance().getAsyncAPI().getProcessAsyncAPI().stopProcessAsync(target.getProcessUniqueID()).onComplete(info -> {});
+            ExecutorAPI.getInstance().getAsyncAPI().getProcessAsyncAPI().stopProcessAsync(target.getProcessDetail().getProcessUniqueID()).onComplete(info -> {});
             commandSource.sendMessage(LanguageManager.get("command-process-stop-proceed", strings[0]));
             return true;
         }
 
         if (strings.length == 2 && strings[1].equalsIgnoreCase("start")) {
-            if (!target.getProcessState().equals(ProcessState.PREPARED)) {
+            if (!target.getProcessDetail().getProcessState().equals(ProcessState.PREPARED)) {
                 commandSource.sendMessage(LanguageManager.get("command-process-process-not-prepared", strings[0]));
                 return true;
             }
@@ -150,15 +150,15 @@ public final class CommandProcess extends GlobalCommand {
         StringBuilder builder = new StringBuilder();
 
         builder.append(" > Name         - ").append(information.getName()).append("\n");
-        builder.append(" > Display      - ").append(information.getDisplayName()).append("\n");
-        builder.append(" > Parent       - ").append(information.getParent()).append("\n");
-        builder.append(" > Unique-ID    - ").append(information.getProcessUniqueID().toString()).append("\n");
+        builder.append(" > Display      - ").append(information.getProcessDetail().getDisplayName()).append("\n");
+        builder.append(" > Parent       - ").append(information.getProcessDetail().getParentName()).append("\n");
+        builder.append(" > Unique-ID    - ").append(information.getProcessDetail().getProcessUniqueID().toString()).append("\n");
         builder.append(" > Group        - ").append(information.getProcessGroup().getName()).append("\n");
-        builder.append(" > Template     - ").append(information.getTemplate().getName()).append("/")
-                .append(information.getTemplate().getBackend()).append("\n");
+        builder.append(" > Template     - ").append(information.getProcessDetail().getTemplate().getName()).append("/")
+                .append(information.getProcessDetail().getTemplate().getBackend()).append("\n");
         builder.append("\n");
-        builder.append(" > Ready        - ").append(information.getProcessState().isReady() ? "&ayes&r" : "&cno&r").append("\n");
-        builder.append(" > State        - ").append(information.getProcessState().name()).append("\n");
+        builder.append(" > Ready        - ").append(information.getProcessDetail().getProcessState().isReady() ? "&ayes&r" : "&cno&r").append("\n");
+        builder.append(" > State        - ").append(information.getProcessDetail().getProcessState().name()).append("\n");
         builder.append(" > Connected    - ").append(information.getNetworkInfo().isConnected() ? "&ayes&r" : "&cno&r").append("\n");
         builder.append(" > Address      - ").append(information.getNetworkInfo().getHost())
                 .append(":").append(information.getNetworkInfo().getPort()).append("\n");
@@ -169,16 +169,16 @@ public final class CommandProcess extends GlobalCommand {
         builder.append(" ").append("\n");
         builder.append(" > Inclusions").append("\n");
 
-        if (!information.getTemplate().getTemplateInclusions().isEmpty()) {
-            for (Inclusion templateInclusion : information.getTemplate().getTemplateInclusions()) {
+        if (!information.getProcessDetail().getTemplate().getTemplateInclusions().isEmpty()) {
+            for (Inclusion templateInclusion : information.getProcessDetail().getTemplate().getTemplateInclusions()) {
                 builder.append("   > ").append(templateInclusion.getKey()).append("/").append(templateInclusion.getBackend()).append("\n");
             }
 
             builder.append(" ").append("\n");
         }
 
-        if (!information.getTemplate().getPathInclusions().isEmpty()) {
-            for (Inclusion pathInclusion : information.getTemplate().getPathInclusions()) {
+        if (!information.getProcessDetail().getTemplate().getPathInclusions().isEmpty()) {
+            for (Inclusion pathInclusion : information.getProcessDetail().getTemplate().getPathInclusions()) {
                 builder.append("   > ").append(pathInclusion.getKey()).append(" FROM ").append(pathInclusion.getBackend()).append("\n");
             }
         }
@@ -186,14 +186,14 @@ public final class CommandProcess extends GlobalCommand {
         builder.append(" ").append("\n");
 
         builder.append(" > Runtime").append("\n");
-        builder.append("  > OS           - ").append(information.getProcessRuntimeInformation().getOsVersion()).append("\n");
-        builder.append("  > OS-Arch      - ").append(information.getProcessRuntimeInformation().getSystemArchitecture()).append("\n");
-        builder.append("  > Java         - ").append(information.getProcessRuntimeInformation().getJavaVersion()).append("\n");
-        builder.append("  > CPU          - ").append(DECIMAL_FORMAT.format(information.getProcessRuntimeInformation().getCpuUsageInternal())).append("%").append("\n");
-        builder.append("  > Memory       - ").append(information.getProcessRuntimeInformation().getMemoryUsageInternal()).append("MB").append("\n");
-        builder.append("  > Non-Heap     - ").append(information.getProcessRuntimeInformation().getNonHeapMemoryUsage()).append("MB").append("\n");
-        builder.append("  > Threads      - ").append(information.getProcessRuntimeInformation().getThreadInfos().size()).append("\n");
-        builder.append("  > Dead Threads - ").append(information.getProcessRuntimeInformation().getDeadLockedThreads().length);
+        builder.append("  > OS           - ").append(information.getProcessDetail().getProcessRuntimeInformation().getOsVersion()).append("\n");
+        builder.append("  > OS-Arch      - ").append(information.getProcessDetail().getProcessRuntimeInformation().getSystemArchitecture()).append("\n");
+        builder.append("  > Java         - ").append(information.getProcessDetail().getProcessRuntimeInformation().getJavaVersion()).append("\n");
+        builder.append("  > CPU          - ").append(DECIMAL_FORMAT.format(information.getProcessDetail().getProcessRuntimeInformation().getCpuUsageInternal())).append("%").append("\n");
+        builder.append("  > Memory       - ").append(information.getProcessDetail().getProcessRuntimeInformation().getMemoryUsageInternal()).append("MB").append("\n");
+        builder.append("  > Non-Heap     - ").append(information.getProcessDetail().getProcessRuntimeInformation().getNonHeapMemoryUsage()).append("MB").append("\n");
+        builder.append("  > Threads      - ").append(information.getProcessDetail().getProcessRuntimeInformation().getThreadInfos().size()).append("\n");
+        builder.append("  > Dead Threads - ").append(information.getProcessDetail().getProcessRuntimeInformation().getDeadLockedThreads().length);
 
         if (full) {
             builder.append(" ").append("\n");

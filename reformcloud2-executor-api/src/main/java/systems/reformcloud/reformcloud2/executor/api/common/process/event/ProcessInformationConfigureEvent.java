@@ -1,22 +1,21 @@
 package systems.reformcloud.reformcloud2.executor.api.common.process.event;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.event.Event;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
-
-import javax.annotation.Nonnull;
 
 /**
  * This event gets only called on nodes/controller
  */
 public class ProcessInformationConfigureEvent extends Event {
 
-    public ProcessInformationConfigureEvent(@Nonnull ProcessInformation information) {
+    public ProcessInformationConfigureEvent(@NotNull ProcessInformation information) {
         this.information = information;
     }
 
     private final ProcessInformation information;
 
-    @Nonnull
+    @NotNull
     public ProcessInformation getInformation() {
         return information;
     }

@@ -10,7 +10,7 @@ public final class NetworkInfo {
         this.connectTime = connected ? System.currentTimeMillis() : -1;
     }
 
-    private final String host;
+    private String host;
 
     private int port;
 
@@ -18,6 +18,10 @@ public final class NetworkInfo {
 
     public String getHost() {
         return host;
+    }
+
+    public void setHost(String host) {
+        this.host = host;
     }
 
     public InetSocketAddress toInet() {

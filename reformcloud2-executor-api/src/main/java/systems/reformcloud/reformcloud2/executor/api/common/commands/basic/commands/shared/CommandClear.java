@@ -1,11 +1,10 @@
 package systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.shared;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.GlobalCommand;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.source.CommandSource;
 import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.LoggerBase;
-
-import javax.annotation.Nonnull;
 
 public final class CommandClear extends GlobalCommand {
 
@@ -17,12 +16,12 @@ public final class CommandClear extends GlobalCommand {
     private final LoggerBase loggerBase;
 
     @Override
-    public void describeCommandToSender(@Nonnull CommandSource source) {
+    public void describeCommandToSender(@NotNull CommandSource source) {
         source.sendMessage(LanguageManager.get("command-clear-description"));
     }
 
     @Override
-    public boolean handleCommand(@Nonnull CommandSource commandSource, @Nonnull String[] strings) {
+    public boolean handleCommand(@NotNull CommandSource commandSource, @NotNull String[] strings) {
         loggerBase.clearScreen();
         return true;
     }

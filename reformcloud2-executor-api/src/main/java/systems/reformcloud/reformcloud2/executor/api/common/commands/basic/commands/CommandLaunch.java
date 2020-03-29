@@ -1,5 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.CommonHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.GlobalCommand;
@@ -12,7 +13,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.process.api.ProcessI
 import systems.reformcloud.reformcloud2.executor.api.common.utility.StringUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Properties;
@@ -25,7 +25,7 @@ public final class CommandLaunch extends GlobalCommand {
     }
 
     @Override
-    public void describeCommandToSender(@Nonnull CommandSource source) {
+    public void describeCommandToSender(@NotNull CommandSource source) {
         source.sendMessages((
                 "launch <group-name>            | Creates a new process bases on the group\n" +
                         " --template=[template]         | Uses a specific template for the startup (default: random)\n" +
@@ -42,7 +42,7 @@ public final class CommandLaunch extends GlobalCommand {
     }
 
     @Override
-    public boolean handleCommand(@Nonnull CommandSource commandSource, @Nonnull String[] strings) {
+    public boolean handleCommand(@NotNull CommandSource commandSource, @NotNull String[] strings) {
         if (strings.length == 0) {
             this.describeCommandToSender(commandSource);
             return true;
@@ -165,8 +165,8 @@ public final class CommandLaunch extends GlobalCommand {
         return true;
     }
 
-    @Nonnull
-    private static Collection<ProcessInclusion> parseInclusions(@Nonnull String from) {
+    @NotNull
+    private static Collection<ProcessInclusion> parseInclusions(@NotNull String from) {
         Collection<ProcessInclusion> out = new ArrayList<>();
         for (String inclusion : from.split(";")) {
             String[] parts = inclusion.split(",");

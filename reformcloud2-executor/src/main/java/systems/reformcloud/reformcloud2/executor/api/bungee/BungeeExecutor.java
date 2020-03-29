@@ -5,6 +5,8 @@ import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Plugin;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorType;
 import systems.reformcloud.reformcloud2.executor.api.api.API;
 import systems.reformcloud.reformcloud2.executor.api.bungee.event.PlayerListenerHandler;
@@ -39,8 +41,6 @@ import systems.reformcloud.reformcloud2.executor.api.network.channel.APINetworkC
 import systems.reformcloud.reformcloud2.executor.api.network.packets.in.APIPacketInAPIAction;
 import systems.reformcloud.reformcloud2.executor.api.network.packets.out.APIBungeePacketOutRequestIngameMessages;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -94,9 +94,9 @@ public final class BungeeExecutor extends API implements PlayerAPIExecutor {
             return;
         }
 
-        waterdog = thisProcessInformation.getTemplate().getVersion().equals(Version.WATERDOG)
-                || thisProcessInformation.getTemplate().getVersion().equals(Version.WATERDOG_PE);
-        waterdogPE = thisProcessInformation.getTemplate().getVersion().equals(Version.WATERDOG_PE);
+        waterdog = thisProcessInformation.getProcessDetail().getTemplate().getVersion().equals(Version.WATERDOG)
+                || thisProcessInformation.getProcessDetail().getTemplate().getVersion().equals(Version.WATERDOG_PE);
+        waterdogPE = thisProcessInformation.getProcessDetail().getTemplate().getVersion().equals(Version.WATERDOG_PE);
 
         this.networkClient.connect(
                 connectionConfig.getString("controller-host"),
@@ -116,7 +116,7 @@ public final class BungeeExecutor extends API implements PlayerAPIExecutor {
         awaitConnectionAndUpdate();
     }
 
-    @Nonnull
+    @NotNull
     public EventManager getEventManager() {
         return ExternalEventBusHandler.getInstance().getEventManager();
     }
@@ -134,13 +134,13 @@ public final class BungeeExecutor extends API implements PlayerAPIExecutor {
         return packetHandler;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public ProcessInformation getCurrentProcessInformation() {
         return this.thisProcessInformation;
     }
 
-    @Nonnull
+    @NotNull
     public static BungeeExecutor getInstance() {
         return instance;
     }
@@ -166,7 +166,7 @@ public final class BungeeExecutor extends API implements PlayerAPIExecutor {
             thisProcessInformation.updateMaxPlayers(ProxyServer.getInstance().getConfig().getPlayerLimit());
             thisProcessInformation.updateRuntimeInformation();
             thisProcessInformation.getNetworkInfo().setConnected(true);
-            thisProcessInformation.setProcessState(ProcessState.READY);
+            thisProcessInformation.getProcessDetail().setProcessState(ProcessState.READY);
             ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(thisProcessInformation);
 
             DefaultChannelManager.INSTANCE.get("Controller").ifPresent(controller -> packetHandler.getQueryHandler().sendQueryAsync(
@@ -181,7 +181,7 @@ public final class BungeeExecutor extends API implements PlayerAPIExecutor {
         });
     }
 
-    public static void registerServer(@Nonnull ProcessInformation processInformation) {
+    public static void registerServer(@NotNull ProcessInformation processInformation) {
         ServerInfo oldInfo = ProxyServer.getInstance().getServerInfo(processInformation.getName());
         if (oldInfo != null) {
             if (!(oldInfo.getSocketAddress() instanceof InetSocketAddress)) {
@@ -196,7 +196,7 @@ public final class BungeeExecutor extends API implements PlayerAPIExecutor {
             unregisterServer(processInformation);
         }
 
-        if (processInformation.getNetworkInfo().isConnected() && processInformation.getTemplate().isServer()) {
+        if (processInformation.getNetworkInfo().isConnected() && processInformation.getProcessDetail().getTemplate().isServer()) {
             ServerInfo serverInfo = constructServerInfo(processInformation);
             if (serverInfo == null) {
                 return;
@@ -221,11 +221,11 @@ public final class BungeeExecutor extends API implements PlayerAPIExecutor {
     }
 
     @Nullable
-    private static ServerInfo constructServerInfo(@Nonnull ProcessInformation processInformation) {
+    private static ServerInfo constructServerInfo(@NotNull ProcessInformation processInformation) {
         if (waterdog) {
-            if (waterdogPE && processInformation.getTemplate().getVersion().getId() != 3) {
+            if (waterdogPE && processInformation.getProcessDetail().getTemplate().getVersion().getId() != 3) {
                 return null;
-            } else if (!waterdogPE && processInformation.getTemplate().getVersion().getId() == 3) {
+            } else if (!waterdogPE && processInformation.getProcessDetail().getTemplate().getVersion().getId() == 3) {
                 return null;
             }
 
@@ -233,11 +233,11 @@ public final class BungeeExecutor extends API implements PlayerAPIExecutor {
                 Method method = ProxyServer.class.getMethod("constructServerInfo", String.class, SocketAddress.class, String.class, boolean.class, boolean.class, String.class);
                 method.setAccessible(true);
                 return (ServerInfo) method.invoke(ProxyServer.getInstance(),
-                        processInformation.getName(),
+                        processInformation.getProcessDetail().getName(),
                         processInformation.getNetworkInfo().toInet(),
                         "ReformCloud2",
                         false,
-                        processInformation.getTemplate().getVersion().getId() == 3,
+                        processInformation.getProcessDetail().getTemplate().getVersion().getId() == 3,
                         "default"
                 );
             } catch (final InvocationTargetException | IllegalAccessException | NoSuchMethodException ex) {
@@ -256,12 +256,12 @@ public final class BungeeExecutor extends API implements PlayerAPIExecutor {
 
         // Filter all non java servers if this is a java proxy else all mcpe servers
         Streams.others(lobbies, e -> {
-            Version version = e.getTemplate().getVersion();
-            if (version.equals(Version.NUKKIT_X) && current.getTemplate().getVersion().equals(Version.WATERDOG_PE)) {
+            Version version = e.getProcessDetail().getTemplate().getVersion();
+            if (version.equals(Version.NUKKIT_X) && current.getProcessDetail().getTemplate().getVersion().equals(Version.WATERDOG_PE)) {
                 return true;
             }
 
-            return version.getId() == 1 && current.getTemplate().getVersion().getId() == 2;
+            return version.getId() == 1 && current.getProcessDetail().getTemplate().getVersion().getId() == 2;
         }).forEach(lobbies::remove);
 
         // Filter out all lobbies with join permission which the player does not
@@ -293,7 +293,7 @@ public final class BungeeExecutor extends API implements PlayerAPIExecutor {
                 return true;
             }
 
-            if (e.getOnlineCount() < configuration.getMaxPlayers()) {
+            if (e.getProcessPlayerManager().getOnlineCount() < e.getProcessDetail().getMaxPlayers()) {
                 return true;
             }
 
@@ -325,13 +325,13 @@ public final class BungeeExecutor extends API implements PlayerAPIExecutor {
         return messages;
     }
 
-    private void setMessages(@Nonnull IngameMessages messages) {
+    private void setMessages(@NotNull IngameMessages messages) {
         this.messages = messages;
     }
 
     @Listener
     public void handle(final ProcessUpdatedEvent event) {
-        if (event.getProcessInformation().getProcessUniqueID().equals(thisProcessInformation.getProcessUniqueID())) {
+        if (event.getProcessInformation().getProcessDetail().getProcessUniqueID().equals(thisProcessInformation.getProcessDetail().getProcessUniqueID())) {
             thisProcessInformation = event.getProcessInformation();
         }
     }

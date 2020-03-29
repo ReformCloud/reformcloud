@@ -1,9 +1,8 @@
 package systems.reformcloud.reformcloud2.executor.api.common.commands.dispatcher.command;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.Command;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 public interface EventDispatcher {
 
@@ -15,7 +14,7 @@ public interface EventDispatcher {
      * @return The affected command
      */
     @Nullable
-    Command dispatchCommandEvent(@Nonnull CommandEvent commandEvent, @Nullable Command command);
+    Command dispatchCommandEvent(@NotNull CommandEvent commandEvent, @Nullable Command command);
 
     /**
      * Dispatched the command event
@@ -27,9 +26,9 @@ public interface EventDispatcher {
      */
     @Nullable
     Command dispatchCommandEvent(
-            @Nonnull CommandEvent commandEvent,
-            @Nonnull Command command,
-            @Nonnull Command update
+            @NotNull CommandEvent commandEvent,
+            @NotNull Command command,
+            @NotNull Command update
     );
 
     /**
@@ -43,9 +42,9 @@ public interface EventDispatcher {
      */
     @Nullable
     Command dispatchCommandEvent(
-            @Nonnull CommandEvent commandEvent,
+            @NotNull CommandEvent commandEvent,
             @Nullable Command command,
             @Nullable Command update,
-            @Nonnull String line
+            @NotNull String line
     );
 }

@@ -2,11 +2,11 @@ package systems.reformcloud.reformcloud2.executor.api.common.restapi.request.def
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.permission.PermissionResult;
 import systems.reformcloud.reformcloud2.executor.api.common.restapi.request.WebRequester;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 
-import javax.annotation.Nonnull;
 import java.util.Collection;
 
 public class DefaultWebRequester implements WebRequester {
@@ -23,7 +23,7 @@ public class DefaultWebRequester implements WebRequester {
 
     private final Collection<String> permissions;
 
-    @Nonnull
+    @NotNull
     @Override
     public Channel channel() {
         return context.channel();
@@ -34,9 +34,9 @@ public class DefaultWebRequester implements WebRequester {
         return context != null && context.channel().isOpen();
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public PermissionResult hasPermissionValue(@Nonnull String perm) {
+    public PermissionResult hasPermissionValue(@NotNull String perm) {
         String matched = Streams.filter(permissions, permission -> {
             if (permission.equals("*")) {
                 return true;
@@ -51,7 +51,7 @@ public class DefaultWebRequester implements WebRequester {
         return matched == null ? PermissionResult.NOT_SET : matched.startsWith("-") ? PermissionResult.DENIED : PermissionResult.ALLOWED;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String getName() {
         return name;

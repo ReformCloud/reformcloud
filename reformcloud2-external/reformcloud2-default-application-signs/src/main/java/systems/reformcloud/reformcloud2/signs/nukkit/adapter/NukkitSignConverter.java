@@ -3,14 +3,14 @@ package systems.reformcloud.reformcloud2.signs.nukkit.adapter;
 import cn.nukkit.Server;
 import cn.nukkit.blockentity.BlockEntitySign;
 import cn.nukkit.level.Location;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.api.API;
 import systems.reformcloud.reformcloud2.executor.api.common.base.Conditions;
 import systems.reformcloud.reformcloud2.signs.util.converter.SignConverter;
 import systems.reformcloud.reformcloud2.signs.util.sign.CloudLocation;
 import systems.reformcloud.reformcloud2.signs.util.sign.CloudSign;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.math.BigDecimal;
 
 public class NukkitSignConverter implements SignConverter<BlockEntitySign> {
@@ -19,22 +19,22 @@ public class NukkitSignConverter implements SignConverter<BlockEntitySign> {
 
     @Nullable
     @Override
-    public BlockEntitySign from(@Nonnull CloudSign cloudSign) {
+    public BlockEntitySign from(@NotNull CloudSign cloudSign) {
         Location location = accumulate(cloudSign.getLocation());
         return location != null && location.getLevel().getBlockEntity(location) instanceof BlockEntitySign
                 ? (BlockEntitySign) location.getLevel().getBlockEntity(location)
                 : null;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public CloudSign to(@Nonnull BlockEntitySign blockEntitySign, @Nonnull String group) {
+    public CloudSign to(@NotNull BlockEntitySign blockEntitySign, @NotNull String group) {
         return new CloudSign(group, accumulate(blockEntitySign.getLocation().clone()));
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public CloudLocation to(@Nonnull BlockEntitySign blockEntitySign) {
+    public CloudLocation to(@NotNull BlockEntitySign blockEntitySign) {
         return accumulate(blockEntitySign.getLocation().clone());
     }
 

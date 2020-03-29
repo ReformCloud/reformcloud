@@ -1,5 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.controller.network.packets.in;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.client.ClientRuntimeInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.client.basic.DefaultClientRuntimeInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.network.NetworkUtil;
@@ -8,7 +9,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.channel.hand
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.controller.process.ClientManager;
 
-import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 
 public final class ControllerPacketInNotifyRuntimeUpdate extends DefaultJsonNetworkHandler {
@@ -19,7 +19,7 @@ public final class ControllerPacketInNotifyRuntimeUpdate extends DefaultJsonNetw
     }
 
     @Override
-    public void handlePacket(@Nonnull PacketSender packetSender, @Nonnull Packet packet, @Nonnull Consumer<Packet> responses) {
+    public void handlePacket(@NotNull PacketSender packetSender, @NotNull Packet packet, @NotNull Consumer<Packet> responses) {
         DefaultClientRuntimeInformation clientRuntimeInformation = packet.content().get("info", ClientRuntimeInformation.TYPE);
         ClientManager.INSTANCE.updateClient(clientRuntimeInformation);
     }

@@ -1,5 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.CommonHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.GlobalCommand;
@@ -10,7 +11,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Vers
 import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.StringUtil;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -23,7 +23,7 @@ public final class CommandCreate extends GlobalCommand {
     }
 
     @Override
-    public void describeCommandToSender(@Nonnull CommandSource source) {
+    public void describeCommandToSender(@NotNull CommandSource source) {
         source.sendMessages((
                 "create new pg <name> <version>     | Creates a new process group\n" +
                         " --start-port=[port]               | Sets the start port of the new process group\n" +
@@ -47,7 +47,7 @@ public final class CommandCreate extends GlobalCommand {
     }
 
     @Override
-    public boolean handleCommand(@Nonnull CommandSource commandSource, @Nonnull String[] strings) {
+    public boolean handleCommand(@NotNull CommandSource commandSource, @NotNull String[] strings) {
         if (strings.length <= 2 || !strings[0].equalsIgnoreCase("new")) {
             this.describeCommandToSender(commandSource);
             return true;

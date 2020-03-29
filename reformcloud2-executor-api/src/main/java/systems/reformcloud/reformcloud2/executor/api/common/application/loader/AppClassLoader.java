@@ -1,6 +1,7 @@
 package systems.reformcloud.reformcloud2.executor.api.common.application.loader;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -11,7 +12,7 @@ public final class AppClassLoader extends URLClassLoader {
         ClassLoader.registerAsParallelCapable();
     }
 
-    public AppClassLoader(@Nonnull URL[] urls, @Nonnull ClassLoader parent) {
+    public AppClassLoader(@NotNull URL[] urls, @NotNull ClassLoader parent) {
         super(urls, parent);
     }
 

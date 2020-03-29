@@ -21,7 +21,7 @@ public final class LocalProcessManager {
     }
 
     public static void unregisterProcesses(UUID uniqueID) {
-        Streams.filterToReference(NODE_PROCESSES, e -> e.getProcessInformation().getProcessUniqueID().equals(uniqueID)).ifPresent(NODE_PROCESSES::remove);
+        Streams.filterToReference(NODE_PROCESSES, e -> e.getProcessInformation().getProcessDetail().getProcessUniqueID().equals(uniqueID)).ifPresent(NODE_PROCESSES::remove);
     }
 
     public static Collection<RunningProcess> getNodeProcesses() {

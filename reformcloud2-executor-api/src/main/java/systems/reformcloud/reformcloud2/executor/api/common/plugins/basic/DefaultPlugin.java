@@ -1,10 +1,10 @@
 package systems.reformcloud.reformcloud2.executor.api.common.plugins.basic;
 
 import com.google.gson.reflect.TypeToken;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.common.plugins.Plugin;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.List;
 
 public final class DefaultPlugin extends Plugin {
@@ -35,7 +35,7 @@ public final class DefaultPlugin extends Plugin {
 
     private final String name;
 
-    @Nonnull
+    @NotNull
     @Override
     public String version() {
         return version;
@@ -47,7 +47,7 @@ public final class DefaultPlugin extends Plugin {
         return author;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String main() {
         return main;
@@ -68,7 +68,7 @@ public final class DefaultPlugin extends Plugin {
         return enabled;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String getName() {
         return name;

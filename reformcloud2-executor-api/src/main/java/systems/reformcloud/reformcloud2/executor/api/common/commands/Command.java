@@ -1,14 +1,14 @@
 package systems.reformcloud.reformcloud2.executor.api.common.commands;
 
 import com.google.gson.reflect.TypeToken;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.GlobalCommand;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.complete.TabCompleter;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.manager.CommandManager;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.permission.Permission;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.source.CommandSource;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.List;
 
 /**
@@ -25,7 +25,7 @@ public interface Command extends TabCompleter {
     /**
      * @return The main command name
      */
-    @Nonnull
+    @NotNull
     String mainCommand();
 
     /**
@@ -37,19 +37,19 @@ public interface Command extends TabCompleter {
     /**
      * @return The command aliases
      */
-    @Nonnull
+    @NotNull
     List<String> aliases();
 
     /**
      * @return The command description
      */
-    @Nonnull
+    @NotNull
     String description();
 
     /**
      * @return The allowed command sources
      */
-    @Nonnull
+    @NotNull
     AllowedCommandSources sources();
 
     /**
@@ -57,7 +57,7 @@ public interface Command extends TabCompleter {
      *
      * @param source The source who sent the command
      */
-    void describeCommandToSender(@Nonnull CommandSource source);
+    void describeCommandToSender(@NotNull CommandSource source);
 
     /**
      * Handles the command
@@ -66,5 +66,5 @@ public interface Command extends TabCompleter {
      * @param strings       The parameters given in the command
      * @return If the command execute was successful
      */
-    boolean handleCommand(@Nonnull CommandSource commandSource, @Nonnull String[] strings);
+    boolean handleCommand(@NotNull CommandSource commandSource, @NotNull String[] strings);
 }

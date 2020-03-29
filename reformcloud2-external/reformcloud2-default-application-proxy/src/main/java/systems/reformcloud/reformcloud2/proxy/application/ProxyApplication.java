@@ -1,5 +1,6 @@
 package systems.reformcloud.reformcloud2.proxy.application;
 
+import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorType;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.application.api.Application;
@@ -12,8 +13,6 @@ import systems.reformcloud.reformcloud2.proxy.application.command.CommandProxy;
 import systems.reformcloud.reformcloud2.proxy.application.listener.ProcessInclusionHandler;
 import systems.reformcloud.reformcloud2.proxy.application.network.PacketQueryInRequestConfig;
 import systems.reformcloud.reformcloud2.proxy.application.updater.ProxyAddonUpdater;
-
-import javax.annotation.Nullable;
 
 public class ProxyApplication extends Application {
 

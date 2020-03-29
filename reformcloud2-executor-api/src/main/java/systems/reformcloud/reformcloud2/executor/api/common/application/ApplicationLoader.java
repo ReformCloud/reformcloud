@@ -1,9 +1,9 @@
 package systems.reformcloud.reformcloud2.executor.api.common.application;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.common.application.api.Application;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.List;
 
 /**
@@ -46,7 +46,7 @@ public interface ApplicationLoader {
      *
      * @param application The name of the application which should get checked
      */
-    void fetchUpdates(@Nonnull String application);
+    void fetchUpdates(@NotNull String application);
 
     /**
      * Installs an specific application
@@ -54,7 +54,7 @@ public interface ApplicationLoader {
      * @param application The application which should get installed
      * @return If the cloud can find the application and install it {@code true} else {@code false}
      */
-    boolean doSpecificApplicationInstall(@Nonnull InstallableApplication application);
+    boolean doSpecificApplicationInstall(@NotNull InstallableApplication application);
 
     /**
      * Unloads a specific application
@@ -62,7 +62,7 @@ public interface ApplicationLoader {
      * @param loadedApplication The application which should get unloaded
      * @return If the application was loaded and got unloaded
      */
-    boolean doSpecificApplicationUninstall(@Nonnull LoadedApplication loadedApplication);
+    boolean doSpecificApplicationUninstall(@NotNull LoadedApplication loadedApplication);
 
     /**
      * Finds the {@link LoadedApplication} by the name and unloads it
@@ -72,7 +72,7 @@ public interface ApplicationLoader {
      * @see #getApplication(String)
      * @see #doSpecificApplicationUninstall(LoadedApplication)
      */
-    boolean doSpecificApplicationUninstall(@Nonnull String application);
+    boolean doSpecificApplicationUninstall(@NotNull String application);
 
     /**
      * Get a specific application
@@ -81,7 +81,7 @@ public interface ApplicationLoader {
      * @return The loaded application or {@code null} if the application is unknown
      */
     @Nullable
-    LoadedApplication getApplication(@Nonnull String name);
+    LoadedApplication getApplication(@NotNull String name);
 
     /**
      * The name of a loaded application
@@ -90,13 +90,13 @@ public interface ApplicationLoader {
      * @return The name of the application
      * @see LoadedApplication#getName()
      */
-    @Nonnull
-    String getApplicationName(@Nonnull LoadedApplication loadedApplication);
+    @NotNull
+    String getApplicationName(@NotNull LoadedApplication loadedApplication);
 
     /**
      * @return All currently loaded applications in the runtime
      */
-    @Nonnull
+    @NotNull
     List<LoadedApplication> getApplications();
 
     /**
@@ -104,8 +104,8 @@ public interface ApplicationLoader {
      *
      * @param applicationHandler The handler which should get registered
      */
-    void addApplicationHandler(@Nonnull ApplicationHandler applicationHandler);
+    void addApplicationHandler(@NotNull ApplicationHandler applicationHandler);
 
     @Nullable
-    Application getInternalApplication(@Nonnull String name);
+    Application getInternalApplication(@NotNull String name);
 }

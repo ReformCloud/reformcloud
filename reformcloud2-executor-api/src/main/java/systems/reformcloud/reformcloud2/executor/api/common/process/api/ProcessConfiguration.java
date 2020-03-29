@@ -1,11 +1,11 @@
 package systems.reformcloud.reformcloud2.executor.api.common.process.api;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Template;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.UUID;
 
@@ -46,12 +46,12 @@ public class ProcessConfiguration {
 
     private final Collection<ProcessInclusion> inclusions;
 
-    @Nonnull
+    @NotNull
     public ProcessGroup getBase() {
         return base;
     }
 
-    @Nonnull
+    @NotNull
     public UUID getUniqueId() {
         return uniqueId;
     }
@@ -76,7 +76,7 @@ public class ProcessConfiguration {
         return template;
     }
 
-    @Nonnull
+    @NotNull
     public JsonConfiguration getExtra() {
         return extra;
     }
@@ -89,7 +89,7 @@ public class ProcessConfiguration {
         return maxPlayers;
     }
 
-    @Nonnull
+    @NotNull
     public Collection<ProcessInclusion> getInclusions() {
         return inclusions;
     }

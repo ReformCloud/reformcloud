@@ -1,9 +1,8 @@
 package systems.reformcloud.reformcloud2.executor.api.common.commands.basic;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.permission.Permission;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.permission.PermissionResult;
-
-import javax.annotation.Nonnull;
 
 public final class DefaultPermission implements Permission {
 
@@ -16,13 +15,13 @@ public final class DefaultPermission implements Permission {
 
     private final PermissionResult defaultResult;
 
-    @Nonnull
+    @NotNull
     @Override
     public String permission() {
         return permission;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public PermissionResult defaultResult() {
         return defaultResult;

@@ -82,7 +82,7 @@ public final class PlayerListenerHandler {
         final PlayerAccessConfiguration configuration = current.getProcessGroup().getPlayerAccessConfiguration();
 
         if (configuration.isUseCloudPlayerLimit()
-                && configuration.getMaxPlayers() < current.getOnlineCount() + 1
+                && current.getProcessDetail().getMaxPlayers() < current.getProcessPlayerManager().getOnlineCount() + 1
                 && !player.hasPermission(configuration.getFullJoinPermission())) {
             player.disconnect(TextComponent.of("§4§lThe proxy is full"));
             return;
@@ -98,20 +98,20 @@ public final class PlayerListenerHandler {
             return;
         }
 
-        if (current.getProcessState().equals(ProcessState.FULL) && !player.hasPermission(configuration.getFullJoinPermission())) {
+        if (current.getProcessDetail().getProcessState().equals(ProcessState.FULL) && !player.hasPermission(configuration.getFullJoinPermission())) {
             player.disconnect(TextComponent.of("§4§lYou are not allowed to join this server in the current state"));
             return;
         }
 
-        if (!current.onLogin(event.getPlayer().getUniqueId(), event.getPlayer().getUsername())) {
+        if (!current.getProcessPlayerManager().onLogin(event.getPlayer().getUniqueId(), event.getPlayer().getUsername())) {
             player.disconnect(TextComponent.of("§4§lYou are not allowed to join this proxy"));
             return;
         }
 
-        if (VelocityExecutor.getInstance().getProxyServer().getPlayerCount() >= current.getMaxPlayers()
-                && !current.getProcessState().equals(ProcessState.FULL)
-                && !current.getProcessState().equals(ProcessState.INVISIBLE)) {
-            current.setProcessState(ProcessState.FULL);
+        if (VelocityExecutor.getInstance().getProxyServer().getPlayerCount() >= current.getProcessDetail().getMaxPlayers()
+                && !current.getProcessDetail().getProcessState().equals(ProcessState.FULL)
+                && !current.getProcessDetail().getProcessState().equals(ProcessState.INVISIBLE)) {
+            current.getProcessDetail().setProcessState(ProcessState.FULL);
         }
 
         current.updateRuntimeInformation();
@@ -154,14 +154,14 @@ public final class PlayerListenerHandler {
 
         CommonHelper.EXECUTOR.execute(() -> {
             ProcessInformation current = API.getInstance().getCurrentProcessInformation();
-            if (VelocityExecutor.getInstance().getProxyServer().getPlayerCount() < current.getMaxPlayers()
-                    && !current.getProcessState().equals(ProcessState.READY)
-                    && !current.getProcessState().equals(ProcessState.INVISIBLE)) {
-                current.setProcessState(ProcessState.READY);
+            if (VelocityExecutor.getInstance().getProxyServer().getPlayerCount() < current.getProcessDetail().getMaxPlayers()
+                    && !current.getProcessDetail().getProcessState().equals(ProcessState.READY)
+                    && !current.getProcessDetail().getProcessState().equals(ProcessState.INVISIBLE)) {
+                current.getProcessDetail().setProcessState(ProcessState.READY);
             }
 
             current.updateRuntimeInformation();
-            current.onLogout(event.getPlayer().getUniqueId());
+            current.getProcessPlayerManager().onLogout(event.getPlayer().getUniqueId());
             VelocityExecutor.getInstance().setThisProcessInformation(current);
             ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(current);
         });

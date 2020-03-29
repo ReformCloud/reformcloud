@@ -1,11 +1,11 @@
 package systems.reformcloud.reformcloud2.executor.api.common.process.running.env;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Version;
 import systems.reformcloud.reformcloud2.executor.api.common.process.running.RunningProcess;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.system.DownloadHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.system.SystemHelper;
 
-import javax.annotation.Nonnull;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
@@ -30,7 +30,7 @@ public final class EnvironmentBuilder {
      *
      * @param runningProcess The process for which we are building the env
      */
-    public static void constructEnvFor(@Nonnull RunningProcess runningProcess) {
+    public static void constructEnvFor(@NotNull RunningProcess runningProcess) {
         chooseLogicallyStartup(runningProcess);
     }
 
@@ -44,12 +44,12 @@ public final class EnvironmentBuilder {
 
     //Sponge
     private static boolean isLogicallySpongeVanilla(RunningProcess runningProcess) {
-        Version version = runningProcess.getProcessInformation().getTemplate().getVersion();
+        Version version = runningProcess.getProcessInformation().getProcessDetail().getTemplate().getVersion();
         return version.equals(Version.SPONGEVANILLA_1_11_2) || version.equals(Version.SPONGEVANILLA_1_12_2);
     }
 
     private static boolean isLogicallySpongeForge(RunningProcess runningProcess) {
-        Version version = runningProcess.getProcessInformation().getTemplate().getVersion();
+        Version version = runningProcess.getProcessInformation().getProcessDetail().getTemplate().getVersion();
         return version.equals(Version.SPONGEFORGE_1_10_2) || version.equals(Version.SPONGEFORGE_1_11_2) || version.equals(Version.SPONGEFORGE_1_12_2);
     }
 
@@ -69,7 +69,7 @@ public final class EnvironmentBuilder {
     // ========================= //
     //Bungee
     private static boolean isLogicallyBungee(RunningProcess runningProcess) {
-        Version version = runningProcess.getProcessInformation().getTemplate().getVersion();
+        Version version = runningProcess.getProcessInformation().getProcessDetail().getTemplate().getVersion();
         return version.equals(Version.WATERFALL) || version.equals(Version.TRAVERTINE) || version.equals(Version.HEXACORD) || version.equals(Version.BUNGEECORD);
     }
 
@@ -92,7 +92,7 @@ public final class EnvironmentBuilder {
     //Waterdog
 
     private static boolean isLogicallyWaterDog(RunningProcess runningProcess) {
-        Version version = runningProcess.getProcessInformation().getTemplate().getVersion();
+        Version version = runningProcess.getProcessInformation().getProcessDetail().getTemplate().getVersion();
         return version.equals(Version.WATERDOG) || version.equals(Version.WATERDOG_PE);
     }
 
@@ -106,7 +106,7 @@ public final class EnvironmentBuilder {
             } else if (s.startsWith("use_xuid_for_uuid:")) {
                 s = "use_xuid_for_uuid: true";
             } else if (s.startsWith("  raknet:")) {
-                s = "  raknet: " + runningProcess.getProcessInformation().getTemplate().getVersion().equals(Version.WATERDOG_PE);
+                s = "  raknet: " + runningProcess.getProcessInformation().getProcessDetail().getTemplate().getVersion().equals(Version.WATERDOG_PE);
             } else if (s.startsWith("- query_port:")) {
                 s = "- query_port: " + runningProcess.getProcessInformation().getNetworkInfo().getPort();
             }
@@ -123,7 +123,7 @@ public final class EnvironmentBuilder {
             if (s.startsWith("bind")) {
                 s = "bind = \"" + runningProcess.getProcessInformation().getNetworkInfo().getHost() + ":" + runningProcess.getProcessInformation().getNetworkInfo().getPort() + "\"";
             } else if (s.startsWith("show-max-players") && runningProcess.getProcessInformation().getProcessGroup().getPlayerAccessConfiguration().isUseCloudPlayerLimit()) {
-                s = "show-max-players = " + runningProcess.getProcessInformation().getProcessGroup().getPlayerAccessConfiguration().getMaxPlayers();
+                s = "show-max-players = " + runningProcess.getProcessInformation().getProcessDetail().getMaxPlayers();
             } else if (s.startsWith("player-info-forwarding-mode")) {
                 s = "player-info-forwarding-mode = \"LEGACY\"";
             }
@@ -135,7 +135,7 @@ public final class EnvironmentBuilder {
     // ========================= //
     //Glowstone
     private static boolean isLogicallyGlowstone(RunningProcess runningProcess) {
-        Version version = runningProcess.getProcessInformation().getTemplate().getVersion();
+        Version version = runningProcess.getProcessInformation().getProcessDetail().getTemplate().getVersion();
         return version.equals(Version.GLOWSTONE_1_10_2) || version.equals(Version.GLOWSTONE_1_12_2);
     }
 
@@ -177,7 +177,7 @@ public final class EnvironmentBuilder {
     //Startup
 
     private static void chooseLogicallyStartup(RunningProcess runningProcess) {
-        if (runningProcess.getProcessInformation().getTemplate().isServer()) {
+        if (runningProcess.getProcessInformation().getProcessDetail().getTemplate().isServer()) {
             serverStartup(runningProcess);
         } else {
             proxyStartup(runningProcess);
@@ -188,7 +188,7 @@ public final class EnvironmentBuilder {
         createEula(runningProcess);
 
         if (isLogicallySpongeForge(runningProcess)) {
-            Version version = runningProcess.getProcessInformation().getTemplate().getVersion();
+            Version version = runningProcess.getProcessInformation().getProcessDetail().getTemplate().getVersion();
             String fileName = "reformcloud/files/" + version.getName().toLowerCase().replace(" ", "-") + ".zip";
             String destPath = "reformcloud/files/" + version.getName().toLowerCase().replace(" ", "-");
 
@@ -215,7 +215,7 @@ public final class EnvironmentBuilder {
             SystemHelper.createDirectory(Paths.get(runningProcess.getPath() + "/config/sponge"));
             SystemHelper.doInternalCopy(EnvironmentBuilder.class.getClassLoader(), "files/java/sponge/forge/global.conf", runningProcess.getPath() + "/config/sponge/global.conf");
             rewriteSpongeConfig(runningProcess);
-        } else if (runningProcess.getProcessInformation().getTemplate().getVersion().equals(Version.NUKKIT_X)) {
+        } else if (runningProcess.getProcessInformation().getProcessDetail().getTemplate().getVersion().equals(Version.NUKKIT_X)) {
             SystemHelper.doInternalCopy(EnvironmentBuilder.class.getClassLoader(), "files/mcpe/nukkit/server.properties", runningProcess.getPath() + "/server.properties");
             SystemHelper.doInternalCopy(EnvironmentBuilder.class.getClassLoader(), "files/mcpe/nukkit/nukkit.yml", runningProcess.getPath() + "/nukkit.yml");
             Properties properties = new Properties();
@@ -236,7 +236,7 @@ public final class EnvironmentBuilder {
             rewriteSpigotConfig(runningProcess);
         }
 
-        if (!runningProcess.getProcessInformation().getTemplate().getVersion().equals(Version.NUKKIT_X)) {
+        if (!runningProcess.getProcessInformation().getProcessDetail().getTemplate().getVersion().equals(Version.NUKKIT_X)) {
             Properties properties = new Properties();
             SystemHelper.doInternalCopy(EnvironmentBuilder.class.getClassLoader(), "files/java/bukkit/server.properties", runningProcess.getPath() + "/server.properties");
             try (InputStream inputStream = Files.newInputStream(Paths.get(runningProcess.getPath() + "/server.properties"))) {
@@ -254,7 +254,7 @@ public final class EnvironmentBuilder {
         }
 
         if (!isLogicallySpongeForge(runningProcess) && !Files.exists(Paths.get(runningProcess.getPath() + "/process.jar"))) {
-            Version version = runningProcess.getProcessInformation().getTemplate().getVersion();
+            Version version = runningProcess.getProcessInformation().getProcessDetail().getTemplate().getVersion();
             if (!Files.exists(Paths.get("reformcloud/files/" + Version.format(version)))) {
                 Version.downloadVersion(version);
             }
@@ -269,7 +269,7 @@ public final class EnvironmentBuilder {
         try {
             BufferedImage bufferedImage = ImageIO.read(Paths.get(runningProcess.getPath() + "/server-icon.png").toFile());
             if (bufferedImage.getHeight() != 64 || bufferedImage.getWidth() != 64) {
-                System.err.println("The server icon of the process " + runningProcess.getProcessInformation().getName() + " is not correctly sized");
+                System.err.println("The server icon of the process " + runningProcess.getProcessInformation().getProcessDetail().getName() + " is not correctly sized");
                 SystemHelper.rename(Paths.get(runningProcess.getPath() + "/server-icon.png").toFile(), runningProcess.getPath() + "/server-icon-old.png");
                 SystemHelper.doInternalCopy(EnvironmentBuilder.class.getClassLoader(), "files/server-icon.png", runningProcess.getPath() + "/server-icon.png");
             }
@@ -283,13 +283,13 @@ public final class EnvironmentBuilder {
         } else if (isLogicallyWaterDog(runningProcess)) {
             SystemHelper.doInternalCopy(EnvironmentBuilder.class.getClassLoader(), "files/mcpe/waterdog/internal-waterdog-config.yml", runningProcess.getPath() + "/config.yml");
             rewriteWaterDogConfig(runningProcess);
-        } else if (runningProcess.getProcessInformation().getTemplate().getVersion().equals(Version.VELOCITY)) {
+        } else if (runningProcess.getProcessInformation().getProcessDetail().getTemplate().getVersion().equals(Version.VELOCITY)) {
             SystemHelper.doInternalCopy(EnvironmentBuilder.class.getClassLoader(), "files/java/velocity/velocity.toml", runningProcess.getPath() + "/velocity.toml");
             rewriteVelocityConfig(runningProcess);
         }
 
         if (!Files.exists(Paths.get(runningProcess.getPath() + "/process.jar"))) {
-            Version version = runningProcess.getProcessInformation().getTemplate().getVersion();
+            Version version = runningProcess.getProcessInformation().getProcessDetail().getTemplate().getVersion();
             if (!Files.exists(Paths.get("reformcloud/files/" + Version.format(version)))) {
                 Version.downloadVersion(version);
             }

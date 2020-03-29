@@ -1,12 +1,12 @@
 package systems.reformcloud.reformcloud2.runner.commands;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.runner.reformscript.InterpretedReformScript;
 import systems.reformcloud.reformcloud2.runner.reformscript.utils.InterpreterCommand;
 import systems.reformcloud.reformcloud2.runner.reformscript.utils.InterpreterVariable;
 import systems.reformcloud.reformcloud2.runner.util.RunnerUtils;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Collection;
 
 public final class IfCommand extends InterpreterCommand {
@@ -16,7 +16,7 @@ public final class IfCommand extends InterpreterCommand {
     }
 
     @Override
-    public void execute(@Nonnull String cursorLine, @Nonnull InterpretedReformScript script, @Nonnull Collection<String> allLines) {
+    public void execute(@NotNull String cursorLine, @NotNull InterpretedReformScript script, @NotNull Collection<String> allLines) {
         cursorLine = cursorLine.replaceFirst(getCommand() + " ", "");
 
         String[] splitLine = cursorLine.split(" ");
@@ -32,7 +32,7 @@ public final class IfCommand extends InterpreterCommand {
         }
     }
 
-    private void then(@Nonnull String[] splitLine, @Nonnull InterpretedReformScript script, @Nonnull Collection<String> allLines) {
+    private void then(@NotNull String[] splitLine, @NotNull InterpretedReformScript script, @NotNull Collection<String> allLines) {
         String then = RunnerUtils.replaceLast(splitLine[1].replaceFirst("THEN\\(", ""), "\\)", "");
         if (then.trim().isEmpty()) {
             return;
@@ -41,7 +41,7 @@ public final class IfCommand extends InterpreterCommand {
         this.executeCommands(then, script, allLines);
     }
 
-    private void or(@Nonnull String[] splitLine, @Nonnull InterpretedReformScript script, @Nonnull Collection<String> allLines) {
+    private void or(@NotNull String[] splitLine, @NotNull InterpretedReformScript script, @NotNull Collection<String> allLines) {
         String or = RunnerUtils.replaceLast(splitLine[2].replaceFirst("OR\\(", ""), "\\)", "");
         if (or.trim().isEmpty()) {
             return;
@@ -50,7 +50,7 @@ public final class IfCommand extends InterpreterCommand {
         this.executeCommands(or, script, allLines);
     }
 
-    private void executeCommands(@Nonnull String part, @Nonnull InterpretedReformScript script, @Nonnull Collection<String> allLines) {
+    private void executeCommands(@NotNull String part, @NotNull InterpretedReformScript script, @NotNull Collection<String> allLines) {
         for (String parts : part.split(";")) {
             String[] arguments = parts.split(":");
             InterpreterCommand command = script.getInterpreter().getCommand(arguments[0]);
@@ -73,7 +73,7 @@ public final class IfCommand extends InterpreterCommand {
     }
 
     @Nullable
-    private Boolean parse(@Nonnull String text) {
+    private Boolean parse(@NotNull String text) {
         if ("true".equals(text) || "false".equals(text)) {
             return "true".equals(text);
         }

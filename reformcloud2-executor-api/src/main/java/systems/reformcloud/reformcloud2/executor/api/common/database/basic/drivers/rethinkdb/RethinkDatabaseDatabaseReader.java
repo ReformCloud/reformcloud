@@ -5,14 +5,13 @@ import com.rethinkdb.model.MapObject;
 import com.rethinkdb.net.Connection;
 import com.rethinkdb.net.Result;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.database.Database;
 import systems.reformcloud.reformcloud2.executor.api.common.database.DatabaseReader;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.defaults.DefaultTask;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -35,21 +34,21 @@ public class RethinkDatabaseDatabaseReader implements DatabaseReader {
 
     private final String table;
 
-    @Nonnull
+    @NotNull
     @Override
-    public Task<JsonConfiguration> find(@Nonnull String key) {
+    public Task<JsonConfiguration> find(@NotNull String key) {
         return this.get(KEY_NAME, key);
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public Task<JsonConfiguration> findIfAbsent(@Nonnull String identifier) {
+    public Task<JsonConfiguration> findIfAbsent(@NotNull String identifier) {
         return this.get(ID_NAME, identifier);
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public Task<JsonConfiguration> insert(@Nonnull String key, @Nullable String identifier, @Nonnull JsonConfiguration data) {
+    public Task<JsonConfiguration> insert(@NotNull String key, @Nullable String identifier, @NotNull JsonConfiguration data) {
         Task<JsonConfiguration> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             this.parent.get().table(this.table).insert(this.asMap(key, identifier, data)).run(this.connection);
@@ -58,33 +57,33 @@ public class RethinkDatabaseDatabaseReader implements DatabaseReader {
         return task;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public Task<Boolean> update(@Nonnull String key, @Nonnull JsonConfiguration newData) {
+    public Task<Boolean> update(@NotNull String key, @NotNull JsonConfiguration newData) {
         return this.update(KEY_NAME, key, newData);
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public Task<Boolean> updateIfAbsent(@Nonnull String identifier, @Nonnull JsonConfiguration newData) {
+    public Task<Boolean> updateIfAbsent(@NotNull String identifier, @NotNull JsonConfiguration newData) {
         return this.update(ID_NAME, identifier, newData);
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public Task<Void> remove(@Nonnull String key) {
+    public Task<Void> remove(@NotNull String key) {
         return this.delete(KEY_NAME, key);
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public Task<Void> removeIfAbsent(@Nonnull String identifier) {
+    public Task<Void> removeIfAbsent(@NotNull String identifier) {
         return this.delete(ID_NAME, identifier);
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public Task<Boolean> contains(@Nonnull String key) {
+    public Task<Boolean> contains(@NotNull String key) {
         Task<Boolean> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> task.complete(this.find(key).getUninterruptedly() != null));
         return task;
@@ -105,7 +104,7 @@ public class RethinkDatabaseDatabaseReader implements DatabaseReader {
                 .iterator();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String getName() {
         return this.table;

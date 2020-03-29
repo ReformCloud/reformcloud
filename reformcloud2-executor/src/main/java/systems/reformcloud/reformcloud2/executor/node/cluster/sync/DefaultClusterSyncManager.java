@@ -47,7 +47,7 @@ public class DefaultClusterSyncManager implements ClusterSyncManager {
 
     @Override
     public void syncProcessStartup(ProcessInformation processInformation) {
-        NodeExecutor.getInstance().getNodeNetworkManager().getQueuedProcesses().remove(processInformation.getProcessUniqueID());
+        NodeExecutor.getInstance().getNodeNetworkManager().getQueuedProcesses().remove(processInformation.getProcessDetail().getProcessUniqueID());
         NodeExecutor.getInstance().getNodeNetworkManager().getCluster().broadCastToCluster(new PacketOutProcessAction(
                 ProcessAction.START, processInformation
         ));
@@ -263,7 +263,7 @@ public class DefaultClusterSyncManager implements ClusterSyncManager {
     @Override
     public void handleProcessInformationSync(Collection<ProcessInformation> information) {
         Collection<ProcessInformation> clusterProcesses = NodeExecutor.getInstance().getNodeNetworkManager().getNodeProcessHelper().getClusterProcesses();
-        Streams.allOf(information, e -> clusterProcesses.stream().noneMatch(i -> i.getProcessUniqueID().equals(e.getProcessUniqueID())))
+        Streams.allOf(information, e -> clusterProcesses.stream().noneMatch(i -> i.getProcessDetail().getProcessUniqueID().equals(e.getProcessDetail().getProcessUniqueID())))
                 .forEach(e -> {
                     clusterProcesses.add(e);
                     sendToAllExcludedNodes(new ControllerEventProcessStarted(e));

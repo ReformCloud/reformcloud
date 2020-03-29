@@ -4,6 +4,7 @@ import com.google.common.base.Enums;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorType;
 import systems.reformcloud.reformcloud2.executor.api.api.API;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
@@ -34,7 +35,6 @@ import systems.reformcloud.reformcloud2.executor.api.network.packets.in.APIPacke
 import systems.reformcloud.reformcloud2.executor.api.network.packets.out.APIBungeePacketOutRequestIngameMessages;
 import systems.reformcloud.reformcloud2.executor.api.spigot.plugins.PluginExecutorContainer;
 
-import javax.annotation.Nonnull;
 import java.io.File;
 import java.util.UUID;
 
@@ -98,18 +98,18 @@ public final class SpigotExecutor extends API implements PlayerAPIExecutor {
         return messages;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public ProcessInformation getCurrentProcessInformation() {
         return this.thisProcessInformation;
     }
 
-    @Nonnull
+    @NotNull
     public static SpigotExecutor getInstance() {
         return instance;
     }
 
-    @Nonnull
+    @NotNull
     public EventManager getEventManager() {
         return ExternalEventBusHandler.getInstance().getEventManager();
     }
@@ -125,7 +125,7 @@ public final class SpigotExecutor extends API implements PlayerAPIExecutor {
 
     @Listener
     public void handle(final ProcessUpdatedEvent event) {
-        if (event.getProcessInformation().getProcessUniqueID().equals(thisProcessInformation.getProcessUniqueID())) {
+        if (event.getProcessInformation().getProcessDetail().getProcessUniqueID().equals(thisProcessInformation.getProcessDetail().getProcessUniqueID())) {
             thisProcessInformation = event.getProcessInformation();
         }
     }
@@ -146,7 +146,7 @@ public final class SpigotExecutor extends API implements PlayerAPIExecutor {
 
             thisProcessInformation.updateMaxPlayers(Bukkit.getMaxPlayers());
             thisProcessInformation.getNetworkInfo().setConnected(true);
-            thisProcessInformation.setProcessState(ProcessState.READY);
+            thisProcessInformation.getProcessDetail().setProcessState(ProcessState.READY);
             thisProcessInformation.updateRuntimeInformation();
             ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(thisProcessInformation);
 

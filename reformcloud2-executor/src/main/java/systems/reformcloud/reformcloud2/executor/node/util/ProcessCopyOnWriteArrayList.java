@@ -19,7 +19,7 @@ public class ProcessCopyOnWriteArrayList extends CopyOnWriteArrayList<ProcessInf
     @Override
     public boolean add(ProcessInformation c) {
         this.stream()
-                .filter(e -> e.getProcessUniqueID().equals(c.getProcessUniqueID()))
+                .filter(e -> e.getProcessDetail().getProcessUniqueID().equals(c.getProcessDetail().getProcessUniqueID()))
                 .forEach(this::remove);
         return super.add(c);
     }

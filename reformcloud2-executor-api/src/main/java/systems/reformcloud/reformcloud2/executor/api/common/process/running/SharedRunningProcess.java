@@ -1,5 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.api.common.process.running;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.base.Conditions;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
@@ -25,7 +26,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.defaults.DefaultTask;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
 
-import javax.annotation.Nonnull;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -50,14 +50,15 @@ public abstract class SharedRunningProcess implements RunningProcess {
      *
      * @param processInformation The process information for the startup process
      */
-    public SharedRunningProcess(@Nonnull ProcessInformation processInformation) {
+    public SharedRunningProcess(@NotNull ProcessInformation processInformation) {
         this.startupInformation = processInformation;
 
         if (processInformation.getProcessGroup().isStaticProcess()) {
-            this.path = Paths.get("reformcloud/static/" + processInformation.getName());
+            this.path = Paths.get("reformcloud/static/" + processInformation.getProcessDetail().getName());
             SystemHelper.createDirectory(Paths.get(path + "/plugins"));
         } else {
-            this.path = Paths.get("reformcloud/temp/" + processInformation.getName() + "-" + processInformation.getProcessUniqueID());
+            this.path = Paths.get("reformcloud/temp/" + processInformation.getProcessDetail().getName()
+                    + "-" + processInformation.getProcessDetail().getProcessUniqueID());
             SystemHelper.recreateDirectory(path);
         }
     }
@@ -82,7 +83,7 @@ public abstract class SharedRunningProcess implements RunningProcess {
      */
     protected long startupTime = -1;
 
-    @Nonnull
+    @NotNull
     @Override
     public Task<Void> prepare() {
         Task<Void> task = new DefaultTask<>();
@@ -122,7 +123,7 @@ public abstract class SharedRunningProcess implements RunningProcess {
                     .add("startInfo", this.startupInformation)
                     .write(path + "/reformcloud/.connection/connection.json");
 
-            this.startupInformation.setProcessState(ProcessState.PREPARED);
+            this.startupInformation.getProcessDetail().setProcessState(ProcessState.PREPARED);
             ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(this.startupInformation);
 
             ExecutorAPI.getInstance().getEventManager().callEvent(new RunningProcessPreparedEvent(this));
@@ -133,14 +134,14 @@ public abstract class SharedRunningProcess implements RunningProcess {
 
     @Override
     public void handleEnqueue() {
-        this.startupInformation.setProcessState(ProcessState.READY_TO_START);
+        this.startupInformation.getProcessDetail().setProcessState(ProcessState.READY_TO_START);
         ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(this.startupInformation);
     }
 
     @Override
     public boolean bootstrap() {
         Conditions.isTrue(
-                this.startupInformation.getProcessState().equals(ProcessState.READY_TO_START),
+                this.startupInformation.getProcessDetail().getProcessState().equals(ProcessState.READY_TO_START),
                 "Trying to start a process which is not prepared and ready to start"
         );
 
@@ -158,17 +159,17 @@ public abstract class SharedRunningProcess implements RunningProcess {
                 "-Dreformcloud.executor.type=3",
                 "-Dreformcloud.lib.path=" + LIB_PATH,
                 "-Dreformcloud.process.path=" + new File("reformcloud/files/" + Version.format(
-                        this.startupInformation.getTemplate().getVersion()
+                        this.startupInformation.getProcessDetail().getTemplate().getVersion()
                 )).getAbsolutePath(),
 
-                "-Xmx" + this.startupInformation.getMaxMemory() + "M"
+                "-Xmx" + this.startupInformation.getProcessDetail().getMaxMemory() + "M"
         ));
 
-        command.addAll(this.startupInformation.getTemplate().getRuntimeConfiguration().getJvmOptions());
-        this.startupInformation.getTemplate().getRuntimeConfiguration().getSystemProperties().forEach(
+        command.addAll(this.startupInformation.getProcessDetail().getTemplate().getRuntimeConfiguration().getJvmOptions());
+        this.startupInformation.getProcessDetail().getTemplate().getRuntimeConfiguration().getSystemProperties().forEach(
                 (key, value) -> command.add(String.format("-D%s=%s", key, value))
         );
-        command.addAll(this.startupInformation.getTemplate().getRuntimeConfiguration().getProcessParameters());
+        command.addAll(this.startupInformation.getProcessDetail().getTemplate().getRuntimeConfiguration().getProcessParameters());
 
         command.addAll(Arrays.asList(
                 "-cp", StringUtil.NULL_PATH,
@@ -176,9 +177,9 @@ public abstract class SharedRunningProcess implements RunningProcess {
                 "systems.reformcloud.reformcloud2.runner.RunnerExecutor"
         ));
 
-        if (this.startupInformation.getTemplate().getVersion().getId() == 1) {
+        if (this.startupInformation.getProcessDetail().getTemplate().getVersion().getId() == 1) {
             command.add("nogui"); // Spigot server
-        } else if (this.startupInformation.getTemplate().getVersion().getId() == 3) {
+        } else if (this.startupInformation.getProcessDetail().getTemplate().getVersion().getId() == 3) {
             command.add("disable-ansi"); // Nukkit server
         }
 
@@ -195,7 +196,7 @@ public abstract class SharedRunningProcess implements RunningProcess {
 
         ExecutorAPI.getInstance().getEventManager().callEvent(new RunningProcessStartedEvent(this));
 
-        this.startupInformation.setProcessState(ProcessState.STARTED);
+        this.startupInformation.getProcessDetail().setProcessState(ProcessState.STARTED);
         ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(this.startupInformation);
 
         return true;
@@ -214,10 +215,10 @@ public abstract class SharedRunningProcess implements RunningProcess {
                 this.getShutdownCommands()
         );
 
-        if (this.startupInformation.getTemplate().isAutoReleaseOnClose()) {
-            TemplateBackendManager.getOrDefault(this.startupInformation.getTemplate().getBackend()).deployTemplate(
+        if (this.startupInformation.getProcessDetail().getTemplate().isAutoReleaseOnClose()) {
+            TemplateBackendManager.getOrDefault(this.startupInformation.getProcessDetail().getTemplate().getBackend()).deployTemplate(
                     this.startupInformation.getProcessGroup().getName(),
-                    this.startupInformation.getTemplate().getName(),
+                    this.startupInformation.getProcessDetail().getTemplate().getName(),
                     this.path,
                     this.startupInformation.getPreInclusions().stream().map(ProcessInclusion::getName).collect(Collectors.toList())
             );
@@ -232,28 +233,28 @@ public abstract class SharedRunningProcess implements RunningProcess {
     public void copy() {
         this.sendCommand("save-all");
         AbsoluteThread.sleep(TimeUnit.SECONDS, 1);
-        TemplateBackendManager.getOrDefault(this.startupInformation.getTemplate().getBackend()).deployTemplate(
+        TemplateBackendManager.getOrDefault(this.startupInformation.getProcessDetail().getTemplate().getBackend()).deployTemplate(
                 this.startupInformation.getProcessGroup().getName(),
-                this.startupInformation.getTemplate().getName(),
+                this.startupInformation.getProcessDetail().getTemplate().getName(),
                 this.path,
                 this.startupInformation.getPreInclusions().stream().map(ProcessInclusion::getName).collect(Collectors.toList())
         );
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public ReferencedOptional<Process> getProcess() {
         return ReferencedOptional.build(this.process);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public ProcessInformation getProcessInformation() {
         return this.startupInformation;
     }
 
     @Override
-    public void sendCommand(@Nonnull String line) {
+    public void sendCommand(@NotNull String line) {
         if (this.isAlive()) {
             try {
                 this.process.getOutputStream().write((line + "\n").getBytes());
@@ -278,7 +279,7 @@ public abstract class SharedRunningProcess implements RunningProcess {
         return this.startupTime;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Path getPath() {
         return this.path;
@@ -289,8 +290,8 @@ public abstract class SharedRunningProcess implements RunningProcess {
      *
      * @param loadType The type of inclusion which should get loaded
      */
-    protected void loadTemplateInclusions(@Nonnull Inclusion.InclusionLoadType loadType) {
-        this.startupInformation.getTemplate().getTemplateInclusionsOfType(loadType).forEach(e -> {
+    protected void loadTemplateInclusions(@NotNull Inclusion.InclusionLoadType loadType) {
+        this.startupInformation.getProcessDetail().getTemplate().getTemplateInclusionsOfType(loadType).forEach(e -> {
             String[] splitTemplate = e.getFirst().split("/");
             if (splitTemplate.length != 2) {
                 return;
@@ -309,8 +310,8 @@ public abstract class SharedRunningProcess implements RunningProcess {
      *
      * @param loadType The type of inclusion which should get loaded
      */
-    protected void loadPathInclusions(@Nonnull Inclusion.InclusionLoadType loadType) {
-        this.startupInformation.getTemplate().getPathInclusionsOfType(loadType).forEach(e -> {
+    protected void loadPathInclusions(@NotNull Inclusion.InclusionLoadType loadType) {
+        this.startupInformation.getProcessDetail().getTemplate().getPathInclusionsOfType(loadType).forEach(e -> {
             TemplateBackendManager.getOrDefault(e.getSecond()).loadPath(
                     e.getFirst(),
                     this.path
@@ -322,14 +323,14 @@ public abstract class SharedRunningProcess implements RunningProcess {
      * Loads all global templates of the current group first and then the current startup template
      */
     private void initGlobalTemplateAndCurrentTemplate() {
-        TemplateBackendManager.getOrDefault(this.startupInformation.getTemplate().getBackend()).loadGlobalTemplates(
+        TemplateBackendManager.getOrDefault(this.startupInformation.getProcessDetail().getTemplate().getBackend()).loadGlobalTemplates(
                 this.startupInformation.getProcessGroup(),
                 this.path
         ).awaitUninterruptedly();
 
-        TemplateBackendManager.getOrDefault(this.startupInformation.getTemplate().getBackend()).loadTemplate(
+        TemplateBackendManager.getOrDefault(this.startupInformation.getProcessDetail().getTemplate().getBackend()).loadTemplate(
                 this.startupInformation.getProcessGroup().getName(),
-                this.startupInformation.getTemplate().getName(),
+                this.startupInformation.getProcessDetail().getTemplate().getName(),
                 this.path
         ).awaitUninterruptedly();
     }
@@ -341,7 +342,7 @@ public abstract class SharedRunningProcess implements RunningProcess {
         }
 
         RunningProcess that = (RunningProcess) o;
-        return that.getProcessInformation().getProcessUniqueID().equals(this.startupInformation.getProcessUniqueID());
+        return that.getProcessInformation().getProcessDetail().getProcessUniqueID().equals(this.startupInformation.getProcessDetail().getProcessUniqueID());
     }
 
     @Override
@@ -358,12 +359,12 @@ public abstract class SharedRunningProcess implements RunningProcess {
     /**
      * @return The host and port to which the process will connect
      */
-    @Nonnull
+    @NotNull
     public abstract Duo<String, Integer> getAvailableConnectionHost();
 
     /**
      * @return The connection key for the current process
      */
-    @Nonnull
+    @NotNull
     public abstract String getConnectionKey();
 }

@@ -1,12 +1,12 @@
 package systems.reformcloud.reformcloud2.executor.api.common.language.loading;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.base.Conditions;
 import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
 import systems.reformcloud.reformcloud2.executor.api.common.language.language.Language;
 import systems.reformcloud.reformcloud2.executor.api.common.language.language.source.LanguageSource;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Duo;
 
-import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -104,7 +104,7 @@ public final class LanguageWorker {
             return name;
         }
 
-        @Nonnull
+        @NotNull
         @Override
         public String getName() {
             return display;
