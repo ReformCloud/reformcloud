@@ -9,6 +9,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Template;
+import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.PlayerAccessConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.plugins.basic.DefaultPlugin;
 import systems.reformcloud.reformcloud2.executor.api.common.process.api.ProcessInclusion;
 import systems.reformcloud.reformcloud2.executor.api.common.process.detail.ProcessDetail;
@@ -63,39 +64,73 @@ public final class ProcessInformation implements Nameable, Clone<ProcessInformat
         return processDetail;
     }
 
+    /**
+     * @return If the current process is a lobby process
+     */
     public boolean isLobby() {
         return this.processDetail.getTemplate().isServer() && processGroup.isCanBeUsedAsLobby();
     }
 
+    /**
+     * @return The network information of the current process
+     */
     @NotNull
     public NetworkInfo getNetworkInfo() {
         return networkInfo;
     }
 
+    /**
+     * @return The process group on which the current process is based
+     */
     @NotNull
     public ProcessGroup getProcessGroup() {
         return processGroup;
     }
 
+    /**
+     * @return All plugins which are registered on the current process
+     */
     @NotNull
     public List<DefaultPlugin> getPlugins() {
         return plugins;
     }
 
+    /**
+     * @return The extra configuration which was given by the user
+     */
     @NotNull
     public JsonConfiguration getExtra() {
         return extra;
     }
 
+    /**
+     * @return All inclusions which are loaded before the start of the process
+     */
     @NotNull
     public Collection<ProcessInclusion> getPreInclusions() {
         return preInclusions;
     }
 
+    /**
+     * Sets the process group on which this process is based
+     *
+     * @param processGroup The updated process group
+     */
+    @ApiStatus.Internal
     public void setProcessGroup(@NotNull ProcessGroup processGroup) {
         this.processGroup = processGroup;
     }
 
+    /**
+     * Updates the max player count of the process. This will not force the process to use the given
+     * player count. If {@link PlayerAccessConfiguration#isUseCloudPlayerLimit()} then the count will
+     * be set to the {@link PlayerAccessConfiguration#getMaxPlayers()} value. If you want to force set
+     * the max players of the process use {@link ProcessDetail#setMaxPlayers(int)} instead.
+     *
+     * @param value The new maximum amount of players or {@code null} if the cloud should only check
+     *              if it should use the internal count and set it to the given value.
+     * @return The same instance of the process information
+     */
     @NotNull
     public ProcessInformation updateMaxPlayers(@Nullable Integer value) {
         if (processGroup.getPlayerAccessConfiguration().isUseCloudPlayerLimit()) {
@@ -109,14 +144,48 @@ public final class ProcessInformation implements Nameable, Clone<ProcessInformat
         return this;
     }
 
+    /**
+     * Updates the runtime information of the current process
+     */
     public void updateRuntimeInformation() {
         this.processDetail.setProcessRuntimeInformation(ProcessRuntimeInformation.create());
     }
 
+    /**
+     * @return A new process util which wraps the current process information and brings some util methods
+     */
     @NotNull
     public ProcessUtil toWrapped() {
         return new ProcessUtil(this);
     }
+
+    @Override
+    @Nullable
+    public ProcessInformation clone() {
+        try {
+            return (ProcessInformation) super.clone();
+        } catch (final CloneNotSupportedException ex) {
+            return null;
+        }
+    }
+
+    @Override
+    public boolean equals(@NotNull Object obj) {
+        if (!(obj instanceof ProcessInformation)) {
+            return false;
+        }
+
+        ProcessInformation compare = (ProcessInformation) obj;
+        return Objects.equals(compare.getProcessDetail().getProcessUniqueID(), getProcessDetail().getProcessUniqueID());
+    }
+
+    @Override
+    @NotNull
+    public String toString() {
+        return getName() + "/" + getProcessDetail().getProcessUniqueID();
+    }
+
+    /* =========== Scheduled for removal =========== */
 
     @NotNull
     @ApiStatus.ScheduledForRemoval(inVersion = "2.3")
@@ -254,31 +323,5 @@ public final class ProcessInformation implements Nameable, Clone<ProcessInformat
     @ReplacedWith("#getProcessPlayerManager#isPlayerOnlineOnCurrentProcess")
     public boolean isPlayerOnline(@NotNull String name) {
         return this.processPlayerManager.isPlayerOnlineOnCurrentProcess(name);
-    }
-
-    @Override
-    @Nullable
-    public ProcessInformation clone() {
-        try {
-            return (ProcessInformation) super.clone();
-        } catch (final CloneNotSupportedException ex) {
-            return null;
-        }
-    }
-
-    @Override
-    public boolean equals(@NotNull Object obj) {
-        if (!(obj instanceof ProcessInformation)) {
-            return false;
-        }
-
-        ProcessInformation compare = (ProcessInformation) obj;
-        return Objects.equals(compare.getProcessDetail().getProcessUniqueID(), getProcessDetail().getProcessUniqueID());
-    }
-
-    @Override
-    @NotNull
-    public String toString() {
-        return getName() + "/" + getProcessDetail().getProcessUniqueID();
     }
 }
