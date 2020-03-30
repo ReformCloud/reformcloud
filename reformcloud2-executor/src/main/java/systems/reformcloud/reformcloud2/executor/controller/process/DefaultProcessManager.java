@@ -300,7 +300,10 @@ public final class DefaultProcessManager implements ProcessManager {
         if (processGroup.getStartupConfiguration().isSearchBestClientAlone()) {
             AtomicReference<ClientRuntimeInformation> best = new AtomicReference<>();
             Streams.newCollection(ClientManager.INSTANCE.getClientRuntimeInformation(), clientRuntimeInformation -> {
-                Collection<Integer> startedOn = Streams.newCollection(processInformation, processInformation -> processInformation.getProcessDetail().getParentName().equals(clientRuntimeInformation.getName()), processInformation -> processInformation.getProcessDetail().getTemplate().getRuntimeConfiguration().getMaxMemory());
+                Collection<Integer> startedOn = Streams.newCollection(processInformation,
+                        processInformation -> processInformation.getProcessDetail().getParentName().equals(clientRuntimeInformation.getName()),
+                        processInformation -> processInformation.getProcessDetail().getMaxMemory()
+                );
 
                 int usedMemory = 0;
                 for (Integer integer : startedOn) {
@@ -326,7 +329,11 @@ public final class DefaultProcessManager implements ProcessManager {
                     return false;
                 }
 
-                Collection<Integer> startedOn = Streams.newCollection(processInformation, processInformation -> processInformation.getProcessDetail().getParentName().equals(clientRuntimeInformation.getName()), processInformation -> processInformation.getProcessDetail().getTemplate().getRuntimeConfiguration().getMaxMemory());
+                Collection<Integer> startedOn = Streams.newCollection(
+                        processInformation,
+                        processInformation -> processInformation.getProcessDetail().getParentName().equals(clientRuntimeInformation.getName()),
+                        processInformation -> processInformation.getProcessDetail().getMaxMemory()
+                );
 
                 int usedMemory = 0;
                 for (Integer integer : startedOn) {
