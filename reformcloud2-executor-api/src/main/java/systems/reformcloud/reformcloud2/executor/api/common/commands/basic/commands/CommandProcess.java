@@ -68,7 +68,7 @@ public final class CommandProcess extends GlobalCommand {
 
             commandSource.sendMessage(LanguageManager.get("command-process-process-list-prefix", processes.size()));
             processes.forEach(
-                    e -> commandSource.sendMessage("  - " + e.getName() + "/" + e.getProcessDetail().getProcessUniqueID())
+                    e -> commandSource.sendMessage("  - " + e.getProcessDetail().getName() + "/" + e.getProcessDetail().getProcessUniqueID())
             );
             return true;
         }
@@ -137,7 +137,7 @@ public final class CommandProcess extends GlobalCommand {
                 || strings[1].equalsIgnoreCase("cmd")
                 || strings[1].equalsIgnoreCase("execute"))) {
             String command = String.join(" ", Arrays.copyOfRange(strings, 2, strings.length));
-            ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().executeProcessCommand(target.getName(), command);
+            ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().executeProcessCommand(target.getProcessDetail().getName(), command);
             commandSource.sendMessage(LanguageManager.get("command-process-command-execute", command, strings[0]));
             return true;
         }
@@ -149,7 +149,7 @@ public final class CommandProcess extends GlobalCommand {
     private void describeProcessToSender(CommandSource source, ProcessInformation information, boolean full) {
         StringBuilder builder = new StringBuilder();
 
-        builder.append(" > Name         - ").append(information.getName()).append("\n");
+        builder.append(" > Name         - ").append(information.getProcessDetail().getName()).append("\n");
         builder.append(" > Display      - ").append(information.getProcessDetail().getDisplayName()).append("\n");
         builder.append(" > Parent       - ").append(information.getProcessDetail().getParentName()).append("\n");
         builder.append(" > Unique-ID    - ").append(information.getProcessDetail().getProcessUniqueID().toString()).append("\n");

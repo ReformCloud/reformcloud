@@ -17,8 +17,7 @@ public final class ProcessListener {
         }
 
         if (ExecutorAPI.getInstance().getType().equals(ExecutorType.NODE)
-                && (event.getProcessInformation().getNodeUniqueID() == null
-                || !event.getProcessInformation().getNodeUniqueID().equals(NodeExecutor.getInstance().getNodeConfig().getUniqueID()))) {
+                && !event.getProcessInformation().getProcessDetail().getParentUniqueID().equals(NodeExecutor.getInstance().getNodeConfig().getUniqueID())) {
             return;
         }
 

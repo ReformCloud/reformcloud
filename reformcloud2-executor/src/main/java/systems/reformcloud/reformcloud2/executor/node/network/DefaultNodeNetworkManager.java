@@ -88,7 +88,7 @@ public class DefaultNodeNetworkManager implements NodeNetworkManager {
             System.out.println(LanguageManager.get(
                     "process-start-already-prepared-process",
                     configuration.getBase().getName(),
-                    matching.getName()
+                    matching.getProcessDetail().getName()
             ));
             this.startProcess(matching);
             return matching;
@@ -103,8 +103,7 @@ public class DefaultNodeNetworkManager implements NodeNetworkManager {
             DefaultChannelManager.INSTANCE.get(processInformation.getProcessDetail().getParentName()).ifPresent(
                     e -> e.sendPacket(new NodePacketOutStartPreparedProcess(processInformation))
             ).ifEmpty(e -> {
-                if (processInformation.getNodeUniqueID() != null
-                        && processInformation.getNodeUniqueID().equals(cluster.getSelfNode().getNodeUniqueID())
+                if (processInformation.getProcessDetail().getParentUniqueID().equals(cluster.getSelfNode().getNodeUniqueID())
                         && processInformation.getProcessDetail().getProcessState().equals(ProcessState.PREPARED)) {
                     LocalProcessManager.getNodeProcesses()
                             .stream()

@@ -22,7 +22,7 @@ public class ProcessListener {
     public void handle(final ProcessStartedEvent event) {
         this.publishNotification(
                 BungeeExecutor.getInstance().getMessages().getProcessStarted(),
-                event.getProcessInformation().getName()
+                event.getProcessInformation().getProcessDetail().getName()
         );
     }
 
@@ -33,7 +33,7 @@ public class ProcessListener {
             STARTED.add(processInformation.getProcessDetail().getProcessUniqueID());
             this.publishNotification(
                     BungeeExecutor.getInstance().getMessages().getProcessConnected(),
-                    processInformation.getName()
+                    processInformation.getProcessDetail().getName()
             );
         }
     }
@@ -42,7 +42,7 @@ public class ProcessListener {
     public void handle(final ProcessStoppedEvent event) {
         this.publishNotification(
                 BungeeExecutor.getInstance().getMessages().getProcessStopped(),
-                event.getProcessInformation().getName()
+                event.getProcessInformation().getProcessDetail().getName()
         );
         STARTED.remove(event.getProcessInformation().getProcessDetail().getProcessUniqueID());
     }
@@ -58,7 +58,7 @@ public class ProcessListener {
 
     private boolean isNotify(ProcessInformation information) {
         return !STARTED.contains(information.getProcessDetail().getProcessUniqueID())
-                && ProxyServer.getInstance().getServerInfo(information.getName()) == null
+                && ProxyServer.getInstance().getServerInfo(information.getProcessDetail().getName()) == null
                 && information.getNetworkInfo().isConnected();
     }
 }

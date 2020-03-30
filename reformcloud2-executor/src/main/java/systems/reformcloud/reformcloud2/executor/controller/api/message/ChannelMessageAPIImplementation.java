@@ -63,7 +63,7 @@ public class ChannelMessageAPIImplementation implements MessageSyncAPI, MessageA
                         Streams.allOf(ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getAllProcesses(),
                                 e -> !e.getProcessDetail().getTemplate().getVersion().isServer()
                         ).stream()
-                                .map(e -> DefaultChannelManager.INSTANCE.get(e.getName()))
+                                .map(e -> DefaultChannelManager.INSTANCE.get(e.getProcessDetail().getName()))
                                 .filter(ReferencedOptional::isPresent)
                                 .map(ReferencedOptional::get)
                                 .forEach(channels::add);
@@ -74,7 +74,7 @@ public class ChannelMessageAPIImplementation implements MessageSyncAPI, MessageA
                         Streams.allOf(ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getAllProcesses(),
                                 e -> e.getProcessDetail().getTemplate().getVersion().isServer()
                         ).stream()
-                                .map(e -> DefaultChannelManager.INSTANCE.get(e.getName()))
+                                .map(e -> DefaultChannelManager.INSTANCE.get(e.getProcessDetail().getName()))
                                 .filter(ReferencedOptional::isPresent)
                                 .map(ReferencedOptional::get)
                                 .forEach(channels::add);

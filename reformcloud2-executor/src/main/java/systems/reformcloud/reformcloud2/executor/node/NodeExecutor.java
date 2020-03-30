@@ -547,7 +547,7 @@ public class NodeExecutor extends Node {
     private void loadCommands() {
         this.commandManager
                 .register(new CommandProcess(target -> {
-                    if (target.getNodeUniqueID().equals(NodeExecutor.getInstance().getNodeConfig().getUniqueID())) {
+                    if (target.getProcessDetail().getParentUniqueID().equals(NodeExecutor.getInstance().getNodeConfig().getUniqueID())) {
                         ReferencedOptional<NodeProcessScreen> screen = NodeProcessScreenHandler.getScreen(target.getProcessDetail().getProcessUniqueID());
                         return screen.isPresent() && screen.get().toggleFor(NodeExecutor.getInstance().getNodeConfig().getName());
                     } else {
@@ -556,7 +556,7 @@ public class NodeExecutor extends Node {
                         return optional.isPresent();
                     }
                 }, target -> {
-                    if (NodeExecutor.getInstance().getNodeConfig().getUniqueID().equals(target.getNodeUniqueID())) {
+                    if (NodeExecutor.getInstance().getNodeConfig().getUniqueID().equals(target.getProcessDetail().getParentUniqueID())) {
                         Streams.filterToReference(
                                 LocalProcessManager.getNodeProcesses(),
                                 e -> e.getProcessInformation().getProcessDetail().getProcessUniqueID().equals(target.getProcessDetail().getProcessUniqueID())

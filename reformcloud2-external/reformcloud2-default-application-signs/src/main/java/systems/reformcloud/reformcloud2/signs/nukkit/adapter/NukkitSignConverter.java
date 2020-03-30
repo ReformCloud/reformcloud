@@ -57,7 +57,7 @@ public class NukkitSignConverter implements SignConverter<BlockEntitySign> {
         Conditions.isTrue(location.getLevel() != null);
         return new CloudLocation(
                 location.getLevel().getName(),
-                API.getInstance().getCurrentProcessInformation().getName(),
+                API.getInstance().getCurrentProcessInformation().getProcessGroup().getName(),
                 location.getX(),
                 location.getY(),
                 location.getZ(),

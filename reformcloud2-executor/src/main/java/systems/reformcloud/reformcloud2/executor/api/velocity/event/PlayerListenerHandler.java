@@ -37,7 +37,7 @@ public final class PlayerListenerHandler {
                     player::hasPermission
             );
             if (lobby != null) {
-                Optional<RegisteredServer> server = VelocityExecutor.getInstance().getProxyServer().getServer(lobby.getName());
+                Optional<RegisteredServer> server = VelocityExecutor.getInstance().getProxyServer().getServer(lobby.getProcessDetail().getName());
                 if (!server.isPresent()) {
                     event.setResult(ServerPreConnectEvent.ServerResult.denied());
                     return;
@@ -128,7 +128,7 @@ public final class PlayerListenerHandler {
                 API.getInstance().getCurrentProcessInformation(),
                 player::hasPermission);
         if (lobby != null) {
-            Optional<RegisteredServer> server = VelocityExecutor.getInstance().getProxyServer().getServer(lobby.getName());
+            Optional<RegisteredServer> server = VelocityExecutor.getInstance().getProxyServer().getServer(lobby.getProcessDetail().getName());
             if (!server.isPresent()) {
                 event.setResult(KickedFromServerEvent.DisconnectPlayer.create(TextComponent.of(VelocityExecutor.getInstance().getMessages().format(
                         VelocityExecutor.getInstance().getMessages().getNoHubServerAvailable()

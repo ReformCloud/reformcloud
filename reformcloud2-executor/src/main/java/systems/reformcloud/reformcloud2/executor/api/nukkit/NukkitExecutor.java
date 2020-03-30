@@ -81,7 +81,7 @@ public final class NukkitExecutor extends API implements PlayerAPIExecutor {
                 () -> new APINetworkChannelReader(this.packetHandler),
                 new ClientChallengeAuthHandler(
                         connectionKey,
-                        thisProcessInformation.getName(),
+                        thisProcessInformation.getProcessDetail().getName(),
                         () -> new JsonConfiguration(),
                         context -> {
                         } // unused here

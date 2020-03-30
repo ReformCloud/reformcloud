@@ -28,7 +28,7 @@ public class ControllerPacketInScreenEnabled extends DefaultJsonNetworkHandler {
 
         ProcessInformation processInformation = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcess(uniqueID);
         if (processInformation != null) {
-            lines.forEach(line -> System.out.println(LanguageManager.get("screen-line-added", processInformation.getName(), line)));
+            lines.forEach(line -> System.out.println(LanguageManager.get("screen-line-added", processInformation.getProcessDetail().getName(), line)));
         }
     }
 }

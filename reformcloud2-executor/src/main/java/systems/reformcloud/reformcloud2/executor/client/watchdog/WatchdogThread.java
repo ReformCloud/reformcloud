@@ -23,7 +23,7 @@ public final class WatchdogThread extends AbsoluteThread {
                         && runningProcess.getStartupTime() + TimeUnit.SECONDS.toMillis(30) < System.currentTimeMillis()) {
                     runningProcess.shutdown();
                     DefaultChannelManager.INSTANCE.get("Controller").ifPresent(packetSender -> packetSender.sendPacket(
-                            new ClientPacketOutProcessWatchdogStopped(runningProcess.getProcessInformation().getName())
+                            new ClientPacketOutProcessWatchdogStopped(runningProcess.getProcessInformation().getProcessDetail().getName())
                     ));
                 }
             });

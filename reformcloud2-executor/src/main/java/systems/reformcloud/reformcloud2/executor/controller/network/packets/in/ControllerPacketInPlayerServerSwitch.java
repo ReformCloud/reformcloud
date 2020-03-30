@@ -27,7 +27,7 @@ public class ControllerPacketInPlayerServerSwitch extends DefaultJsonNetworkHand
         String target = packet.content().getString("target");
 
         ControllerExecutor.getInstance().getEventManager().callEvent(new PlayerServerSwitchEvent(uuid, target));
-        ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getAllProcesses().forEach(process -> DefaultChannelManager.INSTANCE.get(process.getName()).ifPresent(channel -> channel.sendPacket(
+        ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getAllProcesses().forEach(process -> DefaultChannelManager.INSTANCE.get(process.getProcessDetail().getName()).ifPresent(channel -> channel.sendPacket(
                 new ControllerEventPlayerServerSwitch(uuid, target)
         )));
     }

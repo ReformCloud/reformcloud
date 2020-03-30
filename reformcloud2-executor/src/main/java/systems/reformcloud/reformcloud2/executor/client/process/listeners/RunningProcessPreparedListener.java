@@ -10,7 +10,7 @@ public class RunningProcessPreparedListener {
     @Listener
     public void handle(final RunningProcessPrepareEvent event) {
         DefaultChannelManager.INSTANCE.get("Controller").ifPresent(packetSender -> packetSender.sendPacket(new ClientPacketOutProcessPrepared(
-                event.getRunningProcess().getProcessInformation().getName(),
+                event.getRunningProcess().getProcessInformation().getProcessDetail().getName(),
                 event.getRunningProcess().getProcessInformation().getProcessDetail().getProcessUniqueID(),
                 event.getRunningProcess().getProcessInformation().getProcessDetail().getTemplate().getName()
         )));

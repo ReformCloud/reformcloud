@@ -14,6 +14,6 @@ public class RunningProcessStartedListener {
         NodeExecutor.getInstance().getClusterSyncManager().syncProcessStartup(event.getRunningProcess().getProcessInformation());
         NodeExecutor.getInstance().getNodeNetworkManager().getNodeProcessHelper().handleLocalProcessStart(event.getRunningProcess().getProcessInformation());
         NodeProcessScreenHandler.registerScreen(new NodeProcessScreen(event.getRunningProcess().getProcessInformation().getProcessDetail().getProcessUniqueID()));
-        System.out.println(LanguageManager.get("client-process-start-done", event.getRunningProcess().getProcessInformation().getName()));
+        System.out.println(LanguageManager.get("client-process-start-done", event.getRunningProcess().getProcessInformation().getProcessDetail().getName()));
     }
 }

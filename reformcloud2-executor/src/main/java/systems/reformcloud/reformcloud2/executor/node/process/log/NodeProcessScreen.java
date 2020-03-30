@@ -35,7 +35,7 @@ public class NodeProcessScreen {
         if (name.equals(NodeExecutor.getInstance().getNodeConfig().getName())) {
             ProcessInformation processInformation = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcess(uniqueID);
             if (processInformation != null) {
-                queue.forEach(line -> System.out.println(LanguageManager.get("screen-line-added", processInformation.getName(), line)));
+                queue.forEach(line -> System.out.println(LanguageManager.get("screen-line-added", processInformation.getProcessDetail().getName(), line)));
             }
         } else {
             DefaultChannelManager.INSTANCE.get(name).ifPresent(e -> e.sendPacket(new NodePacketOutScreenEnabled(
@@ -64,7 +64,7 @@ public class NodeProcessScreen {
 
         ProcessInformation processInformation = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcess(uniqueID);
         if (processInformation != null && enabledFrom.contains(NodeExecutor.getInstance().getNodeConfig().getName())) {
-                System.out.println(LanguageManager.get("screen-line-added", processInformation.getName(), line));
+                System.out.println(LanguageManager.get("screen-line-added", processInformation.getProcessDetail().getName(), line));
         }
     }
 

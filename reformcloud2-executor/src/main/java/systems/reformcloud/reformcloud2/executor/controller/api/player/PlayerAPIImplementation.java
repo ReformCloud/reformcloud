@@ -30,7 +30,7 @@ public class PlayerAPIImplementation implements PlayerAsyncAPI, PlayerSyncAPI {
         Task.EXECUTOR.execute(() -> {
             ProcessInformation processInformation = getPlayerOnProxy(player);
             if (processInformation != null) {
-                DefaultChannelManager.INSTANCE.get(processInformation.getName()).ifPresent(packetSender -> packetSender.sendPacket(new ControllerAPIAction(
+                DefaultChannelManager.INSTANCE.get(processInformation.getProcessDetail().getName()).ifPresent(packetSender -> packetSender.sendPacket(new ControllerAPIAction(
                         ControllerAPIAction.APIAction.SEND_MESSAGE,
                         Arrays.asList(player, message)
                 )));
@@ -47,7 +47,7 @@ public class PlayerAPIImplementation implements PlayerAsyncAPI, PlayerSyncAPI {
         Task.EXECUTOR.execute(() -> {
             ProcessInformation processInformation = getPlayerOnProxy(player);
             if (processInformation != null) {
-                DefaultChannelManager.INSTANCE.get(processInformation.getName()).ifPresent(packetSender -> packetSender.sendPacket(new ControllerAPIAction(
+                DefaultChannelManager.INSTANCE.get(processInformation.getProcessDetail().getName()).ifPresent(packetSender -> packetSender.sendPacket(new ControllerAPIAction(
                         ControllerAPIAction.APIAction.KICK_PLAYER,
                         Arrays.asList(player, message)
                 )));
@@ -64,7 +64,7 @@ public class PlayerAPIImplementation implements PlayerAsyncAPI, PlayerSyncAPI {
         Task.EXECUTOR.execute(() -> {
             ProcessInformation processInformation = getPlayerOnServer(player);
             if (processInformation != null) {
-                DefaultChannelManager.INSTANCE.get(processInformation.getName()).ifPresent(packetSender -> packetSender.sendPacket(new ControllerAPIAction(
+                DefaultChannelManager.INSTANCE.get(processInformation.getProcessDetail().getName()).ifPresent(packetSender -> packetSender.sendPacket(new ControllerAPIAction(
                         ControllerAPIAction.APIAction.KICK_PLAYER,
                         Arrays.asList(player, message)
                 )));
@@ -81,7 +81,7 @@ public class PlayerAPIImplementation implements PlayerAsyncAPI, PlayerSyncAPI {
         Task.EXECUTOR.execute(() -> {
             ProcessInformation processInformation = getPlayerOnServer(player);
             if (processInformation != null) {
-                DefaultChannelManager.INSTANCE.get(processInformation.getName()).ifPresent(packetSender -> packetSender.sendPacket(new ControllerAPIAction(
+                DefaultChannelManager.INSTANCE.get(processInformation.getProcessDetail().getName()).ifPresent(packetSender -> packetSender.sendPacket(new ControllerAPIAction(
                         ControllerAPIAction.APIAction.PLAY_SOUND,
                         Arrays.asList(player, sound, f1, f2)
                 )));
@@ -98,7 +98,7 @@ public class PlayerAPIImplementation implements PlayerAsyncAPI, PlayerSyncAPI {
         Task.EXECUTOR.execute(() -> {
             ProcessInformation processInformation = getPlayerOnProxy(player);
             if (processInformation != null) {
-                DefaultChannelManager.INSTANCE.get(processInformation.getName()).ifPresent(packetSender -> packetSender.sendPacket(new ControllerAPIAction(
+                DefaultChannelManager.INSTANCE.get(processInformation.getProcessDetail().getName()).ifPresent(packetSender -> packetSender.sendPacket(new ControllerAPIAction(
                         ControllerAPIAction.APIAction.SEND_TITLE,
                         Arrays.asList(player, title, subTitle, fadeIn, stay, fadeOut)
                 )));
@@ -115,7 +115,7 @@ public class PlayerAPIImplementation implements PlayerAsyncAPI, PlayerSyncAPI {
         Task.EXECUTOR.execute(() -> {
             ProcessInformation processInformation = getPlayerOnServer(player);
             if (processInformation != null) {
-                DefaultChannelManager.INSTANCE.get(processInformation.getName()).ifPresent(packetSender -> packetSender.sendPacket(new ControllerAPIAction(
+                DefaultChannelManager.INSTANCE.get(processInformation.getProcessDetail().getName()).ifPresent(packetSender -> packetSender.sendPacket(new ControllerAPIAction(
                         ControllerAPIAction.APIAction.PLAY_ENTITY_EFFECT,
                         Arrays.asList(player, entityEffect)
                 )));
@@ -132,7 +132,7 @@ public class PlayerAPIImplementation implements PlayerAsyncAPI, PlayerSyncAPI {
         Task.EXECUTOR.execute(() -> {
             ProcessInformation processInformation = getPlayerOnProxy(player);
             if (processInformation != null) {
-                DefaultChannelManager.INSTANCE.get(processInformation.getName()).ifPresent(packetSender -> packetSender.sendPacket(new ControllerAPIAction(
+                DefaultChannelManager.INSTANCE.get(processInformation.getProcessDetail().getName()).ifPresent(packetSender -> packetSender.sendPacket(new ControllerAPIAction(
                         ControllerAPIAction.APIAction.PLAY_EFFECT,
                         Arrays.asList(player, effect, data)
                 )));
@@ -149,7 +149,7 @@ public class PlayerAPIImplementation implements PlayerAsyncAPI, PlayerSyncAPI {
         Task.EXECUTOR.execute(() -> {
             ProcessInformation processInformation = getPlayerOnServer(player);
             if (processInformation != null) {
-                DefaultChannelManager.INSTANCE.get(processInformation.getName()).ifPresent(packetSender -> packetSender.sendPacket(new ControllerAPIAction(
+                DefaultChannelManager.INSTANCE.get(processInformation.getProcessDetail().getName()).ifPresent(packetSender -> packetSender.sendPacket(new ControllerAPIAction(
                         ControllerAPIAction.APIAction.RESPAWN,
                         Collections.singletonList(player)
                 )));
@@ -166,7 +166,7 @@ public class PlayerAPIImplementation implements PlayerAsyncAPI, PlayerSyncAPI {
         Task.EXECUTOR.execute(() -> {
             ProcessInformation processInformation = getPlayerOnServer(player);
             if (processInformation != null) {
-                DefaultChannelManager.INSTANCE.get(processInformation.getName()).ifPresent(packetSender -> packetSender.sendPacket(new ControllerAPIAction(
+                DefaultChannelManager.INSTANCE.get(processInformation.getProcessDetail().getName()).ifPresent(packetSender -> packetSender.sendPacket(new ControllerAPIAction(
                         ControllerAPIAction.APIAction.LOCATION_TELEPORT,
                         Arrays.asList(player, world, x, y, z, yaw, pitch)
                 )));
@@ -183,7 +183,7 @@ public class PlayerAPIImplementation implements PlayerAsyncAPI, PlayerSyncAPI {
         Task.EXECUTOR.execute(() -> {
             ProcessInformation processInformation = getPlayerOnProxy(player);
             if (processInformation != null) {
-                DefaultChannelManager.INSTANCE.get(processInformation.getName()).ifPresent(packetSender -> packetSender.sendPacket(new ControllerAPIAction(
+                DefaultChannelManager.INSTANCE.get(processInformation.getProcessDetail().getName()).ifPresent(packetSender -> packetSender.sendPacket(new ControllerAPIAction(
                         ControllerAPIAction.APIAction.CONNECT,
                         Arrays.asList(player, server)
                 )));
@@ -196,7 +196,7 @@ public class PlayerAPIImplementation implements PlayerAsyncAPI, PlayerSyncAPI {
     @NotNull
     @Override
     public Task<Void> connectAsync(@NotNull UUID player, @NotNull ProcessInformation server) {
-        return connectAsync(player, server.getName());
+        return connectAsync(player, server.getProcessDetail().getName());
     }
 
     @NotNull
@@ -213,7 +213,7 @@ public class PlayerAPIImplementation implements PlayerAsyncAPI, PlayerSyncAPI {
         Task.EXECUTOR.execute(() -> {
             ProcessInformation processInformation = getPlayerOnServer(player);
             if (processInformation != null) {
-                DefaultChannelManager.INSTANCE.get(processInformation.getName()).ifPresent(packetSender -> packetSender.sendPacket(new ControllerAPIAction(
+                DefaultChannelManager.INSTANCE.get(processInformation.getProcessDetail().getName()).ifPresent(packetSender -> packetSender.sendPacket(new ControllerAPIAction(
                         ControllerAPIAction.APIAction.SET_RESOURCE_PACK,
                         Arrays.asList(player, pack)
                 )));

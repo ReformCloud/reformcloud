@@ -32,7 +32,7 @@ public class ClientDumpUtil implements DumpUtil {
                 ProcessInformation processInformation = e.getProcessInformation();
                 stringBuilder
                         .append("Name: ")
-                        .append(processInformation.getName())
+                        .append(processInformation.getProcessDetail().getName())
                         .append("\n")
                         .append("UniqueID: ")
                         .append(processInformation.getProcessDetail().getProcessUniqueID())

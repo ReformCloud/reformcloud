@@ -44,7 +44,7 @@ public class PluginAPIImplementation implements PluginSyncAPI, PluginAsyncAPI {
     @NotNull
     @Override
     public Task<Void> installPluginAsync(@NotNull ProcessInformation process, @NotNull InstallablePlugin plugin) {
-        return installPluginAsync(process.getName(), plugin);
+        return installPluginAsync(process.getProcessDetail().getName(), plugin);
     }
 
     @NotNull
@@ -72,7 +72,7 @@ public class PluginAPIImplementation implements PluginSyncAPI, PluginAsyncAPI {
     @NotNull
     @Override
     public Task<Void> unloadPluginAsync(@NotNull ProcessInformation process, @NotNull Plugin plugin) {
-        return unloadPluginAsync(process.getName(), plugin);
+        return unloadPluginAsync(process.getProcessDetail().getName(), plugin);
     }
 
     @NotNull
@@ -94,7 +94,7 @@ public class PluginAPIImplementation implements PluginSyncAPI, PluginAsyncAPI {
     @NotNull
     @Override
     public Task<Plugin> getInstalledPluginAsync(@NotNull ProcessInformation process, @NotNull String name) {
-        return getInstalledPluginAsync(process.getName(), name);
+        return getInstalledPluginAsync(process.getProcessDetail().getName(), name);
     }
 
     @NotNull
@@ -116,7 +116,7 @@ public class PluginAPIImplementation implements PluginSyncAPI, PluginAsyncAPI {
     @NotNull
     @Override
     public Task<Collection<DefaultPlugin>> getPluginsAsync(@NotNull ProcessInformation process, @NotNull String author) {
-        return getPluginsAsync(process.getName(), author);
+        return getPluginsAsync(process.getProcessDetail().getName(), author);
     }
 
     @NotNull
@@ -138,7 +138,7 @@ public class PluginAPIImplementation implements PluginSyncAPI, PluginAsyncAPI {
     @NotNull
     @Override
     public Task<Collection<DefaultPlugin>> getPluginsAsync(@NotNull ProcessInformation processInformation) {
-        return getPluginsAsync(processInformation.getName());
+        return getPluginsAsync(processInformation.getProcessDetail().getName());
     }
 
     @Override

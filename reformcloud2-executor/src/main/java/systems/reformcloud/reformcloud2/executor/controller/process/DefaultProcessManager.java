@@ -91,7 +91,7 @@ public final class DefaultProcessManager implements ProcessManager {
     @Override
     public ProcessInformation getProcess(String name) {
         requireNonNull(name);
-        return Streams.filter(processInformation, processInformation -> processInformation.getName().equals(name));
+        return Streams.filter(processInformation, processInformation -> processInformation.getProcessDetail().getName().equals(name));
     }
 
     @Override
@@ -109,7 +109,7 @@ public final class DefaultProcessManager implements ProcessManager {
             System.out.println(LanguageManager.get(
                     "process-start-already-prepared-process",
                     configuration.getBase().getName(),
-                    matching.getName()
+                    matching.getProcessDetail().getName()
             ));
             this.startProcess(matching);
             return matching;
@@ -276,7 +276,7 @@ public final class DefaultProcessManager implements ProcessManager {
 
     private int nextID(ProcessGroup processGroup) {
         int id = 1;
-        Collection<Integer> ids = Streams.newCollection(processInformation, processInformation -> processInformation.getProcessGroup().getName().equals(processGroup.getName()), ProcessInformation::getId);
+        Collection<Integer> ids = Streams.newCollection(processInformation, processInformation -> processInformation.getProcessGroup().getName().equals(processGroup.getName()), e -> e.getProcessDetail().getId());
 
         while (ids.contains(id)) {
             id++;
@@ -382,7 +382,7 @@ public final class DefaultProcessManager implements ProcessManager {
 
             System.out.println(LanguageManager.get(
                     "process-connection-lost",
-                    info.getName(),
+                    info.getProcessDetail().getName(),
                     info.getProcessDetail().getProcessUniqueID(),
                     info.getProcessDetail().getParentName()
             ));

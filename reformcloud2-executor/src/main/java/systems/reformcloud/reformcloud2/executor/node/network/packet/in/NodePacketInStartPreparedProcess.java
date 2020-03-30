@@ -24,8 +24,7 @@ public class NodePacketInStartPreparedProcess extends DefaultJsonNetworkHandler 
     public void handlePacket(@NotNull PacketSender packetSender, @NotNull Packet packet, @NotNull Consumer<Packet> responses) {
         ProcessInformation processInformation = packet.content().get("info", ProcessInformation.TYPE);
         if (processInformation != null
-                && processInformation.getNodeUniqueID() != null
-                && processInformation.getNodeUniqueID().equals(NodeExecutor.getInstance().getNodeNetworkManager().getCluster().getSelfNode().getNodeUniqueID())
+                && processInformation.getProcessDetail().getParentUniqueID().equals(NodeExecutor.getInstance().getNodeNetworkManager().getCluster().getSelfNode().getNodeUniqueID())
                 && processInformation.getProcessDetail().getProcessState().equals(ProcessState.PREPARED)) {
             LocalProcessManager.getNodeProcesses()
                     .stream()

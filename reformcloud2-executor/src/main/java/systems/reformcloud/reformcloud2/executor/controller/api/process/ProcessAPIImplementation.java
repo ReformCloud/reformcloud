@@ -119,7 +119,14 @@ public class ProcessAPIImplementation implements ProcessSyncAPI, ProcessAsyncAPI
     @Override
     public Task<Integer> getGlobalOnlineCountAsync(@NotNull Collection<String> ignoredProxies) {
         Task<Integer> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> task.complete(processManager.getAllProcesses().stream().filter(processInformation -> !processInformation.getProcessDetail().getTemplate().isServer() && !ignoredProxies.contains(processInformation.getName())).mapToInt(ProcessInformation::getOnlineCount).sum()));
+        Task.EXECUTOR.execute(() -> task.complete(processManager
+                .getAllProcesses()
+                .stream()
+                .filter(processInformation -> !processInformation.getProcessDetail().getTemplate().isServer()
+                        && !ignoredProxies.contains(processInformation.getProcessDetail().getName()))
+                .mapToInt(e -> e.getProcessPlayerManager().getOnlineCount())
+                .sum()
+        ));
         return task;
     }
 

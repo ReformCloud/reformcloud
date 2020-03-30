@@ -217,7 +217,7 @@ public class BungeeCordListener implements Listener {
 
         ProcessInformation current = API.getInstance().getCurrentProcessInformation();
         return ChatColor.translateAlternateColorCodes('&', text)
-                .replace("%proxy_name%", current.getName())
+                .replace("%proxy_name%", current.getProcessDetail().getName())
                 .replace("%proxy_display_name%", current.getProcessDetail().getDisplayName())
                 .replace("%proxy_unique_id%", current.getProcessDetail().getProcessUniqueID().toString())
                 .replace("%proxy_id%", Integer.toString(current.getProcessDetail().getId()))

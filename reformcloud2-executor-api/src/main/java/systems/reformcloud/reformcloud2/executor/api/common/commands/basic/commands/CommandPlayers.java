@@ -47,7 +47,8 @@ public final class CommandPlayers extends GlobalCommand {
 
                         return null;
                     }).filter(Objects::nonNull).forEach(e -> commandSource.sendMessage(
-                    " > " + e.getThird().getName() + " on " + e.getFirst().getName() + "/" + e.getSecond().getName()
+                    " > " + e.getThird().getName() + " on " + e.getFirst().getProcessDetail().getName()
+                            + "/" + e.getSecond().getProcessDetail().getName()
             ));
             return true;
         }
@@ -76,9 +77,9 @@ public final class CommandPlayers extends GlobalCommand {
             AtomicReference<StringBuilder> stringBuilder = new AtomicReference<>(new StringBuilder());
             stringBuilder.get().append(" > Name               - ").append(trio.getThird().getName()).append("\n");
             stringBuilder.get().append(" > UUID               - ").append(trio.getThird().getUniqueID()).append("\n");
-            stringBuilder.get().append(" > Proxy              - ").append(trio.getSecond().getName()).append("\n");
+            stringBuilder.get().append(" > Proxy              - ").append(trio.getSecond().getProcessDetail().getName()).append("\n");
             stringBuilder.get().append(" > Connected (Proxy)  - ").append(CommonHelper.DATE_FORMAT.format(trio.getThird().getJoined())).append("\n");
-            stringBuilder.get().append(" > Server             - ").append(trio.getFirst().getName()).append("\n");
+            stringBuilder.get().append(" > Server             - ").append(trio.getFirst().getProcessDetail().getName()).append("\n");
             stringBuilder.get().append(" > Connected (Server) - ").append(CommonHelper.DATE_FORMAT.format(subServerPlayer.getJoined())).append("\n");
             commandSource.sendMessages(stringBuilder.get().toString().split("\n"));
             return true;

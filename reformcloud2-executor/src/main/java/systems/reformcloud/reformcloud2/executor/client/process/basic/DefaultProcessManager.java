@@ -33,13 +33,13 @@ public final class DefaultProcessManager implements ProcessManager {
 
         DefaultChannelManager.INSTANCE.get("Controller").ifPresent(packetSender -> packetSender.sendPacket(new ClientPacketOutProcessRegistered(
                 runningProcess.getProcessInformation().getProcessDetail().getProcessUniqueID(),
-                runningProcess.getProcessInformation().getName()
+                runningProcess.getProcessInformation().getProcessDetail().getName()
         )));
     }
 
     @Override
     public void unregisterProcess(@NotNull String name) {
-        Streams.filterToReference(list, runningProcess -> runningProcess.getProcessInformation().getName().equals(name)).ifPresent(runningProcess -> {
+        Streams.filterToReference(list, runningProcess -> runningProcess.getProcessInformation().getProcessDetail().getName().equals(name)).ifPresent(runningProcess -> {
             list.remove(runningProcess);
             ClientExecutor.getInstance().getScreenManager().getPerProcessScreenLines().remove(runningProcess.getProcessInformation().getProcessDetail().getProcessUniqueID());
         });
@@ -54,7 +54,7 @@ public final class DefaultProcessManager implements ProcessManager {
     @NotNull
     @Override
     public ReferencedOptional<RunningProcess> getProcess(String name) {
-        return Streams.filterToReference(list, runningProcess -> runningProcess.getProcessInformation().getName().equals(name));
+        return Streams.filterToReference(list, runningProcess -> runningProcess.getProcessInformation().getProcessDetail().getName().equals(name));
     }
 
     @NotNull

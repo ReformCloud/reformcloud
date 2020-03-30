@@ -26,7 +26,7 @@ public class PacketInScreenLineAdded extends DefaultJsonNetworkHandler {
 
         ProcessInformation processInformation = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcess(uniqueID);
         if (processInformation != null) {
-            System.out.println(LanguageManager.get("screen-line-added", processInformation.getName(), line));
+            System.out.println(LanguageManager.get("screen-line-added", processInformation.getProcessDetail().getName(), line));
         }
     }
 }

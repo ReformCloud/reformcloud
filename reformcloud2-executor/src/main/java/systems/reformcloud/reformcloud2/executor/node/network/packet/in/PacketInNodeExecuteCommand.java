@@ -23,7 +23,7 @@ public class PacketInNodeExecuteCommand extends DefaultJsonNetworkHandler {
         String name = packet.content().getString("name");
         String command = packet.content().getString("command");
 
-        RunningProcess nodeProcess = Streams.filterToReference(LocalProcessManager.getNodeProcesses(), e -> e.getProcessInformation().getName().equals(name)).orNothing();
+        RunningProcess nodeProcess = Streams.filterToReference(LocalProcessManager.getNodeProcesses(), e -> e.getProcessInformation().getProcessDetail().getName().equals(name)).orNothing();
         if (nodeProcess == null) {
             return;
         }

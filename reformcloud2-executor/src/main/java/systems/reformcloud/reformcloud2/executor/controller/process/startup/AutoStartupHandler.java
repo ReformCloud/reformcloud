@@ -61,7 +61,7 @@ public final class AutoStartupHandler extends AbsoluteThread {
                                     System.out.println(LanguageManager.get(
                                             "process-start-already-prepared-process",
                                             processGroup.getName(),
-                                            prepared.getName()
+                                            prepared.getProcessDetail().getName()
                                     ));
                                     ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().startProcess(prepared);
                                 } else {

@@ -42,10 +42,10 @@ public class CommandLeave extends Command {
         if (lobby != null) {
             proxiedPlayer.sendMessage(TextComponent.fromLegacyText(
                     BungeeExecutor.getInstance().getMessages().format(
-                            BungeeExecutor.getInstance().getMessages().getConnectingToHub(), lobby.getName()
+                            BungeeExecutor.getInstance().getMessages().getConnectingToHub(), lobby.getProcessDetail().getName()
                     )
             ));
-            proxiedPlayer.connect(ProxyServer.getInstance().getServerInfo(lobby.getName()));
+            proxiedPlayer.connect(ProxyServer.getInstance().getServerInfo(lobby.getProcessDetail().getName()));
             return;
         }
 

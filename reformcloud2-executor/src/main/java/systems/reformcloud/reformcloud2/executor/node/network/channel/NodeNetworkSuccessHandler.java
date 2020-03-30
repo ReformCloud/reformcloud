@@ -67,7 +67,7 @@ public class NodeNetworkSuccessHandler implements BiConsumer<ChannelHandlerConte
             ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(process);
             NodeExecutor.getInstance().getNodeNetworkManager().getNodeProcessHelper().handleProcessConnection(process);
 
-            System.out.println(LanguageManager.get("process-connected", process.getName(), process.getProcessDetail().getParentName()));
+            System.out.println(LanguageManager.get("process-connected", process.getProcessDetail().getName(), process.getProcessDetail().getParentName()));
         }
     }
 }

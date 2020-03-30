@@ -91,7 +91,7 @@ public class LocalAutoStartupHandler extends AbsoluteThread {
                     System.out.println(LanguageManager.get(
                             "process-start-already-prepared-process",
                             processGroup.getName(),
-                            preparedProcesses.get(0).getName()
+                            preparedProcesses.get(0).getProcessDetail().getName()
                     ));
                     ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().startProcess(preparedProcesses.get(0));
                     continue;

@@ -50,8 +50,8 @@ public class PluginAPIImplementation implements PluginSyncAPI, PluginAsyncAPI {
         Task<Void> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             if (this.nodeNetworkManager.getCluster().getSelfNode().getName().equals(process.getProcessDetail().getParentName())) {
-                DefaultChannelManager.INSTANCE.get(process.getName()).ifPresent(e -> e.sendPacket(new NodePluginAction(
-                        NodePluginAction.Action.INSTALL, process.getName(), new DefaultInstallablePlugin(
+                DefaultChannelManager.INSTANCE.get(process.getProcessDetail().getName()).ifPresent(e -> e.sendPacket(new NodePluginAction(
+                        NodePluginAction.Action.INSTALL, process.getProcessDetail().getName(), new DefaultInstallablePlugin(
                         plugin.getDownloadURL(),
                         plugin.getName(),
                         plugin.version(),
@@ -60,7 +60,7 @@ public class PluginAPIImplementation implements PluginSyncAPI, PluginAsyncAPI {
                 ))));
             } else {
                 DefaultChannelManager.INSTANCE.get(process.getProcessDetail().getParentName()).ifPresent(e -> e.sendPacket(new NodePluginAction(
-                        NodePluginAction.Action.INSTALL, process.getName(), new DefaultInstallablePlugin(
+                        NodePluginAction.Action.INSTALL, process.getProcessDetail().getName(), new DefaultInstallablePlugin(
                         plugin.getDownloadURL(),
                         plugin.getName(),
                         plugin.version(),
@@ -96,9 +96,9 @@ public class PluginAPIImplementation implements PluginSyncAPI, PluginAsyncAPI {
         Task<Void> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             if (this.nodeNetworkManager.getCluster().getSelfNode().getName().equals(process.getProcessDetail().getParentName())) {
-                DefaultChannelManager.INSTANCE.get(process.getName()).ifPresent(e -> e.sendPacket(new NodePluginAction(
+                DefaultChannelManager.INSTANCE.get(process.getProcessDetail().getName()).ifPresent(e -> e.sendPacket(new NodePluginAction(
                         NodePluginAction.Action.UNINSTALL,
-                        process.getName(),
+                        process.getProcessDetail().getName(),
                         new DefaultPlugin(
                                 plugin.version(),
                                 plugin.author(),
@@ -111,7 +111,7 @@ public class PluginAPIImplementation implements PluginSyncAPI, PluginAsyncAPI {
             } else {
                 DefaultChannelManager.INSTANCE.get(process.getProcessDetail().getParentName()).ifPresent(e -> e.sendPacket(new NodePluginAction(
                         NodePluginAction.Action.UNINSTALL,
-                        process.getName(),
+                        process.getProcessDetail().getName(),
                         new DefaultPlugin(
                                 plugin.version(),
                                 plugin.author(),

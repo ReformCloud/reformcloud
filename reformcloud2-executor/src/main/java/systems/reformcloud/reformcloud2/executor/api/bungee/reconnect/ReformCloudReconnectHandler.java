@@ -17,7 +17,7 @@ public class ReformCloudReconnectHandler implements ReconnectHandler {
                 proxiedPlayer::hasPermission
         );
 
-        return information == null ? null : ProxyServer.getInstance().getServerInfo(information.getName());
+        return information == null ? null : ProxyServer.getInstance().getServerInfo(information.getProcessDetail().getName());
     }
 
     @Override

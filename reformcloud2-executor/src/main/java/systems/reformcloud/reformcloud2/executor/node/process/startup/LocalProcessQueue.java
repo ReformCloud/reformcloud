@@ -23,7 +23,7 @@ public class LocalProcessQueue extends AbsoluteThread {
     public static void queue(@NotNull ProcessInformation processInformation) {
         RunningProcess localNodeProcess = new BasicLocalNodeProcess(processInformation);
         int size = QUEUE.size();
-        System.out.println(LanguageManager.get("client-process-now-in-queue", processInformation.getName(), size +1));
+        System.out.println(LanguageManager.get("client-process-now-in-queue", processInformation.getProcessDetail().getName(), size +1));
 
         localNodeProcess.prepare().onComplete(e -> {
             localNodeProcess.handleEnqueue();
@@ -33,7 +33,7 @@ public class LocalProcessQueue extends AbsoluteThread {
 
     public static void queue(@NotNull RunningProcess process) {
         System.out.println(LanguageManager.get("client-process-now-in-queue",
-                process.getProcessInformation().getName(), QUEUE.size() +1));
+                process.getProcessInformation().getProcessDetail().getName(), QUEUE.size() +1));
         process.handleEnqueue();
         QUEUE.offerLast(process);
     }
@@ -50,7 +50,7 @@ public class LocalProcessQueue extends AbsoluteThread {
                 RunningProcess process = QUEUE.takeFirst();
                 if (isMemoryFree(process.getProcessInformation().getProcessDetail().getMaxMemory())
                         && process.bootstrap()) {
-                    System.out.println(LanguageManager.get("node-process-start", process.getProcessInformation().getName()));
+                    System.out.println(LanguageManager.get("node-process-start", process.getProcessInformation().getProcessDetail().getName()));
                     AbsoluteThread.sleep(50);
                     continue;
                 }

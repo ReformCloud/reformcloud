@@ -10,10 +10,10 @@ public class RunningProcessStoppedListener {
 
     @Listener
     public void handle(final RunningProcessStoppedEvent event) {
-        ClientExecutor.getInstance().getProcessManager().unregisterProcess(event.getRunningProcess().getProcessInformation().getName());
+        ClientExecutor.getInstance().getProcessManager().unregisterProcess(event.getRunningProcess().getProcessInformation().getProcessDetail().getName());
         DefaultChannelManager.INSTANCE.get("Controller").ifPresent(packetSender -> packetSender.sendPacket(new ClientPacketOutProcessStopped(
                 event.getRunningProcess().getProcessInformation().getProcessDetail().getProcessUniqueID(),
-                event.getRunningProcess().getProcessInformation().getName()
+                event.getRunningProcess().getProcessInformation().getProcessDetail().getName()
         )));
     }
 }

@@ -28,7 +28,7 @@ public class DefaultClusterManager implements ClusterManager {
             this.nodeInformation.remove(e);
             cluster.getConnectedNodes().remove(e);
             Streams.allOf(Streams.newList(NodeExecutor.getInstance().getNodeNetworkManager().getNodeProcessHelper().getClusterProcesses()),
-                    i -> i.getNodeUniqueID().equals(e.getNodeUniqueID())
+                    i -> i.getProcessDetail().getParentUniqueID().equals(e.getNodeUniqueID())
             ).forEach(i -> {
                 NodeExecutor.getInstance().getNodeNetworkManager().getNodeProcessHelper().handleProcessStop(i);
                 DefaultClusterSyncManager.sendToAllExcludedNodes(new ControllerEventProcessClosed(i));

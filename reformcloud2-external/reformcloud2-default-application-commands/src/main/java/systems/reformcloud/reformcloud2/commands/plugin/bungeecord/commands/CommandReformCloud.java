@@ -27,7 +27,7 @@ public class CommandReformCloud extends Command {
 
         if (strings.length == 1 && strings[0].equalsIgnoreCase("list")) {
             ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getAllProcesses().forEach(e -> commandSender.sendMessage(TextComponent.fromLegacyText(
-                    "=> " + e.getName()
+                    "=> " + e.getProcessDetail().getName()
                             + "/ Display: " + e.getProcessDetail().getDisplayName()
                             + "/ UniqueID: " + e.getProcessDetail().getProcessUniqueID()
                             + "/ Parent: " + e.getProcessDetail().getParentName()
@@ -57,7 +57,7 @@ public class CommandReformCloud extends Command {
                 }
 
                 case "stopall": {
-                    ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcesses(strings[1]).forEach(e -> ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().stopProcess(e.getName()));
+                    ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcesses(strings[1]).forEach(e -> ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().stopProcess(e.getProcessDetail().getName()));
                     commandSender.sendMessage(getCommandSuccessMessage());
                     return;
                 }

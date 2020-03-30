@@ -31,7 +31,7 @@ public class ControllerNetworkSuccessHandler implements BiConsumer<ChannelHandle
             process.getProcessDetail().setProcessState(ProcessState.READY);
             ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(process);
 
-            System.out.println(LanguageManager.get("process-connected", process.getName(), process.getProcessDetail().getParentName()));
+            System.out.println(LanguageManager.get("process-connected", process.getProcessDetail().getName(), process.getProcessDetail().getParentName()));
         }
     }
 }

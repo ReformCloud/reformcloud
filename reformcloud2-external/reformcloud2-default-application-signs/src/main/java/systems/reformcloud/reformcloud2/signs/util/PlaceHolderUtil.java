@@ -12,7 +12,7 @@ public final class PlaceHolderUtil {
 
     public static <T> T format(String line, String group, ProcessInformation processInformation, Function<String, T> function) {
         line = line.replace("%group%", group);
-        line = line.replace("%name%", processInformation.getName());
+        line = line.replace("%name%", processInformation.getProcessDetail().getName());
         line = line.replace("%display%", processInformation.getProcessDetail().getDisplayName());
         line = line.replace("%parent%", processInformation.getProcessDetail().getParentName());
         line = line.replace("%id%", Integer.toString(processInformation.getProcessDetail().getId()));

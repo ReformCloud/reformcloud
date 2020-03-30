@@ -26,7 +26,7 @@ public final class ControllerPacketInAddScreenLine extends DefaultJsonNetworkHan
 
         ProcessInformation processInformation = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcess(uuid);
         if (processInformation != null) {
-            System.out.println(LanguageManager.get("screen-line-added", processInformation.getName(), line));
+            System.out.println(LanguageManager.get("screen-line-added", processInformation.getProcessDetail().getName(), line));
         }
     }
 }

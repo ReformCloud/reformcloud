@@ -64,7 +64,7 @@ public class ProcessAPIImplementation implements ProcessSyncAPI, ProcessAsyncAPI
                 return;
             }
 
-            nodeNetworkManager.stopProcess(old.getName());
+            nodeNetworkManager.stopProcess(old.getProcessDetail().getName());
             task.complete(old);
         });
         return task;
@@ -130,13 +130,13 @@ public class ProcessAPIImplementation implements ProcessSyncAPI, ProcessAsyncAPI
                 return;
             }
 
-            if (NodeExecutor.getInstance().getNodeConfig().getUniqueID().equals(processInformation.getNodeUniqueID())) {
+            if (NodeExecutor.getInstance().getNodeConfig().getUniqueID().equals(processInformation.getProcessDetail().getParentUniqueID())) {
                 Streams.filterToReference(LocalProcessManager.getNodeProcesses(),
                         e -> e.getProcessInformation().getProcessDetail().getProcessUniqueID().equals(processInformation.getProcessDetail().getProcessUniqueID())
                 ).ifPresent(e -> e.sendCommand(commandLine));
             } else {
                 DefaultChannelManager.INSTANCE.get(processInformation.getProcessDetail().getParentName())
-                        .ifPresent(e -> e.sendPacket(new NodePacketOutExecuteCommand(processInformation.getName(), commandLine)));
+                        .ifPresent(e -> e.sendPacket(new NodePacketOutExecuteCommand(processInformation.getProcessDetail().getName(), commandLine)));
             }
 
             task.complete(null);
@@ -150,8 +150,8 @@ public class ProcessAPIImplementation implements ProcessSyncAPI, ProcessAsyncAPI
         Task<Integer> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             int online = Streams.allOf(nodeNetworkManager.getNodeProcessHelper().getClusterProcesses(),
-                    e -> !e.getProcessDetail().getTemplate().isServer() && !ignoredProxies.contains(e.getName())
-            ).stream().mapToInt(ProcessInformation::getOnlineCount).sum();
+                    e -> !e.getProcessDetail().getTemplate().isServer() && !ignoredProxies.contains(e.getProcessDetail().getName())
+            ).stream().mapToInt(e -> e.getProcessPlayerManager().getOnlineCount()).sum();
             task.complete(online);
         });
         return task;

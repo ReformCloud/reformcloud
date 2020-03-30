@@ -35,7 +35,7 @@ public class PlayerAPIImplementation implements PlayerAsyncAPI, PlayerSyncAPI {
             }
 
             if (this.nodeNetworkManager.getCluster().getSelfNode().getName().equals(processInformation.getProcessDetail().getParentName())) {
-                DefaultChannelManager.INSTANCE.get(processInformation.getName()).ifPresent(e -> e.sendPacket(new NodeAPIAction(
+                DefaultChannelManager.INSTANCE.get(processInformation.getProcessDetail().getName()).ifPresent(e -> e.sendPacket(new NodeAPIAction(
                         NodeAPIAction.APIAction.SEND_MESSAGE, Arrays.asList(player, message)
                 )));
             } else {
@@ -61,7 +61,7 @@ public class PlayerAPIImplementation implements PlayerAsyncAPI, PlayerSyncAPI {
             }
 
             if (this.nodeNetworkManager.getCluster().getSelfNode().getName().equals(processInformation.getProcessDetail().getParentName())) {
-                DefaultChannelManager.INSTANCE.get(processInformation.getName()).ifPresent(e -> e.sendPacket(new NodeAPIAction(
+                DefaultChannelManager.INSTANCE.get(processInformation.getProcessDetail().getName()).ifPresent(e -> e.sendPacket(new NodeAPIAction(
                         NodeAPIAction.APIAction.KICK_PLAYER, Arrays.asList(player, message)
                 )));
             } else {
@@ -87,7 +87,7 @@ public class PlayerAPIImplementation implements PlayerAsyncAPI, PlayerSyncAPI {
             }
 
             if (this.nodeNetworkManager.getCluster().getSelfNode().getName().equals(processInformation.getProcessDetail().getParentName())) {
-                DefaultChannelManager.INSTANCE.get(processInformation.getName()).ifPresent(e -> e.sendPacket(new NodeAPIAction(
+                DefaultChannelManager.INSTANCE.get(processInformation.getProcessDetail().getName()).ifPresent(e -> e.sendPacket(new NodeAPIAction(
                         NodeAPIAction.APIAction.KICK_PLAYER, Arrays.asList(player, message)
                 )));
             } else {
@@ -113,7 +113,7 @@ public class PlayerAPIImplementation implements PlayerAsyncAPI, PlayerSyncAPI {
             }
 
             if (this.nodeNetworkManager.getCluster().getSelfNode().getName().equals(processInformation.getProcessDetail().getParentName())) {
-                DefaultChannelManager.INSTANCE.get(processInformation.getName()).ifPresent(e -> e.sendPacket(new NodeAPIAction(
+                DefaultChannelManager.INSTANCE.get(processInformation.getProcessDetail().getName()).ifPresent(e -> e.sendPacket(new NodeAPIAction(
                         NodeAPIAction.APIAction.PLAY_SOUND, Arrays.asList(player, sound, f1, f2)
                 )));
             } else {
@@ -139,7 +139,7 @@ public class PlayerAPIImplementation implements PlayerAsyncAPI, PlayerSyncAPI {
             }
 
             if (this.nodeNetworkManager.getCluster().getSelfNode().getName().equals(processInformation.getProcessDetail().getParentName())) {
-                DefaultChannelManager.INSTANCE.get(processInformation.getName()).ifPresent(e -> e.sendPacket(new NodeAPIAction(
+                DefaultChannelManager.INSTANCE.get(processInformation.getProcessDetail().getName()).ifPresent(e -> e.sendPacket(new NodeAPIAction(
                         NodeAPIAction.APIAction.SEND_TITLE, Arrays.asList(player, title, subTitle, fadeIn, stay, fadeOut)
                 )));
             } else {
@@ -165,7 +165,7 @@ public class PlayerAPIImplementation implements PlayerAsyncAPI, PlayerSyncAPI {
             }
 
             if (this.nodeNetworkManager.getCluster().getSelfNode().getName().equals(processInformation.getProcessDetail().getParentName())) {
-                DefaultChannelManager.INSTANCE.get(processInformation.getName()).ifPresent(e -> e.sendPacket(new NodeAPIAction(
+                DefaultChannelManager.INSTANCE.get(processInformation.getProcessDetail().getName()).ifPresent(e -> e.sendPacket(new NodeAPIAction(
                         NodeAPIAction.APIAction.PLAY_ENTITY_EFFECT, Arrays.asList(player, entityEffect)
                 )));
             } else {
@@ -191,7 +191,7 @@ public class PlayerAPIImplementation implements PlayerAsyncAPI, PlayerSyncAPI {
             }
 
             if (this.nodeNetworkManager.getCluster().getSelfNode().getName().equals(processInformation.getProcessDetail().getParentName())) {
-                DefaultChannelManager.INSTANCE.get(processInformation.getName()).ifPresent(e -> e.sendPacket(new NodeAPIAction(
+                DefaultChannelManager.INSTANCE.get(processInformation.getProcessDetail().getName()).ifPresent(e -> e.sendPacket(new NodeAPIAction(
                         NodeAPIAction.APIAction.PLAY_EFFECT, Arrays.asList(player, effect, data)
                 )));
             } else {
@@ -217,7 +217,7 @@ public class PlayerAPIImplementation implements PlayerAsyncAPI, PlayerSyncAPI {
             }
 
             if (this.nodeNetworkManager.getCluster().getSelfNode().getName().equals(processInformation.getProcessDetail().getParentName())) {
-                DefaultChannelManager.INSTANCE.get(processInformation.getName()).ifPresent(e -> e.sendPacket(new NodeAPIAction(
+                DefaultChannelManager.INSTANCE.get(processInformation.getProcessDetail().getName()).ifPresent(e -> e.sendPacket(new NodeAPIAction(
                         NodeAPIAction.APIAction.RESPAWN, Collections.singletonList(player)
                 )));
             } else {
@@ -243,7 +243,7 @@ public class PlayerAPIImplementation implements PlayerAsyncAPI, PlayerSyncAPI {
             }
 
             if (this.nodeNetworkManager.getCluster().getSelfNode().getName().equals(processInformation.getProcessDetail().getParentName())) {
-                DefaultChannelManager.INSTANCE.get(processInformation.getName()).ifPresent(e -> e.sendPacket(new NodeAPIAction(
+                DefaultChannelManager.INSTANCE.get(processInformation.getProcessDetail().getName()).ifPresent(e -> e.sendPacket(new NodeAPIAction(
                         NodeAPIAction.APIAction.LOCATION_TELEPORT, Arrays.asList(player, world, x, y, z, yaw, pitch)
                 )));
             } else {
@@ -269,7 +269,7 @@ public class PlayerAPIImplementation implements PlayerAsyncAPI, PlayerSyncAPI {
             }
 
             if (this.nodeNetworkManager.getCluster().getSelfNode().getName().equals(processInformation.getProcessDetail().getParentName())) {
-                DefaultChannelManager.INSTANCE.get(processInformation.getName()).ifPresent(e -> e.sendPacket(new NodeAPIAction(
+                DefaultChannelManager.INSTANCE.get(processInformation.getProcessDetail().getName()).ifPresent(e -> e.sendPacket(new NodeAPIAction(
                         NodeAPIAction.APIAction.CONNECT, Arrays.asList(player, server)
                 )));
             } else {
@@ -286,7 +286,7 @@ public class PlayerAPIImplementation implements PlayerAsyncAPI, PlayerSyncAPI {
     @NotNull
     @Override
     public Task<Void> connectAsync(@NotNull UUID player, @NotNull ProcessInformation server) {
-        return connectAsync(player, server.getName());
+        return connectAsync(player, server.getProcessDetail().getName());
     }
 
     @NotNull
@@ -316,7 +316,7 @@ public class PlayerAPIImplementation implements PlayerAsyncAPI, PlayerSyncAPI {
             }
 
             if (this.nodeNetworkManager.getCluster().getSelfNode().getName().equals(processInformation.getProcessDetail().getParentName())) {
-                DefaultChannelManager.INSTANCE.get(processInformation.getName()).ifPresent(e -> e.sendPacket(new NodeAPIAction(
+                DefaultChannelManager.INSTANCE.get(processInformation.getProcessDetail().getName()).ifPresent(e -> e.sendPacket(new NodeAPIAction(
                         NodeAPIAction.APIAction.SET_RESOURCE_PACK, Arrays.asList(player, pack)
                 )));
             } else {

@@ -29,7 +29,7 @@ public class ProcessListener {
     public void handle(final ProcessStartedEvent event) {
         this.publishNotification(
                 VelocityExecutor.getInstance().getMessages().getProcessStarted(),
-                event.getProcessInformation().getName()
+                event.getProcessInformation().getProcessDetail().getName()
         );
     }
 
@@ -40,7 +40,7 @@ public class ProcessListener {
             STARTED.add(processInformation.getProcessDetail().getProcessUniqueID());
             this.publishNotification(
                     VelocityExecutor.getInstance().getMessages().getProcessConnected(),
-                    processInformation.getName()
+                    processInformation.getProcessDetail().getName()
             );
         }
     }
@@ -49,7 +49,7 @@ public class ProcessListener {
     public void handle(final ProcessStoppedEvent event) {
         this.publishNotification(
                 VelocityExecutor.getInstance().getMessages().getProcessStopped(),
-                event.getProcessInformation().getName()
+                event.getProcessInformation().getProcessDetail().getName()
         );
         STARTED.remove(event.getProcessInformation().getProcessDetail().getProcessUniqueID());
     }
@@ -65,7 +65,7 @@ public class ProcessListener {
 
     private boolean isNotify(ProcessInformation information) {
         return !STARTED.contains(information.getProcessDetail().getProcessUniqueID())
-                && !VelocityPlugin.proxyServer.getServer(information.getName()).isPresent()
+                && !VelocityPlugin.proxyServer.getServer(information.getProcessDetail().getName()).isPresent()
                 && information.getNetworkInfo().isConnected();
     }
 }

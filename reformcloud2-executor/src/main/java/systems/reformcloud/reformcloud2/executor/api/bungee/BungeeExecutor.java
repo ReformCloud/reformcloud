@@ -104,7 +104,7 @@ public final class BungeeExecutor extends API implements PlayerAPIExecutor {
                 () -> new APINetworkChannelReader(this.packetHandler),
                 new ClientChallengeAuthHandler(
                         connectionKey,
-                        thisProcessInformation.getName(),
+                        thisProcessInformation.getProcessDetail().getName(),
                         () -> new JsonConfiguration(),
                         context -> {
                         } // unused here
@@ -182,7 +182,7 @@ public final class BungeeExecutor extends API implements PlayerAPIExecutor {
     }
 
     public static void registerServer(@NotNull ProcessInformation processInformation) {
-        ServerInfo oldInfo = ProxyServer.getInstance().getServerInfo(processInformation.getName());
+        ServerInfo oldInfo = ProxyServer.getInstance().getServerInfo(processInformation.getProcessDetail().getName());
         if (oldInfo != null) {
             if (!(oldInfo.getSocketAddress() instanceof InetSocketAddress)) {
                 return;
@@ -202,20 +202,20 @@ public final class BungeeExecutor extends API implements PlayerAPIExecutor {
                 return;
             }
 
-            ProxyServer.getInstance().getServers().put(processInformation.getName(), serverInfo);
+            ProxyServer.getInstance().getServers().put(processInformation.getProcessDetail().getName(), serverInfo);
             if (processInformation.isLobby()) {
                 LOBBY_SERVERS.add(processInformation);
-                ProxyServer.getInstance().getConfig().getListeners().forEach(listenerInfo -> listenerInfo.getServerPriority().add(processInformation.getName()));
+                ProxyServer.getInstance().getConfig().getListeners().forEach(listenerInfo -> listenerInfo.getServerPriority().add(processInformation.getProcessDetail().getName()));
             }
         }
     }
 
     public static void unregisterServer(ProcessInformation processInformation) {
-        ProxyServer.getInstance().getServers().remove(processInformation.getName());
+        ProxyServer.getInstance().getServers().remove(processInformation.getProcessDetail().getName());
         if (processInformation.isLobby()) {
             BungeeExecutor.LOBBY_SERVERS.remove(processInformation);
             ProxyServer.getInstance().getConfig().getListeners().forEach(
-                    listenerInfo -> listenerInfo.getServerPriority().remove(processInformation.getName())
+                    listenerInfo -> listenerInfo.getServerPriority().remove(processInformation.getProcessDetail().getName())
             );
         }
     }
@@ -246,7 +246,7 @@ public final class BungeeExecutor extends API implements PlayerAPIExecutor {
         }
 
         return ProxyServer.getInstance().constructServerInfo(
-                processInformation.getName(),
+                processInformation.getProcessDetail().getName(),
                 processInformation.getNetworkInfo().toInet(),
                 "ReformCloud2", false);
     }
@@ -405,7 +405,7 @@ public final class BungeeExecutor extends API implements PlayerAPIExecutor {
 
     @Override
     public void executeConnect(UUID player, ProcessInformation server) {
-        executeConnect(player, server.getName());
+        executeConnect(player, server.getProcessDetail().getName());
     }
 
     @Override

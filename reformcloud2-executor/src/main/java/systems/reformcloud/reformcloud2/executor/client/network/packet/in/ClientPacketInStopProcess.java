@@ -30,7 +30,7 @@ public final class ClientPacketInStopProcess extends DefaultJsonNetworkHandler {
         if (queued != null) {
             packetSender.sendPacket(new ClientPacketOutProcessStopped(
                     queued.getProcessDetail().getProcessUniqueID(),
-                    queued.getName()
+                    queued.getProcessDetail().getName()
             ));
             return;
         }

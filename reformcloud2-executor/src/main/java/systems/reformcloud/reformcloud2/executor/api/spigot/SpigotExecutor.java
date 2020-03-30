@@ -80,7 +80,7 @@ public final class SpigotExecutor extends API implements PlayerAPIExecutor {
                 () -> new APINetworkChannelReader(this.packetHandler),
                 new ClientChallengeAuthHandler(
                         connectionKey,
-                        thisProcessInformation.getName(),
+                        thisProcessInformation.getProcessDetail().getName(),
                         () -> new JsonConfiguration(),
                         context -> {
                         } // unused here

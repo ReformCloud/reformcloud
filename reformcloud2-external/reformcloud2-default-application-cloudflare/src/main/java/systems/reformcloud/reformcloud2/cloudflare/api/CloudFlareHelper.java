@@ -121,7 +121,7 @@ public final class CloudFlareHelper {
                     } catch (final Throwable ignored) {
                     }
 
-                    System.err.println(LanguageManager.get("cloudlfare-create-error", target.getName()));
+                    System.err.println(LanguageManager.get("cloudlfare-create-error", target.getProcessDetail().getName()));
                 }
             }
         } catch (final IOException ex) {
