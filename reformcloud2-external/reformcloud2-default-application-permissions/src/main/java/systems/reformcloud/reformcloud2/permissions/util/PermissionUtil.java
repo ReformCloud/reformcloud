@@ -1,5 +1,6 @@
 package systems.reformcloud.reformcloud2.permissions.util;
 
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.permissions.util.group.NodeGroup;
@@ -32,7 +33,7 @@ public interface PermissionUtil {
      * Adds a specific permission to a permission group
      *
      * @param permissionGroup The group which should get the permission
-     * @param permissionNode The permission which should be added
+     * @param permissionNode  The permission which should be added
      */
     void addGroupPermission(
             @NotNull PermissionGroup permissionGroup,
@@ -42,9 +43,9 @@ public interface PermissionUtil {
     /**
      * Adds a specific permission to a permission group on a specific process group
      *
-     * @param processGroup The process group on which the permission should be valid
+     * @param processGroup    The process group on which the permission should be valid
      * @param permissionGroup The group which should get the permission
-     * @param permissionNode The permission which should be added
+     * @param permissionNode  The permission which should be added
      */
     void addProcessGroupPermission(
             @NotNull String processGroup,
@@ -91,11 +92,10 @@ public interface PermissionUtil {
     /**
      * Checks if a specific permission user has the given permission
      *
-     * @see PermissionUser#hasPermission(String)
-     *
      * @param permissionUser The user which should get the deep group check
-     * @param permission The permission which should get checked
+     * @param permission     The permission which should get checked
      * @return If the user has the given permission
+     * @see PermissionUser#hasPermission(String)
      */
     boolean hasPermission(
             @NotNull PermissionUser permissionUser,
@@ -105,7 +105,7 @@ public interface PermissionUtil {
     /**
      * Checks if a specific permission group has the given permission
      *
-     * @param group The group which should get permission check including all sub groups and their sub groups etc.
+     * @param group      The group which should get permission check including all sub groups and their sub groups etc.
      * @param permission The permission which should get checked
      * @return If the group has the given permission
      */
@@ -136,7 +136,7 @@ public interface PermissionUtil {
     /**
      * Adds a specific permission to a user
      *
-     * @param uuid The uniqueID of the permission user
+     * @param uuid           The uniqueID of the permission user
      * @param permissionNode The permission node which should get added to the user
      */
     void addUserPermission(
@@ -147,7 +147,7 @@ public interface PermissionUtil {
     /**
      * Removes a specific group from a user
      *
-     * @param uuid The uniqueID of the permission user
+     * @param uuid  The uniqueID of the permission user
      * @param group The group which should get removed
      */
     void removeUserGroup(
@@ -158,7 +158,7 @@ public interface PermissionUtil {
     /**
      * Adds a specific group to a user
      *
-     * @param uuid The uniqueID of the permission user
+     * @param uuid  The uniqueID of the permission user
      * @param group The group which should get added
      */
     void addUserGroup(
@@ -184,19 +184,27 @@ public interface PermissionUtil {
     // The following methods are not documented because they are for internal use only
     // ===================================
 
+    @ApiStatus.Internal
     void handleDisconnect(UUID uuid);
 
+    @ApiStatus.Internal
     void handleInternalPermissionGroupUpdate(PermissionGroup permissionGroup);
 
+    @ApiStatus.Internal
     void handleInternalPermissionGroupCreate(PermissionGroup permissionGroup);
 
+    @ApiStatus.Internal
     void handleInternalPermissionGroupDelete(PermissionGroup permissionGroup);
 
+    @ApiStatus.Internal
     void handleInternalUserUpdate(PermissionUser permissionUser);
 
+    @ApiStatus.Internal
     void handleInternalUserCreate(PermissionUser permissionUser);
 
+    @ApiStatus.Internal
     void handleInternalUserDelete(PermissionUser permissionUser);
 
+    @ApiStatus.Internal
     void handleInternalDefaultGroupsUpdate();
 }
