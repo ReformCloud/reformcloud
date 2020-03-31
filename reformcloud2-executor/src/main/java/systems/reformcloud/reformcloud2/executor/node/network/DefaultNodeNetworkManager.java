@@ -1,6 +1,9 @@
 package systems.reformcloud.reformcloud2.executor.node.network;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
+import systems.reformcloud.reformcloud2.executor.api.common.base.Conditions;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.RuntimeConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Template;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Version;
@@ -11,9 +14,9 @@ import systems.reformcloud.reformcloud2.executor.api.common.node.NodeInformation
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState;
 import systems.reformcloud.reformcloud2.executor.api.common.process.api.ProcessConfiguration;
-import systems.reformcloud.reformcloud2.executor.api.common.process.running.matcher.PreparedProcessFilter;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Duo;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.maps.BiMap;
 import systems.reformcloud.reformcloud2.executor.api.node.cluster.InternalNetworkCluster;
 import systems.reformcloud.reformcloud2.executor.api.node.network.NodeNetworkManager;
 import systems.reformcloud.reformcloud2.executor.api.node.process.NodeProcessManager;
@@ -26,19 +29,19 @@ import systems.reformcloud.reformcloud2.executor.node.process.manager.LocalProce
 import systems.reformcloud.reformcloud2.executor.node.process.startup.LocalProcessQueue;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
+
+import static systems.reformcloud.reformcloud2.executor.api.common.process.running.matcher.PreparedProcessFilter.findMayMatchingProcess;
 
 public class DefaultNodeNetworkManager implements NodeNetworkManager {
 
-    private static final Map<UUID, String> QUEUED_PROCESSES = new ConcurrentHashMap<>();
-
     private static final Queue<Duo<ProcessConfiguration, Boolean>> LATER = new ConcurrentLinkedQueue<>();
 
-    public DefaultNodeNetworkManager(NodeProcessManager processManager, InternalNetworkCluster cluster) {
+    private static final BiMap<String, UUID> PER_GROUP_WAITING = new BiMap<>();
+
+    public DefaultNodeNetworkManager(@NotNull NodeProcessManager processManager, @NotNull InternalNetworkCluster cluster) {
         this.localNodeProcessManager = processManager;
         this.cluster = cluster;
 
@@ -54,128 +57,122 @@ public class DefaultNodeNetworkManager implements NodeNetworkManager {
 
     private final InternalNetworkCluster cluster;
 
+    @NotNull
     @Override
     public NodeProcessManager getNodeProcessHelper() {
-        return localNodeProcessManager;
+        return this.localNodeProcessManager;
     }
 
+    @NotNull
     @Override
     public InternalNetworkCluster getCluster() {
-        return cluster;
+        return this.cluster;
     }
 
     @Override
-    public ProcessInformation getCloudProcess(String name) {
-        return localNodeProcessManager.getClusterProcess(name);
-    }
+    public ProcessInformation prepareProcess(@NotNull ProcessConfiguration configuration, boolean start) {
+        synchronized (this) {
+            if (start) {
+                ProcessInformation maybe = findMayMatchingProcess(configuration, this.getPreparedProcesses(configuration.getBase().getName()));
+                if (maybe != null) {
+                    System.out.println(LanguageManager.get(
+                            "process-start-already-prepared-process",
+                            configuration.getBase().getName(),
+                            maybe.getProcessDetail().getName()
+                    ));
 
-    @Override
-    public ProcessInformation getCloudProcess(UUID uuid) {
-        return localNodeProcessManager.getClusterProcess(uuid);
-    }
-
-    @Override
-    public synchronized ProcessInformation prepareProcess(ProcessConfiguration configuration, boolean start) {
-        return this.startProcessInternal(configuration, true, start);
-    }
-
-    @Override
-    public synchronized ProcessInformation startProcess(ProcessConfiguration configuration) {
-        ProcessInformation matching = PreparedProcessFilter.findMayMatchingProcess(
-                configuration, this.getPreparedProcesses(configuration.getBase().getName())
-        );
-        if (matching != null && matching.getProcessDetail().getProcessState().equals(ProcessState.PREPARED)) {
-            System.out.println(LanguageManager.get(
-                    "process-start-already-prepared-process",
-                    configuration.getBase().getName(),
-                    matching.getProcessDetail().getName()
-            ));
-            this.startProcess(matching);
-            return matching;
-        }
-
-        return this.startProcessInternal(configuration, true, true);
-    }
-
-    @Override
-    public synchronized ProcessInformation startProcess(ProcessInformation processInformation) {
-        if (getCluster().isSelfNodeHead()) {
-            DefaultChannelManager.INSTANCE.get(processInformation.getProcessDetail().getParentName()).ifPresent(
-                    e -> e.sendPacket(new NodePacketOutStartPreparedProcess(processInformation))
-            ).ifEmpty(e -> {
-                if (processInformation.getProcessDetail().getParentUniqueID().equals(cluster.getSelfNode().getNodeUniqueID())
-                        && processInformation.getProcessDetail().getProcessState().equals(ProcessState.PREPARED)) {
-                    LocalProcessManager.getNodeProcesses()
-                            .stream()
-                            .filter(p -> p.getProcessInformation().getProcessDetail().getProcessUniqueID().equals(processInformation.getProcessDetail().getProcessUniqueID()))
-                            .findFirst()
-                            .ifPresent(LocalProcessQueue::queue);
+                    this.startProcess(maybe);
+                    return maybe;
                 }
-            });
-
-            processInformation.getProcessDetail().setProcessState(ProcessState.READY_TO_START);
-            ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(processInformation);
-        } else {
-            DefaultChannelManager.INSTANCE.get(this.cluster.getHeadNode().getName()).ifPresent(
-                    e -> e.sendPacket(new NodePacketOutToHeadStartPreparedProcess(processInformation))
-            );
-        }
-
-        return processInformation;
-    }
-
-    private synchronized ProcessInformation startProcessInternal(ProcessConfiguration configuration, boolean informUser, boolean start) {
-        Template template = configuration.getTemplate();
-        if (template == null) {
-            AtomicReference<Template> bestTemplate = new AtomicReference<>();
-            configuration.getBase().getTemplates().forEach(template1 -> {
-                if (bestTemplate.get() == null) {
-                    bestTemplate.set(template1);
-                } else {
-                    if (bestTemplate.get().getPriority() < template1.getPriority()) {
-                        bestTemplate.set(template1);
-                    }
-                }
-            });
-
-            if (bestTemplate.get() == null) {
-                bestTemplate.set(new Template(0, "default", false, FileBackend.NAME, "#", new RuntimeConfiguration(
-                        512, new ArrayList<>(), new HashMap<>()
-                ), Version.PAPER_1_8_8));
-
-                System.err.println("Starting up process " + configuration.getBase().getName() + " with default template because no template is set up");
-                Thread.dumpStack();
             }
 
-            template = bestTemplate.get();
+            return this.startProcessInternal(configuration, true, start);
+        }
+    }
+
+    @NotNull
+    @Override
+    public synchronized ProcessInformation startProcess(@NotNull ProcessInformation processInformation) {
+        synchronized (this) {
+            if (getCluster().isSelfNodeHead()) {
+                DefaultChannelManager.INSTANCE.get(processInformation.getProcessDetail().getParentName()).ifPresent(
+                        e -> e.sendPacket(new NodePacketOutStartPreparedProcess(processInformation))
+                ).ifEmpty(e -> {
+                    if (processInformation.getProcessDetail().getParentUniqueID().equals(cluster.getSelfNode().getNodeUniqueID())
+                            && processInformation.getProcessDetail().getProcessState().equals(ProcessState.PREPARED)) {
+                        LocalProcessManager.getNodeProcesses()
+                                .stream()
+                                .filter(p -> p.getProcessInformation().getProcessDetail().getProcessUniqueID().equals(processInformation.getProcessDetail().getProcessUniqueID()))
+                                .findFirst()
+                                .ifPresent(LocalProcessQueue::queue);
+                    }
+                });
+
+                processInformation.getProcessDetail().setProcessState(ProcessState.READY_TO_START);
+                ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(processInformation);
+            } else {
+                DefaultChannelManager.INSTANCE.get(this.cluster.getHeadNode().getName()).ifPresent(
+                        e -> e.sendPacket(new NodePacketOutToHeadStartPreparedProcess(processInformation))
+                );
+            }
+
+            return processInformation;
+        }
+    }
+
+    @Nullable
+    private ProcessInformation startProcessInternal(@NotNull ProcessConfiguration configuration, boolean informUser, boolean start) {
+        Template template = configuration.getTemplate();
+        if (template == null) {
+            if (configuration.getBase().getTemplates().isEmpty()) {
+                template = new Template(
+                        0,
+                        "default",
+                        false,
+                        FileBackend.NAME,
+                        "#",
+                        new RuntimeConfiguration(
+                                512, new ArrayList<>(), new HashMap<>()
+                        ), Version.PAPER_1_8_8);
+                configuration.getBase().getTemplates().add(template);
+                ExecutorAPI.getInstance().getSyncAPI().getGroupSyncAPI().updateProcessGroup(configuration.getBase());
+
+                System.err.println("Starting up process " + configuration.getBase().getName()
+                        + " with default template because no template is set up");
+            } else {
+                for (Template groupTemplate : configuration.getBase().getTemplates()) {
+                    if (template == null) {
+                        template = groupTemplate;
+                    } else if (template.getPriority() < groupTemplate.getPriority()) {
+                        template = groupTemplate;
+                    }
+                }
+            }
         }
 
+        Conditions.nonNull(template, "Unable to find any template to start the process with");
+
         if (getCluster().isSelfNodeHead()) {
-            QUEUED_PROCESSES.put(configuration.getUniqueId(), configuration.getBase().getName());
+            PER_GROUP_WAITING.add(configuration.getBase().getName(), configuration.getUniqueId());
 
             if (getCluster().noOtherNodes()) {
-                if (configuration.getBase().getStartupConfiguration().isSearchBestClientAlone()) {
-                    return localNodeProcessManager.prepareLocalProcess(configuration, template, start);
-                }
-
-                if (configuration.getBase().getStartupConfiguration().getUseOnlyTheseClients()
+                if (configuration.getBase().getStartupConfiguration().isSearchBestClientAlone()
+                        || configuration.getBase().getStartupConfiguration().getUseOnlyTheseClients()
                         .contains(NodeExecutor.getInstance().getNodeConfig().getName())) {
-                    return localNodeProcessManager.prepareLocalProcess(configuration, template, start);
+                    return this.localNodeProcessManager.prepareLocalProcess(configuration, template, start);
                 }
 
                 LATER.add(new Duo<>(configuration, start));
                 return null;
             }
 
-            int maxMemory = configuration.getMaxMemory() == null ? template.getRuntimeConfiguration().getMaxMemory()
+            int maxMemory = configuration.getMaxMemory() == null
+                    ? template.getRuntimeConfiguration().getMaxMemory()
                     : configuration.getMaxMemory();
 
-            NodeInformation best = getCluster().findBestNodeForStartup(
-                    configuration.getBase(),
-                    maxMemory
-            );
-            if (best != null && best.canEqual(getCluster().getHeadNode())) {
-                return localNodeProcessManager.prepareLocalProcess(configuration, template, start);
+            NodeInformation best = getCluster().findBestNodeForStartup(configuration.getBase(), maxMemory);
+            if (best != null && best.canEqual(this.getCluster().getSelfNode())) {
+                return this.localNodeProcessManager.prepareLocalProcess(configuration, template, start);
             }
 
             if (best == null) {
@@ -192,46 +189,58 @@ public class DefaultNodeNetworkManager implements NodeNetworkManager {
             }
 
             best.addUsedMemory(maxMemory);
-            return localNodeProcessManager.queueProcess(configuration, template, best, start);
+            return this.localNodeProcessManager.queueProcess(configuration, template, best, start);
         }
 
-        return getCluster().sendQueryToHead(new NodePacketOutQueryStartProcess(configuration, start),
-                packet -> packet.content().get("result", ProcessInformation.TYPE
-                ));
+        return this.getCluster().sendQueryToHead(
+                new NodePacketOutQueryStartProcess(configuration, start),
+                packet -> packet.content().get("result", ProcessInformation.TYPE)
+        );
     }
 
     @Override
-    public void stopProcess(String name) {
-        ProcessInformation information = localNodeProcessManager.getClusterProcess(name);
+    public void stopProcess(@NotNull String name) {
+        ProcessInformation information = this.localNodeProcessManager.getClusterProcess(name);
         if (information == null) {
             return;
         }
 
-        stopProcess(information.getProcessDetail().getProcessUniqueID());
+        this.stopProcess(information.getProcessDetail().getProcessUniqueID());
     }
 
     @Override
-    public void stopProcess(UUID uuid) {
+    public void stopProcess(@NotNull UUID uuid) {
         if (localNodeProcessManager.isLocal(uuid)) {
-            localNodeProcessManager.stopLocalProcess(uuid);
+            this.localNodeProcessManager.stopLocalProcess(uuid);
             return;
         }
 
-        ProcessInformation information = localNodeProcessManager.getClusterProcess(uuid);
+        ProcessInformation information = this.localNodeProcessManager.getClusterProcess(uuid);
         if (information == null) {
             return;
         }
 
-        DefaultChannelManager.INSTANCE.get(information.getProcessDetail().getParentName()).ifPresent(e -> e.sendPacket(new NodePacketOutStopProcess(uuid)));
+        DefaultChannelManager.INSTANCE.get(information.getProcessDetail().getParentName()).ifPresent(
+                e -> e.sendPacket(new NodePacketOutStopProcess(uuid))
+        );
     }
 
+    @NotNull
     @Override
-    public Map<UUID, String> getQueuedProcesses() {
-        return QUEUED_PROCESSES;
+    public Collection<Duo<ProcessConfiguration, Boolean>> getWaitingProcesses() {
+        return Collections.unmodifiableCollection(LATER);
     }
 
-    private List<ProcessInformation> getPreparedProcesses(String group) {
-        return Streams.list(ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcesses(group),
+    @NotNull
+    @Override
+    public BiMap<String, UUID> getRegisteredProcesses() {
+        return PER_GROUP_WAITING;
+    }
+
+    @NotNull
+    private List<ProcessInformation> getPreparedProcesses(@NotNull String group) {
+        return Streams.list(
+                ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcesses(group),
                 e -> e.getProcessDetail().getProcessState().equals(ProcessState.PREPARED)
         );
     }

@@ -12,7 +12,5 @@ public interface ClusterManager {
 
     int getOnlineAndWaiting(String groupName);
 
-    int getWaiting(String groupName);
-
     NodeInformation getHeadNode();
 }

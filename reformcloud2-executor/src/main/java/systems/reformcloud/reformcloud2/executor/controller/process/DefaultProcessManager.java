@@ -267,8 +267,7 @@ public final class DefaultProcessManager implements ProcessManager {
                 ),
                 new NetworkInfo(
                         client.startHost(),
-                        port,
-                        false
+                        port
                 ), configuration.getBase(), configuration.getExtra(), configuration.getInclusions()
         );
         return processInformation.updateMaxPlayers(null);

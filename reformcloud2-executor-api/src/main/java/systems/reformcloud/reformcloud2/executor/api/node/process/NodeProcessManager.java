@@ -26,11 +26,11 @@ public interface NodeProcessManager extends Updateable<ProcessInformation>, Iter
     /**
      * Gets a locally running process
      *
-     * @param uuid The unique id of the process which is requested
+     * @param uniqueID The unique id of the process which is requested
      * @return The locally running process or {@code null} if either the process is not running or not local
      */
     @Nullable
-    ProcessInformation getLocalCloudProcess(@NotNull UUID uuid);
+    ProcessInformation getLocalCloudProcess(@NotNull UUID uniqueID);
 
     /**
      * Creates a new running process based in the provided group and template

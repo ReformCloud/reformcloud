@@ -4,10 +4,10 @@ import java.net.InetSocketAddress;
 
 public final class NetworkInfo {
 
-    public NetworkInfo(String host, int port, boolean connected) {
+    public NetworkInfo(String host, int port) {
         this.host = host;
         this.port = port;
-        this.connectTime = connected ? System.currentTimeMillis() : -1;
+        this.connectTime = -1L;
     }
 
     private String host;

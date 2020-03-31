@@ -41,7 +41,6 @@ public class PacketInProcessAction extends DefaultJsonNetworkHandler {
                 NodeExecutor.getInstance().getNodeNetworkManager().getNodeProcessHelper().handleProcessStart(
                         information
                 );
-                NodeExecutor.getInstance().getNodeNetworkManager().getQueuedProcesses().remove(information.getProcessDetail().getProcessUniqueID());
 
                 NodeExecutor.getInstance().getEventManager().callEvent(new ProcessStartedEvent(information));
                 DefaultClusterSyncManager.sendToAllExcludedNodes(new ControllerEventProcessStarted(information));

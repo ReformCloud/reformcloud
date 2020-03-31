@@ -15,7 +15,12 @@ public class RunningProcessPreparedListener {
                 event.getRunningProcess().getProcessInformation().getProcessDetail().getProcessUniqueID(),
                 event.getRunningProcess().getProcessInformation().getProcessDetail().getTemplate().getName()
         ));
+
         LocalProcessManager.registerLocalProcess(event.getRunningProcess());
+
         NodeExecutor.getInstance().getNodeNetworkManager().getNodeProcessHelper().registerLocalProcess(event.getRunningProcess());
+        NodeExecutor.getInstance().getNodeNetworkManager().getRegisteredProcesses().removeRandom(
+                event.getRunningProcess().getProcessInformation().getProcessGroup().getName()
+        );
     }
 }

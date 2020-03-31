@@ -1,5 +1,7 @@
 package systems.reformcloud.reformcloud2.executor.api.common.utility.maps;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -12,6 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public final class AbsentMap<K, V> extends ConcurrentHashMap<K, V> {
 
     @Override
+    @NotNull
     public V putIfAbsent(K key, V value) {
         V out = get(key);
         if (out == null) {

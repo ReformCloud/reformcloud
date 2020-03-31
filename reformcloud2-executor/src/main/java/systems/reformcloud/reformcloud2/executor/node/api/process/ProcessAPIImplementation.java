@@ -33,7 +33,7 @@ public class ProcessAPIImplementation implements ProcessSyncAPI, ProcessAsyncAPI
     @Override
     public Task<ProcessInformation> startProcessAsync(@NotNull ProcessConfiguration configuration) {
         Task<ProcessInformation> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> task.complete(nodeNetworkManager.startProcess(configuration)));
+        Task.EXECUTOR.execute(() -> task.complete(nodeNetworkManager.prepareProcess(configuration, true)));
         return task;
     }
 

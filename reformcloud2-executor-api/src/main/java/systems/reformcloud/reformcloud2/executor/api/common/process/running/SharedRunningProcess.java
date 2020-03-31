@@ -205,7 +205,6 @@ public abstract class SharedRunningProcess implements RunningProcess {
     @Override
     public void shutdown() {
         this.startupTime = -1;
-        ExecutorAPI.getInstance().getEventManager().callEvent(new RunningProcessStoppedEvent(this));
 
         JavaProcessHelper.shutdown(
                 this.process,
@@ -227,6 +226,8 @@ public abstract class SharedRunningProcess implements RunningProcess {
         if (!this.startupInformation.getProcessGroup().isStaticProcess()) {
             SystemHelper.deleteDirectory(this.path);
         }
+
+        ExecutorAPI.getInstance().getEventManager().callEvent(new RunningProcessStoppedEvent(this));
     }
 
     @Override

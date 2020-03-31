@@ -17,13 +17,19 @@ public final class PreparedProcessFilter {
     @Nullable
     public static ProcessInformation findMayMatchingProcess(@NotNull ProcessConfiguration configuration,
                                                             @NotNull Collection<ProcessInformation> prepared) {
+        ProcessInformation maybe = null;
+
         for (ProcessInformation information : prepared) {
             if (information.getProcessDetail().getProcessUniqueID().equals(configuration.getUniqueId()) || isEqual(information, configuration)) {
-                return information;
+                if (maybe == null) {
+                    maybe = information;
+                } else if (maybe.getProcessDetail().getId() > information.getProcessDetail().getId()) {
+                    maybe = information;
+                }
             }
         }
 
-        return null;
+        return maybe;
     }
 
     private static boolean isEqual(@NotNull ProcessInformation information, @NotNull ProcessConfiguration configuration) {

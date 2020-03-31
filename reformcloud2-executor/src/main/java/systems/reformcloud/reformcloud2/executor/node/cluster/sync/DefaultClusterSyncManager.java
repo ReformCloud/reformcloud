@@ -47,7 +47,6 @@ public class DefaultClusterSyncManager implements ClusterSyncManager {
 
     @Override
     public void syncProcessStartup(ProcessInformation processInformation) {
-        NodeExecutor.getInstance().getNodeNetworkManager().getQueuedProcesses().remove(processInformation.getProcessDetail().getProcessUniqueID());
         NodeExecutor.getInstance().getNodeNetworkManager().getCluster().broadCastToCluster(new PacketOutProcessAction(
                 ProcessAction.START, processInformation
         ));
