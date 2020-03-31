@@ -38,7 +38,7 @@ public class LocalAutoStartupHandler extends AbsoluteThread {
 
     @Override
     public void run() {
-        while (!Thread.currentThread().isInterrupted()) {
+        while (!isInterrupted()) {
             if (!NodeExecutor.getInstance().getClusterSyncManager().isConnectedAndSyncWithCluster()) {
                 AbsoluteThread.sleep(500);
                 continue;

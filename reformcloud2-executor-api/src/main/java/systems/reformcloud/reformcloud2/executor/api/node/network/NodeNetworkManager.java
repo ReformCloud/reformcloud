@@ -70,4 +70,9 @@ public interface NodeNetworkManager {
      */
     @NotNull
     BiMap<String, UUID> getRegisteredProcesses();
+
+    /**
+     * Closes the current network manager and clears all waiting processes
+     */
+    void close();
 }

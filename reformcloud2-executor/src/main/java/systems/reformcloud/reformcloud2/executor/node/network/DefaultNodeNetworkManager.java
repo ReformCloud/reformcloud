@@ -237,6 +237,11 @@ public class DefaultNodeNetworkManager implements NodeNetworkManager {
         return PER_GROUP_WAITING;
     }
 
+    @Override
+    public void close() {
+        LATER.clear();
+    }
+
     @NotNull
     private List<ProcessInformation> getPreparedProcesses(@NotNull String group) {
         return Streams.list(

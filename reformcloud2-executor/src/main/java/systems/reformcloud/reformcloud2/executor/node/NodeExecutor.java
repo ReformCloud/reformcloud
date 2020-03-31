@@ -431,6 +431,7 @@ public class NodeExecutor extends Node {
         this.logLineReader.interrupt();
         this.localProcessQueue.interrupt();
         this.localAutoStartupHandler.interrupt();
+        this.nodeNetworkManager.close();
 
         LocalProcessManager.close();
 
