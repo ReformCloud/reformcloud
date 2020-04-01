@@ -8,12 +8,13 @@ import systems.reformcloud.reformcloud2.executor.controller.network.packets.out.
 import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
 import systems.reformcloud.reformcloud2.executor.node.cluster.sync.DefaultClusterSyncManager;
 
+import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import static systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState.PREPARED;
 
-public class DefaultClusterManager implements ClusterManager {
+public final class DefaultClusterManager implements ClusterManager {
 
     private final Collection<NodeInformation> nodeInformation = new CopyOnWriteArrayList<>();
 
@@ -25,7 +26,7 @@ public class DefaultClusterManager implements ClusterManager {
     }
 
     @Override
-    public void handleNodeDisconnect(InternalNetworkCluster cluster, String name) {
+    public void handleNodeDisconnect(@Nonnull InternalNetworkCluster cluster, @Nonnull String name) {
         Streams.allOf(nodeInformation, e -> e.getName().equals(name)).forEach(e -> {
             this.nodeInformation.remove(e);
             cluster.getConnectedNodes().remove(e);
@@ -47,7 +48,7 @@ public class DefaultClusterManager implements ClusterManager {
     }
 
     @Override
-    public void handleConnect(InternalNetworkCluster cluster, NodeInformation nodeInformation) {
+    public void handleConnect(@Nonnull InternalNetworkCluster cluster, @Nonnull NodeInformation nodeInformation) {
         if (this.nodeInformation.stream().anyMatch(e -> e.getName().equals(nodeInformation.getName()))) {
             return;
         }
@@ -58,7 +59,7 @@ public class DefaultClusterManager implements ClusterManager {
     }
 
     @Override
-    public int getOnlineAndWaiting(String groupName) {
+    public int getOnlineAndWaiting(@Nonnull String groupName) {
         int allNotPrepared = Streams.allOf(
                 NodeExecutor.getInstance().getNodeNetworkManager().getNodeProcessHelper().getClusterProcesses(),
                 e -> e.getProcessGroup().getName().equals(groupName) && !e.getProcessDetail().getProcessState().equals(PREPARED)

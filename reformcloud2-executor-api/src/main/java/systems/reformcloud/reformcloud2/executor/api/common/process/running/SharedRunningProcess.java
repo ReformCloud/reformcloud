@@ -55,10 +55,12 @@ public abstract class SharedRunningProcess implements RunningProcess {
 
         if (processInformation.getProcessGroup().isStaticProcess()) {
             this.path = Paths.get("reformcloud/static/" + processInformation.getProcessDetail().getName());
+            this.firstStartup = Files.notExists(this.path);
             SystemHelper.createDirectory(Paths.get(path + "/plugins"));
         } else {
             this.path = Paths.get("reformcloud/temp/" + processInformation.getProcessDetail().getName()
                     + "-" + processInformation.getProcessDetail().getProcessUniqueID());
+            this.firstStartup = Files.notExists(this.path);
             SystemHelper.recreateDirectory(path);
         }
     }
@@ -83,6 +85,11 @@ public abstract class SharedRunningProcess implements RunningProcess {
      */
     protected long startupTime = -1;
 
+    /**
+     * If the process got started the first time
+     */
+    private final boolean firstStartup;
+
     @NotNull
     @Override
     public Task<Void> prepare() {
@@ -94,14 +101,19 @@ public abstract class SharedRunningProcess implements RunningProcess {
                     this.startupInformation.getNetworkInfo().getPort()
             ));
 
-            this.loadTemplateInclusions(Inclusion.InclusionLoadType.PRE);
-            this.loadPathInclusions(Inclusion.InclusionLoadType.PRE);
+            if (!this.startupInformation.getProcessGroup().isStaticProcess() || this.firstStartup) {
+                this.loadTemplateInclusions(Inclusion.InclusionLoadType.PRE);
+                this.loadPathInclusions(Inclusion.InclusionLoadType.PRE);
 
-            this.initGlobalTemplateAndCurrentTemplate();
+                this.initGlobalTemplateAndCurrentTemplate();
+            }
+
             InclusionLoader.loadInclusions(this.path, this.startupInformation.getPreInclusions());
 
-            this.loadTemplateInclusions(Inclusion.InclusionLoadType.PAST);
-            this.loadPathInclusions(Inclusion.InclusionLoadType.PAST);
+            if (!this.startupInformation.getProcessGroup().isStaticProcess() || this.firstStartup) {
+                this.loadTemplateInclusions(Inclusion.InclusionLoadType.PAST);
+                this.loadPathInclusions(Inclusion.InclusionLoadType.PAST);
+            }
 
             this.chooseStartupEnvironmentAndPrepare();
 

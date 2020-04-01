@@ -4,6 +4,7 @@ import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.plugin.Command;
+import systems.reformcloud.reformcloud2.executor.api.api.API;
 import systems.reformcloud.reformcloud2.executor.api.bungee.BungeeExecutor;
 import systems.reformcloud.reformcloud2.executor.api.common.CommonHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
@@ -39,7 +40,7 @@ public class CommandReformCloud extends Command {
         if (strings.length == 2) {
             switch (strings[0].toLowerCase()) {
                 case "copy": {
-                    ExecutorAPI.getInstance().getSyncAPI().getConsoleSyncAPI().dispatchCommandAndGetResult("p " + strings[1] + " copy");
+                    API.getInstance().getCurrentProcessInformation().toWrapped().copy();
                     commandSender.sendMessage(getCommandSuccessMessage());
                     return;
                 }
@@ -69,9 +70,8 @@ public class CommandReformCloud extends Command {
                         return;
                     }
 
-                    ExecutorAPI.getInstance().getSyncAPI().getConsoleSyncAPI().dispatchCommandAndGetResult(
-                            "g sub " + strings[1] + " edit --maintenance=false"
-                    );
+                    processGroup.getPlayerAccessConfiguration().toggleMaintenance();
+                    ExecutorAPI.getInstance().getSyncAPI().getGroupSyncAPI().updateProcessGroup(processGroup);
                     commandSender.sendMessage(getCommandSuccessMessage());
                     return;
                 }

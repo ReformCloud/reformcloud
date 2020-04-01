@@ -10,13 +10,14 @@ import systems.reformcloud.reformcloud2.executor.api.common.node.NodeInformation
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
+import systems.reformcloud.reformcloud2.executor.api.node.cluster.InternalNetworkCluster;
 import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
 import systems.reformcloud.reformcloud2.executor.node.network.packet.out.NodePacketOutConnectionInitDone;
 
 import java.net.InetSocketAddress;
 import java.util.function.BiConsumer;
 
-public class NodeNetworkSuccessHandler implements BiConsumer<ChannelHandlerContext, Packet> {
+public final class NodeNetworkSuccessHandler implements BiConsumer<ChannelHandlerContext, Packet> {
 
     @Override
     public void accept(ChannelHandlerContext channelHandlerContext, Packet packet) {
@@ -45,6 +46,13 @@ public class NodeNetworkSuccessHandler implements BiConsumer<ChannelHandlerConte
             NodeInformation nodeInformation = packet.content().get("info", NodeInformation.TYPE);
             if (nodeInformation == null) {
                 System.out.println(LanguageManager.get("network-node-connection-from-unknown-node", address));
+                channelHandlerContext.channel().close().syncUninterruptibly();
+                return;
+            }
+
+            InternalNetworkCluster cluster = NodeExecutor.getInstance().getNodeNetworkManager().getCluster();
+            if (cluster.getNode(nodeInformation.getName()) != null || cluster.getNode(nodeInformation.getNodeUniqueID()) != null) {
+                System.out.println(LanguageManager.get("network-node-already-connected", nodeInformation.getName(), nodeInformation.getNodeUniqueID()));
                 channelHandlerContext.channel().close().syncUninterruptibly();
                 return;
             }

@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.function.Supplier;
 
-public class NodeNetworkClient implements NetworkClient {
+public final class NodeNetworkClient implements NetworkClient {
 
     private static final NetworkClient CLIENT = new DefaultNetworkClient();
 

@@ -28,7 +28,7 @@ import systems.reformcloud.reformcloud2.executor.node.util.ProcessCopyOnWriteArr
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class LocalNodeProcessManager implements NodeProcessManager {
+public final class LocalNodeProcessManager implements NodeProcessManager {
 
     private final Collection<ProcessInformation> information = Collections.synchronizedCollection(new ProcessCopyOnWriteArrayList());
 

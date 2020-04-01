@@ -6,14 +6,14 @@ import systems.reformcloud.reformcloud2.executor.api.common.utility.task.default
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.excepetion.TaskCompletionException;
 
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 public abstract class Task<V> extends CompletableFuture<V> {
 
-    public static final Executor EXECUTOR = Executors.newCachedThreadPool();
+    public static final ExecutorService EXECUTOR = Executors.newCachedThreadPool();
 
     /**
      * Creates a new already completed task

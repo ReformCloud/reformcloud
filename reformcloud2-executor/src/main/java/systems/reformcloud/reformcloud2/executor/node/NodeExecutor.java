@@ -109,8 +109,9 @@ import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
-public class NodeExecutor extends Node {
+public final class NodeExecutor extends Node {
 
     private static NodeExecutor instance;
 
@@ -337,6 +338,7 @@ public class NodeExecutor extends Node {
         System.out.println(LanguageManager.get("startup-done", Long.toString(System.currentTimeMillis() - current)));
 
         this.awaitConnectionsAndUpdate();
+        this.startSendUpdate();
         this.runConsole();
     }
 
@@ -438,9 +440,14 @@ public class NodeExecutor extends Node {
         this.database.disconnect();
 
         this.applicationLoader.disableApplications();
-        this.loggerBase.close();
+
+        CommonHelper.SCHEDULED_EXECUTOR_SERVICE.shutdownNow();
+        CommonHelper.EXECUTOR.shutdownNow();
+        Task.EXECUTOR.shutdownNow();
 
         SystemHelper.deleteDirectory(Paths.get("reformcloud/temp"));
+
+        this.loggerBase.close();
     }
 
     private void runConsole() {
@@ -503,6 +510,7 @@ public class NodeExecutor extends Node {
         LanguageWorker.doReload();
 
         this.nodeConfig = this.nodeExecutorConfig.reload();
+        this.clusterSyncManager.syncSelfInformation();
 
         this.clusterSyncManager.getProcessGroups().addAll(nodeExecutorConfig.getProcessGroups());
         this.clusterSyncManager.getMainGroups().addAll(nodeExecutorConfig.getMainGroups());
@@ -629,6 +637,10 @@ public class NodeExecutor extends Node {
                     packetSender.getName()
             );
         }
+    }
+
+    private void startSendUpdate() {
+        CommonHelper.SCHEDULED_EXECUTOR_SERVICE.scheduleAtFixedRate(this.clusterSyncManager::syncSelfInformation, 10, 30, TimeUnit.SECONDS);
     }
 
     public NetworkClient getNetworkClient() {

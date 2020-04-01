@@ -29,7 +29,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams.newCollection;
 
-public class NodeExecutorConfig {
+public final class NodeExecutorConfig {
 
     private static final Collection<Path> PATHS = newCollection(
             s -> Paths.get(s),
@@ -40,7 +40,6 @@ public class NodeExecutorConfig {
             "reformcloud/temp",
             "reformcloud/static",
             "reformcloud/templates",
-            "reformcloud/global/plugins",
             "reformcloud/files/.connection"
     );
 
@@ -206,7 +205,7 @@ public class NodeExecutorConfig {
     public NodeConfig reload() {
         this.nodeConfig = JsonConfiguration.read(NodeConfig.PATH).get("config", NodeConfig.TYPE);
         this.ingameMessages = JsonConfiguration.read("reformcloud/configs/messages.json").get("messages", IngameMessages.TYPE);
-        this.self = this.nodeConfig.prepare();
+        this.self.setMaxMemory(this.nodeConfig.getMaxMemory());
         this.connectionKey = JsonConfiguration.read("reformcloud/files/.connection/connection.json").getOrDefault("key", (String) null);
         this.loadGroups();
 

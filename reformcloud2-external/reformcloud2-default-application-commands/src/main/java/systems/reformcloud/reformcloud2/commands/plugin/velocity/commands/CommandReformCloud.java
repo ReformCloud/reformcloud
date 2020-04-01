@@ -4,6 +4,7 @@ import com.velocitypowered.api.command.Command;
 import com.velocitypowered.api.command.CommandSource;
 import net.kyori.text.TextComponent;
 import org.jetbrains.annotations.NotNull;
+import systems.reformcloud.reformcloud2.executor.api.api.API;
 import systems.reformcloud.reformcloud2.executor.api.common.CommonHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.MainGroup;
@@ -41,20 +42,20 @@ public class CommandReformCloud implements Command {
         if (strings.length == 2) {
             switch (strings[0].toLowerCase()) {
                 case "copy": {
-                    ExecutorAPI.getInstance().getSyncAPI().getConsoleSyncAPI().dispatchCommandAndGetResult("p " + strings[1] + " copy");
-                    commandSender.sendMessage(getCommandSuccessMessage());
+                    API.getInstance().getCurrentProcessInformation().toWrapped().copy();
+                    commandSender.sendMessage(this.getCommandSuccessMessage());
                     return;
                 }
 
                 case "start": {
                     ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().startProcess(strings[1]);
-                    commandSender.sendMessage(getCommandSuccessMessage());
+                    commandSender.sendMessage(this.getCommandSuccessMessage());
                     return;
                 }
 
                 case "stop": {
                     ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().stopProcess(strings[1]);
-                    commandSender.sendMessage(getCommandSuccessMessage());
+                    commandSender.sendMessage(this.getCommandSuccessMessage());
                     return;
                 }
 
@@ -62,7 +63,8 @@ public class CommandReformCloud implements Command {
                     ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcesses(strings[1]).forEach(
                             e -> ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().stopProcess(e.getProcessDetail().getName())
                     );
-                    commandSender.sendMessage(getCommandSuccessMessage());
+
+                    commandSender.sendMessage(this.getCommandSuccessMessage());
                     return;
                 }
 
@@ -73,10 +75,9 @@ public class CommandReformCloud implements Command {
                         return;
                     }
 
-                    ExecutorAPI.getInstance().getSyncAPI().getConsoleSyncAPI().dispatchCommandAndGetResult(
-                            "g sub " + strings[1] + " edit --maintenance=false"
-                    );
-                    commandSender.sendMessage(getCommandSuccessMessage());
+                    processGroup.getPlayerAccessConfiguration().toggleMaintenance();
+                    ExecutorAPI.getInstance().getSyncAPI().getGroupSyncAPI().updateProcessGroup(processGroup);
+                    commandSender.sendMessage(this.getCommandSuccessMessage());
                     return;
                 }
             }

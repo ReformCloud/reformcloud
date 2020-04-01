@@ -1,6 +1,7 @@
 package systems.reformcloud.reformcloud2.executor.node.config;
 
 import com.google.gson.reflect.TypeToken;
+import systems.reformcloud.reformcloud2.executor.api.common.CommonHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.node.NodeInformation;
 
@@ -11,7 +12,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class NodeConfig {
+public final class NodeConfig {
 
     static final TypeToken<NodeConfig> TYPE = new TypeToken<NodeConfig>() {
     };
@@ -78,6 +79,7 @@ public class NodeConfig {
                 System.currentTimeMillis(),
                 0L,
                 maxMemory,
+                CommonHelper.cpuUsageSystem(),
                 new CopyOnWriteArrayList<>()
         );
     }

@@ -6,7 +6,7 @@ import java.util.Collection;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Stream;
 
-public class ProcessCopyOnWriteArrayList extends CopyOnWriteArrayList<ProcessInformation> {
+public final class ProcessCopyOnWriteArrayList extends CopyOnWriteArrayList<ProcessInformation> {
 
     private final Object lock = new Object();
 

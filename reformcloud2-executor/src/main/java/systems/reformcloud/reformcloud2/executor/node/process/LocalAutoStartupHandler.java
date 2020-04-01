@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.concurrent.ConcurrentSkipListSet;
 
-public class LocalAutoStartupHandler extends AbsoluteThread {
+public final class LocalAutoStartupHandler extends AbsoluteThread {
 
     public void doStart() {
         updatePriority(Thread.MIN_PRIORITY).enableDaemon().start();

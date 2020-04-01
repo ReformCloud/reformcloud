@@ -18,8 +18,9 @@ import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
 
@@ -29,7 +30,9 @@ public final class CommonHelper {
         throw new UnsupportedOperationException();
     }
 
-    public static final Executor EXECUTOR = Executors.newCachedThreadPool();
+    public static final ExecutorService EXECUTOR = Executors.newCachedThreadPool();
+
+    public static final ScheduledExecutorService SCHEDULED_EXECUTOR_SERVICE = Executors.newSingleThreadScheduledExecutor();
 
     public static final DateFormat DATE_FORMAT = new SimpleDateFormat("dd.MM.yyyy kk:mm:ss");
 

@@ -10,7 +10,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 
-public class NodeDumpUtil implements DumpUtil {
+public final class NodeDumpUtil implements DumpUtil {
 
     private static final DumpUtil PARENT = new DefaultDumpUtil();
 

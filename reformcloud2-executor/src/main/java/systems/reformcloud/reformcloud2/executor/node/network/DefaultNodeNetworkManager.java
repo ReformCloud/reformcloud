@@ -35,7 +35,7 @@ import java.util.concurrent.TimeUnit;
 
 import static systems.reformcloud.reformcloud2.executor.api.common.process.running.matcher.PreparedProcessFilter.findMayMatchingProcess;
 
-public class DefaultNodeNetworkManager implements NodeNetworkManager {
+public final class DefaultNodeNetworkManager implements NodeNetworkManager {
 
     private static final Queue<Duo<ProcessConfiguration, Boolean>> LATER = new ConcurrentLinkedQueue<>();
 
@@ -170,7 +170,7 @@ public class DefaultNodeNetworkManager implements NodeNetworkManager {
                     ? template.getRuntimeConfiguration().getMaxMemory()
                     : configuration.getMaxMemory();
 
-            NodeInformation best = getCluster().findBestNodeForStartup(configuration.getBase(), maxMemory);
+            NodeInformation best = this.getCluster().findBestNodeForStartup(configuration.getBase(), maxMemory);
             if (best != null && best.canEqual(this.getCluster().getSelfNode())) {
                 return this.localNodeProcessManager.prepareLocalProcess(configuration, template, start);
             }
