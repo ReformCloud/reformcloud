@@ -12,6 +12,7 @@ import net.md_5.bungee.api.event.ProxyPingEvent;
 import net.md_5.bungee.api.event.ServerSwitchEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
+import net.md_5.bungee.event.EventPriority;
 import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.api.API;
 import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.ProcessUpdatedEvent;
@@ -146,7 +147,7 @@ public class BungeeCordListener implements Listener {
         event.setResponse(serverPing);
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void handle(final PostLoginEvent event) {
         initTab();
     }
@@ -163,7 +164,10 @@ public class BungeeCordListener implements Listener {
 
     @systems.reformcloud.reformcloud2.executor.api.common.event.handler.Listener
     public void handle(final ProcessUpdatedEvent event) {
-        initTab();
+        if (event.getProcessInformation().getProcessDetail().getProcessUniqueID()
+                .equals(API.getInstance().getCurrentProcessInformation().getProcessDetail().getProcessUniqueID())) {
+            initTab();
+        }
     }
 
     private static void initTab() {

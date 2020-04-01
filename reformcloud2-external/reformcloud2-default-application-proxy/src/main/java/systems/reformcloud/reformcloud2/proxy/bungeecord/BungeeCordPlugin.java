@@ -12,7 +12,11 @@ public class BungeeCordPlugin extends Plugin {
     @Override
     public void onEnable() {
         PluginConfigHandler.request(() -> {
-            ProxyServer.getInstance().getPluginManager().registerListener(this, new BungeeCordListener());
+            BungeeCordListener listener = new BungeeCordListener();
+
+            ProxyServer.getInstance().getPluginManager().registerListener(this, listener);
+            ExecutorAPI.getInstance().getEventManager().registerListener(listener);
+
             ExecutorAPI.getInstance().getPacketHandler().registerHandler(new PacketInConfigUpdate());
         });
     }

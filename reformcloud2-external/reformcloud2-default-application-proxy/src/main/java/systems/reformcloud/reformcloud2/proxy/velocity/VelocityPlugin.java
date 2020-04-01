@@ -24,7 +24,11 @@ public class VelocityPlugin {
     public VelocityPlugin(ProxyServer server) {
         proxyServer = server;
         PluginConfigHandler.request(() -> {
-            server.getEventManager().register(this, new VelocityListener());
+            VelocityListener listener = new VelocityListener();
+
+            server.getEventManager().register(this, listener);
+            ExecutorAPI.getInstance().getEventManager().registerListener(listener);
+
             ExecutorAPI.getInstance().getPacketHandler().registerHandler(new PacketInConfigUpdate());
         });
     }

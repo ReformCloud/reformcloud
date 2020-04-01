@@ -1,5 +1,6 @@
 package systems.reformcloud.reformcloud2.proxy.velocity.listener;
 
+import com.velocitypowered.api.event.PostOrder;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.DisconnectEvent;
 import com.velocitypowered.api.event.connection.PostLoginEvent;
@@ -11,6 +12,7 @@ import net.kyori.text.Component;
 import net.kyori.text.TextComponent;
 import systems.reformcloud.reformcloud2.executor.api.api.API;
 import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.ProcessUpdatedEvent;
+import systems.reformcloud.reformcloud2.executor.api.common.event.handler.Listener;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
@@ -141,7 +143,7 @@ public class VelocityListener {
         event.setPing(builder.build());
     }
 
-    @Subscribe
+    @Subscribe(order = PostOrder.LAST)
     public void handle(final PostLoginEvent event) {
         initTab();
     }
@@ -156,9 +158,12 @@ public class VelocityListener {
         initTab0(event.getPlayer());
     }
 
-    @systems.reformcloud.reformcloud2.executor.api.common.event.handler.Listener
+    @Listener
     public void handle(final ProcessUpdatedEvent event) {
-        initTab();
+        if (event.getProcessInformation().getProcessDetail().getProcessUniqueID()
+                .equals(API.getInstance().getCurrentProcessInformation().getProcessDetail().getProcessUniqueID())) {
+            initTab();
+        }
     }
 
     private static void initTab() {
