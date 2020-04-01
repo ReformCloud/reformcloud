@@ -4,11 +4,11 @@ import com.velocitypowered.api.command.Command;
 import com.velocitypowered.api.command.CommandSource;
 import net.kyori.text.TextComponent;
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.api.API;
 import systems.reformcloud.reformcloud2.executor.api.common.CommonHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.MainGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
+import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
 import systems.reformcloud.reformcloud2.executor.api.velocity.VelocityExecutor;
 
@@ -42,8 +42,14 @@ public class CommandReformCloud implements Command {
         if (strings.length == 2) {
             switch (strings[0].toLowerCase()) {
                 case "copy": {
-                    API.getInstance().getCurrentProcessInformation().toWrapped().copy();
-                    commandSender.sendMessage(this.getCommandSuccessMessage());
+                    ProcessInformation process = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcess(strings[1]);
+                    if (process == null) {
+                        commandSender.sendMessage(TextComponent.of(prefix + "§cThis process is unknown"));
+                        return;
+                    }
+
+                    process.toWrapped().copy();
+                    commandSender.sendMessage(getCommandSuccessMessage());
                     return;
                 }
 

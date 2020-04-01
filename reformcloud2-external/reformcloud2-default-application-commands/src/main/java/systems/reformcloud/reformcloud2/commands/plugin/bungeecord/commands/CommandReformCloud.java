@@ -4,12 +4,12 @@ import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.plugin.Command;
-import systems.reformcloud.reformcloud2.executor.api.api.API;
 import systems.reformcloud.reformcloud2.executor.api.bungee.BungeeExecutor;
 import systems.reformcloud.reformcloud2.executor.api.common.CommonHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.MainGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
+import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
 
 import java.util.Arrays;
@@ -40,7 +40,13 @@ public class CommandReformCloud extends Command {
         if (strings.length == 2) {
             switch (strings[0].toLowerCase()) {
                 case "copy": {
-                    API.getInstance().getCurrentProcessInformation().toWrapped().copy();
+                    ProcessInformation process = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcess(strings[1]);
+                    if (process == null) {
+                        commandSender.sendMessage(TextComponent.fromLegacyText(prefix + "§cThis process is unknown"));
+                        return;
+                    }
+
+                    process.toWrapped().copy();
                     commandSender.sendMessage(getCommandSuccessMessage());
                     return;
                 }

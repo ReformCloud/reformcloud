@@ -1,6 +1,7 @@
 package systems.reformcloud.reformcloud2.proxy.velocity.listener;
 
 import com.velocitypowered.api.event.Subscribe;
+import com.velocitypowered.api.event.connection.DisconnectEvent;
 import com.velocitypowered.api.event.connection.PostLoginEvent;
 import com.velocitypowered.api.event.player.ServerConnectedEvent;
 import com.velocitypowered.api.event.proxy.ProxyPingEvent;
@@ -142,7 +143,12 @@ public class VelocityListener {
 
     @Subscribe
     public void handle(final PostLoginEvent event) {
-        initTab0(event.getPlayer());
+        initTab();
+    }
+
+    @Subscribe
+    public void handle(final DisconnectEvent event) {
+        initTab();
     }
 
     @Subscribe

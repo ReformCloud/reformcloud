@@ -6,6 +6,7 @@ import net.md_5.bungee.api.ServerPing;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.md_5.bungee.api.event.PlayerDisconnectEvent;
 import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.event.ProxyPingEvent;
 import net.md_5.bungee.api.event.ServerSwitchEvent;
@@ -147,7 +148,12 @@ public class BungeeCordListener implements Listener {
 
     @EventHandler
     public void handle(final PostLoginEvent event) {
-        initTab0(event.getPlayer());
+        initTab();
+    }
+
+    @EventHandler
+    public void handle(final PlayerDisconnectEvent event) {
+        initTab();
     }
 
     @EventHandler
