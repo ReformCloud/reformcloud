@@ -49,8 +49,8 @@ public final class LocalAutoStartupHandler extends AbsoluteThread {
                 continue;
             }
 
-            handleProcessStarts();
-            handleProcessPrepare();
+            this.handleProcessStarts();
+            this.handleProcessPrepare();
             AbsoluteThread.sleep(50);
         }
     }
@@ -65,14 +65,16 @@ public final class LocalAutoStartupHandler extends AbsoluteThread {
                     .getRegisteredProcesses()
                     .size(processGroup.getName());
 
-            if (total < processGroup.getStartupConfiguration().getAlwaysPreparedProcesses()) {
-                System.out.println(LanguageManager.get("process-preparing-new-process", processGroup.getName()));
-                ExecutorAPI.getInstance()
-                        .getAsyncAPI()
-                        .getProcessAsyncAPI()
-                        .prepareProcessAsync(processGroup.getName())
-                        .awaitUninterruptedly();
+            if (total >= processGroup.getStartupConfiguration().getAlwaysPreparedProcesses()) {
+                continue;
             }
+
+            System.out.println(LanguageManager.get("process-preparing-new-process", processGroup.getName()));
+            ExecutorAPI.getInstance()
+                    .getAsyncAPI()
+                    .getProcessAsyncAPI()
+                    .prepareProcessAsync(processGroup.getName())
+                    .awaitUninterruptedly();
         }
     }
 
@@ -92,7 +94,6 @@ public final class LocalAutoStartupHandler extends AbsoluteThread {
                         .size(processGroup.getName());
 
                 List<ProcessInformation> preparedProcesses = this.getPreparedProcesses(processGroup.getName());
-
                 if (processGroup.getStartupConfiguration().getMaxOnlineProcesses() != -1
                         && processGroup.getStartupConfiguration().getMaxOnlineProcesses() <= online) {
                     continue;
@@ -109,6 +110,7 @@ public final class LocalAutoStartupHandler extends AbsoluteThread {
                             processGroup.getName(),
                             preparedProcesses.get(0).getProcessDetail().getName()
                     ));
+
                     ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().startProcess(preparedProcesses.get(0));
                     continue;
                 }

@@ -35,8 +35,9 @@ public final class PlayerListenerHandler implements Listener {
 
             Packet result = NukkitExecutor.getInstance().packetHandler().getQueryHandler().sendQueryAsync(packetSender, new APIPacketOutHasPlayerAccess(
                     event.getPlayer().getUniqueId(),
-                    event.getPlayer().getName()
-            )).getTask().getUninterruptedly(TimeUnit.SECONDS, 2);
+                    event.getPlayer().getName(),
+                    event.getPlayer().getAddress()
+            )).getTask().getUninterruptedly(TimeUnit.SECONDS, 5);
             if (result != null && result.content().getBoolean("access")) {
                 event.setCancelled(false);
             } else {

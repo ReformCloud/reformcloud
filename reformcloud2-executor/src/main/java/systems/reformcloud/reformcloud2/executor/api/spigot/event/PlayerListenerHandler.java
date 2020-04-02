@@ -35,8 +35,9 @@ public final class PlayerListenerHandler implements Listener {
 
             Packet result = SpigotExecutor.getInstance().packetHandler().getQueryHandler().sendQueryAsync(packetSender, new APIPacketOutHasPlayerAccess(
                     event.getPlayer().getUniqueId(),
-                    event.getPlayer().getName()
-            )).getTask().getUninterruptedly(TimeUnit.SECONDS, 2);
+                    event.getPlayer().getName(),
+                    event.getRealAddress().getHostAddress()
+            )).getTask().getUninterruptedly(TimeUnit.SECONDS, 5);
             if (result != null && result.content().getBoolean("access")) {
                 event.setResult(PlayerLoginEvent.Result.ALLOWED);
             } else {

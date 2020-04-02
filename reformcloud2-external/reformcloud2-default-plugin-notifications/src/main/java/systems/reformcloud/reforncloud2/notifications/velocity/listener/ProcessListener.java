@@ -2,25 +2,40 @@ package systems.reformcloud.reforncloud2.notifications.velocity.listener;
 
 import com.velocitypowered.api.proxy.ProxyServer;
 import net.kyori.text.TextComponent;
+import org.jetbrains.annotations.NotNull;
+import systems.reformcloud.reformcloud2.executor.api.bungee.BungeeExecutor;
+import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.ProcessStartedEvent;
 import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.ProcessStoppedEvent;
 import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.ProcessUpdatedEvent;
 import systems.reformcloud.reformcloud2.executor.api.common.event.handler.Listener;
-import systems.reformcloud.reformcloud2.executor.api.common.event.priority.EventPriority;
+import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
-import systems.reformcloud.reformcloud2.executor.api.velocity.VelocityExecutor;
-import systems.reformcloud.reforncloud2.notifications.velocity.VelocityPlugin;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
 
-import java.util.Collection;
-import java.util.LinkedList;
+import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
-public class ProcessListener {
+public final class ProcessListener {
 
-    private static final Collection<UUID> STARTED = new LinkedList<>();
+    private static final Map<UUID, ProcessInformation> REGISTERED = new ConcurrentHashMap<>();
 
-    public ProcessListener(ProxyServer proxyServer) {
-        this.proxyServer = proxyServer;
+    public ProcessListener(@NotNull ProxyServer server) {
+        Task.EXECUTOR.execute(() -> {
+            while (DefaultChannelManager.INSTANCE.get("Controller").isEmpty()) {
+                AbsoluteThread.sleep(50);
+            }
+
+            ExecutorAPI.getInstance()
+                    .getSyncAPI()
+                    .getProcessSyncAPI()
+                    .getAllProcesses()
+                    .forEach(e -> REGISTERED.put(e.getProcessDetail().getProcessUniqueID(), e));
+        });
+
+        this.proxyServer = server;
     }
 
     private final ProxyServer proxyServer;
@@ -28,44 +43,52 @@ public class ProcessListener {
     @Listener
     public void handle(final ProcessStartedEvent event) {
         this.publishNotification(
-                VelocityExecutor.getInstance().getMessages().getProcessStarted(),
+                BungeeExecutor.getInstance().getMessages().getProcessStarted(),
                 event.getProcessInformation().getProcessDetail().getName()
         );
-    }
-
-    @Listener (priority = EventPriority.FIRST)
-    public void handle(final ProcessUpdatedEvent event) {
-        ProcessInformation processInformation = event.getProcessInformation();
-        if (isNotify(processInformation)) {
-            STARTED.add(processInformation.getProcessDetail().getProcessUniqueID());
-            this.publishNotification(
-                    VelocityExecutor.getInstance().getMessages().getProcessConnected(),
-                    processInformation.getProcessDetail().getName()
-            );
-        }
     }
 
     @Listener
     public void handle(final ProcessStoppedEvent event) {
+        if (!REGISTERED.containsKey(event.getProcessInformation().getProcessDetail().getProcessUniqueID())) {
+            return;
+        }
+
         this.publishNotification(
-                VelocityExecutor.getInstance().getMessages().getProcessStopped(),
+                BungeeExecutor.getInstance().getMessages().getProcessStopped(),
                 event.getProcessInformation().getProcessDetail().getName()
         );
-        STARTED.remove(event.getProcessInformation().getProcessDetail().getProcessUniqueID());
+        REGISTERED.remove(event.getProcessInformation().getProcessDetail().getProcessUniqueID());
+    }
+
+    @Listener
+    public void handle(final ProcessUpdatedEvent event) {
+        ProcessInformation old = REGISTERED.put(
+                event.getProcessInformation().getProcessDetail().getProcessUniqueID(),
+                event.getProcessInformation()
+        );
+        if (old != null) {
+            if (!old.getNetworkInfo().isConnected() && event.getProcessInformation().getNetworkInfo().isConnected()) {
+                this.publishNotification(
+                        BungeeExecutor.getInstance().getMessages().getProcessConnected(),
+                        event.getProcessInformation().getProcessDetail().getName()
+                );
+            }
+
+            return;
+        }
+
+        this.publishNotification(
+                BungeeExecutor.getInstance().getMessages().getProcessRegistered(),
+                event.getProcessInformation().getProcessDetail().getName()
+        );
     }
 
     private void publishNotification(String message, Object... replacements) {
-        final String replacedMessage = VelocityExecutor.getInstance().getMessages().format(message, replacements);
-        proxyServer.getAllPlayers().forEach(player -> {
-            if (player.hasPermission("reformcloud.notify")) {
-                player.sendMessage(TextComponent.of(replacedMessage));
-            }
-        });
-    }
-
-    private boolean isNotify(ProcessInformation information) {
-        return !STARTED.contains(information.getProcessDetail().getProcessUniqueID())
-                && !VelocityPlugin.proxyServer.getServer(information.getProcessDetail().getName()).isPresent()
-                && information.getNetworkInfo().isConnected();
+        String replacedMessage = BungeeExecutor.getInstance().getMessages().format(message, replacements);
+        this.proxyServer.getAllPlayers()
+                .stream()
+                .filter(e -> e.hasPermission("reformcloud.notify"))
+                .forEach(player -> player.sendMessage(TextComponent.of(replacedMessage)));
     }
 }

@@ -4,7 +4,7 @@ import net.md_5.bungee.api.plugin.Plugin;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reforncloud2.notifications.bungeecord.listener.ProcessListener;
 
-public class BungeecordPlugin extends Plugin {
+public final class BungeecordPlugin extends Plugin {
 
     private static final ProcessListener LISTENER = new ProcessListener();
 

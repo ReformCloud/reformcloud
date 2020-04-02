@@ -19,7 +19,7 @@ import systems.reformcloud.reforncloud2.notifications.velocity.listener.ProcessL
         authors = {"derklaro"},
         dependencies = {@Dependency(id = "reformcloud_2_api_executor")}
 )
-public class VelocityPlugin {
+public final class VelocityPlugin {
 
     @Inject
     public VelocityPlugin(ProxyServer server) {
