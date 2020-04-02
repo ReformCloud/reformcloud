@@ -195,7 +195,8 @@ public class SpongeSignSystemAdapter implements SignSystemAdapter<Sign> {
             return getSelfLayout().isShowMaintenanceProcessesOnSigns();
         }
 
-        return true;
+        ProcessState state = cloudSign.getCurrentTarget().getProcessDetail().getProcessState();
+        return state.isReady() && !state.equals(ProcessState.INVISIBLE);
     }
 
     @Override

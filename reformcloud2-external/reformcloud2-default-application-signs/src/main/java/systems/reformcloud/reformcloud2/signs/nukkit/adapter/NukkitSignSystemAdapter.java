@@ -193,7 +193,8 @@ public class NukkitSignSystemAdapter implements SignSystemAdapter<BlockEntitySig
             return getSelfLayout().isShowMaintenanceProcessesOnSigns();
         }
 
-        return true;
+        ProcessState state = cloudSign.getCurrentTarget().getProcessDetail().getProcessState();
+        return state.isReady() && !state.equals(ProcessState.INVISIBLE);
     }
 
     @Override
