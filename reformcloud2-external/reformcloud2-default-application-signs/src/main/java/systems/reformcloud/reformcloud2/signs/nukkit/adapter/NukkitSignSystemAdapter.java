@@ -171,6 +171,24 @@ public class NukkitSignSystemAdapter implements SignSystemAdapter<BlockEntitySig
         );
     }
 
+    @Override
+    public void deleteAll() {
+        cachedSigns.forEach(e -> DefaultChannelManager.INSTANCE.get("Controller").ifPresent(
+                s -> s.sendPacket(new APIPacketOutDeleteSign(e))
+        ));
+    }
+
+    @Override
+    public void cleanSigns() {
+        for (CloudSign cachedSign : cachedSigns) {
+            if (this.getSignConverter().from(cachedSign) == null) {
+                DefaultChannelManager.INSTANCE.get("Controller").ifPresent(
+                        s -> s.sendPacket(new APIPacketOutDeleteSign(cachedSign))
+                );
+            }
+        }
+    }
+
     @Nullable
     @Override
     public CloudSign getSignAt(@NotNull CloudLocation location) {

@@ -1,41 +1,25 @@
 package systems.reformcloud.reformcloud2.executor.api.common.database.basic.drivers.mysql;
 
+import com.zaxxer.hikari.HikariDataSource;
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.common.base.Conditions;
 import systems.reformcloud.reformcloud2.executor.api.common.database.Database;
 import systems.reformcloud.reformcloud2.executor.api.common.database.DatabaseReader;
 import systems.reformcloud.reformcloud2.executor.api.common.database.sql.SQLDatabaseReader;
-import systems.reformcloud.reformcloud2.executor.api.common.dependency.DefaultDependency;
-import systems.reformcloud.reformcloud2.executor.api.common.dependency.repo.DefaultRepositories;
-import systems.reformcloud.reformcloud2.executor.api.common.scheduler.TaskScheduler;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.StringUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.maps.AbsentMap;
 
-import java.net.URL;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.text.MessageFormat;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 public final class MySQLDatabase extends Database<Connection> {
 
     private final Map<String, DatabaseReader> perTableReader = new AbsentMap<>();
 
-    private static final String CONNECT_ARGUMENTS = "jdbc:mysql://{0}:{1}/{2}?autoReconnect=true&useUnicode=true&useJDBCCompliantTimezoneShift=true" +
-            "&useLegacyDatetimeCode=false&serverTimezone=UTC";
+    private static final String CONNECT_ARGUMENTS = "jdbc:mysql://%s:%d/%s?serverTimezone=UTC";
 
-    public MySQLDatabase() {
-        URL dependency = DEPENDENCY_LOADER.loadDependency(new DefaultDependency(
-                DefaultRepositories.MAVEN_CENTRAL,
-                "mysql",
-                "mysql-connector-java",
-                "8.0.19"
-        ));
-        Conditions.nonNull(dependency, StringUtil.formatError("dependency load for MySQL database"));
-        DEPENDENCY_LOADER.addDependency(dependency);
+    static {
+        MySQLDatabaseDependencyLoader.load(DEPENDENCY_LOADER);
     }
 
     private String host;
@@ -48,7 +32,7 @@ public final class MySQLDatabase extends Database<Connection> {
 
     private String table;
 
-    private Connection connection;
+    private HikariDataSource hikariDataSource;
 
     @Override
     public void connect(@NotNull String host, int port, @NotNull String userName, @NotNull String password, @NotNull String table) {
@@ -59,34 +43,24 @@ public final class MySQLDatabase extends Database<Connection> {
             this.password = password;
             this.table = table;
 
-            try {
-                Class.forName("com.mysql.cj.jdbc.Driver");
+            this.hikariDataSource = new HikariDataSource();
+            this.hikariDataSource.setJdbcUrl(String.format(CONNECT_ARGUMENTS, host, port, table));
+            this.hikariDataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
 
-                this.connection = DriverManager.getConnection(
-                        MessageFormat.format(
-                                CONNECT_ARGUMENTS,
-                                host,
-                                Integer.toString(port),
-                                table
-                        ), userName, password
-                );
+            this.hikariDataSource.setUsername(userName);
+            this.hikariDataSource.setPassword(password);
 
-                if (isConnected()) {
-                    startReconnect();
-                }
-            } catch (final Exception ex) {
-                ex.printStackTrace();
-            }
+            this.hikariDataSource.setValidationTimeout(5000);
+            this.hikariDataSource.setConnectionTimeout(5000);
+            this.hikariDataSource.setMaximumPoolSize(20);
+
+            this.hikariDataSource.validate();
         }
     }
 
     @Override
     public boolean isConnected() {
-        try {
-            return connection != null && !connection.isClosed() && connection.isValid(250);
-        } catch (final SQLException ex) {
-            return connection != null;
-        }
+        return this.hikariDataSource != null && !this.hikariDataSource.isClosed();
     }
 
     @Override
@@ -98,18 +72,15 @@ public final class MySQLDatabase extends Database<Connection> {
     @Override
     public void disconnect() {
         if (isConnected()) {
-            try {
-                connection.close();
-            } catch (final SQLException ex) {
-                ex.printStackTrace();
-            }
+            this.hikariDataSource.close();
+            this.hikariDataSource = null;
         }
     }
 
     @Override
     public boolean createDatabase(String name) {
-        try (PreparedStatement statement = SQLDatabaseReader.prepareStatement("CREATE TABLE IF NOT EXISTS `"
-                + name + "` (`key` TEXT, `identifier` TEXT, `data` LONGBLOB);", this)) {
+        try (Connection connection = this.get();
+             PreparedStatement statement = SQLDatabaseReader.prepareStatement("CREATE TABLE IF NOT EXISTS `" + name + "` (`key` TEXT, `identifier` TEXT, `data` LONGBLOB);", connection)) {
             statement.executeUpdate();
             return true;
         } catch (final SQLException ex) {
@@ -120,7 +91,8 @@ public final class MySQLDatabase extends Database<Connection> {
 
     @Override
     public boolean deleteDatabase(String name) {
-        try (PreparedStatement statement = SQLDatabaseReader.prepareStatement("DROP TABLE `" + name + "`", this)) {
+        try (Connection connection = this.get();
+             PreparedStatement statement = SQLDatabaseReader.prepareStatement("DROP TABLE `" + name + "`", connection)) {
             statement.executeUpdate();
             return true;
         } catch (final SQLException ex) {
@@ -138,10 +110,10 @@ public final class MySQLDatabase extends Database<Connection> {
     @NotNull
     @Override
     public Connection get() {
-        return connection;
-    }
-
-    private void startReconnect() {
-        TaskScheduler.INSTANCE.schedule(() -> createDatabase("internal_users"), 0, 5, TimeUnit.MINUTES);
+        try {
+            return this.hikariDataSource.getConnection();
+        } catch (final SQLException ex) {
+            throw new RuntimeException(ex);
+        }
     }
 }

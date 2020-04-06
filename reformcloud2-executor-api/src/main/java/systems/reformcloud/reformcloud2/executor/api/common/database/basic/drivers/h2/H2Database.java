@@ -33,17 +33,20 @@ public class H2Database extends Database<Connection> {
         ));
         Conditions.nonNull(url, StringUtil.formatError("dependency load for h2 database"));
         DEPENDENCY_LOADER.addDependency(url);
+
         FileUtils.createDirectories("reformcloud/.database/h2");
     }
 
-    private Connection connection;
+    private ReformCloudWrappedConnection connection;
 
     @Override
     public void connect(@NotNull String host, int port, @NotNull String userName, @NotNull String password, @NotNull String table) {
         if (!isConnected()) {
             try {
                 Driver.load();
-                this.connection = DriverManager.getConnection("jdbc:h2:" + new File("reformcloud/.database/h2/h2_db").getAbsolutePath());
+
+                Connection connection = DriverManager.getConnection("jdbc:h2:" + new File("reformcloud/.database/h2/h2_db").getAbsolutePath());
+                this.connection = new ReformCloudWrappedConnection(connection);
             } catch (final Throwable throwable) {
                 throwable.printStackTrace();
             }
@@ -69,7 +72,7 @@ public class H2Database extends Database<Connection> {
     public void disconnect() {
         if (isConnected()) {
             try {
-                connection.close();
+                this.connection.disconnect();
             } catch (final SQLException ex) {
                 ex.printStackTrace();
             }
@@ -79,7 +82,7 @@ public class H2Database extends Database<Connection> {
     @Override
     public boolean createDatabase(String name) {
         try (PreparedStatement statement = SQLDatabaseReader.prepareStatement("CREATE TABLE IF NOT EXISTS `"
-                + name + "` (`key` TEXT, `identifier` TEXT, `data` LONGBLOB);", this)) {
+                + name + "` (`key` TEXT, `identifier` TEXT, `data` LONGBLOB);", this.connection)) {
             statement.executeUpdate();
             return true;
         } catch (final SQLException ex) {
@@ -90,7 +93,7 @@ public class H2Database extends Database<Connection> {
 
     @Override
     public boolean deleteDatabase(String name) {
-        try (PreparedStatement statement = SQLDatabaseReader.prepareStatement("DROP TABLE `" + name + "`", this)) {
+        try (PreparedStatement statement = SQLDatabaseReader.prepareStatement("DROP TABLE `" + name + "`", this.connection)) {
             statement.executeUpdate();
             return true;
         } catch (final SQLException ex) {

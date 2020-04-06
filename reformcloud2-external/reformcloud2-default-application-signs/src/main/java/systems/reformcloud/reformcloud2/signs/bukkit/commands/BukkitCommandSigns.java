@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.signs.bukkit.adapter.BukkitSignSystemAdapter;
+import systems.reformcloud.reformcloud2.signs.util.SignSystemAdapter;
 import systems.reformcloud.reformcloud2.signs.util.sign.CloudSign;
 
 public class BukkitCommandSigns implements CommandExecutor {
@@ -71,8 +72,22 @@ public class BukkitCommandSigns implements CommandExecutor {
             }
         }
 
+        if (strings.length == 1 && strings[0].equalsIgnoreCase("deleteall")) {
+            SignSystemAdapter.getInstance().deleteAll();
+            commandSender.sendMessage("§7Deleting all signs, please wait...");
+            return true;
+        }
+
+        if (strings.length == 1 && strings[0].equalsIgnoreCase("clean")) {
+            SignSystemAdapter.getInstance().cleanSigns();
+            commandSender.sendMessage("§7Cleaning signs, please wait...");
+            return true;
+        }
+
         commandSender.sendMessage("§7/signs create [group]");
         commandSender.sendMessage("§7/signs delete");
+        commandSender.sendMessage("§7/signs deleteAll");
+        commandSender.sendMessage("§7/signs clean");
         return true;
     }
 }

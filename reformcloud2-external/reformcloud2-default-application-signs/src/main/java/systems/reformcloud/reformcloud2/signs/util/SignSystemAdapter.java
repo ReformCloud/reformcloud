@@ -1,5 +1,6 @@
 package systems.reformcloud.reformcloud2.signs.util;
 
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
@@ -48,7 +49,7 @@ public interface SignSystemAdapter<T> {
     /**
      * Creates a new sign
      *
-     * @param t The object of the current implementation of a sign
+     * @param t     The object of the current implementation of a sign
      * @param group The group for which the sign should be
      * @return The created cloud sign or the which already exists
      */
@@ -61,6 +62,16 @@ public interface SignSystemAdapter<T> {
      * @param location The cloud location of the sign which should get deleted
      */
     void deleteSign(@NotNull CloudLocation location);
+
+    /**
+     * Deletes all signs
+     */
+    void deleteAll();
+
+    /**
+     * Deletes all signs on which location are not
+     */
+    void cleanSigns();
 
     /**
      * Gets a sign at a current location
@@ -77,15 +88,24 @@ public interface SignSystemAdapter<T> {
     @NotNull
     SignConverter<T> getSignConverter();
 
+    /**
+     * Checks if a user can connect to the process which is associated with the sign
+     *
+     * @param cloudSign The sign for which the check should be made
+     * @return If a user can connect to the process
+     */
     boolean canConnect(@NotNull CloudSign cloudSign);
 
     // ===================================
     // The following methods are not documented because they are for internal use only
     // ===================================
 
+    @ApiStatus.Internal
     void handleInternalSignCreate(@NotNull CloudSign cloudSign);
 
+    @ApiStatus.Internal
     void handleInternalSignDelete(@NotNull CloudSign cloudSign);
 
+    @ApiStatus.Internal
     void handleSignConfigUpdate(@NotNull SignConfig config);
 }

@@ -55,7 +55,8 @@ public class SQLDatabaseReader implements DatabaseReader {
                 return;
             }
 
-            try (PreparedStatement statement = prepareStatement("INSERT INTO `" + table + "` (`key`, `identifier`, `data`) VALUES (?, ?, ?);", database)) {
+            try (Connection connection = this.database.get();
+                 PreparedStatement statement = prepareStatement("INSERT INTO `" + table + "` (`key`, `identifier`, `data`) VALUES (?, ?, ?);", connection)) {
                 statement.setString(1, key);
                 statement.setString(2, identifier);
                 statement.setBytes(3, data.toPrettyBytes());
@@ -74,7 +75,8 @@ public class SQLDatabaseReader implements DatabaseReader {
     public Task<Boolean> update(@NotNull String key, @NotNull JsonConfiguration newData) {
         Task<Boolean> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
-            try (PreparedStatement statement = prepareStatement("UPDATE `" + table + "` SET `data` = ? WHERE `key` = ?", database)) {
+            try (Connection connection = this.database.get();
+                 PreparedStatement statement = prepareStatement("UPDATE `" + table + "` SET `data` = ? WHERE `key` = ?", connection)) {
                 statement.setBytes(1, newData.toPrettyBytes());
                 statement.setString(2, key);
                 statement.executeUpdate();
@@ -92,7 +94,8 @@ public class SQLDatabaseReader implements DatabaseReader {
     public Task<Boolean> updateIfAbsent(@NotNull String identifier, @NotNull JsonConfiguration newData) {
         Task<Boolean> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
-            try (PreparedStatement statement = prepareStatement("UPDATE `" + table + "` SET `data` = ? WHERE `identifier` = ?", database)) {
+            try (Connection connection = this.database.get();
+                 PreparedStatement statement = prepareStatement("UPDATE `" + table + "` SET `data` = ? WHERE `identifier` = ?", connection)) {
                 statement.setBytes(1, newData.toPrettyBytes());
                 statement.setString(2, identifier);
                 statement.executeUpdate();
@@ -108,18 +111,19 @@ public class SQLDatabaseReader implements DatabaseReader {
     @NotNull
     @Override
     public Task<Void> remove(@NotNull String key) {
-       Task<Void> task = new DefaultTask<>();
-       Task.EXECUTOR.execute(() -> {
-           try (PreparedStatement statement = prepareStatement("DELETE FROM `" + table + "` WHERE `key` = ?", database)) {
-               statement.setString(1, key);
-               statement.executeUpdate();
-           } catch (final SQLException ex) {
-               ex.printStackTrace();
-           }
+        Task<Void> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(() -> {
+            try (Connection connection = this.database.get();
+                 PreparedStatement statement = prepareStatement("DELETE FROM `" + table + "` WHERE `key` = ?", connection)) {
+                statement.setString(1, key);
+                statement.executeUpdate();
+            } catch (final SQLException ex) {
+                ex.printStackTrace();
+            }
 
-           task.complete(null);
-       });
-       return task;
+            task.complete(null);
+        });
+        return task;
     }
 
     @NotNull
@@ -127,7 +131,8 @@ public class SQLDatabaseReader implements DatabaseReader {
     public Task<Void> removeIfAbsent(@NotNull String identifier) {
         Task<Void> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
-            try (PreparedStatement statement = prepareStatement("DELETE FROM `" + table + "` WHERE `identifier` = ?", database)) {
+            try (Connection connection = this.database.get();
+                 PreparedStatement statement = prepareStatement("DELETE FROM `" + table + "` WHERE `identifier` = ?", connection)) {
                 statement.setString(1, identifier);
                 statement.executeUpdate();
             } catch (final SQLException ex) {
@@ -151,7 +156,8 @@ public class SQLDatabaseReader implements DatabaseReader {
     @Override
     public Iterator<JsonConfiguration> iterator() {
         Collection<JsonConfiguration> list = new ArrayList<>();
-        try (PreparedStatement statement = prepareStatement("SELECT `data` FROM `" + table + "`", database)) {
+        try (Connection connection = this.database.get();
+             PreparedStatement statement = prepareStatement("SELECT `data` FROM `" + table + "`", connection)) {
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 byte[] bytes = resultSet.getBytes("data");
@@ -176,10 +182,12 @@ public class SQLDatabaseReader implements DatabaseReader {
         return this.table;
     }
 
-    private Task<JsonConfiguration> get(String keyName, String key) {
+    @NotNull
+    private Task<JsonConfiguration> get(@NotNull String keyName, @NotNull String key) {
         Task<JsonConfiguration> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
-            try (PreparedStatement statement = prepareStatement("SELECT `data` FROM `" + table + "` WHERE `" + keyName + "` = ?", database)) {
+            try (Connection connection = this.database.get();
+                 PreparedStatement statement = prepareStatement("SELECT `data` FROM `" + table + "` WHERE `" + keyName + "` = ?", connection)) {
                 statement.setString(1, key);
                 ResultSet resultSet = statement.executeQuery();
                 if (!resultSet.next()) {
@@ -208,7 +216,7 @@ public class SQLDatabaseReader implements DatabaseReader {
     }
 
     @NotNull
-    public static PreparedStatement prepareStatement(@NotNull String sql, @NotNull Database<Connection> database) throws SQLException {
-        return database.get().prepareStatement(sql);
+    public static PreparedStatement prepareStatement(@NotNull String sql, @NotNull Connection connection) throws SQLException {
+        return connection.prepareStatement(sql);
     }
 }

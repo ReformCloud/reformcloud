@@ -6,8 +6,8 @@ import systems.reformcloud.reformcloud2.executor.api.common.language.loading.Lan
 public final class NodeLauncher {
 
     public static synchronized void main(String[] args) {
-        DependencyLoader.doLoad();
         LanguageWorker.doLoad();
+        DependencyLoader.doLoad();
 
         new NodeExecutor();
     }

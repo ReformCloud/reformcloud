@@ -22,6 +22,15 @@ public final class RethinkDBDatabase extends Database<RethinkDB> {
     public RethinkDBDatabase() {
         URL dependency = DEPENDENCY_LOADER.loadDependency(new DefaultDependency(
                 DefaultRepositories.MAVEN_CENTRAL,
+                "org.slf4j",
+                "slf4j-api",
+                "1.7.30"
+        ));
+        Conditions.nonNull(dependency, StringUtil.formatError("dependency load for rethink database"));
+        DEPENDENCY_LOADER.addDependency(dependency);
+
+        dependency = DEPENDENCY_LOADER.loadDependency(new DefaultDependency(
+                DefaultRepositories.MAVEN_CENTRAL,
                 "com.rethinkdb",
                 "rethinkdb-driver",
                 "2.4.1"

@@ -99,6 +99,14 @@
             <scope>provided</scope>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/com.zaxxer/HikariCP -->
+        <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+            <version>3.4.2</version>
+            <scope>provided</scope>
+        </dependency>
+
         <!-- https://mvnrepository.com/artifact/com.h2database/h2 -->
         <dependency>
             <groupId>com.h2database</groupId>
@@ -144,6 +152,8 @@
                         <exclude>de.derklaro.projects.deer:*</exclude>
                         <exclude>*:annotations-java5</exclude>
                         <exclude>*:rethinkdb-driver</exclude>
+                        <exclude>*:HikariCP</exclude>
+                        <exclude>*:slf4j-api</exclude>
                     </excludes>
 
                     <outputFileName>

@@ -107,7 +107,6 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.file.Paths;
 import java.util.Collections;
-import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
@@ -272,21 +271,17 @@ public final class NodeExecutor extends Node {
 
         this.loadPacketHandlers();
 
-        this.nodeConfig.getNetworkListener().forEach(e -> e.forEach((ip, port) -> this.networkServer.bind(
-                ip,
-                port,
+        this.nodeConfig.getHttpNetworkListeners().forEach(e -> this.webServer.add(e.getHost(), e.getPort(), this.requestListenerHandler));
+        this.nodeConfig.getNetworkListeners().forEach(e -> this.networkServer.bind(
+                e.getHost(),
+                e.getPort(),
                 () -> new NodeNetworkChannelReader(this.packetHandler),
-                new NodeChallengeAuthHandler(new SharedChallengeProvider(this.nodeExecutorConfig.getConnectionKey()), new NodeNetworkSuccessHandler())))
-        );
-
-        this.nodeConfig.getHttpNetworkListener().forEach(map -> map.forEach((host, port) -> {
-                    this.webServer.add(host, port, this.requestListenerHandler);
-                })
-        );
+                new NodeChallengeAuthHandler(new SharedChallengeProvider(this.nodeExecutorConfig.getConnectionKey()), new NodeNetworkSuccessHandler())
+        ));
 
         this.applicationLoader.loadApplications();
-
         this.getSyncAPI().getDatabaseSyncAPI().createDatabase("internal_users");
+
         if (this.nodeExecutorConfig.isFirstStartup()) {
             final String token = StringUtil.generateString(2);
             WebUser webUser = new WebUser("admin", token, Collections.singletonList("*"));
@@ -295,14 +290,16 @@ public final class NodeExecutor extends Node {
             System.out.println(LanguageManager.get("setup-created-default-user", webUser.getName(), token));
         }
 
-        if (this.nodeConfig.getOtherNodes().isEmpty()) {
+        if (this.nodeConfig.getClusterNodes().isEmpty()) {
             System.out.println(LanguageManager.get("network-node-no-other-nodes-defined"));
         } else {
             if (this.nodeExecutorConfig.getConnectionKey() == null) {
                 System.out.println(LanguageManager.get("network-node-try-connect-with-no-key"));
             } else {
-                this.nodeConfig.getOtherNodes().forEach(e -> e.forEach((ip, port) -> {
-                    if (this.networkClient.connect(ip, port,
+                this.nodeConfig.getClusterNodes().forEach(e -> {
+                    if (this.networkClient.connect(
+                            e.getHost(),
+                            e.getPort(),
                             () -> new NodeNetworkChannelReader(NodeExecutor.getInstance().getPacketHandler()),
                             new ClientChallengeAuthHandler(
                                     NodeExecutor.getInstance().getNodeExecutorConfig().getConnectionKey(),
@@ -312,15 +309,15 @@ public final class NodeExecutor extends Node {
                             ))
                     ) {
                         System.out.println(LanguageManager.get(
-                                "network-node-connection-to-other-node-success", ip, Integer.toString(port)
+                                "network-node-connection-to-other-node-success", e.getHost(), e.getPort()
                         ));
-                        this.clusterSyncManager.getWaitingConnections().add(ip);
+                        this.clusterSyncManager.getWaitingConnections().add(e.getHost());
                     } else {
                         System.out.println(LanguageManager.get(
-                                "network-node-connection-to-other-node-not-successful", ip, Integer.toString(port)
+                                "network-node-connection-to-other-node-not-successful", e.getHost(), e.getPort()
                         ));
                     }
-                }));
+                });
             }
         }
 
@@ -402,13 +399,15 @@ public final class NodeExecutor extends Node {
     }
 
     public Duo<String, Integer> getConnectHost() {
-        if (this.nodeConfig.getNetworkListener().size() == 1) {
-            Map.Entry<String, Integer> result = nodeConfig.getNetworkListener().get(0).entrySet().iterator().next();
-            return new Duo<>(result.getKey(), result.getValue());
+        if (this.nodeConfig.getNetworkListeners().size() == 1) {
+            NodeConfig.NetworkAddress address = this.nodeConfig.getNetworkListeners().get(0);
+            return new Duo<>(address.getHost(), address.getPort());
         }
 
-        Map.Entry<String, Integer> result = nodeConfig.getNetworkListener().get(new Random().nextInt(nodeConfig.getNetworkListener().size())).entrySet().iterator().next();
-        return new Duo<>(result.getKey(), result.getValue());
+        NodeConfig.NetworkAddress address = this.nodeConfig.getNetworkListeners().get(new Random().nextInt(
+                this.nodeConfig.getNetworkListeners().size()
+        ));
+        return new Duo<>(address.getHost(), address.getPort());
     }
 
     @Override

@@ -20,4 +20,9 @@ public interface Setup {
      * @param loggerBase The {@link LoggerBase} which should get used for the setup
      */
     void startSetup(@NotNull LoggerBase loggerBase);
+
+    /**
+     * Removes all previously added questions from the current setup
+     */
+    void clear();
 }

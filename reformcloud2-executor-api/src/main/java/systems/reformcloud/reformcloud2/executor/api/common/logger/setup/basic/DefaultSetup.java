@@ -32,4 +32,9 @@ public final class DefaultSetup implements Setup {
             setupQuestion.then().accept(line);
         });
     }
+
+    @Override
+    public void clear() {
+        this.questions.clear();
+    }
 }

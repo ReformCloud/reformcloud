@@ -9,7 +9,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packe
 import systems.reformcloud.reformcloud2.executor.api.common.node.NodeInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.node.cluster.InternalNetworkCluster;
 import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
 import systems.reformcloud.reformcloud2.executor.node.network.packet.out.NodePacketOutConnectionInitDone;
@@ -35,9 +34,7 @@ public final class NodeNetworkSuccessHandler implements BiConsumer<ChannelHandle
 
         if (process == null) {
             String address = ((InetSocketAddress) channelHandlerContext.channel().remoteAddress()).getAddress().getHostAddress();
-            if (Streams.filterToReference(NodeExecutor.getInstance().getNodeConfig().getOtherNodes(), e -> e.keySet().stream().anyMatch(c -> c.equals(
-                    address
-            ))).isEmpty()) {
+            if (NodeExecutor.getInstance().getNodeConfig().getClusterNodes().stream().noneMatch(e -> e.getHost().equals(address))) {
                 System.out.println(LanguageManager.get("network-node-connection-from-unknown-node", address));
                 channelHandlerContext.channel().close().syncUninterruptibly();
                 return;

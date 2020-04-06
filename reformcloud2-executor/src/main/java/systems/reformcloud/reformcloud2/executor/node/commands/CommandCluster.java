@@ -7,11 +7,11 @@ import systems.reformcloud.reformcloud2.executor.api.common.commands.source.Comm
 import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
 import systems.reformcloud.reformcloud2.executor.api.common.node.NodeInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.node.NodeProcess;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
+import systems.reformcloud.reformcloud2.executor.node.config.NodeConfig;
 
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
 
 public final class CommandCluster extends GlobalCommand {
 
@@ -49,7 +49,12 @@ public final class CommandCluster extends GlobalCommand {
         }
 
         if (strings.length == 1 && strings[0].equalsIgnoreCase("head")) {
-            this.showInformationAboutToSender(commandSource, NodeExecutor.getInstance().getNodeNetworkManager().getCluster().getHeadNode());
+            NodeInformation head = NodeExecutor.getInstance().getNodeNetworkManager().getCluster().getHeadNode();
+            if (head == null) {
+                head = NodeExecutor.getInstance().getNodeNetworkManager().getCluster().getSelfNode();
+            }
+
+            this.showInformationAboutToSender(commandSource, head);
             return true;
         }
 
@@ -86,7 +91,7 @@ public final class CommandCluster extends GlobalCommand {
                 return true;
             }
 
-            NodeExecutor.getInstance().getNodeConfig().getOtherNodes().add(Collections.singletonMap(ip, port));
+            NodeExecutor.getInstance().getNodeConfig().getClusterNodes().add(new NodeConfig.NetworkAddress(ip, port));
             NodeExecutor.getInstance().getNodeConfig().save();
             commandSource.sendMessage(LanguageManager.get("command-cluster-created-node", ip, strings[2]));
             return true;
@@ -99,13 +104,16 @@ public final class CommandCluster extends GlobalCommand {
                 return true;
             }
 
-            if (!this.existsNode(ip)) {
+            NodeConfig.NetworkAddress address = Streams.filter(
+                    NodeExecutor.getInstance().getNodeConfig().getClusterNodes(),
+                    e -> e.getHost().equals(ip.trim())
+            );
+            if (address == null) {
                 commandSource.sendMessage(LanguageManager.get("command-cluster-node-not-exists", ip));
                 return true;
             }
 
-            Map<String, Integer> map = this.getByHost(ip);
-            NodeExecutor.getInstance().getNodeConfig().getOtherNodes().remove(map);
+            NodeExecutor.getInstance().getNodeConfig().getClusterNodes().remove(address);
             NodeExecutor.getInstance().getNodeConfig().save();
             commandSource.sendMessage(LanguageManager.get("command-cluster-node-deleted", ip));
             return true;
@@ -115,20 +123,13 @@ public final class CommandCluster extends GlobalCommand {
         return true;
     }
 
-    private boolean existsNode(String host) {
-        return getByHost(host) != null;
-    }
-
-    private Map<String, Integer> getByHost(String host) {
-        for (Map<String, Integer> otherNode : NodeExecutor.getInstance().getNodeConfig().getOtherNodes()) {
-            for (Map.Entry<String, Integer> stringIntegerEntry : otherNode.entrySet()) {
-                if (stringIntegerEntry.getKey().equals(host)) {
-                    return otherNode;
-                }
-            }
-        }
-
-        return null;
+    private boolean existsNode(@NotNull String host) {
+        return NodeExecutor
+                .getInstance()
+                .getNodeConfig()
+                .getClusterNodes()
+                .stream()
+                .anyMatch(e -> e.getHost().equals(host.trim()));
     }
 
     private void showInformationAboutToSender(CommandSource source, NodeInformation information) {
@@ -154,11 +155,9 @@ public final class CommandCluster extends GlobalCommand {
     private void listConnectedAndListenersToSender(CommandSource source) {
         StringBuilder stringBuilder = new StringBuilder();
 
-        stringBuilder.append("Known nodes (").append(NodeExecutor.getInstance().getNodeConfig().getOtherNodes().size()).append(")").append("\n");
-        for (Map<String, Integer> otherNode : NodeExecutor.getInstance().getNodeConfig().getOtherNodes()) {
-            for (Map.Entry<String, Integer> stringIntegerEntry : otherNode.entrySet()) {
-                stringBuilder.append(" > ").append(stringIntegerEntry.getKey()).append(":").append(stringIntegerEntry.getValue()).append("\n");
-            }
+        stringBuilder.append("Known nodes (").append(NodeExecutor.getInstance().getNodeConfig().getClusterNodes().size()).append(")").append("\n");
+        for (NodeConfig.NetworkAddress clusterNode : NodeExecutor.getInstance().getNodeConfig().getClusterNodes()) {
+            stringBuilder.append(" > ").append(clusterNode.getHost()).append(":").append(clusterNode.getPort()).append("\n");
         }
 
         stringBuilder.append("\n");
