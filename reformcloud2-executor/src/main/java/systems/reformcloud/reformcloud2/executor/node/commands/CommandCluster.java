@@ -132,20 +132,30 @@ public final class CommandCluster extends GlobalCommand {
                 .anyMatch(e -> e.getHost().equals(host.trim()));
     }
 
-    private void showInformationAboutToSender(CommandSource source, NodeInformation information) {
+    private void showInformationAboutToSender(@NotNull CommandSource source, @NotNull NodeInformation information) {
         StringBuilder stringBuilder = new StringBuilder();
 
-        stringBuilder.append(" > Name       - ").append(information.getName()).append("\n");
-        stringBuilder.append(" > UniqueID   - ").append(information.getNodeUniqueID()).append("\n");
-        stringBuilder.append(" > Memory     - ").append(information.getUsedMemory()).append("MB/").append(information.getMaxMemory()).append("MB\n");
-        stringBuilder.append(" > Start time - ").append(CommonHelper.DATE_FORMAT.format(information.getStartupTime())).append("\n");
+        stringBuilder.append(" > Name            - ").append(information.getName()).append("\n");
+        stringBuilder.append(" > UniqueID        - ").append(information.getNodeUniqueID()).append("\n");
+        stringBuilder.append(" > Memory          - ").append(information.getUsedMemory()).append("MB/").append(information.getMaxMemory()).append("MB\n");
+        stringBuilder.append(" > OS              - ").append(information.getProcessRuntimeInformation().getOsVersion()).append("\n");
+        stringBuilder.append(" > OS-Arch         - ").append(information.getProcessRuntimeInformation().getSystemArchitecture()).append("\n");
+        stringBuilder.append(" > Java            - ").append(information.getProcessRuntimeInformation().getJavaVersion()).append("\n");
+        stringBuilder.append(" > Cores           - ").append(information.getProcessRuntimeInformation().getProcessorCount()).append("\n");
+        stringBuilder.append(" > Threads         - ").append(information.getProcessRuntimeInformation().getThreadInfos().size()).append("\n");
+        stringBuilder.append(" > Heap Memory     - ").append(information.getProcessRuntimeInformation().getMemoryUsageInternal()).append("MB").append("\n");
+        stringBuilder.append(" > Non-Heap Memory - ").append(information.getProcessRuntimeInformation().getNonHeapMemoryUsage()).append("MB").append("\n");
+        stringBuilder.append(" > CPU             - ").append(CommonHelper.DECIMAL_FORMAT.format(information.getProcessRuntimeInformation().getCpuUsageSystem())).append("%").append("\n");
+        stringBuilder.append(" > Load average    - ").append(CommonHelper.DECIMAL_FORMAT.format(information.getProcessRuntimeInformation().getLoadAverageSystem())).append("MB").append("\n");
+        stringBuilder.append(" > Start time      - ").append(CommonHelper.DATE_FORMAT.format(information.getStartupTime())).append("\n");
+        stringBuilder.append(" > Last Update     - ").append(CommonHelper.DATE_FORMAT.format(information.getLastUpdate())).append("\n");
         stringBuilder.append(" ").append("\n");
         stringBuilder.append(" > Started processes (").append(information.getStartedProcesses().size()).append(")").append("\n");
         for (NodeProcess startedProcess : information.getStartedProcesses()) {
             stringBuilder.append("\n");
-            stringBuilder.append("  > Name      - ").append(startedProcess.getName()).append("\n");
-            stringBuilder.append("  > UniqueID  - ").append(startedProcess.getUniqueID()).append("\n");
-            stringBuilder.append("  > Group     - ").append(startedProcess.getGroup()).append("\n");
+            stringBuilder.append("  > Name           - ").append(startedProcess.getName()).append("\n");
+            stringBuilder.append("  > UniqueID       - ").append(startedProcess.getUniqueID()).append("\n");
+            stringBuilder.append("  > Group          - ").append(startedProcess.getGroup()).append("\n");
             stringBuilder.append(" ");
         }
 

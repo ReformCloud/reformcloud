@@ -118,7 +118,8 @@ public final class DefaultNodeInternalCluster implements InternalNetworkCluster 
                 continue;
             }
 
-            if (validNode.getSystemCpuUsage() == -1 || result.getSystemCpuUsage() == -1) {
+            if (validNode.getProcessRuntimeInformation().getCpuUsageSystem() == -1
+                    || result.getProcessRuntimeInformation().getCpuUsageSystem() == -1) {
                 // do not check system cpu if it's not given
                 if (result.getUsedMemory() > validNode.getUsedMemory()) {
                     result = validNode;
@@ -127,7 +128,7 @@ public final class DefaultNodeInternalCluster implements InternalNetworkCluster 
                 continue;
             }
 
-            if (result.getSystemCpuUsage() > validNode.getSystemCpuUsage()
+            if (result.getProcessRuntimeInformation().getCpuUsageSystem() > validNode.getProcessRuntimeInformation().getCpuUsageSystem()
                     || result.getUsedMemory() > validNode.getUsedMemory()) {
                 result = validNode;
             }

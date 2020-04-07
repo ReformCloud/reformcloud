@@ -4,7 +4,6 @@ import com.google.gson.reflect.TypeToken;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.common.CommonHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.node.NodeInformation;
 
@@ -134,7 +133,6 @@ public final class NodeConfig {
                 System.currentTimeMillis(),
                 0L,
                 maxMemory,
-                CommonHelper.cpuUsageSystem(),
                 new CopyOnWriteArrayList<>()
         );
     }

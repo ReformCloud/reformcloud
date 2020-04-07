@@ -30,9 +30,11 @@ public final class CommandHelp extends GlobalCommand {
                     + CommandHelp.class.getPackage().getSpecificationVersion()
                     + " by derklaro and ReformCloud-Community"
             );
+            commandSource.sendMessage("Discord: https://discord.gg/uskXdVZ");
             commandSource.sendMessage(" ");
 
             commandManager.getCommands().forEach(command -> commandSource.sendMessage("   -> " + command.mainCommand() + " " + command.aliases()));
+            commandSource.sendMessage(" ");
             commandSource.sendMessage(LanguageManager.get("command-help-use"));
             return true;
         }

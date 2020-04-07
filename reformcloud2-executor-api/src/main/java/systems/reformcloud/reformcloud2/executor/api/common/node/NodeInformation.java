@@ -1,7 +1,8 @@
 package systems.reformcloud.reformcloud2.executor.api.common.node;
 
 import com.google.gson.reflect.TypeToken;
-import systems.reformcloud.reformcloud2.executor.api.common.CommonHelper;
+import org.jetbrains.annotations.NotNull;
+import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessRuntimeInformation;
 
 import java.util.Collection;
 import java.util.Objects;
@@ -19,35 +20,43 @@ public class NodeInformation {
 
     private final long startupTime;
 
+    private long lastUpdate;
+
     private long usedMemory;
 
     private long maxMemory;
 
-    private double systemCpuUsage;
+    private ProcessRuntimeInformation processRuntimeInformation;
 
     private final Collection<NodeProcess> startedProcesses;
 
     public NodeInformation(String name, UUID nodeUniqueID, long startupTime,
-                           long usedMemory, long maxMemory, double systemCpuUsage, Collection<NodeProcess> startedProcesses) {
+                           long usedMemory, long maxMemory, Collection<NodeProcess> startedProcesses) {
         this.name = name;
         this.nodeUniqueID = nodeUniqueID;
-        this.startupTime = startupTime;
+        this.startupTime = this.lastUpdate = startupTime;
         this.usedMemory = usedMemory;
         this.maxMemory = maxMemory;
-        this.systemCpuUsage = systemCpuUsage;
+        this.processRuntimeInformation = ProcessRuntimeInformation.create();
         this.startedProcesses = new CopyOnWriteArrayList<>(startedProcesses);
     }
 
+    @NotNull
     public String getName() {
         return name;
     }
 
+    @NotNull
     public UUID getNodeUniqueID() {
         return nodeUniqueID;
     }
 
     public long getStartupTime() {
         return startupTime;
+    }
+
+    public long getLastUpdate() {
+        return lastUpdate;
     }
 
     public long getUsedMemory() {
@@ -58,10 +67,12 @@ public class NodeInformation {
         return maxMemory;
     }
 
-    public double getSystemCpuUsage() {
-        return systemCpuUsage;
+    @NotNull
+    public ProcessRuntimeInformation getProcessRuntimeInformation() {
+        return processRuntimeInformation;
     }
 
+    @NotNull
     public Collection<NodeProcess> getStartedProcesses() {
         return startedProcesses;
     }
@@ -79,7 +90,8 @@ public class NodeInformation {
     }
 
     public void update() {
-        this.systemCpuUsage = CommonHelper.cpuUsageSystem();
+        this.processRuntimeInformation = ProcessRuntimeInformation.create();
+        this.lastUpdate = System.currentTimeMillis();
     }
 
     @Override
@@ -88,10 +100,12 @@ public class NodeInformation {
         if (!(o instanceof NodeInformation)) return false;
         NodeInformation that = (NodeInformation) o;
         return getStartupTime() == that.getStartupTime() &&
+                getLastUpdate() == that.getLastUpdate() &&
                 getUsedMemory() == that.getUsedMemory() &&
                 getMaxMemory() == that.getMaxMemory() &&
                 Objects.equals(getName(), that.getName()) &&
                 Objects.equals(getNodeUniqueID(), that.getNodeUniqueID()) &&
+                Objects.equals(getProcessRuntimeInformation(), that.getProcessRuntimeInformation()) &&
                 Objects.equals(getStartedProcesses(), that.getStartedProcesses());
     }
 
