@@ -42,7 +42,7 @@ public final class PlayerListenerHandler implements Listener {
                 event.setResult(PlayerLoginEvent.Result.ALLOWED);
             } else {
                 event.setKickMessage(format(
-                        SpigotExecutor.getInstance().getMessages().getAlreadyConnectedMessage()
+                        SpigotExecutor.getInstance().getMessages().getNotUsingInternalProxy()
                 ));
                 event.setResult(PlayerLoginEvent.Result.KICK_BANNED);
             }

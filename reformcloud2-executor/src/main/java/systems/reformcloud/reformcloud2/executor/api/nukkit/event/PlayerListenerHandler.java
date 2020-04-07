@@ -42,7 +42,7 @@ public final class PlayerListenerHandler implements Listener {
                 event.setCancelled(false);
             } else {
                 event.setKickMessage(format(
-                        NukkitExecutor.getInstance().getMessages().getAlreadyConnectedMessage()
+                        NukkitExecutor.getInstance().getMessages().getNotUsingInternalProxy()
                 ));
                 event.setCancelled(true);
             }

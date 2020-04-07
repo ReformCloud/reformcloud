@@ -1,6 +1,7 @@
 package systems.reformcloud.reformcloud2.executor.api.common.groups.messages;
 
 import com.google.gson.reflect.TypeToken;
+import org.jetbrains.annotations.NotNull;
 
 import java.text.MessageFormat;
 
@@ -12,12 +13,11 @@ public final class IngameMessages {
     public IngameMessages() {
     }
 
-    public IngameMessages(String prefix, String processRegistered, String processStarted, String processConnected, String processStopped,
-                          String noHubServerAvailable, String alreadyConnectedToHub, String connectingToHub,
-                          String currentProcessClosed, String commandExecuteSuccess, String processFullMessage,
-                          String processEnterPermissionNotSet,
-                          String processInMaintenanceMessage, String alreadyConnectedMessage
-    ) {
+    public IngameMessages(String prefix, String processRegistered, String processStarted, String processConnected,
+                          String processStopped, String noHubServerAvailable, String alreadyConnectedToHub,
+                          String connectingToHub, String currentProcessClosed, String commandExecuteSuccess,
+                          String processFullMessage, String processEnterPermissionNotSet, String processInMaintenanceMessage,
+                          String alreadyConnectedMessage, String notUsingInternalProxy) {
         this.prefix = prefix;
         this.processRegistered = processRegistered;
         this.processStarted = processStarted;
@@ -32,6 +32,7 @@ public final class IngameMessages {
         this.processEnterPermissionNotSet = processEnterPermissionNotSet;
         this.processInMaintenanceMessage = processInMaintenanceMessage;
         this.alreadyConnectedMessage = alreadyConnectedMessage;
+        this.notUsingInternalProxy = notUsingInternalProxy;
     }
 
     private String prefix = "§6§lR§e§leform§6§lC§e§lloud§6§l2 §7|";
@@ -61,6 +62,8 @@ public final class IngameMessages {
     private String processInMaintenanceMessage = "§4§lThis process is currently in maintenance";
 
     private String alreadyConnectedMessage = "§4§lYou are not allowed to join this process";
+
+    private String notUsingInternalProxy = "§4§lTo connect to this server please use an internal proxy server";
 
     public String getPrefix() {
         return prefix;
@@ -118,7 +121,12 @@ public final class IngameMessages {
         return commandExecuteSuccess;
     }
 
-    public String format(String message, Object... replacements) {
+    public String getNotUsingInternalProxy() {
+        return notUsingInternalProxy;
+    }
+
+    @NotNull
+    public String format(@NotNull String message, @NotNull Object... replacements) {
         message = message.replace("%prefix%", prefix).replace("&", "§");
         return MessageFormat.format(message, replacements);
     }
