@@ -1,5 +1,7 @@
 package systems.reformcloud.reformcloud2.permissions.util.uuid;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.permissions.util.basic.DefaultPermissionUtil;
@@ -29,7 +31,8 @@ public final class UUIDFetcher {
      * @param name The name of the player
      * @return The uuid of the player
      */
-    public static UUID getUUIDFromName(final String name) {
+    @Nullable
+    public static UUID getUUIDFromName(@NotNull String name) {
         if (CACHE.containsKey(name)) {
             return CACHE.get(name);
         }
@@ -65,23 +68,26 @@ public final class UUIDFetcher {
         return null;
     }
 
-    private static UUID fromDatabase(String name) {
+    @Nullable
+    private static UUID fromDatabase(@NotNull String name) {
         JsonConfiguration configuration = ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().find(
                 DefaultPermissionUtil.PERMISSION_NAME_TO_UNIQUE_ID_TABLE,
                 name,
                 null
         );
+
         return configuration == null || !configuration.has("id") ? null : configuration.get("id", UUID.class);
     }
 
-    private static UUID fromString(String name) throws IllegalArgumentException {
+    @NotNull
+    private static UUID fromString(@NotNull String name) throws IllegalArgumentException {
         String[] components = name.split("-");
         if (components.length != 5) {
             throw new IllegalArgumentException("Invalid UUID string: " + name);
         }
 
-        for (int i=0; i<5; i++) {
-            components[i] = "0x"+components[i];
+        for (int i = 0; i < 5; i++) {
+            components[i] = "0x" + components[i];
         }
 
         long mostSigBits = Long.decode(components[0]);
