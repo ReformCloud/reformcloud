@@ -9,7 +9,7 @@ import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
 
 import java.util.function.BiConsumer;
 
-public class NodeChallengeAuthHandler extends ServerChallengeAuthHandler {
+public final class NodeChallengeAuthHandler extends ServerChallengeAuthHandler {
 
     public NodeChallengeAuthHandler(ChallengeProvider provider, BiConsumer<ChannelHandlerContext, Packet> afterSuccess) {
         super(provider, afterSuccess, name -> {

@@ -21,7 +21,7 @@ public final class ProcessQueue extends AbsoluteThread {
         RunningProcess runningProcess = new DefaultRunningProcess(information);
         System.out.println(LanguageManager.get(
                 "client-process-now-in-queue",
-                runningProcess.getProcessInformation().getName(),
+                runningProcess.getProcessInformation().getProcessDetail().getName(),
                 QUEUE.size() + 1
         ));
 
@@ -34,7 +34,7 @@ public final class ProcessQueue extends AbsoluteThread {
     public static void queue(RunningProcess process) {
         System.out.println(LanguageManager.get(
                 "client-process-now-in-queue",
-                process.getProcessInformation().getName(),
+                process.getProcessInformation().getProcessDetail().getName(),
                 QUEUE.size() + 1
         ));
         process.handleEnqueue();
@@ -56,20 +56,20 @@ public final class ProcessQueue extends AbsoluteThread {
                 if (isStartupNowLogic()) {
                     System.out.println(LanguageManager.get(
                             "client-process-start",
-                            process.getProcessInformation().getName()
+                            process.getProcessInformation().getProcessDetail().getName()
                     ));
 
                     if (process.bootstrap()) {
                         ClientExecutor.getInstance().getProcessManager().registerProcess(process);
                         System.out.println(LanguageManager.get(
                                 "client-process-start-done",
-                                process.getProcessInformation().getName()
+                                process.getProcessInformation().getProcessDetail().getName()
                         ));
                     } else {
                         QUEUE.offerLast(process);
                         System.out.println(LanguageManager.get(
                                 "client-process-start-failed",
-                                process.getProcessInformation().getName(),
+                                process.getProcessInformation().getProcessDetail().getName(),
                                 QUEUE.size()
                         ));
                     }
@@ -83,7 +83,7 @@ public final class ProcessQueue extends AbsoluteThread {
 
     public static ProcessInformation removeFromQueue(UUID uuid) {
         synchronized (QUEUE) {
-            RunningProcess process = Streams.filterToReference(QUEUE, e -> e.getProcessInformation().getProcessUniqueID().equals(uuid)).orNothing();
+            RunningProcess process = Streams.filterToReference(QUEUE, e -> e.getProcessInformation().getProcessDetail().getProcessUniqueID().equals(uuid)).orNothing();
             if (process == null) {
                 return null;
             }

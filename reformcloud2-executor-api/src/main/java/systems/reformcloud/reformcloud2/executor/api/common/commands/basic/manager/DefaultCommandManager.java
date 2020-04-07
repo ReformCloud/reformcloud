@@ -1,5 +1,7 @@
 package systems.reformcloud.reformcloud2.executor.api.common.commands.basic.manager;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.common.base.Conditions;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.AllowedCommandSources;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.Command;
@@ -9,8 +11,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.commands.source.Comm
 import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.function.Consumer;
@@ -23,16 +23,16 @@ public final class DefaultCommandManager implements CommandManager {
 
     private final Map<Command, String> noPermissionMessagePerCommand = new HashMap<>();
 
-    @Nonnull
+    @NotNull
     @Override
-    public CommandManager register(@Nonnull Command command) {
+    public CommandManager register(@NotNull Command command) {
         dispatchCommandEvent(CommandEvent.ADD, command);
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public CommandManager register(@Nonnull Class<? extends Command> command) {
+    public CommandManager register(@NotNull Class<? extends Command> command) {
         try {
             register(command.getDeclaredConstructor().newInstance());
         } catch (final IllegalAccessException | NoSuchMethodException | InvocationTargetException | InstantiationException ex) {
@@ -43,12 +43,12 @@ public final class DefaultCommandManager implements CommandManager {
     }
 
     @Override
-    public void unregisterCommand(@Nonnull Command command) {
+    public void unregisterCommand(@NotNull Command command) {
         dispatchCommandEvent(CommandEvent.REMOVE, command);
     }
 
     @Override
-    public Command unregisterAndGetCommand(@Nonnull String line) {
+    public Command unregisterAndGetCommand(@NotNull String line) {
         line = line.toLowerCase();
         for (Command command : Streams.newList(commands)) {
             if (command.mainCommand().equals(line) || command.aliases().contains(line)) {
@@ -61,7 +61,7 @@ public final class DefaultCommandManager implements CommandManager {
     }
 
     @Override
-    public Command dispatchCommandEvent(@Nonnull CommandEvent commandEvent, @Nullable Command command) {
+    public Command dispatchCommandEvent(@NotNull CommandEvent commandEvent, @Nullable Command command) {
         switch (commandEvent) {
             case ADD: {
                 commands.add(command);
@@ -88,7 +88,7 @@ public final class DefaultCommandManager implements CommandManager {
     }
 
     @Override
-    public Command dispatchCommandEvent(@Nonnull CommandEvent commandEvent, @Nonnull Command command, @Nonnull Command update) {
+    public Command dispatchCommandEvent(@NotNull CommandEvent commandEvent, @NotNull Command command, @NotNull Command update) {
         switch (commandEvent) {
             case UNREGISTER_ALL:
             case ADD:
@@ -109,7 +109,7 @@ public final class DefaultCommandManager implements CommandManager {
     }
 
     @Override
-    public Command dispatchCommandEvent(@Nonnull CommandEvent commandEvent, @Nullable Command command, @Nullable Command update, @Nonnull String line) {
+    public Command dispatchCommandEvent(@NotNull CommandEvent commandEvent, @Nullable Command command, @Nullable Command update, @NotNull String line) {
         switch (commandEvent) {
             case UNREGISTER_ALL:
             case UPDATE:
@@ -138,7 +138,7 @@ public final class DefaultCommandManager implements CommandManager {
         }
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public List<Command> getCommands() {
         return Streams.unmodifiable(commands);
@@ -150,12 +150,12 @@ public final class DefaultCommandManager implements CommandManager {
     }
 
     @Override
-    public Command getCommand(@Nonnull String command) {
+    public Command getCommand(@NotNull String command) {
         return dispatchCommandEvent(CommandEvent.FIND, null, null, command);
     }
 
     @Override
-    public Command findCommand(@Nonnull String commandPreLine) {
+    public Command findCommand(@NotNull String commandPreLine) {
         commandPreLine = commandPreLine.toLowerCase();
         for (Command command : commands) {
             if (command.mainCommand().startsWith(commandPreLine)) {
@@ -173,13 +173,13 @@ public final class DefaultCommandManager implements CommandManager {
     }
 
     @Override
-    public void register(@Nonnull String noPermissionMessage, @Nonnull Command command) {
+    public void register(@NotNull String noPermissionMessage, @NotNull Command command) {
         dispatchCommandEvent(CommandEvent.ADD, command);
         this.noPermissionMessagePerCommand.put(command, noPermissionMessage);
     }
 
     @Override
-    public void dispatchCommand(@Nonnull CommandSource commandSource, @Nonnull AllowedCommandSources commandSources, @Nonnull String commandLine, @Nonnull Consumer<String> result) {
+    public void dispatchCommand(@NotNull CommandSource commandSource, @NotNull AllowedCommandSources commandSources, @NotNull String commandLine, @NotNull Consumer<String> result) {
         commandLine = commandLine.contains(" ") ? commandLine : commandLine + " ";
         String[] split = commandLine.split(" ");
 

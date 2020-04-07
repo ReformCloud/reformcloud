@@ -1,6 +1,7 @@
 package systems.reformcloud.reformcloud2.runner.reformscript.utils;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Collection;
 
 /**
@@ -13,7 +14,7 @@ public abstract class InterpreterVariable {
      *
      * @param plain The plain variable name which can get wrapped
      */
-    public InterpreterVariable(@Nonnull String plain) {
+    public InterpreterVariable(@NotNull String plain) {
         this.plain = plain.toLowerCase();
     }
 
@@ -22,7 +23,7 @@ public abstract class InterpreterVariable {
     /**
      * @return The wrapped name of the variable
      */
-    @Nonnull
+    @NotNull
     public String wrap() {
         return "_%_" + this.plain + "_%_";
     }
@@ -34,6 +35,6 @@ public abstract class InterpreterVariable {
      * @param fullLines  All lines of the script
      * @return The replaced string of the current variable
      */
-    @Nonnull
-    public abstract String unwrap(@Nonnull String cursorLine, @Nonnull Collection<String> fullLines);
+    @NotNull
+    public abstract String unwrap(@NotNull String cursorLine, @NotNull Collection<String> fullLines);
 }

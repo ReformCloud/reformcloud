@@ -1,5 +1,7 @@
 package systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.common.CommonHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.GlobalCommand;
@@ -9,8 +11,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.process.Player;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Trio;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
@@ -22,7 +22,7 @@ public final class CommandPlayers extends GlobalCommand {
     }
 
     @Override
-    public void describeCommandToSender(@Nonnull CommandSource source) {
+    public void describeCommandToSender(@NotNull CommandSource source) {
         source.sendMessages((
                 "players [list]               | Lists all connected players\n" +
                         "players <name | uuid> [info] | Shows information about a specific online player"
@@ -30,7 +30,7 @@ public final class CommandPlayers extends GlobalCommand {
     }
 
     @Override
-    public boolean handleCommand(@Nonnull CommandSource commandSource, @Nonnull String[] strings) {
+    public boolean handleCommand(@NotNull CommandSource commandSource, @NotNull String[] strings) {
         if (strings.length == 0) {
             this.describeCommandToSender(commandSource);
             return true;
@@ -39,15 +39,16 @@ public final class CommandPlayers extends GlobalCommand {
         if (strings[0].equalsIgnoreCase("list")) {
             commandSource.sendMessage("Online-Players: ");
             ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getAllProcesses().stream()
-                    .filter(e -> !e.getTemplate().isServer())
+                    .filter(e -> !e.getProcessDetail().getTemplate().isServer())
                     .map(e -> {
-                        for (Player onlinePlayer : e.getOnlinePlayers()) {
+                        for (Player onlinePlayer : e.getProcessPlayerManager().getOnlinePlayers()) {
                             return findPlayer(onlinePlayer.getUniqueID());
                         }
 
                         return null;
                     }).filter(Objects::nonNull).forEach(e -> commandSource.sendMessage(
-                    " > " + e.getThird().getName() + " on " + e.getFirst().getName() + "/" + e.getSecond().getName()
+                    " > " + e.getThird().getName() + " on " + e.getFirst().getProcessDetail().getName()
+                            + "/" + e.getSecond().getProcessDetail().getName()
             ));
             return true;
         }
@@ -66,7 +67,7 @@ public final class CommandPlayers extends GlobalCommand {
                 return true;
             }
 
-            Player subServerPlayer = trio.getFirst().getOnlinePlayers().stream().filter(e -> uniqueID == null
+            Player subServerPlayer = trio.getFirst().getProcessPlayerManager().getOnlinePlayers().stream().filter(e -> uniqueID == null
                     ? e.getName().equals(strings[0]) : e.getUniqueID().equals(uniqueID)).findAny().orElse(null);
             if (subServerPlayer == null) {
                 commandSource.sendMessage(LanguageManager.get("command-players-player-not-found", strings[0]));
@@ -76,9 +77,9 @@ public final class CommandPlayers extends GlobalCommand {
             AtomicReference<StringBuilder> stringBuilder = new AtomicReference<>(new StringBuilder());
             stringBuilder.get().append(" > Name               - ").append(trio.getThird().getName()).append("\n");
             stringBuilder.get().append(" > UUID               - ").append(trio.getThird().getUniqueID()).append("\n");
-            stringBuilder.get().append(" > Proxy              - ").append(trio.getSecond().getName()).append("\n");
+            stringBuilder.get().append(" > Proxy              - ").append(trio.getSecond().getProcessDetail().getName()).append("\n");
             stringBuilder.get().append(" > Connected (Proxy)  - ").append(CommonHelper.DATE_FORMAT.format(trio.getThird().getJoined())).append("\n");
-            stringBuilder.get().append(" > Server             - ").append(trio.getFirst().getName()).append("\n");
+            stringBuilder.get().append(" > Server             - ").append(trio.getFirst().getProcessDetail().getName()).append("\n");
             stringBuilder.get().append(" > Connected (Server) - ").append(CommonHelper.DATE_FORMAT.format(subServerPlayer.getJoined())).append("\n");
             commandSource.sendMessages(stringBuilder.get().toString().split("\n"));
             return true;
@@ -91,14 +92,14 @@ public final class CommandPlayers extends GlobalCommand {
     private Trio<ProcessInformation, ProcessInformation, Player> findPlayer(UUID uniqueID) {
         ProcessInformation information = getProcess(null, uniqueID, false);
         ProcessInformation proxy = getProcess(null, uniqueID, true);
-        return information == null || proxy == null ? null : new Trio<>(information, proxy, proxy.getOnlinePlayers()
+        return information == null || proxy == null ? null : new Trio<>(information, proxy, proxy.getProcessPlayerManager().getOnlinePlayers()
                 .stream().filter(e -> e.getUniqueID().equals(uniqueID)).findFirst().orElse(null));
     }
 
     private Trio<ProcessInformation, ProcessInformation, Player> findPlayer(String name) {
         ProcessInformation information = getProcess(name, null, false);
         ProcessInformation proxy = getProcess(name, null, true);
-        return information == null || proxy == null ? null : new Trio<>(information, proxy, proxy.getOnlinePlayers()
+        return information == null || proxy == null ? null : new Trio<>(information, proxy, proxy.getProcessPlayerManager().getOnlinePlayers()
                 .stream().filter(e -> e.getName().equals(name)).findFirst().orElse(null));
     }
 
@@ -109,8 +110,8 @@ public final class CommandPlayers extends GlobalCommand {
 
         return ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getAllProcesses()
                 .stream()
-                .filter(e -> proxy != e.getTemplate().isServer())
-                .filter(e -> name == null ? e.isPlayerOnline(uuid) : e.isPlayerOnline(name))
+                .filter(e -> proxy != e.getProcessDetail().getTemplate().isServer())
+                .filter(e -> name == null ? e.getProcessPlayerManager().isPlayerOnlineOnCurrentProcess(uuid) : e.getProcessPlayerManager().isPlayerOnlineOnCurrentProcess(name))
                 .findFirst()
                 .orElse(null);
     }

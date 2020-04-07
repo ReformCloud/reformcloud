@@ -1,5 +1,6 @@
 package systems.reformcloud.reformcloud2.web;
 
+import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorType;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.application.api.Application;
@@ -10,8 +11,6 @@ import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
 import systems.reformcloud.reformcloud2.web.commands.WebCommand;
 import systems.reformcloud.reformcloud2.web.tokens.TokenDatabase;
 import systems.reformcloud.reformcloud2.web.tokens.TokenWebServerAuth;
-
-import javax.annotation.Nullable;
 
 public class WebApplication extends Application {
 

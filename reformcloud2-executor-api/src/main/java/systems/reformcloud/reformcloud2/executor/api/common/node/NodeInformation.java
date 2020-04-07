@@ -1,6 +1,7 @@
 package systems.reformcloud.reformcloud2.executor.api.common.node;
 
 import com.google.gson.reflect.TypeToken;
+import systems.reformcloud.reformcloud2.executor.api.common.CommonHelper;
 
 import java.util.Collection;
 import java.util.Objects;
@@ -9,7 +10,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public class NodeInformation {
 
-    public static final TypeToken<NodeInformation> TYPE = new TypeToken<NodeInformation>() {};
+    public static final TypeToken<NodeInformation> TYPE = new TypeToken<NodeInformation>() {
+    };
 
     private final String name;
 
@@ -19,17 +21,20 @@ public class NodeInformation {
 
     private long usedMemory;
 
-    private final long maxMemory;
+    private long maxMemory;
+
+    private double systemCpuUsage;
 
     private final Collection<NodeProcess> startedProcesses;
 
     public NodeInformation(String name, UUID nodeUniqueID, long startupTime,
-                           long usedMemory, long maxMemory, Collection<NodeProcess> startedProcesses) {
+                           long usedMemory, long maxMemory, double systemCpuUsage, Collection<NodeProcess> startedProcesses) {
         this.name = name;
         this.nodeUniqueID = nodeUniqueID;
         this.startupTime = startupTime;
         this.usedMemory = usedMemory;
         this.maxMemory = maxMemory;
+        this.systemCpuUsage = systemCpuUsage;
         this.startedProcesses = new CopyOnWriteArrayList<>(startedProcesses);
     }
 
@@ -53,6 +58,10 @@ public class NodeInformation {
         return maxMemory;
     }
 
+    public double getSystemCpuUsage() {
+        return systemCpuUsage;
+    }
+
     public Collection<NodeProcess> getStartedProcesses() {
         return startedProcesses;
     }
@@ -63,6 +72,14 @@ public class NodeInformation {
 
     public void removeUsedMemory(int memory) {
         this.usedMemory -= memory;
+    }
+
+    public void setMaxMemory(long maxMemory) {
+        this.maxMemory = maxMemory;
+    }
+
+    public void update() {
+        this.systemCpuUsage = CommonHelper.cpuUsageSystem();
     }
 
     @Override

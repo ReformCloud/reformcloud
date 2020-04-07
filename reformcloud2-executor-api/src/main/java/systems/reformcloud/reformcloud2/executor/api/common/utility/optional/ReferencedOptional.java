@@ -1,7 +1,8 @@
 package systems.reformcloud.reformcloud2.executor.api.common.utility.optional;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.io.Serializable;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
@@ -18,12 +19,12 @@ public final class ReferencedOptional<T> implements Serializable {
 
     // =======================
 
-    @Nonnull
+    @NotNull
     public static <T> ReferencedOptional<T> empty() {
         return new ReferencedOptional<>();
     }
 
-    @Nonnull
+    @NotNull
     public static <T> ReferencedOptional<T> build(@Nullable T value) {
         return new ReferencedOptional<T>().update(value);
     }
@@ -32,7 +33,7 @@ public final class ReferencedOptional<T> implements Serializable {
 
     private final AtomicReference<T> reference = new AtomicReference<>();
 
-    @Nonnull
+    @NotNull
     public ReferencedOptional<T> update(@Nullable T newValue) {
         if (newValue != null) {
             reference.set(newValue);
@@ -46,7 +47,7 @@ public final class ReferencedOptional<T> implements Serializable {
         return orElse(null);
     }
 
-    public ReferencedOptional<T> ifPresent(@Nonnull Consumer<T> consumer) {
+    public ReferencedOptional<T> ifPresent(@NotNull Consumer<T> consumer) {
         T value = reference.get();
         if (value != null) {
             consumer.accept(value);
@@ -55,7 +56,7 @@ public final class ReferencedOptional<T> implements Serializable {
         return this;
     }
 
-    public ReferencedOptional<T> ifEmpty(@Nonnull Consumer<Void> consumer) {
+    public ReferencedOptional<T> ifEmpty(@NotNull Consumer<Void> consumer) {
         if (isEmpty()) {
             consumer.accept(null);
         }
@@ -73,7 +74,7 @@ public final class ReferencedOptional<T> implements Serializable {
         return value;
     }
 
-    public void orElseDo(@Nonnull Predicate<T> predicate, @Nonnull Runnable ifFalse, @Nonnull Consumer<T> or) {
+    public void orElseDo(@NotNull Predicate<T> predicate, @NotNull Runnable ifFalse, @NotNull Consumer<T> or) {
         T value = reference.get();
         if (!predicate.test(value)) {
             ifFalse.run();

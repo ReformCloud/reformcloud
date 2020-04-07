@@ -1,9 +1,8 @@
 package systems.reformcloud.reformcloud2.permissions;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.permissions.util.PermissionUtil;
 import systems.reformcloud.reformcloud2.permissions.util.basic.DefaultPermissionUtil;
-
-import javax.annotation.Nonnull;
 
 public final class PermissionAPI {
 
@@ -17,12 +16,12 @@ public final class PermissionAPI {
         this.permissionUtil = DefaultPermissionUtil.hello();
     }
 
-    @Nonnull
+    @NotNull
     public PermissionUtil getPermissionUtil() {
         return permissionUtil;
     }
 
-    @Nonnull
+    @NotNull
     public static PermissionAPI getInstance() {
         return instance;
     }

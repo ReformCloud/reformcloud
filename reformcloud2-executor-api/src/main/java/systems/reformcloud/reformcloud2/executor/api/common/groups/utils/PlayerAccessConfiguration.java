@@ -1,6 +1,7 @@
 package systems.reformcloud.reformcloud2.executor.api.common.groups.utils;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Objects;
 
 public final class PlayerAccessConfiguration {
@@ -37,7 +38,7 @@ public final class PlayerAccessConfiguration {
 
     private int maxPlayers;
 
-    @Nonnull
+    @NotNull
     public String getFullJoinPermission() {
         return fullJoinPermission == null ? "reformcloud.join.full" : fullJoinPermission;
     }
@@ -46,7 +47,7 @@ public final class PlayerAccessConfiguration {
         return maintenance;
     }
 
-    @Nonnull
+    @NotNull
     public String getMaintenanceJoinPermission() {
         return maintenanceJoinPermission == null ? "reformcloud.join.maintenance" : maintenanceJoinPermission;
     }
@@ -55,7 +56,7 @@ public final class PlayerAccessConfiguration {
         return joinOnlyPerPermission;
     }
 
-    @Nonnull
+    @NotNull
     public String getJoinPermission() {
         return joinPermission == null ? "reformcloud.custom.permission" : joinPermission;
     }

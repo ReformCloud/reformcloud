@@ -1,6 +1,7 @@
 package systems.reformcloud.reformcloud2.signs.application;
 
 import com.google.gson.reflect.TypeToken;
+import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.application.api.Application;
 import systems.reformcloud.reformcloud2.executor.api.common.application.updater.ApplicationUpdateRepository;
@@ -8,6 +9,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonCo
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.system.SystemHelper;
+import systems.reformcloud.reformcloud2.signs.application.listener.ProcessInclusionHandler;
 import systems.reformcloud.reformcloud2.signs.application.packets.in.PacketInCreateSign;
 import systems.reformcloud.reformcloud2.signs.application.packets.in.PacketInDeleteSign;
 import systems.reformcloud.reformcloud2.signs.application.packets.in.PacketInGetSignConfig;
@@ -18,7 +20,6 @@ import systems.reformcloud.reformcloud2.signs.util.SignSystemAdapter;
 import systems.reformcloud.reformcloud2.signs.util.sign.CloudSign;
 import systems.reformcloud.reformcloud2.signs.util.sign.config.SignConfig;
 
-import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -26,7 +27,19 @@ public class ReformCloudApplication extends Application {
 
     private static SignConfig signConfig;
 
+    private static ReformCloudApplication instance;
+
     private static final ApplicationUpdateRepository REPOSITORY = new SignsUpdater();
+
+    @Override
+    public void onInstallable() {
+        ExecutorAPI.getInstance().getEventManager().registerListener(new ProcessInclusionHandler());
+    }
+
+    @Override
+    public void onLoad() {
+        instance = this;
+    }
 
     @Override
     public void onEnable() {
@@ -69,6 +82,10 @@ public class ReformCloudApplication extends Application {
     }
 
     // ====
+
+    public static ReformCloudApplication getInstance() {
+        return instance;
+    }
 
     public static SignConfig getSignConfig() {
         return signConfig;

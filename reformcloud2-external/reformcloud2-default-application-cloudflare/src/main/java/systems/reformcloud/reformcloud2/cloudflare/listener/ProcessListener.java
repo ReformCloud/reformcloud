@@ -12,13 +12,12 @@ public final class ProcessListener {
 
     @Listener
     public void handle(final ProcessStartedEvent event) {
-        if (event.getProcessInformation().getTemplate().isServer()) {
+        if (event.getProcessInformation().getProcessDetail().getTemplate().isServer()) {
             return;
         }
 
         if (ExecutorAPI.getInstance().getType().equals(ExecutorType.NODE)
-                && (event.getProcessInformation().getNodeUniqueID() == null
-                || !event.getProcessInformation().getNodeUniqueID().equals(NodeExecutor.getInstance().getNodeConfig().getUniqueID()))) {
+                && !event.getProcessInformation().getProcessDetail().getParentUniqueID().equals(NodeExecutor.getInstance().getNodeConfig().getUniqueID())) {
             return;
         }
 

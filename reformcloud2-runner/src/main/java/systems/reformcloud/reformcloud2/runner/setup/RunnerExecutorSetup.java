@@ -1,8 +1,8 @@
 package systems.reformcloud.reformcloud2.runner.setup;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.runner.util.RunnerUtils;
 
-import javax.annotation.Nonnull;
 import java.io.Console;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -17,6 +17,9 @@ public final class RunnerExecutorSetup {
      * Executes the runner executor setup
      */
     public static void executeSetup() {
+        System.out.println("Please choose an executor: \"node\" (recommended), \"controller\", \"client\"");
+        System.out.println("For more information check out the README on GitHub: " + RunnerUtils.REPO_BASE_URL);
+
         String executor = readFromConsoleOrFromSystemProperties(
                 s -> RunnerUtils.AVAILABLE_EXECUTORS.contains(s.toLowerCase()),
                 s -> {
@@ -29,9 +32,9 @@ public final class RunnerExecutorSetup {
         );
     }
 
-    @Nonnull
-    private static String readFromConsoleOrFromSystemProperties(@Nonnull Predicate<String> predicate,
-                                                                @Nonnull Consumer<String> wrongInput) {
+    @NotNull
+    private static String readFromConsoleOrFromSystemProperties(@NotNull Predicate<String> predicate,
+                                                                @NotNull Consumer<String> wrongInput) {
         String property = System.getProperty("reformcloud.executor.type");
         if (property != null && predicate.test(property)) {
             return property;
@@ -47,7 +50,7 @@ public final class RunnerExecutorSetup {
         return s;
     }
 
-    private static int getIDFromType(@Nonnull String type) {
+    private static int getIDFromType(@NotNull String type) {
         if (type.equalsIgnoreCase("node")) {
             return 4;
         }

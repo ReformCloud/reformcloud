@@ -1,6 +1,8 @@
 package systems.reformcloud.reformcloud2.executor.node.config;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.CommonHelper;
+import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.MainGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
@@ -28,7 +30,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams.newCollection;
 
-public class NodeExecutorConfig {
+public final class NodeExecutorConfig {
 
     private static final Collection<Path> PATHS = newCollection(
             s -> Paths.get(s),
@@ -39,7 +41,6 @@ public class NodeExecutorConfig {
             "reformcloud/temp",
             "reformcloud/static",
             "reformcloud/templates",
-            "reformcloud/global/plugins",
             "reformcloud/files/.connection"
     );
 
@@ -71,6 +72,9 @@ public class NodeExecutorConfig {
             AtomicReference<String> nodeName = new AtomicReference<>();
             AtomicReference<String> networkAddress = new AtomicReference<>();
             AtomicInteger networkPort = new AtomicInteger();
+            AtomicInteger httpPort = new AtomicInteger();
+            AtomicBoolean runClusterSetup = new AtomicBoolean(false);
+            List<NodeConfig.NetworkAddress> clusterNodes = new ArrayList<>();
 
             setup.addQuestion(new DefaultSetupQuestion(
                     LanguageManager.get("node-setup-question-node-name"),
@@ -117,14 +121,7 @@ public class NodeExecutorConfig {
                             throw new RuntimeException(e);
                         }
 
-                        new JsonConfiguration().add("config", new NodeConfig(
-                                nodeName.get(),
-                                CommonHelper.calculateMaxMemory(),
-                                networkAddress.get(),
-                                Collections.singletonList(Collections.singletonMap(networkAddress.get(), networkPort.get())),
-                                Collections.singletonList(Collections.singletonMap(networkAddress.get(), integer)),
-                                Collections.emptyList()
-                        )).write(NodeConfig.PATH);
+                        httpPort.set(integer);
                     }
             )).addQuestion(new DefaultSetupQuestion(
                     LanguageManager.get("node-setup-question-connection-key"),
@@ -137,7 +134,30 @@ public class NodeExecutorConfig {
 
                         new JsonConfiguration().add("key", s).write("reformcloud/files/.connection/connection.json");
                     }
+            )).addQuestion(new DefaultSetupQuestion(
+                    LanguageManager.get("node-setup-in-cluster"),
+                    LanguageManager.get("node-setup-question-boolean"),
+                    s -> CommonHelper.booleanFromString(s) != null,
+                    s -> {
+                        if (s.equalsIgnoreCase("true")) {
+                            runClusterSetup.set(true);
+                        }
+                    }
             )).startSetup(NodeExecutor.getInstance().getLoggerBase());
+
+            if (runClusterSetup.get()) {
+                clusterNodes.addAll(this.runClusterSetup());
+            }
+
+            new JsonConfiguration().add("config", new NodeConfig(
+                    nodeName.get(),
+                    UUID.randomUUID(),
+                    CommonHelper.calculateMaxMemory(),
+                    networkAddress.get(),
+                    new ArrayList<>(Collections.singletonList(new NodeConfig.NetworkAddress(networkAddress.get(), networkPort.get()))),
+                    new ArrayList<>(Collections.singletonList(new NodeConfig.NetworkAddress(networkAddress.get(), httpPort.get()))),
+                    clusterNodes
+            )).write(NodeConfig.PATH);
 
             System.out.println(LanguageManager.get("general-setup-choose-default-installation"));
             GroupSetupHelper.printAvailable();
@@ -160,6 +180,7 @@ public class NodeExecutorConfig {
         }
 
         this.nodeConfig = JsonConfiguration.read(NodeConfig.PATH).get("config", NodeConfig.TYPE);
+        this.nodeConfig.tryTransform();
         this.ingameMessages = JsonConfiguration.read("reformcloud/configs/messages.json").get("messages", IngameMessages.TYPE);
         this.self = this.nodeConfig.prepare();
         this.connectionKey = JsonConfiguration.read("reformcloud/files/.connection/connection.json").getOrDefault("key", (String) null);
@@ -192,6 +213,10 @@ public class NodeExecutorConfig {
 
     public void handleProcessGroupDelete(ProcessGroup processGroup) {
         this.localSubGroupsRegistry.deleteKey(processGroup.getName());
+
+        ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcesses(processGroup.getName()).forEach(
+                e -> ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().stopProcess(e.getProcessDetail().getProcessUniqueID())
+        );
     }
 
     public void handleMainGroupDelete(MainGroup mainGroup) {
@@ -201,11 +226,67 @@ public class NodeExecutorConfig {
     public NodeConfig reload() {
         this.nodeConfig = JsonConfiguration.read(NodeConfig.PATH).get("config", NodeConfig.TYPE);
         this.ingameMessages = JsonConfiguration.read("reformcloud/configs/messages.json").get("messages", IngameMessages.TYPE);
-        this.self = this.nodeConfig.prepare();
+        this.self.setMaxMemory(this.nodeConfig.getMaxMemory());
         this.connectionKey = JsonConfiguration.read("reformcloud/files/.connection/connection.json").getOrDefault("key", (String) null);
         this.loadGroups();
 
         return this.nodeConfig;
+    }
+
+    @NotNull
+    private Collection<NodeConfig.NetworkAddress> runClusterSetup() {
+        this.setup.clear();
+
+        AtomicInteger nodeCount = new AtomicInteger(1);
+        this.setup.addQuestion(new DefaultSetupQuestion(
+                LanguageManager.get("node-cluster-setup-node-count"),
+                LanguageManager.get("node-setup-question-integer", 0, 100),
+                s -> {
+                    Integer integer = CommonHelper.fromString(s);
+                    return integer != null && integer > 0 && integer < 100;
+                },
+                s -> {
+                    Integer integer = CommonHelper.fromString(s);
+                    if (integer == null) {
+                        throw new IllegalStateException();
+                    }
+
+                    nodeCount.set(integer);
+                }
+        )).startSetup(NodeExecutor.getInstance().getLoggerBase());
+
+        AtomicReference<String> nodeHost = new AtomicReference<>();
+        Collection<NodeConfig.NetworkAddress> out = new ArrayList<>();
+
+        this.setup.clear();
+        this.setup.addQuestion(new DefaultSetupQuestion(
+                LanguageManager.get("node-cluster-setup-new-node-host"),
+                LanguageManager.get("node-setup-question-node-address-wrong"),
+                s -> {
+                    String ipAddress = CommonHelper.getIpAddress(s.trim());
+                    return ipAddress != null && out.stream().noneMatch(e -> e.getHost().equals(ipAddress));
+                },
+                s -> nodeHost.set(CommonHelper.getIpAddress(s.trim()))
+        )).addQuestion(new DefaultSetupQuestion(
+                LanguageManager.get("node-cluster-setup-new-node-port"),
+                LanguageManager.get("node-setup-question-integer", 0, 65535),
+                s -> CommonHelper.fromString(s) != null,
+                s -> {
+                    Integer integer = CommonHelper.fromString(s);
+                    if (integer == null) {
+                        throw new IllegalStateException();
+                    }
+
+                    out.add(new NodeConfig.NetworkAddress(nodeHost.get(), integer));
+                }
+        ));
+
+        for (int i = 1; i <= nodeCount.get(); i++) {
+            System.out.println(LanguageManager.get("node-cluster-setup-new-node", i));
+            this.setup.startSetup(NodeExecutor.getInstance().getLoggerBase());
+        }
+
+        return out;
     }
 
     private void createDirectories() {

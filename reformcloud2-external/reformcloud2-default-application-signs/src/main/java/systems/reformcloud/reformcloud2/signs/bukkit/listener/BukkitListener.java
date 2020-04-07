@@ -31,7 +31,7 @@ public class BukkitListener implements Listener {
                 return;
             }
 
-            connect(event.getPlayer(), cloudSign.getCurrentTarget().getName());
+            connect(event.getPlayer(), cloudSign.getCurrentTarget().getProcessDetail().getName());
         }
     }
 

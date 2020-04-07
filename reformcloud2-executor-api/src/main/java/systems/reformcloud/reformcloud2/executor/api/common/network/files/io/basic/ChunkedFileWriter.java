@@ -1,9 +1,9 @@
 package systems.reformcloud.reformcloud2.executor.api.common.network.files.io.basic;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.network.files.io.FileWriter;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.system.SystemHelper;
 
-import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
@@ -11,7 +11,7 @@ import java.nio.file.Path;
 
 public class ChunkedFileWriter implements FileWriter {
 
-    public ChunkedFileWriter(@Nonnull Path target) {
+    public ChunkedFileWriter(@NotNull Path target) {
         SystemHelper.deleteFile(target.toFile());
         SystemHelper.createFile(target);
 
@@ -22,14 +22,14 @@ public class ChunkedFileWriter implements FileWriter {
         }
     }
 
-    public ChunkedFileWriter(@Nonnull OutputStream outputStream) {
+    public ChunkedFileWriter(@NotNull OutputStream outputStream) {
         this.outputStream = outputStream;
     }
 
     private OutputStream outputStream;
 
     @Override
-    public void write(@Nonnull byte[] bytes) {
+    public void write(@NotNull byte[] bytes) {
         try {
             outputStream.write(bytes);
             outputStream.flush();

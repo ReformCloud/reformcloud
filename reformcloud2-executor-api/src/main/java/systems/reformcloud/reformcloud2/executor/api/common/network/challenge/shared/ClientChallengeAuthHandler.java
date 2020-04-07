@@ -1,13 +1,13 @@
 package systems.reformcloud.reformcloud2.executor.api.common.network.challenge.shared;
 
 import io.netty.channel.ChannelHandlerContext;
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.network.challenge.ChallengeAuthHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.challenge.security.ChallengeSecurity;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.JsonPacket;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 
-import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -29,7 +29,7 @@ public final class ClientChallengeAuthHandler implements ChallengeAuthHandler {
     private final Consumer<ChannelHandlerContext> channelHandlerContextConsumer;
 
     @Override
-    public boolean handle(@Nonnull ChannelHandlerContext channelHandlerContext, @Nonnull Packet input, @Nonnull String name) {
+    public boolean handle(@NotNull ChannelHandlerContext channelHandlerContext, @NotNull Packet input, @NotNull String name) {
         if (input.packetID() == -512) {
             // challenge from server
             byte[] bytes = input.content().get("challenge", byte[].class);
@@ -65,7 +65,7 @@ public final class ClientChallengeAuthHandler implements ChallengeAuthHandler {
     }
 
     @Override
-    public void handleChannelActive(@Nonnull ChannelHandlerContext channelHandlerContext) {
+    public void handleChannelActive(@NotNull ChannelHandlerContext channelHandlerContext) {
         channelHandlerContext.channel().writeAndFlush(new JsonPacket(
                 -512, new JsonConfiguration().add("name", this.name)
         )).syncUninterruptibly();

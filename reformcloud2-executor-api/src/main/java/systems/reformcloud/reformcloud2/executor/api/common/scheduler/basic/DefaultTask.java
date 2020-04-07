@@ -1,8 +1,8 @@
 package systems.reformcloud.reformcloud2.executor.api.common.scheduler.basic;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.scheduler.ScheduledTask;
 
-import javax.annotation.Nonnull;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -27,11 +27,11 @@ public final class DefaultTask implements ScheduledTask {
     private final Runnable task;
 
     @Override
-    public int getID() {
+    public int getId() {
         return id;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Runnable getTask() {
         return task;

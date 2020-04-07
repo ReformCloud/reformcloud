@@ -1,9 +1,9 @@
 package systems.reformcloud.reformcloud2.executor.api.common.registry;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.function.Function;
 
@@ -20,8 +20,8 @@ public interface Registry {
      * @param <T>     The type of the object
      * @return The object which should get inserted or the value which is already inserted
      */
-    @Nonnull
-    <T> T createKey(@Nonnull String keyName, @Nonnull T t);
+    @NotNull
+    <T> T createKey(@NotNull String keyName, @NotNull T t);
 
     /**
      * Gets a key from the registry
@@ -31,14 +31,14 @@ public interface Registry {
      * @return The key in the registry or {@code null}
      */
     @Nullable
-    <T> T getKey(@Nonnull String keyName);
+    <T> T getKey(@NotNull String keyName);
 
     /**
      * Deletes a key from the registry
      *
      * @param key The key which should get deleted
      */
-    void deleteKey(@Nonnull String key);
+    void deleteKey(@NotNull String key);
 
     /**
      * Updates a key in the registry
@@ -49,7 +49,7 @@ public interface Registry {
      * @return The value which should get updated
      */
     @Nullable
-    <T> T updateKey(@Nonnull String key, @Nonnull T newValue);
+    <T> T updateKey(@NotNull String key, @NotNull T newValue);
 
     /**
      * Reads all keys from the registry
@@ -58,6 +58,6 @@ public interface Registry {
      * @param <T>      The type of the object
      * @return A collection of all objects in the database
      */
-    @Nonnull
-    <T> Collection<T> readKeys(@Nonnull Function<JsonConfiguration, T> function);
+    @NotNull
+    <T> Collection<T> readKeys(@NotNull Function<JsonConfiguration, T> function);
 }

@@ -1,5 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.controller.network.packets.in.query;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.basic.ExternalAPIImplementation;
 import systems.reformcloud.reformcloud2.executor.api.common.application.basic.DefaultLoadedApplication;
@@ -10,7 +11,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.JsonP
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 
-import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 
 public final class ControllerQueryInGetApplications extends DefaultJsonNetworkHandler {
@@ -21,7 +21,7 @@ public final class ControllerQueryInGetApplications extends DefaultJsonNetworkHa
     }
 
     @Override
-    public void handlePacket(@Nonnull PacketSender packetSender, @Nonnull Packet packet, @Nonnull Consumer<Packet> responses) {
+    public void handlePacket(@NotNull PacketSender packetSender, @NotNull Packet packet, @NotNull Consumer<Packet> responses) {
         responses.accept(new JsonPacket(-1, convert()));
     }
 

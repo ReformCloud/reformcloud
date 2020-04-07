@@ -1,13 +1,13 @@
 package systems.reformcloud.reformcloud2.executor.api.common.scheduler;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.scheduler.basic.DefaultTaskScheduler;
 
-import javax.annotation.Nonnull;
 import java.util.concurrent.TimeUnit;
 
 public interface TaskScheduler {
 
-    @Nonnull
+    @NotNull
     TaskScheduler INSTANCE = new DefaultTaskScheduler();
 
     /**
@@ -22,7 +22,7 @@ public interface TaskScheduler {
      *
      * @param scheduledTask The task which should get cancelled
      */
-    void cancel(@Nonnull ScheduledTask scheduledTask);
+    void cancel(@NotNull ScheduledTask scheduledTask);
 
     /**
      * Runs a task async
@@ -30,8 +30,8 @@ public interface TaskScheduler {
      * @param runnable The runnable which should get run
      * @return The created task
      */
-    @Nonnull
-    ScheduledTask runAsync(@Nonnull Runnable runnable);
+    @NotNull
+    ScheduledTask runAsync(@NotNull Runnable runnable);
 
     /**
      * Schedules a task
@@ -41,8 +41,8 @@ public interface TaskScheduler {
      * @param timeUnit The {@link TimeUnit} of the delay
      * @return The created task
      */
-    @Nonnull
-    ScheduledTask schedule(@Nonnull Runnable runnable, long delay, @Nonnull TimeUnit timeUnit);
+    @NotNull
+    ScheduledTask schedule(@NotNull Runnable runnable, long delay, @NotNull TimeUnit timeUnit);
 
     /**
      * Schedules a task
@@ -53,6 +53,6 @@ public interface TaskScheduler {
      * @param timeUnit The {@link TimeUnit} of the delay
      * @return The created task
      */
-    @Nonnull
-    ScheduledTask schedule(@Nonnull Runnable runnable, long delay, long period, @Nonnull TimeUnit timeUnit);
+    @NotNull
+    ScheduledTask schedule(@NotNull Runnable runnable, long delay, long period, @NotNull TimeUnit timeUnit);
 }

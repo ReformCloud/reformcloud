@@ -1,6 +1,7 @@
 package systems.reformcloud.reformcloud2.executor.api.common.network.channel.shared;
 
 import io.netty.channel.ChannelHandlerContext;
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.base.Conditions;
 import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
 import systems.reformcloud.reformcloud2.executor.api.common.network.NetworkUtil;
@@ -12,7 +13,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packe
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.WrappedByteInput;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.handler.PacketHandler;
 
-import javax.annotation.Nonnull;
 import java.io.ObjectInputStream;
 import java.net.InetSocketAddress;
 
@@ -26,20 +26,20 @@ public abstract class SharedNetworkChannelReader implements NetworkChannelReader
 
     protected PacketSender packetSender;
 
-    @Nonnull
+    @NotNull
     @Override
     public PacketHandler getPacketHandler() {
         return this.packetHandler;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public PacketSender sender() {
         return this.packetSender;
     }
 
     @Override
-    public void setChannelHandlerContext(@Nonnull ChannelHandlerContext channelHandlerContext, @Nonnull String name) {
+    public void setChannelHandlerContext(@NotNull ChannelHandlerContext channelHandlerContext, @NotNull String name) {
         Conditions.isTrue(this.packetSender == null, "Cannot redefine packet sender");
         this.packetSender = new DefaultPacketSender(channelHandlerContext);
         this.packetSender.setName(name);

@@ -1,5 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.api.common.commands.basic;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.manager.CommandManager;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.permission.Permission;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.permission.PermissionCheck;
@@ -8,7 +9,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.commands.permission.
 import systems.reformcloud.reformcloud2.executor.api.common.commands.source.CommandSource;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.coloured.Colours;
 
-import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -17,13 +17,13 @@ public final class ConsoleCommandSource implements CommandSource {
     private static final PermissionCheck CONSOLE_COMMAND_CHECK = new ConsoleCommandCheck();
 
     private static final Collection<Permission> PERMISSIONS = Collections.singletonList(new Permission() {
-        @Nonnull
+        @NotNull
         @Override
         public String permission() {
             return "*";
         }
 
-        @Nonnull
+        @NotNull
         @Override
         public PermissionResult defaultResult() {
             return PermissionResult.ALLOWED;
@@ -37,17 +37,17 @@ public final class ConsoleCommandSource implements CommandSource {
     private final CommandManager commandManager;
 
     @Override
-    public boolean hasPermission(@Nonnull String permission) {
+    public boolean hasPermission(@NotNull String permission) {
         return true;
     }
 
     @Override
-    public boolean isPermissionSet(@Nonnull String permission) {
+    public boolean isPermissionSet(@NotNull String permission) {
         return true;
     }
 
     @Override
-    public boolean hasPermission(@Nonnull Permission permission) {
+    public boolean hasPermission(@NotNull Permission permission) {
         if (hasPermission(permission.permission())) {
             return true;
         }
@@ -56,7 +56,7 @@ public final class ConsoleCommandSource implements CommandSource {
     }
 
     @Override
-    public boolean isPermissionSet(@Nonnull Permission permission) {
+    public boolean isPermissionSet(@NotNull Permission permission) {
         if (isPermissionSet(permission.permission())) {
             return true;
         }
@@ -64,7 +64,7 @@ public final class ConsoleCommandSource implements CommandSource {
         return permission.defaultResult().isAllowed();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Collection<Permission> getEffectivePermissions() {
         return PERMISSIONS;
@@ -74,43 +74,43 @@ public final class ConsoleCommandSource implements CommandSource {
     public void recalculatePermissions() {
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public PermissionCheck check() {
         return CONSOLE_COMMAND_CHECK;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String getName() {
         return "ReformCloudConsole";
     }
 
     @Override
-    public void sendMessage(@Nonnull String message) {
+    public void sendMessage(@NotNull String message) {
         System.out.println(message);
     }
 
     @Override
-    public void sendRawMessage(@Nonnull String message) {
+    public void sendRawMessage(@NotNull String message) {
         System.out.println(Colours.stripColor(message));
     }
 
     @Override
-    public void sendMessages(@Nonnull String[] messages) {
+    public void sendMessages(@NotNull String[] messages) {
         for (String message : messages) {
             sendMessage(message);
         }
     }
 
     @Override
-    public void sendRawMessages(@Nonnull String[] messages) {
+    public void sendRawMessages(@NotNull String[] messages) {
         for (String message : messages) {
             sendRawMessage(message);
         }
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public CommandManager commandManager() {
         return commandManager;
@@ -118,13 +118,13 @@ public final class ConsoleCommandSource implements CommandSource {
 
     private static class ConsoleCommandCheck implements PermissionCheck {
 
-        @Nonnull
+        @NotNull
         @Override
         public PermissionResult checkPermission(PermissionHolder permissionHolder, Permission permission) {
             return PermissionResult.ALLOWED;
         }
 
-        @Nonnull
+        @NotNull
         @Override
         public PermissionResult checkPermission(PermissionHolder permissionHolder, String permission) {
             return PermissionResult.ALLOWED;

@@ -2,6 +2,7 @@ package systems.reformcloud.reformcloud2.backends.sftp;
 
 import com.google.gson.reflect.TypeToken;
 import com.jcraft.jsch.*;
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.backend.TemplateBackend;
@@ -12,7 +13,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.utility.system.Syste
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.defaults.DefaultTask;
 
-import javax.annotation.Nonnull;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -92,7 +92,7 @@ public final class SFTPTemplateBackend implements TemplateBackend {
     }
 
     @Override
-    public boolean existsTemplate(@Nonnull String group, @Nonnull String template) {
+    public boolean existsTemplate(@NotNull String group, @NotNull String template) {
         if (isDisconnected()) {
             return false;
         }
@@ -106,7 +106,7 @@ public final class SFTPTemplateBackend implements TemplateBackend {
     }
 
     @Override
-    public void createTemplate(@Nonnull String group, @Nonnull String template) {
+    public void createTemplate(@NotNull String group, @NotNull String template) {
         if (isDisconnected()) {
             return;
         }
@@ -114,9 +114,9 @@ public final class SFTPTemplateBackend implements TemplateBackend {
         future(() -> this.makeDirectory(this.config.getBaseDirectory() + group + "/" + template));
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public Task<Void> loadTemplate(@Nonnull String group, @Nonnull String template, @Nonnull Path target) {
+    public Task<Void> loadTemplate(@NotNull String group, @NotNull String template, @NotNull Path target) {
         if (isDisconnected()) {
             return Task.completedTask(null);
         }
@@ -155,16 +155,16 @@ public final class SFTPTemplateBackend implements TemplateBackend {
         }
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public Task<Void> loadGlobalTemplates(@Nonnull ProcessGroup group, @Nonnull Path target) {
+    public Task<Void> loadGlobalTemplates(@NotNull ProcessGroup group, @NotNull Path target) {
         return future(() -> Streams.allOf(group.getTemplates(), e -> e.getBackend().equals(getName())
                 && e.isGlobal()).forEach(e -> this.loadTemplate(group.getName(), e.getName(), target)));
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public Task<Void> loadPath(@Nonnull String path, @Nonnull Path target) {
+    public Task<Void> loadPath(@NotNull String path, @NotNull Path target) {
         if (isDisconnected()) {
             return Task.completedTask(null);
         }
@@ -173,14 +173,19 @@ public final class SFTPTemplateBackend implements TemplateBackend {
     }
 
     @Override
-    public void deployTemplate(@Nonnull String group, @Nonnull String template, @Nonnull Path current) {
+    public void deployTemplate(@NotNull String group, @NotNull String template, @NotNull Path current, @NotNull Collection<String> collection) {
         if (isDisconnected()) {
             return;
         }
 
         future(() -> {
             try {
-                File[] files = current.toFile().listFiles();
+                File[] files = current.toFile().listFiles(e -> {
+                    String full = e.getAbsolutePath()
+                            .replaceFirst(current.toFile().getAbsolutePath(), "")
+                            .replaceFirst("\\\\", "");
+                    return !collection.contains(full);
+                });
                 if (files == null || files.length == 0) {
                     return;
                 }
@@ -213,7 +218,7 @@ public final class SFTPTemplateBackend implements TemplateBackend {
     }
 
     @Override
-    public void deleteTemplate(@Nonnull String group, @Nonnull String template) {
+    public void deleteTemplate(@NotNull String group, @NotNull String template) {
         if (isDisconnected()) {
             return;
         }
@@ -281,7 +286,7 @@ public final class SFTPTemplateBackend implements TemplateBackend {
         return entries;
     }
 
-    private static Task<Void> future(@Nonnull Runnable runnable) {
+    private static Task<Void> future(@NotNull Runnable runnable) {
         Task<Void> completableFuture = new DefaultTask<>();
         Runnable newRunnable = () -> {
             runnable.run();
@@ -312,7 +317,7 @@ public final class SFTPTemplateBackend implements TemplateBackend {
         }
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String getName() {
         return "SFTP";

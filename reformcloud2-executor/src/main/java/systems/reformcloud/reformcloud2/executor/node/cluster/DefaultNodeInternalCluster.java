@@ -1,8 +1,8 @@
 package systems.reformcloud.reformcloud2.executor.node.cluster;
 
-import systems.reformcloud.reformcloud2.executor.api.common.base.Conditions;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
-import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Template;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
@@ -12,13 +12,14 @@ import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams
 import systems.reformcloud.reformcloud2.executor.api.node.cluster.ClusterManager;
 import systems.reformcloud.reformcloud2.executor.api.node.cluster.InternalNetworkCluster;
 
+import javax.annotation.Nonnull;
 import java.util.Collection;
-import java.util.Objects;
+import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
-public class DefaultNodeInternalCluster implements InternalNetworkCluster {
+public final class DefaultNodeInternalCluster implements InternalNetworkCluster {
 
     private final Collection<NodeInformation> connectedNodes = new CopyOnWriteArrayList<>();
 
@@ -34,109 +35,120 @@ public class DefaultNodeInternalCluster implements InternalNetworkCluster {
 
     private NodeInformation self;
 
+    @Nonnull
     @Override
     public ClusterManager getClusterManager() {
-        return clusterManager;
+        return this.clusterManager;
     }
 
     @Override
     public NodeInformation getHeadNode() {
-        return clusterManager.getHeadNode();
+        return this.clusterManager.getHeadNode();
     }
 
+    @Nonnull
     @Override
     public NodeInformation getSelfNode() {
-        return self;
+        return this.self;
     }
 
     @Override
-    public void updateSelf(NodeInformation self) {
-        Conditions.isTrue(self != null);
+    public void updateSelf(@Nonnull NodeInformation self) {
         this.self = self;
     }
 
     @Override
-    public NodeInformation getNode(String name) {
-        return Streams.filterToReference(connectedNodes, e -> e.getName().equals(name)).orNothing();
+    public NodeInformation getNode(@Nonnull String name) {
+        return Streams.filter(this.connectedNodes, e -> e.getName().equals(name));
     }
 
+    @Nullable
+    @Override
+    public NodeInformation getNode(@NotNull UUID nodeUniqueID) {
+        return Streams.filter(this.connectedNodes, e -> e.getNodeUniqueID().equals(nodeUniqueID));
+    }
+
+    @Nonnull
     @Override
     public Collection<NodeInformation> getConnectedNodes() {
-        return connectedNodes;
+        return this.connectedNodes;
     }
 
     @Override
-    public void handleNodeUpdate(NodeInformation nodeInformation) {
-        Streams.filterToReference(connectedNodes, e -> e.getNodeUniqueID().equals(nodeInformation.getNodeUniqueID())).ifPresent(e -> {
-            this.connectedNodes.add(nodeInformation);
-            this.connectedNodes.remove(e);
-        });
+    public void handleNodeUpdate(@Nonnull NodeInformation nodeInformation) {
+        Streams
+                .filterToReference(connectedNodes, e -> e.getNodeUniqueID().equals(nodeInformation.getNodeUniqueID()))
+                .ifPresent(e -> {
+                    this.connectedNodes.remove(e);
+                    this.connectedNodes.add(nodeInformation);
+                });
     }
 
     @Override
-    public void publishToHeadNode(Packet packet) {
-        if (getHeadNode() == null) {
+    public void publishToHeadNode(@Nonnull Packet packet) {
+        if (this.getHeadNode() == null) {
             return;
         }
 
-        DefaultChannelManager.INSTANCE.get(getHeadNode().getName()).ifPresent(sender -> sender.sendPacket(packet));
+        DefaultChannelManager.INSTANCE.get(this.getHeadNode().getName()).ifPresent(sender -> sender.sendPacket(packet));
     }
 
     @Override
-    public void broadCastToCluster(Packet packet) {
-        getConnectedNodes()
-                .stream()
-                .map(e -> DefaultChannelManager.INSTANCE.get(e.getName()).orNothing())
-                .filter(Objects::nonNull)
-                .forEach(e -> e.sendPacket(packet));
-    }
-
-    @Override
-    public <T> T sendQueryToNode(String node, Packet query, Function<Packet, T> responseHandler) {
+    public <T> T sendQueryToNode(@Nonnull String node, @Nonnull Packet query, @Nonnull Function<Packet, T> responseHandler) {
         PacketSender sender = DefaultChannelManager.INSTANCE.get(node).orNothing();
         if (sender == null) {
             return null;
         }
 
-        Packet result = packetHandler.getQueryHandler().sendQueryAsync(sender, query).getTask().getUninterruptedly();
+        Packet result = this.packetHandler.getQueryHandler().sendQueryAsync(sender, query).getTask().getUninterruptedly();
         return result != null ? responseHandler.apply(result) : null;
     }
 
     @Override
-    public NodeInformation findBestNodeForStartup(ProcessGroup group, Template template) {
-        AtomicReference<NodeInformation> result = new AtomicReference<>();
-        if (self.getUsedMemory() + template.getRuntimeConfiguration().getMaxMemory() < self.getMaxMemory()) {
-            result.set(self);
-        }
-
-        getConnectedNodes().forEach(e -> {
-            if (!group.getStartupConfiguration().isSearchBestClientAlone()
-                    && !group.getStartupConfiguration().getUseOnlyTheseClients().contains(e.getName())) {
-                return;
+    public NodeInformation findBestNodeForStartup(@Nonnull ProcessGroup group, int maxMemory) {
+        NodeInformation result = null;
+        for (NodeInformation validNode : this.findValidNodes(group)) {
+            long memoryAfterStart = validNode.getUsedMemory() + maxMemory;
+            if (memoryAfterStart > validNode.getMaxMemory()) {
+                continue;
             }
 
-            if (result.get() == null) {
-                if (e.getUsedMemory() + template.getRuntimeConfiguration().getMaxMemory() < e.getMaxMemory()) {
-                    result.set(e);
+            if (result == null) {
+                result = validNode;
+                continue;
+            }
+
+            if (validNode.getSystemCpuUsage() == -1 || result.getSystemCpuUsage() == -1) {
+                // do not check system cpu if it's not given
+                if (result.getUsedMemory() > validNode.getUsedMemory()) {
+                    result = validNode;
                 }
 
-                return;
+                continue;
             }
 
-            NodeInformation current = result.get();
-            long memoryOnCurrentNode = calcMem(current.getUsedMemory(), template);
-            long memoryOnNewNode = calcMem(e.getUsedMemory(), template);
-
-            if (memoryOnNewNode <= e.getMaxMemory() && memoryOnCurrentNode > memoryOnNewNode
-                    && memoryOnCurrentNode <= current.getMaxMemory()) {
-                result.set(e);
+            if (result.getSystemCpuUsage() > validNode.getSystemCpuUsage()
+                    || result.getUsedMemory() > validNode.getUsedMemory()) {
+                result = validNode;
             }
-        });
+        }
 
-        return result.get();
+        return result;
     }
 
-    private long calcMem(long used, Template template) {
-        return used + template.getRuntimeConfiguration().getMaxMemory();
+    @NotNull
+    private Collection<NodeInformation> findValidNodes(@NotNull ProcessGroup group) {
+        Collection<NodeInformation> validClusterNodes = this.connectedNodes
+                .stream()
+                .filter(e -> DefaultChannelManager.INSTANCE.get(e.getName()).isPresent())
+                .filter(e -> group.getStartupConfiguration().isSearchBestClientAlone()
+                        || group.getStartupConfiguration().getUseOnlyTheseClients().contains(e.getName()))
+                .collect(Collectors.toList());
+        if (group.getStartupConfiguration().isSearchBestClientAlone()
+                || group.getStartupConfiguration().getUseOnlyTheseClients().contains(this.getSelfNode().getName())) {
+            validClusterNodes.add(this.getSelfNode());
+        }
+
+        return validClusterNodes;
     }
 }

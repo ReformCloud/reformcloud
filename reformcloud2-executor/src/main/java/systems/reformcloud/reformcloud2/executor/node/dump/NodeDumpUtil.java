@@ -10,7 +10,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 
-public class NodeDumpUtil implements DumpUtil {
+public final class NodeDumpUtil implements DumpUtil {
 
     private static final DumpUtil PARENT = new DefaultDumpUtil();
 
@@ -32,10 +32,10 @@ public class NodeDumpUtil implements DumpUtil {
                 ProcessInformation processInformation = e.getProcessInformation();
                 stringBuilder
                         .append("Name: ")
-                        .append(processInformation.getName())
+                        .append(processInformation.getProcessDetail().getName())
                         .append("\n")
                         .append("UniqueID: ")
-                        .append(processInformation.getProcessUniqueID())
+                        .append(processInformation.getProcessDetail().getProcessUniqueID())
                         .append("\n")
                         .append("Startup Time: ")
                         .append(e.getStartupTime() == -1 ? "unknown" : DATE_FORMAT.format(e.getStartupTime()));

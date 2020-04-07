@@ -1,11 +1,11 @@
 package systems.reformcloud.reformcloud2.executor.api.common.network.packet.defaults;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.query.QueryHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.query.QueryRequest;
 
-import javax.annotation.Nonnull;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -24,7 +24,7 @@ public final class DefaultQueryHandler implements QueryHandler {
         return waiting.containsKey(uuid);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public QueryRequest<Packet> sendQueryAsync(PacketSender sender, Packet packet) {
         this.convertToQuery(packet, UUID.randomUUID());
@@ -34,7 +34,7 @@ public final class DefaultQueryHandler implements QueryHandler {
         return queryRequest;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Packet convertToQuery(Packet packet, UUID uuid) {
         packet.setQueryID(uuid);

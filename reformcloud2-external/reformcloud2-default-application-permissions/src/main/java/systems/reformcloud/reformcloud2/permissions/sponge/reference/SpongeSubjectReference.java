@@ -1,19 +1,19 @@
 package systems.reformcloud.reformcloud2.permissions.sponge.reference;
 
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.service.permission.PermissionService;
 import org.spongepowered.api.service.permission.Subject;
 import org.spongepowered.api.service.permission.SubjectCollection;
 import org.spongepowered.api.service.permission.SubjectReference;
 
-import javax.annotation.Nonnull;
 import java.util.concurrent.CompletableFuture;
 
 public class SpongeSubjectReference implements SubjectReference {
 
     public SpongeSubjectReference(
-            @Nonnull PermissionService service,
-            @Nonnull String collection,
-            @Nonnull String id
+            @NotNull PermissionService service,
+            @NotNull String collection,
+            @NotNull String id
     ) {
         this.collection = collection;
         this.id = id;
@@ -29,19 +29,19 @@ public class SpongeSubjectReference implements SubjectReference {
     private Subject cache;
 
     @Override
-    @Nonnull
+    @NotNull
     public String getCollectionIdentifier() {
         return collection;
     }
 
     @Override
-    @Nonnull
+    @NotNull
     public String getSubjectIdentifier() {
         return id;
     }
 
     @Override
-    @Nonnull
+    @NotNull
     public CompletableFuture<Subject> resolve() {
         if (cache == null) {
             SubjectCollection subjectCollection = service.getCollection(collection).orElseThrow(() -> new IllegalArgumentException("Collection not loaded"));

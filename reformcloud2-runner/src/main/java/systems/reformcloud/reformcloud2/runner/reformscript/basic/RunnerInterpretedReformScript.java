@@ -1,23 +1,23 @@
 package systems.reformcloud.reformcloud2.runner.reformscript.basic;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.runner.reformscript.InterpretedReformScript;
 import systems.reformcloud.reformcloud2.runner.reformscript.ReformScriptInterpreter;
 import systems.reformcloud.reformcloud2.runner.reformscript.utils.InterpreterCommand;
 import systems.reformcloud.reformcloud2.runner.reformscript.utils.InterpreterTask;
 import systems.reformcloud.reformcloud2.runner.util.RunnerUtils;
 
-import javax.annotation.Nonnull;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Map;
 
 public final class RunnerInterpretedReformScript implements InterpretedReformScript {
 
-    RunnerInterpretedReformScript(@Nonnull ReformScriptInterpreter parent,
-                                  @Nonnull Path file,
-                                  @Nonnull Collection<String> allLines,
-                                  @Nonnull Collection<InterpreterTask> tasks,
-                                  @Nonnull Map<String, Map.Entry<Integer, InterpreterCommand>> commandsPerLine) {
+    RunnerInterpretedReformScript(@NotNull ReformScriptInterpreter parent,
+                                  @NotNull Path file,
+                                  @NotNull Collection<String> allLines,
+                                  @NotNull Collection<InterpreterTask> tasks,
+                                  @NotNull Map<String, Map.Entry<Integer, InterpreterCommand>> commandsPerLine) {
         this.parent = parent;
         this.file = file;
         this.allLines = allLines;
@@ -35,19 +35,19 @@ public final class RunnerInterpretedReformScript implements InterpretedReformScr
 
     private final Map<String, Map.Entry<Integer, InterpreterCommand>> commandsPerLine;
 
-    @Nonnull
+    @NotNull
     @Override
     public ReformScriptInterpreter getInterpreter() {
         return this.parent;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Collection<InterpreterTask> getAllTasks() {
         return this.tasks;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Path getScriptPath() {
         return this.file;

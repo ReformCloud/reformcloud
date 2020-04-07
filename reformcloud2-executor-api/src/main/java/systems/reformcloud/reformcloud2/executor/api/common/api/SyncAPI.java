@@ -1,5 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.api.common.api;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.applications.ApplicationSyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.console.ConsoleSyncAPI;
@@ -9,8 +10,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.api.messaging.Messag
 import systems.reformcloud.reformcloud2.executor.api.common.api.player.PlayerSyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.plugins.PluginSyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.process.ProcessSyncAPI;
-
-import javax.annotation.Nonnull;
 
 /**
  * This class is representing the wrapper for all sync api handler
@@ -22,48 +21,48 @@ public interface SyncAPI {
     /**
      * @return The current process sync api instance
      */
-    @Nonnull
+    @NotNull
     ProcessSyncAPI getProcessSyncAPI();
 
     /**
      * @return The current groups sync api instance
      */
-    @Nonnull
+    @NotNull
     GroupSyncAPI getGroupSyncAPI();
 
     /**
      * @return The current application sync api instance
      */
-    @Nonnull
+    @NotNull
     ApplicationSyncAPI getApplicationSyncAPI();
 
     /**
      * @return The current console sync api instance
      */
-    @Nonnull
+    @NotNull
     ConsoleSyncAPI getConsoleSyncAPI();
 
     /**
      * @return The current player sync api instance
      */
-    @Nonnull
+    @NotNull
     PlayerSyncAPI getPlayerSyncAPI();
 
     /**
      * @return The current plugins sync api instance
      */
-    @Nonnull
+    @NotNull
     PluginSyncAPI getPluginSyncAPI();
 
     /**
      * @return The current database sync api instance
      */
-    @Nonnull
+    @NotNull
     DatabaseSyncAPI getDatabaseSyncAPI();
 
     /**
      * @return The current messaging sync api instance
      */
-    @Nonnull
+    @NotNull
     MessageSyncAPI getMessageSyncAPI();
 }

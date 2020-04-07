@@ -1,8 +1,7 @@
 package systems.reformcloud.reformcloud2.executor.api.common.application.updater;
 
+import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.name.Nameable;
-
-import javax.annotation.Nullable;
 
 public interface ApplicationUpdateRepository extends Nameable {
 

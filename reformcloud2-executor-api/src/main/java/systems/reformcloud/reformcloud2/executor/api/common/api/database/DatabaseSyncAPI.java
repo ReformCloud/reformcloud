@@ -1,9 +1,9 @@
 package systems.reformcloud.reformcloud2.executor.api.common.api.database;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.function.Function;
 
 public interface DatabaseSyncAPI {
@@ -17,7 +17,7 @@ public interface DatabaseSyncAPI {
      * @return The json config or {@code null} if the entry does not exists
      */
     @Nullable
-    JsonConfiguration find(@Nonnull String table, @Nonnull String key, @Nullable String identifier);
+    JsonConfiguration find(@NotNull String table, @NotNull String key, @Nullable String identifier);
 
     /**
      * Tries to find an object in the database
@@ -31,10 +31,10 @@ public interface DatabaseSyncAPI {
      */
     @Nullable
     <T> T find(
-            @Nonnull String table,
-            @Nonnull String key,
+            @NotNull String table,
+            @NotNull String key,
             @Nullable String identifier,
-            @Nonnull Function<JsonConfiguration, T> function
+            @NotNull Function<JsonConfiguration, T> function
     );
 
     /**
@@ -45,7 +45,7 @@ public interface DatabaseSyncAPI {
      * @param identifier The identifier of the entry
      * @param data       The json config which should be inserted
      */
-    void insert(@Nonnull String table, @Nonnull String key, @Nullable String identifier, @Nonnull JsonConfiguration data);
+    void insert(@NotNull String table, @NotNull String key, @Nullable String identifier, @NotNull JsonConfiguration data);
 
     /**
      * Updates a json config in the database
@@ -55,7 +55,7 @@ public interface DatabaseSyncAPI {
      * @param newData The new value of the entry
      * @return {@code true} if the config got updated or {@code false}
      */
-    boolean update(@Nonnull String table, @Nonnull String key, @Nonnull JsonConfiguration newData);
+    boolean update(@NotNull String table, @NotNull String key, @NotNull JsonConfiguration newData);
 
     /**
      * Updates a json config in the database
@@ -65,7 +65,7 @@ public interface DatabaseSyncAPI {
      * @param newData    The new value of the entry
      * @return {@code true} if the config got updated or {@code false}
      */
-    boolean updateIfAbsent(@Nonnull String table, @Nonnull String identifier, @Nonnull JsonConfiguration newData);
+    boolean updateIfAbsent(@NotNull String table, @NotNull String identifier, @NotNull JsonConfiguration newData);
 
     /**
      * Removes an json config out of the database
@@ -73,7 +73,7 @@ public interface DatabaseSyncAPI {
      * @param table The table in which the config is
      * @param key   The key of the config
      */
-    void remove(@Nonnull String table, @Nonnull String key);
+    void remove(@NotNull String table, @NotNull String key);
 
     /**
      * Removes an json config out of the database
@@ -81,7 +81,7 @@ public interface DatabaseSyncAPI {
      * @param table      The table in which the config is
      * @param identifier The id of the config if the key is unknown
      */
-    void removeIfAbsent(@Nonnull String table, @Nonnull String identifier);
+    void removeIfAbsent(@NotNull String table, @NotNull String identifier);
 
     /**
      * Creates a new database with the given name
@@ -89,7 +89,7 @@ public interface DatabaseSyncAPI {
      * @param name The name of the new database
      * @return {@code true} if the operation was successful else {@code false}
      */
-    boolean createDatabase(@Nonnull String name);
+    boolean createDatabase(@NotNull String name);
 
     /**
      * Deletes an database an all contents in it
@@ -97,7 +97,7 @@ public interface DatabaseSyncAPI {
      * @param name The name of the database
      * @return {@code true} if the operation was successful else {@code false}
      */
-    boolean deleteDatabase(@Nonnull String name);
+    boolean deleteDatabase(@NotNull String name);
 
     /**
      * Checks if an specific key is in the database
@@ -106,7 +106,7 @@ public interface DatabaseSyncAPI {
      * @param key   The key of the entry
      * @return {@code true} if the value is present else {@code false}
      */
-    boolean contains(@Nonnull String table, @Nonnull String key);
+    boolean contains(@NotNull String table, @NotNull String key);
 
     /**
      * Get the size of a table
@@ -114,5 +114,5 @@ public interface DatabaseSyncAPI {
      * @param table The name of the table
      * @return The current size of the database
      */
-    int size(@Nonnull String table);
+    int size(@NotNull String table);
 }

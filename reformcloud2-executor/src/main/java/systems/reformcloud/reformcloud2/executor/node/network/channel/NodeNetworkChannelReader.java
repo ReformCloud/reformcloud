@@ -7,7 +7,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.channel.shar
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.handler.PacketHandler;
 import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
 
-public class NodeNetworkChannelReader extends SharedNetworkChannelReader {
+public final class NodeNetworkChannelReader extends SharedNetworkChannelReader {
 
     public NodeNetworkChannelReader(PacketHandler packetHandler) {
         super(packetHandler);

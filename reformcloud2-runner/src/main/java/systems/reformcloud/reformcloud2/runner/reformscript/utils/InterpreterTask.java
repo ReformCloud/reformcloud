@@ -1,8 +1,8 @@
 package systems.reformcloud.reformcloud2.runner.reformscript.utils;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.runner.reformscript.InterpretedReformScript;
 
-import javax.annotation.Nonnull;
 import java.util.Collection;
 
 /**
@@ -13,7 +13,7 @@ public abstract class InterpreterTask {
     /**
      * @return The name of the method
      */
-    @Nonnull
+    @NotNull
     public abstract String getName();
 
     /**
@@ -23,5 +23,5 @@ public abstract class InterpreterTask {
      * @param script     The script from which the caller is called which calls the task
      * @param allLines   All lines of the interpreted script
      */
-    public abstract void executeTask(@Nonnull String callerLine, @Nonnull InterpretedReformScript script, @Nonnull Collection<String> allLines);
+    public abstract void executeTask(@NotNull String callerLine, @NotNull InterpretedReformScript script, @NotNull Collection<String> allLines);
 }

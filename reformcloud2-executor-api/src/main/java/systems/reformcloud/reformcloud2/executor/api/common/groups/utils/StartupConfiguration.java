@@ -1,6 +1,7 @@
 package systems.reformcloud.reformcloud2.executor.api.common.groups.utils;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.List;
 import java.util.Objects;
 
@@ -78,7 +79,7 @@ public final class StartupConfiguration {
         return startupEnvironment;
     }
 
-    @Nonnull
+    @NotNull
     public AutomaticStartupConfiguration getAutomaticStartupConfiguration() {
         return automaticStartupConfiguration;
     }
@@ -87,7 +88,7 @@ public final class StartupConfiguration {
         return searchBestClientAlone;
     }
 
-    @Nonnull
+    @NotNull
     public List<String> getUseOnlyTheseClients() {
         return useOnlyTheseClients;
     }

@@ -1,16 +1,18 @@
 package systems.reformcloud.reformcloud2.executor.api.common.client.basic;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.client.ClientRuntimeInformation;
 
-import javax.annotation.Nonnull;
+import java.util.UUID;
 
 public final class DefaultClientRuntimeInformation implements ClientRuntimeInformation {
 
-    public DefaultClientRuntimeInformation(String startHost, int maxMemory, int maxProcesses, String name) {
+    public DefaultClientRuntimeInformation(String startHost, int maxMemory, int maxProcesses, String name, UUID uniqueId) {
         this.startHost = startHost;
         this.maxMemory = maxMemory;
         this.maxProcesses = maxProcesses;
         this.name = name;
+        this.uniqueID = uniqueId;
     }
 
     private final String startHost;
@@ -21,10 +23,18 @@ public final class DefaultClientRuntimeInformation implements ClientRuntimeInfor
 
     private final String name;
 
-    @Nonnull
+    private final UUID uniqueID;
+
+    @NotNull
     @Override
     public String startHost() {
         return startHost;
+    }
+
+    @NotNull
+    @Override
+    public UUID uniqueID() {
+        return uniqueID;
     }
 
     @Override
@@ -37,7 +47,7 @@ public final class DefaultClientRuntimeInformation implements ClientRuntimeInfor
         return maxProcesses;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String getName() {
         return name;

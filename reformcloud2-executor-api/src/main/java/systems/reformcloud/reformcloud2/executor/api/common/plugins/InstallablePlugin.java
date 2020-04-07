@@ -1,9 +1,8 @@
 package systems.reformcloud.reformcloud2.executor.api.common.plugins;
 
 import com.google.gson.reflect.TypeToken;
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.plugins.basic.DefaultInstallablePlugin;
-
-import javax.annotation.Nonnull;
 
 /**
  * This class represents any plugin which is installable on a process instance
@@ -19,6 +18,6 @@ public abstract class InstallablePlugin extends Plugin {
     /**
      * @return The download url of the plugin
      */
-    @Nonnull
+    @NotNull
     public abstract String getDownloadURL();
 }

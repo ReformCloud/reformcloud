@@ -1,9 +1,9 @@
 package systems.reformcloud.reformcloud2.executor.api.common.utility.list;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.optional.ReferencedOptional;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -22,8 +22,8 @@ public final class Streams {
      * @param list The input list
      * @return A new list with all keys of the given list, but lower-case
      */
-    @Nonnull
-    public static List<String> toLowerCase(@Nonnull Collection<String> list) {
+    @NotNull
+    public static List<String> toLowerCase(@NotNull Collection<String> list) {
         List<String> strings = new ArrayList<>();
         list.forEach(string -> strings.add(string.toLowerCase()));
 
@@ -37,8 +37,8 @@ public final class Streams {
      * @param <T> The object parameter of the values in the list
      * @return A unmodifiable list of all given keys
      */
-    @Nonnull
-    public static <T> List<T> unmodifiable(@Nonnull List<T> in) {
+    @NotNull
+    public static <T> List<T> unmodifiable(@NotNull List<T> in) {
         return Collections.unmodifiableList(in);
     }
 
@@ -49,8 +49,8 @@ public final class Streams {
      * @param <T> The object parameter of the values in the list
      * @return A new list with all values of the input list in it
      */
-    @Nonnull
-    public static <T> List<T> newList(@Nonnull Collection<T> in) {
+    @NotNull
+    public static <T> List<T> newList(@NotNull Collection<T> in) {
         return new ArrayList<>(in);
     }
 
@@ -61,8 +61,8 @@ public final class Streams {
      * @param <T> The object parameter of the values in the list
      * @return A copy of the current set
      */
-    @Nonnull
-    public static <T> SortedSet<T> copySortedSet(@Nonnull SortedSet<T> set) {
+    @NotNull
+    public static <T> SortedSet<T> copySortedSet(@NotNull SortedSet<T> set) {
         SortedSet<T> sortedSet = new TreeSet<>(set.comparator());
         sortedSet.addAll(set);
         return sortedSet;
@@ -77,8 +77,8 @@ public final class Streams {
      * @param <F> The object parameter of the values in the outgoing list
      * @return A new list with all values of the incoming list, applied to the function
      */
-    @Nonnull
-    public static <T, F> List<F> apply(@Nonnull List<T> in, @Nonnull Function<T, F> function) {
+    @NotNull
+    public static <T, F> List<F> apply(@NotNull List<T> in, @NotNull Function<T, F> function) {
         return in.stream().map(function).collect(Collectors.toList());
     }
 
@@ -91,7 +91,7 @@ public final class Streams {
      * @return The first value in the list which equals to the filter
      */
     @Nullable
-    public static <T> T filter(@Nonnull Collection<T> in, @Nonnull Predicate<T> predicate) {
+    public static <T> T filter(@NotNull Collection<T> in, @NotNull Predicate<T> predicate) {
         if (in.isEmpty()) {
             return null;
         }
@@ -108,8 +108,8 @@ public final class Streams {
      * @param <T> The object parameter of the values in the list
      * @return A new {@link ReferencedOptional} with the value or {@code null} if no value in the list equals to the filter
      */
-    @Nonnull
-    public static <T> ReferencedOptional<T> filterToReference(@Nonnull Collection<T> in, @Nonnull Predicate<T> predicate) {
+    @NotNull
+    public static <T> ReferencedOptional<T> filterToReference(@NotNull Collection<T> in, @NotNull Predicate<T> predicate) {
         return ReferencedOptional.build(filter(in, predicate));
     }
 
@@ -122,8 +122,8 @@ public final class Streams {
      * @param <V> The object parameter of the values in the map
      * @return A new {@link ReferencedOptional} with the value or {@code null} if no value in the map equals to the filter
      */
-    @Nonnull
-    public static <K, V> ReferencedOptional<V> filterToReference(@Nonnull Map<K, V> in, @Nonnull Predicate<K> predicate) {
+    @NotNull
+    public static <K, V> ReferencedOptional<V> filterToReference(@NotNull Map<K, V> in, @NotNull Predicate<K> predicate) {
         if (in.isEmpty()) {
             return ReferencedOptional.empty();
         }
@@ -149,7 +149,7 @@ public final class Streams {
      * @return The value which got applied to the function or {@code null} if no value in the list equals to the filter
      */
     @Nullable
-    public static <T, F> F filterAndApply(@Nonnull List<T> in, @Nonnull Predicate<T> predicate, @Nonnull Function<T, F> function) {
+    public static <T, F> F filterAndApply(@NotNull List<T> in, @NotNull Predicate<T> predicate, @NotNull Function<T, F> function) {
         if (in.isEmpty()) {
             return null;
         }
@@ -167,8 +167,8 @@ public final class Streams {
      * @param <T> The object parameter of the values in the map
      * @return A list with all values of the map which equaled to the filter
      */
-    @Nonnull
-    public static <F, T> List<T> getValues(@Nonnull Map<F, T> in, @Nonnull Predicate<F> predicate) {
+    @NotNull
+    public static <F, T> List<T> getValues(@NotNull Map<F, T> in, @NotNull Predicate<F> predicate) {
         if (in.isEmpty()) {
             return new ArrayList<>();
         }
@@ -189,7 +189,7 @@ public final class Streams {
      * @param consumer The consumer which should accept all values in the map
      * @param <T> The object parameter of the values in the map
      */
-    public static <T> void forEachValues(@Nonnull Map<?, T> map, @Nonnull Consumer<T> consumer) {
+    public static <T> void forEachValues(@NotNull Map<?, T> map, @NotNull Consumer<T> consumer) {
         map.values().forEach(consumer);
     }
 
@@ -200,7 +200,7 @@ public final class Streams {
      * @param consumer The consumer which should accept all values in the map
      * @param <F> The object parameter of the values in the list
      */
-    public static <F> void forEach(@Nonnull List<F> list, @Nonnull Consumer<F> consumer) {
+    public static <F> void forEach(@NotNull List<F> list, @NotNull Consumer<F> consumer) {
         list.forEach(consumer);
     }
 
@@ -213,8 +213,8 @@ public final class Streams {
      * @param <X> The object parameter of the values in the outgoing list
      * @return The created list with all applied values in the map
      */
-    @Nonnull
-    public static <F, X> List<X> keyApply(@Nonnull Map<F, ?> map, @Nonnull Function<F, X> fxFunction) {
+    @NotNull
+    public static <F, X> List<X> keyApply(@NotNull Map<F, ?> map, @NotNull Function<F, X> fxFunction) {
         return map.keySet().stream().map(fxFunction).collect(Collectors.toList());
     }
 
@@ -227,9 +227,9 @@ public final class Streams {
      * @param <F> The object parameter of the values in the outgoing list
      * @return The created list with all values applied to the function
      */
-    @Nonnull
+    @NotNull
     @SafeVarargs
-    public static <S, F> Collection<F> newCollection(@Nonnull Function<S, F> function, S... in) {
+    public static <S, F> Collection<F> newCollection(@NotNull Function<S, F> function, S... in) {
         return newCollection(Arrays.asList(in), function);
     }
 
@@ -242,8 +242,8 @@ public final class Streams {
      * @param <F> The object parameter of the values in the outgoing list
      * @return The created collection with the values applied to the function
      */
-    @Nonnull
-    public static <S, F> Collection<F> newCollection(@Nonnull Collection<S> in, @Nonnull Function<S, F> function) {
+    @NotNull
+    public static <S, F> Collection<F> newCollection(@NotNull Collection<S> in, @NotNull Function<S, F> function) {
         return newCollection(in, s -> true, function);
     }
 
@@ -257,8 +257,8 @@ public final class Streams {
      * @param <F> The object parameter of the values in the outgoing list
      * @return The created collection
      */
-    @Nonnull
-    public static <S, F> Collection<F> newCollection(@Nonnull Collection<S> in, @Nonnull Predicate<S> predicate, @Nonnull Function<S, F> function) {
+    @NotNull
+    public static <S, F> Collection<F> newCollection(@NotNull Collection<S> in, @NotNull Predicate<S> predicate, @NotNull Function<S, F> function) {
         return in.stream().filter(predicate).map(function).collect(Collectors.toList());
     }
 
@@ -270,8 +270,8 @@ public final class Streams {
      * @param <T> The object parameter of the collection
      * @return The new list with all values matching the {@link Predicate}
      */
-    @Nonnull
-    public static <T> List<T> list(@Nonnull Collection<T> list, @Nonnull Predicate<T> predicate) {
+    @NotNull
+    public static <T> List<T> list(@NotNull Collection<T> list, @NotNull Predicate<T> predicate) {
         return list.stream().filter(predicate).collect(Collectors.toList());
     }
 
@@ -283,8 +283,8 @@ public final class Streams {
      * @param <T> The object parameter of the collection
      * @return The new list with all values not matching the {@link Predicate}
      */
-    @Nonnull
-    public static <T> Collection<T> others(@Nonnull Collection<T> list, @Nonnull Predicate<T> predicate) {
+    @NotNull
+    public static <T> Collection<T> others(@NotNull Collection<T> list, @NotNull Predicate<T> predicate) {
         return list.stream().filter(predicate.negate()).collect(Collectors.toList());
     }
 
@@ -296,7 +296,7 @@ public final class Streams {
      * @param <T> The object parameter of the collection
      * @return The new list with all values matching the {@link Predicate}
      */
-    @Nonnull
+    @NotNull
     public static <T> Collection<T> allOf(Collection<T> collection, Predicate<T> predicate) {
         return collection.stream().filter(predicate).collect(Collectors.toList());
     }
@@ -310,8 +310,8 @@ public final class Streams {
      * @param <F> The object parameter of the values in the outgoing collection
      * @return The new collection with all values applied to the function in it
      */
-    @Nonnull
-    public static <T, F> Collection<F> apply(@Nonnull Collection<T> collection, @Nonnull Function<T, F> function) {
+    @NotNull
+    public static <T, F> Collection<F> apply(@NotNull Collection<T> collection, @NotNull Function<T, F> function) {
         return collection.stream().map(function).collect(Collectors.toList());
     }
 
@@ -324,8 +324,8 @@ public final class Streams {
      * @param <S> The object parameter of the values in the map
      * @return The collection with all filtered values of the map
      */
-    @Nonnull
-    public static <F, S> Collection<S> deepFilter(@Nonnull Map<F, S> in, @Nonnull Predicate<Map.Entry<F, S>> predicate) {
+    @NotNull
+    public static <F, S> Collection<S> deepFilter(@NotNull Map<F, S> in, @NotNull Predicate<Map.Entry<F, S>> predicate) {
         Collection<S> out = new LinkedList<>();
         in.entrySet().forEach(e -> {
             if (predicate.test(e)) {
@@ -344,8 +344,8 @@ public final class Streams {
      * @param <S> The object parameter of the values in the map
      * @return The first {@link Map.Entry} which matches to filter or {@link ReferencedOptional#empty()}
      */
-    @Nonnull
-    public static <F, S> ReferencedOptional<Map.Entry<F, S>> deepFilterToReference(@Nonnull Map<F, S> in, @Nonnull Predicate<Map.Entry<F, S>> predicate) {
+    @NotNull
+    public static <F, S> ReferencedOptional<Map.Entry<F, S>> deepFilterToReference(@NotNull Map<F, S> in, @NotNull Predicate<Map.Entry<F, S>> predicate) {
         if (in.isEmpty()) {
             return ReferencedOptional.empty();
         }
@@ -367,8 +367,8 @@ public final class Streams {
      * @param <T> The type of the arrays which should get concatenated
      * @return The concatenated array of the first and second array
      */
-    @Nonnull
-    public static <T> T[] concat(@Nonnull T[] first, @Nonnull T[] second) {
+    @NotNull
+    public static <T> T[] concat(@NotNull T[] first, @NotNull T[] second) {
         T[] result = Arrays.copyOf(first, first.length + second.length);
         System.arraycopy(second, 0, result, first.length, second.length);
         return result;

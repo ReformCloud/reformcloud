@@ -1,9 +1,8 @@
 package systems.reformcloud.reformcloud2.executor.api.common.api.console;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.Command;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 public interface ConsoleSyncAPI {
 
@@ -12,14 +11,14 @@ public interface ConsoleSyncAPI {
      *
      * @param line The line which should be sent
      */
-    void sendColouredLine(@Nonnull String line);
+    void sendColouredLine(@NotNull String line);
 
     /**
      * Sends a raw line into the console
      *
      * @param line The line which should be sent
      */
-    void sendRawLine(@Nonnull String line);
+    void sendRawLine(@NotNull String line);
 
     /**
      * Dispatches a command into the console and waits for a result
@@ -30,7 +29,7 @@ public interface ConsoleSyncAPI {
      * b) doesn't sent any result to the handler
      */
     @Nullable
-    String dispatchCommandAndGetResult(@Nonnull String commandLine);
+    String dispatchCommandAndGetResult(@NotNull String commandLine);
 
     /**
      * Gets a command which is registered
@@ -39,7 +38,7 @@ public interface ConsoleSyncAPI {
      * @return The command or {@code null} if the command is not registered
      */
     @Nullable
-    Command getCommand(@Nonnull String name);
+    Command getCommand(@NotNull String name);
 
     /**
      * Checks if a specific command is registered
@@ -47,5 +46,5 @@ public interface ConsoleSyncAPI {
      * @param name The name of the command
      * @return {@code true} if the command is registered or else {@code false}
      */
-    boolean isCommandRegistered(@Nonnull String name);
+    boolean isCommandRegistered(@NotNull String name);
 }

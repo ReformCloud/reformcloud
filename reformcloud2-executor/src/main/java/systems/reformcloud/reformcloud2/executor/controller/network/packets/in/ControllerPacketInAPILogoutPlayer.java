@@ -1,5 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.controller.network.packets.in;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.PlayerLogoutEvent;
 import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
@@ -12,7 +13,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.process.join.OnlyPro
 import systems.reformcloud.reformcloud2.executor.controller.ControllerExecutor;
 import systems.reformcloud.reformcloud2.executor.controller.network.packets.out.event.ControllerEventLogoutPlayer;
 
-import javax.annotation.Nonnull;
 import java.util.UUID;
 import java.util.function.Consumer;
 
@@ -24,7 +24,7 @@ public final class ControllerPacketInAPILogoutPlayer extends DefaultJsonNetworkH
     }
 
     @Override
-    public void handlePacket(@Nonnull PacketSender packetSender, @Nonnull Packet packet, @Nonnull Consumer<Packet> responses) {
+    public void handlePacket(@NotNull PacketSender packetSender, @NotNull Packet packet, @NotNull Consumer<Packet> responses) {
         UUID uuid = packet.content().get("uuid", UUID.class);
         String name = packet.content().getString("name");
 
@@ -37,7 +37,7 @@ public final class ControllerPacketInAPILogoutPlayer extends DefaultJsonNetworkH
         ));
 
         ControllerExecutor.getInstance().getEventManager().callEvent(new PlayerLogoutEvent(name, uuid));
-        ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getAllProcesses().forEach(process -> DefaultChannelManager.INSTANCE.get(process.getName()).ifPresent(channel -> channel.sendPacket(
+        ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getAllProcesses().forEach(process -> DefaultChannelManager.INSTANCE.get(process.getProcessDetail().getName()).ifPresent(channel -> channel.sendPacket(
                 new ControllerEventLogoutPlayer(name, uuid)
         )));
     }

@@ -1,6 +1,7 @@
 package systems.reformcloud.reformcloud2.web.tokens;
 
 import io.netty.channel.ChannelHandlerContext;
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.restapi.auth.Auth;
 import systems.reformcloud.reformcloud2.executor.api.common.restapi.request.WebRequester;
@@ -8,7 +9,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.restapi.request.defa
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Duo;
 import systems.reformcloud.reformcloud2.web.WebApplication;
 
-import javax.annotation.Nonnull;
 import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -18,9 +18,9 @@ public class TokenWebServerAuth implements Auth {
 
     private final Map<Long, WebRequester> handled = new ConcurrentHashMap<>();
 
-    @Nonnull
+    @NotNull
     @Override
-    public Duo<Boolean, WebRequester> handleAuth(@Nonnull JsonConfiguration configurable, @Nonnull ChannelHandlerContext channelHandlerContext) {
+    public Duo<Boolean, WebRequester> handleAuth(@NotNull JsonConfiguration configurable, @NotNull ChannelHandlerContext channelHandlerContext) {
         String token = configurable.getOrDefault("token", (String) null);
         if (token == null) {
             if (TokenDatabase.isSetupDone()) {

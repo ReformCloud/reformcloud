@@ -6,12 +6,12 @@ import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.socket.ServerSocketChannel;
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.network.NetworkUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.network.challenge.ChallengeAuthHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.NetworkChannelReader;
 import systems.reformcloud.reformcloud2.executor.api.common.network.handler.ServerInitializerHandler;
 
-import javax.annotation.Nonnull;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
@@ -27,7 +27,7 @@ public final class DefaultNetworkServer implements NetworkServer {
     private final Class<? extends ServerSocketChannel> channelClass = NetworkUtil.serverSocketChannel();
 
     @Override
-    public void bind(@Nonnull String host, int port, @Nonnull Supplier<NetworkChannelReader> readerHelper, @Nonnull ChallengeAuthHandler challengeAuthHandler) {
+    public void bind(@NotNull String host, int port, @NotNull Supplier<NetworkChannelReader> readerHelper, @NotNull ChallengeAuthHandler challengeAuthHandler) {
         if (!channelFutures.containsKey(port)) {
                 new ServerBootstrap()
                         .channel(channelClass)

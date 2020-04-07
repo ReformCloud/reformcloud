@@ -1,17 +1,17 @@
 package systems.reformcloud.reformcloud2.permissions.sponge.subject.base.system;
 
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.service.permission.PermissionService;
 import org.spongepowered.api.service.permission.SubjectCollection;
 import systems.reformcloud.reformcloud2.permissions.sponge.subject.impl.AbstractSystemSubject;
 
-import javax.annotation.Nonnull;
 import java.util.Optional;
 
 public class SystemSubject extends AbstractSystemSubject {
 
-    public SystemSubject(@Nonnull String id, @Nonnull PermissionService service, @Nonnull SubjectCollection source) {
+    public SystemSubject(@NotNull String id, @NotNull PermissionService service, @NotNull SubjectCollection source) {
         super(new SystemSubjectData());
         this.id = id;
         this.service = service;
@@ -24,7 +24,7 @@ public class SystemSubject extends AbstractSystemSubject {
 
     private final SubjectCollection source;
 
-    @Nonnull
+    @NotNull
     @Override
     public Optional<CommandSource> getCommandSource() {
         if (id.equals(PermissionService.SUBJECTS_SYSTEM)) {
@@ -45,13 +45,13 @@ public class SystemSubject extends AbstractSystemSubject {
     }
 
     @Override
-    @Nonnull
+    @NotNull
     public SubjectCollection getContainingCollection() {
         return this.source;
     }
 
     @Override
-    @Nonnull
+    @NotNull
     public String getIdentifier() {
         return this.id;
     }

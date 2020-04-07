@@ -1,10 +1,10 @@
 package systems.reformcloud.reformcloud2.executor.api.common.network.channel.handler;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.JsonPacket;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 
-import javax.annotation.Nonnull;
 import java.io.ObjectInputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
@@ -26,13 +26,13 @@ public abstract class DefaultJsonNetworkHandler implements NetworkHandler {
         return id;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public Packet read(int id, @Nonnull ObjectInputStream inputStream) throws Exception {
+    public Packet read(int id, @NotNull ObjectInputStream inputStream) throws Exception {
         return readPacket(id, inputStream);
     }
 
-    public static Packet readPacket(int id, @Nonnull ObjectInputStream inputStream) throws Exception {
+    public static Packet readPacket(int id, @NotNull ObjectInputStream inputStream) throws Exception {
         String uid = inputStream.readUTF();
         JsonConfiguration content = read((byte[]) inputStream.readObject());
         byte[] extra = (byte[]) inputStream.readObject();

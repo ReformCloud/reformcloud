@@ -2,6 +2,7 @@ package systems.reformcloud.reformcloud2.executor.api.common.database.basic.driv
 
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.base.Conditions;
 import systems.reformcloud.reformcloud2.executor.api.common.database.Database;
 import systems.reformcloud.reformcloud2.executor.api.common.database.DatabaseReader;
@@ -10,7 +11,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.dependency.repo.Defa
 import systems.reformcloud.reformcloud2.executor.api.common.utility.StringUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.maps.AbsentMap;
 
-import javax.annotation.Nonnull;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -48,7 +48,7 @@ public final class MongoDatabase extends Database<com.mongodb.client.MongoDataba
     private String table;
 
     @Override
-    public void connect(@Nonnull String host, int port, @Nonnull String userName, @Nonnull String password, @Nonnull String table) {
+    public void connect(@NotNull String host, int port, @NotNull String userName, @NotNull String password, @NotNull String table) {
         if (!isConnected()) {
             this.host = host;
             this.port = port;
@@ -111,7 +111,7 @@ public final class MongoDatabase extends Database<com.mongodb.client.MongoDataba
         return perTableReader.putIfAbsent(table, new MongoDatabaseReader(table, this));
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public com.mongodb.client.MongoDatabase get() {
         return mongoDatabase;

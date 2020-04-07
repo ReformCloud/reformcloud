@@ -9,6 +9,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.CommonHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.MainGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
+import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
 
 import java.util.Arrays;
@@ -27,10 +28,10 @@ public class CommandReformCloud extends Command {
 
         if (strings.length == 1 && strings[0].equalsIgnoreCase("list")) {
             ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getAllProcesses().forEach(e -> commandSender.sendMessage(TextComponent.fromLegacyText(
-                    "=> " + e.getName()
-                            + "/ Display: " + e.getDisplayName()
-                            + "/ UniqueID: " + e.getProcessUniqueID()
-                            + "/ Parent: " + e.getParent()
+                    "=> " + e.getProcessDetail().getName()
+                            + "/ Display: " + e.getProcessDetail().getDisplayName()
+                            + "/ UniqueID: " + e.getProcessDetail().getProcessUniqueID()
+                            + "/ Parent: " + e.getProcessDetail().getParentName()
                             + "/ Connected: " + e.getNetworkInfo().isConnected()
             )));
             return;
@@ -39,7 +40,13 @@ public class CommandReformCloud extends Command {
         if (strings.length == 2) {
             switch (strings[0].toLowerCase()) {
                 case "copy": {
-                    ExecutorAPI.getInstance().getSyncAPI().getConsoleSyncAPI().dispatchCommandAndGetResult("p " + strings[1] + " copy");
+                    ProcessInformation process = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcess(strings[1]);
+                    if (process == null) {
+                        commandSender.sendMessage(TextComponent.fromLegacyText(prefix + "§cThis process is unknown"));
+                        return;
+                    }
+
+                    process.toWrapped().copy();
                     commandSender.sendMessage(getCommandSuccessMessage());
                     return;
                 }
@@ -57,7 +64,7 @@ public class CommandReformCloud extends Command {
                 }
 
                 case "stopall": {
-                    ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcesses(strings[1]).forEach(e -> ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().stopProcess(e.getName()));
+                    ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcesses(strings[1]).forEach(e -> ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().stopProcess(e.getProcessDetail().getName()));
                     commandSender.sendMessage(getCommandSuccessMessage());
                     return;
                 }
@@ -69,9 +76,8 @@ public class CommandReformCloud extends Command {
                         return;
                     }
 
-                    ExecutorAPI.getInstance().getSyncAPI().getConsoleSyncAPI().dispatchCommandAndGetResult(
-                            "g sub " + strings[1] + " edit --maintenance=false"
-                    );
+                    processGroup.getPlayerAccessConfiguration().toggleMaintenance();
+                    ExecutorAPI.getInstance().getSyncAPI().getGroupSyncAPI().updateProcessGroup(processGroup);
                     commandSender.sendMessage(getCommandSuccessMessage());
                     return;
                 }
@@ -114,7 +120,7 @@ public class CommandReformCloud extends Command {
                             }
 
                             ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcesses(processGroup.getName()).forEach(processInformation -> {
-                                ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().stopProcess(processInformation.getProcessUniqueID());
+                                ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().stopProcess(processInformation.getProcessDetail().getProcessUniqueID());
                                 AbsoluteThread.sleep(TimeUnit.MILLISECONDS, 10);
                             });
                         });

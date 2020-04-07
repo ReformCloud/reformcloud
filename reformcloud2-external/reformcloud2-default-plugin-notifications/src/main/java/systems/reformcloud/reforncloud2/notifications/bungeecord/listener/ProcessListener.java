@@ -3,62 +3,87 @@ package systems.reformcloud.reforncloud2.notifications.bungeecord.listener;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
 import systems.reformcloud.reformcloud2.executor.api.bungee.BungeeExecutor;
+import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.ProcessStartedEvent;
 import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.ProcessStoppedEvent;
 import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.ProcessUpdatedEvent;
 import systems.reformcloud.reformcloud2.executor.api.common.event.handler.Listener;
-import systems.reformcloud.reformcloud2.executor.api.common.event.priority.EventPriority;
+import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
 
-import java.util.Collection;
-import java.util.LinkedList;
+import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
-public class ProcessListener {
+public final class ProcessListener {
 
-    private static final Collection<UUID> STARTED = new LinkedList<>();
+    private static final Map<UUID, ProcessInformation> REGISTERED = new ConcurrentHashMap<>();
+
+    public ProcessListener() {
+        Task.EXECUTOR.execute(() -> {
+            while (DefaultChannelManager.INSTANCE.get("Controller").isEmpty()) {
+                AbsoluteThread.sleep(50);
+            }
+
+            ExecutorAPI.getInstance()
+                    .getSyncAPI()
+                    .getProcessSyncAPI()
+                    .getAllProcesses()
+                    .forEach(e -> REGISTERED.put(e.getProcessDetail().getProcessUniqueID(), e));
+        });
+    }
 
     @Listener
     public void handle(final ProcessStartedEvent event) {
         this.publishNotification(
                 BungeeExecutor.getInstance().getMessages().getProcessStarted(),
-                event.getProcessInformation().getName()
+                event.getProcessInformation().getProcessDetail().getName()
         );
-    }
-
-    @Listener (priority = EventPriority.FIRST)
-    public void handle(final ProcessUpdatedEvent event) {
-        ProcessInformation processInformation = event.getProcessInformation();
-        if (isNotify(processInformation)) {
-            STARTED.add(processInformation.getProcessUniqueID());
-            this.publishNotification(
-                    BungeeExecutor.getInstance().getMessages().getProcessConnected(),
-                    processInformation.getName()
-            );
-        }
     }
 
     @Listener
     public void handle(final ProcessStoppedEvent event) {
+        if (!REGISTERED.containsKey(event.getProcessInformation().getProcessDetail().getProcessUniqueID())) {
+            return;
+        }
+
         this.publishNotification(
                 BungeeExecutor.getInstance().getMessages().getProcessStopped(),
-                event.getProcessInformation().getName()
+                event.getProcessInformation().getProcessDetail().getName()
         );
-        STARTED.remove(event.getProcessInformation().getProcessUniqueID());
+        REGISTERED.remove(event.getProcessInformation().getProcessDetail().getProcessUniqueID());
+    }
+
+    @Listener
+    public void handle(final ProcessUpdatedEvent event) {
+        ProcessInformation old = REGISTERED.put(
+                event.getProcessInformation().getProcessDetail().getProcessUniqueID(),
+                event.getProcessInformation()
+        );
+        if (old != null) {
+            if (!old.getNetworkInfo().isConnected() && event.getProcessInformation().getNetworkInfo().isConnected()) {
+                this.publishNotification(
+                        BungeeExecutor.getInstance().getMessages().getProcessConnected(),
+                        event.getProcessInformation().getProcessDetail().getName()
+                );
+            }
+
+            return;
+        }
+
+        this.publishNotification(
+                BungeeExecutor.getInstance().getMessages().getProcessRegistered(),
+                event.getProcessInformation().getProcessDetail().getName()
+        );
     }
 
     private void publishNotification(String message, Object... replacements) {
-        final String replacedMessage = BungeeExecutor.getInstance().getMessages().format(message, replacements);
-        ProxyServer.getInstance().getPlayers().forEach(player -> {
-            if (player.hasPermission("reformcloud.notify")) {
-                player.sendMessage(TextComponent.fromLegacyText(replacedMessage));
-            }
-        });
-    }
-
-    private boolean isNotify(ProcessInformation information) {
-        return !STARTED.contains(information.getProcessUniqueID())
-                && ProxyServer.getInstance().getServerInfo(information.getName()) == null
-                && information.getNetworkInfo().isConnected();
+        String replacedMessage = BungeeExecutor.getInstance().getMessages().format(message, replacements);
+        ProxyServer.getInstance().getPlayers()
+                .stream()
+                .filter(e -> e.hasPermission("reformcloud.notify"))
+                .forEach(player -> player.sendMessage(TextComponent.fromLegacyText(replacedMessage)));
     }
 }

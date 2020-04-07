@@ -1,16 +1,16 @@
 package systems.reformcloud.reformcloud2.permissions.sponge.subject.base.user;
 
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.service.permission.PermissionService;
 import org.spongepowered.api.service.permission.SubjectCollection;
 import systems.reformcloud.reformcloud2.permissions.PermissionAPI;
 import systems.reformcloud.reformcloud2.permissions.sponge.subject.impl.AbstractUserSpongeSubject;
 
-import javax.annotation.Nonnull;
 import java.util.UUID;
 
 public class SpongeSubject extends AbstractUserSpongeSubject {
 
-    public SpongeSubject(@Nonnull UUID user, @Nonnull SubjectCollection source, @Nonnull PermissionService service) {
+    public SpongeSubject(@NotNull UUID user, @NotNull SubjectCollection source, @NotNull PermissionService service) {
         super(user);
         this.uniqueUserID = user;
         this.source = source;
@@ -34,13 +34,13 @@ public class SpongeSubject extends AbstractUserSpongeSubject {
     }
 
     @Override
-    @Nonnull
+    @NotNull
     public SubjectCollection getContainingCollection() {
         return this.source;
     }
 
     @Override
-    @Nonnull
+    @NotNull
     public String getIdentifier() {
         return this.uniqueUserID.toString();
     }

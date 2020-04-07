@@ -3,12 +3,12 @@ package systems.reformcloud.reformcloud2.executor.api.common.database.basic.driv
 import de.derklaro.projects.deer.api.Database;
 import de.derklaro.projects.deer.api.basic.Filters;
 import de.derklaro.projects.deer.api.provider.DatabaseProvider;
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.database.DatabaseReader;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.defaults.DefaultTask;
 
-import javax.annotation.Nonnull;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
@@ -36,25 +36,25 @@ public class FileDatabaseReader implements DatabaseReader {
 
     private final Database<SerializableJsonConfiguration> database;
 
-    @Nonnull
+    @NotNull
     @Override
-    public Task<JsonConfiguration> find(@Nonnull String key) {
+    public Task<JsonConfiguration> find(@NotNull String key) {
         Task<JsonConfiguration> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> task.complete(database.getEntry(Filters.keyEq(key)).orElse(new SerializableJsonConfiguration())));
         return task;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public Task<JsonConfiguration> findIfAbsent(@Nonnull String identifier) {
+    public Task<JsonConfiguration> findIfAbsent(@NotNull String identifier) {
         Task<JsonConfiguration> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> task.complete(database.getEntry(Filters.anyValueMatch(identifier)).orElse(new SerializableJsonConfiguration())));
         return task;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public Task<JsonConfiguration> insert(@Nonnull String key, String identifier, @Nonnull JsonConfiguration data) {
+    public Task<JsonConfiguration> insert(@NotNull String key, String identifier, @NotNull JsonConfiguration data) {
         Task<JsonConfiguration> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             Optional<SerializableJsonConfiguration> optional = database.getEntry(Filters.keyEq(key));
@@ -69,9 +69,9 @@ public class FileDatabaseReader implements DatabaseReader {
         return task;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public Task<Boolean> update(@Nonnull String key, @Nonnull JsonConfiguration newData) {
+    public Task<Boolean> update(@NotNull String key, @NotNull JsonConfiguration newData) {
         Task<Boolean> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             database.updateKey(Filters.keyEq(key), new SerializableJsonConfiguration(newData));
@@ -80,9 +80,9 @@ public class FileDatabaseReader implements DatabaseReader {
         return task;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public Task<Boolean> updateIfAbsent(@Nonnull String identifier, @Nonnull JsonConfiguration newData) {
+    public Task<Boolean> updateIfAbsent(@NotNull String identifier, @NotNull JsonConfiguration newData) {
         Task<Boolean> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             database.updateKey(Filters.anyValueMatch(identifier), new SerializableJsonConfiguration(newData));
@@ -91,9 +91,9 @@ public class FileDatabaseReader implements DatabaseReader {
         return task;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public Task<Void> remove(@Nonnull String key) {
+    public Task<Void> remove(@NotNull String key) {
         Task<Void> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             database.delete(Filters.keyEq(key));
@@ -102,9 +102,9 @@ public class FileDatabaseReader implements DatabaseReader {
         return task;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public Task<Void> removeIfAbsent(@Nonnull String identifier) {
+    public Task<Void> removeIfAbsent(@NotNull String identifier) {
         Task<Void> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             database.delete(Filters.anyValueMatch(identifier));
@@ -113,15 +113,15 @@ public class FileDatabaseReader implements DatabaseReader {
         return task;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public Task<Boolean> contains(@Nonnull String key) {
+    public Task<Boolean> contains(@NotNull String key) {
         Task<Boolean> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> task.complete(database.getEntry(Filters.keyEq(key)).isPresent()));
         return task;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Task<Integer> size() {
         Task<Integer> task = new DefaultTask<>();
@@ -144,14 +144,14 @@ public class FileDatabaseReader implements DatabaseReader {
         return task;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String getName() {
         return table;
     }
 
     @Override
-    @Nonnull
+    @NotNull
     public Iterator<JsonConfiguration> iterator() {
         List<JsonConfiguration> list = new ArrayList<>();
         for (File file : Objects.requireNonNull(new File(this.parentTable + "/" + table).listFiles(pathname -> pathname.isFile() && pathname.getName().endsWith(".json")))) {

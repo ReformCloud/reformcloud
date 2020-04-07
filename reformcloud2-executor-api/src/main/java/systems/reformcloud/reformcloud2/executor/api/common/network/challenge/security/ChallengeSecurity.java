@@ -1,9 +1,9 @@
 package systems.reformcloud.reformcloud2.executor.api.common.network.challenge.security;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
@@ -25,7 +25,7 @@ public final class ChallengeSecurity {
     }
 
     @Nullable
-    public static byte[] encryptChallengeRequest(@Nonnull String key, @Nonnull String challengeKey) {
+    public static byte[] encryptChallengeRequest(@NotNull String key, @NotNull String challengeKey) {
         byte[] input = challengeKey.trim().getBytes();
         byte[] keyBytes = Arrays.copyOf(key.getBytes(), 256 / 8);
 
@@ -39,7 +39,7 @@ public final class ChallengeSecurity {
     }
 
     @Nullable
-    public static String decodeChallengeRequest(@Nonnull String key, @Nonnull byte[] request) {
+    public static String decodeChallengeRequest(@NotNull String key, @NotNull byte[] request) {
         byte[] keyBytes = Arrays.copyOf(key.getBytes(), 256 / 8);
 
         SecretKeySpec secretKeySpec = new SecretKeySpec(keyBytes, "AES");
@@ -52,7 +52,7 @@ public final class ChallengeSecurity {
     }
 
     @Nullable
-    public static String hash(@Nonnull String plain) {
+    public static String hash(@NotNull String plain) {
         try {
             MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
             messageDigest.update(plain.getBytes(StandardCharsets.UTF_8));

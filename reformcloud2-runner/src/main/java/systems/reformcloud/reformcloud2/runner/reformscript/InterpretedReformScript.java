@@ -1,8 +1,8 @@
 package systems.reformcloud.reformcloud2.runner.reformscript;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.runner.reformscript.utils.InterpreterTask;
 
-import javax.annotation.Nonnull;
 import java.nio.file.Path;
 import java.util.Collection;
 
@@ -14,19 +14,19 @@ public interface InterpretedReformScript {
     /**
      * @return The interpreter which interpreted the current script
      */
-    @Nonnull
+    @NotNull
     ReformScriptInterpreter getInterpreter();
 
     /**
      * @return All tasks of the current script
      */
-    @Nonnull
+    @NotNull
     Collection<InterpreterTask> getAllTasks();
 
     /**
      * @return The path to the file which contains the script
      */
-    @Nonnull
+    @NotNull
     Path getScriptPath();
 
     /**

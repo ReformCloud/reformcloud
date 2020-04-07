@@ -1,9 +1,9 @@
 package systems.reformcloud.reformcloud2.executor.api.common.commands.basic.command.sources;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.AllowedCommandSources;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.GlobalCommand;
 
-import javax.annotation.Nonnull;
 import java.util.List;
 
 public abstract class ApiCommand extends GlobalCommand {
@@ -24,7 +24,7 @@ public abstract class ApiCommand extends GlobalCommand {
         super(command);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public AllowedCommandSources sources() {
         return AllowedCommandSources.API;

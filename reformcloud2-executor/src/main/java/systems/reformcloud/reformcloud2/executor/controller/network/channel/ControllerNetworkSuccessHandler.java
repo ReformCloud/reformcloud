@@ -28,10 +28,10 @@ public class ControllerNetworkSuccessHandler implements BiConsumer<ChannelHandle
             ClientManager.INSTANCE.connectClient(packet.content().get("info", ClientRuntimeInformation.TYPE));
         } else {
             process.getNetworkInfo().setConnected(true);
-            process.setProcessState(ProcessState.READY);
+            process.getProcessDetail().setProcessState(ProcessState.READY);
             ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(process);
 
-            System.out.println(LanguageManager.get("process-connected", process.getName(), process.getParent()));
+            System.out.println(LanguageManager.get("process-connected", process.getProcessDetail().getName(), process.getProcessDetail().getParentName()));
         }
     }
 }

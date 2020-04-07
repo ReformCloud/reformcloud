@@ -4,20 +4,22 @@ import com.google.gson.reflect.TypeToken;
 
 import java.text.MessageFormat;
 
-public class IngameMessages {
+public final class IngameMessages {
 
-    public static final TypeToken<IngameMessages> TYPE = new TypeToken<IngameMessages>() {};
+    public static final TypeToken<IngameMessages> TYPE = new TypeToken<IngameMessages>() {
+    };
 
     public IngameMessages() {
     }
 
-    public IngameMessages(String prefix, String processStarted, String processConnected, String processStopped,
+    public IngameMessages(String prefix, String processRegistered, String processStarted, String processConnected, String processStopped,
                           String noHubServerAvailable, String alreadyConnectedToHub, String connectingToHub,
                           String currentProcessClosed, String commandExecuteSuccess, String processFullMessage,
                           String processEnterPermissionNotSet,
                           String processInMaintenanceMessage, String alreadyConnectedMessage
     ) {
         this.prefix = prefix;
+        this.processRegistered = processRegistered;
         this.processStarted = processStarted;
         this.processConnected = processConnected;
         this.processStopped = processStopped;
@@ -34,11 +36,13 @@ public class IngameMessages {
 
     private String prefix = "§6§lR§e§leform§6§lC§e§lloud§6§l2 §7|";
 
-    private String processStarted = "%prefix% [§e§l+§7] {0}";
+    private String processRegistered = "%prefix% §7Registered process §e{0}";
 
-    private String processConnected = "%prefix% [§a§l+§7] {0}";
+    private String processStarted = "%prefix% §7The process §e{0} §7is §astarting §7now...";
 
-    private String processStopped = "%prefix% [§4§l-§7] {0}";
+    private String processConnected = "%prefix% §7The process §e{0} §7 is §aconnected to the network";
+
+    private String processStopped = "%prefix% §7The process §e{0} §7is now §cstopped§7...";
 
     private String noHubServerAvailable = "%prefix% There is currently §cno §7Hub-Server available";
 
@@ -60,6 +64,10 @@ public class IngameMessages {
 
     public String getPrefix() {
         return prefix;
+    }
+
+    public String getProcessRegistered() {
+        return processRegistered;
     }
 
     public String getProcessStarted() {

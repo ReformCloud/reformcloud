@@ -1,5 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.node.api.console;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.api.console.ConsoleAsyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.console.ConsoleSyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.AllowedCommandSources;
@@ -9,8 +10,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.commands.manager.Com
 import systems.reformcloud.reformcloud2.executor.api.common.commands.source.CommandSource;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.defaults.DefaultTask;
-
-import javax.annotation.Nonnull;
 
 public class ConsoleAPIImplementation implements ConsoleSyncAPI, ConsoleAsyncAPI {
 
@@ -23,9 +22,9 @@ public class ConsoleAPIImplementation implements ConsoleSyncAPI, ConsoleAsyncAPI
 
     private final CommandSource console;
 
-    @Nonnull
+    @NotNull
     @Override
-    public Task<Void> sendColouredLineAsync(@Nonnull String line) {
+    public Task<Void> sendColouredLineAsync(@NotNull String line) {
         Task<Void> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             System.out.println(line);
@@ -34,9 +33,9 @@ public class ConsoleAPIImplementation implements ConsoleSyncAPI, ConsoleAsyncAPI
         return task;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public Task<Void> sendRawLineAsync(@Nonnull String line) {
+    public Task<Void> sendRawLineAsync(@NotNull String line) {
         Task<Void> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             System.out.println(line);
@@ -45,9 +44,9 @@ public class ConsoleAPIImplementation implements ConsoleSyncAPI, ConsoleAsyncAPI
         return task;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public Task<String> dispatchCommandAndGetResultAsync(@Nonnull String commandLine) {
+    public Task<String> dispatchCommandAndGetResultAsync(@NotNull String commandLine) {
         Task<String> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             this.commandManager.dispatchCommand(console, AllowedCommandSources.ALL, commandLine, s -> {});
@@ -56,44 +55,44 @@ public class ConsoleAPIImplementation implements ConsoleSyncAPI, ConsoleAsyncAPI
         return task;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public Task<Command> getCommandAsync(@Nonnull String name) {
+    public Task<Command> getCommandAsync(@NotNull String name) {
         Task<Command> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> task.complete(commandManager.getCommand(name)));
         return task;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public Task<Boolean> isCommandRegisteredAsync(@Nonnull String name) {
+    public Task<Boolean> isCommandRegisteredAsync(@NotNull String name) {
         Task<Boolean> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> task.complete(commandManager.getCommand(name) != null));
         return task;
     }
 
     @Override
-    public void sendColouredLine(@Nonnull String line) {
+    public void sendColouredLine(@NotNull String line) {
         sendColouredLineAsync(line).awaitUninterruptedly();
     }
 
     @Override
-    public void sendRawLine(@Nonnull String line) {
+    public void sendRawLine(@NotNull String line) {
         sendRawLineAsync(line).awaitUninterruptedly();
     }
 
     @Override
-    public String dispatchCommandAndGetResult(@Nonnull String commandLine) {
+    public String dispatchCommandAndGetResult(@NotNull String commandLine) {
         return dispatchCommandAndGetResultAsync(commandLine).getUninterruptedly();
     }
 
     @Override
-    public Command getCommand(@Nonnull String name) {
+    public Command getCommand(@NotNull String name) {
         return getCommandAsync(name).getUninterruptedly();
     }
 
     @Override
-    public boolean isCommandRegistered(@Nonnull String name) {
+    public boolean isCommandRegistered(@NotNull String name) {
         Boolean result = isCommandRegisteredAsync(name).getUninterruptedly();
         return result == null ? false : result;
     }

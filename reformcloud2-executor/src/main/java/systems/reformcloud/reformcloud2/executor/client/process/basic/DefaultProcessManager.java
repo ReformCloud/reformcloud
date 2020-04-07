@@ -1,5 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.client.process.basic;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.client.process.ProcessManager;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.common.process.running.RunningProcess;
@@ -9,7 +10,6 @@ import systems.reformcloud.reformcloud2.executor.client.ClientExecutor;
 import systems.reformcloud.reformcloud2.executor.client.network.packet.out.ClientPacketOutProcessRegistered;
 import systems.reformcloud.reformcloud2.executor.client.screen.ProcessScreen;
 
-import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -24,48 +24,48 @@ public final class DefaultProcessManager implements ProcessManager {
     private final List<RunningProcess> list = new CopyOnWriteArrayList<>();
 
     @Override
-    public void registerProcess(@Nonnull RunningProcess runningProcess) {
+    public void registerProcess(@NotNull RunningProcess runningProcess) {
         list.add(runningProcess);
         ClientExecutor.getInstance().getScreenManager().getPerProcessScreenLines().put(
-                runningProcess.getProcessInformation().getProcessUniqueID(),
-                new ProcessScreen(runningProcess.getProcessInformation().getProcessUniqueID())
+                runningProcess.getProcessInformation().getProcessDetail().getProcessUniqueID(),
+                new ProcessScreen(runningProcess.getProcessInformation().getProcessDetail().getProcessUniqueID())
         );
 
         DefaultChannelManager.INSTANCE.get("Controller").ifPresent(packetSender -> packetSender.sendPacket(new ClientPacketOutProcessRegistered(
-                runningProcess.getProcessInformation().getProcessUniqueID(),
-                runningProcess.getProcessInformation().getName()
+                runningProcess.getProcessInformation().getProcessDetail().getProcessUniqueID(),
+                runningProcess.getProcessInformation().getProcessDetail().getName()
         )));
     }
 
     @Override
-    public void unregisterProcess(@Nonnull String name) {
-        Streams.filterToReference(list, runningProcess -> runningProcess.getProcessInformation().getName().equals(name)).ifPresent(runningProcess -> {
+    public void unregisterProcess(@NotNull String name) {
+        Streams.filterToReference(list, runningProcess -> runningProcess.getProcessInformation().getProcessDetail().getName().equals(name)).ifPresent(runningProcess -> {
             list.remove(runningProcess);
-            ClientExecutor.getInstance().getScreenManager().getPerProcessScreenLines().remove(runningProcess.getProcessInformation().getProcessUniqueID());
+            ClientExecutor.getInstance().getScreenManager().getPerProcessScreenLines().remove(runningProcess.getProcessInformation().getProcessDetail().getProcessUniqueID());
         });
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public ReferencedOptional<RunningProcess> getProcess(@Nonnull UUID uniqueID) {
-        return Streams.filterToReference(list, runningProcess -> runningProcess.getProcessInformation().getProcessUniqueID().equals(uniqueID));
+    public ReferencedOptional<RunningProcess> getProcess(@NotNull UUID uniqueID) {
+        return Streams.filterToReference(list, runningProcess -> runningProcess.getProcessInformation().getProcessDetail().getProcessUniqueID().equals(uniqueID));
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public ReferencedOptional<RunningProcess> getProcess(String name) {
-        return Streams.filterToReference(list, runningProcess -> runningProcess.getProcessInformation().getName().equals(name));
+        return Streams.filterToReference(list, runningProcess -> runningProcess.getProcessInformation().getProcessDetail().getName().equals(name));
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Collection<RunningProcess> getAll() {
         return Collections.unmodifiableCollection(list);
     }
 
     @Override
-    public void onProcessDisconnect(@Nonnull UUID uuid) {
-        Streams.filterToReference(list, runningProcess -> runningProcess.getProcessInformation().getProcessUniqueID().equals(uuid)).ifPresent(RunningProcess::shutdown);
+    public void onProcessDisconnect(@NotNull UUID uuid) {
+        Streams.filterToReference(list, runningProcess -> runningProcess.getProcessInformation().getProcessDetail().getProcessUniqueID().equals(uuid)).ifPresent(RunningProcess::shutdown);
     }
 
     @Override

@@ -6,7 +6,7 @@ import java.util.Collection;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Stream;
 
-public class ProcessCopyOnWriteArrayList extends CopyOnWriteArrayList<ProcessInformation> {
+public final class ProcessCopyOnWriteArrayList extends CopyOnWriteArrayList<ProcessInformation> {
 
     private final Object lock = new Object();
 
@@ -19,7 +19,7 @@ public class ProcessCopyOnWriteArrayList extends CopyOnWriteArrayList<ProcessInf
     @Override
     public boolean add(ProcessInformation c) {
         this.stream()
-                .filter(e -> e.getProcessUniqueID().equals(c.getProcessUniqueID()))
+                .filter(e -> e.getProcessDetail().getProcessUniqueID().equals(c.getProcessDetail().getProcessUniqueID()))
                 .forEach(this::remove);
         return super.add(c);
     }

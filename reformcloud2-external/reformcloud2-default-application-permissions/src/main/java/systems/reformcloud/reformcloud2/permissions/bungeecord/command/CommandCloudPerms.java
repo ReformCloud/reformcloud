@@ -5,6 +5,7 @@ import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.CommonHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.optional.ReferencedOptional;
@@ -16,7 +17,6 @@ import systems.reformcloud.reformcloud2.permissions.util.unit.InternalTimeUnit;
 import systems.reformcloud.reformcloud2.permissions.util.user.PermissionUser;
 import systems.reformcloud.reformcloud2.permissions.util.uuid.UUIDFetcher;
 
-import javax.annotation.Nonnull;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -313,7 +313,7 @@ public class CommandCloudPerms extends Command {
         return player != null ? player.getUniqueId() : UUIDFetcher.getUUIDFromName(name);
     }
 
-    private static TimeUnit parseUnitFromString(@Nonnull String s) {
+    private static TimeUnit parseUnitFromString(@NotNull String s) {
         switch (s.toLowerCase()) {
             case "s":
                 return TimeUnit.SECONDS;

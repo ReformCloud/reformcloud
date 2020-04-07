@@ -11,11 +11,16 @@ public class RunningProcessPreparedListener {
     @Listener
     public void handle(final RunningProcessPreparedEvent event) {
         NodeExecutor.getInstance().getNodeNetworkManager().getCluster().broadCastToCluster(new NodePacketOutProcessPrepared(
-                event.getRunningProcess().getProcessInformation().getName(),
-                event.getRunningProcess().getProcessInformation().getProcessUniqueID(),
-                event.getRunningProcess().getProcessInformation().getTemplate().getName()
+                event.getRunningProcess().getProcessInformation().getProcessDetail().getName(),
+                event.getRunningProcess().getProcessInformation().getProcessDetail().getProcessUniqueID(),
+                event.getRunningProcess().getProcessInformation().getProcessDetail().getTemplate().getName()
         ));
+
         LocalProcessManager.registerLocalProcess(event.getRunningProcess());
+
         NodeExecutor.getInstance().getNodeNetworkManager().getNodeProcessHelper().registerLocalProcess(event.getRunningProcess());
+        NodeExecutor.getInstance().getNodeNetworkManager().getRegisteredProcesses().removeRandom(
+                event.getRunningProcess().getProcessInformation().getProcessGroup().getName()
+        );
     }
 }

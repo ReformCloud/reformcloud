@@ -1,11 +1,10 @@
 package systems.reformcloud.reformcloud2.executor.api.common.api.messaging;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.api.messaging.util.ErrorReportHandling;
 import systems.reformcloud.reformcloud2.executor.api.common.api.messaging.util.ReceiverType;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
-
-import javax.annotation.Nonnull;
 
 public interface MessageAsyncAPI {
 
@@ -16,8 +15,8 @@ public interface MessageAsyncAPI {
      * @param jsonConfiguration The content which should get sent
      * @return A task which will get completed when the message got sent to all receivers
      */
-    @Nonnull
-    default Task<Void> sendChannelMessageAsync(@Nonnull String receiver, @Nonnull JsonConfiguration jsonConfiguration) {
+    @NotNull
+    default Task<Void> sendChannelMessageAsync(@NotNull String receiver, @NotNull JsonConfiguration jsonConfiguration) {
         return sendChannelMessageAsync(jsonConfiguration, ErrorReportHandling.NOTHING, receiver);
     }
 
@@ -28,8 +27,8 @@ public interface MessageAsyncAPI {
      * @param receivers         The receivers of the channel message
      * @return A task which will get completed when the message got sent to all receivers
      */
-    @Nonnull
-    default Task<Void> sendChannelMessageAsync(@Nonnull JsonConfiguration jsonConfiguration, @Nonnull String... receivers) {
+    @NotNull
+    default Task<Void> sendChannelMessageAsync(@NotNull JsonConfiguration jsonConfiguration, @NotNull String... receivers) {
         return sendChannelMessageAsync(jsonConfiguration, ErrorReportHandling.NOTHING, receivers);
     }
 
@@ -42,10 +41,10 @@ public interface MessageAsyncAPI {
      * @param receivers           The receivers of the channel message
      * @return A task which will get completed when the message got sent to all receivers
      */
-    @Nonnull
-    default Task<Void> sendChannelMessageAsync(@Nonnull JsonConfiguration jsonConfiguration,
-                                               @Nonnull ErrorReportHandling errorReportHandling,
-                                               @Nonnull String... receivers) {
+    @NotNull
+    default Task<Void> sendChannelMessageAsync(@NotNull JsonConfiguration jsonConfiguration,
+                                               @NotNull ErrorReportHandling errorReportHandling,
+                                               @NotNull String... receivers) {
         return sendChannelMessageAsync(jsonConfiguration, "unknown", errorReportHandling, receivers);
     }
 
@@ -59,12 +58,12 @@ public interface MessageAsyncAPI {
      * @param receivers           The receivers of the channel message
      * @return A task which will get completed when the message got sent to all receivers
      */
-    @Nonnull
+    @NotNull
     default Task<Void> sendChannelMessageAsync(
-            @Nonnull JsonConfiguration jsonConfiguration,
-            @Nonnull String baseChannel,
-            @Nonnull ErrorReportHandling errorReportHandling,
-            @Nonnull String... receivers) {
+            @NotNull JsonConfiguration jsonConfiguration,
+            @NotNull String baseChannel,
+            @NotNull ErrorReportHandling errorReportHandling,
+            @NotNull String... receivers) {
         return sendChannelMessageAsync(jsonConfiguration, baseChannel, "unknown", errorReportHandling, receivers);
     }
 
@@ -79,13 +78,13 @@ public interface MessageAsyncAPI {
      * @param receivers           The receivers of the channel message
      * @return A task which will get completed when the message got sent to all receivers
      */
-    @Nonnull
+    @NotNull
     Task<Void> sendChannelMessageAsync(
-            @Nonnull JsonConfiguration jsonConfiguration,
-            @Nonnull String baseChannel,
-            @Nonnull String subChannel,
-            @Nonnull ErrorReportHandling errorReportHandling,
-            @Nonnull String... receivers
+            @NotNull JsonConfiguration jsonConfiguration,
+            @NotNull String baseChannel,
+            @NotNull String subChannel,
+            @NotNull ErrorReportHandling errorReportHandling,
+            @NotNull String... receivers
     );
 
     /**
@@ -95,8 +94,8 @@ public interface MessageAsyncAPI {
      * @param receiverTypes The type of receivers which should get the message
      * @return A task which will get completed when the message got sent to all receivers
      */
-    @Nonnull
-    default Task<Void> sendChannelMessageAsync(@Nonnull JsonConfiguration configuration, @Nonnull ReceiverType... receiverTypes) {
+    @NotNull
+    default Task<Void> sendChannelMessageAsync(@NotNull JsonConfiguration configuration, @NotNull ReceiverType... receiverTypes) {
         return sendChannelMessageAsync(configuration, "unknown", receiverTypes);
     }
 
@@ -108,10 +107,10 @@ public interface MessageAsyncAPI {
      * @param receiverTypes The type of receivers which should get the message
      * @return A task which will get completed when the message got sent to all receivers
      */
-    @Nonnull
-    default Task<Void> sendChannelMessageAsync(@Nonnull JsonConfiguration configuration,
-                                               @Nonnull String baseChannel,
-                                               @Nonnull ReceiverType... receiverTypes) {
+    @NotNull
+    default Task<Void> sendChannelMessageAsync(@NotNull JsonConfiguration configuration,
+                                               @NotNull String baseChannel,
+                                               @NotNull ReceiverType... receiverTypes) {
         return sendChannelMessageAsync(configuration, baseChannel, "unknown", receiverTypes);
     }
 
@@ -124,7 +123,7 @@ public interface MessageAsyncAPI {
      * @param receiverTypes The type of receivers which should get the message
      * @return A task which will get completed when the message got sent to all receivers
      */
-    @Nonnull
-    Task<Void> sendChannelMessageAsync(@Nonnull JsonConfiguration configuration, @Nonnull String baseChannel,
-                                       @Nonnull String subChannel, @Nonnull ReceiverType... receiverTypes);
+    @NotNull
+    Task<Void> sendChannelMessageAsync(@NotNull JsonConfiguration configuration, @NotNull String baseChannel,
+                                       @NotNull String subChannel, @NotNull ReceiverType... receiverTypes);
 }

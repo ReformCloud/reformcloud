@@ -1,13 +1,12 @@
 package systems.reformcloud.reformcloud2.executor.api.common.utility.list;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.annotiations.UndefinedNullability;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 public final class Duo<F, S> {
 
-    public Duo(@Nonnull F first, @Nullable S second) {
+    public Duo(@NotNull F first, @Nullable S second) {
         this.first = first;
         this.second = second;
     }
@@ -19,7 +18,7 @@ public final class Duo<F, S> {
     /**
      * @return The key of this pair
      */
-    @Nonnull
+    @NotNull
     public F getFirst() {
         return first;
     }

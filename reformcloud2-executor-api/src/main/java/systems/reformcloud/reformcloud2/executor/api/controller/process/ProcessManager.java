@@ -1,11 +1,11 @@
 package systems.reformcloud.reformcloud2.executor.api.controller.process;
 
-import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
+import systems.reformcloud.reformcloud2.executor.api.common.process.api.ProcessConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.update.Updateable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.List;
 import java.util.UUID;
 
@@ -75,39 +75,11 @@ public interface ProcessManager extends Iterable<ProcessInformation>, Updateable
      * Starts a process of the specified group and filters automatically the best template
      * <p>
      *
-     * @param groupName The name of the group which is required to be non-null
+     * @param processConfiguration The configuration of the process
      * @return The process information about the created process
-     * @see ProcessInformation
-     * @see #startProcess(String, String)
      */
     @Nullable
-    ProcessInformation startProcess(String groupName);
-
-    /**
-     * Starts a process with the given template name
-     * <p>
-     *
-     * @param groupName The name if tge group which is required to be non-null
-     * @param template  The name of the template which must not exists using default template instead
-     * @return The process information of the created process
-     * @see ProcessInformation
-     * @see #startProcess(String, String, JsonConfiguration)
-     */
-    @Nullable
-    ProcessInformation startProcess(String groupName, String template);
-
-    /**
-     * Starts a process with the given template name and the json configuration as extra data for the process object
-     * <p>
-     *
-     * @param groupName    The name if tge group which is required to be non-null
-     * @param template     The name of the template which must not exists using default template instead
-     * @param configurable The extra data which you can read on the process (can be {@code null})
-     * @return The process information of the created process
-     * @see ProcessInformation
-     */
-    @Nullable
-    ProcessInformation startProcess(String groupName, String template, JsonConfiguration configurable);
+    ProcessInformation startProcess(@NotNull ProcessConfiguration processConfiguration);
 
     /**
      * Starts a prepared process
@@ -115,20 +87,19 @@ public interface ProcessManager extends Iterable<ProcessInformation>, Updateable
      * @param processInformation The information of the prepared process
      * @return The process information after the start call
      */
-    @Nonnull
-    ProcessInformation startProcess(@Nonnull ProcessInformation processInformation);
+    @NotNull
+    ProcessInformation startProcess(@NotNull ProcessInformation processInformation);
 
     /**
      * Prepares a process with the given template name and the json configuration as extra data for the process object
      * <p>
-     * @param groupName    The name if tge group which is required to be non-null
-     * @param template     The name of the template which must not exists using default template instead
-     * @param configurable The extra data which you can read on the process (can be {@code null})
+     *
+     * @param processConfiguration The configuration of the process which should get crated
      * @return The process information of the created process
      * @see ProcessInformation
      */
     @Nullable
-    ProcessInformation prepareProcess(String groupName, String template, JsonConfiguration configurable);
+    ProcessInformation prepareProcess(@NotNull ProcessConfiguration processConfiguration);
 
     /**
      * Stops a specific process and returns the last known process information
@@ -177,7 +148,7 @@ public interface ProcessManager extends Iterable<ProcessInformation>, Updateable
      * <p>
      *
      * @param uniqueID The uniqueID of the process information which will be used to identify the process
-     * @see ProcessInformation#getProcessUniqueID()
+     * @see ProcessInformation#getProcessDetail().getProcessUniqueID()
      */
     void unregisterProcess(UUID uniqueID);
 }

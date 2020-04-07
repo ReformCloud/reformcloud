@@ -1,14 +1,13 @@
 package systems.reformcloud.reformcloud2.executor.api.common.network.challenge;
 
 import io.netty.channel.ChannelHandlerContext;
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
-
-import javax.annotation.Nonnull;
 
 public interface ChallengeAuthHandler {
 
-    boolean handle(@Nonnull ChannelHandlerContext channelHandlerContext, @Nonnull Packet input, @Nonnull String name);
+    boolean handle(@NotNull ChannelHandlerContext channelHandlerContext, @NotNull Packet input, @NotNull String name);
 
-    default void handleChannelActive(@Nonnull ChannelHandlerContext channelHandlerContext) {
+    default void handleChannelActive(@NotNull ChannelHandlerContext channelHandlerContext) {
     }
 }

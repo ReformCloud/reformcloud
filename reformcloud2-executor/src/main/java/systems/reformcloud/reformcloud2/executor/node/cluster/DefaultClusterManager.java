@@ -8,12 +8,15 @@ import systems.reformcloud.reformcloud2.executor.controller.network.packets.out.
 import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
 import systems.reformcloud.reformcloud2.executor.node.cluster.sync.DefaultClusterSyncManager;
 
-import java.util.ArrayList;
+import javax.annotation.Nonnull;
 import java.util.Collection;
+import java.util.concurrent.CopyOnWriteArrayList;
 
-public class DefaultClusterManager implements ClusterManager {
+import static systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState.PREPARED;
 
-    private final Collection<NodeInformation> nodeInformation = new ArrayList<>();
+public final class DefaultClusterManager implements ClusterManager {
+
+    private final Collection<NodeInformation> nodeInformation = new CopyOnWriteArrayList<>();
 
     private NodeInformation head;
 
@@ -23,12 +26,14 @@ public class DefaultClusterManager implements ClusterManager {
     }
 
     @Override
-    public void handleNodeDisconnect(InternalNetworkCluster cluster, String name) {
-        Streams.allOf(Streams.newList(nodeInformation), e -> e.getName().equals(name)).forEach(e -> {
+    public void handleNodeDisconnect(@Nonnull InternalNetworkCluster cluster, @Nonnull String name) {
+        Streams.allOf(nodeInformation, e -> e.getName().equals(name)).forEach(e -> {
             this.nodeInformation.remove(e);
             cluster.getConnectedNodes().remove(e);
-            Streams.allOf(Streams.newList(NodeExecutor.getInstance().getNodeNetworkManager().getNodeProcessHelper().getClusterProcesses()),
-                    i -> i.getNodeUniqueID().equals(e.getNodeUniqueID())
+
+            Streams.allOf(
+                    Streams.newList(NodeExecutor.getInstance().getNodeNetworkManager().getNodeProcessHelper().getClusterProcesses()),
+                    i -> i.getProcessDetail().getParentUniqueID().equals(e.getNodeUniqueID())
             ).forEach(i -> {
                 NodeExecutor.getInstance().getNodeNetworkManager().getNodeProcessHelper().handleProcessStop(i);
                 DefaultClusterSyncManager.sendToAllExcludedNodes(new ControllerEventProcessClosed(i));
@@ -39,11 +44,11 @@ public class DefaultClusterManager implements ClusterManager {
             }
         });
 
-        recalculateHead();
+        this.recalculateHead();
     }
 
     @Override
-    public void handleConnect(InternalNetworkCluster cluster, NodeInformation nodeInformation) {
+    public void handleConnect(@Nonnull InternalNetworkCluster cluster, @Nonnull NodeInformation nodeInformation) {
         if (this.nodeInformation.stream().anyMatch(e -> e.getName().equals(nodeInformation.getName()))) {
             return;
         }
@@ -54,23 +59,24 @@ public class DefaultClusterManager implements ClusterManager {
     }
 
     @Override
-    public int getOnlineAndWaiting(String groupName) {
-        int onlineOrWaiting = Streams.allOf(NodeExecutor.getInstance().getNodeNetworkManager().getNodeProcessHelper().getClusterProcesses(),
-                e -> e.getProcessGroup().getName().equals(groupName) && e.getProcessState().isValid()).size();
-        onlineOrWaiting += Streams.deepFilter(NodeExecutor.getInstance().getNodeNetworkManager().getQueuedProcesses(),
-                v -> v.getValue().equals(groupName)).size();
-        return onlineOrWaiting;
-    }
+    public int getOnlineAndWaiting(@Nonnull String groupName) {
+        int allNotPrepared = Streams.allOf(
+                NodeExecutor.getInstance().getNodeNetworkManager().getNodeProcessHelper().getClusterProcesses(),
+                e -> e.getProcessGroup().getName().equals(groupName) && !e.getProcessDetail().getProcessState().equals(PREPARED)
+        ).size();
 
-    @Override
-    public int getWaiting(String groupName) {
-        return Streams.deepFilter(NodeExecutor.getInstance().getNodeNetworkManager().getQueuedProcesses(), v -> v.getValue().equals(groupName)).size();
+        int waiting = Streams.allOf(
+                NodeExecutor.getInstance().getNodeNetworkManager().getWaitingProcesses(),
+                e -> e.getFirst().getBase().getName().equals(groupName)
+        ).size();
+
+        return allNotPrepared + waiting;
     }
 
     @Override
     public NodeInformation getHeadNode() {
         if (head == null) {
-            recalculateHead();
+            this.recalculateHead();
         }
 
         return head;
@@ -80,10 +86,7 @@ public class DefaultClusterManager implements ClusterManager {
         for (NodeInformation information : nodeInformation) {
             if (head == null) {
                 head = information;
-                continue;
-            }
-
-            if (information.getStartupTime() < head.getStartupTime()) {
+            } else if (information.getStartupTime() < head.getStartupTime()) {
                 head = information;
             }
         }

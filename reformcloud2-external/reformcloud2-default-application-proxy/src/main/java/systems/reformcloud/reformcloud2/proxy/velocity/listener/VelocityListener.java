@@ -1,6 +1,8 @@
 package systems.reformcloud.reformcloud2.proxy.velocity.listener;
 
+import com.velocitypowered.api.event.PostOrder;
 import com.velocitypowered.api.event.Subscribe;
+import com.velocitypowered.api.event.connection.DisconnectEvent;
 import com.velocitypowered.api.event.connection.PostLoginEvent;
 import com.velocitypowered.api.event.player.ServerConnectedEvent;
 import com.velocitypowered.api.event.proxy.ProxyPingEvent;
@@ -10,6 +12,7 @@ import net.kyori.text.Component;
 import net.kyori.text.TextComponent;
 import systems.reformcloud.reformcloud2.executor.api.api.API;
 import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.ProcessUpdatedEvent;
+import systems.reformcloud.reformcloud2.executor.api.common.event.handler.Listener;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
@@ -118,8 +121,8 @@ public class VelocityListener {
         // ====
 
         ProcessInformation info = API.getInstance().getCurrentProcessInformation();
-        int max = info.getMaxPlayers();
-        int online = info.getOnlineCount();
+        int max = info.getProcessDetail().getMaxPlayers();
+        int online = info.getProcessPlayerManager().getOnlineCount();
 
         // ====
 
@@ -140,9 +143,14 @@ public class VelocityListener {
         event.setPing(builder.build());
     }
 
-    @Subscribe
+    @Subscribe(order = PostOrder.LAST)
     public void handle(final PostLoginEvent event) {
-        initTab0(event.getPlayer());
+        initTab();
+    }
+
+    @Subscribe
+    public void handle(final DisconnectEvent event) {
+        initTab();
     }
 
     @Subscribe
@@ -150,9 +158,12 @@ public class VelocityListener {
         initTab0(event.getPlayer());
     }
 
-    @systems.reformcloud.reformcloud2.executor.api.common.event.handler.Listener
+    @Listener
     public void handle(final ProcessUpdatedEvent event) {
-        initTab();
+        if (event.getProcessInformation().getProcessDetail().getProcessUniqueID()
+                .equals(API.getInstance().getCurrentProcessInformation().getProcessDetail().getProcessUniqueID())) {
+            initTab();
+        }
     }
 
     private static void initTab() {
@@ -204,14 +215,14 @@ public class VelocityListener {
 
         ProcessInformation current = API.getInstance().getCurrentProcessInformation();
         return text
-                .replace("%proxy_name%", current.getName())
-                .replace("%proxy_display_name%", current.getDisplayName())
-                .replace("%proxy_unique_id%", current.getProcessUniqueID().toString())
-                .replace("%proxy_id%", Integer.toString(current.getId()))
-                .replace("%proxy_online_players%", Integer.toString(current.getOnlineCount()))
-                .replace("%proxy_max_players%", Integer.toString(current.getMaxPlayers()))
+                .replace("%proxy_name%", current.getProcessDetail().getName())
+                .replace("%proxy_display_name%", current.getProcessDetail().getDisplayName())
+                .replace("%proxy_unique_id%", current.getProcessDetail().getProcessUniqueID().toString())
+                .replace("%proxy_id%", Integer.toString(current.getProcessDetail().getId()))
+                .replace("%proxy_online_players%", Integer.toString(current.getProcessPlayerManager().getOnlineCount()))
+                .replace("%proxy_max_players%", Integer.toString(current.getProcessDetail().getMaxPlayers()))
                 .replace("%proxy_group%", current.getProcessGroup().getName())
-                .replace("%proxy_parent%", current.getParent());
+                .replace("%proxy_parent%", current.getProcessDetail().getParentName());
     }
 
     private static String[] replaceAll(String[] in) {
@@ -226,8 +237,8 @@ public class VelocityListener {
 
     private static String replaceTabList(Player player, String line) {
         ProcessInformation info = API.getInstance().getCurrentProcessInformation();
-        int max = info.getMaxPlayers();
-        int online = info.getOnlineCount();
+        int max = info.getProcessDetail().getMaxPlayers();
+        int online = info.getProcessPlayerManager().getOnlineCount();
 
         return line
                 .replace("%player_server%", player.getCurrentServer().isPresent()

@@ -1,5 +1,8 @@
 package systems.reformcloud.reformcloud2.executor.api.common.utility.system;
 
+import org.jetbrains.annotations.NotNull;
+import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -16,14 +19,47 @@ public final class DownloadHelper {
         throw new UnsupportedOperationException();
     }
 
-    public static void downloadAndDisconnect(String url, String target) {
-        openConnection(url, stream -> {
-            SystemHelper.createDirectory(Paths.get(target).getParent());
-            SystemHelper.doCopy(stream, Paths.get(target), StandardCopyOption.REPLACE_EXISTING);
-        });
+    public static void downloadAndDisconnect(@NotNull String url, @NotNull String target) {
+        openURLConnection(url, new HashMap<>(), connection -> {
+            System.out.println(LanguageManager.get("runtime-download-file", url, getSize(connection.getContentLengthLong())));
+            long start = System.currentTimeMillis();
+
+            try (InputStream stream = connection.getInputStream()) {
+                SystemHelper.createDirectory(Paths.get(target).getParent());
+                SystemHelper.doCopy(stream, Paths.get(target), StandardCopyOption.REPLACE_EXISTING);
+            } catch (final IOException ex) {
+                ex.printStackTrace();
+            }
+
+            System.out.println(LanguageManager.get("runtime-download-file-completed",
+                    url, System.currentTimeMillis() - start));
+        }, throwable -> throwable.printStackTrace());
     }
 
-    public static void openConnection(String url, Map<String, String> headers, Consumer<InputStream> inputStreamConsumer) {
+    public static void openConnection(@NotNull String url, @NotNull Consumer<InputStream> consumer) {
+        openConnection(url, new HashMap<>(), consumer);
+    }
+
+    public static void openConnection(@NotNull String url, @NotNull Map<String, String> headers,
+                                      @NotNull Consumer<InputStream> inputStreamConsumer) {
+        openConnection(url, headers, inputStreamConsumer, ex -> ex.printStackTrace());
+    }
+
+    public static void openConnection(@NotNull String url, @NotNull Map<String, String> headers,
+                                      @NotNull Consumer<InputStream> inputStreamConsumer,
+                                      @NotNull Consumer<Throwable> exceptionConsumer) {
+        openURLConnection(url, headers, httpURLConnection -> {
+            try (InputStream stream = httpURLConnection.getInputStream()) {
+                inputStreamConsumer.accept(stream);
+            } catch (final IOException ex) {
+                ex.printStackTrace();
+            }
+        }, exceptionConsumer);
+    }
+
+    public static void openURLConnection(@NotNull String url, @NotNull Map<String, String> headers,
+                                         @NotNull Consumer<HttpURLConnection> connectionConsumer,
+                                         @NotNull Consumer<Throwable> exceptionConsumer) {
         try {
             HttpURLConnection httpURLConnection = (HttpURLConnection) new URL(url).openConnection();
             httpURLConnection.setRequestProperty(
@@ -34,18 +70,23 @@ public final class DownloadHelper {
             httpURLConnection.setDoOutput(false);
             httpURLConnection.setUseCaches(false);
             httpURLConnection.connect();
-
-            try (InputStream inputStream = httpURLConnection.getInputStream()) {
-                inputStreamConsumer.accept(inputStream);
-            }
-
+            connectionConsumer.accept(httpURLConnection);
             httpURLConnection.disconnect();
-        } catch (final IOException ex) {
-            ex.printStackTrace();
+        } catch (final Throwable throwable) {
+            exceptionConsumer.accept(throwable);
         }
     }
 
-    public static void openConnection(String url, Consumer<InputStream> consumer) {
-        openConnection(url, new HashMap<>(), consumer);
+    @NotNull
+    private static String getSize(long size) {
+        if (size >= 1048576L) {
+            return Math.round((float) size / 1048576.0F) + "MB";
+        }
+
+        if (size >= 1024) {
+            return Math.round((float) size / 1024.0F) + "KB";
+        }
+
+        return Math.round(size) + "B";
     }
 }

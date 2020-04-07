@@ -1,6 +1,8 @@
 package systems.reformcloud.reformcloud2.signs.sponge.adapter;
 
 import com.google.gson.reflect.TypeToken;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockType;
 import org.spongepowered.api.block.BlockTypes;
@@ -39,8 +41,6 @@ import systems.reformcloud.reformcloud2.signs.util.sign.config.SignConfig;
 import systems.reformcloud.reformcloud2.signs.util.sign.config.SignLayout;
 import systems.reformcloud.reformcloud2.signs.util.sign.config.SignSubLayout;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -113,8 +113,8 @@ public class SpongeSignSystemAdapter implements SignSystemAdapter<Sign> {
     };
 
     @Override
-    public void handleProcessStart(@Nonnull ProcessInformation processInformation) {
-        if (!processInformation.getTemplate().isServer()) {
+    public void handleProcessStart(@NotNull ProcessInformation processInformation) {
+        if (!processInformation.getProcessDetail().getTemplate().isServer()) {
             return;
         }
 
@@ -127,8 +127,8 @@ public class SpongeSignSystemAdapter implements SignSystemAdapter<Sign> {
     }
 
     @Override
-    public void handleProcessUpdate(@Nonnull ProcessInformation processInformation) {
-        if (!processInformation.getTemplate().isServer()) {
+    public void handleProcessUpdate(@NotNull ProcessInformation processInformation) {
+        if (!processInformation.getProcessDetail().getTemplate().isServer()) {
             return;
         }
 
@@ -141,8 +141,8 @@ public class SpongeSignSystemAdapter implements SignSystemAdapter<Sign> {
     }
 
     @Override
-    public void handleProcessStop(@Nonnull ProcessInformation processInformation) {
-        if (!processInformation.getTemplate().isServer()) {
+    public void handleProcessStop(@NotNull ProcessInformation processInformation) {
+        if (!processInformation.getProcessDetail().getTemplate().isServer()) {
             return;
         }
 
@@ -154,9 +154,9 @@ public class SpongeSignSystemAdapter implements SignSystemAdapter<Sign> {
         updateAllSigns();
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public CloudSign createSign(@Nonnull Sign sign, @Nonnull String group) {
+    public CloudSign createSign(@NotNull Sign sign, @NotNull String group) {
         CloudSign cloudSign = getSignConverter().to(sign, group);
         if (getSignAt(cloudSign.getLocation()) != null) {
             return cloudSign;
@@ -167,26 +167,44 @@ public class SpongeSignSystemAdapter implements SignSystemAdapter<Sign> {
     }
 
     @Override
-    public void deleteSign(@Nonnull CloudLocation location) {
+    public void deleteSign(@NotNull CloudLocation location) {
         Streams.filterToReference(cachedSigns, e -> e.getLocation().equals(location)).ifPresent(e ->
                 DefaultChannelManager.INSTANCE.get("Controller").ifPresent(s -> s.sendPacket(new APIPacketOutDeleteSign(e)))
         );
     }
 
+    @Override
+    public void deleteAll() {
+        cachedSigns.forEach(e -> DefaultChannelManager.INSTANCE.get("Controller").ifPresent(
+                s -> s.sendPacket(new APIPacketOutDeleteSign(e))
+        ));
+    }
+
+    @Override
+    public void cleanSigns() {
+        for (CloudSign cachedSign : cachedSigns) {
+            if (this.getSignConverter().from(cachedSign) == null) {
+                DefaultChannelManager.INSTANCE.get("Controller").ifPresent(
+                        s -> s.sendPacket(new APIPacketOutDeleteSign(cachedSign))
+                );
+            }
+        }
+    }
+
     @Nullable
     @Override
-    public CloudSign getSignAt(@Nonnull CloudLocation location) {
+    public CloudSign getSignAt(@NotNull CloudLocation location) {
         return Streams.filter(cachedSigns, e -> e.getLocation().equals(location));
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public SignConverter<Sign> getSignConverter() {
         return SpongeSignConverter.INSTANCE;
     }
 
     @Override
-    public boolean canConnect(@Nonnull CloudSign cloudSign) {
+    public boolean canConnect(@NotNull CloudSign cloudSign) {
         if (cloudSign.getCurrentTarget() == null || !cloudSign.getCurrentTarget().getNetworkInfo().isConnected()) {
             return false;
         }
@@ -195,18 +213,19 @@ public class SpongeSignSystemAdapter implements SignSystemAdapter<Sign> {
             return getSelfLayout().isShowMaintenanceProcessesOnSigns();
         }
 
-        return true;
+        ProcessState state = cloudSign.getCurrentTarget().getProcessDetail().getProcessState();
+        return state.isReady() && !state.equals(ProcessState.INVISIBLE);
     }
 
     @Override
-    public void handleInternalSignCreate(@Nonnull CloudSign cloudSign) {
+    public void handleInternalSignCreate(@NotNull CloudSign cloudSign) {
         this.cachedSigns.add(cloudSign);
         tryAssign();
         updateAllSigns();
     }
 
     @Override
-    public void handleInternalSignDelete(@Nonnull CloudSign cloudSign) {
+    public void handleInternalSignDelete(@NotNull CloudSign cloudSign) {
         Streams.filterToReference(cachedSigns, e -> e.getLocation().equals(cloudSign.getLocation())).ifPresent(e -> {
             this.cachedSigns.remove(e);
             removeAssign(e);
@@ -216,7 +235,7 @@ public class SpongeSignSystemAdapter implements SignSystemAdapter<Sign> {
     }
 
     @Override
-    public void handleSignConfigUpdate(@Nonnull SignConfig config) {
+    public void handleSignConfigUpdate(@NotNull SignConfig config) {
         this.config = config;
         restart();
     }
@@ -231,7 +250,7 @@ public class SpongeSignSystemAdapter implements SignSystemAdapter<Sign> {
     }
 
     private boolean isCurrent(ProcessInformation processInformation) {
-        return API.getInstance().getCurrentProcessInformation().getProcessUniqueID().equals(processInformation.getProcessUniqueID());
+        return API.getInstance().getCurrentProcessInformation().getProcessDetail().getProcessUniqueID().equals(processInformation.getProcessDetail().getProcessUniqueID());
     }
 
     private void assign(ProcessInformation processInformation) {
@@ -239,18 +258,18 @@ public class SpongeSignSystemAdapter implements SignSystemAdapter<Sign> {
             if (sign.getCurrentTarget() == null
                     && sign.getGroup().equals(processInformation.getProcessGroup().getName())) {
                 sign.setCurrentTarget(processInformation);
-                notAssigned.remove(processInformation.getProcessUniqueID());
+                notAssigned.remove(processInformation.getProcessDetail().getProcessUniqueID());
                 return;
             }
         }
 
-        notAssigned.put(processInformation.getProcessUniqueID(), processInformation);
+        notAssigned.put(processInformation.getProcessDetail().getProcessUniqueID(), processInformation);
     }
 
     private void updateAssign(ProcessInformation newInfo) {
         for (CloudSign sign : cachedSigns) {
             if (sign.getCurrentTarget() != null
-                    && sign.getCurrentTarget().getProcessUniqueID().equals(newInfo.getProcessUniqueID())) {
+                    && sign.getCurrentTarget().getProcessDetail().getProcessUniqueID().equals(newInfo.getProcessDetail().getProcessUniqueID())) {
                 sign.setCurrentTarget(newInfo);
                 break;
             }
@@ -260,13 +279,13 @@ public class SpongeSignSystemAdapter implements SignSystemAdapter<Sign> {
     private void deleteAssignment(ProcessInformation processInformation) {
         for (CloudSign sign : cachedSigns) {
             if (sign.getCurrentTarget() != null
-                    && sign.getCurrentTarget().getProcessUniqueID().equals(processInformation.getProcessUniqueID())) {
+                    && sign.getCurrentTarget().getProcessDetail().getProcessUniqueID().equals(processInformation.getProcessDetail().getProcessUniqueID())) {
                 sign.setCurrentTarget(null);
                 return;
             }
         }
 
-        notAssigned.remove(processInformation.getProcessUniqueID());
+        notAssigned.remove(processInformation.getProcessDetail().getProcessUniqueID());
     }
 
     private void tryAssign() {
@@ -282,7 +301,7 @@ public class SpongeSignSystemAdapter implements SignSystemAdapter<Sign> {
             return;
         }
 
-        notAssigned.put(sign.getCurrentTarget().getProcessUniqueID(), sign.getCurrentTarget());
+        notAssigned.put(sign.getCurrentTarget().getProcessDetail().getProcessUniqueID(), sign.getCurrentTarget());
         sign.setCurrentTarget(null);
         tryAssign();
     }
@@ -328,10 +347,10 @@ public class SpongeSignSystemAdapter implements SignSystemAdapter<Sign> {
                 return;
             }
 
-            if (e.getCurrentTarget().getProcessState().equals(ProcessState.INVISIBLE)
-                    || e.getCurrentTarget().getProcessState().equals(ProcessState.STOPPED)
-                    || e.getCurrentTarget().getProcessState().equals(ProcessState.STARTED)
-                    || e.getCurrentTarget().getProcessState().equals(ProcessState.PREPARED)) {
+            if (e.getCurrentTarget().getProcessDetail().getProcessState().equals(ProcessState.INVISIBLE)
+                    || e.getCurrentTarget().getProcessDetail().getProcessState().equals(ProcessState.STOPPED)
+                    || e.getCurrentTarget().getProcessDetail().getProcessState().equals(ProcessState.STARTED)
+                    || e.getCurrentTarget().getProcessDetail().getProcessState().equals(ProcessState.PREPARED)) {
                 updateSign(e, searching, null);
                 return;
             }
@@ -351,12 +370,12 @@ public class SpongeSignSystemAdapter implements SignSystemAdapter<Sign> {
                 return;
             }
 
-            if (e.getCurrentTarget().getOnlineCount() == 0) {
+            if (e.getCurrentTarget().getProcessPlayerManager().getOnlineCount() == 0) {
                 updateSign(e, empty, e.getCurrentTarget());
                 return;
             }
 
-            if (e.getCurrentTarget().getOnlineCount() >= e.getCurrentTarget().getMaxPlayers()) {
+            if (e.getCurrentTarget().getProcessPlayerManager().getOnlineCount() >= e.getCurrentTarget().getProcessDetail().getMaxPlayers()) {
                 if (layout.isSearchingLayoutWhenFull()) {
                     updateSign(e, searching, null);
                     return;

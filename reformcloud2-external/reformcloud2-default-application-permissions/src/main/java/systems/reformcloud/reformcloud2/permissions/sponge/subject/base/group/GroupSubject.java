@@ -1,17 +1,15 @@
 package systems.reformcloud.reformcloud2.permissions.sponge.subject.base.group;
 
-import org.checkerframework.checker.nullness.qual.NonNull;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.service.permission.PermissionService;
 import org.spongepowered.api.service.permission.SubjectCollection;
 import systems.reformcloud.reformcloud2.permissions.PermissionAPI;
 import systems.reformcloud.reformcloud2.permissions.sponge.subject.impl.AbstractGroupSubject;
 import systems.reformcloud.reformcloud2.permissions.util.group.PermissionGroup;
 
-import javax.annotation.Nonnull;
-
 public class GroupSubject extends AbstractGroupSubject {
 
-    public GroupSubject(@Nonnull String group, @Nonnull PermissionService service, @NonNull SubjectCollection source) {
+    public GroupSubject(@NotNull String group, @NotNull PermissionService service, @NotNull SubjectCollection source) {
         super(group);
         this.service = service;
         this.source = source;
@@ -40,13 +38,13 @@ public class GroupSubject extends AbstractGroupSubject {
     }
 
     @Override
-    @NonNull
+    @NotNull
     public SubjectCollection getContainingCollection() {
         return this.source;
     }
 
     @Override
-    @Nonnull
+    @NotNull
     public String getIdentifier() {
         return this.group;
     }

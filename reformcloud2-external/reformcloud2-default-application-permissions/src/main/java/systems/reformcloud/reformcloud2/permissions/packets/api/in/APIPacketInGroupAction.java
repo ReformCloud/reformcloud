@@ -1,5 +1,6 @@
 package systems.reformcloud.reformcloud2.permissions.packets.api.in;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.handler.DefaultJsonNetworkHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
@@ -8,7 +9,6 @@ import systems.reformcloud.reformcloud2.permissions.packets.PacketHelper;
 import systems.reformcloud.reformcloud2.permissions.packets.util.PermissionAction;
 import systems.reformcloud.reformcloud2.permissions.util.group.PermissionGroup;
 
-import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 
 public class APIPacketInGroupAction extends DefaultJsonNetworkHandler {
@@ -18,7 +18,7 @@ public class APIPacketInGroupAction extends DefaultJsonNetworkHandler {
     }
 
     @Override
-    public void handlePacket(@Nonnull PacketSender packetSender, @Nonnull Packet packet, @Nonnull Consumer<Packet> responses) {
+    public void handlePacket(@NotNull PacketSender packetSender, @NotNull Packet packet, @NotNull Consumer<Packet> responses) {
         final PermissionGroup permissionGroup = packet.content().get("group", PermissionGroup.TYPE);
         final PermissionAction permissionAction = packet.content().get("action", PermissionAction.class);
 

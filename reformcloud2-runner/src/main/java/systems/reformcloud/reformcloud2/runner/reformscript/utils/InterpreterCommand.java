@@ -1,8 +1,8 @@
 package systems.reformcloud.reformcloud2.runner.reformscript.utils;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.runner.reformscript.InterpretedReformScript;
 
-import javax.annotation.Nonnull;
 import java.util.Collection;
 
 /**
@@ -15,7 +15,7 @@ public abstract class InterpreterCommand {
      *
      * @param command The name of the command
      */
-    public InterpreterCommand(@Nonnull String command) {
+    public InterpreterCommand(@NotNull String command) {
         this.command = command.toUpperCase();
     }
 
@@ -24,7 +24,7 @@ public abstract class InterpreterCommand {
     /**
      * @return The actual command name which is always upper-case
      */
-    @Nonnull
+    @NotNull
     public String getCommand() {
         return command;
     }
@@ -36,5 +36,5 @@ public abstract class InterpreterCommand {
      * @param script     The script from which the command got executed
      * @param allLines   All lines of the script
      */
-    public abstract void execute(@Nonnull String cursorLine, @Nonnull InterpretedReformScript script, @Nonnull Collection<String> allLines);
+    public abstract void execute(@NotNull String cursorLine, @NotNull InterpretedReformScript script, @NotNull Collection<String> allLines);
 }

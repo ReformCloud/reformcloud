@@ -1,10 +1,10 @@
 package systems.reformcloud.reformcloud2.runner.commands;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.runner.reformscript.InterpretedReformScript;
 import systems.reformcloud.reformcloud2.runner.reformscript.utils.InterpreterCommand;
 import systems.reformcloud.reformcloud2.runner.setup.RunnerExecutorSetup;
 
-import javax.annotation.Nonnull;
 import java.util.Collection;
 
 public final class SetupCommand extends InterpreterCommand {
@@ -14,7 +14,7 @@ public final class SetupCommand extends InterpreterCommand {
     }
 
     @Override
-    public void execute(@Nonnull String cursorLine, @Nonnull InterpretedReformScript script, @Nonnull Collection<String> allLines) {
+    public void execute(@NotNull String cursorLine, @NotNull InterpretedReformScript script, @NotNull Collection<String> allLines) {
         if (Integer.getInteger("reformcloud.executor.type") != null) {
             return;
         }

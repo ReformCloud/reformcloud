@@ -4,14 +4,13 @@ import systems.reformcloud.reformcloud2.executor.api.common.api.basic.ExternalAP
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.JsonPacket;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
+import systems.reformcloud.reformcloud2.executor.api.common.process.api.ProcessConfiguration;
 
 public final class ExternalAPIPacketOutStartProcess extends JsonPacket {
 
-    public ExternalAPIPacketOutStartProcess(String group, String template, JsonConfiguration data, boolean start) {
+    public ExternalAPIPacketOutStartProcess(ProcessConfiguration processConfiguration, boolean start) {
         super(ExternalAPIImplementation.EXTERNAL_PACKET_ID + 31, new JsonConfiguration()
-                .add("group", group)
-                .add("template", template == null ? "" : template)
-                .add("extra", data)
+                .add("config", processConfiguration)
                 .add("start", start)
         );
     }

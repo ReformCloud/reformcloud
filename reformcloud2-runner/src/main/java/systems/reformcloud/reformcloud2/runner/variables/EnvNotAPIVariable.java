@@ -1,8 +1,8 @@
 package systems.reformcloud.reformcloud2.runner.variables;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.runner.reformscript.utils.InterpreterVariable;
 
-import javax.annotation.Nonnull;
 import java.util.Collection;
 
 public final class EnvNotAPIVariable extends InterpreterVariable {
@@ -11,9 +11,9 @@ public final class EnvNotAPIVariable extends InterpreterVariable {
         super("env_not_api");
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public String unwrap(@Nonnull String cursorLine, @Nonnull Collection<String> fullLines) {
+    public String unwrap(@NotNull String cursorLine, @NotNull Collection<String> fullLines) {
         Integer integer = Integer.getInteger(cursorLine);
         return Boolean.toString(integer != null && integer != 3);
     }

@@ -1,11 +1,10 @@
 package systems.reformcloud.reformcloud2.executor.api.common.api.player;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.UUID;
 
 public interface PlayerAsyncAPI {
@@ -17,9 +16,8 @@ public interface PlayerAsyncAPI {
      * @param message The message which should be sent
      * @return A task which will be completed after the completion of the packet sent
      */
-    @Nonnull
-    @CheckReturnValue
-    Task<Void> sendMessageAsync(@Nonnull UUID player, @Nonnull String message);
+    @NotNull
+    Task<Void> sendMessageAsync(@NotNull UUID player, @NotNull String message);
 
     /**
      * Kicks a player from the network
@@ -28,9 +26,8 @@ public interface PlayerAsyncAPI {
      * @param message The kick message
      * @return A task which will be completed after the completion of the packet sent
      */
-    @Nonnull
-    @CheckReturnValue
-    Task<Void> kickPlayerAsync(@Nonnull UUID player, @Nonnull String message);
+    @NotNull
+    Task<Void> kickPlayerAsync(@NotNull UUID player, @NotNull String message);
 
     /**
      * Kicks a player from a specific server
@@ -39,9 +36,8 @@ public interface PlayerAsyncAPI {
      * @param message The kick message
      * @return A task which will be completed after the completion of the packet sent
      */
-    @Nonnull
-    @CheckReturnValue
-    Task<Void> kickPlayerFromServerAsync(@Nonnull UUID player, @Nonnull String message);
+    @NotNull
+    Task<Void> kickPlayerFromServerAsync(@NotNull UUID player, @NotNull String message);
 
     /**
      * Plays a sound to a player
@@ -52,9 +48,8 @@ public interface PlayerAsyncAPI {
      * @param f2     The pitch of the sound
      * @return A task which will be completed after the completion of the packet sent
      */
-    @Nonnull
-    @CheckReturnValue
-    Task<Void> playSoundAsync(@Nonnull UUID player, @Nonnull String sound, float f1, float f2);
+    @NotNull
+    Task<Void> playSoundAsync(@NotNull UUID player, @NotNull String sound, float f1, float f2);
 
     /**
      * Sends a title to a player
@@ -67,9 +62,8 @@ public interface PlayerAsyncAPI {
      * @param fadeOut  The fadeout time of the title
      * @return A task which will be completed after the completion of the packet sent
      */
-    @Nonnull
-    @CheckReturnValue
-    Task<Void> sendTitleAsync(@Nonnull UUID player, @Nonnull String title, @Nonnull String subTitle, int fadeIn, int stay, int fadeOut);
+    @NotNull
+    Task<Void> sendTitleAsync(@NotNull UUID player, @NotNull String title, @NotNull String subTitle, int fadeIn, int stay, int fadeOut);
 
     /**
      * Sets a player effect
@@ -78,9 +72,8 @@ public interface PlayerAsyncAPI {
      * @param entityEffect The entity effect which should be played
      * @return A task which will be completed after the completion of the packet sent
      */
-    @Nonnull
-    @CheckReturnValue
-    Task<Void> playEffectAsync(@Nonnull UUID player, @Nonnull String entityEffect);
+    @NotNull
+    Task<Void> playEffectAsync(@NotNull UUID player, @NotNull String entityEffect);
 
     /**
      * Plays a player effect
@@ -91,9 +84,8 @@ public interface PlayerAsyncAPI {
      * @param <T>    The data depending to the effect
      * @return A task which will be completed after the completion of the packet sent
      */
-    @Nonnull
-    @CheckReturnValue
-    <T> Task<Void> playEffectAsync(@Nonnull UUID player, @Nonnull String effect, @Nullable T data);
+    @NotNull
+    <T> Task<Void> playEffectAsync(@NotNull UUID player, @NotNull String effect, @Nullable T data);
 
     /**
      * Respawn a player
@@ -101,9 +93,8 @@ public interface PlayerAsyncAPI {
      * @param player The uuid of the player which should be re-spawned
      * @return A task which will be completed after the completion of the packet sent
      */
-    @Nonnull
-    @CheckReturnValue
-    Task<Void> respawnAsync(@Nonnull UUID player);
+    @NotNull
+    Task<Void> respawnAsync(@NotNull UUID player);
 
     /**
      * Teleports a player
@@ -117,9 +108,8 @@ public interface PlayerAsyncAPI {
      * @param pitch  The pitch of the new location
      * @return A task which will be completed after the completion of the packet sent
      */
-    @Nonnull
-    @CheckReturnValue
-    Task<Void> teleportAsync(@Nonnull UUID player, @Nonnull String world, double x, double y, double z, float yaw, float pitch);
+    @NotNull
+    Task<Void> teleportAsync(@NotNull UUID player, @NotNull String world, double x, double y, double z, float yaw, float pitch);
 
     /**
      * Connects a player to a specific server
@@ -128,9 +118,8 @@ public interface PlayerAsyncAPI {
      * @param server The target server
      * @return A task which will be completed after the completion of the packet sent
      */
-    @Nonnull
-    @CheckReturnValue
-    Task<Void> connectAsync(@Nonnull UUID player, @Nonnull String server);
+    @NotNull
+    Task<Void> connectAsync(@NotNull UUID player, @NotNull String server);
 
     /**
      * Connects a player to a specific server
@@ -139,9 +128,8 @@ public interface PlayerAsyncAPI {
      * @param server The {@link ProcessInformation} of the target server
      * @return A task which will be completed after the completion of the packet sent
      */
-    @Nonnull
-    @CheckReturnValue
-    Task<Void> connectAsync(@Nonnull UUID player, @Nonnull ProcessInformation server);
+    @NotNull
+    Task<Void> connectAsync(@NotNull UUID player, @NotNull ProcessInformation server);
 
     /**
      * Connects a player to an other player
@@ -150,9 +138,8 @@ public interface PlayerAsyncAPI {
      * @param target The target player
      * @return A task which will be completed after the completion of the packet sent
      */
-    @Nonnull
-    @CheckReturnValue
-    Task<Void> connectAsync(@Nonnull UUID player, @Nonnull UUID target);
+    @NotNull
+    Task<Void> connectAsync(@NotNull UUID player, @NotNull UUID target);
 
     /**
      * Sets a player resource pack
@@ -161,7 +148,6 @@ public interface PlayerAsyncAPI {
      * @param pack   The url of the resource pack
      * @return A task which will be completed after the completion of the packet sent
      */
-    @Nonnull
-    @CheckReturnValue
-    Task<Void> setResourcePackAsync(@Nonnull UUID player, @Nonnull String pack);
+    @NotNull
+    Task<Void> setResourcePackAsync(@NotNull UUID player, @NotNull String pack);
 }

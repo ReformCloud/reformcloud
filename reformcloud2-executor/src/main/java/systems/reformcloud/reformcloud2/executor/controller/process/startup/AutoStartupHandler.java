@@ -61,12 +61,12 @@ public final class AutoStartupHandler extends AbsoluteThread {
                                     System.out.println(LanguageManager.get(
                                             "process-start-already-prepared-process",
                                             processGroup.getName(),
-                                            prepared.getName()
+                                            prepared.getProcessDetail().getName()
                                     ));
                                     ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().startProcess(prepared);
                                 } else {
                                     System.out.println(LanguageManager.get("process-start-creating-new-process", processGroup.getName()));
-                                    ControllerExecutor.getInstance().getProcessManager().startProcess(processGroup.getName());
+                                    ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().startProcess(processGroup.getName());
                                     AbsoluteThread.sleep(100);
                                 }
                             }
@@ -91,7 +91,7 @@ public final class AutoStartupHandler extends AbsoluteThread {
 
     private List<ProcessInformation> getPreparedProcesses(String group) {
         return Streams.list(ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcesses(group),
-                e -> e.getProcessState().equals(ProcessState.PREPARED)
+                e -> e.getProcessDetail().getProcessState().equals(ProcessState.PREPARED)
         );
     }
 }

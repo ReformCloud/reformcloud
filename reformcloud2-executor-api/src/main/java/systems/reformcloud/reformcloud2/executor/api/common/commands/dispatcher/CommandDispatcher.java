@@ -1,10 +1,10 @@
 package systems.reformcloud.reformcloud2.executor.api.common.commands.dispatcher;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.AllowedCommandSources;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.dispatcher.command.EventDispatcher;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.source.CommandSource;
 
-import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 
 public interface CommandDispatcher extends EventDispatcher {
@@ -18,9 +18,9 @@ public interface CommandDispatcher extends EventDispatcher {
      * @param result         The result handler of the method
      */
     void dispatchCommand(
-            @Nonnull CommandSource commandSource,
-            @Nonnull AllowedCommandSources commandSources,
-            @Nonnull String commandLine,
-            @Nonnull Consumer<String> result
+            @NotNull CommandSource commandSource,
+            @NotNull AllowedCommandSources commandSources,
+            @NotNull String commandLine,
+            @NotNull Consumer<String> result
     );
 }

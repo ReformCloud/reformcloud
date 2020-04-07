@@ -3,37 +3,37 @@ package systems.reformcloud.reformcloud2.commands.plugin.velocity.commands;
 import com.velocitypowered.api.command.Command;
 import com.velocitypowered.api.command.CommandSource;
 import net.kyori.text.TextComponent;
-import org.checkerframework.checker.nullness.qual.NonNull;
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.CommonHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.MainGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
+import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
 import systems.reformcloud.reformcloud2.executor.api.velocity.VelocityExecutor;
 
-import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class CommandReformCloud implements Command {
 
-    public CommandReformCloud(@Nonnull List<String> aliases) {
+    public CommandReformCloud(@NotNull List<String> aliases) {
         this.aliases = aliases;
     }
 
     private final List<String> aliases;
 
     @Override
-    public void execute(CommandSource commandSender, @NonNull String[] strings) {
+    public void execute(CommandSource commandSender, @NotNull String[] strings) {
         final String prefix = VelocityExecutor.getInstance().getMessages().getPrefix() + " ";
 
         if (strings.length == 1 && strings[0].equalsIgnoreCase("list")) {
             ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getAllProcesses().forEach(e -> commandSender.sendMessage(TextComponent.of(
-                    "=> " + e.getName()
-                            + "/ Display: " + e.getDisplayName()
-                            + "/ UniqueID: " + e.getProcessUniqueID()
-                            + "/ Parent: " + e.getParent()
+                    "=> " + e.getProcessDetail().getName()
+                            + "/ Display: " + e.getProcessDetail().getDisplayName()
+                            + "/ UniqueID: " + e.getProcessDetail().getProcessUniqueID()
+                            + "/ Parent: " + e.getProcessDetail().getParentName()
                             + "/ Connected: " + e.getNetworkInfo().isConnected()
             )));
             return;
@@ -42,26 +42,35 @@ public class CommandReformCloud implements Command {
         if (strings.length == 2) {
             switch (strings[0].toLowerCase()) {
                 case "copy": {
-                    ExecutorAPI.getInstance().getSyncAPI().getConsoleSyncAPI().dispatchCommandAndGetResult("p " + strings[1] + " copy");
+                    ProcessInformation process = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcess(strings[1]);
+                    if (process == null) {
+                        commandSender.sendMessage(TextComponent.of(prefix + "§cThis process is unknown"));
+                        return;
+                    }
+
+                    process.toWrapped().copy();
                     commandSender.sendMessage(getCommandSuccessMessage());
                     return;
                 }
 
                 case "start": {
                     ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().startProcess(strings[1]);
-                    commandSender.sendMessage(getCommandSuccessMessage());
+                    commandSender.sendMessage(this.getCommandSuccessMessage());
                     return;
                 }
 
                 case "stop": {
                     ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().stopProcess(strings[1]);
-                    commandSender.sendMessage(getCommandSuccessMessage());
+                    commandSender.sendMessage(this.getCommandSuccessMessage());
                     return;
                 }
 
                 case "stopall": {
-                    ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcesses(strings[1]).forEach(e -> ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().stopProcess(e.getName()));
-                    commandSender.sendMessage(getCommandSuccessMessage());
+                    ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcesses(strings[1]).forEach(
+                            e -> ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().stopProcess(e.getProcessDetail().getName())
+                    );
+
+                    commandSender.sendMessage(this.getCommandSuccessMessage());
                     return;
                 }
 
@@ -72,10 +81,9 @@ public class CommandReformCloud implements Command {
                         return;
                     }
 
-                    ExecutorAPI.getInstance().getSyncAPI().getConsoleSyncAPI().dispatchCommandAndGetResult(
-                            "g sub " + strings[1] + " edit --maintenance=false"
-                    );
-                    commandSender.sendMessage(getCommandSuccessMessage());
+                    processGroup.getPlayerAccessConfiguration().toggleMaintenance();
+                    ExecutorAPI.getInstance().getSyncAPI().getGroupSyncAPI().updateProcessGroup(processGroup);
+                    commandSender.sendMessage(this.getCommandSuccessMessage());
                     return;
                 }
             }
@@ -117,7 +125,7 @@ public class CommandReformCloud implements Command {
                             }
 
                             ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcesses(processGroup.getName()).forEach(processInformation -> {
-                                ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().stopProcess(processInformation.getProcessUniqueID());
+                                ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().stopProcess(processInformation.getProcessDetail().getProcessUniqueID());
                                 AbsoluteThread.sleep(TimeUnit.MILLISECONDS, 10);
                             });
                         });
@@ -169,13 +177,13 @@ public class CommandReformCloud implements Command {
         return TextComponent.of(message);
     }
 
-    @Nonnull
+    @NotNull
     public List<String> getAliases() {
         return aliases;
     }
 
     @Override
-    public boolean hasPermission(CommandSource source, @NonNull String[] args) {
+    public boolean hasPermission(CommandSource source, @NotNull String[] args) {
         return source.hasPermission("reformcloud.command.reformcloud");
     }
 }

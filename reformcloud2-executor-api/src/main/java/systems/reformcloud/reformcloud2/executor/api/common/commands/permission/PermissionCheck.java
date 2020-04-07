@@ -1,6 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.api.common.commands.permission;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 public interface PermissionCheck {
 
@@ -11,7 +11,7 @@ public interface PermissionCheck {
      * @param permission       The permission which should be checked
      * @return The {@link PermissionResult} of the permission check
      */
-    @Nonnull
+    @NotNull
     PermissionResult checkPermission(PermissionHolder permissionHolder, Permission permission);
 
     /**
@@ -21,6 +21,6 @@ public interface PermissionCheck {
      * @param permission       The permission which should be checked
      * @return The {@link PermissionResult} of the permission check
      */
-    @Nonnull
+    @NotNull
     PermissionResult checkPermission(PermissionHolder permissionHolder, String permission);
 }

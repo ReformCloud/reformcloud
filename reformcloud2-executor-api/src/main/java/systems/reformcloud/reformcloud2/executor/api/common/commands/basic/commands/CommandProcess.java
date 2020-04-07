@@ -1,21 +1,19 @@
 package systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.common.CommonHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.GlobalCommand;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.source.CommandSource;
+import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.inclusion.Inclusion;
 import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.StringUtil;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Properties;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -23,7 +21,9 @@ import static systems.reformcloud.reformcloud2.executor.api.common.CommonHelper.
 
 public final class CommandProcess extends GlobalCommand {
 
-    public CommandProcess(@Nonnull Function<ProcessInformation, Boolean> screenToggle, @Nonnull Consumer<ProcessInformation> copy) {
+    private static final String FORMAT_LIST = " - %s - %d/%d - %s - %s";
+
+    public CommandProcess(@NotNull Function<ProcessInformation, Boolean> screenToggle, @NotNull Consumer<ProcessInformation> copy) {
         super("process", "reformcloud.command.process", "The process management command", "p", "processes");
         this.screenToggle = screenToggle;
         this.copy = copy;
@@ -34,24 +34,24 @@ public final class CommandProcess extends GlobalCommand {
     private final Consumer<ProcessInformation> copy;
 
     @Override
-    public void describeCommandToSender(@Nonnull CommandSource source) {
+    public void describeCommandToSender(@NotNull CommandSource source) {
         source.sendMessages((
                 "process list                                  | Lists all processes\n" +
-                " --group=[group]                              | Lists all processes of the specified group\n" +
-                " \n" +
-                "process <name | uniqueID> [info]              | Shows information about a process\n" +
-                " --full=[full]                                | Shows the full extra data submitted to the process (default: false)\n" +
-                " \n" +
-                "process <name | uniqueID> [start]             | Starts a process which is prepared\n" +
-                "process <name | uniqueID> [stop]              | Stops the process\n" +
-                "process <name | uniqueID> [screen]            | Toggles the screen logging of the process to the console\n" +
-                "process <name | uniqueID> [copy]              | Copies the specified process is the currently running template\n" +
-                "process <name | uniqueID> [execute] <command> | Sends the specified command to the process"
+                        " --group=[group]                              | Lists all processes of the specified group\n" +
+                        " \n" +
+                        "process <name | uniqueID> [info]              | Shows information about a process\n" +
+                        " --full=[full]                                | Shows the full extra data submitted to the process (default: false)\n" +
+                        " \n" +
+                        "process <name | uniqueID> [start]             | Starts a process which is prepared\n" +
+                        "process <name | uniqueID> [stop]              | Stops the process\n" +
+                        "process <name | uniqueID> [screen]            | Toggles the screen logging of the process to the console\n" +
+                        "process <name | uniqueID> [copy]              | Copies the specified process is the currently running template\n" +
+                        "process <name | uniqueID> [execute] <command> | Sends the specified command to the process"
         ).split("\n"));
     }
 
     @Override
-    public boolean handleCommand(@Nonnull CommandSource commandSource, @Nonnull String[] strings) {
+    public boolean handleCommand(@NotNull CommandSource commandSource, @NotNull String[] strings) {
         if (strings.length == 0) {
             this.describeCommandToSender(commandSource);
             return true;
@@ -59,17 +59,20 @@ public final class CommandProcess extends GlobalCommand {
 
         Properties properties = StringUtil.calcProperties(strings, 1);
         if (strings[0].equalsIgnoreCase("list")) {
-            Collection<ProcessInformation> processes;
             if (properties.containsKey("group")) {
-                processes = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcesses(properties.getProperty("group"));
+                ProcessGroup group = ExecutorAPI.getInstance().getSyncAPI().getGroupSyncAPI().getProcessGroup(properties.getProperty("group"));
+                if (group == null) {
+                    commandSource.sendMessage(LanguageManager.get("command-process-group-unavailable", properties.getProperty("group")));
+                    return true;
+                }
+
+                this.showAllProcesses(commandSource, group);
             } else {
-                processes = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getAllProcesses();
+                for (ProcessGroup processGroup : ExecutorAPI.getInstance().getSyncAPI().getGroupSyncAPI().getProcessGroups()) {
+                    this.showAllProcesses(commandSource, processGroup);
+                }
             }
 
-            commandSource.sendMessage(LanguageManager.get("command-process-process-list-prefix", processes.size()));
-            processes.forEach(
-                    e -> commandSource.sendMessage("  - " + e.getName() + "/" + e.getProcessUniqueID())
-            );
             return true;
         }
 
@@ -93,8 +96,8 @@ public final class CommandProcess extends GlobalCommand {
             commandSource.sendMessage(LanguageManager.get(
                     "command-process-process-copied",
                     strings[0],
-                    target.getTemplate().getName(),
-                    target.getTemplate().getBackend())
+                    target.getProcessDetail().getTemplate().getName(),
+                    target.getProcessDetail().getTemplate().getBackend())
             );
             copy.accept(target);
             return true;
@@ -117,18 +120,20 @@ public final class CommandProcess extends GlobalCommand {
         }
 
         if (strings.length == 2 && (strings[1].equalsIgnoreCase("stop") || strings[1].equalsIgnoreCase("kill"))) {
-            ExecutorAPI.getInstance().getAsyncAPI().getProcessAsyncAPI().stopProcessAsync(target.getProcessUniqueID()).onComplete(info -> {});
+            ExecutorAPI.getInstance().getAsyncAPI().getProcessAsyncAPI().stopProcessAsync(target.getProcessDetail().getProcessUniqueID()).onComplete(info -> {
+            });
             commandSource.sendMessage(LanguageManager.get("command-process-stop-proceed", strings[0]));
             return true;
         }
 
         if (strings.length == 2 && strings[1].equalsIgnoreCase("start")) {
-            if (!target.getProcessState().equals(ProcessState.PREPARED)) {
+            if (!target.getProcessDetail().getProcessState().equals(ProcessState.PREPARED)) {
                 commandSource.sendMessage(LanguageManager.get("command-process-process-not-prepared", strings[0]));
                 return true;
             }
 
-            ExecutorAPI.getInstance().getAsyncAPI().getProcessAsyncAPI().startProcessAsync(target).onComplete(e -> {});
+            ExecutorAPI.getInstance().getAsyncAPI().getProcessAsyncAPI().startProcessAsync(target).onComplete(e -> {
+            });
             commandSource.sendMessage(LanguageManager.get("command-process-starting-prepared", strings[0]));
             return true;
         }
@@ -137,7 +142,7 @@ public final class CommandProcess extends GlobalCommand {
                 || strings[1].equalsIgnoreCase("cmd")
                 || strings[1].equalsIgnoreCase("execute"))) {
             String command = String.join(" ", Arrays.copyOfRange(strings, 2, strings.length));
-            ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().executeProcessCommand(target.getName(), command);
+            ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().executeProcessCommand(target.getProcessDetail().getName(), command);
             commandSource.sendMessage(LanguageManager.get("command-process-command-execute", command, strings[0]));
             return true;
         }
@@ -149,16 +154,16 @@ public final class CommandProcess extends GlobalCommand {
     private void describeProcessToSender(CommandSource source, ProcessInformation information, boolean full) {
         StringBuilder builder = new StringBuilder();
 
-        builder.append(" > Name         - ").append(information.getName()).append("\n");
-        builder.append(" > Display      - ").append(information.getDisplayName()).append("\n");
-        builder.append(" > Parent       - ").append(information.getParent()).append("\n");
-        builder.append(" > Unique-ID    - ").append(information.getProcessUniqueID().toString()).append("\n");
+        builder.append(" > Name         - ").append(information.getProcessDetail().getName()).append("\n");
+        builder.append(" > Display      - ").append(information.getProcessDetail().getDisplayName()).append("\n");
+        builder.append(" > Parent       - ").append(information.getProcessDetail().getParentName()).append("\n");
+        builder.append(" > Unique-ID    - ").append(information.getProcessDetail().getProcessUniqueID().toString()).append("\n");
         builder.append(" > Group        - ").append(information.getProcessGroup().getName()).append("\n");
-        builder.append(" > Template     - ").append(information.getTemplate().getName()).append("/")
-                .append(information.getTemplate().getBackend()).append("\n");
+        builder.append(" > Template     - ").append(information.getProcessDetail().getTemplate().getName()).append("/")
+                .append(information.getProcessDetail().getTemplate().getBackend()).append("\n");
         builder.append("\n");
-        builder.append(" > Ready        - ").append(information.getProcessState().isReady() ? "&ayes&r" : "&cno&r").append("\n");
-        builder.append(" > State        - ").append(information.getProcessState().name()).append("\n");
+        builder.append(" > Ready        - ").append(information.getProcessDetail().getProcessState().isReady() ? "&ayes&r" : "&cno&r").append("\n");
+        builder.append(" > State        - ").append(information.getProcessDetail().getProcessState().name()).append("\n");
         builder.append(" > Connected    - ").append(information.getNetworkInfo().isConnected() ? "&ayes&r" : "&cno&r").append("\n");
         builder.append(" > Address      - ").append(information.getNetworkInfo().getHost())
                 .append(":").append(information.getNetworkInfo().getPort()).append("\n");
@@ -169,16 +174,16 @@ public final class CommandProcess extends GlobalCommand {
         builder.append(" ").append("\n");
         builder.append(" > Inclusions").append("\n");
 
-        if (!information.getTemplate().getTemplateInclusions().isEmpty()) {
-            for (Inclusion templateInclusion : information.getTemplate().getTemplateInclusions()) {
+        if (!information.getProcessDetail().getTemplate().getTemplateInclusions().isEmpty()) {
+            for (Inclusion templateInclusion : information.getProcessDetail().getTemplate().getTemplateInclusions()) {
                 builder.append("   > ").append(templateInclusion.getKey()).append("/").append(templateInclusion.getBackend()).append("\n");
             }
 
             builder.append(" ").append("\n");
         }
 
-        if (!information.getTemplate().getPathInclusions().isEmpty()) {
-            for (Inclusion pathInclusion : information.getTemplate().getPathInclusions()) {
+        if (!information.getProcessDetail().getTemplate().getPathInclusions().isEmpty()) {
+            for (Inclusion pathInclusion : information.getProcessDetail().getTemplate().getPathInclusions()) {
                 builder.append("   > ").append(pathInclusion.getKey()).append(" FROM ").append(pathInclusion.getBackend()).append("\n");
             }
         }
@@ -186,14 +191,14 @@ public final class CommandProcess extends GlobalCommand {
         builder.append(" ").append("\n");
 
         builder.append(" > Runtime").append("\n");
-        builder.append("  > OS           - ").append(information.getProcessRuntimeInformation().getOsVersion()).append("\n");
-        builder.append("  > OS-Arch      - ").append(information.getProcessRuntimeInformation().getSystemArchitecture()).append("\n");
-        builder.append("  > Java         - ").append(information.getProcessRuntimeInformation().getJavaVersion()).append("\n");
-        builder.append("  > CPU          - ").append(DECIMAL_FORMAT.format(information.getProcessRuntimeInformation().getCpuUsageInternal())).append("%").append("\n");
-        builder.append("  > Memory       - ").append(information.getProcessRuntimeInformation().getMemoryUsageInternal()).append("MB").append("\n");
-        builder.append("  > Non-Heap     - ").append(information.getProcessRuntimeInformation().getNonHeapMemoryUsage()).append("MB").append("\n");
-        builder.append("  > Threads      - ").append(information.getProcessRuntimeInformation().getThreadInfos().size()).append("\n");
-        builder.append("  > Dead Threads - ").append(information.getProcessRuntimeInformation().getDeadLockedThreads().length);
+        builder.append("  > OS           - ").append(information.getProcessDetail().getProcessRuntimeInformation().getOsVersion()).append("\n");
+        builder.append("  > OS-Arch      - ").append(information.getProcessDetail().getProcessRuntimeInformation().getSystemArchitecture()).append("\n");
+        builder.append("  > Java         - ").append(information.getProcessDetail().getProcessRuntimeInformation().getJavaVersion()).append("\n");
+        builder.append("  > CPU          - ").append(DECIMAL_FORMAT.format(information.getProcessDetail().getProcessRuntimeInformation().getCpuUsageInternal())).append("%").append("\n");
+        builder.append("  > Memory       - ").append(information.getProcessDetail().getProcessRuntimeInformation().getMemoryUsageInternal()).append("MB").append("\n");
+        builder.append("  > Non-Heap     - ").append(information.getProcessDetail().getProcessRuntimeInformation().getNonHeapMemoryUsage()).append("MB").append("\n");
+        builder.append("  > Threads      - ").append(information.getProcessDetail().getProcessRuntimeInformation().getThreadInfos().size()).append("\n");
+        builder.append("  > Dead Threads - ").append(information.getProcessDetail().getProcessRuntimeInformation().getDeadLockedThreads().length);
 
         if (full) {
             builder.append(" ").append("\n");
@@ -210,5 +215,26 @@ public final class CommandProcess extends GlobalCommand {
         return process == null
                 ? ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcess(s)
                 : ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcess(process);
+    }
+
+    private void showAllProcesses(@NotNull CommandSource source, @NotNull ProcessGroup group) {
+        Set<ProcessInformation> all = this.sort(ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcesses(group.getName()));
+        all.forEach(
+                e -> source.sendMessage(String.format(
+                        FORMAT_LIST,
+                        e.getProcessDetail().getName(),
+                        e.getProcessPlayerManager().getOnlineCount(),
+                        e.getProcessDetail().getMaxPlayers(),
+                        e.getProcessDetail().getProcessState().name(),
+                        e.getProcessDetail().getProcessUniqueID().toString()
+                ))
+        );
+    }
+
+    @NotNull
+    private Set<ProcessInformation> sort(@NotNull Collection<ProcessInformation> all) {
+        SortedSet<ProcessInformation> out = new TreeSet<>(Comparator.comparingInt(e -> e.getProcessDetail().getId()));
+        out.addAll(all);
+        return out;
     }
 }

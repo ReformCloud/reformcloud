@@ -1,14 +1,14 @@
 package systems.reformcloud.reformcloud2.executor.api.common.groups;
 
 import com.google.gson.reflect.TypeToken;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Template;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.PlayerAccessConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.StartupConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.name.Nameable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Objects;
 
@@ -58,17 +58,17 @@ public class ProcessGroup implements Nameable {
         return showIdInName;
     }
 
-    @Nonnull
+    @NotNull
     public StartupConfiguration getStartupConfiguration() {
         return startupConfiguration;
     }
 
-    @Nonnull
+    @NotNull
     public List<Template> getTemplates() {
         return templates;
     }
 
-    @Nonnull
+    @NotNull
     public PlayerAccessConfiguration getPlayerAccessConfiguration() {
         return playerAccessConfiguration;
     }
@@ -94,11 +94,11 @@ public class ProcessGroup implements Nameable {
     }
 
     @Nullable
-    public Template getTemplate(@Nonnull String name) {
+    public Template getTemplate(@NotNull String name) {
         return Streams.filter(this.getTemplates(), e -> e.getName().equals(name));
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String getName() {
         return name;

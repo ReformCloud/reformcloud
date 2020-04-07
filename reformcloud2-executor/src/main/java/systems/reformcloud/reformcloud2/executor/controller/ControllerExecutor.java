@@ -1,5 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.controller;
 
+import org.jetbrains.annotations.NotNull;
 import org.reflections.Reflections;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorType;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
@@ -75,7 +76,6 @@ import systems.reformcloud.reformcloud2.executor.controller.process.ClientManage
 import systems.reformcloud.reformcloud2.executor.controller.process.DefaultProcessManager;
 import systems.reformcloud.reformcloud2.executor.controller.process.startup.AutoStartupHandler;
 
-import javax.annotation.Nonnull;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -320,7 +320,7 @@ public final class ControllerExecutor extends Controller {
         return controllerExecutorConfig;
     }
 
-    @Nonnull
+    @NotNull
     public static ControllerExecutor getInstance() {
         if (instance == null) {
             return (ControllerExecutor) Controller.getInstance();
@@ -329,13 +329,13 @@ public final class ControllerExecutor extends Controller {
         return instance;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public SyncAPI getSyncAPI() {
         return syncAPI;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public AsyncAPI getAsyncAPI() {
         return asyncAPI;
@@ -346,7 +346,7 @@ public final class ControllerExecutor extends Controller {
         return networkServer;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public PacketHandler getPacketHandler() {
         return packetHandler;
@@ -381,7 +381,7 @@ public final class ControllerExecutor extends Controller {
         return database;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public EventManager getEventManager() {
         return eventManager;
@@ -417,11 +417,11 @@ public final class ControllerExecutor extends Controller {
     private void loadCommands() {
         this.commandManager
                 .register(new CommandProcess(target -> {
-                    ReferencedOptional<PacketSender> optional = DefaultChannelManager.INSTANCE.get(target.getParent());
-                    optional.ifPresent(packetSender -> packetSender.sendPacket(new ControllerPacketOutToggleScreen(target.getProcessUniqueID())));
+                    ReferencedOptional<PacketSender> optional = DefaultChannelManager.INSTANCE.get(target.getProcessDetail().getParentName());
+                    optional.ifPresent(packetSender -> packetSender.sendPacket(new ControllerPacketOutToggleScreen(target.getProcessDetail().getProcessUniqueID())));
                     return optional.isPresent();
-                }, e -> DefaultChannelManager.INSTANCE.get(e.getParent()).ifPresent(packetSender -> packetSender.sendPacket(
-                        new ControllerPacketOutCopyProcess(e.getProcessUniqueID())
+                }, e -> DefaultChannelManager.INSTANCE.get(e.getProcessDetail().getParentName()).ifPresent(packetSender -> packetSender.sendPacket(
+                        new ControllerPacketOutCopyProcess(e.getProcessDetail().getProcessUniqueID())
                 ))))
                 .register(new CommandClients())
                 .register(new CommandPlayers())

@@ -1,10 +1,9 @@
 package systems.reformcloud.reformcloud2.executor.api.common.process.util;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.RuntimeConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Template;
-
-import javax.annotation.Nonnull;
 
 public final class MemoryCalculator {
 
@@ -12,7 +11,7 @@ public final class MemoryCalculator {
         throw new UnsupportedOperationException();
     }
 
-    public static int calcMemory(@Nonnull String group, @Nonnull Template template) {
+    public static int calcMemory(@NotNull String group, @NotNull Template template) {
         RuntimeConfiguration configuration = template.getRuntimeConfiguration();
         if (configuration.getMaxMemory() < 0 || configuration.getDynamicMemory() < 0) {
             return configuration.getMaxMemory() < 0 ? 512 : configuration.getMaxMemory();

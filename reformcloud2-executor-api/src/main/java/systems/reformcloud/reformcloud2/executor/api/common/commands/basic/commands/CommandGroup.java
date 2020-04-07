@@ -1,5 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.CommonHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.GlobalCommand;
@@ -13,11 +14,11 @@ import systems.reformcloud.reformcloud2.executor.api.common.groups.template.back
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.backend.TemplateBackendManager;
 import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
+import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.StringUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
 
-import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -31,12 +32,13 @@ public final class CommandGroup extends GlobalCommand {
     }
 
     @Override
-    public void describeCommandToSender(@Nonnull CommandSource source) {
+    public void describeCommandToSender(@NotNull CommandSource source) {
         source.sendMessages((
                 "group <list>                                   | Shows all registered main and process groups\n" +
                         "group <sub | main> <name> [info]               | Shows information about a specific group\n" +
                         "group <sub | main> <name> [delete]             | Deletes the specified process group\n" +
-                        "group <sub | main> <name> [stop]               | Stops either all processes of the group or all sub groups of the main group\n" +
+                        "group <sub | main> <name> [stop]               | Stops either all non-prepared processes of the group or all sub groups of the main group which are not prepared\n" +
+                        "group <sub | main> <name> [kill]               | Stops either all processes of the group or all sub groups of the main group\n" +
                         " \n" +
                         "group <sub> <name> [edit]                      | Edits the specified group\n" +
                         " --maintenance=[maintenance]                   | Enables or disables the maintenance mode\n" +
@@ -67,7 +69,7 @@ public final class CommandGroup extends GlobalCommand {
     }
 
     @Override
-    public boolean handleCommand(@Nonnull CommandSource commandSource, @Nonnull String[] strings) {
+    public boolean handleCommand(@NotNull CommandSource commandSource, @NotNull String[] strings) {
         if (strings.length == 1 && strings[0].equalsIgnoreCase("list")) {
             this.listGroupsToSender(commandSource);
             return true;
@@ -101,10 +103,26 @@ public final class CommandGroup extends GlobalCommand {
         }
 
         if (strings.length == 3 && strings[2].equalsIgnoreCase("stop")) {
+            List<ProcessInformation> processes = ExecutorAPI.getInstance()
+                    .getSyncAPI()
+                    .getProcessSyncAPI()
+                    .getProcesses(processGroup.getName())
+                    .stream()
+                    .filter(e -> !e.getProcessDetail().getProcessState().equals(ProcessState.PREPARED))
+                    .collect(Collectors.toList());
+            source.sendMessage(LanguageManager.get("command-group-stopping-all-not-prepared", processGroup.getName()));
+            processes.forEach(e -> ExecutorAPI.getInstance().getAsyncAPI().getProcessAsyncAPI().stopProcessAsync(e.getProcessDetail().getProcessUniqueID()).onComplete(f -> {
+            }));
+
+            return;
+        }
+
+        if (strings.length == 3 && strings[2].equalsIgnoreCase("kill")) {
             List<ProcessInformation> processes = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcesses(processGroup.getName());
             source.sendMessage(LanguageManager.get("command-group-stopping-all", processGroup.getName()));
-            processes.forEach(e -> ExecutorAPI.getInstance().getAsyncAPI().getProcessAsyncAPI().stopProcessAsync(e.getProcessUniqueID()).onComplete(f -> {
+            processes.forEach(e -> ExecutorAPI.getInstance().getAsyncAPI().getProcessAsyncAPI().stopProcessAsync(e.getProcessDetail().getProcessUniqueID()).onComplete(f -> {
             }));
+
             return;
         }
 
@@ -382,7 +400,7 @@ public final class CommandGroup extends GlobalCommand {
             ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcesses(processGroup.getName()).forEach(e -> {
                 e.setProcessGroup(processGroup);
                 ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(e);
-                System.out.println(LanguageManager.get("command-group-edited-running-process", e.getName()));
+                System.out.println(LanguageManager.get("command-group-edited-running-process", e.getProcessDetail().getName()));
             });
             return;
         }
@@ -410,9 +428,27 @@ public final class CommandGroup extends GlobalCommand {
 
         if (strings.length == 3 && strings[2].equalsIgnoreCase("stop")) {
             for (String subGroup : mainGroup.getSubGroups()) {
+                Collection<ProcessInformation> running = ExecutorAPI.getInstance()
+                        .getSyncAPI()
+                        .getProcessSyncAPI()
+                        .getProcesses(subGroup)
+                        .stream()
+                        .filter(e -> !e.getProcessDetail().getProcessState().equals(ProcessState.PREPARED))
+                        .collect(Collectors.toList());
+                source.sendMessage(LanguageManager.get("command-group-stopping-all-not-prepared", subGroup));
+                running.forEach(e -> ExecutorAPI.getInstance().getAsyncAPI().getProcessAsyncAPI().stopProcessAsync(e.getProcessDetail().getProcessUniqueID()).onComplete(f -> {
+                }));
+                AbsoluteThread.sleep(50);
+            }
+
+            return;
+        }
+
+        if (strings.length == 3 && strings[2].equalsIgnoreCase("kill")) {
+            for (String subGroup : mainGroup.getSubGroups()) {
                 Collection<ProcessInformation> running = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcesses(subGroup);
                 source.sendMessage(LanguageManager.get("command-group-stopping-all", subGroup));
-                running.forEach(e -> ExecutorAPI.getInstance().getAsyncAPI().getProcessAsyncAPI().stopProcessAsync(e.getProcessUniqueID()).onComplete(f -> {
+                running.forEach(e -> ExecutorAPI.getInstance().getAsyncAPI().getProcessAsyncAPI().stopProcessAsync(e.getProcessDetail().getProcessUniqueID()).onComplete(f -> {
                 }));
                 AbsoluteThread.sleep(50);
             }

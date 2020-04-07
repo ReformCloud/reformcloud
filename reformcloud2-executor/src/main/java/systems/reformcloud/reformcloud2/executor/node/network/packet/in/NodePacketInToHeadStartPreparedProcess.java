@@ -1,5 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.node.network.packet.in;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.network.NetworkUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
@@ -7,7 +8,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.channel.hand
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 
-import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 
 public class NodePacketInToHeadStartPreparedProcess extends DefaultJsonNetworkHandler {
@@ -18,7 +18,7 @@ public class NodePacketInToHeadStartPreparedProcess extends DefaultJsonNetworkHa
     }
 
     @Override
-    public void handlePacket(@Nonnull PacketSender packetSender, @Nonnull Packet packet, @Nonnull Consumer<Packet> responses) {
+    public void handlePacket(@NotNull PacketSender packetSender, @NotNull Packet packet, @NotNull Consumer<Packet> responses) {
         ProcessInformation information = packet.content().get("info", ProcessInformation.TYPE);
         if (information != null) {
             ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().startProcess(information);
