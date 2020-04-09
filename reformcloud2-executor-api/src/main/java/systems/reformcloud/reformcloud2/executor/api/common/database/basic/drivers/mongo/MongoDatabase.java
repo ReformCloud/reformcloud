@@ -27,7 +27,7 @@ public final class MongoDatabase extends Database<com.mongodb.client.MongoDataba
                 DefaultRepositories.MAVEN_CENTRAL,
                 "org.mongodb",
                 "mongo-java-driver",
-                "3.12.2"
+                "3.12.3"
         ));
         Conditions.nonNull(dependency, StringUtil.formatError("dependency load for mongo database"));
         DEPENDENCY_LOADER.addDependency(dependency);
