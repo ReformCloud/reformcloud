@@ -34,7 +34,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -360,7 +359,7 @@ public abstract class SharedRunningProcess implements RunningProcess {
 
     @Override
     public int hashCode() {
-        return Objects.hash(startupInformation, path, getProcess(), getStartupTime());
+        return this.getProcessInformation().hashCode();
     }
 
     /**

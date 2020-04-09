@@ -180,6 +180,11 @@ public final class ProcessInformation implements Nameable, Clone<ProcessInformat
     }
 
     @Override
+    public int hashCode() {
+        return this.getProcessDetail().getProcessUniqueID().hashCode();
+    }
+
+    @Override
     @NotNull
     public String toString() {
         return getName() + "/" + getProcessDetail().getProcessUniqueID();

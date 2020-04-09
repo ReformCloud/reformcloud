@@ -23,14 +23,29 @@ import systems.reformcloud.reformcloud2.executor.node.network.packet.out.PacketO
 import systems.reformcloud.reformcloud2.executor.node.process.basic.BasicLocalNodeProcess;
 import systems.reformcloud.reformcloud2.executor.node.process.manager.LocalProcessManager;
 import systems.reformcloud.reformcloud2.executor.node.process.startup.LocalProcessQueue;
-import systems.reformcloud.reformcloud2.executor.node.util.ProcessCopyOnWriteArrayList;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public final class LocalNodeProcessManager implements NodeProcessManager {
 
-    private final Collection<ProcessInformation> information = Collections.synchronizedCollection(new ProcessCopyOnWriteArrayList());
+    private final Set<ProcessInformation> information = Collections.synchronizedSet(new HashSet<ProcessInformation>() {
+        @Override
+        public Stream<ProcessInformation> stream() {
+            synchronized (this) {
+                return super.stream();
+            }
+        }
+
+        @Override
+        @NotNull
+        public Iterator<ProcessInformation> iterator() {
+            synchronized (this) {
+                return super.iterator();
+            }
+        }
+    });
 
     @Nullable
     @Override
@@ -162,28 +177,12 @@ public final class LocalNodeProcessManager implements NodeProcessManager {
 
     @Override
     public void handleProcessStart(@NotNull ProcessInformation processInformation) {
-        ProcessInformation information = Streams.filterToReference(
-                this.information,
-                e -> e.getProcessDetail().getProcessUniqueID().equals(processInformation.getProcessDetail().getProcessUniqueID())
-        ).orNothing();
-        if (information == null) {
-            this.information.add(processInformation);
-            return;
-        }
-
-        this.information.remove(information);
         this.information.add(processInformation);
     }
 
     @Override
     public void handleProcessUpdate(@NotNull ProcessInformation processInformation) {
-        Streams.filterToReference(
-                this.information,
-                e -> e.getProcessDetail().getProcessUniqueID().equals(processInformation.getProcessDetail().getProcessUniqueID())
-        ).ifPresent(e -> {
-            this.information.remove(e);
-            this.information.add(processInformation);
-        });
+        this.information.add(processInformation);
     }
 
     @Override
@@ -201,10 +200,7 @@ public final class LocalNodeProcessManager implements NodeProcessManager {
 
     @Override
     public void handleProcessStop(@NotNull ProcessInformation processInformation) {
-        Streams.filterToReference(
-                this.information,
-                e -> e.getProcessDetail().getProcessUniqueID().equals(processInformation.getProcessDetail().getProcessUniqueID())
-        ).ifPresent(information::remove);
+        this.information.remove(processInformation);
     }
 
     @Override
