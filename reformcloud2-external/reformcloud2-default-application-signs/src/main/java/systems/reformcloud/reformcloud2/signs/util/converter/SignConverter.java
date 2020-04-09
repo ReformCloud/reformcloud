@@ -19,7 +19,7 @@ public interface SignConverter<T> {
     /**
      * Converts a object to a cloud sign
      *
-     * @param t The object which should get converted
+     * @param t     The object which should get converted
      * @param group The target group of the sign
      * @return The converted cloud sign
      */

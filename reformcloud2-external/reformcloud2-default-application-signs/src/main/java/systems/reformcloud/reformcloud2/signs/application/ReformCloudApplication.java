@@ -27,6 +27,8 @@ public class ReformCloudApplication extends Application {
 
     private static SignConfig signConfig;
 
+    private static JsonConfiguration databaseEntry;
+
     private static ReformCloudApplication instance;
 
     private static final ApplicationUpdateRepository REPOSITORY = new SignsUpdater();
@@ -64,6 +66,7 @@ public class ReformCloudApplication extends Application {
                 new PacketInGetSignConfig()
         );
 
+        databaseEntry = ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().find(SignSystemAdapter.table, "signs", null);
         signConfig = ConfigHelper.read(dataFolder().getPath());
         DefaultChannelManager.INSTANCE.getAllSender().forEach(e -> e.sendPacket(new PacketOutReloadConfig(signConfig)));
     }
@@ -100,7 +103,9 @@ public class ReformCloudApplication extends Application {
         }
 
         signs.add(cloudSign);
-        insert(signs);
+        databaseEntry.add("signs", signs);
+
+        insert();
     }
 
     public static void delete(CloudSign cloudSign) {
@@ -110,17 +115,19 @@ public class ReformCloudApplication extends Application {
         }
 
         Streams.filterToReference(signs, e -> e.getLocation().equals(cloudSign.getLocation())).ifPresent(signs::remove);
-        insert(signs);
+        databaseEntry.add("signs", signs);
+
+        insert();
     }
 
     // ====
 
     private static Collection<CloudSign> read() {
-        return ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().find(SignSystemAdapter.table, "signs", null, k -> k.get("signs", new TypeToken<Collection<CloudSign>>() {
-        }));
+        return databaseEntry.get("signs", new TypeToken<Collection<CloudSign>>() {
+        });
     }
 
-    private static void insert(Collection<CloudSign> signs) {
-        ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().update(SignSystemAdapter.table, "signs", new JsonConfiguration().add("signs", signs));
+    private static void insert() {
+        ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().update(SignSystemAdapter.table, "signs", databaseEntry);
     }
 }

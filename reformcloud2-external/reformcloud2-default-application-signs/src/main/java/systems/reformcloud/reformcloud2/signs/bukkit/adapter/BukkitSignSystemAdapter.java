@@ -1,6 +1,5 @@
 package systems.reformcloud.reformcloud2.signs.bukkit.adapter;
 
-import com.google.gson.reflect.TypeToken;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -16,48 +15,30 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import systems.reformcloud.reformcloud2.executor.api.api.API;
-import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.base.Conditions;
-import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
-import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
+import systems.reformcloud.reformcloud2.signs.SharedSignSystemAdapter;
 import systems.reformcloud.reformcloud2.signs.bukkit.commands.BukkitCommandSigns;
 import systems.reformcloud.reformcloud2.signs.bukkit.listener.BukkitListener;
-import systems.reformcloud.reformcloud2.signs.listener.CloudListener;
-import systems.reformcloud.reformcloud2.signs.packets.api.in.APIPacketInCreateSign;
-import systems.reformcloud.reformcloud2.signs.packets.api.in.APIPacketInDeleteSign;
-import systems.reformcloud.reformcloud2.signs.packets.api.in.APIPacketInReloadConfig;
-import systems.reformcloud.reformcloud2.signs.packets.api.out.APIPacketOutCreateSign;
-import systems.reformcloud.reformcloud2.signs.packets.api.out.APIPacketOutDeleteSign;
-import systems.reformcloud.reformcloud2.signs.util.LayoutUtil;
 import systems.reformcloud.reformcloud2.signs.util.PlaceHolderUtil;
-import systems.reformcloud.reformcloud2.signs.util.SignSystemAdapter;
 import systems.reformcloud.reformcloud2.signs.util.converter.SignConverter;
-import systems.reformcloud.reformcloud2.signs.util.sign.CloudLocation;
 import systems.reformcloud.reformcloud2.signs.util.sign.CloudSign;
 import systems.reformcloud.reformcloud2.signs.util.sign.config.SignConfig;
-import systems.reformcloud.reformcloud2.signs.util.sign.config.SignLayout;
 import systems.reformcloud.reformcloud2.signs.util.sign.config.SignSubLayout;
 
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.atomic.AtomicInteger;
+import javax.annotation.Nonnull;
+import java.util.Optional;
 
-public class BukkitSignSystemAdapter implements SignSystemAdapter<Sign> {
+public class BukkitSignSystemAdapter extends SharedSignSystemAdapter<Sign> {
 
     private static BukkitSignSystemAdapter instance;
 
     public BukkitSignSystemAdapter(JavaPlugin plugin, SignConfig config) {
-        SignSystemAdapter.instance.set(instance = this);
+        super(config);
+        instance = this;
 
         this.plugin = plugin;
-        this.config = config;
 
-        ExecutorAPI.getInstance().getEventManager().registerListener(new CloudListener());
         Bukkit.getPluginManager().registerEvents(new BukkitListener(), plugin);
 
         PluginCommand signs = plugin.getCommand("signs");
@@ -65,337 +46,57 @@ public class BukkitSignSystemAdapter implements SignSystemAdapter<Sign> {
         signs.setExecutor(new BukkitCommandSigns());
         signs.setPermission("reformcloud.command.signs");
 
-        ExecutorAPI.getInstance().getPacketHandler().registerNetworkHandlers(
-                new APIPacketInCreateSign(),
-                new APIPacketInDeleteSign(),
-                new APIPacketInReloadConfig()
-        );
-
         Bukkit.getMessenger().registerOutgoingPluginChannel(plugin, "BungeeCord");
-        this.start();
     }
 
-    private SignConfig config;
-
     private final Plugin plugin;
-
-    private final List<CloudSign> cachedSigns = new CopyOnWriteArrayList<>();
 
     private int taskID = -1;
 
     private int knockBackTaskID = -1;
 
-    private final Map<UUID, ProcessInformation> notAssigned = new ConcurrentHashMap<>();
-
-    private final AtomicInteger[] counter = new AtomicInteger[]{
-            new AtomicInteger(-1), // start
-            new AtomicInteger(-1), // connecting
-            new AtomicInteger(-1), // empty
-            new AtomicInteger(-1), // online
-            new AtomicInteger(-1), // full
-            new AtomicInteger(-1)  // maintenance
-    };
-
     @Override
-    public void handleProcessStart(@NotNull ProcessInformation processInformation) {
-        if (!processInformation.getProcessDetail().getTemplate().isServer()) {
-            return;
-        }
-
-        if (isCurrent(processInformation)) {
-            return;
-        }
-
-        assign(processInformation);
-        updateAllSigns();
-    }
-
-    @Override
-    public void handleProcessUpdate(@NotNull ProcessInformation processInformation) {
-        if (!processInformation.getProcessDetail().getTemplate().isServer()) {
-            return;
-        }
-
-        if (isCurrent(processInformation)) {
-            return;
-        }
-
-        if (notAssigned.containsKey(processInformation.getProcessDetail().getProcessUniqueID())) {
-            notAssigned.put(processInformation.getProcessDetail().getProcessUniqueID(), processInformation);
-            return;
-        }
-
-        updateAssign(processInformation);
-        updateAllSigns();
-    }
-
-    @Override
-    public void handleProcessStop(@NotNull ProcessInformation processInformation) {
-        if (!processInformation.getProcessDetail().getTemplate().isServer()) {
-            return;
-        }
-
-        if (isCurrent(processInformation)) {
-            return;
-        }
-
-        deleteAssignment(processInformation);
-        updateAllSigns();
-    }
-
-    @NotNull
-    @Override
-    public CloudSign createSign(@NotNull Sign sign, @NotNull String group) {
-        CloudSign cloudSign = getSignConverter().to(sign, group);
-        if (getSignAt(cloudSign.getLocation()) != null) {
-            return cloudSign;
-        }
-
-        DefaultChannelManager.INSTANCE.get("Controller").ifPresent(e -> e.sendPacket(new APIPacketOutCreateSign(cloudSign)));
-        return cloudSign;
-    }
-
-    @Override
-    public void deleteSign(@NotNull CloudLocation location) {
-        Streams.filterToReference(cachedSigns, e -> e.getLocation().equals(location)).ifPresent(e ->
-                DefaultChannelManager.INSTANCE.get("Controller").ifPresent(s -> s.sendPacket(new APIPacketOutDeleteSign(e)))
-        );
-    }
-
-    @Override
-    public void deleteAll() {
-        cachedSigns.forEach(e -> DefaultChannelManager.INSTANCE.get("Controller").ifPresent(
-                s -> s.sendPacket(new APIPacketOutDeleteSign(e))
-        ));
-    }
-
-    @Override
-    public void cleanSigns() {
-        for (CloudSign cachedSign : cachedSigns) {
-            if (this.getSignConverter().from(cachedSign) == null) {
-                DefaultChannelManager.INSTANCE.get("Controller").ifPresent(
-                        s -> s.sendPacket(new APIPacketOutDeleteSign(cachedSign))
-                );
+    protected void setSignLines(@Nullable Sign sign, @NotNull String[] lines) {
+        if (sign != null && lines.length == 4) {
+            for (int i = 0; i < 4; i++) {
+                sign.setLine(i, lines[i]);
             }
+
+            sign.update();
         }
-    }
-
-    @Nullable
-    @Override
-    public CloudSign getSignAt(@NotNull CloudLocation location) {
-        return Streams.filter(cachedSigns, e -> e.getLocation().equals(location));
-    }
-
-    @NotNull
-    @Override
-    public SignConverter<Sign> getSignConverter() {
-        return BukkitSignConverter.INSTANCE;
-    }
-
-    @Override
-    public boolean canConnect(@NotNull CloudSign cloudSign) {
-        if (cloudSign.getCurrentTarget() == null || !cloudSign.getCurrentTarget().getNetworkInfo().isConnected()) {
-            return false;
-        }
-
-        if (cloudSign.getCurrentTarget().getProcessGroup().getPlayerAccessConfiguration().isMaintenance()) {
-            return getSelfLayout().isShowMaintenanceProcessesOnSigns();
-        }
-
-        ProcessState state = cloudSign.getCurrentTarget().getProcessDetail().getProcessState();
-        return state.isReady() && !state.equals(ProcessState.INVISIBLE);
-    }
-
-    @Override
-    public void handleInternalSignCreate(@NotNull CloudSign cloudSign) {
-        this.cachedSigns.add(cloudSign);
-        tryAssign();
-        updateAllSigns();
-    }
-
-    @Override
-    public void handleInternalSignDelete(@NotNull CloudSign cloudSign) {
-        Streams.filterToReference(cachedSigns, e -> e.getLocation().equals(cloudSign.getLocation())).ifPresent(e -> {
-            this.cachedSigns.remove(e);
-            removeAssign(e);
-            updateAllSigns();
-            doSync(() -> clearLines(getSignConverter().from(e)));
-        });
     }
 
     @Override
     public void handleSignConfigUpdate(@NotNull SignConfig config) {
-        this.config = config;
-        restartTask();
+        super.signConfig = config;
+        this.restartTask();
     }
 
-    private void clearLines(Sign sign) {
-        if (sign == null) {
-            return;
-        }
-
-        sign.setLine(0, " ");
-        sign.setLine(1, " ");
-        sign.setLine(2, " ");
-        sign.setLine(3, " ");
-        sign.update();
+    @Override
+    public @NotNull SignConverter<Sign> getSignConverter() {
+        return BukkitSignConverter.INSTANCE;
     }
 
-    private void doSync(Runnable runnable) {
-        if (!plugin.isEnabled()) {
-            return;
-        }
-
-        Bukkit.getScheduler().runTask(plugin, runnable);
-    }
-
-    private void assign(ProcessInformation processInformation) {
-        for (CloudSign sign : cachedSigns) {
-            if (sign.getCurrentTarget() == null
-                    && sign.getGroup().equals(processInformation.getProcessGroup().getName())) {
-                sign.setCurrentTarget(processInformation);
-                notAssigned.remove(processInformation.getProcessDetail().getProcessUniqueID());
-                return;
-            }
-        }
-
-        notAssigned.put(processInformation.getProcessDetail().getProcessUniqueID(), processInformation);
-    }
-
-    private void updateAssign(ProcessInformation newInfo) {
-        for (CloudSign sign : cachedSigns) {
-            if (sign.getCurrentTarget() != null
-                    && sign.getCurrentTarget().getProcessDetail().getProcessUniqueID().equals(newInfo.getProcessDetail().getProcessUniqueID())) {
-                sign.setCurrentTarget(newInfo);
-                break;
-            }
-        }
-    }
-
-    private void deleteAssignment(ProcessInformation processInformation) {
-        for (CloudSign sign : cachedSigns) {
-            if (sign.getCurrentTarget() != null
-                    && sign.getCurrentTarget().getProcessDetail().getProcessUniqueID().equals(processInformation.getProcessDetail().getProcessUniqueID())) {
-                sign.setCurrentTarget(null);
-                return;
-            }
-        }
-
-        notAssigned.remove(processInformation.getProcessDetail().getProcessUniqueID());
-    }
-
-    private void tryAssign() {
-        if (notAssigned.isEmpty()) {
-            return;
-        }
-
-        notAssigned.values().forEach(this::assign);
-    }
-
-    private void removeAssign(CloudSign sign) {
-        if (sign.getCurrentTarget() == null) {
-            return;
-        }
-
-        notAssigned.put(sign.getCurrentTarget().getProcessDetail().getProcessUniqueID(), sign.getCurrentTarget());
-        sign.setCurrentTarget(null);
-        tryAssign();
-    }
-
-    private void updateAllSigns() {
-        doSync(this::updateAllSigns0);
-    }
-
-    private void updateAllSigns0() {
-        SignLayout layout = getSelfLayout();
-
-        SignSubLayout searching = LayoutUtil.getNextAndCheckFor(layout.getSearchingLayouts(), counter[0])
-                .orElseThrow(() -> new RuntimeException("Waiting layout for current group not present"));
-
-        SignSubLayout maintenance = LayoutUtil.getNextAndCheckFor(layout.getMaintenanceLayout(), counter[5])
-                .orElseThrow(() -> new RuntimeException("Waiting layout for current group not present"));
-
-        SignSubLayout connecting = LayoutUtil.getNextAndCheckFor(layout.getWaitingForConnectLayout(), counter[1])
-                .orElseThrow(() -> new RuntimeException("Connecting layout for current group not present"));
-
-        SignSubLayout empty = LayoutUtil.getNextAndCheckFor(layout.getEmptyLayout(), counter[2])
-                .orElseThrow(() -> new RuntimeException("Empty layout for current group not present"));
-
-        SignSubLayout full = LayoutUtil.getNextAndCheckFor(layout.getFullLayout(), counter[4])
-                .orElseThrow(() -> new RuntimeException("Empty layout for current group not present"));
-
-        SignSubLayout online = LayoutUtil.getNextAndCheckFor(layout.getOnlineLayout(), counter[3])
-                .orElseThrow(() -> new RuntimeException("Empty layout for current group not present"));
-
-        this.cachedSigns.forEach(e -> {
-            if (e.getCurrentTarget() == null) {
-                updateSign(e, searching, null);
-                return;
-            }
-
-            if (e.getCurrentTarget().getProcessDetail().getProcessState().equals(ProcessState.INVISIBLE)
-                    || e.getCurrentTarget().getProcessDetail().getProcessState().equals(ProcessState.STOPPED)
-                    || e.getCurrentTarget().getProcessDetail().getProcessState().equals(ProcessState.STARTED)
-                    || e.getCurrentTarget().getProcessDetail().getProcessState().equals(ProcessState.PREPARED)) {
-                updateSign(e, searching, null);
-                return;
-            }
-
-            if (e.getCurrentTarget().getProcessGroup().getPlayerAccessConfiguration().isMaintenance()) {
-                if (layout.isShowMaintenanceProcessesOnSigns()) {
-                    updateSign(e, maintenance, e.getCurrentTarget());
-                    return;
-                }
-
-                updateSign(e, searching, null);
-                return;
-            }
-
-            if (!e.getCurrentTarget().getNetworkInfo().isConnected()) {
-                updateSign(e, connecting, e.getCurrentTarget());
-                return;
-            }
-
-            if (e.getCurrentTarget().getProcessPlayerManager().getOnlineCount() == 0) {
-                updateSign(e, empty, e.getCurrentTarget());
-                return;
-            }
-
-            if (e.getCurrentTarget().getProcessPlayerManager().getOnlineCount() >= e.getCurrentTarget().getProcessDetail().getMaxPlayers()) {
-                if (layout.isSearchingLayoutWhenFull()) {
-                    updateSign(e, searching, null);
-                    return;
-                }
-
-                updateSign(e, full, e.getCurrentTarget());
-                return;
-            }
-
-            updateSign(e, online, e.getCurrentTarget());
-        });
-    }
-
-    private void updateSign(CloudSign sign, SignSubLayout layout, ProcessInformation processInformation) {
-        Sign bukkit = getSignConverter().from(sign);
-        if (bukkit == null || layout.getLines() == null || layout.getLines().length != 4) {
-            return;
-        }
-
-        bukkit.setLine(0, replaceAll(layout.getLines()[0], sign.getGroup(), processInformation));
-        bukkit.setLine(1, replaceAll(layout.getLines()[1], sign.getGroup(), processInformation));
-        bukkit.setLine(2, replaceAll(layout.getLines()[2], sign.getGroup(), processInformation));
-        bukkit.setLine(3, replaceAll(layout.getLines()[3], sign.getGroup(), processInformation));
-        bukkit.update();
-        this.changeBlockBehind(bukkit, layout);
-    }
-
-    private String replaceAll(String line, String group, ProcessInformation processInformation) {
+    @Nonnull
+    protected String replaceAll(@Nonnull String line, @Nonnull String group, ProcessInformation processInformation) {
         if (processInformation == null) {
             line = line.replace("%group%", group);
             return ChatColor.translateAlternateColorCodes('&', line);
         }
 
         return PlaceHolderUtil.format(line, group, processInformation, s -> ChatColor.translateAlternateColorCodes('&', s));
+    }
+
+    @Override
+    public void changeBlock(@NotNull CloudSign sign, @NotNull SignSubLayout layout) {
+        Sign bukkit = this.getSignConverter().from(sign);
+        if (bukkit != null) {
+            if (Bukkit.isPrimaryThread()) {
+                this.changeBlockBehind(bukkit, layout);
+            } else {
+                Bukkit.getScheduler().runTask(this.plugin, () -> this.changeBlockBehind(bukkit, layout));
+            }
+        }
     }
 
     private void changeBlockBehind(Sign sign, SignSubLayout layout) {
@@ -452,20 +153,6 @@ public class BukkitSignSystemAdapter implements SignSystemAdapter<Sign> {
         return Optional.empty();
     }
 
-    private void start() {
-        Task.EXECUTOR.execute(() -> {
-            Collection<CloudSign> signs = ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().find(SignSystemAdapter.table, "signs", null, k -> k.get("signs", new TypeToken<Collection<CloudSign>>() {
-            }));
-            if (signs == null) {
-                return;
-            }
-
-            cachedSigns.addAll(signs);
-            ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getAllProcesses().forEach(this::handleProcessStart);
-            runTasks();
-        });
-    }
-
     private void restartTask() {
         if (taskID != -1) {
             Bukkit.getScheduler().cancelTask(taskID);
@@ -480,12 +167,13 @@ public class BukkitSignSystemAdapter implements SignSystemAdapter<Sign> {
         runTasks();
     }
 
-    private void runTasks() {
-        taskID = Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, this::updateAllSigns, 0, 20 * config.getUpdateInterval()).getTaskId();
+    @Override
+    protected void runTasks() {
+        taskID = Bukkit.getScheduler().runTaskTimer(plugin, this::updateSigns, 0, 20 * super.signConfig.getUpdateInterval()).getTaskId();
 
-        double distance = this.config.getKnockBackDistance();
+        double distance = super.signConfig.getKnockBackDistance();
         knockBackTaskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
-            for (CloudSign cachedSign : this.cachedSigns) {
+            for (CloudSign cachedSign : this.signs) {
                 Sign bukkitSign = this.getSignConverter().from(cachedSign);
                 if (bukkitSign == null) {
                     continue;
@@ -499,26 +187,16 @@ public class BukkitSignSystemAdapter implements SignSystemAdapter<Sign> {
                 location.getWorld()
                         .getNearbyEntities(location, distance, distance, distance)
                         .stream()
-                        .filter(e -> e instanceof Player && !e.hasPermission(this.config.getKnockBackBypassPermission()))
+                        .filter(e -> e instanceof Player && !e.hasPermission(super.signConfig.getKnockBackBypassPermission()))
                         .forEach(e -> e.setVelocity(e.getLocation()
                                 .toVector()
                                 .subtract(location.toVector())
                                 .normalize()
-                                .multiply(this.config.getKnockBackStrength())
+                                .multiply(super.signConfig.getKnockBackStrength())
                                 .setY(0.2D)
                         ));
             }
         }, 20, 5);
-    }
-
-    private boolean isCurrent(ProcessInformation processInformation) {
-        return API.getInstance().getCurrentProcessInformation().getProcessDetail().getProcessUniqueID().equals(processInformation.getProcessDetail().getProcessUniqueID());
-    }
-
-    private SignLayout getSelfLayout() {
-        return LayoutUtil
-                .getLayoutFor(API.getInstance().getCurrentProcessInformation().getProcessGroup().getName(), config)
-                .orElseThrow(() -> new RuntimeException("No sign config present for context global or current group"));
     }
 
     public static BukkitSignSystemAdapter getInstance() {
