@@ -19,7 +19,9 @@ public class NukkitCommandSigns implements CommandExecutor {
             return true;
         }
 
+        NukkitSignSystemAdapter signSystemAdapter = NukkitSignSystemAdapter.getInstance();
         Player player = (Player) commandSender;
+
         if (strings.length == 2 && strings[0].equalsIgnoreCase("create")) {
             if (ExecutorAPI.getInstance().getSyncAPI().getGroupSyncAPI().getProcessGroup(strings[1]) == null) {
                 commandSender.sendMessage("§7The process group " + strings[1] + " does not exists");
@@ -33,15 +35,13 @@ public class NukkitCommandSigns implements CommandExecutor {
             }
 
             BlockEntitySign entitySign = (BlockEntitySign) block.getLevel().getBlockEntity(block.getLocation());
-            CloudSign cloudSign = NukkitSignSystemAdapter.getInstance().getSignAt(
-                    NukkitSignSystemAdapter.getInstance().getSignConverter().to(entitySign)
-            );
+            CloudSign cloudSign = signSystemAdapter.getSignAt(signSystemAdapter.getSignConverter().to(entitySign));
             if (cloudSign != null) {
                 commandSender.sendMessage("§cThe sign already exists");
                 return true;
             }
 
-            NukkitSignSystemAdapter.getInstance().createSign(entitySign, strings[1]);
+            signSystemAdapter.createSign(entitySign, strings[1]);
             commandSender.sendMessage("§7Created the sign successfully, please wait a second...");
             return true;
         }
@@ -54,15 +54,13 @@ public class NukkitCommandSigns implements CommandExecutor {
             }
 
             BlockEntitySign entitySign = (BlockEntitySign) block.getLevel().getBlockEntity(block.getLocation());
-            CloudSign cloudSign = NukkitSignSystemAdapter.getInstance().getSignAt(
-                    NukkitSignSystemAdapter.getInstance().getSignConverter().to(entitySign)
-            );
+            CloudSign cloudSign = signSystemAdapter.getSignAt(signSystemAdapter.getSignConverter().to(entitySign));
             if (cloudSign == null) {
                 commandSender.sendMessage("§cThe sign does not exists");
                 return true;
             }
 
-            NukkitSignSystemAdapter.getInstance().deleteSign(cloudSign.getLocation());
+            signSystemAdapter.deleteSign(cloudSign.getLocation());
             commandSender.sendMessage("§7Deleted sign, please wait a second...");
             return true;
         }

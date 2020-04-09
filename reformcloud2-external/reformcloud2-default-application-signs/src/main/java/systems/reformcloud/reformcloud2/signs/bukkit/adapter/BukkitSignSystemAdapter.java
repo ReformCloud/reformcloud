@@ -51,10 +51,6 @@ public class BukkitSignSystemAdapter extends SharedSignSystemAdapter<Sign> {
 
     private final Plugin plugin;
 
-    private int taskID = -1;
-
-    private int knockBackTaskID = -1;
-
     @Override
     protected void setSignLines(@Nullable Sign sign, @NotNull String[] lines) {
         if (sign != null && lines.length == 4) {
@@ -154,25 +150,16 @@ public class BukkitSignSystemAdapter extends SharedSignSystemAdapter<Sign> {
     }
 
     private void restartTask() {
-        if (taskID != -1) {
-            Bukkit.getScheduler().cancelTask(taskID);
-            taskID = -1;
-        }
-
-        if (knockBackTaskID != -1) {
-            Bukkit.getScheduler().cancelTask(knockBackTaskID);
-            knockBackTaskID = -1;
-        }
-
+        Bukkit.getScheduler().cancelTasks(this.plugin);
         runTasks();
     }
 
     @Override
     protected void runTasks() {
-        taskID = Bukkit.getScheduler().runTaskTimer(plugin, this::updateSigns, 0, 20 * super.signConfig.getUpdateInterval()).getTaskId();
+        Bukkit.getScheduler().runTaskTimer(plugin, this::updateSigns, 0, 20 * super.signConfig.getUpdateInterval());
 
         double distance = super.signConfig.getKnockBackDistance();
-        knockBackTaskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
             for (CloudSign cachedSign : this.signs) {
                 Sign bukkitSign = this.getSignConverter().from(cachedSign);
                 if (bukkitSign == null) {

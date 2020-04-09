@@ -1,6 +1,6 @@
 package systems.reformcloud.reformcloud2.signs.sponge.adapter;
 
-import com.google.gson.reflect.TypeToken;
+import com.flowpowered.math.vector.Vector3d;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.api.Sponge;
@@ -12,45 +12,33 @@ import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.manipulator.mutable.block.DirectionalData;
 import org.spongepowered.api.data.manipulator.mutable.tileentity.SignData;
+import org.spongepowered.api.entity.Entity;
+import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
-import systems.reformcloud.reformcloud2.executor.api.api.API;
-import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
-import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
-import systems.reformcloud.reformcloud2.signs.listener.CloudListener;
-import systems.reformcloud.reformcloud2.signs.packets.api.in.APIPacketInCreateSign;
-import systems.reformcloud.reformcloud2.signs.packets.api.in.APIPacketInDeleteSign;
-import systems.reformcloud.reformcloud2.signs.packets.api.in.APIPacketInReloadConfig;
-import systems.reformcloud.reformcloud2.signs.packets.api.out.APIPacketOutCreateSign;
-import systems.reformcloud.reformcloud2.signs.packets.api.out.APIPacketOutDeleteSign;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.annotiations.UndefinedNullability;
+import systems.reformcloud.reformcloud2.signs.SharedSignSystemAdapter;
 import systems.reformcloud.reformcloud2.signs.sponge.command.SpongeCommandSigns;
 import systems.reformcloud.reformcloud2.signs.sponge.listener.SpongeListener;
-import systems.reformcloud.reformcloud2.signs.util.LayoutUtil;
 import systems.reformcloud.reformcloud2.signs.util.PlaceHolderUtil;
-import systems.reformcloud.reformcloud2.signs.util.SignSystemAdapter;
 import systems.reformcloud.reformcloud2.signs.util.converter.SignConverter;
-import systems.reformcloud.reformcloud2.signs.util.sign.CloudLocation;
 import systems.reformcloud.reformcloud2.signs.util.sign.CloudSign;
 import systems.reformcloud.reformcloud2.signs.util.sign.config.SignConfig;
-import systems.reformcloud.reformcloud2.signs.util.sign.config.SignLayout;
 import systems.reformcloud.reformcloud2.signs.util.sign.config.SignSubLayout;
 
 import java.lang.reflect.Modifier;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
 
-public class SpongeSignSystemAdapter implements SignSystemAdapter<Sign> {
+public class SpongeSignSystemAdapter extends SharedSignSystemAdapter<Sign> {
 
-    private static SpongeSignSystemAdapter instance;
-
-    private static final Map<String, BlockType> BLOCK_TYPES = new HashMap<>();
+    private static final Map<String, BlockType> BLOCK_TYPES = new ConcurrentHashMap<>();
 
     static {
         Arrays.stream(BlockTypes.class.getDeclaredFields()).filter(
@@ -64,22 +52,16 @@ public class SpongeSignSystemAdapter implements SignSystemAdapter<Sign> {
         });
     }
 
-    public SpongeSignSystemAdapter(Object plugin, SignConfig config) {
-        SignSystemAdapter.instance.set(instance = this);
+    public SpongeSignSystemAdapter(@NotNull SignConfig signConfig, @NotNull Object plugin) {
+        super(signConfig);
+
+        instance = this;
 
         this.plugin = plugin;
-        this.config = config;
-
-        ExecutorAPI.getInstance().getEventManager().registerListener(new CloudListener());
         Sponge.getEventManager().registerListeners(plugin, new SpongeListener());
 
-        ExecutorAPI.getInstance().getPacketHandler().registerNetworkHandlers(
-                new APIPacketInCreateSign(),
-                new APIPacketInDeleteSign(),
-                new APIPacketInReloadConfig()
-        );
-
-        CommandSpec signs = CommandSpec.builder()
+        CommandSpec signs = CommandSpec
+                .builder()
                 .description(Text.of("The default signs command of the cloud system"))
                 .permission("reformcloud.command.signs")
                 .arguments(
@@ -89,323 +71,108 @@ public class SpongeSignSystemAdapter implements SignSystemAdapter<Sign> {
                 .executor(new SpongeCommandSigns())
                 .build();
         Sponge.getCommandManager().register(plugin, signs, "signs");
-
-        start();
     }
 
-    private final List<CloudSign> cachedSigns = new LinkedList<>();
+    private static SpongeSignSystemAdapter instance;
 
     private final Object plugin;
 
-    private SignConfig config;
-
-    private UUID taskID;
-
-    private final Map<UUID, ProcessInformation> notAssigned = new ConcurrentHashMap<>();
-
-    private final AtomicInteger[] counter = new AtomicInteger[] {
-            new AtomicInteger(-1), // start
-            new AtomicInteger(-1), // connecting
-            new AtomicInteger(-1), // empty
-            new AtomicInteger(-1), // online
-            new AtomicInteger(-1), // full
-            new AtomicInteger(-1)  // maintenance
-    };
-
     @Override
-    public void handleProcessStart(@NotNull ProcessInformation processInformation) {
-        if (!processInformation.getProcessDetail().getTemplate().isServer()) {
-            return;
-        }
-
-        if (isCurrent(processInformation)) {
-            return;
-        }
-
-        assign(processInformation);
-        updateAllSigns();
-    }
-
-    @Override
-    public void handleProcessUpdate(@NotNull ProcessInformation processInformation) {
-        if (!processInformation.getProcessDetail().getTemplate().isServer()) {
-            return;
-        }
-
-        if (isCurrent(processInformation)) {
-            return;
-        }
-
-        updateAssign(processInformation);
-        updateAllSigns();
-    }
-
-    @Override
-    public void handleProcessStop(@NotNull ProcessInformation processInformation) {
-        if (!processInformation.getProcessDetail().getTemplate().isServer()) {
-            return;
-        }
-
-        if (isCurrent(processInformation)) {
-            return;
-        }
-
-        deleteAssignment(processInformation);
-        updateAllSigns();
-    }
-
-    @NotNull
-    @Override
-    public CloudSign createSign(@NotNull Sign sign, @NotNull String group) {
-        CloudSign cloudSign = getSignConverter().to(sign, group);
-        if (getSignAt(cloudSign.getLocation()) != null) {
-            return cloudSign;
-        }
-
-        DefaultChannelManager.INSTANCE.get("Controller").ifPresent(e -> e.sendPacket(new APIPacketOutCreateSign(cloudSign)));
-        return cloudSign;
-    }
-
-    @Override
-    public void deleteSign(@NotNull CloudLocation location) {
-        Streams.filterToReference(cachedSigns, e -> e.getLocation().equals(location)).ifPresent(e ->
-                DefaultChannelManager.INSTANCE.get("Controller").ifPresent(s -> s.sendPacket(new APIPacketOutDeleteSign(e)))
-        );
-    }
-
-    @Override
-    public void deleteAll() {
-        cachedSigns.forEach(e -> DefaultChannelManager.INSTANCE.get("Controller").ifPresent(
-                s -> s.sendPacket(new APIPacketOutDeleteSign(e))
-        ));
-    }
-
-    @Override
-    public void cleanSigns() {
-        for (CloudSign cachedSign : cachedSigns) {
-            if (this.getSignConverter().from(cachedSign) == null) {
-                DefaultChannelManager.INSTANCE.get("Controller").ifPresent(
-                        s -> s.sendPacket(new APIPacketOutDeleteSign(cachedSign))
-                );
-            }
-        }
-    }
-
-    @Nullable
-    @Override
-    public CloudSign getSignAt(@NotNull CloudLocation location) {
-        return Streams.filter(cachedSigns, e -> e.getLocation().equals(location));
-    }
-
-    @NotNull
-    @Override
-    public SignConverter<Sign> getSignConverter() {
-        return SpongeSignConverter.INSTANCE;
-    }
-
-    @Override
-    public boolean canConnect(@NotNull CloudSign cloudSign) {
-        if (cloudSign.getCurrentTarget() == null || !cloudSign.getCurrentTarget().getNetworkInfo().isConnected()) {
-            return false;
-        }
-
-        if (cloudSign.getCurrentTarget().getProcessGroup().getPlayerAccessConfiguration().isMaintenance()) {
-            return getSelfLayout().isShowMaintenanceProcessesOnSigns();
-        }
-
-        ProcessState state = cloudSign.getCurrentTarget().getProcessDetail().getProcessState();
-        return state.isReady() && !state.equals(ProcessState.INVISIBLE);
-    }
-
-    @Override
-    public void handleInternalSignCreate(@NotNull CloudSign cloudSign) {
-        this.cachedSigns.add(cloudSign);
-        tryAssign();
-        updateAllSigns();
-    }
-
-    @Override
-    public void handleInternalSignDelete(@NotNull CloudSign cloudSign) {
-        Streams.filterToReference(cachedSigns, e -> e.getLocation().equals(cloudSign.getLocation())).ifPresent(e -> {
-            this.cachedSigns.remove(e);
-            removeAssign(e);
-            clearLines(getSignConverter().from(e));
-            updateAllSigns();
-        });
-    }
-
-    @Override
-    public void handleSignConfigUpdate(@NotNull SignConfig config) {
-        this.config = config;
-        restart();
-    }
-
-    private UUID repeat(Runnable runnable, long interval) {
-        return Sponge.getScheduler().createTaskBuilder()
-                .execute(runnable)
-                .delayTicks(0)
-                .intervalTicks(interval)
-                .submit(plugin)
-                .getUniqueId();
-    }
-
-    private boolean isCurrent(ProcessInformation processInformation) {
-        return API.getInstance().getCurrentProcessInformation().getProcessDetail().getProcessUniqueID().equals(processInformation.getProcessDetail().getProcessUniqueID());
-    }
-
-    private void assign(ProcessInformation processInformation) {
-        for (CloudSign sign : cachedSigns) {
-            if (sign.getCurrentTarget() == null
-                    && sign.getGroup().equals(processInformation.getProcessGroup().getName())) {
-                sign.setCurrentTarget(processInformation);
-                notAssigned.remove(processInformation.getProcessDetail().getProcessUniqueID());
-                return;
-            }
-        }
-
-        notAssigned.put(processInformation.getProcessDetail().getProcessUniqueID(), processInformation);
-    }
-
-    private void updateAssign(ProcessInformation newInfo) {
-        for (CloudSign sign : cachedSigns) {
-            if (sign.getCurrentTarget() != null
-                    && sign.getCurrentTarget().getProcessDetail().getProcessUniqueID().equals(newInfo.getProcessDetail().getProcessUniqueID())) {
-                sign.setCurrentTarget(newInfo);
-                break;
-            }
-        }
-    }
-
-    private void deleteAssignment(ProcessInformation processInformation) {
-        for (CloudSign sign : cachedSigns) {
-            if (sign.getCurrentTarget() != null
-                    && sign.getCurrentTarget().getProcessDetail().getProcessUniqueID().equals(processInformation.getProcessDetail().getProcessUniqueID())) {
-                sign.setCurrentTarget(null);
-                return;
-            }
-        }
-
-        notAssigned.remove(processInformation.getProcessDetail().getProcessUniqueID());
-    }
-
-    private void tryAssign() {
-        if (notAssigned.isEmpty()) {
-            return;
-        }
-
-        notAssigned.values().forEach(this::assign);
-    }
-
-    private void removeAssign(CloudSign sign) {
-        if (sign.getCurrentTarget() == null) {
-            return;
-        }
-
-        notAssigned.put(sign.getCurrentTarget().getProcessDetail().getProcessUniqueID(), sign.getCurrentTarget());
-        sign.setCurrentTarget(null);
-        tryAssign();
-    }
-
-    private void clearLines(Sign sign) {
+    protected void setSignLines(@Nullable Sign sign, @NotNull String[] lines) {
         if (sign == null) {
             return;
         }
 
-        SignData signData = sign.getSignData();
-        signData.setElement(0, Text.of());
-        signData.setElement(1, Text.of());
-        signData.setElement(2, Text.of());
-        signData.setElement(3, Text.of());
+        SignData data = sign.getSignData();
+        for (int i = 0; i <= 3; i++) {
+            data.setElement(i, Text.of(lines[i]));
+        }
 
-        sign.offer(signData);
+        sign.offer(data);
     }
 
-    private void updateAllSigns() {
-        SignLayout layout = getSelfLayout();
+    @Override
+    protected void runTasks() {
+        Sponge.getScheduler()
+                .createTaskBuilder()
+                .execute(this::updateSigns)
+                .delayTicks(0)
+                .intervalTicks(20 * super.signConfig.getUpdateInterval())
+                .submit(this.plugin);
 
-        SignSubLayout searching = LayoutUtil.getNextAndCheckFor(layout.getSearchingLayouts(), counter[0])
-                .orElseThrow(() -> new RuntimeException("Waiting layout for current group not present"));
+        double distance = super.signConfig.getKnockBackDistance();
+        Sponge.getScheduler()
+                .createTaskBuilder()
+                .execute(() -> {
+                    for (CloudSign sign : this.signs) {
+                        Sign spongeSign = this.getSignConverter().from(sign);
+                        if (spongeSign == null) {
+                            continue;
+                        }
 
-        SignSubLayout maintenance = LayoutUtil.getNextAndCheckFor(layout.getMaintenanceLayout(), counter[5])
-                .orElseThrow(() -> new RuntimeException("Waiting layout for current group not present"));
+                        Vector3d vector = spongeSign.getLocation().getPosition();
+                        for (Entity entity : spongeSign.getWorld().getNearbyEntities(vector, distance)) {
+                            if (!(entity instanceof Player)) {
+                                continue;
+                            }
 
-        SignSubLayout connecting = LayoutUtil.getNextAndCheckFor(layout.getWaitingForConnectLayout(), counter[1])
-                .orElseThrow(() -> new RuntimeException("Connecting layout for current group not present"));
+                            Player player = (Player) entity;
+                            if (player.hasPermission(super.signConfig.getKnockBackBypassPermission())) {
+                                continue;
+                            }
 
-        SignSubLayout empty = LayoutUtil.getNextAndCheckFor(layout.getEmptyLayout(), counter[2])
-                .orElseThrow(() -> new RuntimeException("Empty layout for current group not present"));
-
-        SignSubLayout full = LayoutUtil.getNextAndCheckFor(layout.getFullLayout(), counter[4])
-                .orElseThrow(() -> new RuntimeException("Empty layout for current group not present"));
-
-        SignSubLayout online = LayoutUtil.getNextAndCheckFor(layout.getOnlineLayout(), counter[3])
-                .orElseThrow(() -> new RuntimeException("Empty layout for current group not present"));
-
-        this.cachedSigns.forEach(e -> {
-            if (e.getCurrentTarget() == null) {
-                updateSign(e, searching, null);
-                return;
-            }
-
-            if (e.getCurrentTarget().getProcessDetail().getProcessState().equals(ProcessState.INVISIBLE)
-                    || e.getCurrentTarget().getProcessDetail().getProcessState().equals(ProcessState.STOPPED)
-                    || e.getCurrentTarget().getProcessDetail().getProcessState().equals(ProcessState.STARTED)
-                    || e.getCurrentTarget().getProcessDetail().getProcessState().equals(ProcessState.PREPARED)) {
-                updateSign(e, searching, null);
-                return;
-            }
-
-            if (e.getCurrentTarget().getProcessGroup().getPlayerAccessConfiguration().isMaintenance()) {
-                if (layout.isShowMaintenanceProcessesOnSigns()) {
-                    updateSign(e, maintenance, e.getCurrentTarget());
-                    return;
-                }
-
-                updateSign(e, searching, null);
-                return;
-            }
-
-            if (!e.getCurrentTarget().getNetworkInfo().isConnected()) {
-                updateSign(e, connecting, e.getCurrentTarget());
-                return;
-            }
-
-            if (e.getCurrentTarget().getProcessPlayerManager().getOnlineCount() == 0) {
-                updateSign(e, empty, e.getCurrentTarget());
-                return;
-            }
-
-            if (e.getCurrentTarget().getProcessPlayerManager().getOnlineCount() >= e.getCurrentTarget().getProcessDetail().getMaxPlayers()) {
-                if (layout.isSearchingLayoutWhenFull()) {
-                    updateSign(e, searching, null);
-                    return;
-                }
-
-                updateSign(e, full, e.getCurrentTarget());
-                return;
-            }
-
-            updateSign(e, online, e.getCurrentTarget());
-        });
+                            Vector3d vector3d = player
+                                    .getLocation()
+                                    .getPosition()
+                                    .sub(vector)
+                                    .normalize()
+                                    .mul(super.signConfig.getKnockBackStrength());
+                            player.setVelocity(new Vector3d(vector3d.getX(), 0.2D, vector3d.getZ()));
+                        }
+                    }
+                })
+                .delayTicks(20)
+                .intervalTicks(5)
+                .submit(this.plugin);
     }
 
-    private void updateSign(CloudSign sign, SignSubLayout layout, ProcessInformation processInformation) {
-        Sign sponge = getSignConverter().from(sign);
-        if (sponge == null || layout.getLines() == null || layout.getLines().length != 4) {
+    @Override
+    protected @NotNull String replaceAll(@NotNull String line, @NotNull String group, @Nullable ProcessInformation processInformation) {
+        if (processInformation == null) {
+            line = line.replace("%group%", group);
+            return TextSerializers.FORMATTING_CODE.deserialize(line).toPlain();
+        }
+
+        return PlaceHolderUtil.format(line, group, processInformation, TextSerializers.FORMATTING_CODE::deserialize).toPlain();
+    }
+
+    @Override
+    public void changeBlock(@NotNull CloudSign sign, @NotNull SignSubLayout layout) {
+        Sign spongeSign = this.getSignConverter().from(sign);
+        if (spongeSign == null) {
             return;
         }
 
-        SignData signData = sponge.getSignData();
-        signData.setElement(0, replaceAll(layout.getLines()[0], sign.getGroup(), processInformation));
-        signData.setElement(1, replaceAll(layout.getLines()[1], sign.getGroup(), processInformation));
-        signData.setElement(2, replaceAll(layout.getLines()[2], sign.getGroup(), processInformation));
-        signData.setElement(3, replaceAll(layout.getLines()[3], sign.getGroup(), processInformation));
-        sponge.offer(signData);
-
-        this.changeBlockBehind(sponge, layout);
+        this.changeBlock0(spongeSign, layout);
     }
 
-    private void changeBlockBehind(Sign sign, SignSubLayout layout) {
+    @Override
+    public @NotNull SignConverter<Sign> getSignConverter() {
+        return SpongeSignConverter.INSTANCE;
+    }
+
+    @Override
+    public void handleSignConfigUpdate(@NotNull SignConfig config) {
+        super.signConfig = config;
+        this.restartTasks();
+    }
+
+    @UndefinedNullability
+    public static SpongeSignSystemAdapter getInstance() {
+        return instance;
+    }
+
+    private void changeBlock0(@NotNull Sign sign, @NotNull SignSubLayout layout) {
         Optional<DirectionalData> directionalData = sign.getLocation().get(DirectionalData.class);
         if (!directionalData.isPresent()) {
             return;
@@ -423,48 +190,8 @@ public class SpongeSignSystemAdapter implements SignSystemAdapter<Sign> {
         });
     }
 
-    private Text replaceAll(String line, String group, ProcessInformation processInformation) {
-        if (processInformation == null) {
-            line = line.replace("%group%", group);
-            return TextSerializers.FORMATTING_CODE.deserialize(line);
-        }
-
-        return PlaceHolderUtil.format(line, group, processInformation, TextSerializers.FORMATTING_CODE::deserialize);
-    }
-
-    private void start() {
-        systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task.EXECUTOR.execute(() -> {
-            Collection<CloudSign> signs = ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().find(SignSystemAdapter.table, "signs", null, k -> k.get("signs", new TypeToken<Collection<CloudSign>>() {
-            }));
-            if (signs == null) {
-                return;
-            }
-
-            cachedSigns.addAll(signs);
-            ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getAllProcesses().forEach(this::handleProcessStart);
-            runTasks();
-        });
-    }
-
-    private void runTasks() {
-        this.taskID = repeat(this::updateAllSigns, this.config.getUpdateInterval() * 20);
-    }
-
-    private void restart() {
-        if (this.taskID != null) {
-            Sponge.getScheduler().getTaskById(taskID).ifPresent(Task::cancel);
-        }
-
-        runTasks();
-    }
-
-    private SignLayout getSelfLayout() {
-        return LayoutUtil
-                .getLayoutFor(API.getInstance().getCurrentProcessInformation().getProcessGroup().getName(), config)
-                .orElseThrow(() -> new RuntimeException("No sign config present for context global or current group"));
-    }
-
-    public static SpongeSignSystemAdapter getInstance() {
-        return instance;
+    private void restartTasks() {
+        Sponge.getScheduler().getScheduledTasks().forEach(Task::cancel);
+        this.runTasks();
     }
 }
