@@ -251,7 +251,10 @@ public final class BungeeExecutor extends API implements PlayerAPIExecutor {
                 "ReformCloud2", false);
     }
 
-    public static ProcessInformation getBestLobbyForPlayer(ProcessInformation current, Function<String, Boolean> permissionCheck) {
+    @Nullable
+    public static ProcessInformation getBestLobbyForPlayer(@NotNull ProcessInformation current,
+                                                           @NotNull Function<String, Boolean> permissionCheck,
+                                                           @Nullable String excluded) {
         final List<ProcessInformation> lobbies = new ArrayList<>(LOBBY_SERVERS);
 
         // Filter all non java servers if this is a java proxy else all mcpe servers
@@ -299,6 +302,11 @@ public final class BungeeExecutor extends API implements PlayerAPIExecutor {
 
             return permissionCheck.apply("reformcloud.join.full");
         }).forEach(lobbies::remove);
+
+        // Filter out all excluded servers
+        if (excluded != null) {
+            Streams.allOf(lobbies, e -> e.getProcessDetail().getName().equals(excluded)).forEach(lobbies::remove);
+        }
 
         if (lobbies.isEmpty()) {
             return null;

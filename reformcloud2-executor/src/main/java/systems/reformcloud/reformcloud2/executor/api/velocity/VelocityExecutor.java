@@ -5,6 +5,7 @@ import com.velocitypowered.api.proxy.server.RegisteredServer;
 import com.velocitypowered.api.proxy.server.ServerInfo;
 import net.kyori.text.TextComponent;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorType;
 import systems.reformcloud.reformcloud2.executor.api.api.API;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
@@ -192,7 +193,8 @@ public final class VelocityExecutor extends API implements PlayerAPIExecutor {
         });
     }
 
-    public static ProcessInformation getBestLobbyForPlayer(ProcessInformation current, Function<String, Boolean> permissionCheck) {
+    public static ProcessInformation getBestLobbyForPlayer(ProcessInformation current, Function<String, Boolean> permissionCheck,
+                                                           @Nullable String excluded) {
         final List<ProcessInformation> lobbies = new ArrayList<>(LOBBY_SERVERS);
 
         // Filter all non java servers if this is a java proxy else all mcpe servers
@@ -238,6 +240,11 @@ public final class VelocityExecutor extends API implements PlayerAPIExecutor {
 
             return permissionCheck.apply("reformcloud.join.full");
         }).forEach(lobbies::remove);
+
+        // Filter out all excluded servers
+        if (excluded != null) {
+            Streams.allOf(lobbies, e -> e.getProcessDetail().getName().equals(excluded)).forEach(lobbies::remove);
+        }
 
         if (lobbies.isEmpty()) {
             return null;
