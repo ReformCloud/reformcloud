@@ -47,7 +47,7 @@
         <dependency>
             <groupId>org.jline</groupId>
             <artifactId>jline</artifactId>
-            <version>3.14.0</version>
+            <version>3.14.1</version>
             <scope>provided</scope>
         </dependency>
 
@@ -87,7 +87,7 @@
         <dependency>
             <groupId>org.mongodb</groupId>
             <artifactId>mongo-java-driver</artifactId>
-            <version>3.12.2</version>
+            <version>3.12.3</version>
             <scope>provided</scope>
         </dependency>
 
