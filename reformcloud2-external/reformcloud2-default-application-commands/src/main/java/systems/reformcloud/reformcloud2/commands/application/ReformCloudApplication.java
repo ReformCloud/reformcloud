@@ -4,6 +4,7 @@ import com.google.gson.reflect.TypeToken;
 import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.commands.application.listener.ProcessInclusionHandler;
 import systems.reformcloud.reformcloud2.commands.application.packet.in.PacketInGetCommandsConfig;
+import systems.reformcloud.reformcloud2.commands.application.packet.out.PacketOutReleaseCommandsConfig;
 import systems.reformcloud.reformcloud2.commands.application.update.CommandAddonUpdater;
 import systems.reformcloud.reformcloud2.commands.config.CommandsConfig;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
@@ -11,6 +12,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.application.api.Appl
 import systems.reformcloud.reformcloud2.executor.api.common.application.updater.ApplicationUpdateRepository;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.network.NetworkUtil;
+import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.system.SystemHelper;
 
 import java.nio.file.Files;
@@ -51,6 +53,8 @@ public class ReformCloudApplication extends Application {
         commandsConfig = JsonConfiguration.read(path).get("config", new TypeToken<CommandsConfig>() {
         });
         ExecutorAPI.getInstance().getPacketHandler().registerHandler(new PacketInGetCommandsConfig());
+
+        DefaultChannelManager.INSTANCE.getAllSender().forEach(e -> e.sendPacket(new PacketOutReleaseCommandsConfig(commandsConfig)));
     }
 
     @Override

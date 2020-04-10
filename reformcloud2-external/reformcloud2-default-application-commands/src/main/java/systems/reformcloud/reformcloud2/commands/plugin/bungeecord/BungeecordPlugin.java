@@ -8,6 +8,7 @@ import systems.reformcloud.reformcloud2.commands.config.CommandsConfig;
 import systems.reformcloud.reformcloud2.commands.plugin.CommandConfigHandler;
 import systems.reformcloud.reformcloud2.commands.plugin.bungeecord.commands.CommandLeave;
 import systems.reformcloud.reformcloud2.commands.plugin.bungeecord.commands.CommandReformCloud;
+import systems.reformcloud.reformcloud2.commands.plugin.packet.in.PacketInReleaseCommandsConfig;
 import systems.reformcloud.reformcloud2.commands.plugin.packet.out.PacketOutGetCommandsConfig;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.network.NetworkUtil;
@@ -29,15 +30,16 @@ public class BungeecordPlugin extends Plugin {
                 sender = DefaultChannelManager.INSTANCE.get("Controller").orNothing();
             }
 
-            ExecutorAPI.getInstance().getPacketHandler().getQueryHandler().sendQueryAsync(sender, new PacketOutGetCommandsConfig())
-                    .onComplete(e -> {
-                        CommandsConfig commandsConfig = e.content().get("content", new TypeToken<CommandsConfig>() {});
-                        if (commandsConfig == null) {
-                            return;
-                        }
+            ExecutorAPI.getInstance().getPacketHandler().getQueryHandler().sendQueryAsync(sender, new PacketOutGetCommandsConfig()).onComplete(e -> {
+                CommandsConfig commandsConfig = e.content().get("content", new TypeToken<CommandsConfig>() {
+                });
+                if (commandsConfig == null) {
+                    return;
+                }
 
-                        CommandConfigHandler.getInstance().handleCommandConfigRelease(commandsConfig);
-                    });
+                CommandConfigHandler.getInstance().handleCommandConfigRelease(commandsConfig);
+                ExecutorAPI.getInstance().getPacketHandler().registerHandler(new PacketInReleaseCommandsConfig());
+            });
         });
     }
 
@@ -58,7 +60,7 @@ public class BungeecordPlugin extends Plugin {
             unregisterAllCommands();
             if (commandsConfig.isLeaveCommandEnabled() && commandsConfig.getLeaveCommands().size() > 0) {
                 String name = commandsConfig.getLeaveCommands().get(0);
-                if (commandsConfig.getLeaveCommands().size() -1 > 0) {
+                if (commandsConfig.getLeaveCommands().size() - 1 > 0) {
                     commandsConfig.getLeaveCommands().remove(name);
                 }
 
@@ -68,7 +70,7 @@ public class BungeecordPlugin extends Plugin {
 
             if (commandsConfig.isReformCloudCommandEnabled() && commandsConfig.getReformCloudCommands().size() > 0) {
                 String name = commandsConfig.getReformCloudCommands().get(0);
-                if (commandsConfig.getReformCloudCommands().size() -1 > 0) {
+                if (commandsConfig.getReformCloudCommands().size() - 1 > 0) {
                     commandsConfig.getReformCloudCommands().remove(name);
                 }
 

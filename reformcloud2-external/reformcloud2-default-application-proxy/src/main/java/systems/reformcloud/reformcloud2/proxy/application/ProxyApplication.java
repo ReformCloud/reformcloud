@@ -1,16 +1,13 @@
 package systems.reformcloud.reformcloud2.proxy.application;
 
 import org.jetbrains.annotations.Nullable;
-import systems.reformcloud.reformcloud2.executor.api.ExecutorType;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.application.api.Application;
 import systems.reformcloud.reformcloud2.executor.api.common.application.updater.ApplicationUpdateRepository;
-import systems.reformcloud.reformcloud2.executor.api.common.commands.manager.CommandManager;
 import systems.reformcloud.reformcloud2.executor.api.common.network.NetworkUtil;
-import systems.reformcloud.reformcloud2.executor.controller.ControllerExecutor;
-import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
-import systems.reformcloud.reformcloud2.proxy.application.command.CommandProxy;
+import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.proxy.application.listener.ProcessInclusionHandler;
+import systems.reformcloud.reformcloud2.proxy.application.network.PacketOutConfigUpdate;
 import systems.reformcloud.reformcloud2.proxy.application.network.PacketQueryInRequestConfig;
 import systems.reformcloud.reformcloud2.proxy.application.updater.ProxyAddonUpdater;
 
@@ -30,9 +27,9 @@ public class ProxyApplication extends Application {
         instance = this;
 
         ConfigHelper.init(dataFolder());
-        this.getCommandManager().register(new CommandProxy());
 
         ExecutorAPI.getInstance().getPacketHandler().registerHandler(new PacketQueryInRequestConfig());
+        DefaultChannelManager.INSTANCE.getAllSender().forEach(e -> e.sendPacket(new PacketOutConfigUpdate()));
     }
 
     @Override
@@ -44,19 +41,9 @@ public class ProxyApplication extends Application {
         return instance;
     }
 
-    public void reloadConfig() {
-        ConfigHelper.init(dataFolder());
-    }
-
     @Nullable
     @Override
     public ApplicationUpdateRepository getUpdateRepository() {
         return REPOSITORY;
-    }
-
-    private CommandManager getCommandManager() {
-        return ExecutorAPI.getInstance().getType().equals(ExecutorType.CONTROLLER)
-                ? ControllerExecutor.getInstance().getCommandManager()
-                : NodeExecutor.getInstance().getCommandManager();
     }
 }

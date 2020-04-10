@@ -8,6 +8,7 @@ import com.velocitypowered.api.proxy.ProxyServer;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.commands.config.CommandsConfig;
 import systems.reformcloud.reformcloud2.commands.plugin.CommandConfigHandler;
+import systems.reformcloud.reformcloud2.commands.plugin.packet.in.PacketInReleaseCommandsConfig;
 import systems.reformcloud.reformcloud2.commands.plugin.packet.out.PacketOutGetCommandsConfig;
 import systems.reformcloud.reformcloud2.commands.plugin.velocity.commands.CommandLeave;
 import systems.reformcloud.reformcloud2.commands.plugin.velocity.commands.CommandReformCloud;
@@ -38,15 +39,16 @@ public class VelocityPlugin {
                 sender = DefaultChannelManager.INSTANCE.get("Controller").orNothing();
             }
 
-            ExecutorAPI.getInstance().getPacketHandler().getQueryHandler().sendQueryAsync(sender, new PacketOutGetCommandsConfig())
-                    .onComplete(e -> {
-                        CommandsConfig commandsConfig = e.content().get("content", new TypeToken<CommandsConfig>() {});
-                        if (commandsConfig == null) {
-                            return;
-                        }
+            ExecutorAPI.getInstance().getPacketHandler().getQueryHandler().sendQueryAsync(sender, new PacketOutGetCommandsConfig()).onComplete(e -> {
+                CommandsConfig commandsConfig = e.content().get("content", new TypeToken<CommandsConfig>() {
+                });
+                if (commandsConfig == null) {
+                    return;
+                }
 
-                        CommandConfigHandler.getInstance().handleCommandConfigRelease(commandsConfig);
-                    });
+                CommandConfigHandler.getInstance().handleCommandConfigRelease(commandsConfig);
+                ExecutorAPI.getInstance().getPacketHandler().registerHandler(new PacketInReleaseCommandsConfig());
+            });
         });
     }
 
@@ -80,7 +82,7 @@ public class VelocityPlugin {
 
         @Override
         public void unregisterAllCommands() {
-            if (this.commandLeave != null)  {
+            if (this.commandLeave != null) {
                 this.commandLeave.getAliases().forEach(VelocityPlugin.this.proxyServer.getCommandManager()::unregister);
                 this.commandLeave = null;
             }
