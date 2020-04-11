@@ -62,7 +62,8 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
                             file,
                             appConfig
                     ).withDependencies(
-                            configurable.getOrDefault("dependencies", new TypeToken<List<Dependency>>() {}.getType(), new ArrayList<>())
+                            configurable.getOrDefault("dependencies", new TypeToken<List<Dependency>>() {
+                            }.getType(), new ArrayList<>())
                     ).withDescription(
                             configurable.getOrDefault("description", (String) null)
                     ).withWebsite(
@@ -72,8 +73,9 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
                     ).create();
 
                     ApplicationUnsafe.checkIfUnsafe(applicationConfig);
-
-                    load.put(applicationConfig.getName(), applicationConfig);
+                    if (load.put(applicationConfig.getName(), applicationConfig) != null) {
+                        System.err.println("Duplicated application " + applicationConfig.getName());
+                    }
                 }
             } catch (final IOException ex) {
                 ex.printStackTrace();
@@ -93,7 +95,7 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
                     }
                 }
 
-                AppClassLoader classLoader = new AppClassLoader(new URL[] {
+                AppClassLoader classLoader = new AppClassLoader(new URL[]{
                         config.getValue().applicationFile().toURI().toURL()
                 }, Thread.currentThread().getContextClassLoader());
 
@@ -205,7 +207,8 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
                         file,
                         appConfig
                 ).withDependencies(
-                        configurable.get("dependencies", new TypeToken<List<Dependency>>() {})
+                        configurable.get("dependencies", new TypeToken<List<Dependency>>() {
+                        })
                 ).withDescription(
                         configurable.getString("description")
                 ).withWebsite(
@@ -222,7 +225,7 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
                     }
                 }
 
-                AppClassLoader classLoader = new AppClassLoader(new URL[] {
+                AppClassLoader classLoader = new AppClassLoader(new URL[]{
                         applicationConfig.applicationFile().toURI().toURL()
                 }, Thread.currentThread().getContextClassLoader());
 
