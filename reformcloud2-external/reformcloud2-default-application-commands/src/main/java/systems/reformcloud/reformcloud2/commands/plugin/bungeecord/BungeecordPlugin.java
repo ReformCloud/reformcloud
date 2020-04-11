@@ -86,7 +86,7 @@ public class BungeecordPlugin extends Plugin {
                 this.leave = null;
             }
 
-            if (this.reformCloud == null) {
+            if (this.reformCloud != null) {
                 ProxyServer.getInstance().getPluginManager().unregisterCommand(reformCloud);
                 this.reformCloud = null;
             }
