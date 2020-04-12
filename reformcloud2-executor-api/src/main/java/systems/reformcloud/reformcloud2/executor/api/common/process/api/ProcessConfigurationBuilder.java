@@ -31,6 +31,8 @@ public final class ProcessConfigurationBuilder {
 
     /**
      * Use {@link #newBuilder(String)} )} instead
+     *
+     * @param processGroup The group for which the builder is made
      */
     private ProcessConfigurationBuilder(@NotNull ProcessGroup processGroup) {
         this.base = processGroup;

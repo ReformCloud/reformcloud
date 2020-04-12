@@ -45,7 +45,7 @@ public final class ProcessUtil {
      * Copies the current process into the loaded template
      */
     public void copy() {
-        ExecutorAPI.getInstance().getSyncAPI().getConsoleSyncAPI().dispatchCommandAndGetResult(
+        ExecutorAPI.getInstance().getAsyncAPI().getConsoleAsyncAPI().dispatchCommandAndGetResultAsync(
                 "p " + parent.getProcessDetail().getProcessUniqueID() + " copy"
         );
     }
