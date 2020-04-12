@@ -20,7 +20,7 @@
 
     <pluginRepositories>
         <pluginRepository>
-            <id>reformcloud</id>
+            <id>reformcloud-central</id>
             <url>https://repo.reformcloud.systems/</url>
         </pluginRepository>
     </pluginRepositories>

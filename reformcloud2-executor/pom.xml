@@ -21,7 +21,7 @@
         <!-- bungee repo -->
         <repository>
             <id>bungeecord-repo</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
         </repository>
 
         <!-- velocity repo -->
@@ -34,13 +34,13 @@
         <repository>
             <id>sponge-repo</id>
             <name>Sponge Maven Repository</name>
-            <url>https://repo.spongepowered.org/maven</url>
+            <url>https://repo.spongepowered.org/maven/</url>
         </repository>
 
-        <!-- reformcloud repo for nukkitX -->
+        <!-- nukkit repo -->
         <repository>
-            <id>reformcloud-repo</id>
-            <url>https://repo.reformcloud.systems/</url>
+            <id>nukkit-repo</id>
+            <url>https://repo.nukkitx.com/maven-snapshots/</url>
         </repository>
     </repositories>
 
