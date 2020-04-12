@@ -1,9 +1,8 @@
 package systems.reformcloud.reformcloud2.commands.plugin;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.commands.config.CommandsConfig;
 import systems.reformcloud.reformcloud2.executor.api.common.base.Conditions;
-
-import javax.annotation.Nonnull;
 
 public abstract class CommandConfigHandler {
 
@@ -13,12 +12,12 @@ public abstract class CommandConfigHandler {
         return instance;
     }
 
-    public static void setInstance(@Nonnull CommandConfigHandler handler) {
+    public static void setInstance(@NotNull CommandConfigHandler handler) {
         Conditions.isTrue(instance == null);
         instance = handler;
     }
 
-    public abstract void handleCommandConfigRelease(@Nonnull CommandsConfig commandsConfig);
+    public abstract void handleCommandConfigRelease(@NotNull CommandsConfig commandsConfig);
 
     public abstract void unregisterAllCommands();
 }

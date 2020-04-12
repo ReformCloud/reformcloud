@@ -7,7 +7,8 @@ import java.util.UUID;
 
 public class CloudSign {
 
-    public static final TypeToken<CloudSign> TYPE = new TypeToken<CloudSign>() {};
+    public static final TypeToken<CloudSign> TYPE = new TypeToken<CloudSign>() {
+    };
 
     public CloudSign(String group, CloudLocation location) {
         this.group = group;
@@ -42,5 +43,18 @@ public class CloudSign {
 
     public void setCurrentTarget(ProcessInformation currentTarget) {
         this.currentTarget = currentTarget;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof CloudSign)) return false;
+        CloudSign sign = (CloudSign) o;
+        return sign.getUniqueID().equals(this.getUniqueID());
+    }
+
+    @Override
+    public int hashCode() {
+        return this.getUniqueID().hashCode();
     }
 }

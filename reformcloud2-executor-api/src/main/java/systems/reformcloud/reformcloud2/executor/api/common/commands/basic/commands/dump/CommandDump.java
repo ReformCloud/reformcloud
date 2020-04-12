@@ -1,5 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.dump;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.CommonHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.GlobalCommand;
@@ -8,7 +9,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonCo
 import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 
-import javax.annotation.Nonnull;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,12 +33,12 @@ public class CommandDump extends GlobalCommand {
     private final DumpUtil specificDumper;
 
     @Override
-    public void describeCommandToSender(@Nonnull CommandSource source) {
+    public void describeCommandToSender(@NotNull CommandSource source) {
         source.sendMessage(LanguageManager.get("command-dump-description"));
     }
 
     @Override
-    public boolean handleCommand(@Nonnull CommandSource commandSource, @Nonnull String[] strings) {
+    public boolean handleCommand(@NotNull CommandSource commandSource, @NotNull String[] strings) {
         commandSource.sendMessage(LanguageManager.get("command-dump-creating"));
         String dump = createFullDump();
         commandSource.sendMessage(LanguageManager.get("command-dump-created", pasteDump(dump)));

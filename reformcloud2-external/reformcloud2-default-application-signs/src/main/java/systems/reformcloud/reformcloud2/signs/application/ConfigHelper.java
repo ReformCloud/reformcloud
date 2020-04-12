@@ -52,17 +52,17 @@ final class ConfigHelper {
                         createDefault("STAINED_CLAY", 1, "< ========== >", "%group%", " Waiting. ", "< ========== >"),
                         createDefault("STAINED_CLAY", 1, "< =========== >", "%group%", " Waiting ", "< =========== >")
                 ), Arrays.asList(
-                        createDefault("STAINED_CLAY", 2, "< = >", "%group%", " Connecting ", "< = >"),
-                        createDefault("STAINED_CLAY", 2, "< == >", "%group%", " Connecting. ", "< == >"),
-                        createDefault("STAINED_CLAY", 2, "< === >", "%group%", " Connecting.. ", "< === >"),
-                        createDefault("STAINED_CLAY", 2, "< ==== >", "%group%", " Connecting... ", "< ==== >"),
-                        createDefault("STAINED_CLAY", 2, "< ===== >", "%group%", " Connecting.... ", "< ===== >"),
-                        createDefault("STAINED_CLAY", 2, "< ====== >", "%group%", " Connecting..... ", "< ====== >"),
-                        createDefault("STAINED_CLAY", 2, "< ======= >", "%group%", " Connecting.... ", "< ======= >"),
-                        createDefault("STAINED_CLAY", 2, "< ======== >", "%group%", " Connecting... ", "< ======== >"),
-                        createDefault("STAINED_CLAY", 2, "< ========= >", "%group%", " Connecting.. ", "< ========= >"),
-                        createDefault("STAINED_CLAY", 2, "< ========== >", "%group%", " Connecting. ", "< ========== >"),
-                        createDefault("STAINED_CLAY", 2, "< =========== >", "%group%", " Connecting ", "< =========== >")
+                        createDefault("STAINED_CLAY", 2, "< = >", "%name%", " Connecting ", "< = >"),
+                        createDefault("STAINED_CLAY", 2, "< == >", "%name%", " Connecting. ", "< == >"),
+                        createDefault("STAINED_CLAY", 2, "< === >", "%name%", " Connecting.. ", "< === >"),
+                        createDefault("STAINED_CLAY", 2, "< ==== >", "%name%", " Connecting... ", "< ==== >"),
+                        createDefault("STAINED_CLAY", 2, "< ===== >", "%name%", " Connecting.... ", "< ===== >"),
+                        createDefault("STAINED_CLAY", 2, "< ====== >", "%name%", " Connecting..... ", "< ====== >"),
+                        createDefault("STAINED_CLAY", 2, "< ======= >", "%name%", " Connecting.... ", "< ======= >"),
+                        createDefault("STAINED_CLAY", 2, "< ======== >", "%name%", " Connecting... ", "< ======== >"),
+                        createDefault("STAINED_CLAY", 2, "< ========= >", "%name%", " Connecting.. ", "< ========= >"),
+                        createDefault("STAINED_CLAY", 2, "< ========== >", "%name%", " Connecting. ", "< ========== >"),
+                        createDefault("STAINED_CLAY", 2, "< =========== >", "%name%", " Connecting ", "< =========== >")
                 ), Arrays.asList(
                         createDefault("STAINED_CLAY", 7, "< = >", "%name%", "%template%", "< = >"),
                         createDefault("STAINED_CLAY", 7, "< == >", "%name%", "%template%", "< == >"),

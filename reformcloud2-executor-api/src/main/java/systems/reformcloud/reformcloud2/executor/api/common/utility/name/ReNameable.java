@@ -1,6 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.api.common.utility.name;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * A special nameable which can get renamed
@@ -12,5 +12,5 @@ public interface ReNameable extends Nameable {
      *
      * @param newName The new name which should get used
      */
-    void setName(@Nonnull String newName);
+    void setName(@NotNull String newName);
 }

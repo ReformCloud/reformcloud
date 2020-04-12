@@ -1,5 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.node.network.packet.in.screen;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
 import systems.reformcloud.reformcloud2.executor.api.common.network.NetworkUtil;
@@ -8,7 +9,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.channel.hand
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 
-import javax.annotation.Nonnull;
 import java.util.UUID;
 import java.util.function.Consumer;
 
@@ -20,13 +20,13 @@ public class PacketInScreenLineAdded extends DefaultJsonNetworkHandler {
     }
 
     @Override
-    public void handlePacket(@Nonnull PacketSender packetSender, @Nonnull Packet packet, @Nonnull Consumer<Packet> responses) {
+    public void handlePacket(@NotNull PacketSender packetSender, @NotNull Packet packet, @NotNull Consumer<Packet> responses) {
         UUID uniqueID = packet.content().get("uniqueID", UUID.class);
         String line = packet.content().getString("line");
 
         ProcessInformation processInformation = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcess(uniqueID);
         if (processInformation != null) {
-            System.out.println(LanguageManager.get("screen-line-added", processInformation.getName(), line));
+            System.out.println(LanguageManager.get("screen-line-added", processInformation.getProcessDetail().getName(), line));
         }
     }
 }

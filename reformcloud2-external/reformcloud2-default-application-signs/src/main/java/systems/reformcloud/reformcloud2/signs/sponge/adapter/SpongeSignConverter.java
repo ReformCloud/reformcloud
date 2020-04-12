@@ -1,5 +1,7 @@
 package systems.reformcloud.reformcloud2.signs.sponge.adapter;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockTypes;
 import org.spongepowered.api.block.tileentity.Sign;
@@ -11,16 +13,13 @@ import systems.reformcloud.reformcloud2.signs.util.converter.SignConverter;
 import systems.reformcloud.reformcloud2.signs.util.sign.CloudLocation;
 import systems.reformcloud.reformcloud2.signs.util.sign.CloudSign;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 public class SpongeSignConverter implements SignConverter<Sign> {
 
     static final SpongeSignConverter INSTANCE = new SpongeSignConverter();
 
     @Nullable
     @Override
-    public Sign from(@Nonnull CloudSign cloudSign) {
+    public Sign from(@NotNull CloudSign cloudSign) {
         Location<World> sponge = accumulate(cloudSign.getLocation());
         if (sponge == null) {
             return null;
@@ -35,15 +34,15 @@ public class SpongeSignConverter implements SignConverter<Sign> {
         return null;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public CloudSign to(@Nonnull Sign sign, @Nonnull String group) {
+    public CloudSign to(@NotNull Sign sign, @NotNull String group) {
         return new CloudSign(group, accumulate(sign.getLocation()));
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public CloudLocation to(@Nonnull Sign sign) {
+    public CloudLocation to(@NotNull Sign sign) {
         return accumulate(sign.getLocation());
     }
 
@@ -59,7 +58,7 @@ public class SpongeSignConverter implements SignConverter<Sign> {
     private CloudLocation accumulate(Location<World> location) {
         return new CloudLocation(
                 location.getExtent().getName(),
-                API.getInstance().getCurrentProcessInformation().getName(),
+                API.getInstance().getCurrentProcessInformation().getProcessGroup().getName(),
                 location.getX(),
                 location.getY(),
                 location.getZ(),

@@ -1,9 +1,8 @@
 package systems.reformcloud.reformcloud2.executor.api.common.commands.source;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.manager.CommandManager;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.permission.PermissionHolder;
-
-import javax.annotation.Nonnull;
 
 public interface CommandSource extends PermissionHolder {
 
@@ -12,32 +11,32 @@ public interface CommandSource extends PermissionHolder {
      *
      * @param message The message which should be sent
      */
-    void sendMessage(@Nonnull String message);
+    void sendMessage(@NotNull String message);
 
     /**
      * Sends a raw message to the source of the command
      *
      * @param message The message which should be sent
      */
-    void sendRawMessage(@Nonnull String message);
+    void sendRawMessage(@NotNull String message);
 
     /**
      * Sends many messages to the source of the command
      *
      * @param messages The messages which should be sent
      */
-    void sendMessages(@Nonnull String[] messages);
+    void sendMessages(@NotNull String[] messages);
 
     /**
      * Sends many messages to the source of the command
      *
      * @param messages The messages which should be sent
      */
-    void sendRawMessages(@Nonnull String[] messages);
+    void sendRawMessages(@NotNull String[] messages);
 
     /**
      * @return The command manger of the source
      */
-    @Nonnull
+    @NotNull
     CommandManager commandManager();
 }

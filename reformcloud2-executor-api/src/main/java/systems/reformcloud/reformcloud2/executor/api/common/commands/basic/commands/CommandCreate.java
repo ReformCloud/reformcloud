@@ -1,5 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.CommonHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.GlobalCommand;
@@ -10,7 +11,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Vers
 import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.StringUtil;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -23,13 +23,14 @@ public final class CommandCreate extends GlobalCommand {
     }
 
     @Override
-    public void describeCommandToSender(@Nonnull CommandSource source) {
+    public void describeCommandToSender(@NotNull CommandSource source) {
         source.sendMessages((
                 "create new pg <name> <version>     | Creates a new process group\n" +
                         " --start-port=[port]               | Sets the start port of the new process group\n" +
                         " --max-memory=[memory]             | Sets the max-memory of the process group (default: 512)\n" +
                         " --min-process-count=[min]         | Sets the min process count for the group (default: 1)\n" +
                         " --max-process-count=[max]         | Sets the max process count for the group (default: -1)\n" +
+                        " --always-prepared=[prepared]      | Sets the amount of processes which should always be preared (default: 1)\n" +
                         " --max-players=[max]               | Sets the max player count for the processes (default: proxies: 512, servers: 20)\n" +
                         " --start-priority=[priority]       | Sets the startup priority for the group to start (default: 0)\n" +
                         " --static=[static]                 | Marks the process as a static process (default: false)\n" +
@@ -46,7 +47,7 @@ public final class CommandCreate extends GlobalCommand {
     }
 
     @Override
-    public boolean handleCommand(@Nonnull CommandSource commandSource, @Nonnull String[] strings) {
+    public boolean handleCommand(@NotNull CommandSource commandSource, @NotNull String[] strings) {
         if (strings.length <= 2 || !strings[0].equalsIgnoreCase("new")) {
             this.describeCommandToSender(commandSource);
             return true;
@@ -127,6 +128,7 @@ public final class CommandCreate extends GlobalCommand {
         int memory = 512;
         int min = 1;
         int max = -1;
+        int prepared = 1;
         int maxPlayers = version.isServer() ? 20 : 512;
         int priority = 0;
         boolean staticProcess = false;
@@ -192,6 +194,16 @@ public final class CommandCreate extends GlobalCommand {
             }
 
             max = maxProcessCount;
+        }
+
+        if (properties.containsKey("always-prepared")) {
+            Integer alwaysPrepared = CommonHelper.fromString(properties.getProperty("always-prepared"));
+            if (alwaysPrepared == null || alwaysPrepared <= -1) {
+                source.sendMessage(LanguageManager.get("command-integer-failed", -1, properties.getProperty("always-prepared")));
+                return;
+            }
+
+            prepared = alwaysPrepared;
         }
 
         if (properties.containsKey("static")) {
@@ -272,6 +284,7 @@ public final class CommandCreate extends GlobalCommand {
                 maintenance,
                 min,
                 max,
+                prepared,
                 priority,
                 staticProcess,
                 lobby,

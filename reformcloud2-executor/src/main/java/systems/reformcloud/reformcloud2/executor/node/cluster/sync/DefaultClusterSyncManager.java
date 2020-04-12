@@ -1,5 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.node.cluster.sync;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.ProcessStartedEvent;
 import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.ProcessStoppedEvent;
 import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.ProcessUpdatedEvent;
@@ -21,10 +22,11 @@ import systems.reformcloud.reformcloud2.executor.node.network.packet.out.NodePac
 import systems.reformcloud.reformcloud2.executor.node.network.packet.out.cluster.*;
 import systems.reformcloud.reformcloud2.executor.node.process.util.ProcessAction;
 
+import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class DefaultClusterSyncManager implements ClusterSyncManager {
+public final class DefaultClusterSyncManager implements ClusterSyncManager {
 
     public DefaultClusterSyncManager(NodeNetworkClient nodeNetworkClient) {
         this.nodeNetworkClient = nodeNetworkClient;
@@ -40,14 +42,16 @@ public class DefaultClusterSyncManager implements ClusterSyncManager {
 
     @Override
     public void syncSelfInformation() {
+        NodeInformation self = NodeExecutor.getInstance().getNodeNetworkManager().getCluster().getSelfNode();
+        self.update();
+
         NodeExecutor.getInstance().getNodeNetworkManager().getCluster().broadCastToCluster(
-                new NodePacketOutNodeInformationUpdate(NodeExecutor.getInstance().getNodeNetworkManager().getCluster().getSelfNode())
+                new NodePacketOutNodeInformationUpdate(self)
         );
     }
 
     @Override
-    public void syncProcessStartup(ProcessInformation processInformation) {
-        NodeExecutor.getInstance().getNodeNetworkManager().getQueuedProcesses().remove(processInformation.getProcessUniqueID());
+    public void syncProcessStartup(@Nonnull ProcessInformation processInformation) {
         NodeExecutor.getInstance().getNodeNetworkManager().getCluster().broadCastToCluster(new PacketOutProcessAction(
                 ProcessAction.START, processInformation
         ));
@@ -57,7 +61,7 @@ public class DefaultClusterSyncManager implements ClusterSyncManager {
     }
 
     @Override
-    public void syncProcessUpdate(ProcessInformation processInformation) {
+    public void syncProcessUpdate(@Nonnull ProcessInformation processInformation) {
         NodeExecutor.getInstance().getNodeNetworkManager().getCluster().broadCastToCluster(new PacketOutProcessAction(
                 ProcessAction.UPDATE, processInformation
         ));
@@ -67,7 +71,7 @@ public class DefaultClusterSyncManager implements ClusterSyncManager {
     }
 
     @Override
-    public void syncProcessStop(ProcessInformation processInformation) {
+    public void syncProcessStop(@Nonnull ProcessInformation processInformation) {
         NodeExecutor.getInstance().getNodeNetworkManager().getCluster().broadCastToCluster(new PacketOutProcessAction(
                 ProcessAction.STOP, processInformation
         ));
@@ -77,7 +81,7 @@ public class DefaultClusterSyncManager implements ClusterSyncManager {
     }
 
     @Override
-    public void syncProcessGroups(Collection<ProcessGroup> processGroups, SyncAction action) {
+    public void syncProcessGroups(@Nonnull Collection<ProcessGroup> processGroups, @Nonnull SyncAction action) {
         NodeExecutor.getInstance().getNodeNetworkManager().getCluster().broadCastToCluster(new PacketOutSyncProcessGroups(processGroups, action));
     }
 
@@ -87,32 +91,34 @@ public class DefaultClusterSyncManager implements ClusterSyncManager {
     }
 
     @Override
-    public void syncProcessInformation(Collection<ProcessInformation> information) {
+    public void syncProcessInformation(@Nonnull Collection<ProcessInformation> information) {
         NodeExecutor.getInstance().getNodeNetworkManager().getCluster().broadCastToCluster(new PacketOutSyncProcessInformation(information));
     }
 
+    @Nonnull
     @Override
     public Collection<ProcessGroup> getProcessGroups() {
         return processGroups;
     }
 
+    @Nonnull
     @Override
     public Collection<MainGroup> getMainGroups() {
         return mainGroups;
     }
 
     @Override
-    public boolean existsProcessGroup(String name) {
+    public boolean existsProcessGroup(@Nonnull String name) {
         return Streams.filterToReference(this.processGroups, e -> e.getName().equals(name)).isPresent();
     }
 
     @Override
-    public boolean existsMainGroup(String name) {
+    public boolean existsMainGroup(@Nonnull String name) {
         return Streams.filterToReference(this.mainGroups, e -> e.getName().equals(name)).isPresent();
     }
 
     @Override
-    public void syncProcessGroupCreate(ProcessGroup group) {
+    public void syncProcessGroupCreate(@Nonnull ProcessGroup group) {
         this.processGroups.add(group);
         this.syncProcessGroups(this.processGroups, SyncAction.CREATE);
 
@@ -121,7 +127,7 @@ public class DefaultClusterSyncManager implements ClusterSyncManager {
     }
 
     @Override
-    public void syncMainGroupCreate(MainGroup group) {
+    public void syncMainGroupCreate(@Nonnull MainGroup group) {
         this.mainGroups.add(group);
         this.syncMainGroups(this.mainGroups, SyncAction.CREATE);
 
@@ -129,7 +135,7 @@ public class DefaultClusterSyncManager implements ClusterSyncManager {
     }
 
     @Override
-    public void syncProcessGroupUpdate(ProcessGroup processGroup) {
+    public void syncProcessGroupUpdate(@Nonnull ProcessGroup processGroup) {
         Streams.filterToReference(this.processGroups, e -> e.getName().equals(processGroup.getName())).ifPresent(e -> {
             this.processGroups.remove(e);
             this.processGroups.add(processGroup);
@@ -141,7 +147,7 @@ public class DefaultClusterSyncManager implements ClusterSyncManager {
     }
 
     @Override
-    public void syncMainGroupUpdate(MainGroup mainGroup) {
+    public void syncMainGroupUpdate(@Nonnull MainGroup mainGroup) {
         Streams.filterToReference(this.mainGroups, e -> e.getName().equals(mainGroup.getName())).ifPresent(e -> {
             this.mainGroups.remove(e);
             this.mainGroups.add(mainGroup);
@@ -152,18 +158,18 @@ public class DefaultClusterSyncManager implements ClusterSyncManager {
     }
 
     @Override
-    public void syncProcessGroupDelete(String name) {
+    public void syncProcessGroupDelete(@Nonnull String name) {
         Streams.filterToReference(this.processGroups, e -> e.getName().equals(name)).ifPresent(e -> {
             this.processGroups.remove(e);
             this.syncProcessGroups(processGroups, SyncAction.DELETE);
 
-            NodeExecutor.getInstance().getNodeExecutorConfig().handleProcessGroupDelete(e);
             NodeExecutor.getInstance().getLocalAutoStartupHandler().update();
+            NodeExecutor.getInstance().getNodeExecutorConfig().handleProcessGroupDelete(e);
         });
     }
 
     @Override
-    public void syncMainGroupDelete(String name) {
+    public void syncMainGroupDelete(@NotNull String name) {
         Streams.filterToReference(this.mainGroups, e -> e.getName().equals(name)).ifPresent(e -> {
             this.mainGroups.remove(e);
             this.syncMainGroups(mainGroups, SyncAction.DELETE);
@@ -173,7 +179,7 @@ public class DefaultClusterSyncManager implements ClusterSyncManager {
     }
 
     @Override
-    public void handleProcessGroupSync(Collection<ProcessGroup> groups, SyncAction action) {
+    public void handleProcessGroupSync(@Nonnull Collection<ProcessGroup> groups, @Nonnull SyncAction action) {
         switch (action) {
             case CREATE: {
                 groups
@@ -218,7 +224,7 @@ public class DefaultClusterSyncManager implements ClusterSyncManager {
     }
 
     @Override
-    public void handleMainGroupSync(Collection<MainGroup> groups, SyncAction action) {
+    public void handleMainGroupSync(@Nonnull Collection<MainGroup> groups, @Nonnull SyncAction action) {
         switch (action) {
             case CREATE: {
                 groups
@@ -261,9 +267,9 @@ public class DefaultClusterSyncManager implements ClusterSyncManager {
     }
 
     @Override
-    public void handleProcessInformationSync(Collection<ProcessInformation> information) {
+    public void handleProcessInformationSync(@Nonnull Collection<ProcessInformation> information) {
         Collection<ProcessInformation> clusterProcesses = NodeExecutor.getInstance().getNodeNetworkManager().getNodeProcessHelper().getClusterProcesses();
-        Streams.allOf(information, e -> clusterProcesses.stream().noneMatch(i -> i.getProcessUniqueID().equals(e.getProcessUniqueID())))
+        Streams.allOf(information, e -> clusterProcesses.stream().noneMatch(i -> i.getProcessDetail().getProcessUniqueID().equals(e.getProcessDetail().getProcessUniqueID())))
                 .forEach(e -> {
                     clusterProcesses.add(e);
                     sendToAllExcludedNodes(new ControllerEventProcessStarted(e));
@@ -280,7 +286,7 @@ public class DefaultClusterSyncManager implements ClusterSyncManager {
     }
 
     @Override
-    public void handleNodeInformationUpdate(NodeInformation nodeInformation) {
+    public void handleNodeInformationUpdate(@Nonnull NodeInformation nodeInformation) {
         NodeExecutor.getInstance().getNodeNetworkManager().getCluster().handleNodeUpdate(nodeInformation);
     }
 
@@ -299,6 +305,7 @@ public class DefaultClusterSyncManager implements ClusterSyncManager {
         return waiting.isEmpty();
     }
 
+    @Nonnull
     @Override
     public Collection<String> getWaitingConnections() {
         return waiting;

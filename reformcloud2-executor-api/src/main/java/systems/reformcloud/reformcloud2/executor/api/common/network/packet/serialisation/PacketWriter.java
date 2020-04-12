@@ -1,6 +1,7 @@
 package systems.reformcloud.reformcloud2.executor.api.common.network.packet.serialisation;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 
@@ -12,6 +13,6 @@ public interface PacketWriter {
      * @param objectOutputStream The stream in which the data should get written
      * @throws IOException Catches all exceptions occurring while stream write
      */
-    void write(@Nonnull ObjectOutputStream objectOutputStream) throws IOException;
+    void write(@NotNull ObjectOutputStream objectOutputStream) throws IOException;
 
 }

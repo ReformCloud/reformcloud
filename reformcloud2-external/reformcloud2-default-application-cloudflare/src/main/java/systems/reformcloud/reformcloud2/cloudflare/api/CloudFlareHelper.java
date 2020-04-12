@@ -1,6 +1,7 @@
 package systems.reformcloud.reformcloud2.cloudflare.api;
 
 import com.google.gson.JsonArray;
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.cloudflare.config.CloudFlareConfig;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
@@ -9,7 +10,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInfor
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.system.SystemHelper;
 
-import javax.annotation.Nonnull;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,7 +35,7 @@ public final class CloudFlareHelper {
 
     private static CloudFlareConfig cloudFlareConfig;
 
-    public static boolean init(@Nonnull String baseFolder) {
+    public static boolean init(@NotNull String baseFolder) {
 
         if (Files.notExists(Paths.get(baseFolder + "/config.json"))) {
             SystemHelper.createDirectory(Paths.get(baseFolder));
@@ -57,24 +57,24 @@ public final class CloudFlareHelper {
     public static void loadAlreadyRunning() {
         ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getAllProcesses()
                 .stream()
-                .filter(e -> !e.getTemplate().isServer())
+                .filter(e -> !e.getProcessDetail().getTemplate().isServer())
                 .forEach(CloudFlareHelper::createForProcess);
     }
 
-    public static void createForProcess(@Nonnull ProcessInformation target) {
+    public static void createForProcess(@NotNull ProcessInformation target) {
         String dnsID = createSRVRecord(target);
         if (dnsID == null) {
             return;
         }
 
-        CACHE.put(target.getProcessUniqueID(), dnsID);
+        CACHE.put(target.getProcessDetail().getProcessUniqueID(), dnsID);
     }
 
     private static String createSRVRecord(ProcessInformation target) {
-        if (!A_RECORD_CACHE.containsKey(target.getParent())) {
+        if (!A_RECORD_CACHE.containsKey(target.getProcessDetail().getParentName())) {
             String recordID = createRecord(target, prepareARecord(target));
             if (recordID != null) {
-                A_RECORD_CACHE.put(target.getParent(), recordID);
+                A_RECORD_CACHE.put(target.getProcessDetail().getParentName(), recordID);
             }
         }
 
@@ -121,7 +121,7 @@ public final class CloudFlareHelper {
                     } catch (final Throwable ignored) {
                     }
 
-                    System.err.println(LanguageManager.get("cloudlfare-create-error", target.getName()));
+                    System.err.println(LanguageManager.get("cloudlfare-create-error", target.getProcessDetail().getName()));
                 }
             }
         } catch (final IOException ex) {
@@ -137,7 +137,7 @@ public final class CloudFlareHelper {
     }
 
     public static void deleteRecord(ProcessInformation target) {
-        String dnsID = CACHE.remove(target.getProcessUniqueID());
+        String dnsID = CACHE.remove(target.getProcessDetail().getProcessUniqueID());
         if (dnsID == null) {
             return;
         }
@@ -173,7 +173,7 @@ public final class CloudFlareHelper {
                 .add("type", "SRV")
                 .add("name", "_minecraft._tcp." + cloudFlareConfig.getDomainName())
                 .add("content", "SRV 1 1 " + target.getNetworkInfo().getPort()
-                        + " " + target.getParent() + "." + cloudFlareConfig.getDomainName())
+                        + " " + target.getProcessDetail().getParentName() + "." + cloudFlareConfig.getDomainName())
                 .add("ttl", 1)
                 .add("priority", 1)
                 .add("proxied", false)
@@ -185,7 +185,7 @@ public final class CloudFlareHelper {
                         .add("priority", 1)
                         .add("weight", 1)
                         .add("port", target.getNetworkInfo().getPort())
-                        .add("target", target.getParent() + "." + cloudFlareConfig.getDomainName())
+                        .add("target", target.getProcessDetail().getParentName() + "." + cloudFlareConfig.getDomainName())
                         .getJsonObject()
                 );
     }
@@ -193,7 +193,7 @@ public final class CloudFlareHelper {
     private static JsonConfiguration prepareARecord(ProcessInformation processInformation) {
         return new JsonConfiguration()
                 .add("type", "A")
-                .add("name", processInformation.getParent() + "." + cloudFlareConfig.getDomainName())
+                .add("name", processInformation.getProcessDetail().getParentName() + "." + cloudFlareConfig.getDomainName())
                 .add("content", processInformation.getNetworkInfo().getHost())
                 .add("ttl", 1)
                 .add("proxied", false)

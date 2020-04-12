@@ -1,10 +1,10 @@
 package systems.reformcloud.reformcloud2.executor.api.common.logger.setup.basic;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.LoggerBase;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.setup.Setup;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.setup.SetupQuestion;
 
-import javax.annotation.Nonnull;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -12,15 +12,15 @@ public final class DefaultSetup implements Setup {
 
     private final Queue<SetupQuestion> questions = new ConcurrentLinkedQueue<>();
 
-    @Nonnull
+    @NotNull
     @Override
-    public Setup addQuestion(@Nonnull SetupQuestion setupQuestion) {
+    public Setup addQuestion(@NotNull SetupQuestion setupQuestion) {
         questions.add(setupQuestion);
         return this;
     }
 
     @Override
-    public void startSetup(@Nonnull LoggerBase loggerBase) {
+    public void startSetup(@NotNull LoggerBase loggerBase) {
         questions.forEach(setupQuestion -> {
             System.out.println(setupQuestion.question());
             String line = loggerBase.readLineNoPrompt();
@@ -31,5 +31,10 @@ public final class DefaultSetup implements Setup {
 
             setupQuestion.then().accept(line);
         });
+    }
+
+    @Override
+    public void clear() {
+        this.questions.clear();
     }
 }

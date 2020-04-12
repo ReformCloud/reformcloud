@@ -1,6 +1,8 @@
 package systems.reformcloud.reformcloud2.permissions.util.basic;
 
 import com.google.gson.reflect.TypeToken;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorType;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
@@ -24,8 +26,6 @@ import systems.reformcloud.reformcloud2.permissions.util.group.PermissionGroup;
 import systems.reformcloud.reformcloud2.permissions.util.permission.PermissionNode;
 import systems.reformcloud.reformcloud2.permissions.util.user.PermissionUser;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -71,7 +71,7 @@ public final class DefaultPermissionUtil implements PermissionUtil {
     }
 
     @Override
-    public PermissionGroup getGroup(@Nonnull String name) {
+    public PermissionGroup getGroup(@NotNull String name) {
         if (CACHE.containsKey(name)) {
             return CACHE.get(name);
         }
@@ -96,7 +96,7 @@ public final class DefaultPermissionUtil implements PermissionUtil {
     }
 
     @Override
-    public void updateGroup(@Nonnull PermissionGroup permissionGroup) {
+    public void updateGroup(@NotNull PermissionGroup permissionGroup) {
         CACHE.put(permissionGroup.getName(), permissionGroup);
 
         if (ExecutorAPI.getInstance().getType().equals(ExecutorType.CONTROLLER)
@@ -110,13 +110,13 @@ public final class DefaultPermissionUtil implements PermissionUtil {
     }
 
     @Override
-    public void addGroupPermission(@Nonnull PermissionGroup permissionGroup, @Nonnull PermissionNode permissionNode) {
+    public void addGroupPermission(@NotNull PermissionGroup permissionGroup, @NotNull PermissionNode permissionNode) {
         permissionGroup.getPermissionNodes().add(permissionNode);
         updateGroup(permissionGroup);
     }
 
     @Override
-    public void addProcessGroupPermission(@Nonnull String processGroup, @Nonnull PermissionGroup permissionGroup, @Nonnull PermissionNode permissionNode) {
+    public void addProcessGroupPermission(@NotNull String processGroup, @NotNull PermissionGroup permissionGroup, @NotNull PermissionNode permissionNode) {
         final Collection<PermissionNode> current = permissionGroup.getPerGroupPermissions().get(processGroup);
         if (current == null) {
             permissionGroup.getPerGroupPermissions().put(processGroup, new ArrayList<>(Collections.singletonList(permissionNode)));
@@ -129,7 +129,7 @@ public final class DefaultPermissionUtil implements PermissionUtil {
     }
 
     @Override
-    public void addDefaultGroup(@Nonnull String group) {
+    public void addDefaultGroup(@NotNull String group) {
         if (ExecutorAPI.getInstance().getType().equals(ExecutorType.CONTROLLER)
                 || ExecutorAPI.getInstance().getType().equals(ExecutorType.NODE)) {
             JsonConfiguration config = ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().find(PERMISSION_CONFIG_TABLE, "config", null);
@@ -163,7 +163,7 @@ public final class DefaultPermissionUtil implements PermissionUtil {
     }
 
     @Override
-    public void removeDefaultGroup(@Nonnull String group) {
+    public void removeDefaultGroup(@NotNull String group) {
         if (ExecutorAPI.getInstance().getType().equals(ExecutorType.CONTROLLER)
                 || ExecutorAPI.getInstance().getType().equals(ExecutorType.NODE)) {
             JsonConfiguration config = ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().find(PERMISSION_CONFIG_TABLE, "config", null);
@@ -196,9 +196,9 @@ public final class DefaultPermissionUtil implements PermissionUtil {
         }
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public PermissionGroup createGroup(@Nonnull String name) {
+    public PermissionGroup createGroup(@NotNull String name) {
         final PermissionGroup permissionGroup = getGroup(name);
         if (permissionGroup != null) {
             return permissionGroup;
@@ -225,14 +225,14 @@ public final class DefaultPermissionUtil implements PermissionUtil {
         return newGroup;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Collection<PermissionGroup> getDefaultGroups() {
         return Collections.unmodifiableCollection(CACHED_DEFAULT_GROUPS);
     }
 
     @Override
-    public void deleteGroup(@Nonnull String name) {
+    public void deleteGroup(@NotNull String name) {
         final PermissionGroup toDelete = getGroup(name);
         if (toDelete != null) {
             if (ExecutorAPI.getInstance().getType().equals(ExecutorType.CONTROLLER)
@@ -248,7 +248,7 @@ public final class DefaultPermissionUtil implements PermissionUtil {
     }
 
     @Override
-    public boolean hasPermission(@Nonnull PermissionUser permissionUser, @Nonnull String permission) {
+    public boolean hasPermission(@NotNull PermissionUser permissionUser, @NotNull String permission) {
         permission = permission.toLowerCase();
         for (NodeGroup group : permissionUser.getGroups()) {
             if (!group.isValid()) {
@@ -268,9 +268,9 @@ public final class DefaultPermissionUtil implements PermissionUtil {
         return false;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public PermissionUser loadUser(@Nonnull UUID uuid) {
+    public PermissionUser loadUser(@NotNull UUID uuid) {
         if (USER_CACHE.containsKey(uuid)) {
             return USER_CACHE.get(uuid);
         }
@@ -306,9 +306,9 @@ public final class DefaultPermissionUtil implements PermissionUtil {
         return result;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public PermissionUser loadUser(@Nonnull UUID uuid, @Nullable String name) {
+    public PermissionUser loadUser(@NotNull UUID uuid, @Nullable String name) {
         if (name != null) {
             pushToDB(uuid, name);
         }
@@ -317,14 +317,14 @@ public final class DefaultPermissionUtil implements PermissionUtil {
     }
 
     @Override
-    public void addUserPermission(@Nonnull UUID uuid, @Nonnull PermissionNode permissionNode) {
+    public void addUserPermission(@NotNull UUID uuid, @NotNull PermissionNode permissionNode) {
         final PermissionUser user = loadUser(uuid);
         user.getPermissionNodes().add(permissionNode);
         updateUser(user);
     }
 
     @Override
-    public void removeUserGroup(@Nonnull UUID uuid, @Nonnull String group) {
+    public void removeUserGroup(@NotNull UUID uuid, @NotNull String group) {
         final PermissionUser user = loadUser(uuid);
         Streams.filterToReference(user.getGroups(), e -> e.getGroupName().equals(group)).ifPresent(e -> {
             user.getGroups().remove(e);
@@ -333,14 +333,14 @@ public final class DefaultPermissionUtil implements PermissionUtil {
     }
 
     @Override
-    public void addUserGroup(@Nonnull UUID uuid, @Nonnull NodeGroup group) {
+    public void addUserGroup(@NotNull UUID uuid, @NotNull NodeGroup group) {
         final PermissionUser user = loadUser(uuid);
         user.getGroups().add(group);
         updateUser(user);
     }
 
     @Override
-    public void updateUser(@Nonnull PermissionUser permissionUser) {
+    public void updateUser(@NotNull PermissionUser permissionUser) {
         USER_CACHE.put(permissionUser.getUniqueID(), permissionUser);
 
         if (ExecutorAPI.getInstance().getType().equals(ExecutorType.CONTROLLER)
@@ -354,7 +354,7 @@ public final class DefaultPermissionUtil implements PermissionUtil {
     }
 
     @Override
-    public void deleteUser(@Nonnull UUID uuid) {
+    public void deleteUser(@NotNull UUID uuid) {
         final PermissionUser user = loadUser(uuid);
         if (ExecutorAPI.getInstance().getType().equals(ExecutorType.CONTROLLER)
                 || ExecutorAPI.getInstance().getType().equals(ExecutorType.NODE)) {
@@ -421,7 +421,7 @@ public final class DefaultPermissionUtil implements PermissionUtil {
     }
 
     @Override
-    public boolean hasPermission(@Nonnull PermissionGroup group, @Nonnull String perm) {
+    public boolean hasPermission(@NotNull PermissionGroup group, @NotNull String perm) {
         if (group.hasPermission(perm)) {
             return true;
         }

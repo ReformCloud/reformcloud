@@ -1,13 +1,13 @@
 package systems.reformcloud.reformcloud2.executor.api.common.groups.setup;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.MainGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.basic.DefaultProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.setup.basic.BasicGroupSetupVersion;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Version;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -182,7 +182,7 @@ public final class GroupSetupHelper {
     }
 
     @Nullable
-    public static GroupSetupVersion findByName(@Nonnull String name) {
+    public static GroupSetupVersion findByName(@NotNull String name) {
         return AVAILABLE.stream().filter(e -> e.getName().equalsIgnoreCase(name)).findFirst().orElse(null);
     }
 }

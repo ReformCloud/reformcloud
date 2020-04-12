@@ -1,8 +1,8 @@
 package systems.reformcloud.reformcloud2.executor.api.common.plugins.basic;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.plugins.InstallablePlugin;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,25 +26,25 @@ public final class DefaultInstallablePlugin extends InstallablePlugin {
 
     private final String main;
 
-    @Nonnull
+    @NotNull
     @Override
     public String getDownloadURL() {
         return downloadURL;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String version() {
         return version;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String author() {
         return author;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String main() {
         return main;
@@ -65,7 +65,7 @@ public final class DefaultInstallablePlugin extends InstallablePlugin {
         return false;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String getName() {
         return name;

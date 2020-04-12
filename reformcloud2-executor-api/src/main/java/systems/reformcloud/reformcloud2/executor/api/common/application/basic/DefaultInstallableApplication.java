@@ -1,8 +1,7 @@
 package systems.reformcloud.reformcloud2.executor.api.common.application.basic;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.application.InstallableApplication;
-
-import javax.annotation.Nonnull;
 
 public final class DefaultInstallableApplication implements InstallableApplication {
 
@@ -15,13 +14,13 @@ public final class DefaultInstallableApplication implements InstallableApplicati
 
     private final String name;
 
-    @Nonnull
+    @NotNull
     @Override
     public String url() {
         return url;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String getName() {
         return name;

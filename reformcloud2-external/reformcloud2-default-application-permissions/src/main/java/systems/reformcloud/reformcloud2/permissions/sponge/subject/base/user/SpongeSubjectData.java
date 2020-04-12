@@ -1,5 +1,7 @@
 package systems.reformcloud.reformcloud2.permissions.sponge.subject.base.user;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.api.service.context.Context;
 import org.spongepowered.api.service.permission.SubjectData;
 import systems.reformcloud.reformcloud2.permissions.PermissionAPI;
@@ -8,26 +10,24 @@ import systems.reformcloud.reformcloud2.permissions.sponge.subject.util.SubjectG
 import systems.reformcloud.reformcloud2.permissions.util.group.PermissionGroup;
 import systems.reformcloud.reformcloud2.permissions.util.user.PermissionUser;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.*;
 
 public class SpongeSubjectData extends AbstractSpongeSubjectData {
 
-    public SpongeSubjectData(@Nonnull UUID user) {
+    public SpongeSubjectData(@NotNull UUID user) {
         this.uniqueID = user;
     }
 
     private final UUID uniqueID;
 
     @Override
-    @Nonnull
+    @NotNull
     public Map<Set<Context>, Map<String, Boolean>> getAllPermissions() {
         return Collections.singletonMap(SubjectData.GLOBAL_CONTEXT, getPermissions());
     }
 
     @Override
-    @Nonnull
+    @NotNull
     public Map<String, Boolean> getPermissions(@Nullable Set<Context> contexts) {
         return getPermissions();
     }

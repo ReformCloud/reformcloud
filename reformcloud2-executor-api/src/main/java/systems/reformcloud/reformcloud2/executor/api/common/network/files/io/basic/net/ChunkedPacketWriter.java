@@ -1,17 +1,17 @@
 package systems.reformcloud.reformcloud2.executor.api.common.network.files.io.basic.net;
 
 import io.netty.channel.ChannelFutureListener;
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
 import systems.reformcloud.reformcloud2.executor.api.common.network.files.ChunkedFilePacket;
 import systems.reformcloud.reformcloud2.executor.api.common.network.files.io.basic.ChunkedFileReader;
 
-import javax.annotation.Nonnull;
 import java.nio.file.Paths;
 import java.util.UUID;
 
 public class ChunkedPacketWriter extends ChunkedFileReader {
 
-    public ChunkedPacketWriter(@Nonnull String path, @Nonnull UUID operationID, @Nonnull PacketSender packetSender) {
+    public ChunkedPacketWriter(@NotNull String path, @NotNull UUID operationID, @NotNull PacketSender packetSender) {
         super(Paths.get(path));
         this.packetSender = packetSender;
         this.path = path;

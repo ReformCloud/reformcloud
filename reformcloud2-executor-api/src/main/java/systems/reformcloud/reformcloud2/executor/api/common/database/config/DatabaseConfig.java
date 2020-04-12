@@ -54,6 +54,8 @@ public final class DatabaseConfig {
 
         MONGO,
 
-        MYSQL
+        MYSQL,
+
+        RETHINK_DB
     }
 }

@@ -1,5 +1,6 @@
 package systems.reformcloud.reformcloud2.signs.packets.api.in;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.handler.DefaultJsonNetworkHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
@@ -7,7 +8,6 @@ import systems.reformcloud.reformcloud2.signs.packets.PacketUtil;
 import systems.reformcloud.reformcloud2.signs.util.SignSystemAdapter;
 import systems.reformcloud.reformcloud2.signs.util.sign.CloudSign;
 
-import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 
 public class APIPacketInDeleteSign extends DefaultJsonNetworkHandler {
@@ -18,7 +18,7 @@ public class APIPacketInDeleteSign extends DefaultJsonNetworkHandler {
     }
 
     @Override
-    public void handlePacket(@Nonnull PacketSender packetSender, @Nonnull Packet packet, @Nonnull Consumer<Packet> responses) {
+    public void handlePacket(@NotNull PacketSender packetSender, @NotNull Packet packet, @NotNull Consumer<Packet> responses) {
         CloudSign sign = packet.content().get("sign", CloudSign.TYPE);
         if (sign == null) {
             return;

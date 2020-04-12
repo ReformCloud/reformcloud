@@ -1,6 +1,7 @@
 package systems.reformcloud.reformcloud2.executor.api.common.groups.utils;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.List;
 import java.util.Objects;
 
@@ -17,8 +18,17 @@ public final class StartupConfiguration {
                                 int startPort, StartupEnvironment startupEnvironment,
                                 AutomaticStartupConfiguration automaticStartupConfiguration,
                                 boolean searchBestClientAlone, List<String> useOnlyTheseClients) {
+        this(maxOnlineProcesses, minOnlineProcesses, 1, startupPriority, startPort, startupEnvironment,
+                automaticStartupConfiguration, searchBestClientAlone, useOnlyTheseClients);
+    }
+
+    public StartupConfiguration(int maxOnlineProcesses, int minOnlineProcesses, int alwaysPreparedProcesses,
+                                int startupPriority, int startPort, StartupEnvironment startupEnvironment,
+                                AutomaticStartupConfiguration automaticStartupConfiguration,
+                                boolean searchBestClientAlone, List<String> useOnlyTheseClients) {
         this.maxOnlineProcesses = maxOnlineProcesses;
         this.minOnlineProcesses = minOnlineProcesses;
+        this.alwaysPreparedProcesses = alwaysPreparedProcesses;
         this.startupPriority = startupPriority;
         this.startPort = startPort;
         this.startupEnvironment = startupEnvironment;
@@ -30,6 +40,8 @@ public final class StartupConfiguration {
     private int maxOnlineProcesses;
 
     private int minOnlineProcesses;
+
+    private int alwaysPreparedProcesses;
 
     private int startupPriority;
 
@@ -51,6 +63,10 @@ public final class StartupConfiguration {
         return minOnlineProcesses;
     }
 
+    public int getAlwaysPreparedProcesses() {
+        return alwaysPreparedProcesses;
+    }
+
     public int getStartupPriority() {
         return startupPriority;
     }
@@ -63,7 +79,7 @@ public final class StartupConfiguration {
         return startupEnvironment;
     }
 
-    @Nonnull
+    @NotNull
     public AutomaticStartupConfiguration getAutomaticStartupConfiguration() {
         return automaticStartupConfiguration;
     }
@@ -72,7 +88,7 @@ public final class StartupConfiguration {
         return searchBestClientAlone;
     }
 
-    @Nonnull
+    @NotNull
     public List<String> getUseOnlyTheseClients() {
         return useOnlyTheseClients;
     }
@@ -83,6 +99,10 @@ public final class StartupConfiguration {
 
     public void setMinOnlineProcesses(int minOnlineProcesses) {
         this.minOnlineProcesses = minOnlineProcesses;
+    }
+
+    public void setAlwaysPreparedProcesses(int alwaysPreparedProcesses) {
+        this.alwaysPreparedProcesses = alwaysPreparedProcesses;
     }
 
     public void setStartPort(int startPort) {

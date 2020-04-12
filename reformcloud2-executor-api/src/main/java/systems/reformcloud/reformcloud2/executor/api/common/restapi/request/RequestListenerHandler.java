@@ -1,8 +1,8 @@
 package systems.reformcloud.reformcloud2.executor.api.common.restapi.request;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.restapi.auth.Auth;
 
-import javax.annotation.Nonnull;
 import java.util.Collection;
 
 public interface RequestListenerHandler {
@@ -13,12 +13,12 @@ public interface RequestListenerHandler {
      * @param auth The new auth handler
      * @throws UnsupportedOperationException If the operation is not supported by the current handler
      */
-    void setAuth(@Nonnull Auth auth);
+    void setAuth(@NotNull Auth auth);
 
     /**
      * @return The current auth handler of this instance
      */
-    @Nonnull
+    @NotNull
     Auth authHandler();
 
     /**
@@ -27,8 +27,8 @@ public interface RequestListenerHandler {
      * @param requestHandler The request handler which should get registered
      * @return The current instance of this class
      */
-    @Nonnull
-    RequestListenerHandler registerListener(@Nonnull RequestHandler requestHandler);
+    @NotNull
+    RequestListenerHandler registerListener(@NotNull RequestHandler requestHandler);
 
     /**
      * Registers a new request handler
@@ -37,19 +37,19 @@ public interface RequestListenerHandler {
      * @param requestHandler The request handler which should get registered
      * @return The current instance of this class
      */
-    @Nonnull
-    RequestListenerHandler registerListener(@Nonnull Class<? extends RequestHandler> requestHandler);
+    @NotNull
+    RequestListenerHandler registerListener(@NotNull Class<? extends RequestHandler> requestHandler);
 
     /**
      * Unregisters a request handler
      *
      * @param requestHandler The request handler which should get unregistered
      */
-    void unregisterHandler(@Nonnull RequestHandler requestHandler);
+    void unregisterHandler(@NotNull RequestHandler requestHandler);
 
     /**
      * @return All currently registered request listener of this instance
      */
-    @Nonnull
+    @NotNull
     Collection<RequestHandler> getHandlers();
 }

@@ -1,9 +1,9 @@
 package systems.reformcloud.reformcloud2.executor.api.common.application.builder;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.application.ApplicationConfig;
 import systems.reformcloud.reformcloud2.executor.api.common.dependency.Dependency;
 
-import javax.annotation.Nonnull;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +36,7 @@ public final class ApplicationConfigBuilder {
 
     private String website = "https://reformcloud.systems";
 
-    private String implementedVersion = "2.1.0";
+    private String implementedVersion = "2.2.0";
 
     private final List<Dependency> dependencies = new ArrayList<>();
 
@@ -75,60 +75,60 @@ public final class ApplicationConfigBuilder {
     public ApplicationConfig create() {
         return new ApplicationConfig() {
             @Override
-            @Nonnull
+            @NotNull
             public String version() {
                 return version;
             }
 
-            @Nonnull
+            @NotNull
             @Override
             public String author() {
                 return author;
             }
 
-            @Nonnull
+            @NotNull
             @Override
             public String main() {
                 return main;
             }
 
-            @Nonnull
+            @NotNull
             @Override
             public Dependency[] dependencies() {
                 return dependencies.toArray(new Dependency[0]);
             }
 
-            @Nonnull
+            @NotNull
             @Override
             public String description() {
                 return description;
             }
 
-            @Nonnull
+            @NotNull
             @Override
             public String website() {
                 return website;
             }
 
-            @Nonnull
+            @NotNull
             @Override
             public String implementedVersion() {
                 return implementedVersion;
             }
 
-            @Nonnull
+            @NotNull
             @Override
             public File applicationFile() {
                 return appFile;
             }
 
-            @Nonnull
+            @NotNull
             @Override
             public JarEntry applicationConfigFile() {
                 return descFile;
             }
 
-            @Nonnull
+            @NotNull
             @Override
             public String getName() {
                 return name;

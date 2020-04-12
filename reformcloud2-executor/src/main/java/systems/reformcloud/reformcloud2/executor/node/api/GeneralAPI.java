@@ -1,5 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.node.api;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.api.AsyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.SyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.applications.ApplicationAsyncAPI;
@@ -26,8 +27,6 @@ import systems.reformcloud.reformcloud2.executor.node.api.message.ChannelMessage
 import systems.reformcloud.reformcloud2.executor.node.api.player.PlayerAPIImplementation;
 import systems.reformcloud.reformcloud2.executor.node.api.plugins.PluginAPIImplementation;
 import systems.reformcloud.reformcloud2.executor.node.api.process.ProcessAPIImplementation;
-
-import javax.annotation.Nonnull;
 
 public class GeneralAPI implements SyncAPI, AsyncAPI {
 
@@ -67,97 +66,97 @@ public class GeneralAPI implements SyncAPI, AsyncAPI {
 
     private final ChannelMessageAPIImplementation channelAPI;
 
-    @Nonnull
+    @NotNull
     @Override
     public ProcessAsyncAPI getProcessAsyncAPI() {
         return processAPI;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public GroupAsyncAPI getGroupAsyncAPI() {
         return groupAPI;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public ApplicationAsyncAPI getApplicationAsyncAPI() {
         return applicationAPI;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public ConsoleAsyncAPI getConsoleAsyncAPI() {
         return consoleAPI;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public PlayerAsyncAPI getPlayerAsyncAPI() {
         return playerAPI;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public PluginAsyncAPI getPluginAsyncAPI() {
         return pluginAPI;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public DatabaseAsyncAPI getDatabaseAsyncAPI() {
         return databaseAPI;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public MessageAsyncAPI getMessageAsyncAPI() {
         return this.channelAPI;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public ProcessSyncAPI getProcessSyncAPI() {
         return processAPI;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public GroupSyncAPI getGroupSyncAPI() {
         return groupAPI;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public ApplicationSyncAPI getApplicationSyncAPI() {
         return applicationAPI;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public ConsoleSyncAPI getConsoleSyncAPI() {
         return consoleAPI;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public PlayerSyncAPI getPlayerSyncAPI() {
         return playerAPI;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public PluginSyncAPI getPluginSyncAPI() {
         return pluginAPI;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public DatabaseSyncAPI getDatabaseSyncAPI() {
         return databaseAPI;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public MessageSyncAPI getMessageSyncAPI() {
         return this.channelAPI;

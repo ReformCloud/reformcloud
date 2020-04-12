@@ -9,14 +9,14 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packe
 import systems.reformcloud.reformcloud2.executor.api.common.node.NodeInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
+import systems.reformcloud.reformcloud2.executor.api.node.cluster.InternalNetworkCluster;
 import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
 import systems.reformcloud.reformcloud2.executor.node.network.packet.out.NodePacketOutConnectionInitDone;
 
 import java.net.InetSocketAddress;
 import java.util.function.BiConsumer;
 
-public class NodeNetworkSuccessHandler implements BiConsumer<ChannelHandlerContext, Packet> {
+public final class NodeNetworkSuccessHandler implements BiConsumer<ChannelHandlerContext, Packet> {
 
     @Override
     public void accept(ChannelHandlerContext channelHandlerContext, Packet packet) {
@@ -34,9 +34,7 @@ public class NodeNetworkSuccessHandler implements BiConsumer<ChannelHandlerConte
 
         if (process == null) {
             String address = ((InetSocketAddress) channelHandlerContext.channel().remoteAddress()).getAddress().getHostAddress();
-            if (Streams.filterToReference(NodeExecutor.getInstance().getNodeConfig().getOtherNodes(), e -> e.keySet().stream().anyMatch(c -> c.equals(
-                    address
-            ))).isEmpty()) {
+            if (NodeExecutor.getInstance().getNodeConfig().getClusterNodes().stream().noneMatch(e -> e.getHost().equals(address))) {
                 System.out.println(LanguageManager.get("network-node-connection-from-unknown-node", address));
                 channelHandlerContext.channel().close().syncUninterruptibly();
                 return;
@@ -45,6 +43,13 @@ public class NodeNetworkSuccessHandler implements BiConsumer<ChannelHandlerConte
             NodeInformation nodeInformation = packet.content().get("info", NodeInformation.TYPE);
             if (nodeInformation == null) {
                 System.out.println(LanguageManager.get("network-node-connection-from-unknown-node", address));
+                channelHandlerContext.channel().close().syncUninterruptibly();
+                return;
+            }
+
+            InternalNetworkCluster cluster = NodeExecutor.getInstance().getNodeNetworkManager().getCluster();
+            if (cluster.getNode(nodeInformation.getName()) != null || cluster.getNode(nodeInformation.getNodeUniqueID()) != null) {
+                System.out.println(LanguageManager.get("network-node-already-connected", nodeInformation.getName(), nodeInformation.getNodeUniqueID()));
                 channelHandlerContext.channel().close().syncUninterruptibly();
                 return;
             }
@@ -63,11 +68,11 @@ public class NodeNetworkSuccessHandler implements BiConsumer<ChannelHandlerConte
             System.out.println(LanguageManager.get("network-node-other-node-connected", nodeInformation.getName(), address));
         } else {
             process.getNetworkInfo().setConnected(true);
-            process.setProcessState(ProcessState.READY);
+            process.getProcessDetail().setProcessState(ProcessState.READY);
             ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(process);
             NodeExecutor.getInstance().getNodeNetworkManager().getNodeProcessHelper().handleProcessConnection(process);
 
-            System.out.println(LanguageManager.get("process-connected", process.getName(), process.getParent()));
+            System.out.println(LanguageManager.get("process-connected", process.getProcessDetail().getName(), process.getProcessDetail().getParentName()));
         }
     }
 }

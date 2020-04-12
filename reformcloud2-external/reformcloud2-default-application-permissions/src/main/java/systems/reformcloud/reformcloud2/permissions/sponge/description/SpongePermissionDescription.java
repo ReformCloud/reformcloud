@@ -1,5 +1,7 @@
 package systems.reformcloud.reformcloud2.permissions.sponge.description;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.service.permission.PermissionDescription;
 import org.spongepowered.api.service.permission.PermissionService;
@@ -7,8 +9,6 @@ import org.spongepowered.api.service.permission.Subject;
 import org.spongepowered.api.service.permission.SubjectReference;
 import org.spongepowered.api.text.Text;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -17,8 +17,8 @@ import java.util.concurrent.CompletableFuture;
 public class SpongePermissionDescription implements PermissionDescription {
 
     SpongePermissionDescription(
-            @Nonnull PermissionService service,
-            @Nonnull String id,
+            @NotNull PermissionService service,
+            @NotNull String id,
             @Nullable PluginContainer owner,
             @Nullable Text description
     ) {
@@ -37,26 +37,26 @@ public class SpongePermissionDescription implements PermissionDescription {
     private final Text description;
 
     @Override
-    @Nonnull
+    @NotNull
     public String getId() {
         return id;
     }
 
     @Override
-    @Nonnull
+    @NotNull
     public Optional<Text> getDescription() {
         return Optional.ofNullable(description);
     }
 
     @Override
-    @Nonnull
+    @NotNull
     public Optional<PluginContainer> getOwner() {
         return Optional.ofNullable(owner);
     }
 
     @Override
-    @Nonnull
-    public CompletableFuture<Map<SubjectReference, Boolean>> findAssignedSubjects(@Nonnull String collectionIdentifier) {
+    @NotNull
+    public CompletableFuture<Map<SubjectReference, Boolean>> findAssignedSubjects(@NotNull String collectionIdentifier) {
         return service.loadCollection(collectionIdentifier).thenCompose(e -> {
             if (e == null) {
                 return CompletableFuture.completedFuture(new HashMap<>());
@@ -67,8 +67,8 @@ public class SpongePermissionDescription implements PermissionDescription {
     }
 
     @Override
-    @Nonnull
-    public Map<Subject, Boolean> getAssignedSubjects(@Nonnull String collectionIdentifier) {
+    @NotNull
+    public Map<Subject, Boolean> getAssignedSubjects(@NotNull String collectionIdentifier) {
         return service.getCollection(collectionIdentifier).map(e -> e.getLoadedWithPermission(getId())).orElseGet(HashMap::new);
     }
 }

@@ -1,8 +1,8 @@
 package systems.reformcloud.reformcloud2.executor.api.common.commands.permission;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.name.Nameable;
 
-import javax.annotation.Nonnull;
 import java.util.Collection;
 
 public interface PermissionHolder extends Nameable {
@@ -13,7 +13,7 @@ public interface PermissionHolder extends Nameable {
      * @param permission The permission which should be checked
      * @return If the user has the permission
      */
-    boolean hasPermission(@Nonnull String permission);
+    boolean hasPermission(@NotNull String permission);
 
     /**
      * Checks if the given permission value is set
@@ -21,7 +21,7 @@ public interface PermissionHolder extends Nameable {
      * @param permission The permission which should be checked
      * @return If the permission is set
      */
-    boolean isPermissionSet(@Nonnull String permission);
+    boolean isPermissionSet(@NotNull String permission);
 
     /**
      * Checks if the user has the specified permission
@@ -29,7 +29,7 @@ public interface PermissionHolder extends Nameable {
      * @param permission Checks if the user has the given {@link Permission}
      * @return If the user has the permission else {@link Permission#defaultResult()}
      */
-    boolean hasPermission(@Nonnull Permission permission);
+    boolean hasPermission(@NotNull Permission permission);
 
     /**
      * Checks if the user has the specified permission
@@ -37,12 +37,12 @@ public interface PermissionHolder extends Nameable {
      * @param permission Checks if the user has the given {@link Permission}
      * @return If the user has the permission else {@link Permission#defaultResult()}
      */
-    boolean isPermissionSet(@Nonnull Permission permission);
+    boolean isPermissionSet(@NotNull Permission permission);
 
     /**
      * @return All permissions of the user
      */
-    @Nonnull
+    @NotNull
     Collection<Permission> getEffectivePermissions();
 
     /**
@@ -53,6 +53,6 @@ public interface PermissionHolder extends Nameable {
     /**
      * @return The permission check for the current user
      */
-    @Nonnull
+    @NotNull
     PermissionCheck check();
 }

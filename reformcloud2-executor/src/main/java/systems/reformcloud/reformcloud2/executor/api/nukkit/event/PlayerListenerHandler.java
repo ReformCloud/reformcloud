@@ -35,13 +35,14 @@ public final class PlayerListenerHandler implements Listener {
 
             Packet result = NukkitExecutor.getInstance().packetHandler().getQueryHandler().sendQueryAsync(packetSender, new APIPacketOutHasPlayerAccess(
                     event.getPlayer().getUniqueId(),
-                    event.getPlayer().getName()
-            )).getTask().getUninterruptedly(TimeUnit.SECONDS, 2);
+                    event.getPlayer().getName(),
+                    event.getPlayer().getAddress()
+            )).getTask().getUninterruptedly(TimeUnit.SECONDS, 5);
             if (result != null && result.content().getBoolean("access")) {
                 event.setCancelled(false);
             } else {
                 event.setKickMessage(format(
-                        NukkitExecutor.getInstance().getMessages().getAlreadyConnectedMessage()
+                        NukkitExecutor.getInstance().getMessages().getNotUsingInternalProxy()
                 ));
                 event.setCancelled(true);
             }
@@ -55,7 +56,7 @@ public final class PlayerListenerHandler implements Listener {
         final PlayerAccessConfiguration configuration = current.getProcessGroup().getPlayerAccessConfiguration();
 
         if (configuration.isUseCloudPlayerLimit()
-                && configuration.getMaxPlayers() < current.getOnlineCount() + 1
+                && current.getProcessDetail().getMaxPlayers() < current.getProcessPlayerManager().getOnlineCount() + 1
                 && !player.hasPermission(configuration.getFullJoinPermission())) {
             player.kick(format(
                     NukkitExecutor.getInstance().getMessages().getProcessFullMessage()
@@ -77,24 +78,24 @@ public final class PlayerListenerHandler implements Listener {
             return;
         }
 
-        if (current.getProcessState().equals(ProcessState.FULL) && !player.hasPermission(configuration.getFullJoinPermission())) {
+        if (current.getProcessDetail().getProcessState().equals(ProcessState.FULL) && !player.hasPermission(configuration.getFullJoinPermission())) {
             player.kick(format(
                     NukkitExecutor.getInstance().getMessages().getProcessFullMessage()
             ));
             return;
         }
 
-        if (!current.onLogin(player.getUniqueId(), player.getName())) {
+        if (!current.getProcessPlayerManager().onLogin(player.getUniqueId(), player.getName())) {
             player.kick(format(
                     NukkitExecutor.getInstance().getMessages().getAlreadyConnectedMessage()
             ));
             return;
         }
 
-        if (Server.getInstance().getOnlinePlayers().size() >= current.getMaxPlayers()
-                && !current.getProcessState().equals(ProcessState.FULL)
-                && !current.getProcessState().equals(ProcessState.INVISIBLE)) {
-            current.setProcessState(ProcessState.FULL);
+        if (Server.getInstance().getOnlinePlayers().size() >= current.getProcessDetail().getMaxPlayers()
+                && !current.getProcessDetail().getProcessState().equals(ProcessState.FULL)
+                && !current.getProcessDetail().getProcessState().equals(ProcessState.INVISIBLE)) {
+            current.getProcessDetail().setProcessState(ProcessState.FULL);
         }
 
         current.updateRuntimeInformation();
@@ -105,18 +106,18 @@ public final class PlayerListenerHandler implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void handle(final PlayerQuitEvent event) {
         ProcessInformation current = API.getInstance().getCurrentProcessInformation();
-        if (!current.isPlayerOnline(event.getPlayer().getUniqueId())) {
+        if (!current.getProcessPlayerManager().isPlayerOnlineOnCurrentProcess(event.getPlayer().getUniqueId())) {
             return;
         }
 
-        if (Server.getInstance().getOnlinePlayers().size() < current.getMaxPlayers()
-                && !current.getProcessState().equals(ProcessState.READY)
-                && !current.getProcessState().equals(ProcessState.INVISIBLE)) {
-            current.setProcessState(ProcessState.READY);
+        if (Server.getInstance().getOnlinePlayers().size() < current.getProcessDetail().getMaxPlayers()
+                && !current.getProcessDetail().getProcessState().equals(ProcessState.READY)
+                && !current.getProcessDetail().getProcessState().equals(ProcessState.INVISIBLE)) {
+            current.getProcessDetail().setProcessState(ProcessState.READY);
         }
 
         current.updateRuntimeInformation();
-        current.onLogout(event.getPlayer().getUniqueId());
+        current.getProcessPlayerManager().onLogout(event.getPlayer().getUniqueId());
         NukkitExecutor.getInstance().setThisProcessInformation(current);
         ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(current);
     }

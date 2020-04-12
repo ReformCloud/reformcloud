@@ -1,6 +1,7 @@
 package systems.reformcloud.reformcloud2.executor.api.common.logger;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.logging.Formatter;
@@ -21,8 +22,8 @@ public abstract class FormatterBase extends Formatter {
      * @see Throwable
      * @see StringWriter
      */
-    @Nonnull
-    protected StringWriter format(@Nonnull Throwable throwable) {
+    @NotNull
+    protected StringWriter format(@NotNull Throwable throwable) {
         StringWriter stringWriter = new StringWriter();
         PrintWriter printWriter = new PrintWriter(stringWriter);
         throwable.printStackTrace(printWriter);

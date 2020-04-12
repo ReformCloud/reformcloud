@@ -1,8 +1,8 @@
 package systems.reformcloud.reformcloud2.executor.api.executor;
 
+import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 
-import javax.annotation.Nullable;
 import java.util.UUID;
 
 public interface PlayerAPIExecutor {

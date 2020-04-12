@@ -1,5 +1,7 @@
 package systems.reformcloud.reformcloud2.executor.api.common.application.api;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.common.application.LoadedApplication;
 import systems.reformcloud.reformcloud2.executor.api.common.application.factory.ApplicationThreadFactory;
 import systems.reformcloud.reformcloud2.executor.api.common.application.factory.ApplicationThreadGroup;
@@ -9,9 +11,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.application.updater.
 import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
 import systems.reformcloud.reformcloud2.executor.api.common.language.language.Language;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.File;
 import java.io.InputStream;
 import java.util.Properties;
@@ -28,7 +27,7 @@ public class Application {
 
     private static Application self;
 
-    public final void init(@Nonnull LoadedApplication application, AppClassLoader loader) {
+    public final void init(@NotNull LoadedApplication application, AppClassLoader loader) {
         self = this;
 
         this.application = application;
@@ -36,19 +35,26 @@ public class Application {
         this.appClassLoader = loader;
     }
 
-    public void onInstallable() {}
+    public void onInstallable() {
+    }
 
-    public void onInstalled() {}
+    public void onInstalled() {
+    }
 
-    public void onLoad() {}
+    public void onLoad() {
+    }
 
-    public void onEnable() {}
+    public void onEnable() {
+    }
 
-    public void onPreDisable() {}
+    public void onPreDisable() {
+    }
 
-    public void onDisable() {}
+    public void onDisable() {
+    }
 
-    public void onUninstall() {}
+    public void onUninstall() {
+    }
 
     public static Application self() {
         return self;
@@ -59,7 +65,7 @@ public class Application {
         return null;
     }
 
-    @Nonnull
+    @NotNull
     public final File dataFolder() {
         return new File("reformcloud/applications", application.getName());
     }
@@ -82,7 +88,7 @@ public class Application {
         return appClassLoader;
     }
 
-    @Nonnull
+    @NotNull
     public final LoadedApplication getApplication() {
         return application;
     }
@@ -91,8 +97,7 @@ public class Application {
         System.out.println(log);
     }
 
-    @CheckReturnValue
-    @Nonnull
+    @NotNull
     public final ExecutorService getExecutorService() {
         return executorService;
     }

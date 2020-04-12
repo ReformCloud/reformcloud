@@ -1,5 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.controller.network.packets.in;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.basic.ExternalAPIImplementation;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
@@ -8,7 +9,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packe
 import systems.reformcloud.reformcloud2.executor.api.common.plugins.Plugin;
 import systems.reformcloud.reformcloud2.executor.api.common.plugins.basic.DefaultPlugin;
 
-import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 
 public final class ControllerPacketInUnloadPlugin extends DefaultJsonNetworkHandler {
@@ -19,7 +19,7 @@ public final class ControllerPacketInUnloadPlugin extends DefaultJsonNetworkHand
     }
 
     @Override
-    public void handlePacket(@Nonnull PacketSender packetSender, @Nonnull Packet packet, @Nonnull Consumer<Packet> responses) {
+    public void handlePacket(@NotNull PacketSender packetSender, @NotNull Packet packet, @NotNull Consumer<Packet> responses) {
         String process = packet.content().getString("process");
         DefaultPlugin defaultPlugin = packet.content().get("plugin", Plugin.TYPE);
         ExecutorAPI.getInstance().getSyncAPI().getPluginSyncAPI().unloadPlugin(process, defaultPlugin);

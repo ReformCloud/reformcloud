@@ -1,5 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.client;
 
+import org.jetbrains.annotations.NotNull;
 import org.reflections.Reflections;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorType;
 import systems.reformcloud.reformcloud2.executor.api.client.Client;
@@ -45,10 +46,11 @@ import systems.reformcloud.reformcloud2.executor.client.network.channel.ClientNe
 import systems.reformcloud.reformcloud2.executor.client.packet.out.ClientPacketOutNotifyRuntimeUpdate;
 import systems.reformcloud.reformcloud2.executor.client.process.ProcessQueue;
 import systems.reformcloud.reformcloud2.executor.client.process.basic.DefaultProcessManager;
+import systems.reformcloud.reformcloud2.executor.client.process.listeners.RunningProcessPreparedListener;
+import systems.reformcloud.reformcloud2.executor.client.process.listeners.RunningProcessStoppedListener;
 import systems.reformcloud.reformcloud2.executor.client.screen.ScreenManager;
 import systems.reformcloud.reformcloud2.executor.client.watchdog.WatchdogThread;
 
-import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.concurrent.TimeUnit;
@@ -112,7 +114,7 @@ public final class ClientExecutor extends Client {
         SystemHelper.deleteDirectory(Paths.get("reformcloud/temp"));
 
         try {
-            if (Boolean.getBoolean("reformcloud2.disable.colours")) {
+            if (Boolean.getBoolean("reformcloud.disable.colours")) {
                 this.loggerBase = new DefaultLoggerHandler(this.commandManager);
             } else {
                 this.loggerBase = new ColouredLoggerHandler(this.commandManager);
@@ -121,13 +123,17 @@ public final class ClientExecutor extends Client {
             ex.printStackTrace();
         }
 
+        ExecutorAPI.getInstance().getEventManager().registerListener(new RunningProcessPreparedListener());
+        ExecutorAPI.getInstance().getEventManager().registerListener(new RunningProcessStoppedListener());
+
         this.clientExecutorConfig = new ClientExecutorConfig();
         this.clientConfig = clientExecutorConfig.getClientConfig();
         this.clientRuntimeInformation = new DefaultClientRuntimeInformation(
                 clientConfig.getStartHost(),
                 clientConfig.getMaxMemory(),
                 clientConfig.getMaxProcesses(),
-                clientConfig.getName()
+                clientConfig.getName(),
+                clientConfig.getUniqueID()
         );
 
         applicationLoader.detectApplications();
@@ -179,7 +185,8 @@ public final class ClientExecutor extends Client {
                 clientConfig.getStartHost(),
                 clientConfig.getMaxMemory(),
                 clientConfig.getMaxProcesses(),
-                clientConfig.getName()
+                clientConfig.getName(),
+                clientConfig.getUniqueID()
         );
         this.packetHandler.clearHandlers();
         this.packetHandler.getQueryHandler().clearQueries();
@@ -228,7 +235,7 @@ public final class ClientExecutor extends Client {
         return packetHandler;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public PacketHandler getPacketHandler() {
         return packetHandler;
@@ -258,7 +265,7 @@ public final class ClientExecutor extends Client {
         return clientExecutorConfig;
     }
 
-    @Nonnull
+    @NotNull
     public EventManager getEventManager() {
         return ExternalEventBusHandler.getInstance().getEventManager();
     }
@@ -286,7 +293,8 @@ public final class ClientExecutor extends Client {
                     clientConfig.getStartHost(),
                     clientConfig.getMaxMemory(),
                     clientConfig.getMaxProcesses(),
-                    clientConfig.getName()
+                    clientConfig.getName(),
+                    clientConfig.getUniqueID()
             );
 
             packetSender.sendPacket(new ClientPacketOutNotifyRuntimeUpdate(information));
@@ -344,7 +352,8 @@ public final class ClientExecutor extends Client {
                         this.clientExecutorConfig.getConnectionKey(),
                         this.clientConfig.getName(),
                         () -> new JsonConfiguration().add("info", this.clientRuntimeInformation),
-                        context -> {} // unused here
+                        context -> {
+                        } // unused here
                 )
         );
     }

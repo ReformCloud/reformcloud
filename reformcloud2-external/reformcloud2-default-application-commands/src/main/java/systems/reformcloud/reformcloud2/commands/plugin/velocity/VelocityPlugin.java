@@ -5,8 +5,10 @@ import com.google.inject.Inject;
 import com.velocitypowered.api.plugin.Dependency;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.proxy.ProxyServer;
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.commands.config.CommandsConfig;
 import systems.reformcloud.reformcloud2.commands.plugin.CommandConfigHandler;
+import systems.reformcloud.reformcloud2.commands.plugin.packet.in.PacketInReleaseCommandsConfig;
 import systems.reformcloud.reformcloud2.commands.plugin.packet.out.PacketOutGetCommandsConfig;
 import systems.reformcloud.reformcloud2.commands.plugin.velocity.commands.CommandLeave;
 import systems.reformcloud.reformcloud2.commands.plugin.velocity.commands.CommandReformCloud;
@@ -14,8 +16,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.network.NetworkUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
-
-import javax.annotation.Nonnull;
 
 @Plugin(
         id = "reformcloud_2_commands",
@@ -39,15 +39,16 @@ public class VelocityPlugin {
                 sender = DefaultChannelManager.INSTANCE.get("Controller").orNothing();
             }
 
-            ExecutorAPI.getInstance().getPacketHandler().getQueryHandler().sendQueryAsync(sender, new PacketOutGetCommandsConfig())
-                    .onComplete(e -> {
-                        CommandsConfig commandsConfig = e.content().get("content", new TypeToken<CommandsConfig>() {});
-                        if (commandsConfig == null) {
-                            return;
-                        }
+            ExecutorAPI.getInstance().getPacketHandler().getQueryHandler().sendQueryAsync(sender, new PacketOutGetCommandsConfig()).onComplete(e -> {
+                CommandsConfig commandsConfig = e.content().get("content", new TypeToken<CommandsConfig>() {
+                });
+                if (commandsConfig == null) {
+                    return;
+                }
 
-                        CommandConfigHandler.getInstance().handleCommandConfigRelease(commandsConfig);
-                    });
+                CommandConfigHandler.getInstance().handleCommandConfigRelease(commandsConfig);
+                ExecutorAPI.getInstance().getPacketHandler().registerHandler(new PacketInReleaseCommandsConfig());
+            });
         });
     }
 
@@ -60,7 +61,7 @@ public class VelocityPlugin {
         private CommandReformCloud commandReformCloud;
 
         @Override
-        public void handleCommandConfigRelease(@Nonnull CommandsConfig commandsConfig) {
+        public void handleCommandConfigRelease(@NotNull CommandsConfig commandsConfig) {
             unregisterAllCommands();
             if (commandsConfig.isLeaveCommandEnabled() && commandsConfig.getLeaveCommands().size() > 0) {
                 this.commandLeave = new CommandLeave(commandsConfig.getLeaveCommands());
@@ -81,7 +82,7 @@ public class VelocityPlugin {
 
         @Override
         public void unregisterAllCommands() {
-            if (this.commandLeave != null)  {
+            if (this.commandLeave != null) {
                 this.commandLeave.getAliases().forEach(VelocityPlugin.this.proxyServer.getCommandManager()::unregister);
                 this.commandLeave = null;
             }

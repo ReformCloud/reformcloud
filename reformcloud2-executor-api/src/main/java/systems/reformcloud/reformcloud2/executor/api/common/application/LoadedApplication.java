@@ -1,12 +1,11 @@
 package systems.reformcloud.reformcloud2.executor.api.common.application;
 
 import com.google.gson.reflect.TypeToken;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.application.basic.DefaultLoadedApplication;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.name.Nameable;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * This class represents an application which is loaded
@@ -21,25 +20,25 @@ public interface LoadedApplication extends Nameable {
     /**
      * @return The application loader which has loaded the application
      */
-    @Nonnull
+    @NotNull
     ApplicationLoader loader();
 
     /**
      * @return The current instance of the {@link ExecutorAPI}
      */
-    @Nonnull
+    @NotNull
     ExecutorAPI api();
 
     /**
      * @return The provided config of the application
      */
-    @Nonnull
+    @NotNull
     ApplicationConfig applicationConfig();
 
     /**
      * @return The current lifecycle status of the application
      */
-    @Nonnull
+    @NotNull
     ApplicationStatus applicationStatus();
 
     /**
@@ -53,13 +52,13 @@ public interface LoadedApplication extends Nameable {
      *
      * @param status The new status of the application
      */
-    void setApplicationStatus(@Nonnull ApplicationStatus status);
+    void setApplicationStatus(@NotNull ApplicationStatus status);
 
     /**
      * @return The name of the application
      * @see #applicationConfig()
      */
-    @Nonnull
+    @NotNull
     @Override
     default String getName() {
         return applicationConfig().getName();

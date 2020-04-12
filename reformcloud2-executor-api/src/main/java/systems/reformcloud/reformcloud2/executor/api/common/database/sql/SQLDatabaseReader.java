@@ -1,13 +1,13 @@
 package systems.reformcloud.reformcloud2.executor.api.common.database.sql;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.database.Database;
 import systems.reformcloud.reformcloud2.executor.api.common.database.DatabaseReader;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.defaults.DefaultTask;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,21 +31,21 @@ public class SQLDatabaseReader implements DatabaseReader {
 
     private final Database<Connection> database;
 
-    @Nonnull
+    @NotNull
     @Override
-    public Task<JsonConfiguration> find(@Nonnull String key) {
+    public Task<JsonConfiguration> find(@NotNull String key) {
         return this.get("key", key);
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public Task<JsonConfiguration> findIfAbsent(@Nonnull String identifier) {
+    public Task<JsonConfiguration> findIfAbsent(@NotNull String identifier) {
         return this.get("identifier", identifier);
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public Task<JsonConfiguration> insert(@Nonnull String key, @Nullable String identifier, @Nonnull JsonConfiguration data) {
+    public Task<JsonConfiguration> insert(@NotNull String key, @Nullable String identifier, @NotNull JsonConfiguration data) {
         Task<JsonConfiguration> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             Boolean has = this.contains(key).getUninterruptedly(TimeUnit.SECONDS, 5);
@@ -55,7 +55,8 @@ public class SQLDatabaseReader implements DatabaseReader {
                 return;
             }
 
-            try (PreparedStatement statement = prepareStatement("INSERT INTO `" + table + "` (`key`, `identifier`, `data`) VALUES (?, ?, ?);", database)) {
+            try (Connection connection = this.database.get();
+                 PreparedStatement statement = prepareStatement("INSERT INTO `" + table + "` (`key`, `identifier`, `data`) VALUES (?, ?, ?);", connection)) {
                 statement.setString(1, key);
                 statement.setString(2, identifier);
                 statement.setBytes(3, data.toPrettyBytes());
@@ -69,12 +70,13 @@ public class SQLDatabaseReader implements DatabaseReader {
         return task;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public Task<Boolean> update(@Nonnull String key, @Nonnull JsonConfiguration newData) {
+    public Task<Boolean> update(@NotNull String key, @NotNull JsonConfiguration newData) {
         Task<Boolean> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
-            try (PreparedStatement statement = prepareStatement("UPDATE `" + table + "` SET `data` = ? WHERE `key` = ?", database)) {
+            try (Connection connection = this.database.get();
+                 PreparedStatement statement = prepareStatement("UPDATE `" + table + "` SET `data` = ? WHERE `key` = ?", connection)) {
                 statement.setBytes(1, newData.toPrettyBytes());
                 statement.setString(2, key);
                 statement.executeUpdate();
@@ -87,12 +89,13 @@ public class SQLDatabaseReader implements DatabaseReader {
         return task;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public Task<Boolean> updateIfAbsent(@Nonnull String identifier, @Nonnull JsonConfiguration newData) {
+    public Task<Boolean> updateIfAbsent(@NotNull String identifier, @NotNull JsonConfiguration newData) {
         Task<Boolean> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
-            try (PreparedStatement statement = prepareStatement("UPDATE `" + table + "` SET `data` = ? WHERE `identifier` = ?", database)) {
+            try (Connection connection = this.database.get();
+                 PreparedStatement statement = prepareStatement("UPDATE `" + table + "` SET `data` = ? WHERE `identifier` = ?", connection)) {
                 statement.setBytes(1, newData.toPrettyBytes());
                 statement.setString(2, identifier);
                 statement.executeUpdate();
@@ -105,29 +108,31 @@ public class SQLDatabaseReader implements DatabaseReader {
         return task;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public Task<Void> remove(@Nonnull String key) {
-       Task<Void> task = new DefaultTask<>();
-       Task.EXECUTOR.execute(() -> {
-           try (PreparedStatement statement = prepareStatement("DELETE FROM `" + table + "` WHERE `key` = ?", database)) {
-               statement.setString(1, key);
-               statement.executeUpdate();
-           } catch (final SQLException ex) {
-               ex.printStackTrace();
-           }
-
-           task.complete(null);
-       });
-       return task;
-    }
-
-    @Nonnull
-    @Override
-    public Task<Void> removeIfAbsent(@Nonnull String identifier) {
+    public Task<Void> remove(@NotNull String key) {
         Task<Void> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
-            try (PreparedStatement statement = prepareStatement("DELETE FROM `" + table + "` WHERE `identifier` = ?", database)) {
+            try (Connection connection = this.database.get();
+                 PreparedStatement statement = prepareStatement("DELETE FROM `" + table + "` WHERE `key` = ?", connection)) {
+                statement.setString(1, key);
+                statement.executeUpdate();
+            } catch (final SQLException ex) {
+                ex.printStackTrace();
+            }
+
+            task.complete(null);
+        });
+        return task;
+    }
+
+    @NotNull
+    @Override
+    public Task<Void> removeIfAbsent(@NotNull String identifier) {
+        Task<Void> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(() -> {
+            try (Connection connection = this.database.get();
+                 PreparedStatement statement = prepareStatement("DELETE FROM `" + table + "` WHERE `identifier` = ?", connection)) {
                 statement.setString(1, identifier);
                 statement.executeUpdate();
             } catch (final SQLException ex) {
@@ -139,34 +144,20 @@ public class SQLDatabaseReader implements DatabaseReader {
         return task;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public Task<Boolean> contains(@Nonnull String key) {
+    public Task<Boolean> contains(@NotNull String key) {
         Task<Boolean> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> task.complete(this.find(key).getUninterruptedly() != null));
         return task;
     }
 
-    @Nonnull
-    @Override
-    public Task<Integer> size() {
-        Task<Integer> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> {
-            int count = 0;
-            for (JsonConfiguration ignored : this) {
-                count++;
-            }
-
-            task.complete(count);
-        });
-        return task;
-    }
-
-    @Nonnull
+    @NotNull
     @Override
     public Iterator<JsonConfiguration> iterator() {
         Collection<JsonConfiguration> list = new ArrayList<>();
-        try (PreparedStatement statement = prepareStatement("SELECT `data` FROM `" + table + "`", database)) {
+        try (Connection connection = this.database.get();
+             PreparedStatement statement = prepareStatement("SELECT `data` FROM `" + table + "`", connection)) {
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 byte[] bytes = resultSet.getBytes("data");
@@ -185,16 +176,18 @@ public class SQLDatabaseReader implements DatabaseReader {
         return list.iterator();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String getName() {
         return this.table;
     }
 
-    private Task<JsonConfiguration> get(String keyName, String key) {
+    @NotNull
+    private Task<JsonConfiguration> get(@NotNull String keyName, @NotNull String key) {
         Task<JsonConfiguration> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
-            try (PreparedStatement statement = prepareStatement("SELECT `data` FROM `" + table + "` WHERE `" + keyName + "` = ?", database)) {
+            try (Connection connection = this.database.get();
+                 PreparedStatement statement = prepareStatement("SELECT `data` FROM `" + table + "` WHERE `" + keyName + "` = ?", connection)) {
                 statement.setString(1, key);
                 ResultSet resultSet = statement.executeQuery();
                 if (!resultSet.next()) {
@@ -222,8 +215,8 @@ public class SQLDatabaseReader implements DatabaseReader {
         return task;
     }
 
-    @Nonnull
-    public static PreparedStatement prepareStatement(@Nonnull String sql, @Nonnull Database<Connection> database) throws SQLException {
-        return database.get().prepareStatement(sql);
+    @NotNull
+    public static PreparedStatement prepareStatement(@NotNull String sql, @NotNull Connection connection) throws SQLException {
+        return connection.prepareStatement(sql);
     }
 }

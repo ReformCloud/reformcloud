@@ -35,13 +35,14 @@ public final class PlayerListenerHandler implements Listener {
 
             Packet result = SpigotExecutor.getInstance().packetHandler().getQueryHandler().sendQueryAsync(packetSender, new APIPacketOutHasPlayerAccess(
                     event.getPlayer().getUniqueId(),
-                    event.getPlayer().getName()
-            )).getTask().getUninterruptedly(TimeUnit.SECONDS, 2);
+                    event.getPlayer().getName(),
+                    event.getRealAddress().getHostAddress()
+            )).getTask().getUninterruptedly(TimeUnit.SECONDS, 5);
             if (result != null && result.content().getBoolean("access")) {
                 event.setResult(PlayerLoginEvent.Result.ALLOWED);
             } else {
                 event.setKickMessage(format(
-                        SpigotExecutor.getInstance().getMessages().getAlreadyConnectedMessage()
+                        SpigotExecutor.getInstance().getMessages().getNotUsingInternalProxy()
                 ));
                 event.setResult(PlayerLoginEvent.Result.KICK_BANNED);
             }
@@ -52,7 +53,7 @@ public final class PlayerListenerHandler implements Listener {
         final PlayerAccessConfiguration configuration = current.getProcessGroup().getPlayerAccessConfiguration();
 
         if (configuration.isUseCloudPlayerLimit()
-                && configuration.getMaxPlayers() < current.getOnlineCount() + 1
+                && configuration.getMaxPlayers() < current.getProcessPlayerManager().getOnlineCount() + 1
                 && !player.hasPermission(configuration.getFullJoinPermission())) {
             event.setKickMessage(format(
                     SpigotExecutor.getInstance().getMessages().getProcessFullMessage()
@@ -77,7 +78,7 @@ public final class PlayerListenerHandler implements Listener {
             return;
         }
 
-        if (current.getProcessState().equals(ProcessState.FULL) && !player.hasPermission(configuration.getFullJoinPermission())) {
+        if (current.getProcessDetail().getProcessState().equals(ProcessState.FULL) && !player.hasPermission(configuration.getFullJoinPermission())) {
             event.setKickMessage(format(
                     SpigotExecutor.getInstance().getMessages().getProcessFullMessage()
             ));
@@ -85,7 +86,7 @@ public final class PlayerListenerHandler implements Listener {
             return;
         }
 
-        if (current.isPlayerOnline(player.getUniqueId())) {
+        if (current.getProcessPlayerManager().isPlayerOnlineOnCurrentProcess(player.getUniqueId())) {
             event.setKickMessage(format(
                     SpigotExecutor.getInstance().getMessages().getAlreadyConnectedMessage()
             ));
@@ -93,17 +94,17 @@ public final class PlayerListenerHandler implements Listener {
             return;
         }
 
-        if (Bukkit.getOnlinePlayers().size() >= current.getMaxPlayers()
-                && !current.getProcessState().equals(ProcessState.FULL)
-                && !current.getProcessState().equals(ProcessState.INVISIBLE)) {
-            current.setProcessState(ProcessState.FULL);
+        if (Bukkit.getOnlinePlayers().size() >= current.getProcessDetail().getMaxPlayers()
+                && !current.getProcessDetail().getProcessState().equals(ProcessState.FULL)
+                && !current.getProcessDetail().getProcessState().equals(ProcessState.INVISIBLE)) {
+            current.getProcessDetail().setProcessState(ProcessState.FULL);
         }
     }
 
     @EventHandler (priority = EventPriority.HIGHEST)
     public void handle(final PlayerJoinEvent event) {
         final ProcessInformation current = API.getInstance().getCurrentProcessInformation();
-        current.onLogin(event.getPlayer().getUniqueId(), event.getPlayer().getName());
+        current.getProcessPlayerManager().onLogin(event.getPlayer().getUniqueId(), event.getPlayer().getName());
         current.updateRuntimeInformation();
         SpigotExecutor.getInstance().setThisProcessInformation(current);
         ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(current);
@@ -112,18 +113,18 @@ public final class PlayerListenerHandler implements Listener {
     @EventHandler (priority = EventPriority.LOWEST)
     public void handle(final PlayerQuitEvent event) {
         ProcessInformation current = API.getInstance().getCurrentProcessInformation();
-        if (!current.isPlayerOnline(event.getPlayer().getUniqueId())) {
+        if (!current.getProcessPlayerManager().isPlayerOnlineOnCurrentProcess(event.getPlayer().getUniqueId())) {
             return;
         }
 
-        if (Bukkit.getOnlinePlayers().size() < current.getMaxPlayers()
-                && !current.getProcessState().equals(ProcessState.READY)
-                && !current.getProcessState().equals(ProcessState.INVISIBLE)) {
-            current.setProcessState(ProcessState.READY);
+        if (Bukkit.getOnlinePlayers().size() < current.getProcessDetail().getMaxPlayers()
+                && !current.getProcessDetail().getProcessState().equals(ProcessState.READY)
+                && !current.getProcessDetail().getProcessState().equals(ProcessState.INVISIBLE)) {
+            current.getProcessDetail().setProcessState(ProcessState.READY);
         }
 
         current.updateRuntimeInformation();
-        current.onLogout(event.getPlayer().getUniqueId());
+        current.getProcessPlayerManager().onLogout(event.getPlayer().getUniqueId());
         SpigotExecutor.getInstance().setThisProcessInformation(current);
         ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(current);
     }

@@ -5,17 +5,24 @@
     <parent>
         <artifactId>reformcloud2-external</artifactId>
         <groupId>systems.reformcloud.reformcloud2</groupId>
-        <version>2.1.0</version>
+        <version>2.2.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>reformcloud2-default-application-template-backends</artifactId>
 
+    <pluginRepositories>
+        <pluginRepository>
+            <id>reformcloud</id>
+            <url>https://repo.reformcloud.systems/</url>
+        </pluginRepository>
+    </pluginRepositories>
+
     <dependencies>
         <dependency>
             <groupId>systems.reformcloud.reformcloud2</groupId>
             <artifactId>reformcloud2-executor-api</artifactId>
-            <version>2.1.0</version>
+            <version>2.2.0</version>
             <scope>provided</scope>
         </dependency>
 
@@ -43,4 +50,42 @@
         </dependency>
     </dependencies>
 
+    <build>
+        <plugins>
+            <!-- https://github.com/derklaro/maven-dependency-list-plugin -->
+            <plugin>
+                <groupId>de.derklaro</groupId>
+                <artifactId>dependency-list-maven-plugin</artifactId>
+                <version>1.2</version>
+                <configuration>
+                    <excludedScopes>
+                        <excludedScope>test</excludedScope>
+                        <excludedScope>compile</excludedScope>
+                    </excludedScopes>
+
+                    <excludes>
+                        <exclude>*:reformcloud2-executor-api</exclude>
+                        <exclude>*:gson</exclude>
+                    </excludes>
+
+                    <outputFileName>
+                        reformcloud2-external/reformcloud2-default-application-template-backends/src/main/resources/dependencies.txt
+                    </outputFileName>
+
+                    <overrideExistingFile>true</overrideExistingFile>
+                    <resolveDependenciesOfDependencies>true</resolveDependenciesOfDependencies>
+                    <includeOptionalDependencies>false</includeOptionalDependencies>
+                    <createParentFiles>true</createParentFiles>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>dependency-list</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>

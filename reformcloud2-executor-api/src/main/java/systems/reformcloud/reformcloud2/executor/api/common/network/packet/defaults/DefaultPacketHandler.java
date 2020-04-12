@@ -1,12 +1,12 @@
 package systems.reformcloud.reformcloud2.executor.api.common.network.packet.defaults;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.handler.NetworkHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.handler.query.DefaultQueryNetworkHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.handler.PacketHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.query.QueryHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 
-import javax.annotation.Nonnull;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.List;
@@ -54,19 +54,19 @@ public final class DefaultPacketHandler implements PacketHandler {
         Streams.allOf(handlers, e -> e.getHandlingPacketID() == id).forEach(handlers::remove);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public List<NetworkHandler> getNetworkHandlers(int id) {
         return Streams.list(handlers, e -> e.getHandlingPacketID() == id);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public List<NetworkHandler> getAllNetworkHandlers() {
         return Collections.unmodifiableList(handlers);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public QueryHandler getQueryHandler() {
         return QUERY_HANDLER;

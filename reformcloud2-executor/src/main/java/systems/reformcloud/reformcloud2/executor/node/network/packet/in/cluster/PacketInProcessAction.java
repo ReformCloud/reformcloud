@@ -1,5 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.node.network.packet.in.cluster;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.ProcessStartedEvent;
 import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.ProcessStoppedEvent;
 import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.ProcessUpdatedEvent;
@@ -16,7 +17,6 @@ import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
 import systems.reformcloud.reformcloud2.executor.node.cluster.sync.DefaultClusterSyncManager;
 import systems.reformcloud.reformcloud2.executor.node.process.util.ProcessAction;
 
-import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 
 public class PacketInProcessAction extends DefaultJsonNetworkHandler {
@@ -27,7 +27,7 @@ public class PacketInProcessAction extends DefaultJsonNetworkHandler {
     }
 
     @Override
-    public void handlePacket(@Nonnull PacketSender packetSender, @Nonnull Packet packet, @Nonnull Consumer<Packet> responses) {
+    public void handlePacket(@NotNull PacketSender packetSender, @NotNull Packet packet, @NotNull Consumer<Packet> responses) {
         ProcessAction action = packet.content().get("action", ProcessAction.class);
         ProcessInformation information = packet.content().get("info", ProcessInformation.TYPE);
 
@@ -41,7 +41,6 @@ public class PacketInProcessAction extends DefaultJsonNetworkHandler {
                 NodeExecutor.getInstance().getNodeNetworkManager().getNodeProcessHelper().handleProcessStart(
                         information
                 );
-                NodeExecutor.getInstance().getNodeNetworkManager().getQueuedProcesses().remove(information.getProcessUniqueID());
 
                 NodeExecutor.getInstance().getEventManager().callEvent(new ProcessStartedEvent(information));
                 DefaultClusterSyncManager.sendToAllExcludedNodes(new ControllerEventProcessStarted(information));

@@ -5,7 +5,7 @@
     <parent>
         <artifactId>reformcloud2</artifactId>
         <groupId>systems.reformcloud.reformcloud2</groupId>
-        <version>2.1.0</version>
+        <version>2.2.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -21,7 +21,7 @@
         <!-- bungee repo -->
         <repository>
             <id>bungeecord-repo</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
         </repository>
 
         <!-- velocity repo -->
@@ -34,13 +34,13 @@
         <repository>
             <id>sponge-repo</id>
             <name>Sponge Maven Repository</name>
-            <url>https://repo.spongepowered.org/maven</url>
+            <url>https://repo.spongepowered.org/maven/</url>
         </repository>
 
-        <!-- reformcloud repo for nukkitX -->
+        <!-- nukkit repo -->
         <repository>
-            <id>reformcloud-repo</id>
-            <url>https://repo.reformcloud.systems/</url>
+            <id>nukkit-repo</id>
+            <url>https://repo.nukkitx.com/maven-snapshots/</url>
         </repository>
     </repositories>
 
@@ -49,7 +49,7 @@
         <dependency>
             <groupId>systems.reformcloud.reformcloud2</groupId>
             <artifactId>reformcloud2-executor-api</artifactId>
-            <version>2.1.0</version>
+            <version>2.2.0</version>
             <scope>compile</scope>
             <type>jar</type>
         </dependency>
@@ -59,7 +59,7 @@
         <dependency>
             <groupId>org.jline</groupId>
             <artifactId>jline</artifactId>
-            <version>3.14.0</version>
+            <version>3.14.1</version>
             <scope>provided</scope>
         </dependency>
 
@@ -118,7 +118,7 @@
         <dependency>
             <groupId>org.spongepowered</groupId>
             <artifactId>spongeapi</artifactId>
-            <version>7.1.0</version>
+            <version>7.2.0</version>
             <type>jar</type>
             <scope>provided</scope>
         </dependency>
@@ -168,7 +168,7 @@
                                     </excludes>
                                 </filter>
                                 <filter>
-                                    <artifact>com.google.code.findbugs:jsr305</artifact>
+                                    <artifact>org.jetbrains:annotations</artifact>
                                     <excludes>
                                         <exclude>META-INF/*.MF</exclude>
                                     </excludes>

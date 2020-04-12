@@ -1,5 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.api.common.commands.basic;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.AllowedCommandSources;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.Command;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.permission.Permission;
@@ -7,7 +8,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.commands.permission.
 import systems.reformcloud.reformcloud2.executor.api.common.commands.source.CommandSource;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 
-import javax.annotation.Nonnull;
 import java.util.*;
 
 public abstract class GlobalCommand implements Command {
@@ -58,7 +58,7 @@ public abstract class GlobalCommand implements Command {
 
     private final Permission permissionCheck;
 
-    @Nonnull
+    @NotNull
     @Override
     public String mainCommand() {
         return mainCommand;
@@ -69,32 +69,32 @@ public abstract class GlobalCommand implements Command {
         return permissionCheck;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public List<String> aliases() {
         return aliases;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String description() {
         return description;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public AllowedCommandSources sources() {
         return AllowedCommandSources.ALL;
     }
 
     @Override
-    public void describeCommandToSender(@Nonnull CommandSource source) {
+    public void describeCommandToSender(@NotNull CommandSource source) {
         source.sendMessage(description);
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public Collection<String> complete(@Nonnull CommandSource commandSource, @Nonnull String commandLine, @Nonnull String[] currentArg) {
+    public Collection<String> complete(@NotNull CommandSource commandSource, @NotNull String commandLine, @NotNull String[] currentArg) {
         return Collections.emptyList();
     }
 }

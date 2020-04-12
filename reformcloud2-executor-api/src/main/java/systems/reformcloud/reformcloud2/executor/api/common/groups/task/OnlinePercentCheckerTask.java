@@ -24,15 +24,15 @@ public final class OnlinePercentCheckerTask {
                     && e.getStartupConfiguration().getAutomaticStartupConfiguration().getMaxPercentOfPlayers() > 0) {
                 int id = TaskScheduler.INSTANCE.schedule(() -> {
                     List<ProcessInformation> processes = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcesses(e.getName());
-                    int max = processes.stream().mapToInt(ProcessInformation::getMaxPlayers).sum();
-                    int online = processes.stream().mapToInt(ProcessInformation::getOnlineCount).sum();
+                    int max = processes.stream().mapToInt(p -> p.getProcessDetail().getMaxPlayers()).sum();
+                    int online = processes.stream().mapToInt(p -> p.getProcessDetail().getMaxPlayers()).sum();
 
                     if (getPercentOf(online, max) >= e.getStartupConfiguration().getAutomaticStartupConfiguration().getMaxPercentOfPlayers()
                             && (e.getStartupConfiguration().getMaxOnlineProcesses() == -1
                             || processes.size() < e.getStartupConfiguration().getMaxOnlineProcesses())) {
                         ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().startProcess(e.getName());
                     }
-                }, 0, e.getStartupConfiguration().getAutomaticStartupConfiguration().getCheckIntervalInSeconds(), TimeUnit.SECONDS).getID();
+                }, 0, e.getStartupConfiguration().getAutomaticStartupConfiguration().getCheckIntervalInSeconds(), TimeUnit.SECONDS).getId();
                 TASKS.add(id);
             }
         });

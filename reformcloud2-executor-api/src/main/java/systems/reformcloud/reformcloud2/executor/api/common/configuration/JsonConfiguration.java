@@ -3,13 +3,13 @@ package systems.reformcloud.reformcloud2.executor.api.common.configuration;
 import com.google.gson.*;
 import com.google.gson.internal.bind.TypeAdapters;
 import com.google.gson.reflect.TypeToken;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.common.base.Conditions;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.gson.InternalJsonParser;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.gson.JsonConfigurationTypeAdapter;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.system.SystemHelper;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.*;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
@@ -17,9 +17,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.DateFormat;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Predicate;
 
-public class JsonConfiguration implements Configurable<JsonConfiguration> {
+public class JsonConfiguration implements Configurable<JsonElement, JsonConfiguration> {
 
     public static final ThreadLocal<Gson> GSON = ThreadLocal.withInitial(
             () -> new GsonBuilder()
@@ -90,9 +92,9 @@ public class JsonConfiguration implements Configurable<JsonConfiguration> {
 
     private JsonObject jsonObject = new JsonObject();
 
-    @Nonnull
+    @NotNull
     @Override
-    public JsonConfiguration add(@Nonnull String key, @Nullable JsonConfiguration value) {
+    public JsonConfiguration add(@NotNull String key, @Nullable JsonConfiguration value) {
         if (value == null) {
             jsonObject.add(key, JsonNull.INSTANCE);
             return this;
@@ -102,9 +104,9 @@ public class JsonConfiguration implements Configurable<JsonConfiguration> {
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public JsonConfiguration add(@Nonnull String key, @Nullable Object value) {
+    public JsonConfiguration add(@NotNull String key, @Nullable Object value) {
         if (value == null) {
             jsonObject.add(key, JsonNull.INSTANCE);
             return this;
@@ -114,128 +116,128 @@ public class JsonConfiguration implements Configurable<JsonConfiguration> {
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public JsonConfiguration add(@Nonnull String key, @Nullable String value) {
+    public JsonConfiguration add(@NotNull String key, @Nullable String value) {
         this.jsonObject.addProperty(key, value);
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public JsonConfiguration add(@Nonnull String key, @Nullable Integer value) {
+    public JsonConfiguration add(@NotNull String key, @Nullable Integer value) {
         this.jsonObject.addProperty(key, value);
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public JsonConfiguration add(@Nonnull String key, @Nullable Long value) {
+    public JsonConfiguration add(@NotNull String key, @Nullable Long value) {
         this.jsonObject.addProperty(key, value);
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public JsonConfiguration add(@Nonnull String key, @Nullable Short value) {
+    public JsonConfiguration add(@NotNull String key, @Nullable Short value) {
         this.jsonObject.addProperty(key, value);
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public JsonConfiguration add(@Nonnull String key, @Nullable Byte value) {
+    public JsonConfiguration add(@NotNull String key, @Nullable Byte value) {
         this.jsonObject.addProperty(key, value);
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public JsonConfiguration add(@Nonnull String key, @Nullable Boolean value) {
+    public JsonConfiguration add(@NotNull String key, @Nullable Boolean value) {
         this.jsonObject.addProperty(key, value);
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public JsonConfiguration add(@Nonnull String key, @Nullable Double value) {
+    public JsonConfiguration add(@NotNull String key, @Nullable Double value) {
         this.jsonObject.addProperty(key, value);
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public JsonConfiguration add(@Nonnull String key, @Nullable Float value) {
+    public JsonConfiguration add(@NotNull String key, @Nullable Float value) {
         this.jsonObject.addProperty(key, value);
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public JsonConfiguration remove(@Nonnull String key) {
+    public JsonConfiguration remove(@NotNull String key) {
         this.jsonObject.remove(key);
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public JsonConfiguration get(@Nonnull String key) {
+    public JsonConfiguration get(@NotNull String key) {
         return getOrDefault(key, new JsonConfiguration());
     }
 
     @Override
-    public <T> T get(@Nonnull String key, @Nonnull TypeToken<T> type) {
+    public <T> T get(@NotNull String key, @NotNull TypeToken<T> type) {
         return getOrDefault(key, type.getType(), null);
     }
 
     @Override
-    public <T> T get(@Nonnull String key, @Nonnull Class<T> type) {
+    public <T> T get(@NotNull String key, @NotNull Class<T> type) {
         return getOrDefault(key, type, null);
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public String getString(@Nonnull String key) {
+    public String getString(@NotNull String key) {
         return getOrDefault(key, "");
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Integer getInteger(String key) {
         return getOrDefault(key, -1);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Long getLong(String key) {
         return getOrDefault(key, (long) -1);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Short getShort(String key) {
         return getOrDefault(key, (short) -1);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Byte getByte(String key) {
         return getOrDefault(key, (byte) -1);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Boolean getBoolean(String key) {
         return getOrDefault(key, false);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Double getDouble(String key) {
         return getOrDefault(key, -1D);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Float getFloat(String key) {
         return getOrDefault(key, -1F);
@@ -482,18 +484,30 @@ public class JsonConfiguration implements Configurable<JsonConfiguration> {
         write(path.toPath());
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String toPrettyString() {
         return GSON.get().toJson(jsonObject);
     }
 
+    @NotNull
     @Override
     public byte[] toPrettyBytes() {
         return toPrettyString().getBytes(StandardCharsets.UTF_8);
     }
 
-    @Nonnull
+    @NotNull
+    @Override
+    public Map<String, JsonElement> asMap() {
+        Map<String, JsonElement> out = new HashMap<>();
+        for (Map.Entry<String, JsonElement> stringJsonElementEntry : this.jsonObject.entrySet()) {
+            out.put(stringJsonElementEntry.getKey(), stringJsonElementEntry.getValue());
+        }
+
+        return out;
+    }
+
+    @NotNull
     @Override
     public JsonConfiguration copy() {
         return new JsonConfiguration(this.jsonObject.deepCopy());
@@ -515,6 +529,16 @@ public class JsonConfiguration implements Configurable<JsonConfiguration> {
         }
 
         return new JsonConfiguration();
+    }
+
+    public static JsonConfiguration fromMap(@NotNull Map<String, JsonElement> map) {
+        JsonConfiguration out = new JsonConfiguration();
+
+        for (Map.Entry<String, JsonElement> stringJsonElementEntry : map.entrySet()) {
+            out.getJsonObject().add(stringJsonElementEntry.getKey(), stringJsonElementEntry.getValue());
+        }
+
+        return out;
     }
 
     public static JsonConfiguration read(String path) {

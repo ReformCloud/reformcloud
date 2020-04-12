@@ -1,11 +1,9 @@
 package systems.reformcloud.reformcloud2.executor.api.common.database;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.common.dependency.DefaultDependencyLoader;
 import systems.reformcloud.reformcloud2.executor.api.common.dependency.DependencyLoader;
-
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * Represents an database of the cloud system
@@ -26,11 +24,11 @@ public abstract class Database<V> {
      * @param table    The table which the cloud system should use
      */
     public abstract void connect(
-            @Nonnull String host,
+            @NotNull String host,
             int port,
-            @Nonnull String userName,
-            @Nonnull String password,
-            @Nonnull String table
+            @NotNull String userName,
+            @NotNull String password,
+            @NotNull String table
     );
 
     /**
@@ -71,13 +69,11 @@ public abstract class Database<V> {
      * @return The creates {@link DatabaseReader} for the table
      */
     @Nullable
-    @CheckReturnValue
     public abstract DatabaseReader createForTable(String table);
 
     /**
      * @return The type parameter depending to the database type
      */
-    @Nonnull
-    @CheckReturnValue
+    @NotNull
     public abstract V get();
 }

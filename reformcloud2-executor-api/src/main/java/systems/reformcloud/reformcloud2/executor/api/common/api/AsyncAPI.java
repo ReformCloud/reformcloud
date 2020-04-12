@@ -1,5 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.api.common.api;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.applications.ApplicationAsyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.console.ConsoleAsyncAPI;
@@ -9,8 +10,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.api.messaging.Messag
 import systems.reformcloud.reformcloud2.executor.api.common.api.player.PlayerAsyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.plugins.PluginAsyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.process.ProcessAsyncAPI;
-
-import javax.annotation.Nonnull;
 
 /**
  * This class represents the wrapper for all async api methods in the cloud system
@@ -22,48 +21,48 @@ public interface AsyncAPI {
     /**
      * @return The current process async api instance
      */
-    @Nonnull
+    @NotNull
     ProcessAsyncAPI getProcessAsyncAPI();
 
     /**
      * @return The current groups async api instance
      */
-    @Nonnull
+    @NotNull
     GroupAsyncAPI getGroupAsyncAPI();
 
     /**
      * @return The current application async api instance
      */
-    @Nonnull
+    @NotNull
     ApplicationAsyncAPI getApplicationAsyncAPI();
 
     /**
      * @return The current console async api instance
      */
-    @Nonnull
+    @NotNull
     ConsoleAsyncAPI getConsoleAsyncAPI();
 
     /**
      * @return The current player async api instance
      */
-    @Nonnull
+    @NotNull
     PlayerAsyncAPI getPlayerAsyncAPI();
 
     /**
      * @return The current plugins async api instance
      */
-    @Nonnull
+    @NotNull
     PluginAsyncAPI getPluginAsyncAPI();
 
     /**
      * @return The current database async api instance
      */
-    @Nonnull
+    @NotNull
     DatabaseAsyncAPI getDatabaseAsyncAPI();
 
     /**
      * @return The current messaging async api instance
      */
-    @Nonnull
+    @NotNull
     MessageAsyncAPI getMessageAsyncAPI();
 }

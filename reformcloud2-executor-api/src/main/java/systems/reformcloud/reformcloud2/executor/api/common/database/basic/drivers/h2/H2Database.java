@@ -2,15 +2,16 @@ package systems.reformcloud.reformcloud2.executor.api.common.database.basic.driv
 
 import org.h2.Driver;
 import org.h2.store.fs.FileUtils;
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.base.Conditions;
 import systems.reformcloud.reformcloud2.executor.api.common.database.Database;
 import systems.reformcloud.reformcloud2.executor.api.common.database.DatabaseReader;
 import systems.reformcloud.reformcloud2.executor.api.common.database.sql.SQLDatabaseReader;
-import systems.reformcloud.reformcloud2.executor.api.common.dependency.util.MavenCentralDependency;
+import systems.reformcloud.reformcloud2.executor.api.common.dependency.DefaultDependency;
+import systems.reformcloud.reformcloud2.executor.api.common.dependency.repo.DefaultRepositories;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.StringUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.maps.AbsentMap;
 
-import javax.annotation.Nonnull;
 import java.io.File;
 import java.net.URL;
 import java.sql.Connection;
@@ -24,24 +25,28 @@ public class H2Database extends Database<Connection> {
     private final Map<String, DatabaseReader> perTableReader = new AbsentMap<>();
 
     public H2Database() {
-        URL url = DEPENDENCY_LOADER.loadDependency(new MavenCentralDependency(
+        URL url = DEPENDENCY_LOADER.loadDependency(new DefaultDependency(
+                DefaultRepositories.MAVEN_CENTRAL,
                 "com.h2database",
                 "h2",
                 "1.4.200"
         ));
         Conditions.nonNull(url, StringUtil.formatError("dependency load for h2 database"));
         DEPENDENCY_LOADER.addDependency(url);
+
         FileUtils.createDirectories("reformcloud/.database/h2");
     }
 
-    private Connection connection;
+    private ReformCloudWrappedConnection connection;
 
     @Override
-    public void connect(@Nonnull String host, int port, @Nonnull String userName, @Nonnull String password, @Nonnull String table) {
+    public void connect(@NotNull String host, int port, @NotNull String userName, @NotNull String password, @NotNull String table) {
         if (!isConnected()) {
             try {
                 Driver.load();
-                this.connection = DriverManager.getConnection("jdbc:h2:" + new File("reformcloud/.database/h2/h2_db").getAbsolutePath());
+
+                Connection connection = DriverManager.getConnection("jdbc:h2:" + new File("reformcloud/.database/h2/h2_db").getAbsolutePath());
+                this.connection = new ReformCloudWrappedConnection(connection);
             } catch (final Throwable throwable) {
                 throwable.printStackTrace();
             }
@@ -67,7 +72,7 @@ public class H2Database extends Database<Connection> {
     public void disconnect() {
         if (isConnected()) {
             try {
-                connection.close();
+                this.connection.disconnect();
             } catch (final SQLException ex) {
                 ex.printStackTrace();
             }
@@ -77,7 +82,7 @@ public class H2Database extends Database<Connection> {
     @Override
     public boolean createDatabase(String name) {
         try (PreparedStatement statement = SQLDatabaseReader.prepareStatement("CREATE TABLE IF NOT EXISTS `"
-                + name + "` (`key` TEXT, `identifier` TEXT, `data` LONGBLOB);", this)) {
+                + name + "` (`key` TEXT, `identifier` TEXT, `data` LONGBLOB);", this.connection)) {
             statement.executeUpdate();
             return true;
         } catch (final SQLException ex) {
@@ -88,7 +93,7 @@ public class H2Database extends Database<Connection> {
 
     @Override
     public boolean deleteDatabase(String name) {
-        try (PreparedStatement statement = SQLDatabaseReader.prepareStatement("DROP TABLE `" + name + "`", this)) {
+        try (PreparedStatement statement = SQLDatabaseReader.prepareStatement("DROP TABLE `" + name + "`", this.connection)) {
             statement.executeUpdate();
             return true;
         } catch (final SQLException ex) {
@@ -103,7 +108,7 @@ public class H2Database extends Database<Connection> {
         return perTableReader.putIfAbsent(table, new SQLDatabaseReader(table, this));
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Connection get() {
         return connection;

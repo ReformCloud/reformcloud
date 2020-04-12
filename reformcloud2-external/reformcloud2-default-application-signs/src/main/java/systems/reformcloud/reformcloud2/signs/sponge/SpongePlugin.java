@@ -25,6 +25,6 @@ public class SpongePlugin {
 
     @Listener
     public void handle(final GameStartedServerEvent event) {
-        ConfigRequesterUtil.requestSignConfigAsync(e -> new SpongeSignSystemAdapter(this, e));
+        ConfigRequesterUtil.requestSignConfigAsync(e -> new SpongeSignSystemAdapter(e, this));
     }
 }

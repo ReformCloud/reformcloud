@@ -1,11 +1,11 @@
 package systems.reformcloud.reformcloud2.executor.controller.process;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.client.ClientRuntimeInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.process.JavaProcessHelper;
 
-import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
@@ -65,7 +65,7 @@ public final class ClientManager {
         this.process = process;
     }
 
-    public ClientRuntimeInformation getClientInfo(@Nonnull String name) {
+    public ClientRuntimeInformation getClientInfo(@NotNull String name) {
         return Streams.filter(this.clientRuntimeInformation, e -> e.getName().equals(name));
     }
 

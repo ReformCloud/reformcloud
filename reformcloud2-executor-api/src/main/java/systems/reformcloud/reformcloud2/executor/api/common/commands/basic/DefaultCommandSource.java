@@ -1,5 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.api.common.commands.basic;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.manager.CommandManager;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.permission.Permission;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.permission.PermissionCheck;
@@ -7,7 +8,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.commands.permission.
 import systems.reformcloud.reformcloud2.executor.api.common.commands.permission.PermissionResult;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.source.CommandSource;
 
-import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.function.Consumer;
@@ -24,62 +24,62 @@ public final class DefaultCommandSource implements CommandSource {
     private final CommandManager commandManager;
 
     @Override
-    public void sendMessage(@Nonnull String message) {
+    public void sendMessage(@NotNull String message) {
         result.accept(message);
     }
 
     @Override
-    public void sendRawMessage(@Nonnull String message) {
+    public void sendRawMessage(@NotNull String message) {
         result.accept(message);
     }
 
     @Override
-    public void sendMessages(@Nonnull String[] messages) {
+    public void sendMessages(@NotNull String[] messages) {
         sendMessage(messages[0]);
     }
 
     @Override
-    public void sendRawMessages(@Nonnull String[] messages) {
+    public void sendRawMessages(@NotNull String[] messages) {
         sendRawMessage(messages[0]);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public CommandManager commandManager() {
         return commandManager;
     }
 
     @Override
-    public boolean hasPermission(@Nonnull String permission) {
+    public boolean hasPermission(@NotNull String permission) {
         return true;
     }
 
     @Override
-    public boolean isPermissionSet(@Nonnull String permission) {
+    public boolean isPermissionSet(@NotNull String permission) {
         return true;
     }
 
     @Override
-    public boolean hasPermission(@Nonnull Permission permission) {
+    public boolean hasPermission(@NotNull Permission permission) {
         return true;
     }
 
     @Override
-    public boolean isPermissionSet(@Nonnull Permission permission) {
+    public boolean isPermissionSet(@NotNull Permission permission) {
         return true;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Collection<Permission> getEffectivePermissions() {
         return Collections.singleton(new Permission() {
-            @Nonnull
+            @NotNull
             @Override
             public String permission() {
                 return "*";
             }
 
-            @Nonnull
+            @NotNull
             @Override
             public PermissionResult defaultResult() {
                 return PermissionResult.ALLOWED;
@@ -91,17 +91,17 @@ public final class DefaultCommandSource implements CommandSource {
     public void recalculatePermissions() {
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public PermissionCheck check() {
         return new PermissionCheck() {
-            @Nonnull
+            @NotNull
             @Override
             public PermissionResult checkPermission(PermissionHolder permissionHolder, Permission permission) {
                 return PermissionResult.ALLOWED;
             }
 
-            @Nonnull
+            @NotNull
             @Override
             public PermissionResult checkPermission(PermissionHolder permissionHolder, String permission) {
                 return PermissionResult.ALLOWED;
@@ -109,7 +109,7 @@ public final class DefaultCommandSource implements CommandSource {
         };
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String getName() {
         return "API";

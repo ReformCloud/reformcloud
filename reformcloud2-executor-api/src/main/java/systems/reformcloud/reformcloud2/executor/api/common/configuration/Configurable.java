@@ -1,92 +1,84 @@
 package systems.reformcloud.reformcloud2.executor.api.common.configuration;
 
 import com.google.gson.reflect.TypeToken;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.File;
 import java.lang.reflect.Type;
 import java.nio.file.Path;
+import java.util.Map;
 import java.util.function.Predicate;
 
 /**
  * Represents any configuration used in the cloud system
  */
-public interface Configurable<V extends Configurable<V>> {
+public interface Configurable<X, V extends Configurable<X, V>> {
 
-    @Nonnull
-    V add(@Nonnull String key, @Nullable V value);
+    @NotNull
+    V add(@NotNull String key, @Nullable V value);
 
-    @Nonnull
-    V add(@Nonnull String key, @Nullable Object value);
+    @NotNull
+    V add(@NotNull String key, @Nullable Object value);
 
-    @Nonnull
-    V add(@Nonnull String key, @Nullable String value);
+    @NotNull
+    V add(@NotNull String key, @Nullable String value);
 
-    @Nonnull
-    V add(@Nonnull String key, @Nullable Integer value);
+    @NotNull
+    V add(@NotNull String key, @Nullable Integer value);
 
-    @Nonnull
-    V add(@Nonnull String key, @Nullable Long value);
+    @NotNull
+    V add(@NotNull String key, @Nullable Long value);
 
-    @Nonnull
-    V add(@Nonnull String key, @Nullable Short value);
+    @NotNull
+    V add(@NotNull String key, @Nullable Short value);
 
-    @Nonnull
-    V add(@Nonnull String key, @Nullable Byte value);
+    @NotNull
+    V add(@NotNull String key, @Nullable Byte value);
 
-    @Nonnull
-    V add(@Nonnull String key, @Nullable Boolean value);
+    @NotNull
+    V add(@NotNull String key, @Nullable Boolean value);
 
-    @Nonnull
-    V add(@Nonnull String key, @Nullable Double value);
+    @NotNull
+    V add(@NotNull String key, @Nullable Double value);
 
-    @Nonnull
-    V add(@Nonnull String key, @Nullable Float value);
+    @NotNull
+    V add(@NotNull String key, @Nullable Float value);
 
-    @Nonnull
-    V remove(@Nonnull String key);
+    @NotNull
+    V remove(@NotNull String key);
 
-    @Nonnull
-    V get(@Nonnull String key);
-
-    @Nullable
-    <T> T get(@Nonnull String key, @Nonnull TypeToken<T> type);
+    @NotNull
+    V get(@NotNull String key);
 
     @Nullable
-    <T> T get(@Nonnull String key, @Nonnull Class<T> type);
+    <T> T get(@NotNull String key, @NotNull TypeToken<T> type);
 
-    @Nonnull
-    @CheckReturnValue
-    String getString(@Nonnull String key);
+    @Nullable
+    <T> T get(@NotNull String key, @NotNull Class<T> type);
 
-    @Nonnull
-    @CheckReturnValue
+    @NotNull
+    String getString(@NotNull String key);
+
+    @NotNull
     Integer getInteger(String key);
 
-    @Nonnull
-    @CheckReturnValue
+    @NotNull
     Long getLong(String key);
 
-    @Nonnull
-    @CheckReturnValue
+    @NotNull
     Short getShort(String key);
 
-    @Nonnull
-    @CheckReturnValue
+    @NotNull
     Byte getByte(String key);
 
-    @Nonnull
-    @CheckReturnValue
+    @NotNull
     Boolean getBoolean(String key);
 
-    @Nonnull
-    @CheckReturnValue
+    @NotNull
     Double getDouble(String key);
 
-    @Nonnull
-    @CheckReturnValue
+    @NotNull
     Float getFloat(String key);
 
     V getOrDefault(String key, V def);
@@ -141,11 +133,15 @@ public interface Configurable<V extends Configurable<V>> {
 
     void write(File path);
 
-    @Nonnull
+    @NotNull
     String toPrettyString();
 
+    @NotNull
     byte[] toPrettyBytes();
 
-    @Nonnull
+    @NotNull
+    Map<String, X> asMap();
+
+    @NotNull
     V copy();
 }

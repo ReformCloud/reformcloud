@@ -1,5 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.controller.commands;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.CommonHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.client.ClientRuntimeInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.GlobalCommand;
@@ -15,7 +16,6 @@ import systems.reformcloud.reformcloud2.executor.client.config.ClientConnectionC
 import systems.reformcloud.reformcloud2.executor.controller.ControllerExecutor;
 import systems.reformcloud.reformcloud2.executor.controller.process.ClientManager;
 
-import javax.annotation.Nonnull;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -33,7 +33,7 @@ public final class CommandClients extends GlobalCommand {
     }
 
     @Override
-    public void describeCommandToSender(@Nonnull CommandSource source) {
+    public void describeCommandToSender(@NotNull CommandSource source) {
         source.sendMessages((
                 "clients list           | Lists all connected clients\n" +
                         "clients info <name>    | Shows information about a connected client\n" +
@@ -47,7 +47,7 @@ public final class CommandClients extends GlobalCommand {
     }
 
     @Override
-    public boolean handleCommand(@Nonnull CommandSource commandSource, @Nonnull String[] strings) {
+    public boolean handleCommand(@NotNull CommandSource commandSource, @NotNull String[] strings) {
         if (strings.length == 0) {
             this.describeCommandToSender(commandSource);
             return true;

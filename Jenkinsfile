@@ -1,21 +1,68 @@
 pipeline {
     agent any
+
     tools {
         jdk "1.8.0_222"
     }
 
+    options {
+        buildDiscarder logRotator(numToKeepStr: '10')
+    }
+
+    environment {
+        PROJECT_VERSION = getProjectVersion().replace("-SNAPSHOT", "");
+        IS_SNAPSHOT = getProjectVersion().endsWith("-SNAPSHOT");
+    }
+
     stages {
+        stage('Update snapshot version') {
+            when {
+                allOf {
+                    branch 'indev'
+                    environment name:'IS_SNAPSHOT', value: 'true'
+                }
+            }
+
+            steps {
+                sh 'mvn versions:set -DnewVersion="${PROJECT_VERSION}.${BUILD_NUMBER}-SNAPSHOT"';
+            }
+        }
+
+        stage('Validate') {
+            steps {
+                sh 'mvn validate';
+            }
+        }
+
         stage('Clean') {
             steps {
-                echo "Cleaning up...";
                 sh 'mvn clean';
             }
         }
 
         stage('Build') {
             steps {
-                echo "Building project...";
                 sh 'mvn package';
+            }
+        }
+
+        stage('Verify') {
+            steps {
+                sh 'mvn verify';
+            }
+        }
+
+        stage('Deploy release') {
+            when {
+                allOf {
+                    branch 'master'
+                    environment name:'IS_SNAPSHOT', value: 'false'
+                }
+            }
+
+            steps {
+                echo "Deploy new release...";
+                sh 'mvn clean deploy -P deploy';
             }
         }
 
@@ -51,7 +98,20 @@ pipeline {
                 archiveArtifacts artifacts: 'ReformCloud2.zip'
                 archiveArtifacts artifacts: 'ReformCloud2-Applications.zip'
                 archiveArtifacts artifacts: 'reformcloud2-runner/target/runner.jar'
+                archiveArtifacts artifacts: 'reformcloud2-executor/target/executor.jar'
             }
         }
     }
+
+    post {
+        always {
+            withCredentials([string(credentialsId: 'discord-webhook', variable: 'url')]) {
+                discordSend description: 'New build of ReformCloud', footer: 'Update', link: BUILD_URL, successful: currentBuild.resultIsBetterOrEqualTo('SUCCESS'), title: JOB_NAME, webhookURL: url
+            }
+        }
+    }
+}
+
+def getProjectVersion() {
+  return sh(script: "mvn help:evaluate -Dexpression=project.version -q -DforceStdout  | tail -1", returnStdout: true)
 }

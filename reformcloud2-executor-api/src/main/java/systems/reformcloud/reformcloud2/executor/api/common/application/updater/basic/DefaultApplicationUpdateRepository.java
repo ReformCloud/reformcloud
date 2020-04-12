@@ -1,12 +1,11 @@
 package systems.reformcloud.reformcloud2.executor.api.common.application.updater.basic;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.application.updater.ApplicationUpdateRepository;
-
-import javax.annotation.Nonnull;
 
 public abstract class DefaultApplicationUpdateRepository implements ApplicationUpdateRepository {
 
-    @Nonnull
+    @NotNull
     @Override
     public String getName() {
         return "ReformCloud-Internal";

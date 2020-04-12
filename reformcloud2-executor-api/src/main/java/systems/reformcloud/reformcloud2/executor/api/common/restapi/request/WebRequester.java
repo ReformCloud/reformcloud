@@ -1,17 +1,16 @@
 package systems.reformcloud.reformcloud2.executor.api.common.restapi.request;
 
 import io.netty.channel.Channel;
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.permission.PermissionResult;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.name.Nameable;
-
-import javax.annotation.Nonnull;
 
 public interface WebRequester extends Nameable {
 
     /**
      * @return The http channel of the web requester
      */
-    @Nonnull
+    @NotNull
     Channel channel();
 
     /**
@@ -25,8 +24,8 @@ public interface WebRequester extends Nameable {
      * @param perm The permission which should get checked
      * @return If the permission is set
      */
-    @Nonnull
-    PermissionResult hasPermissionValue(@Nonnull String perm);
+    @NotNull
+    PermissionResult hasPermissionValue(@NotNull String perm);
 
     /**
      * Checks if the specified permission is set
@@ -35,7 +34,7 @@ public interface WebRequester extends Nameable {
      * @param perm The permission which should get checked
      * @return If the permission is set
      */
-    default boolean hasPermission(@Nonnull String perm) {
+    default boolean hasPermission(@NotNull String perm) {
         return hasPermissionValue(perm).isAllowed();
     }
 }

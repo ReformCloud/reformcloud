@@ -1,10 +1,9 @@
 package systems.reformcloud.reformcloud2.signs.util.converter;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.signs.util.sign.CloudLocation;
 import systems.reformcloud.reformcloud2.signs.util.sign.CloudSign;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 public interface SignConverter<T> {
 
@@ -15,17 +14,17 @@ public interface SignConverter<T> {
      * @return The target object
      */
     @Nullable
-    T from(@Nonnull CloudSign cloudSign);
+    T from(@NotNull CloudSign cloudSign);
 
     /**
      * Converts a object to a cloud sign
      *
-     * @param t The object which should get converted
+     * @param t     The object which should get converted
      * @param group The target group of the sign
      * @return The converted cloud sign
      */
-    @Nonnull
-    CloudSign to(@Nonnull T t, @Nonnull String group);
+    @NotNull
+    CloudSign to(@NotNull T t, @NotNull String group);
 
     /**
      * Converts a object to the current location
@@ -33,6 +32,6 @@ public interface SignConverter<T> {
      * @param t The object which should get updates
      * @return The created cloud location
      */
-    @Nonnull
-    CloudLocation to(@Nonnull T t);
+    @NotNull
+    CloudLocation to(@NotNull T t);
 }

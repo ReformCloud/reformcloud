@@ -5,7 +5,7 @@
     <parent>
         <artifactId>reformcloud2</artifactId>
         <groupId>systems.reformcloud.reformcloud2</groupId>
-        <version>2.1.0</version>
+        <version>2.2.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -20,7 +20,7 @@
 
     <pluginRepositories>
         <pluginRepository>
-            <id>reformcloud</id>
+            <id>reformcloud-central</id>
             <url>https://repo.reformcloud.systems/</url>
         </pluginRepository>
     </pluginRepositories>
@@ -47,7 +47,7 @@
         <dependency>
             <groupId>org.jline</groupId>
             <artifactId>jline</artifactId>
-            <version>3.14.0</version>
+            <version>3.14.1</version>
             <scope>provided</scope>
         </dependency>
 
@@ -55,7 +55,7 @@
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-all</artifactId>
-            <version>4.1.46.Final</version>
+            <version>4.1.48.Final</version>
             <scope>provided</scope>
         </dependency>
 
@@ -87,7 +87,7 @@
         <dependency>
             <groupId>org.mongodb</groupId>
             <artifactId>mongo-java-driver</artifactId>
-            <version>3.12.2</version>
+            <version>3.12.3</version>
             <scope>provided</scope>
         </dependency>
 
@@ -96,6 +96,14 @@
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
             <version>8.0.19</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/com.zaxxer/HikariCP -->
+        <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+            <version>3.4.2</version>
             <scope>provided</scope>
         </dependency>
 
@@ -111,7 +119,15 @@
         <dependency>
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcprov-jdk15on</artifactId>
-            <version>1.64</version>
+            <version>1.65</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/com.rethinkdb/rethinkdb-driver -->
+        <dependency>
+            <groupId>com.rethinkdb</groupId>
+            <artifactId>rethinkdb-driver</artifactId>
+            <version>2.4.2</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
@@ -135,6 +151,9 @@
                         <exclude>*:mysql-connector-java</exclude>
                         <exclude>de.derklaro.projects.deer:*</exclude>
                         <exclude>*:annotations-java5</exclude>
+                        <exclude>*:rethinkdb-driver</exclude>
+                        <exclude>*:HikariCP</exclude>
+                        <exclude>*:slf4j-api</exclude>
                     </excludes>
 
                     <outputFileName>

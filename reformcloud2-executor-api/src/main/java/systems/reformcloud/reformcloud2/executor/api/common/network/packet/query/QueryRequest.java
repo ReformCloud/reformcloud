@@ -1,10 +1,10 @@
 package systems.reformcloud.reformcloud2.executor.api.common.network.packet.query;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.defaults.DefaultTask;
 
-import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 
 public final class QueryRequest<T extends Packet> {
@@ -15,15 +15,15 @@ public final class QueryRequest<T extends Packet> {
 
     private final Task<T> task;
 
-    public void onComplete(@Nonnull Consumer<T> consumer) {
+    public void onComplete(@NotNull Consumer<T> consumer) {
         task.thenAccept(consumer);
     }
 
-    public void complete(@Nonnull T result) {
+    public void complete(@NotNull T result) {
         this.task.complete(result);
     }
 
-    @Nonnull
+    @NotNull
     public Task<T> getTask() {
         return task;
     }

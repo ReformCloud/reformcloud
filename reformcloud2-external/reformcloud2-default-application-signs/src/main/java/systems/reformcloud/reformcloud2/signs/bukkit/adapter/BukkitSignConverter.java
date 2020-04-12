@@ -3,14 +3,13 @@ package systems.reformcloud.reformcloud2.signs.bukkit.adapter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Sign;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.api.API;
 import systems.reformcloud.reformcloud2.executor.api.common.base.Conditions;
 import systems.reformcloud.reformcloud2.signs.util.converter.SignConverter;
 import systems.reformcloud.reformcloud2.signs.util.sign.CloudLocation;
 import systems.reformcloud.reformcloud2.signs.util.sign.CloudSign;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 public class BukkitSignConverter implements SignConverter<Sign> {
 
@@ -18,20 +17,20 @@ public class BukkitSignConverter implements SignConverter<Sign> {
 
     @Nullable
     @Override
-    public Sign from(@Nonnull CloudSign cloudSign) {
+    public Sign from(@NotNull CloudSign cloudSign) {
         Location bukkit = accumulate(cloudSign.getLocation());
         return bukkit != null && bukkit.getBlock().getState() instanceof Sign ? (Sign) bukkit.getBlock().getState() : null;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public CloudSign to(@Nonnull Sign sign, @Nonnull String group) {
+    public CloudSign to(@NotNull Sign sign, @NotNull String group) {
         return new CloudSign(group, accumulate(sign.getLocation().clone()));
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public CloudLocation to(@Nonnull Sign sign) {
+    public CloudLocation to(@NotNull Sign sign) {
         return accumulate(sign.getLocation().clone());
     }
 

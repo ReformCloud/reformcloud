@@ -1,8 +1,8 @@
 package systems.reformcloud.reformcloud2.executor.api.common.dependency;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.dependency.repo.Repository;
 
-import javax.annotation.Nonnull;
 import java.nio.file.Path;
 
 /**
@@ -15,25 +15,25 @@ public interface Dependency {
     /**
      * @return The repository of the dependency
      */
-    @Nonnull
+    @NotNull
     Repository getRepository();
 
     /**
      * @return The groupID of the dependency
      */
-    @Nonnull
+    @NotNull
     String getGroupID();
 
     /**
      * @return The artifactID of the dependency
      */
-    @Nonnull
+    @NotNull
     String getArtifactID();
 
     /**
      * @return The version of the dependency
      */
-    @Nonnull
+    @NotNull
     String getVersion();
 
     /**
@@ -41,7 +41,7 @@ public interface Dependency {
      * a) saved
      * b) should be saved to
      */
-    @Nonnull
+    @NotNull
     Path getPath();
 
     /**

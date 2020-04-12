@@ -6,11 +6,14 @@ import net.md_5.bungee.api.ServerPing;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.md_5.bungee.api.event.PlayerDisconnectEvent;
 import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.event.ProxyPingEvent;
 import net.md_5.bungee.api.event.ServerSwitchEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
+import net.md_5.bungee.event.EventPriority;
+import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.api.API;
 import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.ProcessUpdatedEvent;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
@@ -20,7 +23,6 @@ import systems.reformcloud.reformcloud2.proxy.config.MotdConfiguration;
 import systems.reformcloud.reformcloud2.proxy.config.TabListConfiguration;
 import systems.reformcloud.reformcloud2.proxy.plugin.PluginConfigHandler;
 
-import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -44,7 +46,7 @@ public class BungeeCordListener implements Listener {
                     continue;
                 }
 
-                if (PluginConfigHandler.getConfiguration().getTabListConfigurations().size() <= ATOMIC_INTEGERS[0].get()) {
+                if ((PluginConfigHandler.getConfiguration().getTabListConfigurations().size() - 1) == ATOMIC_INTEGERS[0].get()) {
                     ATOMIC_INTEGERS[0].set(0);
                     initTab();
                     AbsoluteThread.sleep(TimeUnit.SECONDS.toMillis(currentTabConfig.getWaitUntilNextInSeconds()));
@@ -67,7 +69,7 @@ public class BungeeCordListener implements Listener {
                     return;
                 }
 
-                if (PluginConfigHandler.getConfiguration().getMotdDefaultConfig().size() <= ATOMIC_INTEGERS[1].get()) {
+                if ((PluginConfigHandler.getConfiguration().getMotdDefaultConfig().size() - 1) == ATOMIC_INTEGERS[1].get()) {
                     ATOMIC_INTEGERS[1].set(0);
                     AbsoluteThread.sleep(TimeUnit.SECONDS.toMillis(getDefaultConfig().getWaitUntilNextInSeconds()));
                     continue;
@@ -88,7 +90,7 @@ public class BungeeCordListener implements Listener {
                     return;
                 }
 
-                if (PluginConfigHandler.getConfiguration().getMotdMaintenanceConfig().size() <= ATOMIC_INTEGERS[2].get()) {
+                if ((PluginConfigHandler.getConfiguration().getMotdMaintenanceConfig().size() - 1) == ATOMIC_INTEGERS[2].get()) {
                     ATOMIC_INTEGERS[2].set(0);
                     AbsoluteThread.sleep(TimeUnit.SECONDS.toMillis(getMaintenanceConfig().getWaitUntilNextInSeconds()));
                     continue;
@@ -126,8 +128,8 @@ public class BungeeCordListener implements Listener {
         // ====
 
         ProcessInformation info = API.getInstance().getCurrentProcessInformation();
-        int max = info.getMaxPlayers();
-        int online = info.getOnlineCount();
+        int max = info.getProcessDetail().getMaxPlayers();
+        int online = info.getProcessPlayerManager().getOnlineCount();
 
         // ====
 
@@ -145,9 +147,14 @@ public class BungeeCordListener implements Listener {
         event.setResponse(serverPing);
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void handle(final PostLoginEvent event) {
-        initTab0(event.getPlayer());
+        initTab();
+    }
+
+    @EventHandler
+    public void handle(final PlayerDisconnectEvent event) {
+        initTab();
     }
 
     @EventHandler
@@ -157,7 +164,10 @@ public class BungeeCordListener implements Listener {
 
     @systems.reformcloud.reformcloud2.executor.api.common.event.handler.Listener
     public void handle(final ProcessUpdatedEvent event) {
-        initTab();
+        if (event.getProcessInformation().getProcessDetail().getProcessUniqueID()
+                .equals(API.getInstance().getCurrentProcessInformation().getProcessDetail().getProcessUniqueID())) {
+            initTab();
+        }
     }
 
     private static void initTab() {
@@ -217,14 +227,14 @@ public class BungeeCordListener implements Listener {
 
         ProcessInformation current = API.getInstance().getCurrentProcessInformation();
         return ChatColor.translateAlternateColorCodes('&', text)
-                .replace("%proxy_name%", current.getName())
-                .replace("%proxy_display_name%", current.getDisplayName())
-                .replace("%proxy_unique_id%", current.getProcessUniqueID().toString())
-                .replace("%proxy_id%", Integer.toString(current.getId()))
-                .replace("%proxy_online_players%", Integer.toString(current.getOnlineCount()))
-                .replace("%proxy_max_players%", Integer.toString(current.getMaxPlayers()))
+                .replace("%proxy_name%", current.getProcessDetail().getName())
+                .replace("%proxy_display_name%", current.getProcessDetail().getDisplayName())
+                .replace("%proxy_unique_id%", current.getProcessDetail().getProcessUniqueID().toString())
+                .replace("%proxy_id%", Integer.toString(current.getProcessDetail().getId()))
+                .replace("%proxy_online_players%", Integer.toString(current.getProcessPlayerManager().getOnlineCount()))
+                .replace("%proxy_max_players%", Integer.toString(current.getProcessDetail().getMaxPlayers()))
                 .replace("%proxy_group%", current.getProcessGroup().getName())
-                .replace("%proxy_parent%", current.getParent());
+                .replace("%proxy_parent%", current.getProcessDetail().getParentName());
     }
 
     private static String[] replaceAll(String[] in) {
@@ -239,8 +249,8 @@ public class BungeeCordListener implements Listener {
 
     private static String replaceTabList(ProxiedPlayer player, String line) {
         ProcessInformation info = API.getInstance().getCurrentProcessInformation();
-        int max = info.getMaxPlayers();
-        int online = info.getOnlineCount();
+        int max = info.getProcessDetail().getMaxPlayers();
+        int online = info.getProcessPlayerManager().getOnlineCount();
 
         return ChatColor.translateAlternateColorCodes('&', line)
                 .replace("%player_server%", player.getServer() != null

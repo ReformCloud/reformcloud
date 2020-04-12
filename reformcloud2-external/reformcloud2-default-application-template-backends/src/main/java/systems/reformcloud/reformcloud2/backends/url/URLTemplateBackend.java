@@ -1,5 +1,6 @@
 package systems.reformcloud.reformcloud2.backends.url;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.backend.TemplateBackend;
@@ -9,7 +10,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.utility.system.Downl
 import systems.reformcloud.reformcloud2.executor.api.common.utility.system.SystemHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 
-import javax.annotation.Nonnull;
 import java.io.File;
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -17,6 +17,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collection;
 
 public final class URLTemplateBackend implements TemplateBackend {
 
@@ -41,7 +42,7 @@ public final class URLTemplateBackend implements TemplateBackend {
     private final String basePath;
 
     @Override
-    public boolean existsTemplate(String group, String template) {
+    public boolean existsTemplate(@NotNull String group, @NotNull String template) {
         try {
             HttpURLConnection connection = (HttpURLConnection) new URL(getBasePath() + group + "-" + template + ".zip").openConnection();
             connection.setRequestProperty(
@@ -57,53 +58,49 @@ public final class URLTemplateBackend implements TemplateBackend {
         }
     }
 
-    @Nonnull
     @Override
-    public Task<Void> createTemplate(String group, String template) {
-        return Task.completedTask(null);
+    public void createTemplate(@NotNull String group, @NotNull String template) {
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public Task<Void> loadTemplate(String group, String template, Path target) {
-        DownloadHelper.downloadAndDisconnect(getBasePath() + group + "-" + template + ".zip",  "reformcloud/files/temp/template.zip");
+    public Task<Void> loadTemplate(@NotNull String group, @NotNull String template, @NotNull Path target) {
+        DownloadHelper.downloadAndDisconnect(getBasePath() + group + "-" + template + ".zip", "reformcloud/files/temp/template.zip");
         SystemHelper.unZip(new File("reformcloud/files/temp/template.zip"), target.toString());
         SystemHelper.deleteFile(new File("reformcloud/files/temp/template.zip"));
         return Task.completedTask(null);
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public Task<Void> loadGlobalTemplates(ProcessGroup group, Path target) {
+    public Task<Void> loadGlobalTemplates(@NotNull ProcessGroup group, @NotNull Path target) {
         Streams.allOf(group.getTemplates(), e -> e.getBackend().equals(getName())
                 && e.isGlobal()).forEach(e -> this.loadTemplate(group.getName(), e.getName(), target));
         return Task.completedTask(null);
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public Task<Void> loadPath(String path, Path target) {
-        DownloadHelper.downloadAndDisconnect(getBasePath() + path,  "reformcloud/files/temp/template.zip");
+    public Task<Void> loadPath(@NotNull String path, @NotNull Path target) {
+        DownloadHelper.downloadAndDisconnect(getBasePath() + path, "reformcloud/files/temp/template.zip");
         SystemHelper.unZip(new File("reformcloud/files/temp/template.zip"), target.toString());
         SystemHelper.deleteFile(new File("reformcloud/files/temp/template.zip"));
         return Task.completedTask(null);
     }
 
-    @Nonnull
     @Override
-    public Task<Void> deployTemplate(String group, String template, Path current) {
-        return Task.completedTask(null);
+    public void deployTemplate(@NotNull String group, @NotNull String template, @NotNull Path current, @NotNull Collection<String> collection) {
     }
 
     @Override
-    public void deleteTemplate(String group, String template) {
+    public void deleteTemplate(@NotNull String group, @NotNull String template) {
     }
 
     private String getBasePath() {
         return basePath.endsWith("/") ? basePath : basePath + "/";
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String getName() {
         return "URL";

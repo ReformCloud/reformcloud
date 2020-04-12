@@ -1,6 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.api.common.groups.utils;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 public class AutomaticStartupConfiguration {
 
@@ -31,7 +31,7 @@ public class AutomaticStartupConfiguration {
     /**
      * @return The default values of an automatic startup config
      */
-    @Nonnull
+    @NotNull
     public static AutomaticStartupConfiguration defaults() {
         return new AutomaticStartupConfiguration(false, 70, 30);
     }

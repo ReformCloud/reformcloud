@@ -1,12 +1,12 @@
 package systems.reformcloud.reformcloud2.executor.api.common.network.challenge.provider;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public interface ChallengeProvider {
 
     @Nullable
-    byte[] createChallenge(@Nonnull String sender);
+    byte[] createChallenge(@NotNull String sender);
 
-    boolean checkResult(@Nonnull String sender, @Nonnull String challengeResult);
+    boolean checkResult(@NotNull String sender, @NotNull String challengeResult);
 }

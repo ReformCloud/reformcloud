@@ -1,12 +1,13 @@
 package systems.reformcloud.reformcloud2.executor.client.process;
 
-import systems.reformcloud.reformcloud2.executor.api.client.process.RunningProcess;
 import systems.reformcloud.reformcloud2.executor.api.common.CommonHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
+import systems.reformcloud.reformcloud2.executor.api.common.process.running.RunningProcess;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
 import systems.reformcloud.reformcloud2.executor.client.ClientExecutor;
+import systems.reformcloud.reformcloud2.executor.client.process.basic.DefaultRunningProcess;
 
 import java.util.UUID;
 import java.util.concurrent.BlockingDeque;
@@ -17,17 +18,27 @@ public final class ProcessQueue extends AbsoluteThread {
     private static final BlockingDeque<RunningProcess> QUEUE = new LinkedBlockingDeque<>();
 
     public static void queue(ProcessInformation information) {
-        RunningProcess runningProcess = RunningProcessBuilder.build(information);
+        RunningProcess runningProcess = new DefaultRunningProcess(information);
         System.out.println(LanguageManager.get(
                 "client-process-now-in-queue",
-                runningProcess.getProcessInformation().getName(),
+                runningProcess.getProcessInformation().getProcessDetail().getName(),
                 QUEUE.size() + 1
         ));
 
-        runningProcess.initTemplate().thenAccept(e -> {
-            runningProcess.prepare();
+        runningProcess.prepare().onComplete(e -> {
+            runningProcess.handleEnqueue();
             QUEUE.offerLast(runningProcess);
         });
+    }
+
+    public static void queue(RunningProcess process) {
+        System.out.println(LanguageManager.get(
+                "client-process-now-in-queue",
+                process.getProcessInformation().getProcessDetail().getName(),
+                QUEUE.size() + 1
+        ));
+        process.handleEnqueue();
+        QUEUE.offerLast(process);
     }
 
     /* ============== */
@@ -45,20 +56,20 @@ public final class ProcessQueue extends AbsoluteThread {
                 if (isStartupNowLogic()) {
                     System.out.println(LanguageManager.get(
                             "client-process-start",
-                            process.getProcessInformation().getName()
+                            process.getProcessInformation().getProcessDetail().getName()
                     ));
 
                     if (process.bootstrap()) {
                         ClientExecutor.getInstance().getProcessManager().registerProcess(process);
                         System.out.println(LanguageManager.get(
                                 "client-process-start-done",
-                                process.getProcessInformation().getName()
+                                process.getProcessInformation().getProcessDetail().getName()
                         ));
                     } else {
                         QUEUE.offerLast(process);
                         System.out.println(LanguageManager.get(
                                 "client-process-start-failed",
-                                process.getProcessInformation().getName(),
+                                process.getProcessInformation().getProcessDetail().getName(),
                                 QUEUE.size()
                         ));
                     }
@@ -72,7 +83,7 @@ public final class ProcessQueue extends AbsoluteThread {
 
     public static ProcessInformation removeFromQueue(UUID uuid) {
         synchronized (QUEUE) {
-            RunningProcess process = Streams.filterToReference(QUEUE, e -> e.getProcessInformation().getProcessUniqueID().equals(uuid)).orNothing();
+            RunningProcess process = Streams.filterToReference(QUEUE, e -> e.getProcessInformation().getProcessDetail().getProcessUniqueID().equals(uuid)).orNothing();
             if (process == null) {
                 return null;
             }

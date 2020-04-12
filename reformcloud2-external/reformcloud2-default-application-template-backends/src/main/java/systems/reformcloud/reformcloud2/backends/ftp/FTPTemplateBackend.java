@@ -5,6 +5,7 @@ import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPSClient;
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.backend.TemplateBackend;
@@ -15,11 +16,11 @@ import systems.reformcloud.reformcloud2.executor.api.common.utility.system.Syste
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.defaults.DefaultTask;
 
-import javax.annotation.Nonnull;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collection;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
@@ -34,7 +35,8 @@ public final class FTPTemplateBackend implements TemplateBackend {
                     )).write(Paths.get(basePath, "ftp.json"));
         }
 
-        FTPConfig config = JsonConfiguration.read(Paths.get(basePath, "ftp.json")).get("config", new TypeToken<FTPConfig>() {});
+        FTPConfig config = JsonConfiguration.read(Paths.get(basePath, "ftp.json")).get("config", new TypeToken<FTPConfig>() {
+        });
         if (config == null || !config.isEnabled()) {
             return;
         }
@@ -89,7 +91,7 @@ public final class FTPTemplateBackend implements TemplateBackend {
     }
 
     @Override
-    public boolean existsTemplate(String group, String template) {
+    public boolean existsTemplate(@NotNull String group, @NotNull String template) {
         if (this.ftpClient == null) {
             return false;
         }
@@ -101,14 +103,13 @@ public final class FTPTemplateBackend implements TemplateBackend {
         }
     }
 
-    @Nonnull
     @Override
-    public Task<Void> createTemplate(String group, String template) {
+    public void createTemplate(@NotNull String group, @NotNull String template) {
         if (this.ftpClient == null) {
-            return Task.completedTask(null);
+            return;
         }
 
-        return future(() -> {
+        future(() -> {
             try {
                 this.makeDirectory(group + "/" + template);
             } catch (final IOException ex) {
@@ -117,9 +118,9 @@ public final class FTPTemplateBackend implements TemplateBackend {
         });
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public Task<Void> loadTemplate(String group, String template, Path target) {
+    public Task<Void> loadTemplate(@NotNull String group, @NotNull String template, @NotNull Path target) {
         if (this.ftpClient == null) {
             return Task.completedTask(null);
         }
@@ -164,22 +165,22 @@ public final class FTPTemplateBackend implements TemplateBackend {
         this.ftpClient.changeWorkingDirectory(this.config.getBaseDirectory());
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public Task<Void> loadGlobalTemplates(ProcessGroup group, Path target) {
+    public Task<Void> loadGlobalTemplates(@NotNull ProcessGroup group, @NotNull Path target) {
         if (this.ftpClient == null) {
             return Task.completedTask(null);
         }
 
         return future(() ->
-            Streams.allOf(group.getTemplates(), e -> e.getBackend().equals(getName())
-                    && e.isGlobal()).forEach(e -> this.loadTemplate(group.getName(), e.getName(), target))
+                Streams.allOf(group.getTemplates(), e -> e.getBackend().equals(getName())
+                        && e.isGlobal()).forEach(e -> this.loadTemplate(group.getName(), e.getName(), target))
         );
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public Task<Void> loadPath(String path, Path target) {
+    public Task<Void> loadPath(@NotNull String path, @NotNull Path target) {
         if (this.ftpClient == null) {
             return Task.completedTask(null);
         }
@@ -200,19 +201,23 @@ public final class FTPTemplateBackend implements TemplateBackend {
         });
     }
 
-    @Nonnull
     @Override
-    public Task<Void> deployTemplate(String group, String template, Path current) {
+    public void deployTemplate(@NotNull String group, @NotNull String template, @NotNull Path current, @NotNull Collection<String> collection) {
         if (this.ftpClient == null) {
-            return Task.completedTask(null);
+            return;
         }
 
-        File[] localFiles = current.toFile().listFiles();
+        File[] localFiles = current.toFile().listFiles(e -> {
+            String full = e.getAbsolutePath()
+                    .replaceFirst(current.toFile().getAbsolutePath(), "")
+                    .replaceFirst("\\\\", "");
+            return !collection.contains(full);
+        });
         if (localFiles == null || localFiles.length == 0) {
-            return Task.completedTask(null);
+            return;
         }
 
-        return future(() -> {
+        future(() -> {
             try {
                 for (File localFile : localFiles) {
                     this.writeFile(group + "/" + template, localFile);
@@ -258,7 +263,7 @@ public final class FTPTemplateBackend implements TemplateBackend {
     }
 
     @Override
-    public void deleteTemplate(String group, String template) {
+    public void deleteTemplate(@NotNull String group, @NotNull String template) {
         if (this.ftpClient == null) {
             return;
         }
@@ -296,7 +301,7 @@ public final class FTPTemplateBackend implements TemplateBackend {
         }
     }
 
-    private static Task<Void> future(@Nonnull Runnable runnable) {
+    private static Task<Void> future(@NotNull Runnable runnable) {
         Task<Void> completableFuture = new DefaultTask<>();
         Runnable newRunnable = () -> {
             runnable.run();
@@ -323,7 +328,7 @@ public final class FTPTemplateBackend implements TemplateBackend {
         }
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String getName() {
         return "FTP";

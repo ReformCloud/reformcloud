@@ -1,9 +1,11 @@
 package systems.reformcloud.reformcloud2.executor.api.velocity;
 
-import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
+import com.velocitypowered.api.proxy.server.RegisteredServer;
 import com.velocitypowered.api.proxy.server.ServerInfo;
 import net.kyori.text.TextComponent;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorType;
 import systems.reformcloud.reformcloud2.executor.api.api.API;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
@@ -40,12 +42,8 @@ import systems.reformcloud.reformcloud2.executor.api.velocity.event.ProcessEvent
 import systems.reformcloud.reformcloud2.executor.api.velocity.plugins.PluginExecutorContainer;
 import systems.reformcloud.reformcloud2.executor.api.velocity.plugins.PluginUpdater;
 
-import javax.annotation.Nonnull;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Function;
 
 public final class VelocityExecutor extends API implements PlayerAPIExecutor {
@@ -95,7 +93,7 @@ public final class VelocityExecutor extends API implements PlayerAPIExecutor {
                 () -> new APINetworkChannelReader(this.packetHandler),
                 new ClientChallengeAuthHandler(
                         connectionKey,
-                        thisProcessInformation.getName(),
+                        thisProcessInformation.getProcessDetail().getName(),
                         () -> new JsonConfiguration(),
                         context -> {
                         } // unused here
@@ -114,7 +112,7 @@ public final class VelocityExecutor extends API implements PlayerAPIExecutor {
         return packetHandler;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public EventManager getEventManager() {
         return ExternalEventBusHandler.getInstance().getEventManager();
@@ -124,23 +122,30 @@ public final class VelocityExecutor extends API implements PlayerAPIExecutor {
         return proxyServer;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public ProcessInformation getCurrentProcessInformation() {
         return this.thisProcessInformation;
     }
 
-    @Nonnull
+    @NotNull
     public static VelocityExecutor getInstance() {
         return instance;
     }
 
     public void handleProcessUpdate(ProcessInformation processInformation) {
-        if (!isServerRegistered(processInformation.getName())
-                && processInformation.getNetworkInfo().isConnected()
-                && processInformation.getTemplate().getVersion().getId() == 1) {
+        Optional<RegisteredServer> server = this.proxyServer.getServer(processInformation.getProcessDetail().getName());
+        if (server.isPresent()) {
+            if (server.get().getServerInfo().getAddress().getPort() == processInformation.getNetworkInfo().getPort()) {
+                return;
+            }
+
+            handleProcessRemove(processInformation);
+        }
+
+        if (processInformation.getNetworkInfo().isConnected() && processInformation.getProcessDetail().getTemplate().getVersion().getId() == 1) {
             ServerInfo serverInfo = new ServerInfo(
-                    processInformation.getName(),
+                    processInformation.getProcessDetail().getName(),
                     processInformation.getNetworkInfo().toInet()
             );
             proxyServer.registerServer(serverInfo);
@@ -151,7 +156,8 @@ public final class VelocityExecutor extends API implements PlayerAPIExecutor {
     }
 
     public void handleProcessRemove(ProcessInformation processInformation) {
-        proxyServer.getServer(processInformation.getName()).ifPresent(registeredServer -> proxyServer.unregisterServer(registeredServer.getServerInfo()));
+        proxyServer.getServer(processInformation.getProcessDetail().getName())
+                .ifPresent(registeredServer -> proxyServer.unregisterServer(registeredServer.getServerInfo()));
 
         if (processInformation.isLobby()) {
             LOBBY_SERVERS.remove(processInformation);
@@ -177,7 +183,7 @@ public final class VelocityExecutor extends API implements PlayerAPIExecutor {
             thisProcessInformation.updateMaxPlayers(proxyServer.getConfiguration().getShowMaxPlayers());
             thisProcessInformation.updateRuntimeInformation();
             thisProcessInformation.getNetworkInfo().setConnected(true);
-            thisProcessInformation.setProcessState(ProcessState.READY);
+            thisProcessInformation.getProcessDetail().setProcessState(ProcessState.READY);
             ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(thisProcessInformation);
 
             DefaultChannelManager.INSTANCE.get("Controller").ifPresent(controller -> packetHandler.getQueryHandler().sendQueryAsync(controller, new APIBungeePacketOutRequestIngameMessages()).onComplete(packet -> {
@@ -187,21 +193,18 @@ public final class VelocityExecutor extends API implements PlayerAPIExecutor {
         });
     }
 
-    public static ProcessInformation getBestLobbyForPlayer(ProcessInformation current, Player player, Function<String, Boolean> permissionCheck) {
+    public static ProcessInformation getBestLobbyForPlayer(ProcessInformation current, Function<String, Boolean> permissionCheck,
+                                                           @Nullable String excluded) {
         final List<ProcessInformation> lobbies = new ArrayList<>(LOBBY_SERVERS);
-
-        if (player != null && player.getCurrentServer().isPresent()) {
-            Streams.allOf(lobbies, e -> e.getName().equals(player.getCurrentServer().get().getServerInfo().getName())).forEach(lobbies::remove);
-        }
 
         // Filter all non java servers if this is a java proxy else all mcpe servers
         Streams.others(lobbies, e -> {
-            Version version = e.getTemplate().getVersion();
-            if (version.equals(Version.NUKKIT_X) && current.getTemplate().getVersion().equals(Version.WATERDOG_PE)) {
+            Version version = e.getProcessDetail().getTemplate().getVersion();
+            if (version.equals(Version.NUKKIT_X) && current.getProcessDetail().getTemplate().getVersion().equals(Version.WATERDOG_PE)) {
                 return true;
             }
 
-            return version.getId() == 1 && current.getTemplate().getVersion().getId() == 2;
+            return version.getId() == 1 && current.getProcessDetail().getTemplate().getVersion().getId() == 2;
         }).forEach(lobbies::remove);
 
         // Filter out all lobbies with join permission which the player does not have
@@ -231,12 +234,17 @@ public final class VelocityExecutor extends API implements PlayerAPIExecutor {
                 return true;
             }
 
-            if (e.getOnlineCount() < configuration.getMaxPlayers()) {
+            if (e.getProcessPlayerManager().getOnlineCount() < e.getProcessDetail().getMaxPlayers()) {
                 return true;
             }
 
             return permissionCheck.apply("reformcloud.join.full");
         }).forEach(lobbies::remove);
+
+        // Filter out all excluded servers
+        if (excluded != null) {
+            Streams.allOf(lobbies, e -> e.getProcessDetail().getName().equals(excluded)).forEach(lobbies::remove);
+        }
 
         if (lobbies.isEmpty()) {
             return null;
@@ -251,7 +259,7 @@ public final class VelocityExecutor extends API implements PlayerAPIExecutor {
 
     @Listener
     public void handle(final ProcessUpdatedEvent event) {
-        if (event.getProcessInformation().getProcessUniqueID().equals(thisProcessInformation.getProcessUniqueID())) {
+        if (event.getProcessInformation().getProcessDetail().getProcessUniqueID().equals(thisProcessInformation.getProcessDetail().getProcessUniqueID())) {
             thisProcessInformation = event.getProcessInformation();
         }
     }
@@ -323,7 +331,7 @@ public final class VelocityExecutor extends API implements PlayerAPIExecutor {
 
     @Override
     public void executeConnect(UUID player, ProcessInformation server) {
-        executeConnect(player, server.getName());
+        executeConnect(player, server.getProcessDetail().getName());
     }
 
     @Override

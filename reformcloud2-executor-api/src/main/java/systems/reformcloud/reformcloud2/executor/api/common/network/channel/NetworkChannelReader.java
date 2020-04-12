@@ -1,10 +1,10 @@
 package systems.reformcloud.reformcloud2.executor.api.common.network.channel;
 
 import io.netty.channel.ChannelHandlerContext;
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.WrappedByteInput;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.handler.PacketHandler;
 
-import javax.annotation.Nonnull;
 import java.io.IOException;
 
 public interface NetworkChannelReader {
@@ -12,13 +12,13 @@ public interface NetworkChannelReader {
     /**
      * @return The packet handler of the network channel
      */
-    @Nonnull
+    @NotNull
     PacketHandler getPacketHandler();
 
     /**
      * @return The current packet sender of the reader
      */
-    @Nonnull
+    @NotNull
     PacketSender sender();
 
     /**
@@ -30,7 +30,7 @@ public interface NetworkChannelReader {
      * @param name                  The name of the channel which should get registered
      * @see systems.reformcloud.reformcloud2.executor.api.common.network.handler.ChannelReaderHelper Gets called there
      */
-    void setChannelHandlerContext(@Nonnull ChannelHandlerContext channelHandlerContext, @Nonnull String name);
+    void setChannelHandlerContext(@NotNull ChannelHandlerContext channelHandlerContext, @NotNull String name);
 
     /**
      * Gets called when a channel opens

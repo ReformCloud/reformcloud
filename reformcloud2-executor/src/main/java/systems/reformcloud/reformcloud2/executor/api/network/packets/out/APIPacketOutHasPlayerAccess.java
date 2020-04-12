@@ -8,10 +8,11 @@ import java.util.UUID;
 
 public final class APIPacketOutHasPlayerAccess extends JsonPacket {
 
-    public APIPacketOutHasPlayerAccess(UUID uuid, String name) {
+    public APIPacketOutHasPlayerAccess(UUID uuid, String name, String address) {
         super(NetworkUtil.PLAYER_INFORMATION_BUS + 4, new JsonConfiguration()
                 .add("uuid", uuid)
                 .add("name", name)
+                .add("address", address)
         );
     }
 }

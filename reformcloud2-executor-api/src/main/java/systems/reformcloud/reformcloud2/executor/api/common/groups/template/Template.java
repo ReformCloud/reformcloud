@@ -1,19 +1,20 @@
 package systems.reformcloud.reformcloud2.executor.api.common.groups.template;
 
 import com.google.gson.reflect.TypeToken;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.inclusion.Inclusion;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Duo;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.name.Nameable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
 public final class Template implements Nameable {
 
-    public static final TypeToken<Template> TYPE = new TypeToken<Template>() {};
+    public static final TypeToken<Template> TYPE = new TypeToken<Template>() {
+    };
 
     public Template(int priority, String name, boolean global, String backend, String serverNameSplitter,
                     RuntimeConfiguration runtimeConfiguration, Version version) {
@@ -23,9 +24,16 @@ public final class Template implements Nameable {
     public Template(int priority, String name, boolean global, String backend, String serverNameSplitter,
                     RuntimeConfiguration runtimeConfiguration, Version version, Collection<Inclusion> templateInclusions,
                     Collection<Inclusion> pathInclusions) {
+        this(priority, name, global, false, backend, serverNameSplitter, runtimeConfiguration, version, templateInclusions, pathInclusions);
+    }
+
+    public Template(int priority, String name, boolean global, boolean autoReleaseOnClose, String backend, String serverNameSplitter,
+                    RuntimeConfiguration runtimeConfiguration, Version version, Collection<Inclusion> templateInclusions,
+                    Collection<Inclusion> pathInclusions) {
         this.priority = priority;
         this.name = name;
         this.global = global;
+        this.autoReleaseOnClose = autoReleaseOnClose;
         this.backend = backend;
         this.serverNameSplitter = serverNameSplitter;
         this.runtimeConfiguration = runtimeConfiguration;
@@ -39,6 +47,8 @@ public final class Template implements Nameable {
     private final String name;
 
     private final boolean global;
+
+    private final boolean autoReleaseOnClose;
 
     private final String backend;
 
@@ -56,7 +66,7 @@ public final class Template implements Nameable {
         return priority;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String getName() {
         return name;
@@ -66,7 +76,11 @@ public final class Template implements Nameable {
         return global;
     }
 
-    @Nonnull
+    public boolean isAutoReleaseOnClose() {
+        return autoReleaseOnClose;
+    }
+
+    @NotNull
     public String getBackend() {
         return backend;
     }
@@ -76,12 +90,12 @@ public final class Template implements Nameable {
         return serverNameSplitter;
     }
 
-    @Nonnull
+    @NotNull
     public RuntimeConfiguration getRuntimeConfiguration() {
         return runtimeConfiguration;
     }
 
-    @Nonnull
+    @NotNull
     public Version getVersion() {
         return version;
     }
@@ -100,7 +114,7 @@ public final class Template implements Nameable {
         return pathInclusions == null ? new ArrayList<>() : pathInclusions;
     }
 
-    public Collection<Duo<String, String>> getPathInclusionsOfType(@Nonnull Inclusion.InclusionLoadType type) {
+    public Collection<Duo<String, String>> getPathInclusionsOfType(@NotNull Inclusion.InclusionLoadType type) {
         return this.getPathInclusions()
                 .stream()
                 .filter(e -> e.getInclusionLoadType().equals(type))
@@ -109,7 +123,7 @@ public final class Template implements Nameable {
                 .collect(Collectors.toList());
     }
 
-    public Collection<Duo<String, String>> getTemplateInclusionsOfType(@Nonnull Inclusion.InclusionLoadType type) {
+    public Collection<Duo<String, String>> getTemplateInclusionsOfType(@NotNull Inclusion.InclusionLoadType type) {
         return this.getTemplateInclusions()
                 .stream()
                 .filter(e -> e.getInclusionLoadType().equals(type))

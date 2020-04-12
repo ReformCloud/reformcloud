@@ -125,16 +125,16 @@ public class DefaultDumpUtil implements DumpUtil {
 
         if (allProcesses.size() > 0) {
             allProcesses.forEach(e -> {
-                Collection<String> players = e.getOnlinePlayers().stream().map(Player::getName).collect(Collectors.toList());
+                Collection<String> players = e.getProcessPlayerManager().getOnlinePlayers().stream().map(Player::getName).collect(Collectors.toList());
                 Collection<String> plugins = e.getPlugins().stream().map(
                         p -> p.getName() + " of " + p.author() + " (V" + p.version() + ")"
                 ).collect(Collectors.toList());
 
                 stringBuilder
                         .append("Name: ")
-                        .append(e.getName())
+                        .append(e.getProcessDetail().getName())
                         .append(" (Display Name: ")
-                        .append(e.getDisplayName())
+                        .append(e.getProcessDetail().getDisplayName())
                         .append(") ")
                         .append("\n")
                         .append("Online: ")
@@ -146,13 +146,13 @@ public class DefaultDumpUtil implements DumpUtil {
                         .append("Template: ")
                         .append("\n")
                         .append("   Name: ")
-                        .append(e.getTemplate().getName())
+                        .append(e.getProcessDetail().getTemplate().getName())
                         .append("\n")
                         .append("   Backend: ")
-                        .append(e.getTemplate().getBackend())
+                        .append(e.getProcessDetail().getTemplate().getBackend())
                         .append("\n")
                         .append("   Version: ")
-                        .append(e.getTemplate().getVersion().name())
+                        .append(e.getProcessDetail().getTemplate().getVersion().name())
                         .append("\n\n");
             });
         } else {

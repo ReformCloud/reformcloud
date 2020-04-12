@@ -1,6 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.api.common.utility.clone;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.Nullable;
 
 public interface Clone<T> extends Cloneable {
 
@@ -9,6 +9,6 @@ public interface Clone<T> extends Cloneable {
      *
      * @return The cloned object of the current object instance
      */
-    @Nonnull
+    @Nullable
     T clone();
 }

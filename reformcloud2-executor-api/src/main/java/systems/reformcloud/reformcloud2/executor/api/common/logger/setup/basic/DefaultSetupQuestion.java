@@ -1,8 +1,8 @@
 package systems.reformcloud.reformcloud2.executor.api.common.logger.setup.basic;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.setup.SetupQuestion;
 
-import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -23,25 +23,25 @@ public final class DefaultSetupQuestion implements SetupQuestion {
 
     private final Consumer<String> then;
 
-    @Nonnull
+    @NotNull
     @Override
     public String question() {
         return question;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String wrongAnswerMessage() {
         return wrongAnswer;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Predicate<String> tester() {
         return predicate;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Consumer<String> then() {
         return then;

@@ -1,5 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.node.api.player;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.api.player.PlayerAsyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.player.PlayerSyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
@@ -10,7 +11,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.utility.task.default
 import systems.reformcloud.reformcloud2.executor.api.node.network.NodeNetworkManager;
 import systems.reformcloud.reformcloud2.executor.node.network.packet.out.api.NodeAPIAction;
 
-import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.UUID;
@@ -23,9 +23,9 @@ public class PlayerAPIImplementation implements PlayerAsyncAPI, PlayerSyncAPI {
 
     private final NodeNetworkManager nodeNetworkManager;
 
-    @Nonnull
+    @NotNull
     @Override
-    public Task<Void> sendMessageAsync(@Nonnull UUID player, @Nonnull String message) {
+    public Task<Void> sendMessageAsync(@NotNull UUID player, @NotNull String message) {
         Task<Void> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             ProcessInformation processInformation = this.getPlayerOnProxy(player);
@@ -34,12 +34,12 @@ public class PlayerAPIImplementation implements PlayerAsyncAPI, PlayerSyncAPI {
                 return;
             }
 
-            if (this.nodeNetworkManager.getCluster().getSelfNode().getName().equals(processInformation.getParent())) {
-                DefaultChannelManager.INSTANCE.get(processInformation.getName()).ifPresent(e -> e.sendPacket(new NodeAPIAction(
+            if (this.nodeNetworkManager.getCluster().getSelfNode().getName().equals(processInformation.getProcessDetail().getParentName())) {
+                DefaultChannelManager.INSTANCE.get(processInformation.getProcessDetail().getName()).ifPresent(e -> e.sendPacket(new NodeAPIAction(
                         NodeAPIAction.APIAction.SEND_MESSAGE, Arrays.asList(player, message)
                 )));
             } else {
-                DefaultChannelManager.INSTANCE.get(processInformation.getParent()).ifPresent(e -> e.sendPacket(new NodeAPIAction(
+                DefaultChannelManager.INSTANCE.get(processInformation.getProcessDetail().getParentName()).ifPresent(e -> e.sendPacket(new NodeAPIAction(
                         NodeAPIAction.APIAction.SEND_MESSAGE, Arrays.asList(player, message)
                 )));
             }
@@ -49,9 +49,9 @@ public class PlayerAPIImplementation implements PlayerAsyncAPI, PlayerSyncAPI {
         return task;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public Task<Void> kickPlayerAsync(@Nonnull UUID player, @Nonnull String message) {
+    public Task<Void> kickPlayerAsync(@NotNull UUID player, @NotNull String message) {
         Task<Void> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             ProcessInformation processInformation = this.getPlayerOnProxy(player);
@@ -60,12 +60,12 @@ public class PlayerAPIImplementation implements PlayerAsyncAPI, PlayerSyncAPI {
                 return;
             }
 
-            if (this.nodeNetworkManager.getCluster().getSelfNode().getName().equals(processInformation.getParent())) {
-                DefaultChannelManager.INSTANCE.get(processInformation.getName()).ifPresent(e -> e.sendPacket(new NodeAPIAction(
+            if (this.nodeNetworkManager.getCluster().getSelfNode().getName().equals(processInformation.getProcessDetail().getParentName())) {
+                DefaultChannelManager.INSTANCE.get(processInformation.getProcessDetail().getName()).ifPresent(e -> e.sendPacket(new NodeAPIAction(
                         NodeAPIAction.APIAction.KICK_PLAYER, Arrays.asList(player, message)
                 )));
             } else {
-                DefaultChannelManager.INSTANCE.get(processInformation.getParent()).ifPresent(e -> e.sendPacket(new NodeAPIAction(
+                DefaultChannelManager.INSTANCE.get(processInformation.getProcessDetail().getParentName()).ifPresent(e -> e.sendPacket(new NodeAPIAction(
                         NodeAPIAction.APIAction.KICK_PLAYER, Arrays.asList(player, message)
                 )));
             }
@@ -75,9 +75,9 @@ public class PlayerAPIImplementation implements PlayerAsyncAPI, PlayerSyncAPI {
         return task;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public Task<Void> kickPlayerFromServerAsync(@Nonnull UUID player, @Nonnull String message) {
+    public Task<Void> kickPlayerFromServerAsync(@NotNull UUID player, @NotNull String message) {
         Task<Void> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             ProcessInformation processInformation = this.getPlayerOnServer(player);
@@ -86,12 +86,12 @@ public class PlayerAPIImplementation implements PlayerAsyncAPI, PlayerSyncAPI {
                 return;
             }
 
-            if (this.nodeNetworkManager.getCluster().getSelfNode().getName().equals(processInformation.getParent())) {
-                DefaultChannelManager.INSTANCE.get(processInformation.getName()).ifPresent(e -> e.sendPacket(new NodeAPIAction(
+            if (this.nodeNetworkManager.getCluster().getSelfNode().getName().equals(processInformation.getProcessDetail().getParentName())) {
+                DefaultChannelManager.INSTANCE.get(processInformation.getProcessDetail().getName()).ifPresent(e -> e.sendPacket(new NodeAPIAction(
                         NodeAPIAction.APIAction.KICK_PLAYER, Arrays.asList(player, message)
                 )));
             } else {
-                DefaultChannelManager.INSTANCE.get(processInformation.getParent()).ifPresent(e -> e.sendPacket(new NodeAPIAction(
+                DefaultChannelManager.INSTANCE.get(processInformation.getProcessDetail().getParentName()).ifPresent(e -> e.sendPacket(new NodeAPIAction(
                         NodeAPIAction.APIAction.KICK_PLAYER, Arrays.asList(player, message)
                 )));
             }
@@ -101,9 +101,9 @@ public class PlayerAPIImplementation implements PlayerAsyncAPI, PlayerSyncAPI {
         return task;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public Task<Void> playSoundAsync(@Nonnull UUID player, @Nonnull String sound, float f1, float f2) {
+    public Task<Void> playSoundAsync(@NotNull UUID player, @NotNull String sound, float f1, float f2) {
         Task<Void> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             ProcessInformation processInformation = this.getPlayerOnServer(player);
@@ -112,12 +112,12 @@ public class PlayerAPIImplementation implements PlayerAsyncAPI, PlayerSyncAPI {
                 return;
             }
 
-            if (this.nodeNetworkManager.getCluster().getSelfNode().getName().equals(processInformation.getParent())) {
-                DefaultChannelManager.INSTANCE.get(processInformation.getName()).ifPresent(e -> e.sendPacket(new NodeAPIAction(
+            if (this.nodeNetworkManager.getCluster().getSelfNode().getName().equals(processInformation.getProcessDetail().getParentName())) {
+                DefaultChannelManager.INSTANCE.get(processInformation.getProcessDetail().getName()).ifPresent(e -> e.sendPacket(new NodeAPIAction(
                         NodeAPIAction.APIAction.PLAY_SOUND, Arrays.asList(player, sound, f1, f2)
                 )));
             } else {
-                DefaultChannelManager.INSTANCE.get(processInformation.getParent()).ifPresent(e -> e.sendPacket(new NodeAPIAction(
+                DefaultChannelManager.INSTANCE.get(processInformation.getProcessDetail().getParentName()).ifPresent(e -> e.sendPacket(new NodeAPIAction(
                         NodeAPIAction.APIAction.PLAY_SOUND, Arrays.asList(player, sound, f1, f2)
                 )));
             }
@@ -127,9 +127,9 @@ public class PlayerAPIImplementation implements PlayerAsyncAPI, PlayerSyncAPI {
         return task;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public Task<Void> sendTitleAsync(@Nonnull UUID player, @Nonnull String title, @Nonnull String subTitle, int fadeIn, int stay, int fadeOut) {
+    public Task<Void> sendTitleAsync(@NotNull UUID player, @NotNull String title, @NotNull String subTitle, int fadeIn, int stay, int fadeOut) {
         Task<Void> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             ProcessInformation processInformation = this.getPlayerOnProxy(player);
@@ -138,12 +138,12 @@ public class PlayerAPIImplementation implements PlayerAsyncAPI, PlayerSyncAPI {
                 return;
             }
 
-            if (this.nodeNetworkManager.getCluster().getSelfNode().getName().equals(processInformation.getParent())) {
-                DefaultChannelManager.INSTANCE.get(processInformation.getName()).ifPresent(e -> e.sendPacket(new NodeAPIAction(
+            if (this.nodeNetworkManager.getCluster().getSelfNode().getName().equals(processInformation.getProcessDetail().getParentName())) {
+                DefaultChannelManager.INSTANCE.get(processInformation.getProcessDetail().getName()).ifPresent(e -> e.sendPacket(new NodeAPIAction(
                         NodeAPIAction.APIAction.SEND_TITLE, Arrays.asList(player, title, subTitle, fadeIn, stay, fadeOut)
                 )));
             } else {
-                DefaultChannelManager.INSTANCE.get(processInformation.getParent()).ifPresent(e -> e.sendPacket(new NodeAPIAction(
+                DefaultChannelManager.INSTANCE.get(processInformation.getProcessDetail().getParentName()).ifPresent(e -> e.sendPacket(new NodeAPIAction(
                         NodeAPIAction.APIAction.SEND_TITLE, Arrays.asList(player, title, subTitle, fadeIn, stay, fadeOut)
                 )));
             }
@@ -153,9 +153,9 @@ public class PlayerAPIImplementation implements PlayerAsyncAPI, PlayerSyncAPI {
         return task;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public Task<Void> playEffectAsync(@Nonnull UUID player, @Nonnull String entityEffect) {
+    public Task<Void> playEffectAsync(@NotNull UUID player, @NotNull String entityEffect) {
         Task<Void> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             ProcessInformation processInformation = this.getPlayerOnServer(player);
@@ -164,12 +164,12 @@ public class PlayerAPIImplementation implements PlayerAsyncAPI, PlayerSyncAPI {
                 return;
             }
 
-            if (this.nodeNetworkManager.getCluster().getSelfNode().getName().equals(processInformation.getParent())) {
-                DefaultChannelManager.INSTANCE.get(processInformation.getName()).ifPresent(e -> e.sendPacket(new NodeAPIAction(
+            if (this.nodeNetworkManager.getCluster().getSelfNode().getName().equals(processInformation.getProcessDetail().getParentName())) {
+                DefaultChannelManager.INSTANCE.get(processInformation.getProcessDetail().getName()).ifPresent(e -> e.sendPacket(new NodeAPIAction(
                         NodeAPIAction.APIAction.PLAY_ENTITY_EFFECT, Arrays.asList(player, entityEffect)
                 )));
             } else {
-                DefaultChannelManager.INSTANCE.get(processInformation.getParent()).ifPresent(e -> e.sendPacket(new NodeAPIAction(
+                DefaultChannelManager.INSTANCE.get(processInformation.getProcessDetail().getParentName()).ifPresent(e -> e.sendPacket(new NodeAPIAction(
                         NodeAPIAction.APIAction.PLAY_ENTITY_EFFECT, Arrays.asList(player, entityEffect)
                 )));
             }
@@ -179,9 +179,9 @@ public class PlayerAPIImplementation implements PlayerAsyncAPI, PlayerSyncAPI {
         return task;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public <T> Task<Void> playEffectAsync(@Nonnull UUID player, @Nonnull String effect, T data) {
+    public <T> Task<Void> playEffectAsync(@NotNull UUID player, @NotNull String effect, T data) {
         Task<Void> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             ProcessInformation processInformation = this.getPlayerOnServer(player);
@@ -190,12 +190,12 @@ public class PlayerAPIImplementation implements PlayerAsyncAPI, PlayerSyncAPI {
                 return;
             }
 
-            if (this.nodeNetworkManager.getCluster().getSelfNode().getName().equals(processInformation.getParent())) {
-                DefaultChannelManager.INSTANCE.get(processInformation.getName()).ifPresent(e -> e.sendPacket(new NodeAPIAction(
+            if (this.nodeNetworkManager.getCluster().getSelfNode().getName().equals(processInformation.getProcessDetail().getParentName())) {
+                DefaultChannelManager.INSTANCE.get(processInformation.getProcessDetail().getName()).ifPresent(e -> e.sendPacket(new NodeAPIAction(
                         NodeAPIAction.APIAction.PLAY_EFFECT, Arrays.asList(player, effect, data)
                 )));
             } else {
-                DefaultChannelManager.INSTANCE.get(processInformation.getParent()).ifPresent(e -> e.sendPacket(new NodeAPIAction(
+                DefaultChannelManager.INSTANCE.get(processInformation.getProcessDetail().getParentName()).ifPresent(e -> e.sendPacket(new NodeAPIAction(
                         NodeAPIAction.APIAction.PLAY_EFFECT, Arrays.asList(player, effect, data)
                 )));
             }
@@ -205,9 +205,9 @@ public class PlayerAPIImplementation implements PlayerAsyncAPI, PlayerSyncAPI {
         return task;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public Task<Void> respawnAsync(@Nonnull UUID player) {
+    public Task<Void> respawnAsync(@NotNull UUID player) {
         Task<Void> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             ProcessInformation processInformation = this.getPlayerOnServer(player);
@@ -216,12 +216,12 @@ public class PlayerAPIImplementation implements PlayerAsyncAPI, PlayerSyncAPI {
                 return;
             }
 
-            if (this.nodeNetworkManager.getCluster().getSelfNode().getName().equals(processInformation.getParent())) {
-                DefaultChannelManager.INSTANCE.get(processInformation.getName()).ifPresent(e -> e.sendPacket(new NodeAPIAction(
+            if (this.nodeNetworkManager.getCluster().getSelfNode().getName().equals(processInformation.getProcessDetail().getParentName())) {
+                DefaultChannelManager.INSTANCE.get(processInformation.getProcessDetail().getName()).ifPresent(e -> e.sendPacket(new NodeAPIAction(
                         NodeAPIAction.APIAction.RESPAWN, Collections.singletonList(player)
                 )));
             } else {
-                DefaultChannelManager.INSTANCE.get(processInformation.getParent()).ifPresent(e -> e.sendPacket(new NodeAPIAction(
+                DefaultChannelManager.INSTANCE.get(processInformation.getProcessDetail().getParentName()).ifPresent(e -> e.sendPacket(new NodeAPIAction(
                         NodeAPIAction.APIAction.RESPAWN, Collections.singletonList(player)
                 )));
             }
@@ -231,9 +231,9 @@ public class PlayerAPIImplementation implements PlayerAsyncAPI, PlayerSyncAPI {
         return task;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public Task<Void> teleportAsync(@Nonnull UUID player, @Nonnull String world, double x, double y, double z, float yaw, float pitch) {
+    public Task<Void> teleportAsync(@NotNull UUID player, @NotNull String world, double x, double y, double z, float yaw, float pitch) {
         Task<Void> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             ProcessInformation processInformation = this.getPlayerOnServer(player);
@@ -242,12 +242,12 @@ public class PlayerAPIImplementation implements PlayerAsyncAPI, PlayerSyncAPI {
                 return;
             }
 
-            if (this.nodeNetworkManager.getCluster().getSelfNode().getName().equals(processInformation.getParent())) {
-                DefaultChannelManager.INSTANCE.get(processInformation.getName()).ifPresent(e -> e.sendPacket(new NodeAPIAction(
+            if (this.nodeNetworkManager.getCluster().getSelfNode().getName().equals(processInformation.getProcessDetail().getParentName())) {
+                DefaultChannelManager.INSTANCE.get(processInformation.getProcessDetail().getName()).ifPresent(e -> e.sendPacket(new NodeAPIAction(
                         NodeAPIAction.APIAction.LOCATION_TELEPORT, Arrays.asList(player, world, x, y, z, yaw, pitch)
                 )));
             } else {
-                DefaultChannelManager.INSTANCE.get(processInformation.getParent()).ifPresent(e -> e.sendPacket(new NodeAPIAction(
+                DefaultChannelManager.INSTANCE.get(processInformation.getProcessDetail().getParentName()).ifPresent(e -> e.sendPacket(new NodeAPIAction(
                         NodeAPIAction.APIAction.LOCATION_TELEPORT, Arrays.asList(player, world, x, y, z, yaw, pitch)
                 )));
             }
@@ -257,9 +257,9 @@ public class PlayerAPIImplementation implements PlayerAsyncAPI, PlayerSyncAPI {
         return task;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public Task<Void> connectAsync(@Nonnull UUID player, @Nonnull String server) {
+    public Task<Void> connectAsync(@NotNull UUID player, @NotNull String server) {
         Task<Void> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             ProcessInformation processInformation = this.getPlayerOnProxy(player);
@@ -268,12 +268,12 @@ public class PlayerAPIImplementation implements PlayerAsyncAPI, PlayerSyncAPI {
                 return;
             }
 
-            if (this.nodeNetworkManager.getCluster().getSelfNode().getName().equals(processInformation.getParent())) {
-                DefaultChannelManager.INSTANCE.get(processInformation.getName()).ifPresent(e -> e.sendPacket(new NodeAPIAction(
+            if (this.nodeNetworkManager.getCluster().getSelfNode().getName().equals(processInformation.getProcessDetail().getParentName())) {
+                DefaultChannelManager.INSTANCE.get(processInformation.getProcessDetail().getName()).ifPresent(e -> e.sendPacket(new NodeAPIAction(
                         NodeAPIAction.APIAction.CONNECT, Arrays.asList(player, server)
                 )));
             } else {
-                DefaultChannelManager.INSTANCE.get(processInformation.getParent()).ifPresent(e -> e.sendPacket(new NodeAPIAction(
+                DefaultChannelManager.INSTANCE.get(processInformation.getProcessDetail().getParentName()).ifPresent(e -> e.sendPacket(new NodeAPIAction(
                         NodeAPIAction.APIAction.CONNECT, Arrays.asList(player, server)
                 )));
             }
@@ -283,15 +283,15 @@ public class PlayerAPIImplementation implements PlayerAsyncAPI, PlayerSyncAPI {
         return task;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public Task<Void> connectAsync(@Nonnull UUID player, @Nonnull ProcessInformation server) {
-        return connectAsync(player, server.getName());
+    public Task<Void> connectAsync(@NotNull UUID player, @NotNull ProcessInformation server) {
+        return connectAsync(player, server.getProcessDetail().getName());
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public Task<Void> connectAsync(@Nonnull UUID player, @Nonnull UUID target) {
+    public Task<Void> connectAsync(@NotNull UUID player, @NotNull UUID target) {
         Task<Void> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             ProcessInformation targetServer = getPlayerOnServer(target);
@@ -304,9 +304,9 @@ public class PlayerAPIImplementation implements PlayerAsyncAPI, PlayerSyncAPI {
         return task;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public Task<Void> setResourcePackAsync(@Nonnull UUID player, @Nonnull String pack) {
+    public Task<Void> setResourcePackAsync(@NotNull UUID player, @NotNull String pack) {
         Task<Void> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             ProcessInformation processInformation = this.getPlayerOnServer(player);
@@ -315,12 +315,12 @@ public class PlayerAPIImplementation implements PlayerAsyncAPI, PlayerSyncAPI {
                 return;
             }
 
-            if (this.nodeNetworkManager.getCluster().getSelfNode().getName().equals(processInformation.getParent())) {
-                DefaultChannelManager.INSTANCE.get(processInformation.getName()).ifPresent(e -> e.sendPacket(new NodeAPIAction(
+            if (this.nodeNetworkManager.getCluster().getSelfNode().getName().equals(processInformation.getProcessDetail().getParentName())) {
+                DefaultChannelManager.INSTANCE.get(processInformation.getProcessDetail().getName()).ifPresent(e -> e.sendPacket(new NodeAPIAction(
                         NodeAPIAction.APIAction.SET_RESOURCE_PACK, Arrays.asList(player, pack)
                 )));
             } else {
-                DefaultChannelManager.INSTANCE.get(processInformation.getParent()).ifPresent(e -> e.sendPacket(new NodeAPIAction(
+                DefaultChannelManager.INSTANCE.get(processInformation.getProcessDetail().getParentName()).ifPresent(e -> e.sendPacket(new NodeAPIAction(
                         NodeAPIAction.APIAction.SET_RESOURCE_PACK, Arrays.asList(player, pack)
                 )));
             }
@@ -331,75 +331,75 @@ public class PlayerAPIImplementation implements PlayerAsyncAPI, PlayerSyncAPI {
     }
 
     @Override
-    public void sendMessage(@Nonnull UUID player, @Nonnull String message) {
+    public void sendMessage(@NotNull UUID player, @NotNull String message) {
         sendMessageAsync(player, message).awaitUninterruptedly();
     }
 
     @Override
-    public void kickPlayer(@Nonnull UUID player, @Nonnull String message) {
+    public void kickPlayer(@NotNull UUID player, @NotNull String message) {
         kickPlayerAsync(player, message).awaitUninterruptedly();
     }
 
     @Override
-    public void kickPlayerFromServer(@Nonnull UUID player, @Nonnull String message) {
+    public void kickPlayerFromServer(@NotNull UUID player, @NotNull String message) {
         kickPlayerFromServerAsync(player, message).awaitUninterruptedly();
     }
 
     @Override
-    public void playSound(@Nonnull UUID player, @Nonnull String sound, float f1, float f2) {
+    public void playSound(@NotNull UUID player, @NotNull String sound, float f1, float f2) {
         playSoundAsync(player, sound, f1, f2).awaitUninterruptedly();
     }
 
     @Override
-    public void sendTitle(@Nonnull UUID player, @Nonnull String title, @Nonnull String subTitle, int fadeIn, int stay, int fadeOut) {
+    public void sendTitle(@NotNull UUID player, @NotNull String title, @NotNull String subTitle, int fadeIn, int stay, int fadeOut) {
         sendTitleAsync(player, title, subTitle, fadeIn, stay, fadeOut).awaitUninterruptedly();
     }
 
     @Override
-    public void playEffect(@Nonnull UUID player, @Nonnull String entityEffect) {
+    public void playEffect(@NotNull UUID player, @NotNull String entityEffect) {
         playEffectAsync(player, entityEffect).awaitUninterruptedly();
     }
 
     @Override
-    public <T> void playEffect(@Nonnull UUID player, @Nonnull String effect, T data) {
+    public <T> void playEffect(@NotNull UUID player, @NotNull String effect, T data) {
         playEffectAsync(player, effect, data).awaitUninterruptedly();
     }
 
     @Override
-    public void respawn(@Nonnull UUID player) {
+    public void respawn(@NotNull UUID player) {
         respawnAsync(player).awaitUninterruptedly();
     }
 
     @Override
-    public void teleport(@Nonnull UUID player, @Nonnull String world, double x, double y, double z, float yaw, float pitch) {
+    public void teleport(@NotNull UUID player, @NotNull String world, double x, double y, double z, float yaw, float pitch) {
         teleportAsync(player, world, x, y, z, yaw, pitch).awaitUninterruptedly();
     }
 
     @Override
-    public void connect(@Nonnull UUID player, @Nonnull String server) {
+    public void connect(@NotNull UUID player, @NotNull String server) {
         connectAsync(player, server).awaitUninterruptedly();
     }
 
     @Override
-    public void connect(@Nonnull UUID player, @Nonnull ProcessInformation server) {
+    public void connect(@NotNull UUID player, @NotNull ProcessInformation server) {
         connectAsync(player, server).awaitUninterruptedly();
     }
 
     @Override
-    public void connect(@Nonnull UUID player, @Nonnull UUID target) {
+    public void connect(@NotNull UUID player, @NotNull UUID target) {
         connectAsync(player, target).awaitUninterruptedly();
     }
 
     @Override
-    public void setResourcePack(@Nonnull UUID player, @Nonnull String pack) {
+    public void setResourcePack(@NotNull UUID player, @NotNull String pack) {
         setResourcePackAsync(player, pack).awaitUninterruptedly();
     }
 
     private ProcessInformation getPlayerOnProxy(UUID uniqueID) {
-        return Streams.filter(this.nodeNetworkManager.getNodeProcessHelper().getClusterProcesses(), processInformation -> !processInformation.getTemplate().isServer() && Streams.filterToReference(processInformation.getOnlinePlayers(), player -> player.getUniqueID().equals(uniqueID)).isPresent());
+        return Streams.filter(this.nodeNetworkManager.getNodeProcessHelper().getClusterProcesses(), processInformation -> !processInformation.getProcessDetail().getTemplate().isServer() && Streams.filterToReference(processInformation.getProcessPlayerManager().getOnlinePlayers(), player -> player.getUniqueID().equals(uniqueID)).isPresent());
     }
 
     private ProcessInformation getPlayerOnServer(UUID uniqueID) {
-        return Streams.filter(this.nodeNetworkManager.getNodeProcessHelper().getClusterProcesses(), processInformation -> processInformation.getTemplate().isServer() && Streams.filterToReference(processInformation.getOnlinePlayers(), player -> player.getUniqueID().equals(uniqueID)).isPresent());
+        return Streams.filter(this.nodeNetworkManager.getNodeProcessHelper().getClusterProcesses(), processInformation -> processInformation.getProcessDetail().getTemplate().isServer() && Streams.filterToReference(processInformation.getProcessPlayerManager().getOnlinePlayers(), player -> player.getUniqueID().equals(uniqueID)).isPresent());
     }
 }

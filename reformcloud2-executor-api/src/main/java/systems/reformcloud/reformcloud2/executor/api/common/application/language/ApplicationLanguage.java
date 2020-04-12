@@ -1,21 +1,21 @@
 package systems.reformcloud.reformcloud2.executor.api.common.application.language;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.language.language.Language;
 import systems.reformcloud.reformcloud2.executor.api.common.language.language.source.LanguageSource;
 
-import javax.annotation.Nonnull;
 import java.util.Properties;
 
 public class ApplicationLanguage implements Language {
 
-    public ApplicationLanguage(@Nonnull String addon, @Nonnull Properties properties) {
+    public ApplicationLanguage(@NotNull String addon, @NotNull Properties properties) {
         this.source = new LanguageSource() {
             @Override
             public String getSource() {
                 return addon;
             }
 
-            @Nonnull
+            @NotNull
             @Override
             public String getName() {
                 return addon;

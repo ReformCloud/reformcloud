@@ -1,5 +1,7 @@
 package systems.reformcloud.reformcloud2.permissions.sponge.service;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.service.context.ContextCalculator;
 import org.spongepowered.api.service.permission.*;
@@ -8,8 +10,6 @@ import systems.reformcloud.reformcloud2.permissions.sponge.description.SpongePer
 import systems.reformcloud.reformcloud2.permissions.sponge.reference.SpongeSubjectReference;
 import systems.reformcloud.reformcloud2.permissions.sponge.subject.util.SubjectDefaultData;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -49,82 +49,82 @@ public class SpongePermissionService implements PermissionService {
     // ======
 
     @Override
-    @Nonnull
+    @NotNull
     public SubjectCollection getUserSubjects() {
         return CollectionCatalog.USER_COLLECTION;
     }
 
     @Override
-    @Nonnull
+    @NotNull
     public SubjectCollection getGroupSubjects() {
         return CollectionCatalog.GROUP_COLLECTION;
     }
 
     @Override
-    @Nonnull
+    @NotNull
     public Subject getDefaults() {
         return SubjectDefaultData.DEFAULT;
     }
 
     @Override
-    @Nonnull
+    @NotNull
     public Predicate<String> getIdentifierValidityPredicate() {
         return s -> true;
     }
 
     @Override
-    @Nonnull
-    public CompletableFuture<SubjectCollection> loadCollection(@Nonnull String identifier) {
+    @NotNull
+    public CompletableFuture<SubjectCollection> loadCollection(@NotNull String identifier) {
         return CompletableFuture.completedFuture(LOADED.getOrDefault(identifier, CollectionCatalog.FACTORY_COLLECTION));
     }
 
     @Override
-    @Nonnull
-    public Optional<SubjectCollection> getCollection(@Nonnull String identifier) {
+    @NotNull
+    public Optional<SubjectCollection> getCollection(@NotNull String identifier) {
         return Optional.ofNullable(loadCollection(identifier).join());
     }
 
     @Override
-    @Nonnull
-    public CompletableFuture<Boolean> hasCollection(@Nonnull String identifier) {
+    @NotNull
+    public CompletableFuture<Boolean> hasCollection(@NotNull String identifier) {
         return CompletableFuture.completedFuture(getCollection(identifier).isPresent());
     }
 
     @Override
-    @Nonnull
+    @NotNull
     public Map<String, SubjectCollection> getLoadedCollections() {
         return Collections.unmodifiableMap(LOADED);
     }
 
     @Override
-    @Nonnull
+    @NotNull
     public CompletableFuture<Set<String>> getAllIdentifiers() {
         return CompletableFuture.completedFuture(LOADED.keySet());
     }
 
     @Override
-    @Nonnull
+    @NotNull
     public SubjectReference newSubjectReference(
-            @Nonnull String collectionIdentifier,
-            @Nonnull String subjectIdentifier
+            @NotNull String collectionIdentifier,
+            @NotNull String subjectIdentifier
     ) {
         return new SpongeSubjectReference(this, collectionIdentifier, subjectIdentifier);
     }
 
     @Override
-    @Nonnull
-    public PermissionDescription.Builder newDescriptionBuilder(@Nonnull Object plugin) {
+    @NotNull
+    public PermissionDescription.Builder newDescriptionBuilder(@NotNull Object plugin) {
         return new SpongePermissionDescriptionBuilder(this, Sponge.getPluginManager().fromInstance(plugin).orElse(null));
     }
 
     @Override
-    @Nonnull
-    public Optional<PermissionDescription> getDescription(@Nonnull String permission) {
+    @NotNull
+    public Optional<PermissionDescription> getDescription(@NotNull String permission) {
         return Optional.ofNullable(DESCRIPTIONS.get(permission));
     }
 
     @Override
-    @Nonnull
+    @NotNull
     public Collection<PermissionDescription> getDescriptions() {
         return DESCRIPTIONS.values();
     }

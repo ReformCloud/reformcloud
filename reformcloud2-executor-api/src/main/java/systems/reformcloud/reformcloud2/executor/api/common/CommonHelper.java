@@ -1,10 +1,10 @@
 package systems.reformcloud.reformcloud2.executor.api.common;
 
 import com.sun.management.OperatingSystemMXBean;
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessRuntimeInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.optional.ReferencedOptional;
 
-import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
@@ -18,8 +18,9 @@ import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
 
@@ -29,7 +30,9 @@ public final class CommonHelper {
         throw new UnsupportedOperationException();
     }
 
-    public static final Executor EXECUTOR = Executors.newCachedThreadPool();
+    public static final ExecutorService EXECUTOR = Executors.newCachedThreadPool();
+
+    public static final ScheduledExecutorService SCHEDULED_EXECUTOR_SERVICE = Executors.newSingleThreadScheduledExecutor();
 
     public static final DateFormat DATE_FORMAT = new SimpleDateFormat("dd.MM.yyyy kk:mm:ss");
 
@@ -116,7 +119,7 @@ public final class CommonHelper {
         return (int) ((operatingSystemMXBean().getTotalPhysicalMemorySize() / 1048576) - 2048);
     }
 
-    public static String getIpAddress(@Nonnull String input) {
+    public static String getIpAddress(@NotNull String input) {
         if (input.split("\\.").length == 4) {
             return input;
         }

@@ -1,17 +1,17 @@
 package systems.reformcloud.reformcloud2.executor.node.commands;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.CommonHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.GlobalCommand;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.source.CommandSource;
 import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
 import systems.reformcloud.reformcloud2.executor.api.common.node.NodeInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.node.NodeProcess;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
+import systems.reformcloud.reformcloud2.executor.node.config.NodeConfig;
 
-import javax.annotation.Nonnull;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
 
 public final class CommandCluster extends GlobalCommand {
 
@@ -20,7 +20,7 @@ public final class CommandCluster extends GlobalCommand {
     }
 
     @Override
-    public void describeCommandToSender(@Nonnull CommandSource source) {
+    public void describeCommandToSender(@NotNull CommandSource source) {
         source.sendMessages((
                 "cluster list                      | Lists all connected nodes and all other nodes from the config\n" +
                         "cluster me                        | Shows information about the current node\n" +
@@ -32,7 +32,7 @@ public final class CommandCluster extends GlobalCommand {
     }
 
     @Override
-    public boolean handleCommand(@Nonnull CommandSource commandSource, @Nonnull String[] strings) {
+    public boolean handleCommand(@NotNull CommandSource commandSource, @NotNull String[] strings) {
         if (strings.length == 0) {
             this.describeCommandToSender(commandSource);
             return true;
@@ -49,7 +49,12 @@ public final class CommandCluster extends GlobalCommand {
         }
 
         if (strings.length == 1 && strings[0].equalsIgnoreCase("head")) {
-            this.showInformationAboutToSender(commandSource, NodeExecutor.getInstance().getNodeNetworkManager().getCluster().getHeadNode());
+            NodeInformation head = NodeExecutor.getInstance().getNodeNetworkManager().getCluster().getHeadNode();
+            if (head == null) {
+                head = NodeExecutor.getInstance().getNodeNetworkManager().getCluster().getSelfNode();
+            }
+
+            this.showInformationAboutToSender(commandSource, head);
             return true;
         }
 
@@ -86,7 +91,7 @@ public final class CommandCluster extends GlobalCommand {
                 return true;
             }
 
-            NodeExecutor.getInstance().getNodeConfig().getOtherNodes().add(Collections.singletonMap(ip, port));
+            NodeExecutor.getInstance().getNodeConfig().getClusterNodes().add(new NodeConfig.NetworkAddress(ip, port));
             NodeExecutor.getInstance().getNodeConfig().save();
             commandSource.sendMessage(LanguageManager.get("command-cluster-created-node", ip, strings[2]));
             return true;
@@ -99,13 +104,16 @@ public final class CommandCluster extends GlobalCommand {
                 return true;
             }
 
-            if (!this.existsNode(ip)) {
+            NodeConfig.NetworkAddress address = Streams.filter(
+                    NodeExecutor.getInstance().getNodeConfig().getClusterNodes(),
+                    e -> e.getHost().equals(ip.trim())
+            );
+            if (address == null) {
                 commandSource.sendMessage(LanguageManager.get("command-cluster-node-not-exists", ip));
                 return true;
             }
 
-            Map<String, Integer> map = this.getByHost(ip);
-            NodeExecutor.getInstance().getNodeConfig().getOtherNodes().remove(map);
+            NodeExecutor.getInstance().getNodeConfig().getClusterNodes().remove(address);
             NodeExecutor.getInstance().getNodeConfig().save();
             commandSource.sendMessage(LanguageManager.get("command-cluster-node-deleted", ip));
             return true;
@@ -115,36 +123,39 @@ public final class CommandCluster extends GlobalCommand {
         return true;
     }
 
-    private boolean existsNode(String host) {
-        return getByHost(host) != null;
+    private boolean existsNode(@NotNull String host) {
+        return NodeExecutor
+                .getInstance()
+                .getNodeConfig()
+                .getClusterNodes()
+                .stream()
+                .anyMatch(e -> e.getHost().equals(host.trim()));
     }
 
-    private Map<String, Integer> getByHost(String host) {
-        for (Map<String, Integer> otherNode : NodeExecutor.getInstance().getNodeConfig().getOtherNodes()) {
-            for (Map.Entry<String, Integer> stringIntegerEntry : otherNode.entrySet()) {
-                if (stringIntegerEntry.getKey().equals(host)) {
-                    return otherNode;
-                }
-            }
-        }
-
-        return null;
-    }
-
-    private void showInformationAboutToSender(CommandSource source, NodeInformation information) {
+    private void showInformationAboutToSender(@NotNull CommandSource source, @NotNull NodeInformation information) {
         StringBuilder stringBuilder = new StringBuilder();
 
-        stringBuilder.append(" > Name       - ").append(information.getName()).append("\n");
-        stringBuilder.append(" > UniqueID   - ").append(information.getNodeUniqueID()).append("\n");
-        stringBuilder.append(" > Memory     - ").append(information.getUsedMemory()).append("MB/").append(information.getMaxMemory()).append("MB\n");
-        stringBuilder.append(" > Start time - ").append(CommonHelper.DATE_FORMAT.format(information.getStartupTime())).append("\n");
+        stringBuilder.append(" > Name            - ").append(information.getName()).append("\n");
+        stringBuilder.append(" > UniqueID        - ").append(information.getNodeUniqueID()).append("\n");
+        stringBuilder.append(" > Memory          - ").append(information.getUsedMemory()).append("MB/").append(information.getMaxMemory()).append("MB\n");
+        stringBuilder.append(" > OS              - ").append(information.getProcessRuntimeInformation().getOsVersion()).append("\n");
+        stringBuilder.append(" > OS-Arch         - ").append(information.getProcessRuntimeInformation().getSystemArchitecture()).append("\n");
+        stringBuilder.append(" > Java            - ").append(information.getProcessRuntimeInformation().getJavaVersion()).append("\n");
+        stringBuilder.append(" > Cores           - ").append(information.getProcessRuntimeInformation().getProcessorCount()).append("\n");
+        stringBuilder.append(" > Threads         - ").append(information.getProcessRuntimeInformation().getThreadInfos().size()).append("\n");
+        stringBuilder.append(" > Heap Memory     - ").append(information.getProcessRuntimeInformation().getMemoryUsageInternal()).append("MB").append("\n");
+        stringBuilder.append(" > Non-Heap Memory - ").append(information.getProcessRuntimeInformation().getNonHeapMemoryUsage()).append("MB").append("\n");
+        stringBuilder.append(" > CPU             - ").append(CommonHelper.DECIMAL_FORMAT.format(information.getProcessRuntimeInformation().getCpuUsageSystem())).append("%").append("\n");
+        stringBuilder.append(" > Load average    - ").append(CommonHelper.DECIMAL_FORMAT.format(information.getProcessRuntimeInformation().getLoadAverageSystem())).append("MB").append("\n");
+        stringBuilder.append(" > Start time      - ").append(CommonHelper.DATE_FORMAT.format(information.getStartupTime())).append("\n");
+        stringBuilder.append(" > Last Update     - ").append(CommonHelper.DATE_FORMAT.format(information.getLastUpdate())).append("\n");
         stringBuilder.append(" ").append("\n");
         stringBuilder.append(" > Started processes (").append(information.getStartedProcesses().size()).append(")").append("\n");
         for (NodeProcess startedProcess : information.getStartedProcesses()) {
             stringBuilder.append("\n");
-            stringBuilder.append("  > Name      - ").append(startedProcess.getName()).append("\n");
-            stringBuilder.append("  > UniqueID  - ").append(startedProcess.getUniqueID()).append("\n");
-            stringBuilder.append("  > Group     - ").append(startedProcess.getGroup()).append("\n");
+            stringBuilder.append("  > Name           - ").append(startedProcess.getName()).append("\n");
+            stringBuilder.append("  > UniqueID       - ").append(startedProcess.getUniqueID()).append("\n");
+            stringBuilder.append("  > Group          - ").append(startedProcess.getGroup()).append("\n");
             stringBuilder.append(" ");
         }
 
@@ -154,11 +165,9 @@ public final class CommandCluster extends GlobalCommand {
     private void listConnectedAndListenersToSender(CommandSource source) {
         StringBuilder stringBuilder = new StringBuilder();
 
-        stringBuilder.append("Known nodes (").append(NodeExecutor.getInstance().getNodeConfig().getOtherNodes().size()).append(")").append("\n");
-        for (Map<String, Integer> otherNode : NodeExecutor.getInstance().getNodeConfig().getOtherNodes()) {
-            for (Map.Entry<String, Integer> stringIntegerEntry : otherNode.entrySet()) {
-                stringBuilder.append(" > ").append(stringIntegerEntry.getKey()).append(":").append(stringIntegerEntry.getValue()).append("\n");
-            }
+        stringBuilder.append("Known nodes (").append(NodeExecutor.getInstance().getNodeConfig().getClusterNodes().size()).append(")").append("\n");
+        for (NodeConfig.NetworkAddress clusterNode : NodeExecutor.getInstance().getNodeConfig().getClusterNodes()) {
+            stringBuilder.append(" > ").append(clusterNode.getHost()).append(":").append(clusterNode.getPort()).append("\n");
         }
 
         stringBuilder.append("\n");

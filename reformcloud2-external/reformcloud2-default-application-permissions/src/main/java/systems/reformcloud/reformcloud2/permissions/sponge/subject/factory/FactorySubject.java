@@ -1,12 +1,11 @@
 package systems.reformcloud.reformcloud2.permissions.sponge.subject.factory;
 
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.service.permission.PermissionService;
 import org.spongepowered.api.service.permission.SubjectCollection;
 import org.spongepowered.api.service.permission.SubjectData;
 import systems.reformcloud.reformcloud2.permissions.sponge.subject.AbstractSpongeSubject;
 import systems.reformcloud.reformcloud2.permissions.sponge.subject.base.system.SystemSubjectData;
-
-import javax.annotation.Nonnull;
 
 public class FactorySubject extends AbstractSpongeSubject {
 
@@ -35,19 +34,19 @@ public class FactorySubject extends AbstractSpongeSubject {
     }
 
     @Override
-    @Nonnull
+    @NotNull
     public SubjectCollection getContainingCollection() {
         return this.source;
     }
 
     @Override
-    @Nonnull
+    @NotNull
     public SubjectData getSubjectData() {
         return DATA;
     }
 
     @Override
-    @Nonnull
+    @NotNull
     public String getIdentifier() {
         return id;
     }

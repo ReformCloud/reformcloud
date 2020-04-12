@@ -1,5 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.api.common.event.basic;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.base.Conditions;
 import systems.reformcloud.reformcloud2.executor.api.common.event.Event;
 import systems.reformcloud.reformcloud2.executor.api.common.event.EventManager;
@@ -7,7 +8,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.event.LoadedListener
 import systems.reformcloud.reformcloud2.executor.api.common.event.handler.Listener;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 
-import javax.annotation.Nonnull;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
@@ -105,7 +105,7 @@ public final class DefaultEventManager implements EventManager {
         Streams.forEachValues(done, loadedListeners -> Streams.forEach(loadedListeners, loadedListener -> unregister(loadedListener.getListener())));
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public List<List<LoadedListener>> getListeners() {
         return Collections.unmodifiableList(Streams.getValues(done, aClass -> true));

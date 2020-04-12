@@ -1,13 +1,13 @@
 package systems.reformcloud.reformcloud2.executor.api.common.network.challenge.shared;
 
 import io.netty.channel.ChannelHandlerContext;
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.network.challenge.ChallengeAuthHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.challenge.provider.ChallengeProvider;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.JsonPacket;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 
-import javax.annotation.Nonnull;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
@@ -32,7 +32,7 @@ public class ServerChallengeAuthHandler implements ChallengeAuthHandler {
     private final BiConsumer<ChannelHandlerContext, Packet> afterSuccess;
 
     @Override
-    public boolean handle(@Nonnull ChannelHandlerContext channelHandlerContext, @Nonnull Packet input, @Nonnull String name) {
+    public boolean handle(@NotNull ChannelHandlerContext channelHandlerContext, @NotNull Packet input, @NotNull String name) {
         if (input.packetID() == -512) {
             // request of challenge
             byte[] challenge = this.provider.createChallenge(name);

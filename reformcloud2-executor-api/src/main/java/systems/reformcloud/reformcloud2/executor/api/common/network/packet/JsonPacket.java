@@ -1,24 +1,24 @@
 package systems.reformcloud.reformcloud2.executor.api.common.network.packet;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.util.UUID;
 
 public class JsonPacket implements Packet {
 
-    public JsonPacket(int id, @Nonnull JsonConfiguration content) {
+    public JsonPacket(int id, @NotNull JsonConfiguration content) {
         this(id, content, null);
     }
 
-    public JsonPacket(int id, @Nonnull JsonConfiguration content, @Nullable UUID queryUniqueID) {
+    public JsonPacket(int id, @NotNull JsonConfiguration content, @Nullable UUID queryUniqueID) {
         this(id, content, queryUniqueID, new byte[]{0});
     }
 
-    public JsonPacket(int id, @Nonnull JsonConfiguration configuration, @Nullable UUID queryUniqueID, @Nonnull byte[] extra) {
+    public JsonPacket(int id, @NotNull JsonConfiguration configuration, @Nullable UUID queryUniqueID, @NotNull byte[] extra) {
         this.id = id;
         this.uid = queryUniqueID;
         this.content = configuration;
@@ -43,13 +43,13 @@ public class JsonPacket implements Packet {
         return uid;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public JsonConfiguration content() {
         return content;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public byte[] extra() {
         return extra;
@@ -66,7 +66,7 @@ public class JsonPacket implements Packet {
     }
 
     @Override
-    public void write(@Nonnull ObjectOutputStream objectOutputStream) throws IOException {
+    public void write(@NotNull ObjectOutputStream objectOutputStream) throws IOException {
         objectOutputStream.writeUTF(uid == null ? "null" : uid.toString());
         objectOutputStream.writeObject(content.toPrettyBytes());
         objectOutputStream.writeObject(extra.length == 0 ? new byte[]{0} : extra);
