@@ -15,6 +15,6 @@ public final class EnvNotAPIVariable extends InterpreterVariable {
     @Override
     public String unwrap(@NotNull String cursorLine, @NotNull Collection<String> fullLines) {
         Integer integer = Integer.getInteger(cursorLine);
-        return Boolean.toString(integer != null && integer != 3);
+        return Boolean.toString(integer == null || integer != 3);
     }
 }

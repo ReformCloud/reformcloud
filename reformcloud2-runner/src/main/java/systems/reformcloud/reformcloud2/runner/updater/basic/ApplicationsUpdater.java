@@ -41,6 +41,10 @@ public final class ApplicationsUpdater implements Updater {
 
     @Override
     public void collectInformation() {
+        if (Files.notExists(this.applicationUpdatesPath)) {
+            return;
+        }
+
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(this.applicationUpdatesPath, new JarFileDirectoryStreamFilter())) {
             for (Path entry : stream) {
                 Path old = RunnerUtils.findFile(
