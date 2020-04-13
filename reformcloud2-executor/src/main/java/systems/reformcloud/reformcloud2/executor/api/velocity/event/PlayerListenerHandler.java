@@ -21,7 +21,10 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.channel.mana
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
-import systems.reformcloud.reformcloud2.executor.api.network.packets.out.*;
+import systems.reformcloud.reformcloud2.executor.api.network.packets.out.APIBungeePacketOutPlayerServerSwitch;
+import systems.reformcloud.reformcloud2.executor.api.network.packets.out.APIPacketOutLogoutPlayer;
+import systems.reformcloud.reformcloud2.executor.api.network.packets.out.APIPacketOutPlayerCommandExecute;
+import systems.reformcloud.reformcloud2.executor.api.network.packets.out.APIPacketOutPlayerLoggedIn;
 import systems.reformcloud.reformcloud2.executor.api.velocity.VelocityExecutor;
 
 import java.util.Optional;
@@ -64,15 +67,6 @@ public final class PlayerListenerHandler {
         PacketSender sender = DefaultChannelManager.INSTANCE.get("Controller").orElse(null);
         if (sender == null) {
             event.setResult(ResultedEvent.ComponentResult.denied(TextComponent.of("§4§lThe current proxy is not connected to the controller")));
-            return;
-        }
-
-        if (API.getInstance().getCurrentProcessInformation().getProcessGroup().getPlayerAccessConfiguration().isOnlyProxyJoin()) {
-            Player player = event.getPlayer();
-            sender.sendPacket(new APIPacketOutCreateLoginRequest(
-                    player.getUniqueId(),
-                    player.getUsername()
-            ));
         }
     }
 

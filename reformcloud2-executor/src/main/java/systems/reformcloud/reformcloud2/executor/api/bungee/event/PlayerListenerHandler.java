@@ -2,7 +2,6 @@ package systems.reformcloud.reformcloud2.executor.api.bungee.event;
 
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.api.connection.PendingConnection;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.*;
 import net.md_5.bungee.api.plugin.Listener;
@@ -18,7 +17,10 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.channel.mana
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
-import systems.reformcloud.reformcloud2.executor.api.network.packets.out.*;
+import systems.reformcloud.reformcloud2.executor.api.network.packets.out.APIBungeePacketOutPlayerServerSwitch;
+import systems.reformcloud.reformcloud2.executor.api.network.packets.out.APIPacketOutLogoutPlayer;
+import systems.reformcloud.reformcloud2.executor.api.network.packets.out.APIPacketOutPlayerCommandExecute;
+import systems.reformcloud.reformcloud2.executor.api.network.packets.out.APIPacketOutPlayerLoggedIn;
 
 public final class PlayerListenerHandler implements Listener {
 
@@ -57,15 +59,6 @@ public final class PlayerListenerHandler implements Listener {
         if (sender == null) {
             event.setCancelReason(TextComponent.fromLegacyText("§4§lThe current proxy is not connected to the controller"));
             event.setCancelled(true);
-            return;
-        }
-
-        if (API.getInstance().getCurrentProcessInformation().getProcessGroup().getPlayerAccessConfiguration().isOnlyProxyJoin()) {
-            PendingConnection connection = event.getConnection();
-            sender.sendPacket(new APIPacketOutCreateLoginRequest(
-                    connection.getUniqueId(),
-                    connection.getName()
-            ));
         }
     }
 

@@ -30,15 +30,9 @@ public final class PlayerListenerHandler {
             }
 
             Packet result = SpongeExecutor.getInstance().packetHandler().getQueryHandler().sendQueryAsync(packetSender, new APIPacketOutHasPlayerAccess(
-                    event.getProfile().getUniqueId(),
-                    event.getProfile().getName().isPresent() ? event.getProfile().getName().get() : "unknown",
                     event.getConnection().getAddress().getAddress().getHostAddress()
             )).getTask().getUninterruptedly(TimeUnit.SECONDS, 2);
-            if (result != null && result.content().getBoolean("access")) {
-                event.setCancelled(false);
-            } else {
-                event.setCancelled(true);
-            }
+            event.setCancelled(result == null || !result.content().getBoolean("access"));
         }
 
         final User player = event.getTargetUser();

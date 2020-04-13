@@ -7,7 +7,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.NetworkUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.handler.DefaultJsonNetworkHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
-import systems.reformcloud.reformcloud2.executor.api.common.process.join.OnlyProxyJoinHelper;
 import systems.reformcloud.reformcloud2.executor.controller.network.packets.out.event.ControllerEventLogoutPlayer;
 import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
 import systems.reformcloud.reformcloud2.executor.node.cluster.sync.DefaultClusterSyncManager;
@@ -27,7 +26,6 @@ public final class PacketInAPILogoutPlayer extends DefaultJsonNetworkHandler {
         UUID uuid = packet.content().get("uuid", UUID.class);
         String name = packet.content().getString("name");
 
-        OnlyProxyJoinHelper.onDisconnect(uuid);
         System.out.println(LanguageManager.get(
                 "player-logged-out",
                 name,

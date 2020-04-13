@@ -36,7 +36,7 @@ public final class ApplicationConfigBuilder {
 
     private String website = "https://reformcloud.systems";
 
-    private String implementedVersion = "2.3.0-SNAPSHOT";
+    private String implementedVersion = "2.2.0";
 
     private final List<Dependency> dependencies = new ArrayList<>();
 
