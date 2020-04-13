@@ -10,6 +10,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.MainGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
 
 import java.util.Arrays;
@@ -52,19 +53,23 @@ public class CommandReformCloud extends Command {
                 }
 
                 case "start": {
-                    ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().startProcess(strings[1]);
+                    ExecutorAPI.getInstance().getAsyncAPI().getProcessAsyncAPI().startProcessAsync(strings[1]);
                     commandSender.sendMessage(getCommandSuccessMessage());
                     return;
                 }
 
                 case "stop": {
-                    ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().stopProcess(strings[1]);
+                    ExecutorAPI.getInstance().getAsyncAPI().getProcessAsyncAPI().stopProcessAsync(strings[1]);
                     commandSender.sendMessage(getCommandSuccessMessage());
                     return;
                 }
 
                 case "stopall": {
-                    ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcesses(strings[1]).forEach(e -> ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().stopProcess(e.getProcessDetail().getName()));
+                    ExecutorAPI.getInstance().getAsyncAPI().getProcessAsyncAPI().getProcessesAsync(strings[1]).onComplete(infos -> {
+                        for (ProcessInformation info : infos) {
+                            ExecutorAPI.getInstance().getAsyncAPI().getProcessAsyncAPI().stopProcessAsync(info.getProcessDetail().getName());
+                        }
+                    });
                     commandSender.sendMessage(getCommandSuccessMessage());
                     return;
                 }
@@ -93,11 +98,10 @@ public class CommandReformCloud extends Command {
                     }
 
                     if (count == 1) {
-                        ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().startProcess(strings[1]);
+                        ExecutorAPI.getInstance().getAsyncAPI().getProcessAsyncAPI().startProcessAsync(strings[1]);
                     } else {
                         for (int started = 1; started <= count; started++) {
-                            ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().startProcess(strings[1]);
-                            AbsoluteThread.sleep(TimeUnit.MILLISECONDS, 20);
+                            ExecutorAPI.getInstance().getAsyncAPI().getProcessAsyncAPI().startProcessAsync(strings[1]);
                         }
                     }
 
@@ -107,21 +111,23 @@ public class CommandReformCloud extends Command {
 
                 case "ofall": {
                     if (strings[2].equalsIgnoreCase("stop")) {
-                        MainGroup mainGroup = ExecutorAPI.getInstance().getSyncAPI().getGroupSyncAPI().getMainGroup(strings[1]);
-                        if (mainGroup == null) {
-                            commandSender.sendMessage(TextComponent.fromLegacyText(prefix + "§cThis main group is unknown"));
-                            return;
-                        }
-
-                        mainGroup.getSubGroups().forEach(s -> {
-                            ProcessGroup processGroup = ExecutorAPI.getInstance().getSyncAPI().getGroupSyncAPI().getProcessGroup(s);
-                            if (processGroup == null) {
+                        Task.EXECUTOR.execute(() -> {
+                            MainGroup mainGroup = ExecutorAPI.getInstance().getSyncAPI().getGroupSyncAPI().getMainGroup(strings[1]);
+                            if (mainGroup == null) {
+                                commandSender.sendMessage(TextComponent.fromLegacyText(prefix + "§cThis main group is unknown"));
                                 return;
                             }
 
-                            ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcesses(processGroup.getName()).forEach(processInformation -> {
-                                ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().stopProcess(processInformation.getProcessDetail().getProcessUniqueID());
-                                AbsoluteThread.sleep(TimeUnit.MILLISECONDS, 10);
+                            mainGroup.getSubGroups().forEach(s -> {
+                                ProcessGroup processGroup = ExecutorAPI.getInstance().getSyncAPI().getGroupSyncAPI().getProcessGroup(s);
+                                if (processGroup == null) {
+                                    return;
+                                }
+
+                                ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcesses(processGroup.getName()).forEach(processInformation -> {
+                                    ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().stopProcess(processInformation.getProcessDetail().getProcessUniqueID());
+                                    AbsoluteThread.sleep(TimeUnit.MILLISECONDS, 10);
+                                });
                             });
                         });
                         commandSender.sendMessage(getCommandSuccessMessage());
@@ -149,7 +155,7 @@ public class CommandReformCloud extends Command {
                 stringBuilder.append(s).append(" ");
             }
 
-            ExecutorAPI.getInstance().getSyncAPI().getConsoleSyncAPI().dispatchCommandAndGetResult(stringBuilder.toString());
+            ExecutorAPI.getInstance().getAsyncAPI().getConsoleAsyncAPI().dispatchCommandAndGetResultAsync(stringBuilder.toString());
             commandSender.sendMessage(getCommandSuccessMessage());
             return;
         }

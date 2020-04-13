@@ -148,7 +148,6 @@ public interface ProcessManager extends Iterable<ProcessInformation>, Updateable
      * <p>
      *
      * @param uniqueID The uniqueID of the process information which will be used to identify the process
-     * @see ProcessInformation#getProcessDetail().getProcessUniqueID()
      */
     void unregisterProcess(UUID uniqueID);
 }

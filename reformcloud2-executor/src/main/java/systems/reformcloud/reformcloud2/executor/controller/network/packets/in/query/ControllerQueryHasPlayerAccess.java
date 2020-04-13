@@ -9,7 +9,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.JsonP
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.api.common.process.join.OnlyProxyJoinHelper;
 
-import java.util.UUID;
 import java.util.function.Consumer;
 
 public final class ControllerQueryHasPlayerAccess extends DefaultJsonNetworkHandler {
@@ -21,16 +20,14 @@ public final class ControllerQueryHasPlayerAccess extends DefaultJsonNetworkHand
 
     @Override
     public void handlePacket(@NotNull PacketSender packetSender, @NotNull Packet packet, @NotNull Consumer<Packet> responses) {
-        UUID uuid = packet.content().get("uuid", UUID.class);
-        String name = packet.content().getOrDefault("name", (String) null);
         String playerAddress = packet.content().getOrDefault("address", (String) null);
-
-        if (playerAddress == null || uuid == null || name == null) {
+        if (playerAddress == null) {
             responses.accept(new JsonPacket(-1, new JsonConfiguration().add("access", false)));
+            return;
         }
 
         responses.accept(new JsonPacket(-1, new JsonConfiguration().add("access",
-                OnlyProxyJoinHelper.walkedOverProxy(uuid, name, playerAddress))
+                OnlyProxyJoinHelper.walkedOverProxy(playerAddress))
         ));
     }
 }

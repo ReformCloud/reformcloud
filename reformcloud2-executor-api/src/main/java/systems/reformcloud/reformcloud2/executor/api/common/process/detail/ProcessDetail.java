@@ -22,9 +22,12 @@ public final class ProcessDetail implements Nameable {
      *
      * @param processUniqueID The unique id of the process
      * @param parentUniqueID  The unique id of the startup picker which started the process
+     * @param parentName      The name of the startup picker which started the process
      * @param name            The name of the process
      * @param displayName     The display name of the process
      * @param id              The internal id of the process
+     * @param template        The template from which the process is started
+     * @param maxMemory       The maximum amount of memory the process is able to use
      */
     @ApiStatus.Internal
     public ProcessDetail(@NotNull UUID processUniqueID, @NotNull UUID parentUniqueID, @NotNull String parentName,

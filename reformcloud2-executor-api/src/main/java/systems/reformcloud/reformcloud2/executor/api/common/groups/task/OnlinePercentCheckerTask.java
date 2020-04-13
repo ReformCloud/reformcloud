@@ -21,11 +21,12 @@ public final class OnlinePercentCheckerTask {
         ExecutorAPI.getInstance().getSyncAPI().getGroupSyncAPI().getProcessGroups().forEach(e -> {
             if (e.getStartupConfiguration().getAutomaticStartupConfiguration().isEnabled()
                     && e.getStartupConfiguration().getAutomaticStartupConfiguration().getCheckIntervalInSeconds() > 0
-                    && e.getStartupConfiguration().getAutomaticStartupConfiguration().getMaxPercentOfPlayers() > 0) {
+                    && e.getStartupConfiguration().getAutomaticStartupConfiguration().getMaxPercentOfPlayers() > 0
+                    && e.getPlayerAccessConfiguration().isUseCloudPlayerLimit()) {
                 int id = TaskScheduler.INSTANCE.schedule(() -> {
                     List<ProcessInformation> processes = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcesses(e.getName());
                     int max = processes.stream().mapToInt(p -> p.getProcessDetail().getMaxPlayers()).sum();
-                    int online = processes.stream().mapToInt(p -> p.getProcessDetail().getMaxPlayers()).sum();
+                    int online = processes.stream().mapToInt(p -> p.getProcessPlayerManager().getOnlineCount()).sum();
 
                     if (getPercentOf(online, max) >= e.getStartupConfiguration().getAutomaticStartupConfiguration().getMaxPercentOfPlayers()
                             && (e.getStartupConfiguration().getMaxOnlineProcesses() == -1
