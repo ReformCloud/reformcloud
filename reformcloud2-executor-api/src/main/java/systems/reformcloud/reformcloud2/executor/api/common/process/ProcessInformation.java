@@ -2,13 +2,11 @@ package systems.reformcloud.reformcloud2.executor.api.common.process;
 
 import com.google.gson.reflect.TypeToken;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
-import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Template;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.PlayerAccessConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.plugins.basic.DefaultPlugin;
 import systems.reformcloud.reformcloud2.executor.api.common.process.api.ProcessInclusion;
@@ -16,14 +14,14 @@ import systems.reformcloud.reformcloud2.executor.api.common.process.detail.Proce
 import systems.reformcloud.reformcloud2.executor.api.common.process.detail.ProcessPlayerManager;
 import systems.reformcloud.reformcloud2.executor.api.common.process.detail.ProcessUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.process.event.ProcessInformationConfigureEvent;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.annotiations.ReplacedWith;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.clone.Clone;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.name.Nameable;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public final class ProcessInformation implements Nameable, Clone<ProcessInformation> {
+public final class ProcessInformation implements Clone<ProcessInformation> {
 
     public static final TypeToken<ProcessInformation> TYPE = new TypeToken<ProcessInformation>() {
     };
@@ -187,146 +185,6 @@ public final class ProcessInformation implements Nameable, Clone<ProcessInformat
     @Override
     @NotNull
     public String toString() {
-        return getName() + "/" + getProcessDetail().getProcessUniqueID();
-    }
-
-    /* =========== Scheduled for removal =========== */
-
-    @NotNull
-    @ApiStatus.ScheduledForRemoval(inVersion = "2.3")
-    @Deprecated
-    @ReplacedWith("#getProcessDetail#getProcessState")
-    public ProcessState getProcessState() {
-        return this.processDetail.getProcessState();
-    }
-
-    @NotNull
-    @ApiStatus.ScheduledForRemoval(inVersion = "2.3")
-    @Deprecated
-    @ReplacedWith("#getProcessDetail#getProcessRuntimeInformation")
-    public ProcessRuntimeInformation getProcessRuntimeInformation() {
-        return this.processDetail.getProcessRuntimeInformation();
-    }
-
-    @ApiStatus.ScheduledForRemoval(inVersion = "2.3")
-    @Deprecated
-    @ReplacedWith("#getProcessDetail#setProcessState")
-    public void setProcessState(@NotNull ProcessState processState) {
-        this.processDetail.setProcessState(processState);
-    }
-
-    @NotNull
-    @ApiStatus.ScheduledForRemoval(inVersion = "2.3")
-    @Deprecated
-    @ReplacedWith("#getProcessDetail#getTemplate")
-    public Template getTemplate() {
-        return this.processDetail.getTemplate();
-    }
-
-    @ApiStatus.ScheduledForRemoval(inVersion = "2.3")
-    @Deprecated
-    @ReplacedWith("#getProcessDetail#getMaxPlayers")
-    public int getMaxPlayers() {
-        return this.processDetail.getMaxPlayers();
-    }
-
-    @NotNull
-    @ApiStatus.ScheduledForRemoval(inVersion = "2.3")
-    @Deprecated
-    @ReplacedWith("#getProcessDetail#getMaxMemory")
-    public Integer getMaxMemory() {
-        return this.processDetail.getMaxMemory();
-    }
-
-    @NotNull
-    @ApiStatus.ScheduledForRemoval(inVersion = "2.3")
-    @Deprecated
-    @ReplacedWith("#getProcessDetail#getDisplayName")
-    public String getDisplayName() {
-        return this.processDetail.getDisplayName();
-    }
-
-    @NotNull
-    @ApiStatus.ScheduledForRemoval(inVersion = "2.3")
-    @Deprecated
-    @ReplacedWith("#getProcessDetail#getParentName")
-    public String getParent() {
-        return this.processDetail.getParentName();
-    }
-
-    @Contract(pure = true)
-    @ApiStatus.ScheduledForRemoval(inVersion = "2.3")
-    @Deprecated
-    @ReplacedWith("#getProcessDetail#getParentUniqueID")
-    @NotNull
-    public UUID getNodeUniqueID() {
-        return this.processDetail.getParentUniqueID();
-    }
-
-    @NotNull
-    @ApiStatus.ScheduledForRemoval(inVersion = "2.3")
-    @Deprecated
-    @ReplacedWith("#getProcessDetail#getProcessDetail().getProcessUniqueID")
-    public UUID getProcessUniqueID() {
-        return this.processDetail.getProcessUniqueID();
-    }
-
-    @ApiStatus.ScheduledForRemoval(inVersion = "2.3")
-    @Deprecated
-    @ReplacedWith("#getProcessDetail#getId")
-    public int getId() {
-        return this.processDetail.getId();
-    }
-
-    @ApiStatus.ScheduledForRemoval(inVersion = "2.3")
-    @Deprecated
-    @ReplacedWith("#getProcessPlayerManager#getOnlineCount")
-    public int getOnlineCount() {
-        return this.processPlayerManager.getOnlineCount();
-    }
-
-    @NotNull
-    @ApiStatus.ScheduledForRemoval(inVersion = "2.3")
-    @Deprecated
-    @ReplacedWith("#getProcessPlayerManager#getOnlinePlayers")
-    public SortedSet<Player> getOnlinePlayers() {
-        return new TreeSet<>(this.processPlayerManager.getOnlinePlayers());
-    }
-
-    @NotNull
-    @ApiStatus.ScheduledForRemoval(inVersion = "2.3")
-    @Deprecated
-    @Override
-    @ReplacedWith("#getProcessDetail#getName")
-    public String getName() {
-        return this.processDetail.getName();
-    }
-
-    @ApiStatus.ScheduledForRemoval(inVersion = "2.3")
-    @Deprecated
-    @ReplacedWith("#getProcessPlayerManager#onLogin")
-    public boolean onLogin(@NotNull UUID playerUuid, @NotNull String playerName) {
-        return this.processPlayerManager.onLogin(playerUuid, playerName);
-    }
-
-    @ApiStatus.ScheduledForRemoval(inVersion = "2.3")
-    @Deprecated
-    @ReplacedWith("#getProcessPlayerManager#onLogout")
-    public void onLogout(@NotNull UUID uniqueID) {
-        this.processPlayerManager.onLogout(uniqueID);
-    }
-
-    @ApiStatus.ScheduledForRemoval(inVersion = "2.3")
-    @Deprecated
-    @ReplacedWith("#getProcessPlayerManager#isPlayerOnlineOnCurrentProcess")
-    public boolean isPlayerOnline(@NotNull UUID uniqueID) {
-        return this.processPlayerManager.isPlayerOnlineOnCurrentProcess(uniqueID);
-    }
-
-    @ApiStatus.ScheduledForRemoval(inVersion = "2.3")
-    @Deprecated
-    @ReplacedWith("#getProcessPlayerManager#isPlayerOnlineOnCurrentProcess")
-    public boolean isPlayerOnline(@NotNull String name) {
-        return this.processPlayerManager.isPlayerOnlineOnCurrentProcess(name);
+        return this.getProcessDetail().getName() + "/" + getProcessDetail().getProcessUniqueID();
     }
 }

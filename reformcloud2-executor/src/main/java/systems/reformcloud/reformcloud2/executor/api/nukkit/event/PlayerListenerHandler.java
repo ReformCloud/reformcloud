@@ -6,46 +6,15 @@ import cn.nukkit.event.EventHandler;
 import cn.nukkit.event.EventPriority;
 import cn.nukkit.event.Listener;
 import cn.nukkit.event.player.PlayerJoinEvent;
-import cn.nukkit.event.player.PlayerLoginEvent;
 import cn.nukkit.event.player.PlayerQuitEvent;
 import systems.reformcloud.reformcloud2.executor.api.api.API;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.PlayerAccessConfiguration;
-import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
-import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
-import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState;
-import systems.reformcloud.reformcloud2.executor.api.network.packets.out.APIPacketOutHasPlayerAccess;
 import systems.reformcloud.reformcloud2.executor.api.nukkit.NukkitExecutor;
 
-import java.util.concurrent.TimeUnit;
-
 public final class PlayerListenerHandler implements Listener {
-
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void handle(final PlayerLoginEvent event) {
-        if (API.getInstance().getCurrentProcessInformation().getProcessGroup().getPlayerAccessConfiguration().isOnlyProxyJoin()) {
-            PacketSender packetSender = DefaultChannelManager.INSTANCE.get("Controller").orElse(null);
-            if (packetSender == null) {
-                event.setCancelled(true);
-                event.setKickMessage("§4§lThe current server is not connected to the controller");
-                return;
-            }
-
-            Packet result = NukkitExecutor.getInstance().packetHandler().getQueryHandler().sendQueryAsync(packetSender, new APIPacketOutHasPlayerAccess(
-                    event.getPlayer().getAddress()
-            )).getTask().getUninterruptedly(TimeUnit.SECONDS, 5);
-            if (result != null && result.content().getBoolean("access")) {
-                event.setCancelled(false);
-            } else {
-                event.setKickMessage(format(
-                        NukkitExecutor.getInstance().getMessages().getNotUsingInternalProxy()
-                ));
-                event.setCancelled(true);
-            }
-        }
-    }
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void handle(final PlayerJoinEvent event) {

@@ -60,13 +60,12 @@ public class GroupAPIImplementation implements GroupAsyncAPI, GroupSyncAPI {
     @NotNull
     @Override
     public Task<ProcessGroup> createProcessGroupAsync(@NotNull String name, @NotNull List<Template> templates, @NotNull StartupConfiguration startupConfiguration) {
-        return createProcessGroupAsync(name, templates, startupConfiguration,  new PlayerAccessConfiguration(
+        return createProcessGroupAsync(name, templates, startupConfiguration, new PlayerAccessConfiguration(
                 "reformcloud.join.full",
                 false,
                 "reformcloud.join.maintenance",
                 false,
                 null,
-                true,
                 true,
                 true,
                 50

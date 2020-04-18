@@ -8,33 +8,14 @@ import org.spongepowered.api.event.network.ClientConnectionEvent;
 import systems.reformcloud.reformcloud2.executor.api.api.API;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.PlayerAccessConfiguration;
-import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
-import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
-import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState;
-import systems.reformcloud.reformcloud2.executor.api.network.packets.out.APIPacketOutHasPlayerAccess;
 import systems.reformcloud.reformcloud2.executor.api.sponge.SpongeExecutor;
-
-import java.util.concurrent.TimeUnit;
 
 public final class PlayerListenerHandler {
 
     @Listener(order = Order.LATE)
     public void handle(final ClientConnectionEvent.Login event) {
-        if (API.getInstance().getCurrentProcessInformation().getProcessGroup().getPlayerAccessConfiguration().isOnlyProxyJoin()) {
-            PacketSender packetSender = DefaultChannelManager.INSTANCE.get("Controller").orElse(null);
-            if (packetSender == null || !API.getInstance().getCurrentProcessInformation().getNetworkInfo().isConnected()) {
-                event.setCancelled(true);
-                return;
-            }
-
-            Packet result = SpongeExecutor.getInstance().packetHandler().getQueryHandler().sendQueryAsync(packetSender, new APIPacketOutHasPlayerAccess(
-                    event.getConnection().getAddress().getAddress().getHostAddress()
-            )).getTask().getUninterruptedly(TimeUnit.SECONDS, 2);
-            event.setCancelled(result == null || !result.content().getBoolean("access"));
-        }
-
         final User player = event.getTargetUser();
         final ProcessInformation current = API.getInstance().getCurrentProcessInformation();
         final PlayerAccessConfiguration configuration = current.getProcessGroup().getPlayerAccessConfiguration();

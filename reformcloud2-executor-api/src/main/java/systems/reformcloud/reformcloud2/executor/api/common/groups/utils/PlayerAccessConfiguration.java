@@ -7,14 +7,13 @@ import java.util.Objects;
 public final class PlayerAccessConfiguration {
 
     public PlayerAccessConfiguration(String fullJoinPermission, boolean maintenance, String maintenanceJoinPermission,
-                                     boolean joinOnlyPerPermission, String joinPermission, boolean onlyProxyJoin,
+                                     boolean joinOnlyPerPermission, String joinPermission,
                                      boolean playerControllerCommandReporting, boolean useCloudPlayerLimit, int maxPlayers) {
         this.fullJoinPermission = fullJoinPermission;
         this.maintenance = maintenance;
         this.maintenanceJoinPermission = maintenanceJoinPermission;
         this.joinOnlyPerPermission = joinOnlyPerPermission;
         this.joinPermission = joinPermission;
-        this.onlyProxyJoin = onlyProxyJoin;
         this.playerControllerCommandReporting = playerControllerCommandReporting;
         this.useCloudPlayerLimit = useCloudPlayerLimit;
         this.maxPlayers = maxPlayers;
@@ -29,8 +28,6 @@ public final class PlayerAccessConfiguration {
     private final boolean joinOnlyPerPermission;
 
     private final String joinPermission;
-
-    private final boolean onlyProxyJoin;
 
     private final boolean playerControllerCommandReporting;
 
@@ -59,10 +56,6 @@ public final class PlayerAccessConfiguration {
     @NotNull
     public String getJoinPermission() {
         return joinPermission == null ? "reformcloud.custom.permission" : joinPermission;
-    }
-
-    public boolean isOnlyProxyJoin() {
-        return onlyProxyJoin;
     }
 
     public boolean isPlayerControllerCommandReporting() {
@@ -97,7 +90,6 @@ public final class PlayerAccessConfiguration {
         PlayerAccessConfiguration that = (PlayerAccessConfiguration) o;
         return isMaintenance() == that.isMaintenance() &&
                 isJoinOnlyPerPermission() == that.isJoinOnlyPerPermission() &&
-                isOnlyProxyJoin() == that.isOnlyProxyJoin() &&
                 isPlayerControllerCommandReporting() == that.isPlayerControllerCommandReporting() &&
                 isUseCloudPlayerLimit() == that.isUseCloudPlayerLimit() &&
                 getMaxPlayers() == that.getMaxPlayers() &&

@@ -273,7 +273,7 @@ public abstract class ExternalAPIImplementation extends ExecutorAPI implements
     @Override
     public Task<Boolean> updateAsync(@NotNull String table, @NotNull String key, @NotNull JsonConfiguration newData) {
         Task<Boolean> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> sendPacketQuery(new ExternalAPIPacketOutDatabaseUpdateDocument(table, key, newData,true), packet -> task.complete(packet.content().getBoolean("result"))));
+        Task.EXECUTOR.execute(() -> sendPacketQuery(new ExternalAPIPacketOutDatabaseUpdateDocument(table, key, newData, true), packet -> task.complete(packet.content().getBoolean("result"))));
         return task;
     }
 
@@ -281,7 +281,7 @@ public abstract class ExternalAPIImplementation extends ExecutorAPI implements
     @Override
     public Task<Boolean> updateIfAbsentAsync(@NotNull String table, @NotNull String identifier, @NotNull JsonConfiguration newData) {
         Task<Boolean> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> sendPacketQuery(new ExternalAPIPacketOutDatabaseUpdateDocument(table, identifier, newData,false), packet -> task.complete(packet.content().getBoolean("result"))));
+        Task.EXECUTOR.execute(() -> sendPacketQuery(new ExternalAPIPacketOutDatabaseUpdateDocument(table, identifier, newData, false), packet -> task.complete(packet.content().getBoolean("result"))));
         return task;
     }
 
@@ -290,7 +290,7 @@ public abstract class ExternalAPIImplementation extends ExecutorAPI implements
     public Task<Void> removeAsync(@NotNull String table, @NotNull String key) {
         Task<Void> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
-            sendPacket(new ExternalAPIPacketOutDatabaseRemoveDocument(table, key,true));
+            sendPacket(new ExternalAPIPacketOutDatabaseRemoveDocument(table, key, true));
             task.complete(null);
         });
         return task;
@@ -301,7 +301,7 @@ public abstract class ExternalAPIImplementation extends ExecutorAPI implements
     public Task<Void> removeIfAbsentAsync(@NotNull String table, @NotNull String identifier) {
         Task<Void> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
-            sendPacket(new ExternalAPIPacketOutDatabaseRemoveDocument(table, identifier,false));
+            sendPacket(new ExternalAPIPacketOutDatabaseRemoveDocument(table, identifier, false));
             task.complete(null);
         });
         return task;
@@ -432,8 +432,8 @@ public abstract class ExternalAPIImplementation extends ExecutorAPI implements
     @Override
     public Task<ProcessGroup> createProcessGroupAsync(@NotNull String name, @NotNull List<Template> templates, @NotNull StartupConfiguration startupConfiguration) {
         return createProcessGroupAsync(name, templates, startupConfiguration, new PlayerAccessConfiguration(
-                "reformcloud.join.full",false, "reformcloud.join.maintenance",
-                false, null, true, true, true, 50
+                "reformcloud.join.full", false, "reformcloud.join.maintenance",
+                false, null, true, true, 50
         ));
     }
 

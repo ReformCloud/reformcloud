@@ -60,13 +60,12 @@ public final class DefaultProcessGroup extends ProcessGroup {
                         version,
                         new ArrayList<>(),
                         Collections.singletonList(version.isServer() ? SERVER_INCLUSION : PROXY_INCLUSION)
-                )),  new PlayerAccessConfiguration(
+                )), new PlayerAccessConfiguration(
                         "reformcloud.join.full",
                         maintenance,
                         "reformcloud.join.maintenance",
                         false,
                         null,
-                        true,
                         true,
                         true,
                         maxPlayers
@@ -106,7 +105,6 @@ public final class DefaultProcessGroup extends ProcessGroup {
                         "reformcloud.join.maintenance",
                         false,
                         null,
-                        true,
                         true,
                         true,
                         50
@@ -149,7 +147,6 @@ public final class DefaultProcessGroup extends ProcessGroup {
                         "reformcloud.join.maintenance",
                         false,
                         null,
-                        true,
                         true,
                         true,
                         maxPlayers
