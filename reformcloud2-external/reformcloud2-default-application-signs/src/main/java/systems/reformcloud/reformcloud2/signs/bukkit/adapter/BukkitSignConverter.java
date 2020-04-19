@@ -18,6 +18,8 @@ public class BukkitSignConverter implements SignConverter<Sign> {
     @Nullable
     @Override
     public Sign from(@NotNull CloudSign cloudSign) {
+        Conditions.isTrue(Bukkit.isPrimaryThread(), "Cannot call method from async on spigot servers!");
+
         Location bukkit = accumulate(cloudSign.getLocation());
         return bukkit != null && bukkit.getBlock().getState() instanceof Sign ? (Sign) bukkit.getBlock().getState() : null;
     }

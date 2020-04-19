@@ -57,7 +57,8 @@ public class NukkitSignSystemAdapter extends SharedSignSystemAdapter<BlockEntity
     private static NukkitSignSystemAdapter instance;
 
     @Override
-    protected void setSignLines(@Nullable BlockEntitySign blockEntitySign, @NotNull String[] lines) {
+    protected void setSignLines(@NotNull CloudSign cloudSign, @NotNull String[] lines) {
+        BlockEntitySign blockEntitySign = this.getSignConverter().from(cloudSign);
         if (blockEntitySign == null) {
             return;
         }

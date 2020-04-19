@@ -203,7 +203,7 @@ public abstract class SharedSignSystemAdapter<T> implements SignSystemAdapter<T>
         CloudSign other = Streams.filter(this.signs, e -> e.equals(cloudSign));
 
         this.signs.remove(cloudSign);
-        this.setSignLines(this.getSignConverter().from(cloudSign), EMPTY_SIGN);
+        this.setSignLines(cloudSign, EMPTY_SIGN);
         if (other == null) {
             return;
         }
@@ -236,7 +236,7 @@ public abstract class SharedSignSystemAdapter<T> implements SignSystemAdapter<T>
         }
     }
 
-    protected abstract void setSignLines(@Nullable T t, @NotNull String[] lines);
+    protected abstract void setSignLines(@NotNull CloudSign cloudSign, @NotNull String[] lines);
 
     protected void updateSigns() {
         SignLayout layout = this.getSignLayout();
@@ -324,7 +324,7 @@ public abstract class SharedSignSystemAdapter<T> implements SignSystemAdapter<T>
             copy[i] = this.replaceAll(copy[i], sign.getGroup(), sign.getCurrentTarget());
         }
 
-        this.setSignLines(this.getSignConverter().from(sign), copy);
+        this.setSignLines(sign, copy);
         this.changeBlock(sign, layout);
     }
 

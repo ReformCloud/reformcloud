@@ -78,7 +78,8 @@ public class SpongeSignSystemAdapter extends SharedSignSystemAdapter<Sign> {
     private final Object plugin;
 
     @Override
-    protected void setSignLines(@Nullable Sign sign, @NotNull String[] lines) {
+    protected void setSignLines(@NotNull CloudSign cloudSign, @NotNull String[] lines) {
+        Sign sign = this.getSignConverter().from(cloudSign);
         if (sign == null) {
             return;
         }
