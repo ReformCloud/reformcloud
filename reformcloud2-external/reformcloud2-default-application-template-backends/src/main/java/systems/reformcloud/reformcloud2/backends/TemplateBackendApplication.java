@@ -18,7 +18,7 @@ public class TemplateBackendApplication extends Application {
 
     @Override
     public void onLoad() {
-        DependencyParser.getAllDependencies("dependencies.txt", new HashMap<>()).forEach(e -> {
+        DependencyParser.getAllDependencies("dependencies.txt", new HashMap<>(), TemplateBackendApplication.class.getClassLoader()).forEach(e -> {
             URL dependencyURL = TemplateBackendApplication.LOADER.loadDependency(e);
             Conditions.nonNull(dependencyURL, "Dependency load for " + e.getArtifactID() + " failed");
             TemplateBackendApplication.LOADER.addDependency(dependencyURL);

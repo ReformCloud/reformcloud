@@ -20,9 +20,11 @@ public final class DependencyParser {
         throw new UnsupportedOperationException();
     }
 
-    public static Collection<Dependency> getAllDependencies(@NotNull String internalFilePath, @NotNull Map<String, Repository> repositoryGetter) {
+    public static Collection<Dependency> getAllDependencies(@NotNull String internalFilePath,
+                                                            @NotNull Map<String, Repository> repositoryGetter,
+                                                            @NotNull ClassLoader source) {
         Collection<Dependency> out = new ArrayList<>();
-        for (String dependencyString : getDependenciesFromFile(internalFilePath)) {
+        for (String dependencyString : getDependenciesFromFile(internalFilePath, source)) {
             String[] split = dependencyString.split(":");
             if (split.length != 3) {
                 continue;
@@ -37,11 +39,11 @@ public final class DependencyParser {
         return out;
     }
 
-    private static Collection<String> getDependenciesFromFile(String internalFilePath) {
+    private static Collection<String> getDependenciesFromFile(String internalFilePath, ClassLoader source) {
         Collection<String> out = new ArrayList<>();
 
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(
-                Objects.requireNonNull(DependencyParser.class.getClassLoader().getResourceAsStream(internalFilePath))))
+                Objects.requireNonNull(source.getResourceAsStream(internalFilePath))))
         ) {
             String line;
             while ((line = reader.readLine()) != null) {

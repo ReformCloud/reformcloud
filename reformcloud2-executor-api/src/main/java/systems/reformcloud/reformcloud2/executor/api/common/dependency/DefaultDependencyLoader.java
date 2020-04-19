@@ -22,7 +22,7 @@ public final class DefaultDependencyLoader extends DependencyLoader {
 
     @Override
     public void loadDependencies() {
-        DependencyParser.getAllDependencies("internal/dependencies.txt", new HashMap<>()).forEach(e -> {
+        DependencyParser.getAllDependencies("internal/dependencies.txt", new HashMap<>(), DefaultDependencyLoader.class.getClassLoader()).forEach(e -> {
             System.out.println(String.format(LOADING, e.getArtifactID(), e.getVersion(), e.getRepository().getName()));
             urls.add(loadDependency(e));
         });
