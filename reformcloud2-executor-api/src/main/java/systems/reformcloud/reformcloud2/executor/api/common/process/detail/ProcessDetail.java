@@ -31,7 +31,8 @@ public final class ProcessDetail implements Nameable {
      */
     @ApiStatus.Internal
     public ProcessDetail(@NotNull UUID processUniqueID, @NotNull UUID parentUniqueID, @NotNull String parentName,
-                         @NotNull String name, @NotNull String displayName, int id, @NotNull Template template, int maxMemory) {
+                         @NotNull String name, @NotNull String displayName, int id, @NotNull Template template,
+                         int maxMemory, @NotNull ProcessState initialState) {
         this.processUniqueID = processUniqueID;
         this.parentUniqueID = parentUniqueID;
         this.parentName = parentName;
@@ -42,6 +43,7 @@ public final class ProcessDetail implements Nameable {
         this.maxMemory = maxMemory;
         this.creationTime = System.currentTimeMillis();
 
+        this.initialState = initialState;
         this.processState = ProcessState.CREATED;
         this.processRuntimeInformation = ProcessRuntimeInformation.empty();
 
@@ -65,6 +67,8 @@ public final class ProcessDetail implements Nameable {
     private final int maxMemory;
 
     private final long creationTime;
+
+    private final ProcessState initialState;
 
     private ProcessState processState;
 
@@ -142,6 +146,14 @@ public final class ProcessDetail implements Nameable {
      */
     public long getCreationTime() {
         return creationTime;
+    }
+
+    /**
+     * @return The initial state which should get used after the connect of a process
+     */
+    @NotNull
+    public ProcessState getInitialState() {
+        return initialState;
     }
 
     /**

@@ -263,7 +263,8 @@ public final class DefaultProcessManager implements ProcessManager {
                         template,
                         configuration.getMaxMemory() == null
                                 ? MemoryCalculator.calcMemory(configuration.getBase().getName(), template)
-                                : configuration.getMaxMemory()
+                                : configuration.getMaxMemory(),
+                        configuration.getInitialState()
                 ),
                 new NetworkInfo(
                         client.startHost(),

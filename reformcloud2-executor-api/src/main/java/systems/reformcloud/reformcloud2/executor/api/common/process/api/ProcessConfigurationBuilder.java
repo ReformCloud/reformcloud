@@ -9,6 +9,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Runt
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Template;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Version;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.backend.basic.FileBackend;
+import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 
 import java.util.*;
@@ -56,6 +57,8 @@ public final class ProcessConfigurationBuilder {
     private int id = -1;
 
     private int maxPlayers;
+
+    private ProcessState initialState = ProcessState.READY;
 
     private Collection<ProcessInclusion> inclusions = new ArrayList<>();
 
@@ -140,6 +143,14 @@ public final class ProcessConfigurationBuilder {
     }
 
     @NotNull
+    public ProcessConfigurationBuilder initialState(@NotNull ProcessState initialState) {
+        Conditions.nonNull(initialState, "Unable to set initial state");
+
+        this.initialState = initialState;
+        return this;
+    }
+
+    @NotNull
     public ProcessConfigurationBuilder inclusion(@NotNull ProcessInclusion inclusion) {
         Conditions.nonNull(inclusion, "Unable to add null inclusion");
 
@@ -159,7 +170,8 @@ public final class ProcessConfigurationBuilder {
                 this.extra,
                 this.id,
                 this.maxPlayers,
-                this.inclusions
+                this.inclusions,
+                this.initialState
         );
     }
 

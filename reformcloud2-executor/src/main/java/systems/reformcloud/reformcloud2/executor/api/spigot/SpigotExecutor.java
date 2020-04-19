@@ -24,7 +24,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.messaging.Pr
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.defaults.DefaultPacketHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.handler.PacketHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
-import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.system.SystemHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
@@ -146,7 +145,7 @@ public final class SpigotExecutor extends API implements PlayerAPIExecutor {
 
             thisProcessInformation.updateMaxPlayers(Bukkit.getMaxPlayers());
             thisProcessInformation.getNetworkInfo().setConnected(true);
-            thisProcessInformation.getProcessDetail().setProcessState(ProcessState.READY);
+            thisProcessInformation.getProcessDetail().setProcessState(thisProcessInformation.getProcessDetail().getInitialState());
             thisProcessInformation.updateRuntimeInformation();
             ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(thisProcessInformation);
 

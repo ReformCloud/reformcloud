@@ -8,7 +8,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.JsonP
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.api.common.node.NodeInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
-import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState;
 import systems.reformcloud.reformcloud2.executor.api.node.cluster.InternalNetworkCluster;
 import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
 import systems.reformcloud.reformcloud2.executor.node.network.packet.out.NodePacketOutConnectionInitDone;
@@ -68,7 +67,7 @@ public final class NodeNetworkSuccessHandler implements BiConsumer<ChannelHandle
             System.out.println(LanguageManager.get("network-node-other-node-connected", nodeInformation.getName(), address));
         } else {
             process.getNetworkInfo().setConnected(true);
-            process.getProcessDetail().setProcessState(ProcessState.READY);
+            process.getProcessDetail().setProcessState(process.getProcessDetail().getInitialState());
             ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(process);
             NodeExecutor.getInstance().getNodeNetworkManager().getNodeProcessHelper().handleProcessConnection(process);
 

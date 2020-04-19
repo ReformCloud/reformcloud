@@ -6,6 +6,7 @@ import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.api.API;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
+import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState;
 import systems.reformcloud.reformcloud2.executor.api.common.process.api.ProcessConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.process.api.ProcessConfigurationBuilder;
 import systems.reformcloud.reformcloud2.executor.api.common.process.api.ProcessInclusion;
@@ -194,11 +195,51 @@ public interface ProcessSyncAPI {
                                             @Nullable String displayName, @Nullable Integer maxMemory,
                                             @Nullable Integer port, @Nullable Integer id, @Nullable Integer maxPlayers,
                                             @NotNull Collection<ProcessInclusion> inclusions) {
+        return this.startProcess(
+                groupName,
+                template,
+                configurable,
+                uniqueID,
+                displayName,
+                maxMemory,
+                port,
+                id,
+                maxPlayers,
+                inclusions,
+                ProcessState.READY
+        );
+    }
+
+    /**
+     * Starts a process
+     *
+     * @param groupName    The name of the group which should be started from
+     * @param template     The template which should be used
+     * @param configurable The data for the process
+     * @param uniqueID     The unique id which should get used for the process
+     * @param displayName  The display name of the new process
+     * @param maxMemory    The maximum amount of memory which the new process is allowed to use
+     * @param port         The port of the new process (If it's already in use a random port will be used)
+     * @param id           The id of the process (for example {@code 1}). The name of the process will also use
+     *                     the given id (for {@code 1} it might be {@code Lobby-1}). If the id is already taken
+     *                     a random id will get used
+     * @param maxPlayers   The maximum amount of player which are allowed to join the process
+     * @param inclusions   The inclusions which should get loaded before the start of the process
+     * @param initialState The state which the process should set after the connect to the network
+     * @return The created {@link ProcessInformation}
+     */
+    @Nullable
+    default ProcessInformation startProcess(@NotNull String groupName, @Nullable String template,
+                                            @NotNull JsonConfiguration configurable, @NotNull UUID uniqueID,
+                                            @Nullable String displayName, @Nullable Integer maxMemory,
+                                            @Nullable Integer port, @Nullable Integer id, @Nullable Integer maxPlayers,
+                                            @NotNull Collection<ProcessInclusion> inclusions, @NotNull ProcessState initialState) {
         ProcessConfigurationBuilder builder = ProcessConfigurationBuilder
                 .newBuilder(groupName)
                 .extra(configurable)
                 .uniqueId(uniqueID)
-                .inclusions(inclusions);
+                .inclusions(inclusions)
+                .initialState(initialState);
 
         if (template != null) {
             builder.template(template);
@@ -422,11 +463,51 @@ public interface ProcessSyncAPI {
                                               @Nullable String displayName, @Nullable Integer maxMemory,
                                               @Nullable Integer port, @Nullable Integer id, @Nullable Integer maxPlayers,
                                               @NotNull Collection<ProcessInclusion> inclusions) {
+        return this.prepareProcess(
+                groupName,
+                template,
+                configurable,
+                uniqueID,
+                displayName,
+                maxMemory,
+                port,
+                id,
+                maxPlayers,
+                inclusions,
+                ProcessState.READY
+        );
+    }
+
+    /**
+     * Prepares a process
+     *
+     * @param groupName    The name of the group which should be started from
+     * @param template     The template which should be used
+     * @param configurable The data for the process
+     * @param uniqueID     The unique id which should get used for the process
+     * @param displayName  The display name of the new process
+     * @param maxMemory    The maximum amount of memory which the new process is allowed to use
+     * @param port         The port of the new process (If it's already in use a random port will be used)
+     * @param id           The id of the process (for example {@code 1}). The name of the process will also use
+     *                     the given id (for {@code 1} it might be {@code Lobby-1}). If the id is already taken
+     *                     a random id will get used
+     * @param maxPlayers   The maximum amount of player which are allowed to join the process
+     * @param inclusions   The inclusions which should get loaded before the start of the process
+     * @param initialState The state which the process should set after the connect to the network
+     * @return The created {@link ProcessInformation}
+     */
+    @Nullable
+    default ProcessInformation prepareProcess(@NotNull String groupName, @Nullable String template,
+                                              @NotNull JsonConfiguration configurable, @NotNull UUID uniqueID,
+                                              @Nullable String displayName, @Nullable Integer maxMemory,
+                                              @Nullable Integer port, @Nullable Integer id, @Nullable Integer maxPlayers,
+                                              @NotNull Collection<ProcessInclusion> inclusions, @NotNull ProcessState initialState) {
         ProcessConfigurationBuilder builder = ProcessConfigurationBuilder
                 .newBuilder(groupName)
                 .extra(configurable)
                 .uniqueId(uniqueID)
-                .inclusions(inclusions);
+                .inclusions(inclusions)
+                .initialState(initialState);
 
         if (template != null) {
             builder.template(template);

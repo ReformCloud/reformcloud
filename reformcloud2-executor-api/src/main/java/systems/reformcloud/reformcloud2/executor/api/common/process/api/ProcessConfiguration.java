@@ -1,19 +1,22 @@
 package systems.reformcloud.reformcloud2.executor.api.common.process.api;
 
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Template;
+import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState;
 
 import java.util.Collection;
 import java.util.UUID;
 
 public class ProcessConfiguration {
 
+    @ApiStatus.Internal
     ProcessConfiguration(ProcessGroup base, UUID uniqueId, String displayName,
                          Integer maxMemory, Integer port, Template template, JsonConfiguration extra,
-                         int id, int maxPlayers, Collection<ProcessInclusion> inclusions) {
+                         int id, int maxPlayers, Collection<ProcessInclusion> inclusions, @NotNull ProcessState initialState) {
         this.base = base;
         this.uniqueId = uniqueId == null ? UUID.randomUUID() : uniqueId;
         this.displayName = displayName;
@@ -24,6 +27,7 @@ public class ProcessConfiguration {
         this.id = id;
         this.maxPlayers = maxPlayers;
         this.inclusions = inclusions;
+        this.initialState = initialState;
     }
 
     private final ProcessGroup base;
@@ -45,6 +49,8 @@ public class ProcessConfiguration {
     private final int maxPlayers;
 
     private final Collection<ProcessInclusion> inclusions;
+
+    private final ProcessState initialState;
 
     @NotNull
     public ProcessGroup getBase() {
@@ -87,6 +93,11 @@ public class ProcessConfiguration {
 
     public int getMaxPlayers() {
         return maxPlayers;
+    }
+
+    @NotNull
+    public ProcessState getInitialState() {
+        return initialState;
     }
 
     @NotNull

@@ -374,7 +374,8 @@ public final class LocalNodeProcessManager implements NodeProcessManager {
                         template,
                         configuration.getMaxMemory() == null
                                 ? MemoryCalculator.calcMemory(configuration.getBase().getName(), template)
-                                : configuration.getMaxMemory()
+                                : configuration.getMaxMemory(),
+                        configuration.getInitialState()
                 ),
                 new NetworkInfo(
                         NodeExecutor.getInstance().getNodeConfig().getStartHost(),
