@@ -25,27 +25,12 @@ import systems.reformcloud.reformcloud2.executor.node.process.manager.LocalProce
 import systems.reformcloud.reformcloud2.executor.node.process.startup.LocalProcessQueue;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public final class LocalNodeProcessManager implements NodeProcessManager {
 
-    private final Set<ProcessInformation> information = Collections.synchronizedSet(new HashSet<ProcessInformation>() {
-        @Override
-        public Stream<ProcessInformation> stream() {
-            synchronized (this) {
-                return super.stream();
-            }
-        }
-
-        @Override
-        @NotNull
-        public Iterator<ProcessInformation> iterator() {
-            synchronized (this) {
-                return super.iterator();
-            }
-        }
-    });
+    private final Set<ProcessInformation> information = ConcurrentHashMap.newKeySet();
 
     @Nullable
     @Override
@@ -177,11 +162,13 @@ public final class LocalNodeProcessManager implements NodeProcessManager {
 
     @Override
     public void handleProcessStart(@NotNull ProcessInformation processInformation) {
+        this.information.remove(processInformation);
         this.information.add(processInformation);
     }
 
     @Override
     public void handleProcessUpdate(@NotNull ProcessInformation processInformation) {
+        this.information.remove(processInformation);
         this.information.add(processInformation);
     }
 

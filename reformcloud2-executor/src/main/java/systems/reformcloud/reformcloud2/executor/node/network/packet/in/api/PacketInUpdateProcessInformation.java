@@ -20,6 +20,10 @@ public final class PacketInUpdateProcessInformation extends DefaultJsonNetworkHa
     @Override
     public void handlePacket(@NotNull PacketSender packetSender, @NotNull Packet packet, @NotNull Consumer<Packet> responses) {
         ProcessInformation processInformation = packet.content().get("info", ProcessInformation.TYPE);
+        if (processInformation == null) {
+            return;
+        }
+
         ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(processInformation);
     }
 }

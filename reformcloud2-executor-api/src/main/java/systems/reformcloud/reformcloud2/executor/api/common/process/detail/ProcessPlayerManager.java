@@ -3,6 +3,7 @@ package systems.reformcloud.reformcloud2.executor.api.common.process.detail;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnmodifiableView;
 import systems.reformcloud.reformcloud2.executor.api.common.process.Player;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 
@@ -27,7 +28,7 @@ public final class ProcessPlayerManager {
      */
     @NotNull
     @Contract(pure = true)
-    public Set<Player> getOnlinePlayers() {
+    public @UnmodifiableView Set<Player> getOnlinePlayers() {
         return Collections.unmodifiableSet(this.onlinePlayers);
     }
 
