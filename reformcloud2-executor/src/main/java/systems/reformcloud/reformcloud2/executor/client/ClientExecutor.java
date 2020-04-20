@@ -123,6 +123,10 @@ public final class ClientExecutor extends Client {
             ex.printStackTrace();
         }
 
+        new ExternalEventBusHandler(
+                packetHandler, new DefaultEventManager()
+        );
+
         ExecutorAPI.getInstance().getEventManager().registerListener(new RunningProcessPreparedListener());
         ExecutorAPI.getInstance().getEventManager().registerListener(new RunningProcessStoppedListener());
 
@@ -143,9 +147,6 @@ public final class ClientExecutor extends Client {
 
         registerNetworkHandlers();
         registerDefaultCommands();
-        new ExternalEventBusHandler(
-                packetHandler, new DefaultEventManager()
-        );
 
         applicationLoader.loadApplications();
 

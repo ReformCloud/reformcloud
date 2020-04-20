@@ -66,9 +66,9 @@ public class CommandDump extends GlobalCommand {
         stringBuilder.append("--- Other Threads ---");
         stringBuilder.append("\n");
 
-        Thread.getAllStackTraces().keySet().stream().filter(e -> e.getId() != Thread.currentThread().getId())
-                .forEach(e -> dumpThreadInfo(e, stringBuilder));
-
+        for (Thread thread : Streams.allOf(Thread.getAllStackTraces().keySet(), e -> e.getId() != Thread.currentThread().getId())) {
+            dumpThreadInfo(thread, stringBuilder);
+        }
         return stringBuilder.toString();
     }
 

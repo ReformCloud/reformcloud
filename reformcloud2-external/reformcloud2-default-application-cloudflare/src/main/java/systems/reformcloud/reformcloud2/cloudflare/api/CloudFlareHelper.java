@@ -55,10 +55,9 @@ public final class CloudFlareHelper {
     }
 
     public static void loadAlreadyRunning() {
-        ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getAllProcesses()
-                .stream()
-                .filter(e -> !e.getProcessDetail().getTemplate().isServer())
-                .forEach(CloudFlareHelper::createForProcess);
+        for (ProcessInformation processInformation : Streams.allOf(ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getAllProcesses(), e -> !e.getProcessDetail().getTemplate().isServer())) {
+            CloudFlareHelper.createForProcess(processInformation);
+        }
     }
 
     public static void createForProcess(@NotNull ProcessInformation target) {
