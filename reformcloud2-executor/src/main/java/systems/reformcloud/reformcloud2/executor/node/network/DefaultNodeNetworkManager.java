@@ -7,7 +7,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.base.Conditions;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.RuntimeConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Template;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Version;
-import systems.reformcloud.reformcloud2.executor.api.common.groups.template.backend.basic.FileBackend;
+import systems.reformcloud.reformcloud2.executor.api.common.groups.template.backend.basic.FileTemplateBackend;
 import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.common.node.NodeInformation;
@@ -129,7 +129,7 @@ public final class DefaultNodeNetworkManager implements NodeNetworkManager {
                         0,
                         "default",
                         false,
-                        FileBackend.NAME,
+                        FileTemplateBackend.NAME,
                         "#",
                         new RuntimeConfiguration(
                                 512, new ArrayList<>(), new HashMap<>()

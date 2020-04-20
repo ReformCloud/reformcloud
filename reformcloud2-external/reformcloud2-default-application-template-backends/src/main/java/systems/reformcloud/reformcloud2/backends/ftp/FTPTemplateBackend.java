@@ -189,6 +189,7 @@ public final class FTPTemplateBackend implements TemplateBackend {
             try {
                 FTPFile[] files = this.ftpClient.listFiles(path);
                 if (files == null || files.length == 0) {
+                    this.makeDirectory(path);
                     return;
                 }
 

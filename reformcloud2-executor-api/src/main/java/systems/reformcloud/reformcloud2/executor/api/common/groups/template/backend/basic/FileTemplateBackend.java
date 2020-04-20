@@ -14,7 +14,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
 
-public class FileBackend implements TemplateBackend {
+public class FileTemplateBackend implements TemplateBackend {
 
     public static final String NAME = "FILE";
 
@@ -53,6 +53,11 @@ public class FileBackend implements TemplateBackend {
     @Override
     public Task<Void> loadPath(@NotNull String path, @NotNull Path target) {
         File from = new File(path);
+        if (!from.exists()) {
+            SystemHelper.createDirectory(from.toPath());
+            return Task.completedTask(null);
+        }
+
         if (from.isDirectory()) {
             SystemHelper.copyDirectory(from.toPath(), target);
         }

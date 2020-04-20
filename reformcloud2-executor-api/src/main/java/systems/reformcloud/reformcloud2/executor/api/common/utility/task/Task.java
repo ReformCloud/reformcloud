@@ -5,10 +5,7 @@ import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.defaults.DefaultTask;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.excepetion.TaskCompletionException;
 
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.function.Consumer;
 
 public abstract class Task<V> extends CompletableFuture<V> {
@@ -26,6 +23,27 @@ public abstract class Task<V> extends CompletableFuture<V> {
     public static <U> Task<U> completedTask(@Nullable U value) {
         Task<U> task = new DefaultTask<>();
         task.complete(value);
+        return task;
+    }
+
+    /**
+     * Supplies a task async
+     *
+     * @param callable The callable which should complete the task
+     * @param <U>      The type of the object which should get returned
+     * @return The task which gets completed async
+     */
+    @NotNull
+    public static <U> Task<U> supply(@NotNull Callable<U> callable) {
+        Task<U> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(() -> {
+            try {
+                task.complete(callable.call());
+            } catch (final Exception ex) {
+                task.completeExceptionally(ex);
+            }
+        });
+
         return task;
     }
 

@@ -4,7 +4,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.RuntimeConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Template;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Version;
-import systems.reformcloud.reformcloud2.executor.api.common.groups.template.backend.basic.FileBackend;
+import systems.reformcloud.reformcloud2.executor.api.common.groups.template.backend.basic.FileTemplateBackend;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.inclusion.Inclusion;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.AutomaticStartupConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.PlayerAccessConfiguration;
@@ -19,13 +19,13 @@ public final class DefaultProcessGroup extends ProcessGroup {
 
     public static final Inclusion PROXY_INCLUSION = new Inclusion(
             "reformcloud/global/proxies",
-            FileBackend.NAME,
+            FileTemplateBackend.NAME,
             Inclusion.InclusionLoadType.PAST
     );
 
     public static final Inclusion SERVER_INCLUSION = new Inclusion(
             "reformcloud/global/servers",
-            FileBackend.NAME,
+            FileTemplateBackend.NAME,
             Inclusion.InclusionLoadType.PAST
     );
 
@@ -50,7 +50,7 @@ public final class DefaultProcessGroup extends ProcessGroup {
                         0,
                         "default",
                         false,
-                        FileBackend.NAME,
+                        FileTemplateBackend.NAME,
                         "#",
                         new RuntimeConfiguration(
                                 maxMemory,
@@ -89,7 +89,7 @@ public final class DefaultProcessGroup extends ProcessGroup {
                         0,
                         "default",
                         false,
-                        FileBackend.NAME,
+                        FileTemplateBackend.NAME,
                         "#",
                         new RuntimeConfiguration(
                                 maxMemory,
@@ -131,7 +131,7 @@ public final class DefaultProcessGroup extends ProcessGroup {
                         0,
                         "default",
                         false,
-                        FileBackend.NAME,
+                        FileTemplateBackend.NAME,
                         "#",
                         new RuntimeConfiguration(
                                 maxMemory,

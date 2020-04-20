@@ -2,7 +2,7 @@ package systems.reformcloud.reformcloud2.executor.api.common.groups.template.bac
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import systems.reformcloud.reformcloud2.executor.api.common.groups.template.backend.basic.FileBackend;
+import systems.reformcloud.reformcloud2.executor.api.common.groups.template.backend.basic.FileTemplateBackend;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 
 import java.util.Collection;
@@ -31,7 +31,7 @@ public final class TemplateBackendManager {
     @NotNull
     public static TemplateBackend getOrDefault(@NotNull String name) {
         TemplateBackend backend = Streams.filterToReference(LOADED, e -> e.getName().equalsIgnoreCase(name)).orNothing();
-        return backend != null ? backend : new FileBackend();
+        return backend != null ? backend : new FileTemplateBackend();
     }
 
     /**
@@ -67,6 +67,6 @@ public final class TemplateBackendManager {
      * Registers the default template backend
      */
     public static void registerDefaults() {
-        registerBackend(new FileBackend());
+        registerBackend(new FileTemplateBackend());
     }
 }
