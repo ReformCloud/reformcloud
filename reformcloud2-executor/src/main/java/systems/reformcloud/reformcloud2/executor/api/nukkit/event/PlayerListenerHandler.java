@@ -77,16 +77,18 @@ public final class PlayerListenerHandler implements Listener {
             return;
         }
 
-        if (Server.getInstance().getOnlinePlayers().size() < current.getProcessDetail().getMaxPlayers()
-                && !current.getProcessDetail().getProcessState().equals(ProcessState.READY)
-                && !current.getProcessDetail().getProcessState().equals(ProcessState.INVISIBLE)) {
-            current.getProcessDetail().setProcessState(ProcessState.READY);
-        }
+        Server.getInstance().getScheduler().scheduleTask(NukkitExecutor.getInstance().getPlugin(), () -> {
+            if (Server.getInstance().getOnlinePlayers().size() < current.getProcessDetail().getMaxPlayers()
+                    && !current.getProcessDetail().getProcessState().equals(ProcessState.READY)
+                    && !current.getProcessDetail().getProcessState().equals(ProcessState.INVISIBLE)) {
+                current.getProcessDetail().setProcessState(ProcessState.READY);
+            }
 
-        current.updateRuntimeInformation();
-        current.getProcessPlayerManager().onLogout(event.getPlayer().getUniqueId());
-        NukkitExecutor.getInstance().setThisProcessInformation(current);
-        ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(current);
+            current.updateRuntimeInformation();
+            current.getProcessPlayerManager().onLogout(event.getPlayer().getUniqueId());
+            NukkitExecutor.getInstance().setThisProcessInformation(current);
+            ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(current);
+        });
     }
 
     private String format(String msg) {

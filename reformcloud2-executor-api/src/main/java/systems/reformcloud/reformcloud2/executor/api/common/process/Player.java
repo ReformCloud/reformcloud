@@ -2,6 +2,7 @@ package systems.reformcloud.reformcloud2.executor.api.common.process;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Objects;
 import java.util.UUID;
 
 public final class Player implements Comparable<Player> {
@@ -34,5 +35,18 @@ public final class Player implements Comparable<Player> {
     @Override
     public int compareTo(@NotNull Player o) {
         return Long.compare(getJoined(), o.getJoined());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Player)) return false;
+        Player player = (Player) o;
+        return getUniqueID().equals(player.getUniqueID());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getUniqueID());
     }
 }

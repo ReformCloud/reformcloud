@@ -34,6 +34,7 @@ import systems.reformcloud.reformcloud2.executor.api.executor.PlayerAPIExecutor;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.APINetworkChannelReader;
 import systems.reformcloud.reformcloud2.executor.api.network.packets.in.APIPacketInAPIAction;
 import systems.reformcloud.reformcloud2.executor.api.network.packets.out.APIBungeePacketOutRequestIngameMessages;
+import systems.reformcloud.reformcloud2.executor.api.shared.SharedInvalidPlayerFixer;
 import systems.reformcloud.reformcloud2.executor.api.sponge.event.PlayerListenerHandler;
 
 import java.io.File;
@@ -159,10 +160,19 @@ public class SpongeExecutor extends API implements PlayerAPIExecutor {
             thisProcessInformation.getProcessDetail().setProcessState(thisProcessInformation.getProcessDetail().getInitialState());
             ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(thisProcessInformation);
 
+            this.fixInvalidPlayers();
+
             DefaultChannelManager.INSTANCE.get("Controller").ifPresent(controller -> packetHandler.getQueryHandler().sendQueryAsync(controller, new APIBungeePacketOutRequestIngameMessages()).onComplete(packet -> {
                 SpongeExecutor.this.messages = packet.content().get("messages", IngameMessages.TYPE);
             }));
         });
+    }
+
+    private void fixInvalidPlayers() {
+        SharedInvalidPlayerFixer.start(
+                uuid -> Sponge.getServer().getPlayer(uuid).isPresent(),
+                () -> Sponge.getServer().getOnlinePlayers().size()
+        );
     }
 
     @Override

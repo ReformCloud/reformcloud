@@ -36,6 +36,7 @@ import systems.reformcloud.reformcloud2.executor.api.network.channel.APINetworkC
 import systems.reformcloud.reformcloud2.executor.api.network.packets.in.APIPacketInAPIAction;
 import systems.reformcloud.reformcloud2.executor.api.network.packets.in.APIPacketInPluginAction;
 import systems.reformcloud.reformcloud2.executor.api.network.packets.out.APIBungeePacketOutRequestIngameMessages;
+import systems.reformcloud.reformcloud2.executor.api.shared.SharedInvalidPlayerFixer;
 import systems.reformcloud.reformcloud2.executor.api.velocity.event.PlayerListenerHandler;
 import systems.reformcloud.reformcloud2.executor.api.velocity.event.ProcessEventHandler;
 import systems.reformcloud.reformcloud2.executor.api.velocity.plugins.PluginExecutorContainer;
@@ -61,6 +62,8 @@ public final class VelocityExecutor extends API implements PlayerAPIExecutor {
 
     private ProcessInformation thisProcessInformation;
 
+    private final VelocityLauncher plugin;
+
     VelocityExecutor(VelocityLauncher launcher, ProxyServer proxyServer) {
         super.type = ExecutorType.API;
 
@@ -70,7 +73,7 @@ public final class VelocityExecutor extends API implements PlayerAPIExecutor {
         new ExternalEventBusHandler(packetHandler, new DefaultEventManager());
         getEventManager().registerListener(new ProcessEventHandler());
         getEventManager().registerListener(this);
-        proxyServer.getEventManager().register(launcher, new PlayerListenerHandler());
+        proxyServer.getEventManager().register(this.plugin = launcher, new PlayerListenerHandler());
 
         packetHandler.registerHandler(new ProxiedChannelMessageHandler());
         packetHandler.registerHandler(new APIPacketInAPIAction(this));
@@ -185,11 +188,20 @@ public final class VelocityExecutor extends API implements PlayerAPIExecutor {
             thisProcessInformation.getProcessDetail().setProcessState(thisProcessInformation.getProcessDetail().getInitialState());
             ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(thisProcessInformation);
 
+            this.fixInvalidPlayers();
+
             DefaultChannelManager.INSTANCE.get("Controller").ifPresent(controller -> packetHandler.getQueryHandler().sendQueryAsync(controller, new APIBungeePacketOutRequestIngameMessages()).onComplete(packet -> {
                 IngameMessages ingameMessages = packet.content().get("messages", IngameMessages.TYPE);
                 setMessages(ingameMessages);
             }));
         });
+    }
+
+    private void fixInvalidPlayers() {
+        SharedInvalidPlayerFixer.start(
+                uuid -> this.proxyServer.getPlayer(uuid).isPresent(),
+                () -> this.proxyServer.getPlayerCount()
+        );
     }
 
     public static ProcessInformation getBestLobbyForPlayer(ProcessInformation current, Function<String, Boolean> permissionCheck,
@@ -254,6 +266,10 @@ public final class VelocityExecutor extends API implements PlayerAPIExecutor {
         }
 
         return lobbies.get(new Random().nextInt(lobbies.size()));
+    }
+
+    public VelocityLauncher getPlugin() {
+        return plugin;
     }
 
     @Listener

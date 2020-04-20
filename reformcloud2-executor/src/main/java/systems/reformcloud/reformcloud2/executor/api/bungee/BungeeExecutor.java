@@ -39,6 +39,7 @@ import systems.reformcloud.reformcloud2.executor.api.executor.PlayerAPIExecutor;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.APINetworkChannelReader;
 import systems.reformcloud.reformcloud2.executor.api.network.packets.in.APIPacketInAPIAction;
 import systems.reformcloud.reformcloud2.executor.api.network.packets.out.APIBungeePacketOutRequestIngameMessages;
+import systems.reformcloud.reformcloud2.executor.api.shared.SharedInvalidPlayerFixer;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
@@ -49,11 +50,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Function;
 
 public final class BungeeExecutor extends API implements PlayerAPIExecutor {
 
-    public static final List<ProcessInformation> LOBBY_SERVERS = new ArrayList<>();
+    public static final List<ProcessInformation> LOBBY_SERVERS = new CopyOnWriteArrayList<>();
 
     private static BungeeExecutor instance;
 
@@ -168,6 +170,8 @@ public final class BungeeExecutor extends API implements PlayerAPIExecutor {
             thisProcessInformation.getProcessDetail().setProcessState(thisProcessInformation.getProcessDetail().getInitialState());
             ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(thisProcessInformation);
 
+            this.fixInvalidPlayers();
+
             DefaultChannelManager.INSTANCE.get("Controller").ifPresent(controller -> packetHandler.getQueryHandler().sendQueryAsync(
                     controller,
                     new APIBungeePacketOutRequestIngameMessages()
@@ -178,6 +182,13 @@ public final class BungeeExecutor extends API implements PlayerAPIExecutor {
                 }
             }));
         });
+    }
+
+    private void fixInvalidPlayers() {
+        SharedInvalidPlayerFixer.start(
+                uuid -> ProxyServer.getInstance().getPlayer(uuid) != null,
+                () -> ProxyServer.getInstance().getOnlineCount()
+        );
     }
 
     public static void registerServer(@NotNull ProcessInformation processInformation) {

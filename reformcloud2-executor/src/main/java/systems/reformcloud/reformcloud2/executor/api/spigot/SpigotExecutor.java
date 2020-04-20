@@ -32,6 +32,7 @@ import systems.reformcloud.reformcloud2.executor.api.network.channel.APINetworkC
 import systems.reformcloud.reformcloud2.executor.api.network.packets.in.APIPacketInAPIAction;
 import systems.reformcloud.reformcloud2.executor.api.network.packets.in.APIPacketInPluginAction;
 import systems.reformcloud.reformcloud2.executor.api.network.packets.out.APIBungeePacketOutRequestIngameMessages;
+import systems.reformcloud.reformcloud2.executor.api.shared.SharedInvalidPlayerFixer;
 import systems.reformcloud.reformcloud2.executor.api.spigot.plugins.PluginExecutorContainer;
 
 import java.io.File;
@@ -149,10 +150,19 @@ public final class SpigotExecutor extends API implements PlayerAPIExecutor {
             thisProcessInformation.updateRuntimeInformation();
             ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(thisProcessInformation);
 
+            this.fixInvalidPlayers();
+
             DefaultChannelManager.INSTANCE.get("Controller").ifPresent(controller -> packetHandler.getQueryHandler().sendQueryAsync(controller, new APIBungeePacketOutRequestIngameMessages()).onComplete(packet -> {
                 SpigotExecutor.this.messages = packet.content().get("messages", IngameMessages.TYPE);
             }));
         });
+    }
+
+    private void fixInvalidPlayers() {
+        SharedInvalidPlayerFixer.start(
+                uuid -> Bukkit.getPlayer(uuid) != null,
+                () -> Bukkit.getOnlinePlayers().size()
+        );
     }
 
     public void setThisProcessInformation(ProcessInformation thisProcessInformation) {

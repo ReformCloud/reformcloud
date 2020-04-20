@@ -12,6 +12,8 @@ import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInfor
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState;
 import systems.reformcloud.reformcloud2.executor.api.sponge.SpongeExecutor;
 
+import java.util.concurrent.TimeUnit;
+
 public final class PlayerListenerHandler {
 
     @Listener(order = Order.LATE)
@@ -69,15 +71,19 @@ public final class PlayerListenerHandler {
             return;
         }
 
-        if (Sponge.getServer().getOnlinePlayers().size() < current.getProcessDetail().getMaxPlayers()
-                && !current.getProcessDetail().getProcessState().equals(ProcessState.READY)
-                && !current.getProcessDetail().getProcessState().equals(ProcessState.INVISIBLE)) {
-            current.getProcessDetail().setProcessState(ProcessState.READY);
-        }
+        Sponge.getScheduler()
+                .createSyncExecutor(SpongeExecutor.getInstance().getPlugin())
+                .schedule(() -> {
+                    if (Sponge.getServer().getOnlinePlayers().size() < current.getProcessDetail().getMaxPlayers()
+                            && !current.getProcessDetail().getProcessState().equals(ProcessState.READY)
+                            && !current.getProcessDetail().getProcessState().equals(ProcessState.INVISIBLE)) {
+                        current.getProcessDetail().setProcessState(ProcessState.READY);
+                    }
 
-        current.updateRuntimeInformation();
-        current.getProcessPlayerManager().onLogout(event.getTargetEntity().getUniqueId());
-        SpongeExecutor.getInstance().setThisProcessInformation(current);
-        ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(current);
+                    current.updateRuntimeInformation();
+                    current.getProcessPlayerManager().onLogout(event.getTargetEntity().getUniqueId());
+                    SpongeExecutor.getInstance().setThisProcessInformation(current);
+                    ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(current);
+                }, 20, TimeUnit.MILLISECONDS);
     }
 }

@@ -7,14 +7,17 @@ import org.jetbrains.annotations.UnmodifiableView;
 import systems.reformcloud.reformcloud2.executor.api.common.process.Player;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Represents a manager for the player which is located in every process running in the cloud
  */
 public final class ProcessPlayerManager {
 
-    private final SortedSet<Player> onlinePlayers = new TreeSet<>(Comparator.comparingLong(Player::getJoined));
+    private final Set<Player> onlinePlayers = ConcurrentHashMap.newKeySet();
 
     /**
      * @return The current online count of the process
@@ -91,7 +94,7 @@ public final class ProcessPlayerManager {
      * @param uniqueID The unique id of the player who left the process
      */
     public void onLogout(@NotNull UUID uniqueID) {
-        Streams.filterToReference(onlinePlayers, player -> player.getUniqueID().equals(uniqueID)).ifPresent(player -> onlinePlayers.remove(player));
+        this.onlinePlayers.removeIf(e -> e.getUniqueID().equals(uniqueID));
     }
 
 }

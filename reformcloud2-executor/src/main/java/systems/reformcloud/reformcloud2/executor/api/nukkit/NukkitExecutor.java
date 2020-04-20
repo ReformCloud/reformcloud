@@ -33,6 +33,7 @@ import systems.reformcloud.reformcloud2.executor.api.network.packets.in.APIPacke
 import systems.reformcloud.reformcloud2.executor.api.network.packets.in.APIPacketInPluginAction;
 import systems.reformcloud.reformcloud2.executor.api.network.packets.out.APIBungeePacketOutRequestIngameMessages;
 import systems.reformcloud.reformcloud2.executor.api.nukkit.plugins.PluginsExecutorContainer;
+import systems.reformcloud.reformcloud2.executor.api.shared.SharedInvalidPlayerFixer;
 
 import java.io.File;
 import java.util.UUID;
@@ -148,6 +149,8 @@ public final class NukkitExecutor extends API implements PlayerAPIExecutor {
             thisProcessInformation.getProcessDetail().setProcessState(thisProcessInformation.getProcessDetail().getInitialState());
             ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(thisProcessInformation);
 
+            this.fixInvalidPlayers();
+
             DefaultChannelManager.INSTANCE.get("Controller").ifPresent(controller -> packetHandler.getQueryHandler().sendQueryAsync(controller, new APIBungeePacketOutRequestIngameMessages()).onComplete(packet -> {
                 IngameMessages messages = packet.content().get("messages", IngameMessages.TYPE);
                 if (messages != null) {
@@ -155,6 +158,13 @@ public final class NukkitExecutor extends API implements PlayerAPIExecutor {
                 }
             }));
         });
+    }
+
+    private void fixInvalidPlayers() {
+        SharedInvalidPlayerFixer.start(
+                uuid -> Server.getInstance().getPlayer(uuid).isPresent(),
+                () -> Server.getInstance().getOnlinePlayers().size()
+        );
     }
 
     @Listener

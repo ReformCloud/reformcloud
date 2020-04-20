@@ -145,19 +145,17 @@ public final class PlayerListenerHandler implements Listener {
                 event.getPlayer().getName()
         )));
 
-        CommonHelper.EXECUTOR.execute(() -> {
-            ProcessInformation current = API.getInstance().getCurrentProcessInformation();
-            if (ProxyServer.getInstance().getOnlineCount() < current.getProcessDetail().getMaxPlayers()
-                    && !current.getProcessDetail().getProcessState().equals(ProcessState.READY)
-                    && !current.getProcessDetail().getProcessState().equals(ProcessState.INVISIBLE)) {
-                current.getProcessDetail().setProcessState(ProcessState.READY);
-            }
+        ProcessInformation current = API.getInstance().getCurrentProcessInformation();
+        if (ProxyServer.getInstance().getOnlineCount() < current.getProcessDetail().getMaxPlayers()
+                && !current.getProcessDetail().getProcessState().equals(ProcessState.READY)
+                && !current.getProcessDetail().getProcessState().equals(ProcessState.INVISIBLE)) {
+            current.getProcessDetail().setProcessState(ProcessState.READY);
+        }
 
-            current.updateRuntimeInformation();
-            current.getProcessPlayerManager().onLogout(event.getPlayer().getUniqueId());
-            BungeeExecutor.getInstance().setThisProcessInformation(current);
-            ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(current);
-        });
+        current.updateRuntimeInformation();
+        current.getProcessPlayerManager().onLogout(event.getPlayer().getUniqueId());
+        BungeeExecutor.getInstance().setThisProcessInformation(current);
+        ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(current);
     }
 
     @EventHandler

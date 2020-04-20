@@ -28,6 +28,7 @@ import systems.reformcloud.reformcloud2.executor.api.network.packets.out.APIPack
 import systems.reformcloud.reformcloud2.executor.api.velocity.VelocityExecutor;
 
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 public final class PlayerListenerHandler {
 
@@ -149,19 +150,20 @@ public final class PlayerListenerHandler {
                 event.getPlayer().getUsername()
         )));
 
-        CommonHelper.EXECUTOR.execute(() -> {
-            ProcessInformation current = API.getInstance().getCurrentProcessInformation();
-            if (VelocityExecutor.getInstance().getProxyServer().getPlayerCount() < current.getProcessDetail().getMaxPlayers()
-                    && !current.getProcessDetail().getProcessState().equals(ProcessState.READY)
-                    && !current.getProcessDetail().getProcessState().equals(ProcessState.INVISIBLE)) {
-                current.getProcessDetail().setProcessState(ProcessState.READY);
-            }
+        VelocityExecutor.getInstance().getProxyServer().getScheduler()
+                .buildTask(VelocityExecutor.getInstance().getPlugin(), () -> {
+                    ProcessInformation current = API.getInstance().getCurrentProcessInformation();
+                    if (VelocityExecutor.getInstance().getProxyServer().getPlayerCount() < current.getProcessDetail().getMaxPlayers()
+                            && !current.getProcessDetail().getProcessState().equals(ProcessState.READY)
+                            && !current.getProcessDetail().getProcessState().equals(ProcessState.INVISIBLE)) {
+                        current.getProcessDetail().setProcessState(ProcessState.READY);
+                    }
 
-            current.updateRuntimeInformation();
-            current.getProcessPlayerManager().onLogout(event.getPlayer().getUniqueId());
-            VelocityExecutor.getInstance().setThisProcessInformation(current);
-            ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(current);
-        });
+                    current.updateRuntimeInformation();
+                    current.getProcessPlayerManager().onLogout(event.getPlayer().getUniqueId());
+                    VelocityExecutor.getInstance().setThisProcessInformation(current);
+                    ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(current);
+                }).delay(20, TimeUnit.MILLISECONDS).schedule();
     }
 
     @Subscribe
