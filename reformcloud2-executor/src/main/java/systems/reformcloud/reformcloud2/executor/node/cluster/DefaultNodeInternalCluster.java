@@ -12,7 +12,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams
 import systems.reformcloud.reformcloud2.executor.api.node.cluster.ClusterManager;
 import systems.reformcloud.reformcloud2.executor.api.node.cluster.InternalNetworkCluster;
 
-import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -35,7 +34,7 @@ public final class DefaultNodeInternalCluster implements InternalNetworkCluster 
 
     private NodeInformation self;
 
-    @Nonnull
+    @NotNull
     @Override
     public ClusterManager getClusterManager() {
         return this.clusterManager;
@@ -46,19 +45,19 @@ public final class DefaultNodeInternalCluster implements InternalNetworkCluster 
         return this.clusterManager.getHeadNode();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public NodeInformation getSelfNode() {
         return this.self;
     }
 
     @Override
-    public void updateSelf(@Nonnull NodeInformation self) {
+    public void updateSelf(@NotNull NodeInformation self) {
         this.self = self;
     }
 
     @Override
-    public NodeInformation getNode(@Nonnull String name) {
+    public NodeInformation getNode(@NotNull String name) {
         return Streams.filter(this.connectedNodes, e -> e.getName().equals(name));
     }
 
@@ -68,24 +67,28 @@ public final class DefaultNodeInternalCluster implements InternalNetworkCluster 
         return Streams.filter(this.connectedNodes, e -> e.getNodeUniqueID().equals(nodeUniqueID));
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Collection<NodeInformation> getConnectedNodes() {
         return this.connectedNodes;
     }
 
     @Override
-    public void handleNodeUpdate(@Nonnull NodeInformation nodeInformation) {
+    public void handleNodeUpdate(@NotNull NodeInformation nodeInformation) {
         Streams
                 .filterToReference(connectedNodes, e -> e.getNodeUniqueID().equals(nodeInformation.getNodeUniqueID()))
                 .ifPresent(e -> {
                     this.connectedNodes.remove(e);
                     this.connectedNodes.add(nodeInformation);
                 });
+
+        if (this.getHeadNode() != null && this.getHeadNode().canEqual(nodeInformation)) {
+            this.clusterManager.updateHeadNode(nodeInformation);
+        }
     }
 
     @Override
-    public void publishToHeadNode(@Nonnull Packet packet) {
+    public void publishToHeadNode(@NotNull Packet packet) {
         if (this.getHeadNode() == null) {
             return;
         }
@@ -94,7 +97,7 @@ public final class DefaultNodeInternalCluster implements InternalNetworkCluster 
     }
 
     @Override
-    public <T> T sendQueryToNode(@Nonnull String node, @Nonnull Packet query, @Nonnull Function<Packet, T> responseHandler) {
+    public <T> T sendQueryToNode(@NotNull String node, @NotNull Packet query, @NotNull Function<Packet, T> responseHandler) {
         PacketSender sender = DefaultChannelManager.INSTANCE.get(node).orNothing();
         if (sender == null) {
             return null;
@@ -105,7 +108,7 @@ public final class DefaultNodeInternalCluster implements InternalNetworkCluster 
     }
 
     @Override
-    public NodeInformation findBestNodeForStartup(@Nonnull ProcessGroup group, int maxMemory) {
+    public NodeInformation findBestNodeForStartup(@NotNull ProcessGroup group, int maxMemory) {
         NodeInformation result = null;
         for (NodeInformation validNode : this.findValidNodes(group)) {
             long memoryAfterStart = validNode.getUsedMemory() + maxMemory;

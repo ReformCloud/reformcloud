@@ -25,7 +25,6 @@ import systems.reformcloud.reformcloud2.signs.util.sign.CloudSign;
 import systems.reformcloud.reformcloud2.signs.util.sign.config.SignConfig;
 import systems.reformcloud.reformcloud2.signs.util.sign.config.SignSubLayout;
 
-import javax.annotation.Nonnull;
 import java.lang.reflect.Method;
 
 public class BukkitSignSystemAdapter extends SharedSignSystemAdapter<Sign> {
@@ -75,8 +74,8 @@ public class BukkitSignSystemAdapter extends SharedSignSystemAdapter<Sign> {
         return BukkitSignConverter.INSTANCE;
     }
 
-    @Nonnull
-    protected String replaceAll(@Nonnull String line, @Nonnull String group, ProcessInformation processInformation) {
+    @NotNull
+    protected String replaceAll(@NotNull String line, @NotNull String group, ProcessInformation processInformation) {
         if (processInformation == null) {
             line = line.replace("%group%", group);
             return ChatColor.translateAlternateColorCodes('&', line);

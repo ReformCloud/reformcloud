@@ -43,4 +43,11 @@ public interface ClusterManager {
      */
     @Nullable
     NodeInformation getHeadNode();
+
+    /**
+     * Updates the head node information
+     *
+     * @param newHeadNodeInformation The new node information of the head node
+     */
+    void updateHeadNode(@NotNull NodeInformation newHeadNodeInformation);
 }

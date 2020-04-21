@@ -1,5 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.node.cluster;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.node.NodeInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.node.cluster.ClusterManager;
@@ -8,7 +9,6 @@ import systems.reformcloud.reformcloud2.executor.controller.network.packets.out.
 import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
 import systems.reformcloud.reformcloud2.executor.node.cluster.sync.DefaultClusterSyncManager;
 
-import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -26,7 +26,7 @@ public final class DefaultClusterManager implements ClusterManager {
     }
 
     @Override
-    public void handleNodeDisconnect(@Nonnull InternalNetworkCluster cluster, @Nonnull String name) {
+    public void handleNodeDisconnect(@NotNull InternalNetworkCluster cluster, @NotNull String name) {
         Streams.allOf(nodeInformation, e -> e.getName().equals(name)).forEach(e -> {
             this.nodeInformation.remove(e);
             cluster.getConnectedNodes().remove(e);
@@ -48,7 +48,7 @@ public final class DefaultClusterManager implements ClusterManager {
     }
 
     @Override
-    public void handleConnect(@Nonnull InternalNetworkCluster cluster, @Nonnull NodeInformation nodeInformation) {
+    public void handleConnect(@NotNull InternalNetworkCluster cluster, @NotNull NodeInformation nodeInformation) {
         if (this.nodeInformation.stream().anyMatch(e -> e.getName().equals(nodeInformation.getName()))) {
             return;
         }
@@ -59,7 +59,7 @@ public final class DefaultClusterManager implements ClusterManager {
     }
 
     @Override
-    public int getOnlineAndWaiting(@Nonnull String groupName) {
+    public int getOnlineAndWaiting(@NotNull String groupName) {
         int allNotPrepared = Streams.allOf(
                 NodeExecutor.getInstance().getNodeNetworkManager().getNodeProcessHelper().getClusterProcesses(),
                 e -> e.getProcessGroup().getName().equals(groupName) && !e.getProcessDetail().getProcessState().equals(PREPARED)
@@ -80,6 +80,11 @@ public final class DefaultClusterManager implements ClusterManager {
         }
 
         return head;
+    }
+
+    @Override
+    public void updateHeadNode(@NotNull NodeInformation newHeadNodeInformation) {
+        this.head = newHeadNodeInformation;
     }
 
     private void recalculateHead() {
