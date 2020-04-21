@@ -37,14 +37,14 @@ public interface NetworkChannelReader {
      *
      * @param context The channel context of the channel
      */
-    void channelActive(ChannelHandlerContext context);
+    void channelActive(@NotNull ChannelHandlerContext context);
 
     /**
      * Gets called when a channel closes
      *
      * @param context The channel context
      */
-    void channelInactive(ChannelHandlerContext context);
+    void channelInactive(@NotNull ChannelHandlerContext context);
 
     /**
      * Gets called when a packet comes into the channel
@@ -52,7 +52,7 @@ public interface NetworkChannelReader {
      * @param context The context of the channel where the packet is from
      * @param input   The sent content by the sender
      */
-    void read(ChannelHandlerContext context, WrappedByteInput input);
+    void read(@NotNull ChannelHandlerContext context, @NotNull WrappedByteInput input);
 
     /**
      * Handles the exceptions which will occur in the channel
@@ -60,7 +60,7 @@ public interface NetworkChannelReader {
      * @param context The context of the channel the exception occurred in
      * @param cause   The cause why the exception occurred
      */
-    default void exceptionCaught(ChannelHandlerContext context, Throwable cause) {
+    default void exceptionCaught(@NotNull ChannelHandlerContext context, @NotNull Throwable cause) {
         if (!(cause instanceof IOException)) {
             System.err.println("Exception in channel " + context.channel().remoteAddress());
             cause.printStackTrace();
@@ -72,7 +72,7 @@ public interface NetworkChannelReader {
      *
      * @param context The context of the channel
      */
-    default void readOperationCompleted(ChannelHandlerContext context) {
+    default void readOperationCompleted(@NotNull ChannelHandlerContext context) {
         context.flush();
     }
 }

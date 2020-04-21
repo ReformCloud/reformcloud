@@ -196,7 +196,26 @@ public abstract class ExternalAPIImplementation extends ExecutorAPI implements
     @Override
     public Task<String> dispatchCommandAndGetResultAsync(@NotNull String commandLine) {
         Task<String> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> sendPacketQuery(new ExternalAPIPacketOutDispatchControllerCommand(commandLine), packet -> task.complete(packet.content().getString("result"))));
+        Task.EXECUTOR.execute(() -> sendPacketQuery(new ExternalAPIPacketOutDispatchControllerCommand(commandLine), packet -> task.complete("SUCESS")));
+        return task;
+    }
+
+    @NotNull
+    @Override
+    public Task<Collection<String>> dispatchConsoleCommandAndGetResultAsync(@NotNull String commandLine) {
+        Task<Collection<String>> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(() -> this.sendPacketQuery(
+                new ExternalAPIPacketOutDispatchControllerCommand(commandLine),
+                result -> {
+                    Collection<String> messages = result.content().get("result", new TypeToken<Collection<String>>() {
+                    });
+                    if (messages == null) {
+                        messages = new ArrayList<>();
+                    }
+
+                    task.complete(messages);
+                }
+        ));
         return task;
     }
 
@@ -229,6 +248,12 @@ public abstract class ExternalAPIImplementation extends ExecutorAPI implements
     @Override
     public String dispatchCommandAndGetResult(@NotNull String commandLine) {
         return dispatchCommandAndGetResultAsync(commandLine).getUninterruptedly();
+    }
+
+    @NotNull
+    @Override
+    public Collection<String> dispatchConsoleCommandAndGetResult(@NotNull String commandLine) {
+        return this.dispatchConsoleCommandAndGetResultAsync(commandLine).getUninterruptedly();
     }
 
     @Override

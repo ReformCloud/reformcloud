@@ -12,7 +12,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.logger.coloured.Colo
 import java.util.Collection;
 import java.util.Collections;
 
-public final class ConsoleCommandSource implements CommandSource {
+public class ConsoleCommandSource implements CommandSource {
 
     private static final PermissionCheck CONSOLE_COMMAND_CHECK = new ConsoleCommandCheck();
 

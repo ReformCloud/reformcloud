@@ -549,6 +549,17 @@ public interface ProcessSyncAPI {
     /**
      * Stops a process
      *
+     * @param processInformation The process information of the process which should get stopped
+     * @return The last known {@link ProcessInformation}
+     */
+    @Nullable
+    default ProcessInformation stopProcess(@NotNull ProcessInformation processInformation) {
+        return this.stopProcess(processInformation.getProcessDetail().getProcessUniqueID());
+    }
+
+    /**
+     * Stops a process
+     *
      * @param name The name of the process
      * @return The last known {@link ProcessInformation}
      */

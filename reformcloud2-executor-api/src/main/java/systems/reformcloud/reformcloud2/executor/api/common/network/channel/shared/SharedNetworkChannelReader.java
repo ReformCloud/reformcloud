@@ -47,7 +47,7 @@ public abstract class SharedNetworkChannelReader implements NetworkChannelReader
     }
 
     @Override
-    public void channelActive(ChannelHandlerContext context) {
+    public void channelActive(@NotNull ChannelHandlerContext context) {
         if (packetSender == null) {
             String address = ((InetSocketAddress) context.channel().remoteAddress()).getAddress().getHostAddress();
             System.out.println(LanguageManager.get("network-channel-connected", address));
@@ -55,7 +55,7 @@ public abstract class SharedNetworkChannelReader implements NetworkChannelReader
     }
 
     @Override
-    public void read(ChannelHandlerContext context, WrappedByteInput input) {
+    public void read(@NotNull ChannelHandlerContext context, @NotNull WrappedByteInput input) {
         NetworkUtil.EXECUTOR.execute(() ->
                 getPacketHandler().getNetworkHandlers(input.getPacketID()).forEach(networkHandler -> {
                     try (ObjectInputStream stream = input.toObjectStream()) {

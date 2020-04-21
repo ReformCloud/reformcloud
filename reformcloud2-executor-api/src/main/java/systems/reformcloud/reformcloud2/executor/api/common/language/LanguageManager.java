@@ -5,6 +5,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.language.language.La
 import systems.reformcloud.reformcloud2.executor.api.common.language.language.source.LanguageSource;
 
 import java.text.MessageFormat;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -65,9 +66,10 @@ public final class LanguageManager {
             }
         }
 
+        Object[] strings = Arrays.stream(replacements).map(e -> e.toString()).toArray(String[]::new);
         return MessageFormat.format(
                 message,
-                replacements
+                strings
         );
     }
 }

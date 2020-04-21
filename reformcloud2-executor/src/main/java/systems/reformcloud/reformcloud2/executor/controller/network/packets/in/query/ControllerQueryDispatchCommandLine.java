@@ -21,6 +21,9 @@ public final class ControllerQueryDispatchCommandLine extends DefaultJsonNetwork
     @Override
     public void handlePacket(@NotNull PacketSender packetSender, @NotNull Packet packet, @NotNull Consumer<Packet> responses) {
         String line = packet.content().getString("command");
-        responses.accept(new JsonPacket(-1, new JsonConfiguration().add("result", ExecutorAPI.getInstance().getSyncAPI().getConsoleSyncAPI().dispatchCommandAndGetResult(line))));
+        responses.accept(new JsonPacket(-1, new JsonConfiguration().add(
+                "result",
+                ExecutorAPI.getInstance().getSyncAPI().getConsoleSyncAPI().dispatchConsoleCommandAndGetResult(line)
+        )));
     }
 }

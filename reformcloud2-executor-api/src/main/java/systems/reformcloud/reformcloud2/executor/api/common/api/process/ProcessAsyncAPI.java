@@ -528,6 +528,17 @@ public interface ProcessAsyncAPI {
     /**
      * Stops a process
      *
+     * @param processInformation The process information of the process which should get stopped
+     * @return A task which will be completed with the last {@link ProcessInformation}
+     */
+    @NotNull
+    default Task<ProcessInformation> stopProcessAsync(@NotNull ProcessInformation processInformation) {
+        return this.stopProcessAsync(processInformation.getProcessDetail().getProcessUniqueID());
+    }
+
+    /**
+     * Stops a process
+     *
      * @param name The name of the process
      * @return A task which will be completed with the last {@link ProcessInformation}
      */
