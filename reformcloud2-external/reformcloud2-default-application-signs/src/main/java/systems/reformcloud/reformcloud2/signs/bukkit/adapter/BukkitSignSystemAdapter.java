@@ -43,8 +43,6 @@ public class BukkitSignSystemAdapter extends SharedSignSystemAdapter<Sign> {
         Conditions.isTrue(signs != null);
         signs.setExecutor(new BukkitCommandSigns());
         signs.setPermission("reformcloud.command.signs");
-
-        Bukkit.getMessenger().registerOutgoingPluginChannel(plugin, "BungeeCord");
     }
 
     private final Plugin plugin;

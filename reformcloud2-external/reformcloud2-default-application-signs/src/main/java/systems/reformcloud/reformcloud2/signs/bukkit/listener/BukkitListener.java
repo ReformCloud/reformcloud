@@ -1,18 +1,14 @@
 package systems.reformcloud.reformcloud2.signs.bukkit.listener;
 
 import org.bukkit.block.Sign;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.signs.bukkit.adapter.BukkitSignSystemAdapter;
 import systems.reformcloud.reformcloud2.signs.util.SignSystemAdapter;
 import systems.reformcloud.reformcloud2.signs.util.sign.CloudSign;
-
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
 
 public class BukkitListener implements Listener {
 
@@ -31,18 +27,10 @@ public class BukkitListener implements Listener {
                 return;
             }
 
-            connect(event.getPlayer(), cloudSign.getCurrentTarget().getProcessDetail().getName());
-        }
-    }
-
-    private void connect(Player player, String target) {
-        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-             DataOutputStream dataOutputStream = new DataOutputStream(outputStream)) {
-            dataOutputStream.writeUTF("Connect");
-            dataOutputStream.writeUTF(target);
-            player.sendPluginMessage(BukkitSignSystemAdapter.getInstance().getPlugin(), "BungeeCord", outputStream.toByteArray());
-        } catch (final IOException ex) {
-            ex.printStackTrace();
+            ExecutorAPI.getInstance().getSyncAPI().getPlayerSyncAPI().connect(
+                    event.getPlayer().getUniqueId(),
+                    cloudSign.getCurrentTarget().getProcessDetail().getName()
+            );
         }
     }
 }
