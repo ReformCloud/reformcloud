@@ -1,5 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.api.common.database.basic.drivers.mongo;
 
+import com.google.gson.Gson;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 import org.bson.Document;
@@ -21,6 +22,8 @@ public class MongoDatabaseReader implements DatabaseReader {
     private static final String KEY_NAME = "_key";
 
     private static final String ID_NAME = "_identifier";
+
+    private static final Gson GSON = new JsonConfiguration().getGson();
 
     MongoDatabaseReader(String table, Database<MongoDatabase> parent) {
         this.table = table;
@@ -51,7 +54,7 @@ public class MongoDatabaseReader implements DatabaseReader {
             Document document = this.parent.get().getCollection(table).find(Filters.eq(ID_NAME, identifier)).first();
             if (document == null) {
                 data.add(KEY_NAME, key).add(ID_NAME, identifier != null ? identifier : UUID.randomUUID().toString());
-                this.parent.get().getCollection(table).insertOne(JsonConfiguration.GSON.get().fromJson(data.toPrettyString(), Document.class));
+                this.parent.get().getCollection(table).insertOne(GSON.fromJson(data.toPrettyString(), Document.class));
                 task.complete(data);
             } else {
                 task.complete(new JsonConfiguration(document.toJson()));

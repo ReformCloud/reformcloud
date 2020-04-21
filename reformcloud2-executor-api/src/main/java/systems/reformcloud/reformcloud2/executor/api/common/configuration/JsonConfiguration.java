@@ -23,18 +23,20 @@ import java.util.function.Predicate;
 
 public class JsonConfiguration implements Configurable<JsonElement, JsonConfiguration> {
 
-    public static final ThreadLocal<Gson> GSON = ThreadLocal.withInitial(
-            () -> new GsonBuilder()
-                    .setPrettyPrinting()
-                    .serializeNulls()
-                    .disableHtmlEscaping()
-                    .serializeSpecialFloatingPointValues()
-                    .setDateFormat(DateFormat.LONG)
-                    .registerTypeAdapterFactory(TypeAdapters.newTypeHierarchyFactory(JsonConfiguration.class, new JsonConfigurationTypeAdapter()))
-                    .create()
-    );
+    private Gson gson = new GsonBuilder()
+            .setPrettyPrinting()
+            .serializeNulls()
+            .disableHtmlEscaping()
+            .serializeSpecialFloatingPointValues()
+            .setDateFormat(DateFormat.LONG)
+            .registerTypeAdapterFactory(TypeAdapters.newTypeHierarchyFactory(JsonConfiguration.class, new JsonConfigurationTypeAdapter()))
+            .create();
 
     public JsonConfiguration() {
+    }
+
+    public JsonConfiguration(@NotNull Gson gson) {
+        this.gson = gson;
     }
 
     public JsonConfiguration(String json) {
@@ -112,7 +114,7 @@ public class JsonConfiguration implements Configurable<JsonElement, JsonConfigur
             return this;
         }
 
-        this.jsonObject.add(key, GSON.get().toJsonTree(value));
+        this.jsonObject.add(key, this.gson.toJsonTree(value));
         return this;
     }
 
@@ -328,7 +330,7 @@ public class JsonConfiguration implements Configurable<JsonElement, JsonConfigur
             return def;
         }
 
-        T result = GSON.get().fromJson(jsonElement, type);
+        T result = this.gson.fromJson(jsonElement, type);
         if (predicate.test(result)) {
             return result;
         }
@@ -343,7 +345,7 @@ public class JsonConfiguration implements Configurable<JsonElement, JsonConfigur
             return def;
         }
 
-        T result = GSON.get().fromJson(jsonElement, type);
+        T result = this.gson.fromJson(jsonElement, type);
         if (predicate.test(result)) {
             return result;
         }
@@ -468,7 +470,7 @@ public class JsonConfiguration implements Configurable<JsonElement, JsonConfigur
         SystemHelper.createFile(path);
 
         try (OutputStreamWriter outputStreamWriter = new OutputStreamWriter(Files.newOutputStream(path), StandardCharsets.UTF_8)) {
-            GSON.get().toJson(jsonObject, outputStreamWriter);
+            this.gson.toJson(jsonObject, outputStreamWriter);
         } catch (final IOException ex) {
             ex.printStackTrace();
         }
@@ -487,7 +489,7 @@ public class JsonConfiguration implements Configurable<JsonElement, JsonConfigur
     @NotNull
     @Override
     public String toPrettyString() {
-        return GSON.get().toJson(jsonObject);
+        return this.gson.toJson(jsonObject);
     }
 
     @NotNull
@@ -531,6 +533,7 @@ public class JsonConfiguration implements Configurable<JsonElement, JsonConfigur
         return new JsonConfiguration();
     }
 
+    @NotNull
     public static JsonConfiguration fromMap(@NotNull Map<String, JsonElement> map) {
         JsonConfiguration out = new JsonConfiguration();
 
@@ -539,6 +542,11 @@ public class JsonConfiguration implements Configurable<JsonElement, JsonConfigur
         }
 
         return out;
+    }
+
+    @NotNull
+    public Gson getGson() {
+        return gson;
     }
 
     public static JsonConfiguration read(String path) {
