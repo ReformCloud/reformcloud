@@ -66,6 +66,7 @@ import systems.reformcloud.reformcloud2.executor.api.node.cluster.ClusterSyncMan
 import systems.reformcloud.reformcloud2.executor.api.node.cluster.SyncAction;
 import systems.reformcloud.reformcloud2.executor.api.node.network.NodeNetworkManager;
 import systems.reformcloud.reformcloud2.executor.controller.network.packets.in.ControllerPacketInAPIAction;
+import systems.reformcloud.reformcloud2.executor.controller.network.packets.in.ControllerPacketInCopyProcess;
 import systems.reformcloud.reformcloud2.executor.controller.network.packets.in.ControllerPacketInHandleChannelMessage;
 import systems.reformcloud.reformcloud2.executor.node.api.GeneralAPI;
 import systems.reformcloud.reformcloud2.executor.node.api.applications.ApplicationAPIImplementation;
@@ -591,6 +592,7 @@ public final class NodeExecutor extends Node {
 
         this.packetHandler.registerHandler(new ControllerPacketInAPIAction()); // External implementation which handles the api actions (we can re-use it)
         this.packetHandler.registerHandler(new ControllerPacketInHandleChannelMessage()); // Implementation for the channel messaging api
+        this.packetHandler.registerHandler(new ControllerPacketInCopyProcess()); // The copy process packet
     }
 
     public void sync(String name) {
