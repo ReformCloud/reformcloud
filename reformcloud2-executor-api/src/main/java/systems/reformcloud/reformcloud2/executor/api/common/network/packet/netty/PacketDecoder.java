@@ -21,6 +21,8 @@ public final class PacketDecoder extends ByteToMessageDecoder {
             list.add(new DefaultWrappedByteInput(id, NetworkUtil.readBytes(byteBuf)));
         } catch (final Throwable throwable) {
             throwable.printStackTrace();
+        } finally {
+            NetworkUtil.destroyByteBuf(byteBuf, false);
         }
     }
 }

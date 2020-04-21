@@ -13,6 +13,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.util.concurrent.DefaultThreadFactory;
 import io.netty.util.concurrent.MultithreadEventExecutorGroup;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -52,6 +53,7 @@ public final class NetworkUtil {
 
     private static final ThreadFactory THREAD_FACTORY = new DefaultThreadFactory(MultithreadEventExecutorGroup.class, true, Thread.MIN_PRIORITY);
 
+    @NotNull
     public static EventLoopGroup eventLoopGroup() {
         if (!Boolean.getBoolean("reformcloud.disable.native")) {
             if (EPOLL) {
@@ -62,27 +64,26 @@ public final class NetworkUtil {
         return new NioEventLoopGroup(Runtime.getRuntime().availableProcessors(), THREAD_FACTORY);
     }
 
+    @NotNull
     public static Class<? extends ServerSocketChannel> serverSocketChannel() {
-        if (!Boolean.getBoolean("reformcloud.disable.native")) {
-            if (EPOLL) {
-                return EpollServerSocketChannel.class;
-            }
+        if (!Boolean.getBoolean("reformcloud.disable.native") && EPOLL) {
+            return EpollServerSocketChannel.class;
         }
 
         return NioServerSocketChannel.class;
     }
 
+    @NotNull
     public static Class<? extends SocketChannel> socketChannel() {
-        if (!Boolean.getBoolean("reformcloud.disable.native")) {
-            if (EPOLL) {
-                return EpollSocketChannel.class;
-            }
+        if (!Boolean.getBoolean("reformcloud.disable.native") && EPOLL) {
+            return EpollSocketChannel.class;
         }
 
         return NioSocketChannel.class;
     }
 
-    public static synchronized ByteBuf write(ByteBuf byteBuf, int value) {
+    @NotNull
+    public static synchronized ByteBuf write(@NotNull ByteBuf byteBuf, int value) {
         do {
             byte temp = (byte) (value & 0b01111111);
             value >>>= 7;
@@ -95,7 +96,7 @@ public final class NetworkUtil {
         return byteBuf;
     }
 
-    public static synchronized int read(ByteBuf byteBuf) {
+    public static synchronized int read(@NotNull ByteBuf byteBuf) {
         int numRead = 0;
         int result = 0;
         byte read;
@@ -113,11 +114,33 @@ public final class NetworkUtil {
         return result;
     }
 
-    public static synchronized byte[] readBytes(ByteBuf byteBuf) {
+    @NotNull
+    public static synchronized byte[] readBytes(@NotNull ByteBuf byteBuf) {
         int length = read(byteBuf);
         byte[] bytes = new byte[length];
         byteBuf.readBytes(bytes);
         return bytes;
+    }
+
+    public static void destroyByteBuf(@NotNull ByteBuf byteBuf, boolean force) {
+        if (byteBuf.refCnt() == 0) {
+            // buffer is already released and will be garbage collected
+            return;
+        }
+
+        if (byteBuf.refCnt() == 1 && !force) {
+            // release of buffer will be made after channel read (we don't need to destroy it now)
+            return;
+        }
+
+        boolean destroyed = byteBuf.release();
+        while (!destroyed) {
+            if (byteBuf.refCnt() == 1 && !force) {
+                break;
+            }
+
+            destroyed = byteBuf.release();
+        }
     }
 
     public static int getVarIntSize(int readable) {

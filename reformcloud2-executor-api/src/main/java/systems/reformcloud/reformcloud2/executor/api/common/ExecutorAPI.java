@@ -96,5 +96,7 @@ public abstract class ExecutorAPI {
         System.setProperty("io.netty.recycler.maxCapacity", "0");
         System.setProperty("io.netty.recycler.maxCapacity.default", "0");
         System.setProperty("io.netty.allocator.type", "UNPOOLED");
+
+        Thread.setDefaultUncaughtExceptionHandler((t, ex) -> ex.printStackTrace());
     }
 }
