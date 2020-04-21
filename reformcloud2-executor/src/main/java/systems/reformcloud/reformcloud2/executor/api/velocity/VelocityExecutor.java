@@ -279,12 +279,6 @@ public final class VelocityExecutor extends API implements PlayerAPIExecutor {
         }
     }
 
-    @Override
-    @Deprecated
-    public ProcessInformation getThisProcessInformation() {
-        return getCurrentProcessInformation();
-    }
-
     public IngameMessages getMessages() {
         return messages;
     }

@@ -1,9 +1,7 @@
 package systems.reformcloud.reformcloud2.executor.api.common.api.process;
 
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import systems.reformcloud.reformcloud2.executor.api.api.API;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState;
@@ -625,17 +623,6 @@ public interface ProcessSyncAPI {
      * @return The global online count
      */
     int getGlobalOnlineCount(@NotNull Collection<String> ignoredProxies);
-
-    /**
-     * Get the current process information
-     *
-     * @return The current {@link ProcessInformation} or {@code null} if the runtime is not a process
-     * @deprecated Has been moved to {@link API#getCurrentProcessInformation()}. Will be removed in a further release
-     */
-    @Nullable
-    @ApiStatus.ScheduledForRemoval(inVersion = "2.3")
-    @Deprecated
-    ProcessInformation getThisProcessInformation();
 
     /**
      * Iterates through all {@link ProcessInformation}

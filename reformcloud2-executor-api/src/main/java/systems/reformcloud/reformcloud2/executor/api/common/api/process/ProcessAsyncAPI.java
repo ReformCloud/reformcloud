@@ -2,7 +2,6 @@ package systems.reformcloud.reformcloud2.executor.api.common.api.process;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import systems.reformcloud.reformcloud2.executor.api.api.API;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
@@ -607,16 +606,6 @@ public interface ProcessAsyncAPI {
      */
     @NotNull
     Task<Integer> getGlobalOnlineCountAsync(@NotNull Collection<String> ignoredProxies);
-
-    /**
-     * Get the current process information
-     *
-     * @return A task with will be completed with the current {@link ProcessInformation} or {@code null} if the runtime is not a process
-     * @deprecated Has been moved to {@link API#getCurrentProcessInformation()}. Will be removed in a further release
-     */
-    @Nullable
-    @Deprecated
-    Task<ProcessInformation> getThisProcessInformationAsync();
 
     /**
      * Updates a specific {@link ProcessInformation}

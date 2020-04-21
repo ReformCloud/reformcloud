@@ -130,12 +130,6 @@ public final class SpigotExecutor extends API implements PlayerAPIExecutor {
         }
     }
 
-    @Override
-    @Deprecated
-    public ProcessInformation getThisProcessInformation() {
-        return getCurrentProcessInformation();
-    }
-
     private void awaitConnectionAndUpdate() {
         Task.EXECUTOR.execute(() -> {
             PacketSender packetSender = DefaultChannelManager.INSTANCE.get("Controller").orElse(null);

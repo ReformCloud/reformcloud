@@ -98,12 +98,6 @@ public class SpongeExecutor extends API implements PlayerAPIExecutor {
     }
 
     @Override
-    @Deprecated
-    public ProcessInformation getThisProcessInformation() {
-        return getCurrentProcessInformation();
-    }
-
-    @Override
     public PacketHandler packetHandler() {
         return packetHandler;
     }

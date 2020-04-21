@@ -157,14 +157,6 @@ public class ProcessAPIImplementation implements ProcessSyncAPI, ProcessAsyncAPI
         return task;
     }
 
-    @NotNull
-    @Override
-    public Task<ProcessInformation> getThisProcessInformationAsync() {
-        Task<ProcessInformation> task = new DefaultTask<>();
-        task.complete(null);
-        return task;
-    }
-
     @Nullable
     @Override
     public ProcessInformation startProcess(@NotNull ProcessConfiguration configuration) {
@@ -229,11 +221,6 @@ public class ProcessAPIImplementation implements ProcessSyncAPI, ProcessAsyncAPI
     public int getGlobalOnlineCount(@NotNull Collection<String> ignoredProxies) {
         Integer integer = getGlobalOnlineCountAsync(ignoredProxies).getUninterruptedly();
         return integer == null ? 0 : integer;
-    }
-
-    @Override
-    public ProcessInformation getThisProcessInformation() {
-        return null;
     }
 
     @Override
