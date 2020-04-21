@@ -253,7 +253,8 @@ public abstract class ExternalAPIImplementation extends ExecutorAPI implements
     @NotNull
     @Override
     public Collection<String> dispatchConsoleCommandAndGetResult(@NotNull String commandLine) {
-        return this.dispatchConsoleCommandAndGetResultAsync(commandLine).getUninterruptedly();
+        Collection<String> result = this.dispatchConsoleCommandAndGetResultAsync(commandLine).getUninterruptedly();
+        return result == null ? new ArrayList<>() : result;
     }
 
     @Override
@@ -1053,6 +1054,118 @@ public abstract class ExternalAPIImplementation extends ExecutorAPI implements
         Task.EXECUTOR.execute(() -> sendPacketQuery(new ExternalAPIPacketOutGetProcesses(), packet -> task.complete(packet.content().get("result", new TypeToken<List<ProcessInformation>>() {
         }))));
         return task;
+    }
+
+    @NotNull
+    @Override
+    public Task<Void> copyProcessAsync(@NotNull String name) {
+        return Task.supply(() -> {
+            this.sendPacket(new ExternalAPIPacketOutCopyProcess(name, null, null, null));
+            return null;
+        });
+    }
+
+    @NotNull
+    @Override
+    public Task<Void> copyProcessAsync(@NotNull UUID processUniqueId) {
+        return Task.supply(() -> {
+            this.sendPacket(new ExternalAPIPacketOutCopyProcess(processUniqueId, null, null, null));
+            return null;
+        });
+    }
+
+    @NotNull
+    @Override
+    public Task<Void> copyProcessAsync(@NotNull String name, @NotNull String targetTemplate) {
+        return Task.supply(() -> {
+            this.sendPacket(new ExternalAPIPacketOutCopyProcess(name, targetTemplate, null, null));
+            return null;
+        });
+    }
+
+    @NotNull
+    @Override
+    public Task<Void> copyProcessAsync(@NotNull UUID processUniqueId, @NotNull String targetTemplate) {
+        return Task.supply(() -> {
+            this.sendPacket(new ExternalAPIPacketOutCopyProcess(processUniqueId, targetTemplate, null, null));
+            return null;
+        });
+    }
+
+    @NotNull
+    @Override
+    public Task<Void> copyProcessAsync(@NotNull String name, @NotNull String targetTemplate, @NotNull String targetTemplateStorage) {
+        return Task.supply(() -> {
+            this.sendPacket(new ExternalAPIPacketOutCopyProcess(name, targetTemplate, targetTemplateStorage, null));
+            return null;
+        });
+    }
+
+    @NotNull
+    @Override
+    public Task<Void> copyProcessAsync(@NotNull UUID processUniqueId, @NotNull String targetTemplate, @NotNull String targetTemplateStorage) {
+        return Task.supply(() -> {
+            this.sendPacket(new ExternalAPIPacketOutCopyProcess(processUniqueId, targetTemplate, targetTemplateStorage, null));
+            return null;
+        });
+    }
+
+    @NotNull
+    @Override
+    public Task<Void> copyProcessAsync(@NotNull String name, @NotNull String targetTemplate, @NotNull String targetTemplateStorage, @NotNull String targetTemplateGroup) {
+        return Task.supply(() -> {
+            this.sendPacket(new ExternalAPIPacketOutCopyProcess(name, targetTemplate, targetTemplateStorage, targetTemplateGroup));
+            return null;
+        });
+    }
+
+    @NotNull
+    @Override
+    public Task<Void> copyProcessAsync(@NotNull UUID processUniqueId, @NotNull String targetTemplate, @NotNull String targetTemplateStorage, @NotNull String targetTemplateGroup) {
+        return Task.supply(() -> {
+            this.sendPacket(new ExternalAPIPacketOutCopyProcess(processUniqueId, targetTemplate, targetTemplateStorage, targetTemplateGroup));
+            return null;
+        });
+    }
+
+    @Override
+    public void copyProcess(@NotNull String name, @NotNull String targetTemplate) {
+        this.copyProcessAsync(name, targetTemplate).awaitUninterruptedly();
+    }
+
+    @Override
+    public void copyProcess(@NotNull UUID processUniqueId, @NotNull String targetTemplate) {
+        this.copyProcessAsync(processUniqueId, targetTemplate).awaitUninterruptedly();
+    }
+
+    @Override
+    public void copyProcess(@NotNull String name, @NotNull String targetTemplate, @NotNull String targetTemplateStorage) {
+        this.copyProcessAsync(name, targetTemplate, targetTemplateStorage).awaitUninterruptedly();
+    }
+
+    @Override
+    public void copyProcess(@NotNull UUID processUniqueId, @NotNull String targetTemplate, @NotNull String targetTemplateStorage) {
+        this.copyProcessAsync(processUniqueId, targetTemplate, targetTemplateStorage).awaitUninterruptedly();
+    }
+
+    @Override
+    public void copyProcess(@NotNull String name, @NotNull String targetTemplate, @NotNull String targetTemplateStorage, @NotNull String targetTemplateGroup) {
+        this.copyProcessAsync(name, targetTemplate, targetTemplateStorage, targetTemplateGroup).awaitUninterruptedly();
+    }
+
+    @Override
+    public void copyProcess(@NotNull UUID processUniqueId, @NotNull String targetTemplate, @NotNull String targetTemplateStorage, @NotNull String targetTemplateGroup) {
+        this.copyProcessAsync(processUniqueId, targetTemplate, targetTemplateStorage, targetTemplateGroup).awaitUninterruptedly();
+    }
+
+    @Override
+    public void copyProcess(@NotNull String name) {
+        this.copyProcessAsync(name).awaitUninterruptedly();
+    }
+
+    @Override
+    public void copyProcess(@NotNull UUID processUniqueId) {
+        this.copyProcessAsync(processUniqueId).awaitUninterruptedly();
     }
 
     @NotNull

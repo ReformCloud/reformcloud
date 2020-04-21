@@ -45,6 +45,15 @@ public interface RunningProcess {
     void copy();
 
     /**
+     * Copies the current process into the template
+     *
+     * @param targetTemplate        The target template to which the server should get copied
+     * @param targetTemplateStorage The target template storage to which the template should get copied
+     * @param targetTemplateGroup   The target process group to which the template should get copied
+     */
+    void copy(@NotNull String targetTemplate, @NotNull String targetTemplateStorage, @NotNull String targetTemplateGroup);
+
+    /**
      * @return An optional which is either empty if the process is not started or contains the current process
      */
     @NotNull

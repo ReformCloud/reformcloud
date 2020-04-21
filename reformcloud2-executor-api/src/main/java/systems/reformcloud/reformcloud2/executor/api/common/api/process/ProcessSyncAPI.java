@@ -574,6 +574,134 @@ public interface ProcessSyncAPI {
     ProcessInformation stopProcess(@NotNull UUID uniqueID);
 
     /**
+     * Copies the given process into the main template
+     *
+     * @param processInformation The process information of the process which should get copied
+     */
+    default void copyProcess(@NotNull ProcessInformation processInformation) {
+        this.copyProcess(processInformation.getProcessDetail().getProcessUniqueID());
+    }
+
+    /**
+     * Copies the given process into the main template
+     *
+     * @param name The name of the process which should get copied
+     */
+    void copyProcess(@NotNull String name);
+
+    /**
+     * Copies the given process into the main template
+     *
+     * @param processUniqueId The unique id of the process which should get copied
+     */
+    void copyProcess(@NotNull UUID processUniqueId);
+
+    /**
+     * Copies the given process into the main template
+     *
+     * @param processInformation The process information of the process which should get copied
+     * @param targetTemplate     The target template to which the server should get copied
+     */
+    default void copyProcess(@NotNull ProcessInformation processInformation, @NotNull String targetTemplate) {
+        this.copyProcess(
+                processInformation.getProcessDetail().getProcessUniqueID(),
+                targetTemplate,
+                processInformation.getProcessDetail().getTemplate().getBackend()
+        );
+    }
+
+    /**
+     * Copies the given process into the main template
+     *
+     * @param name           The name of the process which should get copied
+     * @param targetTemplate The target template to which the server should get copied
+     */
+    void copyProcess(@NotNull String name, @NotNull String targetTemplate);
+
+    /**
+     * Copies the given process into the main template
+     *
+     * @param processUniqueId The unique id of the process which should get copied
+     * @param targetTemplate  The target template to which the server should get copied
+     */
+    void copyProcess(@NotNull UUID processUniqueId, @NotNull String targetTemplate);
+
+    /**
+     * Copies the given process into the main template
+     *
+     * @param processInformation    The process information of the process which should get copied
+     * @param targetTemplate        The target template to which the server should get copied
+     * @param targetTemplateStorage The target template storage to which the template should get copied
+     */
+    default void copyProcess(@NotNull ProcessInformation processInformation,
+                             @NotNull String targetTemplate, @NotNull String targetTemplateStorage) {
+        this.copyProcess(
+                processInformation.getProcessDetail().getProcessUniqueID(),
+                targetTemplate,
+                targetTemplateStorage,
+                processInformation.getProcessGroup().getName()
+        );
+    }
+
+    /**
+     * Copies the given process into the main template
+     *
+     * @param name                  The name of the process which should get copied
+     * @param targetTemplate        The target template to which the server should get copied
+     * @param targetTemplateStorage The target template storage to which the template should get copied
+     */
+    void copyProcess(@NotNull String name, @NotNull String targetTemplate, @NotNull String targetTemplateStorage);
+
+    /**
+     * Copies the given process into the main template
+     *
+     * @param processUniqueId       The unique id of the process which should get copied
+     * @param targetTemplate        The target template to which the server should get copied
+     * @param targetTemplateStorage The target template storage to which the template should get copied
+     */
+    void copyProcess(@NotNull UUID processUniqueId, @NotNull String targetTemplate, @NotNull String targetTemplateStorage);
+
+    /**
+     * Copies the given process into the main template
+     *
+     * @param processInformation    The process information of the process which should get copied
+     * @param targetTemplate        The target template to which the server should get copied
+     * @param targetTemplateStorage The target template storage to which the template should get copied
+     * @param targetTemplateGroup   The target process group to which the template should get copied
+     */
+    default void copyProcess(@NotNull ProcessInformation processInformation, @NotNull String targetTemplate,
+                             @NotNull String targetTemplateStorage, @NotNull String targetTemplateGroup) {
+        this.copyProcess(
+                processInformation.getProcessDetail().getProcessUniqueID(),
+                targetTemplate,
+                targetTemplateStorage,
+                targetTemplateGroup
+        );
+    }
+
+    /**
+     * Copies the given process into the main template
+     *
+     * @param name                  The name of the process which should get copied
+     * @param targetTemplate        The target template to which the server should get copied
+     * @param targetTemplateStorage The target template storage to which the template should get copied
+     * @param targetTemplateGroup   The target process group to which the template should get copied
+     */
+    void copyProcess(@NotNull String name, @NotNull String targetTemplate,
+                     @NotNull String targetTemplateStorage, @NotNull String targetTemplateGroup);
+
+    /**
+     * Copies the given process into the main template
+     *
+     * @param processUniqueId       The unique id of the process which should get copied
+     * @param targetTemplate        The target template to which the server should get copied
+     * @param targetTemplateStorage The target template storage to which the template should get copied
+     * @param targetTemplateGroup   The target process group to which the template should get copied
+     */
+    void copyProcess(@NotNull UUID processUniqueId, @NotNull String targetTemplate,
+                     @NotNull String targetTemplateStorage, @NotNull String targetTemplateGroup);
+
+    /**
      * Gets a process
      *
      * @param name The name of the process

@@ -70,7 +70,6 @@ import systems.reformcloud.reformcloud2.executor.controller.config.ControllerCon
 import systems.reformcloud.reformcloud2.executor.controller.config.ControllerExecutorConfig;
 import systems.reformcloud.reformcloud2.executor.controller.network.channel.ControllerNetworkChannelReader;
 import systems.reformcloud.reformcloud2.executor.controller.network.channel.ControllerNetworkSuccessHandler;
-import systems.reformcloud.reformcloud2.executor.controller.network.packets.out.ControllerPacketOutCopyProcess;
 import systems.reformcloud.reformcloud2.executor.controller.network.packets.out.ControllerPacketOutToggleScreen;
 import systems.reformcloud.reformcloud2.executor.controller.process.ClientManager;
 import systems.reformcloud.reformcloud2.executor.controller.process.DefaultProcessManager;
@@ -420,9 +419,7 @@ public final class ControllerExecutor extends Controller {
                     ReferencedOptional<PacketSender> optional = DefaultChannelManager.INSTANCE.get(target.getProcessDetail().getParentName());
                     optional.ifPresent(packetSender -> packetSender.sendPacket(new ControllerPacketOutToggleScreen(target.getProcessDetail().getProcessUniqueID())));
                     return optional.isPresent();
-                }, e -> DefaultChannelManager.INSTANCE.get(e.getProcessDetail().getParentName()).ifPresent(packetSender -> packetSender.sendPacket(
-                        new ControllerPacketOutCopyProcess(e.getProcessDetail().getProcessUniqueID())
-                ))))
+                }))
                 .register(new CommandClients())
                 .register(new CommandPlayers())
                 .register(new CommandGroup())

@@ -5,6 +5,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.base.Conditions;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Version;
+import systems.reformcloud.reformcloud2.executor.api.common.groups.template.backend.TemplateBackend;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.backend.TemplateBackendManager;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.inclusion.Inclusion;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
@@ -243,11 +244,24 @@ public abstract class SharedRunningProcess implements RunningProcess {
 
     @Override
     public void copy() {
+        this.copy(
+                this.startupInformation.getProcessDetail().getTemplate().getName(),
+                this.startupInformation.getProcessDetail().getTemplate().getBackend(),
+                this.startupInformation.getProcessGroup().getName()
+        );
+    }
+
+    @Override
+    public void copy(@NotNull String targetTemplate, @NotNull String targetTemplateStorage, @NotNull String targetTemplateGroup) {
         this.sendCommand("save-all");
         AbsoluteThread.sleep(TimeUnit.SECONDS, 1);
-        TemplateBackendManager.getOrDefault(this.startupInformation.getProcessDetail().getTemplate().getBackend()).deployTemplate(
-                this.startupInformation.getProcessGroup().getName(),
-                this.startupInformation.getProcessDetail().getTemplate().getName(),
+
+        TemplateBackend backend = TemplateBackendManager.getOrDefault(targetTemplateStorage);
+        backend.createTemplate(targetTemplateGroup, targetTemplate);
+
+        backend.deployTemplate(
+                targetTemplateGroup,
+                targetTemplate,
                 this.path,
                 this.startupInformation.getPreInclusions().stream().map(ProcessInclusion::getName).collect(Collectors.toList())
         );

@@ -554,6 +554,158 @@ public interface ProcessAsyncAPI {
     Task<ProcessInformation> stopProcessAsync(@NotNull UUID uniqueID);
 
     /**
+     * Copies the given process into the main template
+     *
+     * @param processInformation The process information of the process which should get copied
+     * @return A task which will get completed immediately after the copy request
+     */
+    @NotNull
+    default Task<Void> copyProcessAsync(@NotNull ProcessInformation processInformation) {
+        return this.copyProcessAsync(processInformation.getProcessDetail().getProcessUniqueID());
+    }
+
+    /**
+     * Copies the given process into the main template
+     *
+     * @param name The name of the process which should get copied
+     * @return A task which will get completed immediately after the copy request
+     */
+    @NotNull
+    Task<Void> copyProcessAsync(@NotNull String name);
+
+    /**
+     * Copies the given process into the main template
+     *
+     * @param processUniqueId The unique id of the process which should get copied
+     * @return A task which will get completed immediately after the copy request
+     */
+    @NotNull
+    Task<Void> copyProcessAsync(@NotNull UUID processUniqueId);
+
+    /**
+     * Copies the given process into the main template
+     *
+     * @param processInformation The process information of the process which should get copied
+     * @param targetTemplate     The target template to which the server should get copied
+     * @return A task which will get completed immediately after the copy request
+     */
+    @NotNull
+    default Task<Void> copyProcessAsync(@NotNull ProcessInformation processInformation, @NotNull String targetTemplate) {
+        return this.copyProcessAsync(
+                processInformation.getProcessDetail().getProcessUniqueID(),
+                targetTemplate,
+                processInformation.getProcessDetail().getTemplate().getBackend()
+        );
+    }
+
+    /**
+     * Copies the given process into the main template
+     *
+     * @param name           The name of the process which should get copied
+     * @param targetTemplate The target template to which the server should get copied
+     * @return A task which will get completed immediately after the copy request
+     */
+    @NotNull
+    Task<Void> copyProcessAsync(@NotNull String name, @NotNull String targetTemplate);
+
+    /**
+     * Copies the given process into the main template
+     *
+     * @param processUniqueId The unique id of the process which should get copied
+     * @param targetTemplate  The target template to which the server should get copied
+     * @return A task which will get completed immediately after the copy request
+     */
+    @NotNull
+    Task<Void> copyProcessAsync(@NotNull UUID processUniqueId, @NotNull String targetTemplate);
+
+    /**
+     * Copies the given process into the main template
+     *
+     * @param processInformation    The process information of the process which should get copied
+     * @param targetTemplate        The target template to which the server should get copied
+     * @param targetTemplateStorage The target template storage to which the template should get copied
+     * @return A task which will get completed immediately after the copy request
+     */
+    @NotNull
+    default Task<Void> copyProcessAsync(@NotNull ProcessInformation processInformation,
+                                        @NotNull String targetTemplate, @NotNull String targetTemplateStorage) {
+        return this.copyProcessAsync(
+                processInformation.getProcessDetail().getProcessUniqueID(),
+                targetTemplate,
+                targetTemplateStorage,
+                processInformation.getProcessGroup().getName()
+        );
+    }
+
+    /**
+     * Copies the given process into the main template
+     *
+     * @param name                  The name of the process which should get copied
+     * @param targetTemplate        The target template to which the server should get copied
+     * @param targetTemplateStorage The target template storage to which the template should get copied
+     * @return A task which will get completed immediately after the copy request
+     */
+    @NotNull
+    Task<Void> copyProcessAsync(@NotNull String name, @NotNull String targetTemplate, @NotNull String targetTemplateStorage);
+
+    /**
+     * Copies the given process into the main template
+     *
+     * @param processUniqueId       The unique id of the process which should get copied
+     * @param targetTemplate        The target template to which the server should get copied
+     * @param targetTemplateStorage The target template storage to which the template should get copied
+     * @return A task which will get completed immediately after the copy request
+     */
+    @NotNull
+    Task<Void> copyProcessAsync(@NotNull UUID processUniqueId, @NotNull String targetTemplate, @NotNull String targetTemplateStorage);
+
+    /**
+     * Copies the given process into the main template
+     *
+     * @param processInformation    The process information of the process which should get copied
+     * @param targetTemplate        The target template to which the server should get copied
+     * @param targetTemplateStorage The target template storage to which the template should get copied
+     * @param targetTemplateGroup   The target process group to which the template should get copied
+     * @return A task which will get completed immediately after the copy request
+     */
+    @NotNull
+    default Task<Void> copyProcessAsync(@NotNull ProcessInformation processInformation, @NotNull String targetTemplate,
+                                        @NotNull String targetTemplateStorage, @NotNull String targetTemplateGroup) {
+        return this.copyProcessAsync(
+                processInformation.getProcessDetail().getProcessUniqueID(),
+                targetTemplate,
+                targetTemplateStorage,
+                targetTemplateGroup
+        );
+    }
+
+    /**
+     * Copies the given process into the main template
+     *
+     * @param name                  The name of the process which should get copied
+     * @param targetTemplate        The target template to which the server should get copied
+     * @param targetTemplateStorage The target template storage to which the template should get copied
+     * @param targetTemplateGroup   The target process group to which the template should get copied
+     * @return A task which will get completed immediately after the copy request
+     */
+    @NotNull
+    Task<Void> copyProcessAsync(@NotNull String name, @NotNull String targetTemplate,
+                                @NotNull String targetTemplateStorage, @NotNull String targetTemplateGroup);
+
+    /**
+     * Copies the given process into the main template
+     *
+     * @param processUniqueId       The unique id of the process which should get copied
+     * @param targetTemplate        The target template to which the server should get copied
+     * @param targetTemplateStorage The target template storage to which the template should get copied
+     * @param targetTemplateGroup   The target process group to which the template should get copied
+     * @return A task which will get completed immediately after the copy request
+     */
+    @NotNull
+    Task<Void> copyProcessAsync(@NotNull UUID processUniqueId, @NotNull String targetTemplate,
+                                @NotNull String targetTemplateStorage, @NotNull String targetTemplateGroup);
+
+    /**
      * Gets a process
      *
      * @param name The name of the process

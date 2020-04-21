@@ -1,16 +1,17 @@
-package systems.reformcloud.reformcloud2.executor.client.network.packet.in;
+package systems.reformcloud.reformcloud2.executor.node.network.packet.in;
 
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.network.NetworkUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.handler.DefaultJsonNetworkHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
-import systems.reformcloud.reformcloud2.executor.client.ClientExecutor;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
+import systems.reformcloud.reformcloud2.executor.node.process.manager.LocalProcessManager;
 
 import java.util.UUID;
 import java.util.function.Consumer;
 
-public final class ClientPacketInCopyProcess extends DefaultJsonNetworkHandler {
+public class NodePacketInCopyProcess extends DefaultJsonNetworkHandler {
 
     @Override
     public int getHandlingPacketID() {
@@ -28,9 +29,9 @@ public final class ClientPacketInCopyProcess extends DefaultJsonNetworkHandler {
             return;
         }
 
-        ClientExecutor.getInstance()
-                .getProcessManager()
-                .getProcess(uuid)
-                .ifPresent(e -> e.copy(targetTemplate, targetTemplateStorage, targetTemplateGroup));
+        Streams.filterToReference(
+                LocalProcessManager.getNodeProcesses(),
+                e -> e.getProcessInformation().getProcessDetail().getProcessUniqueID().equals(uuid)
+        ).ifPresent(e -> e.copy(targetTemplate, targetTemplateStorage, targetTemplateGroup));
     }
 }

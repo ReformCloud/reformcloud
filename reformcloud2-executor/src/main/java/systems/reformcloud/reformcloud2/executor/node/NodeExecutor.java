@@ -48,7 +48,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.handl
 import systems.reformcloud.reformcloud2.executor.api.common.network.server.DefaultNetworkServer;
 import systems.reformcloud.reformcloud2.executor.api.common.network.server.NetworkServer;
 import systems.reformcloud.reformcloud2.executor.api.common.node.NodeInformation;
-import systems.reformcloud.reformcloud2.executor.api.common.process.running.RunningProcess;
 import systems.reformcloud.reformcloud2.executor.api.common.restapi.auth.basic.DefaultWebServerAuth;
 import systems.reformcloud.reformcloud2.executor.api.common.restapi.http.server.DefaultWebServer;
 import systems.reformcloud.reformcloud2.executor.api.common.restapi.http.server.WebServer;
@@ -68,7 +67,6 @@ import systems.reformcloud.reformcloud2.executor.api.node.cluster.SyncAction;
 import systems.reformcloud.reformcloud2.executor.api.node.network.NodeNetworkManager;
 import systems.reformcloud.reformcloud2.executor.controller.network.packets.in.ControllerPacketInAPIAction;
 import systems.reformcloud.reformcloud2.executor.controller.network.packets.in.ControllerPacketInHandleChannelMessage;
-import systems.reformcloud.reformcloud2.executor.controller.network.packets.out.ControllerPacketOutCopyProcess;
 import systems.reformcloud.reformcloud2.executor.node.api.GeneralAPI;
 import systems.reformcloud.reformcloud2.executor.node.api.applications.ApplicationAPIImplementation;
 import systems.reformcloud.reformcloud2.executor.node.api.console.ConsoleAPIImplementation;
@@ -562,17 +560,6 @@ public final class NodeExecutor extends Node {
                         ReferencedOptional<PacketSender> optional = DefaultChannelManager.INSTANCE.get(target.getProcessDetail().getParentName());
                         optional.ifPresent(packetSender -> packetSender.sendPacket(new NodePacketOutToggleScreen(target.getProcessDetail().getProcessUniqueID())));
                         return optional.isPresent();
-                    }
-                }, target -> {
-                    if (NodeExecutor.getInstance().getNodeConfig().getUniqueID().equals(target.getProcessDetail().getParentUniqueID())) {
-                        Streams.filterToReference(
-                                LocalProcessManager.getNodeProcesses(),
-                                e -> e.getProcessInformation().getProcessDetail().getProcessUniqueID().equals(target.getProcessDetail().getProcessUniqueID())
-                        ).ifPresent(RunningProcess::copy);
-                    } else {
-                        DefaultChannelManager.INSTANCE.get(target.getProcessDetail().getParentName()).ifPresent(packetSender -> packetSender.sendPacket(
-                                new ControllerPacketOutCopyProcess(target.getProcessDetail().getProcessUniqueID())
-                        ));
                     }
                 }))
                 .register(new CommandCluster())

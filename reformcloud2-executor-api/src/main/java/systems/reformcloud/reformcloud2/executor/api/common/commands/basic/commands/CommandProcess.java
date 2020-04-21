@@ -14,7 +14,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState
 import systems.reformcloud.reformcloud2.executor.api.common.utility.StringUtil;
 
 import java.util.*;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 import static systems.reformcloud.reformcloud2.executor.api.common.CommonHelper.DECIMAL_FORMAT;
@@ -23,15 +22,12 @@ public final class CommandProcess extends GlobalCommand {
 
     private static final String FORMAT_LIST = " - %s - %d/%d - %s - %s";
 
-    public CommandProcess(@NotNull Function<ProcessInformation, Boolean> screenToggle, @NotNull Consumer<ProcessInformation> copy) {
+    public CommandProcess(@NotNull Function<ProcessInformation, Boolean> screenToggle) {
         super("process", "reformcloud.command.process", "The process management command", "p", "processes");
         this.screenToggle = screenToggle;
-        this.copy = copy;
     }
 
     private final Function<ProcessInformation, Boolean> screenToggle;
-
-    private final Consumer<ProcessInformation> copy;
 
     @Override
     public void describeCommandToSender(@NotNull CommandSource source) {
@@ -99,7 +95,7 @@ public final class CommandProcess extends GlobalCommand {
                     target.getProcessDetail().getTemplate().getName(),
                     target.getProcessDetail().getTemplate().getBackend())
             );
-            copy.accept(target);
+            ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().copyProcess(target);
             return true;
         }
 

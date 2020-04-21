@@ -11,6 +11,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.process.api.ProcessC
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.defaults.DefaultTask;
 import systems.reformcloud.reformcloud2.executor.api.controller.process.ProcessManager;
+import systems.reformcloud.reformcloud2.executor.controller.network.packets.out.ControllerPacketOutCopyProcess;
 import systems.reformcloud.reformcloud2.executor.controller.network.packets.out.api.ControllerExecuteCommand;
 
 import java.util.Collection;
@@ -64,6 +65,153 @@ public class ProcessAPIImplementation implements ProcessSyncAPI, ProcessAsyncAPI
         Task<ProcessInformation> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> task.complete(processManager.stopProcess(uniqueID)));
         return task;
+    }
+
+    @NotNull
+    @Override
+    public Task<Void> copyProcessAsync(@NotNull String name) {
+        return Task.supply(() -> {
+            ProcessInformation information = this.getProcess(name);
+            if (information == null) {
+                return null;
+            }
+
+            return this.copyProcessAsync(
+                    name,
+                    information.getProcessDetail().getTemplate().getName(),
+                    information.getProcessDetail().getTemplate().getBackend(),
+                    information.getProcessGroup().getName()
+            ).getUninterruptedly();
+        });
+    }
+
+    @NotNull
+    @Override
+    public Task<Void> copyProcessAsync(@NotNull UUID processUniqueId) {
+        return Task.supply(() -> {
+            ProcessInformation information = this.getProcess(processUniqueId);
+            if (information == null) {
+                return null;
+            }
+
+            return this.copyProcessAsync(
+                    processUniqueId,
+                    information.getProcessDetail().getTemplate().getName(),
+                    information.getProcessDetail().getTemplate().getBackend(),
+                    information.getProcessGroup().getName()
+            ).getUninterruptedly();
+        });
+    }
+
+    @NotNull
+    @Override
+    public Task<Void> copyProcessAsync(@NotNull String name, @NotNull String targetTemplate) {
+        return Task.supply(() -> {
+            ProcessInformation information = this.getProcess(name);
+            if (information == null) {
+                return null;
+            }
+
+            return this.copyProcessAsync(
+                    name,
+                    targetTemplate,
+                    information.getProcessDetail().getTemplate().getBackend(),
+                    information.getProcessGroup().getName()
+            ).getUninterruptedly();
+        });
+    }
+
+    @NotNull
+    @Override
+    public Task<Void> copyProcessAsync(@NotNull UUID processUniqueId, @NotNull String targetTemplate) {
+        return Task.supply(() -> {
+            ProcessInformation information = this.getProcess(processUniqueId);
+            if (information == null) {
+                return null;
+            }
+
+            return this.copyProcessAsync(
+                    processUniqueId,
+                    targetTemplate,
+                    information.getProcessDetail().getTemplate().getBackend(),
+                    information.getProcessGroup().getName()
+            ).getUninterruptedly();
+        });
+    }
+
+    @NotNull
+    @Override
+    public Task<Void> copyProcessAsync(@NotNull String name, @NotNull String targetTemplate, @NotNull String targetTemplateStorage) {
+        return Task.supply(() -> {
+            ProcessInformation information = this.getProcess(name);
+            if (information == null) {
+                return null;
+            }
+
+            return this.copyProcessAsync(
+                    name,
+                    targetTemplate,
+                    targetTemplateStorage,
+                    information.getProcessGroup().getName()
+            ).getUninterruptedly();
+        });
+    }
+
+    @NotNull
+    @Override
+    public Task<Void> copyProcessAsync(@NotNull UUID processUniqueId, @NotNull String targetTemplate, @NotNull String targetTemplateStorage) {
+        return Task.supply(() -> {
+            ProcessInformation information = this.getProcess(processUniqueId);
+            if (information == null) {
+                return null;
+            }
+
+            return this.copyProcessAsync(
+                    processUniqueId,
+                    targetTemplate,
+                    targetTemplateStorage,
+                    information.getProcessGroup().getName()
+            ).getUninterruptedly();
+        });
+    }
+
+    @NotNull
+    @Override
+    public Task<Void> copyProcessAsync(@NotNull String name, @NotNull String targetTemplate, @NotNull String targetTemplateStorage, @NotNull String targetTemplateGroup) {
+        return Task.supply(() -> {
+            ProcessInformation information = this.getProcess(name);
+            if (information == null) {
+                return null;
+            }
+
+            this.copyProcess0(information, targetTemplate, targetTemplateStorage, targetTemplateGroup);
+            return null;
+        });
+    }
+
+    @NotNull
+    @Override
+    public Task<Void> copyProcessAsync(@NotNull UUID processUniqueId, @NotNull String targetTemplate, @NotNull String targetTemplateStorage, @NotNull String targetTemplateGroup) {
+        return Task.supply(() -> {
+            ProcessInformation information = this.getProcess(processUniqueId);
+            if (information == null) {
+                return null;
+            }
+
+            this.copyProcess0(information, targetTemplate, targetTemplateStorage, targetTemplateGroup);
+            return null;
+        });
+    }
+
+    private void copyProcess0(@NotNull ProcessInformation target, @NotNull String targetTemplate, @NotNull String targetTemplateStorage, @NotNull String targetTemplateGroup) {
+        DefaultChannelManager.INSTANCE.get(target.getProcessDetail().getParentName()).ifPresent(
+                packetSender -> packetSender.sendPacket(new ControllerPacketOutCopyProcess(
+                                target.getProcessDetail().getProcessUniqueID(),
+                                targetTemplate,
+                                targetTemplateStorage,
+                                targetTemplateGroup
+                        )
+                ));
     }
 
     @NotNull
@@ -157,6 +305,46 @@ public class ProcessAPIImplementation implements ProcessSyncAPI, ProcessAsyncAPI
     @Override
     public ProcessInformation stopProcess(@NotNull UUID uniqueID) {
         return stopProcessAsync(uniqueID).getUninterruptedly();
+    }
+
+    @Override
+    public void copyProcess(@NotNull String name) {
+        this.copyProcessAsync(name).awaitUninterruptedly();
+    }
+
+    @Override
+    public void copyProcess(@NotNull UUID processUniqueId) {
+        this.copyProcessAsync(processUniqueId).awaitUninterruptedly();
+    }
+
+    @Override
+    public void copyProcess(@NotNull String name, @NotNull String targetTemplate) {
+        this.copyProcessAsync(name, targetTemplate).awaitUninterruptedly();
+    }
+
+    @Override
+    public void copyProcess(@NotNull UUID processUniqueId, @NotNull String targetTemplate) {
+        this.copyProcessAsync(processUniqueId, targetTemplate).awaitUninterruptedly();
+    }
+
+    @Override
+    public void copyProcess(@NotNull String name, @NotNull String targetTemplate, @NotNull String targetTemplateStorage) {
+        this.copyProcessAsync(name, targetTemplate, targetTemplateStorage).awaitUninterruptedly();
+    }
+
+    @Override
+    public void copyProcess(@NotNull UUID processUniqueId, @NotNull String targetTemplate, @NotNull String targetTemplateStorage) {
+        this.copyProcessAsync(processUniqueId, targetTemplate, targetTemplateStorage).awaitUninterruptedly();
+    }
+
+    @Override
+    public void copyProcess(@NotNull String name, @NotNull String targetTemplate, @NotNull String targetTemplateStorage, @NotNull String targetTemplateGroup) {
+        this.copyProcessAsync(name, targetTemplate, targetTemplateStorage, targetTemplateGroup).awaitUninterruptedly();
+    }
+
+    @Override
+    public void copyProcess(@NotNull UUID processUniqueId, @NotNull String targetTemplate, @NotNull String targetTemplateStorage, @NotNull String targetTemplateGroup) {
+        this.copyProcessAsync(processUniqueId, targetTemplate, targetTemplateStorage, targetTemplateGroup).awaitUninterruptedly();
     }
 
     @Override
