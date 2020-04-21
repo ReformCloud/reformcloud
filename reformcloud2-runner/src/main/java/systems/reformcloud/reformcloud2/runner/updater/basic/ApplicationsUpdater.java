@@ -14,6 +14,8 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Represents an updater for the applications
@@ -24,6 +26,11 @@ public final class ApplicationsUpdater implements Updater {
      * The folder in which the installed applications of the cloud versions are located
      */
     private static final Path APP_FOLDER = Paths.get("reformcloud/applications");
+
+    /**
+     * The pattern to find a file update
+     */
+    private static final Pattern PATTERN = Pattern.compile("(.*)-(.*)\\.jar");
 
     /**
      * Creates a new instance of an applications updater
@@ -47,11 +54,20 @@ public final class ApplicationsUpdater implements Updater {
 
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(this.applicationUpdatesPath, new JarFileDirectoryStreamFilter())) {
             for (Path entry : stream) {
+                Matcher matcher = PATTERN.matcher(entry.getFileName().toString());
+                if (!matcher.find()) {
+                    System.err.println("Unable to find match for \"file-name-version.jar\" " +
+                            "is the requested format: " + entry.toString());
+                    continue;
+                }
+
+                String oldName = matcher.group(1);
                 Path old = RunnerUtils.findFile(
                         APP_FOLDER,
-                        path -> path.getFileName().toString().startsWith(entry.getFileName().toString()),
+                        path -> path.getFileName().toString().startsWith(oldName),
                         new JarFileDirectoryStreamFilter()
                 );
+
                 if (old != null) {
                     this.oldToNewUpdates.add(new KeyValueHolder<>(old, entry));
                 }
@@ -71,7 +87,9 @@ public final class ApplicationsUpdater implements Updater {
         for (Map.Entry<Path, Path> oldToNewUpdate : this.oldToNewUpdates) {
             RunnerUtils.deleteFileIfExists(oldToNewUpdate.getKey());
 
-            RunnerUtils.copy(oldToNewUpdate.getValue(), APP_FOLDER);
+            RunnerUtils.copy(oldToNewUpdate.getValue(), Paths.get(
+                    APP_FOLDER + "/" + oldToNewUpdate.getValue().getFileName()
+            ));
             RunnerUtils.deleteFileIfExists(oldToNewUpdate.getValue());
         }
     }
