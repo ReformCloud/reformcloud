@@ -3,7 +3,6 @@ package systems.reformcloud.reforncloud2.notifications.velocity.listener;
 import com.velocitypowered.api.proxy.ProxyServer;
 import net.kyori.text.TextComponent;
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.bungee.BungeeExecutor;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.ProcessStartedEvent;
 import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.ProcessStoppedEvent;
@@ -13,6 +12,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.channel.mana
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
+import systems.reformcloud.reformcloud2.executor.api.velocity.VelocityExecutor;
 
 import java.util.Map;
 import java.util.UUID;
@@ -43,7 +43,7 @@ public final class ProcessListener {
     @Listener
     public void handle(final ProcessStartedEvent event) {
         this.publishNotification(
-                BungeeExecutor.getInstance().getMessages().getProcessStarted(),
+                VelocityExecutor.getInstance().getMessages().getProcessStarted(),
                 event.getProcessInformation().getProcessDetail().getName()
         );
     }
@@ -55,7 +55,7 @@ public final class ProcessListener {
         }
 
         this.publishNotification(
-                BungeeExecutor.getInstance().getMessages().getProcessStopped(),
+                VelocityExecutor.getInstance().getMessages().getProcessStopped(),
                 event.getProcessInformation().getProcessDetail().getName()
         );
         REGISTERED.remove(event.getProcessInformation().getProcessDetail().getProcessUniqueID());
@@ -70,7 +70,7 @@ public final class ProcessListener {
         if (old != null) {
             if (!old.getNetworkInfo().isConnected() && event.getProcessInformation().getNetworkInfo().isConnected()) {
                 this.publishNotification(
-                        BungeeExecutor.getInstance().getMessages().getProcessConnected(),
+                        VelocityExecutor.getInstance().getMessages().getProcessConnected(),
                         event.getProcessInformation().getProcessDetail().getName()
                 );
             }
@@ -79,13 +79,13 @@ public final class ProcessListener {
         }
 
         this.publishNotification(
-                BungeeExecutor.getInstance().getMessages().getProcessRegistered(),
+                VelocityExecutor.getInstance().getMessages().getProcessRegistered(),
                 event.getProcessInformation().getProcessDetail().getName()
         );
     }
 
     private void publishNotification(String message, Object... replacements) {
-        String replacedMessage = BungeeExecutor.getInstance().getMessages().format(message, replacements);
+        String replacedMessage = VelocityExecutor.getInstance().getMessages().format(message, replacements);
         this.proxyServer.getAllPlayers()
                 .stream()
                 .filter(e -> e.hasPermission("reformcloud.notify"))

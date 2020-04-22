@@ -1,6 +1,7 @@
 package systems.reformcloud.reformcloud2.executor.api.velocity;
 
 import com.google.inject.Inject;
+import com.velocitypowered.api.event.PostOrder;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
@@ -30,7 +31,7 @@ public final class VelocityLauncher {
 
     private final ProxyServer proxyServer;
 
-    @Subscribe
+    @Subscribe(order = PostOrder.FIRST)
     public void handleInit(ProxyInitializeEvent event) {
         new VelocityExecutor(this, proxyServer);
     }
