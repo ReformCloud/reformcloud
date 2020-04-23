@@ -1,6 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.api.common.network.channel;
 
-import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
+import org.jetbrains.annotations.NotNull;
 
 public interface NetworkChannel extends DirectIdentifiableChannel {
 
@@ -9,28 +9,28 @@ public interface NetworkChannel extends DirectIdentifiableChannel {
      *
      * @param packet The packet which should get sent
      */
-    void sendPacket(Packet packet);
+    void sendPacket(@NotNull Object packet);
 
     /**
      * Sends a packet sync into the channel
      *
      * @param packet The packet which should get sent
      */
-    void sendPacketSync(Packet packet);
+    void sendPacketSync(@NotNull Object packet);
 
     /**
      * Sends many packets into the channel
      *
      * @param packets The packets which should be sent
      */
-    void sendPackets(Packet... packets);
+    void sendPackets(@NotNull Object... packets);
 
     /**
      * Sends many sync packets into the channel
      *
      * @param packets The packets which should be sent
      */
-    void sendPacketsSync(Packet... packets);
+    void sendPacketsSync(@NotNull Object... packets);
 
     /**
      * @return If the current network channel is connected

@@ -3,7 +3,6 @@ package systems.reformcloud.reformcloud2.executor.api.common.network.channel.def
 import io.netty.channel.ChannelHandlerContext;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
-import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 
 import java.net.InetSocketAddress;
 
@@ -43,32 +42,32 @@ public class DefaultPacketSender extends PacketSender {
     }
 
     @Override
-    public void sendPacket(Packet packet) {
+    public void sendPacket(@NotNull Object packet) {
         if (isConnected()) {
             channel.writeAndFlush(packet);
         }
     }
 
     @Override
-    public void sendPacketSync(Packet packet) {
+    public void sendPacketSync(@NotNull Object packet) {
         if (isConnected()) {
             channel.writeAndFlush(packet).syncUninterruptibly();
         }
     }
 
     @Override
-    public void sendPackets(Packet... packets) {
+    public void sendPackets(@NotNull Object... packets) {
         if (isConnected()) {
-            for (Packet packet : packets) {
+            for (Object packet : packets) {
                 sendPacket(packet);
             }
         }
     }
 
     @Override
-    public void sendPacketsSync(Packet... packets) {
+    public void sendPacketsSync(@NotNull Object... packets) {
         if (isConnected()) {
-            for (Packet packet : packets) {
+            for (Object packet : packets) {
                 sendPacketSync(packet);
             }
         }

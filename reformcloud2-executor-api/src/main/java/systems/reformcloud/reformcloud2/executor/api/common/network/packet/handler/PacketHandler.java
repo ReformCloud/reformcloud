@@ -16,7 +16,7 @@ public interface PacketHandler {
      *
      * @param id The id of the packet handlers which should get unregistered
      */
-    void unregisterNetworkHandlers(int id);
+    void unregisterNetworkHandler(int id);
 
     /**
      * Get all network handlers of a specific id
