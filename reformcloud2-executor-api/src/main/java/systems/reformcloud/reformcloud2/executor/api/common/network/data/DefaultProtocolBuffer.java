@@ -4,6 +4,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.util.ByteProcessor;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.common.network.SerializableObject;
 import systems.reformcloud.reformcloud2.executor.api.common.network.exception.SilentNetworkException;
 
@@ -17,9 +18,8 @@ import java.nio.channels.GatheringByteChannel;
 import java.nio.channels.ScatteringByteChannel;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class DefaultProtocolBuffer extends ProtocolBuffer {
 
@@ -30,12 +30,17 @@ public class DefaultProtocolBuffer extends ProtocolBuffer {
     private final ByteBuf wrapped;
 
     @Override
-    public void writeString(@NotNull String stringToWrite) {
+    public void writeString(@Nullable String stringToWrite) {
         this.writeString(stringToWrite, Integer.MAX_VALUE);
     }
 
     @Override
-    public void writeString(@NotNull String stringToWrite, int maxLength) {
+    public void writeString(@Nullable String stringToWrite, int maxLength) {
+        this.writeBoolean(stringToWrite == null);
+        if (stringToWrite == null) {
+            return;
+        }
+
         if (stringToWrite.length() > maxLength) {
             throw new SilentNetworkException(String.format("String length limit of %d reached. (currently %d)", maxLength, stringToWrite.length()));
         }
@@ -46,8 +51,12 @@ public class DefaultProtocolBuffer extends ProtocolBuffer {
     }
 
     @Override
-    public @NotNull
+    public @Nullable
     String readString() {
+        if (this.readBoolean()) {
+            return null;
+        }
+
         int length = this.readVarInt();
 
         byte[] bytes = new byte[length];
@@ -95,7 +104,7 @@ public class DefaultProtocolBuffer extends ProtocolBuffer {
     }
 
     @Override
-    public void writeStringArray(@NotNull List<String> list) {
+    public void writeStringArray(@NotNull Collection<String> list) {
         this.writeVarInt(list.size());
         for (String s : list) {
             this.writeString(s);
@@ -115,12 +124,90 @@ public class DefaultProtocolBuffer extends ProtocolBuffer {
     }
 
     @Override
-    public <T extends SerializableObject> void writeObject(@NotNull T object) {
+    public void writeStringMap(@NotNull Map<String, String> list) {
+        this.writeVarInt(list.size());
+        for (Map.Entry<String, String> stringStringEntry : list.entrySet()) {
+            this.writeString(stringStringEntry.getKey());
+            this.writeString(stringStringEntry.getValue());
+        }
+    }
+
+    @NotNull
+    @Override
+    public Map<String, String> readStringMap() {
+        int size = this.readVarInt();
+        Map<String, String> out = new ConcurrentHashMap<>(size);
+
+        for (int i = 0; i < size; i++) {
+            out.put(this.readString(), this.readString());
+        }
+
+        return out;
+    }
+
+    @Override
+    public void writeStringArrays(@NotNull String[] strings) {
+        this.writeVarInt(strings.length);
+        for (String string : strings) {
+            this.writeString(string);
+        }
+    }
+
+    @NotNull
+    @Override
+    public String[] readStringArrays() {
+        int size = this.readVarInt();
+        String[] strings = new String[size];
+
+        for (int i = 0; i < size; i++) {
+            strings[i] = this.readString();
+        }
+
+        return strings;
+    }
+
+    @Override
+    public void writeLongArray(@NotNull long[] longs) {
+        this.writeVarInt(longs.length);
+        for (long aLong : longs) {
+            this.writeLong(aLong);
+        }
+    }
+
+    @NotNull
+    @Override
+    public long[] readLongArray() {
+        int size = this.readVarInt();
+        long[] out = new long[size];
+
+        for (int i = 0; i < size; i++) {
+            out[i] = this.readLong();
+        }
+
+        return out;
+    }
+
+    @Override
+    public <T extends SerializableObject> void writeObject(@Nullable T object) {
+        this.writeBoolean(object == null);
+        if (object == null) {
+            return;
+        }
+
         object.write(this);
     }
 
     @Override
     public <T extends SerializableObject> T readObject(@NotNull Class<T> tClass) {
+        if (this.readBoolean()) {
+            return null;
+        }
+
+        return this.readObject0(tClass);
+    }
+
+    @Nullable
+    private <T extends SerializableObject> T readObject0(@NotNull Class<T> tClass) {
         try {
             T instance = tClass.getDeclaredConstructor().newInstance();
             instance.read(this);
@@ -128,6 +215,26 @@ public class DefaultProtocolBuffer extends ProtocolBuffer {
         } catch (final Throwable throwable) {
             return null;
         }
+    }
+
+    @Override
+    public <T extends SerializableObject> void writeObjects(@NotNull Collection<T> objects) {
+        this.writeVarInt(objects.size());
+        for (T object : objects) {
+            object.write(this);
+        }
+    }
+
+    @NotNull
+    @Override
+    public <T extends SerializableObject> List<T> readObjects(@NotNull Class<T> tClass) {
+        int size = this.readVarInt();
+        List<T> out = new ArrayList<>(size);
+        for (int i = 0; i < size; i++) {
+            out.add(this.readObject0(tClass));
+        }
+
+        return out;
     }
 
     @Override

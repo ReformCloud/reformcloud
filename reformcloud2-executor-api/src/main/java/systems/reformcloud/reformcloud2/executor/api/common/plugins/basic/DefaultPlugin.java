@@ -1,15 +1,18 @@
 package systems.reformcloud.reformcloud2.executor.api.common.plugins.basic;
 
-import com.google.gson.reflect.TypeToken;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import systems.reformcloud.reformcloud2.executor.api.common.network.data.ProtocolBuffer;
 import systems.reformcloud.reformcloud2.executor.api.common.plugins.Plugin;
 
 import java.util.List;
 
 public final class DefaultPlugin extends Plugin {
 
-    public static final TypeToken<DefaultPlugin> TYPE_TOKEN = new TypeToken<DefaultPlugin>() {};
+    @ApiStatus.Internal
+    public DefaultPlugin() {
+    }
 
     public DefaultPlugin(String version, String author, String main, List<String> depends, List<String> softpends, boolean enabled, String name) {
         this.version = version;
@@ -21,19 +24,19 @@ public final class DefaultPlugin extends Plugin {
         this.name = name;
     }
 
-    private final String version;
+    private String version;
 
-    private final String author;
+    private String author;
 
-    private final String main;
+    private String main;
 
-    private final List<String> depends;
+    private List<String> depends;
 
-    private final List<String> softpends;
+    private List<String> softpends;
 
-    private final boolean enabled;
+    private boolean enabled;
 
-    private final String name;
+    private String name;
 
     @NotNull
     @Override
@@ -72,5 +75,27 @@ public final class DefaultPlugin extends Plugin {
     @Override
     public String getName() {
         return name;
+    }
+
+    @Override
+    public void write(@NotNull ProtocolBuffer buffer) {
+        buffer.writeString(this.version);
+        buffer.writeString(this.author);
+        buffer.writeString(this.main);
+        buffer.writeStringArray(this.depends);
+        buffer.writeStringArray(this.softpends);
+        buffer.writeBoolean(this.enabled);
+        buffer.writeString(this.name);
+    }
+
+    @Override
+    public void read(@NotNull ProtocolBuffer buffer) {
+        this.version = buffer.readString();
+        this.author = buffer.readString();
+        this.main = buffer.readString();
+        this.depends = buffer.readStringArray();
+        this.softpends = buffer.readStringArray();
+        this.enabled = buffer.readBoolean();
+        this.name = buffer.readString();
     }
 }

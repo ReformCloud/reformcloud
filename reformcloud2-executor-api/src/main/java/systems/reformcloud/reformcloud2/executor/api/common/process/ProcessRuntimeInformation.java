@@ -1,6 +1,10 @@
 package systems.reformcloud.reformcloud2.executor.api.common.process;
 
+import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.CommonHelper;
+import systems.reformcloud.reformcloud2.executor.api.common.network.SerializableObject;
+import systems.reformcloud.reformcloud2.executor.api.common.network.data.ProtocolBuffer;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 
 import java.util.ArrayList;
@@ -8,51 +12,55 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public final class ProcessRuntimeInformation {
+public class ProcessRuntimeInformation implements SerializableObject {
+
+    @ApiStatus.Internal
+    public ProcessRuntimeInformation() {
+    }
 
     public static final long MEGABYTE = 1024L * 1024L;
 
-    private final double cpuUsageSystem;
+    private double cpuUsageSystem;
 
-    private final double cpuUsageInternal;
+    private double cpuUsageInternal;
 
-    private final double loadAverageSystem;
+    private double loadAverageSystem;
 
-    private final int processorCount;
+    private int processorCount;
 
-    private final long memoryUsageSystem;
+    private long memoryUsageSystem;
 
-    private final long memoryUsageInternal;
+    private long memoryUsageInternal;
 
-    private final long nonHeapMemoryUsage;
+    private long nonHeapMemoryUsage;
 
-    private final long collectionMemoryUsage;
+    private long collectionMemoryUsage;
 
-    private final int loadedClasses;
+    private int loadedClasses;
 
-    private final long unloadedClasses;
+    private long unloadedClasses;
 
-    private final long totalLoadedClasses;
+    private long totalLoadedClasses;
 
-    private final String osVersion;
+    private String osVersion;
 
-    private final String javaVersion;
+    private String javaVersion;
 
-    private final String systemArchitecture;
+    private String systemArchitecture;
 
-    private final String[] startParameters;
+    private String[] startParameters;
 
-    private final int stacktraces;
+    private int stacktraces;
 
-    private final long[] deadLockedThreads;
+    private long[] deadLockedThreads;
 
-    private final Map<String, String> systemProperties;
+    private Map<String, String> systemProperties;
 
-    private final String classPath;
+    private String classPath;
 
-    private final String bootClassPath;
+    private String bootClassPath;
 
-    private final List<ThreadInfo> threadInfos;
+    private List<ThreadInfo> threadInfos;
 
     private ProcessRuntimeInformation(double cpuUsageSystem, double cpuUsageInternal, double loadAverageSystem,
                                     int processorCount, long memoryUsageSystem, long memoryUsageInternal,
@@ -219,5 +227,55 @@ public final class ProcessRuntimeInformation {
                 null,
                 new ArrayList<>()
         );
+    }
+
+    @Override
+    public void write(@NotNull ProtocolBuffer buffer) {
+        buffer.writeDouble(this.cpuUsageSystem);
+        buffer.writeDouble(this.cpuUsageInternal);
+        buffer.writeDouble(this.loadAverageSystem);
+        buffer.writeInt(this.processorCount);
+        buffer.writeLong(this.memoryUsageSystem);
+        buffer.writeLong(this.memoryUsageInternal);
+        buffer.writeLong(this.nonHeapMemoryUsage);
+        buffer.writeLong(this.collectionMemoryUsage);
+        buffer.writeInt(this.loadedClasses);
+        buffer.writeLong(this.unloadedClasses);
+        buffer.writeLong(this.totalLoadedClasses);
+        buffer.writeString(this.osVersion);
+        buffer.writeString(this.javaVersion);
+        buffer.writeString(this.systemArchitecture);
+        buffer.writeStringArrays(this.startParameters);
+        buffer.writeInt(this.stacktraces);
+        buffer.writeLongArray(this.deadLockedThreads);
+        buffer.writeStringMap(this.systemProperties);
+        buffer.writeString(this.classPath);
+        buffer.writeString(this.bootClassPath);
+        buffer.writeObjects(this.threadInfos);
+    }
+
+    @Override
+    public void read(@NotNull ProtocolBuffer buffer) {
+        this.cpuUsageSystem = buffer.readDouble();
+        this.cpuUsageInternal = buffer.readDouble();
+        this.loadAverageSystem = buffer.readDouble();
+        this.processorCount = buffer.readInt();
+        this.memoryUsageSystem = buffer.readLong();
+        this.memoryUsageInternal = buffer.readLong();
+        this.nonHeapMemoryUsage = buffer.readLong();
+        this.collectionMemoryUsage = buffer.readLong();
+        this.loadedClasses = buffer.readInt();
+        this.unloadedClasses = buffer.readLong();
+        this.totalLoadedClasses = buffer.readLong();
+        this.osVersion = buffer.readString();
+        this.javaVersion = buffer.readString();
+        this.systemArchitecture = buffer.readString();
+        this.startParameters = buffer.readStringArrays();
+        this.stacktraces = buffer.readInt();
+        this.deadLockedThreads = buffer.readLongArray();
+        this.systemProperties = buffer.readStringMap();
+        this.classPath = buffer.readString();
+        this.bootClassPath = buffer.readString();
+        this.threadInfos = buffer.readObjects(ThreadInfo.class);
     }
 }

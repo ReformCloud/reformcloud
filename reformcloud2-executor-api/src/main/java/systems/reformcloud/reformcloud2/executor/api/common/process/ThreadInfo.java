@@ -1,6 +1,10 @@
 package systems.reformcloud.reformcloud2.executor.api.common.process;
 
-public final class ThreadInfo {
+import org.jetbrains.annotations.NotNull;
+import systems.reformcloud.reformcloud2.executor.api.common.network.SerializableObject;
+import systems.reformcloud.reformcloud2.executor.api.common.network.data.ProtocolBuffer;
+
+public final class ThreadInfo implements SerializableObject {
 
     private ThreadInfo(String name, long id, int priority, boolean daemon, Thread.State state) {
         this.name = name;
@@ -10,15 +14,15 @@ public final class ThreadInfo {
         this.state = state;
     }
 
-    private final String name;
+    private String name;
 
-    private final long id;
+    private long id;
 
-    private final int priority;
+    private int priority;
 
-    private final boolean daemon;
+    private boolean daemon;
 
-    private final Thread.State state;
+    private Thread.State state;
 
     public String getName() {
         return name;
@@ -42,5 +46,23 @@ public final class ThreadInfo {
 
     public static ThreadInfo create(Thread thread) {
         return new ThreadInfo(thread.getName(), thread.getId(), thread.getPriority(), thread.isDaemon(), thread.getState());
+    }
+
+    @Override
+    public void write(@NotNull ProtocolBuffer buffer) {
+        buffer.writeString(this.name);
+        buffer.writeLong(this.id);
+        buffer.writeInt(this.priority);
+        buffer.writeBoolean(this.daemon);
+        buffer.writeVarInt(this.state.ordinal());
+    }
+
+    @Override
+    public void read(@NotNull ProtocolBuffer buffer) {
+        this.name = buffer.readString();
+        this.id = buffer.readLong();
+        this.priority = buffer.readInt();
+        this.daemon = buffer.readBoolean();
+        this.state = Thread.State.values()[buffer.readVarInt()];
     }
 }

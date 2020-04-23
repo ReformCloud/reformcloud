@@ -1,5 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.api.common.groups.utils;
 
+@Deprecated // TODO: remove
 public enum StartupEnvironment {
 
     JAVA_RUNTIME("java", true);
