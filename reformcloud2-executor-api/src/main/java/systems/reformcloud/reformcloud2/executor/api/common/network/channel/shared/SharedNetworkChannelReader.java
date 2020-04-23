@@ -5,15 +5,16 @@ import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.base.Conditions;
 import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
 import systems.reformcloud.reformcloud2.executor.api.common.network.NetworkUtil;
+import systems.reformcloud.reformcloud2.executor.api.common.network.challenge.ChallengeAuthHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.NetworkChannelReader;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.defaults.DefaultPacketSender;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
+import systems.reformcloud.reformcloud2.executor.api.common.network.exception.SilentNetworkException;
+import systems.reformcloud.reformcloud2.executor.api.common.network.handler.ChannelReaderHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
-import systems.reformcloud.reformcloud2.executor.api.common.network.packet.WrappedByteInput;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.handler.PacketHandler;
 
-import java.io.ObjectInputStream;
 import java.net.InetSocketAddress;
 
 public abstract class SharedNetworkChannelReader implements NetworkChannelReader {
@@ -55,8 +56,9 @@ public abstract class SharedNetworkChannelReader implements NetworkChannelReader
     }
 
     @Override
-    public void read(@NotNull ChannelHandlerContext context, @NotNull WrappedByteInput input) {
-        NetworkUtil.EXECUTOR.execute(() ->
+    public void read(@NotNull ChannelHandlerContext context, @NotNull ChallengeAuthHandler authHandler,
+                     @NotNull ChannelReaderHelper parent, @NotNull Packet input) {
+        /*NetworkUtil.EXECUTOR.execute(() ->
                 getPacketHandler().getNetworkHandlers(input.getPacketID()).forEach(networkHandler -> {
                     try (ObjectInputStream stream = input.toObjectStream()) {
                         Packet packet = networkHandler.read(input.getPacketID(), stream);
@@ -71,6 +73,13 @@ public abstract class SharedNetworkChannelReader implements NetworkChannelReader
                         ex.printStackTrace();
                     }
                 })
-        );
+        );*/
+        NetworkUtil.EXECUTOR.execute(() -> {
+            try {
+                input.onPacketReceive().call(this, authHandler, parent, this.packetSender);
+            } catch (final Throwable throwable) {
+                throw new SilentNetworkException(throwable);
+            }
+        });
     }
 }

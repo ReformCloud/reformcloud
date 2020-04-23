@@ -38,7 +38,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.PlayerA
 import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.StartupConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.StartupEnvironment;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
-import systems.reformcloud.reformcloud2.executor.api.common.network.messaging.DefaultMessageJsonPacket;
+import systems.reformcloud.reformcloud2.executor.api.common.network.messaging.TypeMessagePacket;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.handler.PacketHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.plugins.InstallablePlugin;
@@ -1275,7 +1275,7 @@ public abstract class ExternalAPIImplementation extends ExecutorAPI implements
         Task<Void> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             DefaultChannelManager.INSTANCE.get("Controller").ifPresent(sender -> sender.sendPacket(
-                    new DefaultMessageJsonPacket(jsonConfiguration, Arrays.asList(receivers), errorReportHandling, baseChannel, subChannel)
+                    new TypeMessagePacket(jsonConfiguration, Arrays.asList(receivers), errorReportHandling, baseChannel, subChannel)
             ));
             task.complete(null);
         });
@@ -1289,7 +1289,7 @@ public abstract class ExternalAPIImplementation extends ExecutorAPI implements
         Task<Void> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             DefaultChannelManager.INSTANCE.get("Controller").ifPresent(sender -> sender.sendPacket(
-                    new DefaultMessageJsonPacket(Arrays.asList(receiverTypes), configuration, baseChannel, subChannel)
+                    new TypeMessagePacket(Arrays.asList(receiverTypes), configuration, baseChannel, subChannel)
             ));
             task.complete(null);
         });

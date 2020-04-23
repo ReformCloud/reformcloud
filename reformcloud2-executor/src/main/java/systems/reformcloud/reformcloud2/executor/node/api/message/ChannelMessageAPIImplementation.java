@@ -10,7 +10,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonCo
 import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.NetworkChannel;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
-import systems.reformcloud.reformcloud2.executor.api.common.network.messaging.DefaultMessageJsonPacket;
+import systems.reformcloud.reformcloud2.executor.api.common.network.messaging.TypeMessagePacket;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.optional.ReferencedOptional;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
@@ -48,7 +48,7 @@ public class ChannelMessageAPIImplementation implements MessageSyncAPI, MessageA
                 }
             }, sender -> {
                 if (NodeExecutor.getInstance().getNodeNetworkManager().getCluster().getNode(sender.getName()) != null) {
-                    sender.sendPacket(new DefaultMessageJsonPacket(jsonConfiguration, Arrays.asList(receivers), errorReportHandling, baseChannel, subChannel));
+                    sender.sendPacket(new TypeMessagePacket(jsonConfiguration, Arrays.asList(receivers), errorReportHandling, baseChannel, subChannel));
                     return;
                 }
 
@@ -102,7 +102,7 @@ public class ChannelMessageAPIImplementation implements MessageSyncAPI, MessageA
             });
             channels.forEach(e -> {
                 if (NodeExecutor.getInstance().getNodeNetworkManager().getCluster().getNode(e.getName()) != null) {
-                    e.sendPacket(new DefaultMessageJsonPacket(Arrays.asList(receiverTypes), configuration, baseChannel, subChannel));
+                    e.sendPacket(new TypeMessagePacket(Arrays.asList(receiverTypes), configuration, baseChannel, subChannel));
                     return;
                 }
 

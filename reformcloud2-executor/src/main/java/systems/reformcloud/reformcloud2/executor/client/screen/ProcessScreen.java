@@ -44,4 +44,8 @@ public final class ProcessScreen {
             DefaultChannelManager.INSTANCE.get("Controller").ifPresent(packetSender -> packetSender.sendPacket(new ClientPacketOutScreenEnabled(uuid, queue)));
         }
     }
+
+    public Queue<String> getQueue() {
+        return queue;
+    }
 }

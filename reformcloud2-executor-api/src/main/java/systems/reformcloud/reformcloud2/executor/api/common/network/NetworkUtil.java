@@ -11,9 +11,11 @@ import io.netty.channel.socket.ServerSocketChannel;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.codec.MessageToByteEncoder;
 import io.netty.util.concurrent.DefaultThreadFactory;
 import io.netty.util.concurrent.MultithreadEventExecutorGroup;
 import org.jetbrains.annotations.NotNull;
+import systems.reformcloud.reformcloud2.executor.api.common.network.packet.netty.serialisation.LengthSerializer;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -26,6 +28,8 @@ public final class NetworkUtil {
     }
 
     /* ============================= */
+
+    public static final int AUTH_BUS = -550;
 
     public static final int FILE_BUS = 1000;
 
@@ -48,6 +52,8 @@ public final class NetworkUtil {
     /* ============================ */
 
     public static final Executor EXECUTOR = Executors.newCachedThreadPool();
+
+    public static final MessageToByteEncoder<ByteBuf> SERIALIZER = new LengthSerializer();
 
     private static final boolean EPOLL = Epoll.isAvailable();
 

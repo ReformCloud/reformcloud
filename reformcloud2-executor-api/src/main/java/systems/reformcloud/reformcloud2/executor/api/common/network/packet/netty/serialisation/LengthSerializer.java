@@ -1,10 +1,13 @@
 package systems.reformcloud.reformcloud2.executor.api.common.network.packet.netty.serialisation;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
 import systems.reformcloud.reformcloud2.executor.api.common.network.NetworkUtil;
+import systems.reformcloud.reformcloud2.executor.api.common.network.exception.SilentNetworkException;
 
+@ChannelHandler.Sharable
 public final class LengthSerializer extends MessageToByteEncoder<ByteBuf> {
 
     @Override
@@ -13,7 +16,7 @@ public final class LengthSerializer extends MessageToByteEncoder<ByteBuf> {
         int space = NetworkUtil.getVarIntSize(readable);
 
         if (space > 5) {
-            throw new RuntimeException("Unable to fit " + readable + " into " + 5);
+            throw new SilentNetworkException("Unable to fit " + readable + " into " + 5);
         }
 
         byteBuf2.ensureWritable(space + readable);

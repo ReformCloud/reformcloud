@@ -2,7 +2,9 @@ package systems.reformcloud.reformcloud2.executor.api.common.network.channel;
 
 import io.netty.channel.ChannelHandlerContext;
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.common.network.packet.WrappedByteInput;
+import systems.reformcloud.reformcloud2.executor.api.common.network.challenge.ChallengeAuthHandler;
+import systems.reformcloud.reformcloud2.executor.api.common.network.handler.ChannelReaderHelper;
+import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.handler.PacketHandler;
 
 import java.io.IOException;
@@ -52,7 +54,8 @@ public interface NetworkChannelReader {
      * @param context The context of the channel where the packet is from
      * @param input   The sent content by the sender
      */
-    void read(@NotNull ChannelHandlerContext context, @NotNull WrappedByteInput input);
+    void read(@NotNull ChannelHandlerContext context, @NotNull ChallengeAuthHandler authHandler,
+              @NotNull ChannelReaderHelper parent, @NotNull Packet input);
 
     /**
      * Handles the exceptions which will occur in the channel

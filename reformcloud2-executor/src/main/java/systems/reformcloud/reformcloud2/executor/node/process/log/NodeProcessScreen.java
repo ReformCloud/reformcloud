@@ -64,11 +64,15 @@ public class NodeProcessScreen {
 
         ProcessInformation processInformation = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcess(uniqueID);
         if (processInformation != null && enabledFrom.contains(NodeExecutor.getInstance().getNodeConfig().getName())) {
-                System.out.println(LanguageManager.get("screen-line-added", processInformation.getProcessDetail().getName(), line));
+            System.out.println(LanguageManager.get("screen-line-added", processInformation.getProcessDetail().getName(), line));
         }
     }
 
     public UUID getUniqueID() {
         return uniqueID;
+    }
+
+    public Deque<String> getCachedLines() {
+        return queue;
     }
 }

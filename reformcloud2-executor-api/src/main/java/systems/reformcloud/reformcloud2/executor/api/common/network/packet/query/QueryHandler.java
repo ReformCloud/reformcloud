@@ -3,7 +3,7 @@ package systems.reformcloud.reformcloud2.executor.api.common.network.packet.quer
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
-import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 
 import java.util.UUID;
 
@@ -12,19 +12,19 @@ public interface QueryHandler {
     /**
      * Tries to get the waiting query of the given id
      *
-     * @param uuid The id of the query
+     * @param queryUniqueId The id of the query
      * @return The waiting query request or {@code null} if no such request is known
      */
     @Nullable
-    QueryRequest<Packet> getWaitingQuery(UUID uuid);
+    Task<? extends QueryPacket> getWaitingQuery(@NotNull UUID queryUniqueId);
 
     /**
      * Checks if a id has a waiting query
      *
-     * @param uuid The id of the query
+     * @param queryUniqueId The id of the query
      * @return If the id has a waiting query
      */
-    boolean hasWaitingQuery(UUID uuid);
+    boolean hasWaitingQuery(@NotNull UUID queryUniqueId);
 
     /**
      * Sends a query async to a packet sender
@@ -35,17 +35,7 @@ public interface QueryHandler {
      * @return The query request which got created
      */
     @NotNull
-    QueryRequest<Packet> sendQueryAsync(PacketSender sender, Packet packet);
-
-    /**
-     * Converts a packet to a query packet
-     *
-     * @param packet The packet which should get converted
-     * @param uuid   The uuid of the packet which should be used
-     * @return The packet which got converted
-     */
-    @NotNull
-    Packet convertToQuery(Packet packet, UUID uuid);
+    <T extends QueryPacket> Task<T> sendQueryAsync(@NotNull PacketSender sender, @NotNull T packet);
 
     /**
      * Clears all waiting queries

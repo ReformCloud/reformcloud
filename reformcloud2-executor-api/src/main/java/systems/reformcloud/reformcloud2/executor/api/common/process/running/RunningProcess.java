@@ -54,6 +54,14 @@ public interface RunningProcess {
     void copy(@NotNull String targetTemplate, @NotNull String targetTemplateStorage, @NotNull String targetTemplateGroup);
 
     /**
+     * Uploads the log file of the current process to the reformcloud paste server
+     *
+     * @return The uploaded log file url
+     */
+    @NotNull
+    String uploadLog();
+
+    /**
      * @return An optional which is either empty if the process is not started or contains the current process
      */
     @NotNull

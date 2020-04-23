@@ -4,12 +4,11 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.challenge.ChallengeAuthHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.NetworkChannelReader;
-import systems.reformcloud.reformcloud2.executor.api.common.network.channel.handler.DefaultJsonNetworkHandler;
-import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
+import systems.reformcloud.reformcloud2.executor.api.common.network.exception.SilentNetworkException;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
-import systems.reformcloud.reformcloud2.executor.api.common.network.packet.WrappedByteInput;
+import systems.reformcloud.reformcloud2.executor.api.common.network.packet.defaults.ProtocolBufferWrapper;
 
-public final class ChannelReaderHelper extends SimpleChannelInboundHandler<WrappedByteInput> {
+public final class ChannelReaderHelper extends SimpleChannelInboundHandler<ProtocolBufferWrapper> {
 
     public ChannelReaderHelper(NetworkChannelReader channelReader, ChallengeAuthHandler authHandler) {
         this.channelReader = channelReader;
@@ -20,13 +19,13 @@ public final class ChannelReaderHelper extends SimpleChannelInboundHandler<Wrapp
 
     private final ChallengeAuthHandler authHandler;
 
-    private boolean auth = false;
+    public boolean auth = false;
 
     private boolean wasActive = false;
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-        channelReader.exceptionCaught(ctx, cause);
+        this.channelReader.exceptionCaught(ctx, cause);
     }
 
     @Override
@@ -36,25 +35,44 @@ public final class ChannelReaderHelper extends SimpleChannelInboundHandler<Wrapp
             this.authHandler.handleChannelActive(ctx);
         }
 
-        channelReader.channelActive(ctx);
+        this.channelReader.channelActive(ctx);
     }
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) {
-        channelReader.channelInactive(ctx);
+        this.channelReader.channelInactive(ctx);
         this.wasActive = false;
         this.auth = false;
     }
 
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) {
-        channelReader.readOperationCompleted(ctx);
+        this.channelReader.readOperationCompleted(ctx);
     }
 
     @Override
-    protected void channelRead0(ChannelHandlerContext channelHandlerContext, WrappedByteInput input) {
+    protected void channelRead0(ChannelHandlerContext channelHandlerContext, ProtocolBufferWrapper input) {
+        Packet packet = this.channelReader.getPacketHandler().getNetworkHandler(input.getId());
+        if (packet == null) {
+            return;
+        }
+
+        try {
+            packet.read(input.getProtocolBuffer());
+        } catch (final Throwable throwable) {
+            throw new SilentNetworkException("Unable to read packet with id " + input.getId(), throwable);
+        }
+
         if (!auth) {
+            if (input.getId() != -512) {
+                channelHandlerContext.channel().close().syncUninterruptibly();
+                return;
+            }
+
+            /*
             try {
+                packet.onPacketReceive().call(this.channelReader, this.authHandler);
+
                 Packet packet = DefaultJsonNetworkHandler.readPacket(input.getPacketID(), input.toObjectStream());
                 String name = packet.content().getOrDefault("name", (String) null);
                 if (name == null || DefaultChannelManager.INSTANCE.get(name).isPresent()) {
@@ -72,9 +90,9 @@ public final class ChannelReaderHelper extends SimpleChannelInboundHandler<Wrapp
                 channelHandlerContext.channel().close().syncUninterruptibly();
             }
 
-            return;
+*/
         }
 
-        channelReader.read(channelHandlerContext, input);
+        channelReader.read(channelHandlerContext, this.authHandler, packet);
     }
 }

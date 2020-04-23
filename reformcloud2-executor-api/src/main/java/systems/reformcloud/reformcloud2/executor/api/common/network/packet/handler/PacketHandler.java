@@ -1,40 +1,15 @@
 package systems.reformcloud.reformcloud2.executor.api.common.network.packet.handler;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.common.network.channel.handler.NetworkHandler;
+import org.jetbrains.annotations.Nullable;
+import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.query.QueryHandler;
-
-import java.util.List;
 
 public interface PacketHandler {
 
-    /**
-     * Registers a packet handler
-     *
-     * @param networkHandler The packet handler which should get registered
-     */
-    void registerHandler(NetworkHandler networkHandler);
+    void registerHandler(Class<? extends Packet> packetClass);
 
-    /**
-     * Registers a packet handler
-     *
-     * @param networkHandler The class of the packet handler which should get registered
-     */
-    void registerHandler(Class<? extends NetworkHandler> networkHandler);
-
-    /**
-     * Registers many packet handler
-     *
-     * @param networkHandlers All network handler which should get registered
-     */
-    void registerNetworkHandlers(NetworkHandler... networkHandlers);
-
-    /**
-     * Unregisters a specific network handler
-     *
-     * @param networkHandler The network handler which should get unregistered
-     */
-    void unregisterNetworkHandler(NetworkHandler networkHandler);
+    void registerNetworkHandlers(Class<? extends Packet>... packetClasses);
 
     /**
      * Unregisters all packet handler of the given type-id
@@ -49,14 +24,8 @@ public interface PacketHandler {
      * @param id The id which should get filtered
      * @return All registered network handlers handling the given id
      */
-    @NotNull
-    List<NetworkHandler> getNetworkHandlers(int id);
-
-    /**
-     * @return All registered network handlers
-     */
-    @NotNull
-    List<NetworkHandler> getAllNetworkHandlers();
+    @Nullable
+    Packet getNetworkHandler(int id);
 
     /**
      * @return The query handler of the current instance
