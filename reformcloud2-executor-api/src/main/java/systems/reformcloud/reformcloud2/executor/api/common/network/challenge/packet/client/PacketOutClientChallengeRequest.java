@@ -1,13 +1,18 @@
 package systems.reformcloud.reformcloud2.executor.api.common.network.challenge.packet.client;
 
+import io.netty.channel.ChannelHandlerContext;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.common.network.NetworkUtil;
+import systems.reformcloud.reformcloud2.executor.api.common.network.challenge.ChallengeAuthHandler;
+import systems.reformcloud.reformcloud2.executor.api.common.network.channel.NetworkChannelReader;
+import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.common.network.data.ProtocolBuffer;
+import systems.reformcloud.reformcloud2.executor.api.common.network.handler.ChannelReaderHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
-import systems.reformcloud.reformcloud2.executor.api.common.network.packet.PacketCallable;
 
-public class PacketOutClientChallengeRequest implements Packet {
+public final class PacketOutClientChallengeRequest implements Packet {
 
     public PacketOutClientChallengeRequest() {
     }
@@ -23,21 +28,18 @@ public class PacketOutClientChallengeRequest implements Packet {
         return NetworkUtil.AUTH_BUS + 1;
     }
 
-    @NotNull
     @Override
-    public PacketCallable onPacketReceive() {
-        return (reader, authHandler, parent, sender) -> {
-            if (DefaultChannelManager.INSTANCE.get(this.name).isPresent()) {
-                System.out.println("Unknown connect from channel (Name=" + this.name + "). If the name is null, that might be an attack");
-                sender.close();
-                return;
-            }
+    public void handlePacketReceive(@NotNull NetworkChannelReader reader, @NotNull ChallengeAuthHandler authHandler, @NotNull ChannelReaderHelper parent, @Nullable PacketSender sender, @NotNull ChannelHandlerContext channel) {
+        if (DefaultChannelManager.INSTANCE.get(this.name).isPresent()) {
+            System.out.println("Unknown connect from channel (Name=" + this.name + "). If the name is null, that might be an attack");
+            channel.close();
+            return;
+        }
 
-            parent.auth = authHandler.handle(sender.getChannelContext(), this, this.name);
-            if (parent.auth) {
-                reader.setChannelHandlerContext(sender.getChannelContext(), this.name);
-            }
-        };
+        parent.auth = authHandler.handle(channel, this, this.name);
+        if (parent.auth) {
+            reader.setChannelHandlerContext(channel, this.name);
+        }
     }
 
     @Override

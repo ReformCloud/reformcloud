@@ -1,7 +1,7 @@
 package systems.reformcloud.reformcloud2.executor.api.common.api.basic;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.common.api.basic.packets.in.event.*;
+import systems.reformcloud.reformcloud2.executor.api.common.api.basic.packets.shared.*;
 import systems.reformcloud.reformcloud2.executor.api.common.event.Event;
 import systems.reformcloud.reformcloud2.executor.api.common.event.EventManager;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.handler.PacketHandler;
@@ -17,12 +17,12 @@ public final class ExternalEventBusHandler {
      */
     public ExternalEventBusHandler(@NotNull PacketHandler packetHandler, @NotNull EventManager eventManager) {
         packetHandler.registerNetworkHandlers(
-                new EventPacketInProcessClosed(),
-                new EventPacketInProcessStarted(),
-                new EventPacketInProcessUpdated(),
-                new EventPacketInPlayerServerSwitch(),
-                new EventPacketInLogoutPlayer(),
-                new EventPacketInPlayerConnected()
+                new EventPacketProcessClosed(),
+                new EventPacketProcessStarted(),
+                new EventPacketProcessUpdated(),
+                new EventPacketPlayerServerSwitch(),
+                new EventPacketLogoutPlayer(),
+                new EventPacketPlayerConnected()
         );
 
         this.eventManager = eventManager;

@@ -1,15 +1,20 @@
 package systems.reformcloud.reformcloud2.executor.api.common.network.messaging;
 
+import io.netty.channel.ChannelHandlerContext;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.ChannelMessageReceivedEvent;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.network.NetworkUtil;
+import systems.reformcloud.reformcloud2.executor.api.common.network.challenge.ChallengeAuthHandler;
+import systems.reformcloud.reformcloud2.executor.api.common.network.channel.NetworkChannelReader;
+import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
 import systems.reformcloud.reformcloud2.executor.api.common.network.data.ProtocolBuffer;
+import systems.reformcloud.reformcloud2.executor.api.common.network.handler.ChannelReaderHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
-import systems.reformcloud.reformcloud2.executor.api.common.network.packet.PacketCallable;
 
-public class ProxiedChannelMessageHandler implements Packet {
+public final class ProxiedChannelMessageHandler implements Packet {
 
     public ProxiedChannelMessageHandler() {
     }
@@ -31,12 +36,9 @@ public class ProxiedChannelMessageHandler implements Packet {
         return NetworkUtil.MESSAGING_BUS + 3;
     }
 
-    @NotNull
     @Override
-    public PacketCallable onPacketReceive() {
-        return (reader, authHandler, sender) -> {
-            ExecutorAPI.getInstance().getEventManager().callEvent(new ChannelMessageReceivedEvent(this.message, this.base, this.sub));
-        };
+    public void handlePacketReceive(@NotNull NetworkChannelReader reader, @NotNull ChallengeAuthHandler authHandler, @NotNull ChannelReaderHelper parent, @Nullable PacketSender sender, @NotNull ChannelHandlerContext channel) {
+        ExecutorAPI.getInstance().getEventManager().callEvent(new ChannelMessageReceivedEvent(this.message, this.base, this.sub));
     }
 
     @Override

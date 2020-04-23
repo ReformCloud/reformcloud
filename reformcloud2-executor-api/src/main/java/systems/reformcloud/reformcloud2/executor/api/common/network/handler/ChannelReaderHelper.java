@@ -93,6 +93,6 @@ public final class ChannelReaderHelper extends SimpleChannelInboundHandler<Proto
 */
         }
 
-        channelReader.read(channelHandlerContext, this.authHandler, packet);
+        channelReader.read(channelHandlerContext, this.authHandler, this, packet);
     }
 }

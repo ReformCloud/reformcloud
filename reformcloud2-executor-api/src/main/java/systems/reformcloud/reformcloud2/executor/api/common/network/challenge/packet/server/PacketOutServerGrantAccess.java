@@ -1,12 +1,17 @@
 package systems.reformcloud.reformcloud2.executor.api.common.network.challenge.packet.server;
 
+import io.netty.channel.ChannelHandlerContext;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.common.network.NetworkUtil;
+import systems.reformcloud.reformcloud2.executor.api.common.network.challenge.ChallengeAuthHandler;
+import systems.reformcloud.reformcloud2.executor.api.common.network.channel.NetworkChannelReader;
+import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
 import systems.reformcloud.reformcloud2.executor.api.common.network.data.ProtocolBuffer;
+import systems.reformcloud.reformcloud2.executor.api.common.network.handler.ChannelReaderHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
-import systems.reformcloud.reformcloud2.executor.api.common.network.packet.PacketCallable;
 
-public class PacketOutServerGrantAccess implements Packet {
+public final class PacketOutServerGrantAccess implements Packet {
 
     public PacketOutServerGrantAccess() {
     }
@@ -29,10 +34,9 @@ public class PacketOutServerGrantAccess implements Packet {
         return NetworkUtil.AUTH_BUS + 4;
     }
 
-    @NotNull
     @Override
-    public PacketCallable onPacketReceive() {
-        return (reader, authHandler, parent, sender) -> authHandler.handle(sender.getChannelContext(), this, this.name);
+    public void handlePacketReceive(@NotNull NetworkChannelReader reader, @NotNull ChallengeAuthHandler authHandler, @NotNull ChannelReaderHelper parent, @Nullable PacketSender sender, @NotNull ChannelHandlerContext channel) {
+        authHandler.handle(channel, this, this.name);
     }
 
     @Override

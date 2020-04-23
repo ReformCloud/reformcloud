@@ -1,9 +1,10 @@
-package systems.reformcloud.reformcloud2.executor.api.common.network.challenge.packet.client;
+package systems.reformcloud.reformcloud2.executor.api.common.api.basic.packets.shared;
 
 import io.netty.channel.ChannelHandlerContext;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.common.api.basic.ExternalEventBusHandler;
+import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.PlayerServerSwitchEvent;
 import systems.reformcloud.reformcloud2.executor.api.common.network.NetworkUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.network.challenge.ChallengeAuthHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.NetworkChannelReader;
@@ -12,56 +13,46 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.data.Protoco
 import systems.reformcloud.reformcloud2.executor.api.common.network.handler.ChannelReaderHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 
-public class PacketOutClientChallengeResponse implements Packet {
+import java.util.UUID;
 
-    public PacketOutClientChallengeResponse() {
+public final class EventPacketPlayerServerSwitch implements Packet {
+
+    public EventPacketPlayerServerSwitch() {
     }
 
-    public PacketOutClientChallengeResponse(String name, String hashedResult, JsonConfiguration extraData) {
+    public EventPacketPlayerServerSwitch(UUID uniqueId, String name, String targetServer) {
+        this.uniqueId = uniqueId;
         this.name = name;
-        this.hashedResult = hashedResult;
-        this.extraData = extraData;
+        this.targetServer = targetServer;
     }
+
+    private UUID uniqueId;
 
     private String name;
 
-    private String hashedResult;
-
-    private JsonConfiguration extraData;
-
-    public String getName() {
-        return name;
-    }
-
-    public String getHashedResult() {
-        return hashedResult;
-    }
-
-    public JsonConfiguration getExtraData() {
-        return extraData;
-    }
+    private String targetServer;
 
     @Override
     public int getId() {
-        return NetworkUtil.AUTH_BUS + 3;
+        return NetworkUtil.EVENT_BUS + 6;
     }
 
     @Override
     public void handlePacketReceive(@NotNull NetworkChannelReader reader, @NotNull ChallengeAuthHandler authHandler, @NotNull ChannelReaderHelper parent, @Nullable PacketSender sender, @NotNull ChannelHandlerContext channel) {
-        authHandler.handle(channel, this, this.name);
+        ExternalEventBusHandler.getInstance().callEvent(new PlayerServerSwitchEvent(this.uniqueId, this.name, this.targetServer));
     }
 
     @Override
     public void write(@NotNull ProtocolBuffer buffer) {
+        buffer.writeUniqueId(this.uniqueId);
         buffer.writeString(this.name);
-        buffer.writeString(this.hashedResult);
-        buffer.writeArray(this.extraData.toPrettyBytes());
+        buffer.writeString(this.targetServer);
     }
 
     @Override
     public void read(@NotNull ProtocolBuffer buffer) {
+        this.uniqueId = buffer.readUniqueId();
         this.name = buffer.readString();
-        this.hashedResult = buffer.readString();
-        this.extraData = new JsonConfiguration(buffer.readArray());
+        this.targetServer = buffer.readString();
     }
 }

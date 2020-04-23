@@ -76,7 +76,7 @@ public abstract class SharedNetworkChannelReader implements NetworkChannelReader
         );*/
         NetworkUtil.EXECUTOR.execute(() -> {
             try {
-                input.onPacketReceive().call(this, authHandler, parent, this.packetSender);
+                input.handlePacketReceive(this, authHandler, parent, this.packetSender);
             } catch (final Throwable throwable) {
                 throw new SilentNetworkException(throwable);
             }

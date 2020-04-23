@@ -1,9 +1,10 @@
-package systems.reformcloud.reformcloud2.executor.api.common.network.challenge.packet.client;
+package systems.reformcloud.reformcloud2.executor.api.common.api.basic.packets.shared;
 
 import io.netty.channel.ChannelHandlerContext;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.common.api.basic.ExternalEventBusHandler;
+import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.ProcessUpdatedEvent;
 import systems.reformcloud.reformcloud2.executor.api.common.network.NetworkUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.network.challenge.ChallengeAuthHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.NetworkChannelReader;
@@ -11,57 +12,36 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.channel.Pack
 import systems.reformcloud.reformcloud2.executor.api.common.network.data.ProtocolBuffer;
 import systems.reformcloud.reformcloud2.executor.api.common.network.handler.ChannelReaderHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
+import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 
-public class PacketOutClientChallengeResponse implements Packet {
+public final class EventPacketProcessUpdated implements Packet {
 
-    public PacketOutClientChallengeResponse() {
+    public EventPacketProcessUpdated() {
     }
 
-    public PacketOutClientChallengeResponse(String name, String hashedResult, JsonConfiguration extraData) {
-        this.name = name;
-        this.hashedResult = hashedResult;
-        this.extraData = extraData;
+    public EventPacketProcessUpdated(ProcessInformation processInformation) {
+        this.processInformation = processInformation;
     }
 
-    private String name;
-
-    private String hashedResult;
-
-    private JsonConfiguration extraData;
-
-    public String getName() {
-        return name;
-    }
-
-    public String getHashedResult() {
-        return hashedResult;
-    }
-
-    public JsonConfiguration getExtraData() {
-        return extraData;
-    }
+    private ProcessInformation processInformation;
 
     @Override
     public int getId() {
-        return NetworkUtil.AUTH_BUS + 3;
+        return NetworkUtil.EVENT_BUS + 3;
     }
 
     @Override
     public void handlePacketReceive(@NotNull NetworkChannelReader reader, @NotNull ChallengeAuthHandler authHandler, @NotNull ChannelReaderHelper parent, @Nullable PacketSender sender, @NotNull ChannelHandlerContext channel) {
-        authHandler.handle(channel, this, this.name);
+        ExternalEventBusHandler.getInstance().callEvent(new ProcessUpdatedEvent(this.processInformation));
     }
 
     @Override
     public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeString(this.name);
-        buffer.writeString(this.hashedResult);
-        buffer.writeArray(this.extraData.toPrettyBytes());
+        buffer.writeObject(this.processInformation);
     }
 
     @Override
     public void read(@NotNull ProtocolBuffer buffer) {
-        this.name = buffer.readString();
-        this.hashedResult = buffer.readString();
-        this.extraData = new JsonConfiguration(buffer.readArray());
+        this.processInformation = buffer.readObject(ProcessInformation.class);
     }
 }
