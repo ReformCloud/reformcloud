@@ -2,21 +2,24 @@ package systems.reformcloud.reformcloud2.executor.api.common.groups;
 
 import com.google.gson.reflect.TypeToken;
 import org.jetbrains.annotations.NotNull;
+import systems.reformcloud.reformcloud2.executor.api.common.network.SerializableObject;
+import systems.reformcloud.reformcloud2.executor.api.common.network.data.ProtocolBuffer;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.name.Nameable;
 
 import java.util.List;
 import java.util.Objects;
 
-public class MainGroup implements Nameable {
+public class MainGroup implements Nameable, SerializableObject {
 
-    public static final TypeToken<MainGroup> TYPE = new TypeToken<MainGroup>() {};
+    public static final TypeToken<MainGroup> TYPE = new TypeToken<MainGroup>() {
+    };
 
     public MainGroup(String name, List<String> subGroups) {
         this.name = name;
         this.subGroups = subGroups;
     }
 
-    private final String name;
+    private String name;
 
     private List<String> subGroups;
 
@@ -41,5 +44,17 @@ public class MainGroup implements Nameable {
         MainGroup mainGroup = (MainGroup) o;
         return Objects.equals(getName(), mainGroup.getName()) &&
                 Objects.equals(getSubGroups(), mainGroup.getSubGroups());
+    }
+
+    @Override
+    public void write(@NotNull ProtocolBuffer buffer) {
+        buffer.writeString(this.name);
+        buffer.writeStringArray(this.subGroups);
+    }
+
+    @Override
+    public void read(@NotNull ProtocolBuffer buffer) {
+        this.name = buffer.readString();
+        this.subGroups = buffer.readStringArray();
     }
 }

@@ -2,9 +2,13 @@ package systems.reformcloud.reformcloud2.executor.api.common.network.channel.def
 
 import io.netty.channel.ChannelHandlerContext;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
+import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 
 import java.net.InetSocketAddress;
+import java.util.UUID;
 
 public class DefaultPacketSender extends PacketSender {
 
@@ -71,6 +75,15 @@ public class DefaultPacketSender extends PacketSender {
                 sendPacketSync(packet);
             }
         }
+    }
+
+    @Override
+    public void sendQueryResult(@Nullable UUID queryUniqueID, @NotNull Packet result) {
+        if (queryUniqueID == null) {
+            return;
+        }
+
+        ExecutorAPI.getInstance().getPacketHandler().getQueryHandler().sendQueryResultAsync(this, queryUniqueID, result);
     }
 
     @Override

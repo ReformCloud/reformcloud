@@ -14,6 +14,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.exception.Si
 import systems.reformcloud.reformcloud2.executor.api.common.network.handler.ChannelReaderHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.handler.PacketHandler;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 
 import java.net.InetSocketAddress;
 
@@ -58,25 +59,18 @@ public abstract class SharedNetworkChannelReader implements NetworkChannelReader
     @Override
     public void read(@NotNull ChannelHandlerContext context, @NotNull ChallengeAuthHandler authHandler,
                      @NotNull ChannelReaderHelper parent, @NotNull Packet input) {
-        /*NetworkUtil.EXECUTOR.execute(() ->
-                getPacketHandler().getNetworkHandlers(input.getPacketID()).forEach(networkHandler -> {
-                    try (ObjectInputStream stream = input.toObjectStream()) {
-                        Packet packet = networkHandler.read(input.getPacketID(), stream);
-
-                        networkHandler.handlePacket(packetSender, packet, out -> {
-                            if (packet.queryUniqueID() != null) {
-                                out.setQueryID(packet.queryUniqueID());
-                                packetSender.sendPacket(out);
-                            }
-                        });
-                    } catch (final Exception ex) {
-                        ex.printStackTrace();
-                    }
-                })
-        );*/
         NetworkUtil.EXECUTOR.execute(() -> {
+            if (input.getQueryUniqueID() != null) {
+                Task<Packet> waitingQuery = this.packetHandler.getQueryHandler().getWaitingQuery(input.getQueryUniqueID());
+                if (waitingQuery != null) {
+                    waitingQuery.complete(input);
+                }
+
+                return;
+            }
+
             try {
-                input.handlePacketReceive(this, authHandler, parent, this.packetSender);
+                input.handlePacketReceive(this, authHandler, parent, this.packetSender, context);
             } catch (final Throwable throwable) {
                 throw new SilentNetworkException(throwable);
             }

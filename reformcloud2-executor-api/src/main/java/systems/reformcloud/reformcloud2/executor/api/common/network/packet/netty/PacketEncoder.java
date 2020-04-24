@@ -15,6 +15,8 @@ public final class PacketEncoder extends MessageToByteEncoder<Packet> {
         try {
             ProtocolBuffer protocolBuffer = new DefaultProtocolBuffer(byteBuf);
             protocolBuffer.writeVarInt(packet.getId());
+            protocolBuffer.writeUniqueId(packet.getQueryUniqueID());
+
             packet.write(protocolBuffer);
         } catch (final Throwable ex) {
             new SilentNetworkException(ex).printStackTrace();

@@ -68,29 +68,6 @@ public final class ChannelReaderHelper extends SimpleChannelInboundHandler<Proto
                 channelHandlerContext.channel().close().syncUninterruptibly();
                 return;
             }
-
-            /*
-            try {
-                packet.onPacketReceive().call(this.channelReader, this.authHandler);
-
-                Packet packet = DefaultJsonNetworkHandler.readPacket(input.getPacketID(), input.toObjectStream());
-                String name = packet.content().getOrDefault("name", (String) null);
-                if (name == null || DefaultChannelManager.INSTANCE.get(name).isPresent()) {
-                    System.out.println("Unknown connect from channel (Name=" + name + "). If the name is null, that might be an attack");
-                    channelHandlerContext.channel().close().syncUninterruptibly();
-                    return;
-                }
-
-                this.auth = this.authHandler.handle(channelHandlerContext, packet, name);
-
-                if (this.auth) {
-                    this.channelReader.setChannelHandlerContext(channelHandlerContext, name);
-                }
-            } catch (final Throwable throwable) {
-                channelHandlerContext.channel().close().syncUninterruptibly();
-            }
-
-*/
         }
 
         channelReader.read(channelHandlerContext, this.authHandler, this, packet);

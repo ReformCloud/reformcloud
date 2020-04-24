@@ -301,13 +301,22 @@ public class DefaultProtocolBuffer extends ProtocolBuffer {
     }
 
     @Override
-    public @NotNull
-    UUID readUniqueId() {
+    @Nullable
+    public UUID readUniqueId() {
+        if (this.readBoolean()) {
+            return null;
+        }
+
         return new UUID(this.readLong(), this.readLong());
     }
 
     @Override
-    public void writeUniqueId(@NotNull UUID uniqueId) {
+    public void writeUniqueId(@Nullable UUID uniqueId) {
+        this.writeBoolean(uniqueId == null);
+        if (uniqueId == null) {
+            return;
+        }
+
         this.writeLong(uniqueId.getMostSignificantBits());
         this.writeLong(uniqueId.getLeastSignificantBits());
     }

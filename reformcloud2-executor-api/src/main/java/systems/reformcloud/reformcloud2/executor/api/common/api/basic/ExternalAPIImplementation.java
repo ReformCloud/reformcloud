@@ -9,6 +9,11 @@ import systems.reformcloud.reformcloud2.executor.api.common.api.SyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.applications.ApplicationAsyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.applications.ApplicationSyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.applications.api.GeneralAPI;
+import systems.reformcloud.reformcloud2.executor.api.common.api.basic.packets.api.PacketAPIGroupCreateMainGroup;
+import systems.reformcloud.reformcloud2.executor.api.common.api.basic.packets.api.PacketAPIGroupCreateProcessGroup;
+import systems.reformcloud.reformcloud2.executor.api.common.api.basic.packets.api.query.PacketAPIQueryRequestMainGroup;
+import systems.reformcloud.reformcloud2.executor.api.common.api.basic.packets.api.query.PacketAPIQueryRequestProcessByName;
+import systems.reformcloud.reformcloud2.executor.api.common.api.basic.packets.api.query.PacketAPIQueryRequestProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.api.basic.packets.out.*;
 import systems.reformcloud.reformcloud2.executor.api.common.api.console.ConsoleAsyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.console.ConsoleSyncAPI;
@@ -436,7 +441,7 @@ public abstract class ExternalAPIImplementation extends ExecutorAPI implements
     @Override
     public Task<MainGroup> createMainGroupAsync(@NotNull String name, @NotNull List<String> subgroups) {
         Task<MainGroup> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> sendPacketQuery(new ExternalAPIPacketOutCreateMainGroup(new MainGroup(name, subgroups)), packet -> task.complete(packet.content().get("result", MainGroup.TYPE))));
+        Task.EXECUTOR.execute(() -> sendPacketQuery(new PacketAPIGroupCreateMainGroup(new MainGroup(name, subgroups)), packet -> task.complete(packet.content().get("result", MainGroup.TYPE))));
         return task;
     }
 
@@ -491,7 +496,7 @@ public abstract class ExternalAPIImplementation extends ExecutorAPI implements
     @Override
     public Task<ProcessGroup> createProcessGroupAsync(@NotNull ProcessGroup processGroup) {
         Task<ProcessGroup> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> sendPacketQuery(new ExternalAPIPacketOutCreateProcessGroup(processGroup), packet -> task.complete(packet.content().get("result", ProcessGroup.TYPE))));
+        Task.EXECUTOR.execute(() -> sendPacketQuery(new PacketAPIGroupCreateProcessGroup(processGroup), packet -> task.complete(packet.content().get("result", ProcessGroup.TYPE))));
         return task;
     }
 
@@ -521,7 +526,7 @@ public abstract class ExternalAPIImplementation extends ExecutorAPI implements
     @Override
     public Task<MainGroup> getMainGroupAsync(@NotNull String name) {
         Task<MainGroup> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> sendPacketQuery(new ExternalAPIPacketOutGetMainGroup(name), packet -> task.complete(packet.content().get("result", MainGroup.TYPE))));
+        Task.EXECUTOR.execute(() -> sendPacketQuery(new PacketAPIQueryRequestMainGroup(name), packet -> task.complete(packet.content().get("result", MainGroup.TYPE))));
         return task;
     }
 
@@ -529,7 +534,7 @@ public abstract class ExternalAPIImplementation extends ExecutorAPI implements
     @Override
     public Task<ProcessGroup> getProcessGroupAsync(@NotNull String name) {
         Task<ProcessGroup> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> sendPacketQuery(new ExternalAPIPacketOutGetProcessGroup(name), packet -> task.complete(packet.content().get("result", ProcessGroup.TYPE))));
+        Task.EXECUTOR.execute(() -> sendPacketQuery(new PacketAPIQueryRequestProcessGroup(name), packet -> task.complete(packet.content().get("result", ProcessGroup.TYPE))));
         return task;
     }
 
@@ -1035,7 +1040,7 @@ public abstract class ExternalAPIImplementation extends ExecutorAPI implements
     @Override
     public Task<ProcessInformation> getProcessAsync(@NotNull String name) {
         Task<ProcessInformation> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> sendPacketQuery(new ExternalAPIPacketOutGetProcess(name), packet -> task.complete(packet.content().get("result", ProcessInformation.TYPE))));
+        Task.EXECUTOR.execute(() -> sendPacketQuery(new PacketAPIQueryRequestProcessByName(name), packet -> task.complete(packet.content().get("result", ProcessInformation.TYPE))));
         return task;
     }
 
@@ -1043,7 +1048,7 @@ public abstract class ExternalAPIImplementation extends ExecutorAPI implements
     @Override
     public Task<ProcessInformation> getProcessAsync(@NotNull UUID uniqueID) {
         Task<ProcessInformation> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> sendPacketQuery(new ExternalAPIPacketOutGetProcess(uniqueID), packet -> task.complete(packet.content().get("result", ProcessInformation.TYPE))));
+        Task.EXECUTOR.execute(() -> sendPacketQuery(new PacketAPIQueryRequestProcessByName(uniqueID), packet -> task.complete(packet.content().get("result", ProcessInformation.TYPE))));
         return task;
     }
 

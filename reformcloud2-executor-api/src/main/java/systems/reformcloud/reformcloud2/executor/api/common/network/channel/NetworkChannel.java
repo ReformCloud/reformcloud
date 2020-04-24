@@ -1,6 +1,10 @@
 package systems.reformcloud.reformcloud2.executor.api.common.network.channel;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
+
+import java.util.UUID;
 
 public interface NetworkChannel extends DirectIdentifiableChannel {
 
@@ -31,6 +35,8 @@ public interface NetworkChannel extends DirectIdentifiableChannel {
      * @param packets The packets which should be sent
      */
     void sendPacketsSync(@NotNull Object... packets);
+
+    void sendQueryResult(@Nullable UUID queryUniqueID, @NotNull Packet result);
 
     /**
      * @return If the current network channel is connected

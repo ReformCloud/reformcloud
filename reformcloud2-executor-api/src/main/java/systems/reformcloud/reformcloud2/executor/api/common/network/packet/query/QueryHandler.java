@@ -3,6 +3,7 @@ package systems.reformcloud.reformcloud2.executor.api.common.network.packet.quer
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
+import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 
 import java.util.UUID;
@@ -16,7 +17,7 @@ public interface QueryHandler {
      * @return The waiting query request or {@code null} if no such request is known
      */
     @Nullable
-    Task<? extends QueryPacket> getWaitingQuery(@NotNull UUID queryUniqueId);
+    Task<Packet> getWaitingQuery(@NotNull UUID queryUniqueId);
 
     /**
      * Checks if a id has a waiting query
@@ -35,7 +36,12 @@ public interface QueryHandler {
      * @return The query request which got created
      */
     @NotNull
-    <T extends QueryPacket> Task<T> sendQueryAsync(@NotNull PacketSender sender, @NotNull T packet);
+    Task<Packet> sendQueryAsync(@NotNull PacketSender sender, @NotNull Packet packet);
+
+    @NotNull
+    Task<Packet> sendQueryAsync(@NotNull PacketSender sender, @NotNull UUID queryUniqueID, @NotNull Packet packet);
+
+    void sendQueryResultAsync(@NotNull PacketSender sender, @NotNull UUID queryUniqueID, @NotNull Packet packet);
 
     /**
      * Clears all waiting queries
