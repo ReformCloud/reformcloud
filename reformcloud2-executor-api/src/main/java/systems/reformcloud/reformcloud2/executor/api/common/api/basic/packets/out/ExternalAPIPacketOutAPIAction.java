@@ -33,9 +33,9 @@ public final class ExternalAPIPacketOutAPIAction extends JsonPacket {
 
         PLAY_ENTITY_EFFECT,
 
-        PLAY_EFFECT,
+        PLAY_EFFECT, // TODO: remove
 
-        RESPAWN,
+        RESPAWN, // TODO: remove
 
         //ENTITY_TELEPORT, //For update?
 
@@ -45,6 +45,6 @@ public final class ExternalAPIPacketOutAPIAction extends JsonPacket {
 
         CONNECT_PLAYER,
 
-        SET_RESOURCE_PACK
+        SET_RESOURCE_PACK // TODO: remove
     }
 }
