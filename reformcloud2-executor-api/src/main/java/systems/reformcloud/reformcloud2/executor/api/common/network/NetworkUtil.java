@@ -12,9 +12,8 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.MessageToByteEncoder;
-import io.netty.util.concurrent.DefaultThreadFactory;
-import io.netty.util.concurrent.MultithreadEventExecutorGroup;
 import org.jetbrains.annotations.NotNull;
+import systems.reformcloud.reformcloud2.executor.api.common.network.concurrent.FastNettyThreadFactory;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.netty.serialisation.LengthSerializer;
 
 import java.util.concurrent.Executor;
@@ -57,17 +56,15 @@ public final class NetworkUtil {
 
     private static final boolean EPOLL = Epoll.isAvailable();
 
-    private static final ThreadFactory THREAD_FACTORY = new DefaultThreadFactory(MultithreadEventExecutorGroup.class, true, Thread.MIN_PRIORITY);
-
     @NotNull
     public static EventLoopGroup eventLoopGroup() {
         if (!Boolean.getBoolean("reformcloud.disable.native")) {
             if (EPOLL) {
-                return new EpollEventLoopGroup(Runtime.getRuntime().availableProcessors(), THREAD_FACTORY);
+                return new EpollEventLoopGroup(Runtime.getRuntime().availableProcessors(), newThreadFactory("Epoll"));
             }
         }
 
-        return new NioEventLoopGroup(Runtime.getRuntime().availableProcessors(), THREAD_FACTORY);
+        return new NioEventLoopGroup(Runtime.getRuntime().availableProcessors(), newThreadFactory("Nio"));
     }
 
     @NotNull
@@ -120,14 +117,6 @@ public final class NetworkUtil {
         return result;
     }
 
-    @NotNull
-    public static synchronized byte[] readBytes(@NotNull ByteBuf byteBuf) {
-        int length = read(byteBuf);
-        byte[] bytes = new byte[length];
-        byteBuf.readBytes(bytes);
-        return bytes;
-    }
-
     public static void destroyByteBuf(@NotNull ByteBuf byteBuf, boolean force) {
         if (byteBuf.refCnt() == 0) {
             // buffer is already released and will be garbage collected
@@ -161,5 +150,10 @@ public final class NetworkUtil {
         }
 
         return 5;
+    }
+
+    @NotNull
+    public static ThreadFactory newThreadFactory(@NotNull String type) {
+        return new FastNettyThreadFactory("Netty Local " + type + " Thread#%d");
     }
 }
