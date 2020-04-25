@@ -2,6 +2,7 @@ package systems.reformcloud.reformcloud2.executor.api.common.network;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.EventLoopGroup;
+import io.netty.channel.WriteBufferWaterMark;
 import io.netty.channel.epoll.Epoll;
 import io.netty.channel.epoll.EpollEventLoopGroup;
 import io.netty.channel.epoll.EpollServerSocketChannel;
@@ -54,17 +55,19 @@ public final class NetworkUtil {
 
     public static final MessageToByteEncoder<ByteBuf> SERIALIZER = new LengthSerializer();
 
+    public static final WriteBufferWaterMark WATER_MARK = new WriteBufferWaterMark(1 << 20, 1 << 21);
+
     private static final boolean EPOLL = Epoll.isAvailable();
 
     @NotNull
     public static EventLoopGroup eventLoopGroup() {
         if (!Boolean.getBoolean("reformcloud.disable.native")) {
             if (EPOLL) {
-                return new EpollEventLoopGroup(Runtime.getRuntime().availableProcessors(), newThreadFactory("Epoll"));
+                return new EpollEventLoopGroup(0, newThreadFactory("Epoll"));
             }
         }
 
-        return new NioEventLoopGroup(Runtime.getRuntime().availableProcessors(), newThreadFactory("Nio"));
+        return new NioEventLoopGroup(0, newThreadFactory("Nio"));
     }
 
     @NotNull
