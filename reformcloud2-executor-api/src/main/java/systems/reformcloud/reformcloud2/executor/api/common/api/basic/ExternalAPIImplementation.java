@@ -29,6 +29,8 @@ import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Temp
 import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.PlayerAccessConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.StartupConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.StartupEnvironment;
+import systems.reformcloud.reformcloud2.executor.api.common.network.challenge.packet.server.PacketOutServerChallengeStart;
+import systems.reformcloud.reformcloud2.executor.api.common.network.challenge.packet.server.PacketOutServerGrantAccess;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.common.network.exception.WrongResultTypeException;
 import systems.reformcloud.reformcloud2.executor.api.common.network.messaging.NamedMessagePacket;
@@ -52,6 +54,28 @@ public abstract class ExternalAPIImplementation extends ExecutorAPI implements
         GroupSyncAPI, GroupAsyncAPI,
         PlayerSyncAPI, PlayerAsyncAPI,
         MessageSyncAPI, MessageAsyncAPI {
+
+    public ExternalAPIImplementation() {
+        this.packetHandler().registerNetworkHandlers(
+                // API
+                PacketAPIQueryCommandDispatchResult.class,
+                PacketAPIQueryDatabaseContainsResult.class,
+                PacketAPIQueryDatabaseGetDocumentResult.class,
+                PacketAPIQueryGetDatabaseSizeResult.class,
+                PacketAPIQueryGetMainGroupsResult.class,
+                PacketAPIQueryGetProcessesResult.class,
+                PacketAPIQueryGetProcessGroupsResult.class,
+                PacketAPIQueryProcessStartNewResult.class,
+                PacketAPIQueryProcessStartPreparedResult.class,
+                PacketAPIQueryProcessStopResult.class,
+                PacketAPIQueryRequestMainGroupResult.class,
+                PacketAPIQueryRequestProcessGroupResult.class,
+                PacketAPIQueryRequestProcessResult.class,
+                // Auth
+                PacketOutServerChallengeStart.class,
+                PacketOutServerGrantAccess.class
+        );
+    }
 
     public static final int EXTERNAL_PACKET_ID = 600;
 
