@@ -1,7 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.api.common.api.player;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 
@@ -76,27 +75,6 @@ public interface PlayerAsyncAPI {
     Task<Void> playEffectAsync(@NotNull UUID player, @NotNull String entityEffect);
 
     /**
-     * Plays a player effect
-     *
-     * @param player The uuid of the player which should be sent
-     * @param effect The effect which should be played
-     * @param data   A bit needed for some effects
-     * @param <T>    The data depending to the effect
-     * @return A task which will be completed after the completion of the packet sent
-     */
-    @NotNull
-    <T> Task<Void> playEffectAsync(@NotNull UUID player, @NotNull String effect, @Nullable T data);
-
-    /**
-     * Respawn a player
-     *
-     * @param player The uuid of the player which should be re-spawned
-     * @return A task which will be completed after the completion of the packet sent
-     */
-    @NotNull
-    Task<Void> respawnAsync(@NotNull UUID player);
-
-    /**
      * Teleports a player
      *
      * @param player The uuid of the player which should be teleported
@@ -140,14 +118,4 @@ public interface PlayerAsyncAPI {
      */
     @NotNull
     Task<Void> connectAsync(@NotNull UUID player, @NotNull UUID target);
-
-    /**
-     * Sets a player resource pack
-     *
-     * @param player The player who should get the resource pack
-     * @param pack   The url of the resource pack
-     * @return A task which will be completed after the completion of the packet sent
-     */
-    @NotNull
-    Task<Void> setResourcePackAsync(@NotNull UUID player, @NotNull String pack);
 }

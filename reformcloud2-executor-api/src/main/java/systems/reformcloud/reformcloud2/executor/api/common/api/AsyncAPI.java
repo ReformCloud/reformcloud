@@ -2,13 +2,11 @@ package systems.reformcloud.reformcloud2.executor.api.common.api;
 
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.common.api.applications.ApplicationAsyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.console.ConsoleAsyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.database.DatabaseAsyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.group.GroupAsyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.messaging.MessageAsyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.player.PlayerAsyncAPI;
-import systems.reformcloud.reformcloud2.executor.api.common.api.plugins.PluginAsyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.process.ProcessAsyncAPI;
 
 /**
@@ -31,12 +29,6 @@ public interface AsyncAPI {
     GroupAsyncAPI getGroupAsyncAPI();
 
     /**
-     * @return The current application async api instance
-     */
-    @NotNull
-    ApplicationAsyncAPI getApplicationAsyncAPI();
-
-    /**
      * @return The current console async api instance
      */
     @NotNull
@@ -47,12 +39,6 @@ public interface AsyncAPI {
      */
     @NotNull
     PlayerAsyncAPI getPlayerAsyncAPI();
-
-    /**
-     * @return The current plugins async api instance
-     */
-    @NotNull
-    PluginAsyncAPI getPluginAsyncAPI();
 
     /**
      * @return The current database async api instance

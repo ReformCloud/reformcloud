@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorType;
 import systems.reformcloud.reformcloud2.executor.api.api.API;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.common.api.basic.ExternalEventBusHandler;
+import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.ExternalEventBusHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.ProcessUpdatedEvent;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.event.EventManager;
@@ -20,7 +20,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.channel.Pack
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.common.network.client.DefaultNetworkClient;
 import systems.reformcloud.reformcloud2.executor.api.common.network.client.NetworkClient;
-import systems.reformcloud.reformcloud2.executor.api.common.network.messaging.ProxiedChannelMessageHandler;
+import systems.reformcloud.reformcloud2.executor.api.common.network.messaging.ProxiedChannelMessage;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.defaults.DefaultPacketHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.handler.PacketHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
@@ -62,7 +62,7 @@ public final class SpigotExecutor extends API implements PlayerAPIExecutor {
 
         packetHandler.registerHandler(new APIPacketInAPIAction(this));
         packetHandler.registerHandler(new APIPacketInPluginAction(new PluginExecutorContainer()));
-        packetHandler.registerHandler(new ProxiedChannelMessageHandler());
+        packetHandler.registerHandler(new ProxiedChannelMessage());
 
         String connectionKey = JsonConfiguration.read("reformcloud/.connection/key.json").getString("key");
         SystemHelper.deleteFile(new File("reformcloud/.connection/key.json"));

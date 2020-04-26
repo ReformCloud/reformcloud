@@ -1,7 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.api.common.api.player;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 
 import java.util.UUID;
@@ -63,23 +62,6 @@ public interface PlayerSyncAPI {
     void playEffect(@NotNull UUID player, @NotNull String entityEffect);
 
     /**
-     * Plays a player effect
-     *
-     * @param player The uuid of the player which should be sent
-     * @param effect The effect which should be played
-     * @param data   A bit needed for some effects
-     * @param <T>    The data depending to the effect
-     */
-    <T> void playEffect(@NotNull UUID player, @NotNull String effect, @Nullable T data);
-
-    /**
-     * Respawn a player
-     *
-     * @param player The uuid of the player which should be re-spawned
-     */
-    void respawn(@NotNull UUID player);
-
-    /**
      * Teleports a player
      *
      * @param player The uuid of the player which should be teleported
@@ -115,12 +97,4 @@ public interface PlayerSyncAPI {
      * @param target The target player
      */
     void connect(@NotNull UUID player, @NotNull UUID target);
-
-    /**
-     * Sets a player resource pack
-     *
-     * @param player The player who should get the resource pack
-     * @param pack   The url of the resource pack
-     */
-    void setResourcePack(@NotNull UUID player, @NotNull String pack);
 }

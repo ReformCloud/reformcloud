@@ -3,7 +3,7 @@ package systems.reformcloud.reformcloud2.executor.api.common.api.basic.packets.s
 import io.netty.channel.ChannelHandlerContext;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import systems.reformcloud.reformcloud2.executor.api.common.api.basic.ExternalEventBusHandler;
+import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.ExternalEventBusHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.ProcessUpdatedEvent;
 import systems.reformcloud.reformcloud2.executor.api.common.network.NetworkUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.network.challenge.ChallengeAuthHandler;

@@ -6,7 +6,7 @@ import systems.reformcloud.reformcloud2.executor.api.ExecutorType;
 import systems.reformcloud.reformcloud2.executor.api.client.Client;
 import systems.reformcloud.reformcloud2.executor.api.client.process.ProcessManager;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.common.api.basic.ExternalEventBusHandler;
+import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.ExternalEventBusHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.application.ApplicationLoader;
 import systems.reformcloud.reformcloud2.executor.api.common.application.basic.DefaultApplicationLoader;
 import systems.reformcloud.reformcloud2.executor.api.common.client.basic.DefaultClientRuntimeInformation;
@@ -33,7 +33,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.channel.hand
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.common.network.client.DefaultNetworkClient;
 import systems.reformcloud.reformcloud2.executor.api.common.network.client.NetworkClient;
-import systems.reformcloud.reformcloud2.executor.api.common.network.messaging.ProxiedChannelMessageHandler;
+import systems.reformcloud.reformcloud2.executor.api.common.network.messaging.ProxiedChannelMessage;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.defaults.DefaultPacketHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.handler.PacketHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.system.SystemHelper;
@@ -163,7 +163,7 @@ public final class ClientExecutor extends Client {
 
     private void registerNetworkHandlers() {
         new Reflections("systems.reformcloud.reformcloud2.executor.client.network.packet.in").getSubTypesOf(DefaultJsonNetworkHandler.class).forEach(packetHandler::registerHandler);
-        this.packetHandler.registerHandler(new ProxiedChannelMessageHandler());
+        this.packetHandler.registerHandler(new ProxiedChannelMessage());
     }
 
     private void registerDefaultCommands() {

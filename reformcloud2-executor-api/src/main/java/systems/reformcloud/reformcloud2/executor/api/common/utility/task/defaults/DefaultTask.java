@@ -67,6 +67,13 @@ public final class DefaultTask<V> extends Task<V> {
         return this;
     }
 
+    @Override
+    public boolean completeExceptionally(Throwable ex) {
+        boolean result = super.completeExceptionally(ex);
+        this.handleFailure(ex);
+        return result;
+    }
+
     private void handleFailure(Throwable throwable) {
         if (failureConsumer != null) {
             failureConsumer.accept(new TaskCompletionException("A task raised an exception", throwable));

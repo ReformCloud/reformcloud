@@ -751,15 +751,6 @@ public interface ProcessAsyncAPI {
     Task<Void> executeProcessCommandAsync(@NotNull String name, @NotNull String commandLine);
 
     /**
-     * Gets the global online count
-     *
-     * @param ignoredProxies The ignored proxies
-     * @return A task which will be completed with the global online count
-     */
-    @NotNull
-    Task<Integer> getGlobalOnlineCountAsync(@NotNull Collection<String> ignoredProxies);
-
-    /**
      * Updates a specific {@link ProcessInformation}
      *
      * @param processInformation The process information which should be updated

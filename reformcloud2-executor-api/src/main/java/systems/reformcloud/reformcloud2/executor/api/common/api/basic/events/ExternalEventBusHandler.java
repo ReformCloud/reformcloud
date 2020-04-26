@@ -1,4 +1,4 @@
-package systems.reformcloud.reformcloud2.executor.api.common.api.basic;
+package systems.reformcloud.reformcloud2.executor.api.common.api.basic.events;
 
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.api.basic.packets.shared.*;
@@ -7,22 +7,22 @@ import systems.reformcloud.reformcloud2.executor.api.common.event.EventManager;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.handler.PacketHandler;
 
 //Note! This class CANNOT use Reflections because it leads to problems using spigot (older guava implementation)
-public final class ExternalEventBusHandler {
+public class ExternalEventBusHandler {
 
     /**
      * Initializes the external event bus which handles all known event packets and call them sync
      *
      * @param packetHandler The current packet handler per implementation
-     * @param eventManager The event manager which should be used
+     * @param eventManager  The event manager which should be used
      */
     public ExternalEventBusHandler(@NotNull PacketHandler packetHandler, @NotNull EventManager eventManager) {
         packetHandler.registerNetworkHandlers(
-                new EventPacketProcessClosed(),
-                new EventPacketProcessStarted(),
-                new EventPacketProcessUpdated(),
-                new EventPacketPlayerServerSwitch(),
-                new EventPacketLogoutPlayer(),
-                new EventPacketPlayerConnected()
+                EventPacketProcessClosed.class,
+                EventPacketProcessStarted.class,
+                EventPacketProcessUpdated.class,
+                EventPacketPlayerServerSwitch.class,
+                EventPacketLogoutPlayer.class,
+                EventPacketPlayerConnected.class
         );
 
         this.eventManager = eventManager;

@@ -1,11 +1,20 @@
 package systems.reformcloud.reformcloud2.executor.api.common.network.messaging;
 
+import io.netty.channel.ChannelHandlerContext;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.messaging.util.ReceiverType;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.network.NetworkUtil;
+import systems.reformcloud.reformcloud2.executor.api.common.network.challenge.ChallengeAuthHandler;
+import systems.reformcloud.reformcloud2.executor.api.common.network.channel.NetworkChannelReader;
+import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
+import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.common.network.data.ProtocolBuffer;
+import systems.reformcloud.reformcloud2.executor.api.common.network.handler.ChannelReaderHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
+import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -36,6 +45,29 @@ public class TypeMessagePacket implements Packet {
     @Override
     public int getId() {
         return NetworkUtil.MESSAGING_BUS + 1;
+    }
+
+    @Override
+    public void handlePacketReceive(@NotNull NetworkChannelReader reader, @NotNull ChallengeAuthHandler authHandler, @NotNull ChannelReaderHelper parent, @Nullable PacketSender sender, @NotNull ChannelHandlerContext channel) {
+        DefaultChannelManager.INSTANCE.broadcast(
+                new ProxiedChannelMessage(this.content, this.baseChannel, this.subChannel),
+                e -> {
+                    ProcessInformation processInformation = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcess(e.getName());
+                    if (this.receivers.contains(ReceiverType.OTHERS) && processInformation == null) {
+                        return true;
+                    }
+
+                    if (processInformation == null) {
+                        return false;
+                    }
+
+                    if (processInformation.getProcessDetail().getTemplate().isServer() && this.receivers.contains(ReceiverType.SERVER)) {
+                        return true;
+                    }
+
+                    return !processInformation.getProcessDetail().getTemplate().isServer() && this.receivers.contains(ReceiverType.PROXY);
+                }
+        );
     }
 
     @Override

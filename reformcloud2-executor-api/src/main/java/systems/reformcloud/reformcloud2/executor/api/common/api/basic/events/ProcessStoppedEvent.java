@@ -4,7 +4,7 @@ import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.event.Event;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 
-public final class ProcessStoppedEvent extends Event {
+public class ProcessStoppedEvent extends Event {
 
     public ProcessStoppedEvent(@NotNull ProcessInformation processInformation) {
         this.processInformation = processInformation;

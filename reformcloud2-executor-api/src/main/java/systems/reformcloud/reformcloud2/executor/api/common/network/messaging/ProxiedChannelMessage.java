@@ -14,12 +14,12 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.data.Protoco
 import systems.reformcloud.reformcloud2.executor.api.common.network.handler.ChannelReaderHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 
-public final class ProxiedChannelMessageHandler implements Packet {
+public class ProxiedChannelMessage implements Packet {
 
-    public ProxiedChannelMessageHandler() {
+    public ProxiedChannelMessage() {
     }
 
-    public ProxiedChannelMessageHandler(JsonConfiguration message, String base, String sub) {
+    public ProxiedChannelMessage(JsonConfiguration message, String base, String sub) {
         this.message = message;
         this.base = base;
         this.sub = sub;

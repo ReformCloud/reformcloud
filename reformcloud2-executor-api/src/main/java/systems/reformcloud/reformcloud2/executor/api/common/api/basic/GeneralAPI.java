@@ -1,11 +1,8 @@
-package systems.reformcloud.reformcloud2.executor.api.common.api.applications.api;
+package systems.reformcloud.reformcloud2.executor.api.common.api.basic;
 
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.api.AsyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.SyncAPI;
-import systems.reformcloud.reformcloud2.executor.api.common.api.applications.ApplicationAsyncAPI;
-import systems.reformcloud.reformcloud2.executor.api.common.api.applications.ApplicationSyncAPI;
-import systems.reformcloud.reformcloud2.executor.api.common.api.basic.ExternalAPIImplementation;
 import systems.reformcloud.reformcloud2.executor.api.common.api.console.ConsoleAsyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.console.ConsoleSyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.database.DatabaseAsyncAPI;
@@ -16,14 +13,12 @@ import systems.reformcloud.reformcloud2.executor.api.common.api.messaging.Messag
 import systems.reformcloud.reformcloud2.executor.api.common.api.messaging.MessageSyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.player.PlayerAsyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.player.PlayerSyncAPI;
-import systems.reformcloud.reformcloud2.executor.api.common.api.plugins.PluginAsyncAPI;
-import systems.reformcloud.reformcloud2.executor.api.common.api.plugins.PluginSyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.process.ProcessAsyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.process.ProcessSyncAPI;
 
 public class GeneralAPI implements SyncAPI, AsyncAPI {
 
-    public GeneralAPI(ExternalAPIImplementation externalAPIImplementation) {
+    GeneralAPI(ExternalAPIImplementation externalAPIImplementation) {
         this.externalAPIImplementation = externalAPIImplementation;
     }
 
@@ -43,12 +38,6 @@ public class GeneralAPI implements SyncAPI, AsyncAPI {
 
     @NotNull
     @Override
-    public ApplicationAsyncAPI getApplicationAsyncAPI() {
-        return externalAPIImplementation;
-    }
-
-    @NotNull
-    @Override
     public ConsoleAsyncAPI getConsoleAsyncAPI() {
         return externalAPIImplementation;
     }
@@ -56,12 +45,6 @@ public class GeneralAPI implements SyncAPI, AsyncAPI {
     @NotNull
     @Override
     public PlayerAsyncAPI getPlayerAsyncAPI() {
-        return externalAPIImplementation;
-    }
-
-    @NotNull
-    @Override
-    public PluginAsyncAPI getPluginAsyncAPI() {
         return externalAPIImplementation;
     }
 
@@ -91,12 +74,6 @@ public class GeneralAPI implements SyncAPI, AsyncAPI {
 
     @NotNull
     @Override
-    public ApplicationSyncAPI getApplicationSyncAPI() {
-        return externalAPIImplementation;
-    }
-
-    @NotNull
-    @Override
     public ConsoleSyncAPI getConsoleSyncAPI() {
         return externalAPIImplementation;
     }
@@ -104,12 +81,6 @@ public class GeneralAPI implements SyncAPI, AsyncAPI {
     @NotNull
     @Override
     public PlayerSyncAPI getPlayerSyncAPI() {
-        return externalAPIImplementation;
-    }
-
-    @NotNull
-    @Override
-    public PluginSyncAPI getPluginSyncAPI() {
         return externalAPIImplementation;
     }
 

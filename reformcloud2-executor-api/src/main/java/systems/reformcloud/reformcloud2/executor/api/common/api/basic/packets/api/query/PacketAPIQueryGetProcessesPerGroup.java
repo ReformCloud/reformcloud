@@ -14,6 +14,13 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packe
 
 public class PacketAPIQueryGetProcessesPerGroup implements Packet {
 
+    public PacketAPIQueryGetProcessesPerGroup() {
+    }
+
+    public PacketAPIQueryGetProcessesPerGroup(String groupName) {
+        this.groupName = groupName;
+    }
+
     private String groupName;
 
     @Override
