@@ -10,12 +10,13 @@ import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonCo
 import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.NetworkChannel;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
+import systems.reformcloud.reformcloud2.executor.api.common.network.messaging.NamedMessagePacket;
+import systems.reformcloud.reformcloud2.executor.api.common.network.messaging.ProxiedChannelMessage;
 import systems.reformcloud.reformcloud2.executor.api.common.network.messaging.TypeMessagePacket;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.optional.ReferencedOptional;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.defaults.DefaultTask;
-import systems.reformcloud.reformcloud2.executor.controller.network.packets.out.messaging.ProxiedChannelMessage;
 import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
 
 import java.util.ArrayList;
@@ -28,7 +29,7 @@ public class ChannelMessageAPIImplementation implements MessageSyncAPI, MessageA
     @NotNull
     @Override
     public Task<Void> sendChannelMessageAsync(@NotNull JsonConfiguration jsonConfiguration, @NotNull String baseChannel,
-                                              @NotNull String subChannel, @NotNull ErrorReportHandling errorReportHandling, @NotNull String... receivers) {
+                                              @NotNull String subChannel, @NotNull ErrorReportHandling errorReportHandling, String @NotNull ... receivers) {
         Task<Void> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             Arrays.stream(receivers).forEach(receiver -> DefaultChannelManager.INSTANCE.get(receiver).orElseDo(Objects::nonNull, () -> {
@@ -48,7 +49,7 @@ public class ChannelMessageAPIImplementation implements MessageSyncAPI, MessageA
                 }
             }, sender -> {
                 if (NodeExecutor.getInstance().getNodeNetworkManager().getCluster().getNode(sender.getName()) != null) {
-                    sender.sendPacket(new TypeMessagePacket(jsonConfiguration, Arrays.asList(receivers), errorReportHandling, baseChannel, subChannel));
+                    sender.sendPacket(new NamedMessagePacket(Arrays.asList(receivers), jsonConfiguration, errorReportHandling, baseChannel, subChannel));
                     return;
                 }
 
@@ -61,7 +62,7 @@ public class ChannelMessageAPIImplementation implements MessageSyncAPI, MessageA
 
     @NotNull
     @Override
-    public Task<Void> sendChannelMessageAsync(@NotNull JsonConfiguration configuration, @NotNull String baseChannel, @NotNull String subChannel, @NotNull ReceiverType... receiverTypes) {
+    public Task<Void> sendChannelMessageAsync(@NotNull JsonConfiguration configuration, @NotNull String baseChannel, @NotNull String subChannel, ReceiverType @NotNull ... receiverTypes) {
         Task<Void> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             Collection<NetworkChannel> channels = new ArrayList<>();
@@ -114,12 +115,12 @@ public class ChannelMessageAPIImplementation implements MessageSyncAPI, MessageA
     }
 
     @Override
-    public void sendChannelMessageSync(@NotNull JsonConfiguration jsonConfiguration, @NotNull String baseChannel, @NotNull String subChannel, @NotNull ErrorReportHandling errorReportHandling, @NotNull String... receivers) {
+    public void sendChannelMessageSync(@NotNull JsonConfiguration jsonConfiguration, @NotNull String baseChannel, @NotNull String subChannel, @NotNull ErrorReportHandling errorReportHandling, String @NotNull ... receivers) {
         sendChannelMessageAsync(jsonConfiguration, baseChannel, subChannel, errorReportHandling, receivers).awaitUninterruptedly();
     }
 
     @Override
-    public void sendChannelMessageSync(@NotNull JsonConfiguration configuration, @NotNull String baseChannel, @NotNull String subChannel, @NotNull ReceiverType... receiverTypes) {
+    public void sendChannelMessageSync(@NotNull JsonConfiguration configuration, @NotNull String baseChannel, @NotNull String subChannel, ReceiverType @NotNull ... receiverTypes) {
         sendChannelMessageAsync(configuration, baseChannel, subChannel, receiverTypes).awaitUninterruptedly();
     }
 }

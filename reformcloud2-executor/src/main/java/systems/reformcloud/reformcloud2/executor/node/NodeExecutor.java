@@ -40,9 +40,9 @@ import systems.reformcloud.reformcloud2.executor.api.common.logger.other.Default
 import systems.reformcloud.reformcloud2.executor.api.common.network.challenge.shared.ClientChallengeAuthHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.challenge.shared.SharedChallengeProvider;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
-import systems.reformcloud.reformcloud2.executor.api.common.network.channel.handler.DefaultJsonNetworkHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.common.network.client.NetworkClient;
+import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.defaults.DefaultPacketHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.handler.PacketHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.server.DefaultNetworkServer;
@@ -90,6 +90,8 @@ import systems.reformcloud.reformcloud2.executor.node.network.channel.NodeNetwor
 import systems.reformcloud.reformcloud2.executor.node.network.channel.NodeNetworkSuccessHandler;
 import systems.reformcloud.reformcloud2.executor.node.network.client.NodeNetworkClient;
 import systems.reformcloud.reformcloud2.executor.node.network.packet.out.screen.NodePacketOutToggleScreen;
+import systems.reformcloud.reformcloud2.executor.node.network.packet.query.PacketNodeQueryStartProcess;
+import systems.reformcloud.reformcloud2.executor.node.network.packet.query.PacketNodeQueryStartProcessResult;
 import systems.reformcloud.reformcloud2.executor.node.process.LocalAutoStartupHandler;
 import systems.reformcloud.reformcloud2.executor.node.process.LocalNodeProcessManager;
 import systems.reformcloud.reformcloud2.executor.node.process.listeners.RunningProcessPreparedListener;
@@ -577,6 +579,13 @@ public final class NodeExecutor extends Node {
     }
 
     private void loadPacketHandlers() {
+        new Reflections("systems.reformcloud.reformcloud2.executor.api.common.api.basic.packets.api")
+                .getSubTypesOf(Packet.class)
+                .forEach(e -> this.packetHandler.registerHandler(e));
+
+        this.packetHandler.registerHandler(PacketNodeQueryStartProcess.class);
+        this.packetHandler.registerHandler(PacketNodeQueryStartProcessResult.class);
+
         new Reflections("systems.reformcloud.reformcloud2.executor.node.network.packet.in").getSubTypesOf(DefaultJsonNetworkHandler.class).forEach(packetHandler::registerHandler);
 
         // The query handler for the external api, we can re-use them

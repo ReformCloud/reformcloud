@@ -17,7 +17,6 @@ import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
 import systems.reformcloud.reformcloud2.executor.node.network.packet.out.NodePacketOutExecuteCommand;
 import systems.reformcloud.reformcloud2.executor.node.process.manager.LocalProcessManager;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -299,19 +298,6 @@ public class ProcessAPIImplementation implements ProcessSyncAPI, ProcessAsyncAPI
         return task;
     }
 
-    @NotNull
-    @Override
-    public Task<Integer> getGlobalOnlineCountAsync(@NotNull Collection<String> ignoredProxies) {
-        Task<Integer> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> {
-            int online = Streams.allOf(nodeNetworkManager.getNodeProcessHelper().getClusterProcesses(),
-                    e -> !e.getProcessDetail().getTemplate().isServer() && !ignoredProxies.contains(e.getProcessDetail().getName())
-            ).stream().mapToInt(e -> e.getProcessPlayerManager().getOnlineCount()).sum();
-            task.complete(online);
-        });
-        return task;
-    }
-
     @Nullable
     @Override
     public ProcessInformation startProcess(@NotNull ProcessConfiguration configuration) {
@@ -410,12 +396,6 @@ public class ProcessAPIImplementation implements ProcessSyncAPI, ProcessAsyncAPI
     @Override
     public void executeProcessCommand(@NotNull String name, @NotNull String commandLine) {
         executeProcessCommandAsync(name, commandLine).awaitUninterruptedly();
-    }
-
-    @Override
-    public int getGlobalOnlineCount(@NotNull Collection<String> ignoredProxies) {
-        Integer integer = getGlobalOnlineCountAsync(ignoredProxies).getUninterruptedly();
-        return integer == null ? 0 : integer;
     }
 
     @Override
