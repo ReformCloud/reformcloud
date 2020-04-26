@@ -6,12 +6,12 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.data.Protoco
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.query.QueryResultPacket;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 
-public class PacketAPIQueryRequestProcessResult extends QueryResultPacket {
+public class PacketAPIQueryProcessStopResult extends QueryResultPacket {
 
-    public PacketAPIQueryRequestProcessResult() {
+    public PacketAPIQueryProcessStopResult() {
     }
 
-    public PacketAPIQueryRequestProcessResult(ProcessInformation processInformation) {
+    public PacketAPIQueryProcessStopResult(ProcessInformation processInformation) {
         this.processInformation = processInformation;
     }
 
@@ -23,7 +23,7 @@ public class PacketAPIQueryRequestProcessResult extends QueryResultPacket {
 
     @Override
     public int getId() {
-        return ExternalAPIImplementation.EXTERNAL_PACKET_QUERY_RESULT_ID + 9;
+        return ExternalAPIImplementation.EXTERNAL_PACKET_QUERY_RESULT_ID + 13;
     }
 
     @Override

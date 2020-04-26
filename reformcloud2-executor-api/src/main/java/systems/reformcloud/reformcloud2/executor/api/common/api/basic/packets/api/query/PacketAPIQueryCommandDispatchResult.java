@@ -2,39 +2,38 @@ package systems.reformcloud.reformcloud2.executor.api.common.api.basic.packets.a
 
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.api.basic.ExternalAPIImplementation;
-import systems.reformcloud.reformcloud2.executor.api.common.groups.MainGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.network.data.ProtocolBuffer;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.query.QueryResultPacket;
 
-import java.util.List;
+import java.util.Collection;
 
-public class PacketAPIQueryGetMainGroupsResult extends QueryResultPacket {
+public class PacketAPIQueryCommandDispatchResult extends QueryResultPacket {
 
-    public PacketAPIQueryGetMainGroupsResult() {
+    public PacketAPIQueryCommandDispatchResult() {
     }
 
-    public PacketAPIQueryGetMainGroupsResult(List<MainGroup> mainGroups) {
-        this.mainGroups = mainGroups;
+    public PacketAPIQueryCommandDispatchResult(Collection<String> result) {
+        this.result = result;
     }
 
-    private List<MainGroup> mainGroups;
+    private Collection<String> result;
 
-    public List<MainGroup> getMainGroups() {
-        return mainGroups;
+    public Collection<String> getResult() {
+        return result;
     }
 
     @Override
     public int getId() {
-        return ExternalAPIImplementation.EXTERNAL_PACKET_QUERY_RESULT_ID + 4;
+        return ExternalAPIImplementation.EXTERNAL_PACKET_QUERY_RESULT_ID + 10;
     }
 
     @Override
     public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeObjects(this.mainGroups);
+        buffer.writeStringArray(this.result);
     }
 
     @Override
     public void read(@NotNull ProtocolBuffer buffer) {
-        this.mainGroups = buffer.readObjects(MainGroup.class);
+        this.result = buffer.readStringArray();
     }
 }

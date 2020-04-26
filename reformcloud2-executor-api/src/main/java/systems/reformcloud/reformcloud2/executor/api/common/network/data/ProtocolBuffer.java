@@ -74,4 +74,9 @@ public abstract class ProtocolBuffer extends ByteBuf {
     public abstract UUID readUniqueId();
 
     public abstract void writeUniqueId(@Nullable UUID uniqueId);
+
+    public abstract void writeInteger(@Nullable Integer integer);
+
+    @Nullable
+    public abstract Integer readInteger();
 }

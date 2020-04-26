@@ -1,6 +1,7 @@
 package systems.reformcloud.reformcloud2.executor.api.common.api.basic.packets.api.query;
 
 import org.jetbrains.annotations.NotNull;
+import systems.reformcloud.reformcloud2.executor.api.common.api.basic.ExternalAPIImplementation;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.network.data.ProtocolBuffer;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.query.QueryResultPacket;
@@ -11,6 +12,9 @@ import java.io.InputStream;
 
 public class PacketAPIQueryDatabaseGetDocumentResult extends QueryResultPacket {
 
+    public PacketAPIQueryDatabaseGetDocumentResult() {
+    }
+
     public PacketAPIQueryDatabaseGetDocumentResult(JsonConfiguration result) {
         this.result = result;
     }
@@ -19,6 +23,11 @@ public class PacketAPIQueryDatabaseGetDocumentResult extends QueryResultPacket {
 
     public JsonConfiguration getResult() {
         return result;
+    }
+
+    @Override
+    public int getId() {
+        return ExternalAPIImplementation.EXTERNAL_PACKET_QUERY_RESULT_ID + 2;
     }
 
     @Override

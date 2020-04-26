@@ -17,56 +17,61 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class PacketAPIDatabaseInsert implements Packet {
+public class PacketAPIDatabaseUpdateOrInsertDocument implements Packet {
 
-    public PacketAPIDatabaseInsert() {
+    public PacketAPIDatabaseUpdateOrInsertDocument() {
     }
 
-    public PacketAPIDatabaseInsert(String database, String keyEntry, String identifier, JsonConfiguration configuration) {
-        this.database = database;
-        this.keyEntry = keyEntry;
+    public PacketAPIDatabaseUpdateOrInsertDocument(String databaseName, String entryKey, String identifier, JsonConfiguration data) {
+        this.databaseName = databaseName;
+        this.entryKey = entryKey;
         this.identifier = identifier;
-        this.configuration = configuration;
+        this.data = data;
     }
 
-    private String database;
+    private String databaseName;
 
-    private String keyEntry;
+    private String entryKey;
 
     private String identifier;
 
-    private JsonConfiguration configuration;
+    private JsonConfiguration data;
 
     @Override
     public int getId() {
-        return ExternalAPIImplementation.EXTERNAL_PACKET_ID + 11;
+        return ExternalAPIImplementation.EXTERNAL_PACKET_ID + 12;
     }
 
     @Override
     public void handlePacketReceive(@NotNull NetworkChannelReader reader, @NotNull ChallengeAuthHandler authHandler, @NotNull ChannelReaderHelper parent, @Nullable PacketSender sender, @NotNull ChannelHandlerContext channel) {
-        ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().insert(
-                this.database, this.keyEntry, this.identifier, this.configuration
-        );
+        if (this.entryKey != null) {
+            ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().update(this.databaseName, this.entryKey, this.data);
+            return;
+        }
+
+        if (this.identifier != null) {
+            ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().updateIfAbsent(this.databaseName, this.identifier, this.data);
+        }
     }
 
     @Override
     public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeString(this.database);
-        buffer.writeString(this.keyEntry);
+        buffer.writeString(this.databaseName);
+        buffer.writeString(this.entryKey);
         buffer.writeString(this.identifier);
-        buffer.writeArray(this.configuration.toPrettyBytes());
+        buffer.writeArray(this.data.toPrettyBytes());
     }
 
     @Override
     public void read(@NotNull ProtocolBuffer buffer) {
-        this.database = buffer.readString();
-        this.keyEntry = buffer.readString();
+        this.databaseName = buffer.readString();
+        this.entryKey = buffer.readString();
         this.identifier = buffer.readString();
 
         try (InputStream inputStream = new ByteArrayInputStream(buffer.readArray())) {
-            this.configuration = new JsonConfiguration(inputStream);
+            this.data = new JsonConfiguration(inputStream);
         } catch (final IOException ex) {
-            this.configuration = new JsonConfiguration();
+            this.data = new JsonConfiguration();
             ex.printStackTrace();
         }
     }

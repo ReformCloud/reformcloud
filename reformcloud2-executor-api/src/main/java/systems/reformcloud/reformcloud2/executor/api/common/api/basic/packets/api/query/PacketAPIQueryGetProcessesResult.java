@@ -1,6 +1,7 @@
 package systems.reformcloud.reformcloud2.executor.api.common.api.basic.packets.api.query;
 
 import org.jetbrains.annotations.NotNull;
+import systems.reformcloud.reformcloud2.executor.api.common.api.basic.ExternalAPIImplementation;
 import systems.reformcloud.reformcloud2.executor.api.common.network.data.ProtocolBuffer;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.query.QueryResultPacket;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
@@ -20,6 +21,11 @@ public class PacketAPIQueryGetProcessesResult extends QueryResultPacket {
 
     public List<ProcessInformation> getProcessInformation() {
         return processInformation;
+    }
+
+    @Override
+    public int getId() {
+        return ExternalAPIImplementation.EXTERNAL_PACKET_QUERY_RESULT_ID + 5;
     }
 
     @Override

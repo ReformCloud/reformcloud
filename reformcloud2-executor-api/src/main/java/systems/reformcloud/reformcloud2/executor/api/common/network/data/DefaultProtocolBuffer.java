@@ -322,6 +322,26 @@ public class DefaultProtocolBuffer extends ProtocolBuffer {
     }
 
     @Override
+    public void writeInteger(@Nullable Integer integer) {
+        this.writeBoolean(integer == null);
+        if (integer == null) {
+            return;
+        }
+
+        this.writeInt(integer);
+    }
+
+    @Nullable
+    @Override
+    public Integer readInteger() {
+        if (this.readBoolean()) {
+            return null;
+        }
+
+        return this.readInt();
+    }
+
+    @Override
     public int capacity() {
         return this.wrapped.capacity();
     }

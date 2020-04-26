@@ -12,11 +12,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packe
 public abstract class QueryResultPacket implements Packet {
 
     @Override
-    public int getId() {
-        return 0;
-    }
-
-    @Override
     public void handlePacketReceive(@NotNull NetworkChannelReader reader, @NotNull ChallengeAuthHandler authHandler, @NotNull ChannelReaderHelper parent, @Nullable PacketSender sender, @NotNull ChannelHandlerContext channel) {
     }
 }
