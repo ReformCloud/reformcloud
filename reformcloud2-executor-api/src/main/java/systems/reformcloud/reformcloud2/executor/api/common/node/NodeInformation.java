@@ -2,6 +2,8 @@ package systems.reformcloud.reformcloud2.executor.api.common.node;
 
 import com.google.gson.reflect.TypeToken;
 import org.jetbrains.annotations.NotNull;
+import systems.reformcloud.reformcloud2.executor.api.common.network.SerializableObject;
+import systems.reformcloud.reformcloud2.executor.api.common.network.data.ProtocolBuffer;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessRuntimeInformation;
 
 import java.util.Collection;
@@ -9,16 +11,16 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class NodeInformation {
+public class NodeInformation implements SerializableObject {
 
     public static final TypeToken<NodeInformation> TYPE = new TypeToken<NodeInformation>() {
     };
 
-    private final String name;
+    private String name;
 
-    private final UUID nodeUniqueID;
+    private UUID nodeUniqueID;
 
-    private final long startupTime;
+    private long startupTime;
 
     private long lastUpdate;
 
@@ -28,7 +30,7 @@ public class NodeInformation {
 
     private ProcessRuntimeInformation processRuntimeInformation;
 
-    private final Collection<NodeProcess> startedProcesses;
+    private Collection<NodeProcess> startedProcesses;
 
     public NodeInformation(String name, UUID nodeUniqueID, long startupTime,
                            long usedMemory, long maxMemory, Collection<NodeProcess> startedProcesses) {
@@ -109,7 +111,35 @@ public class NodeInformation {
                 Objects.equals(getStartedProcesses(), that.getStartedProcesses());
     }
 
-    public boolean canEqual(NodeInformation other) {
+    public boolean canEqual(@NotNull NodeInformation other) {
         return getNodeUniqueID().equals(other.getNodeUniqueID());
+    }
+
+    @Override
+    public void write(@NotNull ProtocolBuffer buffer) {
+        buffer.writeString(this.name);
+        buffer.writeUniqueId(this.nodeUniqueID);
+
+        buffer.writeLong(this.startupTime);
+        buffer.writeLong(this.lastUpdate);
+        buffer.writeLong(this.usedMemory);
+        buffer.writeLong(this.maxMemory);
+
+        buffer.writeObject(this.processRuntimeInformation);
+        buffer.writeObjects(this.startedProcesses);
+    }
+
+    @Override
+    public void read(@NotNull ProtocolBuffer buffer) {
+        this.name = buffer.readString();
+        this.nodeUniqueID = buffer.readUniqueId();
+
+        this.startupTime = buffer.readLong();
+        this.lastUpdate = buffer.readLong();
+        this.usedMemory = buffer.readLong();
+        this.maxMemory = buffer.readLong();
+
+        this.processRuntimeInformation = buffer.readObject(ProcessRuntimeInformation.class);
+        this.startedProcesses = buffer.readObjects(NodeProcess.class);
     }
 }

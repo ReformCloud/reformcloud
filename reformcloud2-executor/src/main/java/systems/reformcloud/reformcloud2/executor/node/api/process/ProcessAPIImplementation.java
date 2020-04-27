@@ -12,8 +12,8 @@ import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.defaults.DefaultTask;
 import systems.reformcloud.reformcloud2.executor.api.node.network.NodeNetworkManager;
-import systems.reformcloud.reformcloud2.executor.controller.network.packets.out.ControllerPacketOutCopyProcess;
 import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
+import systems.reformcloud.reformcloud2.executor.node.network.packet.out.NodePacketOutCopyProcess;
 import systems.reformcloud.reformcloud2.executor.node.network.packet.out.NodePacketOutExecuteCommand;
 import systems.reformcloud.reformcloud2.executor.node.process.manager.LocalProcessManager;
 
@@ -231,7 +231,7 @@ public class ProcessAPIImplementation implements ProcessSyncAPI, ProcessAsyncAPI
             ).ifPresent(e -> e.copy(targetTemplate, targetTemplateStorage, targetTemplateGroup));
         } else {
             DefaultChannelManager.INSTANCE.get(target.getProcessDetail().getParentName()).ifPresent(packetSender -> packetSender.sendPacket(
-                    new ControllerPacketOutCopyProcess(
+                    new NodePacketOutCopyProcess(
                             target.getProcessDetail().getProcessUniqueID(),
                             targetTemplate,
                             targetTemplateStorage,

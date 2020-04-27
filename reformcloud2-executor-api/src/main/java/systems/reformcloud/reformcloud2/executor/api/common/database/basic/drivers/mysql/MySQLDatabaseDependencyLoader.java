@@ -20,7 +20,7 @@ public final class MySQLDatabaseDependencyLoader {
                 DefaultRepositories.MAVEN_CENTRAL,
                 "mysql",
                 "mysql-connector-java",
-                "8.0.19"
+                "8.0.20"
         ));
         Conditions.nonNull(dependency, StringUtil.formatError("dependency load for MySQL database"));
         dependencyLoader.addDependency(dependency);
@@ -38,7 +38,7 @@ public final class MySQLDatabaseDependencyLoader {
                 DefaultRepositories.MAVEN_CENTRAL,
                 "com.zaxxer",
                 "HikariCP",
-                "3.4.2"
+                "3.4.3"
         ));
         Conditions.nonNull(dependency, StringUtil.formatError("dependency load for MySQL database"));
         dependencyLoader.addDependency(dependency);
