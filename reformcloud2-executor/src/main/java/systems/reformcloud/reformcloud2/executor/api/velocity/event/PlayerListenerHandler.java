@@ -57,6 +57,7 @@ public final class PlayerListenerHandler {
         if (event.getResult().getServer().isPresent()) {
             DefaultChannelManager.INSTANCE.get("Controller").ifPresent(sender -> sender.sendPacket(new APIBungeePacketOutPlayerServerSwitch(
                     event.getPlayer().getUniqueId(),
+                    event.getPlayer().getCurrentServer().isPresent() ? event.getPlayer().getCurrentServer().get().getServerInfo().getName() : null,
                     event.getResult().getServer().get().getServerInfo().getName()
             )));
             AbsoluteThread.sleep(20);
@@ -147,7 +148,8 @@ public final class PlayerListenerHandler {
     public void handle(final DisconnectEvent event) {
         DefaultChannelManager.INSTANCE.get("Controller").ifPresent(packetSender -> packetSender.sendPacket(new APIPacketOutLogoutPlayer(
                 event.getPlayer().getUniqueId(),
-                event.getPlayer().getUsername()
+                event.getPlayer().getUsername(),
+                event.getPlayer().getCurrentServer().isPresent() ? event.getPlayer().getCurrentServer().get().getServerInfo().getName() : null
         )));
 
         VelocityExecutor.getInstance().getProxyServer().getScheduler()

@@ -20,10 +20,11 @@ public final class EventPacketPlayerServerSwitch implements Packet {
     public EventPacketPlayerServerSwitch() {
     }
 
-    public EventPacketPlayerServerSwitch(UUID uniqueId, String name, String targetServer) {
+    public EventPacketPlayerServerSwitch(UUID uniqueId, String name, String previousServer, String targetServer) {
         this.uniqueId = uniqueId;
         this.name = name;
         this.targetServer = targetServer;
+        this.previousServer = previousServer;
     }
 
     private UUID uniqueId;
@@ -32,6 +33,8 @@ public final class EventPacketPlayerServerSwitch implements Packet {
 
     private String targetServer;
 
+    private String previousServer;
+
     @Override
     public int getId() {
         return NetworkUtil.EVENT_BUS + 6;
@@ -39,7 +42,7 @@ public final class EventPacketPlayerServerSwitch implements Packet {
 
     @Override
     public void handlePacketReceive(@NotNull NetworkChannelReader reader, @NotNull ChallengeAuthHandler authHandler, @NotNull ChannelReaderHelper parent, @Nullable PacketSender sender, @NotNull ChannelHandlerContext channel) {
-        ExternalEventBusHandler.getInstance().callEvent(new PlayerServerSwitchEvent(this.uniqueId, this.name, this.targetServer));
+        ExternalEventBusHandler.getInstance().callEvent(new PlayerServerSwitchEvent(this.uniqueId, this.name, this.previousServer, this.targetServer));
     }
 
     @Override
@@ -47,6 +50,7 @@ public final class EventPacketPlayerServerSwitch implements Packet {
         buffer.writeUniqueId(this.uniqueId);
         buffer.writeString(this.name);
         buffer.writeString(this.targetServer);
+        buffer.writeString(this.previousServer);
     }
 
     @Override
@@ -54,5 +58,6 @@ public final class EventPacketPlayerServerSwitch implements Packet {
         this.uniqueId = buffer.readUniqueId();
         this.name = buffer.readString();
         this.targetServer = buffer.readString();
+        this.previousServer = buffer.readString();
     }
 }

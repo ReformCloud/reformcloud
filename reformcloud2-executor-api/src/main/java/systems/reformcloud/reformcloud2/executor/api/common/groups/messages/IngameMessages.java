@@ -2,10 +2,12 @@ package systems.reformcloud.reformcloud2.executor.api.common.groups.messages;
 
 import com.google.gson.reflect.TypeToken;
 import org.jetbrains.annotations.NotNull;
+import systems.reformcloud.reformcloud2.executor.api.common.network.SerializableObject;
+import systems.reformcloud.reformcloud2.executor.api.common.network.data.ProtocolBuffer;
 
 import java.text.MessageFormat;
 
-public final class IngameMessages {
+public final class IngameMessages implements SerializableObject {
 
     public static final TypeToken<IngameMessages> TYPE = new TypeToken<IngameMessages>() {
     };
@@ -129,5 +131,43 @@ public final class IngameMessages {
     public String format(@NotNull String message, @NotNull Object... replacements) {
         message = message.replace("%prefix%", prefix).replace("&", "§");
         return MessageFormat.format(message, replacements);
+    }
+
+    @Override
+    public void write(@NotNull ProtocolBuffer buffer) {
+        buffer.writeString(this.prefix);
+        buffer.writeString(this.processRegistered);
+        buffer.writeString(this.processStarted);
+        buffer.writeString(this.processConnected);
+        buffer.writeString(this.processStopped);
+        buffer.writeString(this.noHubServerAvailable);
+        buffer.writeString(this.alreadyConnectedToHub);
+        buffer.writeString(this.connectingToHub);
+        buffer.writeString(this.currentProcessClosed);
+        buffer.writeString(this.commandExecuteSuccess);
+        buffer.writeString(this.processFullMessage);
+        buffer.writeString(this.processEnterPermissionNotSet);
+        buffer.writeString(this.processInMaintenanceMessage);
+        buffer.writeString(this.alreadyConnectedMessage);
+        buffer.writeString(this.notUsingInternalProxy);
+    }
+
+    @Override
+    public void read(@NotNull ProtocolBuffer buffer) {
+        this.prefix = buffer.readString();
+        this.processRegistered = buffer.readString();
+        this.processStarted = buffer.readString();
+        this.processConnected = buffer.readString();
+        this.processStopped = buffer.readString();
+        this.noHubServerAvailable = buffer.readString();
+        this.alreadyConnectedMessage = buffer.readString();
+        this.connectingToHub = buffer.readString();
+        this.currentProcessClosed = buffer.readString();
+        this.commandExecuteSuccess = buffer.readString();
+        this.processFullMessage = buffer.readString();
+        this.processEnterPermissionNotSet = buffer.readString();
+        this.processInMaintenanceMessage = buffer.readString();
+        this.alreadyConnectedMessage = buffer.readString();
+        this.notUsingInternalProxy = buffer.readString();
     }
 }

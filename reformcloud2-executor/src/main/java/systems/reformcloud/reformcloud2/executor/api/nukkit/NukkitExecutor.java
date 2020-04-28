@@ -1,10 +1,10 @@
 package systems.reformcloud.reformcloud2.executor.api.nukkit;
 
-import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.level.Location;
 import cn.nukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
+import systems.reformcloud.reformcloud2.executor.api.APIConstants;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorType;
 import systems.reformcloud.reformcloud2.executor.api.api.API;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
@@ -20,7 +20,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.channel.Pack
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.common.network.client.DefaultNetworkClient;
 import systems.reformcloud.reformcloud2.executor.api.common.network.client.NetworkClient;
-import systems.reformcloud.reformcloud2.executor.api.common.network.messaging.ProxiedChannelMessage;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.defaults.DefaultPacketHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.handler.PacketHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
@@ -28,11 +27,10 @@ import systems.reformcloud.reformcloud2.executor.api.common.utility.system.Syste
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
 import systems.reformcloud.reformcloud2.executor.api.executor.PlayerAPIExecutor;
+import systems.reformcloud.reformcloud2.executor.api.network.api.*;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.APINetworkChannelReader;
-import systems.reformcloud.reformcloud2.executor.api.network.packets.in.APIPacketInAPIAction;
-import systems.reformcloud.reformcloud2.executor.api.network.packets.in.APIPacketInPluginAction;
-import systems.reformcloud.reformcloud2.executor.api.network.packets.out.APIBungeePacketOutRequestIngameMessages;
-import systems.reformcloud.reformcloud2.executor.api.nukkit.plugins.PluginsExecutorContainer;
+import systems.reformcloud.reformcloud2.executor.api.network.packets.out.APIPacketOutRequestIngameMessages;
+import systems.reformcloud.reformcloud2.executor.api.network.packets.out.APIPacketOutRequestIngameMessagesResult;
 import systems.reformcloud.reformcloud2.executor.api.shared.SharedInvalidPlayerFixer;
 
 import java.io.File;
@@ -54,6 +52,7 @@ public final class NukkitExecutor extends API implements PlayerAPIExecutor {
 
     NukkitExecutor(Plugin plugin) {
         super.type = ExecutorType.API;
+        APIConstants.playerAPIExecutor = this;
 
         instance = this;
         this.plugin = plugin;
@@ -61,9 +60,15 @@ public final class NukkitExecutor extends API implements PlayerAPIExecutor {
         new ExternalEventBusHandler(packetHandler, new DefaultEventManager());
         getEventManager().registerListener(this);
 
-        packetHandler.registerHandler(new APIPacketInAPIAction(this));
-        packetHandler.registerHandler(new APIPacketInPluginAction(new PluginsExecutorContainer()));
-        packetHandler.registerHandler(new ProxiedChannelMessage());
+        this.packetHandler.registerNetworkHandlers(
+                PacketAPIPlayEntityEffect.class,
+                PacketAPIPlaySound.class,
+                PacketAPIKickPlayer.class,
+                PacketAPISendMessage.class,
+                PacketAPISendTitle.class,
+                PacketAPITeleportPlayer.class,
+                APIPacketOutRequestIngameMessagesResult.class
+        );
 
         String connectionKey = JsonConfiguration.read("reformcloud/.connection/key.json").getString("key");
         SystemHelper.deleteFile(new File("reformcloud/.connection/key.json"));
@@ -145,13 +150,20 @@ public final class NukkitExecutor extends API implements PlayerAPIExecutor {
 
             this.fixInvalidPlayers();
 
-            DefaultChannelManager.INSTANCE.get("Controller").ifPresent(controller -> packetHandler.getQueryHandler().sendQueryAsync(controller, new APIBungeePacketOutRequestIngameMessages()).onComplete(packet -> {
-                IngameMessages messages = packet.content().get("messages", IngameMessages.TYPE);
-                if (messages != null) {
-                    NukkitExecutor.this.messages = messages;
-                }
-            }));
+            DefaultChannelManager.INSTANCE.get("Controller").ifPresent(controller -> packetHandler.getQueryHandler().sendQueryAsync(
+                    controller,
+                    new APIPacketOutRequestIngameMessages()
+                    ).onComplete(packet -> {
+                        if (packet instanceof APIPacketOutRequestIngameMessagesResult) {
+                            this.setMessages(((APIPacketOutRequestIngameMessagesResult) packet).getIngameMessages());
+                        }
+                    })
+            );
         });
+    }
+
+    public void setMessages(IngameMessages messages) {
+        this.messages = messages;
     }
 
     private void fixInvalidPlayers() {
@@ -196,16 +208,6 @@ public final class NukkitExecutor extends API implements PlayerAPIExecutor {
     }
 
     @Override
-    public <T> void executePlayEffect(UUID player, String effect, T data) {
-        throw new UnsupportedOperationException("Not supported on nukkit");
-    }
-
-    @Override
-    public void executeRespawn(UUID player) {
-        Server.getInstance().getPlayer(player).ifPresent(Player::kill);
-    }
-
-    @Override
     public void executeTeleport(UUID player, String world, double x, double y, double z, float yaw, float pitch) {
         Server.getInstance().getPlayer(player).ifPresent(player1 -> player1.teleport(new Location(x, y, z, yaw, pitch)));
     }
@@ -222,11 +224,6 @@ public final class NukkitExecutor extends API implements PlayerAPIExecutor {
 
     @Override
     public void executeConnect(UUID player, UUID target) {
-        throw new UnsupportedOperationException("Not supported on nukkit");
-    }
-
-    @Override
-    public void executeSetResourcePack(UUID player, String pack) {
         throw new UnsupportedOperationException("Not supported on nukkit");
     }
 }

@@ -20,14 +20,17 @@ public final class EventPacketLogoutPlayer implements Packet {
     public EventPacketLogoutPlayer() {
     }
 
-    public EventPacketLogoutPlayer(String name, UUID uniqueID) {
+    public EventPacketLogoutPlayer(String name, UUID uniqueID, String lastServer) {
         this.name = name;
         this.uniqueID = uniqueID;
+        this.lastServer = lastServer;
     }
 
     private String name;
 
     private UUID uniqueID;
+
+    private String lastServer;
 
     @Override
     public int getId() {
@@ -36,18 +39,20 @@ public final class EventPacketLogoutPlayer implements Packet {
 
     @Override
     public void handlePacketReceive(@NotNull NetworkChannelReader reader, @NotNull ChallengeAuthHandler authHandler, @NotNull ChannelReaderHelper parent, @Nullable PacketSender sender, @NotNull ChannelHandlerContext channel) {
-        ExternalEventBusHandler.getInstance().callEvent(new PlayerLogoutEvent(this.name, this.uniqueID));
+        ExternalEventBusHandler.getInstance().callEvent(new PlayerLogoutEvent(this.name, this.uniqueID, this.lastServer));
     }
 
     @Override
     public void write(@NotNull ProtocolBuffer buffer) {
         buffer.writeString(this.name);
         buffer.writeUniqueId(this.uniqueID);
+        buffer.writeString(this.lastServer);
     }
 
     @Override
     public void read(@NotNull ProtocolBuffer buffer) {
         this.name = buffer.readString();
         this.uniqueID = buffer.readUniqueId();
+        this.lastServer = buffer.readString();
     }
 }

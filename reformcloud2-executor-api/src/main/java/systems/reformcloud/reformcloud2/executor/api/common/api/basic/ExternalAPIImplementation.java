@@ -34,6 +34,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.challenge.pa
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.common.network.exception.WrongResultTypeException;
 import systems.reformcloud.reformcloud2.executor.api.common.network.messaging.NamedMessagePacket;
+import systems.reformcloud.reformcloud2.executor.api.common.network.messaging.ProxiedChannelMessage;
 import systems.reformcloud.reformcloud2.executor.api.common.network.messaging.TypeMessagePacket;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.handler.PacketHandler;
@@ -73,7 +74,9 @@ public abstract class ExternalAPIImplementation extends ExecutorAPI implements
                 PacketAPIQueryRequestProcessResult.class,
                 // Auth
                 PacketOutServerChallengeStart.class,
-                PacketOutServerGrantAccess.class
+                PacketOutServerGrantAccess.class,
+                // Channel messages
+                ProxiedChannelMessage.class
         );
     }
 
