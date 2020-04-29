@@ -40,8 +40,8 @@ import systems.reformcloud.reformcloud2.executor.api.common.logger.other.Default
 import systems.reformcloud.reformcloud2.executor.api.common.network.challenge.shared.ServerChallengeAuthHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.challenge.shared.SharedChallengeProvider;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
-import systems.reformcloud.reformcloud2.executor.api.common.network.channel.handler.DefaultJsonNetworkHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
+import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.defaults.DefaultPacketHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.handler.PacketHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.server.DefaultNetworkServer;
@@ -56,21 +56,23 @@ import systems.reformcloud.reformcloud2.executor.api.common.utility.StringUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.optional.ReferencedOptional;
 import systems.reformcloud.reformcloud2.executor.api.controller.Controller;
 import systems.reformcloud.reformcloud2.executor.api.controller.process.ProcessManager;
+import systems.reformcloud.reformcloud2.executor.client.network.packet.ControllerPacketToggleScreen;
 import systems.reformcloud.reformcloud2.executor.controller.api.GeneralAPI;
-import systems.reformcloud.reformcloud2.executor.controller.api.applications.ApplicationAPIImplementation;
 import systems.reformcloud.reformcloud2.executor.controller.api.console.ConsoleAPIImplementation;
 import systems.reformcloud.reformcloud2.executor.controller.api.database.DatabaseAPIImplementation;
 import systems.reformcloud.reformcloud2.executor.controller.api.group.GroupAPIImplementation;
 import systems.reformcloud.reformcloud2.executor.controller.api.message.ChannelMessageAPIImplementation;
 import systems.reformcloud.reformcloud2.executor.controller.api.player.PlayerAPIImplementation;
-import systems.reformcloud.reformcloud2.executor.controller.api.plugins.PluginAPIImplementation;
 import systems.reformcloud.reformcloud2.executor.controller.api.process.ProcessAPIImplementation;
 import systems.reformcloud.reformcloud2.executor.controller.commands.CommandClients;
 import systems.reformcloud.reformcloud2.executor.controller.config.ControllerConfig;
 import systems.reformcloud.reformcloud2.executor.controller.config.ControllerExecutorConfig;
 import systems.reformcloud.reformcloud2.executor.controller.network.channel.ControllerNetworkChannelReader;
 import systems.reformcloud.reformcloud2.executor.controller.network.channel.ControllerNetworkSuccessHandler;
-import systems.reformcloud.reformcloud2.executor.controller.network.packets.out.ControllerPacketOutToggleScreen;
+import systems.reformcloud.reformcloud2.executor.controller.network.packet.handler.PacketInAPILogoutPlayer;
+import systems.reformcloud.reformcloud2.executor.controller.network.packet.handler.PacketInAPIPlayerCommandExecute;
+import systems.reformcloud.reformcloud2.executor.controller.network.packet.handler.PacketInAPIPlayerLoggedIn;
+import systems.reformcloud.reformcloud2.executor.controller.network.packet.handler.PacketInAPIServerSwitchPlayer;
 import systems.reformcloud.reformcloud2.executor.controller.process.ClientManager;
 import systems.reformcloud.reformcloud2.executor.controller.process.DefaultProcessManager;
 import systems.reformcloud.reformcloud2.executor.controller.process.startup.AutoStartupHandler;
@@ -188,12 +190,10 @@ public final class ControllerExecutor extends Controller {
         }
 
         GeneralAPI generalAPI = new GeneralAPI(
-                new ApplicationAPIImplementation(this.applicationLoader),
                 new ConsoleAPIImplementation(this.commandManager),
                 new DatabaseAPIImplementation(this.database),
                 new GroupAPIImplementation(),
                 new PlayerAPIImplementation(this.processManager),
-                new PluginAPIImplementation(),
                 new ProcessAPIImplementation(this.processManager),
                 new ChannelMessageAPIImplementation()
         );
@@ -417,13 +417,12 @@ public final class ControllerExecutor extends Controller {
         this.commandManager
                 .register(new CommandProcess(target -> {
                     ReferencedOptional<PacketSender> optional = DefaultChannelManager.INSTANCE.get(target.getProcessDetail().getParentName());
-                    optional.ifPresent(packetSender -> packetSender.sendPacket(new ControllerPacketOutToggleScreen(target.getProcessDetail().getProcessUniqueID())));
+                    optional.ifPresent(packetSender -> packetSender.sendPacket(new ControllerPacketToggleScreen(target.getProcessDetail().getProcessUniqueID())));
                     return optional.isPresent();
                 }))
                 .register(new CommandClients())
                 .register(new CommandPlayers())
                 .register(new CommandGroup())
-                .register(new CommandApplication())
                 .register(new CommandDump(new DefaultDumpUtil()))
                 .register(new CommandLaunch())
                 .register(new CommandStop())
@@ -434,7 +433,19 @@ public final class ControllerExecutor extends Controller {
     }
 
     private void loadPacketHandlers() {
-        new Reflections("systems.reformcloud.reformcloud2.executor.controller.network.packets.in").getSubTypesOf(DefaultJsonNetworkHandler.class).forEach(packetHandler::registerHandler);
+        new Reflections("systems.reformcloud.reformcloud2.executor.api.common.api.basic.packets.api")
+                .getSubTypesOf(Packet.class)
+                .forEach(packetHandler::registerHandler);
+
+        new Reflections("systems.reformcloud.reformcloud2.executor.controller.network.packet")
+                .getSubTypesOf(Packet.class)
+                .forEach(packetHandler::registerHandler);
+
+        // API -> Controller handler
+        this.packetHandler.registerHandler(PacketInAPILogoutPlayer.class);
+        this.packetHandler.registerHandler(PacketInAPIPlayerCommandExecute.class);
+        this.packetHandler.registerHandler(PacketInAPIPlayerLoggedIn.class);
+        this.packetHandler.registerHandler(PacketInAPIServerSwitchPlayer.class);
     }
 
     public void handleChannelDisconnect(PacketSender packetSender) {

@@ -9,7 +9,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
-public final class LocalProcessManager {
+@Deprecated
+public final class LocalProcessManager { // TODO: I think a rework may be good :)
 
     private LocalProcessManager() {
         throw new UnsupportedOperationException();

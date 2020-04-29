@@ -29,11 +29,10 @@ import systems.reformcloud.reformcloud2.executor.api.common.logger.LoggerBase;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.coloured.ColouredLoggerHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.other.DefaultLoggerHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.challenge.shared.ClientChallengeAuthHandler;
-import systems.reformcloud.reformcloud2.executor.api.common.network.channel.handler.DefaultJsonNetworkHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.common.network.client.DefaultNetworkClient;
 import systems.reformcloud.reformcloud2.executor.api.common.network.client.NetworkClient;
-import systems.reformcloud.reformcloud2.executor.api.common.network.messaging.ProxiedChannelMessage;
+import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.defaults.DefaultPacketHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.handler.PacketHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.system.SystemHelper;
@@ -42,13 +41,13 @@ import systems.reformcloud.reformcloud2.executor.client.config.ClientConfig;
 import systems.reformcloud.reformcloud2.executor.client.config.ClientExecutorConfig;
 import systems.reformcloud.reformcloud2.executor.client.dump.ClientDumpUtil;
 import systems.reformcloud.reformcloud2.executor.client.network.channel.ClientNetworkChannelReader;
-import systems.reformcloud.reformcloud2.executor.client.packet.out.ClientPacketOutNotifyRuntimeUpdate;
 import systems.reformcloud.reformcloud2.executor.client.process.ProcessQueue;
 import systems.reformcloud.reformcloud2.executor.client.process.basic.DefaultProcessManager;
 import systems.reformcloud.reformcloud2.executor.client.process.listeners.RunningProcessPreparedListener;
 import systems.reformcloud.reformcloud2.executor.client.process.listeners.RunningProcessStoppedListener;
 import systems.reformcloud.reformcloud2.executor.client.screen.ScreenManager;
 import systems.reformcloud.reformcloud2.executor.client.watchdog.WatchdogThread;
+import systems.reformcloud.reformcloud2.executor.controller.network.packet.ClientPacketNotifyRuntimeUpdate;
 
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -162,8 +161,9 @@ public final class ClientExecutor extends Client {
     }
 
     private void registerNetworkHandlers() {
-        new Reflections("systems.reformcloud.reformcloud2.executor.client.network.packet.in").getSubTypesOf(DefaultJsonNetworkHandler.class).forEach(packetHandler::registerHandler);
-        this.packetHandler.registerHandler(new ProxiedChannelMessage());
+        new Reflections("systems.reformcloud.reformcloud2.executor.client.network.packet")
+                .getSubTypesOf(Packet.class)
+                .forEach(packetHandler::registerHandler);
     }
 
     private void registerDefaultCommands() {
@@ -297,7 +297,7 @@ public final class ClientExecutor extends Client {
                     clientConfig.getUniqueID()
             );
 
-            packetSender.sendPacket(new ClientPacketOutNotifyRuntimeUpdate(information));
+            packetSender.sendPacket(new ClientPacketNotifyRuntimeUpdate(information));
         });
     }
 

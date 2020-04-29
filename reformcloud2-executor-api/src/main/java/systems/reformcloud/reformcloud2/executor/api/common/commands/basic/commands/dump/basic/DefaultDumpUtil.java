@@ -1,7 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.dump.basic;
 
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.common.application.LoadedApplication;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.dump.DumpUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.MainGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
@@ -24,7 +23,6 @@ public class DefaultDumpUtil implements DumpUtil {
     public void appendCurrentDump(StringBuilder stringBuilder) {
         bumpMainGroups(stringBuilder);
         bumpProcessGroups(stringBuilder);
-        bumpLoadedApplications(stringBuilder);
         bumpStartedProcesses(stringBuilder);
         bumpNetwork(stringBuilder);
     }
@@ -157,35 +155,6 @@ public class DefaultDumpUtil implements DumpUtil {
             });
         } else {
             stringBuilder.append("No processes are started").append("\n\n");
-        }
-    }
-
-    private void bumpLoadedApplications(StringBuilder stringBuilder) {
-        List<LoadedApplication> applications = ExecutorAPI.getInstance().getSyncAPI().getApplicationSyncAPI().getApplications();
-        stringBuilder.append("--- Loaded Applications (").append(applications.size()).append(") ---");
-        stringBuilder.append("\n");
-
-        if (applications.size() > 0) {
-            applications.forEach(e ->
-                    stringBuilder
-                            .append("Name: ")
-                            .append(e.getName())
-                            .append("\n")
-                            .append("Status: ")
-                            .append(e.applicationStatus().name())
-                            .append("\n")
-                            .append("Main-Class: ")
-                            .append(e.applicationConfig().main())
-                            .append("\n")
-                            .append("Author: ")
-                            .append(e.applicationConfig().author())
-                            .append("\n")
-                            .append("Version: ")
-                            .append(e.applicationConfig().version())
-                            .append("\n\n")
-            );
-        } else {
-            stringBuilder.append("No applications are loaded").append("\n\n");
         }
     }
 }

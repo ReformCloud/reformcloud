@@ -568,7 +568,6 @@ public final class NodeExecutor extends Node {
                 .register(new CommandCluster())
                 .register(new CommandPlayers())
                 .register(new CommandGroup())
-                .register(new CommandApplication())
                 .register(new CommandDump(new NodeDumpUtil()))
                 .register(new CommandCreate())
                 .register(new CommandLaunch())

@@ -11,10 +11,9 @@ import systems.reformcloud.reformcloud2.executor.api.common.process.api.ProcessC
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.defaults.DefaultTask;
 import systems.reformcloud.reformcloud2.executor.api.controller.process.ProcessManager;
-import systems.reformcloud.reformcloud2.executor.controller.network.packets.out.ControllerPacketOutCopyProcess;
-import systems.reformcloud.reformcloud2.executor.controller.network.packets.out.api.ControllerExecuteCommand;
+import systems.reformcloud.reformcloud2.executor.client.network.packet.ControllerPacketCopyProcess;
+import systems.reformcloud.reformcloud2.executor.client.network.packet.ControllerPacketExecuteProcessCommand;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -205,7 +204,7 @@ public class ProcessAPIImplementation implements ProcessSyncAPI, ProcessAsyncAPI
 
     private void copyProcess0(@NotNull ProcessInformation target, @NotNull String targetTemplate, @NotNull String targetTemplateStorage, @NotNull String targetTemplateGroup) {
         DefaultChannelManager.INSTANCE.get(target.getProcessDetail().getParentName()).ifPresent(
-                packetSender -> packetSender.sendPacket(new ControllerPacketOutCopyProcess(
+                packetSender -> packetSender.sendPacket(new ControllerPacketCopyProcess(
                                 target.getProcessDetail().getProcessUniqueID(),
                                 targetTemplate,
                                 targetTemplateStorage,
@@ -257,24 +256,9 @@ public class ProcessAPIImplementation implements ProcessSyncAPI, ProcessAsyncAPI
                 return;
             }
 
-            DefaultChannelManager.INSTANCE.get(information.getProcessDetail().getParentName()).ifPresent(packetSender -> packetSender.sendPacket(new ControllerExecuteCommand(name, commandLine)));
+            DefaultChannelManager.INSTANCE.get(information.getProcessDetail().getParentName()).ifPresent(packetSender -> packetSender.sendPacket(new ControllerPacketExecuteProcessCommand(name, commandLine)));
             task.complete(null);
         });
-        return task;
-    }
-
-    @NotNull
-    @Override
-    public Task<Integer> getGlobalOnlineCountAsync(@NotNull Collection<String> ignoredProxies) {
-        Task<Integer> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> task.complete(processManager
-                .getAllProcesses()
-                .stream()
-                .filter(processInformation -> !processInformation.getProcessDetail().getTemplate().isServer()
-                        && !ignoredProxies.contains(processInformation.getProcessDetail().getName()))
-                .mapToInt(e -> e.getProcessPlayerManager().getOnlineCount())
-                .sum()
-        ));
         return task;
     }
 
@@ -376,12 +360,6 @@ public class ProcessAPIImplementation implements ProcessSyncAPI, ProcessAsyncAPI
     @Override
     public void executeProcessCommand(@NotNull String name, @NotNull String commandLine) {
         executeProcessCommandAsync(name, commandLine).awaitUninterruptedly();
-    }
-
-    @Override
-    public int getGlobalOnlineCount(@NotNull Collection<String> ignoredProxies) {
-        Integer integer = getGlobalOnlineCountAsync(ignoredProxies).getUninterruptedly();
-        return integer == null ? 0 : integer;
     }
 
     @Override

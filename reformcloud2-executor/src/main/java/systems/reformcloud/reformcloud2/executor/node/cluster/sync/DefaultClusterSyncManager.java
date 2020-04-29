@@ -4,6 +4,9 @@ import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.ProcessStartedEvent;
 import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.ProcessStoppedEvent;
 import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.ProcessUpdatedEvent;
+import systems.reformcloud.reformcloud2.executor.api.common.api.basic.packets.shared.EventPacketProcessClosed;
+import systems.reformcloud.reformcloud2.executor.api.common.api.basic.packets.shared.EventPacketProcessStarted;
+import systems.reformcloud.reformcloud2.executor.api.common.api.basic.packets.shared.EventPacketProcessUpdated;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.MainGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
@@ -13,9 +16,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInfor
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.node.cluster.ClusterSyncManager;
 import systems.reformcloud.reformcloud2.executor.api.node.cluster.SyncAction;
-import systems.reformcloud.reformcloud2.executor.controller.network.packets.out.event.ControllerEventProcessClosed;
-import systems.reformcloud.reformcloud2.executor.controller.network.packets.out.event.ControllerEventProcessStarted;
-import systems.reformcloud.reformcloud2.executor.controller.network.packets.out.event.ControllerEventProcessUpdated;
 import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
 import systems.reformcloud.reformcloud2.executor.node.network.client.NodeNetworkClient;
 import systems.reformcloud.reformcloud2.executor.node.network.packet.out.NodePacketOutNodeInformationUpdate;
@@ -56,7 +56,7 @@ public final class DefaultClusterSyncManager implements ClusterSyncManager {
         ));
 
         NodeExecutor.getInstance().getEventManager().callEvent(new ProcessStartedEvent(processInformation));
-        sendToAllExcludedNodes(new ControllerEventProcessStarted(processInformation));
+        sendToAllExcludedNodes(new EventPacketProcessUpdated(processInformation));
     }
 
     @Override
@@ -66,7 +66,7 @@ public final class DefaultClusterSyncManager implements ClusterSyncManager {
         ));
 
         NodeExecutor.getInstance().getEventManager().callEvent(new ProcessUpdatedEvent(processInformation));
-        sendToAllExcludedNodes(new ControllerEventProcessUpdated(processInformation));
+        sendToAllExcludedNodes(new EventPacketProcessUpdated(processInformation));
     }
 
     @Override
@@ -76,7 +76,7 @@ public final class DefaultClusterSyncManager implements ClusterSyncManager {
         ));
 
         NodeExecutor.getInstance().getEventManager().callEvent(new ProcessStoppedEvent(processInformation));
-        sendToAllExcludedNodes(new ControllerEventProcessClosed(processInformation));
+        sendToAllExcludedNodes(new EventPacketProcessClosed(processInformation));
     }
 
     @Override
@@ -271,7 +271,7 @@ public final class DefaultClusterSyncManager implements ClusterSyncManager {
         Streams.allOf(information, e -> clusterProcesses.stream().noneMatch(i -> i.getProcessDetail().getProcessUniqueID().equals(e.getProcessDetail().getProcessUniqueID())))
                 .forEach(e -> {
                     clusterProcesses.add(e);
-                    sendToAllExcludedNodes(new ControllerEventProcessStarted(e));
+                    sendToAllExcludedNodes(new EventPacketProcessStarted(e));
                 });
     }
 

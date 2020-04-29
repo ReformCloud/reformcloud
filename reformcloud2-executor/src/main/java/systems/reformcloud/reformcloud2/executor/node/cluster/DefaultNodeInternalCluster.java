@@ -103,7 +103,7 @@ public final class DefaultNodeInternalCluster implements InternalNetworkCluster 
             return null;
         }
 
-        Packet result = this.packetHandler.getQueryHandler().sendQueryAsync(sender, query).getTask().getUninterruptedly();
+        Packet result = this.packetHandler.getQueryHandler().sendQueryAsync(sender, query).getUninterruptedly();
         return result != null ? responseHandler.apply(result) : null;
     }
 

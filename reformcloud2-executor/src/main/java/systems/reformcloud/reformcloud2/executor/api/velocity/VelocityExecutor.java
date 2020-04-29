@@ -42,7 +42,6 @@ import systems.reformcloud.reformcloud2.executor.api.network.packets.out.APIPack
 import systems.reformcloud.reformcloud2.executor.api.shared.SharedInvalidPlayerFixer;
 import systems.reformcloud.reformcloud2.executor.api.velocity.event.PlayerListenerHandler;
 import systems.reformcloud.reformcloud2.executor.api.velocity.event.ProcessEventHandler;
-import systems.reformcloud.reformcloud2.executor.api.velocity.plugins.PluginUpdater;
 
 import java.io.File;
 import java.util.*;
@@ -186,8 +185,6 @@ public final class VelocityExecutor extends API implements PlayerAPIExecutor {
             }
 
             getAllProcesses().forEach(this::handleProcessUpdate);
-
-            new PluginUpdater();
 
             thisProcessInformation.updateMaxPlayers(proxyServer.getConfiguration().getShowMaxPlayers());
             thisProcessInformation.updateRuntimeInformation();

@@ -7,8 +7,8 @@ import systems.reformcloud.reformcloud2.executor.api.common.process.running.Runn
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.optional.ReferencedOptional;
 import systems.reformcloud.reformcloud2.executor.client.ClientExecutor;
-import systems.reformcloud.reformcloud2.executor.client.network.packet.out.ClientPacketOutProcessRegistered;
 import systems.reformcloud.reformcloud2.executor.client.screen.ProcessScreen;
+import systems.reformcloud.reformcloud2.executor.controller.network.packet.ClientPacketProcessRegistered;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -31,7 +31,7 @@ public final class DefaultProcessManager implements ProcessManager {
                 new ProcessScreen(runningProcess.getProcessInformation().getProcessDetail().getProcessUniqueID())
         );
 
-        DefaultChannelManager.INSTANCE.get("Controller").ifPresent(packetSender -> packetSender.sendPacket(new ClientPacketOutProcessRegistered(
+        DefaultChannelManager.INSTANCE.get("Controller").ifPresent(packetSender -> packetSender.sendPacket(new ClientPacketProcessRegistered(
                 runningProcess.getProcessInformation().getProcessDetail().getProcessUniqueID(),
                 runningProcess.getProcessInformation().getProcessDetail().getName()
         )));
