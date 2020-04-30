@@ -5,7 +5,7 @@ import com.velocitypowered.api.plugin.Dependency;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.proxy.ProxyServer;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
-import systems.reformcloud.reformcloud2.proxy.network.PacketInConfigUpdate;
+import systems.reformcloud.reformcloud2.proxy.network.PacketProxyConfigUpdate;
 import systems.reformcloud.reformcloud2.proxy.plugin.PluginConfigHandler;
 import systems.reformcloud.reformcloud2.proxy.velocity.listener.VelocityListener;
 
@@ -29,7 +29,7 @@ public class VelocityPlugin {
             server.getEventManager().register(this, listener);
             ExecutorAPI.getInstance().getEventManager().registerListener(listener);
 
-            ExecutorAPI.getInstance().getPacketHandler().registerHandler(new PacketInConfigUpdate());
+            ExecutorAPI.getInstance().getPacketHandler().registerHandler(PacketProxyConfigUpdate.class);
         });
     }
 

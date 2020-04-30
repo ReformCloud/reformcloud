@@ -1,8 +1,12 @@
 package systems.reformcloud.reformcloud2.commands.config;
 
+import org.jetbrains.annotations.NotNull;
+import systems.reformcloud.reformcloud2.executor.api.common.network.SerializableObject;
+import systems.reformcloud.reformcloud2.executor.api.common.network.data.ProtocolBuffer;
+
 import java.util.List;
 
-public class CommandsConfig {
+public class CommandsConfig implements SerializableObject {
 
     public CommandsConfig(boolean leaveCommandEnabled, List<String> leaveCommands, boolean reformCloudCommandEnabled, List<String> reformCloudCommands) {
         this.leaveCommandEnabled = leaveCommandEnabled;
@@ -11,13 +15,13 @@ public class CommandsConfig {
         this.reformCloudCommands = reformCloudCommands;
     }
 
-    private final boolean leaveCommandEnabled;
+    private boolean leaveCommandEnabled;
 
-    private final List<String> leaveCommands;
+    private List<String> leaveCommands;
 
-    private final boolean reformCloudCommandEnabled;
+    private boolean reformCloudCommandEnabled;
 
-    private final List<String> reformCloudCommands;
+    private List<String> reformCloudCommands;
 
     public boolean isLeaveCommandEnabled() {
         return leaveCommandEnabled;
@@ -33,5 +37,21 @@ public class CommandsConfig {
 
     public List<String> getReformCloudCommands() {
         return reformCloudCommands;
+    }
+
+    @Override
+    public void write(@NotNull ProtocolBuffer buffer) {
+        buffer.writeBoolean(this.leaveCommandEnabled);
+        buffer.writeStringArray(this.leaveCommands);
+        buffer.writeBoolean(this.reformCloudCommandEnabled);
+        buffer.writeStringArray(this.reformCloudCommands);
+    }
+
+    @Override
+    public void read(@NotNull ProtocolBuffer buffer) {
+        this.leaveCommandEnabled = buffer.readBoolean();
+        this.leaveCommands = buffer.readStringArray();
+        this.reformCloudCommandEnabled = buffer.readBoolean();
+        this.reformCloudCommands = buffer.readStringArray();
     }
 }

@@ -1,15 +1,15 @@
 package systems.reformcloud.reformcloud2.commands.plugin.bungeecord;
 
-import com.google.gson.reflect.TypeToken;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
+import systems.reformcloud.reformcloud2.commands.application.packet.PacketGetCommandsConfig;
+import systems.reformcloud.reformcloud2.commands.application.packet.PacketGetCommandsConfigResult;
 import systems.reformcloud.reformcloud2.commands.config.CommandsConfig;
 import systems.reformcloud.reformcloud2.commands.plugin.CommandConfigHandler;
 import systems.reformcloud.reformcloud2.commands.plugin.bungeecord.commands.CommandLeave;
 import systems.reformcloud.reformcloud2.commands.plugin.bungeecord.commands.CommandReformCloud;
-import systems.reformcloud.reformcloud2.commands.plugin.packet.in.PacketInReleaseCommandsConfig;
-import systems.reformcloud.reformcloud2.commands.plugin.packet.out.PacketOutGetCommandsConfig;
+import systems.reformcloud.reformcloud2.commands.plugin.packet.PacketReleaseCommandsConfig;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.network.NetworkUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
@@ -30,15 +30,12 @@ public class BungeecordPlugin extends Plugin {
                 sender = DefaultChannelManager.INSTANCE.get("Controller").orNothing();
             }
 
-            ExecutorAPI.getInstance().getPacketHandler().getQueryHandler().sendQueryAsync(sender, new PacketOutGetCommandsConfig()).onComplete(e -> {
-                CommandsConfig commandsConfig = e.content().get("content", new TypeToken<CommandsConfig>() {
-                });
-                if (commandsConfig == null) {
-                    return;
+            ExecutorAPI.getInstance().getPacketHandler().registerHandler(PacketGetCommandsConfigResult.class);
+            ExecutorAPI.getInstance().getPacketHandler().getQueryHandler().sendQueryAsync(sender, new PacketGetCommandsConfig()).onComplete(e -> {
+                if (e instanceof PacketGetCommandsConfigResult) {
+                    CommandConfigHandler.getInstance().handleCommandConfigRelease(((PacketGetCommandsConfigResult) e).getCommandsConfig());
+                    ExecutorAPI.getInstance().getPacketHandler().registerHandler(PacketReleaseCommandsConfig.class);
                 }
-
-                CommandConfigHandler.getInstance().handleCommandConfigRelease(commandsConfig);
-                ExecutorAPI.getInstance().getPacketHandler().registerHandler(new PacketInReleaseCommandsConfig());
             });
         });
     }
@@ -46,7 +43,7 @@ public class BungeecordPlugin extends Plugin {
     @Override
     public void onDisable() {
         CommandConfigHandler.getInstance().unregisterAllCommands();
-        ExecutorAPI.getInstance().getPacketHandler().unregisterNetworkHandlers(NetworkUtil.EXTERNAL_BUS + 1);
+        ExecutorAPI.getInstance().getPacketHandler().unregisterNetworkHandler(NetworkUtil.EXTERNAL_BUS + 4);
     }
 
     private static class ConfigHandler extends CommandConfigHandler {

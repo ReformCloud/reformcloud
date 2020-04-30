@@ -1,7 +1,10 @@
 package systems.reformcloud.reformcloud2.permissions.util.user;
 
 import com.google.gson.reflect.TypeToken;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
+import systems.reformcloud.reformcloud2.executor.api.common.network.SerializableObject;
+import systems.reformcloud.reformcloud2.executor.api.common.network.data.ProtocolBuffer;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.permissions.PermissionAPI;
 import systems.reformcloud.reformcloud2.permissions.util.basic.checks.WildcardCheck;
@@ -11,9 +14,14 @@ import systems.reformcloud.reformcloud2.permissions.util.permission.PermissionNo
 import java.util.Collection;
 import java.util.UUID;
 
-public class PermissionUser {
+public class PermissionUser implements SerializableObject {
 
-    public static final TypeToken<PermissionUser> TYPE = new TypeToken<PermissionUser>() {};
+    public static final TypeToken<PermissionUser> TYPE = new TypeToken<PermissionUser>() {
+    };
+
+    @ApiStatus.Internal
+    public PermissionUser() {
+    }
 
     public PermissionUser(
             @NotNull UUID uuid,
@@ -25,11 +33,11 @@ public class PermissionUser {
         this.groups = groups;
     }
 
-    private final UUID uuid;
+    private UUID uuid;
 
-    private final Collection<PermissionNode> permissionNodes;
+    private Collection<PermissionNode> permissionNodes;
 
-    private final Collection<NodeGroup> groups;
+    private Collection<NodeGroup> groups;
 
     @NotNull
     public UUID getUniqueID() {
@@ -75,5 +83,19 @@ public class PermissionUser {
         }
 
         return PermissionAPI.getInstance().getPermissionUtil().hasPermission(this, permission);
+    }
+
+    @Override
+    public void write(@NotNull ProtocolBuffer buffer) {
+        buffer.writeUniqueId(this.uuid);
+        buffer.writeObjects(this.groups);
+        buffer.writeObjects(this.permissionNodes);
+    }
+
+    @Override
+    public void read(@NotNull ProtocolBuffer buffer) {
+        this.uuid = buffer.readUniqueId();
+        this.groups = buffer.readObjects(NodeGroup.class);
+        this.permissionNodes = buffer.readObjects(PermissionNode.class);
     }
 }

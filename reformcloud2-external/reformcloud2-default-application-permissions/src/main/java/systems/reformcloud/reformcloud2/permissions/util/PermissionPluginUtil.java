@@ -23,7 +23,7 @@ public final class PermissionPluginUtil {
             }
 
             PermissionAPI.handshake();
-            PacketHelper.addAPIPackets();
+            PacketHelper.addPacketHandler();
         });
     }
 

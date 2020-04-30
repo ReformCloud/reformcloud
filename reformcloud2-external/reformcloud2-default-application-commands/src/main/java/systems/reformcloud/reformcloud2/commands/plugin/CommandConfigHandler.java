@@ -4,7 +4,8 @@ import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.commands.config.CommandsConfig;
 import systems.reformcloud.reformcloud2.executor.api.common.base.Conditions;
 
-public abstract class CommandConfigHandler {
+@Deprecated
+public abstract class CommandConfigHandler { // TODO: a rework may be better
 
     private static CommandConfigHandler instance;
 

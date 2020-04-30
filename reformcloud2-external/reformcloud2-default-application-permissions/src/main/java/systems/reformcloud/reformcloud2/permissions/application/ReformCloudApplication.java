@@ -32,15 +32,10 @@ public class ReformCloudApplication extends Application {
 
     @Override
     public void onEnable() {
-        PacketHelper.addControllerPackets();
+        PacketHelper.addPacketHandler();
         PermissionAPI.handshake();
 
         getCommandManager().register(new CommandPerms());
-    }
-
-    @Override
-    public void onUninstall() {
-        PacketHelper.unregisterControllerPackets();
     }
 
     @Nullable

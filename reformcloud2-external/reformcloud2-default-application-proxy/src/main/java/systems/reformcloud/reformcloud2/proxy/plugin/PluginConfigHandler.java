@@ -5,6 +5,8 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.channel.mana
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
 import systems.reformcloud.reformcloud2.proxy.ProxyConfiguration;
+import systems.reformcloud.reformcloud2.proxy.application.network.PacketRequestConfig;
+import systems.reformcloud.reformcloud2.proxy.application.network.PacketRequestConfigResult;
 
 public final class PluginConfigHandler {
 
@@ -20,17 +22,16 @@ public final class PluginConfigHandler {
                 AbsoluteThread.sleep(20);
             }
 
-            DefaultChannelManager.INSTANCE.get("Controller").ifPresent(
-                    e -> ExecutorAPI.getInstance().getPacketHandler().getQueryHandler().sendQueryAsync(e, new PacketOutRequestConfig()).onComplete(result -> {
-                        ProxyConfiguration configuration = result.content().get("result", ProxyConfiguration.TYPE);
-                        if (configuration == null) {
-                            return;
-                        }
-
-                        PluginConfigHandler.setConfiguration(configuration);
-                        then.run();
-                    })
-            );
+            ExecutorAPI.getInstance().getPacketHandler().registerHandler(PacketRequestConfigResult.class);
+            DefaultChannelManager.INSTANCE
+                    .get("Controller")
+                    .ifPresent(e -> ExecutorAPI.getInstance().getPacketHandler().getQueryHandler().sendQueryAsync(e, new PacketRequestConfig()).onComplete(result -> {
+                                if (result instanceof PacketRequestConfigResult) {
+                                    PluginConfigHandler.setConfiguration(((PacketRequestConfigResult) result).getProxyConfiguration());
+                                    then.run();
+                                }
+                            })
+                    );
         });
     }
 

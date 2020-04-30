@@ -1,15 +1,15 @@
 package systems.reformcloud.reformcloud2.commands.plugin.velocity;
 
-import com.google.gson.reflect.TypeToken;
 import com.google.inject.Inject;
 import com.velocitypowered.api.plugin.Dependency;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.proxy.ProxyServer;
 import org.jetbrains.annotations.NotNull;
+import systems.reformcloud.reformcloud2.commands.application.packet.PacketGetCommandsConfig;
+import systems.reformcloud.reformcloud2.commands.application.packet.PacketGetCommandsConfigResult;
 import systems.reformcloud.reformcloud2.commands.config.CommandsConfig;
 import systems.reformcloud.reformcloud2.commands.plugin.CommandConfigHandler;
-import systems.reformcloud.reformcloud2.commands.plugin.packet.in.PacketInReleaseCommandsConfig;
-import systems.reformcloud.reformcloud2.commands.plugin.packet.out.PacketOutGetCommandsConfig;
+import systems.reformcloud.reformcloud2.commands.plugin.packet.PacketReleaseCommandsConfig;
 import systems.reformcloud.reformcloud2.commands.plugin.velocity.commands.CommandLeave;
 import systems.reformcloud.reformcloud2.commands.plugin.velocity.commands.CommandReformCloud;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
@@ -39,15 +39,12 @@ public class VelocityPlugin {
                 sender = DefaultChannelManager.INSTANCE.get("Controller").orNothing();
             }
 
-            ExecutorAPI.getInstance().getPacketHandler().getQueryHandler().sendQueryAsync(sender, new PacketOutGetCommandsConfig()).onComplete(e -> {
-                CommandsConfig commandsConfig = e.content().get("content", new TypeToken<CommandsConfig>() {
-                });
-                if (commandsConfig == null) {
-                    return;
+            ExecutorAPI.getInstance().getPacketHandler().registerHandler(PacketGetCommandsConfigResult.class);
+            ExecutorAPI.getInstance().getPacketHandler().getQueryHandler().sendQueryAsync(sender, new PacketGetCommandsConfig()).onComplete(e -> {
+                if (e instanceof PacketGetCommandsConfigResult) {
+                    CommandConfigHandler.getInstance().handleCommandConfigRelease(((PacketGetCommandsConfigResult) e).getCommandsConfig());
+                    ExecutorAPI.getInstance().getPacketHandler().registerHandler(PacketReleaseCommandsConfig.class);
                 }
-
-                CommandConfigHandler.getInstance().handleCommandConfigRelease(commandsConfig);
-                ExecutorAPI.getInstance().getPacketHandler().registerHandler(new PacketInReleaseCommandsConfig());
             });
         });
     }
