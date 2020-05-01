@@ -42,10 +42,13 @@ public final class NodeConfig {
 
     private final String startHost;
 
+    // TODO: remove
     private final List<Map<String, Integer>> networkListener = new ArrayList<>();
 
+    // TODO: too
     private final List<Map<String, Integer>> httpNetworkListener = new ArrayList<>();
 
+    // TODO: too
     private final List<Map<String, Integer>> otherNodes = new ArrayList<>();
 
     private List<NetworkAddress> networkListeners;

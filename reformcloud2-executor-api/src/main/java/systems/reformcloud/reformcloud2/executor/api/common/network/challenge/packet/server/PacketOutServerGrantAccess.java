@@ -36,7 +36,10 @@ public final class PacketOutServerGrantAccess implements Packet {
 
     @Override
     public void handlePacketReceive(@NotNull NetworkChannelReader reader, @NotNull ChallengeAuthHandler authHandler, @NotNull ChannelReaderHelper parent, @Nullable PacketSender sender, @NotNull ChannelHandlerContext channel) {
-        authHandler.handle(channel, this, this.name);
+        parent.auth = authHandler.handle(channel, this, this.name);
+        if (parent.auth) {
+            reader.setChannelHandlerContext(channel, this.name);
+        }
     }
 
     @Override

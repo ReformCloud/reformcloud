@@ -56,7 +56,7 @@ public abstract class ExternalAPIImplementation extends ExecutorAPI implements
         PlayerSyncAPI, PlayerAsyncAPI,
         MessageSyncAPI, MessageAsyncAPI {
 
-    public ExternalAPIImplementation() {
+    protected void loadPacketHandlers() {
         this.packetHandler().registerNetworkHandlers(
                 // API
                 PacketAPIQueryCommandDispatchResult.class,

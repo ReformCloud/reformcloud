@@ -1,5 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.api.common.network.handler;
 
+import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
 import systems.reformcloud.reformcloud2.executor.api.common.network.NetworkUtil;
@@ -8,6 +9,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.channel.Netw
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.netty.PacketDecoder;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.netty.PacketEncoder;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.netty.serialisation.LengthDeserializer;
+import systems.reformcloud.reformcloud2.executor.api.common.network.packet.netty.serialisation.LengthSerializer;
 
 import java.util.function.Supplier;
 
@@ -24,10 +26,13 @@ public final class ServerInitializerHandler extends ChannelInitializer<Channel> 
 
     @Override
     protected void initChannel(Channel channel) {
+        channel.config().setAllocator(PooledByteBufAllocator.DEFAULT);
+        channel.config().setWriteBufferWaterMark(NetworkUtil.WATER_MARK);
+
         channel.pipeline()
                 .addLast("deserializer", new LengthDeserializer())
                 .addLast("decoder", new PacketDecoder())
-                .addLast("serializer", NetworkUtil.SERIALIZER)
+                .addLast("serializer", new LengthSerializer())
                 .addLast("encoder", new PacketEncoder())
                 .addLast("handler", new ChannelReaderHelper(this.reader.get(), this.authHandler));
     }

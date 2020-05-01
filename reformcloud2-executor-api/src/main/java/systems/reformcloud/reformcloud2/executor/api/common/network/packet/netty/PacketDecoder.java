@@ -2,30 +2,38 @@ package systems.reformcloud.reformcloud2.executor.api.common.network.packet.nett
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.ByteToMessageDecoder;
-import systems.reformcloud.reformcloud2.executor.api.common.network.NetworkUtil;
+import io.netty.handler.codec.MessageToMessageDecoder;
 import systems.reformcloud.reformcloud2.executor.api.common.network.data.DefaultProtocolBuffer;
-import systems.reformcloud.reformcloud2.executor.api.common.network.packet.defaults.ProtocolBufferWrapper;
+import systems.reformcloud.reformcloud2.executor.api.common.network.data.ProtocolBuffer;
+import systems.reformcloud.reformcloud2.executor.api.common.network.exception.SilentNetworkException;
+import systems.reformcloud.reformcloud2.executor.api.common.network.handler.ChannelReaderHelper;
+import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 
 import java.util.List;
 
-public final class PacketDecoder extends ByteToMessageDecoder {
+public final class PacketDecoder extends MessageToMessageDecoder<ByteBuf> {
 
     @Override
     protected void decode(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf, List<Object> list) {
-        if (byteBuf.readableBytes() == 0) {
+        ChannelReaderHelper helper = channelHandlerContext.channel().pipeline().get(ChannelReaderHelper.class);
+        if (helper == null) {
             return;
         }
 
-        ByteBuf copy = byteBuf.copy();
         try {
-            int id = NetworkUtil.read(byteBuf);
-            list.add(new ProtocolBufferWrapper(id, new DefaultProtocolBuffer(copy)));
+            ProtocolBuffer protocolBuffer = new DefaultProtocolBuffer(byteBuf);
+
+            Packet packet = helper.getChannelReader().getPacketHandler().getNetworkHandler(protocolBuffer.readInt());
+            if (packet == null) {
+                return;
+            }
+
+            packet.setQueryUniqueID(protocolBuffer.readUniqueId());
+            packet.read(protocolBuffer);
+
+            list.add(packet);
         } catch (final Throwable throwable) {
-            throwable.printStackTrace();
-        } finally {
-            NetworkUtil.destroyByteBuf(byteBuf, false);
-            NetworkUtil.destroyByteBuf(copy, false);
+            throw new SilentNetworkException(throwable);
         }
     }
 }

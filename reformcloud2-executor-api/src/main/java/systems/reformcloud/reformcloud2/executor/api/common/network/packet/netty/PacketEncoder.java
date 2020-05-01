@@ -14,7 +14,8 @@ public final class PacketEncoder extends MessageToByteEncoder<Packet> {
     protected void encode(ChannelHandlerContext channelHandlerContext, Packet packet, ByteBuf byteBuf) {
         try {
             ProtocolBuffer protocolBuffer = new DefaultProtocolBuffer(byteBuf);
-            protocolBuffer.writeVarInt(packet.getId());
+
+            protocolBuffer.writeInt(packet.getId());
             protocolBuffer.writeUniqueId(packet.getQueryUniqueID());
 
             packet.write(protocolBuffer);

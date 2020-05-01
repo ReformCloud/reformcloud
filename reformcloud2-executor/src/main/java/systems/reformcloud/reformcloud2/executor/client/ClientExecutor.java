@@ -92,6 +92,7 @@ public final class ClientExecutor extends Client {
     ClientExecutor() {
         ExecutorAPI.setInstance(this);
         super.type = ExecutorType.CLIENT;
+        super.loadPacketHandlers();
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             try {

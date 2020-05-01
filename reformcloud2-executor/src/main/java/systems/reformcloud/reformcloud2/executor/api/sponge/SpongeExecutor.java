@@ -55,6 +55,7 @@ public class SpongeExecutor extends API implements PlayerAPIExecutor {
 
     SpongeExecutor(SpongeLauncher launcher) {
         super.type = ExecutorType.API;
+        super.loadPacketHandlers();
         APIConstants.playerAPIExecutor = this;
 
         this.plugin = launcher;

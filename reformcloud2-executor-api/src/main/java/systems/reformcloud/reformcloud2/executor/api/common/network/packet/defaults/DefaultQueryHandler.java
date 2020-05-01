@@ -28,8 +28,7 @@ public final class DefaultQueryHandler implements QueryHandler {
     @NotNull
     @Override
     public Task<Packet> sendQueryAsync(@NotNull PacketSender sender, @NotNull Packet packet) {
-        UUID random = UUID.randomUUID();
-        return this.sendQueryAsync(sender, random, packet);
+        return this.sendQueryAsync(sender, UUID.randomUUID(), packet);
     }
 
     @NotNull
@@ -39,6 +38,8 @@ public final class DefaultQueryHandler implements QueryHandler {
 
         this.waiting.put(queryUniqueID, task);
         packet.setQueryUniqueID(queryUniqueID);
+
+        System.out.println("Sending query packet with id " + packet.getId() + " " + packet.getClass().getName()); // TODO: remove
 
         sender.sendPacket(packet);
         return task;

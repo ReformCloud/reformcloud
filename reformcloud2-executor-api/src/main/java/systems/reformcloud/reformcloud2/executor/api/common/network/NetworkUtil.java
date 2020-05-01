@@ -12,10 +12,8 @@ import io.netty.channel.socket.ServerSocketChannel;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.codec.MessageToByteEncoder;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.network.concurrent.FastNettyThreadFactory;
-import systems.reformcloud.reformcloud2.executor.api.common.network.packet.netty.serialisation.LengthSerializer;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -30,8 +28,6 @@ public final class NetworkUtil {
     /* ============================= */
 
     public static final int AUTH_BUS = -550;
-
-    public static final int FILE_BUS = 1000;
 
     public static final int NODE_TO_NODE_BUS = 20000;
 
@@ -53,11 +49,9 @@ public final class NetworkUtil {
 
     public static final Executor EXECUTOR = Executors.newCachedThreadPool();
 
-    public static final MessageToByteEncoder<ByteBuf> SERIALIZER = new LengthSerializer();
-
-    public static final WriteBufferWaterMark WATER_MARK = new WriteBufferWaterMark(1 << 20, 1 << 21);
-
     private static final boolean EPOLL = Epoll.isAvailable();
+
+    public static final WriteBufferWaterMark WATER_MARK = new WriteBufferWaterMark(524288, 2097152);
 
     @NotNull
     public static EventLoopGroup eventLoopGroup() {
@@ -89,7 +83,7 @@ public final class NetworkUtil {
     }
 
     @NotNull
-    public static synchronized ByteBuf write(@NotNull ByteBuf byteBuf, int value) {
+    public static ByteBuf write(@NotNull ByteBuf byteBuf, int value) {
         do {
             byte temp = (byte) (value & 0b01111111);
             value >>>= 7;
@@ -102,7 +96,7 @@ public final class NetworkUtil {
         return byteBuf;
     }
 
-    public static synchronized int read(@NotNull ByteBuf byteBuf) {
+    public static int read(@NotNull ByteBuf byteBuf) {
         int numRead = 0;
         int result = 0;
         byte read;
@@ -118,27 +112,6 @@ public final class NetworkUtil {
         } while ((read & 0b10000000) != 0);
 
         return result;
-    }
-
-    public static void destroyByteBuf(@NotNull ByteBuf byteBuf, boolean force) {
-        if (byteBuf.refCnt() == 0) {
-            // buffer is already released and will be garbage collected
-            return;
-        }
-
-        if (byteBuf.refCnt() == 1 && !force) {
-            // release of buffer will be made after channel read (we don't need to destroy it now)
-            return;
-        }
-
-        boolean destroyed = byteBuf.release();
-        while (!destroyed) {
-            if (byteBuf.refCnt() == 1 && !force) {
-                break;
-            }
-
-            destroyed = byteBuf.release();
-        }
     }
 
     public static int getVarIntSize(int readable) {

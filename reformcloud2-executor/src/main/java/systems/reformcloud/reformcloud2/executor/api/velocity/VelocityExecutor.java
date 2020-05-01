@@ -67,6 +67,7 @@ public final class VelocityExecutor extends API implements PlayerAPIExecutor {
 
     VelocityExecutor(VelocityLauncher launcher, ProxyServer proxyServer) {
         super.type = ExecutorType.API;
+        super.loadPacketHandlers();
         APIConstants.playerAPIExecutor = this;
 
         instance = this;

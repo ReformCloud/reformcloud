@@ -36,10 +36,7 @@ public final class PacketOutClientChallengeRequest implements Packet {
             return;
         }
 
-        parent.auth = authHandler.handle(channel, this, this.name);
-        if (parent.auth) {
-            reader.setChannelHandlerContext(channel, this.name);
-        }
+        authHandler.handle(channel, this, this.name);
     }
 
     @Override

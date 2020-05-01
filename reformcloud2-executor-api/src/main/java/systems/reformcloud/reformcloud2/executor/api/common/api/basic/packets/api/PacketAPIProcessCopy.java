@@ -6,6 +6,9 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packe
 
 public abstract class PacketAPIProcessCopy implements Packet {
 
+    public PacketAPIProcessCopy() {
+    }
+
     public PacketAPIProcessCopy(String targetTemplate, String targetTemplateStorage, String targetTemplateGroup) {
         this.targetTemplate = targetTemplate;
         this.targetTemplateStorage = targetTemplateStorage;

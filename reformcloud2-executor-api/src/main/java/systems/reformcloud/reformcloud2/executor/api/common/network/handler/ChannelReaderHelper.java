@@ -2,13 +2,12 @@ package systems.reformcloud.reformcloud2.executor.api.common.network.handler;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import systems.reformcloud.reformcloud2.executor.api.common.network.NetworkUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.network.challenge.ChallengeAuthHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.NetworkChannelReader;
-import systems.reformcloud.reformcloud2.executor.api.common.network.exception.SilentNetworkException;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
-import systems.reformcloud.reformcloud2.executor.api.common.network.packet.defaults.ProtocolBufferWrapper;
 
-public final class ChannelReaderHelper extends SimpleChannelInboundHandler<ProtocolBufferWrapper> {
+public final class ChannelReaderHelper extends SimpleChannelInboundHandler<Packet> {
 
     public ChannelReaderHelper(NetworkChannelReader channelReader, ChallengeAuthHandler authHandler) {
         this.channelReader = channelReader;
@@ -51,25 +50,18 @@ public final class ChannelReaderHelper extends SimpleChannelInboundHandler<Proto
     }
 
     @Override
-    protected void channelRead0(ChannelHandlerContext channelHandlerContext, ProtocolBufferWrapper input) {
-        Packet packet = this.channelReader.getPacketHandler().getNetworkHandler(input.getId());
-        if (packet == null) {
-            return;
-        }
-
-        try {
-            packet.read(input.getProtocolBuffer());
-        } catch (final Throwable throwable) {
-            throw new SilentNetworkException("Unable to read packet with id " + input.getId(), throwable);
-        }
-
+    protected void channelRead0(ChannelHandlerContext channelHandlerContext, Packet input) {
         if (!auth) {
-            if (input.getId() != -512) {
+            if (input.getId() > NetworkUtil.AUTH_BUS + 4 || input.getId() < NetworkUtil.AUTH_BUS) {
                 channelHandlerContext.channel().close().syncUninterruptibly();
                 return;
             }
         }
 
-        channelReader.read(channelHandlerContext, this.authHandler, this, packet);
+        channelReader.read(channelHandlerContext, this.authHandler, this, input);
+    }
+
+    public NetworkChannelReader getChannelReader() {
+        return channelReader;
     }
 }

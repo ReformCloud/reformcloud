@@ -47,7 +47,9 @@ public class DefaultPacketSender extends PacketSender {
 
     @Override
     public void sendPacket(@NotNull Object packet) {
+        System.out.println("sending packet sender packet " + packet.getClass().getName()); // TODO: remove
         if (isConnected()) {
+            System.out.println("Packet sent of " + packet.getClass().getName() + " done"); // TODO: too
             channel.writeAndFlush(packet);
         }
     }

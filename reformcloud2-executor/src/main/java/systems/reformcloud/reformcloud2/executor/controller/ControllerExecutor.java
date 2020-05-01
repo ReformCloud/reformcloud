@@ -6,6 +6,8 @@ import systems.reformcloud.reformcloud2.executor.api.ExecutorType;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.AsyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.SyncAPI;
+import systems.reformcloud.reformcloud2.executor.api.common.api.basic.packets.api.PacketAPIProcessCopyByName;
+import systems.reformcloud.reformcloud2.executor.api.common.api.basic.packets.api.PacketAPIProcessCopyByUniqueID;
 import systems.reformcloud.reformcloud2.executor.api.common.application.ApplicationLoader;
 import systems.reformcloud.reformcloud2.executor.api.common.application.basic.DefaultApplicationLoader;
 import systems.reformcloud.reformcloud2.executor.api.common.client.ClientRuntimeInformation;
@@ -37,6 +39,8 @@ import systems.reformcloud.reformcloud2.executor.api.common.language.loading.Lan
 import systems.reformcloud.reformcloud2.executor.api.common.logger.LoggerBase;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.coloured.ColouredLoggerHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.other.DefaultLoggerHandler;
+import systems.reformcloud.reformcloud2.executor.api.common.network.challenge.packet.client.PacketOutClientChallengeRequest;
+import systems.reformcloud.reformcloud2.executor.api.common.network.challenge.packet.client.PacketOutClientChallengeResponse;
 import systems.reformcloud.reformcloud2.executor.api.common.network.challenge.shared.ServerChallengeAuthHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.challenge.shared.SharedChallengeProvider;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
@@ -435,7 +439,17 @@ public final class ControllerExecutor extends Controller {
     private void loadPacketHandlers() {
         new Reflections("systems.reformcloud.reformcloud2.executor.api.common.api.basic.packets.api")
                 .getSubTypesOf(Packet.class)
-                .forEach(packetHandler::registerHandler);
+                .forEach(e -> {
+                    if (e.getSimpleName().equals("PacketAPIProcessCopy") || e.getSimpleName().equals("QueryResultPacket")) {
+                        return;
+                    }
+
+                    this.packetHandler.registerHandler(e);
+                });
+
+        // Copy api
+        this.packetHandler.registerHandler(PacketAPIProcessCopyByName.class);
+        this.packetHandler.registerHandler(PacketAPIProcessCopyByUniqueID.class);
 
         new Reflections("systems.reformcloud.reformcloud2.executor.controller.network.packet")
                 .getSubTypesOf(Packet.class)
@@ -446,6 +460,10 @@ public final class ControllerExecutor extends Controller {
         this.packetHandler.registerHandler(PacketInAPIPlayerCommandExecute.class);
         this.packetHandler.registerHandler(PacketInAPIPlayerLoggedIn.class);
         this.packetHandler.registerHandler(PacketInAPIServerSwitchPlayer.class);
+
+        // Auth
+        this.packetHandler.registerHandler(PacketOutClientChallengeRequest.class);
+        this.packetHandler.registerHandler(PacketOutClientChallengeResponse.class);
     }
 
     public void handleChannelDisconnect(PacketSender packetSender) {

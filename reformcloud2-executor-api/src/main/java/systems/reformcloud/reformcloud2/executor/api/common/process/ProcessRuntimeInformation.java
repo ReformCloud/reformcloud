@@ -219,7 +219,7 @@ public class ProcessRuntimeInformation implements SerializableObject {
                 null,
                 null,
                 null,
-                null,
+                new String[0],
                 -1,
                 new long[0],
                 new HashMap<>(),

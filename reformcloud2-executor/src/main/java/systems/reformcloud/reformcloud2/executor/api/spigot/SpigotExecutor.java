@@ -56,6 +56,7 @@ public final class SpigotExecutor extends API implements PlayerAPIExecutor {
 
     SpigotExecutor(JavaPlugin plugin) {
         super.type = ExecutorType.API;
+        super.loadPacketHandlers();
         APIConstants.playerAPIExecutor = this;
 
         instance = this;

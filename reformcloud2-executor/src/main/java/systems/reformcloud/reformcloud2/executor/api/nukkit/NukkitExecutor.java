@@ -52,6 +52,7 @@ public final class NukkitExecutor extends API implements PlayerAPIExecutor {
 
     NukkitExecutor(Plugin plugin) {
         super.type = ExecutorType.API;
+        super.loadPacketHandlers();
         APIConstants.playerAPIExecutor = this;
 
         instance = this;

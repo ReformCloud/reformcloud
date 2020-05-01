@@ -79,6 +79,7 @@ public final class BungeeExecutor extends API implements PlayerAPIExecutor {
 
     BungeeExecutor(Plugin plugin) {
         super.type = ExecutorType.API;
+        super.loadPacketHandlers();
         APIConstants.playerAPIExecutor = this;
 
         this.plugin = plugin;
@@ -170,6 +171,7 @@ public final class BungeeExecutor extends API implements PlayerAPIExecutor {
             while (packetSender == null) {
                 packetSender = DefaultChannelManager.INSTANCE.get("Controller").orElse(null);
                 AbsoluteThread.sleep(20);
+                System.out.println("NOT CONNECTED EY");
             }
 
             getAllProcesses().forEach(BungeeExecutor::registerServer);

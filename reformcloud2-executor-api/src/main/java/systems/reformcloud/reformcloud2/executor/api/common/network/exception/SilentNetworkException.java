@@ -7,11 +7,11 @@ public class SilentNetworkException extends RuntimeException {
     }
 
     public SilentNetworkException(Throwable cause) {
-        super(cause);
+        super(cause.getClass().getSimpleName() + ":" + cause.getMessage());
     }
 
     public SilentNetworkException(String message, Throwable cause) {
-        super(message, cause);
+        super(message + "@" + cause.getClass().getSimpleName() + ":" + cause.getMessage());
     }
 
     @Override

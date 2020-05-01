@@ -38,7 +38,6 @@ public final class DefaultNetworkServer implements NetworkServer {
                         .childOption(ChannelOption.AUTO_READ, true)
                         .childOption(ChannelOption.IP_TOS, 0x18)
                         .childOption(ChannelOption.TCP_NODELAY, true)
-                        .childOption(ChannelOption.WRITE_BUFFER_WATER_MARK, NetworkUtil.WATER_MARK)
 
                         .childHandler(new ServerInitializerHandler(readerHelper, challengeAuthHandler))
 
