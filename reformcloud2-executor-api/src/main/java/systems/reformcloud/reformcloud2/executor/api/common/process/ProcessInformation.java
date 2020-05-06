@@ -202,10 +202,10 @@ public final class ProcessInformation implements Clone<ProcessInformation>, Seri
         buffer.writeObjects(this.processPlayerManager.getOnlinePlayers());
         buffer.writeObject(this.processDetail);
         buffer.writeObject(this.networkInfo);
-        buffer.writeArray(this.extra.toPrettyBytes());
         buffer.writeObjects(this.plugins);
         buffer.writeObjects(this.preInclusions);
         buffer.writeObject(this.processGroup);
+        buffer.writeArray(this.extra.toPrettyBytes());
     }
 
     @Override
@@ -213,6 +213,9 @@ public final class ProcessInformation implements Clone<ProcessInformation>, Seri
         this.processPlayerManager = new ProcessPlayerManager(buffer.readObjects(Player.class));
         this.processDetail = buffer.readObject(ProcessDetail.class);
         this.networkInfo = buffer.readObject(NetworkInfo.class);
+        this.plugins = buffer.readObjects(DefaultPlugin.class);
+        this.preInclusions = buffer.readObjects(ProcessInclusion.class);
+        this.processGroup = buffer.readObject(ProcessGroup.class);
 
         try (InputStream stream = new ByteArrayInputStream(buffer.readArray())) {
             this.extra = new JsonConfiguration(stream);
@@ -220,9 +223,5 @@ public final class ProcessInformation implements Clone<ProcessInformation>, Seri
             ex.printStackTrace();
             this.extra = new JsonConfiguration();
         }
-
-        this.plugins = buffer.readObjects(DefaultPlugin.class);
-        this.preInclusions = buffer.readObjects(ProcessInclusion.class);
-        this.processGroup = buffer.readObject(ProcessGroup.class);
     }
 }

@@ -12,7 +12,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.handler.Chan
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.controller.ControllerExecutor;
 
-public class ClientPacketProcessWatchdogStopped implements Packet {
+public class ClientPacketProcessWatchdogStopped extends Packet {
 
     public ClientPacketProcessWatchdogStopped() {
     }

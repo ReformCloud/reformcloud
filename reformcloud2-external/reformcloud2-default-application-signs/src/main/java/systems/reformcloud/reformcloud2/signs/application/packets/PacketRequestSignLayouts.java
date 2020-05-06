@@ -12,7 +12,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packe
 import systems.reformcloud.reformcloud2.signs.application.ReformCloudApplication;
 import systems.reformcloud.reformcloud2.signs.packets.PacketUtil;
 
-public class PacketRequestSignLayouts implements Packet {
+public class PacketRequestSignLayouts extends Packet {
 
     public PacketRequestSignLayouts() {
     }

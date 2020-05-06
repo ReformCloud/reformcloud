@@ -16,7 +16,7 @@ import systems.reformcloud.reformcloud2.executor.node.process.manager.LocalProce
 
 import java.util.UUID;
 
-public class NodePacketOutStopProcess implements Packet {
+public class NodePacketOutStopProcess extends Packet {
 
     public NodePacketOutStopProcess() {
     }

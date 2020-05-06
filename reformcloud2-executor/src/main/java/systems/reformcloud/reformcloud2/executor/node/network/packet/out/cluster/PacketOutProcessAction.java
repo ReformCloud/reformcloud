@@ -21,7 +21,7 @@ import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
 import systems.reformcloud.reformcloud2.executor.node.cluster.sync.DefaultClusterSyncManager;
 import systems.reformcloud.reformcloud2.executor.node.process.util.ProcessAction;
 
-public class PacketOutProcessAction implements Packet {
+public class PacketOutProcessAction extends Packet {
 
     public PacketOutProcessAction() {
     }

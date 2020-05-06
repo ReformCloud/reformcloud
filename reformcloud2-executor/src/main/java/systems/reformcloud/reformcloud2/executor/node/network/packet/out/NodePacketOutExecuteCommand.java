@@ -13,7 +13,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packe
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.node.process.manager.LocalProcessManager;
 
-public class NodePacketOutExecuteCommand implements Packet {
+public class NodePacketOutExecuteCommand extends Packet {
 
     public NodePacketOutExecuteCommand() {
     }

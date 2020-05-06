@@ -14,7 +14,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packe
 
 import java.util.List;
 
-public class PacketAPIGroupCreateMainGroup implements Packet {
+public class PacketAPIGroupCreateMainGroup extends Packet {
 
     public PacketAPIGroupCreateMainGroup() {
     }

@@ -17,7 +17,7 @@ import systems.reformcloud.reformcloud2.signs.packets.PacketUtil;
 import systems.reformcloud.reformcloud2.signs.util.SignSystemAdapter;
 import systems.reformcloud.reformcloud2.signs.util.sign.CloudSign;
 
-public class PacketDeleteSign implements Packet {
+public class PacketDeleteSign extends Packet {
 
     public PacketDeleteSign() {
     }

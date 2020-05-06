@@ -16,7 +16,7 @@ import systems.reformcloud.reformcloud2.signs.util.sign.CloudSign;
 
 import java.util.Collection;
 
-public class PacketDeleteBulkSigns implements Packet {
+public class PacketDeleteBulkSigns extends Packet {
 
     public PacketDeleteBulkSigns() {
     }

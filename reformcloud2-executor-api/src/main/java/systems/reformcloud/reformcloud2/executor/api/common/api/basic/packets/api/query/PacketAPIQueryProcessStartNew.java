@@ -14,7 +14,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packe
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.process.api.ProcessConfiguration;
 
-public class PacketAPIQueryProcessStartNew implements Packet {
+public class PacketAPIQueryProcessStartNew extends Packet {
 
     public PacketAPIQueryProcessStartNew() {
     }

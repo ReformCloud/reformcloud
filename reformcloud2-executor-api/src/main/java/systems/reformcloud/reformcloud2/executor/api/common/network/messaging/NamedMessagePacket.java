@@ -19,7 +19,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 
-public class NamedMessagePacket implements Packet {
+public class NamedMessagePacket extends Packet {
 
     public NamedMessagePacket() {
     }

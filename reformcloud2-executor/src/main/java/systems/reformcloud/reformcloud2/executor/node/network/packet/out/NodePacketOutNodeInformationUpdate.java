@@ -13,7 +13,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packe
 import systems.reformcloud.reformcloud2.executor.api.common.node.NodeInformation;
 import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
 
-public class NodePacketOutNodeInformationUpdate implements Packet {
+public class NodePacketOutNodeInformationUpdate extends Packet {
 
     public NodePacketOutNodeInformationUpdate() {
     }

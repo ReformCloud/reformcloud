@@ -16,7 +16,7 @@ import systems.reformcloud.reformcloud2.executor.client.screen.ProcessScreen;
 
 import java.util.UUID;
 
-public class ControllerPacketToggleScreen implements Packet {
+public class ControllerPacketToggleScreen extends Packet {
 
     public ControllerPacketToggleScreen() {
     }

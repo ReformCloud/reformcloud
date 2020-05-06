@@ -13,7 +13,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packe
 
 import java.util.UUID;
 
-public class APIPacketOutLogoutPlayer implements Packet {
+public class APIPacketOutLogoutPlayer extends Packet {
 
     public APIPacketOutLogoutPlayer(UUID playerUniqueID, String playerName, String lastServer) {
         this.playerUniqueID = playerUniqueID;

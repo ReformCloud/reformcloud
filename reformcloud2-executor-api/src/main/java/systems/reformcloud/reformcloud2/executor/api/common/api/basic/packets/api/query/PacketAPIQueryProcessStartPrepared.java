@@ -15,7 +15,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInfor
 
 import java.util.UUID;
 
-public class PacketAPIQueryProcessStartPrepared implements Packet {
+public class PacketAPIQueryProcessStartPrepared extends Packet {
 
     public PacketAPIQueryProcessStartPrepared() {
     }

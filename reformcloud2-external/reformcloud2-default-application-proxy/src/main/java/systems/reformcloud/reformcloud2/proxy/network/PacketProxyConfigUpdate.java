@@ -13,7 +13,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packe
 import systems.reformcloud.reformcloud2.proxy.ProxyConfiguration;
 import systems.reformcloud.reformcloud2.proxy.plugin.PluginConfigHandler;
 
-public class PacketProxyConfigUpdate implements Packet {
+public class PacketProxyConfigUpdate extends Packet {
 
     public PacketProxyConfigUpdate() {
     }

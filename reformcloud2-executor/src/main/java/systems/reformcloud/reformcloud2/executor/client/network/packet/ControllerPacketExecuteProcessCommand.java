@@ -12,7 +12,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.handler.Chan
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.client.ClientExecutor;
 
-public class ControllerPacketExecuteProcessCommand implements Packet {
+public class ControllerPacketExecuteProcessCommand extends Packet {
 
     public ControllerPacketExecuteProcessCommand() {
     }

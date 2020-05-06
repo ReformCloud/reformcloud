@@ -11,7 +11,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.data.Protoco
 import systems.reformcloud.reformcloud2.executor.api.common.network.handler.ChannelReaderHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 
-public final class PacketOutServerChallengeStart implements Packet {
+public final class PacketOutServerChallengeStart extends Packet {
 
     public PacketOutServerChallengeStart() {
     }

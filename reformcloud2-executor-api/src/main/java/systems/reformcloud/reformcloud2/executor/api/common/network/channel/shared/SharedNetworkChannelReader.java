@@ -64,9 +64,8 @@ public abstract class SharedNetworkChannelReader implements NetworkChannelReader
                 Task<Packet> waitingQuery = this.packetHandler.getQueryHandler().getWaitingQuery(input.getQueryUniqueID());
                 if (waitingQuery != null) {
                     waitingQuery.complete(input);
+                    return;
                 }
-
-                return;
             }
 
             try {

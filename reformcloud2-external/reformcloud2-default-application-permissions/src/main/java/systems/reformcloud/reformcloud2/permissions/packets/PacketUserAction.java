@@ -17,7 +17,7 @@ import systems.reformcloud.reformcloud2.permissions.packets.util.PermissionActio
 import systems.reformcloud.reformcloud2.permissions.util.basic.DefaultPermissionUtil;
 import systems.reformcloud.reformcloud2.permissions.util.user.PermissionUser;
 
-public class PacketUserAction implements Packet {
+public class PacketUserAction extends Packet {
 
     public PacketUserAction() {
     }

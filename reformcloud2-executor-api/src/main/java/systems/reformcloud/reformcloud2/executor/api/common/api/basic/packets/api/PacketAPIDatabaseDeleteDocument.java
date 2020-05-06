@@ -12,7 +12,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.data.Protoco
 import systems.reformcloud.reformcloud2.executor.api.common.network.handler.ChannelReaderHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 
-public class PacketAPIDatabaseDeleteDocument implements Packet {
+public class PacketAPIDatabaseDeleteDocument extends Packet {
 
     public PacketAPIDatabaseDeleteDocument() {
     }

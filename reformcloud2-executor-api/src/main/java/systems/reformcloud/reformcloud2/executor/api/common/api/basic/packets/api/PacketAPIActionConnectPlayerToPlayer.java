@@ -14,7 +14,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packe
 
 import java.util.UUID;
 
-public class PacketAPIActionConnectPlayerToPlayer implements Packet {
+public class PacketAPIActionConnectPlayerToPlayer extends Packet {
 
     public PacketAPIActionConnectPlayerToPlayer() {
     }

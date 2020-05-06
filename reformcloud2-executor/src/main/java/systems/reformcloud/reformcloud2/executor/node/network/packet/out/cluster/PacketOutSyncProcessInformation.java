@@ -15,7 +15,7 @@ import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
 
 import java.util.Collection;
 
-public class PacketOutSyncProcessInformation implements Packet {
+public class PacketOutSyncProcessInformation extends Packet {
 
     public PacketOutSyncProcessInformation() {
     }

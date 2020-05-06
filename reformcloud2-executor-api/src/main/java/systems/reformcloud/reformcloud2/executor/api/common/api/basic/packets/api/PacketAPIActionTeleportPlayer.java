@@ -14,7 +14,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packe
 
 import java.util.UUID;
 
-public class PacketAPIActionTeleportPlayer implements Packet {
+public class PacketAPIActionTeleportPlayer extends Packet {
 
     public PacketAPIActionTeleportPlayer() {
     }

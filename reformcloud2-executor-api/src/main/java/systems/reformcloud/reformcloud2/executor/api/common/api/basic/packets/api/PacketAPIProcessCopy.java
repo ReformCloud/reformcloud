@@ -4,7 +4,7 @@ import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.network.data.ProtocolBuffer;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 
-public abstract class PacketAPIProcessCopy implements Packet {
+public abstract class PacketAPIProcessCopy extends Packet {
 
     public PacketAPIProcessCopy() {
     }

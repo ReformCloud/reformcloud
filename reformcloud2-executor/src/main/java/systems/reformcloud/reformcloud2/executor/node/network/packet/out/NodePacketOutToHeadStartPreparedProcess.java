@@ -13,7 +13,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.handler.Chan
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 
-public class NodePacketOutToHeadStartPreparedProcess implements Packet {
+public class NodePacketOutToHeadStartPreparedProcess extends Packet {
 
     public NodePacketOutToHeadStartPreparedProcess() {
     }

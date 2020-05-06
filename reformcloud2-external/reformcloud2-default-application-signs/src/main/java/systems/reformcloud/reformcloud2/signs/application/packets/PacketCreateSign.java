@@ -17,7 +17,7 @@ import systems.reformcloud.reformcloud2.signs.packets.PacketUtil;
 import systems.reformcloud.reformcloud2.signs.util.SignSystemAdapter;
 import systems.reformcloud.reformcloud2.signs.util.sign.CloudSign;
 
-public class PacketCreateSign implements Packet {
+public class PacketCreateSign extends Packet {
 
     public PacketCreateSign() {
     }

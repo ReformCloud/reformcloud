@@ -16,7 +16,7 @@ import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
 import systems.reformcloud.reformcloud2.executor.node.process.manager.LocalProcessManager;
 import systems.reformcloud.reformcloud2.executor.node.process.startup.LocalProcessQueue;
 
-public class NodePacketOutStartPreparedProcess implements Packet {
+public class NodePacketOutStartPreparedProcess extends Packet {
 
     public NodePacketOutStartPreparedProcess() {
     }

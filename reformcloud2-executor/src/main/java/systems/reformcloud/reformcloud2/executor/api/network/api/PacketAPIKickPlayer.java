@@ -14,7 +14,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packe
 
 import java.util.UUID;
 
-public class PacketAPIKickPlayer implements Packet {
+public class PacketAPIKickPlayer extends Packet {
 
     public PacketAPIKickPlayer() {
     }

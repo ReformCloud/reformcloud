@@ -12,7 +12,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.data.Protoco
 import systems.reformcloud.reformcloud2.executor.api.common.network.handler.ChannelReaderHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 
-public class PacketAPIGroupDeleteProcessGroup implements Packet {
+public class PacketAPIGroupDeleteProcessGroup extends Packet {
 
     public PacketAPIGroupDeleteProcessGroup() {
     }

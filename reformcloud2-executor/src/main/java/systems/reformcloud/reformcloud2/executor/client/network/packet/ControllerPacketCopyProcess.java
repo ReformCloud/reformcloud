@@ -14,7 +14,7 @@ import systems.reformcloud.reformcloud2.executor.client.ClientExecutor;
 
 import java.util.UUID;
 
-public class ControllerPacketCopyProcess implements Packet {
+public class ControllerPacketCopyProcess extends Packet {
 
     public ControllerPacketCopyProcess() {
     }

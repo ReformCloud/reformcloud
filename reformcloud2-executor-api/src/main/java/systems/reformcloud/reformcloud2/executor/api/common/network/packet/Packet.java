@@ -11,19 +11,22 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.handler.Chan
 
 import java.util.UUID;
 
-public interface Packet extends SerializableObject {
+public abstract class Packet implements SerializableObject {
 
-    int getId();
+    protected UUID queryUniqueID;
+
+    public abstract int getId();
 
     @Nullable
-    default UUID getQueryUniqueID() {
-        return null;
+    public UUID getQueryUniqueID() {
+        return this.queryUniqueID;
     }
 
-    default void setQueryUniqueID(@Nullable UUID queryUniqueID) {
+    public void setQueryUniqueID(@Nullable UUID queryUniqueID) {
+        this.queryUniqueID = queryUniqueID;
     }
 
-    void handlePacketReceive(@NotNull NetworkChannelReader reader, @NotNull ChallengeAuthHandler authHandler,
-                             @NotNull ChannelReaderHelper parent, @Nullable PacketSender sender, @NotNull ChannelHandlerContext channel);
+    public abstract void handlePacketReceive(@NotNull NetworkChannelReader reader, @NotNull ChallengeAuthHandler authHandler,
+                                             @NotNull ChannelReaderHelper parent, @Nullable PacketSender sender, @NotNull ChannelHandlerContext channel);
 
 }

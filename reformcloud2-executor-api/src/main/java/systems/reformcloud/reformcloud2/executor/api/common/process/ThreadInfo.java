@@ -1,10 +1,15 @@
 package systems.reformcloud.reformcloud2.executor.api.common.process;
 
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.network.SerializableObject;
 import systems.reformcloud.reformcloud2.executor.api.common.network.data.ProtocolBuffer;
 
 public final class ThreadInfo implements SerializableObject {
+
+    @ApiStatus.Internal
+    public ThreadInfo() {
+    }
 
     private ThreadInfo(String name, long id, int priority, boolean daemon, Thread.State state) {
         this.name = name;

@@ -18,7 +18,7 @@ import systems.reformcloud.reformcloud2.executor.controller.network.packet.Clien
 
 import java.util.UUID;
 
-public class ControllerPacketStopProcess implements Packet {
+public class ControllerPacketStopProcess extends Packet {
 
     public ControllerPacketStopProcess() {
     }

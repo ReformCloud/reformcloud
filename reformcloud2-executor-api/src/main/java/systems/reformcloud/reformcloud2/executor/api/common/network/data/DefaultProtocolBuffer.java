@@ -11,6 +11,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.exception.Si
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
@@ -212,9 +213,14 @@ public class DefaultProtocolBuffer extends ProtocolBuffer {
             T instance = tClass.getDeclaredConstructor().newInstance();
             instance.read(this);
             return instance;
-        } catch (final Throwable throwable) {
-            return null;
+        } catch (final NoSuchMethodException exception) {
+            System.err.println("Unable to find NoArgsConstructor for object class " + tClass.getName());
+        } catch (final IllegalAccessException | InvocationTargetException | InstantiationException exception) {
+            System.err.println("An unexpected exception occured while reading object class " + tClass.getName());
+            exception.printStackTrace();
         }
+
+        return null;
     }
 
     @Override

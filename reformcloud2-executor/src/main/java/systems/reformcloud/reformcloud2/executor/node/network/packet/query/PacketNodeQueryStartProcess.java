@@ -13,7 +13,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packe
 import systems.reformcloud.reformcloud2.executor.api.common.process.api.ProcessConfiguration;
 import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
 
-public class PacketNodeQueryStartProcess implements Packet {
+public class PacketNodeQueryStartProcess extends Packet {
 
     public PacketNodeQueryStartProcess() {
     }

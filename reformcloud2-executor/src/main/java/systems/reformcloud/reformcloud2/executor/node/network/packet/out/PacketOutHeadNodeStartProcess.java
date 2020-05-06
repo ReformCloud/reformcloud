@@ -13,7 +13,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packe
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
 
-public class PacketOutHeadNodeStartProcess implements Packet {
+public class PacketOutHeadNodeStartProcess extends Packet {
 
     public PacketOutHeadNodeStartProcess() {
     }

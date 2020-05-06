@@ -15,7 +15,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packe
 
 import java.util.UUID;
 
-public final class EventPacketPlayerServerSwitch implements Packet {
+public final class EventPacketPlayerServerSwitch extends Packet {
 
     public EventPacketPlayerServerSwitch() {
     }

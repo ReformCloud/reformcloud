@@ -16,7 +16,7 @@ import systems.reformcloud.reformcloud2.executor.client.ClientExecutor;
 import systems.reformcloud.reformcloud2.executor.client.process.ProcessQueue;
 import systems.reformcloud.reformcloud2.executor.client.process.basic.DefaultRunningProcess;
 
-public class ControllerPacketStartProcess implements Packet {
+public class ControllerPacketStartProcess extends Packet {
 
     public ControllerPacketStartProcess() {
     }

@@ -15,7 +15,7 @@ import systems.reformcloud.reformcloud2.executor.node.process.manager.LocalProce
 
 import java.util.UUID;
 
-public class NodePacketOutCopyProcess implements Packet {
+public class NodePacketOutCopyProcess extends Packet {
 
     public NodePacketOutCopyProcess() {
     }

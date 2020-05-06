@@ -22,7 +22,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class TypeMessagePacket implements Packet {
+public class TypeMessagePacket extends Packet {
 
     public TypeMessagePacket() {
     }

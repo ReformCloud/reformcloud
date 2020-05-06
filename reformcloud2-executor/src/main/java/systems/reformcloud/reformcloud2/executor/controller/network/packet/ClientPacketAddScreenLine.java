@@ -16,7 +16,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInfor
 
 import java.util.UUID;
 
-public class ClientPacketAddScreenLine implements Packet {
+public class ClientPacketAddScreenLine extends Packet {
 
     public ClientPacketAddScreenLine() {
     }

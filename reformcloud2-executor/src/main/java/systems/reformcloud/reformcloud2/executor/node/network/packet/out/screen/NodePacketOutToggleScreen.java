@@ -14,7 +14,7 @@ import systems.reformcloud.reformcloud2.executor.node.process.log.NodeProcessScr
 
 import java.util.UUID;
 
-public class NodePacketOutToggleScreen implements Packet {
+public class NodePacketOutToggleScreen extends Packet {
 
     public NodePacketOutToggleScreen() {
     }

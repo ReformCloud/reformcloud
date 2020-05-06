@@ -12,7 +12,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.data.Protoco
 import systems.reformcloud.reformcloud2.executor.api.common.network.handler.ChannelReaderHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 
-public class PacketOutClientChallengeResponse implements Packet {
+public class PacketOutClientChallengeResponse extends Packet {
 
     public PacketOutClientChallengeResponse() {
     }

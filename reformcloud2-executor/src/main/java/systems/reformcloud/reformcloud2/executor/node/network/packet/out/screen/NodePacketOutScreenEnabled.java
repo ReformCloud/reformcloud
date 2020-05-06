@@ -17,7 +17,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInfor
 import java.util.Collection;
 import java.util.UUID;
 
-public class NodePacketOutScreenEnabled implements Packet {
+public class NodePacketOutScreenEnabled extends Packet {
 
     public NodePacketOutScreenEnabled() {
     }

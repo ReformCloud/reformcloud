@@ -14,7 +14,7 @@ import systems.reformcloud.reformcloud2.executor.client.ClientExecutor;
 
 import java.util.UUID;
 
-public class ControllerPacketProcessDisconnected implements Packet {
+public class ControllerPacketProcessDisconnected extends Packet {
 
     public ControllerPacketProcessDisconnected() {
     }

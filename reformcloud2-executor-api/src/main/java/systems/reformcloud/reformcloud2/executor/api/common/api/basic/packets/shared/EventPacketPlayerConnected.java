@@ -13,7 +13,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.data.Protoco
 import systems.reformcloud.reformcloud2.executor.api.common.network.handler.ChannelReaderHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 
-public final class EventPacketPlayerConnected implements Packet {
+public final class EventPacketPlayerConnected extends Packet {
 
     public EventPacketPlayerConnected() {
     }

@@ -589,7 +589,6 @@ public final class NodeExecutor extends Node {
                         return;
                     }
 
-                    System.out.println(e.getName());
                     this.packetHandler.registerHandler(e);
                 });
 

@@ -17,7 +17,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class PacketAPIDatabaseUpdateOrInsertDocument implements Packet {
+public class PacketAPIDatabaseUpdateOrInsertDocument extends Packet {
 
     public PacketAPIDatabaseUpdateOrInsertDocument() {
     }

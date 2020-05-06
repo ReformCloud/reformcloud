@@ -12,7 +12,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.handler.Chan
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 import systems.reformcloud.reformcloud2.proxy.application.ConfigHelper;
 
-public class PacketRequestConfig implements Packet {
+public class PacketRequestConfig extends Packet {
 
     public PacketRequestConfig() {
     }

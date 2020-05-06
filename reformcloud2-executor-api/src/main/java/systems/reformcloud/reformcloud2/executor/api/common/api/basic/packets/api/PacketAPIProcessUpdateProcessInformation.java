@@ -13,7 +13,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.handler.Chan
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 
-public class PacketAPIProcessUpdateProcessInformation implements Packet {
+public class PacketAPIProcessUpdateProcessInformation extends Packet {
 
     public PacketAPIProcessUpdateProcessInformation() {
     }

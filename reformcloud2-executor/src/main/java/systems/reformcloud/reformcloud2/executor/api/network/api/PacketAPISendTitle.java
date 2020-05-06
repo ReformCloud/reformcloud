@@ -14,7 +14,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packe
 
 import java.util.UUID;
 
-public class PacketAPISendTitle implements Packet {
+public class PacketAPISendTitle extends Packet {
 
     public PacketAPISendTitle() {
     }

@@ -11,7 +11,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.data.Protoco
 import systems.reformcloud.reformcloud2.executor.api.common.network.handler.ChannelReaderHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 
-public class APIPacketOutPlayerLoggedIn implements Packet {
+public class APIPacketOutPlayerLoggedIn extends Packet {
 
     public APIPacketOutPlayerLoggedIn(String playerName) {
         this.playerName = playerName;

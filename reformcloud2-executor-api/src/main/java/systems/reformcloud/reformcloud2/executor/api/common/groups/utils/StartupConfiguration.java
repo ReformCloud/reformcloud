@@ -1,5 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.api.common.groups.utils;
 
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.network.SerializableObject;
 import systems.reformcloud.reformcloud2.executor.api.common.network.data.ProtocolBuffer;
@@ -8,6 +9,10 @@ import java.util.List;
 import java.util.Objects;
 
 public final class StartupConfiguration implements SerializableObject {
+
+    @ApiStatus.Internal
+    public StartupConfiguration() {
+    }
 
     public StartupConfiguration(int maxOnlineProcesses, int minOnlineProcesses, int startupPriority,
                                 int startPort, StartupEnvironment startupEnvironment,

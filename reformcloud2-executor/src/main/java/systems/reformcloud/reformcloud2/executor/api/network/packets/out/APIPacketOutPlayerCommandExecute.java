@@ -13,7 +13,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packe
 
 import java.util.UUID;
 
-public class APIPacketOutPlayerCommandExecute implements Packet {
+public class APIPacketOutPlayerCommandExecute extends Packet {
 
     public APIPacketOutPlayerCommandExecute(String playerName, UUID playerUniqueID, String command) {
         this.playerName = playerName;

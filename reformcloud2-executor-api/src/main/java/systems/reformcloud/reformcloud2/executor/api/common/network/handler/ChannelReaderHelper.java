@@ -60,8 +60,4 @@ public final class ChannelReaderHelper extends SimpleChannelInboundHandler<Packe
 
         channelReader.read(channelHandlerContext, this.authHandler, this, input);
     }
-
-    public NetworkChannelReader getChannelReader() {
-        return channelReader;
-    }
 }

@@ -13,7 +13,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packe
 
 import java.util.UUID;
 
-public class APIBungeePacketOutPlayerServerSwitch implements Packet {
+public class APIBungeePacketOutPlayerServerSwitch extends Packet {
 
     public APIBungeePacketOutPlayerServerSwitch() {
     }

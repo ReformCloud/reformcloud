@@ -15,7 +15,7 @@ import systems.reformcloud.reformcloud2.permissions.PermissionAPI;
 import systems.reformcloud.reformcloud2.permissions.packets.util.PermissionAction;
 import systems.reformcloud.reformcloud2.permissions.util.group.PermissionGroup;
 
-public class PacketGroupAction implements Packet {
+public class PacketGroupAction extends Packet {
 
     public PacketGroupAction() {
     }

@@ -1,5 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.api.common.groups.utils;
 
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.network.SerializableObject;
 import systems.reformcloud.reformcloud2.executor.api.common.network.data.ProtocolBuffer;
@@ -7,6 +8,10 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.data.Protoco
 import java.util.Objects;
 
 public final class PlayerAccessConfiguration implements SerializableObject {
+
+    @ApiStatus.Internal
+    public PlayerAccessConfiguration() {
+    }
 
     public PlayerAccessConfiguration(String fullJoinPermission, boolean maintenance, String maintenanceJoinPermission,
                                      boolean joinOnlyPerPermission, String joinPermission,

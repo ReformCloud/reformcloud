@@ -14,7 +14,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packe
 
 import java.util.UUID;
 
-public class PacketAPIActionPlayEntityEffect implements Packet {
+public class PacketAPIActionPlayEntityEffect extends Packet {
 
     public PacketAPIActionPlayEntityEffect() {
     }

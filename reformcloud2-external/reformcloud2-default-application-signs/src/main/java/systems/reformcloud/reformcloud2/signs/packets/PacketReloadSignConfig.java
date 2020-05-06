@@ -12,7 +12,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packe
 import systems.reformcloud.reformcloud2.signs.util.SignSystemAdapter;
 import systems.reformcloud.reformcloud2.signs.util.sign.config.SignConfig;
 
-public class PacketReloadSignConfig implements Packet {
+public class PacketReloadSignConfig extends Packet {
 
     public PacketReloadSignConfig() {
     }

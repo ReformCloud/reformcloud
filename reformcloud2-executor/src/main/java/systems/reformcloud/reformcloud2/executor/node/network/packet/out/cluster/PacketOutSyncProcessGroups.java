@@ -16,7 +16,7 @@ import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
 
 import java.util.Collection;
 
-public class PacketOutSyncProcessGroups implements Packet {
+public class PacketOutSyncProcessGroups extends Packet {
 
     public PacketOutSyncProcessGroups() {
     }
