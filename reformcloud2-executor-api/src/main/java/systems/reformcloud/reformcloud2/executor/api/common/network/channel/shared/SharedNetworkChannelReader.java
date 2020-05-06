@@ -2,6 +2,7 @@ package systems.reformcloud.reformcloud2.executor.api.common.network.channel.sha
 
 import io.netty.channel.ChannelHandlerContext;
 import org.jetbrains.annotations.NotNull;
+import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.base.Conditions;
 import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
 import systems.reformcloud.reformcloud2.executor.api.common.network.NetworkUtil;
@@ -13,26 +14,13 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.channel.mana
 import systems.reformcloud.reformcloud2.executor.api.common.network.exception.SilentNetworkException;
 import systems.reformcloud.reformcloud2.executor.api.common.network.handler.ChannelReaderHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
-import systems.reformcloud.reformcloud2.executor.api.common.network.packet.handler.PacketHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 
 import java.net.InetSocketAddress;
 
 public abstract class SharedNetworkChannelReader implements NetworkChannelReader {
 
-    public SharedNetworkChannelReader(PacketHandler packetHandler) {
-        this.packetHandler = packetHandler;
-    }
-
-    protected final PacketHandler packetHandler;
-
     protected PacketSender packetSender;
-
-    @NotNull
-    @Override
-    public PacketHandler getPacketHandler() {
-        return this.packetHandler;
-    }
 
     @NotNull
     @Override
@@ -61,7 +49,7 @@ public abstract class SharedNetworkChannelReader implements NetworkChannelReader
                      @NotNull ChannelReaderHelper parent, @NotNull Packet input) {
         NetworkUtil.EXECUTOR.execute(() -> {
             if (input.getQueryUniqueID() != null) {
-                Task<Packet> waitingQuery = this.packetHandler.getQueryHandler().getWaitingQuery(input.getQueryUniqueID());
+                Task<Packet> waitingQuery = ExecutorAPI.getInstance().getPacketHandler().getQueryHandler().getWaitingQuery(input.getQueryUniqueID());
                 if (waitingQuery != null) {
                     waitingQuery.complete(input);
                     return;

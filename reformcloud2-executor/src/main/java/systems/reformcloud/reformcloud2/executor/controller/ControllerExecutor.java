@@ -213,7 +213,7 @@ public final class ControllerExecutor extends Controller {
         this.controllerConfig.getNetworkListener().forEach(e -> e.forEach((host, port) -> ControllerExecutor.this.networkServer.bind(
                 host,
                 port,
-                () -> new ControllerNetworkChannelReader(this.packetHandler),
+                () -> new ControllerNetworkChannelReader(),
                 new ServerChallengeAuthHandler(new SharedChallengeProvider(this.controllerExecutorConfig.getConnectionKey()), new ControllerNetworkSuccessHandler())
         )));
 

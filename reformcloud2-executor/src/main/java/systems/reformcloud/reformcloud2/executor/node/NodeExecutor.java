@@ -280,7 +280,7 @@ public final class NodeExecutor extends Node {
         this.nodeConfig.getNetworkListeners().forEach(e -> this.networkServer.bind(
                 e.getHost(),
                 e.getPort(),
-                () -> new NodeNetworkChannelReader(this.packetHandler),
+                () -> new NodeNetworkChannelReader(),
                 new NodeChallengeAuthHandler(new SharedChallengeProvider(this.nodeExecutorConfig.getConnectionKey()), new NodeNetworkSuccessHandler())
         ));
 
@@ -305,7 +305,7 @@ public final class NodeExecutor extends Node {
                     if (this.networkClient.connect(
                             e.getHost(),
                             e.getPort(),
-                            () -> new NodeNetworkChannelReader(NodeExecutor.getInstance().getPacketHandler()),
+                            () -> new NodeNetworkChannelReader(),
                             new ClientChallengeAuthHandler(
                                     NodeExecutor.getInstance().getNodeExecutorConfig().getConnectionKey(),
                                     NodeExecutor.getInstance().getNodeConfig().getName(),

@@ -5,17 +5,10 @@ import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.network.challenge.ChallengeAuthHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.handler.ChannelReaderHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
-import systems.reformcloud.reformcloud2.executor.api.common.network.packet.handler.PacketHandler;
 
 import java.io.IOException;
 
 public interface NetworkChannelReader {
-
-    /**
-     * @return The packet handler of the network channel
-     */
-    @NotNull
-    PacketHandler getPacketHandler();
 
     /**
      * @return The current packet sender of the reader

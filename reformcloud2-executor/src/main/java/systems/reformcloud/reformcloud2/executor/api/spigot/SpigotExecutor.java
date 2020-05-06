@@ -88,7 +88,7 @@ public final class SpigotExecutor extends API implements PlayerAPIExecutor {
         this.networkClient.connect(
                 connectionConfig.getString("controller-host"),
                 connectionConfig.getInteger("controller-port"),
-                () -> new APINetworkChannelReader(this.packetHandler),
+                () -> new APINetworkChannelReader(),
                 new ClientChallengeAuthHandler(
                         connectionKey,
                         thisProcessInformation.getProcessDetail().getName(),

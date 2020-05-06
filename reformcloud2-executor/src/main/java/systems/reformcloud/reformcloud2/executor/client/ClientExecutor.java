@@ -348,7 +348,7 @@ public final class ClientExecutor extends Client {
         return this.networkClient.connect(
                 clientExecutorConfig.getClientConnectionConfig().getHost(),
                 clientExecutorConfig.getClientConnectionConfig().getPort(),
-                () -> new ClientNetworkChannelReader(this.packetHandler),
+                () -> new ClientNetworkChannelReader(),
                 new ClientChallengeAuthHandler(
                         this.clientExecutorConfig.getConnectionKey(),
                         this.clientConfig.getName(),
