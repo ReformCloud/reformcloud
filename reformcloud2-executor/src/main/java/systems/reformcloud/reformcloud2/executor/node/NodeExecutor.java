@@ -78,6 +78,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.handl
 import systems.reformcloud.reformcloud2.executor.api.common.network.server.DefaultNetworkServer;
 import systems.reformcloud.reformcloud2.executor.api.common.network.server.NetworkServer;
 import systems.reformcloud.reformcloud2.executor.api.common.node.NodeInformation;
+import systems.reformcloud.reformcloud2.executor.api.common.process.running.manager.SharedRunningProcessManager;
 import systems.reformcloud.reformcloud2.executor.api.common.restapi.auth.basic.DefaultWebServerAuth;
 import systems.reformcloud.reformcloud2.executor.api.common.restapi.http.server.DefaultWebServer;
 import systems.reformcloud.reformcloud2.executor.api.common.restapi.http.server.WebServer;
@@ -106,6 +107,7 @@ import systems.reformcloud.reformcloud2.executor.node.cluster.DefaultClusterMana
 import systems.reformcloud.reformcloud2.executor.node.cluster.DefaultNodeInternalCluster;
 import systems.reformcloud.reformcloud2.executor.node.cluster.sync.DefaultClusterSyncManager;
 import systems.reformcloud.reformcloud2.executor.node.commands.CommandCluster;
+import systems.reformcloud.reformcloud2.executor.node.commands.CommandLog;
 import systems.reformcloud.reformcloud2.executor.node.config.NodeConfig;
 import systems.reformcloud.reformcloud2.executor.node.config.NodeExecutorConfig;
 import systems.reformcloud.reformcloud2.executor.node.dump.NodeDumpUtil;
@@ -130,7 +132,6 @@ import systems.reformcloud.reformcloud2.executor.node.process.listeners.RunningP
 import systems.reformcloud.reformcloud2.executor.node.process.log.LogLineReader;
 import systems.reformcloud.reformcloud2.executor.node.process.log.NodeProcessScreen;
 import systems.reformcloud.reformcloud2.executor.node.process.log.NodeProcessScreenHandler;
-import systems.reformcloud.reformcloud2.executor.node.process.manager.LocalProcessManager;
 import systems.reformcloud.reformcloud2.executor.node.process.startup.LocalProcessQueue;
 import systems.reformcloud.reformcloud2.executor.node.process.watchdog.WatchdogThread;
 
@@ -463,7 +464,7 @@ public final class NodeExecutor extends Node {
         this.localAutoStartupHandler.interrupt();
         this.nodeNetworkManager.close();
 
-        LocalProcessManager.close();
+        SharedRunningProcessManager.shutdownAll();
 
         this.database.disconnect();
 
@@ -600,6 +601,7 @@ public final class NodeExecutor extends Node {
                 .register(new CommandCreate())
                 .register(new CommandLaunch())
                 .register(new CommandStop())
+                .register(new CommandLog())
                 .register(new CommandReload(this))
                 .register(new CommandClear(loggerBase))
                 .register(new CommandHelp(commandManager));

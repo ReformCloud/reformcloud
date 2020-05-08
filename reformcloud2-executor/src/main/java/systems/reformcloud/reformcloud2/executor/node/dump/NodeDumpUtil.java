@@ -28,7 +28,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.comma
 import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.dump.basic.DefaultDumpUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.process.running.RunningProcess;
-import systems.reformcloud.reformcloud2.executor.node.process.manager.LocalProcessManager;
+import systems.reformcloud.reformcloud2.executor.api.common.process.running.manager.SharedRunningProcessManager;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -47,7 +47,7 @@ public final class NodeDumpUtil implements DumpUtil {
     }
 
     private static void dumpProcessInfos(StringBuilder stringBuilder) {
-        Collection<RunningProcess> nodeProcesses = LocalProcessManager.getNodeProcesses();
+        Collection<RunningProcess> nodeProcesses = SharedRunningProcessManager.getAllProcesses();
         stringBuilder.append("--- Registered Node Processes (").append(nodeProcesses.size()).append(") ---");
         stringBuilder.append("\n");
 

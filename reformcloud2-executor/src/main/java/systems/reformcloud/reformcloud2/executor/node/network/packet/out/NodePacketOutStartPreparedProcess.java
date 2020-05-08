@@ -36,8 +36,8 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.handler.Chan
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState;
+import systems.reformcloud.reformcloud2.executor.api.common.process.running.manager.SharedRunningProcessManager;
 import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
-import systems.reformcloud.reformcloud2.executor.node.process.manager.LocalProcessManager;
 import systems.reformcloud.reformcloud2.executor.node.process.startup.LocalProcessQueue;
 
 public class NodePacketOutStartPreparedProcess extends Packet {
@@ -61,7 +61,7 @@ public class NodePacketOutStartPreparedProcess extends Packet {
         if (this.processInformation != null
                 && this.processInformation.getProcessDetail().getParentUniqueID().equals(NodeExecutor.getInstance().getNodeNetworkManager().getCluster().getSelfNode().getNodeUniqueID())
                 && this.processInformation.getProcessDetail().getProcessState().equals(ProcessState.PREPARED)) {
-            LocalProcessManager.getNodeProcesses()
+            SharedRunningProcessManager.getAllProcesses()
                     .stream()
                     .filter(p -> p.getProcessInformation().getProcessDetail().getProcessUniqueID().equals(this.processInformation.getProcessDetail().getProcessUniqueID()))
                     .findFirst()

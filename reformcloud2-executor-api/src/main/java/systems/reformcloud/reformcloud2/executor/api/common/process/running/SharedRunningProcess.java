@@ -26,6 +26,7 @@ package systems.reformcloud.reformcloud2.executor.api.common.process.running;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import systems.reformcloud.reformcloud2.executor.api.common.CommonHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.base.Conditions;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
@@ -422,6 +423,10 @@ public abstract class SharedRunningProcess implements RunningProcess {
                 this.getProcessInformation().getProcessDetail().getParentName() +
                 "/" +
                 this.getProcessInformation().getProcessDetail().getParentUniqueID() +
+                "\n" +
+                "Process started: " + this.getProcess().isPresent() +
+                "\n" +
+                "Start time: " + (this.getProcess().isEmpty() ? "-1" : CommonHelper.DATE_FORMAT.format(this.getStartupTime())) +
                 "\n\n" + text;
 
         try {
@@ -439,13 +444,13 @@ public abstract class SharedRunningProcess implements RunningProcess {
                 stream.flush();
             }
 
-            if (connection.getResponseCode() != 200) {
+            if (connection.getResponseCode() != 201) {
                 return null;
             }
 
             try (BufferedReader stream = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
                 String lines = stream.lines().collect(Collectors.joining("\n"));
-                return new JsonConfiguration(lines).getString("key");
+                return pasteServerUrl + '/' + new JsonConfiguration(lines).getString("key");
             }
         } catch (final IOException ex) {
             ex.printStackTrace();

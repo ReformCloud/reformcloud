@@ -28,10 +28,10 @@ import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.process.running.RunningProcess;
+import systems.reformcloud.reformcloud2.executor.api.common.process.running.manager.SharedRunningProcessManager;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
 import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
 import systems.reformcloud.reformcloud2.executor.node.process.basic.BasicLocalNodeProcess;
-import systems.reformcloud.reformcloud2.executor.node.process.manager.LocalProcessManager;
 
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.LinkedBlockingDeque;
@@ -87,8 +87,10 @@ public class LocalProcessQueue extends AbsoluteThread {
     }
 
     private boolean isMemoryFree(int memory) {
-        int current = LocalProcessManager.getNodeProcesses().stream()
-                .mapToInt(e -> e.getProcessInformation().getProcessDetail().getMaxMemory()).sum() + memory;
+        int current = SharedRunningProcessManager.getAllProcesses()
+                .stream()
+                .mapToInt(e -> e.getProcessInformation().getProcessDetail().getMaxMemory())
+                .sum() + memory;
         return NodeExecutor.getInstance().getNodeConfig().getMaxMemory() >= current;
     }
 }

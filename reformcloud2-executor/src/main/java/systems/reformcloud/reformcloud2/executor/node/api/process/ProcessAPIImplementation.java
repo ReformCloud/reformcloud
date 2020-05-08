@@ -32,6 +32,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.base.Conditions;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.process.api.ProcessConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.common.process.running.manager.SharedRunningProcessManager;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.defaults.DefaultTask;
@@ -39,7 +40,6 @@ import systems.reformcloud.reformcloud2.executor.api.node.network.NodeNetworkMan
 import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
 import systems.reformcloud.reformcloud2.executor.node.network.packet.out.NodePacketOutCopyProcess;
 import systems.reformcloud.reformcloud2.executor.node.network.packet.out.NodePacketOutExecuteCommand;
-import systems.reformcloud.reformcloud2.executor.node.process.manager.LocalProcessManager;
 
 import java.util.List;
 import java.util.UUID;
@@ -250,7 +250,7 @@ public class ProcessAPIImplementation implements ProcessSyncAPI, ProcessAsyncAPI
     private void copyProcess0(@NotNull ProcessInformation target, @NotNull String targetTemplate, @NotNull String targetTemplateStorage, @NotNull String targetTemplateGroup) {
         if (NodeExecutor.getInstance().getNodeConfig().getUniqueID().equals(target.getProcessDetail().getParentUniqueID())) {
             Streams.filterToReference(
-                    LocalProcessManager.getNodeProcesses(),
+                    SharedRunningProcessManager.getAllProcesses(),
                     e -> e.getProcessInformation().getProcessDetail().getProcessUniqueID().equals(target.getProcessDetail().getProcessUniqueID())
             ).ifPresent(e -> e.copy(targetTemplate, targetTemplateStorage, targetTemplateGroup));
         } else {
@@ -309,7 +309,8 @@ public class ProcessAPIImplementation implements ProcessSyncAPI, ProcessAsyncAPI
             }
 
             if (NodeExecutor.getInstance().getNodeConfig().getUniqueID().equals(processInformation.getProcessDetail().getParentUniqueID())) {
-                Streams.filterToReference(LocalProcessManager.getNodeProcesses(),
+                Streams.filterToReference(
+                        SharedRunningProcessManager.getAllProcesses(),
                         e -> e.getProcessInformation().getProcessDetail().getProcessUniqueID().equals(processInformation.getProcessDetail().getProcessUniqueID())
                 ).ifPresent(e -> e.sendCommand(commandLine));
             } else {

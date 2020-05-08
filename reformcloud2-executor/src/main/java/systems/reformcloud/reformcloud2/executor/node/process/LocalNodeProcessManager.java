@@ -37,6 +37,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInfor
 import systems.reformcloud.reformcloud2.executor.api.common.process.api.ProcessConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.process.detail.ProcessDetail;
 import systems.reformcloud.reformcloud2.executor.api.common.process.running.RunningProcess;
+import systems.reformcloud.reformcloud2.executor.api.common.process.running.manager.SharedRunningProcessManager;
 import systems.reformcloud.reformcloud2.executor.api.common.process.util.MemoryCalculator;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
@@ -45,7 +46,6 @@ import systems.reformcloud.reformcloud2.executor.api.node.process.NodeProcessMan
 import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
 import systems.reformcloud.reformcloud2.executor.node.network.packet.out.PacketOutHeadNodeStartProcess;
 import systems.reformcloud.reformcloud2.executor.node.process.basic.BasicLocalNodeProcess;
-import systems.reformcloud.reformcloud2.executor.node.process.manager.LocalProcessManager;
 import systems.reformcloud.reformcloud2.executor.node.process.startup.LocalProcessQueue;
 
 import java.util.*;
@@ -103,7 +103,7 @@ public final class LocalNodeProcessManager implements NodeProcessManager {
     @Nullable
     @Override
     public ProcessInformation stopLocalProcess(@NotNull String name) {
-        List<RunningProcess> processes = LocalProcessManager.getNodeProcesses()
+        List<RunningProcess> processes = SharedRunningProcessManager.getAllProcesses()
                 .stream()
                 .filter(e -> e.getProcessInformation().getProcessDetail().getName().equals(name))
                 .collect(Collectors.toList());
@@ -118,7 +118,7 @@ public final class LocalNodeProcessManager implements NodeProcessManager {
     @Nullable
     @Override
     public ProcessInformation stopLocalProcess(@NotNull UUID uuid) {
-        List<RunningProcess> processes = LocalProcessManager.getNodeProcesses()
+        List<RunningProcess> processes = SharedRunningProcessManager.getAllProcesses()
                 .stream()
                 .filter(e -> e.getProcessInformation().getProcessDetail().getProcessUniqueID().equals(uuid))
                 .collect(Collectors.toList());

@@ -26,9 +26,9 @@ package systems.reformcloud.reformcloud2.executor.node.process.listeners;
 
 import systems.reformcloud.reformcloud2.executor.api.common.event.handler.Listener;
 import systems.reformcloud.reformcloud2.executor.api.common.process.running.events.RunningProcessStoppedEvent;
+import systems.reformcloud.reformcloud2.executor.api.common.process.running.manager.SharedRunningProcessManager;
 import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
 import systems.reformcloud.reformcloud2.executor.node.process.log.NodeProcessScreenHandler;
-import systems.reformcloud.reformcloud2.executor.node.process.manager.LocalProcessManager;
 
 public class RunningProcessStoppedListener {
 
@@ -38,6 +38,6 @@ public class RunningProcessStoppedListener {
         NodeExecutor.getInstance().getClusterSyncManager().syncProcessStop(event.getRunningProcess().getProcessInformation());
         NodeExecutor.getInstance().getNodeNetworkManager().getNodeProcessHelper().unregisterLocalProcess(event.getRunningProcess().getProcessInformation().getProcessDetail().getProcessUniqueID());
         NodeExecutor.getInstance().getNodeNetworkManager().getNodeProcessHelper().handleLocalProcessStop(event.getRunningProcess().getProcessInformation());
-        LocalProcessManager.unregisterProcesses(event.getRunningProcess().getProcessInformation().getProcessDetail().getProcessUniqueID());
+        SharedRunningProcessManager.unregisterProcess(event.getRunningProcess().getProcessInformation().getProcessDetail().getProcessUniqueID());
     }
 }

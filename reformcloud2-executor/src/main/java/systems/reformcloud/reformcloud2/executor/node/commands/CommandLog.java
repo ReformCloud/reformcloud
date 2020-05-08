@@ -22,31 +22,30 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.node.process.watchdog;
+package systems.reformcloud.reformcloud2.executor.node.commands;
 
+import org.jetbrains.annotations.NotNull;
+import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.GlobalCommand;
+import systems.reformcloud.reformcloud2.executor.api.common.commands.source.CommandSource;
+import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
 import systems.reformcloud.reformcloud2.executor.api.common.process.running.manager.SharedRunningProcessManager;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
 
-import java.util.concurrent.TimeUnit;
+public final class CommandLog extends GlobalCommand {
 
-public final class WatchdogThread extends AbsoluteThread {
-
-    public WatchdogThread() {
-        updatePriority(Thread.MIN_PRIORITY).enableDaemon().start();
+    public CommandLog() {
+        super("log", "reformcloud.command.log", "Uploads the log of a process");
     }
 
     @Override
-    public void run() {
-        while (!Thread.currentThread().isInterrupted()) {
-            SharedRunningProcessManager.getAllProcesses().forEach(runningProcess -> {
-                if (!runningProcess.isAlive()
-                        && runningProcess.getStartupTime() != -1
-                        && runningProcess.getStartupTime() + TimeUnit.SECONDS.toMillis(30) < System.currentTimeMillis()) {
-                    runningProcess.shutdown();
-                }
-            });
-
-            AbsoluteThread.sleep(TimeUnit.SECONDS, 1);
+    public boolean handleCommand(@NotNull CommandSource commandSource, String @NotNull [] strings) {
+        if (strings.length == 0) {
+            commandSource.sendMessage("log <name>");
+            return true;
         }
+
+        SharedRunningProcessManager.getProcessByName(strings[0])
+                .ifPresent(runningProcess -> System.out.println(runningProcess.uploadLog()))
+                .ifEmpty(e -> System.out.println(LanguageManager.get("command-process-process-unknown", strings[0])));
+        return true;
     }
 }

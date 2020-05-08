@@ -24,9 +24,8 @@
  */
 package systems.reformcloud.reformcloud2.executor.node.process.log;
 
-import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
+import systems.reformcloud.reformcloud2.executor.api.common.process.running.manager.SharedRunningProcessManager;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
-import systems.reformcloud.reformcloud2.executor.node.process.manager.LocalProcessManager;
 
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -45,7 +44,7 @@ public class LogLineReader extends AbsoluteThread {
     @Override
     public void run() {
         while (!Thread.currentThread().isInterrupted()) {
-            Streams.newList(LocalProcessManager.getNodeProcesses()).stream().filter(e -> e.getProcess().isPresent()).forEach(e -> {
+            SharedRunningProcessManager.getAllProcesses().stream().filter(e -> e.getProcess().isPresent()).forEach(e -> {
                 InputStream inputStream = e.getProcess().get().getInputStream();
                 try {
                     int len;
