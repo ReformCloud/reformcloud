@@ -22,19 +22,27 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.node.process.listeners;
+package systems.reformcloud.reformcloud2.executor.api.common.process.running.events;
 
-import systems.reformcloud.reformcloud2.executor.api.common.event.handler.Listener;
-import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
-import systems.reformcloud.reformcloud2.executor.api.common.process.running.events.RunningProcessStartedEvent;
-import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
+import systems.reformcloud.reformcloud2.executor.api.common.event.Event;
+import systems.reformcloud.reformcloud2.executor.api.common.process.running.screen.RunningProcessScreen;
 
-public class RunningProcessStartedListener {
+public class ProcessScreenEntryCachedEvent extends Event {
 
-    @Listener
-    public void handle(final RunningProcessStartedEvent event) {
-        NodeExecutor.getInstance().getClusterSyncManager().syncProcessStartup(event.getRunningProcess().getProcessInformation());
-        NodeExecutor.getInstance().getNodeNetworkManager().getNodeProcessHelper().handleLocalProcessStart(event.getRunningProcess().getProcessInformation());
-        System.out.println(LanguageManager.get("client-process-start-done", event.getRunningProcess().getProcessInformation().getProcessDetail().getName()));
+    public ProcessScreenEntryCachedEvent(RunningProcessScreen runningProcessScreen, String cachedLogLine) {
+        this.runningProcessScreen = runningProcessScreen;
+        this.cachedLogLine = cachedLogLine;
+    }
+
+    private final RunningProcessScreen runningProcessScreen;
+
+    private final String cachedLogLine;
+
+    public RunningProcessScreen getRunningProcessScreen() {
+        return runningProcessScreen;
+    }
+
+    public String getCachedLogLine() {
+        return cachedLogLine;
     }
 }

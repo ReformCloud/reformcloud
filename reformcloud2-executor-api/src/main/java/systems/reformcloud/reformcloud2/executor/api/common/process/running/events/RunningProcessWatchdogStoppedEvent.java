@@ -22,31 +22,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.node.process.watchdog;
+package systems.reformcloud.reformcloud2.executor.api.common.process.running.events;
 
-import systems.reformcloud.reformcloud2.executor.api.common.process.running.manager.SharedRunningProcessManager;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
+import org.jetbrains.annotations.NotNull;
+import systems.reformcloud.reformcloud2.executor.api.common.process.running.RunningProcess;
 
-import java.util.concurrent.TimeUnit;
+public class RunningProcessWatchdogStoppedEvent extends RunningProcessEvent {
 
-public final class WatchdogThread extends AbsoluteThread {
-
-    public WatchdogThread() {
-        updatePriority(Thread.MIN_PRIORITY).enableDaemon().start();
-    }
-
-    @Override
-    public void run() {
-        while (!Thread.currentThread().isInterrupted()) {
-            SharedRunningProcessManager.getAllProcesses().forEach(runningProcess -> {
-                if (!runningProcess.isAlive()
-                        && runningProcess.getStartupTime() != -1
-                        && runningProcess.getStartupTime() + TimeUnit.SECONDS.toMillis(30) < System.currentTimeMillis()) {
-                    runningProcess.shutdown();
-                }
-            });
-
-            AbsoluteThread.sleep(TimeUnit.SECONDS, 1);
-        }
+    public RunningProcessWatchdogStoppedEvent(@NotNull RunningProcess runningProcess) {
+        super(runningProcess);
     }
 }

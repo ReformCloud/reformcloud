@@ -42,6 +42,8 @@ import systems.reformcloud.reformcloud2.executor.api.common.process.running.even
 import systems.reformcloud.reformcloud2.executor.api.common.process.running.events.RunningProcessStartedEvent;
 import systems.reformcloud.reformcloud2.executor.api.common.process.running.events.RunningProcessStoppedEvent;
 import systems.reformcloud.reformcloud2.executor.api.common.process.running.inclusions.InclusionLoader;
+import systems.reformcloud.reformcloud2.executor.api.common.process.running.screen.DefaultRunningProcessScreen;
+import systems.reformcloud.reformcloud2.executor.api.common.process.running.screen.RunningProcessScreen;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.PortUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.StringUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Duo;
@@ -91,6 +93,7 @@ public abstract class SharedRunningProcess implements RunningProcess {
      */
     public SharedRunningProcess(@NotNull ProcessInformation processInformation) {
         this.startupInformation = processInformation;
+        this.runningProcessScreen = new DefaultRunningProcessScreen(this);
 
         if (processInformation.getProcessGroup().isStaticProcess()) {
             this.path = Paths.get("reformcloud/static/" + processInformation.getProcessDetail().getName());
@@ -123,6 +126,11 @@ public abstract class SharedRunningProcess implements RunningProcess {
      * The startup time of the process ({@code -1} if it's not started yet)
      */
     protected long startupTime = -1;
+
+    /**
+     * The screen of the current running process
+     */
+    protected RunningProcessScreen runningProcessScreen;
 
     /**
      * If the process got started the first time
@@ -332,6 +340,12 @@ public abstract class SharedRunningProcess implements RunningProcess {
         return this.startupInformation;
     }
 
+    @NotNull
+    @Override
+    public RunningProcessScreen getProcessScreen() {
+        return this.runningProcessScreen;
+    }
+
     @Override
     public void sendCommand(@NotNull String line) {
         if (this.isAlive()) {
@@ -462,7 +476,7 @@ public abstract class SharedRunningProcess implements RunningProcess {
     private String getLogLines() {
         StringBuilder stringBuilder = new StringBuilder();
 
-        for (String cachedLogLine : this.getCachedLogLines()) {
+        for (String cachedLogLine : this.getProcessScreen().getLastLogLines()) {
             Matcher matcher = IP_PATTERN.matcher(cachedLogLine);
             if (matcher.find()) {
                 String ip = matcher.group();
@@ -491,12 +505,6 @@ public abstract class SharedRunningProcess implements RunningProcess {
     public int hashCode() {
         return this.getProcessInformation().hashCode();
     }
-
-    /**
-     * @return The cached log lines of the current process
-     */
-    @NotNull
-    public abstract Collection<String> getCachedLogLines();
 
     /**
      * Chooses the logical startup for the information and creates all files for the start of the

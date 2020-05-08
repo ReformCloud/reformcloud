@@ -78,6 +78,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.handl
 import systems.reformcloud.reformcloud2.executor.api.common.network.server.DefaultNetworkServer;
 import systems.reformcloud.reformcloud2.executor.api.common.network.server.NetworkServer;
 import systems.reformcloud.reformcloud2.executor.api.common.node.NodeInformation;
+import systems.reformcloud.reformcloud2.executor.api.common.process.running.RunningProcess;
 import systems.reformcloud.reformcloud2.executor.api.common.process.running.manager.SharedRunningProcessManager;
 import systems.reformcloud.reformcloud2.executor.api.common.restapi.auth.basic.DefaultWebServerAuth;
 import systems.reformcloud.reformcloud2.executor.api.common.restapi.http.server.DefaultWebServer;
@@ -127,13 +128,10 @@ import systems.reformcloud.reformcloud2.executor.node.network.packet.query.Packe
 import systems.reformcloud.reformcloud2.executor.node.process.LocalAutoStartupHandler;
 import systems.reformcloud.reformcloud2.executor.node.process.LocalNodeProcessManager;
 import systems.reformcloud.reformcloud2.executor.node.process.listeners.RunningProcessPreparedListener;
+import systems.reformcloud.reformcloud2.executor.node.process.listeners.RunningProcessScreenListener;
 import systems.reformcloud.reformcloud2.executor.node.process.listeners.RunningProcessStartedListener;
 import systems.reformcloud.reformcloud2.executor.node.process.listeners.RunningProcessStoppedListener;
-import systems.reformcloud.reformcloud2.executor.node.process.log.LogLineReader;
-import systems.reformcloud.reformcloud2.executor.node.process.log.NodeProcessScreen;
-import systems.reformcloud.reformcloud2.executor.node.process.log.NodeProcessScreenHandler;
 import systems.reformcloud.reformcloud2.executor.node.process.startup.LocalProcessQueue;
-import systems.reformcloud.reformcloud2.executor.node.process.watchdog.WatchdogThread;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -173,10 +171,6 @@ public final class NodeExecutor extends Node {
     private AsyncAPI asyncAPI;
 
     private LocalProcessQueue localProcessQueue;
-
-    private LogLineReader logLineReader;
-
-    private WatchdogThread watchdogThread;
 
     private NetworkClient networkClient;
 
@@ -294,9 +288,8 @@ public final class NodeExecutor extends Node {
         ExecutorAPI.getInstance().getEventManager().registerListener(new RunningProcessPreparedListener());
         ExecutorAPI.getInstance().getEventManager().registerListener(new RunningProcessStartedListener());
         ExecutorAPI.getInstance().getEventManager().registerListener(new RunningProcessStoppedListener());
+        ExecutorAPI.getInstance().getEventManager().registerListener(new RunningProcessScreenListener());
 
-        this.logLineReader = new LogLineReader();
-        this.watchdogThread = new WatchdogThread();
         this.localAutoStartupHandler = new LocalAutoStartupHandler();
 
         this.loadPacketHandlers();
@@ -458,8 +451,6 @@ public final class NodeExecutor extends Node {
         this.networkClient.disconnect();
         this.webServer.close();
 
-        this.watchdogThread.interrupt();
-        this.logLineReader.interrupt();
         this.localProcessQueue.interrupt();
         this.localAutoStartupHandler.interrupt();
         this.nodeNetworkManager.close();
@@ -586,8 +577,18 @@ public final class NodeExecutor extends Node {
         this.commandManager
                 .register(new CommandProcess(target -> {
                     if (target.getProcessDetail().getParentUniqueID().equals(NodeExecutor.getInstance().getNodeConfig().getUniqueID())) {
-                        ReferencedOptional<NodeProcessScreen> screen = NodeProcessScreenHandler.getScreen(target.getProcessDetail().getProcessUniqueID());
-                        return screen.isPresent() && screen.get().toggleFor(NodeExecutor.getInstance().getNodeConfig().getName());
+                        ReferencedOptional<RunningProcess> process = SharedRunningProcessManager.getProcessByUniqueId(target.getProcessDetail().getProcessUniqueID());
+                        if (process.isEmpty()) {
+                            return false;
+                        }
+
+                        if (process.get().getProcessScreen().isEnabledFor(this.nodeConfig.getName())) {
+                            process.get().getProcessScreen().disableScreen(this.nodeConfig.getName());
+                            return false;
+                        } else {
+                            process.get().getProcessScreen().enableScreen(this.nodeConfig.getName());
+                            return true;
+                        }
                     } else {
                         ReferencedOptional<PacketSender> optional = DefaultChannelManager.INSTANCE.get(target.getProcessDetail().getParentName());
                         optional.ifPresent(packetSender -> packetSender.sendPacket(new NodePacketOutToggleScreen(target.getProcessDetail().getProcessUniqueID())));

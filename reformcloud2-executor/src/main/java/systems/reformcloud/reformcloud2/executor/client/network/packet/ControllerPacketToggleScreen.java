@@ -34,9 +34,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.channel.Pack
 import systems.reformcloud.reformcloud2.executor.api.common.network.data.ProtocolBuffer;
 import systems.reformcloud.reformcloud2.executor.api.common.network.handler.ChannelReaderHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
-import systems.reformcloud.reformcloud2.executor.client.ClientExecutor;
-import systems.reformcloud.reformcloud2.executor.client.screen.ProcessScreen;
+import systems.reformcloud.reformcloud2.executor.api.common.process.running.manager.SharedRunningProcessManager;
 
 import java.util.UUID;
 
@@ -58,10 +56,17 @@ public class ControllerPacketToggleScreen extends Packet {
 
     @Override
     public void handlePacketReceive(@NotNull NetworkChannelReader reader, @NotNull ChallengeAuthHandler authHandler, @NotNull ChannelReaderHelper parent, @Nullable PacketSender sender, @NotNull ChannelHandlerContext channel) {
-        Streams.filterToReference(
-                ClientExecutor.getInstance().getScreenManager().getPerProcessScreenLines(),
-                processUniqueID::equals
-        ).ifPresent(ProcessScreen::toggleScreen);
+        if (sender == null) {
+            return;
+        }
+
+        SharedRunningProcessManager.getProcessByUniqueId(this.processUniqueID).ifPresent(runningProcess -> {
+            if (runningProcess.getProcessScreen().isEnabledFor(sender.getName())) {
+                runningProcess.getProcessScreen().disableScreen(sender.getName());
+            } else {
+                runningProcess.getProcessScreen().enableScreen(sender.getName());
+            }
+        });
     }
 
     @Override

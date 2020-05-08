@@ -22,19 +22,32 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.node.process.listeners;
+package systems.reformcloud.reformcloud2.executor.api.common.process.running.screen;
 
-import systems.reformcloud.reformcloud2.executor.api.common.event.handler.Listener;
-import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
-import systems.reformcloud.reformcloud2.executor.api.common.process.running.events.RunningProcessStartedEvent;
-import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.UnmodifiableView;
+import systems.reformcloud.reformcloud2.executor.api.common.process.running.RunningProcess;
 
-public class RunningProcessStartedListener {
+import java.util.Collection;
+import java.util.Queue;
 
-    @Listener
-    public void handle(final RunningProcessStartedEvent event) {
-        NodeExecutor.getInstance().getClusterSyncManager().syncProcessStartup(event.getRunningProcess().getProcessInformation());
-        NodeExecutor.getInstance().getNodeNetworkManager().getNodeProcessHelper().handleLocalProcessStart(event.getRunningProcess().getProcessInformation());
-        System.out.println(LanguageManager.get("client-process-start-done", event.getRunningProcess().getProcessInformation().getProcessDetail().getName()));
-    }
+public interface RunningProcessScreen {
+
+    void callUpdate();
+
+    @NotNull
+    Queue<String> getLastLogLines();
+
+    @NotNull
+    RunningProcess getTargetProcess();
+
+    @NotNull
+    @UnmodifiableView
+    Collection<String> getReceivers();
+
+    void enableScreen(@NotNull String receiver);
+
+    void disableScreen(@NotNull String receiver);
+
+    boolean isEnabledFor(@NotNull String receiver);
 }

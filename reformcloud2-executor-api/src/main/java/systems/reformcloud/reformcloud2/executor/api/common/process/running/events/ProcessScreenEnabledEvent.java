@@ -22,33 +22,27 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.node.process.log;
+package systems.reformcloud.reformcloud2.executor.api.common.process.running.events;
 
-import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.optional.ReferencedOptional;
+import systems.reformcloud.reformcloud2.executor.api.common.event.Event;
+import systems.reformcloud.reformcloud2.executor.api.common.process.running.screen.RunningProcessScreen;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.UUID;
+public class ProcessScreenEnabledEvent extends Event {
 
-public final class NodeProcessScreenHandler {
-
-    private NodeProcessScreenHandler() {
-        throw new UnsupportedOperationException();
+    public ProcessScreenEnabledEvent(RunningProcessScreen runningProcessScreen, String enabledFor) {
+        this.runningProcessScreen = runningProcessScreen;
+        this.enabledFor = enabledFor;
     }
 
-    private static final Collection<NodeProcessScreen> SCREENS = new ArrayList<>();
+    private final RunningProcessScreen runningProcessScreen;
 
-    public static void registerScreen(NodeProcessScreen screen) {
-        SCREENS.add(screen);
+    private final String enabledFor;
+
+    public RunningProcessScreen getRunningProcessScreen() {
+        return runningProcessScreen;
     }
 
-    public static void unregisterScreen(UUID uniqueID) {
-        Streams.filterToReference(SCREENS, e -> e.getUniqueID().equals(uniqueID)).ifPresent(SCREENS::remove);
+    public String getEnabledFor() {
+        return enabledFor;
     }
-
-    public static ReferencedOptional<NodeProcessScreen> getScreen(UUID uniqueID) {
-        return Streams.filterToReference(SCREENS, e -> e.getUniqueID().equals(uniqueID));
-    }
-
 }

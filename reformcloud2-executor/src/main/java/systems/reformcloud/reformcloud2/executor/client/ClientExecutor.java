@@ -68,9 +68,8 @@ import systems.reformcloud.reformcloud2.executor.client.network.channel.ClientNe
 import systems.reformcloud.reformcloud2.executor.client.process.ProcessQueue;
 import systems.reformcloud.reformcloud2.executor.client.process.basic.DefaultProcessManager;
 import systems.reformcloud.reformcloud2.executor.client.process.listeners.RunningProcessPreparedListener;
+import systems.reformcloud.reformcloud2.executor.client.process.listeners.RunningProcessScreenListener;
 import systems.reformcloud.reformcloud2.executor.client.process.listeners.RunningProcessStoppedListener;
-import systems.reformcloud.reformcloud2.executor.client.screen.ScreenManager;
-import systems.reformcloud.reformcloud2.executor.client.watchdog.WatchdogThread;
 import systems.reformcloud.reformcloud2.executor.controller.network.packet.ClientPacketNotifyRuntimeUpdate;
 
 import java.io.IOException;
@@ -92,10 +91,6 @@ public final class ClientExecutor extends Client {
     private DefaultClientRuntimeInformation clientRuntimeInformation;
 
     private ClientExecutorConfig clientExecutorConfig;
-
-    private WatchdogThread watchdogThread;
-
-    private ScreenManager screenManager;
 
     private final CommandManager commandManager = new DefaultCommandManager();
 
@@ -152,6 +147,7 @@ public final class ClientExecutor extends Client {
 
         ExecutorAPI.getInstance().getEventManager().registerListener(new RunningProcessPreparedListener());
         ExecutorAPI.getInstance().getEventManager().registerListener(new RunningProcessStoppedListener());
+        ExecutorAPI.getInstance().getEventManager().registerListener(new RunningProcessScreenListener());
 
         this.clientExecutorConfig = new ClientExecutorConfig();
         this.clientConfig = clientExecutorConfig.getClientConfig();
@@ -172,9 +168,6 @@ public final class ClientExecutor extends Client {
         registerDefaultCommands();
 
         applicationLoader.loadApplications();
-
-        this.watchdogThread = new WatchdogThread();
-        this.screenManager = new ScreenManager();
 
         doConnect();
 
@@ -230,9 +223,7 @@ public final class ClientExecutor extends Client {
 
     @Override
     public void shutdown() {
-        this.watchdogThread.interrupt();
         this.processQueue.interrupt();
-        this.screenManager.interrupt();
 
         this.packetHandler.clearHandlers();
         this.packetHandler.getQueryHandler().clearQueries();
@@ -268,10 +259,6 @@ public final class ClientExecutor extends Client {
 
     public LoggerBase getLoggerBase() {
         return loggerBase;
-    }
-
-    public ScreenManager getScreenManager() {
-        return screenManager;
     }
 
     public static ClientExecutor getInstance() {

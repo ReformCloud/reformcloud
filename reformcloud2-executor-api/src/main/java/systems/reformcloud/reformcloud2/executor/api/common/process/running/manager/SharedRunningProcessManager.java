@@ -26,7 +26,10 @@ package systems.reformcloud.reformcloud2.executor.api.common.process.running.man
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnmodifiableView;
+import systems.reformcloud.reformcloud2.executor.api.common.CommonHelper;
+import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.process.running.RunningProcess;
+import systems.reformcloud.reformcloud2.executor.api.common.process.running.events.RunningProcessWatchdogStoppedEvent;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.optional.ReferencedOptional;
 
@@ -42,6 +45,10 @@ public final class SharedRunningProcessManager {
 
     private SharedRunningProcessManager() {
         throw new UnsupportedOperationException();
+    }
+
+    static {
+        tick();
     }
 
     private static final Collection<RunningProcess> ALL_PROCESSES = new CopyOnWriteArrayList<>();
@@ -88,5 +95,22 @@ public final class SharedRunningProcessManager {
     @UnmodifiableView
     public static Collection<RunningProcess> getAllProcesses() {
         return Collections.unmodifiableCollection(ALL_PROCESSES);
+    }
+
+    private static void tick() {
+        CommonHelper.SCHEDULED_EXECUTOR_SERVICE.scheduleAtFixedRate(() -> {
+            for (RunningProcess process : ALL_PROCESSES) {
+                if (!process.isAlive()
+                        && process.getProcess().isPresent()
+                        && process.getStartupTime() != -1
+                        && process.getStartupTime() + TimeUnit.SECONDS.toMillis(30) < System.currentTimeMillis()) {
+                    process.shutdown();
+                    ExecutorAPI.getInstance().getEventManager().callEvent(new RunningProcessWatchdogStoppedEvent(process));
+                    continue;
+                }
+
+                process.getProcessScreen().callUpdate();
+            }
+        }, 0, 1, TimeUnit.SECONDS);
     }
 }

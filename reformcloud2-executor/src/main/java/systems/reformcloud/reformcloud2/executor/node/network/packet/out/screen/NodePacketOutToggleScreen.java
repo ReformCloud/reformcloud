@@ -34,7 +34,8 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.channel.Pack
 import systems.reformcloud.reformcloud2.executor.api.common.network.data.ProtocolBuffer;
 import systems.reformcloud.reformcloud2.executor.api.common.network.handler.ChannelReaderHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
-import systems.reformcloud.reformcloud2.executor.node.process.log.NodeProcessScreenHandler;
+import systems.reformcloud.reformcloud2.executor.api.common.process.running.RunningProcess;
+import systems.reformcloud.reformcloud2.executor.api.common.process.running.manager.SharedRunningProcessManager;
 
 import java.util.UUID;
 
@@ -60,7 +61,16 @@ public class NodePacketOutToggleScreen extends Packet {
             return;
         }
 
-        NodeProcessScreenHandler.getScreen(this.processUniqueID).ifPresent(e -> e.toggleFor(sender.getName()));
+        SharedRunningProcessManager
+                .getProcessByUniqueId(this.processUniqueID)
+                .map(RunningProcess::getProcessScreen)
+                .ifPresent(runningProcessScreen -> {
+                    if (runningProcessScreen.isEnabledFor(sender.getName())) {
+                        runningProcessScreen.disableScreen(sender.getName());
+                    } else {
+                        runningProcessScreen.enableScreen(sender.getName());
+                    }
+                });
     }
 
     @Override

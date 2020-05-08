@@ -26,6 +26,7 @@ package systems.reformcloud.reformcloud2.executor.api.common.process.running;
 
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
+import systems.reformcloud.reformcloud2.executor.api.common.process.running.screen.RunningProcessScreen;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.optional.ReferencedOptional;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 
@@ -96,6 +97,12 @@ public interface RunningProcess {
      */
     @NotNull
     ProcessInformation getProcessInformation();
+
+    /**
+     * @return The screen for the current process
+     */
+    @NotNull
+    RunningProcessScreen getProcessScreen();
 
     /**
      * Sends the specified command to the console

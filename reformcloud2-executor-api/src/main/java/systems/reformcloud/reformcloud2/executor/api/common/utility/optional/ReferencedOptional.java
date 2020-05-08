@@ -30,6 +30,7 @@ import org.jetbrains.annotations.Nullable;
 import java.io.Serializable;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 /**
@@ -106,6 +107,15 @@ public final class ReferencedOptional<T> implements Serializable {
         }
 
         or.accept(value);
+    }
+
+    @NotNull
+    public <V> ReferencedOptional<V> map(@NotNull Function<T, V> mapper) {
+        if (this.isEmpty()) {
+            return ReferencedOptional.empty();
+        }
+
+        return ReferencedOptional.build(mapper.apply(this.reference.get()));
     }
 
     public boolean isPresent() {
