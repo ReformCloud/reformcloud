@@ -11,12 +11,12 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packe
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
+import systems.reformcloud.reformcloud2.signs.application.packets.PacketCreateSign;
+import systems.reformcloud.reformcloud2.signs.application.packets.PacketDeleteBulkSigns;
+import systems.reformcloud.reformcloud2.signs.application.packets.PacketDeleteSign;
+import systems.reformcloud.reformcloud2.signs.application.packets.PacketRequestSignLayoutsResult;
 import systems.reformcloud.reformcloud2.signs.listener.CloudListener;
-import systems.reformcloud.reformcloud2.signs.packets.api.in.APIPacketInCreateSign;
-import systems.reformcloud.reformcloud2.signs.packets.api.in.APIPacketInDeleteSign;
-import systems.reformcloud.reformcloud2.signs.packets.api.in.APIPacketInReloadConfig;
-import systems.reformcloud.reformcloud2.signs.packets.api.out.APIPacketOutCreateSign;
-import systems.reformcloud.reformcloud2.signs.packets.api.out.APIPacketOutDeleteSign;
+import systems.reformcloud.reformcloud2.signs.packets.PacketReloadSignConfig;
 import systems.reformcloud.reformcloud2.signs.util.LayoutUtil;
 import systems.reformcloud.reformcloud2.signs.util.SignSystemAdapter;
 import systems.reformcloud.reformcloud2.signs.util.Utils;
@@ -41,9 +41,10 @@ public abstract class SharedSignSystemAdapter<T> implements SignSystemAdapter<T>
 
         ExecutorAPI.getInstance().getEventManager().registerListener(new CloudListener());
         ExecutorAPI.getInstance().getPacketHandler().registerNetworkHandlers(
-                new APIPacketInCreateSign(),
-                new APIPacketInDeleteSign(),
-                new APIPacketInReloadConfig()
+                PacketCreateSign.class,
+                PacketDeleteSign.class,
+                PacketRequestSignLayoutsResult.class,
+                PacketReloadSignConfig.class
         );
 
         this.start();
@@ -138,7 +139,7 @@ public abstract class SharedSignSystemAdapter<T> implements SignSystemAdapter<T>
         }
 
         cloudSign = this.getSignConverter().to(t, group);
-        this.sendPacketToController(new APIPacketOutCreateSign(cloudSign));
+        this.sendPacketToController(new PacketCreateSign(cloudSign));
 
         return cloudSign;
     }
@@ -147,7 +148,7 @@ public abstract class SharedSignSystemAdapter<T> implements SignSystemAdapter<T>
     public void deleteSign(@NotNull CloudLocation location) {
         CloudSign sign = this.getSignAt(location);
         if (sign != null) {
-            this.sendPacketToController(new APIPacketOutDeleteSign(sign));
+            this.sendPacketToController(new PacketDeleteSign(sign));
         }
     }
 
@@ -168,7 +169,7 @@ public abstract class SharedSignSystemAdapter<T> implements SignSystemAdapter<T>
             return;
         }
 
-        this.sendPacketToController(new APIPacketOutDeleteSign(signs));
+        this.sendPacketToController(new PacketDeleteBulkSigns(signs));
     }
 
     @Override

@@ -2,6 +2,7 @@ package systems.reformcloud.reformcloud2.executor.api.common.network;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.EventLoopGroup;
+import io.netty.channel.WriteBufferWaterMark;
 import io.netty.channel.epoll.Epoll;
 import io.netty.channel.epoll.EpollEventLoopGroup;
 import io.netty.channel.epoll.EpollServerSocketChannel;
@@ -11,9 +12,8 @@ import io.netty.channel.socket.ServerSocketChannel;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.util.concurrent.DefaultThreadFactory;
-import io.netty.util.concurrent.MultithreadEventExecutorGroup;
 import org.jetbrains.annotations.NotNull;
+import systems.reformcloud.reformcloud2.executor.api.common.network.concurrent.FastNettyThreadFactory;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -27,7 +27,7 @@ public final class NetworkUtil {
 
     /* ============================= */
 
-    public static final int FILE_BUS = 1000;
+    public static final int AUTH_BUS = -550;
 
     public static final int NODE_TO_NODE_BUS = 20000;
 
@@ -51,17 +51,17 @@ public final class NetworkUtil {
 
     private static final boolean EPOLL = Epoll.isAvailable();
 
-    private static final ThreadFactory THREAD_FACTORY = new DefaultThreadFactory(MultithreadEventExecutorGroup.class, true, Thread.MIN_PRIORITY);
+    public static final WriteBufferWaterMark WATER_MARK = new WriteBufferWaterMark(524288, 2097152);
 
     @NotNull
     public static EventLoopGroup eventLoopGroup() {
         if (!Boolean.getBoolean("reformcloud.disable.native")) {
             if (EPOLL) {
-                return new EpollEventLoopGroup(Runtime.getRuntime().availableProcessors(), THREAD_FACTORY);
+                return new EpollEventLoopGroup(0, newThreadFactory("Epoll"));
             }
         }
 
-        return new NioEventLoopGroup(Runtime.getRuntime().availableProcessors(), THREAD_FACTORY);
+        return new NioEventLoopGroup(0, newThreadFactory("Nio"));
     }
 
     @NotNull
@@ -83,7 +83,7 @@ public final class NetworkUtil {
     }
 
     @NotNull
-    public static synchronized ByteBuf write(@NotNull ByteBuf byteBuf, int value) {
+    public static ByteBuf write(@NotNull ByteBuf byteBuf, int value) {
         do {
             byte temp = (byte) (value & 0b01111111);
             value >>>= 7;
@@ -96,7 +96,7 @@ public final class NetworkUtil {
         return byteBuf;
     }
 
-    public static synchronized int read(@NotNull ByteBuf byteBuf) {
+    public static int read(@NotNull ByteBuf byteBuf) {
         int numRead = 0;
         int result = 0;
         byte read;
@@ -114,35 +114,6 @@ public final class NetworkUtil {
         return result;
     }
 
-    @NotNull
-    public static synchronized byte[] readBytes(@NotNull ByteBuf byteBuf) {
-        int length = read(byteBuf);
-        byte[] bytes = new byte[length];
-        byteBuf.readBytes(bytes);
-        return bytes;
-    }
-
-    public static void destroyByteBuf(@NotNull ByteBuf byteBuf, boolean force) {
-        if (byteBuf.refCnt() == 0) {
-            // buffer is already released and will be garbage collected
-            return;
-        }
-
-        if (byteBuf.refCnt() == 1 && !force) {
-            // release of buffer will be made after channel read (we don't need to destroy it now)
-            return;
-        }
-
-        boolean destroyed = byteBuf.release();
-        while (!destroyed) {
-            if (byteBuf.refCnt() == 1 && !force) {
-                break;
-            }
-
-            destroyed = byteBuf.release();
-        }
-    }
-
     public static int getVarIntSize(int readable) {
         if ((readable & -128) == 0) {
             return 1;
@@ -155,5 +126,10 @@ public final class NetworkUtil {
         }
 
         return 5;
+    }
+
+    @NotNull
+    public static ThreadFactory newThreadFactory(@NotNull String type) {
+        return new FastNettyThreadFactory("Netty Local " + type + " Thread#%d");
     }
 }

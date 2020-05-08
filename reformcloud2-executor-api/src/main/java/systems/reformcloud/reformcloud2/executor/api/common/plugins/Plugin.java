@@ -3,6 +3,7 @@ package systems.reformcloud.reformcloud2.executor.api.common.plugins;
 import com.google.gson.reflect.TypeToken;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import systems.reformcloud.reformcloud2.executor.api.common.network.SerializableObject;
 import systems.reformcloud.reformcloud2.executor.api.common.plugins.basic.DefaultPlugin;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.name.Nameable;
@@ -14,7 +15,7 @@ import java.util.List;
  *
  * @see ProcessInformation#getPlugins()
  */
-public abstract class Plugin implements Nameable {
+public abstract class Plugin implements Nameable, SerializableObject {
 
     public static final TypeToken<DefaultPlugin> TYPE = new TypeToken<DefaultPlugin>() {
     };

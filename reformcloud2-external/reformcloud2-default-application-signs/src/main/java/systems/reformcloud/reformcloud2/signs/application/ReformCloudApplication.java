@@ -10,12 +10,12 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.channel.mana
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.system.SystemHelper;
 import systems.reformcloud.reformcloud2.signs.application.listener.ProcessInclusionHandler;
-import systems.reformcloud.reformcloud2.signs.application.packets.in.PacketInCreateSign;
-import systems.reformcloud.reformcloud2.signs.application.packets.in.PacketInDeleteSign;
-import systems.reformcloud.reformcloud2.signs.application.packets.in.PacketInGetSignConfig;
-import systems.reformcloud.reformcloud2.signs.application.packets.out.PacketOutReloadConfig;
+import systems.reformcloud.reformcloud2.signs.application.packets.PacketCreateSign;
+import systems.reformcloud.reformcloud2.signs.application.packets.PacketDeleteBulkSigns;
+import systems.reformcloud.reformcloud2.signs.application.packets.PacketDeleteSign;
+import systems.reformcloud.reformcloud2.signs.application.packets.PacketRequestSignLayouts;
 import systems.reformcloud.reformcloud2.signs.application.updater.SignsUpdater;
-import systems.reformcloud.reformcloud2.signs.packets.PacketUtil;
+import systems.reformcloud.reformcloud2.signs.packets.PacketReloadSignConfig;
 import systems.reformcloud.reformcloud2.signs.util.SignSystemAdapter;
 import systems.reformcloud.reformcloud2.signs.util.sign.CloudSign;
 import systems.reformcloud.reformcloud2.signs.util.sign.config.SignConfig;
@@ -61,21 +61,15 @@ public class ReformCloudApplication extends Application {
         }
 
         ExecutorAPI.getInstance().getPacketHandler().registerNetworkHandlers(
-                new PacketInCreateSign(),
-                new PacketInDeleteSign(),
-                new PacketInGetSignConfig()
+                PacketCreateSign.class,
+                PacketDeleteSign.class,
+                PacketDeleteBulkSigns.class,
+                PacketRequestSignLayouts.class
         );
 
         databaseEntry = ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().find(SignSystemAdapter.table, "signs", null);
         signConfig = ConfigHelper.read(dataFolder().getPath());
-        DefaultChannelManager.INSTANCE.getAllSender().forEach(e -> e.sendPacket(new PacketOutReloadConfig(signConfig)));
-    }
-
-    @Override
-    public void onDisable() {
-        ExecutorAPI.getInstance().getPacketHandler().unregisterNetworkHandlers(PacketUtil.SIGN_BUS + 1);
-        ExecutorAPI.getInstance().getPacketHandler().unregisterNetworkHandlers(PacketUtil.SIGN_BUS + 2);
-        ExecutorAPI.getInstance().getPacketHandler().unregisterNetworkHandlers(PacketUtil.SIGN_BUS + 3);
+        DefaultChannelManager.INSTANCE.getAllSender().forEach(e -> e.sendPacket(new PacketReloadSignConfig(signConfig)));
     }
 
     @Nullable

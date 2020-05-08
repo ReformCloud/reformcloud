@@ -6,10 +6,11 @@ import com.velocitypowered.api.proxy.server.ServerInfo;
 import net.kyori.text.TextComponent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import systems.reformcloud.reformcloud2.executor.api.APIConstants;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorType;
 import systems.reformcloud.reformcloud2.executor.api.api.API;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.common.api.basic.ExternalEventBusHandler;
+import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.ExternalEventBusHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.ProcessUpdatedEvent;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.event.EventManager;
@@ -23,7 +24,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.channel.Pack
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.common.network.client.DefaultNetworkClient;
 import systems.reformcloud.reformcloud2.executor.api.common.network.client.NetworkClient;
-import systems.reformcloud.reformcloud2.executor.api.common.network.messaging.ProxiedChannelMessageHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.defaults.DefaultPacketHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.handler.PacketHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
@@ -32,15 +32,16 @@ import systems.reformcloud.reformcloud2.executor.api.common.utility.system.Syste
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
 import systems.reformcloud.reformcloud2.executor.api.executor.PlayerAPIExecutor;
+import systems.reformcloud.reformcloud2.executor.api.network.api.PacketAPIConnectPlayerToServer;
+import systems.reformcloud.reformcloud2.executor.api.network.api.PacketAPIKickPlayer;
+import systems.reformcloud.reformcloud2.executor.api.network.api.PacketAPISendMessage;
+import systems.reformcloud.reformcloud2.executor.api.network.api.PacketAPISendTitle;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.APINetworkChannelReader;
-import systems.reformcloud.reformcloud2.executor.api.network.packets.in.APIPacketInAPIAction;
-import systems.reformcloud.reformcloud2.executor.api.network.packets.in.APIPacketInPluginAction;
-import systems.reformcloud.reformcloud2.executor.api.network.packets.out.APIBungeePacketOutRequestIngameMessages;
+import systems.reformcloud.reformcloud2.executor.api.network.packets.out.APIPacketOutRequestIngameMessages;
+import systems.reformcloud.reformcloud2.executor.api.network.packets.out.APIPacketOutRequestIngameMessagesResult;
 import systems.reformcloud.reformcloud2.executor.api.shared.SharedInvalidPlayerFixer;
 import systems.reformcloud.reformcloud2.executor.api.velocity.event.PlayerListenerHandler;
 import systems.reformcloud.reformcloud2.executor.api.velocity.event.ProcessEventHandler;
-import systems.reformcloud.reformcloud2.executor.api.velocity.plugins.PluginExecutorContainer;
-import systems.reformcloud.reformcloud2.executor.api.velocity.plugins.PluginUpdater;
 
 import java.io.File;
 import java.util.*;
@@ -66,6 +67,8 @@ public final class VelocityExecutor extends API implements PlayerAPIExecutor {
 
     VelocityExecutor(VelocityLauncher launcher, ProxyServer proxyServer) {
         super.type = ExecutorType.API;
+        super.loadPacketHandlers();
+        APIConstants.playerAPIExecutor = this;
 
         instance = this;
         this.proxyServer = proxyServer;
@@ -75,9 +78,13 @@ public final class VelocityExecutor extends API implements PlayerAPIExecutor {
         getEventManager().registerListener(this);
         proxyServer.getEventManager().register(this.plugin = launcher, new PlayerListenerHandler());
 
-        packetHandler.registerHandler(new ProxiedChannelMessageHandler());
-        packetHandler.registerHandler(new APIPacketInAPIAction(this));
-        packetHandler.registerHandler(new APIPacketInPluginAction(new PluginExecutorContainer()));
+        this.packetHandler.registerNetworkHandlers(
+                PacketAPIConnectPlayerToServer.class,
+                PacketAPIKickPlayer.class,
+                PacketAPISendMessage.class,
+                PacketAPISendTitle.class,
+                APIPacketOutRequestIngameMessagesResult.class
+        );
 
         String connectionKey = JsonConfiguration.read("reformcloud/.connection/key.json").getString("key");
         SystemHelper.deleteFile(new File("reformcloud/.connection/key.json"));
@@ -92,7 +99,7 @@ public final class VelocityExecutor extends API implements PlayerAPIExecutor {
         this.networkClient.connect(
                 connectionConfig.getString("controller-host"),
                 connectionConfig.getInteger("controller-port"),
-                () -> new APINetworkChannelReader(this.packetHandler),
+                () -> new APINetworkChannelReader(),
                 new ClientChallengeAuthHandler(
                         connectionKey,
                         thisProcessInformation.getProcessDetail().getName(),
@@ -180,8 +187,6 @@ public final class VelocityExecutor extends API implements PlayerAPIExecutor {
 
             getAllProcesses().forEach(this::handleProcessUpdate);
 
-            new PluginUpdater();
-
             thisProcessInformation.updateMaxPlayers(proxyServer.getConfiguration().getShowMaxPlayers());
             thisProcessInformation.updateRuntimeInformation();
             thisProcessInformation.getNetworkInfo().setConnected(true);
@@ -190,9 +195,13 @@ public final class VelocityExecutor extends API implements PlayerAPIExecutor {
 
             this.fixInvalidPlayers();
 
-            DefaultChannelManager.INSTANCE.get("Controller").ifPresent(controller -> packetHandler.getQueryHandler().sendQueryAsync(controller, new APIBungeePacketOutRequestIngameMessages()).onComplete(packet -> {
-                IngameMessages ingameMessages = packet.content().get("messages", IngameMessages.TYPE);
-                setMessages(ingameMessages);
+            DefaultChannelManager.INSTANCE.get("Controller").ifPresent(controller -> packetHandler.getQueryHandler().sendQueryAsync(
+                    controller,
+                    new APIPacketOutRequestIngameMessages()
+            ).onComplete(packet -> {
+                if (packet instanceof APIPacketOutRequestIngameMessagesResult) {
+                    this.setMessages(((APIPacketOutRequestIngameMessagesResult) packet).getIngameMessages());
+                }
             }));
         });
     }
@@ -319,16 +328,6 @@ public final class VelocityExecutor extends API implements PlayerAPIExecutor {
     }
 
     @Override
-    public <T> void executePlayEffect(UUID player, String effect, T data) {
-        throw new UnsupportedOperationException("Not supported on velocity");
-    }
-
-    @Override
-    public void executeRespawn(UUID player) {
-        throw new UnsupportedOperationException("Not supported on velocity");
-    }
-
-    @Override
     public void executeTeleport(UUID player, String world, double x, double y, double z, float yaw, float pitch) {
         throw new UnsupportedOperationException("Not supported on velocity");
     }
@@ -353,10 +352,5 @@ public final class VelocityExecutor extends API implements PlayerAPIExecutor {
                 ).fireAndForget();
             }
         }));
-    }
-
-    @Override
-    public void executeSetResourcePack(UUID player, String pack) {
-        proxyServer.getPlayer(player).ifPresent(player1 -> player1.sendResourcePack(pack));
     }
 }

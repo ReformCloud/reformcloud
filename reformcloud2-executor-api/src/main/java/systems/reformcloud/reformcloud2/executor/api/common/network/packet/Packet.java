@@ -1,48 +1,32 @@
 package systems.reformcloud.reformcloud2.executor.api.common.network.packet;
 
+import io.netty.channel.ChannelHandlerContext;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
-import systems.reformcloud.reformcloud2.executor.api.common.network.packet.serialisation.PacketWriter;
+import systems.reformcloud.reformcloud2.executor.api.common.network.SerializableObject;
+import systems.reformcloud.reformcloud2.executor.api.common.network.challenge.ChallengeAuthHandler;
+import systems.reformcloud.reformcloud2.executor.api.common.network.channel.NetworkChannelReader;
+import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
+import systems.reformcloud.reformcloud2.executor.api.common.network.handler.ChannelReaderHelper;
 
 import java.util.UUID;
 
-public interface Packet extends PacketWriter {
+public abstract class Packet implements SerializableObject {
 
-    /**
-     * @return The packet id of the packet
-     */
-    int packetID();
+    protected UUID queryUniqueID;
 
-    /**
-     * @return The id of the query or {@code null} if the packet is not a query
-     */
+    public abstract int getId();
+
     @Nullable
-    UUID queryUniqueID();
+    public UUID getQueryUniqueID() {
+        return this.queryUniqueID;
+    }
 
-    /**
-     * @return The content of the packet
-     */
-    @NotNull
-    JsonConfiguration content();
+    public void setQueryUniqueID(@Nullable UUID queryUniqueID) {
+        this.queryUniqueID = queryUniqueID;
+    }
 
-    /**
-     * @return The extra content of this packet
-     */
-    @NotNull
-    byte[] extra();
+    public abstract void handlePacketReceive(@NotNull NetworkChannelReader reader, @NotNull ChallengeAuthHandler authHandler,
+                                             @NotNull ChannelReaderHelper parent, @Nullable PacketSender sender, @NotNull ChannelHandlerContext channel);
 
-    /**
-     * Sets the query id
-     *
-     * @param id The new id which should get used
-     */
-    void setQueryID(UUID id);
-
-    /**
-     * Sets the content of the packet
-     *
-     * @param content The new content which should get used
-     */
-    void setContent(JsonConfiguration content);
 }

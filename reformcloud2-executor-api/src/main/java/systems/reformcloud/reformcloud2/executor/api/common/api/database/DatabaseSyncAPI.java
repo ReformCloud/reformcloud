@@ -1,5 +1,6 @@
 package systems.reformcloud.reformcloud2.executor.api.common.api.database;
 
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
@@ -54,7 +55,10 @@ public interface DatabaseSyncAPI {
      * @param key     The key of the document
      * @param newData The new value of the entry
      * @return {@code true} if the config got updated or {@code false}
+     * @deprecated Use {@link #update(String, String, String, JsonConfiguration)} instead
      */
+    @Deprecated
+    @ApiStatus.ScheduledForRemoval
     boolean update(@NotNull String table, @NotNull String key, @NotNull JsonConfiguration newData);
 
     /**
@@ -64,15 +68,31 @@ public interface DatabaseSyncAPI {
      * @param identifier The identifier of the json config if the key is unknown
      * @param newData    The new value of the entry
      * @return {@code true} if the config got updated or {@code false}
+     * @deprecated Use {@link #update(String, String, String, JsonConfiguration)} instead
      */
+    @Deprecated
+    @ApiStatus.ScheduledForRemoval
     boolean updateIfAbsent(@NotNull String table, @NotNull String identifier, @NotNull JsonConfiguration newData);
+
+    /**
+     * Updates a json config in the database
+     *
+     * @param table      The table in which the document is
+     * @param key        The key of the document
+     * @param identifier The identifier of the json config if the key is unknown
+     * @param newData    The new value of the entry
+     */
+    void update(@NotNull String table, @Nullable String key, @Nullable String identifier, @NotNull JsonConfiguration newData);
 
     /**
      * Removes an json config out of the database
      *
      * @param table The table in which the config is
      * @param key   The key of the config
+     * @deprecated Use {@link #remove(String, String, String)} instead
      */
+    @Deprecated
+    @ApiStatus.ScheduledForRemoval
     void remove(@NotNull String table, @NotNull String key);
 
     /**
@@ -80,8 +100,20 @@ public interface DatabaseSyncAPI {
      *
      * @param table      The table in which the config is
      * @param identifier The id of the config if the key is unknown
+     * @deprecated Use {@link #remove(String, String, String)} instead
      */
+    @Deprecated
+    @ApiStatus.ScheduledForRemoval
     void removeIfAbsent(@NotNull String table, @NotNull String identifier);
+
+    /**
+     * Removes an json config out of the database
+     *
+     * @param table      The table in which the config is
+     * @param key        The key of the config
+     * @param identifier The id of the config if the key is unknown
+     */
+    void remove(@NotNull String table, @Nullable String key, @Nullable String identifier);
 
     /**
      * Creates a new database with the given name

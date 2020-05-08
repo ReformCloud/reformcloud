@@ -1,9 +1,12 @@
 package systems.reformcloud.reformcloud2.executor.api.common.groups.template;
 
 import com.google.gson.reflect.TypeToken;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.inclusion.Inclusion;
+import systems.reformcloud.reformcloud2.executor.api.common.network.SerializableObject;
+import systems.reformcloud.reformcloud2.executor.api.common.network.data.ProtocolBuffer;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Duo;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.name.Nameable;
 
@@ -11,10 +14,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
-public final class Template implements Nameable {
+public final class Template implements Nameable, SerializableObject {
 
     public static final TypeToken<Template> TYPE = new TypeToken<Template>() {
     };
+
+    @ApiStatus.Internal
+    public Template() {
+    }
 
     public Template(int priority, String name, boolean global, String backend, String serverNameSplitter,
                     RuntimeConfiguration runtimeConfiguration, Version version) {
@@ -42,25 +49,25 @@ public final class Template implements Nameable {
         this.pathInclusions = pathInclusions;
     }
 
-    private final int priority;
+    private int priority;
 
-    private final String name;
+    private String name;
 
-    private final boolean global;
+    private boolean global;
 
-    private final boolean autoReleaseOnClose;
+    private boolean autoReleaseOnClose;
 
-    private final String backend;
+    private String backend;
 
-    private final String serverNameSplitter;
+    private String serverNameSplitter;
 
-    private final RuntimeConfiguration runtimeConfiguration;
+    private RuntimeConfiguration runtimeConfiguration;
 
-    private final Version version;
+    private Version version;
 
-    private final Collection<Inclusion> templateInclusions;
+    private Collection<Inclusion> templateInclusions;
 
-    private final Collection<Inclusion> pathInclusions;
+    private Collection<Inclusion> pathInclusions;
 
     public int getPriority() {
         return priority;
@@ -130,5 +137,33 @@ public final class Template implements Nameable {
                 .filter(e -> e.getBackend() != null && e.getKey() != null)
                 .map(e -> new Duo<>(e.getKey(), e.getBackend()))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public void write(@NotNull ProtocolBuffer buffer) {
+        buffer.writeVarInt(this.priority);
+        buffer.writeString(this.name);
+        buffer.writeBoolean(this.global);
+        buffer.writeBoolean(this.autoReleaseOnClose);
+        buffer.writeString(this.backend);
+        buffer.writeString(this.serverNameSplitter);
+        buffer.writeObject(this.runtimeConfiguration);
+        buffer.writeVarInt(this.version.ordinal());
+        buffer.writeObjects(this.templateInclusions);
+        buffer.writeObjects(this.pathInclusions);
+    }
+
+    @Override
+    public void read(@NotNull ProtocolBuffer buffer) {
+        this.priority = buffer.readVarInt();
+        this.name = buffer.readString();
+        this.global = buffer.readBoolean();
+        this.autoReleaseOnClose = buffer.readBoolean();
+        this.backend = buffer.readString();
+        this.serverNameSplitter = buffer.readString();
+        this.runtimeConfiguration = buffer.readObject(RuntimeConfiguration.class);
+        this.version = Version.values()[buffer.readVarInt()];
+        this.templateInclusions = buffer.readObjects(Inclusion.class);
+        this.pathInclusions = buffer.readObjects(Inclusion.class);
     }
 }

@@ -2,10 +2,15 @@ package systems.reformcloud.reformcloud2.executor.api.common.client.basic;
 
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.client.ClientRuntimeInformation;
+import systems.reformcloud.reformcloud2.executor.api.common.network.SerializableObject;
+import systems.reformcloud.reformcloud2.executor.api.common.network.data.ProtocolBuffer;
 
 import java.util.UUID;
 
-public final class DefaultClientRuntimeInformation implements ClientRuntimeInformation {
+public final class DefaultClientRuntimeInformation implements ClientRuntimeInformation, SerializableObject {
+
+    public DefaultClientRuntimeInformation() {
+    }
 
     public DefaultClientRuntimeInformation(String startHost, int maxMemory, int maxProcesses, String name, UUID uniqueId) {
         this.startHost = startHost;
@@ -15,15 +20,15 @@ public final class DefaultClientRuntimeInformation implements ClientRuntimeInfor
         this.uniqueID = uniqueId;
     }
 
-    private final String startHost;
+    private String startHost;
 
-    private final int maxMemory;
+    private int maxMemory;
 
-    private final int maxProcesses;
+    private int maxProcesses;
 
-    private final String name;
+    private String name;
 
-    private final UUID uniqueID;
+    private UUID uniqueID;
 
     @NotNull
     @Override
@@ -51,5 +56,23 @@ public final class DefaultClientRuntimeInformation implements ClientRuntimeInfor
     @Override
     public String getName() {
         return name;
+    }
+
+    @Override
+    public void write(@NotNull ProtocolBuffer buffer) {
+        buffer.writeString(this.startHost);
+        buffer.writeInt(this.maxMemory);
+        buffer.writeInt(this.maxProcesses);
+        buffer.writeString(this.name);
+        buffer.writeUniqueId(this.uniqueID);
+    }
+
+    @Override
+    public void read(@NotNull ProtocolBuffer buffer) {
+        this.startHost = buffer.readString();
+        this.maxMemory = buffer.readInt();
+        this.maxProcesses = buffer.readInt();
+        this.name = buffer.readString();
+        this.uniqueID = buffer.readUniqueId();
     }
 }

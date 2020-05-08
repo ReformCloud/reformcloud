@@ -4,7 +4,6 @@ import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.plugin.Plugin;
 import systems.reformcloud.reformcloud2.permissions.bungeecord.command.CommandCloudPerms;
 import systems.reformcloud.reformcloud2.permissions.bungeecord.listener.BungeeCordPermissionListener;
-import systems.reformcloud.reformcloud2.permissions.packets.PacketHelper;
 import systems.reformcloud.reformcloud2.permissions.util.PermissionPluginUtil;
 
 public class BungeeCordPermissionPlugin extends Plugin {
@@ -19,7 +18,6 @@ public class BungeeCordPermissionPlugin extends Plugin {
 
     @Override
     public void onDisable() {
-        PacketHelper.unregisterAPIPackets();
         ProxyServer.getInstance().getScheduler().cancel(this);
     }
 }

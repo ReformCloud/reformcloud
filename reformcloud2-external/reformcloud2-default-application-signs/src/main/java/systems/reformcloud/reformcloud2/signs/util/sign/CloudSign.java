@@ -1,14 +1,16 @@
 package systems.reformcloud.reformcloud2.signs.util.sign;
 
-import com.google.gson.reflect.TypeToken;
+import org.jetbrains.annotations.NotNull;
+import systems.reformcloud.reformcloud2.executor.api.common.network.SerializableObject;
+import systems.reformcloud.reformcloud2.executor.api.common.network.data.ProtocolBuffer;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 
 import java.util.UUID;
 
-public class CloudSign {
+public class CloudSign implements SerializableObject {
 
-    public static final TypeToken<CloudSign> TYPE = new TypeToken<CloudSign>() {
-    };
+    public CloudSign() {
+    }
 
     public CloudSign(String group, CloudLocation location) {
         this.group = group;
@@ -17,11 +19,11 @@ public class CloudSign {
         this.currentTarget = null;
     }
 
-    private final String group;
+    private String group;
 
-    private final CloudLocation location;
+    private CloudLocation location;
 
-    private final UUID uniqueID;
+    private UUID uniqueID;
 
     private ProcessInformation currentTarget;
 
@@ -56,5 +58,19 @@ public class CloudSign {
     @Override
     public int hashCode() {
         return this.getUniqueID().hashCode();
+    }
+
+    @Override
+    public void write(@NotNull ProtocolBuffer buffer) {
+        buffer.writeString(this.group);
+        buffer.writeObject(this.location);
+        buffer.writeUniqueId(this.uniqueID);
+    }
+
+    @Override
+    public void read(@NotNull ProtocolBuffer buffer) {
+        this.group = buffer.readString();
+        this.location = buffer.readObject(CloudLocation.class);
+        this.uniqueID = buffer.readUniqueId();
     }
 }

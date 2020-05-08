@@ -47,6 +47,7 @@ public final class PlayerListenerHandler implements Listener {
         if (!event.isCancelled()) {
             DefaultChannelManager.INSTANCE.get("Controller").ifPresent(sender -> sender.sendPacket(new APIBungeePacketOutPlayerServerSwitch(
                     event.getPlayer().getUniqueId(),
+                    proxiedPlayer.getServer() == null ? null : proxiedPlayer.getServer().getInfo().getName(),
                     event.getTarget().getName()
             )));
             AbsoluteThread.sleep(20);
@@ -142,7 +143,8 @@ public final class PlayerListenerHandler implements Listener {
     public void handle(final PlayerDisconnectEvent event) {
         DefaultChannelManager.INSTANCE.get("Controller").ifPresent(packetSender -> packetSender.sendPacket(new APIPacketOutLogoutPlayer(
                 event.getPlayer().getUniqueId(),
-                event.getPlayer().getName()
+                event.getPlayer().getName(),
+                event.getPlayer().getServer() != null ? event.getPlayer().getServer().getInfo().getName() : null
         )));
 
         ProcessInformation current = API.getInstance().getCurrentProcessInformation();

@@ -1,8 +1,13 @@
 package systems.reformcloud.reformcloud2.permissions.util.permission;
 
 import org.jetbrains.annotations.NotNull;
+import systems.reformcloud.reformcloud2.executor.api.common.network.SerializableObject;
+import systems.reformcloud.reformcloud2.executor.api.common.network.data.ProtocolBuffer;
 
-public class PermissionNode {
+public class PermissionNode implements SerializableObject {
+
+    public PermissionNode() {
+    }
 
     public PermissionNode(long addTime, long timeout, boolean set, @NotNull String actualPermission) {
         this.addTime = addTime;
@@ -11,13 +16,13 @@ public class PermissionNode {
         this.actualPermission = actualPermission;
     }
 
-    private final long addTime;
+    private long addTime;
 
-    private final long timeout;
+    private long timeout;
 
-    private final boolean set;
+    private boolean set;
 
-    private final String actualPermission;
+    private String actualPermission;
 
     public long getAddTime() {
         return addTime;
@@ -38,5 +43,21 @@ public class PermissionNode {
     @NotNull
     public String getActualPermission() {
         return actualPermission;
+    }
+
+    @Override
+    public void write(@NotNull ProtocolBuffer buffer) {
+        buffer.writeLong(this.addTime);
+        buffer.writeLong(this.timeout);
+        buffer.writeBoolean(this.set);
+        buffer.writeString(this.actualPermission);
+    }
+
+    @Override
+    public void read(@NotNull ProtocolBuffer buffer) {
+        this.addTime = buffer.readLong();
+        this.timeout = buffer.readLong();
+        this.set = buffer.readBoolean();
+        this.actualPermission = buffer.readString();
     }
 }

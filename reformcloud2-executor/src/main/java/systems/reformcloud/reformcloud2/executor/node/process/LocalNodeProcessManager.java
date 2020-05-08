@@ -2,6 +2,7 @@ package systems.reformcloud.reformcloud2.executor.node.process;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import systems.reformcloud.reformcloud2.executor.api.common.api.basic.packets.shared.EventPacketProcessUpdated;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Template;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
@@ -17,7 +18,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
 import systems.reformcloud.reformcloud2.executor.api.node.process.NodeProcessManager;
-import systems.reformcloud.reformcloud2.executor.controller.network.packets.out.event.ControllerEventProcessUpdated;
 import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
 import systems.reformcloud.reformcloud2.executor.node.network.packet.out.PacketOutHeadNodeStartProcess;
 import systems.reformcloud.reformcloud2.executor.node.process.basic.BasicLocalNodeProcess;
@@ -180,7 +180,7 @@ public final class LocalNodeProcessManager implements NodeProcessManager {
             }
 
             DefaultChannelManager.INSTANCE.get(processInformation.getProcessDetail().getName()).ifPresent(
-                    e -> e.sendPacket(new ControllerEventProcessUpdated(processInformation))
+                    e -> e.sendPacket(new EventPacketProcessUpdated(processInformation))
             );
         });
     }

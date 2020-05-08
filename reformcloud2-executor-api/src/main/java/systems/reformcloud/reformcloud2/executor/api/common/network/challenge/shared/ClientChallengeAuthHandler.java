@@ -4,8 +4,11 @@ import io.netty.channel.ChannelHandlerContext;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.network.challenge.ChallengeAuthHandler;
+import systems.reformcloud.reformcloud2.executor.api.common.network.challenge.packet.client.PacketOutClientChallengeRequest;
+import systems.reformcloud.reformcloud2.executor.api.common.network.challenge.packet.client.PacketOutClientChallengeResponse;
+import systems.reformcloud.reformcloud2.executor.api.common.network.challenge.packet.server.PacketOutServerChallengeStart;
+import systems.reformcloud.reformcloud2.executor.api.common.network.challenge.packet.server.PacketOutServerGrantAccess;
 import systems.reformcloud.reformcloud2.executor.api.common.network.challenge.security.ChallengeSecurity;
-import systems.reformcloud.reformcloud2.executor.api.common.network.packet.JsonPacket;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 
 import java.util.function.Consumer;
@@ -30,35 +33,34 @@ public final class ClientChallengeAuthHandler implements ChallengeAuthHandler {
 
     @Override
     public boolean handle(@NotNull ChannelHandlerContext channelHandlerContext, @NotNull Packet input, @NotNull String name) {
-        if (input.packetID() == -512) {
-            // challenge from server
-            byte[] bytes = input.content().get("challenge", byte[].class);
-            if (bytes == null) {
-                channelHandlerContext.channel().close().syncUninterruptibly();
-                return false;
-            }
+        if (input instanceof PacketOutServerChallengeStart) {
+            PacketOutServerChallengeStart challengeStart = (PacketOutServerChallengeStart) input;
 
-            String result = ChallengeSecurity.decodeChallengeRequest(this.key, bytes);
+            String result = ChallengeSecurity.decodeChallengeRequest(this.key, challengeStart.getChallenge());
             if (result == null) {
-                channelHandlerContext.channel().close().syncUninterruptibly();
+                channelHandlerContext.close().syncUninterruptibly();
                 return false;
             }
 
             String hashed = ChallengeSecurity.hash(result);
             if (hashed == null) {
-                channelHandlerContext.channel().close().syncUninterruptibly();
+                channelHandlerContext.close().syncUninterruptibly();
                 return false;
             }
 
-            channelHandlerContext.channel().writeAndFlush(new JsonPacket(
-                    -511, supplier.get().add("result", hashed).add("name", this.name)
-            )).syncUninterruptibly();
+            channelHandlerContext.writeAndFlush(new PacketOutClientChallengeResponse(this.name, hashed, this.supplier.get())).syncUninterruptibly();
             return false;
         }
 
-        if (input.packetID() == -511 && input.content().getBoolean("access")) {
-            this.channelHandlerContextConsumer.accept(channelHandlerContext);
-            return true;
+        if (input instanceof PacketOutServerGrantAccess) {
+            PacketOutServerGrantAccess packetOutServerGrantAccess = (PacketOutServerGrantAccess) input;
+            if (packetOutServerGrantAccess.isAccess()) {
+                this.channelHandlerContextConsumer.accept(channelHandlerContext);
+            } else {
+                channelHandlerContext.channel().close().syncUninterruptibly();
+            }
+
+            return packetOutServerGrantAccess.isAccess();
         }
 
         return false;
@@ -66,8 +68,6 @@ public final class ClientChallengeAuthHandler implements ChallengeAuthHandler {
 
     @Override
     public void handleChannelActive(@NotNull ChannelHandlerContext channelHandlerContext) {
-        channelHandlerContext.channel().writeAndFlush(new JsonPacket(
-                -512, new JsonConfiguration().add("name", this.name)
-        )).syncUninterruptibly();
+        channelHandlerContext.channel().writeAndFlush(new PacketOutClientChallengeRequest(this.name)).syncUninterruptibly();
     }
 }

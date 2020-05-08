@@ -1,79 +1,71 @@
 package systems.reformcloud.reformcloud2.executor.api.common.network.packet.defaults;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.common.network.channel.handler.NetworkHandler;
-import systems.reformcloud.reformcloud2.executor.api.common.network.channel.handler.query.DefaultQueryNetworkHandler;
+import org.jetbrains.annotations.Nullable;
+import systems.reformcloud.reformcloud2.executor.api.common.network.exception.SilentNetworkException;
+import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.handler.PacketHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.query.QueryHandler;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public final class DefaultPacketHandler implements PacketHandler {
 
-    private static final QueryHandler QUERY_HANDLER = new DefaultQueryHandler();
+    private final QueryHandler queryHandler = new DefaultQueryHandler();
 
-    private final List<NetworkHandler> handlers = new CopyOnWriteArrayList<>();
-
-    public DefaultPacketHandler() {
-        this.registerHandler(new DefaultQueryNetworkHandler(QUERY_HANDLER));
-    }
+    private final Map<Integer, Class<? extends Packet>> packets = new ConcurrentHashMap<>();
 
     @Override
-    public void registerHandler(NetworkHandler networkHandler) {
-        handlers.add(networkHandler);
-    }
-
-    @Override
-    public void registerHandler(Class<? extends NetworkHandler> networkHandler) {
+    public void registerHandler(Class<? extends Packet> packetClass) {
         try {
-            NetworkHandler handler = networkHandler.getDeclaredConstructor().newInstance();
-            registerHandler(handler);
-        } catch (final IllegalAccessException | NoSuchMethodException | InvocationTargetException | InstantiationException ex) {
-            ex.printStackTrace();
+            Packet asPacket = packetClass.getDeclaredConstructor().newInstance();
+            this.packets.put(asPacket.getId(), packetClass);
+        } catch (final NoSuchMethodException ex) {
+            System.err.println("Missing NoArgsConstructor in packet class " + packetClass.getName());
+        } catch (final Throwable throwable) {
+            throw new SilentNetworkException("Unable to register packet " + packetClass.getName(), throwable);
         }
     }
 
     @Override
-    public void registerNetworkHandlers(NetworkHandler... networkHandlers) {
-        for (NetworkHandler networkHandler : networkHandlers) {
-            registerHandler(networkHandler);
+    @SafeVarargs
+    public final void registerNetworkHandlers(Class<? extends Packet>... packetClasses) {
+        for (Class<? extends Packet> packetClass : packetClasses) {
+            this.registerHandler(packetClass);
         }
     }
 
     @Override
-    public void unregisterNetworkHandler(NetworkHandler networkHandler) {
-        handlers.remove(networkHandler);
+    public void unregisterNetworkHandler(int id) {
+        this.packets.remove(id);
     }
 
+    @Nullable
     @Override
-    public void unregisterNetworkHandlers(int id) {
-        Streams.allOf(handlers, e -> e.getHandlingPacketID() == id).forEach(handlers::remove);
-    }
+    public Packet getNetworkHandler(int id) {
+        Class<? extends Packet> packetClass = this.packets.get(id);
+        if (packetClass == null) {
+            return null;
+        }
 
-    @NotNull
-    @Override
-    public List<NetworkHandler> getNetworkHandlers(int id) {
-        return Streams.list(handlers, e -> e.getHandlingPacketID() == id);
-    }
-
-    @NotNull
-    @Override
-    public List<NetworkHandler> getAllNetworkHandlers() {
-        return Collections.unmodifiableList(handlers);
+        try {
+            return packetClass.getDeclaredConstructor().newInstance();
+        } catch (final Throwable throwable) {
+            throwable.printStackTrace();
+            return null;
+        }
     }
 
     @NotNull
     @Override
     public QueryHandler getQueryHandler() {
-        return QUERY_HANDLER;
+        return this.queryHandler;
     }
 
     @Override
     public void clearHandlers() {
-        this.handlers.clear();
+        this.packets.clear();
+        this.queryHandler.clearQueries();
     }
 }

@@ -2,14 +2,12 @@ package systems.reformcloud.reformcloud2.executor.api.common.network.handler;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import systems.reformcloud.reformcloud2.executor.api.common.network.NetworkUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.network.challenge.ChallengeAuthHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.NetworkChannelReader;
-import systems.reformcloud.reformcloud2.executor.api.common.network.channel.handler.DefaultJsonNetworkHandler;
-import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
-import systems.reformcloud.reformcloud2.executor.api.common.network.packet.WrappedByteInput;
 
-public final class ChannelReaderHelper extends SimpleChannelInboundHandler<WrappedByteInput> {
+public final class ChannelReaderHelper extends SimpleChannelInboundHandler<Packet> {
 
     public ChannelReaderHelper(NetworkChannelReader channelReader, ChallengeAuthHandler authHandler) {
         this.channelReader = channelReader;
@@ -20,13 +18,13 @@ public final class ChannelReaderHelper extends SimpleChannelInboundHandler<Wrapp
 
     private final ChallengeAuthHandler authHandler;
 
-    private boolean auth = false;
+    public boolean auth = false;
 
     private boolean wasActive = false;
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-        channelReader.exceptionCaught(ctx, cause);
+        this.channelReader.exceptionCaught(ctx, cause);
     }
 
     @Override
@@ -36,45 +34,30 @@ public final class ChannelReaderHelper extends SimpleChannelInboundHandler<Wrapp
             this.authHandler.handleChannelActive(ctx);
         }
 
-        channelReader.channelActive(ctx);
+        this.channelReader.channelActive(ctx);
     }
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) {
-        channelReader.channelInactive(ctx);
+        this.channelReader.channelInactive(ctx);
         this.wasActive = false;
         this.auth = false;
     }
 
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) {
-        channelReader.readOperationCompleted(ctx);
+        this.channelReader.readOperationCompleted(ctx);
     }
 
     @Override
-    protected void channelRead0(ChannelHandlerContext channelHandlerContext, WrappedByteInput input) {
+    protected void channelRead0(ChannelHandlerContext channelHandlerContext, Packet input) {
         if (!auth) {
-            try {
-                Packet packet = DefaultJsonNetworkHandler.readPacket(input.getPacketID(), input.toObjectStream());
-                String name = packet.content().getOrDefault("name", (String) null);
-                if (name == null || DefaultChannelManager.INSTANCE.get(name).isPresent()) {
-                    System.out.println("Unknown connect from channel (Name=" + name + "). If the name is null, that might be an attack");
-                    channelHandlerContext.channel().close().syncUninterruptibly();
-                    return;
-                }
-
-                this.auth = this.authHandler.handle(channelHandlerContext, packet, name);
-
-                if (this.auth) {
-                    this.channelReader.setChannelHandlerContext(channelHandlerContext, name);
-                }
-            } catch (final Throwable throwable) {
+            if (input.getId() > NetworkUtil.AUTH_BUS + 4 || input.getId() < NetworkUtil.AUTH_BUS) {
                 channelHandlerContext.channel().close().syncUninterruptibly();
+                return;
             }
-
-            return;
         }
 
-        channelReader.read(channelHandlerContext, input);
+        channelReader.read(channelHandlerContext, this.authHandler, this, input);
     }
 }

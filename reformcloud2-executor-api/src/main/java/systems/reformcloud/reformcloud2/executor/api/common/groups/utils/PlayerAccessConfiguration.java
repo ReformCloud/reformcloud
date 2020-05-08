@@ -1,10 +1,17 @@
 package systems.reformcloud.reformcloud2.executor.api.common.groups.utils;
 
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
+import systems.reformcloud.reformcloud2.executor.api.common.network.SerializableObject;
+import systems.reformcloud.reformcloud2.executor.api.common.network.data.ProtocolBuffer;
 
 import java.util.Objects;
 
-public final class PlayerAccessConfiguration {
+public final class PlayerAccessConfiguration implements SerializableObject {
+
+    @ApiStatus.Internal
+    public PlayerAccessConfiguration() {
+    }
 
     public PlayerAccessConfiguration(String fullJoinPermission, boolean maintenance, String maintenanceJoinPermission,
                                      boolean joinOnlyPerPermission, String joinPermission,
@@ -19,17 +26,17 @@ public final class PlayerAccessConfiguration {
         this.maxPlayers = maxPlayers;
     }
 
-    private final String fullJoinPermission;
+    private String fullJoinPermission;
 
     private boolean maintenance;
 
-    private final String maintenanceJoinPermission;
+    private String maintenanceJoinPermission;
 
-    private final boolean joinOnlyPerPermission;
+    private boolean joinOnlyPerPermission;
 
-    private final String joinPermission;
+    private String joinPermission;
 
-    private final boolean playerControllerCommandReporting;
+    private boolean playerControllerCommandReporting;
 
     private boolean useCloudPlayerLimit;
 
@@ -95,5 +102,29 @@ public final class PlayerAccessConfiguration {
                 getMaxPlayers() == that.getMaxPlayers() &&
                 Objects.equals(getMaintenanceJoinPermission(), that.getMaintenanceJoinPermission()) &&
                 Objects.equals(getJoinPermission(), that.getJoinPermission());
+    }
+
+    @Override
+    public void write(@NotNull ProtocolBuffer buffer) {
+        buffer.writeString(this.fullJoinPermission);
+        buffer.writeBoolean(this.maintenance);
+        buffer.writeString(this.maintenanceJoinPermission);
+        buffer.writeBoolean(this.joinOnlyPerPermission);
+        buffer.writeString(this.joinPermission);
+        buffer.writeBoolean(this.playerControllerCommandReporting);
+        buffer.writeBoolean(this.useCloudPlayerLimit);
+        buffer.writeVarInt(this.maxPlayers);
+    }
+
+    @Override
+    public void read(@NotNull ProtocolBuffer buffer) {
+        this.fullJoinPermission = buffer.readString();
+        this.maintenance = buffer.readBoolean();
+        this.maintenanceJoinPermission = buffer.readString();
+        this.joinOnlyPerPermission = buffer.readBoolean();
+        this.joinPermission = buffer.readString();
+        this.playerControllerCommandReporting = buffer.readBoolean();
+        this.useCloudPlayerLimit = buffer.readBoolean();
+        this.maxPlayers = buffer.readVarInt();
     }
 }

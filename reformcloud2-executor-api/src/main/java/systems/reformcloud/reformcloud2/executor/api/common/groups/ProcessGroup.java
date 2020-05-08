@@ -1,20 +1,28 @@
 package systems.reformcloud.reformcloud2.executor.api.common.groups;
 
 import com.google.gson.reflect.TypeToken;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Template;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.PlayerAccessConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.StartupConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.common.network.SerializableObject;
+import systems.reformcloud.reformcloud2.executor.api.common.network.data.ProtocolBuffer;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.name.Nameable;
 
 import java.util.List;
 import java.util.Objects;
 
-public class ProcessGroup implements Nameable {
+public class ProcessGroup implements Nameable, SerializableObject {
 
-    public static final TypeToken<ProcessGroup> TYPE = new TypeToken<ProcessGroup>() {};
+    public static final TypeToken<ProcessGroup> TYPE = new TypeToken<ProcessGroup>() {
+    };
+
+    @ApiStatus.Internal
+    public ProcessGroup() {
+    }
 
     public ProcessGroup(String name, boolean showIdInName,
                         StartupConfiguration startupConfiguration, List<Template> templates,
@@ -40,15 +48,15 @@ public class ProcessGroup implements Nameable {
         this.canBeUsedAsLobby = asLobby;
     }
 
-    private final String name;
+    private String name;
 
-    private final boolean showIdInName;
+    private boolean showIdInName;
 
-    private final StartupConfiguration startupConfiguration;
+    private StartupConfiguration startupConfiguration;
 
     private List<Template> templates;
 
-    private final PlayerAccessConfiguration playerAccessConfiguration;
+    private PlayerAccessConfiguration playerAccessConfiguration;
 
     private boolean staticProcess;
 
@@ -116,5 +124,27 @@ public class ProcessGroup implements Nameable {
                 Objects.equals(getStartupConfiguration(), that.getStartupConfiguration()) &&
                 Objects.equals(getTemplates(), that.getTemplates()) &&
                 Objects.equals(getPlayerAccessConfiguration(), that.getPlayerAccessConfiguration());
+    }
+
+    @Override
+    public void write(@NotNull ProtocolBuffer buffer) {
+        buffer.writeString(this.name);
+        buffer.writeBoolean(this.showIdInName);
+        buffer.writeObject(this.startupConfiguration);
+        buffer.writeObjects(this.templates);
+        buffer.writeObject(this.playerAccessConfiguration);
+        buffer.writeBoolean(this.staticProcess);
+        buffer.writeBoolean(this.canBeUsedAsLobby);
+    }
+
+    @Override
+    public void read(@NotNull ProtocolBuffer buffer) {
+        this.name = buffer.readString();
+        this.showIdInName = buffer.readBoolean();
+        this.startupConfiguration = buffer.readObject(StartupConfiguration.class);
+        this.templates = buffer.readObjects(Template.class);
+        this.playerAccessConfiguration = buffer.readObject(PlayerAccessConfiguration.class);
+        this.staticProcess = buffer.readBoolean();
+        this.canBeUsedAsLobby = buffer.readBoolean();
     }
 }

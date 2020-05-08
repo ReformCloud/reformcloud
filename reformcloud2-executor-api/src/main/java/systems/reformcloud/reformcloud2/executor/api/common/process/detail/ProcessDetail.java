@@ -5,6 +5,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Template;
+import systems.reformcloud.reformcloud2.executor.api.common.network.SerializableObject;
+import systems.reformcloud.reformcloud2.executor.api.common.network.data.ProtocolBuffer;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessRuntimeInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState;
 import systems.reformcloud.reformcloud2.executor.api.common.process.event.ProcessDetailConfigureEvent;
@@ -15,7 +17,11 @@ import java.util.UUID;
 /**
  * Holds the details of a process like the unique id or name
  */
-public final class ProcessDetail implements Nameable {
+public final class ProcessDetail implements Nameable, SerializableObject {
+
+    @ApiStatus.Internal
+    public ProcessDetail() {
+    }
 
     /**
      * Creates a new process detail for a process
@@ -50,25 +56,25 @@ public final class ProcessDetail implements Nameable {
         ExecutorAPI.getInstance().getEventManager().callEvent(new ProcessDetailConfigureEvent(this));
     }
 
-    private final UUID processUniqueID;
+    private UUID processUniqueID;
 
-    private final UUID parentUniqueID;
+    private UUID parentUniqueID;
 
-    private final String parentName;
+    private String parentName;
 
-    private final String name;
+    private String name;
 
-    private final String displayName;
+    private String displayName;
 
-    private final int id;
+    private int id;
 
-    private final Template template;
+    private Template template;
 
-    private final int maxMemory;
+    private int maxMemory;
 
-    private final long creationTime;
+    private long creationTime;
 
-    private final ProcessState initialState;
+    private ProcessState initialState;
 
     private ProcessState processState;
 
@@ -224,5 +230,51 @@ public final class ProcessDetail implements Nameable {
      */
     public void setProcessRuntimeInformation(@NotNull ProcessRuntimeInformation processRuntimeInformation) {
         this.processRuntimeInformation = processRuntimeInformation;
+    }
+
+    @Override
+    public void write(@NotNull ProtocolBuffer buffer) {
+        buffer.writeUniqueId(this.processUniqueID);
+        buffer.writeString(this.name);
+        buffer.writeString(this.displayName);
+        buffer.writeVarInt(this.id);
+
+        buffer.writeUniqueId(this.parentUniqueID);
+        buffer.writeString(this.parentName);
+
+        buffer.writeObject(this.template);
+        buffer.writeObject(this.processRuntimeInformation);
+
+        buffer.writeInt(this.maxMemory);
+        buffer.writeLong(this.creationTime);
+
+        buffer.writeVarInt(this.processState.ordinal());
+        buffer.writeVarInt(this.initialState.ordinal());
+
+        buffer.writeInt(this.maxPlayers);
+        buffer.writeString(this.messageOfTheDay);
+    }
+
+    @Override
+    public void read(@NotNull ProtocolBuffer buffer) {
+        this.processUniqueID = buffer.readUniqueId();
+        this.name = buffer.readString();
+        this.displayName = buffer.readString();
+        this.id = buffer.readVarInt();
+
+        this.parentUniqueID = buffer.readUniqueId();
+        this.parentName = buffer.readString();
+
+        this.template = buffer.readObject(Template.class);
+        this.processRuntimeInformation = buffer.readObject(ProcessRuntimeInformation.class);
+
+        this.maxMemory = buffer.readInt();
+        this.creationTime = buffer.readLong();
+
+        this.processState = ProcessState.values()[buffer.readVarInt()];
+        this.initialState = ProcessState.values()[buffer.readVarInt()];
+
+        this.maxPlayers = buffer.readInt();
+        this.messageOfTheDay = buffer.readString();
     }
 }

@@ -1,11 +1,18 @@
 package systems.reformcloud.reformcloud2.executor.api.common.groups.utils;
 
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
+import systems.reformcloud.reformcloud2.executor.api.common.network.SerializableObject;
+import systems.reformcloud.reformcloud2.executor.api.common.network.data.ProtocolBuffer;
 
 import java.util.List;
 import java.util.Objects;
 
-public final class StartupConfiguration {
+public final class StartupConfiguration implements SerializableObject {
+
+    @ApiStatus.Internal
+    public StartupConfiguration() {
+    }
 
     public StartupConfiguration(int maxOnlineProcesses, int minOnlineProcesses, int startupPriority,
                                 int startPort, StartupEnvironment startupEnvironment,
@@ -47,9 +54,9 @@ public final class StartupConfiguration {
 
     private int startPort;
 
-    private final StartupEnvironment startupEnvironment;
+    private StartupEnvironment startupEnvironment;
 
-    private final AutomaticStartupConfiguration automaticStartupConfiguration;
+    private AutomaticStartupConfiguration automaticStartupConfiguration;
 
     private boolean searchBestClientAlone;
 
@@ -130,5 +137,31 @@ public final class StartupConfiguration {
                 isSearchBestClientAlone() == that.isSearchBestClientAlone() &&
                 getStartupEnvironment() == that.getStartupEnvironment() &&
                 Objects.equals(getUseOnlyTheseClients(), that.getUseOnlyTheseClients());
+    }
+
+    @Override
+    public void write(@NotNull ProtocolBuffer buffer) {
+        buffer.writeInt(this.maxOnlineProcesses);
+        buffer.writeInt(this.minOnlineProcesses);
+        buffer.writeInt(this.alwaysPreparedProcesses);
+        buffer.writeInt(this.startupPriority);
+        buffer.writeInt(this.startPort);
+        buffer.writeInt(this.startupEnvironment.ordinal());
+        buffer.writeObject(this.automaticStartupConfiguration);
+        buffer.writeBoolean(this.searchBestClientAlone);
+        buffer.writeStringArray(this.useOnlyTheseClients);
+    }
+
+    @Override
+    public void read(@NotNull ProtocolBuffer buffer) {
+        this.maxOnlineProcesses = buffer.readInt();
+        this.minOnlineProcesses = buffer.readInt();
+        this.alwaysPreparedProcesses = buffer.readInt();
+        this.startupPriority = buffer.readInt();
+        this.startPort = buffer.readInt();
+        this.startupEnvironment = StartupEnvironment.values()[buffer.readInt()];
+        this.automaticStartupConfiguration = buffer.readObject(AutomaticStartupConfiguration.class);
+        this.searchBestClientAlone = buffer.readBoolean();
+        this.useOnlyTheseClients = buffer.readStringArray();
     }
 }

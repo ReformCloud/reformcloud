@@ -24,7 +24,8 @@ import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
 import systems.reformcloud.reformcloud2.executor.node.network.packet.out.NodePacketOutStartPreparedProcess;
 import systems.reformcloud.reformcloud2.executor.node.network.packet.out.NodePacketOutStopProcess;
 import systems.reformcloud.reformcloud2.executor.node.network.packet.out.NodePacketOutToHeadStartPreparedProcess;
-import systems.reformcloud.reformcloud2.executor.node.network.packet.query.out.NodePacketOutQueryStartProcess;
+import systems.reformcloud.reformcloud2.executor.node.network.packet.query.PacketNodeQueryStartProcess;
+import systems.reformcloud.reformcloud2.executor.node.network.packet.query.PacketNodeQueryStartProcessResult;
 import systems.reformcloud.reformcloud2.executor.node.process.manager.LocalProcessManager;
 import systems.reformcloud.reformcloud2.executor.node.process.startup.LocalProcessQueue;
 
@@ -193,8 +194,14 @@ public final class DefaultNodeNetworkManager implements NodeNetworkManager {
         }
 
         return this.getCluster().sendQueryToHead(
-                new NodePacketOutQueryStartProcess(configuration, start),
-                packet -> packet.content().get("result", ProcessInformation.TYPE)
+                new PacketNodeQueryStartProcess(configuration, start),
+                packet -> {
+                    if (packet instanceof PacketNodeQueryStartProcessResult) {
+                        return ((PacketNodeQueryStartProcessResult) packet).getProcessInformation();
+                    }
+
+                    return null;
+                }
         );
     }
 

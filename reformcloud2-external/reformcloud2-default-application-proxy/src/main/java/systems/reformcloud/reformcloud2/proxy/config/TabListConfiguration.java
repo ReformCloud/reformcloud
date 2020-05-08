@@ -1,6 +1,13 @@
 package systems.reformcloud.reformcloud2.proxy.config;
 
-public class TabListConfiguration {
+import org.jetbrains.annotations.NotNull;
+import systems.reformcloud.reformcloud2.executor.api.common.network.SerializableObject;
+import systems.reformcloud.reformcloud2.executor.api.common.network.data.ProtocolBuffer;
+
+public class TabListConfiguration implements SerializableObject {
+
+    public TabListConfiguration() {
+    }
 
     public TabListConfiguration(String header, String footer, long waitUntilNextInSeconds) {
         this.header = header;
@@ -8,11 +15,11 @@ public class TabListConfiguration {
         this.waitUntilNextInSeconds = waitUntilNextInSeconds;
     }
 
-    private final String header;
+    private String header;
 
-    private final String footer;
+    private String footer;
 
-    private final long waitUntilNextInSeconds;
+    private long waitUntilNextInSeconds;
 
     public String getHeader() {
         return header;
@@ -24,5 +31,19 @@ public class TabListConfiguration {
 
     public long getWaitUntilNextInSeconds() {
         return waitUntilNextInSeconds;
+    }
+
+    @Override
+    public void write(@NotNull ProtocolBuffer buffer) {
+        buffer.writeString(this.header);
+        buffer.writeString(this.footer);
+        buffer.writeLong(this.waitUntilNextInSeconds);
+    }
+
+    @Override
+    public void read(@NotNull ProtocolBuffer buffer) {
+        this.header = buffer.readString();
+        this.footer = buffer.readString();
+        this.waitUntilNextInSeconds = buffer.readLong();
     }
 }

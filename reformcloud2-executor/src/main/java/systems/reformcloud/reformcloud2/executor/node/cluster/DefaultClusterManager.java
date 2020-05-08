@@ -1,11 +1,11 @@
 package systems.reformcloud.reformcloud2.executor.node.cluster;
 
 import org.jetbrains.annotations.NotNull;
+import systems.reformcloud.reformcloud2.executor.api.common.api.basic.packets.shared.EventPacketProcessClosed;
 import systems.reformcloud.reformcloud2.executor.api.common.node.NodeInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.node.cluster.ClusterManager;
 import systems.reformcloud.reformcloud2.executor.api.node.cluster.InternalNetworkCluster;
-import systems.reformcloud.reformcloud2.executor.controller.network.packets.out.event.ControllerEventProcessClosed;
 import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
 import systems.reformcloud.reformcloud2.executor.node.cluster.sync.DefaultClusterSyncManager;
 
@@ -36,7 +36,7 @@ public final class DefaultClusterManager implements ClusterManager {
                     i -> i.getProcessDetail().getParentUniqueID().equals(e.getNodeUniqueID())
             ).forEach(i -> {
                 NodeExecutor.getInstance().getNodeNetworkManager().getNodeProcessHelper().handleProcessStop(i);
-                DefaultClusterSyncManager.sendToAllExcludedNodes(new ControllerEventProcessClosed(i));
+                DefaultClusterSyncManager.sendToAllExcludedNodes(new EventPacketProcessClosed(i));
             });
 
             if (head != null && head.getNodeUniqueID().equals(e.getNodeUniqueID())) {

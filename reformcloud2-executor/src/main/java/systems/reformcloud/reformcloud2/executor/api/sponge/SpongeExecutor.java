@@ -1,17 +1,16 @@
 package systems.reformcloud.reformcloud2.executor.api.sponge;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.effect.sound.SoundType;
-import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.title.Title;
 import org.spongepowered.api.world.Location;
+import systems.reformcloud.reformcloud2.executor.api.APIConstants;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorType;
 import systems.reformcloud.reformcloud2.executor.api.api.API;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.common.api.basic.ExternalEventBusHandler;
+import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.ExternalEventBusHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.ProcessUpdatedEvent;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.event.EventManager;
@@ -23,7 +22,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.channel.Pack
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.common.network.client.DefaultNetworkClient;
 import systems.reformcloud.reformcloud2.executor.api.common.network.client.NetworkClient;
-import systems.reformcloud.reformcloud2.executor.api.common.network.messaging.ProxiedChannelMessageHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.defaults.DefaultPacketHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.handler.PacketHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
@@ -31,9 +29,10 @@ import systems.reformcloud.reformcloud2.executor.api.common.utility.system.Syste
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
 import systems.reformcloud.reformcloud2.executor.api.executor.PlayerAPIExecutor;
+import systems.reformcloud.reformcloud2.executor.api.network.api.*;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.APINetworkChannelReader;
-import systems.reformcloud.reformcloud2.executor.api.network.packets.in.APIPacketInAPIAction;
-import systems.reformcloud.reformcloud2.executor.api.network.packets.out.APIBungeePacketOutRequestIngameMessages;
+import systems.reformcloud.reformcloud2.executor.api.network.packets.out.APIPacketOutRequestIngameMessages;
+import systems.reformcloud.reformcloud2.executor.api.network.packets.out.APIPacketOutRequestIngameMessagesResult;
 import systems.reformcloud.reformcloud2.executor.api.shared.SharedInvalidPlayerFixer;
 import systems.reformcloud.reformcloud2.executor.api.sponge.event.PlayerListenerHandler;
 
@@ -56,12 +55,20 @@ public class SpongeExecutor extends API implements PlayerAPIExecutor {
 
     SpongeExecutor(SpongeLauncher launcher) {
         super.type = ExecutorType.API;
+        super.loadPacketHandlers();
+        APIConstants.playerAPIExecutor = this;
 
         this.plugin = launcher;
         instance = this;
 
-        packetHandler.registerHandler(new APIPacketInAPIAction(this));
-        packetHandler.registerHandler(new ProxiedChannelMessageHandler());
+        this.packetHandler.registerNetworkHandlers(
+                PacketAPIKickPlayer.class,
+                PacketAPISendMessage.class,
+                PacketAPISendTitle.class,
+                PacketAPIPlaySound.class,
+                PacketAPITeleportPlayer.class,
+                APIPacketOutRequestIngameMessagesResult.class
+        );
 
         new ExternalEventBusHandler(packetHandler, new DefaultEventManager());
         getEventManager().registerListener(this);
@@ -80,7 +87,7 @@ public class SpongeExecutor extends API implements PlayerAPIExecutor {
         this.networkClient.connect(
                 connectionConfig.getString("controller-host"),
                 connectionConfig.getInteger("controller-port"),
-                () -> new APINetworkChannelReader(this.packetHandler),
+                () -> new APINetworkChannelReader(),
                 new ClientChallengeAuthHandler(
                         connectionKey,
                         thisProcessInformation.getProcessDetail().getName(),
@@ -156,10 +163,19 @@ public class SpongeExecutor extends API implements PlayerAPIExecutor {
 
             this.fixInvalidPlayers();
 
-            DefaultChannelManager.INSTANCE.get("Controller").ifPresent(controller -> packetHandler.getQueryHandler().sendQueryAsync(controller, new APIBungeePacketOutRequestIngameMessages()).onComplete(packet -> {
-                SpongeExecutor.this.messages = packet.content().get("messages", IngameMessages.TYPE);
+            DefaultChannelManager.INSTANCE.get("Controller").ifPresent(controller -> packetHandler.getQueryHandler().sendQueryAsync(
+                    controller,
+                    new APIPacketOutRequestIngameMessages()
+            ).onComplete(packet -> {
+                if (packet instanceof APIPacketOutRequestIngameMessagesResult) {
+                    this.setMessages(((APIPacketOutRequestIngameMessagesResult) packet).getIngameMessages());
+                }
             }));
         });
+    }
+
+    public void setMessages(IngameMessages messages) {
+        this.messages = messages;
     }
 
     private void fixInvalidPlayers() {
@@ -209,15 +225,6 @@ public class SpongeExecutor extends API implements PlayerAPIExecutor {
     }
 
     @Override
-    public <T> void executePlayEffect(UUID player, String effect, @Nullable T data) {
-    }
-
-    @Override
-    public void executeRespawn(UUID player) {
-        Sponge.getServer().getPlayer(player).ifPresent(Player::respawnPlayer);
-    }
-
-    @Override
     public void executeTeleport(UUID player, String world, double x, double y, double z, float yaw, float pitch) {
         Sponge.getServer().getPlayer(player).ifPresent(e -> Sponge.getServer().getWorld(world).ifPresent(w ->
                 e.setLocationSafely(new Location<>(w, x, y, z))
@@ -237,9 +244,5 @@ public class SpongeExecutor extends API implements PlayerAPIExecutor {
     @Override
     public void executeConnect(UUID player, UUID target) {
 
-    }
-
-    @Override
-    public void executeSetResourcePack(UUID player, String pack) {
     }
 }

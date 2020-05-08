@@ -266,6 +266,11 @@ public enum Version {
         return getId() == 1 || getId() == 3;
     }
 
+    public boolean isSponge() {
+        return this == SPONGEFORGE_1_10_2 || this == SPONGEFORGE_1_11_2 || this == SPONGEFORGE_1_12_2
+                || this == SPONGEVANILLA_1_11_2 || this == SPONGEVANILLA_1_12_2;
+    }
+
     public static void downloadVersion(Version version) {
         DownloadHelper.downloadAndDisconnect(version.url, "reformcloud/files/" + format(version));
     }

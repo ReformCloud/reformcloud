@@ -3,10 +3,10 @@ package systems.reformcloud.reformcloud2.commands.application;
 import com.google.gson.reflect.TypeToken;
 import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.commands.application.listener.ProcessInclusionHandler;
-import systems.reformcloud.reformcloud2.commands.application.packet.in.PacketInGetCommandsConfig;
-import systems.reformcloud.reformcloud2.commands.application.packet.out.PacketOutReleaseCommandsConfig;
+import systems.reformcloud.reformcloud2.commands.application.packet.PacketGetCommandsConfig;
 import systems.reformcloud.reformcloud2.commands.application.update.CommandAddonUpdater;
 import systems.reformcloud.reformcloud2.commands.config.CommandsConfig;
+import systems.reformcloud.reformcloud2.commands.plugin.packet.PacketReleaseCommandsConfig;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.application.api.Application;
 import systems.reformcloud.reformcloud2.executor.api.common.application.updater.ApplicationUpdateRepository;
@@ -52,14 +52,14 @@ public class ReformCloudApplication extends Application {
 
         commandsConfig = JsonConfiguration.read(path).get("config", new TypeToken<CommandsConfig>() {
         });
-        ExecutorAPI.getInstance().getPacketHandler().registerHandler(new PacketInGetCommandsConfig());
+        ExecutorAPI.getInstance().getPacketHandler().registerHandler(PacketGetCommandsConfig.class);
 
-        DefaultChannelManager.INSTANCE.getAllSender().forEach(e -> e.sendPacket(new PacketOutReleaseCommandsConfig(commandsConfig)));
+        DefaultChannelManager.INSTANCE.getAllSender().forEach(e -> e.sendPacket(new PacketReleaseCommandsConfig(commandsConfig)));
     }
 
     @Override
     public void onPreDisable() {
-        ExecutorAPI.getInstance().getPacketHandler().unregisterNetworkHandlers(NetworkUtil.EXTERNAL_BUS + 1);
+        ExecutorAPI.getInstance().getPacketHandler().unregisterNetworkHandler(NetworkUtil.EXTERNAL_BUS + 1);
     }
 
     @Nullable

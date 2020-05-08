@@ -1,8 +1,15 @@
 package systems.reformcloud.reformcloud2.signs.util.sign;
 
+import org.jetbrains.annotations.NotNull;
+import systems.reformcloud.reformcloud2.executor.api.common.network.SerializableObject;
+import systems.reformcloud.reformcloud2.executor.api.common.network.data.ProtocolBuffer;
+
 import java.util.Objects;
 
-public class CloudLocation {
+public class CloudLocation implements SerializableObject {
+
+    public CloudLocation() {
+    }
 
     public CloudLocation(String world, String group, double x, double y, double z, float yaw, float pitch) {
         this.world = world;
@@ -14,19 +21,19 @@ public class CloudLocation {
         this.pitch = pitch;
     }
 
-    private final String world;
+    private String world;
 
-    private final String group;
+    private String group;
 
-    private final double x;
+    private double x;
 
-    private final double y;
+    private double y;
 
-    private final double z;
+    private double z;
 
-    private final float yaw;
+    private float yaw;
 
-    private final float pitch;
+    private float pitch;
 
     public String getWorld() {
         return world;
@@ -68,5 +75,27 @@ public class CloudLocation {
                 Float.compare(that.getPitch(), getPitch()) == 0 &&
                 Objects.equals(getWorld(), that.getWorld()) &&
                 Objects.equals(getGroup(), that.getGroup());
+    }
+
+    @Override
+    public void write(@NotNull ProtocolBuffer buffer) {
+        buffer.writeString(this.world);
+        buffer.writeString(this.group);
+        buffer.writeDouble(this.x);
+        buffer.writeDouble(this.y);
+        buffer.writeDouble(this.z);
+        buffer.writeFloat(this.yaw);
+        buffer.writeFloat(this.pitch);
+    }
+
+    @Override
+    public void read(@NotNull ProtocolBuffer buffer) {
+        this.world = buffer.readString();
+        this.group = buffer.readString();
+        this.x = buffer.readDouble();
+        this.y = buffer.readDouble();
+        this.z = buffer.readDouble();
+        this.yaw = buffer.readFloat();
+        this.pitch = buffer.readFloat();
     }
 }

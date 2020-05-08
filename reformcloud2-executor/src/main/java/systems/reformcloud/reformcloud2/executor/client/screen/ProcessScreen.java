@@ -1,8 +1,8 @@
 package systems.reformcloud.reformcloud2.executor.client.screen;
 
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
-import systems.reformcloud.reformcloud2.executor.client.network.packet.out.ClientPacketOutAddScreenLine;
-import systems.reformcloud.reformcloud2.executor.client.network.packet.out.ClientPacketOutScreenEnabled;
+import systems.reformcloud.reformcloud2.executor.controller.network.packet.ClientPacketAddScreenLine;
+import systems.reformcloud.reformcloud2.executor.controller.network.packet.ClientPacketScreenEnabled;
 
 import java.util.Queue;
 import java.util.UUID;
@@ -33,7 +33,7 @@ public final class ProcessScreen {
 
         queue.add(line);
         if (enabled) {
-            DefaultChannelManager.INSTANCE.get("Controller").ifPresent(packetSender -> packetSender.sendPacket(new ClientPacketOutAddScreenLine(uuid, line)));
+            DefaultChannelManager.INSTANCE.get("Controller").ifPresent(packetSender -> packetSender.sendPacket(new ClientPacketAddScreenLine(uuid, line)));
         }
     }
 
@@ -41,7 +41,11 @@ public final class ProcessScreen {
         this.enabled = !this.enabled;
 
         if (this.enabled) {
-            DefaultChannelManager.INSTANCE.get("Controller").ifPresent(packetSender -> packetSender.sendPacket(new ClientPacketOutScreenEnabled(uuid, queue)));
+            DefaultChannelManager.INSTANCE.get("Controller").ifPresent(packetSender -> packetSender.sendPacket(new ClientPacketScreenEnabled(uuid, queue)));
         }
+    }
+
+    public Queue<String> getQueue() {
+        return queue;
     }
 }

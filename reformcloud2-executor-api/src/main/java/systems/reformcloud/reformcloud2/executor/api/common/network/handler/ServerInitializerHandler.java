@@ -1,7 +1,9 @@
 package systems.reformcloud.reformcloud2.executor.api.common.network.handler;
 
+import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
+import systems.reformcloud.reformcloud2.executor.api.common.network.NetworkUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.network.challenge.ChallengeAuthHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.NetworkChannelReader;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.netty.PacketDecoder;
@@ -24,6 +26,9 @@ public final class ServerInitializerHandler extends ChannelInitializer<Channel> 
 
     @Override
     protected void initChannel(Channel channel) {
+        channel.config().setAllocator(PooledByteBufAllocator.DEFAULT);
+        channel.config().setWriteBufferWaterMark(NetworkUtil.WATER_MARK);
+
         channel.pipeline()
                 .addLast("deserializer", new LengthDeserializer())
                 .addLast("decoder", new PacketDecoder())

@@ -4,7 +4,8 @@ import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.query.QueryHandler;
-import systems.reformcloud.reformcloud2.executor.api.common.network.packet.query.QueryRequest;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.task.defaults.DefaultTask;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -12,33 +13,40 @@ import java.util.UUID;
 
 public final class DefaultQueryHandler implements QueryHandler {
 
-    private final Map<UUID, QueryRequest<Packet>> waiting = new HashMap<>();
+    private final Map<UUID, Task<Packet>> waiting = new HashMap<>();
 
     @Override
-    public QueryRequest<Packet> getWaitingQuery(UUID uuid) {
+    public Task<Packet> getWaitingQuery(@NotNull UUID uuid) {
         return waiting.remove(uuid);
     }
 
     @Override
-    public boolean hasWaitingQuery(UUID uuid) {
+    public boolean hasWaitingQuery(@NotNull UUID uuid) {
         return waiting.containsKey(uuid);
     }
 
     @NotNull
     @Override
-    public QueryRequest<Packet> sendQueryAsync(PacketSender sender, Packet packet) {
-        this.convertToQuery(packet, UUID.randomUUID());
-        QueryRequest<Packet> queryRequest = new QueryRequest<>();
-        this.waiting.put(packet.queryUniqueID(), queryRequest);
-        sender.sendPacket(packet);
-        return queryRequest;
+    public Task<Packet> sendQueryAsync(@NotNull PacketSender sender, @NotNull Packet packet) {
+        return this.sendQueryAsync(sender, UUID.randomUUID(), packet);
     }
 
     @NotNull
     @Override
-    public Packet convertToQuery(Packet packet, UUID uuid) {
-        packet.setQueryID(uuid);
-        return packet;
+    public Task<Packet> sendQueryAsync(@NotNull PacketSender sender, @NotNull UUID queryUniqueID, @NotNull Packet packet) {
+        Task<Packet> task = new DefaultTask<>();
+
+        this.waiting.put(queryUniqueID, task);
+        packet.setQueryUniqueID(queryUniqueID);
+
+        sender.sendPacket(packet);
+        return task;
+    }
+
+    @Override
+    public void sendQueryResultAsync(@NotNull PacketSender sender, @NotNull UUID queryUniqueID, @NotNull Packet packet) {
+        packet.setQueryUniqueID(queryUniqueID);
+        sender.sendPacket(packet);
     }
 
     @Override

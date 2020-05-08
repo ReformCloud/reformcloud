@@ -1,6 +1,7 @@
 package systems.reformcloud.reformcloud2.executor.api.common.process.running;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.base.Conditions;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
@@ -27,8 +28,10 @@ import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.defaults.DefaultTask;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -36,6 +39,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public abstract class SharedRunningProcess implements RunningProcess {
@@ -44,6 +49,15 @@ public abstract class SharedRunningProcess implements RunningProcess {
      * The lib path which points to the root directory of the cloud
      */
     private static final String LIB_PATH = Paths.get("").toAbsolutePath().toString();
+
+    private static final Pattern IP_PATTERN = Pattern.compile(
+            "(?<!\\d|\\d\\.)" +
+                    "(?:[01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
+                    "(?:[01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
+                    "(?:[01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
+                    "(?:[01]?\\d\\d?|2[0-4]\\d|25[0-5])" +
+                    "(?!\\d|\\.\\d)"
+    );
 
     /**
      * Creates a new shared process
@@ -269,6 +283,20 @@ public abstract class SharedRunningProcess implements RunningProcess {
 
     @NotNull
     @Override
+    public String uploadLog() {
+        String lines = this.getLogLines();
+
+        String result = this.uploadLog0("https://paste.reformcloud.systems", lines);
+        if (result != null) {
+            return result;
+        }
+
+        result = this.uploadLog0("https://just-paste.it", lines);
+        return result == null ? "Unable to upload log" : result;
+    }
+
+    @NotNull
+    @Override
     public ReferencedOptional<Process> getProcess() {
         return ReferencedOptional.build(this.process);
     }
@@ -361,6 +389,65 @@ public abstract class SharedRunningProcess implements RunningProcess {
         ).awaitUninterruptedly();
     }
 
+    @Nullable
+    private String uploadLog0(@NotNull String pasteServerUrl, @NotNull String text) {
+        text = "Process: " +
+                this.getProcessInformation().toString() +
+                "\n" +
+                "Running on: " +
+                this.getProcessInformation().getProcessDetail().getParentName() +
+                "/" +
+                this.getProcessInformation().getProcessDetail().getParentUniqueID() +
+                "\n\n" + text;
+
+        try {
+            HttpURLConnection connection = (HttpURLConnection) new URL(pasteServerUrl + "/documents").openConnection();
+            connection.setRequestProperty(
+                    "User-Agent",
+                    "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.95 Safari/537.11"
+            );
+            connection.setRequestMethod("POST");
+            connection.setDoOutput(true);
+            connection.connect();
+
+            try (OutputStream stream = connection.getOutputStream()) {
+                stream.write(text.getBytes(StandardCharsets.UTF_8));
+                stream.flush();
+            }
+
+            if (connection.getResponseCode() != 200) {
+                return null;
+            }
+
+            try (BufferedReader stream = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
+                String lines = stream.lines().collect(Collectors.joining("\n"));
+                return new JsonConfiguration(lines).getString("key");
+            }
+        } catch (final IOException ex) {
+            ex.printStackTrace();
+            return null;
+        }
+    }
+
+    @NotNull
+    private String getLogLines() {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        for (String cachedLogLine : this.getCachedLogLines()) {
+            Matcher matcher = IP_PATTERN.matcher(cachedLogLine);
+            if (matcher.find()) {
+                String ip = matcher.group();
+                stringBuilder.append(cachedLogLine.replace(ip, "***.***.***.***"));
+            } else {
+                stringBuilder.append(cachedLogLine);
+            }
+
+            stringBuilder.append("\n");
+        }
+
+        return stringBuilder.toString();
+    }
+
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof RunningProcess)) {
@@ -375,6 +462,12 @@ public abstract class SharedRunningProcess implements RunningProcess {
     public int hashCode() {
         return this.getProcessInformation().hashCode();
     }
+
+    /**
+     * @return The cached log lines of the current process
+     */
+    @NotNull
+    public abstract Collection<String> getCachedLogLines();
 
     /**
      * Chooses the logical startup for the information and creates all files for the start of the

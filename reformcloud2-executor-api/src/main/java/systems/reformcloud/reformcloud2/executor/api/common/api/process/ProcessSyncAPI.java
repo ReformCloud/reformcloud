@@ -745,14 +745,6 @@ public interface ProcessSyncAPI {
     void executeProcessCommand(@NotNull String name, @NotNull String commandLine);
 
     /**
-     * Gets the global online count
-     *
-     * @param ignoredProxies The ignored proxies
-     * @return The global online count
-     */
-    int getGlobalOnlineCount(@NotNull Collection<String> ignoredProxies);
-
-    /**
      * Iterates through all {@link ProcessInformation}
      *
      * @param action The consumer which will accept by each {@link ProcessInformation}

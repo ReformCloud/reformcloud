@@ -1,8 +1,17 @@
 package systems.reformcloud.reformcloud2.executor.api.common.process;
 
+import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
+import systems.reformcloud.reformcloud2.executor.api.common.network.SerializableObject;
+import systems.reformcloud.reformcloud2.executor.api.common.network.data.ProtocolBuffer;
+
 import java.net.InetSocketAddress;
 
-public final class NetworkInfo {
+public final class NetworkInfo implements SerializableObject {
+
+    @ApiStatus.Internal
+    public NetworkInfo() {
+    }
 
     public NetworkInfo(String host, int port) {
         this.host = host;
@@ -55,5 +64,19 @@ public final class NetworkInfo {
     @Override
     public String toString() {
         return host + ":" + port;
+    }
+
+    @Override
+    public void write(@NotNull ProtocolBuffer buffer) {
+        buffer.writeString(this.host);
+        buffer.writeVarInt(this.port);
+        buffer.writeVarLong(this.connectTime);
+    }
+
+    @Override
+    public void read(@NotNull ProtocolBuffer buffer) {
+        this.host = buffer.readString();
+        this.port = buffer.readVarInt();
+        this.connectTime = buffer.readVarLong();
     }
 }

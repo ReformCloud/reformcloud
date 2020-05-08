@@ -4,7 +4,7 @@ import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.plugin.Plugin;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.proxy.bungeecord.listener.BungeeCordListener;
-import systems.reformcloud.reformcloud2.proxy.network.PacketInConfigUpdate;
+import systems.reformcloud.reformcloud2.proxy.network.PacketProxyConfigUpdate;
 import systems.reformcloud.reformcloud2.proxy.plugin.PluginConfigHandler;
 
 public class BungeeCordPlugin extends Plugin {
@@ -17,7 +17,7 @@ public class BungeeCordPlugin extends Plugin {
             ProxyServer.getInstance().getPluginManager().registerListener(this, listener);
             ExecutorAPI.getInstance().getEventManager().registerListener(listener);
 
-            ExecutorAPI.getInstance().getPacketHandler().registerHandler(new PacketInConfigUpdate());
+            ExecutorAPI.getInstance().getPacketHandler().registerHandler(PacketProxyConfigUpdate.class);
         });
     }
 }

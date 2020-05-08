@@ -2,12 +2,16 @@ package systems.reformcloud.reformcloud2.signs.util.sign.config;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import systems.reformcloud.reformcloud2.executor.api.common.network.SerializableObject;
+import systems.reformcloud.reformcloud2.executor.api.common.network.data.ProtocolBuffer;
 import systems.reformcloud.reformcloud2.signs.util.sign.config.util.LayoutContext;
 
-import java.io.Serializable;
 import java.util.List;
 
-public class SignLayout implements Serializable, Cloneable {
+public class SignLayout implements SerializableObject, Cloneable {
+
+    public SignLayout() {
+    }
 
     public SignLayout(
             @NotNull LayoutContext context,
@@ -32,25 +36,25 @@ public class SignLayout implements Serializable, Cloneable {
         this.maintenanceLayout = maintenanceLayout;
     }
 
-    private final LayoutContext context;
+    private LayoutContext context;
 
-    private final String target;
+    private String target;
 
-    private final boolean searchingLayoutWhenFull;
+    private boolean searchingLayoutWhenFull;
 
-    private final boolean showMaintenanceProcessesOnSigns;
+    private boolean showMaintenanceProcessesOnSigns;
 
-    private final List<SignSubLayout> searchingLayouts;
+    private List<SignSubLayout> searchingLayouts;
 
-    private final List<SignSubLayout> waitingForConnectLayout;
+    private List<SignSubLayout> waitingForConnectLayout;
 
-    private final List<SignSubLayout> emptyLayout;
+    private List<SignSubLayout> emptyLayout;
 
-    private final List<SignSubLayout> onlineLayout;
+    private List<SignSubLayout> onlineLayout;
 
-    private final List<SignSubLayout> fullLayout;
+    private List<SignSubLayout> fullLayout;
 
-    private final List<SignSubLayout> maintenanceLayout;
+    private List<SignSubLayout> maintenanceLayout;
 
     public LayoutContext getContext() {
         return context;
@@ -90,5 +94,33 @@ public class SignLayout implements Serializable, Cloneable {
 
     public List<SignSubLayout> getMaintenanceLayout() {
         return maintenanceLayout;
+    }
+
+    @Override
+    public void write(@NotNull ProtocolBuffer buffer) {
+        buffer.writeInt(this.context.ordinal());
+        buffer.writeString(this.target);
+        buffer.writeBoolean(this.searchingLayoutWhenFull);
+        buffer.writeBoolean(this.showMaintenanceProcessesOnSigns);
+        buffer.writeObjects(this.searchingLayouts);
+        buffer.writeObjects(this.waitingForConnectLayout);
+        buffer.writeObjects(this.emptyLayout);
+        buffer.writeObjects(this.onlineLayout);
+        buffer.writeObjects(this.fullLayout);
+        buffer.writeObjects(this.maintenanceLayout);
+    }
+
+    @Override
+    public void read(@NotNull ProtocolBuffer buffer) {
+        this.context = LayoutContext.values()[buffer.readInt()];
+        this.target = buffer.readString();
+        this.searchingLayoutWhenFull = buffer.readBoolean();
+        this.showMaintenanceProcessesOnSigns = buffer.readBoolean();
+        this.searchingLayouts = buffer.readObjects(SignSubLayout.class);
+        this.waitingForConnectLayout = buffer.readObjects(SignSubLayout.class);
+        this.emptyLayout = buffer.readObjects(SignSubLayout.class);
+        this.onlineLayout = buffer.readObjects(SignSubLayout.class);
+        this.fullLayout = buffer.readObjects(SignSubLayout.class);
+        this.maintenanceLayout = buffer.readObjects(SignSubLayout.class);
     }
 }

@@ -7,6 +7,7 @@ import org.jetbrains.annotations.UnmodifiableView;
 import systems.reformcloud.reformcloud2.executor.api.common.process.Player;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 import java.util.UUID;
@@ -18,6 +19,13 @@ import java.util.concurrent.ConcurrentHashMap;
 public final class ProcessPlayerManager {
 
     private final Set<Player> onlinePlayers = ConcurrentHashMap.newKeySet();
+
+    public ProcessPlayerManager() {
+    }
+
+    public ProcessPlayerManager(@NotNull Collection<Player> collection) {
+        this.onlinePlayers.addAll(collection);
+    }
 
     /**
      * @return The current online count of the process

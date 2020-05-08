@@ -8,6 +8,8 @@ import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.PlayerAccessConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.common.network.SerializableObject;
+import systems.reformcloud.reformcloud2.executor.api.common.network.data.ProtocolBuffer;
 import systems.reformcloud.reformcloud2.executor.api.common.plugins.basic.DefaultPlugin;
 import systems.reformcloud.reformcloud2.executor.api.common.process.api.ProcessInclusion;
 import systems.reformcloud.reformcloud2.executor.api.common.process.detail.ProcessDetail;
@@ -16,15 +18,22 @@ import systems.reformcloud.reformcloud2.executor.api.common.process.detail.Proce
 import systems.reformcloud.reformcloud2.executor.api.common.process.event.ProcessInformationConfigureEvent;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.clone.Clone;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public final class ProcessInformation implements Clone<ProcessInformation> {
+public final class ProcessInformation implements Clone<ProcessInformation>, SerializableObject {
 
     public static final TypeToken<ProcessInformation> TYPE = new TypeToken<ProcessInformation>() {
     };
+
+    @ApiStatus.Internal
+    public ProcessInformation() {
+    }
 
     @ApiStatus.Internal
     public ProcessInformation(
@@ -40,17 +49,17 @@ public final class ProcessInformation implements Clone<ProcessInformation> {
         ExecutorAPI.getInstance().getEventManager().callEvent(new ProcessInformationConfigureEvent(this));
     }
 
-    private final ProcessPlayerManager processPlayerManager = new ProcessPlayerManager();
+    private ProcessPlayerManager processPlayerManager = new ProcessPlayerManager();
 
-    private final ProcessDetail processDetail;
+    private ProcessDetail processDetail;
 
-    private final NetworkInfo networkInfo;
+    private NetworkInfo networkInfo;
 
-    private final JsonConfiguration extra;
+    private JsonConfiguration extra;
 
-    private final List<DefaultPlugin> plugins = new CopyOnWriteArrayList<>();
+    private List<DefaultPlugin> plugins = new CopyOnWriteArrayList<>();
 
-    private final Collection<ProcessInclusion> preInclusions;
+    private Collection<ProcessInclusion> preInclusions;
 
     private ProcessGroup processGroup;
 
@@ -186,5 +195,33 @@ public final class ProcessInformation implements Clone<ProcessInformation> {
     @NotNull
     public String toString() {
         return this.getProcessDetail().getName() + "/" + getProcessDetail().getProcessUniqueID();
+    }
+
+    @Override
+    public void write(@NotNull ProtocolBuffer buffer) {
+        buffer.writeObjects(this.processPlayerManager.getOnlinePlayers());
+        buffer.writeObject(this.processDetail);
+        buffer.writeObject(this.networkInfo);
+        buffer.writeObjects(this.plugins);
+        buffer.writeObjects(this.preInclusions);
+        buffer.writeObject(this.processGroup);
+        buffer.writeArray(this.extra.toPrettyBytes());
+    }
+
+    @Override
+    public void read(@NotNull ProtocolBuffer buffer) {
+        this.processPlayerManager = new ProcessPlayerManager(buffer.readObjects(Player.class));
+        this.processDetail = buffer.readObject(ProcessDetail.class);
+        this.networkInfo = buffer.readObject(NetworkInfo.class);
+        this.plugins = buffer.readObjects(DefaultPlugin.class);
+        this.preInclusions = buffer.readObjects(ProcessInclusion.class);
+        this.processGroup = buffer.readObject(ProcessGroup.class);
+
+        try (InputStream stream = new ByteArrayInputStream(buffer.readArray())) {
+            this.extra = new JsonConfiguration(stream);
+        } catch (final IOException ex) {
+            ex.printStackTrace();
+            this.extra = new JsonConfiguration();
+        }
     }
 }

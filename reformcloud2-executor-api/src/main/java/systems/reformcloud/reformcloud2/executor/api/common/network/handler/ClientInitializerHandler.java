@@ -25,10 +25,10 @@ public final class ClientInitializerHandler extends ChannelInitializer<Channel> 
     @Override
     protected void initChannel(Channel channel) {
         channel.pipeline()
-                .addLast("deserializer", new LengthDeserializer())
-                .addLast("decoder", new PacketDecoder())
-                .addLast("serializer", new LengthSerializer())
-                .addLast("encoder", new PacketEncoder())
+                .addLast("decoder", new LengthDeserializer())
+                .addLast("packet-decoder", new PacketDecoder())
+                .addLast("encoder", new LengthSerializer())
+                .addLast("packet-encoder", new PacketEncoder())
                 .addLast("handler", new ChannelReaderHelper(supplier.get(), challengeAuthHandler));
     }
 }

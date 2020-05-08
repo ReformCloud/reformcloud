@@ -2,10 +2,11 @@ package systems.reformcloud.reformcloud2.executor.api.common.network.challenge.s
 
 import io.netty.channel.ChannelHandlerContext;
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.network.challenge.ChallengeAuthHandler;
+import systems.reformcloud.reformcloud2.executor.api.common.network.challenge.packet.client.PacketOutClientChallengeRequest;
+import systems.reformcloud.reformcloud2.executor.api.common.network.challenge.packet.client.PacketOutClientChallengeResponse;
+import systems.reformcloud.reformcloud2.executor.api.common.network.challenge.packet.server.PacketOutServerChallengeStart;
 import systems.reformcloud.reformcloud2.executor.api.common.network.challenge.provider.ChallengeProvider;
-import systems.reformcloud.reformcloud2.executor.api.common.network.packet.JsonPacket;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 
 import java.util.function.BiConsumer;
@@ -13,13 +14,13 @@ import java.util.function.Function;
 
 public class ServerChallengeAuthHandler implements ChallengeAuthHandler {
 
-    public ServerChallengeAuthHandler(ChallengeProvider provider, BiConsumer<ChannelHandlerContext, Packet> afterSuccess) {
+    public ServerChallengeAuthHandler(ChallengeProvider provider, BiConsumer<ChannelHandlerContext, PacketOutClientChallengeResponse> afterSuccess) {
         this.provider = provider;
         this.afterSuccess = afterSuccess;
         this.name = ignored -> "Controller";
     }
 
-    public ServerChallengeAuthHandler(ChallengeProvider provider, BiConsumer<ChannelHandlerContext, Packet> afterSuccess, Function<String, String> name) {
+    public ServerChallengeAuthHandler(ChallengeProvider provider, BiConsumer<ChannelHandlerContext, PacketOutClientChallengeResponse> afterSuccess, Function<String, String> name) {
         this.provider = provider;
         this.afterSuccess = afterSuccess;
         this.name = name;
@@ -29,34 +30,25 @@ public class ServerChallengeAuthHandler implements ChallengeAuthHandler {
 
     private final ChallengeProvider provider;
 
-    private final BiConsumer<ChannelHandlerContext, Packet> afterSuccess;
+    private final BiConsumer<ChannelHandlerContext, PacketOutClientChallengeResponse> afterSuccess;
 
     @Override
     public boolean handle(@NotNull ChannelHandlerContext channelHandlerContext, @NotNull Packet input, @NotNull String name) {
-        if (input.packetID() == -512) {
-            // request of challenge
+        if (input instanceof PacketOutClientChallengeRequest) {
             byte[] challenge = this.provider.createChallenge(name);
             if (challenge == null) {
                 channelHandlerContext.channel().close().syncUninterruptibly();
                 throw new RuntimeException("Unexpected issue while generating challenge for sender " + name);
             }
 
-            channelHandlerContext.channel().writeAndFlush(new JsonPacket(
-                    -512, new JsonConfiguration().add("challenge", challenge).add("name", this.name.apply(name))
-            )).syncUninterruptibly();
+            channelHandlerContext.channel().writeAndFlush(new PacketOutServerChallengeStart(this.name.apply(name), challenge)).syncUninterruptibly();
             return false;
         }
 
-        if (input.packetID() == -511) {
-            // result of challenge
-            String challengeResult = input.content().getOrDefault("result", (String) null);
-            if (challengeResult == null) {
-                channelHandlerContext.channel().close().syncUninterruptibly();
-                return false;
-            }
-
-            if (this.provider.checkResult(name, challengeResult)) {
-                this.afterSuccess.accept(channelHandlerContext, input);
+        if (input instanceof PacketOutClientChallengeResponse) {
+            PacketOutClientChallengeResponse response = (PacketOutClientChallengeResponse) input;
+            if (this.provider.checkResult(name, response.getHashedResult())) {
+                this.afterSuccess.accept(channelHandlerContext, response);
                 return true;
             }
 
