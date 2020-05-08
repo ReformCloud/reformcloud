@@ -48,13 +48,16 @@ import systems.reformcloud.reformcloud2.executor.node.network.packet.out.PacketO
 import systems.reformcloud.reformcloud2.executor.node.process.basic.BasicLocalNodeProcess;
 import systems.reformcloud.reformcloud2.executor.node.process.startup.LocalProcessQueue;
 
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 public final class LocalNodeProcessManager implements NodeProcessManager {
 
-    private final Set<ProcessInformation> information = ConcurrentHashMap.newKeySet();
+    private final Collection<ProcessInformation> information = new CopyOnWriteArrayList<>();
 
     @Nullable
     @Override
