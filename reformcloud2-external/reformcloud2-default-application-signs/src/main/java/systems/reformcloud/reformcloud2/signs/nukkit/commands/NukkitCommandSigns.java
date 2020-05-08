@@ -24,12 +24,12 @@
  */
 package systems.reformcloud.reformcloud2.signs.nukkit.commands;
 
-import cn.nukkit.Player;
 import cn.nukkit.block.Block;
-import cn.nukkit.blockentity.BlockEntitySign;
+import cn.nukkit.blockentity.Sign;
 import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandExecutor;
 import cn.nukkit.command.CommandSender;
+import cn.nukkit.player.Player;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.signs.nukkit.adapter.NukkitSignSystemAdapter;
 import systems.reformcloud.reformcloud2.signs.util.SignSystemAdapter;
@@ -53,12 +53,12 @@ public class NukkitCommandSigns implements CommandExecutor {
             }
 
             Block block = player.getTargetBlock(15);
-            if (block == null || !(block.getLevel().getBlockEntity(block.getLocation()) instanceof BlockEntitySign)) {
+            if (block == null || !(block.getLevel().getBlockEntity(block.getPosition()) instanceof Sign)) {
                 commandSender.sendMessage("§cThe target Block is not a sign");
                 return true;
             }
 
-            BlockEntitySign entitySign = (BlockEntitySign) block.getLevel().getBlockEntity(block.getLocation());
+            Sign entitySign = (Sign) block.getLevel().getBlockEntity(block.getPosition());
             CloudSign cloudSign = signSystemAdapter.getSignAt(signSystemAdapter.getSignConverter().to(entitySign));
             if (cloudSign != null) {
                 commandSender.sendMessage("§cThe sign already exists");
@@ -72,12 +72,12 @@ public class NukkitCommandSigns implements CommandExecutor {
 
         if (strings.length == 1 && strings[0].equalsIgnoreCase("delete")) {
             Block block = player.getTargetBlock(15);
-            if (block == null || !(block.getLevel().getBlockEntity(block.getLocation()) instanceof BlockEntitySign)) {
+            if (block == null || !(block.getLevel().getBlockEntity(block.getPosition()) instanceof Sign)) {
                 commandSender.sendMessage("§cThe target Block is not a sign");
                 return true;
             }
 
-            BlockEntitySign entitySign = (BlockEntitySign) block.getLevel().getBlockEntity(block.getLocation());
+            Sign entitySign = (Sign) block.getLevel().getBlockEntity(block.getPosition());
             CloudSign cloudSign = signSystemAdapter.getSignAt(signSystemAdapter.getSignConverter().to(entitySign));
             if (cloudSign == null) {
                 commandSender.sendMessage("§cThe sign does not exists");

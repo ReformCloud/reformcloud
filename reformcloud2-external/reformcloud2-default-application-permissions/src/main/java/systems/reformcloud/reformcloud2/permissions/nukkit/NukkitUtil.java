@@ -22,25 +22,39 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.permissions.nukkit.listeners;
+package systems.reformcloud.reformcloud2.permissions.nukkit;
 
-import cn.nukkit.event.EventHandler;
-import cn.nukkit.event.EventPriority;
-import cn.nukkit.event.Listener;
-import cn.nukkit.event.player.PlayerLoginEvent;
-import cn.nukkit.event.player.PlayerQuitEvent;
-import systems.reformcloud.reformcloud2.permissions.PermissionAPI;
-import systems.reformcloud.reformcloud2.permissions.nukkit.NukkitUtil;
+import cn.nukkit.player.Player;
+import org.jetbrains.annotations.NotNull;
+import systems.reformcloud.reformcloud2.executor.api.common.base.Conditions;
+import systems.reformcloud.reformcloud2.permissions.nukkit.permissible.DefaultPermissible;
 
-public class NukkitPermissionListener implements Listener {
+import java.lang.reflect.Field;
 
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void handle(final PlayerLoginEvent event) {
-        NukkitUtil.injectPlayer(event.getPlayer());
+public final class NukkitUtil {
+
+    private NukkitUtil() {
+        throw new UnsupportedOperationException();
     }
 
-    @EventHandler
-    public void handle(final PlayerQuitEvent event) {
-        PermissionAPI.getInstance().getPermissionUtil().handleDisconnect(event.getPlayer().getServerId());
+    private static final Field PERM_FIELD;
+
+    static {
+        try {
+            PERM_FIELD = Player.class.getDeclaredField("perm");
+            PERM_FIELD.setAccessible(true);
+        } catch (final NoSuchFieldException exception) {
+            throw new RuntimeException(exception);
+        }
+    }
+
+    public static void injectPlayer(@NotNull Player player) {
+        Conditions.nonNull(PERM_FIELD);
+
+        try {
+            PERM_FIELD.set(player, new DefaultPermissible(player));
+        } catch (final IllegalAccessException ex) {
+            ex.printStackTrace();
+        }
     }
 }

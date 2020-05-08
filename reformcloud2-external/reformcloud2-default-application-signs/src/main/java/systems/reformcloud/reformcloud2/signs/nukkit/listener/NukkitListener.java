@@ -24,7 +24,7 @@
  */
 package systems.reformcloud.reformcloud2.signs.nukkit.listener;
 
-import cn.nukkit.blockentity.BlockEntitySign;
+import cn.nukkit.blockentity.Sign;
 import cn.nukkit.event.EventHandler;
 import cn.nukkit.event.Listener;
 import cn.nukkit.event.player.PlayerInteractEvent;
@@ -41,18 +41,17 @@ public class NukkitListener implements Listener {
         NukkitSignSystemAdapter signSystemAdapter = NukkitSignSystemAdapter.getInstance();
 
         if (event.getAction().equals(PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK)) {
-            if (event.getBlock().getId() == 68 || event.getBlock().getId() == 63) {
-                if (!(event.getBlock().getLevel().getBlockEntity(event.getBlock().getLocation()) instanceof BlockEntitySign)) {
-                    return;
-                }
-
-                BlockEntitySign sign = (BlockEntitySign) event.getBlock().getLevel().getBlockEntity(event.getBlock().getLocation());
+            if (event.getBlock().getLevel().getBlockEntity(event.getBlock().getPosition()) instanceof Sign) {
+                Sign sign = (Sign) event.getBlock().getLevel().getBlockEntity(event.getBlock().getPosition());
                 CloudSign cloudSign = signSystemAdapter.getSignAt(signSystemAdapter.getSignConverter().to(sign));
                 if (cloudSign == null || !SignSystemAdapter.getInstance().canConnect(cloudSign)) {
                     return;
                 }
 
-                ExecutorAPI.getInstance().getSyncAPI().getPlayerSyncAPI().connect(event.getPlayer().getUniqueId(), cloudSign.getCurrentTarget());
+                ExecutorAPI.getInstance().getSyncAPI().getPlayerSyncAPI().connect(
+                        event.getPlayer().getServerId(),
+                        cloudSign.getCurrentTarget()
+                );
             }
         }
     }
