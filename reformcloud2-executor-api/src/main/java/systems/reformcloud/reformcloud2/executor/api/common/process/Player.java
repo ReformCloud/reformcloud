@@ -24,6 +24,7 @@
  */
 package systems.reformcloud.reformcloud2.executor.api.common.process;
 
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.network.SerializableObject;
 import systems.reformcloud.reformcloud2.executor.api.common.network.data.ProtocolBuffer;
@@ -32,6 +33,10 @@ import java.util.Objects;
 import java.util.UUID;
 
 public final class Player implements Comparable<Player>, SerializableObject {
+
+    @ApiStatus.Internal
+    public Player() {
+    }
 
     public Player(@NotNull UUID uniqueID, @NotNull String name) {
         this.uniqueID = uniqueID;
