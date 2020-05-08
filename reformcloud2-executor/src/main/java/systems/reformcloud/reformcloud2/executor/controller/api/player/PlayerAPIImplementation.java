@@ -1,3 +1,27 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) ReformCloud-Team
+ * Copyright (c) contributors
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 package systems.reformcloud.reformcloud2.executor.controller.api.player;
 
 import org.jetbrains.annotations.NotNull;
@@ -9,10 +33,8 @@ import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.defaults.DefaultTask;
 import systems.reformcloud.reformcloud2.executor.api.controller.process.ProcessManager;
-import systems.reformcloud.reformcloud2.executor.controller.network.packets.out.api.ControllerAPIAction;
+import systems.reformcloud.reformcloud2.executor.api.network.api.*;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.UUID;
 
 public class PlayerAPIImplementation implements PlayerAsyncAPI, PlayerSyncAPI {
@@ -30,10 +52,9 @@ public class PlayerAPIImplementation implements PlayerAsyncAPI, PlayerSyncAPI {
         Task.EXECUTOR.execute(() -> {
             ProcessInformation processInformation = getPlayerOnProxy(player);
             if (processInformation != null) {
-                DefaultChannelManager.INSTANCE.get(processInformation.getProcessDetail().getName()).ifPresent(packetSender -> packetSender.sendPacket(new ControllerAPIAction(
-                        ControllerAPIAction.APIAction.SEND_MESSAGE,
-                        Arrays.asList(player, message)
-                )));
+                DefaultChannelManager.INSTANCE
+                        .get(processInformation.getProcessDetail().getName())
+                        .ifPresent(e -> e.sendPacket(new PacketAPISendMessage(player, message)));
             }
             task.complete(null);
         });
@@ -47,10 +68,9 @@ public class PlayerAPIImplementation implements PlayerAsyncAPI, PlayerSyncAPI {
         Task.EXECUTOR.execute(() -> {
             ProcessInformation processInformation = getPlayerOnProxy(player);
             if (processInformation != null) {
-                DefaultChannelManager.INSTANCE.get(processInformation.getProcessDetail().getName()).ifPresent(packetSender -> packetSender.sendPacket(new ControllerAPIAction(
-                        ControllerAPIAction.APIAction.KICK_PLAYER,
-                        Arrays.asList(player, message)
-                )));
+                DefaultChannelManager.INSTANCE
+                        .get(processInformation.getProcessDetail().getName())
+                        .ifPresent(e -> e.sendPacket(new PacketAPIKickPlayer(player, message)));
             }
             task.complete(null);
         });
@@ -64,10 +84,9 @@ public class PlayerAPIImplementation implements PlayerAsyncAPI, PlayerSyncAPI {
         Task.EXECUTOR.execute(() -> {
             ProcessInformation processInformation = getPlayerOnServer(player);
             if (processInformation != null) {
-                DefaultChannelManager.INSTANCE.get(processInformation.getProcessDetail().getName()).ifPresent(packetSender -> packetSender.sendPacket(new ControllerAPIAction(
-                        ControllerAPIAction.APIAction.KICK_PLAYER,
-                        Arrays.asList(player, message)
-                )));
+                DefaultChannelManager.INSTANCE
+                        .get(processInformation.getProcessDetail().getName())
+                        .ifPresent(e -> e.sendPacket(new PacketAPIKickPlayer(player, message)));
             }
             task.complete(null);
         });
@@ -81,10 +100,9 @@ public class PlayerAPIImplementation implements PlayerAsyncAPI, PlayerSyncAPI {
         Task.EXECUTOR.execute(() -> {
             ProcessInformation processInformation = getPlayerOnServer(player);
             if (processInformation != null) {
-                DefaultChannelManager.INSTANCE.get(processInformation.getProcessDetail().getName()).ifPresent(packetSender -> packetSender.sendPacket(new ControllerAPIAction(
-                        ControllerAPIAction.APIAction.PLAY_SOUND,
-                        Arrays.asList(player, sound, f1, f2)
-                )));
+                DefaultChannelManager.INSTANCE
+                        .get(processInformation.getProcessDetail().getName())
+                        .ifPresent(e -> e.sendPacket(new PacketAPIPlaySound(player, sound, f1, f2)));
             }
             task.complete(null);
         });
@@ -98,10 +116,9 @@ public class PlayerAPIImplementation implements PlayerAsyncAPI, PlayerSyncAPI {
         Task.EXECUTOR.execute(() -> {
             ProcessInformation processInformation = getPlayerOnProxy(player);
             if (processInformation != null) {
-                DefaultChannelManager.INSTANCE.get(processInformation.getProcessDetail().getName()).ifPresent(packetSender -> packetSender.sendPacket(new ControllerAPIAction(
-                        ControllerAPIAction.APIAction.SEND_TITLE,
-                        Arrays.asList(player, title, subTitle, fadeIn, stay, fadeOut)
-                )));
+                DefaultChannelManager.INSTANCE
+                        .get(processInformation.getProcessDetail().getName())
+                        .ifPresent(e -> e.sendPacket(new PacketAPISendTitle(player, title, subTitle, fadeIn, stay, fadeOut)));
             }
             task.complete(null);
         });
@@ -115,44 +132,9 @@ public class PlayerAPIImplementation implements PlayerAsyncAPI, PlayerSyncAPI {
         Task.EXECUTOR.execute(() -> {
             ProcessInformation processInformation = getPlayerOnServer(player);
             if (processInformation != null) {
-                DefaultChannelManager.INSTANCE.get(processInformation.getProcessDetail().getName()).ifPresent(packetSender -> packetSender.sendPacket(new ControllerAPIAction(
-                        ControllerAPIAction.APIAction.PLAY_ENTITY_EFFECT,
-                        Arrays.asList(player, entityEffect)
-                )));
-            }
-            task.complete(null);
-        });
-        return task;
-    }
-
-    @NotNull
-    @Override
-    public <T> Task<Void> playEffectAsync(@NotNull UUID player, @NotNull String effect, T data) {
-        Task<Void> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> {
-            ProcessInformation processInformation = getPlayerOnProxy(player);
-            if (processInformation != null) {
-                DefaultChannelManager.INSTANCE.get(processInformation.getProcessDetail().getName()).ifPresent(packetSender -> packetSender.sendPacket(new ControllerAPIAction(
-                        ControllerAPIAction.APIAction.PLAY_EFFECT,
-                        Arrays.asList(player, effect, data)
-                )));
-            }
-            task.complete(null);
-        });
-        return task;
-    }
-
-    @NotNull
-    @Override
-    public Task<Void> respawnAsync(@NotNull UUID player) {
-        Task<Void> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> {
-            ProcessInformation processInformation = getPlayerOnServer(player);
-            if (processInformation != null) {
-                DefaultChannelManager.INSTANCE.get(processInformation.getProcessDetail().getName()).ifPresent(packetSender -> packetSender.sendPacket(new ControllerAPIAction(
-                        ControllerAPIAction.APIAction.RESPAWN,
-                        Collections.singletonList(player)
-                )));
+                DefaultChannelManager.INSTANCE
+                        .get(processInformation.getProcessDetail().getName())
+                        .ifPresent(e -> e.sendPacket(new PacketAPIPlayEntityEffect(player, entityEffect)));
             }
             task.complete(null);
         });
@@ -166,10 +148,9 @@ public class PlayerAPIImplementation implements PlayerAsyncAPI, PlayerSyncAPI {
         Task.EXECUTOR.execute(() -> {
             ProcessInformation processInformation = getPlayerOnServer(player);
             if (processInformation != null) {
-                DefaultChannelManager.INSTANCE.get(processInformation.getProcessDetail().getName()).ifPresent(packetSender -> packetSender.sendPacket(new ControllerAPIAction(
-                        ControllerAPIAction.APIAction.LOCATION_TELEPORT,
-                        Arrays.asList(player, world, x, y, z, yaw, pitch)
-                )));
+                DefaultChannelManager.INSTANCE
+                        .get(processInformation.getProcessDetail().getName())
+                        .ifPresent(e -> e.sendPacket(new PacketAPITeleportPlayer(player, world, x, y, z, yaw, pitch)));
             }
             task.complete(null);
         });
@@ -183,10 +164,9 @@ public class PlayerAPIImplementation implements PlayerAsyncAPI, PlayerSyncAPI {
         Task.EXECUTOR.execute(() -> {
             ProcessInformation processInformation = getPlayerOnProxy(player);
             if (processInformation != null) {
-                DefaultChannelManager.INSTANCE.get(processInformation.getProcessDetail().getName()).ifPresent(packetSender -> packetSender.sendPacket(new ControllerAPIAction(
-                        ControllerAPIAction.APIAction.CONNECT,
-                        Arrays.asList(player, server)
-                )));
+                DefaultChannelManager.INSTANCE
+                        .get(processInformation.getProcessDetail().getName())
+                        .ifPresent(e -> e.sendPacket(new PacketAPIConnectPlayerToServer(player, server)));
             }
             task.complete(null);
         });
@@ -204,23 +184,6 @@ public class PlayerAPIImplementation implements PlayerAsyncAPI, PlayerSyncAPI {
     public Task<Void> connectAsync(@NotNull UUID player, @NotNull UUID target) {
         ProcessInformation targetServer = getPlayerOnServer(target);
         return connectAsync(player, targetServer);
-    }
-
-    @NotNull
-    @Override
-    public Task<Void> setResourcePackAsync(@NotNull UUID player, @NotNull String pack) {
-        Task<Void> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> {
-            ProcessInformation processInformation = getPlayerOnServer(player);
-            if (processInformation != null) {
-                DefaultChannelManager.INSTANCE.get(processInformation.getProcessDetail().getName()).ifPresent(packetSender -> packetSender.sendPacket(new ControllerAPIAction(
-                        ControllerAPIAction.APIAction.SET_RESOURCE_PACK,
-                        Arrays.asList(player, pack)
-                )));
-            }
-            task.complete(null);
-        });
-        return task;
     }
 
     @Override
@@ -254,16 +217,6 @@ public class PlayerAPIImplementation implements PlayerAsyncAPI, PlayerSyncAPI {
     }
 
     @Override
-    public <T> void playEffect(@NotNull UUID player, @NotNull String effect, T data) {
-        playEffectAsync(player, effect, data).awaitUninterruptedly();
-    }
-
-    @Override
-    public void respawn(@NotNull UUID player) {
-        respawnAsync(player).awaitUninterruptedly();
-    }
-
-    @Override
     public void teleport(@NotNull UUID player, @NotNull String world, double x, double y, double z, float yaw, float pitch) {
         teleportAsync(player, world, x, y, z, yaw, pitch).awaitUninterruptedly();
     }
@@ -281,11 +234,6 @@ public class PlayerAPIImplementation implements PlayerAsyncAPI, PlayerSyncAPI {
     @Override
     public void connect(@NotNull UUID player, @NotNull UUID target) {
         connectAsync(player, target).awaitUninterruptedly();
-    }
-
-    @Override
-    public void setResourcePack(@NotNull UUID player, @NotNull String pack) {
-        setResourcePackAsync(player, pack).awaitUninterruptedly();
     }
 
     private ProcessInformation getPlayerOnProxy(UUID uniqueID) {

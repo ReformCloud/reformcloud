@@ -1,34 +1,50 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) ReformCloud-Team
+ * Copyright (c) contributors
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 package systems.reformcloud.reformcloud2.executor.api.common.network.packet.netty;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
-import systems.reformcloud.reformcloud2.executor.api.common.network.NetworkUtil;
+import systems.reformcloud.reformcloud2.executor.api.common.network.data.DefaultProtocolBuffer;
+import systems.reformcloud.reformcloud2.executor.api.common.network.data.ProtocolBuffer;
+import systems.reformcloud.reformcloud2.executor.api.common.network.exception.SilentNetworkException;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
 
 public final class PacketEncoder extends MessageToByteEncoder<Packet> {
 
     @Override
     protected void encode(ChannelHandlerContext channelHandlerContext, Packet packet, ByteBuf byteBuf) {
         try {
-            byte[] content = write(packet);
+            ProtocolBuffer protocolBuffer = new DefaultProtocolBuffer(byteBuf);
 
-            NetworkUtil.write(byteBuf, packet.packetID());
-            NetworkUtil.write(byteBuf, content.length).writeBytes(content);
-        } catch (final IOException ex) {
-            ex.printStackTrace();
-        }
-    }
+            protocolBuffer.writeInt(packet.getId());
+            protocolBuffer.writeUniqueId(packet.getQueryUniqueID());
 
-    private static byte[] write(Packet packet) throws IOException {
-        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-             ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream)) {
-            packet.write(objectOutputStream);
-            return outputStream.toByteArray();
+            packet.write(protocolBuffer);
+        } catch (final Throwable ex) {
+            new SilentNetworkException(ex).printStackTrace();
         }
     }
 }

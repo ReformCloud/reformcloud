@@ -1,8 +1,31 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) ReformCloud-Team
+ * Copyright (c) contributors
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 package systems.reformcloud.reformcloud2.executor.api.bungee.event;
 
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.api.connection.PendingConnection;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.*;
 import net.md_5.bungee.api.plugin.Listener;
@@ -18,7 +41,10 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.channel.mana
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
-import systems.reformcloud.reformcloud2.executor.api.network.packets.out.*;
+import systems.reformcloud.reformcloud2.executor.api.network.packets.out.APIBungeePacketOutPlayerServerSwitch;
+import systems.reformcloud.reformcloud2.executor.api.network.packets.out.APIPacketOutLogoutPlayer;
+import systems.reformcloud.reformcloud2.executor.api.network.packets.out.APIPacketOutPlayerCommandExecute;
+import systems.reformcloud.reformcloud2.executor.api.network.packets.out.APIPacketOutPlayerLoggedIn;
 
 public final class PlayerListenerHandler implements Listener {
 
@@ -45,6 +71,7 @@ public final class PlayerListenerHandler implements Listener {
         if (!event.isCancelled()) {
             DefaultChannelManager.INSTANCE.get("Controller").ifPresent(sender -> sender.sendPacket(new APIBungeePacketOutPlayerServerSwitch(
                     event.getPlayer().getUniqueId(),
+                    proxiedPlayer.getServer() == null ? null : proxiedPlayer.getServer().getInfo().getName(),
                     event.getTarget().getName()
             )));
             AbsoluteThread.sleep(20);
@@ -57,15 +84,6 @@ public final class PlayerListenerHandler implements Listener {
         if (sender == null) {
             event.setCancelReason(TextComponent.fromLegacyText("§4§lThe current proxy is not connected to the controller"));
             event.setCancelled(true);
-            return;
-        }
-
-        if (API.getInstance().getCurrentProcessInformation().getProcessGroup().getPlayerAccessConfiguration().isOnlyProxyJoin()) {
-            PendingConnection connection = event.getConnection();
-            sender.sendPacket(new APIPacketOutCreateLoginRequest(
-                    connection.getUniqueId(),
-                    connection.getName()
-            ));
         }
     }
 
@@ -149,22 +167,21 @@ public final class PlayerListenerHandler implements Listener {
     public void handle(final PlayerDisconnectEvent event) {
         DefaultChannelManager.INSTANCE.get("Controller").ifPresent(packetSender -> packetSender.sendPacket(new APIPacketOutLogoutPlayer(
                 event.getPlayer().getUniqueId(),
-                event.getPlayer().getName()
+                event.getPlayer().getName(),
+                event.getPlayer().getServer() != null ? event.getPlayer().getServer().getInfo().getName() : null
         )));
 
-        CommonHelper.EXECUTOR.execute(() -> {
-            ProcessInformation current = API.getInstance().getCurrentProcessInformation();
-            if (ProxyServer.getInstance().getOnlineCount() < current.getProcessDetail().getMaxPlayers()
-                    && !current.getProcessDetail().getProcessState().equals(ProcessState.READY)
-                    && !current.getProcessDetail().getProcessState().equals(ProcessState.INVISIBLE)) {
-                current.getProcessDetail().setProcessState(ProcessState.READY);
-            }
+        ProcessInformation current = API.getInstance().getCurrentProcessInformation();
+        if (ProxyServer.getInstance().getOnlineCount() < current.getProcessDetail().getMaxPlayers()
+                && !current.getProcessDetail().getProcessState().equals(ProcessState.READY)
+                && !current.getProcessDetail().getProcessState().equals(ProcessState.INVISIBLE)) {
+            current.getProcessDetail().setProcessState(ProcessState.READY);
+        }
 
-            current.updateRuntimeInformation();
-            current.getProcessPlayerManager().onLogout(event.getPlayer().getUniqueId());
-            BungeeExecutor.getInstance().setThisProcessInformation(current);
-            ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(current);
-        });
+        current.updateRuntimeInformation();
+        current.getProcessPlayerManager().onLogout(event.getPlayer().getUniqueId());
+        BungeeExecutor.getInstance().setThisProcessInformation(current);
+        ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(current);
     }
 
     @EventHandler

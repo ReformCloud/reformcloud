@@ -1,3 +1,27 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) ReformCloud-Team
+ * Copyright (c) contributors
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 package systems.reformcloud.reformcloud2.executor.client;
 
 import org.jetbrains.annotations.NotNull;
@@ -6,7 +30,7 @@ import systems.reformcloud.reformcloud2.executor.api.ExecutorType;
 import systems.reformcloud.reformcloud2.executor.api.client.Client;
 import systems.reformcloud.reformcloud2.executor.api.client.process.ProcessManager;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.common.api.basic.ExternalEventBusHandler;
+import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.ExternalEventBusHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.application.ApplicationLoader;
 import systems.reformcloud.reformcloud2.executor.api.common.application.basic.DefaultApplicationLoader;
 import systems.reformcloud.reformcloud2.executor.api.common.client.basic.DefaultClientRuntimeInformation;
@@ -29,27 +53,24 @@ import systems.reformcloud.reformcloud2.executor.api.common.logger.LoggerBase;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.coloured.ColouredLoggerHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.other.DefaultLoggerHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.challenge.shared.ClientChallengeAuthHandler;
-import systems.reformcloud.reformcloud2.executor.api.common.network.channel.handler.DefaultJsonNetworkHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.common.network.client.DefaultNetworkClient;
 import systems.reformcloud.reformcloud2.executor.api.common.network.client.NetworkClient;
-import systems.reformcloud.reformcloud2.executor.api.common.network.messaging.ProxiedChannelMessageHandler;
+import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.defaults.DefaultPacketHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.handler.PacketHandler;
-import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.system.SystemHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
 import systems.reformcloud.reformcloud2.executor.client.config.ClientConfig;
 import systems.reformcloud.reformcloud2.executor.client.config.ClientExecutorConfig;
 import systems.reformcloud.reformcloud2.executor.client.dump.ClientDumpUtil;
 import systems.reformcloud.reformcloud2.executor.client.network.channel.ClientNetworkChannelReader;
-import systems.reformcloud.reformcloud2.executor.client.packet.out.ClientPacketOutNotifyRuntimeUpdate;
 import systems.reformcloud.reformcloud2.executor.client.process.ProcessQueue;
 import systems.reformcloud.reformcloud2.executor.client.process.basic.DefaultProcessManager;
 import systems.reformcloud.reformcloud2.executor.client.process.listeners.RunningProcessPreparedListener;
+import systems.reformcloud.reformcloud2.executor.client.process.listeners.RunningProcessScreenListener;
 import systems.reformcloud.reformcloud2.executor.client.process.listeners.RunningProcessStoppedListener;
-import systems.reformcloud.reformcloud2.executor.client.screen.ScreenManager;
-import systems.reformcloud.reformcloud2.executor.client.watchdog.WatchdogThread;
+import systems.reformcloud.reformcloud2.executor.controller.network.packet.ClientPacketNotifyRuntimeUpdate;
 
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -71,10 +92,6 @@ public final class ClientExecutor extends Client {
 
     private ClientExecutorConfig clientExecutorConfig;
 
-    private WatchdogThread watchdogThread;
-
-    private ScreenManager screenManager;
-
     private final CommandManager commandManager = new DefaultCommandManager();
 
     private final CommandSource console = new ConsoleCommandSource(commandManager);
@@ -94,6 +111,7 @@ public final class ClientExecutor extends Client {
     ClientExecutor() {
         ExecutorAPI.setInstance(this);
         super.type = ExecutorType.CLIENT;
+        super.loadPacketHandlers();
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             try {
@@ -123,8 +141,13 @@ public final class ClientExecutor extends Client {
             ex.printStackTrace();
         }
 
+        new ExternalEventBusHandler(
+                packetHandler, new DefaultEventManager()
+        );
+
         ExecutorAPI.getInstance().getEventManager().registerListener(new RunningProcessPreparedListener());
         ExecutorAPI.getInstance().getEventManager().registerListener(new RunningProcessStoppedListener());
+        ExecutorAPI.getInstance().getEventManager().registerListener(new RunningProcessScreenListener());
 
         this.clientExecutorConfig = new ClientExecutorConfig();
         this.clientConfig = clientExecutorConfig.getClientConfig();
@@ -143,14 +166,8 @@ public final class ClientExecutor extends Client {
 
         registerNetworkHandlers();
         registerDefaultCommands();
-        new ExternalEventBusHandler(
-                packetHandler, new DefaultEventManager()
-        );
 
         applicationLoader.loadApplications();
-
-        this.watchdogThread = new WatchdogThread();
-        this.screenManager = new ScreenManager();
 
         doConnect();
 
@@ -162,8 +179,9 @@ public final class ClientExecutor extends Client {
     }
 
     private void registerNetworkHandlers() {
-        new Reflections("systems.reformcloud.reformcloud2.executor.client.network.packet.in").getSubTypesOf(DefaultJsonNetworkHandler.class).forEach(packetHandler::registerHandler);
-        this.packetHandler.registerHandler(new ProxiedChannelMessageHandler());
+        new Reflections("systems.reformcloud.reformcloud2.executor.client.network.packet")
+                .getSubTypesOf(Packet.class)
+                .forEach(packetHandler::registerHandler);
     }
 
     private void registerDefaultCommands() {
@@ -205,9 +223,7 @@ public final class ClientExecutor extends Client {
 
     @Override
     public void shutdown() {
-        this.watchdogThread.interrupt();
         this.processQueue.interrupt();
-        this.screenManager.interrupt();
 
         this.packetHandler.clearHandlers();
         this.packetHandler.getQueryHandler().clearQueries();
@@ -243,10 +259,6 @@ public final class ClientExecutor extends Client {
 
     public LoggerBase getLoggerBase() {
         return loggerBase;
-    }
-
-    public ScreenManager getScreenManager() {
-        return screenManager;
     }
 
     public static ClientExecutor getInstance() {
@@ -297,7 +309,7 @@ public final class ClientExecutor extends Client {
                     clientConfig.getUniqueID()
             );
 
-            packetSender.sendPacket(new ClientPacketOutNotifyRuntimeUpdate(information));
+            packetSender.sendPacket(new ClientPacketNotifyRuntimeUpdate(information));
         });
     }
 
@@ -347,7 +359,7 @@ public final class ClientExecutor extends Client {
         return this.networkClient.connect(
                 clientExecutorConfig.getClientConnectionConfig().getHost(),
                 clientExecutorConfig.getClientConnectionConfig().getPort(),
-                () -> new ClientNetworkChannelReader(this.packetHandler),
+                () -> new ClientNetworkChannelReader(),
                 new ClientChallengeAuthHandler(
                         this.clientExecutorConfig.getConnectionKey(),
                         this.clientConfig.getName(),
@@ -367,10 +379,5 @@ public final class ClientExecutor extends Client {
             System.out.println(LanguageManager.get("network-client-connection-lost"));
             doConnect();
         }
-    }
-
-    @Override
-    public ProcessInformation getThisProcessInformation() {
-        return null;
     }
 }

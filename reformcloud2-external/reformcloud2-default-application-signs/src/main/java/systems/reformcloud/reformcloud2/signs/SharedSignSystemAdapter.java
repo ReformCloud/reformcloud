@@ -1,3 +1,27 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) ReformCloud-Team
+ * Copyright (c) contributors
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 package systems.reformcloud.reformcloud2.signs;
 
 import com.google.gson.reflect.TypeToken;
@@ -11,12 +35,12 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packe
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
+import systems.reformcloud.reformcloud2.signs.application.packets.PacketCreateSign;
+import systems.reformcloud.reformcloud2.signs.application.packets.PacketDeleteBulkSigns;
+import systems.reformcloud.reformcloud2.signs.application.packets.PacketDeleteSign;
+import systems.reformcloud.reformcloud2.signs.application.packets.PacketRequestSignLayoutsResult;
 import systems.reformcloud.reformcloud2.signs.listener.CloudListener;
-import systems.reformcloud.reformcloud2.signs.packets.api.in.APIPacketInCreateSign;
-import systems.reformcloud.reformcloud2.signs.packets.api.in.APIPacketInDeleteSign;
-import systems.reformcloud.reformcloud2.signs.packets.api.in.APIPacketInReloadConfig;
-import systems.reformcloud.reformcloud2.signs.packets.api.out.APIPacketOutCreateSign;
-import systems.reformcloud.reformcloud2.signs.packets.api.out.APIPacketOutDeleteSign;
+import systems.reformcloud.reformcloud2.signs.packets.PacketReloadSignConfig;
 import systems.reformcloud.reformcloud2.signs.util.LayoutUtil;
 import systems.reformcloud.reformcloud2.signs.util.SignSystemAdapter;
 import systems.reformcloud.reformcloud2.signs.util.Utils;
@@ -41,9 +65,10 @@ public abstract class SharedSignSystemAdapter<T> implements SignSystemAdapter<T>
 
         ExecutorAPI.getInstance().getEventManager().registerListener(new CloudListener());
         ExecutorAPI.getInstance().getPacketHandler().registerNetworkHandlers(
-                new APIPacketInCreateSign(),
-                new APIPacketInDeleteSign(),
-                new APIPacketInReloadConfig()
+                PacketCreateSign.class,
+                PacketDeleteSign.class,
+                PacketRequestSignLayoutsResult.class,
+                PacketReloadSignConfig.class
         );
 
         this.start();
@@ -138,7 +163,7 @@ public abstract class SharedSignSystemAdapter<T> implements SignSystemAdapter<T>
         }
 
         cloudSign = this.getSignConverter().to(t, group);
-        this.sendPacketToController(new APIPacketOutCreateSign(cloudSign));
+        this.sendPacketToController(new PacketCreateSign(cloudSign));
 
         return cloudSign;
     }
@@ -147,7 +172,7 @@ public abstract class SharedSignSystemAdapter<T> implements SignSystemAdapter<T>
     public void deleteSign(@NotNull CloudLocation location) {
         CloudSign sign = this.getSignAt(location);
         if (sign != null) {
-            this.sendPacketToController(new APIPacketOutDeleteSign(sign));
+            this.sendPacketToController(new PacketDeleteSign(sign));
         }
     }
 
@@ -168,7 +193,7 @@ public abstract class SharedSignSystemAdapter<T> implements SignSystemAdapter<T>
             return;
         }
 
-        this.sendPacketToController(new APIPacketOutDeleteSign(signs));
+        this.sendPacketToController(new PacketDeleteBulkSigns(signs));
     }
 
     @Override
@@ -203,7 +228,7 @@ public abstract class SharedSignSystemAdapter<T> implements SignSystemAdapter<T>
         CloudSign other = Streams.filter(this.signs, e -> e.equals(cloudSign));
 
         this.signs.remove(cloudSign);
-        this.setSignLines(this.getSignConverter().from(cloudSign), EMPTY_SIGN);
+        this.setSignLines(cloudSign, EMPTY_SIGN);
         if (other == null) {
             return;
         }
@@ -236,7 +261,7 @@ public abstract class SharedSignSystemAdapter<T> implements SignSystemAdapter<T>
         }
     }
 
-    protected abstract void setSignLines(@Nullable T t, @NotNull String[] lines);
+    protected abstract void setSignLines(@NotNull CloudSign cloudSign, @NotNull String[] lines);
 
     protected void updateSigns() {
         SignLayout layout = this.getSignLayout();
@@ -324,7 +349,7 @@ public abstract class SharedSignSystemAdapter<T> implements SignSystemAdapter<T>
             copy[i] = this.replaceAll(copy[i], sign.getGroup(), sign.getCurrentTarget());
         }
 
-        this.setSignLines(this.getSignConverter().from(sign), copy);
+        this.setSignLines(sign, copy);
         this.changeBlock(sign, layout);
     }
 

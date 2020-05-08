@@ -1,3 +1,27 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) ReformCloud-Team
+ * Copyright (c) contributors
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 package systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands;
 
 import org.jetbrains.annotations.NotNull;
@@ -14,7 +38,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState
 import systems.reformcloud.reformcloud2.executor.api.common.utility.StringUtil;
 
 import java.util.*;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 import static systems.reformcloud.reformcloud2.executor.api.common.CommonHelper.DECIMAL_FORMAT;
@@ -23,15 +46,12 @@ public final class CommandProcess extends GlobalCommand {
 
     private static final String FORMAT_LIST = " - %s - %d/%d - %s - %s";
 
-    public CommandProcess(@NotNull Function<ProcessInformation, Boolean> screenToggle, @NotNull Consumer<ProcessInformation> copy) {
+    public CommandProcess(@NotNull Function<ProcessInformation, Boolean> screenToggle) {
         super("process", "reformcloud.command.process", "The process management command", "p", "processes");
         this.screenToggle = screenToggle;
-        this.copy = copy;
     }
 
     private final Function<ProcessInformation, Boolean> screenToggle;
-
-    private final Consumer<ProcessInformation> copy;
 
     @Override
     public void describeCommandToSender(@NotNull CommandSource source) {
@@ -99,7 +119,7 @@ public final class CommandProcess extends GlobalCommand {
                     target.getProcessDetail().getTemplate().getName(),
                     target.getProcessDetail().getTemplate().getBackend())
             );
-            copy.accept(target);
+            ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().copyProcess(target);
             return true;
         }
 

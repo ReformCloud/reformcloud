@@ -1,3 +1,27 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) ReformCloud-Team
+ * Copyright (c) contributors
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 package systems.reformcloud.reformcloud2.executor.api.common.process.detail;
 
 import org.jetbrains.annotations.ApiStatus;
@@ -5,6 +29,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Template;
+import systems.reformcloud.reformcloud2.executor.api.common.network.SerializableObject;
+import systems.reformcloud.reformcloud2.executor.api.common.network.data.ProtocolBuffer;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessRuntimeInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState;
 import systems.reformcloud.reformcloud2.executor.api.common.process.event.ProcessDetailConfigureEvent;
@@ -15,7 +41,11 @@ import java.util.UUID;
 /**
  * Holds the details of a process like the unique id or name
  */
-public final class ProcessDetail implements Nameable {
+public final class ProcessDetail implements Nameable, SerializableObject {
+
+    @ApiStatus.Internal
+    public ProcessDetail() {
+    }
 
     /**
      * Creates a new process detail for a process
@@ -31,7 +61,8 @@ public final class ProcessDetail implements Nameable {
      */
     @ApiStatus.Internal
     public ProcessDetail(@NotNull UUID processUniqueID, @NotNull UUID parentUniqueID, @NotNull String parentName,
-                         @NotNull String name, @NotNull String displayName, int id, @NotNull Template template, int maxMemory) {
+                         @NotNull String name, @NotNull String displayName, int id, @NotNull Template template,
+                         int maxMemory, @NotNull ProcessState initialState) {
         this.processUniqueID = processUniqueID;
         this.parentUniqueID = parentUniqueID;
         this.parentName = parentName;
@@ -42,29 +73,32 @@ public final class ProcessDetail implements Nameable {
         this.maxMemory = maxMemory;
         this.creationTime = System.currentTimeMillis();
 
+        this.initialState = initialState;
         this.processState = ProcessState.CREATED;
         this.processRuntimeInformation = ProcessRuntimeInformation.empty();
 
         ExecutorAPI.getInstance().getEventManager().callEvent(new ProcessDetailConfigureEvent(this));
     }
 
-    private final UUID processUniqueID;
+    private UUID processUniqueID;
 
-    private final UUID parentUniqueID;
+    private UUID parentUniqueID;
 
-    private final String parentName;
+    private String parentName;
 
-    private final String name;
+    private String name;
 
-    private final String displayName;
+    private String displayName;
 
-    private final int id;
+    private int id;
 
-    private final Template template;
+    private Template template;
 
-    private final int maxMemory;
+    private int maxMemory;
 
-    private final long creationTime;
+    private long creationTime;
+
+    private ProcessState initialState;
 
     private ProcessState processState;
 
@@ -145,6 +179,14 @@ public final class ProcessDetail implements Nameable {
     }
 
     /**
+     * @return The initial state which should get used after the connect of a process
+     */
+    @NotNull
+    public ProcessState getInitialState() {
+        return initialState;
+    }
+
+    /**
      * @return The current process state of the process
      */
     @NotNull
@@ -212,5 +254,51 @@ public final class ProcessDetail implements Nameable {
      */
     public void setProcessRuntimeInformation(@NotNull ProcessRuntimeInformation processRuntimeInformation) {
         this.processRuntimeInformation = processRuntimeInformation;
+    }
+
+    @Override
+    public void write(@NotNull ProtocolBuffer buffer) {
+        buffer.writeUniqueId(this.processUniqueID);
+        buffer.writeString(this.name);
+        buffer.writeString(this.displayName);
+        buffer.writeVarInt(this.id);
+
+        buffer.writeUniqueId(this.parentUniqueID);
+        buffer.writeString(this.parentName);
+
+        buffer.writeObject(this.template);
+        buffer.writeObject(this.processRuntimeInformation);
+
+        buffer.writeInt(this.maxMemory);
+        buffer.writeLong(this.creationTime);
+
+        buffer.writeVarInt(this.processState.ordinal());
+        buffer.writeVarInt(this.initialState.ordinal());
+
+        buffer.writeInt(this.maxPlayers);
+        buffer.writeString(this.messageOfTheDay);
+    }
+
+    @Override
+    public void read(@NotNull ProtocolBuffer buffer) {
+        this.processUniqueID = buffer.readUniqueId();
+        this.name = buffer.readString();
+        this.displayName = buffer.readString();
+        this.id = buffer.readVarInt();
+
+        this.parentUniqueID = buffer.readUniqueId();
+        this.parentName = buffer.readString();
+
+        this.template = buffer.readObject(Template.class);
+        this.processRuntimeInformation = buffer.readObject(ProcessRuntimeInformation.class);
+
+        this.maxMemory = buffer.readInt();
+        this.creationTime = buffer.readLong();
+
+        this.processState = ProcessState.values()[buffer.readVarInt()];
+        this.initialState = ProcessState.values()[buffer.readVarInt()];
+
+        this.maxPlayers = buffer.readInt();
+        this.messageOfTheDay = buffer.readString();
     }
 }

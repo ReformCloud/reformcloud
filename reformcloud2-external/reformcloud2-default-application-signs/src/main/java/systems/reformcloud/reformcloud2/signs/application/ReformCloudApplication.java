@@ -1,3 +1,27 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) ReformCloud-Team
+ * Copyright (c) contributors
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 package systems.reformcloud.reformcloud2.signs.application;
 
 import com.google.gson.reflect.TypeToken;
@@ -10,12 +34,12 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.channel.mana
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.system.SystemHelper;
 import systems.reformcloud.reformcloud2.signs.application.listener.ProcessInclusionHandler;
-import systems.reformcloud.reformcloud2.signs.application.packets.in.PacketInCreateSign;
-import systems.reformcloud.reformcloud2.signs.application.packets.in.PacketInDeleteSign;
-import systems.reformcloud.reformcloud2.signs.application.packets.in.PacketInGetSignConfig;
-import systems.reformcloud.reformcloud2.signs.application.packets.out.PacketOutReloadConfig;
+import systems.reformcloud.reformcloud2.signs.application.packets.PacketCreateSign;
+import systems.reformcloud.reformcloud2.signs.application.packets.PacketDeleteBulkSigns;
+import systems.reformcloud.reformcloud2.signs.application.packets.PacketDeleteSign;
+import systems.reformcloud.reformcloud2.signs.application.packets.PacketRequestSignLayouts;
 import systems.reformcloud.reformcloud2.signs.application.updater.SignsUpdater;
-import systems.reformcloud.reformcloud2.signs.packets.PacketUtil;
+import systems.reformcloud.reformcloud2.signs.packets.PacketReloadSignConfig;
 import systems.reformcloud.reformcloud2.signs.util.SignSystemAdapter;
 import systems.reformcloud.reformcloud2.signs.util.sign.CloudSign;
 import systems.reformcloud.reformcloud2.signs.util.sign.config.SignConfig;
@@ -61,21 +85,15 @@ public class ReformCloudApplication extends Application {
         }
 
         ExecutorAPI.getInstance().getPacketHandler().registerNetworkHandlers(
-                new PacketInCreateSign(),
-                new PacketInDeleteSign(),
-                new PacketInGetSignConfig()
+                PacketCreateSign.class,
+                PacketDeleteSign.class,
+                PacketDeleteBulkSigns.class,
+                PacketRequestSignLayouts.class
         );
 
         databaseEntry = ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().find(SignSystemAdapter.table, "signs", null);
         signConfig = ConfigHelper.read(dataFolder().getPath());
-        DefaultChannelManager.INSTANCE.getAllSender().forEach(e -> e.sendPacket(new PacketOutReloadConfig(signConfig)));
-    }
-
-    @Override
-    public void onDisable() {
-        ExecutorAPI.getInstance().getPacketHandler().unregisterNetworkHandlers(PacketUtil.SIGN_BUS + 1);
-        ExecutorAPI.getInstance().getPacketHandler().unregisterNetworkHandlers(PacketUtil.SIGN_BUS + 2);
-        ExecutorAPI.getInstance().getPacketHandler().unregisterNetworkHandlers(PacketUtil.SIGN_BUS + 3);
+        DefaultChannelManager.INSTANCE.getAllSender().forEach(e -> e.sendPacket(new PacketReloadSignConfig(signConfig)));
     }
 
     @Nullable

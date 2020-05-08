@@ -1,5 +1,30 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) ReformCloud-Team
+ * Copyright (c) contributors
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 package systems.reformcloud.reformcloud2.executor.api.common.database.basic.drivers.mongo;
 
+import com.google.gson.Gson;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 import org.bson.Document;
@@ -21,6 +46,8 @@ public class MongoDatabaseReader implements DatabaseReader {
     private static final String KEY_NAME = "_key";
 
     private static final String ID_NAME = "_identifier";
+
+    private static final Gson GSON = new JsonConfiguration().getGson();
 
     MongoDatabaseReader(String table, Database<MongoDatabase> parent) {
         this.table = table;
@@ -51,7 +78,7 @@ public class MongoDatabaseReader implements DatabaseReader {
             Document document = this.parent.get().getCollection(table).find(Filters.eq(ID_NAME, identifier)).first();
             if (document == null) {
                 data.add(KEY_NAME, key).add(ID_NAME, identifier != null ? identifier : UUID.randomUUID().toString());
-                this.parent.get().getCollection(table).insertOne(JsonConfiguration.GSON.get().fromJson(data.toPrettyString(), Document.class));
+                this.parent.get().getCollection(table).insertOne(GSON.fromJson(data.toPrettyString(), Document.class));
                 task.complete(data);
             } else {
                 task.complete(new JsonConfiguration(document.toJson()));

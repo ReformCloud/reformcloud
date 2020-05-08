@@ -1,3 +1,27 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) ReformCloud-Team
+ * Copyright (c) contributors
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 package systems.reformcloud.reformcloud2.permissions.util.basic;
 
 import com.google.gson.reflect.TypeToken;
@@ -8,10 +32,8 @@ import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
-import systems.reformcloud.reformcloud2.permissions.packets.api.out.APIPacketOutGroupAction;
-import systems.reformcloud.reformcloud2.permissions.packets.api.out.APIPacketOutUserAction;
-import systems.reformcloud.reformcloud2.permissions.packets.controller.out.ControllerPacketOutGroupAction;
-import systems.reformcloud.reformcloud2.permissions.packets.controller.out.ControllerPacketOutUserAction;
+import systems.reformcloud.reformcloud2.permissions.packets.PacketGroupAction;
+import systems.reformcloud.reformcloud2.permissions.packets.PacketUserAction;
 import systems.reformcloud.reformcloud2.permissions.packets.util.PermissionAction;
 import systems.reformcloud.reformcloud2.permissions.util.PermissionUtil;
 import systems.reformcloud.reformcloud2.permissions.util.events.group.PermissionDefaultGroupsChangedEvent;
@@ -103,10 +125,9 @@ public final class DefaultPermissionUtil implements PermissionUtil {
                 || ExecutorAPI.getInstance().getType().equals(ExecutorType.NODE)) {
             ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().update(PERMISSION_GROUP_TABLE, permissionGroup.getName(),
                     new JsonConfiguration().add("group", permissionGroup));
-            DefaultChannelManager.INSTANCE.getAllSender().forEach(e -> e.sendPacket(new ControllerPacketOutGroupAction(permissionGroup, PermissionAction.UPDATE)));
-        } else {
-            DefaultChannelManager.INSTANCE.get("Controller").ifPresent(e -> e.sendPacket(new APIPacketOutGroupAction(permissionGroup, PermissionAction.UPDATE)));
         }
+
+        DefaultChannelManager.INSTANCE.get("Controller").ifPresent(e -> e.sendPacket(new PacketGroupAction(permissionGroup, PermissionAction.UPDATE)));
     }
 
     @Override
@@ -137,7 +158,8 @@ public final class DefaultPermissionUtil implements PermissionUtil {
                 return;
             }
 
-            Collection<String> defaultGroups = config.get("defaultGroups", new TypeToken<Collection<String>>() {});
+            Collection<String> defaultGroups = config.get("defaultGroups", new TypeToken<Collection<String>>() {
+            });
             if (defaultGroups == null) {
                 return;
             }
@@ -149,16 +171,16 @@ public final class DefaultPermissionUtil implements PermissionUtil {
             defaultGroups.add(group);
             config.add("defaultGroups", defaultGroups);
             ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().update(PERMISSION_CONFIG_TABLE, "config", config);
-            DefaultChannelManager.INSTANCE.getAllSender().forEach(e -> e.sendPacket(new ControllerPacketOutGroupAction(null, PermissionAction.DEFAULT_GROUPS_CHANGED)));
+            DefaultChannelManager.INSTANCE.getAllSender().forEach(e -> e.sendPacket(new PacketGroupAction(null, PermissionAction.DEFAULT_GROUPS_CHANGED)));
         } else {
-            DefaultChannelManager.INSTANCE.get("Controller").ifPresent(e ->
-                    e.sendPacket(new APIPacketOutGroupAction(new PermissionGroup(
-                            new ArrayList<>(),
-                            new HashMap<>(),
-                            new ArrayList<>(),
-                            group,
-                            -1),
-                            PermissionAction.DEFAULT_GROUPS_CHANGED)));
+            DefaultChannelManager.INSTANCE.get("Controller").ifPresent(e -> e.sendPacket(new PacketGroupAction(new PermissionGroup(
+                    new ArrayList<>(),
+                    new HashMap<>(),
+                    new ArrayList<>(),
+                    group,
+                    -1),
+                    PermissionAction.DEFAULT_GROUPS_CHANGED)
+            ));
         }
     }
 
@@ -171,7 +193,8 @@ public final class DefaultPermissionUtil implements PermissionUtil {
                 return;
             }
 
-            Collection<String> defaultGroups = config.get("defaultGroups", new TypeToken<Collection<String>>() {});
+            Collection<String> defaultGroups = config.get("defaultGroups", new TypeToken<Collection<String>>() {
+            });
             if (defaultGroups == null) {
                 return;
             }
@@ -183,16 +206,16 @@ public final class DefaultPermissionUtil implements PermissionUtil {
             defaultGroups.remove(group);
             config.add("defaultGroups", defaultGroups);
             ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().update(PERMISSION_CONFIG_TABLE, "config", config);
-            DefaultChannelManager.INSTANCE.getAllSender().forEach(e -> e.sendPacket(new ControllerPacketOutGroupAction(null, PermissionAction.DEFAULT_GROUPS_CHANGED)));
+            DefaultChannelManager.INSTANCE.getAllSender().forEach(e -> e.sendPacket(new PacketGroupAction(null, PermissionAction.DEFAULT_GROUPS_CHANGED)));
         } else {
-            DefaultChannelManager.INSTANCE.get("Controller").ifPresent(e ->
-                    e.sendPacket(new APIPacketOutGroupAction(new PermissionGroup(
-                            new ArrayList<>(),
-                            new HashMap<>(),
-                            new ArrayList<>(),
-                            group,
-                            -1),
-                            PermissionAction.DEFAULT_GROUPS_CHANGED)));
+            DefaultChannelManager.INSTANCE.get("Controller").ifPresent(e -> e.sendPacket(new PacketGroupAction(new PermissionGroup(
+                    new ArrayList<>(),
+                    new HashMap<>(),
+                    new ArrayList<>(),
+                    group,
+                    -1),
+                    PermissionAction.DEFAULT_GROUPS_CHANGED
+            )));
         }
     }
 
@@ -216,12 +239,11 @@ public final class DefaultPermissionUtil implements PermissionUtil {
             ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().insert(PERMISSION_GROUP_TABLE, name, null, new JsonConfiguration().add(
                     "group", newGroup
             ));
-            DefaultChannelManager.INSTANCE.getAllSender().forEach(e -> e.sendPacket(new ControllerPacketOutGroupAction(newGroup, PermissionAction.CREATE)));
-        } else {
-            DefaultChannelManager.INSTANCE.get("Controller").ifPresent(e -> e.sendPacket(new APIPacketOutGroupAction(newGroup, PermissionAction.CREATE)));
         }
 
+        DefaultChannelManager.INSTANCE.get("Controller").ifPresent(e -> e.sendPacket(new PacketGroupAction(newGroup, PermissionAction.CREATE)));
         CACHE.put(name, newGroup);
+
         return newGroup;
     }
 
@@ -238,12 +260,10 @@ public final class DefaultPermissionUtil implements PermissionUtil {
             if (ExecutorAPI.getInstance().getType().equals(ExecutorType.CONTROLLER)
                     || ExecutorAPI.getInstance().getType().equals(ExecutorType.NODE)) {
                 ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().remove(PERMISSION_GROUP_TABLE, name);
-                DefaultChannelManager.INSTANCE.getAllSender().forEach(e -> e.sendPacket(new ControllerPacketOutGroupAction(toDelete, PermissionAction.DELETE)));
-            } else {
-                DefaultChannelManager.INSTANCE.get("Controller").ifPresent(e -> e.sendPacket(new APIPacketOutGroupAction(toDelete, PermissionAction.DELETE)));
             }
         }
 
+        DefaultChannelManager.INSTANCE.get("Controller").ifPresent(e -> e.sendPacket(new PacketGroupAction(toDelete, PermissionAction.DELETE)));
         CACHE.remove(name);
     }
 
@@ -282,12 +302,11 @@ public final class DefaultPermissionUtil implements PermissionUtil {
                 ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().insert(PERMISSION_PLAYER_TABLE, uuid.toString(), null, new JsonConfiguration()
                         .add("user", user)
                 );
-                DefaultChannelManager.INSTANCE.getAllSender().forEach(e -> e.sendPacket(new ControllerPacketOutUserAction(user, PermissionAction.CREATE)));
-            } else {
-                DefaultChannelManager.INSTANCE.get("Controller").ifPresent(e -> e.sendPacket(new APIPacketOutUserAction(user, PermissionAction.CREATE)));
             }
 
+            DefaultChannelManager.INSTANCE.getAllSender().forEach(e -> e.sendPacket(new PacketUserAction(user, PermissionAction.CREATE)));
             USER_CACHE.put(uuid, user);
+
             return user;
         }
 
@@ -347,10 +366,9 @@ public final class DefaultPermissionUtil implements PermissionUtil {
                 || ExecutorAPI.getInstance().getType().equals(ExecutorType.NODE)) {
             ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().update(PERMISSION_PLAYER_TABLE, permissionUser.getUniqueID().toString(),
                     new JsonConfiguration().add("user", permissionUser));
-            DefaultChannelManager.INSTANCE.getAllSender().forEach(e -> e.sendPacket(new ControllerPacketOutUserAction(permissionUser, PermissionAction.UPDATE)));
-        } else {
-            DefaultChannelManager.INSTANCE.get("Controller").ifPresent(e -> e.sendPacket(new APIPacketOutUserAction(permissionUser, PermissionAction.UPDATE)));
         }
+
+        DefaultChannelManager.INSTANCE.get("Controller").ifPresent(e -> e.sendPacket(new PacketUserAction(permissionUser, PermissionAction.UPDATE)));
     }
 
     @Override
@@ -359,11 +377,9 @@ public final class DefaultPermissionUtil implements PermissionUtil {
         if (ExecutorAPI.getInstance().getType().equals(ExecutorType.CONTROLLER)
                 || ExecutorAPI.getInstance().getType().equals(ExecutorType.NODE)) {
             ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().remove(PERMISSION_PLAYER_TABLE, uuid.toString());
-            DefaultChannelManager.INSTANCE.getAllSender().forEach(e -> e.sendPacket(new ControllerPacketOutUserAction(user, PermissionAction.DELETE)));
-        } else {
-            DefaultChannelManager.INSTANCE.get("Controller").ifPresent(e -> e.sendPacket(new APIPacketOutUserAction(user, PermissionAction.DELETE)));
         }
 
+        DefaultChannelManager.INSTANCE.getAllSender().forEach(e -> e.sendPacket(new PacketUserAction(user, PermissionAction.DELETE)));
         USER_CACHE.remove(uuid);
     }
 
@@ -462,7 +478,8 @@ public final class DefaultPermissionUtil implements PermissionUtil {
             return;
         }
 
-        Collection<String> defaultGroups = config.get("defaultGroups", new TypeToken<Collection<String>>() {});
+        Collection<String> defaultGroups = config.get("defaultGroups", new TypeToken<Collection<String>>() {
+        });
         if (defaultGroups == null) {
             return;
         }

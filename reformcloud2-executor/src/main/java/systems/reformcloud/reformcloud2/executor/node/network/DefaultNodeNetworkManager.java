@@ -1,3 +1,27 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) ReformCloud-Team
+ * Copyright (c) contributors
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 package systems.reformcloud.reformcloud2.executor.node.network;
 
 import org.jetbrains.annotations.NotNull;
@@ -7,13 +31,14 @@ import systems.reformcloud.reformcloud2.executor.api.common.base.Conditions;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.RuntimeConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Template;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Version;
-import systems.reformcloud.reformcloud2.executor.api.common.groups.template.backend.basic.FileBackend;
+import systems.reformcloud.reformcloud2.executor.api.common.groups.template.backend.basic.FileTemplateBackend;
 import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.common.node.NodeInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState;
 import systems.reformcloud.reformcloud2.executor.api.common.process.api.ProcessConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.common.process.running.manager.SharedRunningProcessManager;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Duo;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.maps.BiMap;
@@ -24,8 +49,8 @@ import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
 import systems.reformcloud.reformcloud2.executor.node.network.packet.out.NodePacketOutStartPreparedProcess;
 import systems.reformcloud.reformcloud2.executor.node.network.packet.out.NodePacketOutStopProcess;
 import systems.reformcloud.reformcloud2.executor.node.network.packet.out.NodePacketOutToHeadStartPreparedProcess;
-import systems.reformcloud.reformcloud2.executor.node.network.packet.query.out.NodePacketOutQueryStartProcess;
-import systems.reformcloud.reformcloud2.executor.node.process.manager.LocalProcessManager;
+import systems.reformcloud.reformcloud2.executor.node.network.packet.query.PacketNodeQueryStartProcess;
+import systems.reformcloud.reformcloud2.executor.node.network.packet.query.PacketNodeQueryStartProcessResult;
 import systems.reformcloud.reformcloud2.executor.node.process.startup.LocalProcessQueue;
 
 import java.util.*;
@@ -100,7 +125,7 @@ public final class DefaultNodeNetworkManager implements NodeNetworkManager {
                 ).ifEmpty(e -> {
                     if (processInformation.getProcessDetail().getParentUniqueID().equals(cluster.getSelfNode().getNodeUniqueID())
                             && processInformation.getProcessDetail().getProcessState().equals(ProcessState.PREPARED)) {
-                        LocalProcessManager.getNodeProcesses()
+                        SharedRunningProcessManager.getAllProcesses()
                                 .stream()
                                 .filter(p -> p.getProcessInformation().getProcessDetail().getProcessUniqueID().equals(processInformation.getProcessDetail().getProcessUniqueID()))
                                 .findFirst()
@@ -129,7 +154,7 @@ public final class DefaultNodeNetworkManager implements NodeNetworkManager {
                         0,
                         "default",
                         false,
-                        FileBackend.NAME,
+                        FileTemplateBackend.NAME,
                         "#",
                         new RuntimeConfiguration(
                                 512, new ArrayList<>(), new HashMap<>()
@@ -193,8 +218,14 @@ public final class DefaultNodeNetworkManager implements NodeNetworkManager {
         }
 
         return this.getCluster().sendQueryToHead(
-                new NodePacketOutQueryStartProcess(configuration, start),
-                packet -> packet.content().get("result", ProcessInformation.TYPE)
+                new PacketNodeQueryStartProcess(configuration, start),
+                packet -> {
+                    if (packet instanceof PacketNodeQueryStartProcessResult) {
+                        return ((PacketNodeQueryStartProcessResult) packet).getProcessInformation();
+                    }
+
+                    return null;
+                }
         );
     }
 

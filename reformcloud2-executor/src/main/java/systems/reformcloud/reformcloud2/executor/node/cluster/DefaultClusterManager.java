@@ -1,14 +1,38 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) ReformCloud-Team
+ * Copyright (c) contributors
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 package systems.reformcloud.reformcloud2.executor.node.cluster;
 
+import org.jetbrains.annotations.NotNull;
+import systems.reformcloud.reformcloud2.executor.api.common.api.basic.packets.shared.EventPacketProcessClosed;
 import systems.reformcloud.reformcloud2.executor.api.common.node.NodeInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.node.cluster.ClusterManager;
 import systems.reformcloud.reformcloud2.executor.api.node.cluster.InternalNetworkCluster;
-import systems.reformcloud.reformcloud2.executor.controller.network.packets.out.event.ControllerEventProcessClosed;
 import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
 import systems.reformcloud.reformcloud2.executor.node.cluster.sync.DefaultClusterSyncManager;
 
-import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -26,7 +50,7 @@ public final class DefaultClusterManager implements ClusterManager {
     }
 
     @Override
-    public void handleNodeDisconnect(@Nonnull InternalNetworkCluster cluster, @Nonnull String name) {
+    public void handleNodeDisconnect(@NotNull InternalNetworkCluster cluster, @NotNull String name) {
         Streams.allOf(nodeInformation, e -> e.getName().equals(name)).forEach(e -> {
             this.nodeInformation.remove(e);
             cluster.getConnectedNodes().remove(e);
@@ -36,7 +60,7 @@ public final class DefaultClusterManager implements ClusterManager {
                     i -> i.getProcessDetail().getParentUniqueID().equals(e.getNodeUniqueID())
             ).forEach(i -> {
                 NodeExecutor.getInstance().getNodeNetworkManager().getNodeProcessHelper().handleProcessStop(i);
-                DefaultClusterSyncManager.sendToAllExcludedNodes(new ControllerEventProcessClosed(i));
+                DefaultClusterSyncManager.sendToAllExcludedNodes(new EventPacketProcessClosed(i));
             });
 
             if (head != null && head.getNodeUniqueID().equals(e.getNodeUniqueID())) {
@@ -48,7 +72,7 @@ public final class DefaultClusterManager implements ClusterManager {
     }
 
     @Override
-    public void handleConnect(@Nonnull InternalNetworkCluster cluster, @Nonnull NodeInformation nodeInformation) {
+    public void handleConnect(@NotNull InternalNetworkCluster cluster, @NotNull NodeInformation nodeInformation) {
         if (this.nodeInformation.stream().anyMatch(e -> e.getName().equals(nodeInformation.getName()))) {
             return;
         }
@@ -59,7 +83,7 @@ public final class DefaultClusterManager implements ClusterManager {
     }
 
     @Override
-    public int getOnlineAndWaiting(@Nonnull String groupName) {
+    public int getOnlineAndWaiting(@NotNull String groupName) {
         int allNotPrepared = Streams.allOf(
                 NodeExecutor.getInstance().getNodeNetworkManager().getNodeProcessHelper().getClusterProcesses(),
                 e -> e.getProcessGroup().getName().equals(groupName) && !e.getProcessDetail().getProcessState().equals(PREPARED)
@@ -80,6 +104,11 @@ public final class DefaultClusterManager implements ClusterManager {
         }
 
         return head;
+    }
+
+    @Override
+    public void updateHeadNode(@NotNull NodeInformation newHeadNodeInformation) {
+        this.head = newHeadNodeInformation;
     }
 
     private void recalculateHead() {

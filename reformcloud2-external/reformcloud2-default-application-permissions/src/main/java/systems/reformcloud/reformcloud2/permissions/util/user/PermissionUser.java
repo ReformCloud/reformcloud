@@ -1,7 +1,34 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) ReformCloud-Team
+ * Copyright (c) contributors
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 package systems.reformcloud.reformcloud2.permissions.util.user;
 
 import com.google.gson.reflect.TypeToken;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
+import systems.reformcloud.reformcloud2.executor.api.common.network.SerializableObject;
+import systems.reformcloud.reformcloud2.executor.api.common.network.data.ProtocolBuffer;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.permissions.PermissionAPI;
 import systems.reformcloud.reformcloud2.permissions.util.basic.checks.WildcardCheck;
@@ -11,9 +38,14 @@ import systems.reformcloud.reformcloud2.permissions.util.permission.PermissionNo
 import java.util.Collection;
 import java.util.UUID;
 
-public class PermissionUser {
+public class PermissionUser implements SerializableObject {
 
-    public static final TypeToken<PermissionUser> TYPE = new TypeToken<PermissionUser>() {};
+    public static final TypeToken<PermissionUser> TYPE = new TypeToken<PermissionUser>() {
+    };
+
+    @ApiStatus.Internal
+    public PermissionUser() {
+    }
 
     public PermissionUser(
             @NotNull UUID uuid,
@@ -25,11 +57,11 @@ public class PermissionUser {
         this.groups = groups;
     }
 
-    private final UUID uuid;
+    private UUID uuid;
 
-    private final Collection<PermissionNode> permissionNodes;
+    private Collection<PermissionNode> permissionNodes;
 
-    private final Collection<NodeGroup> groups;
+    private Collection<NodeGroup> groups;
 
     @NotNull
     public UUID getUniqueID() {
@@ -75,5 +107,19 @@ public class PermissionUser {
         }
 
         return PermissionAPI.getInstance().getPermissionUtil().hasPermission(this, permission);
+    }
+
+    @Override
+    public void write(@NotNull ProtocolBuffer buffer) {
+        buffer.writeUniqueId(this.uuid);
+        buffer.writeObjects(this.groups);
+        buffer.writeObjects(this.permissionNodes);
+    }
+
+    @Override
+    public void read(@NotNull ProtocolBuffer buffer) {
+        this.uuid = buffer.readUniqueId();
+        this.groups = buffer.readObjects(NodeGroup.class);
+        this.permissionNodes = buffer.readObjects(PermissionNode.class);
     }
 }

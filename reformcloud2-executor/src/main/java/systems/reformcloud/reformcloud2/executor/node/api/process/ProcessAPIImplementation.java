@@ -1,3 +1,27 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) ReformCloud-Team
+ * Copyright (c) contributors
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 package systems.reformcloud.reformcloud2.executor.node.api.process;
 
 import org.jetbrains.annotations.NotNull;
@@ -8,15 +32,15 @@ import systems.reformcloud.reformcloud2.executor.api.common.base.Conditions;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.process.api.ProcessConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.common.process.running.manager.SharedRunningProcessManager;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.defaults.DefaultTask;
 import systems.reformcloud.reformcloud2.executor.api.node.network.NodeNetworkManager;
 import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
+import systems.reformcloud.reformcloud2.executor.node.network.packet.out.NodePacketOutCopyProcess;
 import systems.reformcloud.reformcloud2.executor.node.network.packet.out.NodePacketOutExecuteCommand;
-import systems.reformcloud.reformcloud2.executor.node.process.manager.LocalProcessManager;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -89,6 +113,160 @@ public class ProcessAPIImplementation implements ProcessSyncAPI, ProcessAsyncAPI
 
     @NotNull
     @Override
+    public Task<Void> copyProcessAsync(@NotNull String name) {
+        return Task.supply(() -> {
+            ProcessInformation information = this.getProcess(name);
+            if (information == null) {
+                return null;
+            }
+
+            return this.copyProcessAsync(
+                    name,
+                    information.getProcessDetail().getTemplate().getName(),
+                    information.getProcessDetail().getTemplate().getBackend(),
+                    information.getProcessGroup().getName()
+            ).getUninterruptedly();
+        });
+    }
+
+    @NotNull
+    @Override
+    public Task<Void> copyProcessAsync(@NotNull UUID processUniqueId) {
+        return Task.supply(() -> {
+            ProcessInformation information = this.getProcess(processUniqueId);
+            if (information == null) {
+                return null;
+            }
+
+            return this.copyProcessAsync(
+                    processUniqueId,
+                    information.getProcessDetail().getTemplate().getName(),
+                    information.getProcessDetail().getTemplate().getBackend(),
+                    information.getProcessGroup().getName()
+            ).getUninterruptedly();
+        });
+    }
+
+    @NotNull
+    @Override
+    public Task<Void> copyProcessAsync(@NotNull String name, @NotNull String targetTemplate) {
+        return Task.supply(() -> {
+            ProcessInformation information = this.getProcess(name);
+            if (information == null) {
+                return null;
+            }
+
+            return this.copyProcessAsync(
+                    name,
+                    targetTemplate,
+                    information.getProcessDetail().getTemplate().getBackend(),
+                    information.getProcessGroup().getName()
+            ).getUninterruptedly();
+        });
+    }
+
+    @NotNull
+    @Override
+    public Task<Void> copyProcessAsync(@NotNull UUID processUniqueId, @NotNull String targetTemplate) {
+        return Task.supply(() -> {
+            ProcessInformation information = this.getProcess(processUniqueId);
+            if (information == null) {
+                return null;
+            }
+
+            return this.copyProcessAsync(
+                    processUniqueId,
+                    targetTemplate,
+                    information.getProcessDetail().getTemplate().getBackend(),
+                    information.getProcessGroup().getName()
+            ).getUninterruptedly();
+        });
+    }
+
+    @NotNull
+    @Override
+    public Task<Void> copyProcessAsync(@NotNull String name, @NotNull String targetTemplate, @NotNull String targetTemplateStorage) {
+        return Task.supply(() -> {
+            ProcessInformation information = this.getProcess(name);
+            if (information == null) {
+                return null;
+            }
+
+            return this.copyProcessAsync(
+                    name,
+                    targetTemplate,
+                    targetTemplateStorage,
+                    information.getProcessGroup().getName()
+            ).getUninterruptedly();
+        });
+    }
+
+    @NotNull
+    @Override
+    public Task<Void> copyProcessAsync(@NotNull UUID processUniqueId, @NotNull String targetTemplate, @NotNull String targetTemplateStorage) {
+        return Task.supply(() -> {
+            ProcessInformation information = this.getProcess(processUniqueId);
+            if (information == null) {
+                return null;
+            }
+
+            return this.copyProcessAsync(
+                    processUniqueId,
+                    targetTemplate,
+                    targetTemplateStorage,
+                    information.getProcessGroup().getName()
+            ).getUninterruptedly();
+        });
+    }
+
+    @NotNull
+    @Override
+    public Task<Void> copyProcessAsync(@NotNull String name, @NotNull String targetTemplate, @NotNull String targetTemplateStorage, @NotNull String targetTemplateGroup) {
+        return Task.supply(() -> {
+            ProcessInformation information = this.getProcess(name);
+            if (information == null) {
+                return null;
+            }
+
+            this.copyProcess0(information, targetTemplate, targetTemplateStorage, targetTemplateGroup);
+            return null;
+        });
+    }
+
+    @NotNull
+    @Override
+    public Task<Void> copyProcessAsync(@NotNull UUID processUniqueId, @NotNull String targetTemplate, @NotNull String targetTemplateStorage, @NotNull String targetTemplateGroup) {
+        return Task.supply(() -> {
+            ProcessInformation information = this.getProcess(processUniqueId);
+            if (information == null) {
+                return null;
+            }
+
+            this.copyProcess0(information, targetTemplate, targetTemplateStorage, targetTemplateGroup);
+            return null;
+        });
+    }
+
+    private void copyProcess0(@NotNull ProcessInformation target, @NotNull String targetTemplate, @NotNull String targetTemplateStorage, @NotNull String targetTemplateGroup) {
+        if (NodeExecutor.getInstance().getNodeConfig().getUniqueID().equals(target.getProcessDetail().getParentUniqueID())) {
+            Streams.filterToReference(
+                    SharedRunningProcessManager.getAllProcesses(),
+                    e -> e.getProcessInformation().getProcessDetail().getProcessUniqueID().equals(target.getProcessDetail().getProcessUniqueID())
+            ).ifPresent(e -> e.copy(targetTemplate, targetTemplateStorage, targetTemplateGroup));
+        } else {
+            DefaultChannelManager.INSTANCE.get(target.getProcessDetail().getParentName()).ifPresent(packetSender -> packetSender.sendPacket(
+                    new NodePacketOutCopyProcess(
+                            target.getProcessDetail().getProcessUniqueID(),
+                            targetTemplate,
+                            targetTemplateStorage,
+                            targetTemplateGroup
+                    )
+            ));
+        }
+    }
+
+    @NotNull
+    @Override
     public Task<ProcessInformation> getProcessAsync(@NotNull String name) {
         Task<ProcessInformation> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> task.complete(nodeNetworkManager.getNodeProcessHelper().getClusterProcess(name)));
@@ -131,7 +309,8 @@ public class ProcessAPIImplementation implements ProcessSyncAPI, ProcessAsyncAPI
             }
 
             if (NodeExecutor.getInstance().getNodeConfig().getUniqueID().equals(processInformation.getProcessDetail().getParentUniqueID())) {
-                Streams.filterToReference(LocalProcessManager.getNodeProcesses(),
+                Streams.filterToReference(
+                        SharedRunningProcessManager.getAllProcesses(),
                         e -> e.getProcessInformation().getProcessDetail().getProcessUniqueID().equals(processInformation.getProcessDetail().getProcessUniqueID())
                 ).ifPresent(e -> e.sendCommand(commandLine));
             } else {
@@ -141,27 +320,6 @@ public class ProcessAPIImplementation implements ProcessSyncAPI, ProcessAsyncAPI
 
             task.complete(null);
         });
-        return task;
-    }
-
-    @NotNull
-    @Override
-    public Task<Integer> getGlobalOnlineCountAsync(@NotNull Collection<String> ignoredProxies) {
-        Task<Integer> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> {
-            int online = Streams.allOf(nodeNetworkManager.getNodeProcessHelper().getClusterProcesses(),
-                    e -> !e.getProcessDetail().getTemplate().isServer() && !ignoredProxies.contains(e.getProcessDetail().getName())
-            ).stream().mapToInt(e -> e.getProcessPlayerManager().getOnlineCount()).sum();
-            task.complete(online);
-        });
-        return task;
-    }
-
-    @NotNull
-    @Override
-    public Task<ProcessInformation> getThisProcessInformationAsync() {
-        Task<ProcessInformation> task = new DefaultTask<>();
-        task.complete(null);
         return task;
     }
 
@@ -195,6 +353,46 @@ public class ProcessAPIImplementation implements ProcessSyncAPI, ProcessAsyncAPI
     }
 
     @Override
+    public void copyProcess(@NotNull String name) {
+        this.copyProcessAsync(name).awaitUninterruptedly();
+    }
+
+    @Override
+    public void copyProcess(@NotNull UUID processUniqueId) {
+        this.copyProcessAsync(processUniqueId).awaitUninterruptedly();
+    }
+
+    @Override
+    public void copyProcess(@NotNull String name, @NotNull String targetTemplate) {
+        this.copyProcessAsync(name, targetTemplate).awaitUninterruptedly();
+    }
+
+    @Override
+    public void copyProcess(@NotNull UUID processUniqueId, @NotNull String targetTemplate) {
+        this.copyProcessAsync(processUniqueId, targetTemplate).awaitUninterruptedly();
+    }
+
+    @Override
+    public void copyProcess(@NotNull String name, @NotNull String targetTemplate, @NotNull String targetTemplateStorage) {
+        this.copyProcessAsync(name, targetTemplate, targetTemplateStorage).awaitUninterruptedly();
+    }
+
+    @Override
+    public void copyProcess(@NotNull UUID processUniqueId, @NotNull String targetTemplate, @NotNull String targetTemplateStorage) {
+        this.copyProcessAsync(processUniqueId, targetTemplate, targetTemplateStorage).awaitUninterruptedly();
+    }
+
+    @Override
+    public void copyProcess(@NotNull String name, @NotNull String targetTemplate, @NotNull String targetTemplateStorage, @NotNull String targetTemplateGroup) {
+        this.copyProcessAsync(name, targetTemplate, targetTemplateStorage, targetTemplateGroup).awaitUninterruptedly();
+    }
+
+    @Override
+    public void copyProcess(@NotNull UUID processUniqueId, @NotNull String targetTemplate, @NotNull String targetTemplateStorage, @NotNull String targetTemplateGroup) {
+        this.copyProcessAsync(processUniqueId, targetTemplate, targetTemplateStorage, targetTemplateGroup).awaitUninterruptedly();
+    }
+
+    @Override
     public ProcessInformation getProcess(@NotNull String name) {
         return getProcessAsync(name).getUninterruptedly();
     }
@@ -223,17 +421,6 @@ public class ProcessAPIImplementation implements ProcessSyncAPI, ProcessAsyncAPI
     @Override
     public void executeProcessCommand(@NotNull String name, @NotNull String commandLine) {
         executeProcessCommandAsync(name, commandLine).awaitUninterruptedly();
-    }
-
-    @Override
-    public int getGlobalOnlineCount(@NotNull Collection<String> ignoredProxies) {
-        Integer integer = getGlobalOnlineCountAsync(ignoredProxies).getUninterruptedly();
-        return integer == null ? 0 : integer;
-    }
-
-    @Override
-    public ProcessInformation getThisProcessInformation() {
-        return null;
     }
 
     @Override

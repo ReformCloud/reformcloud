@@ -1,11 +1,34 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) ReformCloud-Team
+ * Copyright (c) contributors
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 package systems.reformcloud.reformcloud2.executor.api.common.api.process;
 
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import systems.reformcloud.reformcloud2.executor.api.api.API;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
+import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState;
 import systems.reformcloud.reformcloud2.executor.api.common.process.api.ProcessConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.process.api.ProcessConfigurationBuilder;
 import systems.reformcloud.reformcloud2.executor.api.common.process.api.ProcessInclusion;
@@ -194,11 +217,51 @@ public interface ProcessSyncAPI {
                                             @Nullable String displayName, @Nullable Integer maxMemory,
                                             @Nullable Integer port, @Nullable Integer id, @Nullable Integer maxPlayers,
                                             @NotNull Collection<ProcessInclusion> inclusions) {
+        return this.startProcess(
+                groupName,
+                template,
+                configurable,
+                uniqueID,
+                displayName,
+                maxMemory,
+                port,
+                id,
+                maxPlayers,
+                inclusions,
+                ProcessState.READY
+        );
+    }
+
+    /**
+     * Starts a process
+     *
+     * @param groupName    The name of the group which should be started from
+     * @param template     The template which should be used
+     * @param configurable The data for the process
+     * @param uniqueID     The unique id which should get used for the process
+     * @param displayName  The display name of the new process
+     * @param maxMemory    The maximum amount of memory which the new process is allowed to use
+     * @param port         The port of the new process (If it's already in use a random port will be used)
+     * @param id           The id of the process (for example {@code 1}). The name of the process will also use
+     *                     the given id (for {@code 1} it might be {@code Lobby-1}). If the id is already taken
+     *                     a random id will get used
+     * @param maxPlayers   The maximum amount of player which are allowed to join the process
+     * @param inclusions   The inclusions which should get loaded before the start of the process
+     * @param initialState The state which the process should set after the connect to the network
+     * @return The created {@link ProcessInformation}
+     */
+    @Nullable
+    default ProcessInformation startProcess(@NotNull String groupName, @Nullable String template,
+                                            @NotNull JsonConfiguration configurable, @NotNull UUID uniqueID,
+                                            @Nullable String displayName, @Nullable Integer maxMemory,
+                                            @Nullable Integer port, @Nullable Integer id, @Nullable Integer maxPlayers,
+                                            @NotNull Collection<ProcessInclusion> inclusions, @NotNull ProcessState initialState) {
         ProcessConfigurationBuilder builder = ProcessConfigurationBuilder
                 .newBuilder(groupName)
                 .extra(configurable)
                 .uniqueId(uniqueID)
-                .inclusions(inclusions);
+                .inclusions(inclusions)
+                .initialState(initialState);
 
         if (template != null) {
             builder.template(template);
@@ -422,11 +485,51 @@ public interface ProcessSyncAPI {
                                               @Nullable String displayName, @Nullable Integer maxMemory,
                                               @Nullable Integer port, @Nullable Integer id, @Nullable Integer maxPlayers,
                                               @NotNull Collection<ProcessInclusion> inclusions) {
+        return this.prepareProcess(
+                groupName,
+                template,
+                configurable,
+                uniqueID,
+                displayName,
+                maxMemory,
+                port,
+                id,
+                maxPlayers,
+                inclusions,
+                ProcessState.READY
+        );
+    }
+
+    /**
+     * Prepares a process
+     *
+     * @param groupName    The name of the group which should be started from
+     * @param template     The template which should be used
+     * @param configurable The data for the process
+     * @param uniqueID     The unique id which should get used for the process
+     * @param displayName  The display name of the new process
+     * @param maxMemory    The maximum amount of memory which the new process is allowed to use
+     * @param port         The port of the new process (If it's already in use a random port will be used)
+     * @param id           The id of the process (for example {@code 1}). The name of the process will also use
+     *                     the given id (for {@code 1} it might be {@code Lobby-1}). If the id is already taken
+     *                     a random id will get used
+     * @param maxPlayers   The maximum amount of player which are allowed to join the process
+     * @param inclusions   The inclusions which should get loaded before the start of the process
+     * @param initialState The state which the process should set after the connect to the network
+     * @return The created {@link ProcessInformation}
+     */
+    @Nullable
+    default ProcessInformation prepareProcess(@NotNull String groupName, @Nullable String template,
+                                              @NotNull JsonConfiguration configurable, @NotNull UUID uniqueID,
+                                              @Nullable String displayName, @Nullable Integer maxMemory,
+                                              @Nullable Integer port, @Nullable Integer id, @Nullable Integer maxPlayers,
+                                              @NotNull Collection<ProcessInclusion> inclusions, @NotNull ProcessState initialState) {
         ProcessConfigurationBuilder builder = ProcessConfigurationBuilder
                 .newBuilder(groupName)
                 .extra(configurable)
                 .uniqueId(uniqueID)
-                .inclusions(inclusions);
+                .inclusions(inclusions)
+                .initialState(initialState);
 
         if (template != null) {
             builder.template(template);
@@ -468,6 +571,17 @@ public interface ProcessSyncAPI {
     /**
      * Stops a process
      *
+     * @param processInformation The process information of the process which should get stopped
+     * @return The last known {@link ProcessInformation}
+     */
+    @Nullable
+    default ProcessInformation stopProcess(@NotNull ProcessInformation processInformation) {
+        return this.stopProcess(processInformation.getProcessDetail().getProcessUniqueID());
+    }
+
+    /**
+     * Stops a process
+     *
      * @param name The name of the process
      * @return The last known {@link ProcessInformation}
      */
@@ -482,6 +596,134 @@ public interface ProcessSyncAPI {
      */
     @Nullable
     ProcessInformation stopProcess(@NotNull UUID uniqueID);
+
+    /**
+     * Copies the given process into the main template
+     *
+     * @param processInformation The process information of the process which should get copied
+     */
+    default void copyProcess(@NotNull ProcessInformation processInformation) {
+        this.copyProcess(processInformation.getProcessDetail().getProcessUniqueID());
+    }
+
+    /**
+     * Copies the given process into the main template
+     *
+     * @param name The name of the process which should get copied
+     */
+    void copyProcess(@NotNull String name);
+
+    /**
+     * Copies the given process into the main template
+     *
+     * @param processUniqueId The unique id of the process which should get copied
+     */
+    void copyProcess(@NotNull UUID processUniqueId);
+
+    /**
+     * Copies the given process into the main template
+     *
+     * @param processInformation The process information of the process which should get copied
+     * @param targetTemplate     The target template to which the server should get copied
+     */
+    default void copyProcess(@NotNull ProcessInformation processInformation, @NotNull String targetTemplate) {
+        this.copyProcess(
+                processInformation.getProcessDetail().getProcessUniqueID(),
+                targetTemplate,
+                processInformation.getProcessDetail().getTemplate().getBackend()
+        );
+    }
+
+    /**
+     * Copies the given process into the main template
+     *
+     * @param name           The name of the process which should get copied
+     * @param targetTemplate The target template to which the server should get copied
+     */
+    void copyProcess(@NotNull String name, @NotNull String targetTemplate);
+
+    /**
+     * Copies the given process into the main template
+     *
+     * @param processUniqueId The unique id of the process which should get copied
+     * @param targetTemplate  The target template to which the server should get copied
+     */
+    void copyProcess(@NotNull UUID processUniqueId, @NotNull String targetTemplate);
+
+    /**
+     * Copies the given process into the main template
+     *
+     * @param processInformation    The process information of the process which should get copied
+     * @param targetTemplate        The target template to which the server should get copied
+     * @param targetTemplateStorage The target template storage to which the template should get copied
+     */
+    default void copyProcess(@NotNull ProcessInformation processInformation,
+                             @NotNull String targetTemplate, @NotNull String targetTemplateStorage) {
+        this.copyProcess(
+                processInformation.getProcessDetail().getProcessUniqueID(),
+                targetTemplate,
+                targetTemplateStorage,
+                processInformation.getProcessGroup().getName()
+        );
+    }
+
+    /**
+     * Copies the given process into the main template
+     *
+     * @param name                  The name of the process which should get copied
+     * @param targetTemplate        The target template to which the server should get copied
+     * @param targetTemplateStorage The target template storage to which the template should get copied
+     */
+    void copyProcess(@NotNull String name, @NotNull String targetTemplate, @NotNull String targetTemplateStorage);
+
+    /**
+     * Copies the given process into the main template
+     *
+     * @param processUniqueId       The unique id of the process which should get copied
+     * @param targetTemplate        The target template to which the server should get copied
+     * @param targetTemplateStorage The target template storage to which the template should get copied
+     */
+    void copyProcess(@NotNull UUID processUniqueId, @NotNull String targetTemplate, @NotNull String targetTemplateStorage);
+
+    /**
+     * Copies the given process into the main template
+     *
+     * @param processInformation    The process information of the process which should get copied
+     * @param targetTemplate        The target template to which the server should get copied
+     * @param targetTemplateStorage The target template storage to which the template should get copied
+     * @param targetTemplateGroup   The target process group to which the template should get copied
+     */
+    default void copyProcess(@NotNull ProcessInformation processInformation, @NotNull String targetTemplate,
+                             @NotNull String targetTemplateStorage, @NotNull String targetTemplateGroup) {
+        this.copyProcess(
+                processInformation.getProcessDetail().getProcessUniqueID(),
+                targetTemplate,
+                targetTemplateStorage,
+                targetTemplateGroup
+        );
+    }
+
+    /**
+     * Copies the given process into the main template
+     *
+     * @param name                  The name of the process which should get copied
+     * @param targetTemplate        The target template to which the server should get copied
+     * @param targetTemplateStorage The target template storage to which the template should get copied
+     * @param targetTemplateGroup   The target process group to which the template should get copied
+     */
+    void copyProcess(@NotNull String name, @NotNull String targetTemplate,
+                     @NotNull String targetTemplateStorage, @NotNull String targetTemplateGroup);
+
+    /**
+     * Copies the given process into the main template
+     *
+     * @param processUniqueId       The unique id of the process which should get copied
+     * @param targetTemplate        The target template to which the server should get copied
+     * @param targetTemplateStorage The target template storage to which the template should get copied
+     * @param targetTemplateGroup   The target process group to which the template should get copied
+     */
+    void copyProcess(@NotNull UUID processUniqueId, @NotNull String targetTemplate,
+                     @NotNull String targetTemplateStorage, @NotNull String targetTemplateGroup);
 
     /**
      * Gets a process
@@ -525,25 +767,6 @@ public interface ProcessSyncAPI {
      * @param commandLine The command line with should be executed
      */
     void executeProcessCommand(@NotNull String name, @NotNull String commandLine);
-
-    /**
-     * Gets the global online count
-     *
-     * @param ignoredProxies The ignored proxies
-     * @return The global online count
-     */
-    int getGlobalOnlineCount(@NotNull Collection<String> ignoredProxies);
-
-    /**
-     * Get the current process information
-     *
-     * @return The current {@link ProcessInformation} or {@code null} if the runtime is not a process
-     * @deprecated Has been moved to {@link API#getCurrentProcessInformation()}. Will be removed in a further release
-     */
-    @Nullable
-    @ApiStatus.ScheduledForRemoval(inVersion = "2.3")
-    @Deprecated
-    ProcessInformation getThisProcessInformation();
 
     /**
      * Iterates through all {@link ProcessInformation}

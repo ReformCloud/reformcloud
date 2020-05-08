@@ -1,8 +1,39 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) ReformCloud-Team
+ * Copyright (c) contributors
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 package systems.reformcloud.reformcloud2.signs.util.sign;
+
+import org.jetbrains.annotations.NotNull;
+import systems.reformcloud.reformcloud2.executor.api.common.network.SerializableObject;
+import systems.reformcloud.reformcloud2.executor.api.common.network.data.ProtocolBuffer;
 
 import java.util.Objects;
 
-public class CloudLocation {
+public class CloudLocation implements SerializableObject {
+
+    public CloudLocation() {
+    }
 
     public CloudLocation(String world, String group, double x, double y, double z, float yaw, float pitch) {
         this.world = world;
@@ -14,19 +45,19 @@ public class CloudLocation {
         this.pitch = pitch;
     }
 
-    private final String world;
+    private String world;
 
-    private final String group;
+    private String group;
 
-    private final double x;
+    private double x;
 
-    private final double y;
+    private double y;
 
-    private final double z;
+    private double z;
 
-    private final float yaw;
+    private float yaw;
 
-    private final float pitch;
+    private float pitch;
 
     public String getWorld() {
         return world;
@@ -68,5 +99,27 @@ public class CloudLocation {
                 Float.compare(that.getPitch(), getPitch()) == 0 &&
                 Objects.equals(getWorld(), that.getWorld()) &&
                 Objects.equals(getGroup(), that.getGroup());
+    }
+
+    @Override
+    public void write(@NotNull ProtocolBuffer buffer) {
+        buffer.writeString(this.world);
+        buffer.writeString(this.group);
+        buffer.writeDouble(this.x);
+        buffer.writeDouble(this.y);
+        buffer.writeDouble(this.z);
+        buffer.writeFloat(this.yaw);
+        buffer.writeFloat(this.pitch);
+    }
+
+    @Override
+    public void read(@NotNull ProtocolBuffer buffer) {
+        this.world = buffer.readString();
+        this.group = buffer.readString();
+        this.x = buffer.readDouble();
+        this.y = buffer.readDouble();
+        this.z = buffer.readDouble();
+        this.yaw = buffer.readFloat();
+        this.pitch = buffer.readFloat();
     }
 }

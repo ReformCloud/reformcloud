@@ -1,3 +1,27 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) ReformCloud-Team
+ * Copyright (c) contributors
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 package systems.reformcloud.reformcloud2.executor.controller.process;
 
 import org.jetbrains.annotations.NotNull;
@@ -5,12 +29,15 @@ import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.ProcessStartedEvent;
 import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.ProcessStoppedEvent;
 import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.ProcessUpdatedEvent;
+import systems.reformcloud.reformcloud2.executor.api.common.api.basic.packets.shared.EventPacketProcessClosed;
+import systems.reformcloud.reformcloud2.executor.api.common.api.basic.packets.shared.EventPacketProcessStarted;
+import systems.reformcloud.reformcloud2.executor.api.common.api.basic.packets.shared.EventPacketProcessUpdated;
 import systems.reformcloud.reformcloud2.executor.api.common.client.ClientRuntimeInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.RuntimeConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Template;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Version;
-import systems.reformcloud.reformcloud2.executor.api.common.groups.template.backend.basic.FileBackend;
+import systems.reformcloud.reformcloud2.executor.api.common.groups.template.backend.basic.FileTemplateBackend;
 import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.common.process.NetworkInfo;
@@ -24,14 +51,11 @@ import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Duo;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
 import systems.reformcloud.reformcloud2.executor.api.controller.process.ProcessManager;
+import systems.reformcloud.reformcloud2.executor.client.network.packet.ControllerPacketProcessDisconnected;
+import systems.reformcloud.reformcloud2.executor.client.network.packet.ControllerPacketStartPreparedProcess;
+import systems.reformcloud.reformcloud2.executor.client.network.packet.ControllerPacketStartProcess;
+import systems.reformcloud.reformcloud2.executor.client.network.packet.ControllerPacketStopProcess;
 import systems.reformcloud.reformcloud2.executor.controller.ControllerExecutor;
-import systems.reformcloud.reformcloud2.executor.controller.network.packets.out.ControllerPacketOutProcessDisconnected;
-import systems.reformcloud.reformcloud2.executor.controller.network.packets.out.ControllerPacketOutStartPreparedProcess;
-import systems.reformcloud.reformcloud2.executor.controller.network.packets.out.ControllerPacketOutStartProcess;
-import systems.reformcloud.reformcloud2.executor.controller.network.packets.out.ControllerPacketOutStopProcess;
-import systems.reformcloud.reformcloud2.executor.controller.network.packets.out.event.ControllerEventProcessClosed;
-import systems.reformcloud.reformcloud2.executor.controller.network.packets.out.event.ControllerEventProcessStarted;
-import systems.reformcloud.reformcloud2.executor.controller.network.packets.out.event.ControllerEventProcessUpdated;
 import systems.reformcloud.reformcloud2.executor.node.util.ProcessCopyOnWriteArrayList;
 
 import java.util.*;
@@ -121,9 +145,9 @@ public final class DefaultProcessManager implements ProcessManager {
         }
 
         this.processInformation.add(processInformation);
-        DefaultChannelManager.INSTANCE.get(processInformation.getProcessDetail().getParentName()).ifPresent(packetSender -> packetSender.sendPacket(new ControllerPacketOutStartProcess(processInformation, true)));
+        DefaultChannelManager.INSTANCE.get(processInformation.getProcessDetail().getParentName()).ifPresent(packetSender -> packetSender.sendPacket(new ControllerPacketStartProcess(processInformation, true)));
         //Send event packet to notify processes
-        DefaultChannelManager.INSTANCE.getAllSender().forEach(packetSender -> packetSender.sendPacket(new ControllerEventProcessStarted(processInformation)));
+        DefaultChannelManager.INSTANCE.getAllSender().forEach(packetSender -> packetSender.sendPacket(new EventPacketProcessStarted(processInformation)));
         ControllerExecutor.getInstance().getEventManager().callEvent(new ProcessStartedEvent(processInformation));
         return processInformation;
     }
@@ -133,7 +157,7 @@ public final class DefaultProcessManager implements ProcessManager {
     public synchronized ProcessInformation startProcess(@NotNull ProcessInformation processInformation) {
         if (processInformation.getProcessDetail().getProcessState().equals(ProcessState.PREPARED)) {
             DefaultChannelManager.INSTANCE.get(processInformation.getProcessDetail().getParentName()).ifPresent(
-                    e -> e.sendPacket(new ControllerPacketOutStartPreparedProcess(processInformation))
+                    e -> e.sendPacket(new ControllerPacketStartPreparedProcess(processInformation))
             );
         }
 
@@ -148,7 +172,7 @@ public final class DefaultProcessManager implements ProcessManager {
         }
 
         this.processInformation.add(processInformation);
-        DefaultChannelManager.INSTANCE.get(processInformation.getProcessDetail().getParentName()).ifPresent(packetSender -> packetSender.sendPacket(new ControllerPacketOutStartProcess(processInformation, false)));
+        DefaultChannelManager.INSTANCE.get(processInformation.getProcessDetail().getParentName()).ifPresent(packetSender -> packetSender.sendPacket(new ControllerPacketStartProcess(processInformation, false)));
         return processInformation;
     }
 
@@ -169,7 +193,7 @@ public final class DefaultProcessManager implements ProcessManager {
             return null;
         }
 
-        DefaultChannelManager.INSTANCE.get(processInformation.getProcessDetail().getParentName()).ifPresent(packetSender -> packetSender.sendPacket(new ControllerPacketOutStopProcess(processInformation.getProcessDetail().getProcessUniqueID())));
+        DefaultChannelManager.INSTANCE.get(processInformation.getProcessDetail().getParentName()).ifPresent(packetSender -> packetSender.sendPacket(new ControllerPacketStopProcess(processInformation.getProcessDetail().getProcessUniqueID())));
         return processInformation;
     }
 
@@ -196,7 +220,7 @@ public final class DefaultProcessManager implements ProcessManager {
             });
 
             if (bestTemplate.get() == null) {
-                bestTemplate.set(new Template(0, "default", false, FileBackend.NAME, "#", new RuntimeConfiguration(
+                bestTemplate.set(new Template(0, "default", false, FileTemplateBackend.NAME, "#", new RuntimeConfiguration(
                         512, new ArrayList<>(), new HashMap<>()
                 ), Version.PAPER_1_8_8));
 
@@ -263,7 +287,8 @@ public final class DefaultProcessManager implements ProcessManager {
                         template,
                         configuration.getMaxMemory() == null
                                 ? MemoryCalculator.calcMemory(configuration.getBase().getName(), template)
-                                : configuration.getMaxMemory()
+                                : configuration.getMaxMemory(),
+                        configuration.getInitialState()
                 ),
                 new NetworkInfo(
                         client.startHost(),
@@ -374,7 +399,7 @@ public final class DefaultProcessManager implements ProcessManager {
             });
         }
 
-        DefaultChannelManager.INSTANCE.getAllSender().forEach(packetSender -> packetSender.sendPacket(new ControllerEventProcessUpdated(processInformation)));
+        DefaultChannelManager.INSTANCE.getAllSender().forEach(packetSender -> packetSender.sendPacket(new EventPacketProcessUpdated(processInformation)));
         ControllerExecutor.getInstance().getEventManager().callEvent(new ProcessUpdatedEvent(processInformation));
     }
 
@@ -383,7 +408,7 @@ public final class DefaultProcessManager implements ProcessManager {
         final ProcessInformation info = getProcess(name);
         if (info != null) {
             DefaultChannelManager.INSTANCE.get(info.getProcessDetail().getParentName()).ifPresent(packetSender -> packetSender.sendPacket(
-                    new ControllerPacketOutProcessDisconnected(info.getProcessDetail().getProcessUniqueID()))
+                    new ControllerPacketProcessDisconnected(info.getProcessDetail().getProcessUniqueID()))
             );
 
             System.out.println(LanguageManager.get(
@@ -411,7 +436,9 @@ public final class DefaultProcessManager implements ProcessManager {
 
     // ==========================
     private void notifyDisconnect(ProcessInformation processInformation) {
-        DefaultChannelManager.INSTANCE.getAllSender().forEach(packetSender -> packetSender.sendPacket(new ControllerEventProcessClosed(processInformation)));
+        DefaultChannelManager.INSTANCE
+                .getAllSender()
+                .forEach(packetSender -> packetSender.sendPacket(new EventPacketProcessClosed(processInformation)));
         ControllerExecutor.getInstance().getEventManager().callEvent(new ProcessStoppedEvent(processInformation));
     }
 

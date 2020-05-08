@@ -1,10 +1,37 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) ReformCloud-Team
+ * Copyright (c) contributors
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 package systems.reformcloud.reformcloud2.executor.api.common.process.running;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import systems.reformcloud.reformcloud2.executor.api.common.CommonHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.base.Conditions;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Version;
+import systems.reformcloud.reformcloud2.executor.api.common.groups.template.backend.TemplateBackend;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.backend.TemplateBackendManager;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.inclusion.Inclusion;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
@@ -15,6 +42,8 @@ import systems.reformcloud.reformcloud2.executor.api.common.process.running.even
 import systems.reformcloud.reformcloud2.executor.api.common.process.running.events.RunningProcessStartedEvent;
 import systems.reformcloud.reformcloud2.executor.api.common.process.running.events.RunningProcessStoppedEvent;
 import systems.reformcloud.reformcloud2.executor.api.common.process.running.inclusions.InclusionLoader;
+import systems.reformcloud.reformcloud2.executor.api.common.process.running.screen.DefaultRunningProcessScreen;
+import systems.reformcloud.reformcloud2.executor.api.common.process.running.screen.RunningProcessScreen;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.PortUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.StringUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Duo;
@@ -26,8 +55,10 @@ import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.defaults.DefaultTask;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -35,6 +66,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public abstract class SharedRunningProcess implements RunningProcess {
@@ -44,6 +77,15 @@ public abstract class SharedRunningProcess implements RunningProcess {
      */
     private static final String LIB_PATH = Paths.get("").toAbsolutePath().toString();
 
+    private static final Pattern IP_PATTERN = Pattern.compile(
+            "(?<!\\d|\\d\\.)" +
+                    "(?:[01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
+                    "(?:[01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
+                    "(?:[01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
+                    "(?:[01]?\\d\\d?|2[0-4]\\d|25[0-5])" +
+                    "(?!\\d|\\.\\d)"
+    );
+
     /**
      * Creates a new shared process
      *
@@ -51,6 +93,7 @@ public abstract class SharedRunningProcess implements RunningProcess {
      */
     public SharedRunningProcess(@NotNull ProcessInformation processInformation) {
         this.startupInformation = processInformation;
+        this.runningProcessScreen = new DefaultRunningProcessScreen(this);
 
         if (processInformation.getProcessGroup().isStaticProcess()) {
             this.path = Paths.get("reformcloud/static/" + processInformation.getProcessDetail().getName());
@@ -83,6 +126,11 @@ public abstract class SharedRunningProcess implements RunningProcess {
      * The startup time of the process ({@code -1} if it's not started yet)
      */
     protected long startupTime = -1;
+
+    /**
+     * The screen of the current running process
+     */
+    protected RunningProcessScreen runningProcessScreen;
 
     /**
      * If the process got started the first time
@@ -243,14 +291,41 @@ public abstract class SharedRunningProcess implements RunningProcess {
 
     @Override
     public void copy() {
+        this.copy(
+                this.startupInformation.getProcessDetail().getTemplate().getName(),
+                this.startupInformation.getProcessDetail().getTemplate().getBackend(),
+                this.startupInformation.getProcessGroup().getName()
+        );
+    }
+
+    @Override
+    public void copy(@NotNull String targetTemplate, @NotNull String targetTemplateStorage, @NotNull String targetTemplateGroup) {
         this.sendCommand("save-all");
         AbsoluteThread.sleep(TimeUnit.SECONDS, 1);
-        TemplateBackendManager.getOrDefault(this.startupInformation.getProcessDetail().getTemplate().getBackend()).deployTemplate(
-                this.startupInformation.getProcessGroup().getName(),
-                this.startupInformation.getProcessDetail().getTemplate().getName(),
+
+        TemplateBackend backend = TemplateBackendManager.getOrDefault(targetTemplateStorage);
+        backend.createTemplate(targetTemplateGroup, targetTemplate);
+
+        backend.deployTemplate(
+                targetTemplateGroup,
+                targetTemplate,
                 this.path,
                 this.startupInformation.getPreInclusions().stream().map(ProcessInclusion::getName).collect(Collectors.toList())
         );
+    }
+
+    @NotNull
+    @Override
+    public String uploadLog() {
+        String lines = this.getLogLines();
+
+        String result = this.uploadLog0("https://paste.reformcloud.systems", lines);
+        if (result != null) {
+            return result;
+        }
+
+        result = this.uploadLog0("https://just-paste.it", lines);
+        return result == null ? "Unable to upload log" : result;
     }
 
     @NotNull
@@ -263,6 +338,12 @@ public abstract class SharedRunningProcess implements RunningProcess {
     @Override
     public ProcessInformation getProcessInformation() {
         return this.startupInformation;
+    }
+
+    @NotNull
+    @Override
+    public RunningProcessScreen getProcessScreen() {
+        return this.runningProcessScreen;
     }
 
     @Override
@@ -345,6 +426,69 @@ public abstract class SharedRunningProcess implements RunningProcess {
                 this.startupInformation.getProcessDetail().getTemplate().getName(),
                 this.path
         ).awaitUninterruptedly();
+    }
+
+    @Nullable
+    private String uploadLog0(@NotNull String pasteServerUrl, @NotNull String text) {
+        text = "Process: " +
+                this.getProcessInformation().toString() +
+                "\n" +
+                "Running on: " +
+                this.getProcessInformation().getProcessDetail().getParentName() +
+                "/" +
+                this.getProcessInformation().getProcessDetail().getParentUniqueID() +
+                "\n" +
+                "Process started: " + this.getProcess().isPresent() +
+                "\n" +
+                "Start time: " + (this.getProcess().isEmpty() ? "-1" : CommonHelper.DATE_FORMAT.format(this.getStartupTime())) +
+                "\n\n" + text;
+
+        try {
+            HttpURLConnection connection = (HttpURLConnection) new URL(pasteServerUrl + "/documents").openConnection();
+            connection.setRequestProperty(
+                    "User-Agent",
+                    "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.95 Safari/537.11"
+            );
+            connection.setRequestMethod("POST");
+            connection.setDoOutput(true);
+            connection.connect();
+
+            try (OutputStream stream = connection.getOutputStream()) {
+                stream.write(text.getBytes(StandardCharsets.UTF_8));
+                stream.flush();
+            }
+
+            if (connection.getResponseCode() != 201) {
+                return null;
+            }
+
+            try (BufferedReader stream = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
+                String lines = stream.lines().collect(Collectors.joining("\n"));
+                return pasteServerUrl + '/' + new JsonConfiguration(lines).getString("key");
+            }
+        } catch (final IOException ex) {
+            ex.printStackTrace();
+            return null;
+        }
+    }
+
+    @NotNull
+    private String getLogLines() {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        for (String cachedLogLine : this.getProcessScreen().getLastLogLines()) {
+            Matcher matcher = IP_PATTERN.matcher(cachedLogLine);
+            if (matcher.find()) {
+                String ip = matcher.group();
+                stringBuilder.append(cachedLogLine.replace(ip, "***.***.***.***"));
+            } else {
+                stringBuilder.append(cachedLogLine);
+            }
+
+            stringBuilder.append("\n");
+        }
+
+        return stringBuilder.toString();
     }
 
     @Override

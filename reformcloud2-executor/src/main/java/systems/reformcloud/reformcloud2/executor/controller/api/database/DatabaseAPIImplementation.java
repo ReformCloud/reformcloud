@@ -1,6 +1,31 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) ReformCloud-Team
+ * Copyright (c) contributors
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 package systems.reformcloud.reformcloud2.executor.controller.api.database;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.common.api.database.DatabaseAsyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.database.DatabaseSyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
@@ -9,6 +34,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.database.DatabaseRea
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.defaults.DefaultTask;
 
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
 public class DatabaseAPIImplementation implements DatabaseAsyncAPI, DatabaseSyncAPI {
@@ -98,6 +124,30 @@ public class DatabaseAPIImplementation implements DatabaseAsyncAPI, DatabaseSync
 
     @NotNull
     @Override
+    public Task<Void> updateAsync(@NotNull String table, @Nullable String key, @Nullable String identifier, @NotNull JsonConfiguration newData) {
+        return Task.supply(() -> {
+            DatabaseReader reader = this.database.createForTable(table);
+            if (reader == null) {
+                return null;
+            }
+
+            if (key != null) {
+                Boolean success = reader.update(key, newData).getUninterruptedly(TimeUnit.SECONDS, 5);
+                if (success != null && success) {
+                    return null;
+                }
+            }
+
+            if (identifier != null) {
+                reader.updateIfAbsent(identifier, newData);
+            }
+
+            return null;
+        });
+    }
+
+    @NotNull
+    @Override
     public Task<Void> removeAsync(@NotNull String table, @NotNull String key) {
         DatabaseReader databaseReader = database.createForTable(table);
         if (databaseReader == null) {
@@ -116,6 +166,27 @@ public class DatabaseAPIImplementation implements DatabaseAsyncAPI, DatabaseSync
         }
 
         return databaseReader.removeIfAbsent(identifier);
+    }
+
+    @NotNull
+    @Override
+    public Task<Void> removeAsync(@NotNull String table, @Nullable String key, @Nullable String identifier) {
+        return Task.supply(() -> {
+            DatabaseReader reader = this.database.createForTable(table);
+            if (reader == null) {
+                return null;
+            }
+
+            if (key != null) {
+                reader.remove(key);
+            }
+
+            if (identifier != null) {
+                reader.removeIfAbsent(identifier);
+            }
+
+            return null;
+        });
     }
 
     @NotNull
@@ -184,6 +255,11 @@ public class DatabaseAPIImplementation implements DatabaseAsyncAPI, DatabaseSync
     }
 
     @Override
+    public void update(@NotNull String table, @Nullable String key, @Nullable String identifier, @NotNull JsonConfiguration newData) {
+        this.updateAsync(table, key, identifier, newData).awaitUninterruptedly();
+    }
+
+    @Override
     public void remove(@NotNull String table, @NotNull String key) {
         removeAsync(table, key).awaitUninterruptedly();
     }
@@ -191,6 +267,11 @@ public class DatabaseAPIImplementation implements DatabaseAsyncAPI, DatabaseSync
     @Override
     public void removeIfAbsent(@NotNull String table, @NotNull String identifier) {
         removeIfAbsentAsync(table, identifier).awaitUninterruptedly();
+    }
+
+    @Override
+    public void remove(@NotNull String table, @Nullable String key, @Nullable String identifier) {
+        this.removeAsync(table, key, identifier).awaitUninterruptedly();
     }
 
     @Override

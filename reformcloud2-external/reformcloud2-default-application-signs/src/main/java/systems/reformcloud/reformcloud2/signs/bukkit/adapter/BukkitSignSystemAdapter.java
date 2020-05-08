@@ -1,3 +1,27 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) ReformCloud-Team
+ * Copyright (c) contributors
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 package systems.reformcloud.reformcloud2.signs.bukkit.adapter;
 
 import org.bukkit.Bukkit;
@@ -7,7 +31,6 @@ import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
-import org.bukkit.block.data.Directional;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
 import org.bukkit.material.MaterialData;
@@ -26,8 +49,7 @@ import systems.reformcloud.reformcloud2.signs.util.sign.CloudSign;
 import systems.reformcloud.reformcloud2.signs.util.sign.config.SignConfig;
 import systems.reformcloud.reformcloud2.signs.util.sign.config.SignSubLayout;
 
-import javax.annotation.Nonnull;
-import java.util.Optional;
+import java.lang.reflect.Method;
 
 public class BukkitSignSystemAdapter extends SharedSignSystemAdapter<Sign> {
 
@@ -45,21 +67,22 @@ public class BukkitSignSystemAdapter extends SharedSignSystemAdapter<Sign> {
         Conditions.isTrue(signs != null);
         signs.setExecutor(new BukkitCommandSigns());
         signs.setPermission("reformcloud.command.signs");
-
-        Bukkit.getMessenger().registerOutgoingPluginChannel(plugin, "BungeeCord");
     }
 
     private final Plugin plugin;
 
     @Override
-    protected void setSignLines(@Nullable Sign sign, @NotNull String[] lines) {
-        if (sign != null && lines.length == 4) {
-            for (int i = 0; i < 4; i++) {
-                sign.setLine(i, lines[i]);
-            }
+    protected void setSignLines(@NotNull CloudSign cloudSign, @NotNull String[] lines) {
+        this.run(() -> {
+            Sign sign = this.getSignConverter().from(cloudSign);
+            if (sign != null && lines.length == 4) {
+                for (int i = 0; i < 4; i++) {
+                    sign.setLine(i, lines[i]);
+                }
 
-            sign.update();
-        }
+                sign.update();
+            }
+        });
     }
 
     @Override
@@ -73,8 +96,8 @@ public class BukkitSignSystemAdapter extends SharedSignSystemAdapter<Sign> {
         return BukkitSignConverter.INSTANCE;
     }
 
-    @Nonnull
-    protected String replaceAll(@Nonnull String line, @Nonnull String group, ProcessInformation processInformation) {
+    @NotNull
+    protected String replaceAll(@NotNull String line, @NotNull String group, ProcessInformation processInformation) {
         if (processInformation == null) {
             line = line.replace("%group%", group);
             return ChatColor.translateAlternateColorCodes('&', line);
@@ -85,68 +108,64 @@ public class BukkitSignSystemAdapter extends SharedSignSystemAdapter<Sign> {
 
     @Override
     public void changeBlock(@NotNull CloudSign sign, @NotNull SignSubLayout layout) {
-        Sign bukkit = this.getSignConverter().from(sign);
-        if (bukkit != null) {
-            if (Bukkit.isPrimaryThread()) {
+        this.run(() -> {
+            Sign bukkit = this.getSignConverter().from(sign);
+            if (bukkit != null) {
                 this.changeBlockBehind(bukkit, layout);
-            } else {
-                Bukkit.getScheduler().runTask(this.plugin, () -> this.changeBlockBehind(bukkit, layout));
             }
-        }
-    }
-
-    private void changeBlockBehind(Sign sign, SignSubLayout layout) {
-        BlockFace blockFace = null;
-
-        try {
-            org.bukkit.material.Sign signData = (org.bukkit.material.Sign) sign.getData();
-            if (signData.isWallSign()) {
-                blockFace = signData.getFacing();
-            }
-        } catch (final Throwable throwable) {
-            if (sign.getBlockData() instanceof Directional) {
-                Directional directional = (Directional) sign.getBlockData();
-                blockFace = directional.getFacing();
-            }
-        }
-
-        getRelative(blockFace).ifPresent(e -> {
-            Material material = Material.getMaterial(layout.getBlock());
-            if (material == null) {
-                return;
-            }
-
-            BlockState back = sign.getBlock().getRelative(e).getState();
-            back.setType(material);
-            back.setData(new MaterialData(material, (byte) layout.getSubID()));
-            back.update(true);
         });
     }
 
-    private Optional<BlockFace> getRelative(BlockFace face) {
-        if (face == null) {
-            return Optional.empty();
-        }
+    @Override
+    public void cleanSigns() {
+        this.run(() -> super.cleanSigns());
+    }
 
-        switch (face) {
-            case EAST: {
-                return Optional.of(BlockFace.WEST);
-            }
+    private void changeBlockBehind(@NotNull Sign sign, @NotNull SignSubLayout layout) {
+        BlockState blockState = sign.getLocation().getBlock().getState();
+        BlockFace blockFace = this.getSignFacing(blockState);
 
-            case WEST: {
-                return Optional.of(BlockFace.EAST);
-            }
-
-            case NORTH: {
-                return Optional.of(BlockFace.SOUTH);
-            }
-
-            case SOUTH: {
-                return Optional.of(BlockFace.NORTH);
+        if (blockFace == null) {
+            MaterialData data = blockState.getData();
+            if (data instanceof org.bukkit.material.Sign) {
+                org.bukkit.material.Sign materialSign = (org.bukkit.material.Sign) data;
+                blockFace = materialSign.isWallSign() ? materialSign.getFacing() : BlockFace.UP;
             }
         }
 
-        return Optional.empty();
+        if (blockFace == null) {
+            return;
+        }
+
+        BlockState back = sign.getLocation().getBlock().getRelative(blockFace.getOppositeFace()).getState();
+        Material material = Material.getMaterial(layout.getBlock().toUpperCase());
+        if (material == null || !material.isBlock()) {
+            return;
+        }
+
+        back.setType(material);
+        if (layout.getSubID() > -1) {
+            back.setData(new MaterialData(material, (byte) layout.getSubID()));
+        }
+        back.update(true);
+    }
+
+    @Nullable
+    private BlockFace getSignFacing(@NotNull BlockState blockState) {
+        try {
+            Method getBlockDataMethod = BlockState.class.getDeclaredMethod("getBlockData");
+            Object blockData = getBlockDataMethod.invoke(blockState);
+
+            Class<?> wallSignClass = Class.forName("org.bukkit.block.data.type.WallSign");
+            if (wallSignClass.isInstance(blockData)) {
+                Method getFacingMethod = wallSignClass.getMethod("getFacing");
+                return (BlockFace) getFacingMethod.invoke(blockData);
+            }
+
+            return BlockFace.UP;
+        } catch (final ReflectiveOperationException ex) {
+            return null;
+        }
     }
 
     private void restartTask() {
@@ -184,6 +203,14 @@ public class BukkitSignSystemAdapter extends SharedSignSystemAdapter<Sign> {
                         ));
             }
         }, 20, 5);
+    }
+
+    private void run(@NotNull Runnable runnable) {
+        if (Bukkit.isPrimaryThread()) {
+            runnable.run();
+        } else {
+            Bukkit.getScheduler().runTask(this.plugin, runnable);
+        }
     }
 
     public static BukkitSignSystemAdapter getInstance() {

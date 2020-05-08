@@ -1,7 +1,32 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) ReformCloud-Team
+ * Copyright (c) contributors
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 package systems.reformcloud.reformcloud2.executor.node.process;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import systems.reformcloud.reformcloud2.executor.api.common.api.basic.packets.shared.EventPacketProcessUpdated;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Template;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
@@ -12,40 +37,27 @@ import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInfor
 import systems.reformcloud.reformcloud2.executor.api.common.process.api.ProcessConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.process.detail.ProcessDetail;
 import systems.reformcloud.reformcloud2.executor.api.common.process.running.RunningProcess;
+import systems.reformcloud.reformcloud2.executor.api.common.process.running.manager.SharedRunningProcessManager;
 import systems.reformcloud.reformcloud2.executor.api.common.process.util.MemoryCalculator;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
 import systems.reformcloud.reformcloud2.executor.api.node.process.NodeProcessManager;
-import systems.reformcloud.reformcloud2.executor.controller.network.packets.out.event.ControllerEventProcessUpdated;
 import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
 import systems.reformcloud.reformcloud2.executor.node.network.packet.out.PacketOutHeadNodeStartProcess;
 import systems.reformcloud.reformcloud2.executor.node.process.basic.BasicLocalNodeProcess;
-import systems.reformcloud.reformcloud2.executor.node.process.manager.LocalProcessManager;
 import systems.reformcloud.reformcloud2.executor.node.process.startup.LocalProcessQueue;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public final class LocalNodeProcessManager implements NodeProcessManager {
 
-    private final Set<ProcessInformation> information = Collections.synchronizedSet(new HashSet<ProcessInformation>() {
-        @Override
-        public Stream<ProcessInformation> stream() {
-            synchronized (this) {
-                return super.stream();
-            }
-        }
-
-        @Override
-        @NotNull
-        public Iterator<ProcessInformation> iterator() {
-            synchronized (this) {
-                return super.iterator();
-            }
-        }
-    });
+    private final Collection<ProcessInformation> information = new CopyOnWriteArrayList<>();
 
     @Nullable
     @Override
@@ -94,7 +106,7 @@ public final class LocalNodeProcessManager implements NodeProcessManager {
     @Nullable
     @Override
     public ProcessInformation stopLocalProcess(@NotNull String name) {
-        List<RunningProcess> processes = LocalProcessManager.getNodeProcesses()
+        List<RunningProcess> processes = SharedRunningProcessManager.getAllProcesses()
                 .stream()
                 .filter(e -> e.getProcessInformation().getProcessDetail().getName().equals(name))
                 .collect(Collectors.toList());
@@ -109,7 +121,7 @@ public final class LocalNodeProcessManager implements NodeProcessManager {
     @Nullable
     @Override
     public ProcessInformation stopLocalProcess(@NotNull UUID uuid) {
-        List<RunningProcess> processes = LocalProcessManager.getNodeProcesses()
+        List<RunningProcess> processes = SharedRunningProcessManager.getAllProcesses()
                 .stream()
                 .filter(e -> e.getProcessInformation().getProcessDetail().getProcessUniqueID().equals(uuid))
                 .collect(Collectors.toList());
@@ -177,11 +189,13 @@ public final class LocalNodeProcessManager implements NodeProcessManager {
 
     @Override
     public void handleProcessStart(@NotNull ProcessInformation processInformation) {
+        this.information.remove(processInformation);
         this.information.add(processInformation);
     }
 
     @Override
     public void handleProcessUpdate(@NotNull ProcessInformation processInformation) {
+        this.information.remove(processInformation);
         this.information.add(processInformation);
     }
 
@@ -193,7 +207,7 @@ public final class LocalNodeProcessManager implements NodeProcessManager {
             }
 
             DefaultChannelManager.INSTANCE.get(processInformation.getProcessDetail().getName()).ifPresent(
-                    e -> e.sendPacket(new ControllerEventProcessUpdated(processInformation))
+                    e -> e.sendPacket(new EventPacketProcessUpdated(processInformation))
             );
         });
     }
@@ -387,7 +401,8 @@ public final class LocalNodeProcessManager implements NodeProcessManager {
                         template,
                         configuration.getMaxMemory() == null
                                 ? MemoryCalculator.calcMemory(configuration.getBase().getName(), template)
-                                : configuration.getMaxMemory()
+                                : configuration.getMaxMemory(),
+                        configuration.getInitialState()
                 ),
                 new NetworkInfo(
                         NodeExecutor.getInstance().getNodeConfig().getStartHost(),
