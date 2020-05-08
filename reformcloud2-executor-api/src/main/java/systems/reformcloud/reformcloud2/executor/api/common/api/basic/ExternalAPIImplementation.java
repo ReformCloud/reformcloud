@@ -106,7 +106,7 @@ public abstract class ExternalAPIImplementation extends ExecutorAPI implements
 
     public static final int EXTERNAL_PACKET_ID = 600;
 
-    public static final int EXTERNAL_PACKET_QUERY_RESULT_ID = 800;
+    public static final int EXTERNAL_PACKET_QUERY_RESULT_ID = 900;
 
     private final GeneralAPI generalAPI = new GeneralAPI(this);
 
