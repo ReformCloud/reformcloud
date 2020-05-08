@@ -89,6 +89,7 @@ public class LocalProcessQueue extends AbsoluteThread {
     private boolean isMemoryFree(int memory) {
         int current = SharedRunningProcessManager.getAllProcesses()
                 .stream()
+                .filter(e -> e.getProcess().isPresent())
                 .mapToInt(e -> e.getProcessInformation().getProcessDetail().getMaxMemory())
                 .sum() + memory;
         return NodeExecutor.getInstance().getNodeConfig().getMaxMemory() >= current;

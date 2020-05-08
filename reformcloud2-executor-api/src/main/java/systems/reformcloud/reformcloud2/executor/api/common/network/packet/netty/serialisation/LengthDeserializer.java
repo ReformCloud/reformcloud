@@ -47,21 +47,18 @@ public final class LengthDeserializer extends ByteToMessageDecoder {
 
             bytes[i] = byteBuf.readByte();
             if (bytes[i] >= 0) {
-                int length = NetworkUtil.read(Unpooled.wrappedBuffer(bytes));
-                if (length == 0 || byteBuf.readableBytes() < length) {
-                    byteBuf.resetReaderIndex();
-                    return;
-                }
+                ByteBuf wrappedBuffer = Unpooled.wrappedBuffer(bytes);
+                try {
+                    int length = NetworkUtil.read(wrappedBuffer);
+                    if (length == 0 || byteBuf.readableBytes() < length) {
+                        byteBuf.resetReaderIndex();
+                        return;
+                    }
 
-                if (byteBuf.hasMemoryAddress()) {
-                    list.add(byteBuf.slice(byteBuf.readerIndex(), length).retain());
-                    byteBuf.skipBytes(length);
-                    return;
+                    list.add(byteBuf.readBytes(length));
+                } finally {
+                    wrappedBuffer.release();
                 }
-
-                ByteBuf channel = channelHandlerContext.alloc().directBuffer(length);
-                channel.readBytes(byteBuf);
-                list.add(channel);
 
                 return;
             }
