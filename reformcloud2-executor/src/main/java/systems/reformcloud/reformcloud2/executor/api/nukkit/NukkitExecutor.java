@@ -25,6 +25,7 @@
 package systems.reformcloud.reformcloud2.executor.api.nukkit;
 
 import cn.nukkit.Server;
+import cn.nukkit.level.Level;
 import cn.nukkit.level.Location;
 import cn.nukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
@@ -234,7 +235,14 @@ public final class NukkitExecutor extends API implements PlayerAPIExecutor {
 
     @Override
     public void executeTeleport(UUID player, String world, double x, double y, double z, float yaw, float pitch) {
-        Server.getInstance().getPlayer(player).ifPresent(player1 -> player1.teleport(new Location(x, y, z, yaw, pitch)));
+        Server.getInstance().getPlayer(player).ifPresent(player1 -> {
+            Level level = Server.getInstance().getLevel(world);
+            if (level == null) {
+                return;
+            }
+
+            player1.teleport(Location.from((float) x, (float) y, (float) z, yaw, pitch, level));
+        });
     }
 
     @Override
