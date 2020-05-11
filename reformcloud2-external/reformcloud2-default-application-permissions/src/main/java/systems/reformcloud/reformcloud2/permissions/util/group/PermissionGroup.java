@@ -26,6 +26,7 @@ package systems.reformcloud.reformcloud2.permissions.util.group;
 
 import com.google.gson.reflect.TypeToken;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.common.network.SerializableObject;
 import systems.reformcloud.reformcloud2.executor.api.common.network.data.ProtocolBuffer;
 import systems.reformcloud.reformcloud2.permissions.util.basic.checks.GeneralCheck;
@@ -35,6 +36,7 @@ import systems.reformcloud.reformcloud2.permissions.util.permission.PermissionNo
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 public class PermissionGroup implements SerializableObject {
 
@@ -65,6 +67,14 @@ public class PermissionGroup implements SerializableObject {
 
     private int priority;
 
+    private @Nullable String prefix;
+
+    private @Nullable String suffix;
+
+    private @Nullable String display;
+
+    private @Nullable String colour;
+
     @NotNull
     public Collection<PermissionNode> getPermissionNodes() {
         return permissionNodes;
@@ -93,6 +103,42 @@ public class PermissionGroup implements SerializableObject {
         this.priority = priority;
     }
 
+    @NotNull
+    public Optional<String> getPrefix() {
+        return Optional.ofNullable(this.prefix);
+    }
+
+    @NotNull
+    public Optional<String> getSuffix() {
+        return Optional.ofNullable(this.suffix);
+    }
+
+    @NotNull
+    public Optional<String> getDisplay() {
+        return Optional.ofNullable(this.display);
+    }
+
+    @NotNull
+    public Optional<String> getColour() {
+        return Optional.ofNullable(this.colour);
+    }
+
+    public void setPrefix(@Nullable String prefix) {
+        this.prefix = prefix;
+    }
+
+    public void setSuffix(@Nullable String suffix) {
+        this.suffix = suffix;
+    }
+
+    public void setDisplay(@Nullable String display) {
+        this.display = display;
+    }
+
+    public void setColour(@Nullable String colour) {
+        this.colour = colour;
+    }
+
     public boolean hasPermission(@NotNull String perm) {
         if (WildcardCheck.hasWildcardPermission(this, perm)) {
             return true;
@@ -114,6 +160,11 @@ public class PermissionGroup implements SerializableObject {
         buffer.writeStringArray(this.subGroups);
         buffer.writeString(this.name);
         buffer.writeInt(this.priority);
+
+        buffer.writeString(this.prefix);
+        buffer.writeString(this.suffix);
+        buffer.writeString(this.display);
+        buffer.writeString(this.colour);
     }
 
     @Override
@@ -129,5 +180,10 @@ public class PermissionGroup implements SerializableObject {
         this.subGroups = buffer.readStringArray();
         this.name = buffer.readString();
         this.priority = buffer.readInt();
+
+        this.prefix = buffer.readString();
+        this.suffix = buffer.readString();
+        this.display = buffer.readString();
+        this.colour = buffer.readString();
     }
 }
