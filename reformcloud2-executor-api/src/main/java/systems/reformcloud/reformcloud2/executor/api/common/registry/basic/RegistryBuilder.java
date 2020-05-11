@@ -30,12 +30,12 @@ import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonCo
 import systems.reformcloud.reformcloud2.executor.api.common.registry.Registry;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.system.SystemHelper;
 
-import java.io.File;
+import java.io.IOException;
+import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.function.Function;
@@ -46,7 +46,8 @@ public final class RegistryBuilder {
         throw new UnsupportedOperationException();
     }
 
-    public static Registry newRegistry(Path operatingFolder) {
+    @NotNull
+    public static Registry newRegistry(@NotNull Path operatingFolder) {
         return new RegistryImpl(operatingFolder);
     }
 
@@ -64,12 +65,10 @@ public final class RegistryBuilder {
         public <T> T createKey(@NotNull String keyName, @NotNull T t) {
             Path target = Paths.get(folder + "/" + keyName + ".json");
             if (Files.exists(target)) {
-                return null;
+                return t;
             }
 
-            new JsonConfiguration()
-                    .add("key", t)
-                    .write(target);
+            new JsonConfiguration().add("key", t).write(target);
             return t;
         }
 
@@ -80,7 +79,8 @@ public final class RegistryBuilder {
                 return null;
             }
 
-            return JsonConfiguration.read(target).get("key", new TypeToken<T>() {});
+            return JsonConfiguration.read(target).get("key", new TypeToken<T>() {
+            });
         }
 
         @Override
@@ -109,17 +109,15 @@ public final class RegistryBuilder {
                 return Collections.emptyList();
             }
 
-            File[] files = folder.toFile().listFiles();
-            if (files == null) {
-                return Collections.emptyList();
+            final Collection<T> out = new ArrayList<>();
+            try (DirectoryStream<Path> stream = Files.newDirectoryStream(folder)) {
+                for (Path path : stream) {
+                    out.add(function.apply(JsonConfiguration.read(path)));
+                }
+            } catch (final IOException exception) {
+                exception.printStackTrace();
             }
 
-            final Collection<T> out = new ArrayList<>();
-            Arrays.stream(files)
-                    .map(file -> {
-                        JsonConfiguration configuration = JsonConfiguration.read(file);
-                        return function.apply(configuration);
-                    }).forEach(out::add);
             return out;
         }
     }
