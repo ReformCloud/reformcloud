@@ -33,7 +33,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.groups.template.incl
 import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.AutomaticStartupConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.PlayerAccessConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.StartupConfiguration;
-import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.StartupEnvironment;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -67,7 +66,7 @@ public final class DefaultProcessGroup extends ProcessGroup {
                         1,
                         0,
                         port,
-                        StartupEnvironment.JAVA_RUNTIME,
+                        "java",
                         true,
                         Collections.emptyList()
                 ), Collections.singletonList(new Template(
@@ -106,7 +105,7 @@ public final class DefaultProcessGroup extends ProcessGroup {
                         min,
                         0,
                         port,
-                        StartupEnvironment.JAVA_RUNTIME,
+                        "java",
                         true,
                         Collections.emptyList()
                 ), Collections.singletonList(new Template(
@@ -147,7 +146,7 @@ public final class DefaultProcessGroup extends ProcessGroup {
                         prepared,
                         priority,
                         port,
-                        StartupEnvironment.JAVA_RUNTIME,
+                        "java",
                         AutomaticStartupConfiguration.defaults(),
                         clients.isEmpty(),
                         clients

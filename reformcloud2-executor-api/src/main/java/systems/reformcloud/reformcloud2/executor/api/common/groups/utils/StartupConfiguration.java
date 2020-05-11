@@ -39,22 +39,22 @@ public final class StartupConfiguration implements SerializableObject {
     }
 
     public StartupConfiguration(int maxOnlineProcesses, int minOnlineProcesses, int startupPriority,
-                                int startPort, StartupEnvironment startupEnvironment,
+                                int startPort, String jvmCommand,
                                 boolean searchBestClientAlone, List<String> useOnlyTheseClients) {
-        this(maxOnlineProcesses, minOnlineProcesses, startupPriority, startPort, startupEnvironment,
+        this(maxOnlineProcesses, minOnlineProcesses, startupPriority, startPort, jvmCommand,
                 AutomaticStartupConfiguration.defaults(), searchBestClientAlone, useOnlyTheseClients);
     }
 
     public StartupConfiguration(int maxOnlineProcesses, int minOnlineProcesses, int startupPriority,
-                                int startPort, StartupEnvironment startupEnvironment,
+                                int startPort, String jvmCommand,
                                 AutomaticStartupConfiguration automaticStartupConfiguration,
                                 boolean searchBestClientAlone, List<String> useOnlyTheseClients) {
-        this(maxOnlineProcesses, minOnlineProcesses, 1, startupPriority, startPort, startupEnvironment,
+        this(maxOnlineProcesses, minOnlineProcesses, 1, startupPriority, startPort, jvmCommand,
                 automaticStartupConfiguration, searchBestClientAlone, useOnlyTheseClients);
     }
 
     public StartupConfiguration(int maxOnlineProcesses, int minOnlineProcesses, int alwaysPreparedProcesses,
-                                int startupPriority, int startPort, StartupEnvironment startupEnvironment,
+                                int startupPriority, int startPort, String jvmCommand,
                                 AutomaticStartupConfiguration automaticStartupConfiguration,
                                 boolean searchBestClientAlone, List<String> useOnlyTheseClients) {
         this.maxOnlineProcesses = maxOnlineProcesses;
@@ -62,7 +62,7 @@ public final class StartupConfiguration implements SerializableObject {
         this.alwaysPreparedProcesses = alwaysPreparedProcesses;
         this.startupPriority = startupPriority;
         this.startPort = startPort;
-        this.startupEnvironment = startupEnvironment;
+        this.jvmCommand = jvmCommand;
         this.automaticStartupConfiguration = automaticStartupConfiguration;
         this.searchBestClientAlone = searchBestClientAlone;
         this.useOnlyTheseClients = useOnlyTheseClients;
@@ -78,7 +78,7 @@ public final class StartupConfiguration implements SerializableObject {
 
     private int startPort;
 
-    private StartupEnvironment startupEnvironment;
+    private String jvmCommand;
 
     private AutomaticStartupConfiguration automaticStartupConfiguration;
 
@@ -106,8 +106,8 @@ public final class StartupConfiguration implements SerializableObject {
         return startPort;
     }
 
-    public StartupEnvironment getStartupEnvironment() {
-        return startupEnvironment;
+    public String getJvmCommand() {
+        return jvmCommand == null ? "java" : jvmCommand;
     }
 
     @NotNull
@@ -159,7 +159,7 @@ public final class StartupConfiguration implements SerializableObject {
                 getStartupPriority() == that.getStartupPriority() &&
                 getStartPort() == that.getStartPort() &&
                 isSearchBestClientAlone() == that.isSearchBestClientAlone() &&
-                getStartupEnvironment() == that.getStartupEnvironment() &&
+                getJvmCommand().equals(that.getJvmCommand()) &&
                 Objects.equals(getUseOnlyTheseClients(), that.getUseOnlyTheseClients());
     }
 
@@ -170,7 +170,7 @@ public final class StartupConfiguration implements SerializableObject {
         buffer.writeInt(this.alwaysPreparedProcesses);
         buffer.writeInt(this.startupPriority);
         buffer.writeInt(this.startPort);
-        buffer.writeInt(this.startupEnvironment.ordinal());
+        buffer.writeString(this.jvmCommand);
         buffer.writeObject(this.automaticStartupConfiguration);
         buffer.writeBoolean(this.searchBestClientAlone);
         buffer.writeStringArray(this.useOnlyTheseClients);
@@ -183,7 +183,7 @@ public final class StartupConfiguration implements SerializableObject {
         this.alwaysPreparedProcesses = buffer.readInt();
         this.startupPriority = buffer.readInt();
         this.startPort = buffer.readInt();
-        this.startupEnvironment = StartupEnvironment.values()[buffer.readInt()];
+        this.jvmCommand = buffer.readString();
         this.automaticStartupConfiguration = buffer.readObject(AutomaticStartupConfiguration.class);
         this.searchBestClientAlone = buffer.readBoolean();
         this.useOnlyTheseClients = buffer.readStringArray();

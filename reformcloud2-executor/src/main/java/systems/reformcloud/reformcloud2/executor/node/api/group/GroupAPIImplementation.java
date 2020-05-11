@@ -35,7 +35,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Template;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.PlayerAccessConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.StartupConfiguration;
-import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.StartupEnvironment;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.defaults.DefaultTask;
@@ -86,7 +85,7 @@ public class GroupAPIImplementation implements GroupAsyncAPI, GroupSyncAPI {
     public Task<ProcessGroup> createProcessGroupAsync(@NotNull String name, @NotNull List<Template> templates) {
         return createProcessGroupAsync(name, templates, new StartupConfiguration(
                 -1, 1, 1, templates.isEmpty() ? 41000 : templates.get(0).getVersion().getDefaultPort(),
-                StartupEnvironment.JAVA_RUNTIME, true, new ArrayList<>()
+                "java", true, new ArrayList<>()
         ));
     }
 
