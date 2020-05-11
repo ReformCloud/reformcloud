@@ -28,8 +28,7 @@ import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.commands.config.CommandsConfig;
 import systems.reformcloud.reformcloud2.executor.api.common.base.Conditions;
 
-@Deprecated
-public abstract class CommandConfigHandler { // TODO: a rework may be better
+public abstract class CommandConfigHandler {
 
     private static CommandConfigHandler instance;
 
