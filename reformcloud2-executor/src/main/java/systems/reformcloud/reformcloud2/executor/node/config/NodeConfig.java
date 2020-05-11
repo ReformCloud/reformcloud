@@ -25,7 +25,6 @@
 package systems.reformcloud.reformcloud2.executor.node.config;
 
 import com.google.gson.reflect.TypeToken;
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
@@ -33,9 +32,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.node.NodeInformation
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -66,15 +63,6 @@ public final class NodeConfig {
 
     private final String startHost;
 
-    // TODO: remove
-    private final List<Map<String, Integer>> networkListener = new ArrayList<>();
-
-    // TODO: too
-    private final List<Map<String, Integer>> httpNetworkListener = new ArrayList<>();
-
-    // TODO: too
-    private final List<Map<String, Integer>> otherNodes = new ArrayList<>();
-
     private List<NetworkAddress> networkListeners;
 
     private List<NetworkAddress> httpNetworkListeners;
@@ -97,24 +85,6 @@ public final class NodeConfig {
         return startHost;
     }
 
-    @Deprecated
-    @ApiStatus.ScheduledForRemoval(inVersion = "2.3")
-    public List<Map<String, Integer>> getNetworkListener() {
-        return networkListener;
-    }
-
-    @Deprecated
-    @ApiStatus.ScheduledForRemoval(inVersion = "2.3")
-    public List<Map<String, Integer>> getHttpNetworkListener() {
-        return httpNetworkListener;
-    }
-
-    @Deprecated
-    @ApiStatus.ScheduledForRemoval(inVersion = "2.3")
-    public List<Map<String, Integer>> getOtherNodes() {
-        return otherNodes;
-    }
-
     public List<NetworkAddress> getNetworkListeners() {
         return networkListeners;
     }
@@ -125,30 +95,6 @@ public final class NodeConfig {
 
     public List<NetworkAddress> getClusterNodes() {
         return clusterNodes;
-    }
-
-    /**
-     * @deprecated Util method for upgrading configs from version 2.2 to 2.3
-     */
-    @ApiStatus.ScheduledForRemoval(inVersion = "2.3")
-    @Deprecated
-    void tryTransform() {
-        if (this.networkListeners == null) {
-            this.networkListeners = new ArrayList<>();
-            this.networkListener.forEach(e -> e.forEach((key, value) -> this.networkListeners.add(new NetworkAddress(key, value))));
-        }
-
-        if (this.httpNetworkListeners == null) {
-            this.httpNetworkListeners = new ArrayList<>();
-            this.httpNetworkListener.forEach(e -> e.forEach((key, value) -> this.httpNetworkListeners.add(new NetworkAddress(key, value))));
-        }
-
-        if (this.clusterNodes == null) {
-            this.clusterNodes = new ArrayList<>();
-            this.otherNodes.forEach(e -> e.forEach((key, value) -> this.clusterNodes.add(new NetworkAddress(key, value))));
-        }
-
-        this.save();
     }
 
     @NotNull
