@@ -98,7 +98,7 @@ pipeline {
                 sh "rm -rf ReformCloud2-Plugins.zip";
                 sh "mkdir -p plugins/";
 
-                sh "find reformcloud2-plugins/ -type f -name \"reformcloud2-default-*.jar\" -and -not -name \"*-sources.jar\" -and -not -name \"*-javadoc.jar\" -exec cp \"{}\" applications/ ';'";
+                sh "find reformcloud2-plugins/ -type f -name \"reformcloud2-default-*.jar\" -and -not -name \"*-sources.jar\" -and -not -name \"*-javadoc.jar\" -exec cp \"{}\" plugins/ ';'";
                 zip archive: true, dir: 'plugins', glob: '', zipFile: 'ReformCloud2-Plugins.zip'
 
                 sh "rm -rf plugins/";
