@@ -2,6 +2,6 @@
   "name": "CommandAddon",
   "author": "derklaro",
   "main": "systems.reformcloud.reformcloud2.commands.application.ReformCloudApplication",
-  "version": "2.3.0-SNAPSHOT",
+  "version": "2.2.1",
   "impl-version": "2.2.1"
 }

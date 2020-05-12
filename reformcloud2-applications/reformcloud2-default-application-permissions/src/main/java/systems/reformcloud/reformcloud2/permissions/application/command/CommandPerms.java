@@ -90,7 +90,7 @@ public class CommandPerms extends GlobalCommand {
     }
 
     @Override
-    public boolean handleCommand(@NotNull CommandSource commandSource, @NotNull String[] strings) {
+    public boolean handleCommand(@NotNull CommandSource commandSource, String @NotNull [] strings) {
 
         if (strings.length == 1 && strings[0].equalsIgnoreCase("groups")) {
             DatabaseReader permissionTableReader = getDatabase().createForTable(DefaultPermissionUtil.PERMISSION_GROUP_TABLE);
