@@ -243,7 +243,6 @@ public class CommandCloudPerms implements Command {
             return;
         }
 
-        //"perms group [groupname] addperm [permission] [set] [timeout] [s/m/h/d/mo]",
         if (strings.length == 5
                 && strings[0].equalsIgnoreCase("group")
                 && strings[2].equalsIgnoreCase("addperm")

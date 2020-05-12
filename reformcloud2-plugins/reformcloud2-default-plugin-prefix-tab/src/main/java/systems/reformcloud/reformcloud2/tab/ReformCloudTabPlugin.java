@@ -77,8 +77,8 @@ public class ReformCloudTabPlugin extends JavaPlugin {
 
         PermissionGroup playerPermissionGroup = getOrDefault(player.getUniqueId());
         Bukkit.getOnlinePlayers().forEach(onlinePlayer -> {
-            if (player.getScoreboard().equals(Bukkit.getScoreboardManager().getMainScoreboard())) {
-                player.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
+            if (onlinePlayer.getScoreboard().equals(Bukkit.getScoreboardManager().getMainScoreboard())) {
+                onlinePlayer.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
             }
 
             if (playerPermissionGroup != null) {

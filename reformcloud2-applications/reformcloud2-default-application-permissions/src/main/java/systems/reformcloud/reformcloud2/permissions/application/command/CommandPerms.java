@@ -556,7 +556,7 @@ public class CommandPerms extends GlobalCommand {
             return true;
         }
 
-        if (strings.length >= 4
+        if (strings.length == 4
                 && strings[0].equalsIgnoreCase("group")
                 && strings[2].equalsIgnoreCase("setprefix")
         ) {
@@ -566,7 +566,7 @@ public class CommandPerms extends GlobalCommand {
                 return true;
             }
 
-            String prefix = String.join(" ", Arrays.copyOfRange(strings, 3, strings.length));
+            String prefix = strings[3].replace("_", " ");
             if (prefix.trim().equals("\"\"")) {
                 prefix = null;
             }
@@ -578,7 +578,7 @@ public class CommandPerms extends GlobalCommand {
             return true;
         }
 
-        if (strings.length >= 4
+        if (strings.length == 4
                 && strings[0].equalsIgnoreCase("group")
                 && strings[2].equalsIgnoreCase("setsuffix")
         ) {
@@ -588,7 +588,7 @@ public class CommandPerms extends GlobalCommand {
                 return true;
             }
 
-            String suffix = String.join(" ", Arrays.copyOfRange(strings, 3, strings.length));
+            String suffix = strings[3].replace("_", " ");
             if (suffix.trim().equals("\"\"")) {
                 suffix = null;
             }
@@ -600,7 +600,7 @@ public class CommandPerms extends GlobalCommand {
             return true;
         }
 
-        if (strings.length >= 4
+        if (strings.length == 4
                 && strings[0].equalsIgnoreCase("group")
                 && strings[2].equalsIgnoreCase("setdisplay")
         ) {
@@ -610,7 +610,7 @@ public class CommandPerms extends GlobalCommand {
                 return true;
             }
 
-            String display = String.join(" ", Arrays.copyOfRange(strings, 3, strings.length));
+            String display = strings[3].replace("_", " ");
             if (display.trim().equals("\"\"")) {
                 display = null;
             }

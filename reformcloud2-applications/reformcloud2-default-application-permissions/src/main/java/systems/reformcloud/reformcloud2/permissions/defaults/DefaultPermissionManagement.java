@@ -54,8 +54,6 @@ public class DefaultPermissionManagement extends PermissionManagement {
     private static final boolean CONTROLLER_OR_NODE = ExecutorAPI.getInstance().getType().equals(ExecutorType.CONTROLLER)
             || ExecutorAPI.getInstance().getType().equals(ExecutorType.NODE);
 
-    private static final String PERMISSION_CONFIG_TABLE = "reformcloud_internal_db_perm_config";
-
     public static final String PERMISSION_GROUP_TABLE = "reformcloud_internal_db_perm_group";
 
     public static final String PERMISSION_PLAYER_TABLE = "reformcloud_internal_db_perm_player";
@@ -65,7 +63,6 @@ public class DefaultPermissionManagement extends PermissionManagement {
     public DefaultPermissionManagement() {
         ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().createDatabase(PERMISSION_GROUP_TABLE);
         ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().createDatabase(PERMISSION_PLAYER_TABLE);
-        ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().createDatabase(PERMISSION_CONFIG_TABLE);
         ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().createDatabase(PERMISSION_NAME_TO_UNIQUE_ID_TABLE);
     }
 
@@ -89,8 +86,8 @@ public class DefaultPermissionManagement extends PermissionManagement {
             return null;
         }
 
-        this.eraseGroupCache(permissionGroup);
         nameToGroupCache.put(name, permissionGroup);
+        this.eraseGroupCache(permissionGroup);
         return permissionGroup;
     }
 
@@ -105,7 +102,7 @@ public class DefaultPermissionManagement extends PermissionManagement {
                     .update(PERMISSION_GROUP_TABLE, permissionGroup.getName(), null, new JsonConfiguration().add("group", permissionGroup));
         }
 
-        DefaultChannelManager.INSTANCE.get("Controller").ifPresent(e -> e.sendPacket(new PacketGroupAction(permissionGroup, PermissionAction.UPDATE)));
+        DefaultChannelManager.INSTANCE.getAllSender().forEach(e -> e.sendPacket(new PacketGroupAction(permissionGroup, PermissionAction.UPDATE)));
     }
 
     @Override
@@ -155,7 +152,7 @@ public class DefaultPermissionManagement extends PermissionManagement {
                     .insert(PERMISSION_GROUP_TABLE, permissionGroup.getName(), null, new JsonConfiguration().add("group", permissionGroup));
         }
 
-        DefaultChannelManager.INSTANCE.get("Controller").ifPresent(e -> e.sendPacket(new PacketGroupAction(permissionGroup, PermissionAction.CREATE)));
+        DefaultChannelManager.INSTANCE.getAllSender().forEach(e -> e.sendPacket(new PacketGroupAction(permissionGroup, PermissionAction.CREATE)));
         this.nameToGroupCache.put(permissionGroup.getName(), permissionGroup);
 
         return permissionGroup;
@@ -181,7 +178,7 @@ public class DefaultPermissionManagement extends PermissionManagement {
                     .remove(PERMISSION_GROUP_TABLE, permissionGroup.getName(), null);
         }
 
-        DefaultChannelManager.INSTANCE.get("Controller").ifPresent(e -> e.sendPacket(new PacketGroupAction(permissionGroup, PermissionAction.DELETE)));
+        DefaultChannelManager.INSTANCE.getAllSender().forEach(e -> e.sendPacket(new PacketGroupAction(permissionGroup, PermissionAction.DELETE)));
         nameToGroupCache.remove(name);
     }
 
@@ -209,7 +206,8 @@ public class DefaultPermissionManagement extends PermissionManagement {
     @NotNull
     @Override
     public PermissionUser loadUser(@NotNull UUID uuid) {
-        return this.uniqueIdToUserCache.getOrDefault(uuid, this.loadUser0(uuid));
+        PermissionUser permissionUser = this.uniqueIdToUserCache.get(uuid);
+        return permissionUser == null ? this.loadUser0(uuid) : permissionUser;
     }
 
     private @NotNull PermissionUser loadUser0(@NotNull UUID uuid) {
@@ -221,7 +219,7 @@ public class DefaultPermissionManagement extends PermissionManagement {
                     .getDatabaseSyncAPI()
                     .insert(PERMISSION_PLAYER_TABLE, uuid.toString(), null, new JsonConfiguration().add("user", permissionUser));
 
-            DefaultChannelManager.INSTANCE.get("Controller").ifPresent(e -> e.sendPacket(new PacketUserAction(permissionUser, PermissionAction.CREATE)));
+            DefaultChannelManager.INSTANCE.getAllSender().forEach(e -> e.sendPacket(new PacketUserAction(permissionUser, PermissionAction.CREATE)));
             this.uniqueIdToUserCache.put(uuid, permissionUser);
 
             return permissionUser;
@@ -232,9 +230,8 @@ public class DefaultPermissionManagement extends PermissionManagement {
             return new PermissionUser(uuid, new ArrayList<>(), new ArrayList<>());
         }
 
-        this.eraseUserCache(permissionUser);
         this.uniqueIdToUserCache.put(permissionUser.getUniqueID(), permissionUser);
-
+        this.eraseUserCache(permissionUser);
         return permissionUser;
     }
 
@@ -279,14 +276,14 @@ public class DefaultPermissionManagement extends PermissionManagement {
                 .getSyncAPI()
                 .getDatabaseSyncAPI()
                 .update(PERMISSION_PLAYER_TABLE, permissionUser.getUniqueID().toString(), null, new JsonConfiguration().add("user", permissionUser));
-        DefaultChannelManager.INSTANCE.get("Controller").ifPresent(e -> e.sendPacket(new PacketUserAction(permissionUser, PermissionAction.UPDATE)));
+        DefaultChannelManager.INSTANCE.getAllSender().forEach(e -> e.sendPacket(new PacketUserAction(permissionUser, PermissionAction.UPDATE)));
     }
 
     @Override
     public void deleteUser(@NotNull UUID uuid) {
         PermissionUser user = this.loadUser(uuid);
         ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().remove(PERMISSION_PLAYER_TABLE, uuid.toString(), null);
-        DefaultChannelManager.INSTANCE.get("Controller").ifPresent(e -> e.sendPacket(new PacketUserAction(user, PermissionAction.DELETE)));
+        DefaultChannelManager.INSTANCE.getAllSender().forEach(e -> e.sendPacket(new PacketUserAction(user, PermissionAction.DELETE)));
         this.uniqueIdToUserCache.remove(uuid);
     }
 
