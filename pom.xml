@@ -65,9 +65,10 @@
     <modules>
         <module>reformcloud2-executor-api</module>
         <module>reformcloud2-executor</module>
-        <module>reformcloud2-runner</module>
         <module>reformcloud2-plugins</module>
         <module>reformcloud2-applications</module>
+        <module>reformcloud2-examples</module>
+        <module>reformcloud2-runner</module>
     </modules>
 
     <properties>

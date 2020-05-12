@@ -33,9 +33,11 @@ import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams
 import systems.reformcloud.reformcloud2.permissions.PermissionAPI;
 import systems.reformcloud.reformcloud2.permissions.util.basic.checks.WildcardCheck;
 import systems.reformcloud.reformcloud2.permissions.util.group.NodeGroup;
+import systems.reformcloud.reformcloud2.permissions.util.group.PermissionGroup;
 import systems.reformcloud.reformcloud2.permissions.util.permission.PermissionNode;
 
 import java.util.Collection;
+import java.util.Optional;
 import java.util.UUID;
 
 public class PermissionUser implements SerializableObject {
@@ -76,6 +78,36 @@ public class PermissionUser implements SerializableObject {
     @NotNull
     public Collection<NodeGroup> getGroups() {
         return groups;
+    }
+
+    @NotNull
+    public Optional<PermissionGroup> getHighestPermissionGroup() {
+        PermissionGroup permissionGroup = null;
+
+        for (NodeGroup nodeGroup : this.groups) {
+            PermissionGroup group = PermissionAPI.getInstance().getPermissionUtil().getGroup(nodeGroup.getGroupName());
+            if (group == null) {
+                continue;
+            }
+
+            if (permissionGroup == null) {
+                permissionGroup = group;
+            } else if (permissionGroup.getPriority() > group.getPriority()) {
+                permissionGroup = group;
+            }
+        }
+
+        return Optional.ofNullable(permissionGroup);
+    }
+
+    public boolean isInGroup(@NotNull String group) {
+        for (NodeGroup nodeGroup : this.groups) {
+            if (nodeGroup.getGroupName().equals(group) && nodeGroup.isValid()) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public boolean hasPermission(String permission) {
