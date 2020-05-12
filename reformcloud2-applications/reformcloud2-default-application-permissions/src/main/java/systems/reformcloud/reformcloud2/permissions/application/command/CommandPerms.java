@@ -50,7 +50,7 @@ import java.util.concurrent.TimeUnit;
 
 public class CommandPerms extends GlobalCommand {
 
-    private static final String[] HELP = new String[] {
+    private static final String[] HELP = new String[]{
             "perms groups",
             "perms group [groupname]",
             "perms group [groupname] create",
@@ -59,6 +59,10 @@ public class CommandPerms extends GlobalCommand {
             "perms group [groupname] clear",
             "perms group [groupname] setdefault [default]",
             "perms group [groupname] setpriority [priority]",
+            "perms group [groupname] setprefix [prefix]",
+            "perms group [groupname] setsuffix [suffix]",
+            "perms group [groupname] setdisplay [display]",
+            "perms group [groupname] setcolor [color]",
             "perms group [groupname] addperm [permission] [set]",
             "perms group [groupname] addperm [permission] [set] [timeout] [s/m/h/d/mo]",
             "perms group [groupname] addperm [processgroup] [permission] [set]",
@@ -133,7 +137,7 @@ public class CommandPerms extends GlobalCommand {
                     }
                 }
                 commandSource.sendMessage("Groups: " + (stringBuilder.length() > 2
-                        ? stringBuilder.substring(0, stringBuilder.length() -2) : "none"));
+                        ? stringBuilder.substring(0, stringBuilder.length() - 2) : "none"));
             }
             {
                 StringBuilder stringBuilder = new StringBuilder();
@@ -145,7 +149,7 @@ public class CommandPerms extends GlobalCommand {
                     }
                 }
                 commandSource.sendMessage("Permissions: " + (stringBuilder.length() > 2
-                        ? stringBuilder.substring(0, stringBuilder.length() -2) : "none"));
+                        ? stringBuilder.substring(0, stringBuilder.length() - 2) : "none"));
             }
 
             return true;
@@ -345,7 +349,7 @@ public class CommandPerms extends GlobalCommand {
             }
 
             long timeOut = System.currentTimeMillis()
-                    +  InternalTimeUnit.convert(parseUnitFromString(strings[5]), givenTimeOut);
+                    + InternalTimeUnit.convert(parseUnitFromString(strings[5]), givenTimeOut);
             user.getGroups().add(new NodeGroup(
                     System.currentTimeMillis(),
                     timeOut,
@@ -402,7 +406,7 @@ public class CommandPerms extends GlobalCommand {
                 }
 
                 System.out.println("Permissions: " + (stringBuilder.length() > 2
-                        ? stringBuilder.substring(0, stringBuilder.length() -2)
+                        ? stringBuilder.substring(0, stringBuilder.length() - 2)
                         : "none"));
             }
             {
@@ -419,7 +423,7 @@ public class CommandPerms extends GlobalCommand {
                     stringBuilder.append("\n");
                 });
                 System.out.println("Per-Group-Permissions: \n" + (stringBuilder.length() > 3
-                        ? stringBuilder.substring(0, stringBuilder.length() -3) : "none"));
+                        ? stringBuilder.substring(0, stringBuilder.length() - 3) : "none"));
             }
             return true;
         }
@@ -545,6 +549,95 @@ public class CommandPerms extends GlobalCommand {
             return true;
         }
 
+        if (strings.length >= 4
+                && strings[0].equalsIgnoreCase("group")
+                && strings[2].equalsIgnoreCase("setprefix")
+        ) {
+            PermissionGroup group = PermissionAPI.getInstance().getPermissionUtil().getGroup(strings[1]);
+            if (group == null) {
+                System.out.println("The group " + strings[1] + " does not exists");
+                return true;
+            }
+
+            String prefix = String.join(" ", Arrays.copyOfRange(strings, 3, strings.length));
+            if (prefix.trim().equals("\"\"")) {
+                prefix = null;
+            }
+
+            group.setPrefix(prefix);
+            PermissionAPI.getInstance().getPermissionUtil().updateGroup(group);
+
+            System.out.println("The group " + group.getName() + " " + (prefix == null ? "has no longer a prefix" : "has now the prefix " + prefix));
+            return true;
+        }
+
+        if (strings.length >= 4
+                && strings[0].equalsIgnoreCase("group")
+                && strings[2].equalsIgnoreCase("setsuffix")
+        ) {
+            PermissionGroup group = PermissionAPI.getInstance().getPermissionUtil().getGroup(strings[1]);
+            if (group == null) {
+                System.out.println("The group " + strings[1] + " does not exists");
+                return true;
+            }
+
+            String suffix = String.join(" ", Arrays.copyOfRange(strings, 3, strings.length));
+            if (suffix.trim().equals("\"\"")) {
+                suffix = null;
+            }
+
+            group.setSuffix(suffix);
+            PermissionAPI.getInstance().getPermissionUtil().updateGroup(group);
+
+            System.out.println("The group " + group.getName() + " " + (suffix == null ? "has no longer a suffix" : "has now the suffix " + suffix));
+            return true;
+        }
+
+        if (strings.length >= 4
+                && strings[0].equalsIgnoreCase("group")
+                && strings[2].equalsIgnoreCase("setdisplay")
+        ) {
+            PermissionGroup group = PermissionAPI.getInstance().getPermissionUtil().getGroup(strings[1]);
+            if (group == null) {
+                System.out.println("The group " + strings[1] + " does not exists");
+                return true;
+            }
+
+            String display = String.join(" ", Arrays.copyOfRange(strings, 3, strings.length));
+            if (display.trim().equals("\"\"")) {
+                display = null;
+            }
+
+            group.setDisplay(display);
+            PermissionAPI.getInstance().getPermissionUtil().updateGroup(group);
+
+            System.out.println("The group " + group.getName() + " " + (display == null ? "has no longer a display" : "has now the display " + display));
+            return true;
+        }
+
+        if (strings.length == 4
+                && strings[0].equalsIgnoreCase("group")
+                && strings[2].equalsIgnoreCase("setcolor")
+        ) {
+            PermissionGroup group = PermissionAPI.getInstance().getPermissionUtil().getGroup(strings[1]);
+            if (group == null) {
+                System.out.println("The group " + strings[1] + " does not exists");
+                return true;
+            }
+
+            String color = strings[3];
+            if (color.length() > 2) {
+                System.out.println("Please use a colour code as argument. Look at https://minecraft.gamepedia.com/Formatting_codes for a full list");
+                return true;
+            }
+
+            group.setColour(color);
+            PermissionAPI.getInstance().getPermissionUtil().updateGroup(group);
+
+            System.out.println("The group " + group.getName() + " has now the colour " + color);
+            return true;
+        }
+
         if (strings.length == 5
                 && strings[0].equalsIgnoreCase("group")
                 && strings[2].equalsIgnoreCase("addperm")
@@ -607,7 +700,7 @@ public class CommandPerms extends GlobalCommand {
             }
 
             long timeOut = System.currentTimeMillis()
-                    +  InternalTimeUnit.convert(parseUnitFromString(strings[6]), givenTimeOut);
+                    + InternalTimeUnit.convert(parseUnitFromString(strings[6]), givenTimeOut);
             group.getPermissionNodes().add(new PermissionNode(
                     System.currentTimeMillis(),
                     timeOut,
@@ -682,7 +775,7 @@ public class CommandPerms extends GlobalCommand {
             }
 
             long timeOut = System.currentTimeMillis()
-                    +  InternalTimeUnit.convert(parseUnitFromString(strings[7]), givenTimeOut);
+                    + InternalTimeUnit.convert(parseUnitFromString(strings[7]), givenTimeOut);
             PermissionAPI.getInstance().getPermissionUtil().addProcessGroupPermission(strings[3], group, new PermissionNode(
                     System.currentTimeMillis(),
                     timeOut,
