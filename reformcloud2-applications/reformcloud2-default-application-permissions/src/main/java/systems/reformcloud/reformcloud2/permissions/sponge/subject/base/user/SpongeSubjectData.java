@@ -28,11 +28,11 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.api.service.context.Context;
 import org.spongepowered.api.service.permission.SubjectData;
-import systems.reformcloud.reformcloud2.permissions.PermissionAPI;
+import systems.reformcloud.reformcloud2.permissions.PermissionManagement;
+import systems.reformcloud.reformcloud2.permissions.objects.group.PermissionGroup;
+import systems.reformcloud.reformcloud2.permissions.objects.user.PermissionUser;
 import systems.reformcloud.reformcloud2.permissions.sponge.subject.AbstractSpongeSubjectData;
 import systems.reformcloud.reformcloud2.permissions.sponge.subject.util.SubjectGroupPermissionCalculator;
-import systems.reformcloud.reformcloud2.permissions.util.group.PermissionGroup;
-import systems.reformcloud.reformcloud2.permissions.util.user.PermissionUser;
 
 import java.util.*;
 
@@ -58,7 +58,7 @@ public class SpongeSubjectData extends AbstractSpongeSubjectData {
 
     private Map<String, Boolean> getPermissions() {
         Map<String, Boolean> out = new HashMap<>();
-        PermissionUser user = PermissionAPI.getInstance().getPermissionUtil().loadUser(uniqueID);
+        PermissionUser user = PermissionManagement.getInstance().loadUser(uniqueID);
 
         user.getPermissionNodes().forEach(e -> {
             if (!e.isValid()) {
@@ -73,14 +73,14 @@ public class SpongeSubjectData extends AbstractSpongeSubjectData {
                 return;
             }
 
-            PermissionGroup group = PermissionAPI.getInstance().getPermissionUtil().getGroup(e.getGroupName());
+            PermissionGroup group = PermissionManagement.getInstance().getGroup(e.getGroupName());
             if (group == null) {
                 return;
             }
 
             out.putAll(getPermissionsOf(group));
             group.getSubGroups().forEach(g -> {
-                PermissionGroup sub = PermissionAPI.getInstance().getPermissionUtil().getGroup(g);
+                PermissionGroup sub = PermissionManagement.getInstance().getGroup(g);
                 if (sub == null) {
                     return;
                 }

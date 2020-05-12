@@ -27,7 +27,7 @@ package systems.reformcloud.reformcloud2.permissions.sponge.collections.base;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.service.permission.PermissionService;
 import org.spongepowered.api.service.permission.Subject;
-import systems.reformcloud.reformcloud2.permissions.PermissionAPI;
+import systems.reformcloud.reformcloud2.permissions.PermissionManagement;
 import systems.reformcloud.reformcloud2.permissions.sponge.collections.DefaultSubjectCollection;
 import systems.reformcloud.reformcloud2.permissions.sponge.subject.base.group.GroupSubject;
 
@@ -50,7 +50,7 @@ public class GroupSubjectCollection extends DefaultSubjectCollection {
     @Override
     @NotNull
     public CompletableFuture<Boolean> hasSubject(@NotNull String identifier) {
-        return CompletableFuture.completedFuture(PermissionAPI.getInstance().getPermissionUtil().getGroup(identifier) != null);
+        return CompletableFuture.completedFuture(PermissionManagement.getInstance().getGroup(identifier) != null);
     }
 
     @Override

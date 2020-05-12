@@ -33,13 +33,13 @@ import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.CommonHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.optional.ReferencedOptional;
-import systems.reformcloud.reformcloud2.permissions.PermissionAPI;
-import systems.reformcloud.reformcloud2.permissions.util.group.NodeGroup;
-import systems.reformcloud.reformcloud2.permissions.util.group.PermissionGroup;
-import systems.reformcloud.reformcloud2.permissions.util.permission.PermissionNode;
-import systems.reformcloud.reformcloud2.permissions.util.unit.InternalTimeUnit;
-import systems.reformcloud.reformcloud2.permissions.util.user.PermissionUser;
-import systems.reformcloud.reformcloud2.permissions.util.uuid.UUIDFetcher;
+import systems.reformcloud.reformcloud2.permissions.PermissionManagement;
+import systems.reformcloud.reformcloud2.permissions.internal.UUIDFetcher;
+import systems.reformcloud.reformcloud2.permissions.nodes.NodeGroup;
+import systems.reformcloud.reformcloud2.permissions.nodes.PermissionNode;
+import systems.reformcloud.reformcloud2.permissions.objects.group.PermissionGroup;
+import systems.reformcloud.reformcloud2.permissions.objects.user.PermissionUser;
+import systems.reformcloud.reformcloud2.permissions.util.InternalTimeUnit;
 
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -62,13 +62,13 @@ public class CommandCloudPerms extends Command {
                 return;
             }
 
-            PermissionGroup group = PermissionAPI.getInstance().getPermissionUtil().getGroup(strings[3]);
+            PermissionGroup group = PermissionManagement.getInstance().getGroup(strings[3]);
             if (group == null) {
                 commandSender.sendMessage(TextComponent.fromLegacyText("§cThe group " + strings[3] + " does not exists"));
                 return;
             }
 
-            PermissionUser user = PermissionAPI.getInstance().getPermissionUtil().loadUser(uniqueID);
+            PermissionUser user = PermissionManagement.getInstance().loadUser(uniqueID);
             if (Streams.filterToReference(user.getGroups(), e -> e.getGroupName().equals(strings[3]) && e.isValid()).isPresent()) {
                 commandSender.sendMessage(TextComponent.fromLegacyText("§cThe user " + strings[1] + " is already in group " + strings[3]));
                 return;
@@ -79,7 +79,7 @@ public class CommandCloudPerms extends Command {
                     -1,
                     group.getName()
             ));
-            PermissionAPI.getInstance().getPermissionUtil().updateUser(user);
+            PermissionManagement.getInstance().updateUser(user);
             commandSender.sendMessage(TextComponent.fromLegacyText("§aSuccessfully §7added user " + strings[1] + " to group " + strings[3]));
             return;
         }
@@ -94,13 +94,13 @@ public class CommandCloudPerms extends Command {
                 return;
             }
 
-            PermissionGroup group = PermissionAPI.getInstance().getPermissionUtil().getGroup(strings[3]);
+            PermissionGroup group = PermissionManagement.getInstance().getGroup(strings[3]);
             if (group == null) {
                 commandSender.sendMessage(TextComponent.fromLegacyText("§cThe group " + strings[3] + " does not exists"));
                 return;
             }
 
-            PermissionUser user = PermissionAPI.getInstance().getPermissionUtil().loadUser(uniqueID);
+            PermissionUser user = PermissionManagement.getInstance().loadUser(uniqueID);
             if (Streams.filterToReference(user.getGroups(), e -> e.getGroupName().equals(strings[3]) && e.isValid()).isPresent()) {
                 commandSender.sendMessage(TextComponent.fromLegacyText("§cThe user " + strings[1] + " is already in group " + strings[3]));
                 return;
@@ -113,7 +113,7 @@ public class CommandCloudPerms extends Command {
             }
 
             long timeOut = System.currentTimeMillis()
-                    +  InternalTimeUnit.convert(parseUnitFromString(strings[5]), givenTimeOut);
+                    + InternalTimeUnit.convert(parseUnitFromString(strings[5]), givenTimeOut);
             user.getGroups().add(new NodeGroup(
                     System.currentTimeMillis(),
                     timeOut,
@@ -133,7 +133,7 @@ public class CommandCloudPerms extends Command {
                 return;
             }
 
-            PermissionUser user = PermissionAPI.getInstance().getPermissionUtil().loadUser(uniqueID);
+            PermissionUser user = PermissionManagement.getInstance().loadUser(uniqueID);
             NodeGroup filter = Streams.filter(user.getGroups(), e -> e.getGroupName().equals(strings[3]));
             if (filter == null) {
                 commandSender.sendMessage(TextComponent.fromLegacyText("§cThe user " + strings[1] + " is not in group " + strings[3]));
@@ -141,7 +141,7 @@ public class CommandCloudPerms extends Command {
             }
 
             user.getGroups().remove(filter);
-            PermissionAPI.getInstance().getPermissionUtil().updateUser(user);
+            PermissionManagement.getInstance().updateUser(user);
             commandSender.sendMessage(TextComponent.fromLegacyText("§aSuccessfully §7removed group " + strings[3] + " from user " + strings[1]));
             return;
         }
@@ -156,7 +156,7 @@ public class CommandCloudPerms extends Command {
                 return;
             }
 
-            PermissionUser user = PermissionAPI.getInstance().getPermissionUtil().loadUser(uniqueID);
+            PermissionUser user = PermissionManagement.getInstance().loadUser(uniqueID);
             if (Streams.filterToReference(user.getPermissionNodes(),
                     e -> e.getActualPermission().equalsIgnoreCase(strings[3])).isPresent()) {
                 commandSender.sendMessage(TextComponent.fromLegacyText("§cThe permission " + strings[3] + " is already set"));
@@ -175,7 +175,7 @@ public class CommandCloudPerms extends Command {
                     set,
                     strings[3]
             ));
-            PermissionAPI.getInstance().getPermissionUtil().updateUser(user);
+            PermissionManagement.getInstance().updateUser(user);
             commandSender.sendMessage(TextComponent.fromLegacyText("The permission " + strings[3] + " was added to the user " + strings[1] + " with value " + set));
             return;
         }
@@ -190,7 +190,7 @@ public class CommandCloudPerms extends Command {
                 return;
             }
 
-            PermissionUser user = PermissionAPI.getInstance().getPermissionUtil().loadUser(uniqueID);
+            PermissionUser user = PermissionManagement.getInstance().loadUser(uniqueID);
             if (Streams.filterToReference(user.getPermissionNodes(),
                     e -> e.getActualPermission().equalsIgnoreCase(strings[3])).isPresent()) {
                 commandSender.sendMessage(TextComponent.fromLegacyText("§cThe permission " + strings[3] + " is already set"));
@@ -217,7 +217,7 @@ public class CommandCloudPerms extends Command {
                     set,
                     strings[3]
             ));
-            PermissionAPI.getInstance().getPermissionUtil().updateUser(user);
+            PermissionManagement.getInstance().updateUser(user);
             commandSender.sendMessage(TextComponent.fromLegacyText("The permission " + strings[3] + " was added to the user " + strings[1] + " with value " + set));
             return;
         }
@@ -232,7 +232,7 @@ public class CommandCloudPerms extends Command {
                 return;
             }
 
-            PermissionUser user = PermissionAPI.getInstance().getPermissionUtil().loadUser(uniqueID);
+            PermissionUser user = PermissionManagement.getInstance().loadUser(uniqueID);
             ReferencedOptional<PermissionNode> perm = Streams.filterToReference(user.getPermissionNodes(),
                     e -> e.getActualPermission().equalsIgnoreCase(strings[3]));
             if (!perm.isPresent()) {
@@ -241,7 +241,7 @@ public class CommandCloudPerms extends Command {
             }
 
             user.getPermissionNodes().remove(perm.get());
-            PermissionAPI.getInstance().getPermissionUtil().updateUser(user);
+            PermissionManagement.getInstance().updateUser(user);
             commandSender.sendMessage(TextComponent.fromLegacyText("Removed permission " + strings[3] + " from user " + strings[1]));
             return;
         }
@@ -251,7 +251,7 @@ public class CommandCloudPerms extends Command {
                 && strings[0].equalsIgnoreCase("group")
                 && strings[2].equalsIgnoreCase("addperm")
         ) {
-            PermissionGroup group = PermissionAPI.getInstance().getPermissionUtil().getGroup(strings[1]);
+            PermissionGroup group = PermissionManagement.getInstance().getGroup(strings[1]);
             if (group == null) {
                 commandSender.sendMessage(TextComponent.fromLegacyText("§cThe group " + strings[1] + " does not exists"));
                 return;
@@ -275,7 +275,7 @@ public class CommandCloudPerms extends Command {
                     set,
                     strings[3]
             ));
-            PermissionAPI.getInstance().getPermissionUtil().updateGroup(group);
+            PermissionManagement.getInstance().updateGroup(group);
             commandSender.sendMessage(TextComponent.fromLegacyText("§7The permission " + strings[3] + " was added to group " + group.getName()));
             return;
         }
@@ -284,7 +284,7 @@ public class CommandCloudPerms extends Command {
                 && strings[0].equalsIgnoreCase("group")
                 && strings[2].equalsIgnoreCase("addperm")
         ) {
-            PermissionGroup group = PermissionAPI.getInstance().getPermissionUtil().getGroup(strings[1]);
+            PermissionGroup group = PermissionManagement.getInstance().getGroup(strings[1]);
             if (group == null) {
                 commandSender.sendMessage(TextComponent.fromLegacyText("§cThe group " + strings[1] + " does not exists"));
                 return;
@@ -309,14 +309,14 @@ public class CommandCloudPerms extends Command {
             }
 
             long timeOut = System.currentTimeMillis()
-                    +  InternalTimeUnit.convert(parseUnitFromString(strings[6]), givenTimeOut);
+                    + InternalTimeUnit.convert(parseUnitFromString(strings[6]), givenTimeOut);
             group.getPermissionNodes().add(new PermissionNode(
                     System.currentTimeMillis(),
                     timeOut,
                     set,
                     strings[3]
             ));
-            PermissionAPI.getInstance().getPermissionUtil().updateGroup(group);
+            PermissionManagement.getInstance().updateGroup(group);
             commandSender.sendMessage(TextComponent.fromLegacyText("§7The permission " + strings[3] + " was added to group " + group.getName()));
             return;
         }

@@ -33,11 +33,11 @@ import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.api.API;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
-import systems.reformcloud.reformcloud2.permissions.PermissionAPI;
-import systems.reformcloud.reformcloud2.permissions.util.group.NodeGroup;
-import systems.reformcloud.reformcloud2.permissions.util.group.PermissionGroup;
-import systems.reformcloud.reformcloud2.permissions.util.permission.PermissionNode;
-import systems.reformcloud.reformcloud2.permissions.util.user.PermissionUser;
+import systems.reformcloud.reformcloud2.permissions.PermissionManagement;
+import systems.reformcloud.reformcloud2.permissions.nodes.NodeGroup;
+import systems.reformcloud.reformcloud2.permissions.nodes.PermissionNode;
+import systems.reformcloud.reformcloud2.permissions.objects.group.PermissionGroup;
+import systems.reformcloud.reformcloud2.permissions.objects.user.PermissionUser;
 
 import java.util.*;
 import java.util.stream.Stream;
@@ -121,7 +121,7 @@ public class DefaultPermissible extends PermissibleBase {
     public Set<PermissionAttachmentInfo> getEffectivePermissions() {
         this.perms = new HashSet<>();
 
-        final PermissionUser permissionUser = PermissionAPI.getInstance().getPermissionUtil().loadUser(uuid);
+        final PermissionUser permissionUser = PermissionManagement.getInstance().loadUser(uuid);
         final ProcessInformation current = API.getInstance().getCurrentProcessInformation();
 
         permissionUser.getPermissionNodes().stream().filter(PermissionNode::isValid)
@@ -135,13 +135,13 @@ public class DefaultPermissible extends PermissibleBase {
                 .getGroups()
                 .stream()
                 .filter(NodeGroup::isValid)
-                .map(e -> PermissionAPI.getInstance().getPermissionUtil().getGroup(e.getGroupName()))
+                .map(e -> PermissionManagement.getInstance().getGroup(e.getGroupName()))
                 .filter(Objects::nonNull)
                 .flatMap(e -> {
                     Stream.Builder<PermissionGroup> stream = Stream.<PermissionGroup>builder().add(e);
                     e.getSubGroups()
                             .stream()
-                            .map(g -> PermissionAPI.getInstance().getPermissionUtil().getGroup(g))
+                            .map(g -> PermissionManagement.getInstance().getGroup(g))
                             .filter(Objects::nonNull)
                             .forEach(stream);
                     return stream.build();
@@ -167,7 +167,7 @@ public class DefaultPermissible extends PermissibleBase {
     }
 
     private boolean has(String name) {
-        final PermissionUser permissionUser = PermissionAPI.getInstance().getPermissionUtil().loadUser(uuid);
+        final PermissionUser permissionUser = PermissionManagement.getInstance().loadUser(uuid);
         return permissionUser.hasPermission(name);
     }
 }

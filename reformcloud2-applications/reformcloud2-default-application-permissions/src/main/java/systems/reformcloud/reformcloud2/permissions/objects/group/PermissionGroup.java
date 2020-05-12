@@ -22,16 +22,17 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.permissions.util.group;
+package systems.reformcloud.reformcloud2.permissions.objects.group;
 
 import com.google.gson.reflect.TypeToken;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.common.network.SerializableObject;
 import systems.reformcloud.reformcloud2.executor.api.common.network.data.ProtocolBuffer;
-import systems.reformcloud.reformcloud2.permissions.util.basic.checks.GeneralCheck;
-import systems.reformcloud.reformcloud2.permissions.util.basic.checks.WildcardCheck;
-import systems.reformcloud.reformcloud2.permissions.util.permission.PermissionNode;
+import systems.reformcloud.reformcloud2.permissions.checks.GeneralCheck;
+import systems.reformcloud.reformcloud2.permissions.checks.WildcardCheck;
+import systems.reformcloud.reformcloud2.permissions.nodes.PermissionNode;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -43,6 +44,10 @@ public class PermissionGroup implements SerializableObject {
     public static final TypeToken<PermissionGroup> TYPE = new TypeToken<PermissionGroup>() {
     };
 
+    @ApiStatus.Internal
+    public PermissionGroup() {
+    }
+
     public PermissionGroup(
             @NotNull Collection<PermissionNode> permissionNodes,
             @NotNull Map<String, Collection<PermissionNode>> perGroupPermissions,
@@ -50,11 +55,34 @@ public class PermissionGroup implements SerializableObject {
             @NotNull String name,
             int priority
     ) {
+        this(permissionNodes, perGroupPermissions, subGroups, name, priority, false);
+    }
+
+    public PermissionGroup(
+            @NotNull Collection<PermissionNode> permissionNodes,
+            @NotNull Map<String, Collection<PermissionNode>> perGroupPermissions,
+            @NotNull Collection<String> subGroups,
+            @NotNull String name,
+            int priority,
+            boolean defaultGroup
+    ) {
+        this(permissionNodes, perGroupPermissions, subGroups, name, priority, defaultGroup, null, null, null, null);
+    }
+
+    public PermissionGroup(Collection<PermissionNode> permissionNodes, Map<String, Collection<PermissionNode>> perGroupPermissions,
+                           Collection<String> subGroups, String name, int priority, boolean defaultGroup,
+                           @Nullable String prefix, @Nullable String suffix, @Nullable String display,
+                           @Nullable String colour) {
         this.permissionNodes = permissionNodes;
         this.perGroupPermissions = perGroupPermissions;
         this.subGroups = subGroups;
         this.name = name;
         this.priority = priority;
+        this.defaultGroup = defaultGroup;
+        this.prefix = prefix;
+        this.suffix = suffix;
+        this.display = display;
+        this.colour = colour;
     }
 
     private Collection<PermissionNode> permissionNodes;
@@ -66,6 +94,8 @@ public class PermissionGroup implements SerializableObject {
     private String name;
 
     private int priority;
+
+    private boolean defaultGroup;
 
     private @Nullable String prefix;
 
@@ -97,6 +127,10 @@ public class PermissionGroup implements SerializableObject {
 
     public int getPriority() {
         return priority;
+    }
+
+    public boolean isDefaultGroup() {
+        return defaultGroup;
     }
 
     public void setPriority(int priority) {
@@ -139,6 +173,10 @@ public class PermissionGroup implements SerializableObject {
         this.colour = colour;
     }
 
+    public void setDefaultGroup(boolean defaultGroup) {
+        this.defaultGroup = defaultGroup;
+    }
+
     public boolean hasPermission(@NotNull String perm) {
         if (WildcardCheck.hasWildcardPermission(this, perm)) {
             return true;
@@ -160,6 +198,7 @@ public class PermissionGroup implements SerializableObject {
         buffer.writeStringArray(this.subGroups);
         buffer.writeString(this.name);
         buffer.writeInt(this.priority);
+        buffer.writeBoolean(this.defaultGroup);
 
         buffer.writeString(this.prefix);
         buffer.writeString(this.suffix);
@@ -180,6 +219,7 @@ public class PermissionGroup implements SerializableObject {
         this.subGroups = buffer.readStringArray();
         this.name = buffer.readString();
         this.priority = buffer.readInt();
+        this.defaultGroup = buffer.readBoolean();
 
         this.prefix = buffer.readString();
         this.suffix = buffer.readString();

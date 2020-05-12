@@ -22,19 +22,36 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.permissions.util.events.group;
+package systems.reformcloud.reformcloud2.permissions.util;
 
-import systems.reformcloud.reformcloud2.executor.api.common.event.Event;
+import org.jetbrains.annotations.Nullable;
 
-public class PermissionGroupDeleteEvent extends Event {
+import java.util.Calendar;
+import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
 
-    public PermissionGroupDeleteEvent(String name) {
-        this.name = name;
+public final class InternalTimeUnit {
+
+    private InternalTimeUnit() {
+        throw new UnsupportedOperationException();
     }
 
-    private final String name;
+    public static long convert(@Nullable TimeUnit timeUnit, long time) {
+        return timeUnit != null ? timeUnit.toMillis(time) : convertMonth(time);
+    }
 
-    public String getName() {
-        return name;
+    private static long convertMonth(long time) {
+        Calendar calendar = Calendar.getInstance(TimeZone.getDefault());
+        calendar.setTimeInMillis(System.currentTimeMillis());
+        calendar.add(Calendar.MONTH, toInt(time));
+        return calendar.getTimeInMillis();
+    }
+
+    private static int toInt(long l) {
+        if (l > Integer.MAX_VALUE) {
+            return Integer.MAX_VALUE;
+        }
+
+        return l < Integer.MIN_VALUE ? Integer.MIN_VALUE : (int) l;
     }
 }

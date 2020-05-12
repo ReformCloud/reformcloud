@@ -28,10 +28,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.api.service.context.Context;
 import org.spongepowered.api.service.permission.SubjectData;
-import systems.reformcloud.reformcloud2.permissions.PermissionAPI;
+import systems.reformcloud.reformcloud2.permissions.PermissionManagement;
+import systems.reformcloud.reformcloud2.permissions.objects.group.PermissionGroup;
 import systems.reformcloud.reformcloud2.permissions.sponge.subject.AbstractSpongeSubjectData;
 import systems.reformcloud.reformcloud2.permissions.sponge.subject.util.SubjectGroupPermissionCalculator;
-import systems.reformcloud.reformcloud2.permissions.util.group.PermissionGroup;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -60,14 +60,14 @@ public class GroupSubjectData extends AbstractSpongeSubjectData {
 
     private Map<String, Boolean> getPermissions() {
         Map<String, Boolean> out = new HashMap<>();
-        PermissionGroup permissionGroup = PermissionAPI.getInstance().getPermissionUtil().getGroup(group);
+        PermissionGroup permissionGroup = PermissionManagement.getInstance().getGroup(group);
         if (permissionGroup == null) {
             return out;
         }
 
         out.putAll(getPermissionsOf(permissionGroup));
         permissionGroup.getSubGroups().forEach(e -> {
-            PermissionGroup sub = PermissionAPI.getInstance().getPermissionUtil().getGroup(e);
+            PermissionGroup sub = PermissionManagement.getInstance().getGroup(e);
             if (sub == null) {
                 return;
             }

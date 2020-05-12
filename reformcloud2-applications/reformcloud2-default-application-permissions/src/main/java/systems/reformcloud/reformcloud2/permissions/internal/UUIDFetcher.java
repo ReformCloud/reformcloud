@@ -22,13 +22,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.permissions.util.uuid;
+package systems.reformcloud.reformcloud2.permissions.internal;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
-import systems.reformcloud.reformcloud2.permissions.util.basic.DefaultPermissionUtil;
+import systems.reformcloud.reformcloud2.permissions.defaults.DefaultPermissionManagement;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -95,7 +95,7 @@ public final class UUIDFetcher {
     @Nullable
     private static UUID fromDatabase(@NotNull String name) {
         JsonConfiguration configuration = ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().find(
-                DefaultPermissionUtil.PERMISSION_NAME_TO_UNIQUE_ID_TABLE,
+                DefaultPermissionManagement.PERMISSION_NAME_TO_UNIQUE_ID_TABLE,
                 name,
                 null
         );

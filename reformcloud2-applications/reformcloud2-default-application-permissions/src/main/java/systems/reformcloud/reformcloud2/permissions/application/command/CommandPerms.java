@@ -36,14 +36,14 @@ import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams
 import systems.reformcloud.reformcloud2.executor.api.common.utility.optional.ReferencedOptional;
 import systems.reformcloud.reformcloud2.executor.controller.ControllerExecutor;
 import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
-import systems.reformcloud.reformcloud2.permissions.PermissionAPI;
-import systems.reformcloud.reformcloud2.permissions.util.basic.DefaultPermissionUtil;
-import systems.reformcloud.reformcloud2.permissions.util.group.NodeGroup;
-import systems.reformcloud.reformcloud2.permissions.util.group.PermissionGroup;
-import systems.reformcloud.reformcloud2.permissions.util.permission.PermissionNode;
-import systems.reformcloud.reformcloud2.permissions.util.unit.InternalTimeUnit;
-import systems.reformcloud.reformcloud2.permissions.util.user.PermissionUser;
-import systems.reformcloud.reformcloud2.permissions.util.uuid.UUIDFetcher;
+import systems.reformcloud.reformcloud2.permissions.PermissionManagement;
+import systems.reformcloud.reformcloud2.permissions.defaults.DefaultPermissionManagement;
+import systems.reformcloud.reformcloud2.permissions.internal.UUIDFetcher;
+import systems.reformcloud.reformcloud2.permissions.nodes.NodeGroup;
+import systems.reformcloud.reformcloud2.permissions.nodes.PermissionNode;
+import systems.reformcloud.reformcloud2.permissions.objects.group.PermissionGroup;
+import systems.reformcloud.reformcloud2.permissions.objects.user.PermissionUser;
+import systems.reformcloud.reformcloud2.permissions.util.InternalTimeUnit;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -93,7 +93,7 @@ public class CommandPerms extends GlobalCommand {
     public boolean handleCommand(@NotNull CommandSource commandSource, String @NotNull [] strings) {
 
         if (strings.length == 1 && strings[0].equalsIgnoreCase("groups")) {
-            DatabaseReader permissionTableReader = getDatabase().createForTable(DefaultPermissionUtil.PERMISSION_GROUP_TABLE);
+            DatabaseReader permissionTableReader = getDatabase().createForTable(DefaultPermissionManagement.PERMISSION_GROUP_TABLE);
             if (permissionTableReader == null) {
                 commandSource.sendMessage("The table for the permission groups does not exists");
                 return true;
@@ -128,7 +128,7 @@ public class CommandPerms extends GlobalCommand {
                 return true;
             }
 
-            PermissionUser user = PermissionAPI.getInstance().getPermissionUtil().loadUser(uniqueID);
+            PermissionUser user = PermissionManagement.getInstance().loadUser(uniqueID);
             {
                 StringBuilder stringBuilder = new StringBuilder();
                 for (NodeGroup group : user.getGroups()) {
@@ -165,7 +165,7 @@ public class CommandPerms extends GlobalCommand {
                 return true;
             }
 
-            PermissionAPI.getInstance().getPermissionUtil().deleteUser(uniqueID);
+            PermissionManagement.getInstance().deleteUser(uniqueID);
             System.out.println("Deleted user " + strings[1]);
             return true;
         }
@@ -180,10 +180,10 @@ public class CommandPerms extends GlobalCommand {
                 return true;
             }
 
-            PermissionUser user = PermissionAPI.getInstance().getPermissionUtil().loadUser(uniqueID);
+            PermissionUser user = PermissionManagement.getInstance().loadUser(uniqueID);
             user.getPermissionNodes().clear();
             user.getGroups().clear();
-            PermissionAPI.getInstance().getPermissionUtil().updateUser(user);
+            PermissionManagement.getInstance().updateUser(user);
             System.out.println("Cleared all groups and permissions of user " + strings[1]);
             return true;
         }
@@ -198,7 +198,7 @@ public class CommandPerms extends GlobalCommand {
                 return true;
             }
 
-            PermissionUser user = PermissionAPI.getInstance().getPermissionUtil().loadUser(uniqueID);
+            PermissionUser user = PermissionManagement.getInstance().loadUser(uniqueID);
             if (Streams.filterToReference(user.getPermissionNodes(),
                     e -> e.getActualPermission().equalsIgnoreCase(strings[3])).isPresent()) {
                 System.out.println("The permission " + strings[3] + " is already set");
@@ -217,7 +217,7 @@ public class CommandPerms extends GlobalCommand {
                     set,
                     strings[3]
             ));
-            PermissionAPI.getInstance().getPermissionUtil().updateUser(user);
+            PermissionManagement.getInstance().updateUser(user);
             System.out.println("The permission " + strings[3] + " was added to the user " + strings[1] + " with value " + set);
             return true;
         }
@@ -232,7 +232,7 @@ public class CommandPerms extends GlobalCommand {
                 return true;
             }
 
-            PermissionUser user = PermissionAPI.getInstance().getPermissionUtil().loadUser(uniqueID);
+            PermissionUser user = PermissionManagement.getInstance().loadUser(uniqueID);
             if (Streams.filterToReference(user.getPermissionNodes(),
                     e -> e.getActualPermission().equalsIgnoreCase(strings[3])).isPresent()) {
                 System.out.println("The permission " + strings[3] + " is already set");
@@ -259,7 +259,7 @@ public class CommandPerms extends GlobalCommand {
                     set,
                     strings[3]
             ));
-            PermissionAPI.getInstance().getPermissionUtil().updateUser(user);
+            PermissionManagement.getInstance().updateUser(user);
             System.out.println("The permission " + strings[3] + " was added to the user " + strings[1] + " with value " + set);
             return true;
         }
@@ -274,7 +274,7 @@ public class CommandPerms extends GlobalCommand {
                 return true;
             }
 
-            PermissionUser user = PermissionAPI.getInstance().getPermissionUtil().loadUser(uniqueID);
+            PermissionUser user = PermissionManagement.getInstance().loadUser(uniqueID);
             ReferencedOptional<PermissionNode> perm = Streams.filterToReference(user.getPermissionNodes(),
                     e -> e.getActualPermission().equalsIgnoreCase(strings[3]));
             if (!perm.isPresent()) {
@@ -283,7 +283,7 @@ public class CommandPerms extends GlobalCommand {
             }
 
             user.getPermissionNodes().remove(perm.get());
-            PermissionAPI.getInstance().getPermissionUtil().updateUser(user);
+            PermissionManagement.getInstance().updateUser(user);
             System.out.println("Removed permission " + strings[3] + " from user " + strings[1]);
             return true;
         }
@@ -298,13 +298,13 @@ public class CommandPerms extends GlobalCommand {
                 return true;
             }
 
-            PermissionGroup group = PermissionAPI.getInstance().getPermissionUtil().getGroup(strings[3]);
+            PermissionGroup group = PermissionManagement.getInstance().getGroup(strings[3]);
             if (group == null) {
                 System.out.println("The group " + strings[3] + " does not exists");
                 return true;
             }
 
-            PermissionUser user = PermissionAPI.getInstance().getPermissionUtil().loadUser(uniqueID);
+            PermissionUser user = PermissionManagement.getInstance().loadUser(uniqueID);
             if (Streams.filterToReference(user.getGroups(), e -> e.getGroupName().equals(strings[3]) && e.isValid()).isPresent()) {
                 System.out.println("The user " + strings[1] + " is already in group " + strings[3]);
                 return true;
@@ -315,7 +315,7 @@ public class CommandPerms extends GlobalCommand {
                     -1,
                     group.getName()
             ));
-            PermissionAPI.getInstance().getPermissionUtil().updateUser(user);
+            PermissionManagement.getInstance().updateUser(user);
             System.out.println("Successfully added user " + strings[1] + " to group " + strings[3]);
             return true;
         }
@@ -330,13 +330,13 @@ public class CommandPerms extends GlobalCommand {
                 return true;
             }
 
-            PermissionGroup group = PermissionAPI.getInstance().getPermissionUtil().getGroup(strings[3]);
+            PermissionGroup group = PermissionManagement.getInstance().getGroup(strings[3]);
             if (group == null) {
                 System.out.println("The group " + strings[3] + " does not exists");
                 return true;
             }
 
-            PermissionUser user = PermissionAPI.getInstance().getPermissionUtil().loadUser(uniqueID);
+            PermissionUser user = PermissionManagement.getInstance().loadUser(uniqueID);
             if (Streams.filterToReference(user.getGroups(), e -> e.getGroupName().equals(strings[3]) && e.isValid()).isPresent()) {
                 System.out.println("The user " + strings[1] + " is already in group " + strings[3]);
                 return true;
@@ -355,7 +355,7 @@ public class CommandPerms extends GlobalCommand {
                     timeOut,
                     group.getName()
             ));
-            PermissionAPI.getInstance().getPermissionUtil().updateUser(user);
+            PermissionManagement.getInstance().updateUser(user);
             System.out.println("Successfully added user " + strings[1] + " to group " + strings[3]);
             return true;
         }
@@ -370,7 +370,7 @@ public class CommandPerms extends GlobalCommand {
                 return true;
             }
 
-            PermissionUser user = PermissionAPI.getInstance().getPermissionUtil().loadUser(uniqueID);
+            PermissionUser user = PermissionManagement.getInstance().loadUser(uniqueID);
             NodeGroup filter = Streams.filter(user.getGroups(), e -> e.getGroupName().equals(strings[3]));
             if (filter == null) {
                 System.out.println("The user " + strings[1] + " is not in group " + strings[3]);
@@ -378,7 +378,7 @@ public class CommandPerms extends GlobalCommand {
             }
 
             user.getGroups().remove(filter);
-            PermissionAPI.getInstance().getPermissionUtil().updateUser(user);
+            PermissionManagement.getInstance().updateUser(user);
             System.out.println("Successfully removed group " + strings[3] + " from user " + strings[1]);
             return true;
         }
@@ -386,7 +386,7 @@ public class CommandPerms extends GlobalCommand {
         // ======== Groups ========
 
         if (strings.length == 2 && strings[0].equalsIgnoreCase("group")) {
-            PermissionGroup group = PermissionAPI.getInstance().getPermissionUtil().getGroup(strings[1]);
+            PermissionGroup group = PermissionManagement.getInstance().getGroup(strings[1]);
             if (group == null) {
                 System.out.println("The group " + strings[1] + " does not exists");
                 return true;
@@ -432,13 +432,19 @@ public class CommandPerms extends GlobalCommand {
                 && strings[0].equalsIgnoreCase("group")
                 && strings[2].equalsIgnoreCase("create")
         ) {
-            PermissionGroup group = PermissionAPI.getInstance().getPermissionUtil().getGroup(strings[1]);
+            PermissionGroup group = PermissionManagement.getInstance().getGroup(strings[1]);
             if (group != null) {
                 System.out.println("The group " + strings[1] + " already exists");
                 return true;
             }
 
-            PermissionAPI.getInstance().getPermissionUtil().createGroup(strings[1]);
+            PermissionManagement.getInstance().createPermissionGroup(new PermissionGroup(
+                    new ArrayList<>(),
+                    new HashMap<>(),
+                    new ArrayList<>(),
+                    strings[1],
+                    0
+            ));
             System.out.println("The group " + strings[1] + " was created successfully");
             return true;
         }
@@ -447,7 +453,7 @@ public class CommandPerms extends GlobalCommand {
                 && strings[0].equalsIgnoreCase("group")
                 && strings[2].equalsIgnoreCase("create")
         ) {
-            PermissionGroup group = PermissionAPI.getInstance().getPermissionUtil().getGroup(strings[1]);
+            PermissionGroup group = PermissionManagement.getInstance().getGroup(strings[1]);
             if (group != null) {
                 System.out.println("The group " + strings[1] + " already exists");
                 return true;
@@ -459,10 +465,14 @@ public class CommandPerms extends GlobalCommand {
                 return true;
             }
 
-            PermissionGroup created = PermissionAPI.getInstance().getPermissionUtil().createGroup(strings[1]);
-            if (defaultGroup) {
-                PermissionAPI.getInstance().getPermissionUtil().addDefaultGroup(created.getName());
-            }
+            PermissionManagement.getInstance().createPermissionGroup(new PermissionGroup(
+                    new ArrayList<>(),
+                    new HashMap<>(),
+                    new ArrayList<>(),
+                    strings[1],
+                    0,
+                    defaultGroup
+            ));
 
             System.out.println("The group " + strings[1] + " was created successfully");
             return true;
@@ -472,13 +482,13 @@ public class CommandPerms extends GlobalCommand {
                 && strings[0].equalsIgnoreCase("group")
                 && strings[2].equalsIgnoreCase("delete")
         ) {
-            PermissionGroup group = PermissionAPI.getInstance().getPermissionUtil().getGroup(strings[1]);
+            PermissionGroup group = PermissionManagement.getInstance().getGroup(strings[1]);
             if (group == null) {
                 System.out.println("The group " + strings[1] + " does not exists");
                 return true;
             }
 
-            PermissionAPI.getInstance().getPermissionUtil().deleteGroup(group.getName());
+            PermissionManagement.getInstance().deleteGroup(group.getName());
             System.out.println("The group " + strings[1] + " was deleted successfully");
             return true;
         }
@@ -487,7 +497,7 @@ public class CommandPerms extends GlobalCommand {
                 && strings[0].equalsIgnoreCase("group")
                 && strings[2].equalsIgnoreCase("clear")
         ) {
-            PermissionGroup group = PermissionAPI.getInstance().getPermissionUtil().getGroup(strings[1]);
+            PermissionGroup group = PermissionManagement.getInstance().getGroup(strings[1]);
             if (group == null) {
                 System.out.println("The group " + strings[1] + " does not exists");
                 return true;
@@ -495,7 +505,7 @@ public class CommandPerms extends GlobalCommand {
 
             group.getPerGroupPermissions().clear();
             group.getPermissionNodes().clear();
-            PermissionAPI.getInstance().getPermissionUtil().updateGroup(group);
+            PermissionManagement.getInstance().updateGroup(group);
             System.out.println("Successfully deleted all permissions and process-group-permissions from group " + strings[1]);
             return true;
         }
@@ -504,7 +514,7 @@ public class CommandPerms extends GlobalCommand {
                 && strings[0].equalsIgnoreCase("group")
                 && strings[2].equalsIgnoreCase("setdefault")
         ) {
-            PermissionGroup group = PermissionAPI.getInstance().getPermissionUtil().getGroup(strings[1]);
+            PermissionGroup group = PermissionManagement.getInstance().getGroup(strings[1]);
             if (group == null) {
                 System.out.println("The group " + strings[1] + " does not exists");
                 return true;
@@ -516,11 +526,8 @@ public class CommandPerms extends GlobalCommand {
                 return true;
             }
 
-            if (defaultGroup) {
-                PermissionAPI.getInstance().getPermissionUtil().addDefaultGroup(group.getName());
-            } else {
-                PermissionAPI.getInstance().getPermissionUtil().removeDefaultGroup(group.getName());
-            }
+            group.setDefaultGroup(defaultGroup);
+            PermissionManagement.getInstance().updateGroup(group);
 
             System.out.println("The group " + group.getName() + " is now a " + (defaultGroup ? "default" : "normal") + " group");
             return true;
@@ -530,7 +537,7 @@ public class CommandPerms extends GlobalCommand {
                 && strings[0].equalsIgnoreCase("group")
                 && strings[2].equalsIgnoreCase("setpriority")
         ) {
-            PermissionGroup group = PermissionAPI.getInstance().getPermissionUtil().getGroup(strings[1]);
+            PermissionGroup group = PermissionManagement.getInstance().getGroup(strings[1]);
             if (group == null) {
                 System.out.println("The group " + strings[1] + " does not exists");
                 return true;
@@ -543,7 +550,7 @@ public class CommandPerms extends GlobalCommand {
             }
 
             group.setPriority(priority);
-            PermissionAPI.getInstance().getPermissionUtil().updateGroup(group);
+            PermissionManagement.getInstance().updateGroup(group);
 
             System.out.println("The group " + group.getName() + " has now the priority: " + priority);
             return true;
@@ -553,7 +560,7 @@ public class CommandPerms extends GlobalCommand {
                 && strings[0].equalsIgnoreCase("group")
                 && strings[2].equalsIgnoreCase("setprefix")
         ) {
-            PermissionGroup group = PermissionAPI.getInstance().getPermissionUtil().getGroup(strings[1]);
+            PermissionGroup group = PermissionManagement.getInstance().getGroup(strings[1]);
             if (group == null) {
                 System.out.println("The group " + strings[1] + " does not exists");
                 return true;
@@ -565,7 +572,7 @@ public class CommandPerms extends GlobalCommand {
             }
 
             group.setPrefix(prefix);
-            PermissionAPI.getInstance().getPermissionUtil().updateGroup(group);
+            PermissionManagement.getInstance().updateGroup(group);
 
             System.out.println("The group " + group.getName() + " " + (prefix == null ? "has no longer a prefix" : "has now the prefix " + prefix));
             return true;
@@ -575,7 +582,7 @@ public class CommandPerms extends GlobalCommand {
                 && strings[0].equalsIgnoreCase("group")
                 && strings[2].equalsIgnoreCase("setsuffix")
         ) {
-            PermissionGroup group = PermissionAPI.getInstance().getPermissionUtil().getGroup(strings[1]);
+            PermissionGroup group = PermissionManagement.getInstance().getGroup(strings[1]);
             if (group == null) {
                 System.out.println("The group " + strings[1] + " does not exists");
                 return true;
@@ -587,7 +594,7 @@ public class CommandPerms extends GlobalCommand {
             }
 
             group.setSuffix(suffix);
-            PermissionAPI.getInstance().getPermissionUtil().updateGroup(group);
+            PermissionManagement.getInstance().updateGroup(group);
 
             System.out.println("The group " + group.getName() + " " + (suffix == null ? "has no longer a suffix" : "has now the suffix " + suffix));
             return true;
@@ -597,7 +604,7 @@ public class CommandPerms extends GlobalCommand {
                 && strings[0].equalsIgnoreCase("group")
                 && strings[2].equalsIgnoreCase("setdisplay")
         ) {
-            PermissionGroup group = PermissionAPI.getInstance().getPermissionUtil().getGroup(strings[1]);
+            PermissionGroup group = PermissionManagement.getInstance().getGroup(strings[1]);
             if (group == null) {
                 System.out.println("The group " + strings[1] + " does not exists");
                 return true;
@@ -609,7 +616,7 @@ public class CommandPerms extends GlobalCommand {
             }
 
             group.setDisplay(display);
-            PermissionAPI.getInstance().getPermissionUtil().updateGroup(group);
+            PermissionManagement.getInstance().updateGroup(group);
 
             System.out.println("The group " + group.getName() + " " + (display == null ? "has no longer a display" : "has now the display " + display));
             return true;
@@ -619,7 +626,7 @@ public class CommandPerms extends GlobalCommand {
                 && strings[0].equalsIgnoreCase("group")
                 && strings[2].equalsIgnoreCase("setcolor")
         ) {
-            PermissionGroup group = PermissionAPI.getInstance().getPermissionUtil().getGroup(strings[1]);
+            PermissionGroup group = PermissionManagement.getInstance().getGroup(strings[1]);
             if (group == null) {
                 System.out.println("The group " + strings[1] + " does not exists");
                 return true;
@@ -632,7 +639,7 @@ public class CommandPerms extends GlobalCommand {
             }
 
             group.setColour(color);
-            PermissionAPI.getInstance().getPermissionUtil().updateGroup(group);
+            PermissionManagement.getInstance().updateGroup(group);
 
             System.out.println("The group " + group.getName() + " has now the colour " + color);
             return true;
@@ -642,7 +649,7 @@ public class CommandPerms extends GlobalCommand {
                 && strings[0].equalsIgnoreCase("group")
                 && strings[2].equalsIgnoreCase("addperm")
         ) {
-            PermissionGroup group = PermissionAPI.getInstance().getPermissionUtil().getGroup(strings[1]);
+            PermissionGroup group = PermissionManagement.getInstance().getGroup(strings[1]);
             if (group == null) {
                 System.out.println("The group " + strings[1] + " does not exists");
                 return true;
@@ -666,7 +673,7 @@ public class CommandPerms extends GlobalCommand {
                     set,
                     strings[3]
             ));
-            PermissionAPI.getInstance().getPermissionUtil().updateGroup(group);
+            PermissionManagement.getInstance().updateGroup(group);
             System.out.println("The permission " + strings[3] + " was added to group " + group.getName());
             return true;
         }
@@ -675,7 +682,7 @@ public class CommandPerms extends GlobalCommand {
                 && strings[0].equalsIgnoreCase("group")
                 && strings[2].equalsIgnoreCase("addperm")
         ) {
-            PermissionGroup group = PermissionAPI.getInstance().getPermissionUtil().getGroup(strings[1]);
+            PermissionGroup group = PermissionManagement.getInstance().getGroup(strings[1]);
             if (group == null) {
                 System.out.println("The group " + strings[1] + " does not exists");
                 return true;
@@ -707,7 +714,7 @@ public class CommandPerms extends GlobalCommand {
                     set,
                     strings[3]
             ));
-            PermissionAPI.getInstance().getPermissionUtil().updateGroup(group);
+            PermissionManagement.getInstance().updateGroup(group);
             System.out.println("The permission " + strings[3] + " was added to group " + group.getName());
             return true;
         }
@@ -716,7 +723,7 @@ public class CommandPerms extends GlobalCommand {
                 && strings[0].equalsIgnoreCase("group")
                 && strings[2].equalsIgnoreCase("addperm")
         ) {
-            PermissionGroup group = PermissionAPI.getInstance().getPermissionUtil().getGroup(strings[1]);
+            PermissionGroup group = PermissionManagement.getInstance().getGroup(strings[1]);
             if (group == null) {
                 System.out.println("The group " + strings[1] + " does not exists");
                 return true;
@@ -735,7 +742,7 @@ public class CommandPerms extends GlobalCommand {
                 return true;
             }
 
-            PermissionAPI.getInstance().getPermissionUtil().addProcessGroupPermission(strings[3], group, new PermissionNode(
+            PermissionManagement.getInstance().addProcessGroupPermission(strings[3], group, new PermissionNode(
                     System.currentTimeMillis(),
                     -1,
                     set,
@@ -749,7 +756,7 @@ public class CommandPerms extends GlobalCommand {
                 && strings[0].equalsIgnoreCase("group")
                 && strings[2].equalsIgnoreCase("addperm")
         ) {
-            PermissionGroup group = PermissionAPI.getInstance().getPermissionUtil().getGroup(strings[1]);
+            PermissionGroup group = PermissionManagement.getInstance().getGroup(strings[1]);
             if (group == null) {
                 System.out.println("The group " + strings[1] + " does not exists");
                 return true;
@@ -776,7 +783,7 @@ public class CommandPerms extends GlobalCommand {
 
             long timeOut = System.currentTimeMillis()
                     + InternalTimeUnit.convert(parseUnitFromString(strings[7]), givenTimeOut);
-            PermissionAPI.getInstance().getPermissionUtil().addProcessGroupPermission(strings[3], group, new PermissionNode(
+            PermissionManagement.getInstance().addProcessGroupPermission(strings[3], group, new PermissionNode(
                     System.currentTimeMillis(),
                     timeOut,
                     set,
@@ -790,7 +797,7 @@ public class CommandPerms extends GlobalCommand {
                 && strings[0].equalsIgnoreCase("group")
                 && strings[2].equalsIgnoreCase("delperm")
         ) {
-            PermissionGroup group = PermissionAPI.getInstance().getPermissionUtil().getGroup(strings[1]);
+            PermissionGroup group = PermissionManagement.getInstance().getGroup(strings[1]);
             if (group == null) {
                 System.out.println("The group " + strings[1] + " does not exists");
                 return true;
@@ -804,7 +811,7 @@ public class CommandPerms extends GlobalCommand {
             }
 
             group.getPermissionNodes().remove(filter);
-            PermissionAPI.getInstance().getPermissionUtil().updateGroup(group);
+            PermissionManagement.getInstance().updateGroup(group);
             System.out.println("The permission " + strings[3] + " was removed from the group " + group.getName());
             return true;
         }
@@ -813,7 +820,7 @@ public class CommandPerms extends GlobalCommand {
                 && strings[0].equalsIgnoreCase("group")
                 && strings[2].equalsIgnoreCase("delperm")
         ) {
-            PermissionGroup group = PermissionAPI.getInstance().getPermissionUtil().getGroup(strings[1]);
+            PermissionGroup group = PermissionManagement.getInstance().getGroup(strings[1]);
             if (group == null) {
                 System.out.println("The group " + strings[1] + " does not exists");
                 return true;
@@ -832,7 +839,7 @@ public class CommandPerms extends GlobalCommand {
             }
 
             group.getPerGroupPermissions().get(strings[3]).remove(filter);
-            PermissionAPI.getInstance().getPermissionUtil().updateGroup(group);
+            PermissionManagement.getInstance().updateGroup(group);
             System.out.println("The permission " + strings[4] + " was removed for group " + group.getName() + " on " + strings[3]);
             return true;
         }
@@ -842,7 +849,7 @@ public class CommandPerms extends GlobalCommand {
                 && strings[2].equalsIgnoreCase("parent")
                 && strings[3].equalsIgnoreCase("add")
         ) {
-            PermissionGroup group = PermissionAPI.getInstance().getPermissionUtil().getGroup(strings[1]);
+            PermissionGroup group = PermissionManagement.getInstance().getGroup(strings[1]);
             if (group == null) {
                 System.out.println("The group " + strings[1] + " does not exists");
                 return true;
@@ -853,14 +860,14 @@ public class CommandPerms extends GlobalCommand {
                 return true;
             }
 
-            PermissionGroup sub = PermissionAPI.getInstance().getPermissionUtil().getGroup(strings[4]);
+            PermissionGroup sub = PermissionManagement.getInstance().getGroup(strings[4]);
             if (sub == null) {
                 System.out.println("The group " + strings[4] + " does not exists");
                 return true;
             }
 
             group.getSubGroups().add(sub.getName());
-            PermissionAPI.getInstance().getPermissionUtil().updateGroup(group);
+            PermissionManagement.getInstance().updateGroup(group);
             System.out.println("The sub group " + sub.getName() + " was added to " + group.getName());
             return true;
         }
@@ -870,7 +877,7 @@ public class CommandPerms extends GlobalCommand {
                 && strings[2].equalsIgnoreCase("parent")
                 && strings[3].equalsIgnoreCase("remove")
         ) {
-            PermissionGroup group = PermissionAPI.getInstance().getPermissionUtil().getGroup(strings[1]);
+            PermissionGroup group = PermissionManagement.getInstance().getGroup(strings[1]);
             if (group == null) {
                 System.out.println("The group " + strings[1] + " does not exists");
                 return true;
@@ -882,7 +889,7 @@ public class CommandPerms extends GlobalCommand {
             }
 
             group.getSubGroups().remove(strings[4]);
-            PermissionAPI.getInstance().getPermissionUtil().updateGroup(group);
+            PermissionManagement.getInstance().updateGroup(group);
             System.out.println("Removed sub group " + strings[4] + " from " + group.getName());
             return true;
         }
@@ -891,7 +898,7 @@ public class CommandPerms extends GlobalCommand {
                 && strings[0].equalsIgnoreCase("group")
                 && strings[2].equalsIgnoreCase("parent")
         ) {
-            PermissionGroup group = PermissionAPI.getInstance().getPermissionUtil().getGroup(strings[1]);
+            PermissionGroup group = PermissionManagement.getInstance().getGroup(strings[1]);
             if (group == null) {
                 System.out.println("The group " + strings[1] + " does not exists");
                 return true;
@@ -903,7 +910,7 @@ public class CommandPerms extends GlobalCommand {
             }
 
             group.getSubGroups().clear();
-            PermissionAPI.getInstance().getPermissionUtil().updateGroup(group);
+            PermissionManagement.getInstance().updateGroup(group);
             System.out.println("Cleared all sub group of " + group.getName());
             return true;
         }

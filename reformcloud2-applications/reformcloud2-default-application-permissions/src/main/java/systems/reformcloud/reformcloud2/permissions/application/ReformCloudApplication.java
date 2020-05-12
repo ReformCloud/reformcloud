@@ -32,7 +32,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.application.updater.
 import systems.reformcloud.reformcloud2.executor.api.common.commands.manager.CommandManager;
 import systems.reformcloud.reformcloud2.executor.controller.ControllerExecutor;
 import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
-import systems.reformcloud.reformcloud2.permissions.PermissionAPI;
 import systems.reformcloud.reformcloud2.permissions.application.command.CommandPerms;
 import systems.reformcloud.reformcloud2.permissions.application.listener.ProcessInclusionHandler;
 import systems.reformcloud.reformcloud2.permissions.application.updater.PermissionsAddonUpdater;
@@ -57,9 +56,7 @@ public class ReformCloudApplication extends Application {
     @Override
     public void onEnable() {
         PacketHelper.addPacketHandler();
-        PermissionAPI.handshake();
-
-        getCommandManager().register(new CommandPerms());
+        this.getCommandManager().register(new CommandPerms());
     }
 
     @Nullable

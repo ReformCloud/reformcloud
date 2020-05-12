@@ -26,8 +26,8 @@ package systems.reformcloud.reformcloud2.permissions.sponge.subject.util;
 
 import systems.reformcloud.reformcloud2.executor.api.api.API;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
-import systems.reformcloud.reformcloud2.permissions.util.group.PermissionGroup;
-import systems.reformcloud.reformcloud2.permissions.util.permission.PermissionNode;
+import systems.reformcloud.reformcloud2.permissions.nodes.PermissionNode;
+import systems.reformcloud.reformcloud2.permissions.objects.group.PermissionGroup;
 
 import java.util.Collection;
 import java.util.HashMap;

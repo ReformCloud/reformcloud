@@ -54,10 +54,10 @@ public class VelocityPermissionPlugin {
 
     @Subscribe
     public void handleInit(ProxyInitializeEvent event) {
-        proxy.getEventManager().register(this, new VelocityPermissionListener());
-        proxy.getCommandManager().register(new CommandCloudPerms(), "perms", "permissions", "cloudperms");
-
-        PermissionPluginUtil.awaitConnection();
+        PermissionPluginUtil.awaitConnection(() -> {
+            proxy.getEventManager().register(this, new VelocityPermissionListener());
+            proxy.getCommandManager().register(new CommandCloudPerms(), "perms", "permissions", "cloudperms");
+        });
     }
 
     public static ProxyServer getProxy() {

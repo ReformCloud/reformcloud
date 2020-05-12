@@ -35,9 +35,9 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.channel.Pack
 import systems.reformcloud.reformcloud2.executor.api.common.network.data.ProtocolBuffer;
 import systems.reformcloud.reformcloud2.executor.api.common.network.handler.ChannelReaderHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
-import systems.reformcloud.reformcloud2.permissions.PermissionAPI;
+import systems.reformcloud.reformcloud2.permissions.PermissionManagement;
+import systems.reformcloud.reformcloud2.permissions.objects.group.PermissionGroup;
 import systems.reformcloud.reformcloud2.permissions.packets.util.PermissionAction;
-import systems.reformcloud.reformcloud2.permissions.util.group.PermissionGroup;
 
 public class PacketGroupAction extends Packet {
 
@@ -63,26 +63,20 @@ public class PacketGroupAction extends Packet {
         if (ExecutorAPI.getInstance().getType() != ExecutorType.API) {
             switch (this.permissionAction) {
                 case CREATE: {
-                    PermissionAPI.getInstance().getPermissionUtil().createGroup(permissionGroup.getName());
-                    PermissionAPI.getInstance().getPermissionUtil().handleInternalPermissionGroupCreate(permissionGroup);
+                    PermissionManagement.getInstance().createPermissionGroup(permissionGroup);
+                    PermissionManagement.getInstance().handleInternalPermissionGroupCreate(permissionGroup);
                     break;
                 }
 
                 case UPDATE: {
-                    PermissionAPI.getInstance().getPermissionUtil().updateGroup(permissionGroup);
-                    PermissionAPI.getInstance().getPermissionUtil().handleInternalPermissionGroupUpdate(permissionGroup);
+                    PermissionManagement.getInstance().updateGroup(permissionGroup);
+                    PermissionManagement.getInstance().handleInternalPermissionGroupUpdate(permissionGroup);
                     break;
                 }
 
                 case DELETE: {
-                    PermissionAPI.getInstance().getPermissionUtil().deleteGroup(permissionGroup.getName());
-                    PermissionAPI.getInstance().getPermissionUtil().handleInternalPermissionGroupDelete(permissionGroup);
-                    break;
-                }
-
-                case DEFAULT_GROUPS_CHANGED: {
-                    PermissionAPI.getInstance().getPermissionUtil().removeDefaultGroup(permissionGroup.getName());
-                    PermissionAPI.getInstance().getPermissionUtil().handleInternalDefaultGroupsUpdate();
+                    PermissionManagement.getInstance().deleteGroup(permissionGroup.getName());
+                    PermissionManagement.getInstance().handleInternalPermissionGroupDelete(permissionGroup);
                     break;
                 }
             }
@@ -92,22 +86,17 @@ public class PacketGroupAction extends Packet {
 
         switch (permissionAction) {
             case UPDATE: {
-                PermissionAPI.getInstance().getPermissionUtil().handleInternalPermissionGroupUpdate(permissionGroup);
+                PermissionManagement.getInstance().handleInternalPermissionGroupUpdate(permissionGroup);
                 break;
             }
 
             case DELETE: {
-                PermissionAPI.getInstance().getPermissionUtil().handleInternalPermissionGroupDelete(permissionGroup);
+                PermissionManagement.getInstance().handleInternalPermissionGroupDelete(permissionGroup);
                 break;
             }
 
             case CREATE: {
-                PermissionAPI.getInstance().getPermissionUtil().handleInternalPermissionGroupCreate(permissionGroup);
-                break;
-            }
-
-            case DEFAULT_GROUPS_CHANGED: {
-                PermissionAPI.getInstance().getPermissionUtil().handleInternalDefaultGroupsUpdate();
+                PermissionManagement.getInstance().handleInternalPermissionGroupCreate(permissionGroup);
                 break;
             }
         }

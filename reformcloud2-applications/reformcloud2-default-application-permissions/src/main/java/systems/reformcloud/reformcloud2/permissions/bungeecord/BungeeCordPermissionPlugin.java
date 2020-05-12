@@ -34,10 +34,10 @@ public class BungeeCordPermissionPlugin extends Plugin {
 
     @Override
     public void onEnable() {
-        ProxyServer.getInstance().getPluginManager().registerListener(this, new BungeeCordPermissionListener());
-        ProxyServer.getInstance().getPluginManager().registerCommand(this, new CommandCloudPerms());
-
-        PermissionPluginUtil.awaitConnection();
+        PermissionPluginUtil.awaitConnection(() -> {
+            ProxyServer.getInstance().getPluginManager().registerListener(this, new BungeeCordPermissionListener());
+            ProxyServer.getInstance().getPluginManager().registerCommand(this, new CommandCloudPerms());
+        });
     }
 
     @Override

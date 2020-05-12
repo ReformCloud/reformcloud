@@ -34,8 +34,8 @@ import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.base.Conditions;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
-import systems.reformcloud.reformcloud2.permissions.PermissionAPI;
-import systems.reformcloud.reformcloud2.permissions.util.group.PermissionGroup;
+import systems.reformcloud.reformcloud2.permissions.PermissionManagement;
+import systems.reformcloud.reformcloud2.permissions.objects.group.PermissionGroup;
 import systems.reformcloud.reformcloud2.tab.listener.BukkitTabListeners;
 import systems.reformcloud.reformcloud2.tab.listener.CloudTabListeners;
 
@@ -94,11 +94,10 @@ public class ReformCloudTabPlugin extends JavaPlugin {
 
     @Nullable
     private static PermissionGroup getOrDefault(@NotNull UUID uniqueID) {
-        return PermissionAPI.getInstance()
-                .getPermissionUtil()
+        return PermissionManagement.getInstance()
                 .loadUser(uniqueID)
                 .getHighestPermissionGroup()
-                .orElse(Streams.filter(PermissionAPI.getInstance().getPermissionUtil().getDefaultGroups(), e -> true));
+                .orElse(Streams.filter(PermissionManagement.getInstance().getDefaultGroups(), e -> true));
     }
 
     private static void registerPlayerTeam(@NotNull Player player, @NotNull Player other, @NotNull PermissionGroup permissionGroup) {

@@ -27,7 +27,7 @@ package systems.reformcloud.reformcloud2.permissions.sponge.subject.base.user;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.service.permission.PermissionService;
 import org.spongepowered.api.service.permission.SubjectCollection;
-import systems.reformcloud.reformcloud2.permissions.PermissionAPI;
+import systems.reformcloud.reformcloud2.permissions.PermissionManagement;
 import systems.reformcloud.reformcloud2.permissions.sponge.subject.impl.AbstractUserSpongeSubject;
 
 import java.util.UUID;
@@ -54,7 +54,7 @@ public class SpongeSubject extends AbstractUserSpongeSubject {
 
     @Override
     protected boolean has(String permission) {
-        return PermissionAPI.getInstance().getPermissionUtil().loadUser(uniqueUserID).hasPermission(permission);
+        return PermissionManagement.getInstance().loadUser(uniqueUserID).hasPermission(permission);
     }
 
     @Override

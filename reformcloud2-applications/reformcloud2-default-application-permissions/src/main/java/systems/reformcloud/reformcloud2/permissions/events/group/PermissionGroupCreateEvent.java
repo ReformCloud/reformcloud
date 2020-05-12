@@ -22,10 +22,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.permissions.util.events.group;
+package systems.reformcloud.reformcloud2.permissions.events.group;
 
 import systems.reformcloud.reformcloud2.executor.api.common.event.Event;
-import systems.reformcloud.reformcloud2.permissions.util.group.PermissionGroup;
+import systems.reformcloud.reformcloud2.permissions.objects.group.PermissionGroup;
 
 public class PermissionGroupCreateEvent extends Event {
 

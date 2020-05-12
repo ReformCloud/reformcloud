@@ -32,7 +32,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.permissions.PermissionAPI;
+import systems.reformcloud.reformcloud2.permissions.PermissionManagement;
 
 public class ReformCloudChatPlugin extends JavaPlugin implements Listener {
 
@@ -53,7 +53,7 @@ public class ReformCloudChatPlugin extends JavaPlugin implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void handle(final @NotNull AsyncPlayerChatEvent event) {
-        PermissionAPI.getInstance().getPermissionUtil().loadUser(event.getPlayer().getUniqueId()).getHighestPermissionGroup().ifPresent(permissionGroup -> {
+        PermissionManagement.getInstance().loadUser(event.getPlayer().getUniqueId()).getHighestPermissionGroup().ifPresent(permissionGroup -> {
             String message = event.getMessage().replace("%", "%%");
             if (ChatColor.stripColor(message).trim().isEmpty()) {
                 event.setCancelled(true);

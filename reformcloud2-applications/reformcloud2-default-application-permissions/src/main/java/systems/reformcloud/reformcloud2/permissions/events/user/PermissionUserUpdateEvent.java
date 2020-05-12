@@ -22,39 +22,20 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.permissions;
+package systems.reformcloud.reformcloud2.permissions.events.user;
 
-import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.permissions.util.PermissionUtil;
-import systems.reformcloud.reformcloud2.permissions.util.basic.DefaultPermissionUtil;
+import systems.reformcloud.reformcloud2.executor.api.common.event.Event;
+import systems.reformcloud.reformcloud2.permissions.objects.user.PermissionUser;
 
-public final class PermissionAPI {
+public class PermissionUserUpdateEvent extends Event {
 
-    private static PermissionAPI instance;
-
-    private final PermissionUtil permissionUtil;
-
-    // ====
-
-    private PermissionAPI() {
-        this.permissionUtil = DefaultPermissionUtil.hello();
+    public PermissionUserUpdateEvent(PermissionUser permissionUser) {
+        this.permissionUser = permissionUser;
     }
 
-    @NotNull
-    public PermissionUtil getPermissionUtil() {
-        return permissionUtil;
-    }
+    private final PermissionUser permissionUser;
 
-    @NotNull
-    public static PermissionAPI getInstance() {
-        return instance;
-    }
-
-    public static void handshake() {
-        if (instance != null) {
-            return;
-        }
-
-        instance = new PermissionAPI();
+    public PermissionUser getPermissionUser() {
+        return permissionUser;
     }
 }

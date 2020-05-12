@@ -22,7 +22,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.permissions.util.user;
+package systems.reformcloud.reformcloud2.permissions.objects.user;
 
 import com.google.gson.reflect.TypeToken;
 import org.jetbrains.annotations.ApiStatus;
@@ -30,11 +30,11 @@ import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.network.SerializableObject;
 import systems.reformcloud.reformcloud2.executor.api.common.network.data.ProtocolBuffer;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
-import systems.reformcloud.reformcloud2.permissions.PermissionAPI;
-import systems.reformcloud.reformcloud2.permissions.util.basic.checks.WildcardCheck;
-import systems.reformcloud.reformcloud2.permissions.util.group.NodeGroup;
-import systems.reformcloud.reformcloud2.permissions.util.group.PermissionGroup;
-import systems.reformcloud.reformcloud2.permissions.util.permission.PermissionNode;
+import systems.reformcloud.reformcloud2.permissions.PermissionManagement;
+import systems.reformcloud.reformcloud2.permissions.checks.WildcardCheck;
+import systems.reformcloud.reformcloud2.permissions.nodes.NodeGroup;
+import systems.reformcloud.reformcloud2.permissions.nodes.PermissionNode;
+import systems.reformcloud.reformcloud2.permissions.objects.group.PermissionGroup;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -85,7 +85,7 @@ public class PermissionUser implements SerializableObject {
         PermissionGroup permissionGroup = null;
 
         for (NodeGroup nodeGroup : this.groups) {
-            PermissionGroup group = PermissionAPI.getInstance().getPermissionUtil().getGroup(nodeGroup.getGroupName());
+            PermissionGroup group = PermissionManagement.getInstance().getGroup(nodeGroup.getGroupName());
             if (group == null) {
                 continue;
             }
@@ -138,7 +138,7 @@ public class PermissionUser implements SerializableObject {
             return wildCard;
         }
 
-        return PermissionAPI.getInstance().getPermissionUtil().hasPermission(this, permission);
+        return PermissionManagement.getInstance().hasPermission(this, permission);
     }
 
     @Override

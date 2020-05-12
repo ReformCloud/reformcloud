@@ -29,17 +29,16 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorType;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.network.challenge.ChallengeAuthHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.NetworkChannelReader;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
+import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.common.network.data.ProtocolBuffer;
 import systems.reformcloud.reformcloud2.executor.api.common.network.handler.ChannelReaderHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
-import systems.reformcloud.reformcloud2.permissions.PermissionAPI;
+import systems.reformcloud.reformcloud2.permissions.PermissionManagement;
+import systems.reformcloud.reformcloud2.permissions.objects.user.PermissionUser;
 import systems.reformcloud.reformcloud2.permissions.packets.util.PermissionAction;
-import systems.reformcloud.reformcloud2.permissions.util.basic.DefaultPermissionUtil;
-import systems.reformcloud.reformcloud2.permissions.util.user.PermissionUser;
 
 public class PacketUserAction extends Packet {
 
@@ -64,35 +63,27 @@ public class PacketUserAction extends Packet {
     public void handlePacketReceive(@NotNull NetworkChannelReader reader, @NotNull ChallengeAuthHandler authHandler, @NotNull ChannelReaderHelper parent, @Nullable PacketSender sender, @NotNull ChannelHandlerContext channel) {
         switch (this.permissionAction) {
             case DELETE: {
+                PermissionManagement.getInstance().handleInternalUserDelete(permissionUser);
                 if (ExecutorAPI.getInstance().getType() != ExecutorType.API) {
-                    PermissionAPI.getInstance().getPermissionUtil().deleteUser(permissionUser.getUniqueID());
-                } else {
-                    PermissionAPI.getInstance().getPermissionUtil().handleInternalUserCreate(permissionUser);
+                    DefaultChannelManager.INSTANCE.getAllSender().forEach(e -> e.sendPacket(new PacketUserAction(permissionUser, PermissionAction.DELETE)));
                 }
 
                 break;
             }
 
             case UPDATE: {
+                PermissionManagement.getInstance().handleInternalUserUpdate(permissionUser);
                 if (ExecutorAPI.getInstance().getType() != ExecutorType.API) {
-                    PermissionAPI.getInstance().getPermissionUtil().updateUser(permissionUser);
-                } else {
-                    PermissionAPI.getInstance().getPermissionUtil().handleInternalUserUpdate(permissionUser);
+                    DefaultChannelManager.INSTANCE.getAllSender().forEach(e -> e.sendPacket(new PacketUserAction(permissionUser, PermissionAction.UPDATE)));
                 }
 
                 break;
             }
 
             case CREATE: {
+                PermissionManagement.getInstance().handleInternalUserCreate(permissionUser);
                 if (ExecutorAPI.getInstance().getType() != ExecutorType.API) {
-                    ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().insert(
-                            DefaultPermissionUtil.PERMISSION_PLAYER_TABLE,
-                            permissionUser.getUniqueID().toString(),
-                            null,
-                            new JsonConfiguration().add("user", permissionUser)
-                    );
-                } else {
-                    PermissionAPI.getInstance().getPermissionUtil().handleInternalUserCreate(permissionUser);
+                    DefaultChannelManager.INSTANCE.getAllSender().forEach(e -> e.sendPacket(new PacketUserAction(permissionUser, PermissionAction.CREATE)));
                 }
 
                 break;

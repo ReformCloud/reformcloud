@@ -30,7 +30,5 @@ public enum PermissionAction {
 
     DELETE,
 
-    UPDATE,
-
-    DEFAULT_GROUPS_CHANGED
+    UPDATE
 }

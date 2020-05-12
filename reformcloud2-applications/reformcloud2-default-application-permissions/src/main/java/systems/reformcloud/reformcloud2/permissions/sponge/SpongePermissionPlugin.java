@@ -52,9 +52,9 @@ public class SpongePermissionPlugin {
 
     @Listener
     public void handle(final GameStartedServerEvent event) {
-        PermissionPluginUtil.awaitConnection();
-        serviceManager.setProvider(this, PermissionService.class, new SpongePermissionService());
-
-        Sponge.getEventManager().registerListeners(this, new SpongePermissionListener());
+        PermissionPluginUtil.awaitConnection(() -> {
+            this.serviceManager.setProvider(this, PermissionService.class, new SpongePermissionService());
+            Sponge.getEventManager().registerListeners(this, new SpongePermissionListener());
+        });
     }
 }

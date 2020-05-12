@@ -33,8 +33,7 @@ public class BukkitPermissionPlugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        Bukkit.getPluginManager().registerEvents(new BukkitPermissionListener(), this);
-        PermissionPluginUtil.awaitConnection();
+        PermissionPluginUtil.awaitConnection(() -> Bukkit.getPluginManager().registerEvents(new BukkitPermissionListener(), this));
     }
 
     @Override

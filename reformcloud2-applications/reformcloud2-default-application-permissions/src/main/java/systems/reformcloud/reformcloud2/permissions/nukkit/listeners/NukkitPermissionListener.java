@@ -30,7 +30,7 @@ import cn.nukkit.event.EventPriority;
 import cn.nukkit.event.Listener;
 import cn.nukkit.event.player.PlayerLoginEvent;
 import cn.nukkit.event.player.PlayerQuitEvent;
-import systems.reformcloud.reformcloud2.permissions.PermissionAPI;
+import systems.reformcloud.reformcloud2.permissions.PermissionManagement;
 import systems.reformcloud.reformcloud2.permissions.nukkit.permissible.DefaultPermissible;
 
 import java.lang.reflect.Field;
@@ -50,6 +50,6 @@ public class NukkitPermissionListener implements Listener {
 
     @EventHandler
     public void handle(final PlayerQuitEvent event) {
-        PermissionAPI.getInstance().getPermissionUtil().handleDisconnect(event.getPlayer().getUniqueId());
+        PermissionManagement.getInstance().handleDisconnect(event.getPlayer().getUniqueId());
     }
 }

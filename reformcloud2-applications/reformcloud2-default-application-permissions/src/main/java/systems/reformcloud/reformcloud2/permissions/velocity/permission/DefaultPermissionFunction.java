@@ -27,8 +27,8 @@ package systems.reformcloud.reformcloud2.permissions.velocity.permission;
 import com.velocitypowered.api.permission.PermissionFunction;
 import com.velocitypowered.api.permission.Tristate;
 import com.velocitypowered.api.proxy.Player;
-import systems.reformcloud.reformcloud2.permissions.PermissionAPI;
-import systems.reformcloud.reformcloud2.permissions.util.user.PermissionUser;
+import systems.reformcloud.reformcloud2.permissions.PermissionManagement;
+import systems.reformcloud.reformcloud2.permissions.objects.user.PermissionUser;
 
 import java.util.UUID;
 
@@ -46,7 +46,7 @@ public class DefaultPermissionFunction implements PermissionFunction {
             return Tristate.FALSE;
         }
 
-        final PermissionUser permissionUser = PermissionAPI.getInstance().getPermissionUtil().loadUser(uuid);
+        final PermissionUser permissionUser = PermissionManagement.getInstance().loadUser(uuid);
         return permissionUser.hasPermission(s) ? Tristate.TRUE : Tristate.FALSE;
     }
 }

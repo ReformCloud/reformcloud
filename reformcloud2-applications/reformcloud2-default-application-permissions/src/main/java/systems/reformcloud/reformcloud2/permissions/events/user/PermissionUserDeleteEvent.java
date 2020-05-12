@@ -22,7 +22,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.permissions.util.events.user;
+package systems.reformcloud.reformcloud2.permissions.events.user;
 
 import systems.reformcloud.reformcloud2.executor.api.common.event.Event;
 

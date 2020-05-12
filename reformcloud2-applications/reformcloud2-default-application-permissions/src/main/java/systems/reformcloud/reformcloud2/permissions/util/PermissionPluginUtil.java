@@ -24,12 +24,12 @@
  */
 package systems.reformcloud.reformcloud2.permissions.util;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.network.NetworkUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.optional.ReferencedOptional;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
-import systems.reformcloud.reformcloud2.permissions.PermissionAPI;
 import systems.reformcloud.reformcloud2.permissions.packets.PacketHelper;
 
 public final class PermissionPluginUtil {
@@ -38,7 +38,7 @@ public final class PermissionPluginUtil {
         throw new UnsupportedOperationException();
     }
 
-    public static void awaitConnection() {
+    public static void awaitConnection(@NotNull Runnable then) {
         NetworkUtil.EXECUTOR.execute(() -> {
             ReferencedOptional<PacketSender> optionalPacketSender = DefaultChannelManager.INSTANCE.get("Controller");
             while (!optionalPacketSender.isPresent()) {
@@ -46,8 +46,8 @@ public final class PermissionPluginUtil {
                 optionalPacketSender = DefaultChannelManager.INSTANCE.get("Controller");
             }
 
-            PermissionAPI.handshake();
             PacketHelper.addPacketHandler();
+            then.run();
         });
     }
 

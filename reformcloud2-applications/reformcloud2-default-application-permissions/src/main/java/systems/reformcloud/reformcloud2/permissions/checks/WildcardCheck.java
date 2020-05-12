@@ -22,27 +22,30 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.permissions.util.basic.checks;
+package systems.reformcloud.reformcloud2.permissions.checks;
 
 import systems.reformcloud.reformcloud2.executor.api.api.API;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
-import systems.reformcloud.reformcloud2.permissions.util.group.PermissionGroup;
-import systems.reformcloud.reformcloud2.permissions.util.permission.PermissionNode;
+import systems.reformcloud.reformcloud2.permissions.nodes.PermissionNode;
+import systems.reformcloud.reformcloud2.permissions.objects.group.PermissionGroup;
+import systems.reformcloud.reformcloud2.permissions.objects.user.PermissionUser;
 
 import java.util.Collection;
 
-public class GeneralCheck {
+public class WildcardCheck {
 
-    public static boolean hasPermission(PermissionGroup permissionGroup, String perm) {
-        if (has(permissionGroup, "*")) {
-            return true;
-        }
+    public static boolean hasWildcardPermission(PermissionGroup permissionGroup, String perm) {
+        if (permissionGroup.getPermissionNodes().stream().anyMatch(e -> {
+            final String actual = e.getActualPermission();
+            if (actual.length() > 1
+                    && actual.endsWith("*")
+                    && perm.startsWith(actual.substring(0, actual.length() - 1))
+                    && e.isValid()) {
+                return e.isSet();
+            }
 
-        return has(permissionGroup, perm);
-    }
-
-    private static boolean has(PermissionGroup permissionGroup, String perm) {
-        if (permissionGroup.getPermissionNodes().stream().anyMatch(e -> e.getActualPermission().equals(perm) && e.isSet())) {
+            return false;
+        })) {
             return true;
         }
 
@@ -58,11 +61,29 @@ public class GeneralCheck {
         }
 
         for (PermissionNode currentGroupPerm : currentGroupPerms) {
-            if (currentGroupPerm.getActualPermission().equals(perm)) {
+            final String actual = currentGroupPerm.getActualPermission();
+            if (actual.length() > 1
+                    && actual.endsWith("*")
+                    && perm.startsWith(actual.substring(0, actual.length() - 1))
+                    && currentGroupPerm.isValid()) {
                 return currentGroupPerm.isSet();
             }
         }
 
         return false;
+    }
+
+    public static Boolean hasWildcardPermission(PermissionUser permissionUser, String perm) {
+        for (PermissionNode permissionNode : permissionUser.getPermissionNodes()) {
+            final String actual = permissionNode.getActualPermission();
+            if (actual.length() > 1
+                    && actual.endsWith("*")
+                    && perm.startsWith(actual.substring(0, actual.length() - 1))
+                    && permissionNode.isValid()) {
+                return permissionNode.isSet();
+            }
+        }
+
+        return null;
     }
 }

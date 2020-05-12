@@ -22,20 +22,20 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.permissions.util.events.user;
+package systems.reformcloud.reformcloud2.permissions.events.group;
 
 import systems.reformcloud.reformcloud2.executor.api.common.event.Event;
-import systems.reformcloud.reformcloud2.permissions.util.user.PermissionUser;
+import systems.reformcloud.reformcloud2.permissions.objects.group.PermissionGroup;
 
-public class PermissionUserCreateEvent extends Event {
+public class PermissionGroupUpdateEvent extends Event {
 
-    public PermissionUserCreateEvent(PermissionUser permissionUser) {
-        this.permissionUser = permissionUser;
+    public PermissionGroupUpdateEvent(PermissionGroup permissionGroup) {
+        this.permissionGroup = permissionGroup;
     }
 
-    private final PermissionUser permissionUser;
+    private final PermissionGroup permissionGroup;
 
-    public PermissionUser getPermissionUser() {
-        return permissionUser;
+    public PermissionGroup getPermissionGroup() {
+        return permissionGroup;
     }
 }

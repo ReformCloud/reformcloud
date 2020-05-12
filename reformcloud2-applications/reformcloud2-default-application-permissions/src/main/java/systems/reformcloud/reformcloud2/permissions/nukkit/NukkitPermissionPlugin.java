@@ -33,8 +33,7 @@ public class NukkitPermissionPlugin extends PluginBase {
 
     @Override
     public void onEnable() {
-        Server.getInstance().getPluginManager().registerEvents(new NukkitPermissionListener(), this);
-        PermissionPluginUtil.awaitConnection();
+        PermissionPluginUtil.awaitConnection(() -> Server.getInstance().getPluginManager().registerEvents(new NukkitPermissionListener(), this));
     }
 
     @Override
