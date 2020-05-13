@@ -28,6 +28,7 @@ import com.google.gson.reflect.TypeToken;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.network.SerializableObject;
 import systems.reformcloud.reformcloud2.executor.api.common.network.data.ProtocolBuffer;
 import systems.reformcloud.reformcloud2.permissions.checks.GeneralCheck;
@@ -66,13 +67,13 @@ public class PermissionGroup implements SerializableObject {
             int priority,
             boolean defaultGroup
     ) {
-        this(permissionNodes, perGroupPermissions, subGroups, name, priority, defaultGroup, null, null, null, null);
+        this(permissionNodes, perGroupPermissions, subGroups, name, priority, defaultGroup, null, null, null, null, new JsonConfiguration());
     }
 
     public PermissionGroup(Collection<PermissionNode> permissionNodes, Map<String, Collection<PermissionNode>> perGroupPermissions,
                            Collection<String> subGroups, String name, int priority, boolean defaultGroup,
                            @Nullable String prefix, @Nullable String suffix, @Nullable String display,
-                           @Nullable String colour) {
+                           @Nullable String colour, @NotNull JsonConfiguration extra) {
         this.permissionNodes = permissionNodes;
         this.perGroupPermissions = perGroupPermissions;
         this.subGroups = subGroups;
@@ -83,6 +84,7 @@ public class PermissionGroup implements SerializableObject {
         this.suffix = suffix;
         this.display = display;
         this.colour = colour;
+        this.extra = extra;
     }
 
     private Collection<PermissionNode> permissionNodes;
@@ -104,6 +106,8 @@ public class PermissionGroup implements SerializableObject {
     private @Nullable String display;
 
     private @Nullable String colour;
+
+    private JsonConfiguration extra;
 
     @NotNull
     public Collection<PermissionNode> getPermissionNodes() {
@@ -177,6 +181,11 @@ public class PermissionGroup implements SerializableObject {
         this.defaultGroup = defaultGroup;
     }
 
+    @NotNull
+    public JsonConfiguration getExtra() {
+        return extra == null ? new JsonConfiguration() : extra;
+    }
+
     public boolean hasPermission(@NotNull String perm) {
         if (WildcardCheck.hasWildcardPermission(this, perm)) {
             return true;
@@ -204,6 +213,7 @@ public class PermissionGroup implements SerializableObject {
         buffer.writeString(this.suffix);
         buffer.writeString(this.display);
         buffer.writeString(this.colour);
+        buffer.writeArray(this.extra.toPrettyBytes());
     }
 
     @Override
@@ -225,5 +235,6 @@ public class PermissionGroup implements SerializableObject {
         this.suffix = buffer.readString();
         this.display = buffer.readString();
         this.colour = buffer.readString();
+        this.extra = new JsonConfiguration(buffer.readArray());
     }
 }

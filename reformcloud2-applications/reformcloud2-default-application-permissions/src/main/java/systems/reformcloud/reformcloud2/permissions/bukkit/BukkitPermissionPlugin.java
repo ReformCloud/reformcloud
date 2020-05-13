@@ -27,13 +27,21 @@ package systems.reformcloud.reformcloud2.permissions.bukkit;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import systems.reformcloud.reformcloud2.permissions.bukkit.listeners.BukkitPermissionListener;
+import systems.reformcloud.reformcloud2.permissions.bukkit.vault.VaultUtil;
 import systems.reformcloud.reformcloud2.permissions.util.PermissionPluginUtil;
 
 public class BukkitPermissionPlugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        PermissionPluginUtil.awaitConnection(() -> Bukkit.getPluginManager().registerEvents(new BukkitPermissionListener(), this));
+        PermissionPluginUtil.awaitConnection(() -> {
+            Bukkit.getPluginManager().registerEvents(new BukkitPermissionListener(), this);
+            if (!Bukkit.getPluginManager().isPluginEnabled("Vault") && !Bukkit.getPluginManager().isPluginEnabled("VaultAPI")) {
+                return;
+            }
+
+            VaultUtil.tryInvoke(this);
+        });
     }
 
     @Override

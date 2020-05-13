@@ -27,6 +27,7 @@ package systems.reformcloud.reformcloud2.permissions;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnmodifiableView;
 import systems.reformcloud.reformcloud2.permissions.defaults.DefaultPermissionManagement;
 import systems.reformcloud.reformcloud2.permissions.nodes.NodeGroup;
 import systems.reformcloud.reformcloud2.permissions.nodes.PermissionNode;
@@ -34,6 +35,7 @@ import systems.reformcloud.reformcloud2.permissions.objects.group.PermissionGrou
 import systems.reformcloud.reformcloud2.permissions.objects.user.PermissionUser;
 
 import java.util.Collection;
+import java.util.Optional;
 import java.util.UUID;
 
 public abstract class PermissionManagement {
@@ -52,7 +54,20 @@ public abstract class PermissionManagement {
      * @return The {@link PermissionGroup} or {@code null} if the group does not exists
      */
     @Nullable
-    public abstract PermissionGroup getGroup(@NotNull String name);
+    @Deprecated
+    @ApiStatus.ScheduledForRemoval
+    public PermissionGroup getGroup(@NotNull String name) {
+        return this.getPermissionGroup(name).orElse(null);
+    }
+
+    /**
+     * Get a specific permission group by it's name
+     *
+     * @param name The name of the group
+     * @return An optional holding the requested permission group or empty if the group does not exists
+     */
+    @NotNull
+    public abstract Optional<PermissionGroup> getPermissionGroup(@NotNull String name);
 
     /**
      * Updates a specific permission group
@@ -105,6 +120,13 @@ public abstract class PermissionManagement {
     public abstract Collection<PermissionGroup> getDefaultGroups();
 
     /**
+     * @return All currently cached groups of the management instance
+     */
+    @NotNull
+    @UnmodifiableView
+    public abstract Collection<PermissionGroup> getCachedGroups();
+
+    /**
      * Deletes a specific permission group
      *
      * @param name The name of the group which should get deleted
@@ -138,6 +160,15 @@ public abstract class PermissionManagement {
      */
     @NotNull
     public abstract PermissionUser loadUser(@NotNull UUID uniqueId);
+
+    /**
+     * Loads a specific permission user
+     *
+     * @param uniqueId The uniqueID of the user which should get loaded
+     * @return The loaded permission user
+     */
+    @NotNull
+    public abstract Optional<PermissionUser> getExistingUser(@NotNull UUID uniqueId);
 
     /**
      * Loads a specific permission user or creates a new one

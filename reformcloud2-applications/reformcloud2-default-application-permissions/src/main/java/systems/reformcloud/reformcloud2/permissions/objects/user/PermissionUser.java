@@ -27,6 +27,8 @@ package systems.reformcloud.reformcloud2.permissions.objects.user;
 import com.google.gson.reflect.TypeToken;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.network.SerializableObject;
 import systems.reformcloud.reformcloud2.executor.api.common.network.data.ProtocolBuffer;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
@@ -57,6 +59,7 @@ public class PermissionUser implements SerializableObject {
         this.uuid = uuid;
         this.permissionNodes = permissionNodes;
         this.groups = groups;
+        this.extra = new JsonConfiguration();
     }
 
     private UUID uuid;
@@ -64,6 +67,16 @@ public class PermissionUser implements SerializableObject {
     private Collection<PermissionNode> permissionNodes;
 
     private Collection<NodeGroup> groups;
+
+    private @Nullable String prefix;
+
+    private @Nullable String suffix;
+
+    private @Nullable String display;
+
+    private @Nullable String colour;
+
+    private JsonConfiguration extra;
 
     @NotNull
     public UUID getUniqueID() {
@@ -78,6 +91,63 @@ public class PermissionUser implements SerializableObject {
     @NotNull
     public Collection<NodeGroup> getGroups() {
         return groups;
+    }
+
+    @NotNull
+    public Optional<String> getPrefix() {
+        if (this.prefix == null) {
+            return this.getHighestPermissionGroup().flatMap(PermissionGroup::getPrefix);
+        }
+
+        return Optional.of(this.prefix);
+    }
+
+    @NotNull
+    public Optional<String> getSuffix() {
+        if (this.suffix == null) {
+            return this.getHighestPermissionGroup().flatMap(PermissionGroup::getSuffix);
+        }
+
+        return Optional.of(this.suffix);
+    }
+
+    @NotNull
+    public Optional<String> getDisplay() {
+        if (this.display == null) {
+            return this.getHighestPermissionGroup().flatMap(PermissionGroup::getDisplay);
+        }
+
+        return Optional.of(this.display);
+    }
+
+    @NotNull
+    public Optional<String> getColour() {
+        if (this.colour == null) {
+            return this.getHighestPermissionGroup().flatMap(PermissionGroup::getColour);
+        }
+
+        return Optional.of(this.colour);
+    }
+
+    @NotNull
+    public JsonConfiguration getExtra() {
+        return extra == null ? new JsonConfiguration() : extra;
+    }
+
+    public void setPrefix(@Nullable String prefix) {
+        this.prefix = prefix;
+    }
+
+    public void setSuffix(@Nullable String suffix) {
+        this.suffix = suffix;
+    }
+
+    public void setDisplay(@Nullable String display) {
+        this.display = display;
+    }
+
+    public void setColour(@Nullable String colour) {
+        this.colour = colour;
     }
 
     @NotNull
@@ -146,6 +216,12 @@ public class PermissionUser implements SerializableObject {
         buffer.writeUniqueId(this.uuid);
         buffer.writeObjects(this.groups);
         buffer.writeObjects(this.permissionNodes);
+
+        buffer.writeString(this.prefix);
+        buffer.writeString(this.suffix);
+        buffer.writeString(this.display);
+        buffer.writeString(this.colour);
+        buffer.writeArray(this.extra.toPrettyBytes());
     }
 
     @Override
@@ -153,5 +229,11 @@ public class PermissionUser implements SerializableObject {
         this.uuid = buffer.readUniqueId();
         this.groups = buffer.readObjects(NodeGroup.class);
         this.permissionNodes = buffer.readObjects(PermissionNode.class);
+
+        this.prefix = buffer.readString();
+        this.suffix = buffer.readString();
+        this.display = buffer.readString();
+        this.colour = buffer.readString();
+        this.extra = new JsonConfiguration(buffer.readArray());
     }
 }
