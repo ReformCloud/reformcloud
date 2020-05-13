@@ -13,8 +13,8 @@
 
     <repositories>
         <repository>
-            <id>reformcloud-central</id>
-            <url>https://repo.reformcloud.systems/</url>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
         </repository>
     </repositories>
 
@@ -28,9 +28,9 @@
     <dependencies>
         <!-- https://github.com/derklaro/project-deer -->
         <dependency>
-            <groupId>de.derklaro.projects.deer</groupId>
-            <artifactId>project-deer-executor</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <groupId>com.github.derklaro</groupId>
+            <artifactId>project-deer</artifactId>
+            <version>1.0.0</version>
             <scope>provided</scope>
         </dependency>
 

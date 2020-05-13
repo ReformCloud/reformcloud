@@ -100,21 +100,12 @@ public final class FileDatabase extends Database<Path> {
 
     private void initDependencies() {
         URL url = DEPENDENCY_LOADER.loadDependency(new DefaultDependency(
-                DefaultRepositories.REFORMCLOUD,
-                "de.derklaro.projects.deer",
-                "project-deer-executor",
-                "1.0-SNAPSHOT"
+                DefaultRepositories.JITPACK,
+                "com.github.derklaro",
+                "project-deer",
+                "1.0.0"
         ));
         Conditions.nonNull(url, StringUtil.formatError("dependency executor load for file database"));
         DEPENDENCY_LOADER.addDependency(url);
-
-        URL apiUrl = DEPENDENCY_LOADER.loadDependency(new DefaultDependency(
-                DefaultRepositories.REFORMCLOUD,
-                "de.derklaro.projects.deer",
-                "project-deer-api",
-                "1.0-SNAPSHOT"
-        ));
-        Conditions.nonNull(apiUrl, StringUtil.formatError("dependency api load for file database"));
-        DEPENDENCY_LOADER.addDependency(apiUrl);
     }
 }

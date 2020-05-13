@@ -150,16 +150,14 @@ public class FileDatabaseReader implements DatabaseReader {
     public Task<Integer> size() {
         Task<Integer> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
-            try {
+            try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(this.parentTable + "/" + table))) {
                 AtomicInteger count = new AtomicInteger();
-                DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(this.parentTable + "/" + table));
                 stream.forEach(files -> {
                     if (!files.getFileName().toString().endsWith(".properties")) {
                         count.getAndIncrement();
                     }
                 });
 
-                stream.close();
                 task.complete(count.intValue());
             } catch (final IOException ex) {
                 ex.printStackTrace();

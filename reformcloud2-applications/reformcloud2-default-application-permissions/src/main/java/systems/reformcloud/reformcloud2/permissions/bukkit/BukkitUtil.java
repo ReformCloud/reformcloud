@@ -26,6 +26,7 @@ package systems.reformcloud.reformcloud2.permissions.bukkit;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.base.Conditions;
 import systems.reformcloud.reformcloud2.permissions.bukkit.permissible.DefaultPermissible;
 
@@ -56,8 +57,7 @@ public final class BukkitUtil {
         }
     }
 
-    public static void injectPlayer(Player player) {
-        Conditions.isTrue(player != null);
+    public static void injectPlayer(@NotNull Player player) {
         Conditions.isTrue(PERM_FIELD != null);
 
         try {

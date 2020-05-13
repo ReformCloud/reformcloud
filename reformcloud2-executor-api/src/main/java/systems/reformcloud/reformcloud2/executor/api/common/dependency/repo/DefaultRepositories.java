@@ -42,17 +42,17 @@ public final class DefaultRepositories {
         }
     };
 
-    public static final Repository REFORMCLOUD = new Repository() {
+    public static final Repository JITPACK = new Repository() {
         @NotNull
         @Override
         public String getName() {
-            return "ReformCloud-Central";
+            return "JitPack";
         }
 
         @NotNull
         @Override
         public String getURL() {
-            return "https://repo.reformcloud.systems/";
+            return "https://jitpack.io/";
         }
     };
 

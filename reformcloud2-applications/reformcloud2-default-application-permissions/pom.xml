@@ -37,10 +37,16 @@
             <url>https://repo.spongepowered.org/maven</url>
         </repository>
 
-        <!-- reformcloud repo for nukkitX -->
+        <!-- nukkit repo -->
         <repository>
-            <id>reformcloud-repo</id>
-            <url>https://repo.reformcloud.systems/</url>
+            <id>nukkit-repo</id>
+            <url>https://repo.nukkitx.com/maven-snapshots/</url>
+        </repository>
+
+        <!-- jitpack for vault -->
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
         </repository>
     </repositories>
 
@@ -108,6 +114,14 @@
             <artifactId>spongeapi</artifactId>
             <version>7.2.0</version>
             <type>jar</type>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- vault api -->
+        <dependency>
+            <groupId>com.github.MilkBowl</groupId>
+            <artifactId>VaultAPI</artifactId>
+            <version>1.7</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

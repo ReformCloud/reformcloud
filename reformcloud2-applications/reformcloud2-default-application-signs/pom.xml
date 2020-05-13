@@ -19,10 +19,10 @@
             <url>https://repo.spongepowered.org/maven</url>
         </repository>
 
-        <!-- reformcloud repo for nukkitX -->
+        <!-- nukkit repo -->
         <repository>
-            <id>reformcloud-repo</id>
-            <url>https://repo.reformcloud.systems/</url>
+            <id>nukkit-repo</id>
+            <url>https://repo.nukkitx.com/maven-snapshots/</url>
         </repository>
 
         <!-- spigot mc repo -->
