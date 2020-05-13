@@ -76,6 +76,10 @@ public class CommandPerms extends GlobalCommand {
             "perms user [user]",
             "perms user [user] delete",
             "perms user [user] clear",
+            "perms user [user] setprefix [prefix]",
+            "perms user [user] setsuffix [suffix]",
+            "perms user [user] setdisplay [display]",
+            "perms user [user] setcolor [color]",
             "perms user [user] addperm [permission] [set]",
             "perms user [user] addperm [permission] [set] [timeout] [s/m/h/d/mo]",
             "perms user [user] delperm [permission]",
@@ -185,6 +189,114 @@ public class CommandPerms extends GlobalCommand {
             user.getGroups().clear();
             PermissionManagement.getInstance().updateUser(user);
             System.out.println("Cleared all groups and permissions of user " + strings[1]);
+            return true;
+        }
+
+        if (strings.length == 4
+                && strings[0].equalsIgnoreCase("user")
+                && strings[2].equalsIgnoreCase("setprefix")) {
+            UUID uniqueID = UUIDFetcher.getUUIDFromName(strings[1]);
+            if (uniqueID == null) {
+                commandSource.sendMessage("The uniqueID is unknown");
+                return true;
+            }
+
+            PermissionUser user = PermissionManagement.getInstance().loadUser(uniqueID);
+            if (Streams.filterToReference(user.getPermissionNodes(),
+                    e -> e.getActualPermission().equalsIgnoreCase(strings[3])).isPresent()) {
+                System.out.println("The permission " + strings[3] + " is already set");
+                return true;
+            }
+
+            String prefix = strings[3].replace("_", "");
+            if (prefix.equals("\"\"")) {
+                prefix = null;
+            }
+
+            user.setPrefix(prefix);
+            PermissionManagement.getInstance().updateUser(user);
+            System.out.println("The user " + strings[1] + " " + (prefix == null ? "has no longer a prefix" : "has now the prefix " + prefix));
+            return true;
+        }
+
+        if (strings.length == 4
+                && strings[0].equalsIgnoreCase("user")
+                && strings[2].equalsIgnoreCase("setdisplay")) {
+            UUID uniqueID = UUIDFetcher.getUUIDFromName(strings[1]);
+            if (uniqueID == null) {
+                commandSource.sendMessage("The uniqueID is unknown");
+                return true;
+            }
+
+            PermissionUser user = PermissionManagement.getInstance().loadUser(uniqueID);
+            if (Streams.filterToReference(user.getPermissionNodes(),
+                    e -> e.getActualPermission().equalsIgnoreCase(strings[3])).isPresent()) {
+                System.out.println("The permission " + strings[3] + " is already set");
+                return true;
+            }
+
+            String display = strings[3].replace("_", "");
+            if (display.equals("\"\"")) {
+                display = null;
+            }
+
+            user.setDisplay(display);
+            PermissionManagement.getInstance().updateUser(user);
+            System.out.println("The user " + strings[1] + " " + (display == null ? "has no longer a display" : "has now the display " + display));
+            return true;
+        }
+
+        if (strings.length == 4
+                && strings[0].equalsIgnoreCase("user")
+                && strings[2].equalsIgnoreCase("setsuffix")) {
+            UUID uniqueID = UUIDFetcher.getUUIDFromName(strings[1]);
+            if (uniqueID == null) {
+                commandSource.sendMessage("The uniqueID is unknown");
+                return true;
+            }
+
+            PermissionUser user = PermissionManagement.getInstance().loadUser(uniqueID);
+            if (Streams.filterToReference(user.getPermissionNodes(),
+                    e -> e.getActualPermission().equalsIgnoreCase(strings[3])).isPresent()) {
+                System.out.println("The permission " + strings[3] + " is already set");
+                return true;
+            }
+
+            String suffix = strings[3].replace("_", "");
+            if (suffix.equals("\"\"")) {
+                suffix = null;
+            }
+
+            user.setSuffix(suffix);
+            PermissionManagement.getInstance().updateUser(user);
+            System.out.println("The user " + strings[1] + " " + (suffix == null ? "has no longer a suffix" : "has now the suffix " + suffix));
+            return true;
+        }
+
+        if (strings.length == 4
+                && strings[0].equalsIgnoreCase("user")
+                && strings[2].equalsIgnoreCase("setcolor")) {
+            UUID uniqueID = UUIDFetcher.getUUIDFromName(strings[1]);
+            if (uniqueID == null) {
+                commandSource.sendMessage("The uniqueID is unknown");
+                return true;
+            }
+
+            PermissionUser user = PermissionManagement.getInstance().loadUser(uniqueID);
+            if (Streams.filterToReference(user.getPermissionNodes(),
+                    e -> e.getActualPermission().equalsIgnoreCase(strings[3])).isPresent()) {
+                System.out.println("The permission " + strings[3] + " is already set");
+                return true;
+            }
+
+            String colour = strings[3].replace("_", "");
+            if (colour.equals("\"\"")) {
+                colour = null;
+            }
+
+            user.setColour(colour);
+            PermissionManagement.getInstance().updateUser(user);
+            System.out.println("The user " + strings[1] + " " + (colour == null ? "has no longer a colour" : "has now the colour " + colour));
             return true;
         }
 

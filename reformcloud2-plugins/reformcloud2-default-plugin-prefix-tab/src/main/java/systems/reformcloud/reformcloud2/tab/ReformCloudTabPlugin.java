@@ -33,9 +33,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.base.Conditions;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.permissions.PermissionManagement;
 import systems.reformcloud.reformcloud2.permissions.objects.group.PermissionGroup;
+import systems.reformcloud.reformcloud2.permissions.objects.user.PermissionUser;
 import systems.reformcloud.reformcloud2.tab.listener.BukkitTabListeners;
 import systems.reformcloud.reformcloud2.tab.listener.CloudTabListeners;
 
@@ -75,33 +75,39 @@ public class ReformCloudTabPlugin extends JavaPlugin {
             player.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
         }
 
-        PermissionGroup playerPermissionGroup = getOrDefault(player.getUniqueId());
+        PermissionUser permissionUser = getUser(player.getUniqueId());
         Bukkit.getOnlinePlayers().forEach(onlinePlayer -> {
             if (onlinePlayer.getScoreboard().equals(Bukkit.getScoreboardManager().getMainScoreboard())) {
                 onlinePlayer.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
             }
 
-            if (playerPermissionGroup != null) {
-                registerPlayerTeam(player, onlinePlayer, playerPermissionGroup);
+            if (permissionUser != null) {
+                registerPlayerTeam(player, onlinePlayer, permissionUser);
             }
 
-            PermissionGroup highestOnlinePlayerGroup = getOrDefault(onlinePlayer.getUniqueId());
-            if (highestOnlinePlayerGroup != null) {
-                registerPlayerTeam(onlinePlayer, player, highestOnlinePlayerGroup);
+            PermissionUser onlinePermissionUser = getUser(onlinePlayer.getUniqueId());
+            if (onlinePermissionUser != null) {
+                registerPlayerTeam(onlinePlayer, player, onlinePermissionUser);
             }
         });
     }
 
     @Nullable
-    private static PermissionGroup getOrDefault(@NotNull UUID uniqueID) {
-        return PermissionManagement.getInstance()
-                .loadUser(uniqueID)
-                .getHighestPermissionGroup()
-                .orElse(Streams.filter(PermissionManagement.getInstance().getDefaultGroups(), e -> true));
+    private static PermissionUser getUser(@NotNull UUID uniqueID) {
+        return PermissionManagement.getInstance().getExistingUser(uniqueID).orElse(null);
     }
 
-    private static void registerPlayerTeam(@NotNull Player player, @NotNull Player other, @NotNull PermissionGroup permissionGroup) {
-        String teamName = permissionGroup.getPriority() + permissionGroup.getName();
+    private static void registerPlayerTeam(@NotNull Player player, @NotNull Player other, @NotNull PermissionUser permissionUser) {
+        int priority = 0;
+        String teamName = player.getName();
+
+        PermissionGroup permissionGroup = permissionUser.getHighestPermissionGroup().orElse(null);
+        if (permissionGroup != null) {
+            priority = permissionGroup.getPriority();
+            teamName = permissionGroup.getName();
+        }
+
+        teamName = priority + teamName;
         if (setColor != null && teamName.length() > 64) {
             teamName = teamName.substring(0, 64);
         } else if (setColor == null && teamName.length() > 16) {
@@ -115,14 +121,14 @@ public class ReformCloudTabPlugin extends JavaPlugin {
 
         if (setColor != null) {
             try {
-                String color = permissionGroup.getColour().orElse(null);
+                String color = permissionUser.getColour().orElse(null);
                 if (color != null && !color.isEmpty()) {
                     ChatColor chatColor = ChatColor.getByChar(color.replace("&", "").replace("§", ""));
                     if (chatColor != null) {
                         setColor.invoke(team, chatColor);
                     }
-                } else if (permissionGroup.getPrefix().isPresent()) {
-                    color = ChatColor.getLastColors(permissionGroup.getPrefix().get());
+                } else if (permissionUser.getPrefix().isPresent()) {
+                    color = ChatColor.getLastColors(permissionUser.getPrefix().get());
                     if (!color.isEmpty()) {
                         ChatColor chatColor = ChatColor.getByChar(color.replace("&", "").replace("§", ""));
                         if (chatColor != null) {
@@ -135,9 +141,9 @@ public class ReformCloudTabPlugin extends JavaPlugin {
             }
         }
 
-        team.setPrefix(ChatColor.translateAlternateColorCodes('&', permissionGroup.getPrefix().orElse("")));
-        team.setSuffix(ChatColor.translateAlternateColorCodes('&', permissionGroup.getSuffix().orElse("")));
+        team.setPrefix(ChatColor.translateAlternateColorCodes('&', permissionUser.getPrefix().orElse("")));
+        team.setSuffix(ChatColor.translateAlternateColorCodes('&', permissionUser.getSuffix().orElse("")));
         team.addEntry(player.getName());
-        player.setDisplayName(ChatColor.translateAlternateColorCodes('&', permissionGroup.getDisplay().orElse("") + player.getName()));
+        player.setDisplayName(ChatColor.translateAlternateColorCodes('&', permissionUser.getDisplay().orElse("") + player.getName()));
     }
 }

@@ -5,6 +5,10 @@ main: systems.reformcloud.reformcloud2.permissions.bukkit.BukkitPermissionPlugin
 depend:
   - ReformCloud2SpigotExecutor
 
+softdepend:
+  - Vault
+  - VaultAPI
+
 # Additional
 website: 'https://reformcloud.systems'
 description: 'The reformcloud permission plugin'
