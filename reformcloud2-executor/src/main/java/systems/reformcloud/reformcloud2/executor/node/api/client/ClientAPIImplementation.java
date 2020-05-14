@@ -11,11 +11,11 @@ import javax.annotation.Nonnull;
 
 public class ClientAPIImplementation implements ClientSyncAPI, ClientAsyncAPI {
 
+    private final NodeNetworkManager nodeNetworkManager;
+
     public ClientAPIImplementation(NodeNetworkManager nodeNetworkManager) {
         this.nodeNetworkManager = nodeNetworkManager;
     }
-
-    private final NodeNetworkManager nodeNetworkManager;
 
     @Nonnull
     @Override

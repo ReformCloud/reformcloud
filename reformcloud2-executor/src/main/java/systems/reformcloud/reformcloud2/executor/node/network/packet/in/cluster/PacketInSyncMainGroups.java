@@ -22,7 +22,8 @@ public class PacketInSyncMainGroups extends DefaultJsonNetworkHandler {
 
     @Override
     public void handlePacket(@Nonnull PacketSender packetSender, @Nonnull Packet packet, @Nonnull Consumer<Packet> responses) {
-        Collection<MainGroup> groups = packet.content().get("groups", new TypeToken<Collection<MainGroup>>() {});
+        Collection<MainGroup> groups = packet.content().get("groups", new TypeToken<Collection<MainGroup>>() {
+        });
         SyncAction action = packet.content().get("action", SyncAction.class);
 
         NodeExecutor.getInstance().getClusterSyncManager().handleMainGroupSync(groups, action);

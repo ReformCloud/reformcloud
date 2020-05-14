@@ -44,25 +44,15 @@ public class NodeExecutorConfig {
     );
 
     private final Setup setup = new DefaultSetup();
-
-    private NodeInformation self;
-
-    private NodeConfig nodeConfig;
-
-    private String connectionKey;
-
-    private String currentNodeConnectionKey;
-
     private final List<MainGroup> mainGroups = new ArrayList<>();
-
     private final List<ProcessGroup> processGroups = new ArrayList<>();
-
     private final AtomicBoolean firstStartup = new AtomicBoolean(false);
-
     private final Registry localMainGroupsRegistry = RegistryBuilder.newRegistry(Paths.get("reformcloud/groups/main"));
-
     private final Registry localSubGroupsRegistry = RegistryBuilder.newRegistry(Paths.get("reformcloud/groups/sub"));
-
+    private NodeInformation self;
+    private NodeConfig nodeConfig;
+    private String connectionKey;
+    private String currentNodeConnectionKey;
     private IngameMessages ingameMessages;
 
     public void init() {

@@ -14,11 +14,11 @@ import java.util.function.Consumer;
 
 public final class APIPacketInPluginAction extends DefaultJsonNetworkHandler {
 
+    private final PluginExecutor pluginExecutor;
+
     public APIPacketInPluginAction(PluginExecutor pluginExecutor) {
         this.pluginExecutor = pluginExecutor;
     }
-
-    private final PluginExecutor pluginExecutor;
 
     @Override
     public int getHandlingPacketID() {

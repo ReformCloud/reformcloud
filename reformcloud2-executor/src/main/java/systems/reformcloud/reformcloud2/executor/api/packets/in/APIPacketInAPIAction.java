@@ -13,11 +13,11 @@ import static systems.reformcloud.reformcloud2.executor.api.common.api.basic.pac
 
 public final class APIPacketInAPIAction extends DefaultJsonNetworkHandler {
 
+    private final PlayerAPIExecutor executor;
+
     public APIPacketInAPIAction(PlayerAPIExecutor executor) {
         this.executor = executor;
     }
-
-    private final PlayerAPIExecutor executor;
 
     @Override
     public int getHandlingPacketID() {

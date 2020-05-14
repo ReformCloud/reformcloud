@@ -11,9 +11,8 @@ import java.util.Collection;
 
 public class NodeNetworkClient implements NetworkClient {
 
-    private static final NetworkClient CLIENT = new DefaultNetworkClient();
-
     public static final Collection<String> CONNECTIONS = new ArrayList<>();
+    private static final NetworkClient CLIENT = new DefaultNetworkClient();
 
     @Override
     public boolean connect(@Nonnull String host, int port, @Nonnull Auth auth, @Nonnull NetworkChannelReader channelReader) {

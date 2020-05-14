@@ -10,13 +10,12 @@ import java.util.concurrent.TimeUnit;
 
 public class LogLineReader extends AbsoluteThread {
 
+    private final StringBuffer stringBuffer = new StringBuffer();
+    private final byte[] buffer = new byte[1024];
+
     public LogLineReader() {
         enableDaemon().updatePriority(Thread.MIN_PRIORITY).start();
     }
-
-    private final StringBuffer stringBuffer = new StringBuffer();
-
-    private final byte[] buffer = new byte[1024];
 
     @Override
     public void run() {

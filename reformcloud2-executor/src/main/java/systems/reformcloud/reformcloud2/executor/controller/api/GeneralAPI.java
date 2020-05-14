@@ -34,6 +34,16 @@ import javax.annotation.Nonnull;
 
 public class GeneralAPI implements SyncAPI, AsyncAPI {
 
+    private final ApplicationAPIImplementation applicationAPI;
+    private final ClientAPIImplementation clientAPI;
+    private final ConsoleAPIImplementation consoleAPI;
+    private final DatabaseAPIImplementation databaseAPI;
+    private final GroupAPIImplementation groupAPI;
+    private final PlayerAPIImplementation playerAPI;
+    private final PluginAPIImplementation pluginAPI;
+    private final ProcessAPIImplementation processAPI;
+    private final ChannelMessageAPIImplementation channelAPI;
+
     public GeneralAPI(
             ApplicationAPIImplementation applicationAPI,
             ClientAPIImplementation clientAPI,
@@ -55,24 +65,6 @@ public class GeneralAPI implements SyncAPI, AsyncAPI {
         this.processAPI = processAPI;
         this.channelAPI = channelAPI;
     }
-
-    private final ApplicationAPIImplementation applicationAPI;
-
-    private final ClientAPIImplementation clientAPI;
-
-    private final ConsoleAPIImplementation consoleAPI;
-
-    private final DatabaseAPIImplementation databaseAPI;
-
-    private final GroupAPIImplementation groupAPI;
-
-    private final PlayerAPIImplementation playerAPI;
-
-    private final PluginAPIImplementation pluginAPI;
-
-    private final ProcessAPIImplementation processAPI;
-
-    private final ChannelMessageAPIImplementation channelAPI;
 
     @Nonnull
     @Override

@@ -13,9 +13,17 @@ import java.util.UUID;
 
 public class NodeConfig {
 
-    static final TypeToken<NodeConfig> TYPE = new TypeToken<NodeConfig>() {};
+    static final TypeToken<NodeConfig> TYPE = new TypeToken<NodeConfig>() {
+    };
 
     static final Path PATH = Paths.get("reformcloud/config.json");
+    private String name;
+    private UUID uniqueID;
+    private long maxMemory;
+    private String startHost;
+    private List<Map<String, Integer>> networkListener;
+    private List<Map<String, Integer>> httpNetworkListener;
+    private List<Map<String, Integer>> otherNodes;
 
     NodeConfig(long maxMemory, String startHost, List<Map<String, Integer>> networkListener,
                List<Map<String, Integer>> httpNetworkListener, List<Map<String, Integer>> otherNodes) {
@@ -27,20 +35,6 @@ public class NodeConfig {
         this.httpNetworkListener = httpNetworkListener;
         this.otherNodes = otherNodes;
     }
-
-    private String name;
-
-    private UUID uniqueID;
-
-    private long maxMemory;
-
-    private String startHost;
-
-    private List<Map<String, Integer>> networkListener;
-
-    private List<Map<String, Integer>> httpNetworkListener;
-
-    private List<Map<String, Integer>> otherNodes;
 
     public String getName() {
         return name;

@@ -23,6 +23,8 @@ import systems.reformcloud.reformcloud2.executor.api.common.utility.StringUtil;
 )
 public final class VelocityLauncher {
 
+    private ProxyServer proxyServer;
+
     @Inject
     public VelocityLauncher(ProxyServer proxyServer) {
         LanguageWorker.doLoad();
@@ -30,8 +32,6 @@ public final class VelocityLauncher {
 
         this.proxyServer = proxyServer;
     }
-
-    private ProxyServer proxyServer;
 
     @Subscribe
     public void handleInit(ProxyInitializeEvent event) {

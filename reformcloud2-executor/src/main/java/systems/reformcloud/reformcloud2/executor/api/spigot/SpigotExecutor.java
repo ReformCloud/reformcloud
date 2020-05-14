@@ -84,17 +84,17 @@ public final class SpigotExecutor extends API implements PlayerAPIExecutor {
         awaitConnectionAndUpdate();
     }
 
+    @Nonnull
+    public static SpigotExecutor getInstance() {
+        return instance;
+    }
+
     public JavaPlugin getPlugin() {
         return plugin;
     }
 
     public IngameMessages getMessages() {
         return messages;
-    }
-
-    @Nonnull
-    public static SpigotExecutor getInstance() {
-        return instance;
     }
 
     @Nonnull
@@ -123,6 +123,10 @@ public final class SpigotExecutor extends API implements PlayerAPIExecutor {
         return thisProcessInformation;
     }
 
+    public void setThisProcessInformation(ProcessInformation thisProcessInformation) {
+        this.thisProcessInformation = thisProcessInformation;
+    }
+
     private void awaitConnectionAndUpdate() {
         Task.EXECUTOR.execute(() -> {
             PacketSender packetSender = DefaultChannelManager.INSTANCE.get("Controller").orElse(null);
@@ -139,10 +143,6 @@ public final class SpigotExecutor extends API implements PlayerAPIExecutor {
                 SpigotExecutor.this.messages = packet.content().get("messages", IngameMessages.TYPE);
             }));
         });
-    }
-
-    public void setThisProcessInformation(ProcessInformation thisProcessInformation) {
-        this.thisProcessInformation = thisProcessInformation;
     }
 
     /* ======================== Player API ======================== */

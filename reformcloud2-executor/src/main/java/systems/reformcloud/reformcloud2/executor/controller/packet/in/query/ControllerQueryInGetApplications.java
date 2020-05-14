@@ -15,6 +15,10 @@ import java.util.function.Consumer;
 
 public final class ControllerQueryInGetApplications extends DefaultJsonNetworkHandler {
 
+    private static JsonConfiguration convert() {
+        return new JsonConfiguration().add("result", Streams.apply(ExecutorAPI.getInstance().getSyncAPI().getApplicationSyncAPI().getApplications(), application -> new DefaultLoadedApplication(application.loader(), application.applicationConfig(), application.mainClass())));
+    }
+
     @Override
     public int getHandlingPacketID() {
         return ExternalAPIImplementation.EXTERNAL_PACKET_ID + 4;
@@ -23,9 +27,5 @@ public final class ControllerQueryInGetApplications extends DefaultJsonNetworkHa
     @Override
     public void handlePacket(@Nonnull PacketSender packetSender, @Nonnull Packet packet, @Nonnull Consumer<Packet> responses) {
         responses.accept(new JsonPacket(-1, convert()));
-    }
-
-    private static JsonConfiguration convert() {
-        return new JsonConfiguration().add("result", Streams.apply(ExecutorAPI.getInstance().getSyncAPI().getApplicationSyncAPI().getApplications(), application -> new DefaultLoadedApplication(application.loader(), application.applicationConfig(), application.mainClass())));
     }
 }

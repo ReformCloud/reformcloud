@@ -29,6 +29,8 @@ public class DefaultNodeNetworkManager implements NodeNetworkManager {
     private static final Map<UUID, String> QUEUED_PROCESSES = new ConcurrentHashMap<>();
 
     private static final Queue<Trio<ProcessGroup, Template, JsonConfiguration>> LATER = new ConcurrentLinkedQueue<>();
+    private final NodeProcessManager localNodeProcessManager;
+    private final InternalNetworkCluster cluster;
 
     public DefaultNodeNetworkManager(NodeProcessManager processManager, InternalNetworkCluster cluster) {
         this.localNodeProcessManager = processManager;
@@ -41,10 +43,6 @@ public class DefaultNodeNetworkManager implements NodeNetworkManager {
             }
         }, 0, 10, TimeUnit.SECONDS);
     }
-
-    private final NodeProcessManager localNodeProcessManager;
-
-    private final InternalNetworkCluster cluster;
 
     @Override
     public NodeProcessManager getNodeProcessHelper() {

@@ -516,7 +516,7 @@ public final class CommandReformCloud extends GlobalCommand {
                                     )), new StartupConfiguration(
                                             -1, 1, 1, version.getDefaultPort(),
                                             StartupEnvironment.JAVA_RUNTIME, true, new ArrayList<>()
-                                    ),  new PlayerAccessConfiguration(
+                                    ), new PlayerAccessConfiguration(
                                             "reformcloud.join.full",
                                             true,
                                             "reformcloud.join.maintenance",
@@ -632,7 +632,7 @@ public final class CommandReformCloud extends GlobalCommand {
                                     )), new StartupConfiguration(
                                             max, min, 1, version.getDefaultPort(),
                                             StartupEnvironment.JAVA_RUNTIME, true, new ArrayList<>()
-                                    ),  new PlayerAccessConfiguration(
+                                    ), new PlayerAccessConfiguration(
                                             "reformcloud.join.full",
                                             true,
                                             "reformcloud.join.maintenance",

@@ -12,9 +12,11 @@ import java.util.concurrent.TimeUnit;
 
 public final class LocalProcessManager {
 
-    private LocalProcessManager() { throw new UnsupportedOperationException(); }
-
     private static final Collection<LocalNodeProcess> NODE_PROCESSES = new CopyOnWriteArrayList<>();
+
+    private LocalProcessManager() {
+        throw new UnsupportedOperationException();
+    }
 
     public static void registerLocalProcess(LocalNodeProcess nodeProcess) {
         NODE_PROCESSES.add(nodeProcess);

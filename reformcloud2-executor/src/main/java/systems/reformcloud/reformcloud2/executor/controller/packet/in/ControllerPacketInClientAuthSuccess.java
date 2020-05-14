@@ -21,7 +21,8 @@ public final class ControllerPacketInClientAuthSuccess extends DefaultJsonNetwor
     @Override
     public void handlePacket(@Nonnull PacketSender packetSender, @Nonnull Packet packet, @Nonnull Consumer<Packet> responses) {
         if (packet.content().has("info")) {
-            ClientRuntimeInformation clientRuntimeInformation = packet.content().get("info", new TypeToken<DefaultClientRuntimeInformation>() {});
+            ClientRuntimeInformation clientRuntimeInformation = packet.content().get("info", new TypeToken<DefaultClientRuntimeInformation>() {
+            });
             ClientManager.INSTANCE.connectClient(clientRuntimeInformation);
         }
     }

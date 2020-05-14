@@ -99,78 +99,9 @@ public final class VelocityExecutor extends API implements PlayerAPIExecutor {
         awaitConnectionAndUpdate();
     }
 
-    NetworkClient getNetworkClient() {
-        return networkClient;
-    }
-
-    @Override
-    public PacketHandler packetHandler() {
-        return packetHandler;
-    }
-
-    @Nonnull
-    @Override
-    public EventManager getEventManager() {
-        return ExternalEventBusHandler.getInstance().getEventManager();
-    }
-
-    public ProxyServer getProxyServer() {
-        return proxyServer;
-    }
-
     @Nonnull
     public static VelocityExecutor getInstance() {
         return instance;
-    }
-
-    public void handleProcessUpdate(ProcessInformation processInformation) {
-        if (!isServerRegistered(processInformation.getName())
-                && processInformation.getNetworkInfo().isConnected()
-                && processInformation.getTemplate().getVersion().getId() == 1) {
-            ServerInfo serverInfo = new ServerInfo(
-                    processInformation.getName(),
-                    processInformation.getNetworkInfo().toInet()
-            );
-            proxyServer.registerServer(serverInfo);
-            if (processInformation.isLobby()) {
-                LOBBY_SERVERS.add(processInformation);
-            }
-        }
-    }
-
-    public void handleProcessRemove(ProcessInformation processInformation) {
-        proxyServer.getServer(processInformation.getName()).ifPresent(registeredServer -> proxyServer.unregisterServer(registeredServer.getServerInfo()));
-
-        if (processInformation.isLobby()) {
-            LOBBY_SERVERS.remove(processInformation);
-        }
-    }
-
-    private boolean isServerRegistered(String name) {
-        return proxyServer.getServer(name).isPresent();
-    }
-
-    private void awaitConnectionAndUpdate() {
-        Task.EXECUTOR.execute(() -> {
-            PacketSender packetSender = DefaultChannelManager.INSTANCE.get("Controller").orElse(null);
-            while (packetSender == null) {
-                packetSender = DefaultChannelManager.INSTANCE.get("Controller").orElse(null);
-                AbsoluteThread.sleep(100);
-            }
-
-            getAllProcesses().forEach(this::handleProcessUpdate);
-
-            new PluginUpdater();
-
-            thisProcessInformation.updateMaxPlayers(proxyServer.getConfiguration().getShowMaxPlayers());
-            thisProcessInformation.updateRuntimeInformation();
-            ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(thisProcessInformation);
-
-            DefaultChannelManager.INSTANCE.get("Controller").ifPresent(controller -> packetHandler.getQueryHandler().sendQueryAsync(controller, new APIBungeePacketOutRequestIngameMessages()).onComplete(packet -> {
-                IngameMessages ingameMessages = packet.content().get("messages", IngameMessages.TYPE);
-                setMessages(ingameMessages);
-            }));
-        });
     }
 
     public static ProcessInformation getBestLobbyForPlayer(ProcessInformation current, Player player, Function<String, Boolean> permissionCheck) {
@@ -235,6 +166,75 @@ public final class VelocityExecutor extends API implements PlayerAPIExecutor {
         return lobbies.get(new Random().nextInt(lobbies.size()));
     }
 
+    NetworkClient getNetworkClient() {
+        return networkClient;
+    }
+
+    @Override
+    public PacketHandler packetHandler() {
+        return packetHandler;
+    }
+
+    @Nonnull
+    @Override
+    public EventManager getEventManager() {
+        return ExternalEventBusHandler.getInstance().getEventManager();
+    }
+
+    public ProxyServer getProxyServer() {
+        return proxyServer;
+    }
+
+    public void handleProcessUpdate(ProcessInformation processInformation) {
+        if (!isServerRegistered(processInformation.getName())
+                && processInformation.getNetworkInfo().isConnected()
+                && processInformation.getTemplate().getVersion().getId() == 1) {
+            ServerInfo serverInfo = new ServerInfo(
+                    processInformation.getName(),
+                    processInformation.getNetworkInfo().toInet()
+            );
+            proxyServer.registerServer(serverInfo);
+            if (processInformation.isLobby()) {
+                LOBBY_SERVERS.add(processInformation);
+            }
+        }
+    }
+
+    public void handleProcessRemove(ProcessInformation processInformation) {
+        proxyServer.getServer(processInformation.getName()).ifPresent(registeredServer -> proxyServer.unregisterServer(registeredServer.getServerInfo()));
+
+        if (processInformation.isLobby()) {
+            LOBBY_SERVERS.remove(processInformation);
+        }
+    }
+
+    private boolean isServerRegistered(String name) {
+        return proxyServer.getServer(name).isPresent();
+    }
+
+    private void awaitConnectionAndUpdate() {
+        Task.EXECUTOR.execute(() -> {
+            PacketSender packetSender = DefaultChannelManager.INSTANCE.get("Controller").orElse(null);
+            while (packetSender == null) {
+                packetSender = DefaultChannelManager.INSTANCE.get("Controller").orElse(null);
+                AbsoluteThread.sleep(100);
+            }
+
+            getAllProcesses().forEach(this::handleProcessUpdate);
+
+            new PluginUpdater();
+
+            thisProcessInformation.updateMaxPlayers(proxyServer.getConfiguration().getShowMaxPlayers());
+            thisProcessInformation.updateRuntimeInformation();
+            ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(thisProcessInformation);
+
+            DefaultChannelManager.INSTANCE.get("Controller").ifPresent(controller -> packetHandler.getQueryHandler().sendQueryAsync(controller, new APIBungeePacketOutRequestIngameMessages()).onComplete(packet -> {
+                IngameMessages ingameMessages = packet.content().get("messages", IngameMessages.TYPE);
+                setMessages(ingameMessages);
+            }));
+        });
+    }
+
     @Listener
     public void handleThisUpdate(final ProcessUpdatedEvent event) {
         if (event.getProcessInformation().getProcessUniqueID().equals(thisProcessInformation.getProcessUniqueID())) {
@@ -247,16 +247,16 @@ public final class VelocityExecutor extends API implements PlayerAPIExecutor {
         return thisProcessInformation;
     }
 
+    public void setThisProcessInformation(ProcessInformation thisProcessInformation) {
+        this.thisProcessInformation = thisProcessInformation;
+    }
+
     public IngameMessages getMessages() {
         return messages;
     }
 
     private void setMessages(IngameMessages messages) {
         this.messages = messages;
-    }
-
-    public void setThisProcessInformation(ProcessInformation thisProcessInformation) {
-        this.thisProcessInformation = thisProcessInformation;
     }
 
     /* ======================== Player API ======================== */

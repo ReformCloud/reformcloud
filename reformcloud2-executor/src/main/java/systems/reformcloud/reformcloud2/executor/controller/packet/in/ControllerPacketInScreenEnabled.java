@@ -24,7 +24,8 @@ public class ControllerPacketInScreenEnabled extends DefaultJsonNetworkHandler {
     @Override
     public void handlePacket(@Nonnull PacketSender packetSender, @Nonnull Packet packet, @Nonnull Consumer<Packet> responses) {
         UUID uniqueID = packet.content().get("uniqueID", UUID.class);
-        Collection<String> lines = packet.content().get("lines", new TypeToken<Collection<String>>() {});
+        Collection<String> lines = packet.content().get("lines", new TypeToken<Collection<String>>() {
+        });
 
         ProcessInformation processInformation = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcess(uniqueID);
         if (processInformation != null) {

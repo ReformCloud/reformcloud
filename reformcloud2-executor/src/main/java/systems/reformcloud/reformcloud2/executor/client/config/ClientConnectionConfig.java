@@ -6,15 +6,13 @@ import java.nio.file.Paths;
 public final class ClientConnectionConfig {
 
     public static final Path PATH = Paths.get("reformcloud/connection.json");
+    private String host;
+    private int port;
 
     public ClientConnectionConfig(String host, int port) {
         this.host = host;
         this.port = port;
     }
-
-    private String host;
-
-    private int port;
 
     public String getHost() {
         return host;

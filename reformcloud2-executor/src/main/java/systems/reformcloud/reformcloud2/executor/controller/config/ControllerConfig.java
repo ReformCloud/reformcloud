@@ -9,22 +9,20 @@ import java.util.Map;
 
 public final class ControllerConfig {
 
-    static final TypeToken<ControllerConfig> TYPE = new TypeToken<ControllerConfig>() {};
+    static final TypeToken<ControllerConfig> TYPE = new TypeToken<ControllerConfig>() {
+    };
 
     static final Path PATH = Paths.get("reformcloud/config.json");
+    private int maxProcesses;
+    private List<Map<String, Integer>> networkListener;
+    private List<Map<String, Integer>> httpNetworkListener;
 
     ControllerConfig(int maxProcesses, List<Map<String, Integer>> networkListener,
-                            List<Map<String, Integer>> httpNetworkListener) {
+                     List<Map<String, Integer>> httpNetworkListener) {
         this.maxProcesses = maxProcesses;
         this.networkListener = networkListener;
         this.httpNetworkListener = httpNetworkListener;
     }
-
-    private int maxProcesses;
-
-    private List<Map<String, Integer>> networkListener;
-
-    private List<Map<String, Integer>> httpNetworkListener;
 
     public int getMaxProcesses() {
         return maxProcesses;

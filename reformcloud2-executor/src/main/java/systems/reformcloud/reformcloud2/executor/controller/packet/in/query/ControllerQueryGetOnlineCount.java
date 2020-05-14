@@ -22,7 +22,8 @@ public final class ControllerQueryGetOnlineCount extends DefaultJsonNetworkHandl
 
     @Override
     public void handlePacket(@Nonnull PacketSender packetSender, @Nonnull Packet packet, @Nonnull Consumer<Packet> responses) {
-        Collection<String> ignored = packet.content().get("ignored", new TypeToken<Collection<String>>() {});
+        Collection<String> ignored = packet.content().get("ignored", new TypeToken<Collection<String>>() {
+        });
         responses.accept(new JsonPacket(-1, new JsonConfiguration().add("result", ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getGlobalOnlineCount(ignored))));
     }
 }

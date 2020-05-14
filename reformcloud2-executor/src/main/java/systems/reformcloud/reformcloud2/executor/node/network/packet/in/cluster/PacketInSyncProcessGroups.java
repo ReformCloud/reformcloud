@@ -22,7 +22,8 @@ public class PacketInSyncProcessGroups extends DefaultJsonNetworkHandler {
 
     @Override
     public void handlePacket(@Nonnull PacketSender packetSender, @Nonnull Packet packet, @Nonnull Consumer<Packet> responses) {
-        Collection<ProcessGroup> groups = packet.content().get("info", new TypeToken<Collection<ProcessGroup>>() {});
+        Collection<ProcessGroup> groups = packet.content().get("info", new TypeToken<Collection<ProcessGroup>>() {
+        });
         SyncAction action = packet.content().get("action", SyncAction.class);
 
         NodeExecutor.getInstance().getClusterSyncManager().handleProcessGroupSync(groups, action);

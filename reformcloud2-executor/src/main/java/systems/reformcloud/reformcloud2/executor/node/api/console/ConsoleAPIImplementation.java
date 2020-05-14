@@ -14,14 +14,13 @@ import javax.annotation.Nonnull;
 
 public class ConsoleAPIImplementation implements ConsoleSyncAPI, ConsoleAsyncAPI {
 
+    private final CommandManager commandManager;
+    private final CommandSource console;
+
     public ConsoleAPIImplementation(CommandManager commandManager) {
         this.commandManager = commandManager;
         this.console = new ConsoleCommandSource(commandManager);
     }
-
-    private final CommandManager commandManager;
-
-    private final CommandSource console;
 
     @Nonnull
     @Override
@@ -50,7 +49,8 @@ public class ConsoleAPIImplementation implements ConsoleSyncAPI, ConsoleAsyncAPI
     public Task<String> dispatchCommandAndGetResultAsync(@Nonnull String commandLine) {
         Task<String> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
-            this.commandManager.dispatchCommand(console, AllowedCommandSources.ALL, commandLine, s -> {});
+            this.commandManager.dispatchCommand(console, AllowedCommandSources.ALL, commandLine, s -> {
+            });
             task.complete("Success");
         });
         return task;

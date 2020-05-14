@@ -14,16 +14,13 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 public class NodeProcessScreen {
 
     private static final String LINE_SEPARATOR = System.getProperty("line.separator");
+    private final UUID uniqueID;
+    private final Deque<String> queue = new ConcurrentLinkedDeque<>();
+    private final Collection<String> enabledFrom = new ArrayList<>();
 
     public NodeProcessScreen(UUID uniqueID) {
         this.uniqueID = uniqueID;
     }
-
-    private final UUID uniqueID;
-
-    private final Deque<String> queue = new ConcurrentLinkedDeque<>();
-
-    private final Collection<String> enabledFrom = new ArrayList<>();
 
     public void toggleFor(String name) {
         if (enabledFrom.contains(name)) {
@@ -62,7 +59,7 @@ public class NodeProcessScreen {
 
         ProcessInformation processInformation = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcess(uniqueID);
         if (processInformation != null && enabledFrom.contains(NodeExecutor.getInstance().getNodeConfig().getName())) {
-                System.out.println(LanguageManager.get("screen-line-added", processInformation.getName(), line));
+            System.out.println(LanguageManager.get("screen-line-added", processInformation.getName(), line));
         }
     }
 

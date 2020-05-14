@@ -21,7 +21,8 @@ public class PacketInSyncProcessInformation extends DefaultJsonNetworkHandler {
 
     @Override
     public void handlePacket(@Nonnull PacketSender packetSender, @Nonnull Packet packet, @Nonnull Consumer<Packet> responses) {
-        Collection<ProcessInformation> information = packet.content().get("info", new TypeToken<Collection<ProcessInformation>>() {});
+        Collection<ProcessInformation> information = packet.content().get("info", new TypeToken<Collection<ProcessInformation>>() {
+        });
         NodeExecutor.getInstance().getClusterSyncManager().handleProcessInformationSync(information);
     }
 }

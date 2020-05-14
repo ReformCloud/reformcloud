@@ -121,7 +121,7 @@ public final class CommandReformCloud extends GlobalCommand {
         } else if (strings.length == 1 && strings[0].equalsIgnoreCase("applications")) {
             System.out.println(LanguageManager.get("command-rc-loaded-applications"));
             ExecutorAPI.getInstance().getSyncAPI().getApplicationSyncAPI().getApplications().forEach(e ->
-                System.out.println("   => " + e.getName() + " / Version: " + e.applicationConfig().version())
+                    System.out.println("   => " + e.getName() + " / Version: " + e.applicationConfig().version())
             );
             return true;
         }
@@ -589,7 +589,7 @@ public final class CommandReformCloud extends GlobalCommand {
                                     )), new StartupConfiguration(
                                             -1, 1, 1, version.getDefaultPort(),
                                             StartupEnvironment.JAVA_RUNTIME, true, new ArrayList<>()
-                                    ),  new PlayerAccessConfiguration(
+                                    ), new PlayerAccessConfiguration(
                                             "reformcloud.join.full",
                                             true,
                                             "reformcloud.join.maintenance",
@@ -705,7 +705,7 @@ public final class CommandReformCloud extends GlobalCommand {
                                     )), new StartupConfiguration(
                                             max, min, 1, version.getDefaultPort(),
                                             StartupEnvironment.JAVA_RUNTIME, true, new ArrayList<>()
-                                    ),  new PlayerAccessConfiguration(
+                                    ), new PlayerAccessConfiguration(
                                             "reformcloud.join.full",
                                             true,
                                             "reformcloud.join.maintenance",

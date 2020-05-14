@@ -173,6 +173,11 @@ public class NodeExecutor extends Node {
         bootstrap();
     }
 
+    @Nonnull
+    public static NodeExecutor getInstance() {
+        return instance;
+    }
+
     @Override
     protected void bootstrap() {
         final long current = System.currentTimeMillis();
@@ -264,8 +269,8 @@ public class NodeExecutor extends Node {
             this.networkServer.bind(ip, port, new DefaultServerAuthHandler(
                     packetHandler,
                     packetSender -> this.nodeNetworkManager.getCluster().getClusterManager().handleNodeDisconnect(
-                                this.nodeNetworkManager.getCluster(),
-                                packetSender.getName()
+                            this.nodeNetworkManager.getCluster(),
+                            packetSender.getName()
                     ),
                     packet -> {
                         DefaultAuth auth = packet.content().get("auth", Auth.TYPE);
@@ -447,11 +452,6 @@ public class NodeExecutor extends Node {
 
         this.awaitConnectionsAndUpdate();
         this.runConsole();
-    }
-
-    @Nonnull
-    public static NodeExecutor getInstance() {
-        return instance;
     }
 
     @Nonnull

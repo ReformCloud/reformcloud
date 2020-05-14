@@ -16,12 +16,6 @@ public class ClientDumpUtil implements DumpUtil {
 
     private static final DateFormat DATE_FORMAT = new SimpleDateFormat();
 
-    @Override
-    public void appendCurrentDump(StringBuilder stringBuilder) {
-        PARENT.appendCurrentDump(stringBuilder);
-        dumpProcessInfos(stringBuilder);
-    }
-
     private static void dumpProcessInfos(StringBuilder stringBuilder) {
         Collection<RunningProcess> nodeProcesses = ClientExecutor.getInstance().getProcessManager().getAll();
         stringBuilder.append("--- Registered Client Processes (").append(nodeProcesses.size()).append(") ---");
@@ -57,5 +51,11 @@ public class ClientDumpUtil implements DumpUtil {
         } else {
             stringBuilder.append("No processes are registered on the current client").append("\n\n");
         }
+    }
+
+    @Override
+    public void appendCurrentDump(StringBuilder stringBuilder) {
+        PARENT.appendCurrentDump(stringBuilder);
+        dumpProcessInfos(stringBuilder);
     }
 }

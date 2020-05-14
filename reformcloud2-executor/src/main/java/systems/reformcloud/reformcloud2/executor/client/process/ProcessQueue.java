@@ -16,6 +16,12 @@ public final class ProcessQueue extends AbsoluteThread {
 
     private static final BlockingDeque<RunningProcess> QUEUE = new LinkedBlockingDeque<>();
 
+    public ProcessQueue() {
+        enableDaemon().updatePriority(Thread.MIN_PRIORITY).start();
+    }
+
+    /* ============== */
+
     public static void queue(ProcessInformation information) {
         RunningProcess runningProcess = RunningProcessBuilder.build(information);
         System.out.println(LanguageManager.get(
@@ -30,10 +36,24 @@ public final class ProcessQueue extends AbsoluteThread {
         });
     }
 
-    /* ============== */
+    public static ProcessInformation removeFromQueue(UUID uuid) {
+        synchronized (QUEUE) {
+            RunningProcess process = Streams.filterToReference(QUEUE, e -> e.getProcessInformation().getProcessUniqueID().equals(uuid)).orNothing();
+            if (process == null) {
+                return null;
+            }
 
-    public ProcessQueue() {
-        enableDaemon().updatePriority(Thread.MIN_PRIORITY).start();
+            QUEUE.remove(process);
+            return process.getProcessInformation();
+        }
+    }
+
+    private static boolean isStartupNowLogic() {
+        if (ClientExecutor.getInstance().getClientConfig().getMaxCpu() <= 0D) {
+            return true;
+        }
+
+        return CommonHelper.cpuUsageSystem() <= ClientExecutor.getInstance().getClientConfig().getMaxCpu();
     }
 
     @Override
@@ -69,25 +89,5 @@ public final class ProcessQueue extends AbsoluteThread {
                 ex.printStackTrace();
             }
         }
-    }
-
-    public static ProcessInformation removeFromQueue(UUID uuid) {
-        synchronized (QUEUE) {
-            RunningProcess process = Streams.filterToReference(QUEUE, e -> e.getProcessInformation().getProcessUniqueID().equals(uuid)).orNothing();
-            if (process == null) {
-                return null;
-            }
-
-            QUEUE.remove(process);
-            return process.getProcessInformation();
-        }
-    }
-
-    private static boolean isStartupNowLogic() {
-        if (ClientExecutor.getInstance().getClientConfig().getMaxCpu() <= 0D) {
-            return true;
-        }
-
-        return CommonHelper.cpuUsageSystem() <= ClientExecutor.getInstance().getClientConfig().getMaxCpu();
     }
 }

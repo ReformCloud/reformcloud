@@ -23,7 +23,8 @@ public class ControllerPacketInHandleChannelMessage extends DefaultJsonNetworkHa
 
     @Override
     public void handlePacket(@Nonnull PacketSender packetSender, @Nonnull Packet packet, @Nonnull Consumer<Packet> responses) {
-        Collection<String> receivers = packet.content().get("receivers", new TypeToken<Collection<String>>() {});
+        Collection<String> receivers = packet.content().get("receivers", new TypeToken<Collection<String>>() {
+        });
         ErrorReportHandling reportHandling = packet.content().get("handling", ErrorReportHandling.class);
         JsonConfiguration message = packet.content().get("message");
 

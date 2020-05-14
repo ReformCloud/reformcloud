@@ -41,6 +41,13 @@ import java.util.function.UnaryOperator;
 public final class DefaultRunningProcess implements RunningProcess {
 
     private static final String LIB_PATH = new File(".").getAbsolutePath();
+    private final ProcessInformation processInformation;
+    private final AtomicLong startupTime = new AtomicLong(-1);
+    private Path path;
+
+    private boolean prepared = false;
+
+    private Process process;
 
     public DefaultRunningProcess(ProcessInformation processInformation) {
         this.processInformation = processInformation;
@@ -54,15 +61,33 @@ public final class DefaultRunningProcess implements RunningProcess {
         }
     }
 
-    private final ProcessInformation processInformation;
+    // ========================= //
+    //Static
+    private static void rewriteFile(File file, Function<String, String> function) {
+        try {
+            List<String> list = Files.readAllLines(file.toPath());
+            List<String> newLine = new ArrayList<>();
 
-    private Path path;
+            list.forEach(s -> newLine.add(function.apply(s)));
 
-    private boolean prepared = false;
+            try (PrintWriter printWriter = new PrintWriter(new OutputStreamWriter(Files.newOutputStream(file.toPath()), StandardCharsets.UTF_8), true)) {
+                newLine.forEach(s -> {
+                    printWriter.write(s + "\n");
+                    printWriter.flush();
+                });
+            }
+        } catch (final IOException ex) {
+            ex.printStackTrace();
+        }
+    }
 
-    private Process process;
-
-    private final AtomicLong startupTime = new AtomicLong(-1);
+    private static void updateCommandLine(List<String> command, Version version) {
+        if (version.getId() == 1) {
+            command.add("nogui");
+        } else if (version.getId() == 3) {
+            command.add("disable-ansi");
+        }
+    }
 
     @Override
     public long getStartupTime() {
@@ -264,6 +289,8 @@ public final class DefaultRunningProcess implements RunningProcess {
         return CompletableFuture.completedFuture(null);
     }
 
+    /* ================================= */
+
     @Override
     public ReferencedOptional<Process> getProcess() {
         return ReferencedOptional.build(process);
@@ -273,8 +300,6 @@ public final class DefaultRunningProcess implements RunningProcess {
     public ProcessInformation getProcessInformation() {
         return processInformation;
     }
-
-    /* ================================= */
 
     private void createEula() {
         try (InputStream inputStream = DefaultRunningProcess.class.getClassLoader().getResourceAsStream("files/java/bukkit/eula.txt")) {
@@ -388,6 +413,9 @@ public final class DefaultRunningProcess implements RunningProcess {
     }
 
     // ========================= //
+    //Startup
+
+    // ========================= //
     //Glowstone
     private boolean isLogicallyGlowstone() {
         Version version = processInformation.getTemplate().getVersion();
@@ -398,7 +426,7 @@ public final class DefaultRunningProcess implements RunningProcess {
     private void rewriteGlowstoneConfig() {
         rewriteFile(new File(path + "/config/glowstone.yml"), (UnaryOperator<String>) s -> {
             if (s.trim().startsWith("ip:")) {
-                s = "  ip: '" + this.processInformation.getNetworkInfo().getHost() +  "'";
+                s = "  ip: '" + this.processInformation.getNetworkInfo().getHost() + "'";
             }
 
             if (s.trim().startsWith("port:")) {
@@ -416,9 +444,6 @@ public final class DefaultRunningProcess implements RunningProcess {
             return s;
         });
     }
-
-    // ========================= //
-    //Startup
 
     private void chooseLogicallyStartup() {
         if (processInformation.getTemplate().isServer()) {
@@ -546,33 +571,5 @@ public final class DefaultRunningProcess implements RunningProcess {
         SystemHelper.createDirectory(Paths.get(path + "/plugins"));
         SystemHelper.createDirectory(Paths.get(path + "/reformcloud/.connection"));
         SystemHelper.doCopy("reformcloud/files/.connection/connection.json", path + "/reformcloud/.connection/key.json");
-    }
-
-    // ========================= //
-    //Static
-    private static void rewriteFile(File file, Function<String, String> function) {
-        try {
-            List<String> list = Files.readAllLines(file.toPath());
-            List<String> newLine = new ArrayList<>();
-
-            list.forEach(s -> newLine.add(function.apply(s)));
-
-            try (PrintWriter printWriter = new PrintWriter(new OutputStreamWriter(Files.newOutputStream(file.toPath()), StandardCharsets.UTF_8), true)) {
-                newLine.forEach(s -> {
-                    printWriter.write(s + "\n");
-                    printWriter.flush();
-                });
-            }
-        } catch (final IOException ex) {
-            ex.printStackTrace();
-        }
-    }
-
-    private static void updateCommandLine(List<String> command, Version version) {
-        if (version.getId() == 1) {
-            command.add("nogui");
-        } else if (version.getId() == 3) {
-            command.add("disable-ansi");
-        }
     }
 }

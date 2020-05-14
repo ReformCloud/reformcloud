@@ -12,6 +12,17 @@ import java.util.TreeSet;
 
 public final class AutoStartupHandler extends AbsoluteThread {
 
+    private final SortedSet<ProcessGroup> perPriorityStartup = new TreeSet<>((o1, o2) -> {
+        int o1Priority = o1.getStartupConfiguration().getStartupPriority();
+        int o2Priority = o2.getStartupConfiguration().getStartupPriority();
+
+        if (o1Priority >= o2Priority) {
+            return -1;
+        }
+
+        return 1;
+    });
+
     public AutoStartupHandler() {
         update();
         enableDaemon().updatePriority(Thread.MIN_PRIORITY).start();
@@ -24,17 +35,6 @@ public final class AutoStartupHandler extends AbsoluteThread {
 
         perPriorityStartup.addAll(ControllerExecutor.getInstance().getControllerExecutorConfig().getProcessGroups());
     }
-
-    private final SortedSet<ProcessGroup> perPriorityStartup = new TreeSet<>((o1, o2) -> {
-        int o1Priority = o1.getStartupConfiguration().getStartupPriority();
-        int o2Priority = o2.getStartupConfiguration().getStartupPriority();
-
-        if (o1Priority >= o2Priority) {
-            return -1;
-        }
-
-        return 1;
-    });
 
     @Override
     public void run() {

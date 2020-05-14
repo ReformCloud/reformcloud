@@ -13,15 +13,13 @@ import java.util.concurrent.TimeUnit;
 
 public final class ScreenManager extends AbsoluteThread {
 
+    private final byte[] buffer = new byte[1024];
+    private final StringBuffer stringBuffer = new StringBuffer();
+    private final Map<UUID, ProcessScreen> perProcessScreenLines = new ConcurrentHashMap<>();
+
     public ScreenManager() {
         enableDaemon().updatePriority(Thread.MIN_PRIORITY).start();
     }
-
-    private final byte[] buffer = new byte[1024];
-
-    private final StringBuffer stringBuffer = new StringBuffer();
-
-    private final Map<UUID, ProcessScreen> perProcessScreenLines = new ConcurrentHashMap<>();
 
     @Override
     public void run() {

@@ -22,7 +22,7 @@ public class LocalProcessQueue extends AbsoluteThread {
     public static void queue(ProcessInformation processInformation) {
         LocalNodeProcess localNodeProcess = new BasicLocalNodeProcess(processInformation);
         int size = QUEUE.size();
-        System.out.println(LanguageManager.get("client-process-now-in-queue", processInformation.getName(), size +1));
+        System.out.println(LanguageManager.get("client-process-now-in-queue", processInformation.getName(), size + 1));
 
         localNodeProcess.initTemplate().thenAccept(e -> {
             localNodeProcess.prepare();

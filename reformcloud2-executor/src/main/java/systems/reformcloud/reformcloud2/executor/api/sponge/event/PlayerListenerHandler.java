@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit;
 
 public final class PlayerListenerHandler {
 
-    @Listener (order = Order.LATE)
+    @Listener(order = Order.LATE)
     public void handle(final ClientConnectionEvent.Login event) {
         if (ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation().getProcessGroup().getPlayerAccessConfiguration().isOnlyProxyJoin()) {
             PacketSender packetSender = DefaultChannelManager.INSTANCE.get("Controller").orElse(null);
@@ -77,7 +77,7 @@ public final class PlayerListenerHandler {
         }
     }
 
-    @Listener (order = Order.LATE)
+    @Listener(order = Order.LATE)
     public void handle(final ClientConnectionEvent.Join event) {
         final ProcessInformation current = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation();
         current.updateRuntimeInformation();
@@ -85,7 +85,7 @@ public final class PlayerListenerHandler {
         ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(current);
     }
 
-    @Listener (order = Order.FIRST)
+    @Listener(order = Order.FIRST)
     public void handle(final ClientConnectionEvent.Disconnect event) {
         ProcessInformation current = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation();
         if (!current.isPlayerOnline(event.getTargetEntity().getUniqueId())) {

@@ -54,20 +54,13 @@ public final class BungeeExecutor extends API implements PlayerAPIExecutor {
     public static final List<ProcessInformation> LOBBY_SERVERS = new ArrayList<>();
 
     private static BungeeExecutor instance;
-
-    private final PacketHandler packetHandler = new DefaultPacketHandler();
-
-    private final NetworkClient networkClient = new DefaultNetworkClient();
-
-    private final Plugin plugin;
-
-    private ProcessInformation thisProcessInformation;
-
-    private IngameMessages messages = new IngameMessages();
-
     private static boolean waterdog;
-
     private static boolean waterdogPE;
+    private final PacketHandler packetHandler = new DefaultPacketHandler();
+    private final NetworkClient networkClient = new DefaultNetworkClient();
+    private final Plugin plugin;
+    private ProcessInformation thisProcessInformation;
+    private IngameMessages messages = new IngameMessages();
 
     BungeeExecutor(Plugin plugin) {
         super.type = ExecutorType.API;
@@ -108,58 +101,13 @@ public final class BungeeExecutor extends API implements PlayerAPIExecutor {
     }
 
     @Nonnull
-    public EventManager getEventManager() {
-        return ExternalEventBusHandler.getInstance().getEventManager();
-    }
-
-    public Plugin getPlugin() {
-        return plugin;
-    }
-
-    NetworkClient getNetworkClient() {
-        return networkClient;
-    }
-
-    @Override
-    public PacketHandler packetHandler() {
-        return packetHandler;
-    }
-
-    @Nonnull
     public static BungeeExecutor getInstance() {
         return instance;
     }
 
-    // ===============
-
     static void clearHandlers() {
         ProxyServer.getInstance().getConfig().getListeners().forEach(listenerInfo -> listenerInfo.getServerPriority().clear());
         ProxyServer.getInstance().getConfig().getServers().clear();
-    }
-
-    private void awaitConnectionAndUpdate() {
-        Task.EXECUTOR.execute(() -> {
-            PacketSender packetSender = DefaultChannelManager.INSTANCE.get("Controller").orElse(null);
-            while (packetSender == null) {
-                packetSender = DefaultChannelManager.INSTANCE.get("Controller").orElse(null);
-                AbsoluteThread.sleep(20);
-            }
-
-            getAllProcesses().forEach(BungeeExecutor::registerServer);
-            ProxyServer.getInstance().getPluginManager().registerListener(plugin, new PlayerListenerHandler());
-
-            thisProcessInformation.updateMaxPlayers(ProxyServer.getInstance().getConfig().getPlayerLimit());
-            thisProcessInformation.updateRuntimeInformation();
-            ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(thisProcessInformation);
-
-            DefaultChannelManager.INSTANCE.get("Controller").ifPresent(controller -> packetHandler.getQueryHandler().sendQueryAsync(
-                    controller,
-                    new APIBungeePacketOutRequestIngameMessages()
-            ).onComplete(packet -> {
-                IngameMessages ingameMessages = packet.content().get("messages", IngameMessages.TYPE);
-                setMessages(ingameMessages);
-            }));
-        });
     }
 
     public static void registerServer(ProcessInformation processInformation) {
@@ -273,6 +221,51 @@ public final class BungeeExecutor extends API implements PlayerAPIExecutor {
         }
 
         return lobbies.get(new Random().nextInt(lobbies.size()));
+    }
+
+    // ===============
+
+    @Nonnull
+    public EventManager getEventManager() {
+        return ExternalEventBusHandler.getInstance().getEventManager();
+    }
+
+    public Plugin getPlugin() {
+        return plugin;
+    }
+
+    NetworkClient getNetworkClient() {
+        return networkClient;
+    }
+
+    @Override
+    public PacketHandler packetHandler() {
+        return packetHandler;
+    }
+
+    private void awaitConnectionAndUpdate() {
+        Task.EXECUTOR.execute(() -> {
+            PacketSender packetSender = DefaultChannelManager.INSTANCE.get("Controller").orElse(null);
+            while (packetSender == null) {
+                packetSender = DefaultChannelManager.INSTANCE.get("Controller").orElse(null);
+                AbsoluteThread.sleep(20);
+            }
+
+            getAllProcesses().forEach(BungeeExecutor::registerServer);
+            ProxyServer.getInstance().getPluginManager().registerListener(plugin, new PlayerListenerHandler());
+
+            thisProcessInformation.updateMaxPlayers(ProxyServer.getInstance().getConfig().getPlayerLimit());
+            thisProcessInformation.updateRuntimeInformation();
+            ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(thisProcessInformation);
+
+            DefaultChannelManager.INSTANCE.get("Controller").ifPresent(controller -> packetHandler.getQueryHandler().sendQueryAsync(
+                    controller,
+                    new APIBungeePacketOutRequestIngameMessages()
+            ).onComplete(packet -> {
+                IngameMessages ingameMessages = packet.content().get("messages", IngameMessages.TYPE);
+                setMessages(ingameMessages);
+            }));
+        });
     }
 
     @Override

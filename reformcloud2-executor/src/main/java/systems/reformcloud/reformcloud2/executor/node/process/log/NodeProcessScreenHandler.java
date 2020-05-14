@@ -9,11 +9,11 @@ import java.util.UUID;
 
 public final class NodeProcessScreenHandler {
 
+    private static final Collection<NodeProcessScreen> SCREENS = new ArrayList<>();
+
     private NodeProcessScreenHandler() {
         throw new UnsupportedOperationException();
     }
-
-    private static final Collection<NodeProcessScreen> SCREENS = new ArrayList<>();
 
     public static void registerScreen(NodeProcessScreen screen) {
         SCREENS.add(screen);

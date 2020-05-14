@@ -88,6 +88,11 @@ public class SpongeExecutor extends API implements PlayerAPIExecutor {
         awaitConnectionAndUpdate();
     }
 
+    @Nonnull
+    public static SpongeExecutor getInstance() {
+        return instance;
+    }
+
     public IngameMessages getMessages() {
         return messages;
     }
@@ -95,6 +100,10 @@ public class SpongeExecutor extends API implements PlayerAPIExecutor {
     @Override
     public ProcessInformation getThisProcessInformation() {
         return thisProcessInformation;
+    }
+
+    public void setThisProcessInformation(@Nonnull ProcessInformation thisProcessInformation) {
+        this.thisProcessInformation = thisProcessInformation;
     }
 
     @Override
@@ -116,15 +125,6 @@ public class SpongeExecutor extends API implements PlayerAPIExecutor {
     @Nonnull
     public SpongeLauncher getPlugin() {
         return plugin;
-    }
-
-    @Nonnull
-    public static SpongeExecutor getInstance() {
-        return instance;
-    }
-
-    public void setThisProcessInformation(@Nonnull ProcessInformation thisProcessInformation) {
-        this.thisProcessInformation = thisProcessInformation;
     }
 
     @Listener
@@ -176,14 +176,14 @@ public class SpongeExecutor extends API implements PlayerAPIExecutor {
     @Override
     public void executeSendTitle(UUID player, String title, String subTitle, int fadeIn, int stay, int fadeOut) {
         Sponge.getServer().getPlayer(player).ifPresent(e ->
-            e.sendTitle(Title.CLEAR.toBuilder()
-                    .title(Text.of(title))
-                    .subtitle(Text.of(subTitle))
-                    .fadeIn(fadeIn)
-                    .stay(stay)
-                    .fadeOut(fadeOut)
-                    .build()
-            )
+                e.sendTitle(Title.CLEAR.toBuilder()
+                        .title(Text.of(title))
+                        .subtitle(Text.of(subTitle))
+                        .fadeIn(fadeIn)
+                        .stay(stay)
+                        .fadeOut(fadeOut)
+                        .build()
+                )
         );
     }
 
@@ -203,7 +203,7 @@ public class SpongeExecutor extends API implements PlayerAPIExecutor {
     @Override
     public void executeTeleport(UUID player, String world, double x, double y, double z, float yaw, float pitch) {
         Sponge.getServer().getPlayer(player).ifPresent(e -> Sponge.getServer().getWorld(world).ifPresent(w ->
-            e.setLocationSafely(new Location<World>(w, x, y, z))
+                e.setLocationSafely(new Location<World>(w, x, y, z))
         ));
     }
 

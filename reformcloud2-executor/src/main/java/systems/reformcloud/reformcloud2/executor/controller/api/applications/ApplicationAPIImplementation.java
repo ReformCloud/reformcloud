@@ -13,11 +13,11 @@ import java.util.List;
 
 public class ApplicationAPIImplementation implements ApplicationAsyncAPI, ApplicationSyncAPI {
 
+    private final ApplicationLoader applicationLoader;
+
     public ApplicationAPIImplementation(@Nonnull ApplicationLoader applicationLoader) {
         this.applicationLoader = applicationLoader;
     }
-
-    private final ApplicationLoader applicationLoader;
 
     @Nonnull
     @Override

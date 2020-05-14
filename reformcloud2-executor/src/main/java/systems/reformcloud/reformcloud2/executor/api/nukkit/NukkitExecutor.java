@@ -85,6 +85,11 @@ public final class NukkitExecutor extends API implements PlayerAPIExecutor {
         awaitConnectionAndUpdate();
     }
 
+    @Nonnull
+    public static NukkitExecutor getInstance() {
+        return instance;
+    }
+
     NetworkClient getNetworkClient() {
         return networkClient;
     }
@@ -106,11 +111,6 @@ public final class NukkitExecutor extends API implements PlayerAPIExecutor {
     @Override
     public PacketHandler packetHandler() {
         return packetHandler;
-    }
-
-    @Nonnull
-    public static NukkitExecutor getInstance() {
-        return instance;
     }
 
     @Override

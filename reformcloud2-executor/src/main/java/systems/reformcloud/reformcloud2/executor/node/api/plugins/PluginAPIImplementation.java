@@ -22,11 +22,11 @@ import java.util.concurrent.TimeUnit;
 
 public class PluginAPIImplementation implements PluginSyncAPI, PluginAsyncAPI {
 
+    private final NodeNetworkManager nodeNetworkManager;
+
     public PluginAPIImplementation(NodeNetworkManager nodeNetworkManager) {
         this.nodeNetworkManager = nodeNetworkManager;
     }
-
-    private final NodeNetworkManager nodeNetworkManager;
 
     @Nonnull
     @Override

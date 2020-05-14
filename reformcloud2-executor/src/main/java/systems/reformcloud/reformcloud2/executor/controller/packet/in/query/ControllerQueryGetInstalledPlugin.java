@@ -15,6 +15,14 @@ import java.util.function.Consumer;
 
 public final class ControllerQueryGetInstalledPlugin extends DefaultJsonNetworkHandler {
 
+    private static DefaultPlugin convert(Plugin plugin) {
+        if (plugin == null) {
+            return null;
+        }
+
+        return new DefaultPlugin(plugin.version(), plugin.author(), plugin.main(), plugin.depends(), plugin.softpends(), plugin.enabled(), plugin.getName());
+    }
+
     @Override
     public int getHandlingPacketID() {
         return ExternalAPIImplementation.EXTERNAL_PACKET_ID + 29;
@@ -25,13 +33,5 @@ public final class ControllerQueryGetInstalledPlugin extends DefaultJsonNetworkH
         String name = packet.content().getString("name");
         String process = packet.content().getString("process");
         responses.accept(new JsonPacket(-1, new JsonConfiguration().add("result", convert(ExecutorAPI.getInstance().getSyncAPI().getPluginSyncAPI().getInstalledPlugin(process, name)))));
-    }
-
-    private static DefaultPlugin convert(Plugin plugin) {
-        if (plugin == null) {
-            return null;
-        }
-
-        return new DefaultPlugin(plugin.version(), plugin.author(), plugin.main(), plugin.depends(), plugin.softpends(), plugin.enabled(), plugin.getName());
     }
 }

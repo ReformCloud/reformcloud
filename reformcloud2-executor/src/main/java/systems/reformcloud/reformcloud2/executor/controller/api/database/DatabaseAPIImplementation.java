@@ -13,11 +13,11 @@ import java.util.function.Function;
 
 public class DatabaseAPIImplementation implements DatabaseAsyncAPI, DatabaseSyncAPI {
 
+    private final Database<?> database;
+
     public DatabaseAPIImplementation(Database<?> parent) {
         this.database = parent;
     }
-
-    private final Database<?> database;
 
     @Nonnull
     @Override

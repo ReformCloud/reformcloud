@@ -11,15 +11,6 @@ import java.util.concurrent.ConcurrentSkipListSet;
 
 public class LocalAutoStartupHandler extends AbsoluteThread {
 
-    public void doStart() {
-        updatePriority(Thread.MIN_PRIORITY).enableDaemon().start();
-    }
-
-    public void update() {
-        perPriorityStartup.clear();
-        perPriorityStartup.addAll(NodeExecutor.getInstance().getClusterSyncManager().getProcessGroups());
-    }
-
     private final SortedSet<ProcessGroup> perPriorityStartup = new ConcurrentSkipListSet<>((o1, o2) -> {
         int o1Priority = o1.getStartupConfiguration().getStartupPriority();
         int o2Priority = o2.getStartupConfiguration().getStartupPriority();
@@ -30,6 +21,15 @@ public class LocalAutoStartupHandler extends AbsoluteThread {
 
         return 1;
     });
+
+    public void doStart() {
+        updatePriority(Thread.MIN_PRIORITY).enableDaemon().start();
+    }
+
+    public void update() {
+        perPriorityStartup.clear();
+        perPriorityStartup.addAll(NodeExecutor.getInstance().getClusterSyncManager().getProcessGroups());
+    }
 
     @Override
     public void run() {

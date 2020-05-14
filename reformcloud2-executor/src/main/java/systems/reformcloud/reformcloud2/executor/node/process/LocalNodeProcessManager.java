@@ -286,7 +286,7 @@ public class LocalNodeProcessManager implements NodeProcessManager {
     }
 
     private ProcessInformation constructCaInfo(ProcessGroup processGroup, Template template, JsonConfiguration data,
-                                 NodeInformation node, UUID uniqueID) {
+                                               NodeInformation node, UUID uniqueID) {
         int id = nextID(processGroup);
         return new ProcessInformation(
                 processGroup.getName() + template.getServerNameSplitter() + id,

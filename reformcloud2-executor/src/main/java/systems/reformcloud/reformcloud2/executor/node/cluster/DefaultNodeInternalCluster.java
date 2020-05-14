@@ -21,18 +21,15 @@ import java.util.function.Function;
 public class DefaultNodeInternalCluster implements InternalNetworkCluster {
 
     private final Collection<NodeInformation> connectedNodes = new CopyOnWriteArrayList<>();
+    private final ClusterManager clusterManager;
+    private final PacketHandler packetHandler;
+    private NodeInformation self;
 
     public DefaultNodeInternalCluster(ClusterManager clusterManager, NodeInformation self, PacketHandler packetHandler) {
         this.clusterManager = clusterManager;
         this.packetHandler = packetHandler;
         this.self = self;
     }
-
-    private final ClusterManager clusterManager;
-
-    private final PacketHandler packetHandler;
-
-    private NodeInformation self;
 
     @Override
     public ClusterManager getClusterManager() {

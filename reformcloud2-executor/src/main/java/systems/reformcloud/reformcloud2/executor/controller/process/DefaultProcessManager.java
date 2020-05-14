@@ -177,7 +177,7 @@ public final class DefaultProcessManager implements ProcessManager {
             });
 
             if (bestTemplate.get() == null) {
-                bestTemplate.set(new Template(0, "default", false, FileBackend.NAME,"#", new RuntimeConfiguration(
+                bestTemplate.set(new Template(0, "default", false, FileBackend.NAME, "#", new RuntimeConfiguration(
                         512, new ArrayList<>(), new HashMap<>()
                 ), Version.PAPER_1_8_8));
 
@@ -312,8 +312,8 @@ public final class DefaultProcessManager implements ProcessManager {
 
             Streams.filterToReference(this.processInformation,
                     e -> e.getProcessUniqueID().equals(processInformation.getProcessUniqueID())).ifPresent(e -> {
-                        this.processInformation.remove(e);
-                        this.processInformation.add(processInformation);
+                this.processInformation.remove(e);
+                this.processInformation.add(processInformation);
             });
         }
 

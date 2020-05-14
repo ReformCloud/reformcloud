@@ -22,7 +22,7 @@ import java.util.concurrent.TimeUnit;
 
 public final class PlayerListenerHandler implements Listener {
 
-    @EventHandler (priority = EventPriority.HIGH)
+    @EventHandler(priority = EventPriority.HIGH)
     public void handle(final PlayerLoginEvent event) {
         if (ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation().getProcessGroup().getPlayerAccessConfiguration().isOnlyProxyJoin()) {
             PacketSender packetSender = DefaultChannelManager.INSTANCE.get("Controller").orElse(null);
@@ -99,7 +99,7 @@ public final class PlayerListenerHandler implements Listener {
         }
     }
 
-    @EventHandler (priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void handle(final PlayerJoinEvent event) {
         final ProcessInformation current = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation();
         current.onLogin(event.getPlayer().getUniqueId(), event.getPlayer().getName());
@@ -108,7 +108,7 @@ public final class PlayerListenerHandler implements Listener {
         ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(current);
     }
 
-    @EventHandler (priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.LOWEST)
     public void handle(final PlayerQuitEvent event) {
         ProcessInformation current = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getThisProcessInformation();
         if (!current.isPlayerOnline(event.getPlayer().getUniqueId())) {
