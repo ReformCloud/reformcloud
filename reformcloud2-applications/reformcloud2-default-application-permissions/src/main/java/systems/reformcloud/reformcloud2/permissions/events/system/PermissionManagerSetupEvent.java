@@ -22,35 +22,28 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.permissions.util;
+package systems.reformcloud.reformcloud2.permissions.events.system;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.common.network.NetworkUtil;
-import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
-import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.optional.ReferencedOptional;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
+import systems.reformcloud.reformcloud2.executor.api.common.event.Event;
 import systems.reformcloud.reformcloud2.permissions.PermissionManagement;
-import systems.reformcloud.reformcloud2.permissions.packets.PacketHelper;
 
-public final class PermissionPluginUtil {
+import java.util.Objects;
 
-    private PermissionPluginUtil() {
-        throw new UnsupportedOperationException();
+public class PermissionManagerSetupEvent extends Event {
+
+    public PermissionManagerSetupEvent(@NotNull PermissionManagement permissionManagement) {
+        this.permissionManagement = Objects.requireNonNull(permissionManagement);
     }
 
-    public static void awaitConnection(@NotNull Runnable then) {
-        NetworkUtil.EXECUTOR.execute(() -> {
-            ReferencedOptional<PacketSender> optionalPacketSender = DefaultChannelManager.INSTANCE.get("Controller");
-            while (!optionalPacketSender.isPresent()) {
-                AbsoluteThread.sleep(5);
-                optionalPacketSender = DefaultChannelManager.INSTANCE.get("Controller");
-            }
+    private PermissionManagement permissionManagement;
 
-            PacketHelper.addPacketHandler();
-            PermissionManagement.setup();
-            then.run();
-        });
+    @NotNull
+    public PermissionManagement getPermissionManagement() {
+        return permissionManagement;
     }
 
+    public void setPermissionManagement(@NotNull PermissionManagement permissionManagement) {
+        this.permissionManagement = Objects.requireNonNull(permissionManagement);
+    }
 }

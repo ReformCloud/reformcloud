@@ -69,12 +69,12 @@ public class PacketAPIDatabaseUpdateOrInsertDocument extends Packet {
     @Override
     public void handlePacketReceive(@NotNull NetworkChannelReader reader, @NotNull ChallengeAuthHandler authHandler, @NotNull ChannelReaderHelper parent, @Nullable PacketSender sender, @NotNull ChannelHandlerContext channel) {
         if (this.entryKey != null) {
-            ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().update(this.databaseName, this.entryKey, this.data);
+            ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().update(this.databaseName, this.entryKey, null, this.data);
             return;
         }
 
         if (this.identifier != null) {
-            ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().updateIfAbsent(this.databaseName, this.identifier, this.data);
+            ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().update(this.databaseName, null, this.identifier, this.data);
         }
     }
 

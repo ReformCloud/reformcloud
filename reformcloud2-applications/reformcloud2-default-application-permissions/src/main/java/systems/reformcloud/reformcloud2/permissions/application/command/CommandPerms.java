@@ -25,19 +25,12 @@
 package systems.reformcloud.reformcloud2.permissions.application.command;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.ExecutorType;
 import systems.reformcloud.reformcloud2.executor.api.common.CommonHelper;
-import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.GlobalCommand;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.source.CommandSource;
-import systems.reformcloud.reformcloud2.executor.api.common.database.Database;
-import systems.reformcloud.reformcloud2.executor.api.common.database.DatabaseReader;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.optional.ReferencedOptional;
-import systems.reformcloud.reformcloud2.executor.controller.ControllerExecutor;
-import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
 import systems.reformcloud.reformcloud2.permissions.PermissionManagement;
-import systems.reformcloud.reformcloud2.permissions.defaults.DefaultPermissionManagement;
 import systems.reformcloud.reformcloud2.permissions.internal.UUIDFetcher;
 import systems.reformcloud.reformcloud2.permissions.nodes.NodeGroup;
 import systems.reformcloud.reformcloud2.permissions.nodes.PermissionNode;
@@ -95,33 +88,16 @@ public class CommandPerms extends GlobalCommand {
 
     @Override
     public boolean handleCommand(@NotNull CommandSource commandSource, String @NotNull [] strings) {
-
         if (strings.length == 1 && strings[0].equalsIgnoreCase("groups")) {
-            DatabaseReader permissionTableReader = getDatabase().createForTable(DefaultPermissionManagement.PERMISSION_GROUP_TABLE);
-            if (permissionTableReader == null) {
-                commandSource.sendMessage("The table for the permission groups does not exists");
-                return true;
-            }
-
-            List<PermissionGroup> groups = new ArrayList<>();
-
-            permissionTableReader.forEach(jsonConfiguration -> {
-                PermissionGroup group = jsonConfiguration.get("group", PermissionGroup.TYPE);
-                if (group == null) {
-                    return;
-                }
-
-                groups.add(group);
-            });
-
+            List<PermissionGroup> groups = new ArrayList<>(PermissionManagement.getInstance().getPermissionGroups());
             groups.sort(Comparator.comparingInt(PermissionGroup::getPriority));
+
             commandSource.sendMessage(String.format("Registered groups (%d): \n  -%s", groups.size(), String.join("\n  -",
                     groups
                             .stream()
                             .map(e -> String.format("Name: %s | Priority: %d", e.getName(), e.getPriority()))
                             .toArray(String[]::new))
             ));
-
             return true;
         }
 
@@ -208,7 +184,7 @@ public class CommandPerms extends GlobalCommand {
                 return true;
             }
 
-            String prefix = strings[3].replace("_", "");
+            String prefix = strings[3].replace("_", " ");
             if (prefix.equals("\"\"")) {
                 prefix = null;
             }
@@ -235,7 +211,7 @@ public class CommandPerms extends GlobalCommand {
                 return true;
             }
 
-            String display = strings[3].replace("_", "");
+            String display = strings[3].replace("_", " ");
             if (display.equals("\"\"")) {
                 display = null;
             }
@@ -262,7 +238,7 @@ public class CommandPerms extends GlobalCommand {
                 return true;
             }
 
-            String suffix = strings[3].replace("_", "");
+            String suffix = strings[3].replace("_", " ");
             if (suffix.equals("\"\"")) {
                 suffix = null;
             }
@@ -289,7 +265,7 @@ public class CommandPerms extends GlobalCommand {
                 return true;
             }
 
-            String colour = strings[3].replace("_", "");
+            String colour = strings[3];
             if (colour.equals("\"\"")) {
                 colour = null;
             }
@@ -410,7 +386,7 @@ public class CommandPerms extends GlobalCommand {
                 return true;
             }
 
-            PermissionGroup group = PermissionManagement.getInstance().getGroup(strings[3]);
+            PermissionGroup group = PermissionManagement.getInstance().getPermissionGroup(strings[3]).orElse(null);
             if (group == null) {
                 System.out.println("The group " + strings[3] + " does not exists");
                 return true;
@@ -442,7 +418,7 @@ public class CommandPerms extends GlobalCommand {
                 return true;
             }
 
-            PermissionGroup group = PermissionManagement.getInstance().getGroup(strings[3]);
+            PermissionGroup group = PermissionManagement.getInstance().getPermissionGroup(strings[3]).orElse(null);
             if (group == null) {
                 System.out.println("The group " + strings[3] + " does not exists");
                 return true;
@@ -498,7 +474,7 @@ public class CommandPerms extends GlobalCommand {
         // ======== Groups ========
 
         if (strings.length == 2 && strings[0].equalsIgnoreCase("group")) {
-            PermissionGroup group = PermissionManagement.getInstance().getGroup(strings[1]);
+            PermissionGroup group = PermissionManagement.getInstance().getPermissionGroup(strings[1]).orElse(null);
             if (group == null) {
                 System.out.println("The group " + strings[1] + " does not exists");
                 return true;
@@ -1046,11 +1022,4 @@ public class CommandPerms extends GlobalCommand {
             }
         }
     }
-
-    public static Database<?> getDatabase() {
-        return ExecutorAPI.getInstance().getType().equals(ExecutorType.NODE)
-                ? NodeExecutor.getInstance().getDatabase()
-                : ControllerExecutor.getInstance().getDatabase();
-    }
-
 }

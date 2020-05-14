@@ -70,6 +70,7 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public abstract class ExternalAPIImplementation extends ExecutorAPI implements
         ProcessSyncAPI, ProcessAsyncAPI,
@@ -95,6 +96,7 @@ public abstract class ExternalAPIImplementation extends ExecutorAPI implements
                 PacketAPIQueryRequestMainGroupResult.class,
                 PacketAPIQueryRequestProcessGroupResult.class,
                 PacketAPIQueryRequestProcessResult.class,
+                PacketAPIQueryGetBulkDocumentsResult.class,
                 // Auth
                 PacketOutServerChallengeStart.class,
                 PacketOutServerGrantAccess.class,
@@ -234,6 +236,29 @@ public abstract class ExternalAPIImplementation extends ExecutorAPI implements
 
     @NotNull
     @Override
+    public Task<Collection<JsonConfiguration>> getCompleteDatabaseAsync(@NotNull String table) {
+        Task<Collection<JsonConfiguration>> task = new DefaultTask<>();
+        Task.EXECUTOR.execute(() -> this.sendPacketQuery(new PacketAPIQueryGetBulkDocuments(table), result -> {
+            if (result instanceof PacketAPIQueryGetBulkDocumentsResult) {
+                task.complete(((PacketAPIQueryGetBulkDocumentsResult) result).getResult());
+            } else {
+                task.completeExceptionally(WrongResultTypeException.INSTANCE);
+            }
+        }));
+        return task;
+    }
+
+    @NotNull
+    @Override
+    public <T> Task<Collection<T>> getCompleteDatabaseAsync(@NotNull String table, @NotNull Function<JsonConfiguration, T> mapper) {
+        return Task.supply(() -> {
+            Collection<JsonConfiguration> documents = this.getCompleteDatabase(table);
+            return documents.stream().map(mapper).filter(Objects::nonNull).collect(Collectors.toList());
+        });
+    }
+
+    @NotNull
+    @Override
     public Task<Void> insertAsync(@NotNull String table, @NotNull String key, String identifier, @NotNull JsonConfiguration data) {
         Task<Void> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
@@ -355,6 +380,20 @@ public abstract class ExternalAPIImplementation extends ExecutorAPI implements
     @Override
     public <T> T find(@NotNull String table, @NotNull String key, String identifier, @NotNull Function<JsonConfiguration, T> function) {
         return this.findAsync(table, key, identifier, function).getUninterruptedly();
+    }
+
+    @NotNull
+    @Override
+    public Collection<JsonConfiguration> getCompleteDatabase(@NotNull String table) {
+        Collection<JsonConfiguration> result =  this.getCompleteDatabaseAsync(table).getUninterruptedly(TimeUnit.SECONDS, 5);
+        return result == null ? new ArrayList<>() : result;
+    }
+
+    @NotNull
+    @Override
+    public <T> Collection<T> getCompleteDatabase(@NotNull String table, @NotNull Function<JsonConfiguration, T> mapper) {
+        Collection<T> result = this.getCompleteDatabaseAsync(table, mapper).getUninterruptedly(TimeUnit.SECONDS, 5);
+        return result == null ? new ArrayList<>() : result;
     }
 
     @Override

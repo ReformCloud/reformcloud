@@ -31,11 +31,16 @@ import systems.reformcloud.reformcloud2.executor.api.common.api.database.Databas
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.database.Database;
 import systems.reformcloud.reformcloud2.executor.api.common.database.DatabaseReader;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.defaults.DefaultTask;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class DatabaseAPIImplementation implements DatabaseAsyncAPI, DatabaseSyncAPI {
 
@@ -81,6 +86,21 @@ public class DatabaseAPIImplementation implements DatabaseAsyncAPI, DatabaseSync
             }
         });
         return task;
+    }
+
+    @NotNull
+    @Override
+    public Task<Collection<JsonConfiguration>> getCompleteDatabaseAsync(@NotNull String table) {
+        return Task.supply(() -> {
+            DatabaseReader reader = this.database.createForTable(table);
+            return reader == null ? new ArrayList<>() : Streams.fromIterator(reader.iterator());
+        });
+    }
+
+    @NotNull
+    @Override
+    public <T> Task<Collection<T>> getCompleteDatabaseAsync(@NotNull String table, @NotNull Function<JsonConfiguration, T> mapper) {
+        return Task.supply(() -> this.getCompleteDatabase(table).stream().map(mapper).filter(Objects::nonNull).collect(Collectors.toList()));
     }
 
     @NotNull
@@ -235,6 +255,20 @@ public class DatabaseAPIImplementation implements DatabaseAsyncAPI, DatabaseSync
     @Override
     public <T> T find(@NotNull String table, @NotNull String key, String identifier, @NotNull Function<JsonConfiguration, T> function) {
         return findAsync(table, key, identifier, function).getUninterruptedly();
+    }
+
+    @NotNull
+    @Override
+    public Collection<JsonConfiguration> getCompleteDatabase(@NotNull String table) {
+        Collection<JsonConfiguration> result = this.getCompleteDatabaseAsync(table).getUninterruptedly();
+        return result == null ? new ArrayList<>() : result;
+    }
+
+    @NotNull
+    @Override
+    public <T> Collection<T> getCompleteDatabase(@NotNull String table, @NotNull Function<JsonConfiguration, T> mapper) {
+        Collection<T> result = this.getCompleteDatabaseAsync(table, mapper).getUninterruptedly();
+        return result == null ? new ArrayList<>() : result;
     }
 
     @Override

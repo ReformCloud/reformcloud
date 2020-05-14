@@ -156,7 +156,7 @@ public class PermissionVaultPermissionImplementation extends Permission {
 
     @Override
     public String[] getGroups() {
-        return this.permissionManagement.getCachedGroups().stream().map(PermissionGroup::getName).toArray(String[]::new);
+        return this.permissionManagement.getPermissionGroups().stream().map(PermissionGroup::getName).toArray(String[]::new);
     }
 
     @Override

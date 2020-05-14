@@ -28,13 +28,17 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
+import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
+import systems.reformcloud.reformcloud2.executor.api.common.base.Conditions;
 import systems.reformcloud.reformcloud2.permissions.defaults.DefaultPermissionManagement;
+import systems.reformcloud.reformcloud2.permissions.events.system.PermissionManagerSetupEvent;
 import systems.reformcloud.reformcloud2.permissions.nodes.NodeGroup;
 import systems.reformcloud.reformcloud2.permissions.nodes.PermissionNode;
 import systems.reformcloud.reformcloud2.permissions.objects.group.PermissionGroup;
 import systems.reformcloud.reformcloud2.permissions.objects.user.PermissionUser;
 
 import java.util.Collection;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -42,9 +46,19 @@ public abstract class PermissionManagement {
 
     private static PermissionManagement instance;
 
+    @ApiStatus.Internal
+    public static void setup() {
+        Conditions.isTrue(PermissionManagement.instance == null, "Cannot redefine singleton permission management instance");
+
+        PermissionManagerSetupEvent permissionManagerSetupEvent = new PermissionManagerSetupEvent(new DefaultPermissionManagement());
+        ExecutorAPI.getInstance().getEventManager().callEvent(permissionManagerSetupEvent);
+
+        PermissionManagement.instance = permissionManagerSetupEvent.getPermissionManagement();
+    }
+
     @NotNull
     public static PermissionManagement getInstance() {
-        return instance == null ? instance = new DefaultPermissionManagement() : instance;
+        return Objects.requireNonNull(instance, "Permission management instance is not set yet");
     }
 
     /**
@@ -120,11 +134,11 @@ public abstract class PermissionManagement {
     public abstract Collection<PermissionGroup> getDefaultGroups();
 
     /**
-     * @return All currently cached groups of the management instance
+     * @return All existing permission groups
      */
     @NotNull
     @UnmodifiableView
-    public abstract Collection<PermissionGroup> getCachedGroups();
+    public abstract Collection<PermissionGroup> getPermissionGroups();
 
     /**
      * Deletes a specific permission group

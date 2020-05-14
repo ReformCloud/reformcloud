@@ -33,7 +33,8 @@ public final class DefaultPermissionProvider implements PermissionProvider {
 
     public static final DefaultPermissionProvider INSTANCE = new DefaultPermissionProvider();
 
-    private DefaultPermissionProvider() {}
+    private DefaultPermissionProvider() {
+    }
 
     @Override
     public PermissionFunction createFunction(PermissionSubject permissionSubject) {

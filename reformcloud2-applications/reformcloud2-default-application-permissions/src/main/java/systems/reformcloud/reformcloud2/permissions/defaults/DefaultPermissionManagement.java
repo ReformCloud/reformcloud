@@ -65,6 +65,11 @@ public class DefaultPermissionManagement extends PermissionManagement {
         ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().createDatabase(PERMISSION_GROUP_TABLE);
         ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().createDatabase(PERMISSION_PLAYER_TABLE);
         ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().createDatabase(PERMISSION_NAME_TO_UNIQUE_ID_TABLE);
+
+        for (PermissionGroup permissionGroup : ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().getCompleteDatabase(PERMISSION_GROUP_TABLE, e -> e.get("group", PermissionGroup.TYPE))) {
+            this.eraseGroupCache(permissionGroup);
+            this.nameToGroupCache.put(permissionGroup.getName(), permissionGroup);
+        }
     }
 
     private final Map<String, PermissionGroup> nameToGroupCache = new ConcurrentHashMap<>();
@@ -73,23 +78,7 @@ public class DefaultPermissionManagement extends PermissionManagement {
 
     @Override
     public @NotNull Optional<PermissionGroup> getPermissionGroup(@NotNull String name) {
-        if (nameToGroupCache.containsKey(name)) {
-            return Optional.of(nameToGroupCache.get(name));
-        }
-
-        JsonConfiguration configuration = ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().find(PERMISSION_GROUP_TABLE, name, null);
-        if (configuration == null) {
-            return Optional.empty();
-        }
-
-        PermissionGroup permissionGroup = configuration.get("group", PermissionGroup.TYPE);
-        if (permissionGroup == null) {
-            return Optional.empty();
-        }
-
-        nameToGroupCache.put(name, permissionGroup);
-        this.eraseGroupCache(permissionGroup);
-        return Optional.of(permissionGroup);
+        return Optional.ofNullable(nameToGroupCache.get(name));
     }
 
     @Override
@@ -166,7 +155,7 @@ public class DefaultPermissionManagement extends PermissionManagement {
     }
 
     @Override
-    public @NotNull @UnmodifiableView Collection<PermissionGroup> getCachedGroups() {
+    public @NotNull @UnmodifiableView Collection<PermissionGroup> getPermissionGroups() {
         return Collections.unmodifiableCollection(this.nameToGroupCache.values());
     }
 
@@ -236,7 +225,7 @@ public class DefaultPermissionManagement extends PermissionManagement {
     }
 
     private @NotNull PermissionUser loadUser0(@NotNull UUID uuid) {
-        return this.getExistingUser(uuid).orElse(this.createPermissionUser(uuid));
+        return this.getExistingUser(uuid).orElseGet(() -> this.createPermissionUser(uuid));
     }
 
     @NotNull
@@ -312,15 +301,13 @@ public class DefaultPermissionManagement extends PermissionManagement {
 
     @Override
     public void handleInternalPermissionGroupUpdate(PermissionGroup permissionGroup) {
-        if (this.nameToGroupCache.containsKey(permissionGroup.getName())) {
-            this.nameToGroupCache.put(permissionGroup.getName(), permissionGroup);
-        }
-
+        this.nameToGroupCache.put(permissionGroup.getName(), permissionGroup);
         ExecutorAPI.getInstance().getEventManager().callEvent(new PermissionGroupUpdateEvent(permissionGroup));
     }
 
     @Override
     public void handleInternalPermissionGroupCreate(PermissionGroup permissionGroup) {
+        this.nameToGroupCache.put(permissionGroup.getName(), permissionGroup);
         ExecutorAPI.getInstance().getEventManager().callEvent(new PermissionGroupCreateEvent(permissionGroup));
     }
 
@@ -371,15 +358,23 @@ public class DefaultPermissionManagement extends PermissionManagement {
     }
 
     private void eraseUserCache(@NotNull PermissionUser permissionUser) {
-        Streams.allOf(permissionUser.getGroups(), e -> !e.isValid()).forEach(permissionUser.getGroups()::remove);
-        Streams.allOf(permissionUser.getPermissionNodes(), e -> !e.isValid()).forEach(permissionUser.getPermissionNodes()::remove);
-        this.updateUser(permissionUser);
+        boolean hasChanged = permissionUser.getGroups().removeIf(group -> !group.isValid())
+                || permissionUser.getPermissionNodes().removeIf(permissionNode -> !permissionNode.isValid());
+
+        if (hasChanged) {
+            this.updateUser(permissionUser);
+        }
     }
 
     private void eraseGroupCache(@NotNull PermissionGroup permissionGroup) {
-        Streams.allOf(permissionGroup.getPermissionNodes(), e -> !e.isValid()).forEach(permissionGroup.getPermissionNodes()::remove);
-        permissionGroup.getPerGroupPermissions().forEach((k, v) -> Streams.allOf(v, e -> !e.isValid()).forEach(v::remove));
-        this.updateGroup(permissionGroup);
+        boolean hasChanged = permissionGroup.getPermissionNodes().removeIf(permissionNode -> !permissionNode.isValid());
+        for (Map.Entry<String, Collection<PermissionNode>> stringCollectionEntry : permissionGroup.getPerGroupPermissions().entrySet()) {
+            hasChanged = stringCollectionEntry.getValue().removeIf(permissionNode -> !permissionNode.isValid());
+        }
+
+        if (hasChanged) {
+            this.updateGroup(permissionGroup);
+        }
     }
 
     private void pushToDB(@NotNull UUID uuid, @NotNull String name) {

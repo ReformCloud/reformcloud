@@ -22,7 +22,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.common.api.basic.packets.api;
+package systems.reformcloud.reformcloud2.executor.api.common.api.basic.packets.api.query;
 
 import io.netty.channel.ChannelHandlerContext;
 import org.jetbrains.annotations.NotNull;
@@ -36,51 +36,41 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.data.Protoco
 import systems.reformcloud.reformcloud2.executor.api.common.network.handler.ChannelReaderHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 
-public class PacketAPIDatabaseDeleteDocument extends Packet {
+public class PacketAPIQueryGetBulkDocuments extends Packet {
 
-    public PacketAPIDatabaseDeleteDocument() {
+    public PacketAPIQueryGetBulkDocuments() {
     }
 
-    public PacketAPIDatabaseDeleteDocument(String databaseName, String entryKey, String identifier) {
-        this.databaseName = databaseName;
-        this.entryKey = entryKey;
-        this.identifier = identifier;
+    public PacketAPIQueryGetBulkDocuments(String table) {
+        this.table = table;
     }
 
-    private String databaseName;
-
-    private String entryKey;
-
-    private String identifier;
+    private String table;
 
     @Override
     public int getId() {
-        return ExternalAPIImplementation.EXTERNAL_PACKET_ID + 13;
+        return ExternalAPIImplementation.EXTERNAL_PACKET_ID + 208;
     }
 
     @Override
     public void handlePacketReceive(@NotNull NetworkChannelReader reader, @NotNull ChallengeAuthHandler authHandler, @NotNull ChannelReaderHelper parent, @Nullable PacketSender sender, @NotNull ChannelHandlerContext channel) {
-        if (entryKey != null) {
-            ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().remove(this.databaseName, this.entryKey, null);
+        if (sender == null) {
             return;
         }
 
-        if (identifier != null) {
-            ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().remove(this.databaseName, null, this.identifier);
-        }
+        sender.sendQueryResult(
+                this.getQueryUniqueID(),
+                new PacketAPIQueryGetBulkDocumentsResult(ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().getCompleteDatabase(this.table))
+        );
     }
 
     @Override
     public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeString(this.databaseName);
-        buffer.writeString(this.entryKey);
-        buffer.writeString(this.identifier);
+        buffer.writeString(this.table);
     }
 
     @Override
     public void read(@NotNull ProtocolBuffer buffer) {
-        this.databaseName = buffer.readString();
-        this.entryKey = buffer.readString();
-        this.identifier = buffer.readString();
+        this.table = buffer.readString();
     }
 }

@@ -29,6 +29,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 
+import java.util.Collection;
 import java.util.function.Function;
 
 public interface DatabaseSyncAPI {
@@ -55,12 +56,27 @@ public interface DatabaseSyncAPI {
      * @return The object or {@code null}
      */
     @Nullable
-    <T> T find(
-            @NotNull String table,
-            @NotNull String key,
-            @Nullable String identifier,
-            @NotNull Function<JsonConfiguration, T> function
-    );
+    <T> T find(@NotNull String table, @NotNull String key, @Nullable String identifier, @NotNull Function<JsonConfiguration, T> function);
+
+    /**
+     * Gets all entries from a specific database
+     *
+     * @param table The table name from which all entries are needed
+     * @return A collection of all documents in the given database table
+     */
+    @NotNull
+    Collection<JsonConfiguration> getCompleteDatabase(@NotNull String table);
+
+    /**
+     * Gets all entries from a specific database applied to the given mapping function
+     *
+     * @param table  The table name in which should be searched
+     * @param mapper Tries to apply the json config to, to get the final needed object
+     * @param <T>    The type which should be get out of the json config
+     * @return A collection of all documents in the given database table applied to the function and filtered for not-null
+     */
+    @NotNull
+    <T> Collection<T> getCompleteDatabase(@NotNull String table, @NotNull Function<JsonConfiguration, T> mapper);
 
     /**
      * Inserts a json config into the database

@@ -395,6 +395,16 @@ public final class Streams {
         return out;
     }
 
+    @NotNull
+    public static <T> Collection<T> fromIterator(@NotNull Iterator<T> iterator) {
+        Collection<T> result = new ArrayList<>();
+        while (iterator.hasNext()) {
+            result.add(iterator.next());
+        }
+
+        return result;
+    }
+
     /**
      * Contacts two arrays
      *

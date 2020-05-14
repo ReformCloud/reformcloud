@@ -58,6 +58,7 @@ public class ReformCloudTabPlugin extends JavaPlugin {
     @Override
     public void onEnable() {
         if (Bukkit.getPluginManager().getPlugin("ReformCloud2BukkitPermissions") == null) {
+            System.err.println("[Tab] Unable to find permission plugin, do not load permission listeners");
             return;
         }
 
@@ -99,7 +100,7 @@ public class ReformCloudTabPlugin extends JavaPlugin {
 
     private static void registerPlayerTeam(@NotNull Player player, @NotNull Player other, @NotNull PermissionUser permissionUser) {
         int priority = 0;
-        String teamName = player.getName();
+        String teamName = player.getUniqueId().toString();
 
         PermissionGroup permissionGroup = permissionUser.getHighestPermissionGroup().orElse(null);
         if (permissionGroup != null) {
@@ -141,8 +142,24 @@ public class ReformCloudTabPlugin extends JavaPlugin {
             }
         }
 
-        team.setPrefix(ChatColor.translateAlternateColorCodes('&', permissionUser.getPrefix().orElse("")));
-        team.setSuffix(ChatColor.translateAlternateColorCodes('&', permissionUser.getSuffix().orElse("")));
+        String prefix = ChatColor.translateAlternateColorCodes('&', permissionUser.getPrefix().orElse(""));
+        if (setColor != null && prefix.length() > 64) {
+            prefix = prefix.substring(0, 64);
+        } else if (setColor == null && prefix.length() > 16) {
+            prefix = prefix.substring(0, 16);
+        }
+
+        team.setPrefix(prefix);
+
+        String suffix = ChatColor.translateAlternateColorCodes('&', permissionUser.getSuffix().orElse(""));
+        if (setColor != null && suffix.length() > 64) {
+            suffix = suffix.substring(0, 64);
+        } else if (setColor == null && prefix.length() > 16) {
+            suffix = suffix.substring(0, 16);
+        }
+
+        team.setSuffix(suffix);
+
         team.addEntry(player.getName());
         player.setDisplayName(ChatColor.translateAlternateColorCodes('&', permissionUser.getDisplay().orElse("") + player.getName()));
     }

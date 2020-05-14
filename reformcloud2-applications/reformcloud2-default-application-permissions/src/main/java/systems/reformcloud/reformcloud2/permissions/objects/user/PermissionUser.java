@@ -155,7 +155,7 @@ public class PermissionUser implements SerializableObject {
         PermissionGroup permissionGroup = null;
 
         for (NodeGroup nodeGroup : this.groups) {
-            PermissionGroup group = PermissionManagement.getInstance().getGroup(nodeGroup.getGroupName());
+            PermissionGroup group = PermissionManagement.getInstance().getPermissionGroup(nodeGroup.getGroupName()).orElse(null);
             if (group == null) {
                 continue;
             }
@@ -221,7 +221,7 @@ public class PermissionUser implements SerializableObject {
         buffer.writeString(this.suffix);
         buffer.writeString(this.display);
         buffer.writeString(this.colour);
-        buffer.writeArray(this.extra.toPrettyBytes());
+        buffer.writeArray(this.getExtra().toPrettyBytes());
     }
 
     @Override

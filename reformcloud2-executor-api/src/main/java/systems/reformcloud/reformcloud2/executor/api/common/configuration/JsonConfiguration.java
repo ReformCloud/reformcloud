@@ -65,7 +65,7 @@ public class JsonConfiguration implements Configurable<JsonElement, JsonConfigur
 
     public JsonConfiguration(@NotNull byte[] bytes) {
         try (InputStreamReader stream = new InputStreamReader(new ByteArrayInputStream(bytes))) {
-            JsonElement element = JsonParser.parseReader(stream);
+            JsonElement element = InternalJsonParser.parseReader(stream);
             if (!element.isJsonObject()) {
                 this.jsonObject = new JsonObject();
                 return;
@@ -73,6 +73,7 @@ public class JsonConfiguration implements Configurable<JsonElement, JsonConfigur
 
             this.jsonObject = element.getAsJsonObject();
         } catch (final Throwable throwable) {
+            throwable.printStackTrace();
             this.jsonObject = new JsonObject();
         }
     }

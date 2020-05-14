@@ -213,7 +213,7 @@ public class PermissionGroup implements SerializableObject {
         buffer.writeString(this.suffix);
         buffer.writeString(this.display);
         buffer.writeString(this.colour);
-        buffer.writeArray(this.extra.toPrettyBytes());
+        buffer.writeArray(this.getExtra().toPrettyBytes());
     }
 
     @Override

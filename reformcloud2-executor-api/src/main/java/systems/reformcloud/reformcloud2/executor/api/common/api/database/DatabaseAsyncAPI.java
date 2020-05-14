@@ -30,6 +30,7 @@ import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 
+import java.util.Collection;
 import java.util.function.Function;
 
 public interface DatabaseAsyncAPI {
@@ -56,12 +57,27 @@ public interface DatabaseAsyncAPI {
      * @return A task which will be completed with the object or {@code null}
      */
     @NotNull
-    <T> Task<T> findAsync(
-            @NotNull String table,
-            @NotNull String key,
-            @Nullable String identifier,
-            @NotNull Function<JsonConfiguration, T> function
-    );
+    <T> Task<T> findAsync(@NotNull String table, @NotNull String key, @Nullable String identifier, @NotNull Function<JsonConfiguration, T> function);
+
+    /**
+     * Gets all entries from a specific database
+     *
+     * @param table The table name from which all entries are needed
+     * @return A collection of all documents in the given database table
+     */
+    @NotNull
+    Task<Collection<JsonConfiguration>> getCompleteDatabaseAsync(@NotNull String table);
+
+    /**
+     * Gets all entries from a specific database applied to the given mapping function
+     *
+     * @param table  The table name in which should be searched
+     * @param mapper Tries to apply the json config to, to get the final needed object
+     * @param <T>    The type which should be get out of the json config
+     * @return A collection of all documents in the given database table applied to the function and filtered for not-null
+     */
+    @NotNull
+    <T> Task<Collection<T>> getCompleteDatabaseAsync(@NotNull String table, @NotNull Function<JsonConfiguration, T> mapper);
 
     /**
      * Inserts a json config into the database
@@ -73,12 +89,7 @@ public interface DatabaseAsyncAPI {
      * @return A task which will be completed if the action was successful
      */
     @NotNull
-    Task<Void> insertAsync(
-            @NotNull String table,
-            @NotNull String key,
-            @Nullable String identifier,
-            @NotNull JsonConfiguration data
-    );
+    Task<Void> insertAsync(@NotNull String table, @NotNull String key, @Nullable String identifier, @NotNull JsonConfiguration data);
 
     /**
      * Updates a json config in the database
