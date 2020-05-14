@@ -71,7 +71,7 @@ public final class CommandPlayers extends GlobalCommand {
 
                         return null;
                     }).filter(Objects::nonNull).forEach(e -> commandSource.sendMessage(
-                    " > " + e.getThird().getName() + " on " + e.getFirst().getProcessDetail().getName()
+                    " > " + e.getThird().getName() + "/" + e.getThird().getUniqueID() + " on " + e.getFirst().getProcessDetail().getName()
                             + "/" + e.getSecond().getProcessDetail().getName()
             ));
             return true;
