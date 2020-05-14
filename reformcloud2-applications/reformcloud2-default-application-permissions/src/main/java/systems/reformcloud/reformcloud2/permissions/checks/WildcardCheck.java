@@ -24,6 +24,7 @@
  */
 package systems.reformcloud.reformcloud2.permissions.checks;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.api.API;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
@@ -33,76 +34,53 @@ import systems.reformcloud.reformcloud2.permissions.objects.user.PermissionUser;
 
 import java.util.Collection;
 
-public class WildcardCheck {
+public final class WildcardCheck {
 
-    public static boolean hasWildcardPermission(PermissionGroup permissionGroup, String perm) {
-        if (permissionGroup.getPermissionNodes().stream().anyMatch(e -> {
-            final String actual = e.getActualPermission();
-            if (actual.length() > 1
-                    && actual.endsWith("*")
-                    && perm.startsWith(actual.substring(0, actual.length() - 1))
-                    && e.isValid()) {
-                return e.isSet();
-            }
+    private WildcardCheck() {
+        throw new UnsupportedOperationException();
+    }
 
-            return false;
-        })) {
-            return true;
+    public static boolean hasWildcardPermission(@NotNull PermissionGroup permissionGroup, @NotNull String perm) {
+        Boolean hasPermission = hasPermission(permissionGroup.getPermissionNodes(), perm);
+        if (hasPermission != null) {
+            return hasPermission;
         }
 
         final ProcessInformation current = API.getInstance().getCurrentProcessInformation();
-        if (!permissionGroup.getPerGroupPermissions().containsKey(current.getProcessGroup().getName())) {
+        final Collection<PermissionNode> currentGroupPerms = permissionGroup.getPerGroupPermissions().get(current.getProcessGroup().getName());
+        if (currentGroupPerms == null || currentGroupPerms.isEmpty()) {
             return false;
         }
 
-        final Collection<PermissionNode> currentGroupPerms = permissionGroup.getPerGroupPermissions()
-                .get(current.getProcessGroup().getName());
-        if (currentGroupPerms.isEmpty()) {
-            return false;
-        }
-
-        for (PermissionNode currentGroupPerm : currentGroupPerms) {
-            final String actual = currentGroupPerm.getActualPermission();
-            if (actual.length() > 1
-                    && actual.endsWith("*")
-                    && perm.startsWith(actual.substring(0, actual.length() - 1))
-                    && currentGroupPerm.isValid()) {
-                return currentGroupPerm.isSet();
-            }
-        }
-
-        return false;
+        hasPermission = hasPermission(currentGroupPerms, perm);
+        return hasPermission != null && hasPermission;
     }
 
     @Nullable
-    public static Boolean hasWildcardPermission(PermissionUser permissionUser, String perm) {
-        for (PermissionNode permissionNode : permissionUser.getPermissionNodes()) {
-            final String actual = permissionNode.getActualPermission();
-            if (actual.length() > 1
-                    && actual.endsWith("*")
-                    && perm.startsWith(actual.substring(0, actual.length() - 1))
-                    && permissionNode.isValid()) {
-                return permissionNode.isSet();
-            }
+    public static Boolean hasWildcardPermission(@NotNull PermissionUser permissionUser, @NotNull String perm) {
+        Boolean hasPermission = hasPermission(permissionUser.getPermissionNodes(), perm);
+        if (hasPermission != null) {
+            return hasPermission;
         }
 
         final ProcessInformation current = API.getInstance().getCurrentProcessInformation();
-        if (!permissionUser.getPerGroupPermissions().containsKey(current.getProcessGroup().getName())) {
-            return false;
-        }
-
         final Collection<PermissionNode> currentGroupPerms = permissionUser.getPerGroupPermissions().get(current.getProcessGroup().getName());
-        if (currentGroupPerms.isEmpty()) {
-            return false;
+        if (currentGroupPerms == null || currentGroupPerms.isEmpty()) {
+            return null;
         }
 
-        for (PermissionNode currentGroupPerm : currentGroupPerms) {
-            final String actual = currentGroupPerm.getActualPermission();
+        return hasPermission(currentGroupPerms, perm);
+    }
+
+    @Nullable
+    private static Boolean hasPermission(@NotNull Collection<PermissionNode> permissionNodes, @NotNull String permission) {
+        for (PermissionNode permissionNode : permissionNodes) {
+            final String actual = permissionNode.getActualPermission();
             if (actual.length() > 1
                     && actual.endsWith("*")
-                    && perm.startsWith(actual.substring(0, actual.length() - 1))
-                    && currentGroupPerm.isValid()) {
-                return currentGroupPerm.isSet();
+                    && permission.startsWith(actual.substring(0, actual.length() - 1))
+                    && permissionNode.isValid()) {
+                return permissionNode.isSet();
             }
         }
 

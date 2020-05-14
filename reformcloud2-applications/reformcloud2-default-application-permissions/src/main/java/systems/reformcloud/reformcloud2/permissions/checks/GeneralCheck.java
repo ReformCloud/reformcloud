@@ -24,6 +24,7 @@
  */
 package systems.reformcloud.reformcloud2.permissions.checks;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.api.API;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
@@ -33,9 +34,13 @@ import systems.reformcloud.reformcloud2.permissions.objects.user.PermissionUser;
 
 import java.util.Collection;
 
-public class GeneralCheck {
+public final class GeneralCheck {
 
-    public static boolean hasPermission(PermissionGroup permissionGroup, String perm) {
+    private GeneralCheck() {
+        throw new UnsupportedOperationException();
+    }
+
+    public static boolean hasPermission(@NotNull PermissionGroup permissionGroup, @NotNull String perm) {
         if (has(permissionGroup, "*")) {
             return true;
         }
@@ -44,7 +49,7 @@ public class GeneralCheck {
     }
 
     @Nullable
-    public static Boolean hasPermission(PermissionUser permissionUser, String perm) {
+    public static Boolean hasPermission(@NotNull PermissionUser permissionUser, @NotNull String perm) {
         Boolean star = has(permissionUser, "*");
         if (star != null && star) {
             return true;
@@ -53,7 +58,8 @@ public class GeneralCheck {
         return has(permissionUser, perm);
     }
 
-    private static Boolean has(PermissionUser permissionUser, String perm) {
+    @Nullable
+    private static Boolean has(@NotNull PermissionUser permissionUser, @NotNull String perm) {
         if (permissionUser.getPermissionNodes().stream().anyMatch(e -> e.getActualPermission().equals(perm) && e.isSet())) {
             return true;
         }
@@ -77,7 +83,7 @@ public class GeneralCheck {
         return null;
     }
 
-    private static boolean has(PermissionGroup permissionGroup, String perm) {
+    private static boolean has(@NotNull PermissionGroup permissionGroup, @NotNull String perm) {
         if (permissionGroup.getPermissionNodes().stream().anyMatch(e -> e.getActualPermission().equals(perm) && e.isSet())) {
             return true;
         }
