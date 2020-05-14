@@ -141,23 +141,29 @@ public class ReformCloudTabPlugin extends JavaPlugin {
             }
         }
 
-        String prefix = ChatColor.translateAlternateColorCodes('&', permissionUser.getPrefix().orElse(""));
-        if (setColor != null && prefix.length() > 64) {
-            prefix = prefix.substring(0, 64);
-        } else if (setColor == null && prefix.length() > 16) {
-            prefix = prefix.substring(0, 16);
+        String prefix = permissionUser.getPrefix().orElse(null);
+        if (prefix != null) {
+            prefix = ChatColor.translateAlternateColorCodes('&', prefix);
+            if (setColor != null && prefix.length() > 64) {
+                prefix = prefix.substring(0, 64);
+            } else if (setColor == null && prefix.length() > 16) {
+                prefix = prefix.substring(0, 16);
+            }
+
+            team.setPrefix(prefix);
         }
 
-        team.setPrefix(prefix);
+        String suffix = permissionUser.getSuffix().orElse(null);
+        if (suffix != null) {
+            suffix = ChatColor.translateAlternateColorCodes('&', suffix);
+            if (setColor != null && suffix.length() > 64) {
+                suffix = suffix.substring(0, 64);
+            } else if (setColor == null && suffix.length() > 16) {
+                suffix = suffix.substring(0, 16);
+            }
 
-        String suffix = ChatColor.translateAlternateColorCodes('&', permissionUser.getSuffix().orElse(""));
-        if (setColor != null && suffix.length() > 64) {
-            suffix = suffix.substring(0, 64);
-        } else if (setColor == null && suffix.length() > 16) {
-            suffix = suffix.substring(0, 16);
+            team.setSuffix(suffix);
         }
-
-        team.setSuffix(suffix);
 
         team.addEntry(player.getName());
         player.setDisplayName(ChatColor.translateAlternateColorCodes('&', permissionUser.getDisplay().orElse("") + player.getName()));

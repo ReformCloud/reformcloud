@@ -22,23 +22,24 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.proxy.bungeecord;
+package systems.reformcloud.reformcloud2.proxy.velocity.listener;
 
-import net.md_5.bungee.api.ProxyServer;
-import net.md_5.bungee.api.plugin.Plugin;
-import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
-import systems.reformcloud.reformcloud2.proxy.bungeecord.listener.BungeeCordListener;
-import systems.reformcloud.reformcloud2.proxy.plugin.PluginConfigHandler;
+import com.velocitypowered.api.proxy.ProxyServer;
+import org.jetbrains.annotations.NotNull;
+import systems.reformcloud.reformcloud2.executor.api.common.event.handler.Listener;
+import systems.reformcloud.reformcloud2.proxy.event.ProxyConfigurationHandlerSetupEvent;
+import systems.reformcloud.reformcloud2.proxy.velocity.config.VelocityProxyConfigurationHandler;
 
-public class BungeeCordPlugin extends Plugin {
+public final class VelocityProxyConfigurationHandlerSetupListener {
 
-    @Override
-    public void onEnable() {
-        PluginConfigHandler.request(() -> {
-            BungeeCordListener listener = new BungeeCordListener();
+    public VelocityProxyConfigurationHandlerSetupListener(ProxyServer proxyServer) {
+        this.proxyServer = proxyServer;
+    }
 
-            ProxyServer.getInstance().getPluginManager().registerListener(this, listener);
-            ExecutorAPI.getInstance().getEventManager().registerListener(listener);
-        });
+    private final ProxyServer proxyServer;
+
+    @Listener
+    public void handle(final @NotNull ProxyConfigurationHandlerSetupEvent event) {
+        event.setProxyConfigurationHandler(new VelocityProxyConfigurationHandler(this.proxyServer));
     }
 }

@@ -22,11 +22,20 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.proxy.bridge;
+package systems.reformcloud.reformcloud2.proxy.event;
 
-import java.util.function.BiConsumer;
+import systems.reformcloud.reformcloud2.executor.api.common.event.Event;
+import systems.reformcloud.reformcloud2.proxy.ProxyConfiguration;
 
-public interface BridgeHandler {
+public class ProxyConfigurationUpdateEvent extends Event {
 
-    BiConsumer<String, String> initTab();
+    public ProxyConfigurationUpdateEvent(ProxyConfiguration proxyConfiguration) {
+        this.proxyConfiguration = proxyConfiguration;
+    }
+
+    private final ProxyConfiguration proxyConfiguration;
+
+    public ProxyConfiguration getProxyConfiguration() {
+        return proxyConfiguration;
+    }
 }

@@ -35,7 +35,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.data.Protoco
 import systems.reformcloud.reformcloud2.executor.api.common.network.handler.ChannelReaderHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 import systems.reformcloud.reformcloud2.proxy.ProxyConfiguration;
-import systems.reformcloud.reformcloud2.proxy.plugin.PluginConfigHandler;
+import systems.reformcloud.reformcloud2.proxy.ProxyConfigurationHandler;
 
 public class PacketProxyConfigUpdate extends Packet {
 
@@ -55,7 +55,7 @@ public class PacketProxyConfigUpdate extends Packet {
 
     @Override
     public void handlePacketReceive(@NotNull NetworkChannelReader reader, @NotNull ChallengeAuthHandler authHandler, @NotNull ChannelReaderHelper parent, @Nullable PacketSender sender, @NotNull ChannelHandlerContext channel) {
-        PluginConfigHandler.setConfiguration(this.proxyConfiguration);
+        ProxyConfigurationHandler.getInstance().handleProxyConfigUpdate(this.proxyConfiguration);
     }
 
     @Override

@@ -25,13 +25,15 @@
 package systems.reformcloud.reformcloud2.proxy.velocity;
 
 import com.google.inject.Inject;
+import com.velocitypowered.api.event.Subscribe;
+import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.plugin.Dependency;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.proxy.ProxyServer;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
-import systems.reformcloud.reformcloud2.proxy.network.PacketProxyConfigUpdate;
 import systems.reformcloud.reformcloud2.proxy.plugin.PluginConfigHandler;
 import systems.reformcloud.reformcloud2.proxy.velocity.listener.VelocityListener;
+import systems.reformcloud.reformcloud2.proxy.velocity.listener.VelocityProxyConfigurationHandlerSetupListener;
 
 @Plugin(
         id = "reformcloud_2_proxy",
@@ -46,16 +48,20 @@ public class VelocityPlugin {
 
     @Inject
     public VelocityPlugin(ProxyServer server) {
-        proxyServer = server;
+        this.server = server;
+    }
+
+    private final ProxyServer server;
+
+    @Subscribe
+    public void handle(final ProxyInitializeEvent event) {
+        ExecutorAPI.getInstance().getEventManager().registerListener(new VelocityProxyConfigurationHandlerSetupListener(server));
+
         PluginConfigHandler.request(() -> {
-            VelocityListener listener = new VelocityListener();
+            VelocityListener listener = new VelocityListener(server);
 
             server.getEventManager().register(this, listener);
             ExecutorAPI.getInstance().getEventManager().registerListener(listener);
-
-            ExecutorAPI.getInstance().getPacketHandler().registerHandler(PacketProxyConfigUpdate.class);
         });
     }
-
-    public static ProxyServer proxyServer;
 }

@@ -22,23 +22,17 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.proxy.bungeecord;
+package systems.reformcloud.reformcloud2.proxy.bungeecord.listener;
 
-import net.md_5.bungee.api.ProxyServer;
-import net.md_5.bungee.api.plugin.Plugin;
-import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
-import systems.reformcloud.reformcloud2.proxy.bungeecord.listener.BungeeCordListener;
-import systems.reformcloud.reformcloud2.proxy.plugin.PluginConfigHandler;
+import org.jetbrains.annotations.NotNull;
+import systems.reformcloud.reformcloud2.executor.api.common.event.handler.Listener;
+import systems.reformcloud.reformcloud2.proxy.bungeecord.config.BungeeCordProxyConfigurationHandler;
+import systems.reformcloud.reformcloud2.proxy.event.ProxyConfigurationHandlerSetupEvent;
 
-public class BungeeCordPlugin extends Plugin {
+public final class BungeeCordProxyConfigurationHandlerSetupListener {
 
-    @Override
-    public void onEnable() {
-        PluginConfigHandler.request(() -> {
-            BungeeCordListener listener = new BungeeCordListener();
-
-            ProxyServer.getInstance().getPluginManager().registerListener(this, listener);
-            ExecutorAPI.getInstance().getEventManager().registerListener(listener);
-        });
+    @Listener
+    public void handle(final @NotNull ProxyConfigurationHandlerSetupEvent event) {
+        event.setProxyConfigurationHandler(new BungeeCordProxyConfigurationHandler());
     }
 }

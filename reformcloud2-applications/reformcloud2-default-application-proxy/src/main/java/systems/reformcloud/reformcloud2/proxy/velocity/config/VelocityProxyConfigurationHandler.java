@@ -22,23 +22,22 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.proxy.bungeecord;
+package systems.reformcloud.reformcloud2.proxy.velocity.config;
 
-import net.md_5.bungee.api.ProxyServer;
-import net.md_5.bungee.api.plugin.Plugin;
-import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
-import systems.reformcloud.reformcloud2.proxy.bungeecord.listener.BungeeCordListener;
-import systems.reformcloud.reformcloud2.proxy.plugin.PluginConfigHandler;
+import com.velocitypowered.api.proxy.ProxyServer;
+import systems.reformcloud.reformcloud2.proxy.defaults.AbstractProxyConfigurationHandler;
+import systems.reformcloud.reformcloud2.proxy.velocity.listener.VelocityListener;
 
-public class BungeeCordPlugin extends Plugin {
+public class VelocityProxyConfigurationHandler extends AbstractProxyConfigurationHandler {
+
+    public VelocityProxyConfigurationHandler(ProxyServer proxyServer) {
+        this.proxyServer = proxyServer;
+    }
+
+    private final ProxyServer proxyServer;
 
     @Override
-    public void onEnable() {
-        PluginConfigHandler.request(() -> {
-            BungeeCordListener listener = new BungeeCordListener();
-
-            ProxyServer.getInstance().getPluginManager().registerListener(this, listener);
-            ExecutorAPI.getInstance().getEventManager().registerListener(listener);
-        });
+    public void handleTabListChange() {
+        this.proxyServer.getAllPlayers().forEach(VelocityListener::initTab0);
     }
 }

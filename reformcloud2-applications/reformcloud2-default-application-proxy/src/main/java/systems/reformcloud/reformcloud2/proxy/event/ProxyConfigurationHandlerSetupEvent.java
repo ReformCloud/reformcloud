@@ -22,23 +22,24 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.proxy.bungeecord;
+package systems.reformcloud.reformcloud2.proxy.event;
 
-import net.md_5.bungee.api.ProxyServer;
-import net.md_5.bungee.api.plugin.Plugin;
-import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
-import systems.reformcloud.reformcloud2.proxy.bungeecord.listener.BungeeCordListener;
-import systems.reformcloud.reformcloud2.proxy.plugin.PluginConfigHandler;
+import org.jetbrains.annotations.NotNull;
+import systems.reformcloud.reformcloud2.executor.api.common.event.Event;
+import systems.reformcloud.reformcloud2.proxy.ProxyConfigurationHandler;
 
-public class BungeeCordPlugin extends Plugin {
+import java.util.Objects;
 
-    @Override
-    public void onEnable() {
-        PluginConfigHandler.request(() -> {
-            BungeeCordListener listener = new BungeeCordListener();
+public class ProxyConfigurationHandlerSetupEvent extends Event {
 
-            ProxyServer.getInstance().getPluginManager().registerListener(this, listener);
-            ExecutorAPI.getInstance().getEventManager().registerListener(listener);
-        });
+    private ProxyConfigurationHandler proxyConfigurationHandler;
+
+    @NotNull
+    public ProxyConfigurationHandler getProxyConfigurationHandler() {
+        return Objects.requireNonNull(proxyConfigurationHandler, "No handler was registered by any plugin");
+    }
+
+    public void setProxyConfigurationHandler(@NotNull ProxyConfigurationHandler proxyConfigurationHandler) {
+        this.proxyConfigurationHandler = Objects.requireNonNull(proxyConfigurationHandler);
     }
 }
