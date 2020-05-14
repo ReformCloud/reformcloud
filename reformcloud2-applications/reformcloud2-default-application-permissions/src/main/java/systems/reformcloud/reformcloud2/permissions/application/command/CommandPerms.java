@@ -80,6 +80,8 @@ public class CommandPerms extends GlobalCommand {
             "perms user [user] delperm [processgroup] [permission]",
             "perms user [user] addgroup [group]",
             "perms user [user] addgroup [group] [timeout] [s/m/h/d/mo]",
+            "perms user [user] setgroup [group]",
+            "perms user [user] setgroup [group] [timeout] [s/m/h/d/mo]",
             "perms user [user] delgroup [group]"
     };
 
@@ -93,7 +95,7 @@ public class CommandPerms extends GlobalCommand {
             List<PermissionGroup> groups = new ArrayList<>(PermissionManagement.getInstance().getPermissionGroups());
             groups.sort(Comparator.comparingInt(PermissionGroup::getPriority));
 
-            commandSource.sendMessage(String.format("Registered groups (%d): \n  -%s", groups.size(), String.join("\n  -",
+            commandSource.sendMessage(String.format("Registered groups (%d): \n  - %s", groups.size(), String.join("\n  - ",
                     groups
                             .stream()
                             .map(e -> String.format("Name: %s | Priority: %d", e.getName(), e.getPriority()))
@@ -181,6 +183,21 @@ public class CommandPerms extends GlobalCommand {
                 return;
             }
 
+            if (strings[2].equalsIgnoreCase("setgroup")) {
+                Optional<PermissionGroup> permissionGroup = PermissionManagement.getInstance().getPermissionGroup(strings[3]);
+                if (!permissionGroup.isPresent()) {
+                    source.sendMessage("Unable to find permission group " + strings[3]);
+                    return;
+                }
+
+                permissionUser.getGroups().clear();
+                PermissionManagement.getInstance().assignDefaultGroups(permissionUser);
+                permissionUser.getGroups().add(new NodeGroup(System.currentTimeMillis(), -1, permissionGroup.get().getName()));
+                PermissionManagement.getInstance().updateUser(permissionUser);
+                source.sendMessage("The user " + strings[1] + " is now in the permission group " + strings[3]);
+                return;
+            }
+
             if (strings[2].equalsIgnoreCase("delgroup")) {
                 if (!permissionUser.isInGroup(strings[3])) {
                     source.sendMessage("The user " + strings[1] + " is already in the permission group " + strings[3]);
@@ -188,6 +205,10 @@ public class CommandPerms extends GlobalCommand {
                 }
 
                 permissionUser.getGroups().removeIf(nodeGroup -> nodeGroup.getGroupName().equals(strings[3]));
+                if (permissionUser.getGroups().isEmpty()) {
+                    PermissionManagement.getInstance().assignDefaultGroups(permissionUser);
+                }
+
                 PermissionManagement.getInstance().updateUser(permissionUser);
                 source.sendMessage("Removed permission group " + strings[3] + " from user " + strings[1]);
                 return;
@@ -227,7 +248,7 @@ public class CommandPerms extends GlobalCommand {
             }
 
             if (strings[2].equalsIgnoreCase("setprefix")) {
-                String prefix = strings[2].replace("_", " ");
+                String prefix = strings[3].replace("_", " ");
                 if (prefix.equals("\"\"")) {
                     prefix = null;
                 }
@@ -244,7 +265,7 @@ public class CommandPerms extends GlobalCommand {
             }
 
             if (strings[2].equalsIgnoreCase("setsuffix")) {
-                String suffix = strings[2].replace("_", " ");
+                String suffix = strings[3].replace("_", " ");
                 if (suffix.equals("\"\"")) {
                     suffix = null;
                 }
@@ -261,7 +282,7 @@ public class CommandPerms extends GlobalCommand {
             }
 
             if (strings[2].equalsIgnoreCase("setdisplay")) {
-                String display = strings[2].replace("_", " ");
+                String display = strings[3].replace("_", " ");
                 if (display.equals("\"\"")) {
                     display = null;
                 }
@@ -323,6 +344,11 @@ public class CommandPerms extends GlobalCommand {
                     return;
                 }
 
+                if (permissionUser.getGroups().stream().anyMatch(group -> group.getGroupName().equals(strings[3]))) {
+                    source.sendMessage("The permission user " + strings[1] + " is already in the group " + strings[3]);
+                    return;
+                }
+
                 Long requestedTimeout = CommonHelper.longFromString(strings[4]);
                 if (requestedTimeout == null) {
                     source.sendMessage("Please provide a valid timeout time instead of " + strings[4]);
@@ -339,6 +365,38 @@ public class CommandPerms extends GlobalCommand {
                     return;
                 }
 
+                permissionUser.getGroups().add(new NodeGroup(System.currentTimeMillis(), timeout, optionalPermissionGroup.get().getName()));
+                PermissionManagement.getInstance().updateUser(permissionUser);
+                source.sendMessage("The user " + strings[1] + " is now in the group " + strings[3] + " "
+                        + (timeout == -1 ? "lifetime" : "until " + CommonHelper.DATE_FORMAT.format(timeout)));
+                return;
+            }
+
+            if (strings[2].equalsIgnoreCase("setgroup")) {
+                Optional<PermissionGroup> optionalPermissionGroup = PermissionManagement.getInstance().getPermissionGroup(strings[3]);
+                if (!optionalPermissionGroup.isPresent()) {
+                    source.sendMessage("The permission group " + strings[3] + " is not present");
+                    return;
+                }
+
+                Long requestedTimeout = CommonHelper.longFromString(strings[4]);
+                if (requestedTimeout == null) {
+                    source.sendMessage("Please provide a valid timeout time instead of " + strings[4]);
+                    return;
+                }
+
+                if (requestedTimeout < -1) {
+                    requestedTimeout = (long) -1;
+                }
+
+                Long timeout = parseTimeout(requestedTimeout, strings[5]);
+                if (timeout == null) {
+                    source.sendMessage("Please provide a valid timeout unit instaed of " + strings[5]);
+                    return;
+                }
+
+                permissionUser.getGroups().clear();
+                PermissionManagement.getInstance().assignDefaultGroups(permissionUser);
                 permissionUser.getGroups().add(new NodeGroup(System.currentTimeMillis(), timeout, optionalPermissionGroup.get().getName()));
                 PermissionManagement.getInstance().updateUser(permissionUser);
                 source.sendMessage("The user " + strings[1] + " is now in the group " + strings[3] + " "

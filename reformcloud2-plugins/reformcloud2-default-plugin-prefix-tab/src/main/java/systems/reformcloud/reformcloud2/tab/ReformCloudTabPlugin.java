@@ -153,7 +153,7 @@ public class ReformCloudTabPlugin extends JavaPlugin {
         String suffix = ChatColor.translateAlternateColorCodes('&', permissionUser.getSuffix().orElse(""));
         if (setColor != null && suffix.length() > 64) {
             suffix = suffix.substring(0, 64);
-        } else if (setColor == null && prefix.length() > 16) {
+        } else if (setColor == null && suffix.length() > 16) {
             suffix = suffix.substring(0, 16);
         }
 
