@@ -105,7 +105,6 @@ public class ReformCloudTabPlugin extends JavaPlugin {
         PermissionGroup permissionGroup = permissionUser.getHighestPermissionGroup().orElse(null);
         if (permissionGroup != null) {
             priority = permissionGroup.getPriority();
-            teamName = permissionGroup.getName();
         }
 
         teamName = priority + teamName;

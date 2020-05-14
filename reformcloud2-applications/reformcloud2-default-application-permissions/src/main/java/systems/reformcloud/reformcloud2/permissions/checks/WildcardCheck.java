@@ -24,6 +24,7 @@
  */
 package systems.reformcloud.reformcloud2.permissions.checks;
 
+import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.api.API;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.permissions.nodes.PermissionNode;
@@ -73,6 +74,7 @@ public class WildcardCheck {
         return false;
     }
 
+    @Nullable
     public static Boolean hasWildcardPermission(PermissionUser permissionUser, String perm) {
         for (PermissionNode permissionNode : permissionUser.getPermissionNodes()) {
             final String actual = permissionNode.getActualPermission();
@@ -81,6 +83,26 @@ public class WildcardCheck {
                     && perm.startsWith(actual.substring(0, actual.length() - 1))
                     && permissionNode.isValid()) {
                 return permissionNode.isSet();
+            }
+        }
+
+        final ProcessInformation current = API.getInstance().getCurrentProcessInformation();
+        if (!permissionUser.getPerGroupPermissions().containsKey(current.getProcessGroup().getName())) {
+            return false;
+        }
+
+        final Collection<PermissionNode> currentGroupPerms = permissionUser.getPerGroupPermissions().get(current.getProcessGroup().getName());
+        if (currentGroupPerms.isEmpty()) {
+            return false;
+        }
+
+        for (PermissionNode currentGroupPerm : currentGroupPerms) {
+            final String actual = currentGroupPerm.getActualPermission();
+            if (actual.length() > 1
+                    && actual.endsWith("*")
+                    && perm.startsWith(actual.substring(0, actual.length() - 1))
+                    && currentGroupPerm.isValid()) {
+                return currentGroupPerm.isSet();
             }
         }
 

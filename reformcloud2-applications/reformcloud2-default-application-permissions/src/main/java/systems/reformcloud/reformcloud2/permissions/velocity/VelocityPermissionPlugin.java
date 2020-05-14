@@ -31,7 +31,6 @@ import com.velocitypowered.api.plugin.Dependency;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.proxy.ProxyServer;
 import systems.reformcloud.reformcloud2.permissions.util.PermissionPluginUtil;
-import systems.reformcloud.reformcloud2.permissions.velocity.command.CommandCloudPerms;
 import systems.reformcloud.reformcloud2.permissions.velocity.listener.VelocityPermissionListener;
 
 @Plugin(
@@ -54,10 +53,7 @@ public class VelocityPermissionPlugin {
 
     @Subscribe
     public void handleInit(ProxyInitializeEvent event) {
-        PermissionPluginUtil.awaitConnection(() -> {
-            proxy.getEventManager().register(this, new VelocityPermissionListener());
-            proxy.getCommandManager().register(new CommandCloudPerms(), "perms", "permissions", "cloudperms");
-        });
+        PermissionPluginUtil.awaitConnection(() -> proxy.getEventManager().register(this, new VelocityPermissionListener()));
     }
 
     public static ProxyServer getProxy() {

@@ -24,10 +24,12 @@
  */
 package systems.reformcloud.reformcloud2.permissions.checks;
 
+import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.api.API;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.permissions.nodes.PermissionNode;
 import systems.reformcloud.reformcloud2.permissions.objects.group.PermissionGroup;
+import systems.reformcloud.reformcloud2.permissions.objects.user.PermissionUser;
 
 import java.util.Collection;
 
@@ -39,6 +41,40 @@ public class GeneralCheck {
         }
 
         return has(permissionGroup, perm);
+    }
+
+    @Nullable
+    public static Boolean hasPermission(PermissionUser permissionUser, String perm) {
+        Boolean star = has(permissionUser, "*");
+        if (star != null && star) {
+            return true;
+        }
+
+        return has(permissionUser, perm);
+    }
+
+    private static Boolean has(PermissionUser permissionUser, String perm) {
+        if (permissionUser.getPermissionNodes().stream().anyMatch(e -> e.getActualPermission().equals(perm) && e.isSet())) {
+            return true;
+        }
+
+        final ProcessInformation current = API.getInstance().getCurrentProcessInformation();
+        if (!permissionUser.getPerGroupPermissions().containsKey(current.getProcessGroup().getName())) {
+            return null;
+        }
+
+        final Collection<PermissionNode> currentGroupPerms = permissionUser.getPerGroupPermissions().get(current.getProcessGroup().getName());
+        if (currentGroupPerms.isEmpty()) {
+            return null;
+        }
+
+        for (PermissionNode currentGroupPerm : currentGroupPerms) {
+            if (currentGroupPerm.getActualPermission().equals(perm)) {
+                return currentGroupPerm.isSet();
+            }
+        }
+
+        return null;
     }
 
     private static boolean has(PermissionGroup permissionGroup, String perm) {

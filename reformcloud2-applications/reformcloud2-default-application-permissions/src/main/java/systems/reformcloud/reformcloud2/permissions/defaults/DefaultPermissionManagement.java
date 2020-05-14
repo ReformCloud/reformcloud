@@ -39,6 +39,7 @@ import systems.reformcloud.reformcloud2.permissions.events.group.PermissionGroup
 import systems.reformcloud.reformcloud2.permissions.events.user.PermissionUserCreateEvent;
 import systems.reformcloud.reformcloud2.permissions.events.user.PermissionUserDeleteEvent;
 import systems.reformcloud.reformcloud2.permissions.events.user.PermissionUserUpdateEvent;
+import systems.reformcloud.reformcloud2.permissions.internal.UUIDFetcher;
 import systems.reformcloud.reformcloud2.permissions.nodes.NodeGroup;
 import systems.reformcloud.reformcloud2.permissions.nodes.PermissionNode;
 import systems.reformcloud.reformcloud2.permissions.objects.group.PermissionGroup;
@@ -203,6 +204,26 @@ public class DefaultPermissionManagement extends PermissionManagement {
     }
 
     @Override
+    public @NotNull Optional<PermissionUser> getFirstExistingUser(@NotNull String name) {
+        UUID uniqueID = UUIDFetcher.getUUIDFromName(name);
+        if (uniqueID == null) {
+            return Optional.empty();
+        }
+
+        return this.getExistingUser(uniqueID);
+    }
+
+    @Override
+    public @NotNull Optional<PermissionUser> loadUser(@NotNull String name) {
+        UUID uniqueID = UUIDFetcher.getUUIDFromName(name);
+        if (uniqueID == null) {
+            return Optional.empty();
+        }
+
+        return Optional.of(this.loadUser(uniqueID));
+    }
+
+    @Override
     public @NotNull Optional<PermissionUser> getExistingUser(@NotNull UUID uniqueId) {
         PermissionUser permissionUser = this.uniqueIdToUserCache.get(uniqueId);
         if (permissionUser != null) {
@@ -250,6 +271,26 @@ public class DefaultPermissionManagement extends PermissionManagement {
         }
 
         return this.loadUser(uuid);
+    }
+
+    @Override
+    public void assignDefaultGroups(@NotNull UUID uniqueId) {
+        this.getExistingUser(uniqueId).ifPresent(this::assignDefaultGroups);
+    }
+
+    @Override
+    public void assignDefaultGroups(@NotNull PermissionUser permissionUser) {
+        boolean hasChanged = false;
+        for (PermissionGroup defaultGroup : this.getDefaultGroups()) {
+            if (permissionUser.getGroups().stream().noneMatch(group -> group.getGroupName().equals(defaultGroup.getName()))) {
+                permissionUser.getGroups().add(new NodeGroup(System.currentTimeMillis(), -1, defaultGroup.getName()));
+                hasChanged = true;
+            }
+        }
+
+        if (hasChanged) {
+            this.updateUser(permissionUser);
+        }
     }
 
     @Override
@@ -360,6 +401,9 @@ public class DefaultPermissionManagement extends PermissionManagement {
     private void eraseUserCache(@NotNull PermissionUser permissionUser) {
         boolean hasChanged = permissionUser.getGroups().removeIf(group -> !group.isValid())
                 || permissionUser.getPermissionNodes().removeIf(permissionNode -> !permissionNode.isValid());
+        for (Map.Entry<String, Collection<PermissionNode>> stringCollectionEntry : permissionUser.getPerGroupPermissions().entrySet()) {
+            hasChanged = stringCollectionEntry.getValue().removeIf(permissionNode -> !permissionNode.isValid());
+        }
 
         if (hasChanged) {
             this.updateUser(permissionUser);

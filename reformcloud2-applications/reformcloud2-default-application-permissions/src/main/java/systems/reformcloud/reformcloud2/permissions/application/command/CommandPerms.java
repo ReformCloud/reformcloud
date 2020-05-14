@@ -25,18 +25,15 @@
 package systems.reformcloud.reformcloud2.permissions.application.command;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.common.CommonHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.GlobalCommand;
 import systems.reformcloud.reformcloud2.executor.api.common.commands.source.CommandSource;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.optional.ReferencedOptional;
 import systems.reformcloud.reformcloud2.permissions.PermissionManagement;
-import systems.reformcloud.reformcloud2.permissions.internal.UUIDFetcher;
 import systems.reformcloud.reformcloud2.permissions.nodes.NodeGroup;
 import systems.reformcloud.reformcloud2.permissions.nodes.PermissionNode;
 import systems.reformcloud.reformcloud2.permissions.objects.group.PermissionGroup;
 import systems.reformcloud.reformcloud2.permissions.objects.user.PermissionUser;
-import systems.reformcloud.reformcloud2.permissions.util.InternalTimeUnit;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -50,40 +47,44 @@ public class CommandPerms extends GlobalCommand {
             "perms group [groupname] create [default]",
             "perms group [groupname] delete",
             "perms group [groupname] clear",
+            "perms group [groupname] clear [groups/permissions]",
             "perms group [groupname] setdefault [default]",
             "perms group [groupname] setpriority [priority]",
             "perms group [groupname] setprefix [prefix]",
             "perms group [groupname] setsuffix [suffix]",
             "perms group [groupname] setdisplay [display]",
             "perms group [groupname] setcolor [color]",
-            "perms group [groupname] addperm [permission] [set]",
-            "perms group [groupname] addperm [permission] [set] [timeout] [s/m/h/d/mo]",
-            "perms group [groupname] addperm [processgroup] [permission] [set]",
-            "perms group [groupname] addperm [processgroup] [permission] [set] [timeout] [s/m/h/d/mo]",
+            "perms group [groupname] addgroup [groupname]",
+            "perms group [groupname] delgroup [groupname]",
+            "perms group [groupname] addperm [permission] [positive]",
+            "perms group [groupname] addperm [permission] [positive] [timeout] [s/m/h/d/mo]",
+            "perms group [groupname] addperm [processgroup] [permission] [positive]",
+            "perms group [groupname] addperm [processgroup] [permission] [positive] [timeout] [s/m/h/d/mo]",
             "perms group [groupname] delperm [permission]",
             "perms group [groupname] delperm [processgroup] [permission]",
-            "perms group [groupname] parent add [groupname]",
-            "perms group [groupname] parent remove [groupname]",
             "perms group [groupname] parent clear",
             " ",
             "perms user [user]",
             "perms user [user] delete",
             "perms user [user] clear",
+            "perms user [user] clear [groups/permissions]",
             "perms user [user] setprefix [prefix]",
             "perms user [user] setsuffix [suffix]",
             "perms user [user] setdisplay [display]",
             "perms user [user] setcolor [color]",
-            "perms user [user] addperm [permission] [set]",
-            "perms user [user] addperm [permission] [set] [timeout] [s/m/h/d/mo]",
+            "perms user [user] addperm [permission] [positive]",
+            "perms user [user] addperm [permission] [positive] [timeout] [s/m/h/d/mo]",
+            "perms user [user] addperm [processgroup] [permission] [positive]",
+            "perms user [user] addperm [processgroup] [permission] [positive] [timeout] [s/m/h/d/mo]",
             "perms user [user] delperm [permission]",
+            "perms user [user] delperm [processgroup] [permission]",
             "perms user [user] addgroup [group]",
             "perms user [user] addgroup [group] [timeout] [s/m/h/d/mo]",
             "perms user [user] delgroup [group]"
     };
 
     public CommandPerms() {
-        super("perms", "reformcloud.command.perms",
-                "The main perms command", Arrays.asList("permissions", "cloudperms"));
+        super("perms", "reformcloud.command.perms", "The main perms command", "permissions", "cloudperms");
     }
 
     @Override
@@ -101,456 +102,368 @@ public class CommandPerms extends GlobalCommand {
             return true;
         }
 
-        if (strings.length == 2 && strings[0].equalsIgnoreCase("user")) {
-            UUID uniqueID = UUIDFetcher.getUUIDFromName(strings[1]);
-            if (uniqueID == null) {
-                commandSource.sendMessage("The uniqueID is unknown");
-                return true;
-            }
-
-            PermissionUser user = PermissionManagement.getInstance().loadUser(uniqueID);
-            {
-                StringBuilder stringBuilder = new StringBuilder();
-                for (NodeGroup group : user.getGroups()) {
-                    if (group.isValid()) {
-                        stringBuilder.append(group.getGroupName()).append(", ");
-                    }
-                }
-                commandSource.sendMessage("Groups: " + (stringBuilder.length() > 2
-                        ? stringBuilder.substring(0, stringBuilder.length() - 2) : "none"));
-            }
-            {
-                StringBuilder stringBuilder = new StringBuilder();
-                for (PermissionNode permissionNode : user.getPermissionNodes()) {
-                    if (permissionNode.isValid()) {
-                        stringBuilder.append(permissionNode.isSet()
-                                ? permissionNode.getActualPermission()
-                                : "-" + permissionNode.getActualPermission()).append(", ");
-                    }
-                }
-                commandSource.sendMessage("Permissions: " + (stringBuilder.length() > 2
-                        ? stringBuilder.substring(0, stringBuilder.length() - 2) : "none"));
-            }
-
+        if (strings.length >= 2 && strings[0].equalsIgnoreCase("user")) {
+            this.handleUserCommand(commandSource, strings);
             return true;
         }
 
-        if (strings.length == 3
-                && strings[0].equalsIgnoreCase("user")
-                && strings[2].equalsIgnoreCase("delete")
-        ) {
-            UUID uniqueID = UUIDFetcher.getUUIDFromName(strings[1]);
-            if (uniqueID == null) {
-                commandSource.sendMessage("The uniqueID is unknown");
-                return true;
-            }
-
-            PermissionManagement.getInstance().deleteUser(uniqueID);
-            System.out.println("Deleted user " + strings[1]);
+        if (strings.length >= 2 && strings[0].equalsIgnoreCase("group")) {
+            this.handleGroupCommand(commandSource, strings);
             return true;
         }
 
-        if (strings.length == 3
-                && strings[0].equalsIgnoreCase("user")
-                && strings[2].equalsIgnoreCase("clear")
-        ) {
-            UUID uniqueID = UUIDFetcher.getUUIDFromName(strings[1]);
-            if (uniqueID == null) {
-                commandSource.sendMessage("The uniqueID is unknown");
-                return true;
-            }
+        commandSource.sendMessages(HELP);
+        return true;
+    }
 
-            PermissionUser user = PermissionManagement.getInstance().loadUser(uniqueID);
-            user.getPermissionNodes().clear();
-            user.getGroups().clear();
-            PermissionManagement.getInstance().updateUser(user);
-            System.out.println("Cleared all groups and permissions of user " + strings[1]);
-            return true;
+    private void handleUserCommand(@NotNull CommandSource source, @NotNull String[] strings) {
+        Optional<PermissionUser> permissionUserOptional = PermissionManagement.getInstance().loadUser(strings[1]);
+        if (!permissionUserOptional.isPresent()) {
+            source.sendMessage("The permission user " + strings[1] + " is not present");
+            return;
         }
 
-        if (strings.length == 4
-                && strings[0].equalsIgnoreCase("user")
-                && strings[2].equalsIgnoreCase("setprefix")) {
-            UUID uniqueID = UUIDFetcher.getUUIDFromName(strings[1]);
-            if (uniqueID == null) {
-                commandSource.sendMessage("The uniqueID is unknown");
-                return true;
-            }
-
-            PermissionUser user = PermissionManagement.getInstance().loadUser(uniqueID);
-            if (Streams.filterToReference(user.getPermissionNodes(),
-                    e -> e.getActualPermission().equalsIgnoreCase(strings[3])).isPresent()) {
-                System.out.println("The permission " + strings[3] + " is already set");
-                return true;
-            }
-
-            String prefix = strings[3].replace("_", " ");
-            if (prefix.equals("\"\"")) {
-                prefix = null;
-            }
-
-            user.setPrefix(prefix);
-            PermissionManagement.getInstance().updateUser(user);
-            System.out.println("The user " + strings[1] + " " + (prefix == null ? "has no longer a prefix" : "has now the prefix " + prefix));
-            return true;
+        PermissionUser permissionUser = permissionUserOptional.get();
+        if (strings.length == 2) {
+            this.displayPermissionUser(source, permissionUser, strings[1]);
+            return;
         }
 
-        if (strings.length == 4
-                && strings[0].equalsIgnoreCase("user")
-                && strings[2].equalsIgnoreCase("setdisplay")) {
-            UUID uniqueID = UUIDFetcher.getUUIDFromName(strings[1]);
-            if (uniqueID == null) {
-                commandSource.sendMessage("The uniqueID is unknown");
-                return true;
+        if (strings.length == 3) {
+            if (strings[2].equalsIgnoreCase("delete")) {
+                PermissionManagement.getInstance().deleteUser(permissionUser.getUniqueID());
+                source.sendMessage("The permission user " + strings[1] + " was deleted");
+                return;
             }
 
-            PermissionUser user = PermissionManagement.getInstance().loadUser(uniqueID);
-            if (Streams.filterToReference(user.getPermissionNodes(),
-                    e -> e.getActualPermission().equalsIgnoreCase(strings[3])).isPresent()) {
-                System.out.println("The permission " + strings[3] + " is already set");
-                return true;
+            if (strings[2].equalsIgnoreCase("clear")) {
+                permissionUser.getPermissionNodes().clear();
+                permissionUser.getGroups().clear();
+                PermissionManagement.getInstance().updateUser(permissionUser);
+                source.sendMessage("Cleared all permissions and groups of user " + strings[1]);
+                return;
             }
-
-            String display = strings[3].replace("_", " ");
-            if (display.equals("\"\"")) {
-                display = null;
-            }
-
-            user.setDisplay(display);
-            PermissionManagement.getInstance().updateUser(user);
-            System.out.println("The user " + strings[1] + " " + (display == null ? "has no longer a display" : "has now the display " + display));
-            return true;
         }
 
-        if (strings.length == 4
-                && strings[0].equalsIgnoreCase("user")
-                && strings[2].equalsIgnoreCase("setsuffix")) {
-            UUID uniqueID = UUIDFetcher.getUUIDFromName(strings[1]);
-            if (uniqueID == null) {
-                commandSource.sendMessage("The uniqueID is unknown");
-                return true;
-            }
-
-            PermissionUser user = PermissionManagement.getInstance().loadUser(uniqueID);
-            if (Streams.filterToReference(user.getPermissionNodes(),
-                    e -> e.getActualPermission().equalsIgnoreCase(strings[3])).isPresent()) {
-                System.out.println("The permission " + strings[3] + " is already set");
-                return true;
-            }
-
-            String suffix = strings[3].replace("_", " ");
-            if (suffix.equals("\"\"")) {
-                suffix = null;
-            }
-
-            user.setSuffix(suffix);
-            PermissionManagement.getInstance().updateUser(user);
-            System.out.println("The user " + strings[1] + " " + (suffix == null ? "has no longer a suffix" : "has now the suffix " + suffix));
-            return true;
-        }
-
-        if (strings.length == 4
-                && strings[0].equalsIgnoreCase("user")
-                && strings[2].equalsIgnoreCase("setcolor")) {
-            UUID uniqueID = UUIDFetcher.getUUIDFromName(strings[1]);
-            if (uniqueID == null) {
-                commandSource.sendMessage("The uniqueID is unknown");
-                return true;
-            }
-
-            PermissionUser user = PermissionManagement.getInstance().loadUser(uniqueID);
-            if (Streams.filterToReference(user.getPermissionNodes(),
-                    e -> e.getActualPermission().equalsIgnoreCase(strings[3])).isPresent()) {
-                System.out.println("The permission " + strings[3] + " is already set");
-                return true;
-            }
-
-            String colour = strings[3];
-            if (colour.equals("\"\"")) {
-                colour = null;
-            }
-
-            user.setColour(colour);
-            PermissionManagement.getInstance().updateUser(user);
-            System.out.println("The user " + strings[1] + " " + (colour == null ? "has no longer a colour" : "has now the colour " + colour));
-            return true;
-        }
-
-        if (strings.length == 5
-                && strings[0].equalsIgnoreCase("user")
-                && strings[2].equalsIgnoreCase("addperm")
-        ) {
-            UUID uniqueID = UUIDFetcher.getUUIDFromName(strings[1]);
-            if (uniqueID == null) {
-                commandSource.sendMessage("The uniqueID is unknown");
-                return true;
-            }
-
-            PermissionUser user = PermissionManagement.getInstance().loadUser(uniqueID);
-            if (Streams.filterToReference(user.getPermissionNodes(),
-                    e -> e.getActualPermission().equalsIgnoreCase(strings[3])).isPresent()) {
-                System.out.println("The permission " + strings[3] + " is already set");
-                return true;
-            }
-
-            Boolean set = CommonHelper.booleanFromString(strings[4]);
-            if (set == null) {
-                System.out.println("The permission may not be set correctly. Please recheck (use true/false as set argument)");
-                return true;
-            }
-
-            user.getPermissionNodes().add(new PermissionNode(
-                    System.currentTimeMillis(),
-                    -1,
-                    set,
-                    strings[3]
-            ));
-            PermissionManagement.getInstance().updateUser(user);
-            System.out.println("The permission " + strings[3] + " was added to the user " + strings[1] + " with value " + set);
-            return true;
-        }
-
-        if (strings.length == 7
-                && strings[0].equalsIgnoreCase("user")
-                && strings[2].equalsIgnoreCase("addperm")
-        ) {
-            UUID uniqueID = UUIDFetcher.getUUIDFromName(strings[1]);
-            if (uniqueID == null) {
-                commandSource.sendMessage("The uniqueID is unknown");
-                return true;
-            }
-
-            PermissionUser user = PermissionManagement.getInstance().loadUser(uniqueID);
-            if (Streams.filterToReference(user.getPermissionNodes(),
-                    e -> e.getActualPermission().equalsIgnoreCase(strings[3])).isPresent()) {
-                System.out.println("The permission " + strings[3] + " is already set");
-                return true;
-            }
-
-            Boolean set = CommonHelper.booleanFromString(strings[4]);
-            if (set == null) {
-                System.out.println("The permission may not be set correctly. Please recheck (use true/false as set argument)");
-                return true;
-            }
-
-            Long givenTimeOut = CommonHelper.longFromString(strings[5]);
-            if (givenTimeOut == null) {
-                System.out.println("The timout time is not valid");
-                return true;
-            }
-
-            long timeOut = System.currentTimeMillis()
-                    + InternalTimeUnit.convert(parseUnitFromString(strings[6]), givenTimeOut);
-            user.getPermissionNodes().add(new PermissionNode(
-                    System.currentTimeMillis(),
-                    timeOut,
-                    set,
-                    strings[3]
-            ));
-            PermissionManagement.getInstance().updateUser(user);
-            System.out.println("The permission " + strings[3] + " was added to the user " + strings[1] + " with value " + set);
-            return true;
-        }
-
-        if (strings.length == 4
-                && strings[0].equalsIgnoreCase("user")
-                && strings[2].equalsIgnoreCase("delperm")
-        ) {
-            UUID uniqueID = UUIDFetcher.getUUIDFromName(strings[1]);
-            if (uniqueID == null) {
-                commandSource.sendMessage("The uniqueID is unknown");
-                return true;
-            }
-
-            PermissionUser user = PermissionManagement.getInstance().loadUser(uniqueID);
-            ReferencedOptional<PermissionNode> perm = Streams.filterToReference(user.getPermissionNodes(),
-                    e -> e.getActualPermission().equalsIgnoreCase(strings[3]));
-            if (!perm.isPresent()) {
-                System.out.println("The permission " + strings[3] + " is not set");
-                return true;
-            }
-
-            user.getPermissionNodes().remove(perm.get());
-            PermissionManagement.getInstance().updateUser(user);
-            System.out.println("Removed permission " + strings[3] + " from user " + strings[1]);
-            return true;
-        }
-
-        if (strings.length == 4
-                && strings[0].equalsIgnoreCase("user")
-                && strings[2].equalsIgnoreCase("addgroup")
-        ) {
-            UUID uniqueID = UUIDFetcher.getUUIDFromName(strings[1]);
-            if (uniqueID == null) {
-                commandSource.sendMessage("The uniqueID is unknown");
-                return true;
-            }
-
-            PermissionGroup group = PermissionManagement.getInstance().getPermissionGroup(strings[3]).orElse(null);
-            if (group == null) {
-                System.out.println("The group " + strings[3] + " does not exists");
-                return true;
-            }
-
-            PermissionUser user = PermissionManagement.getInstance().loadUser(uniqueID);
-            if (Streams.filterToReference(user.getGroups(), e -> e.getGroupName().equals(strings[3]) && e.isValid()).isPresent()) {
-                System.out.println("The user " + strings[1] + " is already in group " + strings[3]);
-                return true;
-            }
-
-            user.getGroups().add(new NodeGroup(
-                    System.currentTimeMillis(),
-                    -1,
-                    group.getName()
-            ));
-            PermissionManagement.getInstance().updateUser(user);
-            System.out.println("Successfully added user " + strings[1] + " to group " + strings[3]);
-            return true;
-        }
-
-        if (strings.length == 6
-                && strings[0].equalsIgnoreCase("user")
-                && strings[2].equalsIgnoreCase("addgroup")
-        ) {
-            UUID uniqueID = UUIDFetcher.getUUIDFromName(strings[1]);
-            if (uniqueID == null) {
-                commandSource.sendMessage("The uniqueID is unknown");
-                return true;
-            }
-
-            PermissionGroup group = PermissionManagement.getInstance().getPermissionGroup(strings[3]).orElse(null);
-            if (group == null) {
-                System.out.println("The group " + strings[3] + " does not exists");
-                return true;
-            }
-
-            PermissionUser user = PermissionManagement.getInstance().loadUser(uniqueID);
-            if (Streams.filterToReference(user.getGroups(), e -> e.getGroupName().equals(strings[3]) && e.isValid()).isPresent()) {
-                System.out.println("The user " + strings[1] + " is already in group " + strings[3]);
-                return true;
-            }
-
-            Long givenTimeOut = CommonHelper.longFromString(strings[4]);
-            if (givenTimeOut == null) {
-                System.out.println("The timout time is not valid");
-                return true;
-            }
-
-            long timeOut = System.currentTimeMillis()
-                    + InternalTimeUnit.convert(parseUnitFromString(strings[5]), givenTimeOut);
-            user.getGroups().add(new NodeGroup(
-                    System.currentTimeMillis(),
-                    timeOut,
-                    group.getName()
-            ));
-            PermissionManagement.getInstance().updateUser(user);
-            System.out.println("Successfully added user " + strings[1] + " to group " + strings[3]);
-            return true;
-        }
-
-        if (strings.length == 4
-                && strings[0].equalsIgnoreCase("user")
-                && strings[2].equalsIgnoreCase("delgroup")
-        ) {
-            UUID uniqueID = UUIDFetcher.getUUIDFromName(strings[1]);
-            if (uniqueID == null) {
-                commandSource.sendMessage("The uniqueID is unknown");
-                return true;
-            }
-
-            PermissionUser user = PermissionManagement.getInstance().loadUser(uniqueID);
-            NodeGroup filter = Streams.filter(user.getGroups(), e -> e.getGroupName().equals(strings[3]));
-            if (filter == null) {
-                System.out.println("The user " + strings[1] + " is not in group " + strings[3]);
-                return true;
-            }
-
-            user.getGroups().remove(filter);
-            PermissionManagement.getInstance().updateUser(user);
-            System.out.println("Successfully removed group " + strings[3] + " from user " + strings[1]);
-            return true;
-        }
-
-        // ======== Groups ========
-
-        if (strings.length == 2 && strings[0].equalsIgnoreCase("group")) {
-            PermissionGroup group = PermissionManagement.getInstance().getPermissionGroup(strings[1]).orElse(null);
-            if (group == null) {
-                System.out.println("The group " + strings[1] + " does not exists");
-                return true;
-            }
-
-            {
-                StringBuilder stringBuilder = new StringBuilder();
-                for (PermissionNode permissionNode : group.getPermissionNodes()) {
-                    if (!permissionNode.isValid()) {
-                        continue;
-                    }
-
-                    stringBuilder
-                            .append(permissionNode.isSet() ? "" : "-")
-                            .append(permissionNode.getActualPermission())
-                            .append(", ");
+        if (strings.length == 4) {
+            if (strings[2].equalsIgnoreCase("clear")) {
+                if (strings[3].equalsIgnoreCase("groups")) {
+                    permissionUser.getGroups().clear();
+                    PermissionManagement.getInstance().assignDefaultGroups(permissionUser);
+                    PermissionManagement.getInstance().updateUser(permissionUser);
+                    source.sendMessage("Cleared all groups of user " + strings[1]);
+                    return;
                 }
 
-                System.out.println("Permissions: " + (stringBuilder.length() > 2
-                        ? stringBuilder.substring(0, stringBuilder.length() - 2)
-                        : "none"));
+                if (strings[3].equalsIgnoreCase("permissions") || strings[3].equalsIgnoreCase("perms")) {
+                    permissionUser.getPermissionNodes().clear();
+                    PermissionManagement.getInstance().updateUser(permissionUser);
+                    source.sendMessage("Cleared all permissions of user " + strings[1]);
+                    return;
+                }
             }
-            {
-                StringBuilder stringBuilder = new StringBuilder();
-                group.getPerGroupPermissions().forEach((k, v) -> {
-                    stringBuilder.append("Group ").append(k).append(":\n");
-                    v.forEach(e -> {
-                        if (!e.isValid()) {
-                            return;
-                        }
 
-                        stringBuilder.append("   - ").append(e.isSet() ? "" : "-").append(e.getActualPermission()).append(", ");
-                    });
-                    stringBuilder.append("\n");
-                });
-                System.out.println("Per-Group-Permissions: \n" + (stringBuilder.length() > 3
-                        ? stringBuilder.substring(0, stringBuilder.length() - 3) : "none"));
+            if (strings[2].equalsIgnoreCase("addgroup")) {
+                Optional<PermissionGroup> permissionGroup = PermissionManagement.getInstance().getPermissionGroup(strings[3]);
+                if (!permissionGroup.isPresent()) {
+                    source.sendMessage("Unable to find permission group " + strings[3]);
+                    return;
+                }
+
+                if (permissionUser.isInGroup(permissionGroup.get().getName())) {
+                    source.sendMessage("The user " + strings[1] + " is already in the permission group " + strings[3]);
+                    return;
+                }
+
+                permissionUser.getGroups().add(new NodeGroup(System.currentTimeMillis(), -1, permissionGroup.get().getName()));
+                PermissionManagement.getInstance().updateUser(permissionUser);
+                source.sendMessage("The user " + strings[1] + " is now in the permission group " + strings[3]);
+                return;
             }
-            return true;
+
+            if (strings[2].equalsIgnoreCase("delgroup")) {
+                if (!permissionUser.isInGroup(strings[3])) {
+                    source.sendMessage("The user " + strings[1] + " is already in the permission group " + strings[3]);
+                    return;
+                }
+
+                permissionUser.getGroups().removeIf(nodeGroup -> nodeGroup.getGroupName().equals(strings[3]));
+                PermissionManagement.getInstance().updateUser(permissionUser);
+                source.sendMessage("Removed permission group " + strings[3] + " from user " + strings[1]);
+                return;
+            }
+
+            if (strings[2].equalsIgnoreCase("delperm")) {
+                if (!permissionUser.getPermissionNodes().removeIf(node -> node.getActualPermission().equalsIgnoreCase(strings[3]))) {
+                    source.sendMessage("The user " + strings[1] + " does not have the permission " + strings[3]);
+                    return;
+                }
+
+                PermissionManagement.getInstance().updateUser(permissionUser);
+                source.sendMessage("Removed the permission " + strings[1] + " from the user " + strings[1]);
+                return;
+            }
+
+            if (strings[2].equalsIgnoreCase("setcolor")) {
+                if (strings[3].length() > 2) {
+                    source.sendMessage("You may only use colour codes or \"\" to reset the user's colour");
+                    return;
+                }
+
+                String colour = strings[3];
+                if (colour.equals("\"\"")) {
+                    colour = null;
+                }
+
+                if (permissionUser.getColour().isPresent() && permissionUser.getColour().get().equals(colour)) {
+                    source.sendMessage("The user " + strings[1] + " has already the colour " + colour);
+                    return;
+                }
+
+                permissionUser.setColour(colour);
+                PermissionManagement.getInstance().updateUser(permissionUser);
+                source.sendMessage("The user " + strings[1] + " has " + (colour == null ? "no longer a colour" : "now the colour " + colour));
+                return;
+            }
+
+            if (strings[2].equalsIgnoreCase("setprefix")) {
+                String prefix = strings[2].replace("_", " ");
+                if (prefix.equals("\"\"")) {
+                    prefix = null;
+                }
+
+                if (permissionUser.getPrefix().isPresent() && permissionUser.getPrefix().get().equals(prefix)) {
+                    source.sendMessage("The user " + strings[1] + " has already the prefix " + prefix);
+                    return;
+                }
+
+                permissionUser.setPrefix(prefix);
+                PermissionManagement.getInstance().updateUser(permissionUser);
+                source.sendMessage("The user " + strings[1] + " has " + (prefix == null ? "no longer a prefix" : "now the prefix " + prefix));
+                return;
+            }
+
+            if (strings[2].equalsIgnoreCase("setsuffix")) {
+                String suffix = strings[2].replace("_", " ");
+                if (suffix.equals("\"\"")) {
+                    suffix = null;
+                }
+
+                if (permissionUser.getSuffix().isPresent() && permissionUser.getSuffix().get().equals(suffix)) {
+                    source.sendMessage("The user " + strings[1] + " has already the suffix " + suffix);
+                    return;
+                }
+
+                permissionUser.setSuffix(suffix);
+                PermissionManagement.getInstance().updateUser(permissionUser);
+                source.sendMessage("The user " + strings[1] + " has " + (suffix == null ? "no longer a suffix" : "now the suffix " + suffix));
+                return;
+            }
+
+            if (strings[2].equalsIgnoreCase("setdisplay")) {
+                String display = strings[2].replace("_", " ");
+                if (display.equals("\"\"")) {
+                    display = null;
+                }
+
+                if (permissionUser.getDisplay().isPresent() && permissionUser.getDisplay().get().equals(display)) {
+                    source.sendMessage("The user " + strings[1] + " has already the display " + display);
+                    return;
+                }
+
+                permissionUser.setDisplay(display);
+                PermissionManagement.getInstance().updateUser(permissionUser);
+                source.sendMessage("The user " + strings[1] + " has " + (display == null ? "no longer a display" : "now the display " + display));
+                return;
+            }
         }
 
-        if (strings.length == 3
-                && strings[0].equalsIgnoreCase("group")
-                && strings[2].equalsIgnoreCase("create")
-        ) {
-            PermissionGroup group = PermissionManagement.getInstance().getGroup(strings[1]);
-            if (group != null) {
-                System.out.println("The group " + strings[1] + " already exists");
-                return true;
+        if (strings.length == 5) {
+            if (strings[2].equalsIgnoreCase("delperm")) {
+                Collection<PermissionNode> permissionNodes = permissionUser.getPerGroupPermissions().get(strings[3]);
+                if (permissionNodes == null) {
+                    source.sendMessage("The user " + strings[1] + " has no permissions on the process group " + strings[3]);
+                    return;
+                }
+
+                if (!permissionNodes.removeIf(node -> node.getActualPermission().equalsIgnoreCase(strings[4]))) {
+                    source.sendMessage("The permission " + strings[4] + " is not set for user " + strings[1] + " on process group " + strings[3]);
+                    return;
+                }
+
+                PermissionManagement.getInstance().updateUser(permissionUser);
+                source.sendMessage("The permission " + strings[4] + " was removed from the user " + strings[1] + " on the process group " + strings[3]);
+                return;
             }
 
-            PermissionManagement.getInstance().createPermissionGroup(new PermissionGroup(
-                    new ArrayList<>(),
-                    new HashMap<>(),
-                    new ArrayList<>(),
-                    strings[1],
-                    0
-            ));
-            System.out.println("The group " + strings[1] + " was created successfully");
-            return true;
+            if (strings[2].equalsIgnoreCase("addperm")) {
+                if (permissionUser.getPermissionNodes().stream().anyMatch(node -> node.getActualPermission().equalsIgnoreCase(strings[3]))) {
+                    source.sendMessage("The permission " + strings[3] + " is already set for user " + strings[1]);
+                    return;
+                }
+
+                Boolean positive = CommonHelper.booleanFromString(strings[4]);
+                if (positive == null) {
+                    source.sendMessage("Please provide a boolean as 5. argument (true/false)");
+                    return;
+                }
+
+                permissionUser.getPermissionNodes().add(PermissionNode.createNode(strings[3], -1, positive));
+                PermissionManagement.getInstance().updateUser(permissionUser);
+                source.sendMessage("The permission " + strings[3] + " is now set for the user " + strings[1] + " in context global");
+                return;
+            }
         }
 
-        if (strings.length == 4
-                && strings[0].equalsIgnoreCase("group")
-                && strings[2].equalsIgnoreCase("create")
-        ) {
-            PermissionGroup group = PermissionManagement.getInstance().getGroup(strings[1]);
-            if (group != null) {
-                System.out.println("The group " + strings[1] + " already exists");
-                return true;
+        if (strings.length == 6) {
+            if (strings[2].equalsIgnoreCase("addgroup")) {
+                Optional<PermissionGroup> optionalPermissionGroup = PermissionManagement.getInstance().getPermissionGroup(strings[3]);
+                if (!optionalPermissionGroup.isPresent()) {
+                    source.sendMessage("The permission group " + strings[3] + " is not present");
+                    return;
+                }
+
+                Long requestedTimeout = CommonHelper.longFromString(strings[4]);
+                if (requestedTimeout == null) {
+                    source.sendMessage("Please provide a valid timeout time instead of " + strings[4]);
+                    return;
+                }
+
+                if (requestedTimeout < -1) {
+                    requestedTimeout = (long) -1;
+                }
+
+                Long timeout = parseTimeout(requestedTimeout, strings[5]);
+                if (timeout == null) {
+                    source.sendMessage("Please provide a valid timeout unit instaed of " + strings[5]);
+                    return;
+                }
+
+                permissionUser.getGroups().add(new NodeGroup(System.currentTimeMillis(), timeout, optionalPermissionGroup.get().getName()));
+                PermissionManagement.getInstance().updateUser(permissionUser);
+                source.sendMessage("The user " + strings[1] + " is now in the group " + strings[3] + " "
+                        + (timeout == -1 ? "lifetime" : "until " + CommonHelper.DATE_FORMAT.format(timeout)));
+                return;
             }
 
-            Boolean defaultGroup = CommonHelper.booleanFromString(strings[3]);
+            if (strings[2].equalsIgnoreCase("addperm")) {
+                Collection<PermissionNode> groupPerms = permissionUser.getPerGroupPermissions().get(strings[3]);
+                if (groupPerms != null && groupPerms.stream().anyMatch(node -> node.getActualPermission().equalsIgnoreCase(strings[4]))) {
+                    source.sendMessage("The permission " + strings[4] + " is already set for user " + strings[1] + " on the process group " + strings[3]);
+                    return;
+                }
+
+                Boolean positive = CommonHelper.booleanFromString(strings[5]);
+                if (positive == null) {
+                    source.sendMessage("Please provide a boolean as 6. argument (true/false)");
+                    return;
+                }
+
+                if (groupPerms == null) {
+                    permissionUser.getPerGroupPermissions().put(strings[3], new ArrayList<>());
+                }
+
+                permissionUser.getPerGroupPermissions().get(strings[3]).add(PermissionNode.createNode(strings[4], -1, positive));
+                PermissionManagement.getInstance().updateUser(permissionUser);
+                source.sendMessage("The permission " + strings[4] + " is now set for the user " + strings[1] + " in context group:" + strings[3]);
+                return;
+            }
+        }
+
+        if (strings.length == 7 && strings[2].equalsIgnoreCase("addperm")) {
+            if (permissionUser.getPermissionNodes().stream().anyMatch(node -> node.getActualPermission().equalsIgnoreCase(strings[3]))) {
+                source.sendMessage("The permission " + strings[3] + " is already set for the user " + strings[1]);
+                return;
+            }
+
+            Long requestedTimeout = CommonHelper.longFromString(strings[5]);
+            if (requestedTimeout == null) {
+                source.sendMessage("Please provide a valid timeout time instead of " + strings[5]);
+                return;
+            }
+
+            if (requestedTimeout < -1) {
+                requestedTimeout = (long) -1;
+            }
+
+            Long timeout = parseTimeout(requestedTimeout, strings[6]);
+            if (timeout == null) {
+                source.sendMessage("Please provide a valid timeout unit instaed of " + strings[6]);
+                return;
+            }
+
+            Boolean positive = CommonHelper.booleanFromString(strings[4]);
+            if (positive == null) {
+                source.sendMessage("Please provide a boolean as 6. argument (true/false)");
+                return;
+            }
+
+            permissionUser.getPermissionNodes().add(PermissionNode.createNode(strings[3], timeout, positive));
+            PermissionManagement.getInstance().updateUser(permissionUser);
+            source.sendMessage("The user " + strings[1] + " has now the permission " + strings[3] + " "
+                    + (timeout == -1 ? "lifetime" : "until " + CommonHelper.DATE_FORMAT.format(timeout)));
+            return;
+        }
+
+        if (strings.length == 8 && strings[2].equalsIgnoreCase("addperm")) {
+            Collection<PermissionNode> permissionNodes = permissionUser.getPerGroupPermissions().get(strings[3]);
+            if (permissionNodes != null && permissionNodes.stream().anyMatch(node -> node.getActualPermission().equalsIgnoreCase(strings[4]))) {
+                source.sendMessage("The permission " + strings[4] + " is already set for the user " + strings[1] + " on the group " + strings[3]);
+                return;
+            }
+
+            Long requestedTimeout = CommonHelper.longFromString(strings[6]);
+            if (requestedTimeout == null) {
+                source.sendMessage("Please provide a valid timeout time instead of " + strings[6]);
+                return;
+            }
+
+            if (requestedTimeout < -1) {
+                requestedTimeout = (long) -1;
+            }
+
+            Long timeout = parseTimeout(requestedTimeout, strings[7]);
+            if (timeout == null) {
+                source.sendMessage("Please provide a valid timeout unit instaed of " + strings[7]);
+                return;
+            }
+
+            Boolean positive = CommonHelper.booleanFromString(strings[5]);
+            if (positive == null) {
+                source.sendMessage("Please provide a boolean as argument (true/false)");
+                return;
+            }
+
+            if (permissionNodes == null) {
+                permissionUser.getPerGroupPermissions().put(strings[3], new ArrayList<>());
+            }
+
+            permissionUser.getPerGroupPermissions().get(strings[3]).add(PermissionNode.createNode(strings[4], timeout, positive));
+            PermissionManagement.getInstance().updateUser(permissionUser);
+            source.sendMessage("The user " + strings[1] + " has now the permission " + strings[3] + " "
+                    + (timeout == -1 ? "lifetime" : "until " + CommonHelper.DATE_FORMAT.format(timeout)) + " om the process group " + strings[3]);
+            return;
+        }
+
+        source.sendMessages(HELP);
+    }
+
+    private void handleGroupCommand(@NotNull CommandSource source, @NotNull String[] strings) {
+        Optional<PermissionGroup> optionalPermissionGroup = PermissionManagement.getInstance().getPermissionGroup(strings[1]);
+        if ((strings.length == 3 || strings.length == 4) && strings[2].equalsIgnoreCase("create")) {
+            if (optionalPermissionGroup.isPresent()) {
+                source.sendMessage("The permission group " + strings[1] + " already exists");
+                return;
+            }
+
+            Boolean defaultGroup = false;
+            if (strings.length == 4) {
+                defaultGroup = CommonHelper.booleanFromString(strings[3]);
+            }
+
             if (defaultGroup == null) {
-                System.out.println("Please recheck (use true/false as 4 argument)");
-                return true;
+                source.sendMessage("Please provide a valid value as 4. Argument (true/false)");
+                return;
             }
 
             PermissionManagement.getInstance().createPermissionGroup(new PermissionGroup(
@@ -561,465 +474,461 @@ public class CommandPerms extends GlobalCommand {
                     0,
                     defaultGroup
             ));
-
-            System.out.println("The group " + strings[1] + " was created successfully");
-            return true;
+            source.sendMessage("Successfully created new permission group " + strings[1]);
+            return;
         }
 
-        if (strings.length == 3
-                && strings[0].equalsIgnoreCase("group")
-                && strings[2].equalsIgnoreCase("delete")
-        ) {
-            PermissionGroup group = PermissionManagement.getInstance().getGroup(strings[1]);
-            if (group == null) {
-                System.out.println("The group " + strings[1] + " does not exists");
-                return true;
-            }
-
-            PermissionManagement.getInstance().deleteGroup(group.getName());
-            System.out.println("The group " + strings[1] + " was deleted successfully");
-            return true;
+        if (!optionalPermissionGroup.isPresent()) {
+            source.sendMessage("The permission group " + strings[1] + " is not present");
+            return;
         }
 
-        if (strings.length == 3
-                && strings[0].equalsIgnoreCase("group")
-                && strings[2].equalsIgnoreCase("clear")
-        ) {
-            PermissionGroup group = PermissionManagement.getInstance().getGroup(strings[1]);
-            if (group == null) {
-                System.out.println("The group " + strings[1] + " does not exists");
-                return true;
-            }
-
-            group.getPerGroupPermissions().clear();
-            group.getPermissionNodes().clear();
-            PermissionManagement.getInstance().updateGroup(group);
-            System.out.println("Successfully deleted all permissions and process-group-permissions from group " + strings[1]);
-            return true;
+        PermissionGroup permissionGroup = optionalPermissionGroup.get();
+        if (strings.length == 2) {
+            this.displayPermissionGroup(source, permissionGroup);
+            return;
         }
 
-        if (strings.length == 4
-                && strings[0].equalsIgnoreCase("group")
-                && strings[2].equalsIgnoreCase("setdefault")
-        ) {
-            PermissionGroup group = PermissionManagement.getInstance().getGroup(strings[1]);
-            if (group == null) {
-                System.out.println("The group " + strings[1] + " does not exists");
-                return true;
+        if (strings.length == 3) {
+            if (strings[2].equalsIgnoreCase("delete")) {
+                PermissionManagement.getInstance().deleteGroup(permissionGroup.getName());
+                source.sendMessage("Successfully deleted permission group " + strings[1]);
+                return;
             }
 
-            Boolean defaultGroup = CommonHelper.booleanFromString(strings[3]);
-            if (defaultGroup == null) {
-                System.out.println("Please recheck (use true/false as 4 argument)");
-                return true;
+            if (strings[2].equalsIgnoreCase("clear")) {
+                permissionGroup.getPerGroupPermissions().clear();
+                permissionGroup.getPermissionNodes().clear();
+                permissionGroup.getSubGroups().clear();
+                PermissionManagement.getInstance().updateGroup(permissionGroup);
+                source.sendMessage("Successfully deleted all permissions and sub groups from group " + strings[1]);
+                return;
             }
-
-            group.setDefaultGroup(defaultGroup);
-            PermissionManagement.getInstance().updateGroup(group);
-
-            System.out.println("The group " + group.getName() + " is now a " + (defaultGroup ? "default" : "normal") + " group");
-            return true;
         }
 
-        if (strings.length == 4
-                && strings[0].equalsIgnoreCase("group")
-                && strings[2].equalsIgnoreCase("setpriority")
-        ) {
-            PermissionGroup group = PermissionManagement.getInstance().getGroup(strings[1]);
-            if (group == null) {
-                System.out.println("The group " + strings[1] + " does not exists");
-                return true;
+        if (strings.length == 4) {
+            if (strings[2].equalsIgnoreCase("clear")) {
+                if (strings[3].equalsIgnoreCase("groups")) {
+                    permissionGroup.getSubGroups().clear();
+                    PermissionManagement.getInstance().updateGroup(permissionGroup);
+                    source.sendMessage("Successfully removed all sub groups from group " + strings[1]);
+                    return;
+                }
+
+                if (strings[3].equalsIgnoreCase("permissions") || strings[3].equalsIgnoreCase("perms")) {
+                    permissionGroup.getPerGroupPermissions().clear();
+                    permissionGroup.getPermissionNodes().clear();
+                    PermissionManagement.getInstance().updateGroup(permissionGroup);
+                    source.sendMessage("Successfully deleted all permissions from group " + strings[1]);
+                    return;
+                }
             }
 
-            Integer priority = CommonHelper.fromString(strings[3]);
-            if (priority == null) {
-                System.out.println("Please recheck (use an integer as 4 argument)");
-                return true;
+            if (strings[2].equalsIgnoreCase("setdefault")) {
+                Boolean defaultGroup = CommonHelper.booleanFromString(strings[3]);
+                if (defaultGroup == null) {
+                    source.sendMessage("Please provide a correct value (true/false)");
+                    return;
+                }
+
+                if (defaultGroup && permissionGroup.isDefaultGroup()) {
+                    source.sendMessage("The permission group " + strings[1] + " is already a default group");
+                    return;
+                }
+
+                if (!defaultGroup && !permissionGroup.isDefaultGroup()) {
+                    source.sendMessage("The permission group " + strings[1] + " is already a normal group");
+                    return;
+                }
+
+                permissionGroup.setDefaultGroup(defaultGroup);
+                PermissionManagement.getInstance().updateGroup(permissionGroup);
+                source.sendMessage("The permission group " + strings[1] + " is now a " + (defaultGroup ? "default" : "normal") + " group");
+                return;
             }
 
-            group.setPriority(priority);
-            PermissionManagement.getInstance().updateGroup(group);
+            if (strings[2].equalsIgnoreCase("setpriority")) {
+                Integer priority = CommonHelper.fromString(strings[3]);
+                if (priority == null) {
+                    source.sendMessage("Please provide a valid int as priority");
+                    return;
+                }
 
-            System.out.println("The group " + group.getName() + " has now the priority: " + priority);
-            return true;
+                if (permissionGroup.getPriority() == priority) {
+                    source.sendMessage("The permission group " + strings[1] + " has already the priority " + priority);
+                    return;
+                }
+
+                permissionGroup.setPriority(priority);
+                PermissionManagement.getInstance().updateGroup(permissionGroup);
+                source.sendMessage("The permission group " + strings[1] + " has now the priority " + priority);
+                return;
+            }
+
+            if (strings[2].equalsIgnoreCase("setcolor")) {
+                String color = strings[3];
+                if (color.length() > 2) {
+                    source.sendMessage("Please use a valid chat color (for example &c)");
+                    return;
+                }
+
+                if (color.equals("\"\"")) {
+                    color = null;
+                }
+
+                if (permissionGroup.getColour().isPresent() && permissionGroup.getColour().get().equals(color)) {
+                    source.sendMessage("The permission group " + strings[1] + " has already the color " + color);
+                    return;
+                }
+
+                permissionGroup.setColour(color);
+                PermissionManagement.getInstance().updateGroup(permissionGroup);
+                source.sendMessage("The permission group " + strings[1] + " has " + (color == null ? "no longer a colour" : "now the color " + color));
+                return;
+            }
+
+            if (strings[2].equalsIgnoreCase("setprefix")) {
+                String prefix = strings[3].replace("_", " ");
+                if (prefix.equals("\"\"")) {
+                    prefix = null;
+                }
+
+                if (permissionGroup.getPrefix().isPresent() && permissionGroup.getPrefix().get().equals(prefix)) {
+                    source.sendMessage("The permission group " + strings[1] + " has already the prefix " + prefix);
+                    return;
+                }
+
+                permissionGroup.setPrefix(prefix);
+                PermissionManagement.getInstance().updateGroup(permissionGroup);
+                source.sendMessage("The permission group " + strings[1] + " has " + (prefix == null ? "no longer a prefix" : "now the prefix " + prefix));
+                return;
+            }
+
+            if (strings[2].equalsIgnoreCase("setsuffix")) {
+                String suffix = strings[3].replace("_", " ");
+                if (suffix.equals("\"\"")) {
+                    suffix = null;
+                }
+
+                if (permissionGroup.getSuffix().isPresent() && permissionGroup.getSuffix().get().equals(suffix)) {
+                    source.sendMessage("The permission group " + strings[1] + " has already the suffix " + suffix);
+                    return;
+                }
+
+                permissionGroup.setSuffix(suffix);
+                PermissionManagement.getInstance().updateGroup(permissionGroup);
+                source.sendMessage("The permission group " + strings[1] + " has " + (suffix == null ? "no longer a suffix" : "now the suffix " + suffix));
+                return;
+            }
+
+            if (strings[2].equalsIgnoreCase("setdisplay")) {
+                String display = strings[3].replace("_", " ");
+                if (display.equals("\"\"")) {
+                    display = null;
+                }
+
+                if (permissionGroup.getDisplay().isPresent() && permissionGroup.getDisplay().get().equals(display)) {
+                    source.sendMessage("The permission group " + strings[1] + " has already the display " + display);
+                    return;
+                }
+
+                permissionGroup.setDisplay(display);
+                PermissionManagement.getInstance().updateGroup(permissionGroup);
+                source.sendMessage("The permission group " + strings[1] + " has " + (display == null ? "no longer a display" : "now the display " + display));
+                return;
+            }
+
+            if (strings[2].equalsIgnoreCase("delperm")) {
+                if (!permissionGroup.getPermissionNodes().removeIf(node -> node.getActualPermission().equalsIgnoreCase(strings[3]))) {
+                    source.sendMessage("The permission " + strings[3] + " is not set for the group " + strings[1]);
+                    return;
+                }
+
+                PermissionManagement.getInstance().updateGroup(permissionGroup);
+                source.sendMessage("The permission " + strings[3] + " was successfully removed from the group " + strings[1]);
+                return;
+            }
+
+            if (strings[2].equalsIgnoreCase("addgroup")) {
+                if (permissionGroup.getSubGroups().stream().anyMatch(group -> group.equalsIgnoreCase(strings[3]))) {
+                    source.sendMessage("The permission group " + strings[3] + " is already a sub group of " + strings[1]);
+                    return;
+                }
+
+                Optional<PermissionGroup> other = PermissionManagement.getInstance().getPermissionGroup(strings[3]);
+                if (!other.isPresent()) {
+                    source.sendMessage("The permission group " + strings[3] + " does not exists");
+                    return;
+                }
+
+                permissionGroup.getSubGroups().add(other.get().getName());
+                PermissionManagement.getInstance().updateGroup(permissionGroup);
+                source.sendMessage("The permission group " + other.get().getName() + " is now a sub group of " + strings[1]);
+                return;
+            }
+
+            if (strings[2].equalsIgnoreCase("delgroup")) {
+                if (!permissionGroup.getSubGroups().removeIf(group -> group.equalsIgnoreCase(strings[3]))) {
+                    source.sendMessage("The permission group " + strings[3] + " is not a sub group of " + strings[1]);
+                    return;
+                }
+
+                PermissionManagement.getInstance().updateGroup(permissionGroup);
+                source.sendMessage("The permission group " + strings[3] + " is no longer a sub group of " + strings[1]);
+                return;
+            }
         }
 
-        if (strings.length == 4
-                && strings[0].equalsIgnoreCase("group")
-                && strings[2].equalsIgnoreCase("setprefix")
-        ) {
-            PermissionGroup group = PermissionManagement.getInstance().getGroup(strings[1]);
-            if (group == null) {
-                System.out.println("The group " + strings[1] + " does not exists");
-                return true;
+        if (strings.length == 5) {
+            if (strings[2].equalsIgnoreCase("addperm")) {
+                if (permissionGroup.getPermissionNodes().stream().anyMatch(node -> node.getActualPermission().equalsIgnoreCase(strings[3]))) {
+                    source.sendMessage("The permission " + strings[3] + " is already set for the group " + strings[1]);
+                    return;
+                }
+
+                Boolean positive = CommonHelper.booleanFromString(strings[4]);
+                if (positive == null) {
+                    source.sendMessage("Please provide a valid boolean as 5. argument (true/false)");
+                    return;
+                }
+
+                permissionGroup.getPermissionNodes().add(PermissionNode.createNode(strings[3], -1, positive));
+                PermissionManagement.getInstance().updateGroup(permissionGroup);
+                source.sendMessage("The permission group " + strings[1] + " has now the permission " + strings[3]);
+                return;
             }
 
-            String prefix = strings[3].replace("_", " ");
-            if (prefix.trim().equals("\"\"")) {
-                prefix = null;
+            if (strings[2].equalsIgnoreCase("delperm")) {
+                Collection<PermissionNode> nodes = permissionGroup.getPerGroupPermissions().get(strings[3]);
+                if (nodes == null || !nodes.removeIf(node -> node.getActualPermission().equalsIgnoreCase(strings[4]))) {
+                    source.sendMessage("The permission " + strings[4] + " is not set for the group " + strings[1]);
+                    return;
+                }
+
+                PermissionManagement.getInstance().updateGroup(permissionGroup);
+                source.sendMessage("The permission " + strings[4] + " was removed from the group " + strings[1]);
+                return;
             }
-
-            group.setPrefix(prefix);
-            PermissionManagement.getInstance().updateGroup(group);
-
-            System.out.println("The group " + group.getName() + " " + (prefix == null ? "has no longer a prefix" : "has now the prefix " + prefix));
-            return true;
         }
 
-        if (strings.length == 4
-                && strings[0].equalsIgnoreCase("group")
-                && strings[2].equalsIgnoreCase("setsuffix")
-        ) {
-            PermissionGroup group = PermissionManagement.getInstance().getGroup(strings[1]);
-            if (group == null) {
-                System.out.println("The group " + strings[1] + " does not exists");
-                return true;
+        if (strings.length == 6 && strings[2].equalsIgnoreCase("addperm")) {
+            Collection<PermissionNode> nodes = permissionGroup.getPerGroupPermissions().get(strings[3]);
+            if (nodes != null && nodes.stream().anyMatch(node -> node.getActualPermission().equalsIgnoreCase(strings[4]))) {
+                source.sendMessage("The permission " + strings[4] + " is already set for the group " + strings[1] + " in the context group:" + strings[3]);
+                return;
             }
 
-            String suffix = strings[3].replace("_", " ");
-            if (suffix.trim().equals("\"\"")) {
-                suffix = null;
+            Boolean positive = CommonHelper.booleanFromString(strings[5]);
+            if (positive == null) {
+                source.sendMessage("Please provide a valid boolean as 6. argument (true/false)");
+                return;
             }
 
-            group.setSuffix(suffix);
-            PermissionManagement.getInstance().updateGroup(group);
+            if (nodes == null) {
+                permissionGroup.getPerGroupPermissions().put(strings[3], new ArrayList<>());
+            }
 
-            System.out.println("The group " + group.getName() + " " + (suffix == null ? "has no longer a suffix" : "has now the suffix " + suffix));
-            return true;
+            permissionGroup.getPerGroupPermissions().get(strings[3]).add(PermissionNode.createNode(strings[4], -1, positive));
+            PermissionManagement.getInstance().updateGroup(permissionGroup);
+            source.sendMessage("The permission group " + strings[1] + " has now the permission " + strings[4] + " in the context group:" + strings[3]);
+            return;
         }
 
-        if (strings.length == 4
-                && strings[0].equalsIgnoreCase("group")
-                && strings[2].equalsIgnoreCase("setdisplay")
-        ) {
-            PermissionGroup group = PermissionManagement.getInstance().getGroup(strings[1]);
-            if (group == null) {
-                System.out.println("The group " + strings[1] + " does not exists");
-                return true;
+        if (strings.length == 7 && strings[2].equalsIgnoreCase("addperm")) {
+            if (permissionGroup.getPermissionNodes().stream().anyMatch(node -> node.getActualPermission().equalsIgnoreCase(strings[3]))) {
+                source.sendMessage("The permission " + strings[3] + " is already set for the group " + strings[1] + " in the context global");
+                return;
             }
 
-            String display = strings[3].replace("_", " ");
-            if (display.trim().equals("\"\"")) {
-                display = null;
+            Boolean positive = CommonHelper.booleanFromString(strings[4]);
+            if (positive == null) {
+                source.sendMessage("Please provide a valid boolean as 5. argument (true/false)");
+                return;
             }
 
-            group.setDisplay(display);
-            PermissionManagement.getInstance().updateGroup(group);
+            Long requestedTimeout = CommonHelper.longFromString(strings[5]);
+            if (requestedTimeout == null) {
+                source.sendMessage("Please provide a valid timeout instead of " + strings[5]);
+                return;
+            }
 
-            System.out.println("The group " + group.getName() + " " + (display == null ? "has no longer a display" : "has now the display " + display));
-            return true;
+            if (requestedTimeout < -1) {
+                requestedTimeout = (long) -1;
+            }
+
+            Long timeout = parseTimeout(requestedTimeout, strings[6]);
+            if (timeout == null) {
+                source.sendMessage("Please provide a valid timeout unit " + strings[6]);
+                return;
+            }
+
+            permissionGroup.getPermissionNodes().add(PermissionNode.createNode(strings[3], timeout, positive));
+            PermissionManagement.getInstance().updateGroup(permissionGroup);
+            source.sendMessage("The group " + strings[1] + " has now the permission " + strings[3] + " in context global");
+            return;
         }
 
-        if (strings.length == 4
-                && strings[0].equalsIgnoreCase("group")
-                && strings[2].equalsIgnoreCase("setcolor")
-        ) {
-            PermissionGroup group = PermissionManagement.getInstance().getGroup(strings[1]);
-            if (group == null) {
-                System.out.println("The group " + strings[1] + " does not exists");
-                return true;
+        if (strings.length == 8 && strings[2].equalsIgnoreCase("addperm")) {
+            Collection<PermissionNode> nodes = permissionGroup.getPerGroupPermissions().get(strings[3]);
+            if (nodes != null && nodes.stream().anyMatch(node -> node.getActualPermission().equalsIgnoreCase(strings[4]))) {
+                source.sendMessage("The permission " + strings[4] + " is already set for the group " + strings[1] + " in the context group:" + strings[3]);
+                return;
             }
 
-            String color = strings[3];
-            if (color.length() > 2) {
-                System.out.println("Please use a colour code as argument. Look at https://minecraft.gamepedia.com/Formatting_codes for a full list");
-                return true;
+            Boolean positive = CommonHelper.booleanFromString(strings[5]);
+            if (positive == null) {
+                source.sendMessage("Please provide a valid boolean as 6. argument (true/false)");
+                return;
             }
 
-            group.setColour(color);
-            PermissionManagement.getInstance().updateGroup(group);
+            Long requestedTimeout = CommonHelper.longFromString(strings[6]);
+            if (requestedTimeout == null) {
+                source.sendMessage("Please provide a valid timeout instead of " + strings[6]);
+                return;
+            }
 
-            System.out.println("The group " + group.getName() + " has now the colour " + color);
-            return true;
+            if (requestedTimeout < -1) {
+                requestedTimeout = (long) -1;
+            }
+
+            Long timeout = parseTimeout(requestedTimeout, strings[7]);
+            if (timeout == null) {
+                source.sendMessage("Please provide a valid timeout unit " + strings[7]);
+                return;
+            }
+
+            if (nodes == null) {
+                permissionGroup.getPerGroupPermissions().put(strings[3], new ArrayList<>());
+            }
+
+            permissionGroup.getPerGroupPermissions().get(strings[3]).add(PermissionNode.createNode(strings[4], timeout, positive));
+            PermissionManagement.getInstance().updateGroup(permissionGroup);
+            source.sendMessage("The group " + strings[1] + " has now the permission " + strings[4] + " in the context group:" + strings[3]);
+            return;
         }
 
-        if (strings.length == 5
-                && strings[0].equalsIgnoreCase("group")
-                && strings[2].equalsIgnoreCase("addperm")
-        ) {
-            PermissionGroup group = PermissionManagement.getInstance().getGroup(strings[1]);
-            if (group == null) {
-                System.out.println("The group " + strings[1] + " does not exists");
-                return true;
-            }
-
-            if (Streams.filterToReference(group.getPermissionNodes(),
-                    e -> e.getActualPermission().equalsIgnoreCase(strings[3])).isPresent()) {
-                System.out.println("The permission " + strings[3] + " is already set for group " + strings[3]);
-                return true;
-            }
-
-            Boolean set = CommonHelper.booleanFromString(strings[4]);
-            if (set == null) {
-                System.out.println("The permission may not be set correctly. Please recheck (use true/false as set argument)");
-                return true;
-            }
-
-            group.getPermissionNodes().add(new PermissionNode(
-                    System.currentTimeMillis(),
-                    -1,
-                    set,
-                    strings[3]
-            ));
-            PermissionManagement.getInstance().updateGroup(group);
-            System.out.println("The permission " + strings[3] + " was added to group " + group.getName());
-            return true;
-        }
-
-        if (strings.length == 7
-                && strings[0].equalsIgnoreCase("group")
-                && strings[2].equalsIgnoreCase("addperm")
-        ) {
-            PermissionGroup group = PermissionManagement.getInstance().getGroup(strings[1]);
-            if (group == null) {
-                System.out.println("The group " + strings[1] + " does not exists");
-                return true;
-            }
-
-            if (Streams.filterToReference(group.getPermissionNodes(),
-                    e -> e.getActualPermission().equalsIgnoreCase(strings[3])).isPresent()) {
-                System.out.println("The permission " + strings[3] + " is already set for group " + strings[3]);
-                return true;
-            }
-
-            Boolean set = CommonHelper.booleanFromString(strings[4]);
-            if (set == null) {
-                System.out.println("The permission may not be set correctly. Please recheck (use true/false as set argument)");
-                return true;
-            }
-
-            Long givenTimeOut = CommonHelper.longFromString(strings[5]);
-            if (givenTimeOut == null) {
-                System.out.println("The timout time is not valid");
-                return true;
-            }
-
-            long timeOut = System.currentTimeMillis()
-                    + InternalTimeUnit.convert(parseUnitFromString(strings[6]), givenTimeOut);
-            group.getPermissionNodes().add(new PermissionNode(
-                    System.currentTimeMillis(),
-                    timeOut,
-                    set,
-                    strings[3]
-            ));
-            PermissionManagement.getInstance().updateGroup(group);
-            System.out.println("The permission " + strings[3] + " was added to group " + group.getName());
-            return true;
-        }
-
-        if (strings.length == 6
-                && strings[0].equalsIgnoreCase("group")
-                && strings[2].equalsIgnoreCase("addperm")
-        ) {
-            PermissionGroup group = PermissionManagement.getInstance().getGroup(strings[1]);
-            if (group == null) {
-                System.out.println("The group " + strings[1] + " does not exists");
-                return true;
-            }
-
-            if (group.getPerGroupPermissions().containsKey(strings[3])
-                    && Streams.filterToReference(group.getPerGroupPermissions().get(strings[3]),
-                    e -> e.getActualPermission().equalsIgnoreCase(strings[3])).isPresent()) {
-                System.out.println("The permission " + strings[4] + " is already set for group " + strings[2] + " on " + strings[3]);
-                return true;
-            }
-
-            Boolean set = CommonHelper.booleanFromString(strings[5]);
-            if (set == null) {
-                System.out.println("The permission may not be set correctly. Please recheck (use true/false as set argument)");
-                return true;
-            }
-
-            PermissionManagement.getInstance().addProcessGroupPermission(strings[3], group, new PermissionNode(
-                    System.currentTimeMillis(),
-                    -1,
-                    set,
-                    strings[4]
-            ));
-            System.out.println("The permission " + strings[4] + " was added to group " + group.getName() + " on " + strings[3]);
-            return true;
-        }
-
-        if (strings.length == 8
-                && strings[0].equalsIgnoreCase("group")
-                && strings[2].equalsIgnoreCase("addperm")
-        ) {
-            PermissionGroup group = PermissionManagement.getInstance().getGroup(strings[1]);
-            if (group == null) {
-                System.out.println("The group " + strings[1] + " does not exists");
-                return true;
-            }
-
-            if (group.getPerGroupPermissions().containsKey(strings[3])
-                    && Streams.filterToReference(group.getPerGroupPermissions().get(strings[3]),
-                    e -> e.getActualPermission().equalsIgnoreCase(strings[3])).isPresent()) {
-                System.out.println("The permission " + strings[4] + " is already set for group " + strings[2] + " on " + strings[3]);
-                return true;
-            }
-
-            Boolean set = CommonHelper.booleanFromString(strings[5]);
-            if (set == null) {
-                System.out.println("The permission may not be set correctly. Please recheck (use true/false as set argument)");
-                return true;
-            }
-
-            Long givenTimeOut = CommonHelper.longFromString(strings[6]);
-            if (givenTimeOut == null) {
-                System.out.println("The timout time is not valid");
-                return true;
-            }
-
-            long timeOut = System.currentTimeMillis()
-                    + InternalTimeUnit.convert(parseUnitFromString(strings[7]), givenTimeOut);
-            PermissionManagement.getInstance().addProcessGroupPermission(strings[3], group, new PermissionNode(
-                    System.currentTimeMillis(),
-                    timeOut,
-                    set,
-                    strings[4]
-            ));
-            System.out.println("The permission " + strings[4] + " was added to group " + group.getName() + " on " + strings[3]);
-            return true;
-        }
-
-        if (strings.length == 4
-                && strings[0].equalsIgnoreCase("group")
-                && strings[2].equalsIgnoreCase("delperm")
-        ) {
-            PermissionGroup group = PermissionManagement.getInstance().getGroup(strings[1]);
-            if (group == null) {
-                System.out.println("The group " + strings[1] + " does not exists");
-                return true;
-            }
-
-            PermissionNode filter = Streams.filter(group.getPermissionNodes(),
-                    e -> e.getActualPermission().equalsIgnoreCase(strings[3]));
-            if (filter == null) {
-                System.out.println("The permission " + strings[3] + " is not set");
-                return true;
-            }
-
-            group.getPermissionNodes().remove(filter);
-            PermissionManagement.getInstance().updateGroup(group);
-            System.out.println("The permission " + strings[3] + " was removed from the group " + group.getName());
-            return true;
-        }
-
-        if (strings.length == 5
-                && strings[0].equalsIgnoreCase("group")
-                && strings[2].equalsIgnoreCase("delperm")
-        ) {
-            PermissionGroup group = PermissionManagement.getInstance().getGroup(strings[1]);
-            if (group == null) {
-                System.out.println("The group " + strings[1] + " does not exists");
-                return true;
-            }
-
-            if (!group.getPerGroupPermissions().containsKey(strings[3])) {
-                System.out.println("There are no server group permission for group " + group.getName() + " on " + strings[3]);
-                return true;
-            }
-
-            PermissionNode filter = Streams.filter(group.getPerGroupPermissions().get(strings[3]),
-                    e -> e.getActualPermission().equalsIgnoreCase(strings[4]));
-            if (filter == null) {
-                System.out.println("The permission " + strings[4] + " is not set for " + group.getName() + " on " + strings[3]);
-                return true;
-            }
-
-            group.getPerGroupPermissions().get(strings[3]).remove(filter);
-            PermissionManagement.getInstance().updateGroup(group);
-            System.out.println("The permission " + strings[4] + " was removed for group " + group.getName() + " on " + strings[3]);
-            return true;
-        }
-
-        if (strings.length == 5
-                && strings[0].equalsIgnoreCase("group")
-                && strings[2].equalsIgnoreCase("parent")
-                && strings[3].equalsIgnoreCase("add")
-        ) {
-            PermissionGroup group = PermissionManagement.getInstance().getGroup(strings[1]);
-            if (group == null) {
-                System.out.println("The group " + strings[1] + " does not exists");
-                return true;
-            }
-
-            if (group.getSubGroups().contains(strings[4])) {
-                System.out.println("The group " + strings[4] + " is already a parent of " + group.getName());
-                return true;
-            }
-
-            PermissionGroup sub = PermissionManagement.getInstance().getGroup(strings[4]);
-            if (sub == null) {
-                System.out.println("The group " + strings[4] + " does not exists");
-                return true;
-            }
-
-            group.getSubGroups().add(sub.getName());
-            PermissionManagement.getInstance().updateGroup(group);
-            System.out.println("The sub group " + sub.getName() + " was added to " + group.getName());
-            return true;
-        }
-
-        if (strings.length == 5
-                && strings[0].equalsIgnoreCase("group")
-                && strings[2].equalsIgnoreCase("parent")
-                && strings[3].equalsIgnoreCase("remove")
-        ) {
-            PermissionGroup group = PermissionManagement.getInstance().getGroup(strings[1]);
-            if (group == null) {
-                System.out.println("The group " + strings[1] + " does not exists");
-                return true;
-            }
-
-            if (!group.getSubGroups().contains(strings[4])) {
-                System.out.println("The group " + strings[4] + " is not a parent of " + group.getName());
-                return true;
-            }
-
-            group.getSubGroups().remove(strings[4]);
-            PermissionManagement.getInstance().updateGroup(group);
-            System.out.println("Removed sub group " + strings[4] + " from " + group.getName());
-            return true;
-        }
-
-        if (strings.length == 4
-                && strings[0].equalsIgnoreCase("group")
-                && strings[2].equalsIgnoreCase("parent")
-        ) {
-            PermissionGroup group = PermissionManagement.getInstance().getGroup(strings[1]);
-            if (group == null) {
-                System.out.println("The group " + strings[1] + " does not exists");
-                return true;
-            }
-
-            if (group.getSubGroups().isEmpty()) {
-                System.out.println("The group " + group.getName() + " does not have any sub-groups");
-                return true;
-            }
-
-            group.getSubGroups().clear();
-            PermissionManagement.getInstance().updateGroup(group);
-            System.out.println("Cleared all sub group of " + group.getName());
-            return true;
-        }
-
-        commandSource.sendMessages(HELP);
-        return true;
+        source.sendRawMessages(HELP);
     }
 
-    private static TimeUnit parseUnitFromString(@NotNull String s) {
-        switch (s.toLowerCase()) {
-            case "s":
-                return TimeUnit.SECONDS;
-            case "m":
-                return TimeUnit.MINUTES;
-            case "h":
-                return TimeUnit.HOURS;
-            case "d":
-                return TimeUnit.DAYS;
-            default: {
-                return null;
+    private void displayPermissionGroup(@NotNull CommandSource source, @NotNull PermissionGroup permissionGroup) {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        stringBuilder.append("Name     - ").append(permissionGroup.getName()).append("\n");
+        stringBuilder.append("Type     - ").append(permissionGroup.isDefaultGroup() ? "default group" : "normal group").append("\n");
+        stringBuilder.append("Prefix   - ").append(permissionGroup.getPrefix().orElse("none")).append("\n");
+        stringBuilder.append("Suffix   - ").append(permissionGroup.getSuffix().orElse("none")).append("\n");
+        stringBuilder.append("Display  - ").append(permissionGroup.getDisplay().orElse("none")).append("\n");
+        stringBuilder.append("Colour   - ").append(permissionGroup.getColour().orElse("none")).append("\n");
+        stringBuilder.append("Priority - ").append(permissionGroup.getPriority()).append("\n");
+        for (String s : permissionGroup.getExtra().toPrettyString().split("\n")) {
+            stringBuilder.append("Extra    - ").append(s).append("\n");
+        }
+
+        stringBuilder.append(" Sub-Groups (").append(permissionGroup.getSubGroups().size()).append("):").append("\n");
+        for (String subGroup : permissionGroup.getSubGroups()) {
+            stringBuilder.append("  ").append(subGroup).append("\n");
+        }
+
+        stringBuilder.append("\n").append(" Permissions (").append(permissionGroup.getPermissionNodes().size()).append("):").append("\n");
+        for (PermissionNode permissionNode : permissionGroup.getPermissionNodes()) {
+            stringBuilder.append(formatPermissionNode(permissionNode));
+        }
+
+        stringBuilder.append("\n").append(" Per-Group-Permissions (").append(permissionGroup.getPerGroupPermissions().size()).append("):").append("\n");
+        for (Map.Entry<String, Collection<PermissionNode>> stringCollectionEntry : permissionGroup.getPerGroupPermissions().entrySet()) {
+            stringBuilder.append("  Per-Group-Permissions on ").append(stringCollectionEntry.getKey()).append(" (").append(stringCollectionEntry.getValue().size()).append("):").append("\n");
+            for (PermissionNode node : stringCollectionEntry.getValue()) {
+                stringBuilder.append(formatPermissionNode(node));
             }
+        }
+
+        source.sendMessages(stringBuilder.toString().split("\n"));
+    }
+
+    private void displayPermissionUser(@NotNull CommandSource source, @NotNull PermissionUser permissionUser, @NotNull String userName) {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        stringBuilder.append("Name          - ").append(userName).append("\n");
+        stringBuilder.append("UniqueId      - ").append(permissionUser.getUniqueID()).append("\n");
+        stringBuilder.append("Prefix        - ").append(permissionUser.getPrefix().orElse("none")).append("\n");
+        stringBuilder.append("Suffix        - ").append(permissionUser.getSuffix().orElse("none")).append("\n");
+        stringBuilder.append("Display       - ").append(permissionUser.getDisplay().orElse("none")).append("\n");
+        stringBuilder.append("Colour        - ").append(permissionUser.getColour().orElse("none")).append("\n");
+        stringBuilder.append("Highest Group - ").append(permissionUser.getHighestPermissionGroup().map(PermissionGroup::getName).orElse("none")).append("\n");
+        for (String s : permissionUser.getExtra().toPrettyString().split("\n")) {
+            stringBuilder.append("Extra         - ").append(s).append("\n");
+        }
+
+        stringBuilder.append(" Groups (").append(permissionUser.getGroups().size()).append("):").append("\n");
+        for (NodeGroup group : permissionUser.getGroups()) {
+            if (!group.isValid()) {
+                continue;
+            }
+
+            stringBuilder.append("  ").append(group.getGroupName()).append(" | Since: ").append(CommonHelper.DATE_FORMAT.format(group.getAddTime())).append(" | Until: ");
+            if (group.getTimeout() == -1) {
+                stringBuilder.append("lifetime");
+            } else {
+                stringBuilder.append(CommonHelper.DATE_FORMAT.format(group.getTimeout()));
+            }
+
+            stringBuilder.append("\n");
+        }
+
+        stringBuilder.append("\n").append(" Permissions (").append(permissionUser.getPermissionNodes().size()).append("):").append("\n");
+        for (PermissionNode permissionNode : permissionUser.getPermissionNodes()) {
+            stringBuilder.append(formatPermissionNode(permissionNode));
+        }
+
+        stringBuilder.append("\n").append(" Group-Permissions (").append(permissionUser.getPerGroupPermissions().size()).append("):").append("\n");
+        for (Map.Entry<String, Collection<PermissionNode>> stringCollectionEntry : permissionUser.getPerGroupPermissions().entrySet()) {
+            stringBuilder.append("  Group-Permissions on ").append(stringCollectionEntry.getKey()).append(" (").append(stringCollectionEntry.getValue().size()).append("):").append("\n");
+            for (PermissionNode node : stringCollectionEntry.getValue()) {
+                stringBuilder.append(formatPermissionNode(node));
+            }
+        }
+
+        source.sendMessages(stringBuilder.toString().split("\n"));
+    }
+
+    @NotNull
+    private static String formatPermissionNode(@NotNull PermissionNode node) {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        stringBuilder.append("  ").append(node.getActualPermission()).append(" | Since: ").append(CommonHelper.DATE_FORMAT.format(node.getAddTime())).append(" | Until: ");
+        if (node.getTimeout() == -1) {
+            stringBuilder.append("lifetime");
+        } else {
+            stringBuilder.append(CommonHelper.DATE_FORMAT.format(node.getTimeout()));
+        }
+
+        return stringBuilder.append("\n").toString();
+    }
+
+    @Nullable
+    private static Long parseTimeout(long givenTime, @NotNull String requestedTimeUnit) {
+        if (givenTime == -1) {
+            return givenTime;
+        }
+
+        switch (requestedTimeUnit.toLowerCase()) {
+            case "s":
+            case "seconds":
+                return System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(givenTime);
+            case "m":
+            case "minutes":
+                return System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(givenTime);
+            case "h":
+            case "hours":
+                return System.currentTimeMillis() + TimeUnit.HOURS.toMillis(givenTime);
+            case "d":
+            case "days":
+                return System.currentTimeMillis() + TimeUnit.DAYS.toMillis(givenTime);
+            case "mo":
+            case "months":
+                return System.currentTimeMillis() + 30 * givenTime * TimeUnit.DAYS.toMillis(1);
+            default:
+                return null;
         }
     }
 }

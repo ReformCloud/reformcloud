@@ -176,6 +176,24 @@ public abstract class PermissionManagement {
     public abstract PermissionUser loadUser(@NotNull UUID uniqueId);
 
     /**
+     * Loads a specific permission user which already exists by it's name
+     *
+     * @param name The name of the permission user
+     * @return The loaded permission user
+     */
+    @NotNull
+    public abstract Optional<PermissionUser> getFirstExistingUser(@NotNull String name);
+
+    /**
+     * Loads a specific permission user
+     *
+     * @param name The name of the permission user
+     * @return The loaded or newly created permission user
+     */
+    @NotNull
+    public abstract Optional<PermissionUser> loadUser(@NotNull String name);
+
+    /**
      * Loads a specific permission user
      *
      * @param uniqueId The uniqueID of the user which should get loaded
@@ -193,6 +211,20 @@ public abstract class PermissionManagement {
      */
     @NotNull
     public abstract PermissionUser loadUser(@NotNull UUID uniqueId, @Nullable String name);
+
+    /**
+     * Assigns all default groups to the permission user
+     *
+     * @param uniqueId The unique if of the user which should receive all default groups
+     */
+    public abstract void assignDefaultGroups(@NotNull UUID uniqueId);
+
+    /**
+     * Assigns all default groups to the permission user
+     *
+     * @param permissionUser The user which should receive all default groups
+     */
+    public abstract void assignDefaultGroups(@NotNull PermissionUser permissionUser);
 
     /**
      * Adds a specific permission to a user

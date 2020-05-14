@@ -39,19 +39,20 @@ public final class PacketDecoder extends MessageToMessageDecoder<ByteBuf> {
 
     @Override
     protected void decode(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf, List<Object> list) {
+        ProtocolBuffer protocolBuffer = new DefaultProtocolBuffer(byteBuf);
+        Packet packet = ExecutorAPI.getInstance().getPacketHandler().getNetworkHandler(protocolBuffer.readInt());
+
+        if (packet == null) {
+            return;
+        }
+
         try {
-            ProtocolBuffer protocolBuffer = new DefaultProtocolBuffer(byteBuf);
-            Packet packet = ExecutorAPI.getInstance().getPacketHandler().getNetworkHandler(protocolBuffer.readInt());
-
-            if (packet == null) {
-                return;
-            }
-
             packet.setQueryUniqueID(protocolBuffer.readUniqueId());
             packet.read(protocolBuffer);
 
             list.add(packet);
         } catch (final Throwable throwable) {
+            System.err.println("An error occurred during decode of packet " + packet.getId());
             throw new SilentNetworkException(throwable);
         }
     }

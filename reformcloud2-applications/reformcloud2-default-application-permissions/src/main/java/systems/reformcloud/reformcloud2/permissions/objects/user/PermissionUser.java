@@ -31,16 +31,15 @@ import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.network.SerializableObject;
 import systems.reformcloud.reformcloud2.executor.api.common.network.data.ProtocolBuffer;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.permissions.PermissionManagement;
+import systems.reformcloud.reformcloud2.permissions.checks.GeneralCheck;
 import systems.reformcloud.reformcloud2.permissions.checks.WildcardCheck;
 import systems.reformcloud.reformcloud2.permissions.nodes.NodeGroup;
 import systems.reformcloud.reformcloud2.permissions.nodes.PermissionNode;
 import systems.reformcloud.reformcloud2.permissions.objects.group.PermissionGroup;
 
-import java.util.Collection;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class PermissionUser implements SerializableObject {
 
@@ -59,6 +58,7 @@ public class PermissionUser implements SerializableObject {
         this.uuid = uuid;
         this.permissionNodes = permissionNodes;
         this.groups = groups;
+        this.perGroupPermissions = new ConcurrentHashMap<>();
         this.extra = new JsonConfiguration();
     }
 
@@ -67,6 +67,8 @@ public class PermissionUser implements SerializableObject {
     private Collection<PermissionNode> permissionNodes;
 
     private Collection<NodeGroup> groups;
+
+    private Map<String, Collection<PermissionNode>> perGroupPermissions;
 
     private @Nullable String prefix;
 
@@ -91,6 +93,11 @@ public class PermissionUser implements SerializableObject {
     @NotNull
     public Collection<NodeGroup> getGroups() {
         return groups;
+    }
+
+    @NotNull
+    public Map<String, Collection<PermissionNode>> getPerGroupPermissions() {
+        return perGroupPermissions == null ? new HashMap<>() : perGroupPermissions;
     }
 
     @NotNull
@@ -182,25 +189,16 @@ public class PermissionUser implements SerializableObject {
 
     public boolean hasPermission(String permission) {
         if (permission == null) {
-            new NullPointerException("permission").printStackTrace();
             return false;
         }
 
-        if (permission.equalsIgnoreCase("bukkit.brodcast")
-                || permission.equalsIgnoreCase("bukkit.brodcast.admin")) {
+        if (permission.equalsIgnoreCase("bukkit.brodcast") || permission.equalsIgnoreCase("bukkit.brodcast.admin")) {
             return true;
         }
 
-        final PermissionNode node = Streams.filter(permissionNodes,
-                e -> e.getActualPermission().equalsIgnoreCase(permission) && e.isValid());
-        if (node != null) {
-            return node.isSet();
-        }
-
-        final PermissionNode star = Streams.filter(permissionNodes,
-                e -> e.getActualPermission().equals("*") && e.isValid());
-        if (star != null && star.isSet()) {
-            return true;
+        Boolean general = GeneralCheck.hasPermission(this, permission);
+        if (general != null) {
+            return general;
         }
 
         Boolean wildCard = WildcardCheck.hasWildcardPermission(this, permission);
@@ -217,6 +215,12 @@ public class PermissionUser implements SerializableObject {
         buffer.writeObjects(this.groups);
         buffer.writeObjects(this.permissionNodes);
 
+        buffer.writeVarInt(this.getPerGroupPermissions().size());
+        for (Map.Entry<String, Collection<PermissionNode>> stringCollectionEntry : this.getPerGroupPermissions().entrySet()) {
+            buffer.writeString(stringCollectionEntry.getKey());
+            buffer.writeObjects(stringCollectionEntry.getValue());
+        }
+
         buffer.writeString(this.prefix);
         buffer.writeString(this.suffix);
         buffer.writeString(this.display);
@@ -229,6 +233,12 @@ public class PermissionUser implements SerializableObject {
         this.uuid = buffer.readUniqueId();
         this.groups = buffer.readObjects(NodeGroup.class);
         this.permissionNodes = buffer.readObjects(PermissionNode.class);
+
+        int size = buffer.readVarInt();
+        this.perGroupPermissions = new HashMap<>(size);
+        for (int i = 0; i < size; i++) {
+            this.perGroupPermissions.put(buffer.readString(), buffer.readObjects(PermissionNode.class));
+        }
 
         this.prefix = buffer.readString();
         this.suffix = buffer.readString();
