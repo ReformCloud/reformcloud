@@ -55,6 +55,8 @@ public final class ApplicationsUpdater implements Updater {
      * The pattern to find a file update
      */
     private static final Pattern PATTERN = Pattern.compile("(.*)-(.*)\\.jar");
+    private final Path applicationUpdatesPath;
+    private final Collection<Map.Entry<Path, Path>> oldToNewUpdates;
 
     /**
      * Creates a new instance of an applications updater
@@ -65,10 +67,6 @@ public final class ApplicationsUpdater implements Updater {
         this.applicationUpdatesPath = applicationUpdatesPath;
         this.oldToNewUpdates = new ArrayList<>();
     }
-
-    private final Path applicationUpdatesPath;
-
-    private final Collection<Map.Entry<Path, Path>> oldToNewUpdates;
 
     @Override
     public void collectInformation() {

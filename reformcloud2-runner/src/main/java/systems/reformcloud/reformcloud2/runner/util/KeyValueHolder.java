@@ -30,14 +30,13 @@ import java.util.Map;
 
 public final class KeyValueHolder<K, V> implements Map.Entry<K, V> {
 
+    private final K key;
+    private V value;
+
     public KeyValueHolder(@NotNull K key, @NotNull V value) {
         this.key = key;
         this.value = value;
     }
-
-    private final K key;
-
-    private V value;
 
     @Override
     @NotNull

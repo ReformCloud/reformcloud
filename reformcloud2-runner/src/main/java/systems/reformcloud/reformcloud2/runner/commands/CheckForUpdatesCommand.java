@@ -33,12 +33,12 @@ import java.util.Collection;
 
 public final class CheckForUpdatesCommand extends InterpreterCommand {
 
+    private final Runner runner;
+
     public CheckForUpdatesCommand(@NotNull Runner runner) {
         super("check_for_updates");
         this.runner = runner;
     }
-
-    private final Runner runner;
 
     @Override
     public void execute(@NotNull String cursorLine, @NotNull InterpretedReformScript script, @NotNull Collection<String> allLines) {
