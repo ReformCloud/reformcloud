@@ -22,31 +22,53 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.common.event;
+package systems.reformcloud.reformcloud2.executor.api.common.event.basic;
+
+import org.jetbrains.annotations.NotNull;
+import systems.reformcloud.reformcloud2.executor.api.common.event.Event;
+import systems.reformcloud.reformcloud2.executor.api.common.event.ListenerContainer;
+import systems.reformcloud.reformcloud2.executor.api.common.event.priority.EventPriority;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-public final class LoadedListener {
+public final class DefaultListenerContainer implements ListenerContainer {
 
-    public LoadedListener(Object listener, Method method) {
-        this.listener = listener;
+    DefaultListenerContainer(Class<?> eventClassTarget, Object listenerInstance, Method method, EventPriority priority) {
+        this.eventClassTarget = eventClassTarget;
+        this.listenerInstance = listenerInstance;
         this.method = method;
+        this.priority = priority;
     }
 
-    private final Object listener;
+    private final Class<?> eventClassTarget;
+
+    private final Object listenerInstance;
 
     private final Method method;
 
-    public void call(Event event) throws InvocationTargetException, IllegalAccessException {
-        method.invoke(listener, event);
+    private final EventPriority priority;
+
+    @NotNull
+    @Override
+    public Object getListenerInstance() {
+        return this.listenerInstance;
     }
 
-    public Method getMethod() {
-        return method;
+    @NotNull
+    @Override
+    public Class<?> getTargetEventClass() {
+        return this.eventClassTarget;
     }
 
-    public Object getListener() {
-        return listener;
+    @NotNull
+    @Override
+    public EventPriority getPriority() {
+        return this.priority;
+    }
+
+    @Override
+    public void call(@NotNull Event event) throws InvocationTargetException, IllegalAccessException {
+        this.method.invoke(this.listenerInstance, event);
     }
 }

@@ -24,41 +24,21 @@
  */
 package systems.reformcloud.reformcloud2.executor.api.common.event;
 
-import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
+import systems.reformcloud.reformcloud2.executor.api.common.event.priority.EventPriority;
 
-/**
- * Represents a callable event of the runtime
- *
- * @see EventManager#callEvent(Event)
- * @see EventManager#registerListener(Object)
- */
-public class Event {
+import java.lang.reflect.InvocationTargetException;
 
-    public Event() {
-        this(false);
-    }
+public interface ListenerContainer {
 
-    @Deprecated
-    @ApiStatus.ScheduledForRemoval
-    public Event(boolean isAsync) {
-        this.async = isAsync;
-    }
+    @NotNull
+    Object getListenerInstance();
 
-    private final boolean async;
+    @NotNull
+    Class<?> getTargetEventClass();
 
-    @Deprecated
-    @ApiStatus.ScheduledForRemoval
-    public final boolean isAsync() {
-        return async;
-    }
+    @NotNull
+    EventPriority getPriority();
 
-    @Deprecated
-    @ApiStatus.ScheduledForRemoval
-    public void preCall() {
-    }
-
-    @Deprecated
-    @ApiStatus.ScheduledForRemoval
-    public void postCall() {
-    }
+    void call(@NotNull Event event) throws InvocationTargetException, IllegalAccessException;
 }

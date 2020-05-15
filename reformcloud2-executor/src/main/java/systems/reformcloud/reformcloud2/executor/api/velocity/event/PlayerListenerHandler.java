@@ -35,7 +35,7 @@ import com.velocitypowered.api.event.player.PlayerChatEvent;
 import com.velocitypowered.api.event.player.ServerPreConnectEvent;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
-import net.kyori.text.TextComponent;
+import net.kyori.text.serializer.legacy.LegacyComponentSerializer;
 import systems.reformcloud.reformcloud2.executor.api.api.API;
 import systems.reformcloud.reformcloud2.executor.api.common.CommonHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
@@ -92,7 +92,7 @@ public final class PlayerListenerHandler {
     public void handle(final LoginEvent event) {
         PacketSender sender = DefaultChannelManager.INSTANCE.get("Controller").orElse(null);
         if (sender == null) {
-            event.setResult(ResultedEvent.ComponentResult.denied(TextComponent.of("§4§lThe current proxy is not connected to the controller")));
+            event.setResult(ResultedEvent.ComponentResult.denied(LegacyComponentSerializer.legacyLinking().deserialize("§4§lThe current proxy is not connected to the controller")));
         }
     }
 
@@ -105,27 +105,27 @@ public final class PlayerListenerHandler {
         if (configuration.isUseCloudPlayerLimit()
                 && current.getProcessDetail().getMaxPlayers() < current.getProcessPlayerManager().getOnlineCount() + 1
                 && !player.hasPermission(configuration.getFullJoinPermission())) {
-            player.disconnect(TextComponent.of("§4§lThe proxy is full"));
+            player.disconnect(LegacyComponentSerializer.legacyLinking().deserialize("§4§lThe proxy is full"));
             return;
         }
 
         if (configuration.isJoinOnlyPerPermission() && !player.hasPermission(configuration.getJoinPermission())) {
-            player.disconnect(TextComponent.of("§4§lYou do not have permission to enter this proxy"));
+            player.disconnect(LegacyComponentSerializer.legacyLinking().deserialize("§4§lYou do not have permission to enter this proxy"));
             return;
         }
 
         if (configuration.isMaintenance() && !player.hasPermission(configuration.getMaintenanceJoinPermission())) {
-            player.disconnect(TextComponent.of("§4§lThis proxy is currently in maintenance"));
+            player.disconnect(LegacyComponentSerializer.legacyLinking().deserialize("§4§lThis proxy is currently in maintenance"));
             return;
         }
 
         if (current.getProcessDetail().getProcessState().equals(ProcessState.FULL) && !player.hasPermission(configuration.getFullJoinPermission())) {
-            player.disconnect(TextComponent.of("§4§lYou are not allowed to join this server in the current state"));
+            player.disconnect(LegacyComponentSerializer.legacyLinking().deserialize("§4§lYou are not allowed to join this server in the current state"));
             return;
         }
 
         if (!current.getProcessPlayerManager().onLogin(event.getPlayer().getUniqueId(), event.getPlayer().getUsername())) {
-            player.disconnect(TextComponent.of("§4§lYou are not allowed to join this proxy"));
+            player.disconnect(LegacyComponentSerializer.legacyLinking().deserialize("§4§lYou are not allowed to join this proxy"));
             return;
         }
 
@@ -153,7 +153,7 @@ public final class PlayerListenerHandler {
         if (lobby != null) {
             Optional<RegisteredServer> server = VelocityExecutor.getInstance().getProxyServer().getServer(lobby.getProcessDetail().getName());
             if (!server.isPresent()) {
-                event.setResult(KickedFromServerEvent.DisconnectPlayer.create(TextComponent.of(VelocityExecutor.getInstance().getMessages().format(
+                event.setResult(KickedFromServerEvent.DisconnectPlayer.create(LegacyComponentSerializer.legacyLinking().deserialize(VelocityExecutor.getInstance().getMessages().format(
                         VelocityExecutor.getInstance().getMessages().getNoHubServerAvailable()
                 ))));
                 return;
@@ -163,7 +163,7 @@ public final class PlayerListenerHandler {
             return;
         }
 
-        event.setResult(KickedFromServerEvent.DisconnectPlayer.create(TextComponent.of(VelocityExecutor.getInstance().getMessages().format(
+        event.setResult(KickedFromServerEvent.DisconnectPlayer.create(LegacyComponentSerializer.legacyLinking().deserialize(VelocityExecutor.getInstance().getMessages().format(
                 VelocityExecutor.getInstance().getMessages().getNoHubServerAvailable()
         ))));
     }

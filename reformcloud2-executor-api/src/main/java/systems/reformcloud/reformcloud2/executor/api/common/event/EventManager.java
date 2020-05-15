@@ -25,6 +25,9 @@
 package systems.reformcloud.reformcloud2.executor.api.common.event;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnmodifiableView;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 
 import java.util.List;
 
@@ -36,14 +39,16 @@ public interface EventManager {
      * @param event The class of the event which get instantiated and then called
      * @see #callEvent(Event)
      */
-    void callEvent(Class<? extends Event> event);
+    @Nullable
+    <T extends Event> T callEvent(@NotNull Class<? extends T> event);
 
     /**
      * Calls an event
      *
      * @param event The event which should be called
      */
-    void callEvent(Event event);
+    @NotNull
+    <T extends Event> T callEvent(@NotNull T event);
 
     /**
      * Calls an event async
@@ -51,21 +56,23 @@ public interface EventManager {
      * @param event The class of the event which get instantiated and then called
      * @see #callEventAsync(Event)
      */
-    void callEventAsync(Class<? extends Event> event);
+    @NotNull
+    <T extends Event> Task<T> callEventAsync(@NotNull Class<? extends T> event);
 
     /**
      * Calls an event async
      *
      * @param event The event which should be called
      */
-    void callEventAsync(Event event);
+    @NotNull
+    <T extends Event> Task<T> callEventAsync(@NotNull T event);
 
     /**
      * Registers a event listener
      *
      * @param listener The listener which should get registered
      */
-    void registerListener(Object listener);
+    void registerListener(@NotNull Object listener);
 
     /**
      * Registers a listener
@@ -73,29 +80,14 @@ public interface EventManager {
      * @param listener The listener class which will get instantiated and then registered
      * @see #registerListener(Object)
      */
-    void registerListener(Class<?> listener);
-
-    /**
-     * Registers a listener async
-     *
-     * @param listener The listener which should get registered
-     */
-    void registerListenerAsync(Object listener);
-
-    /**
-     * Registers a listener async
-     *
-     * @param listener The listener class which will get instantiated and then registered
-     * @see #registerListenerAsync(Object)
-     */
-    void registerListenerAsync(Class<?> listener);
+    void registerListener(@NotNull Class<?> listener);
 
     /**
      * Unregisters a specific listener
      *
      * @param listener The listener which should get unregistered
      */
-    void unregisterListener(Object listener);
+    void unregisterListener(@NotNull Object listener);
 
     /**
      * Unregisters all listeners
@@ -106,5 +98,6 @@ public interface EventManager {
      * @return All registered listeners
      */
     @NotNull
-    List<List<LoadedListener>> getListeners();
+    @UnmodifiableView
+    List<ListenerContainer> getListeners();
 }

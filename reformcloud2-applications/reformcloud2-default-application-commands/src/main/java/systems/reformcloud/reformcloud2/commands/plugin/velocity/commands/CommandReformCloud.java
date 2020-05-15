@@ -26,7 +26,7 @@ package systems.reformcloud.reformcloud2.commands.plugin.velocity.commands;
 
 import com.velocitypowered.api.command.Command;
 import com.velocitypowered.api.command.CommandSource;
-import net.kyori.text.TextComponent;
+import net.kyori.text.serializer.legacy.LegacyComponentSerializer;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.commands.plugin.internal.InternalReformCloudCommand;
 import systems.reformcloud.reformcloud2.executor.api.velocity.VelocityExecutor;
@@ -45,7 +45,7 @@ public class CommandReformCloud implements Command {
     public void execute(CommandSource commandSender, @NotNull String[] strings) {
         String prefix = VelocityExecutor.getInstance().getMessages().getPrefix() + " ";
         InternalReformCloudCommand.execute(
-                message -> commandSender.sendMessage(TextComponent.of(message)),
+                message -> commandSender.sendMessage(LegacyComponentSerializer.legacyLinking().deserialize(message)),
                 strings,
                 prefix,
                 this.getCommandSuccessMessage(),

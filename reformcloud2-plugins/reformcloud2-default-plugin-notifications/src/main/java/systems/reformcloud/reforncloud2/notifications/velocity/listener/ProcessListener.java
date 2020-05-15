@@ -25,7 +25,7 @@
 package systems.reformcloud.reforncloud2.notifications.velocity.listener;
 
 import com.velocitypowered.api.proxy.ProxyServer;
-import net.kyori.text.TextComponent;
+import net.kyori.text.serializer.legacy.LegacyComponentSerializer;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.ProcessStartedEvent;
@@ -113,6 +113,6 @@ public final class ProcessListener {
         this.proxyServer.getAllPlayers()
                 .stream()
                 .filter(e -> e.hasPermission("reformcloud.notify"))
-                .forEach(player -> player.sendMessage(TextComponent.of(replacedMessage)));
+                .forEach(player -> player.sendMessage(LegacyComponentSerializer.legacyLinking().deserialize(replacedMessage)));
     }
 }

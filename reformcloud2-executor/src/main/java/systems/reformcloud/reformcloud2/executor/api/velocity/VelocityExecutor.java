@@ -27,7 +27,7 @@ package systems.reformcloud.reformcloud2.executor.api.velocity;
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 import com.velocitypowered.api.proxy.server.ServerInfo;
-import net.kyori.text.TextComponent;
+import net.kyori.text.serializer.legacy.LegacyComponentSerializer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.APIConstants;
@@ -328,12 +328,12 @@ public final class VelocityExecutor extends API implements PlayerAPIExecutor {
 
     @Override
     public void executeSendMessage(UUID player, String message) {
-        proxyServer.getPlayer(player).ifPresent(player1 -> player1.sendMessage(TextComponent.of(message)));
+        proxyServer.getPlayer(player).ifPresent(player1 -> player1.sendMessage(LegacyComponentSerializer.legacyLinking().deserialize(message)));
     }
 
     @Override
     public void executeKickPlayer(UUID player, String message) {
-        proxyServer.getPlayer(player).ifPresent(player1 -> player1.disconnect(TextComponent.of(message)));
+        proxyServer.getPlayer(player).ifPresent(player1 -> player1.disconnect(LegacyComponentSerializer.legacyLinking().deserialize(message)));
     }
 
     @Override

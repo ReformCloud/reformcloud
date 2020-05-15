@@ -35,6 +35,7 @@ import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.server.ServerPing;
 import net.kyori.text.Component;
 import net.kyori.text.TextComponent;
+import net.kyori.text.serializer.legacy.LegacyComponentSerializer;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.api.API;
 import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.ProcessUpdatedEvent;
@@ -79,7 +80,7 @@ public final class VelocityListener {
             int online = info.getProcessPlayerManager().getOnlineCount();
 
             builder
-                    .description(TextComponent.of(finalMotd))
+                    .description(LegacyComponentSerializer.legacyLinking().deserialize(finalMotd))
                     .maximumPlayers(max)
                     .onlinePlayers(online)
                     .build();
@@ -126,10 +127,10 @@ public final class VelocityListener {
         ProxyConfigurationHandler.getInstance().getCurrentTabListConfiguration().ifPresent(tabListConfiguration -> {
             Component header = tabListConfiguration.getHeader() == null
                     ? TextComponent.empty()
-                    : TextComponent.of(replaceVelocityPlaceHolders(player, tabListConfiguration.getHeader()));
+                    : LegacyComponentSerializer.legacyLinking().deserialize(replaceVelocityPlaceHolders(player, tabListConfiguration.getHeader()));
             Component footer = tabListConfiguration.getFooter() == null
                     ? TextComponent.empty()
-                    : TextComponent.of(replaceVelocityPlaceHolders(player, tabListConfiguration.getFooter()));
+                    : LegacyComponentSerializer.legacyLinking().deserialize(replaceVelocityPlaceHolders(player, tabListConfiguration.getFooter()));
 
             player.getTabList().setHeaderAndFooter(header, footer);
         });

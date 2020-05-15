@@ -28,7 +28,7 @@ import com.velocitypowered.api.command.Command;
 import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ServerConnection;
-import net.kyori.text.TextComponent;
+import net.kyori.text.serializer.legacy.LegacyComponentSerializer;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.api.API;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
@@ -61,7 +61,7 @@ public class CommandLeave implements Command {
         }
 
         if (!currentServer.isPresent() || process == null || process.isLobby()) {
-            player.sendMessage(TextComponent.of(
+            player.sendMessage(LegacyComponentSerializer.legacyLinking().deserialize(
                     VelocityExecutor.getInstance().getMessages().format(
                             VelocityExecutor.getInstance().getMessages().getAlreadyConnectedToHub()
                     )
@@ -75,7 +75,7 @@ public class CommandLeave implements Command {
                 null
         );
         if (lobby != null) {
-            player.sendMessage(TextComponent.of(
+            player.sendMessage(LegacyComponentSerializer.legacyLinking().deserialize(
                     VelocityExecutor.getInstance().getMessages().format(
                             VelocityExecutor.getInstance().getMessages().getConnectingToHub(), lobby.getProcessDetail().getName()
                     )
@@ -85,7 +85,7 @@ public class CommandLeave implements Command {
             return;
         }
 
-        player.sendMessage(TextComponent.of(
+        player.sendMessage(LegacyComponentSerializer.legacyLinking().deserialize(
                 VelocityExecutor.getInstance().getMessages().format(
                         VelocityExecutor.getInstance().getMessages().getNoHubServerAvailable()
                 )

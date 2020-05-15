@@ -31,7 +31,7 @@ import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.proxy.ProxyServer;
-import net.kyori.text.TextComponent;
+import net.kyori.text.serializer.legacy.LegacyComponentSerializer;
 import systems.reformcloud.reformcloud2.executor.api.common.language.loading.LanguageWorker;
 
 @Plugin(
@@ -63,7 +63,7 @@ public final class VelocityLauncher {
     @Subscribe
     public void handleStop(ProxyShutdownEvent event) {
         VelocityExecutor.getInstance().getNetworkClient().disconnect();
-        proxyServer.getAllPlayers().forEach(e -> e.disconnect(TextComponent.of(
+        proxyServer.getAllPlayers().forEach(e -> e.disconnect(LegacyComponentSerializer.legacyLinking().deserialize(
                 VelocityExecutor.getInstance().getMessages().getCurrentProcessClosed()
         )));
     }

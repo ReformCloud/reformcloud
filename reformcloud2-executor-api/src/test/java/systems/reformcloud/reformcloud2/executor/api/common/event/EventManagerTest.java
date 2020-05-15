@@ -54,11 +54,13 @@ public class EventManagerTest {
         eventManager.registerListener(listenerTest);
         eventManager.registerListener(listenerTest2);
 
-        assertEquals(1, eventManager.getListeners().size());
+        assertEquals(5, eventManager.getListeners().size());
         eventManager.callEvent(event);
+        assertEquals(9, countDownLatch.getCount());
+        eventManager.callEvent(new EventTest2());
         assertEquals(7, countDownLatch.getCount());
         eventManager.unregisterListener(listenerTest);
-        assertEquals(1, eventManager.getListeners().size());
+        assertEquals(3, eventManager.getListeners().size());
         eventManager.unregisterAll();
         assertEquals(0, eventManager.getListeners().size());
     }
@@ -79,7 +81,14 @@ public class EventManagerTest {
     public final class ListenerTest2 {
 
         @Listener(priority = EventPriority.MONITOR)
-        public void handle(EventTest eventTest) {
+        public void handle(EventTest2 eventTest) {
+            assertEquals(8, countDownLatch.getCount());
+            countDownLatch.countDown();
+        }
+
+        @Listener(priority = EventPriority.FIRST)
+        public void handleSecond(EventTest2 eventTest) {
+            assertEquals(9, countDownLatch.getCount());
             countDownLatch.countDown();
         }
 
@@ -89,18 +98,10 @@ public class EventManagerTest {
         }
     }
 
-    public final class EventTest extends Event {
+    public static class EventTest extends Event {
+    }
 
-        @Override
-        public void preCall() {
-            assertEquals(12, countDownLatch.getCount());
-            countDownLatch.countDown();
-        }
-
-        @Override
-        public void postCall() {
-
-        }
+    public static class EventTest2 extends Event {
     }
 
 }
