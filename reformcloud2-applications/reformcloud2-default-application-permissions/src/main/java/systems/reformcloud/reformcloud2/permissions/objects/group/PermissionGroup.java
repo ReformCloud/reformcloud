@@ -25,6 +25,10 @@
 package systems.reformcloud.reformcloud2.permissions.objects.group;
 
 import com.google.gson.reflect.TypeToken;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -34,11 +38,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.data.Protoco
 import systems.reformcloud.reformcloud2.permissions.checks.GeneralCheck;
 import systems.reformcloud.reformcloud2.permissions.checks.WildcardCheck;
 import systems.reformcloud.reformcloud2.permissions.nodes.PermissionNode;
-
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
 
 public class PermissionGroup implements SerializableObject {
 
@@ -186,9 +185,11 @@ public class PermissionGroup implements SerializableObject {
         return extra == null ? new JsonConfiguration() : extra;
     }
 
-    public boolean hasPermission(@NotNull String perm) {
-        if (WildcardCheck.hasWildcardPermission(this, perm)) {
-            return true;
+    @Nullable
+    public Boolean hasPermission(@NotNull String perm) {
+        Boolean hasPermission = WildcardCheck.hasWildcardPermission(this, perm);
+        if (hasPermission != null) {
+            return hasPermission;
         }
 
         return GeneralCheck.hasPermission(this, perm);

@@ -40,9 +40,11 @@ public final class GeneralCheck {
         throw new UnsupportedOperationException();
     }
 
-    public static boolean hasPermission(@NotNull PermissionGroup permissionGroup, @NotNull String perm) {
-        if (has(permissionGroup, "*")) {
-            return true;
+    @Nullable
+    public static Boolean hasPermission(@NotNull PermissionGroup permissionGroup, @NotNull String perm) {
+        Boolean hasPermission = has(permissionGroup, "*");
+        if (hasPermission != null) {
+            return hasPermission;
         }
 
         return has(permissionGroup, perm);
@@ -83,20 +85,21 @@ public final class GeneralCheck {
         return null;
     }
 
-    private static boolean has(@NotNull PermissionGroup permissionGroup, @NotNull String perm) {
+    @Nullable
+    private static Boolean has(@NotNull PermissionGroup permissionGroup, @NotNull String perm) {
         if (permissionGroup.getPermissionNodes().stream().anyMatch(e -> e.getActualPermission().equals(perm) && e.isSet())) {
             return true;
         }
 
         final ProcessInformation current = API.getInstance().getCurrentProcessInformation();
         if (!permissionGroup.getPerGroupPermissions().containsKey(current.getProcessGroup().getName())) {
-            return false;
+            return null;
         }
 
         final Collection<PermissionNode> currentGroupPerms = permissionGroup.getPerGroupPermissions()
                 .get(current.getProcessGroup().getName());
         if (currentGroupPerms.isEmpty()) {
-            return false;
+            return null;
         }
 
         for (PermissionNode currentGroupPerm : currentGroupPerms) {
@@ -105,6 +108,6 @@ public final class GeneralCheck {
             }
         }
 
-        return false;
+        return null;
     }
 }

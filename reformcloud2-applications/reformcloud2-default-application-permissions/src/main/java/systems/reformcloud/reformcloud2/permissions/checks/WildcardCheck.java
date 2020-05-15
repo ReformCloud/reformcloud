@@ -40,7 +40,7 @@ public final class WildcardCheck {
         throw new UnsupportedOperationException();
     }
 
-    public static boolean hasWildcardPermission(@NotNull PermissionGroup permissionGroup, @NotNull String perm) {
+    public static Boolean hasWildcardPermission(@NotNull PermissionGroup permissionGroup, @NotNull String perm) {
         Boolean hasPermission = hasPermission(permissionGroup.getPermissionNodes(), perm);
         if (hasPermission != null) {
             return hasPermission;
@@ -49,11 +49,10 @@ public final class WildcardCheck {
         final ProcessInformation current = API.getInstance().getCurrentProcessInformation();
         final Collection<PermissionNode> currentGroupPerms = permissionGroup.getPerGroupPermissions().get(current.getProcessGroup().getName());
         if (currentGroupPerms == null || currentGroupPerms.isEmpty()) {
-            return false;
+            return null;
         }
 
-        hasPermission = hasPermission(currentGroupPerms, perm);
-        return hasPermission != null && hasPermission;
+        return hasPermission(currentGroupPerms, perm);
     }
 
     @Nullable

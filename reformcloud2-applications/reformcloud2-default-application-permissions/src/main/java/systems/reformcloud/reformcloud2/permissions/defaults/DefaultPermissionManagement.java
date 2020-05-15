@@ -188,8 +188,9 @@ public class DefaultPermissionManagement extends PermissionManagement {
                 continue;
             }
 
-            if (hasPermission(permissionGroup, permission)) {
-                return true;
+            Boolean hasPermission = this.hasPermission0(permissionGroup, permission);
+            if (hasPermission != null) {
+                return hasPermission;
             }
         }
 
@@ -380,8 +381,15 @@ public class DefaultPermissionManagement extends PermissionManagement {
 
     @Override
     public boolean hasPermission(@NotNull PermissionGroup group, @NotNull String perm) {
-        if (group.hasPermission(perm)) {
-            return true;
+        Boolean hasPermission = this.hasPermission0(group, perm);
+        return hasPermission != null && hasPermission;
+    }
+
+    @Nullable
+    private Boolean hasPermission0(@NotNull PermissionGroup group, @NotNull String perm) {
+        Boolean hasSubPermission = group.hasPermission(perm);
+        if (hasSubPermission != null) {
+            return hasSubPermission;
         }
 
         for (String subGroup : group.getSubGroups()) {
@@ -390,12 +398,13 @@ public class DefaultPermissionManagement extends PermissionManagement {
                 continue;
             }
 
-            if (sub.hasPermission(perm)) {
-                return true;
+            hasSubPermission = this.hasPermission0(sub, perm);
+            if (hasSubPermission != null) {
+                return hasSubPermission;
             }
         }
 
-        return false;
+        return null;
     }
 
     private void eraseUserCache(@NotNull PermissionUser permissionUser) {
