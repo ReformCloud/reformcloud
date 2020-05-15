@@ -222,7 +222,8 @@ public final class BungeeExecutor extends API implements PlayerAPIExecutor {
     private void fixInvalidPlayers() {
         SharedInvalidPlayerFixer.start(
                 uuid -> ProxyServer.getInstance().getPlayer(uuid) != null,
-                () -> ProxyServer.getInstance().getOnlineCount()
+                () -> ProxyServer.getInstance().getOnlineCount(),
+                information -> this.thisProcessInformation = information
         );
     }
 

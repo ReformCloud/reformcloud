@@ -205,7 +205,8 @@ public class SpongeExecutor extends API implements PlayerAPIExecutor {
     private void fixInvalidPlayers() {
         SharedInvalidPlayerFixer.start(
                 uuid -> Sponge.getServer().getPlayer(uuid).isPresent(),
-                () -> Sponge.getServer().getOnlinePlayers().size()
+                () -> Sponge.getServer().getOnlinePlayers().size(),
+                information -> this.thisProcessInformation = information
         );
     }
 

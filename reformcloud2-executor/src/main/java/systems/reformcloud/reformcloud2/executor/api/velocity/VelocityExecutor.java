@@ -233,7 +233,8 @@ public final class VelocityExecutor extends API implements PlayerAPIExecutor {
     private void fixInvalidPlayers() {
         SharedInvalidPlayerFixer.start(
                 uuid -> this.proxyServer.getPlayer(uuid).isPresent(),
-                () -> this.proxyServer.getPlayerCount()
+                () -> this.proxyServer.getPlayerCount(),
+                information -> this.thisProcessInformation = information
         );
     }
 

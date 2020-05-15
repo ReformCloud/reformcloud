@@ -199,7 +199,8 @@ public final class SpigotExecutor extends API implements PlayerAPIExecutor {
     private void fixInvalidPlayers() {
         SharedInvalidPlayerFixer.start(
                 uuid -> Bukkit.getPlayer(uuid) != null,
-                () -> Bukkit.getOnlinePlayers().size()
+                () -> Bukkit.getOnlinePlayers().size(),
+                information -> this.thisProcessInformation = information
         );
     }
 

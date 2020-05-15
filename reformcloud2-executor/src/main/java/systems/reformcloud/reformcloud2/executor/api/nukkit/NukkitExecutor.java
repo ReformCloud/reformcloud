@@ -194,7 +194,8 @@ public final class NukkitExecutor extends API implements PlayerAPIExecutor {
     private void fixInvalidPlayers() {
         SharedInvalidPlayerFixer.start(
                 uuid -> Server.getInstance().getPlayer(uuid).isPresent(),
-                () -> Server.getInstance().getOnlinePlayers().size()
+                () -> Server.getInstance().getOnlinePlayers().size(),
+                information -> this.thisProcessInformation = information
         );
     }
 

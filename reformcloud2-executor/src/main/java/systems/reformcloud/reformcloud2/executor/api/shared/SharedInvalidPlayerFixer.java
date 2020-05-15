@@ -26,7 +26,6 @@ package systems.reformcloud.reformcloud2.executor.api.shared;
 
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.api.API;
-import systems.reformcloud.reformcloud2.executor.api.bungee.BungeeExecutor;
 import systems.reformcloud.reformcloud2.executor.api.common.CommonHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.process.Player;
@@ -37,6 +36,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -46,7 +46,8 @@ public final class SharedInvalidPlayerFixer {
         throw new UnsupportedOperationException();
     }
 
-    public static void start(@NotNull Function<UUID, Boolean> onlineChecker, @NotNull Supplier<Integer> onlineCountSupplier) {
+    public static void start(@NotNull Function<UUID, Boolean> onlineChecker, @NotNull Supplier<Integer> onlineCountSupplier,
+                             @NotNull Consumer<ProcessInformation> processInformationUpdater) {
         CommonHelper.SCHEDULED_EXECUTOR_SERVICE.scheduleAtFixedRate(() -> {
             ProcessInformation current = API.getInstance().getCurrentProcessInformation();
             Collection<UUID> forRemoval = new ArrayList<>();
@@ -75,7 +76,7 @@ public final class SharedInvalidPlayerFixer {
             }
 
             current.updateRuntimeInformation();
-            BungeeExecutor.getInstance().setThisProcessInformation(current);
+            processInformationUpdater.accept(current);
             ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(current);
         }, 2, 2, TimeUnit.SECONDS);
     }
