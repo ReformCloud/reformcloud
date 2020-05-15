@@ -36,11 +36,11 @@ import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Duo;
 
 public class DefaultWebServerAuth implements Auth {
 
+    private final DatabaseSyncAPI api;
+
     public DefaultWebServerAuth(DatabaseSyncAPI api) {
         this.api = api;
     }
-
-    private final DatabaseSyncAPI api;
 
     @NotNull
     @Override

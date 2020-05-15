@@ -53,12 +53,12 @@ public final class RegistryBuilder {
 
     private static final class RegistryImpl implements Registry {
 
+        private final Path folder;
+
         private RegistryImpl(Path folder) {
             this.folder = folder;
             SystemHelper.createDirectory(folder);
         }
-
-        private final Path folder;
 
         @NotNull
         @Override

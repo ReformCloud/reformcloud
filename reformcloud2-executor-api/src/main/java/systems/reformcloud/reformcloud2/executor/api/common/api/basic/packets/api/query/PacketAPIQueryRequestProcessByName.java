@@ -38,14 +38,14 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packe
 
 public class PacketAPIQueryRequestProcessByName extends Packet {
 
+    private String name;
+
     public PacketAPIQueryRequestProcessByName() {
     }
 
     public PacketAPIQueryRequestProcessByName(String name) {
         this.name = name;
     }
-
-    private String name;
 
     @Override
     public int getId() {

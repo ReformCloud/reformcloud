@@ -33,11 +33,11 @@ import systems.reformcloud.reformcloud2.executor.api.common.process.detail.Proce
  */
 public final class ProcessDetailConfigureEvent extends Event {
 
+    private final ProcessDetail processDetail;
+
     public ProcessDetailConfigureEvent(@NotNull ProcessDetail processDetail) {
         this.processDetail = processDetail;
     }
-
-    private final ProcessDetail processDetail;
 
     /**
      * @return The process detail which got created

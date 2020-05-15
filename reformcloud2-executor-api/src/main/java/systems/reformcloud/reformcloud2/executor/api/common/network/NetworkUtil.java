@@ -45,37 +45,26 @@ import java.util.concurrent.ThreadFactory;
 
 public final class NetworkUtil {
 
+    public static final int AUTH_BUS = -550;
+
+    /* ============================= */
+    public static final int NODE_TO_NODE_BUS = 20000;
+    public static final int NODE_TO_NODE_QUERY_BUS = 25000;
+    public static final int CONTROLLER_INFORMATION_BUS = 2000;
+    public static final int EVENT_BUS = 3000;
+    public static final int CONTROLLER_QUERY_BUS = 4000;
+    public static final int PLAYER_INFORMATION_BUS = 5000;
+    public static final int EXTERNAL_BUS = 50000;
+    public static final int MESSAGING_BUS = 60000;
+    public static final Executor EXECUTOR = Executors.newCachedThreadPool();
+
+    /* ============================ */
+    public static final WriteBufferWaterMark WATER_MARK = new WriteBufferWaterMark(524288, 2097152);
+    private static final boolean EPOLL = Epoll.isAvailable();
+
     private NetworkUtil() {
         throw new UnsupportedOperationException();
     }
-
-    /* ============================= */
-
-    public static final int AUTH_BUS = -550;
-
-    public static final int NODE_TO_NODE_BUS = 20000;
-
-    public static final int NODE_TO_NODE_QUERY_BUS = 25000;
-
-    public static final int CONTROLLER_INFORMATION_BUS = 2000;
-
-    public static final int EVENT_BUS = 3000;
-
-    public static final int CONTROLLER_QUERY_BUS = 4000;
-
-    public static final int PLAYER_INFORMATION_BUS = 5000;
-
-    public static final int EXTERNAL_BUS = 50000;
-
-    public static final int MESSAGING_BUS = 60000;
-
-    /* ============================ */
-
-    public static final Executor EXECUTOR = Executors.newCachedThreadPool();
-
-    private static final boolean EPOLL = Epoll.isAvailable();
-
-    public static final WriteBufferWaterMark WATER_MARK = new WriteBufferWaterMark(524288, 2097152);
 
     @NotNull
     public static EventLoopGroup eventLoopGroup() {

@@ -31,9 +31,9 @@ import systems.reformcloud.reformcloud2.executor.api.common.restapi.request.Requ
 
 public abstract class RestAPIHandler extends SimpleChannelInboundHandler<HttpRequest> {
 
+    protected final RequestListenerHandler requestHandler;
+
     public RestAPIHandler(@NotNull RequestListenerHandler requestHandler) {
         this.requestHandler = requestHandler;
     }
-
-    protected final RequestListenerHandler requestHandler;
 }

@@ -42,6 +42,16 @@ public final class Template implements Nameable, SerializableObject {
 
     public static final TypeToken<Template> TYPE = new TypeToken<Template>() {
     };
+    private int priority;
+    private String name;
+    private boolean global;
+    private boolean autoReleaseOnClose;
+    private String backend;
+    private String serverNameSplitter;
+    private RuntimeConfiguration runtimeConfiguration;
+    private Version version;
+    private Collection<Inclusion> templateInclusions;
+    private Collection<Inclusion> pathInclusions;
 
     @ApiStatus.Internal
     public Template() {
@@ -72,26 +82,6 @@ public final class Template implements Nameable, SerializableObject {
         this.templateInclusions = templateInclusions;
         this.pathInclusions = pathInclusions;
     }
-
-    private int priority;
-
-    private String name;
-
-    private boolean global;
-
-    private boolean autoReleaseOnClose;
-
-    private String backend;
-
-    private String serverNameSplitter;
-
-    private RuntimeConfiguration runtimeConfiguration;
-
-    private Version version;
-
-    private Collection<Inclusion> templateInclusions;
-
-    private Collection<Inclusion> pathInclusions;
 
     public int getPriority() {
         return priority;

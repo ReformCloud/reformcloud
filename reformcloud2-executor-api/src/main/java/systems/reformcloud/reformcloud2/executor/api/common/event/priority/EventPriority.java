@@ -38,11 +38,11 @@ public enum EventPriority {
 
     LAST((byte) 64);
 
+    private final byte priority;
+
     EventPriority(byte priorityInJava) {
         this.priority = priorityInJava;
     }
-
-    private final byte priority;
 
     public byte getPriority() {
         return priority;

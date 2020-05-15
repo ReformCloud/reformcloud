@@ -34,14 +34,14 @@ import java.util.List;
 
 public class PacketAPIQueryGetProcessGroupsResult extends QueryResultPacket {
 
+    private List<ProcessGroup> processGroups;
+
     public PacketAPIQueryGetProcessGroupsResult() {
     }
 
     public PacketAPIQueryGetProcessGroupsResult(List<ProcessGroup> processGroups) {
         this.processGroups = processGroups;
     }
-
-    private List<ProcessGroup> processGroups;
 
     public List<ProcessGroup> getProcessGroups() {
         return processGroups;

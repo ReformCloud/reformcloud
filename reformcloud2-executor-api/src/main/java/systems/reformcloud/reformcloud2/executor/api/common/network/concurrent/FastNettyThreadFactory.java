@@ -32,13 +32,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class FastNettyThreadFactory implements ThreadFactory {
 
+    private final String nameFormat;
+    private final AtomicInteger threadNumber = new AtomicInteger();
+
     public FastNettyThreadFactory(String nameFormat) {
         this.nameFormat = nameFormat;
     }
-
-    private final String nameFormat;
-
-    private final AtomicInteger threadNumber = new AtomicInteger();
 
     @Override
     public Thread newThread(@NotNull Runnable r) {

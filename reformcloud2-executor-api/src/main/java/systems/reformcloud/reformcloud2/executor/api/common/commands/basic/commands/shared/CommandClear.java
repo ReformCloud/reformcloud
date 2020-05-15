@@ -32,12 +32,12 @@ import systems.reformcloud.reformcloud2.executor.api.common.logger.LoggerBase;
 
 public final class CommandClear extends GlobalCommand {
 
+    private final LoggerBase loggerBase;
+
     public CommandClear(LoggerBase loggerBase) {
         super("clear", "reformcloud.command.clear", "Clears the console", "cls");
         this.loggerBase = loggerBase;
     }
-
-    private final LoggerBase loggerBase;
 
     @Override
     public void describeCommandToSender(@NotNull CommandSource source) {

@@ -37,6 +37,8 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.handler.Chan
 
 public class PacketAPIProcessCopyByName extends PacketAPIProcessCopy {
 
+    private String processName;
+
     public PacketAPIProcessCopyByName() {
         super(null, null, null);
     }
@@ -45,8 +47,6 @@ public class PacketAPIProcessCopyByName extends PacketAPIProcessCopy {
         super(targetTemplate, targetTemplateStorage, targetTemplateGroup);
         this.processName = processName;
     }
-
-    private String processName;
 
     @Override
     public int getId() {

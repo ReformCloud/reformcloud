@@ -40,19 +40,19 @@ import java.util.*;
 
 public final class ProcessConfigurationBuilder {
 
-    @NotNull
-    public static ProcessConfigurationBuilder newBuilder(@NotNull String processGroupName) {
-        ProcessGroup group = ExecutorAPI.getInstance().getSyncAPI().getGroupSyncAPI().getProcessGroup(processGroupName);
-        Conditions.nonNull(group, "Unable to find group with name " + processGroupName);
-        return newBuilder(group);
-    }
-
-    @NotNull
-    public static ProcessConfigurationBuilder newBuilder(@NotNull ProcessGroup processGroup) {
-        return new ProcessConfigurationBuilder(processGroup);
-    }
+    private final ProcessGroup base;
+    private UUID uniqueID = UUID.randomUUID();
 
     /* =================================== */
+    private String displayName;
+    private Integer maxMemory;
+    private Integer port;
+    private Template template;
+    private JsonConfiguration extra = new JsonConfiguration();
+    private int id = -1;
+    private int maxPlayers;
+    private ProcessState initialState = ProcessState.READY;
+    private Collection<ProcessInclusion> inclusions = new ArrayList<>();
 
     /**
      * Use {@link #newBuilder(String)} )} instead
@@ -64,27 +64,17 @@ public final class ProcessConfigurationBuilder {
         this.maxPlayers = processGroup.getPlayerAccessConfiguration().getMaxPlayers();
     }
 
-    private final ProcessGroup base;
+    @NotNull
+    public static ProcessConfigurationBuilder newBuilder(@NotNull String processGroupName) {
+        ProcessGroup group = ExecutorAPI.getInstance().getSyncAPI().getGroupSyncAPI().getProcessGroup(processGroupName);
+        Conditions.nonNull(group, "Unable to find group with name " + processGroupName);
+        return newBuilder(group);
+    }
 
-    private UUID uniqueID = UUID.randomUUID();
-
-    private String displayName;
-
-    private Integer maxMemory;
-
-    private Integer port;
-
-    private Template template;
-
-    private JsonConfiguration extra = new JsonConfiguration();
-
-    private int id = -1;
-
-    private int maxPlayers;
-
-    private ProcessState initialState = ProcessState.READY;
-
-    private Collection<ProcessInclusion> inclusions = new ArrayList<>();
+    @NotNull
+    public static ProcessConfigurationBuilder newBuilder(@NotNull ProcessGroup processGroup) {
+        return new ProcessConfigurationBuilder(processGroup);
+    }
 
     @NotNull
     public ProcessConfigurationBuilder uniqueId(@NotNull UUID uniqueID) {

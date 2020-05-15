@@ -37,6 +37,10 @@ import java.util.*;
 public abstract class GlobalCommand implements Command {
 
     public static final String DEFAULT_DESCRIPTION = "A reformcloud2 provided command";
+    private final List<String> aliases;
+    private final String mainCommand;
+    private final String description;
+    private final Permission permissionCheck;
 
     public GlobalCommand(String command, String permission, String description, String... aliases) {
         this(command, permission, description, Arrays.asList(aliases));
@@ -73,14 +77,6 @@ public abstract class GlobalCommand implements Command {
         this.description = DEFAULT_DESCRIPTION;
         this.permissionCheck = new DefaultPermission(null, PermissionResult.ALLOWED);
     }
-
-    private final List<String> aliases;
-
-    private final String mainCommand;
-
-    private final String description;
-
-    private final Permission permissionCheck;
 
     @NotNull
     @Override

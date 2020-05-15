@@ -47,13 +47,13 @@ import systems.reformcloud.reformcloud2.executor.api.common.language.loading.Lan
 )
 public final class VelocityLauncher {
 
+    private final ProxyServer proxyServer;
+
     @Inject
     public VelocityLauncher(ProxyServer proxyServer) {
         LanguageWorker.doLoad();
         this.proxyServer = proxyServer;
     }
-
-    private final ProxyServer proxyServer;
 
     @Subscribe(order = PostOrder.FIRST)
     public void handleInit(ProxyInitializeEvent event) {

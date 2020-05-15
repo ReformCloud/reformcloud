@@ -38,13 +38,12 @@ import java.util.concurrent.TimeUnit;
 
 public final class SharedChallengeProvider implements ChallengeProvider {
 
+    private final String authKey;
+    private final Map<String, String> runningChallenges = new ConcurrentHashMap<>();
+
     public SharedChallengeProvider(String authKey) {
         this.authKey = authKey;
     }
-
-    private final String authKey;
-
-    private final Map<String, String> runningChallenges = new ConcurrentHashMap<>();
 
     @Nullable
     @Override

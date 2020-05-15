@@ -40,6 +40,9 @@ import java.util.UUID;
 
 public class ClientPacketProcessRegistered extends Packet {
 
+    private UUID processUniqueID;
+    private String processName;
+
     public ClientPacketProcessRegistered() {
     }
 
@@ -47,10 +50,6 @@ public class ClientPacketProcessRegistered extends Packet {
         this.processUniqueID = processUniqueID;
         this.processName = processName;
     }
-
-    private UUID processUniqueID;
-
-    private String processName;
 
     @Override
     public int getId() {

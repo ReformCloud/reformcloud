@@ -85,6 +85,32 @@ public abstract class SharedRunningProcess implements RunningProcess {
                     "(?:[01]?\\d\\d?|2[0-4]\\d|25[0-5])" +
                     "(?!\\d|\\.\\d)"
     );
+    /**
+     * The process information of the current process before it started (will never get updated again)
+     */
+    protected final ProcessInformation startupInformation;
+    /**
+     * The current path of the process in which the process is or will run
+     */
+    protected final Path path;
+    /**
+     * If the process got started the first time
+     */
+    private final boolean firstStartup;
+    /**
+     * The runtime process in which the current process runs
+     */
+    protected Process process;
+
+    /**
+     * The startup time of the process ({@code -1} if it's not started yet)
+     */
+    protected long startupTime = -1;
+
+    /**
+     * The screen of the current running process
+     */
+    protected RunningProcessScreen runningProcessScreen;
 
     /**
      * Creates a new shared process
@@ -106,36 +132,6 @@ public abstract class SharedRunningProcess implements RunningProcess {
             SystemHelper.recreateDirectory(path);
         }
     }
-
-    /**
-     * The process information of the current process before it started (will never get updated again)
-     */
-    protected final ProcessInformation startupInformation;
-
-    /**
-     * The current path of the process in which the process is or will run
-     */
-    protected final Path path;
-
-    /**
-     * The runtime process in which the current process runs
-     */
-    protected Process process;
-
-    /**
-     * The startup time of the process ({@code -1} if it's not started yet)
-     */
-    protected long startupTime = -1;
-
-    /**
-     * The screen of the current running process
-     */
-    protected RunningProcessScreen runningProcessScreen;
-
-    /**
-     * If the process got started the first time
-     */
-    private final boolean firstStartup;
 
     @NotNull
     @Override

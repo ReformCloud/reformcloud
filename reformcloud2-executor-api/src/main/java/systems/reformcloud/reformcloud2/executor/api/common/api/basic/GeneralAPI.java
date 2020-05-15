@@ -42,11 +42,11 @@ import systems.reformcloud.reformcloud2.executor.api.common.api.process.ProcessS
 
 public class GeneralAPI implements SyncAPI, AsyncAPI {
 
+    private final ExternalAPIImplementation externalAPIImplementation;
+
     GeneralAPI(ExternalAPIImplementation externalAPIImplementation) {
         this.externalAPIImplementation = externalAPIImplementation;
     }
-
-    private final ExternalAPIImplementation externalAPIImplementation;
 
     @NotNull
     @Override

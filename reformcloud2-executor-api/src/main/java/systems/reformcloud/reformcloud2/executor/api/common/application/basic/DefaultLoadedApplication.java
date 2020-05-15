@@ -33,20 +33,17 @@ import systems.reformcloud.reformcloud2.executor.api.common.application.LoadedAp
 
 public final class DefaultLoadedApplication implements LoadedApplication {
 
+    private final ApplicationLoader loader;
+    private final Class<?> main;
+    private final ApplicationConfig application;
+    private ApplicationStatus applicationStatus;
+
     public DefaultLoadedApplication(ApplicationLoader loader, ApplicationConfig application, Class<?> main) {
         this.loader = loader;
         this.application = application;
         this.main = main;
         this.applicationStatus = ApplicationStatus.INSTALLABLE;
     }
-
-    private final ApplicationLoader loader;
-
-    private final Class<?> main;
-
-    private final ApplicationConfig application;
-
-    private ApplicationStatus applicationStatus;
 
     @NotNull
     @Override
@@ -73,12 +70,12 @@ public final class DefaultLoadedApplication implements LoadedApplication {
     }
 
     @Override
-    public Class<?> getMainClass() {
-        return main;
+    public void setApplicationStatus(@NotNull ApplicationStatus status) {
+        this.applicationStatus = status;
     }
 
     @Override
-    public void setApplicationStatus(@NotNull ApplicationStatus status) {
-        this.applicationStatus = status;
+    public Class<?> getMainClass() {
+        return main;
     }
 }

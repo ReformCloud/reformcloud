@@ -40,6 +40,10 @@ import java.util.UUID;
 
 public class NodePacketOutProcessPrepared extends Packet {
 
+    private String processName;
+    private UUID processUniqueID;
+    private String template;
+
     public NodePacketOutProcessPrepared() {
     }
 
@@ -48,13 +52,6 @@ public class NodePacketOutProcessPrepared extends Packet {
         this.processUniqueID = processUniqueID;
         this.template = template;
     }
-
-    private String processName;
-
-    private UUID processUniqueID;
-
-    private String template;
-
 
     @Override
     public int getId() {

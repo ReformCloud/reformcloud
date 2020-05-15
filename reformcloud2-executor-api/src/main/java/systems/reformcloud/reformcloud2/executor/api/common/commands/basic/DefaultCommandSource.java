@@ -38,14 +38,13 @@ import java.util.function.Consumer;
 
 public final class DefaultCommandSource implements CommandSource {
 
+    private final Consumer<String> result;
+    private final CommandManager commandManager;
+
     public DefaultCommandSource(Consumer<String> result, CommandManager commandManager) {
         this.result = result;
         this.commandManager = commandManager;
     }
-
-    private final Consumer<String> result;
-
-    private final CommandManager commandManager;
 
     @Override
     public void sendMessage(@NotNull String message) {

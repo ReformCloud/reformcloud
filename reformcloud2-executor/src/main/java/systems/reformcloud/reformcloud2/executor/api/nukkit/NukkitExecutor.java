@@ -121,6 +121,11 @@ public final class NukkitExecutor extends API implements PlayerAPIExecutor {
         awaitConnectionAndUpdate();
     }
 
+    @NotNull
+    public static NukkitExecutor getInstance() {
+        return instance;
+    }
+
     NetworkClient getNetworkClient() {
         return networkClient;
     }
@@ -132,6 +137,10 @@ public final class NukkitExecutor extends API implements PlayerAPIExecutor {
     @NotNull
     public IngameMessages getMessages() {
         return messages;
+    }
+
+    public void setMessages(IngameMessages messages) {
+        this.messages = messages;
     }
 
     @NotNull
@@ -148,11 +157,6 @@ public final class NukkitExecutor extends API implements PlayerAPIExecutor {
     @Override
     public ProcessInformation getCurrentProcessInformation() {
         return this.thisProcessInformation;
-    }
-
-    @NotNull
-    public static NukkitExecutor getInstance() {
-        return instance;
     }
 
     public void setThisProcessInformation(ProcessInformation thisProcessInformation) {
@@ -185,10 +189,6 @@ public final class NukkitExecutor extends API implements PlayerAPIExecutor {
                     })
             );
         });
-    }
-
-    public void setMessages(IngameMessages messages) {
-        this.messages = messages;
     }
 
     private void fixInvalidPlayers() {

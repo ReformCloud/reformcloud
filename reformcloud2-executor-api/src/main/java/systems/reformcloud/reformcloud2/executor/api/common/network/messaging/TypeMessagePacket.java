@@ -48,6 +48,11 @@ import java.util.Collection;
 
 public class TypeMessagePacket extends Packet {
 
+    private Collection<ReceiverType> receivers;
+    private JsonConfiguration content;
+    private String baseChannel;
+    private String subChannel;
+
     public TypeMessagePacket() {
     }
 
@@ -57,14 +62,6 @@ public class TypeMessagePacket extends Packet {
         this.baseChannel = baseChannel;
         this.subChannel = subChannel;
     }
-
-    private Collection<ReceiverType> receivers;
-
-    private JsonConfiguration content;
-
-    private String baseChannel;
-
-    private String subChannel;
 
     @Override
     public int getId() {

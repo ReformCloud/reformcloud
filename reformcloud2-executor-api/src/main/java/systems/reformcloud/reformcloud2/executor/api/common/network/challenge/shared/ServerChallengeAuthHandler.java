@@ -38,6 +38,10 @@ import java.util.function.Function;
 
 public class ServerChallengeAuthHandler implements ChallengeAuthHandler {
 
+    private final Function<String, String> name;
+    private final ChallengeProvider provider;
+    private final BiConsumer<ChannelHandlerContext, PacketOutClientChallengeResponse> afterSuccess;
+
     public ServerChallengeAuthHandler(ChallengeProvider provider, BiConsumer<ChannelHandlerContext, PacketOutClientChallengeResponse> afterSuccess) {
         this.provider = provider;
         this.afterSuccess = afterSuccess;
@@ -49,12 +53,6 @@ public class ServerChallengeAuthHandler implements ChallengeAuthHandler {
         this.afterSuccess = afterSuccess;
         this.name = name;
     }
-
-    private final Function<String, String> name;
-
-    private final ChallengeProvider provider;
-
-    private final BiConsumer<ChannelHandlerContext, PacketOutClientChallengeResponse> afterSuccess;
 
     @Override
     public boolean handle(@NotNull ChannelHandlerContext channelHandlerContext, @NotNull Packet input, @NotNull String name) {

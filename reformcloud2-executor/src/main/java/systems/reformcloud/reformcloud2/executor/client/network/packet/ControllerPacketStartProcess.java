@@ -42,6 +42,9 @@ import systems.reformcloud.reformcloud2.executor.client.process.basic.DefaultRun
 
 public class ControllerPacketStartProcess extends Packet {
 
+    private ProcessInformation processInformation;
+    private boolean start;
+
     public ControllerPacketStartProcess() {
     }
 
@@ -49,10 +52,6 @@ public class ControllerPacketStartProcess extends Packet {
         this.processInformation = processInformation;
         this.start = start;
     }
-
-    private ProcessInformation processInformation;
-
-    private boolean start;
 
     @Override
     public int getId() {

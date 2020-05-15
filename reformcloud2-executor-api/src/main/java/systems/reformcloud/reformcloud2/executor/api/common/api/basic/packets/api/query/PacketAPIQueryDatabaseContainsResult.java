@@ -31,14 +31,14 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.query
 
 public class PacketAPIQueryDatabaseContainsResult extends QueryResultPacket {
 
+    private boolean result;
+
     public PacketAPIQueryDatabaseContainsResult() {
     }
 
     public PacketAPIQueryDatabaseContainsResult(boolean result) {
         this.result = result;
     }
-
-    private boolean result;
 
     public boolean isResult() {
         return result;

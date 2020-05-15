@@ -34,6 +34,8 @@ import org.jetbrains.annotations.ApiStatus;
  */
 public class Event {
 
+    private final boolean async;
+
     public Event() {
         this(false);
     }
@@ -43,8 +45,6 @@ public class Event {
     public Event(boolean isAsync) {
         this.async = isAsync;
     }
-
-    private final boolean async;
 
     @Deprecated
     @ApiStatus.ScheduledForRemoval

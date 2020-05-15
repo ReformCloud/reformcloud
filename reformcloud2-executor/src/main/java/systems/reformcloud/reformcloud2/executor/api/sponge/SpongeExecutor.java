@@ -124,8 +124,17 @@ public class SpongeExecutor extends API implements PlayerAPIExecutor {
         awaitConnectionAndUpdate();
     }
 
+    @NotNull
+    public static SpongeExecutor getInstance() {
+        return instance;
+    }
+
     public IngameMessages getMessages() {
         return messages;
+    }
+
+    public void setMessages(IngameMessages messages) {
+        this.messages = messages;
     }
 
     @Override
@@ -153,11 +162,6 @@ public class SpongeExecutor extends API implements PlayerAPIExecutor {
     @Override
     public ProcessInformation getCurrentProcessInformation() {
         return this.thisProcessInformation;
-    }
-
-    @NotNull
-    public static SpongeExecutor getInstance() {
-        return instance;
     }
 
     public void setThisProcessInformation(@NotNull ProcessInformation thisProcessInformation) {
@@ -196,10 +200,6 @@ public class SpongeExecutor extends API implements PlayerAPIExecutor {
                 }
             }));
         });
-    }
-
-    public void setMessages(IngameMessages messages) {
-        this.messages = messages;
     }
 
     private void fixInvalidPlayers() {

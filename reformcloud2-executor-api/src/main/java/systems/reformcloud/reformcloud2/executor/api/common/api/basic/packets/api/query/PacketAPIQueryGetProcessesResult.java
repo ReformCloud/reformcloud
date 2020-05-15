@@ -34,14 +34,14 @@ import java.util.List;
 
 public class PacketAPIQueryGetProcessesResult extends QueryResultPacket {
 
+    private List<ProcessInformation> processInformation;
+
     public PacketAPIQueryGetProcessesResult() {
     }
 
     public PacketAPIQueryGetProcessesResult(List<ProcessInformation> processInformation) {
         this.processInformation = processInformation;
     }
-
-    private List<ProcessInformation> processInformation;
 
     public List<ProcessInformation> getProcessInformation() {
         return processInformation;

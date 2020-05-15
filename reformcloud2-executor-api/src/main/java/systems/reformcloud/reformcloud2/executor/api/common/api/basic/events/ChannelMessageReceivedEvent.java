@@ -29,17 +29,15 @@ import systems.reformcloud.reformcloud2.executor.api.common.event.Event;
 
 public class ChannelMessageReceivedEvent extends Event {
 
+    private final JsonConfiguration content;
+    private final String baseChannel;
+    private final String subChannel;
+
     public ChannelMessageReceivedEvent(JsonConfiguration content, String baseChannel, String subChannel) {
         this.content = content;
         this.baseChannel = baseChannel;
         this.subChannel = subChannel;
     }
-
-    private final JsonConfiguration content;
-
-    private final String baseChannel;
-
-    private final String subChannel;
 
     public JsonConfiguration getContent() {
         return content;

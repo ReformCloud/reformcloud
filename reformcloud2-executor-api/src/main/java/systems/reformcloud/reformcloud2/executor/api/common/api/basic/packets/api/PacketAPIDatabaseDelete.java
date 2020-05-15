@@ -38,14 +38,14 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packe
 
 public class PacketAPIDatabaseDelete extends Packet {
 
+    private String databaseName;
+
     public PacketAPIDatabaseDelete() {
     }
 
     public PacketAPIDatabaseDelete(String databaseName) {
         this.databaseName = databaseName;
     }
-
-    private String databaseName;
 
     @Override
     public int getId() {

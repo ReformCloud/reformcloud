@@ -43,6 +43,13 @@ public class ProcessGroup implements Nameable, SerializableObject {
 
     public static final TypeToken<ProcessGroup> TYPE = new TypeToken<ProcessGroup>() {
     };
+    private String name;
+    private boolean showIdInName;
+    private StartupConfiguration startupConfiguration;
+    private List<Template> templates;
+    private PlayerAccessConfiguration playerAccessConfiguration;
+    private boolean staticProcess;
+    private boolean canBeUsedAsLobby;
 
     @ApiStatus.Internal
     public ProcessGroup() {
@@ -72,20 +79,6 @@ public class ProcessGroup implements Nameable, SerializableObject {
         this.canBeUsedAsLobby = asLobby;
     }
 
-    private String name;
-
-    private boolean showIdInName;
-
-    private StartupConfiguration startupConfiguration;
-
-    private List<Template> templates;
-
-    private PlayerAccessConfiguration playerAccessConfiguration;
-
-    private boolean staticProcess;
-
-    private boolean canBeUsedAsLobby;
-
     public boolean isShowIdInName() {
         return showIdInName;
     }
@@ -98,6 +91,10 @@ public class ProcessGroup implements Nameable, SerializableObject {
     @NotNull
     public List<Template> getTemplates() {
         return templates;
+    }
+
+    public void setTemplates(List<Template> templates) {
+        this.templates = templates;
     }
 
     @NotNull
@@ -119,10 +116,6 @@ public class ProcessGroup implements Nameable, SerializableObject {
 
     public void setCanBeUsedAsLobby(boolean canBeUsedAsLobby) {
         this.canBeUsedAsLobby = canBeUsedAsLobby;
-    }
-
-    public void setTemplates(List<Template> templates) {
-        this.templates = templates;
     }
 
     @Nullable

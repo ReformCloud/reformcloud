@@ -39,6 +39,9 @@ import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams
 
 public class NodePacketOutExecuteCommand extends Packet {
 
+    private String processName;
+    private String command;
+
     public NodePacketOutExecuteCommand() {
     }
 
@@ -46,10 +49,6 @@ public class NodePacketOutExecuteCommand extends Packet {
         this.processName = processName;
         this.command = command;
     }
-
-    private String processName;
-
-    private String command;
 
     @Override
     public int getId() {

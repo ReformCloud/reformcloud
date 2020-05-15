@@ -43,6 +43,11 @@ import java.io.InputStream;
 
 public class PacketAPIDatabaseInsertDocument extends Packet {
 
+    private String database;
+    private String keyEntry;
+    private String identifier;
+    private JsonConfiguration configuration;
+
     public PacketAPIDatabaseInsertDocument() {
     }
 
@@ -52,14 +57,6 @@ public class PacketAPIDatabaseInsertDocument extends Packet {
         this.identifier = identifier;
         this.configuration = configuration;
     }
-
-    private String database;
-
-    private String keyEntry;
-
-    private String identifier;
-
-    private JsonConfiguration configuration;
 
     @Override
     public int getId() {

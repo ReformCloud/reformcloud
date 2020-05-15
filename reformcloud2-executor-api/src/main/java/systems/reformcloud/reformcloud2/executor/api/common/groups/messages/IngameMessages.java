@@ -35,6 +35,21 @@ public final class IngameMessages implements SerializableObject {
 
     public static final TypeToken<IngameMessages> TYPE = new TypeToken<IngameMessages>() {
     };
+    private String prefix = "§6§lR§e§leform§6§lC§e§lloud§6§l2 §7|";
+    private String processRegistered = "%prefix% §7Registered process §e{0}";
+    private String processStarted = "%prefix% §7The process §e{0} §7is §astarting §7now...";
+    private String processConnected = "%prefix% §7The process §e{0} §7 is §aconnected to the network";
+    private String processStopped = "%prefix% §7The process §e{0} §7is now §cstopped§7...";
+    private String noHubServerAvailable = "%prefix% There is currently §cno §7Hub-Server available";
+    private String alreadyConnectedToHub = "%prefix% You are §ealready connected to a §6Hub-Server";
+    private String connectingToHub = "%prefix% §aSending §7to hub §6{0}§7...";
+    private String currentProcessClosed = "%prefix% §7The current process got §cstopped";
+    private String commandExecuteSuccess = "%prefix% §aSuccessfully §7proceeded!";
+    private String processFullMessage = "§4§lThe process is full";
+    private String processEnterPermissionNotSet = "§4§lYou do not have permission to join this process";
+    private String processInMaintenanceMessage = "§4§lThis process is currently in maintenance";
+    private String alreadyConnectedMessage = "§4§lYou are not allowed to join this process";
+    private String notUsingInternalProxy = "§4§lTo connect to this server please use an internal proxy server";
 
     public IngameMessages() {
     }
@@ -60,36 +75,6 @@ public final class IngameMessages implements SerializableObject {
         this.alreadyConnectedMessage = alreadyConnectedMessage;
         this.notUsingInternalProxy = notUsingInternalProxy;
     }
-
-    private String prefix = "§6§lR§e§leform§6§lC§e§lloud§6§l2 §7|";
-
-    private String processRegistered = "%prefix% §7Registered process §e{0}";
-
-    private String processStarted = "%prefix% §7The process §e{0} §7is §astarting §7now...";
-
-    private String processConnected = "%prefix% §7The process §e{0} §7 is §aconnected to the network";
-
-    private String processStopped = "%prefix% §7The process §e{0} §7is now §cstopped§7...";
-
-    private String noHubServerAvailable = "%prefix% There is currently §cno §7Hub-Server available";
-
-    private String alreadyConnectedToHub = "%prefix% You are §ealready connected to a §6Hub-Server";
-
-    private String connectingToHub = "%prefix% §aSending §7to hub §6{0}§7...";
-
-    private String currentProcessClosed = "%prefix% §7The current process got §cstopped";
-
-    private String commandExecuteSuccess = "%prefix% §aSuccessfully §7proceeded!";
-
-    private String processFullMessage = "§4§lThe process is full";
-
-    private String processEnterPermissionNotSet = "§4§lYou do not have permission to join this process";
-
-    private String processInMaintenanceMessage = "§4§lThis process is currently in maintenance";
-
-    private String alreadyConnectedMessage = "§4§lYou are not allowed to join this process";
-
-    private String notUsingInternalProxy = "§4§lTo connect to this server please use an internal proxy server";
 
     public String getPrefix() {
         return prefix;

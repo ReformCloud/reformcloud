@@ -34,20 +34,17 @@ import java.lang.reflect.Method;
 
 public final class DefaultListenerContainer implements ListenerContainer {
 
+    private final Class<?> eventClassTarget;
+    private final Object listenerInstance;
+    private final Method method;
+    private final EventPriority priority;
+
     DefaultListenerContainer(Class<?> eventClassTarget, Object listenerInstance, Method method, EventPriority priority) {
         this.eventClassTarget = eventClassTarget;
         this.listenerInstance = listenerInstance;
         this.method = method;
         this.priority = priority;
     }
-
-    private final Class<?> eventClassTarget;
-
-    private final Object listenerInstance;
-
-    private final Method method;
-
-    private final EventPriority priority;
 
     @NotNull
     @Override

@@ -40,6 +40,9 @@ import java.util.UUID;
 
 public class PacketAPIPlayEntityEffect extends Packet {
 
+    protected UUID targetPlayer;
+    protected String entityEffect;
+
     public PacketAPIPlayEntityEffect() {
     }
 
@@ -47,10 +50,6 @@ public class PacketAPIPlayEntityEffect extends Packet {
         this.targetPlayer = targetPlayer;
         this.entityEffect = entityEffect;
     }
-
-    protected UUID targetPlayer;
-
-    protected String entityEffect;
 
     @Override
     public int getId() {

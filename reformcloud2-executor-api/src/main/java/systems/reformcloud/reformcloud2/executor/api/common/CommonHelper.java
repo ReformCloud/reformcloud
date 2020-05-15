@@ -50,17 +50,15 @@ import java.util.function.Function;
 
 public final class CommonHelper {
 
+    public static final ExecutorService EXECUTOR = Executors.newCachedThreadPool();
+    public static final ScheduledExecutorService SCHEDULED_EXECUTOR_SERVICE = Executors.newSingleThreadScheduledExecutor();
+    public static final DateFormat DATE_FORMAT = new SimpleDateFormat("dd.MM.yyyy kk:mm:ss");
+    public static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("##.###");
+    private static final Map<Class<? extends Enum<?>>, Map<String, WeakReference<? extends Enum<?>>>> CACHE = new HashMap<>();
+
     private CommonHelper() {
         throw new UnsupportedOperationException();
     }
-
-    public static final ExecutorService EXECUTOR = Executors.newCachedThreadPool();
-
-    public static final ScheduledExecutorService SCHEDULED_EXECUTOR_SERVICE = Executors.newSingleThreadScheduledExecutor();
-
-    public static final DateFormat DATE_FORMAT = new SimpleDateFormat("dd.MM.yyyy kk:mm:ss");
-
-    public static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("##.###");
 
     public static MemoryMXBean memoryMXBean() {
         return ManagementFactory.getMemoryMXBean();
@@ -155,6 +153,8 @@ public final class CommonHelper {
         }
     }
 
+    /* == Enum Helper == */
+
     public static void rewriteProperties(String path, String saveComment, Function<String, String> function) {
         if (!Files.exists(Paths.get(path))) {
             return;
@@ -173,10 +173,6 @@ public final class CommonHelper {
             ex.printStackTrace();
         }
     }
-
-    /* == Enum Helper == */
-
-    private static final Map<Class<? extends Enum<?>>, Map<String, WeakReference<? extends Enum<?>>>> CACHE = new HashMap<>();
 
     public static <T extends Enum<T>> ReferencedOptional<T> findEnumField(Class<T> enumClass, String field) {
         Map<String, WeakReference<? extends Enum<?>>> cached = CACHE.computeIfAbsent(enumClass, aClass -> cache(enumClass));

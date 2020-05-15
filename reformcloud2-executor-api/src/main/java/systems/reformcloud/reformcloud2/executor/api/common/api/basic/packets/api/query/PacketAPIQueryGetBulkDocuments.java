@@ -38,14 +38,14 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packe
 
 public class PacketAPIQueryGetBulkDocuments extends Packet {
 
+    private String table;
+
     public PacketAPIQueryGetBulkDocuments() {
     }
 
     public PacketAPIQueryGetBulkDocuments(String table) {
         this.table = table;
     }
-
-    private String table;
 
     @Override
     public int getId() {

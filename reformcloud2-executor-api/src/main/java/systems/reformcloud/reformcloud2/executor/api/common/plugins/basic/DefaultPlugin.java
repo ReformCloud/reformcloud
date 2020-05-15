@@ -34,6 +34,14 @@ import java.util.List;
 
 public final class DefaultPlugin extends Plugin {
 
+    private String version;
+    private String author;
+    private String main;
+    private List<String> depends;
+    private List<String> softpends;
+    private boolean enabled;
+    private String name;
+
     @ApiStatus.Internal
     public DefaultPlugin() {
     }
@@ -47,20 +55,6 @@ public final class DefaultPlugin extends Plugin {
         this.enabled = enabled;
         this.name = name;
     }
-
-    private String version;
-
-    private String author;
-
-    private String main;
-
-    private List<String> depends;
-
-    private List<String> softpends;
-
-    private boolean enabled;
-
-    private String name;
 
     @NotNull
     @Override

@@ -31,6 +31,12 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.data.Protoco
 
 public final class ThreadInfo implements SerializableObject {
 
+    private String name;
+    private long id;
+    private int priority;
+    private boolean daemon;
+    private Thread.State state;
+
     @ApiStatus.Internal
     public ThreadInfo() {
     }
@@ -43,15 +49,9 @@ public final class ThreadInfo implements SerializableObject {
         this.state = state;
     }
 
-    private String name;
-
-    private long id;
-
-    private int priority;
-
-    private boolean daemon;
-
-    private Thread.State state;
+    public static ThreadInfo create(Thread thread) {
+        return new ThreadInfo(thread.getName(), thread.getId(), thread.getPriority(), thread.isDaemon(), thread.getState());
+    }
 
     public String getName() {
         return name;
@@ -71,10 +71,6 @@ public final class ThreadInfo implements SerializableObject {
 
     public Thread.State getState() {
         return state;
-    }
-
-    public static ThreadInfo create(Thread thread) {
-        return new ThreadInfo(thread.getName(), thread.getId(), thread.getPriority(), thread.isDaemon(), thread.getState());
     }
 
     @Override

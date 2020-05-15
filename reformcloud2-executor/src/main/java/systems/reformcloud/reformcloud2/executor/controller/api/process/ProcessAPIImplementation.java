@@ -44,11 +44,11 @@ import java.util.concurrent.TimeUnit;
 
 public class ProcessAPIImplementation implements ProcessSyncAPI, ProcessAsyncAPI {
 
+    private final ProcessManager processManager;
+
     public ProcessAPIImplementation(ProcessManager processManager) {
         this.processManager = processManager;
     }
-
-    private final ProcessManager processManager;
 
     @NotNull
     @Override

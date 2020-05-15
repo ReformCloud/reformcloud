@@ -57,9 +57,9 @@ public interface RequestListenerHandler {
     /**
      * Registers a new request handler
      *
-     * @see #registerListener(RequestHandler)
      * @param requestHandler The request handler which should get registered
      * @return The current instance of this class
+     * @see #registerListener(RequestHandler)
      */
     @NotNull
     RequestListenerHandler registerListener(@NotNull Class<? extends RequestHandler> requestHandler);

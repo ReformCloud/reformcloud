@@ -36,14 +36,14 @@ import java.io.InputStream;
 
 public class PacketAPIQueryDatabaseGetDocumentResult extends QueryResultPacket {
 
+    private JsonConfiguration result;
+
     public PacketAPIQueryDatabaseGetDocumentResult() {
     }
 
     public PacketAPIQueryDatabaseGetDocumentResult(JsonConfiguration result) {
         this.result = result;
     }
-
-    private JsonConfiguration result;
 
     public JsonConfiguration getResult() {
         return result;

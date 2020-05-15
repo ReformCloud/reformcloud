@@ -36,14 +36,12 @@ import java.util.concurrent.TimeUnit;
 
 public final class ClientManager {
 
+    public static final ClientManager INSTANCE = new ClientManager();
     private final Collection<ClientRuntimeInformation> clientRuntimeInformation = new CopyOnWriteArrayList<>();
-
     /**
      * Represents the internal client process
      */
     private Process process;
-
-    public static final ClientManager INSTANCE = new ClientManager();
 
     public void connectClient(ClientRuntimeInformation info) {
         clientRuntimeInformation.add(info);

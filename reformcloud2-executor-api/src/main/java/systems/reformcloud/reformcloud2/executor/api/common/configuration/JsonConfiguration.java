@@ -55,6 +55,7 @@ public class JsonConfiguration implements Configurable<JsonElement, JsonConfigur
             .setDateFormat(DateFormat.LONG)
             .registerTypeAdapterFactory(TypeAdapters.newTypeHierarchyFactory(JsonConfiguration.class, new JsonConfigurationTypeAdapter()))
             .create();
+    private JsonObject jsonObject = new JsonObject();
 
     public JsonConfiguration() {
     }
@@ -131,7 +132,38 @@ public class JsonConfiguration implements Configurable<JsonElement, JsonConfigur
         this.jsonObject = jsonObject;
     }
 
-    private JsonObject jsonObject = new JsonObject();
+    public static JsonConfiguration read(Path path) {
+        if (!Files.exists(path)) {
+            return new JsonConfiguration();
+        }
+
+        try (InputStreamReader inputStreamReader = new InputStreamReader(Files.newInputStream(path), StandardCharsets.UTF_8)) {
+            return new JsonConfiguration(inputStreamReader);
+        } catch (final IOException ex) {
+            ex.printStackTrace();
+        }
+
+        return new JsonConfiguration();
+    }
+
+    @NotNull
+    public static JsonConfiguration fromMap(@NotNull Map<String, JsonElement> map) {
+        JsonConfiguration out = new JsonConfiguration();
+
+        for (Map.Entry<String, JsonElement> stringJsonElementEntry : map.entrySet()) {
+            out.getJsonObject().add(stringJsonElementEntry.getKey(), stringJsonElementEntry.getValue());
+        }
+
+        return out;
+    }
+
+    public static JsonConfiguration read(String path) {
+        return read(Paths.get(path));
+    }
+
+    public static JsonConfiguration read(File path) {
+        return read(path.toPath());
+    }
 
     @NotNull
     @Override
@@ -558,41 +590,8 @@ public class JsonConfiguration implements Configurable<JsonElement, JsonConfigur
         return jsonObject;
     }
 
-    public static JsonConfiguration read(Path path) {
-        if (!Files.exists(path)) {
-            return new JsonConfiguration();
-        }
-
-        try (InputStreamReader inputStreamReader = new InputStreamReader(Files.newInputStream(path), StandardCharsets.UTF_8)) {
-            return new JsonConfiguration(inputStreamReader);
-        } catch (final IOException ex) {
-            ex.printStackTrace();
-        }
-
-        return new JsonConfiguration();
-    }
-
-    @NotNull
-    public static JsonConfiguration fromMap(@NotNull Map<String, JsonElement> map) {
-        JsonConfiguration out = new JsonConfiguration();
-
-        for (Map.Entry<String, JsonElement> stringJsonElementEntry : map.entrySet()) {
-            out.getJsonObject().add(stringJsonElementEntry.getKey(), stringJsonElementEntry.getValue());
-        }
-
-        return out;
-    }
-
     @NotNull
     public Gson getGson() {
         return gson;
-    }
-
-    public static JsonConfiguration read(String path) {
-        return read(Paths.get(path));
-    }
-
-    public static JsonConfiguration read(File path) {
-        return read(path.toPath());
     }
 }

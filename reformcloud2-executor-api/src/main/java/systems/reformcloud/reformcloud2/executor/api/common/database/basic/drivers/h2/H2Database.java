@@ -47,6 +47,7 @@ import java.util.Map;
 public class H2Database extends Database<Connection> {
 
     private final Map<String, DatabaseReader> perTableReader = new AbsentMap<>();
+    private ReformCloudWrappedConnection connection;
 
     public H2Database() {
         URL url = DEPENDENCY_LOADER.loadDependency(new DefaultDependency(
@@ -60,8 +61,6 @@ public class H2Database extends Database<Connection> {
 
         FileUtils.createDirectories("reformcloud/.database/h2");
     }
-
-    private ReformCloudWrappedConnection connection;
 
     @Override
     public void connect(@NotNull String host, int port, @NotNull String userName, @NotNull String password, @NotNull String table) {

@@ -43,8 +43,6 @@ import static systems.reformcloud.reformcloud2.executor.api.common.utility.syste
 
 public final class ClientExecutorConfig {
 
-    private final Setup setup = new DefaultSetup();
-
     private static final Collection<Path> PATHS = newCollection(
             s -> Paths.get(s),
             "reformcloud/temp",
@@ -54,7 +52,7 @@ public final class ClientExecutorConfig {
             "reformcloud/files",
             "reformcloud/files/.connection"
     );
-
+    private final Setup setup = new DefaultSetup();
     private final ClientConfig clientConfig;
 
     private final ClientConnectionConfig clientConnectionConfig;
@@ -67,8 +65,10 @@ public final class ClientExecutorConfig {
             firstSetup();
         }
 
-        this.clientConfig = JsonConfiguration.read(ClientConfig.PATH).get("config", new TypeToken<ClientConfig>() {});
-        this.clientConnectionConfig = JsonConfiguration.read(ClientConnectionConfig.PATH).get("config", new TypeToken<ClientConnectionConfig>() {});
+        this.clientConfig = JsonConfiguration.read(ClientConfig.PATH).get("config", new TypeToken<ClientConfig>() {
+        });
+        this.clientConnectionConfig = JsonConfiguration.read(ClientConnectionConfig.PATH).get("config", new TypeToken<ClientConnectionConfig>() {
+        });
         this.connectionKey = JsonConfiguration.read("reformcloud/files/.connection/connection.json").getString("key");
     }
 

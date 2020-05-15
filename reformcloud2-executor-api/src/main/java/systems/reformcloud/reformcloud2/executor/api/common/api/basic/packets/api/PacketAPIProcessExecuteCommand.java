@@ -38,6 +38,9 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packe
 
 public class PacketAPIProcessExecuteCommand extends Packet {
 
+    private String processName;
+    private String command;
+
     public PacketAPIProcessExecuteCommand() {
     }
 
@@ -45,10 +48,6 @@ public class PacketAPIProcessExecuteCommand extends Packet {
         this.processName = processName;
         this.command = command;
     }
-
-    private String processName;
-
-    private String command;
 
     @Override
     public int getId() {

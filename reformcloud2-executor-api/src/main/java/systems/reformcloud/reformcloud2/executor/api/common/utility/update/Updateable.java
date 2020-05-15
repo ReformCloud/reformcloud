@@ -32,6 +32,7 @@ public interface Updateable<T> {
     /**
      * Updates a specific value
      * <p>
+     *
      * @param t The current object which should be updated
      */
     void update(@NotNull T t);

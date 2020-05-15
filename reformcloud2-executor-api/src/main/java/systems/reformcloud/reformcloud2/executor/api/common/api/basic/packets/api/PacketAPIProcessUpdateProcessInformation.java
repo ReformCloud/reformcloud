@@ -39,14 +39,14 @@ import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInfor
 
 public class PacketAPIProcessUpdateProcessInformation extends Packet {
 
+    private ProcessInformation processInformation;
+
     public PacketAPIProcessUpdateProcessInformation() {
     }
 
     public PacketAPIProcessUpdateProcessInformation(ProcessInformation processInformation) {
         this.processInformation = processInformation;
     }
-
-    private ProcessInformation processInformation;
 
     @Override
     public int getId() {

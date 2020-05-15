@@ -38,6 +38,10 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packe
 
 public class PacketOutClientChallengeResponse extends Packet {
 
+    private String name;
+    private String hashedResult;
+    private JsonConfiguration extraData;
+
     public PacketOutClientChallengeResponse() {
     }
 
@@ -46,12 +50,6 @@ public class PacketOutClientChallengeResponse extends Packet {
         this.hashedResult = hashedResult;
         this.extraData = extraData;
     }
-
-    private String name;
-
-    private String hashedResult;
-
-    private JsonConfiguration extraData;
 
     public String getName() {
         return name;

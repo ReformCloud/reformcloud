@@ -44,11 +44,11 @@ import java.util.stream.Collectors;
 
 public class DatabaseAPIImplementation implements DatabaseAsyncAPI, DatabaseSyncAPI {
 
+    private final Database<?> database;
+
     public DatabaseAPIImplementation(Database<?> parent) {
         this.database = parent;
     }
-
-    private final Database<?> database;
 
     @NotNull
     @Override

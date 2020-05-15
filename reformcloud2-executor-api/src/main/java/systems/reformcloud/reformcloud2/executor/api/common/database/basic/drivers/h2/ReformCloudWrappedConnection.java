@@ -34,11 +34,11 @@ import java.util.concurrent.Executor;
 @ApiStatus.Internal
 public final class ReformCloudWrappedConnection implements Connection {
 
+    private final Connection parent;
+
     public ReformCloudWrappedConnection(Connection parent) {
         this.parent = parent;
     }
-
-    private final Connection parent;
 
     @Override
     public Statement createStatement() throws SQLException {
@@ -61,13 +61,13 @@ public final class ReformCloudWrappedConnection implements Connection {
     }
 
     @Override
-    public void setAutoCommit(boolean autoCommit) throws SQLException {
-        parent.setAutoCommit(autoCommit);
+    public boolean getAutoCommit() throws SQLException {
+        return parent.getAutoCommit();
     }
 
     @Override
-    public boolean getAutoCommit() throws SQLException {
-        return parent.getAutoCommit();
+    public void setAutoCommit(boolean autoCommit) throws SQLException {
+        parent.setAutoCommit(autoCommit);
     }
 
     @Override
@@ -100,18 +100,13 @@ public final class ReformCloudWrappedConnection implements Connection {
     }
 
     @Override
-    public void setReadOnly(boolean readOnly) throws SQLException {
-        parent.setReadOnly(readOnly);
-    }
-
-    @Override
     public boolean isReadOnly() throws SQLException {
         return parent.isReadOnly();
     }
 
     @Override
-    public void setCatalog(String catalog) throws SQLException {
-        parent.setCatalog(catalog);
+    public void setReadOnly(boolean readOnly) throws SQLException {
+        parent.setReadOnly(readOnly);
     }
 
     @Override
@@ -120,13 +115,18 @@ public final class ReformCloudWrappedConnection implements Connection {
     }
 
     @Override
-    public void setTransactionIsolation(int level) throws SQLException {
-        parent.setTransactionIsolation(level);
+    public void setCatalog(String catalog) throws SQLException {
+        parent.setCatalog(catalog);
     }
 
     @Override
     public int getTransactionIsolation() throws SQLException {
         return parent.getTransactionIsolation();
+    }
+
+    @Override
+    public void setTransactionIsolation(int level) throws SQLException {
+        parent.setTransactionIsolation(level);
     }
 
     @Override
@@ -165,13 +165,13 @@ public final class ReformCloudWrappedConnection implements Connection {
     }
 
     @Override
-    public void setHoldability(int holdability) throws SQLException {
-        parent.setHoldability(holdability);
+    public int getHoldability() throws SQLException {
+        return parent.getHoldability();
     }
 
     @Override
-    public int getHoldability() throws SQLException {
-        return parent.getHoldability();
+    public void setHoldability(int holdability) throws SQLException {
+        parent.setHoldability(holdability);
     }
 
     @Override
@@ -255,11 +255,6 @@ public final class ReformCloudWrappedConnection implements Connection {
     }
 
     @Override
-    public void setClientInfo(Properties properties) throws SQLClientInfoException {
-        parent.setClientInfo(properties);
-    }
-
-    @Override
     public String getClientInfo(String name) throws SQLException {
         return parent.getClientInfo(name);
     }
@@ -267,6 +262,11 @@ public final class ReformCloudWrappedConnection implements Connection {
     @Override
     public Properties getClientInfo() throws SQLException {
         return parent.getClientInfo();
+    }
+
+    @Override
+    public void setClientInfo(Properties properties) throws SQLClientInfoException {
+        parent.setClientInfo(properties);
     }
 
     @Override
@@ -280,13 +280,13 @@ public final class ReformCloudWrappedConnection implements Connection {
     }
 
     @Override
-    public void setSchema(String schema) throws SQLException {
-        parent.setSchema(schema);
+    public String getSchema() throws SQLException {
+        return parent.getSchema();
     }
 
     @Override
-    public String getSchema() throws SQLException {
-        return parent.getSchema();
+    public void setSchema(String schema) throws SQLException {
+        parent.setSchema(schema);
     }
 
     @Override

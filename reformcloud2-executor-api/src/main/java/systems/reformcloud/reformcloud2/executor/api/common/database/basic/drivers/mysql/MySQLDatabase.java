@@ -38,14 +38,13 @@ import java.util.Map;
 
 public final class MySQLDatabase extends Database<Connection> {
 
-    private final Map<String, DatabaseReader> perTableReader = new AbsentMap<>();
-
     private static final String CONNECT_ARGUMENTS = "jdbc:mysql://%s:%d/%s?serverTimezone=UTC";
 
     static {
         MySQLDatabaseDependencyLoader.load(DEPENDENCY_LOADER);
     }
 
+    private final Map<String, DatabaseReader> perTableReader = new AbsentMap<>();
     private String host;
 
     private int port;

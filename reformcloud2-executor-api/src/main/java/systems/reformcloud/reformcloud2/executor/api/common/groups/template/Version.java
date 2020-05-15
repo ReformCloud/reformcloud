@@ -266,6 +266,20 @@ public enum Version {
         return POCKET_PROXY_PROVIDERS;
     }
 
+    public static void downloadVersion(Version version) {
+        DownloadHelper.downloadAndDisconnect(version.url, "reformcloud/files/" + format(version));
+    }
+
+    public static String format(Version version) {
+        if (version.equals(Version.SPONGEFORGE_1_10_2)
+                || version.equals(Version.SPONGEFORGE_1_11_2)
+                || version.equals(Version.SPONGEFORGE_1_12_2)) {
+            return version.getName().toLowerCase().replace(" ", "-") + "/process.jar";
+        }
+
+        return version.name.toLowerCase().replace(" ", "-") + ".jar";
+    }
+
     public String getName() {
         return name;
     }
@@ -293,19 +307,5 @@ public enum Version {
     public boolean isSponge() {
         return this == SPONGEFORGE_1_10_2 || this == SPONGEFORGE_1_11_2 || this == SPONGEFORGE_1_12_2
                 || this == SPONGEVANILLA_1_11_2 || this == SPONGEVANILLA_1_12_2;
-    }
-
-    public static void downloadVersion(Version version) {
-        DownloadHelper.downloadAndDisconnect(version.url, "reformcloud/files/" + format(version));
-    }
-
-    public static String format(Version version) {
-        if (version.equals(Version.SPONGEFORGE_1_10_2)
-                || version.equals(Version.SPONGEFORGE_1_11_2)
-                || version.equals(Version.SPONGEFORGE_1_12_2)) {
-            return version.getName().toLowerCase().replace(" ", "-") + "/process.jar";
-        }
-
-        return version.name.toLowerCase().replace(" ", "-") + ".jar";
     }
 }

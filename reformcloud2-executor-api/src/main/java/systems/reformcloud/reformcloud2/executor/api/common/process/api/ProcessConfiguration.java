@@ -42,6 +42,18 @@ import java.util.UUID;
 
 public class ProcessConfiguration implements SerializableObject {
 
+    private ProcessGroup base;
+    private UUID uniqueId;
+    private String displayName;
+    private Integer maxMemory;
+    private Integer port;
+    private Template template;
+    private JsonConfiguration extra;
+    private int id;
+    private int maxPlayers;
+    private Collection<ProcessInclusion> inclusions;
+    private ProcessState initialState;
+
     @ApiStatus.Internal
     ProcessConfiguration(ProcessGroup base, UUID uniqueId, String displayName,
                          Integer maxMemory, Integer port, Template template, JsonConfiguration extra,
@@ -58,28 +70,6 @@ public class ProcessConfiguration implements SerializableObject {
         this.inclusions = inclusions;
         this.initialState = initialState;
     }
-
-    private ProcessGroup base;
-
-    private UUID uniqueId;
-
-    private String displayName;
-
-    private Integer maxMemory;
-
-    private Integer port;
-
-    private Template template;
-
-    private JsonConfiguration extra;
-
-    private int id;
-
-    private int maxPlayers;
-
-    private Collection<ProcessInclusion> inclusions;
-
-    private ProcessState initialState;
 
     @NotNull
     public ProcessGroup getBase() {

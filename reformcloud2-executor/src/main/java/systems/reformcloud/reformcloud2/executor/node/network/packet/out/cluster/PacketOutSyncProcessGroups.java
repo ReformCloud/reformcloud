@@ -42,6 +42,9 @@ import java.util.Collection;
 
 public class PacketOutSyncProcessGroups extends Packet {
 
+    private Collection<ProcessGroup> processGroups;
+    private SyncAction syncAction;
+
     public PacketOutSyncProcessGroups() {
     }
 
@@ -49,10 +52,6 @@ public class PacketOutSyncProcessGroups extends Packet {
         this.processGroups = processGroups;
         this.syncAction = syncAction;
     }
-
-    private Collection<ProcessGroup> processGroups;
-
-    private SyncAction syncAction;
 
     @Override
     public int getId() {

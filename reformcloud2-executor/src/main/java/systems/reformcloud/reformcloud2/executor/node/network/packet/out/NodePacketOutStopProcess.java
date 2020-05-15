@@ -42,14 +42,14 @@ import java.util.UUID;
 
 public class NodePacketOutStopProcess extends Packet {
 
+    private UUID processUniqueID;
+
     public NodePacketOutStopProcess() {
     }
 
     public NodePacketOutStopProcess(UUID processUniqueID) {
         this.processUniqueID = processUniqueID;
     }
-
-    private UUID processUniqueID;
 
     @Override
     public int getId() {

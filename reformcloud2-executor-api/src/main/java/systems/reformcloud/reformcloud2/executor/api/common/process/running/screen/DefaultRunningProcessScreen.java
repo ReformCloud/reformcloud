@@ -51,12 +51,11 @@ public class DefaultRunningProcessScreen implements RunningProcessScreen {
     private final byte[] buffer = new byte[1024];
 
     private final StringBuffer stringBuffer = new StringBuffer();
+    private final RunningProcess runningProcess;
 
     public DefaultRunningProcessScreen(@NotNull RunningProcess runningProcess) {
         this.runningProcess = runningProcess;
     }
-
-    private final RunningProcess runningProcess;
 
     @Override
     public void callUpdate() {

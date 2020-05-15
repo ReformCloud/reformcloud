@@ -41,6 +41,10 @@ public final class ProcessQueue extends AbsoluteThread {
 
     private static final BlockingDeque<RunningProcess> QUEUE = new LinkedBlockingDeque<>();
 
+    public ProcessQueue() {
+        enableDaemon().updatePriority(Thread.MIN_PRIORITY).start();
+    }
+
     public static void queue(ProcessInformation information) {
         RunningProcess runningProcess = new DefaultRunningProcess(information);
         System.out.println(LanguageManager.get(
@@ -55,6 +59,8 @@ public final class ProcessQueue extends AbsoluteThread {
         });
     }
 
+    /* ============== */
+
     public static void queue(RunningProcess process) {
         System.out.println(LanguageManager.get(
                 "client-process-now-in-queue",
@@ -65,10 +71,24 @@ public final class ProcessQueue extends AbsoluteThread {
         QUEUE.offerLast(process);
     }
 
-    /* ============== */
+    public static ProcessInformation removeFromQueue(UUID uuid) {
+        synchronized (QUEUE) {
+            RunningProcess process = Streams.filterToReference(QUEUE, e -> e.getProcessInformation().getProcessDetail().getProcessUniqueID().equals(uuid)).orNothing();
+            if (process == null) {
+                return null;
+            }
 
-    public ProcessQueue() {
-        enableDaemon().updatePriority(Thread.MIN_PRIORITY).start();
+            QUEUE.remove(process);
+            return process.getProcessInformation();
+        }
+    }
+
+    private static boolean isStartupNowLogic() {
+        if (ClientExecutor.getInstance().getClientConfig().getMaxCpu() <= 0D) {
+            return true;
+        }
+
+        return CommonHelper.cpuUsageSystem() <= ClientExecutor.getInstance().getClientConfig().getMaxCpu();
     }
 
     @Override
@@ -103,25 +123,5 @@ public final class ProcessQueue extends AbsoluteThread {
             } catch (final InterruptedException ignored) {
             }
         }
-    }
-
-    public static ProcessInformation removeFromQueue(UUID uuid) {
-        synchronized (QUEUE) {
-            RunningProcess process = Streams.filterToReference(QUEUE, e -> e.getProcessInformation().getProcessDetail().getProcessUniqueID().equals(uuid)).orNothing();
-            if (process == null) {
-                return null;
-            }
-
-            QUEUE.remove(process);
-            return process.getProcessInformation();
-        }
-    }
-
-    private static boolean isStartupNowLogic() {
-        if (ClientExecutor.getInstance().getClientConfig().getMaxCpu() <= 0D) {
-            return true;
-        }
-
-        return CommonHelper.cpuUsageSystem() <= ClientExecutor.getInstance().getClientConfig().getMaxCpu();
     }
 }

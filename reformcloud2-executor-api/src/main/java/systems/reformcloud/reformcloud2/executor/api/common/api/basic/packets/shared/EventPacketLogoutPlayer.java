@@ -41,6 +41,10 @@ import java.util.UUID;
 
 public final class EventPacketLogoutPlayer extends Packet {
 
+    private String name;
+    private UUID uniqueID;
+    private String lastServer;
+
     public EventPacketLogoutPlayer() {
     }
 
@@ -49,12 +53,6 @@ public final class EventPacketLogoutPlayer extends Packet {
         this.uniqueID = uniqueID;
         this.lastServer = lastServer;
     }
-
-    private String name;
-
-    private UUID uniqueID;
-
-    private String lastServer;
 
     @Override
     public int getId() {

@@ -40,6 +40,10 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packe
 
 public class ProxiedChannelMessage extends Packet {
 
+    private JsonConfiguration message;
+    private String base;
+    private String sub;
+
     public ProxiedChannelMessage() {
     }
 
@@ -48,12 +52,6 @@ public class ProxiedChannelMessage extends Packet {
         this.base = base;
         this.sub = sub;
     }
-
-    private JsonConfiguration message;
-
-    private String base;
-
-    private String sub;
 
     @Override
     public int getId() {

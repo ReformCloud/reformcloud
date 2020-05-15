@@ -30,11 +30,11 @@ import java.util.concurrent.ThreadFactory;
 
 public final class ApplicationThreadFactory implements ThreadFactory {
 
+    private final ThreadGroup threadGroup;
+
     public ApplicationThreadFactory(ThreadGroup threadGroup) {
         this.threadGroup = threadGroup;
     }
-
-    private final ThreadGroup threadGroup;
 
     @Override
     public Thread newThread(@NotNull Runnable r) {

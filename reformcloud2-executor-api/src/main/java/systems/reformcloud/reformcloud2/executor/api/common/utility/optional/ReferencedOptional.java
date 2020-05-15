@@ -43,20 +43,19 @@ public final class ReferencedOptional<T> implements Serializable {
     private static final long serialVersionUID = 2358039311687874123L;
 
     // =======================
+    private final AtomicReference<T> reference = new AtomicReference<>();
 
     @NotNull
     public static <T> ReferencedOptional<T> empty() {
         return new ReferencedOptional<>();
     }
 
+    // =======================
+
     @NotNull
     public static <T> ReferencedOptional<T> build(@Nullable T value) {
         return new ReferencedOptional<T>().update(value);
     }
-
-    // =======================
-
-    private final AtomicReference<T> reference = new AtomicReference<>();
 
     @NotNull
     public ReferencedOptional<T> update(@Nullable T newValue) {

@@ -42,6 +42,9 @@ import java.util.UUID;
 
 public class ClientPacketAddScreenLine extends Packet {
 
+    private UUID processUniqueID;
+    private String screenLine;
+
     public ClientPacketAddScreenLine() {
     }
 
@@ -49,10 +52,6 @@ public class ClientPacketAddScreenLine extends Packet {
         this.processUniqueID = processUniqueID;
         this.screenLine = screenLine;
     }
-
-    private UUID processUniqueID;
-
-    private String screenLine;
 
     @Override
     public int getId() {

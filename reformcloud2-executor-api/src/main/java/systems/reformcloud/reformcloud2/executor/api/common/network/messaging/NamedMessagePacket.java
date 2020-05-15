@@ -45,6 +45,12 @@ import java.util.Collection;
 
 public class NamedMessagePacket extends Packet {
 
+    private Collection<String> receivers;
+    private JsonConfiguration content;
+    private ErrorReportHandling handling;
+    private String baseChannel;
+    private String subChannel;
+
     public NamedMessagePacket() {
     }
 
@@ -56,16 +62,6 @@ public class NamedMessagePacket extends Packet {
         this.baseChannel = baseChannel;
         this.subChannel = subChannel;
     }
-
-    private Collection<String> receivers;
-
-    private JsonConfiguration content;
-
-    private ErrorReportHandling handling;
-
-    private String baseChannel;
-
-    private String subChannel;
 
     @Override
     public int getId() {

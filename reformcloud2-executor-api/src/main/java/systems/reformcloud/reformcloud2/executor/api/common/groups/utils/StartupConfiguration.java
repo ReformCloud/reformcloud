@@ -34,6 +34,16 @@ import java.util.Objects;
 
 public final class StartupConfiguration implements SerializableObject {
 
+    private int maxOnlineProcesses;
+    private int minOnlineProcesses;
+    private int alwaysPreparedProcesses;
+    private int startupPriority;
+    private int startPort;
+    private String jvmCommand;
+    private AutomaticStartupConfiguration automaticStartupConfiguration;
+    private boolean searchBestClientAlone;
+    private List<String> useOnlyTheseClients;
+
     @ApiStatus.Internal
     public StartupConfiguration() {
     }
@@ -68,42 +78,44 @@ public final class StartupConfiguration implements SerializableObject {
         this.useOnlyTheseClients = useOnlyTheseClients;
     }
 
-    private int maxOnlineProcesses;
-
-    private int minOnlineProcesses;
-
-    private int alwaysPreparedProcesses;
-
-    private int startupPriority;
-
-    private int startPort;
-
-    private String jvmCommand;
-
-    private AutomaticStartupConfiguration automaticStartupConfiguration;
-
-    private boolean searchBestClientAlone;
-
-    private List<String> useOnlyTheseClients;
-
     public int getMaxOnlineProcesses() {
         return maxOnlineProcesses;
+    }
+
+    public void setMaxOnlineProcesses(int maxOnlineProcesses) {
+        this.maxOnlineProcesses = maxOnlineProcesses;
     }
 
     public int getMinOnlineProcesses() {
         return minOnlineProcesses;
     }
 
+    public void setMinOnlineProcesses(int minOnlineProcesses) {
+        this.minOnlineProcesses = minOnlineProcesses;
+    }
+
     public int getAlwaysPreparedProcesses() {
         return alwaysPreparedProcesses;
+    }
+
+    public void setAlwaysPreparedProcesses(int alwaysPreparedProcesses) {
+        this.alwaysPreparedProcesses = alwaysPreparedProcesses;
     }
 
     public int getStartupPriority() {
         return startupPriority;
     }
 
+    public void setStartupPriority(int startupPriority) {
+        this.startupPriority = startupPriority;
+    }
+
     public int getStartPort() {
         return startPort;
+    }
+
+    public void setStartPort(int startPort) {
+        this.startPort = startPort;
     }
 
     public String getJvmCommand() {
@@ -122,26 +134,6 @@ public final class StartupConfiguration implements SerializableObject {
     @NotNull
     public List<String> getUseOnlyTheseClients() {
         return useOnlyTheseClients;
-    }
-
-    public void setMaxOnlineProcesses(int maxOnlineProcesses) {
-        this.maxOnlineProcesses = maxOnlineProcesses;
-    }
-
-    public void setMinOnlineProcesses(int minOnlineProcesses) {
-        this.minOnlineProcesses = minOnlineProcesses;
-    }
-
-    public void setAlwaysPreparedProcesses(int alwaysPreparedProcesses) {
-        this.alwaysPreparedProcesses = alwaysPreparedProcesses;
-    }
-
-    public void setStartPort(int startPort) {
-        this.startPort = startPort;
-    }
-
-    public void setStartupPriority(int startupPriority) {
-        this.startupPriority = startupPriority;
     }
 
     public void setUseOnlyTheseClients(List<String> useOnlyTheseClients) {

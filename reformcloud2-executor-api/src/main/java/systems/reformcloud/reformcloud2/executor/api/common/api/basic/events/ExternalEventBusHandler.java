@@ -33,6 +33,9 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.handl
 //Note! This class CANNOT use Reflections because it leads to problems using spigot (older guava implementation)
 public class ExternalEventBusHandler {
 
+    private static ExternalEventBusHandler instance;
+    private final EventManager eventManager;
+
     /**
      * Initializes the external event bus which handles all known event packets and call them sync
      *
@@ -53,9 +56,15 @@ public class ExternalEventBusHandler {
         instance = this;
     }
 
-    private final EventManager eventManager;
-
-    private static ExternalEventBusHandler instance;
+    /**
+     * Get the current instance of the event bus handler
+     *
+     * @return the current instance of the event bus handler
+     */
+    @NotNull
+    public static ExternalEventBusHandler getInstance() {
+        return instance;
+    }
 
     /**
      * Gets the current event manager which is used for the external event bus
@@ -65,16 +74,6 @@ public class ExternalEventBusHandler {
     @NotNull
     public EventManager getEventManager() {
         return eventManager;
-    }
-
-    /**
-     * Get the current instance of the event bus handler
-     *
-     * @return the current instance of the event bus handler
-     */
-    @NotNull
-    public static ExternalEventBusHandler getInstance() {
-        return instance;
     }
 
     /**

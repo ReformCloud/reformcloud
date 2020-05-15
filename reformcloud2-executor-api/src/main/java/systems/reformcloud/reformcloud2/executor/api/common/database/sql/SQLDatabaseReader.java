@@ -46,14 +46,18 @@ import java.util.concurrent.TimeUnit;
 
 public class SQLDatabaseReader implements DatabaseReader {
 
+    private final String table;
+    private final Database<Connection> database;
+
     public SQLDatabaseReader(String table, Database<Connection> database) {
         this.table = table;
         this.database = database;
     }
 
-    private final String table;
-
-    private final Database<Connection> database;
+    @NotNull
+    public static PreparedStatement prepareStatement(@NotNull String sql, @NotNull Connection connection) throws SQLException {
+        return connection.prepareStatement(sql);
+    }
 
     @NotNull
     @Override
@@ -237,10 +241,5 @@ public class SQLDatabaseReader implements DatabaseReader {
             task.complete(null);
         });
         return task;
-    }
-
-    @NotNull
-    public static PreparedStatement prepareStatement(@NotNull String sql, @NotNull Connection connection) throws SQLException {
-        return connection.prepareStatement(sql);
     }
 }

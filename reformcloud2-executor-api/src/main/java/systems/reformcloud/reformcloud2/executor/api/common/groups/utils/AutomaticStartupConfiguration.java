@@ -31,6 +31,10 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.data.Protoco
 
 public class AutomaticStartupConfiguration implements SerializableObject {
 
+    private boolean enabled;
+    private int maxPercentOfPlayers;
+    private long checkIntervalInSeconds;
+
     @ApiStatus.Internal
     public AutomaticStartupConfiguration() {
     }
@@ -41,11 +45,13 @@ public class AutomaticStartupConfiguration implements SerializableObject {
         this.checkIntervalInSeconds = checkIntervalInSeconds;
     }
 
-    private boolean enabled;
-
-    private int maxPercentOfPlayers;
-
-    private long checkIntervalInSeconds;
+    /**
+     * @return The default values of an automatic startup config
+     */
+    @NotNull
+    public static AutomaticStartupConfiguration defaults() {
+        return new AutomaticStartupConfiguration(false, 70, 30);
+    }
 
     public boolean isEnabled() {
         return enabled;
@@ -57,14 +63,6 @@ public class AutomaticStartupConfiguration implements SerializableObject {
 
     public long getCheckIntervalInSeconds() {
         return checkIntervalInSeconds;
-    }
-
-    /**
-     * @return The default values of an automatic startup config
-     */
-    @NotNull
-    public static AutomaticStartupConfiguration defaults() {
-        return new AutomaticStartupConfiguration(false, 70, 30);
     }
 
     @Override

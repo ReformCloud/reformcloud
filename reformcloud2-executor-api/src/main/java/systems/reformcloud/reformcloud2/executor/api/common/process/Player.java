@@ -34,6 +34,10 @@ import java.util.UUID;
 
 public final class Player implements Comparable<Player>, SerializableObject {
 
+    private UUID uniqueID;
+    private String name;
+    private long joined = System.currentTimeMillis();
+
     @ApiStatus.Internal
     public Player() {
     }
@@ -42,12 +46,6 @@ public final class Player implements Comparable<Player>, SerializableObject {
         this.uniqueID = uniqueID;
         this.name = name;
     }
-
-    private UUID uniqueID;
-
-    private String name;
-
-    private long joined = System.currentTimeMillis();
 
     @NotNull
     public UUID getUniqueID() {

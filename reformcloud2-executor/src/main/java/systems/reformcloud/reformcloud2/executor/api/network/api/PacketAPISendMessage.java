@@ -40,6 +40,9 @@ import java.util.UUID;
 
 public class PacketAPISendMessage extends Packet {
 
+    private UUID targetPlayer;
+    private String message;
+
     public PacketAPISendMessage() {
     }
 
@@ -47,10 +50,6 @@ public class PacketAPISendMessage extends Packet {
         this.targetPlayer = targetPlayer;
         this.message = message;
     }
-
-    private UUID targetPlayer;
-
-    private String message;
 
     @Override
     public int getId() {

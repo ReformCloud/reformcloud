@@ -28,6 +28,19 @@ import java.util.concurrent.TimeUnit;
 
 public abstract class AbsoluteThread extends Thread {
 
+    private volatile boolean interrupted = false;
+
+    public static void sleep(TimeUnit timeUnit, long time) {
+        try {
+            timeUnit.sleep(time);
+        } catch (final InterruptedException ignored) {
+        }
+    }
+
+    public static void sleep(long time) {
+        sleep(TimeUnit.MILLISECONDS, time);
+    }
+
     public AbsoluteThread enableDaemon() {
         setDaemon(true);
         return this;
@@ -47,19 +60,6 @@ public abstract class AbsoluteThread extends Thread {
         setContextClassLoader(classLoader);
         return this;
     }
-
-    public static void sleep(TimeUnit timeUnit, long time) {
-        try {
-            timeUnit.sleep(time);
-        } catch (final InterruptedException ignored) {
-        }
-    }
-
-    public static void sleep(long time) {
-        sleep(TimeUnit.MILLISECONDS, time);
-    }
-
-    private volatile boolean interrupted = false;
 
     @Override
     public void interrupt() {

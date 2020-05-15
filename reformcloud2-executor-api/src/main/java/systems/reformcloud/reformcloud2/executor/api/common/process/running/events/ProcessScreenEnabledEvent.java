@@ -29,14 +29,13 @@ import systems.reformcloud.reformcloud2.executor.api.common.process.running.scre
 
 public class ProcessScreenEnabledEvent extends Event {
 
+    private final RunningProcessScreen runningProcessScreen;
+    private final String enabledFor;
+
     public ProcessScreenEnabledEvent(RunningProcessScreen runningProcessScreen, String enabledFor) {
         this.runningProcessScreen = runningProcessScreen;
         this.enabledFor = enabledFor;
     }
-
-    private final RunningProcessScreen runningProcessScreen;
-
-    private final String enabledFor;
 
     public RunningProcessScreen getRunningProcessScreen() {
         return runningProcessScreen;

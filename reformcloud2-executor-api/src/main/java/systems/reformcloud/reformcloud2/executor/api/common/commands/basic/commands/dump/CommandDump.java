@@ -48,52 +48,12 @@ import java.util.stream.Collectors;
 
 public class CommandDump extends GlobalCommand {
 
+    private final DumpUtil specificDumper;
+
     public CommandDump(DumpUtil specificDump) {
         super("dump", "reformcloud.command.dump",
                 "Dumps the full cloud system to the paste server", new ArrayList<>());
         this.specificDumper = specificDump;
-    }
-
-    private final DumpUtil specificDumper;
-
-    @Override
-    public void describeCommandToSender(@NotNull CommandSource source) {
-        source.sendMessage(LanguageManager.get("command-dump-description"));
-    }
-
-    @Override
-    public boolean handleCommand(@NotNull CommandSource commandSource, @NotNull String[] strings) {
-        commandSource.sendMessage(LanguageManager.get("command-dump-creating"));
-        String dump = createFullDump();
-        commandSource.sendMessage(LanguageManager.get("command-dump-created", pasteDump(dump)));
-        return true;
-    }
-
-    private String createFullDump() {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("-------- ReformCloud Support Dump --------");
-        stringBuilder.append("\n\n");
-
-        appendGeneralInformation(stringBuilder);
-        dumpCloudInfo(stringBuilder);
-        dumpSystemInfo(stringBuilder);
-
-        stringBuilder.append("\n");
-
-        this.specificDumper.appendCurrentDump(stringBuilder);
-
-        stringBuilder.append("--- Current Thread ---");
-        stringBuilder.append("\n");
-
-        dumpThreadInfo(Thread.currentThread(), stringBuilder);
-
-        stringBuilder.append("--- Other Threads ---");
-        stringBuilder.append("\n");
-
-        for (Thread thread : Streams.allOf(Thread.getAllStackTraces().keySet(), e -> e.getId() != Thread.currentThread().getId())) {
-            dumpThreadInfo(thread, stringBuilder);
-        }
-        return stringBuilder.toString();
     }
 
     private static void dumpThreadInfo(Thread thread, StringBuilder builder) {
@@ -308,5 +268,45 @@ public class CommandDump extends GlobalCommand {
 
         String parsed = new String(byteArrayOutputStream.toByteArray(), StandardCharsets.UTF_8);
         return new JsonConfiguration(parsed).getString("key");
+    }
+
+    @Override
+    public void describeCommandToSender(@NotNull CommandSource source) {
+        source.sendMessage(LanguageManager.get("command-dump-description"));
+    }
+
+    @Override
+    public boolean handleCommand(@NotNull CommandSource commandSource, @NotNull String[] strings) {
+        commandSource.sendMessage(LanguageManager.get("command-dump-creating"));
+        String dump = createFullDump();
+        commandSource.sendMessage(LanguageManager.get("command-dump-created", pasteDump(dump)));
+        return true;
+    }
+
+    private String createFullDump() {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("-------- ReformCloud Support Dump --------");
+        stringBuilder.append("\n\n");
+
+        appendGeneralInformation(stringBuilder);
+        dumpCloudInfo(stringBuilder);
+        dumpSystemInfo(stringBuilder);
+
+        stringBuilder.append("\n");
+
+        this.specificDumper.appendCurrentDump(stringBuilder);
+
+        stringBuilder.append("--- Current Thread ---");
+        stringBuilder.append("\n");
+
+        dumpThreadInfo(Thread.currentThread(), stringBuilder);
+
+        stringBuilder.append("--- Other Threads ---");
+        stringBuilder.append("\n");
+
+        for (Thread thread : Streams.allOf(Thread.getAllStackTraces().keySet(), e -> e.getId() != Thread.currentThread().getId())) {
+            dumpThreadInfo(thread, stringBuilder);
+        }
+        return stringBuilder.toString();
     }
 }

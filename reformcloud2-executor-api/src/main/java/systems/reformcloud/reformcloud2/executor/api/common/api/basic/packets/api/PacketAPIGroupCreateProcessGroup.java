@@ -39,14 +39,14 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packe
 
 public class PacketAPIGroupCreateProcessGroup extends Packet {
 
+    private ProcessGroup processGroup;
+
     public PacketAPIGroupCreateProcessGroup() {
     }
 
     public PacketAPIGroupCreateProcessGroup(ProcessGroup processGroup) {
         this.processGroup = processGroup;
     }
-
-    private ProcessGroup processGroup;
 
     @Override
     public int getId() {

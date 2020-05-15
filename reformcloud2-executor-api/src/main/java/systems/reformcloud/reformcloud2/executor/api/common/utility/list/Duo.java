@@ -30,14 +30,13 @@ import systems.reformcloud.reformcloud2.executor.api.common.utility.annotiations
 
 public final class Duo<F, S> {
 
+    private final F first;
+    private final S second;
+
     public Duo(@NotNull F first, @Nullable S second) {
         this.first = first;
         this.second = second;
     }
-
-    private final F first;
-
-    private final S second;
 
     /**
      * @return The key of this pair

@@ -34,13 +34,12 @@ import java.util.logging.Level;
 public final class OutputStream extends OutputBase {
 
     private static final String LINE_SEPARATOR = System.getProperty("line.separator");
+    private final Level level;
 
     public OutputStream(LoggerBase loggerBase, Level level) {
         super(loggerBase);
         this.level = level;
     }
-
-    private final Level level;
 
     @Override
     public void flush() throws IOException {

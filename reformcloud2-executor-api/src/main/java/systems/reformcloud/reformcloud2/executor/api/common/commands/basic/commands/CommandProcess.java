@@ -45,13 +45,12 @@ import static systems.reformcloud.reformcloud2.executor.api.common.CommonHelper.
 public final class CommandProcess extends GlobalCommand {
 
     private static final String FORMAT_LIST = " - %s - %d/%d - %s - %s";
+    private final Function<ProcessInformation, Boolean> screenToggle;
 
     public CommandProcess(@NotNull Function<ProcessInformation, Boolean> screenToggle) {
         super("process", "reformcloud.command.process", "The process management command", "p", "processes");
         this.screenToggle = screenToggle;
     }
-
-    private final Function<ProcessInformation, Boolean> screenToggle;
 
     @Override
     public void describeCommandToSender(@NotNull CommandSource source) {

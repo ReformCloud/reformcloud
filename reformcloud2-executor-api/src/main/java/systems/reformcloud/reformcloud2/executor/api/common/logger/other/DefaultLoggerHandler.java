@@ -54,6 +54,9 @@ import java.util.logging.Level;
 public final class DefaultLoggerHandler extends LoggerBase {
 
     private static String prompt = StringUtil.getConsolePrompt();
+    private final LineReader lineReader;
+    private final Debugger debugger = new DefaultDebugger();
+    private final List<LoggerLineHandler> handlers = new ArrayList<>();
 
     public DefaultLoggerHandler(@NotNull CommandManager commandManager) throws IOException {
         Terminal terminal = TerminalLineHandler.newTerminal(false);
@@ -72,12 +75,6 @@ public final class DefaultLoggerHandler extends LoggerBase {
         System.setOut(new PrintStream(new OutputStream(this, Level.INFO), true));
         System.setErr(new PrintStream(new OutputStream(this, Level.SEVERE), true));
     }
-
-    private final LineReader lineReader;
-
-    private final Debugger debugger = new DefaultDebugger();
-
-    private final List<LoggerLineHandler> handlers = new ArrayList<>();
 
     @NotNull
     @Override

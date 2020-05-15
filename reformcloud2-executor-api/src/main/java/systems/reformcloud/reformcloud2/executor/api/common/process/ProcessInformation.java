@@ -54,6 +54,13 @@ public final class ProcessInformation implements Clone<ProcessInformation>, Seri
 
     public static final TypeToken<ProcessInformation> TYPE = new TypeToken<ProcessInformation>() {
     };
+    private ProcessPlayerManager processPlayerManager = new ProcessPlayerManager();
+    private ProcessDetail processDetail;
+    private NetworkInfo networkInfo;
+    private JsonConfiguration extra;
+    private List<DefaultPlugin> plugins = new CopyOnWriteArrayList<>();
+    private Collection<ProcessInclusion> preInclusions;
+    private ProcessGroup processGroup;
 
     @ApiStatus.Internal
     public ProcessInformation() {
@@ -72,20 +79,6 @@ public final class ProcessInformation implements Clone<ProcessInformation>, Seri
 
         ExecutorAPI.getInstance().getEventManager().callEvent(new ProcessInformationConfigureEvent(this));
     }
-
-    private ProcessPlayerManager processPlayerManager = new ProcessPlayerManager();
-
-    private ProcessDetail processDetail;
-
-    private NetworkInfo networkInfo;
-
-    private JsonConfiguration extra;
-
-    private List<DefaultPlugin> plugins = new CopyOnWriteArrayList<>();
-
-    private Collection<ProcessInclusion> preInclusions;
-
-    private ProcessGroup processGroup;
 
     public ProcessPlayerManager getProcessPlayerManager() {
         return processPlayerManager;
@@ -119,6 +112,16 @@ public final class ProcessInformation implements Clone<ProcessInformation>, Seri
     }
 
     /**
+     * Sets the process group on which this process is based
+     *
+     * @param processGroup The updated process group
+     */
+    @ApiStatus.Internal
+    public void setProcessGroup(@NotNull ProcessGroup processGroup) {
+        this.processGroup = processGroup;
+    }
+
+    /**
      * @return All plugins which are registered on the current process
      */
     @NotNull
@@ -140,16 +143,6 @@ public final class ProcessInformation implements Clone<ProcessInformation>, Seri
     @NotNull
     public Collection<ProcessInclusion> getPreInclusions() {
         return preInclusions;
-    }
-
-    /**
-     * Sets the process group on which this process is based
-     *
-     * @param processGroup The updated process group
-     */
-    @ApiStatus.Internal
-    public void setProcessGroup(@NotNull ProcessGroup processGroup) {
-        this.processGroup = processGroup;
     }
 
     /**

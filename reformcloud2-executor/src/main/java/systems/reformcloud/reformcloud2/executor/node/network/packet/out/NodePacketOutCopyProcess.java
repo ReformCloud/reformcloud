@@ -41,6 +41,11 @@ import java.util.UUID;
 
 public class NodePacketOutCopyProcess extends Packet {
 
+    private UUID processUniqueID;
+    private String targetTemplate;
+    private String targetTemplateStorage;
+    private String targetTemplateGroup;
+
     public NodePacketOutCopyProcess() {
     }
 
@@ -50,14 +55,6 @@ public class NodePacketOutCopyProcess extends Packet {
         this.targetTemplateStorage = targetTemplateStorage;
         this.targetTemplateGroup = targetTemplateGroup;
     }
-
-    private UUID processUniqueID;
-
-    private String targetTemplate;
-
-    private String targetTemplateStorage;
-
-    private String targetTemplateGroup;
 
     @Override
     public int getId() {

@@ -201,6 +201,11 @@ public final class NodeExecutor extends Node {
         bootstrap();
     }
 
+    @NotNull
+    public static NodeExecutor getInstance() {
+        return instance;
+    }
+
     @Override
     protected void bootstrap() {
         final long current = System.currentTimeMillis();
@@ -360,11 +365,6 @@ public final class NodeExecutor extends Node {
         this.awaitConnectionsAndUpdate();
         this.startSendUpdate();
         this.runConsole();
-    }
-
-    @NotNull
-    public static NodeExecutor getInstance() {
-        return instance;
     }
 
     @NotNull

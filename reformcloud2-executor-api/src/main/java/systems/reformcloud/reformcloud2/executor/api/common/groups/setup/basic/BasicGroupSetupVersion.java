@@ -35,17 +35,15 @@ import java.util.function.Consumer;
 
 public class BasicGroupSetupVersion implements GroupSetupVersion {
 
+    private final Collection<ProcessGroup> groups;
+    private final Collection<MainGroup> mainGroups;
+    private final String name;
+
     public BasicGroupSetupVersion(@NotNull String name, @NotNull ProcessGroup[] groups, @NotNull MainGroup[] mainGroups) {
         this.name = name;
         this.groups = Arrays.asList(groups);
         this.mainGroups = Arrays.asList(mainGroups);
     }
-
-    private final Collection<ProcessGroup> groups;
-
-    private final Collection<MainGroup> mainGroups;
-
-    private final String name;
 
     @Override
     public void install(@NotNull Consumer<ProcessGroup> processGroupInstaller, @NotNull Consumer<MainGroup> mainGroupInstaller) {

@@ -43,13 +43,14 @@ import java.util.concurrent.Executors;
 
 public class Application {
 
+    private static Application self;
     private LoadedApplication application;
-
     private ExecutorService executorService;
-
     private AppClassLoader appClassLoader;
 
-    private static Application self;
+    public static Application self() {
+        return self;
+    }
 
     public final void init(@NotNull LoadedApplication application, AppClassLoader loader) {
         self = this;
@@ -78,10 +79,6 @@ public class Application {
     }
 
     public void onUninstall() {
-    }
-
-    public static Application self() {
-        return self;
     }
 
     @Nullable

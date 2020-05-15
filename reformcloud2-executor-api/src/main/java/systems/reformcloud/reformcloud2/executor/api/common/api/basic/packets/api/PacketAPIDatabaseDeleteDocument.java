@@ -38,6 +38,10 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packe
 
 public class PacketAPIDatabaseDeleteDocument extends Packet {
 
+    private String databaseName;
+    private String entryKey;
+    private String identifier;
+
     public PacketAPIDatabaseDeleteDocument() {
     }
 
@@ -46,12 +50,6 @@ public class PacketAPIDatabaseDeleteDocument extends Packet {
         this.entryKey = entryKey;
         this.identifier = identifier;
     }
-
-    private String databaseName;
-
-    private String entryKey;
-
-    private String identifier;
 
     @Override
     public int getId() {

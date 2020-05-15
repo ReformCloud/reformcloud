@@ -33,18 +33,15 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packe
 
 public final class ChannelReaderHelper extends SimpleChannelInboundHandler<Packet> {
 
+    private final NetworkChannelReader channelReader;
+    private final ChallengeAuthHandler authHandler;
+    public boolean auth = false;
+    private boolean wasActive = false;
+
     public ChannelReaderHelper(NetworkChannelReader channelReader, ChallengeAuthHandler authHandler) {
         this.channelReader = channelReader;
         this.authHandler = authHandler;
     }
-
-    private final NetworkChannelReader channelReader;
-
-    private final ChallengeAuthHandler authHandler;
-
-    public boolean auth = false;
-
-    private boolean wasActive = false;
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {

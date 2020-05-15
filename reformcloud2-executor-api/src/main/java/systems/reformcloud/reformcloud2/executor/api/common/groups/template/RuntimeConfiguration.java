@@ -37,6 +37,13 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public final class RuntimeConfiguration implements SerializableObject {
 
+    private int maxMemory;
+    private int dynamicMemory;
+    private List<String> processParameters;
+    private List<String> jvmOptions;
+    private Map<String, String> systemProperties;
+    private Collection<String> shutdownCommands;
+
     @ApiStatus.Internal
     public RuntimeConfiguration() {
     }
@@ -64,28 +71,16 @@ public final class RuntimeConfiguration implements SerializableObject {
         this.shutdownCommands = shutdownCommands;
     }
 
-    private int maxMemory;
-
-    private int dynamicMemory;
-
-    private List<String> processParameters;
-
-    private List<String> jvmOptions;
-
-    private Map<String, String> systemProperties;
-
-    private Collection<String> shutdownCommands;
-
     public int getMaxMemory() {
         return maxMemory;
     }
 
-    public int getDynamicMemory() {
-        return dynamicMemory;
-    }
-
     public void setMaxMemory(int maxMemory) {
         this.maxMemory = maxMemory;
+    }
+
+    public int getDynamicMemory() {
+        return dynamicMemory;
     }
 
     public List<String> getProcessParameters() {

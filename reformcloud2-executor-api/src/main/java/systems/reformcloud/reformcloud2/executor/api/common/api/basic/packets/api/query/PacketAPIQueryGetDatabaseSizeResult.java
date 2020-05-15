@@ -31,14 +31,14 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.query
 
 public class PacketAPIQueryGetDatabaseSizeResult extends QueryResultPacket {
 
+    private int size;
+
     public PacketAPIQueryGetDatabaseSizeResult() {
     }
 
     public PacketAPIQueryGetDatabaseSizeResult(int size) {
         this.size = size;
     }
-
-    private int size;
 
     public int getSize() {
         return size;

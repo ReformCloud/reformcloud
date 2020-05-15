@@ -61,17 +61,17 @@ public interface LoadedApplication extends Nameable {
     ApplicationStatus getApplicationStatus();
 
     /**
-     * @return The main class of the application
-     */
-    @Nullable
-    Class<?> getMainClass();
-
-    /**
      * Updates the application status
      *
      * @param status The new status of the application
      */
     void setApplicationStatus(@NotNull ApplicationStatus status);
+
+    /**
+     * @return The main class of the application
+     */
+    @Nullable
+    Class<?> getMainClass();
 
     /**
      * @return The name of the application

@@ -53,27 +53,27 @@ public final class DefaultNetworkServer implements NetworkServer {
     @Override
     public void bind(@NotNull String host, int port, @NotNull Supplier<NetworkChannelReader> readerHelper, @NotNull ChallengeAuthHandler challengeAuthHandler) {
         if (!channelFutures.containsKey(port)) {
-                new ServerBootstrap()
-                        .channel(channelClass)
-                        .group(boss, worker)
+            new ServerBootstrap()
+                    .channel(channelClass)
+                    .group(boss, worker)
 
-                        .childOption(ChannelOption.SO_REUSEADDR, true)
-                        .childOption(ChannelOption.SO_KEEPALIVE, true)
-                        .childOption(ChannelOption.AUTO_READ, true)
-                        .childOption(ChannelOption.IP_TOS, 0x18)
-                        .childOption(ChannelOption.TCP_NODELAY, true)
+                    .childOption(ChannelOption.SO_REUSEADDR, true)
+                    .childOption(ChannelOption.SO_KEEPALIVE, true)
+                    .childOption(ChannelOption.AUTO_READ, true)
+                    .childOption(ChannelOption.IP_TOS, 0x18)
+                    .childOption(ChannelOption.TCP_NODELAY, true)
 
-                        .childHandler(new ServerInitializerHandler(readerHelper, challengeAuthHandler))
+                    .childHandler(new ServerInitializerHandler(readerHelper, challengeAuthHandler))
 
-                        .bind(host, port)
+                    .bind(host, port)
 
-                        .addListener((ChannelFutureListener) channelFuture -> {
-                            if (channelFuture.isSuccess()) {
-                                DefaultNetworkServer.this.channelFutures.put(port, channelFuture);
-                            } else {
-                                channelFuture.cause().printStackTrace();
-                            }
-                        });
+                    .addListener((ChannelFutureListener) channelFuture -> {
+                        if (channelFuture.isSuccess()) {
+                            DefaultNetworkServer.this.channelFutures.put(port, channelFuture);
+                        } else {
+                            channelFuture.cause().printStackTrace();
+                        }
+                    });
         }
     }
 

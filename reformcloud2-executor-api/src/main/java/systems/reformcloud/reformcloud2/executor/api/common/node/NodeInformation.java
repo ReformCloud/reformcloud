@@ -93,6 +93,10 @@ public class NodeInformation implements SerializableObject {
         return maxMemory;
     }
 
+    public void setMaxMemory(long maxMemory) {
+        this.maxMemory = maxMemory;
+    }
+
     @NotNull
     public ProcessRuntimeInformation getProcessRuntimeInformation() {
         return processRuntimeInformation;
@@ -109,10 +113,6 @@ public class NodeInformation implements SerializableObject {
 
     public void removeUsedMemory(int memory) {
         this.usedMemory -= memory;
-    }
-
-    public void setMaxMemory(long maxMemory) {
-        this.maxMemory = maxMemory;
     }
 
     public void update() {

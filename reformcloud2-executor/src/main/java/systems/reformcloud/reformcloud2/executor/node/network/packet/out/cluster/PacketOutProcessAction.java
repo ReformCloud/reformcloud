@@ -47,6 +47,9 @@ import systems.reformcloud.reformcloud2.executor.node.process.util.ProcessAction
 
 public class PacketOutProcessAction extends Packet {
 
+    private ProcessAction processAction;
+    private ProcessInformation processInformation;
+
     public PacketOutProcessAction() {
     }
 
@@ -54,10 +57,6 @@ public class PacketOutProcessAction extends Packet {
         this.processAction = processAction;
         this.processInformation = processInformation;
     }
-
-    private ProcessAction processAction;
-
-    private ProcessInformation processInformation;
 
     @Override
     public int getId() {

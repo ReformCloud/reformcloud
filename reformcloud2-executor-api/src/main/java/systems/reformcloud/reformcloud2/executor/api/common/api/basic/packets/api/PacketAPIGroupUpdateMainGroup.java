@@ -39,14 +39,14 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packe
 
 public class PacketAPIGroupUpdateMainGroup extends Packet {
 
+    private MainGroup mainGroup;
+
     public PacketAPIGroupUpdateMainGroup() {
     }
 
     public PacketAPIGroupUpdateMainGroup(MainGroup mainGroup) {
         this.mainGroup = mainGroup;
     }
-
-    private MainGroup mainGroup;
 
     @Override
     public int getId() {

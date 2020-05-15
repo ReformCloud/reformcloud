@@ -37,6 +37,9 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packe
 
 public final class PacketOutServerChallengeStart extends Packet {
 
+    private String name;
+    private byte[] challenge;
+
     public PacketOutServerChallengeStart() {
     }
 
@@ -44,10 +47,6 @@ public final class PacketOutServerChallengeStart extends Packet {
         this.name = name;
         this.challenge = challenge;
     }
-
-    private String name;
-
-    private byte[] challenge;
 
     public byte[] getChallenge() {
         return challenge;

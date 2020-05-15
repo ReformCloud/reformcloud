@@ -33,12 +33,12 @@ import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageMan
 
 public final class CommandHelp extends GlobalCommand {
 
+    private final CommandManager commandManager;
+
     public CommandHelp(CommandManager commandManager) {
         super("help", null, GlobalCommand.DEFAULT_DESCRIPTION, "ask", "?");
         this.commandManager = commandManager;
     }
-
-    private final CommandManager commandManager;
 
     @Override
     public void describeCommandToSender(@NotNull CommandSource source) {

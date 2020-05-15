@@ -41,8 +41,8 @@ public interface RequestHandler {
      * Handles the request
      *
      * @param webRequester The web requester of this http request
-     * @param in The http request itself
-     * @param response The response handler of any response which should get sent to the requester
+     * @param in           The http request itself
+     * @param response     The response handler of any response which should get sent to the requester
      */
     void handleRequest(@NotNull WebRequester webRequester, @NotNull HttpRequest in, @NotNull Consumer<HttpResponse> response);
 

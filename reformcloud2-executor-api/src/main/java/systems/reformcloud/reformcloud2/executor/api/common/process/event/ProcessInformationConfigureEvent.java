@@ -33,11 +33,11 @@ import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInfor
  */
 public class ProcessInformationConfigureEvent extends Event {
 
+    private final ProcessInformation information;
+
     public ProcessInformationConfigureEvent(@NotNull ProcessInformation information) {
         this.information = information;
     }
-
-    private final ProcessInformation information;
 
     @NotNull
     public ProcessInformation getInformation() {

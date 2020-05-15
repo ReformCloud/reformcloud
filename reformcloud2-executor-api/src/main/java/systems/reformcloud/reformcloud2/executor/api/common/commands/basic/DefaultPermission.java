@@ -30,14 +30,13 @@ import systems.reformcloud.reformcloud2.executor.api.common.commands.permission.
 
 public final class DefaultPermission implements Permission {
 
+    private final String permission;
+    private final PermissionResult defaultResult;
+
     public DefaultPermission(String permission, PermissionResult defaultResult) {
         this.permission = permission;
         this.defaultResult = defaultResult;
     }
-
-    private final String permission;
-
-    private final PermissionResult defaultResult;
 
     @NotNull
     @Override

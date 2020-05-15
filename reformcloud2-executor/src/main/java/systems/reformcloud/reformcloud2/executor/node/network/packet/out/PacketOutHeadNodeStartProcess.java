@@ -39,6 +39,9 @@ import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
 
 public class PacketOutHeadNodeStartProcess extends Packet {
 
+    private ProcessInformation processInformation;
+    private boolean start;
+
     public PacketOutHeadNodeStartProcess() {
     }
 
@@ -46,10 +49,6 @@ public class PacketOutHeadNodeStartProcess extends Packet {
         this.processInformation = processInformation;
         this.start = start;
     }
-
-    private ProcessInformation processInformation;
-
-    private boolean start;
 
     @Override
     public int getId() {

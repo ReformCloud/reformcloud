@@ -28,9 +28,9 @@ import systems.reformcloud.reformcloud2.executor.api.executor.PlayerAPIExecutor;
 
 public final class APIConstants {
 
+    public static PlayerAPIExecutor playerAPIExecutor;
+
     private APIConstants() {
         throw new UnsupportedOperationException();
     }
-
-    public static PlayerAPIExecutor playerAPIExecutor;
 }

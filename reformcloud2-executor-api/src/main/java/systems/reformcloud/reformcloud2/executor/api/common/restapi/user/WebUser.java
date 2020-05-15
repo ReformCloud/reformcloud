@@ -32,19 +32,17 @@ import java.util.Collection;
 
 public class WebUser implements Nameable {
 
-    public static final TypeToken<WebUser> TYPE = new TypeToken<WebUser>() {};
+    public static final TypeToken<WebUser> TYPE = new TypeToken<WebUser>() {
+    };
+    private final String name;
+    private final String token;
+    private final Collection<String> permissions;
 
     public WebUser(String name, String token, Collection<String> permissions) {
         this.name = name;
         this.token = token;
         this.permissions = permissions;
     }
-
-    private final String name;
-
-    private final String token;
-
-    private final Collection<String> permissions;
 
     @NotNull
     @Override

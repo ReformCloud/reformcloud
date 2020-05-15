@@ -41,6 +41,11 @@ import java.util.UUID;
 
 public final class EventPacketPlayerServerSwitch extends Packet {
 
+    private UUID uniqueId;
+    private String name;
+    private String targetServer;
+    private String previousServer;
+
     public EventPacketPlayerServerSwitch() {
     }
 
@@ -50,14 +55,6 @@ public final class EventPacketPlayerServerSwitch extends Packet {
         this.targetServer = targetServer;
         this.previousServer = previousServer;
     }
-
-    private UUID uniqueId;
-
-    private String name;
-
-    private String targetServer;
-
-    private String previousServer;
 
     @Override
     public int getId() {

@@ -29,23 +29,22 @@ import systems.reformcloud.reformcloud2.executor.api.common.event.Event;
 
 public class ApplicationLoaderDetectedApplicationEvent extends Event {
 
+    private final ApplicationConfig applicationConfig;
+    private boolean cancelled = false;
+
     public ApplicationLoaderDetectedApplicationEvent(ApplicationConfig applicationConfig) {
         this.applicationConfig = applicationConfig;
     }
-
-    private final ApplicationConfig applicationConfig;
-
-    private boolean cancelled = false;
 
     public boolean isCancelled() {
         return cancelled;
     }
 
-    public ApplicationConfig getApplicationConfig() {
-        return applicationConfig;
-    }
-
     public void setCancelled(boolean cancelled) {
         this.cancelled = cancelled;
+    }
+
+    public ApplicationConfig getApplicationConfig() {
+        return applicationConfig;
     }
 }

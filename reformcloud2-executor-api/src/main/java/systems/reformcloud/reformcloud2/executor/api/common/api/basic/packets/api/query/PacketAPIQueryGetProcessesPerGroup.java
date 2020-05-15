@@ -38,14 +38,14 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packe
 
 public class PacketAPIQueryGetProcessesPerGroup extends Packet {
 
+    private String groupName;
+
     public PacketAPIQueryGetProcessesPerGroup() {
     }
 
     public PacketAPIQueryGetProcessesPerGroup(String groupName) {
         this.groupName = groupName;
     }
-
-    private String groupName;
 
     @Override
     public int getId() {

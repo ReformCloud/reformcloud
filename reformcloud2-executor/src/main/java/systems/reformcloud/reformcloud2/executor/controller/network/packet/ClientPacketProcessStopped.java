@@ -41,6 +41,9 @@ import java.util.UUID;
 
 public class ClientPacketProcessStopped extends Packet {
 
+    private UUID processUniqueID;
+    private String processName;
+
     public ClientPacketProcessStopped() {
     }
 
@@ -48,10 +51,6 @@ public class ClientPacketProcessStopped extends Packet {
         this.processUniqueID = processUniqueID;
         this.processName = processName;
     }
-
-    private UUID processUniqueID;
-
-    private String processName;
 
     @Override
     public int getId() {

@@ -41,14 +41,18 @@ import java.util.stream.Collectors;
 
 public class JLine3Completer implements Completer {
 
+    private final CommandManager commandManager;
+    private final CommandSource consoleCommandSource;
+
     public JLine3Completer(@NotNull CommandManager commandManager) {
         this.commandManager = commandManager;
         this.consoleCommandSource = new ConsoleCommandSource(commandManager);
     }
 
-    private final CommandManager commandManager;
-
-    private final CommandSource consoleCommandSource;
+    private static List<Candidate> sortSub(List<String> in) {
+        in.sort(String::compareToIgnoreCase);
+        return in.stream().map(Candidate::new).collect(Collectors.toList());
+    }
 
     @Override
     public void complete(LineReader lineReader, ParsedLine parsedLine, List<Candidate> list) {
@@ -78,10 +82,5 @@ public class JLine3Completer implements Completer {
         }
 
         list.addAll(sortSub(completed));
-    }
-
-    private static List<Candidate> sortSub(List<String> in) {
-        in.sort(String::compareToIgnoreCase);
-        return in.stream().map(Candidate::new).collect(Collectors.toList());
     }
 }

@@ -33,17 +33,15 @@ import java.util.UUID;
 
 public class PlayerLogoutEvent extends Event {
 
+    private final String name;
+    private final UUID uuid;
+    private final String lastServer;
+
     public PlayerLogoutEvent(@NotNull String name, @NotNull UUID uuid, @Nullable String lastServer) {
         this.name = name;
         this.uuid = uuid;
         this.lastServer = lastServer;
     }
-
-    private final String name;
-
-    private final UUID uuid;
-
-    private final String lastServer;
 
     @NotNull
     public String getName() {

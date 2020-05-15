@@ -53,12 +53,11 @@ public class ConsoleCommandSource implements CommandSource {
             return PermissionResult.ALLOWED;
         }
     });
+    private final CommandManager commandManager;
 
     public ConsoleCommandSource(CommandManager commandManager) {
         this.commandManager = commandManager;
     }
-
-    private final CommandManager commandManager;
 
     @Override
     public boolean hasPermission(@NotNull String permission) {

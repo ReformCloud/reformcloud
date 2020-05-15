@@ -42,6 +42,7 @@ import java.util.Map;
 public final class RethinkDBDatabase extends Database<RethinkDB> {
 
     private final Map<String, DatabaseReader> perTableReader = new AbsentMap<>();
+    private Connection connection;
 
     public RethinkDBDatabase() {
         URL dependency = DEPENDENCY_LOADER.loadDependency(new DefaultDependency(
@@ -62,8 +63,6 @@ public final class RethinkDBDatabase extends Database<RethinkDB> {
         Conditions.nonNull(dependency, StringUtil.formatError("dependency load for rethink database"));
         DEPENDENCY_LOADER.addDependency(dependency);
     }
-
-    private Connection connection;
 
     @Override
     public void connect(@NotNull String host, int port, @NotNull String userName, @NotNull String password, @NotNull String table) {

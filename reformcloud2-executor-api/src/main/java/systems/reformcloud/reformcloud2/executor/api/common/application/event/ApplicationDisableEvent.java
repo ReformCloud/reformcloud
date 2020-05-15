@@ -29,13 +29,12 @@ import systems.reformcloud.reformcloud2.executor.api.common.event.Event;
 
 public class ApplicationDisableEvent extends Event {
 
+    private final LoadedApplication application;
+    private boolean cancelled;
+
     public ApplicationDisableEvent(LoadedApplication application) {
         this.application = application;
     }
-
-    private final LoadedApplication application;
-
-    private boolean cancelled;
 
     public LoadedApplication getApplication() {
         return application;

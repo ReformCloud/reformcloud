@@ -41,14 +41,13 @@ import java.util.Collection;
 
 public class ConsoleAPIImplementation implements ConsoleSyncAPI, ConsoleAsyncAPI {
 
+    private final CommandManager commandManager;
+    private final CommandSource console;
+
     public ConsoleAPIImplementation(CommandManager commandManager) {
         this.commandManager = commandManager;
         this.console = new ConsoleCommandSource(commandManager);
     }
-
-    private final CommandManager commandManager;
-
-    private final CommandSource console;
 
     @NotNull
     @Override

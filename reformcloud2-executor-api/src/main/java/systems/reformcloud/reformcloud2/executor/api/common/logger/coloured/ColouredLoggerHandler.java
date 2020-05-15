@@ -55,11 +55,15 @@ import java.util.logging.Level;
 
 public final class ColouredLoggerHandler extends LoggerBase {
 
+    private static String prompt;
+
     static {
         prompt = Colours.coloured(StringUtil.getConsolePrompt());
     }
 
-    private static String prompt;
+    private final LineReader lineReader;
+    private final List<LoggerLineHandler> handlers = new ArrayList<>();
+    private final Debugger debugger = new ColouredDebugger();
 
     public ColouredLoggerHandler(@NotNull CommandManager commandManager) throws IOException {
         Terminal terminal = TerminalLineHandler.newTerminal(true);
@@ -82,12 +86,6 @@ public final class ColouredLoggerHandler extends LoggerBase {
         System.setOut(new PrintStream(new OutputStream(this, Level.INFO), true));
         System.setErr(new PrintStream(new OutputStream(this, Level.SEVERE), true));
     }
-
-    private final LineReader lineReader;
-
-    private final List<LoggerLineHandler> handlers = new ArrayList<>();
-
-    private final Debugger debugger = new ColouredDebugger();
 
     @NotNull
     @Override

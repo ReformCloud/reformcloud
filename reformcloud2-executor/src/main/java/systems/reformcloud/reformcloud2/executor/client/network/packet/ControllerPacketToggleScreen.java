@@ -40,14 +40,14 @@ import java.util.UUID;
 
 public class ControllerPacketToggleScreen extends Packet {
 
+    private UUID processUniqueID;
+
     public ControllerPacketToggleScreen() {
     }
 
     public ControllerPacketToggleScreen(UUID processUniqueID) {
         this.processUniqueID = processUniqueID;
     }
-
-    private UUID processUniqueID;
 
     @Override
     public int getId() {

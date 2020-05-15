@@ -30,17 +30,15 @@ import java.util.UUID;
 
 public class ProtocolBufferWrapper {
 
+    private final int id;
+    private final UUID uuid;
+    private final ProtocolBuffer protocolBuffer;
+
     public ProtocolBufferWrapper(int id, UUID uuid, ProtocolBuffer protocolBuffer) {
         this.id = id;
         this.uuid = uuid;
         this.protocolBuffer = protocolBuffer;
     }
-
-    private final int id;
-
-    private final UUID uuid;
-
-    private final ProtocolBuffer protocolBuffer;
 
     public int getId() {
         return id;
