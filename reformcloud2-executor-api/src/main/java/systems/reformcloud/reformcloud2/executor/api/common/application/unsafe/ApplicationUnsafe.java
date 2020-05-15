@@ -30,8 +30,8 @@ import systems.reformcloud.reformcloud2.executor.api.common.application.Applicat
 public interface ApplicationUnsafe {
 
     static void checkIfUnsafe(@NotNull ApplicationConfig config) {
-        if (!config.implementedVersion().equalsIgnoreCase(System.getProperty("reformcloud.runner.version"))) {
-            System.err.println(config.getName() + " is using api-version " + config.implementedVersion()
+        if (!config.getImplementedVersion().equalsIgnoreCase(System.getProperty("reformcloud.runner.version"))) {
+            System.err.println(config.getName() + " is using api-version " + config.getImplementedVersion()
                     + " instead of current version " + System.getProperty("reformcloud.runner.version"));
         }
     }

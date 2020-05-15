@@ -40,7 +40,7 @@ public final class DefaultInstallableApplication implements InstallableApplicati
 
     @NotNull
     @Override
-    public String url() {
+    public String getDownloadUrl() {
         return url;
     }
 

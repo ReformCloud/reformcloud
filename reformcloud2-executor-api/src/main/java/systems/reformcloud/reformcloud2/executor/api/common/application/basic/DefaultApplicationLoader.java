@@ -27,13 +27,17 @@ package systems.reformcloud.reformcloud2.executor.api.common.application.basic;
 import com.google.gson.reflect.TypeToken;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnmodifiableView;
+import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.application.*;
 import systems.reformcloud.reformcloud2.executor.api.common.application.api.Application;
 import systems.reformcloud.reformcloud2.executor.api.common.application.builder.ApplicationConfigBuilder;
+import systems.reformcloud.reformcloud2.executor.api.common.application.event.ApplicationDisableEvent;
+import systems.reformcloud.reformcloud2.executor.api.common.application.event.ApplicationLoadEvent;
+import systems.reformcloud.reformcloud2.executor.api.common.application.event.ApplicationLoaderDetectedApplicationEvent;
 import systems.reformcloud.reformcloud2.executor.api.common.application.loader.AppClassLoader;
 import systems.reformcloud.reformcloud2.executor.api.common.application.unsafe.ApplicationUnsafe;
 import systems.reformcloud.reformcloud2.executor.api.common.application.updater.ApplicationUpdateRepository;
-import systems.reformcloud.reformcloud2.executor.api.common.base.Conditions;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.dependency.DefaultDependencyLoader;
 import systems.reformcloud.reformcloud2.executor.api.common.dependency.Dependency;
@@ -43,306 +47,261 @@ import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams
 import systems.reformcloud.reformcloud2.executor.api.common.utility.system.DownloadHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.system.SystemHelper;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.stream.Collectors;
 
 public final class DefaultApplicationLoader implements ApplicationLoader {
 
-    private static final File APP_DIR = new File("reformcloud/applications");
+    private static final Path APPLICATION_DIRECTORY = Paths.get("reformcloud", "applications");
 
-    private final Map<String, ApplicationConfig> load = new HashMap<>();
+    private static final DependencyLoader APP_LOADER = new DefaultDependencyLoader();
 
-    private final List<Application> applications = new ArrayList<>();
+    private final Map<String, Application> loadedApplications = new ConcurrentHashMap<>();
 
-    private static final DependencyLoader DEPENDENCY_LOADER = new DefaultDependencyLoader();
-
-    private final List<ApplicationHandler> applicationHandlers = new ArrayList<>();
+    private final Collection<ApplicationConfig> toLoad = new CopyOnWriteArrayList<>();
 
     @Override
     public void detectApplications() {
-        Conditions.isTrue(APP_DIR.isDirectory());
-
-        for (File file : Objects.requireNonNull(APP_DIR.listFiles(pathname -> pathname.isFile() && pathname.getName().endsWith(".jar")))) {
-            try (JarFile jarFile = new JarFile(file)) {
-                JarEntry appConfig = jarFile.getJarEntry("application.json");
-                if (appConfig == null) {
-                    appConfig = jarFile.getJarEntry("app.json");
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(APPLICATION_DIRECTORY, path -> path.toString().endsWith(".jar"))) {
+            for (Path path : stream) {
+                if (loadedApplications.values().stream().anyMatch(e -> e.getApplication().getApplicationConfig().getApplicationFile().toPath().toString().equals(path.toString()))) {
+                    continue;
                 }
 
-                Conditions.isTrue(appConfig != null, "Application has to contain a 'application.json' or 'app.json'");
-                try (InputStream inputStream = jarFile.getInputStream(appConfig)) {
-                    JsonConfiguration configurable = new JsonConfiguration(inputStream);
-                    ApplicationConfig applicationConfig = new ApplicationConfigBuilder(
-                            configurable.getString("name"),
-                            configurable.getString("main"),
-                            configurable.getString("author"),
-                            configurable.getString("version"),
-                            file,
-                            appConfig
-                    ).withDependencies(
-                            configurable.getOrDefault("dependencies", new TypeToken<List<Dependency>>() {
-                            }.getType(), new ArrayList<>())
-                    ).withDescription(
-                            configurable.getOrDefault("description", (String) null)
-                    ).withWebsite(
-                            configurable.getOrDefault("website", (String) null)
-                    ).withImplementedVersion(
-                            configurable.getOrDefault("impl-version", (String) null)
-                    ).create();
-
-                    ApplicationUnsafe.checkIfUnsafe(applicationConfig);
-                    if (load.put(applicationConfig.getName(), applicationConfig) != null) {
-                        System.err.println("Duplicated application " + applicationConfig.getName());
-                    }
-                }
-            } catch (final IOException ex) {
-                ex.printStackTrace();
+                this.detectApplication(path);
             }
+        } catch (final IOException exception) {
+            exception.printStackTrace();
         }
-
-        applicationHandlers.forEach(ApplicationHandler::onDetectApplications);
     }
 
     @Override
     public void installApplications() {
-        for (Map.Entry<String, ApplicationConfig> config : load.entrySet()) {
-            try {
-                if (config.getValue().dependencies().length != 0) {
-                    for (Dependency dependency : config.getValue().dependencies()) {
-                        DEPENDENCY_LOADER.addDependency(DEPENDENCY_LOADER.loadDependency(dependency));
-                    }
-                }
-
-                AppClassLoader classLoader = new AppClassLoader(new URL[]{
-                        config.getValue().applicationFile().toURI().toURL()
-                }, Thread.currentThread().getContextClassLoader());
-
-                Class<?> main = classLoader.loadClass(config.getValue().main());
-                Conditions.isTrue(main != null, "Main-Class of application " + config.getKey() + " not found");
-                Application application = (Application) main.getDeclaredConstructor().newInstance();
-
-                System.out.println(LanguageManager.get("successfully-pre-installed-app", config.getKey(), config.getValue().author()));
-                application.onInstallable();
-
-                application.init(new DefaultLoadedApplication(this, config.getValue(), main), classLoader);
-                application.onInstalled();
-                application.getApplication().setApplicationStatus(ApplicationStatus.INSTALLED);
-                System.out.println(LanguageManager.get("successfully-installed-app", config.getKey()));
-
-                if (application.getUpdateRepository() != null) {
-                    application.getUpdateRepository().fetchOrigin();
-                }
-
-                applications.add(application);
-            } catch (final Throwable throwable) {
-                throwable.printStackTrace();
-            }
-        }
-
-        applicationHandlers.forEach(ApplicationHandler::onInstallApplications);
+        this.toLoad.forEach(this::installApplication);
+        this.toLoad.clear();
     }
 
     @Override
     public void loadApplications() {
-        applications.forEach(application -> {
-            application.onLoad();
-            application.getApplication().setApplicationStatus(ApplicationStatus.LOADED);
-            System.out.println(LanguageManager.get("successfully-loaded-app", application.getApplication().getName()));
-        });
+        for (Application value : this.loadedApplications.values()) {
+            ApplicationLoadEvent event = new ApplicationLoadEvent(value.getApplication());
+            ExecutorAPI.getInstance().getEventManager().callEvent(event);
+            if (event.isCancelled()) {
+                continue;
+            }
 
-        applicationHandlers.forEach(ApplicationHandler::onLoadApplications);
+            value.onLoad();
+            value.getApplication().setApplicationStatus(ApplicationStatus.LOADED);
+            System.out.println(LanguageManager.get("successfully-loaded-app", value.getApplication().getName()));
+        }
     }
 
     @Override
     public void enableApplications() {
-        applications.forEach(application -> {
-            application.onEnable();
-            application.getApplication().setApplicationStatus(ApplicationStatus.ENABLED);
-            System.out.println(LanguageManager.get("successfully-enabled-app", application.getApplication().getName()));
-        });
-
-        applicationHandlers.forEach(ApplicationHandler::onEnableApplications);
+        for (Application value : this.loadedApplications.values()) {
+            value.onEnable();
+            value.getApplication().setApplicationStatus(ApplicationStatus.ENABLED);
+            System.out.println(LanguageManager.get("successfully-enabled-app", value.getApplication().getName()));
+        }
     }
 
     @Override
     public void disableApplications() {
-        applications.forEach(application -> {
-            application.getApplication().setApplicationStatus(ApplicationStatus.PRE_DISABLE);
-            application.onPreDisable();
-            System.out.println(LanguageManager.get("successfully-pre-disabled-app", application.getApplication().getName()));
-            application.getApplication().setApplicationStatus(ApplicationStatus.DISABLED);
-
-            application.onDisable();
-
-            application.getApplication().setApplicationStatus(ApplicationStatus.UNINSTALLING);
-            application.onUninstall();
-            System.out.println(LanguageManager.get("successfully-uninstalled-app", application.getApplication().getName()));
-            application.getApplication().setApplicationStatus(ApplicationStatus.UNINSTALLED);
-
-            this.handleUpdate(application);
-
-            application.unloadAllLanguageFiles();
-            application.getAppClassLoader().close();
-        });
-        applications.clear();
-
-        applicationHandlers.forEach(ApplicationHandler::onDisableApplications);
+        this.loadedApplications.values().forEach(this::disableApplication);
     }
 
     @Override
     public void fetchAllUpdates() {
-        this.applications.forEach(this::handleUpdate);
+        this.loadedApplications.values().forEach(this::handleUpdate);
     }
 
     @Override
     public void fetchUpdates(@NotNull String application) {
-        Streams.filterToReference(this.applications,
-                e -> e.getApplication().getName().equalsIgnoreCase(application)).ifPresent(this::handleUpdate);
+        Streams.filterToReference(this.loadedApplications.values(), e -> e.getApplication().getName().equals(application)).ifPresent(this::handleUpdate);
     }
 
     @Override
     public boolean doSpecificApplicationInstall(@NotNull InstallableApplication application) {
-        DownloadHelper.downloadAndDisconnect(application.url(), "reformcloud/applications/" + application.getName() + ".jar");
-        File file = new File("reformcloud/applications/" + application.getName() + ".jar");
-        if (!file.exists()) {
-            return false;
-        }
+        DownloadHelper.downloadAndDisconnect(application.getDownloadUrl(), "reformcloud/applications/" + application.getName());
+        Path path = Paths.get("reformcloud/applications/" + application.getName());
 
-        try (JarFile jarFile = new JarFile(file)) {
-            JarEntry appConfig = jarFile.getJarEntry("application.json");
-            if (appConfig == null) {
-                appConfig = jarFile.getJarEntry("app.json");
+        if (Files.exists(path)) {
+            ApplicationConfig config = this.detectApplication(path);
+            if (config == null) {
+                return false;
             }
 
-            Conditions.isTrue(appConfig != null, "Application has to contain a 'application.json' or 'app.json'");
-            try (InputStream inputStream = jarFile.getInputStream(appConfig)) {
-                JsonConfiguration configurable = new JsonConfiguration(inputStream);
-                ApplicationConfig applicationConfig = new ApplicationConfigBuilder(
-                        configurable.getString("name"),
-                        configurable.getString("main"),
-                        configurable.getString("author"),
-                        configurable.getString("version"),
-                        file,
-                        appConfig
-                ).withDependencies(
-                        configurable.get("dependencies", new TypeToken<List<Dependency>>() {
-                        })
-                ).withDescription(
-                        configurable.getString("description")
-                ).withWebsite(
-                        configurable.getString("website")
-                ).withImplementedVersion(
-                        configurable.getString("impl-version")
-                ).create();
-
-                ApplicationUnsafe.checkIfUnsafe(applicationConfig);
-
-                if (applicationConfig.dependencies().length != 0) {
-                    for (Dependency dependency : applicationConfig.dependencies()) {
-                        DEPENDENCY_LOADER.addDependency(DEPENDENCY_LOADER.loadDependency(dependency));
-                    }
-                }
-
-                AppClassLoader classLoader = new AppClassLoader(new URL[]{
-                        applicationConfig.applicationFile().toURI().toURL()
-                }, Thread.currentThread().getContextClassLoader());
-
-                Class<?> main = classLoader.loadClass(applicationConfig.main());
-                Conditions.isTrue(main != null, "Main-Class of application " + applicationConfig.getName() + " not found");
-                Application app = (Application) main.getDeclaredConstructor().newInstance();
-
-                System.out.println(LanguageManager.get("successfully-pre-installed-app", applicationConfig.getName(), applicationConfig.author()));
-                app.onInstallable();
-
-                app.init(new DefaultLoadedApplication(this, applicationConfig, main), classLoader);
-                app.onInstalled();
-                app.getApplication().setApplicationStatus(ApplicationStatus.INSTALLED);
-                System.out.println(LanguageManager.get("successfully-installed-app", applicationConfig.getName()));
-
-                if (app.getUpdateRepository() != null) {
-                    app.getUpdateRepository().fetchOrigin();
-                }
-
-                applications.add(app);
-                return true;
+            Application app = this.installApplication(config);
+            if (app != null) {
+                app.onLoad();
+                app.onEnable();
+                app.getApplication().setApplicationStatus(ApplicationStatus.ENABLED);
             }
-        } catch (final Throwable ex) {
-            ex.printStackTrace();
+
+            return app != null;
         }
+
         return false;
     }
 
     @Override
     public boolean doSpecificApplicationUninstall(@NotNull LoadedApplication loadedApplication) {
-        Application application = Streams.filter(applications, application1 -> application1.getApplication().getName().equals(loadedApplication.getName()));
-        if (application == null) {
-            return false;
+        return Streams.filterToReference(
+                this.loadedApplications.values(),
+                e -> e.getApplication().getName().equals(loadedApplication.getName())
+        ).ifPresent(this::disableApplication).isPresent();
+    }
+
+    @NotNull
+    @Override
+    public Optional<LoadedApplication> getApplication(@NotNull String name) {
+        return Optional.ofNullable(this.loadedApplications.get(name)).map(Application::getApplication);
+    }
+
+    @NotNull
+    @Override
+    public @UnmodifiableView Collection<LoadedApplication> getApplications() {
+        return Collections.unmodifiableCollection(this.loadedApplications.values().stream().map(Application::getApplication).collect(Collectors.toList()));
+    }
+
+    @Nullable
+    private ApplicationConfig detectApplication(@NotNull Path path) {
+        try (JarFile jarFile = new JarFile(path.toFile())) {
+            JarEntry applicationConfigEntry = jarFile.getJarEntry("application.json");
+            if (applicationConfigEntry == null) {
+                applicationConfigEntry = jarFile.getJarEntry("app.json");
+
+                if (applicationConfigEntry == null) {
+                    System.err.println("An application has to contain a application.json or app.json @ " + path.toString());
+                    return null;
+                }
+            }
+
+            try (InputStream inputStream = jarFile.getInputStream(applicationConfigEntry)) {
+                JsonConfiguration jsonConfiguration = new JsonConfiguration(inputStream);
+
+                ApplicationConfig applicationConfig = new ApplicationConfigBuilder(
+                        jsonConfiguration.getString("name"),
+                        jsonConfiguration.getString("main"),
+                        jsonConfiguration.getString("author"),
+                        jsonConfiguration.getString("version"),
+                        path.toFile(),
+                        applicationConfigEntry
+                )
+                        .withDependencies(jsonConfiguration.getOrDefault("dependencies", new TypeToken<List<Dependency>>() {
+                        }.getType(), new ArrayList<>()))
+                        .withDescription(jsonConfiguration.getOrDefault("description", (String) null))
+                        .withWebsite(jsonConfiguration.getOrDefault("website", (String) null))
+                        .withImplementedVersion(jsonConfiguration.getOrDefault("impl-version", (String) null))
+                        .create();
+
+                ApplicationUnsafe.checkIfUnsafe(applicationConfig);
+                if (this.getApplication(applicationConfig.getName()).isPresent()) {
+                    System.err.println("Detected duplicate application " + applicationConfig.getName() + " @ " + path.toString());
+                    return null;
+                }
+
+                ApplicationLoaderDetectedApplicationEvent event = new ApplicationLoaderDetectedApplicationEvent(applicationConfig);
+                ExecutorAPI.getInstance().getEventManager().callEvent(event);
+                if (event.isCancelled()) {
+                    return null;
+                }
+
+                this.toLoad.add(applicationConfig);
+                System.out.println(LanguageManager.get("application-detected", applicationConfig.getName(), path.toString()));
+                return applicationConfig;
+            }
+        } catch (final IOException exception) {
+            exception.printStackTrace();
+        }
+
+        return null;
+    }
+
+    @Nullable
+    private Application installApplication(@NotNull ApplicationConfig applicationConfig) {
+        try {
+            if (applicationConfig.getDependencies().length != 0) {
+                for (Dependency dependency : applicationConfig.getDependencies()) {
+                    URL dependencyUrl = APP_LOADER.loadDependency(dependency);
+                    if (dependencyUrl == null) {
+                        System.err.println("Unable to resolve dependency " + dependency.getArtifactID() + " for app " + applicationConfig.getName());
+                        return null;
+                    }
+
+                    APP_LOADER.addDependency(dependencyUrl);
+                }
+            }
+
+            AppClassLoader loader = new AppClassLoader(new URL[]{applicationConfig.getApplicationFile().toURI().toURL()}, Thread.currentThread().getContextClassLoader());
+            Class<?> mainClass = loader.loadClass(applicationConfig.getMainClassName());
+
+            Application instance = (Application) mainClass.getDeclaredConstructor().newInstance();
+            System.out.println(LanguageManager.get("successfully-pre-installed-app", applicationConfig.getName(), applicationConfig.getAuthor()));
+
+            instance.onInstallable();
+            instance.init(new DefaultLoadedApplication(this, applicationConfig, mainClass), loader);
+            instance.onInstalled();
+            instance.getApplication().setApplicationStatus(ApplicationStatus.INSTALLED);
+
+            if (instance.getUpdateRepository() != null) {
+                instance.getUpdateRepository().fetchOrigin();
+            }
+
+            this.loadedApplications.put(applicationConfig.getName(), instance);
+            System.out.println(LanguageManager.get("successfully-installed-app", applicationConfig.getName()));
+            return instance;
+        } catch (final ClassNotFoundException exception) {
+            System.err.println("Unable to find main class " + applicationConfig.getMainClassName() + " for application " + applicationConfig.getName());
+        } catch (final NoSuchMethodException exception) {
+            System.err.println("Unable to find NoArgsConstructor in class " + applicationConfig.getMainClassName() + " in application " + applicationConfig.getName());
+        } catch (final IOException | IllegalAccessException | InstantiationException | InvocationTargetException exception) {
+            exception.printStackTrace();
+        }
+
+        return null;
+    }
+
+    private void disableApplication(@NotNull Application application) {
+        ApplicationDisableEvent event = new ApplicationDisableEvent(application.getApplication());
+        ExecutorAPI.getInstance().getEventManager().callEvent(event);
+        if (event.isCancelled()) {
+            return;
         }
 
         application.getApplication().setApplicationStatus(ApplicationStatus.PRE_DISABLE);
         application.onPreDisable();
         System.out.println(LanguageManager.get("successfully-pre-disabled-app", application.getApplication().getName()));
-        application.getApplication().setApplicationStatus(ApplicationStatus.DISABLED);
 
+        application.getApplication().setApplicationStatus(ApplicationStatus.DISABLED);
         application.onDisable();
 
         application.getApplication().setApplicationStatus(ApplicationStatus.UNINSTALLING);
         application.onUninstall();
+
         System.out.println(LanguageManager.get("successfully-uninstalled-app", application.getApplication().getName()));
         application.getApplication().setApplicationStatus(ApplicationStatus.UNINSTALLED);
 
         this.handleUpdate(application);
 
         application.unloadAllLanguageFiles();
+        this.loadedApplications.remove(application.getApplication().getName());
         application.getAppClassLoader().close();
-        return true;
     }
 
-    @Override
-    public boolean doSpecificApplicationUninstall(@NotNull String application) {
-        LoadedApplication app = getApplication(application);
-        if (app == null) {
-            return false;
-        }
-
-        return doSpecificApplicationUninstall(app);
-    }
-
-    @Override
-    public LoadedApplication getApplication(@NotNull String name) {
-        return Streams.filterAndApply(applications, app -> app.getApplication().getName().equals(name), Application::getApplication);
-    }
-
-    @NotNull
-    @Override
-    public String getApplicationName(@NotNull LoadedApplication loadedApplication) {
-        return loadedApplication.getName();
-    }
-
-    @NotNull
-    @Override
-    public List<LoadedApplication> getApplications() {
-        return Collections.unmodifiableList(Streams.apply(applications, Application::getApplication));
-    }
-
-    @Override
-    public void addApplicationHandler(@NotNull ApplicationHandler applicationHandler) {
-        applicationHandlers.add(applicationHandler);
-    }
-
-    @Nullable
-    @Override
-    public Application getInternalApplication(@NotNull String name) {
-        return Streams.filter(this.applications, e -> e.getApplication().getName().equals(name));
-    }
-
-    private void handleUpdate(Application application) {
+    private void handleUpdate(@NotNull Application application) {
         // Do not fetch updates on development builds
         if (System.getProperty("reformcloud.runner.specification").equals("SNAPSHOT")) {
             return;
@@ -354,24 +313,22 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
         }
 
         SystemHelper.createDirectory(Paths.get("reformcloud/.update/apps"));
-        String fileName = application.getApplication().applicationConfig().applicationFile().getName();
+        String fileName = application.getApplication().getApplicationConfig().getApplicationFile().getName();
         String[] split = fileName.split("-");
-        String name = fileName
-                .replace("-" + split[split.length - 1], "")
-                .replace(".jar", "");
+        String name = fileName.replace("-" + split[split.length - 1], "").replace(".jar", "");
 
         System.out.println(LanguageManager.get(
                 "application-download-update",
-                application.getApplication().applicationConfig().getName(),
-                application.getApplication().applicationConfig().version(),
+                application.getApplication().getApplicationConfig().getName(),
+                application.getApplication().getApplicationConfig().getVersion(),
                 repository.getUpdate().getNewVersion(),
                 repository.getName(),
                 repository.getUpdate().getDownloadUrl()
         ));
+
         DownloadHelper.downloadAndDisconnect(
                 repository.getUpdate().getDownloadUrl(),
-                "reformcloud/.update/apps/" + name
-                        + "-" + repository.getUpdate().getNewVersion() + ".jar"
+                "reformcloud/.update/apps/" + name + "-" + repository.getUpdate().getNewVersion() + ".jar"
         );
     }
 }

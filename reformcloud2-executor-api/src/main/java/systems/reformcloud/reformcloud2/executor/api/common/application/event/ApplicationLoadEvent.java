@@ -22,37 +22,30 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.common.application;
+package systems.reformcloud.reformcloud2.executor.api.common.application.event;
 
-/**
- * Represents a handler for application actions in the runtime
- *
- * @see ApplicationLoader#addApplicationHandler(ApplicationHandler)
- */
-public interface ApplicationHandler {
+import systems.reformcloud.reformcloud2.executor.api.common.application.LoadedApplication;
+import systems.reformcloud.reformcloud2.executor.api.common.event.Event;
 
-    /**
-     * Gets called when the application in the app folder getting detected
-     */
-    void onDetectApplications();
+public class ApplicationLoadEvent extends Event {
 
-    /**
-     * Gets called when the applications are going to be installed
-     */
-    void onInstallApplications();
+    public ApplicationLoadEvent(LoadedApplication application) {
+        this.application = application;
+    }
 
-    /**
-     * Gets called when the applications are going to be loaded
-     */
-    void onLoadApplications();
+    private final LoadedApplication application;
 
-    /**
-     * Gets called when the applications are going to be enabled
-     */
-    void onEnableApplications();
+    private boolean cancelled = false;
 
-    /**
-     * Gets called when the applications are going to be disabled
-     */
-    void onDisableApplications();
+    public boolean isCancelled() {
+        return cancelled;
+    }
+
+    public LoadedApplication getApplication() {
+        return application;
+    }
+
+    public void setCancelled(boolean cancelled) {
+        this.cancelled = cancelled;
+    }
 }

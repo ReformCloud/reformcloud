@@ -53,8 +53,8 @@ public final class ProcessInclusionHandler {
     private void includeSelfFile(@NotNull ProcessInformation processInformation) {
         processInformation.getPreInclusions().add(new ProcessInclusion(
                 "https://dl.reformcloud.systems/addonsv2/reformcloud2-default-application-permissions-"
-                        + ReformCloudApplication.getInstance().getApplication().applicationConfig().version() + ".jar",
-                "plugins/permissions-" + ReformCloudApplication.getInstance().getApplication().applicationConfig().version() + ".jar"
+                        + ReformCloudApplication.getInstance().getApplication().getApplicationConfig().getVersion() + ".jar",
+                "plugins/permissions-" + ReformCloudApplication.getInstance().getApplication().getApplicationConfig().getVersion() + ".jar"
         ));
     }
 }

@@ -34,7 +34,7 @@ import java.util.jar.JarEntry;
 /**
  * Represents a config of an application
  *
- * @see LoadedApplication#applicationConfig()
+ * @see LoadedApplication#getApplicationConfig()
  */
 public interface ApplicationConfig extends Nameable {
 
@@ -42,53 +42,53 @@ public interface ApplicationConfig extends Nameable {
      * @return The version of the application
      */
     @NotNull
-    String version();
+    String getVersion();
 
     /**
      * @return The author of the application
      */
     @NotNull
-    String author();
+    String getAuthor();
 
     /**
      * @return The main class of the application
      */
     @NotNull
-    String main();
+    String getMainClassName();
 
     /**
      * @return All needed dependencies for an application
      */
     @NotNull
-    Dependency[] dependencies();
+    Dependency[] getDependencies();
 
     /**
      * @return The description of the application
      */
     @NotNull
-    String description();
+    String getDescription();
 
     /**
      * @return The website of an application
      */
     @NotNull
-    String website();
+    String getWebsite();
 
     /**
      * @return The api version which the application is using
      */
     @NotNull
-    String implementedVersion();
+    String getImplementedVersion();
 
     /**
      * @return The file from which the application is loaded
      */
     @NotNull
-    File applicationFile();
+    File getApplicationFile();
 
     /**
      * @return The {@link JarEntry} from which the application config is loaded
      */
     @NotNull
-    JarEntry applicationConfigFile();
+    JarEntry getApplicationConfigJarEntry();
 }

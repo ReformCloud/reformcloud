@@ -58,8 +58,8 @@ public final class ProcessInclusionHandler {
 
         processInformation.getPreInclusions().add(new ProcessInclusion(
                 "https://dl.reformcloud.systems/addonsv2/reformcloud2-default-application-signs-"
-                        + ReformCloudApplication.getInstance().getApplication().applicationConfig().version() + ".jar",
-                "plugins/signs-" + ReformCloudApplication.getInstance().getApplication().applicationConfig().version() + ".jar"
+                        + ReformCloudApplication.getInstance().getApplication().getApplicationConfig().getVersion() + ".jar",
+                "plugins/signs-" + ReformCloudApplication.getInstance().getApplication().getApplicationConfig().getVersion() + ".jar"
         ));
     }
 }

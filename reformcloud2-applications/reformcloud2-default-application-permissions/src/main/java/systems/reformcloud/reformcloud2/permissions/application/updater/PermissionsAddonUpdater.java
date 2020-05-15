@@ -54,7 +54,7 @@ public class PermissionsAddonUpdater extends DefaultApplicationUpdateRepository 
 
     @Override
     public boolean isNewVersionAvailable() {
-        return !ReformCloudApplication.self().getApplication().applicationConfig().version().equals(newVersion);
+        return !ReformCloudApplication.self().getApplication().getApplicationConfig().getVersion().equals(newVersion);
     }
 
     @Nullable

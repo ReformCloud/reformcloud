@@ -54,7 +54,7 @@ public class ProxyAddonUpdater extends DefaultApplicationUpdateRepository {
 
     @Override
     public boolean isNewVersionAvailable() {
-        return !ProxyApplication.self().getApplication().applicationConfig().version().equals(newVersion);
+        return !ProxyApplication.self().getApplication().getApplicationConfig().getVersion().equals(newVersion);
     }
 
     @Nullable

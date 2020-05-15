@@ -25,10 +25,10 @@
 package systems.reformcloud.reformcloud2.executor.api.common.application;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import systems.reformcloud.reformcloud2.executor.api.common.application.api.Application;
+import org.jetbrains.annotations.UnmodifiableView;
 
-import java.util.List;
+import java.util.Collection;
+import java.util.Optional;
 
 /**
  * Represents a loader for applications
@@ -89,47 +89,18 @@ public interface ApplicationLoader {
     boolean doSpecificApplicationUninstall(@NotNull LoadedApplication loadedApplication);
 
     /**
-     * Finds the {@link LoadedApplication} by the name and unloads it
-     *
-     * @param application The name oof the application which should get unloaded
-     * @return If the application was loaded and got unloaded
-     * @see #getApplication(String)
-     * @see #doSpecificApplicationUninstall(LoadedApplication)
-     */
-    boolean doSpecificApplicationUninstall(@NotNull String application);
-
-    /**
      * Get a specific application
      *
      * @param name The name of the application
-     * @return The loaded application or {@code null} if the application is unknown
-     */
-    @Nullable
-    LoadedApplication getApplication(@NotNull String name);
-
-    /**
-     * The name of a loaded application
-     *
-     * @param loadedApplication The application from which the name is needed
-     * @return The name of the application
-     * @see LoadedApplication#getName()
+     * @return The loaded application or empty if the application is not loaded
      */
     @NotNull
-    String getApplicationName(@NotNull LoadedApplication loadedApplication);
+    Optional<LoadedApplication> getApplication(@NotNull String name);
 
     /**
      * @return All currently loaded applications in the runtime
      */
     @NotNull
-    List<LoadedApplication> getApplications();
-
-    /**
-     * Registers an {@link ApplicationHandler}
-     *
-     * @param applicationHandler The handler which should get registered
-     */
-    void addApplicationHandler(@NotNull ApplicationHandler applicationHandler);
-
-    @Nullable
-    Application getInternalApplication(@NotNull String name);
+    @UnmodifiableView
+    Collection<LoadedApplication> getApplications();
 }

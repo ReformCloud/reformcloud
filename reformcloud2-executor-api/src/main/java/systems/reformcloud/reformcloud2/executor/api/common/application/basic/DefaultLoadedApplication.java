@@ -50,7 +50,7 @@ public final class DefaultLoadedApplication implements LoadedApplication {
 
     @NotNull
     @Override
-    public ApplicationLoader loader() {
+    public ApplicationLoader getApplicationLoader() {
         return loader;
     }
 
@@ -62,18 +62,18 @@ public final class DefaultLoadedApplication implements LoadedApplication {
 
     @NotNull
     @Override
-    public ApplicationConfig applicationConfig() {
+    public ApplicationConfig getApplicationConfig() {
         return application;
     }
 
     @NotNull
     @Override
-    public ApplicationStatus applicationStatus() {
+    public ApplicationStatus getApplicationStatus() {
         return applicationStatus;
     }
 
     @Override
-    public Class<?> mainClass() {
+    public Class<?> getMainClass() {
         return main;
     }
 

@@ -96,59 +96,60 @@ public final class ApplicationConfigBuilder {
         return this;
     }
 
+    @NotNull
     public ApplicationConfig create() {
         return new ApplicationConfig() {
             @Override
             @NotNull
-            public String version() {
+            public String getVersion() {
                 return version;
             }
 
             @NotNull
             @Override
-            public String author() {
+            public String getAuthor() {
                 return author;
             }
 
             @NotNull
             @Override
-            public String main() {
+            public String getMainClassName() {
                 return main;
             }
 
             @NotNull
             @Override
-            public Dependency[] dependencies() {
+            public Dependency[] getDependencies() {
                 return dependencies.toArray(new Dependency[0]);
             }
 
             @NotNull
             @Override
-            public String description() {
+            public String getDescription() {
                 return description;
             }
 
             @NotNull
             @Override
-            public String website() {
+            public String getWebsite() {
                 return website;
             }
 
             @NotNull
             @Override
-            public String implementedVersion() {
+            public String getImplementedVersion() {
                 return implementedVersion;
             }
 
             @NotNull
             @Override
-            public File applicationFile() {
+            public File getApplicationFile() {
                 return appFile;
             }
 
             @NotNull
             @Override
-            public JarEntry applicationConfigFile() {
+            public JarEntry getApplicationConfigJarEntry() {
                 return descFile;
             }
 

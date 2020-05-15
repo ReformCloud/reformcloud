@@ -22,29 +22,30 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.common.application.loader;
+package systems.reformcloud.reformcloud2.executor.api.common.application.event;
 
-import org.jetbrains.annotations.NotNull;
+import systems.reformcloud.reformcloud2.executor.api.common.application.LoadedApplication;
+import systems.reformcloud.reformcloud2.executor.api.common.event.Event;
 
-import java.io.IOException;
-import java.net.URL;
-import java.net.URLClassLoader;
+public class ApplicationDisableEvent extends Event {
 
-public final class AppClassLoader extends URLClassLoader {
-
-    static {
-        ClassLoader.registerAsParallelCapable();
+    public ApplicationDisableEvent(LoadedApplication application) {
+        this.application = application;
     }
 
-    public AppClassLoader(@NotNull URL[] urls, @NotNull ClassLoader parent) {
-        super(urls, parent);
+    private final LoadedApplication application;
+
+    private boolean cancelled;
+
+    public LoadedApplication getApplication() {
+        return application;
     }
 
-    @Override
-    public void close() {
-        try {
-            super.close();
-        } catch (final IOException ignored) {
-        }
+    public boolean isCancelled() {
+        return cancelled;
+    }
+
+    public void setCancelled(boolean cancelled) {
+        this.cancelled = cancelled;
     }
 }

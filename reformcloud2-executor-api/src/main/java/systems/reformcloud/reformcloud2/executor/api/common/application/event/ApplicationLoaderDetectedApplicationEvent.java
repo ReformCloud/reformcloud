@@ -22,34 +22,30 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.common.application.basic;
+package systems.reformcloud.reformcloud2.executor.api.common.application.event;
 
-import systems.reformcloud.reformcloud2.executor.api.common.application.ApplicationHandler;
+import systems.reformcloud.reformcloud2.executor.api.common.application.ApplicationConfig;
+import systems.reformcloud.reformcloud2.executor.api.common.event.Event;
 
-public final class EmptyApplicationHandler implements ApplicationHandler {
+public class ApplicationLoaderDetectedApplicationEvent extends Event {
 
-    @Override
-    public void onDetectApplications() {
-
+    public ApplicationLoaderDetectedApplicationEvent(ApplicationConfig applicationConfig) {
+        this.applicationConfig = applicationConfig;
     }
 
-    @Override
-    public void onInstallApplications() {
+    private final ApplicationConfig applicationConfig;
 
+    private boolean cancelled = false;
+
+    public boolean isCancelled() {
+        return cancelled;
     }
 
-    @Override
-    public void onLoadApplications() {
-
+    public ApplicationConfig getApplicationConfig() {
+        return applicationConfig;
     }
 
-    @Override
-    public void onEnableApplications() {
-
-    }
-
-    @Override
-    public void onDisableApplications() {
-
+    public void setCancelled(boolean cancelled) {
+        this.cancelled = cancelled;
     }
 }

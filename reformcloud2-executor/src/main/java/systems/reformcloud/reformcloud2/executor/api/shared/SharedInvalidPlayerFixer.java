@@ -52,7 +52,8 @@ public final class SharedInvalidPlayerFixer {
             Collection<UUID> forRemoval = new ArrayList<>();
 
             for (Player onlinePlayer : current.getProcessPlayerManager().getOnlinePlayers()) {
-                if (onlineChecker.apply(onlinePlayer.getUniqueID())) {
+                if (onlinePlayer.getJoined() + TimeUnit.SECONDS.toMillis(20) > System.currentTimeMillis()
+                        || onlineChecker.apply(onlinePlayer.getUniqueID())) {
                     continue;
                 }
 
