@@ -24,6 +24,7 @@
  */
 package systems.reformcloud.reformcloud2.signs.util;
 
+import java.util.function.Consumer;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
@@ -32,8 +33,6 @@ import systems.reformcloud.reformcloud2.signs.application.packets.PacketRequestS
 import systems.reformcloud.reformcloud2.signs.application.packets.PacketRequestSignLayoutsResult;
 import systems.reformcloud.reformcloud2.signs.util.sign.config.SignConfig;
 
-import java.util.function.Consumer;
-
 public final class ConfigRequesterUtil {
 
     private ConfigRequesterUtil() {
@@ -41,6 +40,7 @@ public final class ConfigRequesterUtil {
     }
 
     public static void requestSignConfigAsync(Consumer<SignConfig> callback) {
+        ExecutorAPI.getInstance().getPacketHandler().registerHandler(PacketRequestSignLayoutsResult.class);
         Task.EXECUTOR.execute(() -> {
             while (!DefaultChannelManager.INSTANCE.get("Controller").isPresent()) {
                 AbsoluteThread.sleep(200);
