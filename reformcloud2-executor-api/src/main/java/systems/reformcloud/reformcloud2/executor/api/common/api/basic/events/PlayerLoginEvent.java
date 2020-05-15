@@ -32,6 +32,8 @@ import systems.reformcloud.reformcloud2.executor.api.common.event.Event;
  */
 public class PlayerLoginEvent extends Event {
 
+    private final String name;
+
     /**
      * Creates a new player login event
      *
@@ -40,8 +42,6 @@ public class PlayerLoginEvent extends Event {
     public PlayerLoginEvent(@NotNull String name) {
         this.name = name;
     }
-
-    private final String name;
 
     /**
      * @return The name of the player

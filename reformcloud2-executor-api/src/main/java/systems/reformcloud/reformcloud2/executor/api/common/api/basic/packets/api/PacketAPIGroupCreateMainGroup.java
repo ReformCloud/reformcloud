@@ -40,6 +40,9 @@ import java.util.List;
 
 public class PacketAPIGroupCreateMainGroup extends Packet {
 
+    private String name;
+    private List<String> subGroups;
+
     public PacketAPIGroupCreateMainGroup() {
     }
 
@@ -47,10 +50,6 @@ public class PacketAPIGroupCreateMainGroup extends Packet {
         this.name = name;
         this.subGroups = subGroups;
     }
-
-    private String name;
-
-    private List<String> subGroups;
 
     @Override
     public int getId() {

@@ -33,12 +33,12 @@ import java.util.Collection;
 
 public final class MemoryCachedCommandSource extends ConsoleCommandSource {
 
+    private final Collection<String> messageCache;
+
     public MemoryCachedCommandSource(@NotNull Collection<String> messageCache, @NotNull CommandManager manager) {
         super(manager);
         this.messageCache = messageCache;
     }
-
-    private final Collection<String> messageCache;
 
     @Override
     public void sendMessage(@NotNull String message) {

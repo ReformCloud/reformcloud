@@ -65,6 +65,8 @@ public final class DefaultNodeNetworkManager implements NodeNetworkManager {
     private static final Queue<Duo<ProcessConfiguration, Boolean>> LATER = new ConcurrentLinkedQueue<>();
 
     private static final BiMap<String, UUID> PER_GROUP_WAITING = new BiMap<>();
+    private final NodeProcessManager localNodeProcessManager;
+    private final InternalNetworkCluster cluster;
 
     public DefaultNodeNetworkManager(@NotNull NodeProcessManager processManager, @NotNull InternalNetworkCluster cluster) {
         this.localNodeProcessManager = processManager;
@@ -77,10 +79,6 @@ public final class DefaultNodeNetworkManager implements NodeNetworkManager {
             }
         }, 0, 10, TimeUnit.SECONDS);
     }
-
-    private final NodeProcessManager localNodeProcessManager;
-
-    private final InternalNetworkCluster cluster;
 
     @NotNull
     @Override

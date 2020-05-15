@@ -30,6 +30,10 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packe
 
 public abstract class PacketAPIProcessCopy extends Packet {
 
+    protected String targetTemplate;
+    protected String targetTemplateStorage;
+    protected String targetTemplateGroup;
+
     public PacketAPIProcessCopy() {
     }
 
@@ -38,12 +42,6 @@ public abstract class PacketAPIProcessCopy extends Packet {
         this.targetTemplateStorage = targetTemplateStorage;
         this.targetTemplateGroup = targetTemplateGroup;
     }
-
-    protected String targetTemplate;
-
-    protected String targetTemplateStorage;
-
-    protected String targetTemplateGroup;
 
     @Override
     public void write(@NotNull ProtocolBuffer buffer) {

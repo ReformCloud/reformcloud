@@ -32,14 +32,14 @@ import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInfor
 
 public class PacketAPIQueryProcessStartPreparedResult extends QueryResultPacket {
 
+    private ProcessInformation processInformation;
+
     public PacketAPIQueryProcessStartPreparedResult() {
     }
 
     public PacketAPIQueryProcessStartPreparedResult(ProcessInformation processInformation) {
         this.processInformation = processInformation;
     }
-
-    private ProcessInformation processInformation;
 
     public ProcessInformation getProcessInformation() {
         return processInformation;

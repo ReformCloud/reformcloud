@@ -33,6 +33,12 @@ import java.util.UUID;
 
 public final class DefaultClientRuntimeInformation implements ClientRuntimeInformation, SerializableObject {
 
+    private String startHost;
+    private int maxMemory;
+    private int maxProcesses;
+    private String name;
+    private UUID uniqueID;
+
     public DefaultClientRuntimeInformation() {
     }
 
@@ -43,16 +49,6 @@ public final class DefaultClientRuntimeInformation implements ClientRuntimeInfor
         this.name = name;
         this.uniqueID = uniqueId;
     }
-
-    private String startHost;
-
-    private int maxMemory;
-
-    private int maxProcesses;
-
-    private String name;
-
-    private UUID uniqueID;
 
     @NotNull
     @Override

@@ -36,16 +36,14 @@ import java.util.UUID;
 
 public class DefaultPacketSender extends PacketSender {
 
+    private final ChannelHandlerContext channel;
+    private final long connectionTime;
+    private String name;
+
     public DefaultPacketSender(ChannelHandlerContext channel) {
         this.channel = channel;
         this.connectionTime = System.currentTimeMillis();
     }
-
-    private final ChannelHandlerContext channel;
-
-    private final long connectionTime;
-
-    private String name;
 
     @Override
     public long getConnectionTime() {

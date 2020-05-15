@@ -41,14 +41,14 @@ import java.util.UUID;
 
 public class PacketAPIQueryProcessStartPrepared extends Packet {
 
+    private UUID processUniqueID;
+
     public PacketAPIQueryProcessStartPrepared() {
     }
 
     public PacketAPIQueryProcessStartPrepared(UUID processUniqueID) {
         this.processUniqueID = processUniqueID;
     }
-
-    private UUID processUniqueID;
 
     @Override
     public int getId() {

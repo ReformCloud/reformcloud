@@ -39,17 +39,15 @@ import java.util.UUID;
 
 public class APIPacketOutLogoutPlayer extends Packet {
 
+    protected UUID playerUniqueID;
+    protected String playerName;
+    protected String lastServer;
+
     public APIPacketOutLogoutPlayer(UUID playerUniqueID, String playerName, String lastServer) {
         this.playerUniqueID = playerUniqueID;
         this.playerName = playerName;
         this.lastServer = lastServer;
     }
-
-    protected UUID playerUniqueID;
-
-    protected String playerName;
-
-    protected String lastServer;
 
     @Override
     public int getId() {

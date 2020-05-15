@@ -40,12 +40,6 @@ public final class NodeDumpUtil implements DumpUtil {
 
     private static final DateFormat DATE_FORMAT = new SimpleDateFormat();
 
-    @Override
-    public void appendCurrentDump(StringBuilder stringBuilder) {
-        PARENT.appendCurrentDump(stringBuilder);
-        dumpProcessInfos(stringBuilder);
-    }
-
     private static void dumpProcessInfos(StringBuilder stringBuilder) {
         Collection<RunningProcess> nodeProcesses = SharedRunningProcessManager.getAllProcesses();
         stringBuilder.append("--- Registered Node Processes (").append(nodeProcesses.size()).append(") ---");
@@ -81,5 +75,11 @@ public final class NodeDumpUtil implements DumpUtil {
         } else {
             stringBuilder.append("No processes are registered on the current node").append("\n\n");
         }
+    }
+
+    @Override
+    public void appendCurrentDump(StringBuilder stringBuilder) {
+        PARENT.appendCurrentDump(stringBuilder);
+        dumpProcessInfos(stringBuilder);
     }
 }

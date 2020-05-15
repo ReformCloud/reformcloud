@@ -40,6 +40,9 @@ import systems.reformcloud.reformcloud2.executor.api.common.process.api.ProcessC
 
 public class PacketAPIQueryProcessStartNew extends Packet {
 
+    private ProcessConfiguration processConfiguration;
+    private boolean start;
+
     public PacketAPIQueryProcessStartNew() {
     }
 
@@ -47,10 +50,6 @@ public class PacketAPIQueryProcessStartNew extends Packet {
         this.processConfiguration = processConfiguration;
         this.start = start;
     }
-
-    private ProcessConfiguration processConfiguration;
-
-    private boolean start;
 
     @Override
     public int getId() {

@@ -32,11 +32,11 @@ import java.util.logging.Formatter;
 
 public abstract class FormatterBase extends Formatter {
 
+    protected final LoggerBase loggerBase;
+
     public FormatterBase(LoggerBase loggerBase) {
         this.loggerBase = loggerBase;
     }
-
-    protected final LoggerBase loggerBase;
 
     /**
      * Formats an exception to a string writer

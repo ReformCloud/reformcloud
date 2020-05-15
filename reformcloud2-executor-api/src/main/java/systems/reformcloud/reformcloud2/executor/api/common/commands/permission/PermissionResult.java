@@ -41,11 +41,11 @@ public enum PermissionResult {
      */
     NOT_SET(false);
 
+    private final boolean javaValue;
+
     PermissionResult(boolean javaValue) {
         this.javaValue = javaValue;
     }
-
-    private final boolean javaValue;
 
     public boolean isAllowed() {
         return javaValue;

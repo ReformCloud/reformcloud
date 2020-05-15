@@ -43,6 +43,9 @@ import java.util.UUID;
 
 public class NodePacketOutScreenEnabled extends Packet {
 
+    private UUID processUniqueID;
+    private Collection<String> lines;
+
     public NodePacketOutScreenEnabled() {
     }
 
@@ -50,10 +53,6 @@ public class NodePacketOutScreenEnabled extends Packet {
         this.processUniqueID = processUniqueID;
         this.lines = lines;
     }
-
-    private UUID processUniqueID;
-
-    private Collection<String> lines;
 
     @Override
     public int getId() {

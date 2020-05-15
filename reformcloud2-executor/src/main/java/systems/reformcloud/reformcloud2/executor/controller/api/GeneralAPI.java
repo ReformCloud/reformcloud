@@ -48,6 +48,13 @@ import systems.reformcloud.reformcloud2.executor.controller.api.process.ProcessA
 
 public class GeneralAPI implements SyncAPI, AsyncAPI {
 
+    private final ConsoleAPIImplementation consoleAPI;
+    private final DatabaseAPIImplementation databaseAPI;
+    private final GroupAPIImplementation groupAPI;
+    private final PlayerAPIImplementation playerAPI;
+    private final ProcessAPIImplementation processAPI;
+    private final ChannelMessageAPIImplementation channelAPI;
+
     public GeneralAPI(
             ConsoleAPIImplementation consoleAPI,
             DatabaseAPIImplementation databaseAPI,
@@ -63,18 +70,6 @@ public class GeneralAPI implements SyncAPI, AsyncAPI {
         this.processAPI = processAPI;
         this.channelAPI = channelAPI;
     }
-
-    private final ConsoleAPIImplementation consoleAPI;
-
-    private final DatabaseAPIImplementation databaseAPI;
-
-    private final GroupAPIImplementation groupAPI;
-
-    private final PlayerAPIImplementation playerAPI;
-
-    private final ProcessAPIImplementation processAPI;
-
-    private final ChannelMessageAPIImplementation channelAPI;
 
     @NotNull
     @Override

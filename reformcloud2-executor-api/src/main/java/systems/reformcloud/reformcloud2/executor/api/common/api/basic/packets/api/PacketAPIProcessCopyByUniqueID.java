@@ -39,6 +39,8 @@ import java.util.UUID;
 
 public class PacketAPIProcessCopyByUniqueID extends PacketAPIProcessCopy {
 
+    private UUID processUniqueID;
+
     public PacketAPIProcessCopyByUniqueID() {
         super(null, null, null);
     }
@@ -47,8 +49,6 @@ public class PacketAPIProcessCopyByUniqueID extends PacketAPIProcessCopy {
         super(targetTemplate, targetTemplateStorage, targetTemplateGroup);
         this.processUniqueID = processUniqueID;
     }
-
-    private UUID processUniqueID;
 
     @Override
     public int getId() {

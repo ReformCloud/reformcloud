@@ -39,14 +39,13 @@ import java.util.function.Supplier;
 
 public final class ServerInitializerHandler extends ChannelInitializer<Channel> {
 
+    private final ChallengeAuthHandler authHandler;
+    private final Supplier<NetworkChannelReader> reader;
+
     public ServerInitializerHandler(Supplier<NetworkChannelReader> reader, ChallengeAuthHandler handler) {
         this.reader = reader;
         this.authHandler = handler;
     }
-
-    private final ChallengeAuthHandler authHandler;
-
-    private final Supplier<NetworkChannelReader> reader;
 
     @Override
     protected void initChannel(Channel channel) {

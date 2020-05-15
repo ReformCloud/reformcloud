@@ -39,14 +39,14 @@ import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
 
 public class NodePacketOutNodeInformationUpdate extends Packet {
 
+    private NodeInformation nodeInformation;
+
     public NodePacketOutNodeInformationUpdate() {
     }
 
     public NodePacketOutNodeInformationUpdate(NodeInformation nodeInformation) {
         this.nodeInformation = nodeInformation;
     }
-
-    private NodeInformation nodeInformation;
 
     @Override
     public int getId() {

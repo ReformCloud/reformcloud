@@ -38,6 +38,10 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packe
 
 public class PacketAPIQueryDatabaseGetDocument extends Packet {
 
+    private String database;
+    private String entryKey;
+    private String identifier;
+
     public PacketAPIQueryDatabaseGetDocument() {
     }
 
@@ -46,12 +50,6 @@ public class PacketAPIQueryDatabaseGetDocument extends Packet {
         this.entryKey = entryKey;
         this.identifier = identifier;
     }
-
-    private String database;
-
-    private String entryKey;
-
-    private String identifier;
 
     @Override
     public int getId() {

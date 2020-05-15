@@ -35,14 +35,14 @@ import java.util.Collection;
 
 public class PacketAPIQueryGetBulkDocumentsResult extends QueryResultPacket {
 
+    private Collection<JsonConfiguration> result;
+
     public PacketAPIQueryGetBulkDocumentsResult() {
     }
 
     public PacketAPIQueryGetBulkDocumentsResult(Collection<JsonConfiguration> result) {
         this.result = result;
     }
-
-    private Collection<JsonConfiguration> result;
 
     public Collection<JsonConfiguration> getResult() {
         return result;

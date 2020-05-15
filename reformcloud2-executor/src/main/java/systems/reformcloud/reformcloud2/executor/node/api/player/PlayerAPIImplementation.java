@@ -40,11 +40,11 @@ import java.util.UUID;
 
 public class PlayerAPIImplementation implements PlayerAsyncAPI, PlayerSyncAPI {
 
+    private final NodeNetworkManager nodeNetworkManager;
+
     public PlayerAPIImplementation(NodeNetworkManager nodeNetworkManager) {
         this.nodeNetworkManager = nodeNetworkManager;
     }
-
-    private final NodeNetworkManager nodeNetworkManager;
 
     @NotNull
     @Override

@@ -45,11 +45,11 @@ import java.util.List;
 
 public class GroupAPIImplementation implements GroupAsyncAPI, GroupSyncAPI {
 
+    private final ClusterSyncManager clusterSyncManager;
+
     public GroupAPIImplementation(ClusterSyncManager clusterSyncManager) {
         this.clusterSyncManager = clusterSyncManager;
     }
-
-    private final ClusterSyncManager clusterSyncManager;
 
     @NotNull
     @Override

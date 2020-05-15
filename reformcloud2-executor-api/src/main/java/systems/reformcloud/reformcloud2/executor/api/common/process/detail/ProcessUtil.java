@@ -40,6 +40,8 @@ import java.util.function.Consumer;
  */
 public final class ProcessUtil {
 
+    private final ProcessInformation parent;
+
     /**
      * Creates a new instance of the process util
      *
@@ -49,8 +51,6 @@ public final class ProcessUtil {
     public ProcessUtil(@NotNull ProcessInformation parent) {
         this.parent = parent;
     }
-
-    private final ProcessInformation parent;
 
     /**
      * Starts the current process information if the process is only prepared and ready to start

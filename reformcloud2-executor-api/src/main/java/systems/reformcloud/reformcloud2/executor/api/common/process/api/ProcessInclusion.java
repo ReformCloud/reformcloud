@@ -31,6 +31,9 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.data.Protoco
 
 public class ProcessInclusion implements SerializableObject {
 
+    private String url;
+    private String name;
+
     @ApiStatus.Internal
     public ProcessInclusion() {
     }
@@ -39,10 +42,6 @@ public class ProcessInclusion implements SerializableObject {
         this.url = url;
         this.name = name;
     }
-
-    private String url;
-
-    private String name;
 
     @NotNull
     public String getUrl() {

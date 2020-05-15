@@ -82,12 +82,9 @@ public final class VelocityExecutor extends API implements PlayerAPIExecutor {
     private final PacketHandler packetHandler = new DefaultPacketHandler();
 
     private final NetworkClient networkClient = new DefaultNetworkClient();
-
-    private IngameMessages messages = new IngameMessages();
-
-    private ProcessInformation thisProcessInformation;
-
     private final VelocityLauncher plugin;
+    private IngameMessages messages = new IngameMessages();
+    private ProcessInformation thisProcessInformation;
 
     VelocityExecutor(VelocityLauncher launcher, ProxyServer proxyServer) {
         super.type = ExecutorType.API;
@@ -136,6 +133,75 @@ public final class VelocityExecutor extends API implements PlayerAPIExecutor {
         awaitConnectionAndUpdate();
     }
 
+    @NotNull
+    public static VelocityExecutor getInstance() {
+        return instance;
+    }
+
+    public static ProcessInformation getBestLobbyForPlayer(ProcessInformation current, Function<String, Boolean> permissionCheck,
+                                                           @Nullable String excluded) {
+        final List<ProcessInformation> lobbies = new ArrayList<>(LOBBY_SERVERS);
+
+        // Filter all non java servers if this is a java proxy else all mcpe servers
+        Streams.others(lobbies, e -> {
+            Version version = e.getProcessDetail().getTemplate().getVersion();
+            if (version.equals(Version.NUKKIT_X) && current.getProcessDetail().getTemplate().getVersion().equals(Version.WATERDOG_PE)) {
+                return true;
+            }
+
+            return version.getId() == 1 && current.getProcessDetail().getTemplate().getVersion().getId() == 2;
+        }).forEach(lobbies::remove);
+
+        // Filter out all lobbies with join permission which the player does not have
+        Streams.others(lobbies, e -> {
+            final PlayerAccessConfiguration configuration = e.getProcessGroup().getPlayerAccessConfiguration();
+            if (!configuration.isJoinOnlyPerPermission()) {
+                return true;
+            }
+
+            return permissionCheck.apply(configuration.getJoinPermission());
+        }).forEach(lobbies::remove);
+
+        // Filter out all lobbies which are in maintenance and not joinable for the player
+        Streams.others(lobbies, e -> {
+            final PlayerAccessConfiguration configuration = e.getProcessGroup().getPlayerAccessConfiguration();
+            if (!configuration.isMaintenance()) {
+                return true;
+            }
+
+            return permissionCheck.apply(configuration.getMaintenanceJoinPermission());
+        }).forEach(lobbies::remove);
+
+        // Filter out all full server which the player cannot access
+        Streams.others(lobbies, e -> {
+            final PlayerAccessConfiguration configuration = e.getProcessGroup().getPlayerAccessConfiguration();
+            if (!configuration.isUseCloudPlayerLimit()) {
+                return true;
+            }
+
+            if (e.getProcessPlayerManager().getOnlineCount() < e.getProcessDetail().getMaxPlayers()) {
+                return true;
+            }
+
+            return permissionCheck.apply("reformcloud.join.full");
+        }).forEach(lobbies::remove);
+
+        // Filter out all excluded servers
+        if (excluded != null) {
+            Streams.allOf(lobbies, e -> e.getProcessDetail().getName().equals(excluded)).forEach(lobbies::remove);
+        }
+
+        if (lobbies.isEmpty()) {
+            return null;
+        }
+
+        if (lobbies.size() == 1) {
+            return lobbies.get(0);
+        }
+
+        return lobbies.get(new Random().nextInt(lobbies.size()));
+    }
+
     NetworkClient getNetworkClient() {
         return networkClient;
     }
@@ -159,11 +225,6 @@ public final class VelocityExecutor extends API implements PlayerAPIExecutor {
     @Override
     public ProcessInformation getCurrentProcessInformation() {
         return this.thisProcessInformation;
-    }
-
-    @NotNull
-    public static VelocityExecutor getInstance() {
-        return instance;
     }
 
     public void handleProcessUpdate(ProcessInformation processInformation) {
@@ -236,70 +297,6 @@ public final class VelocityExecutor extends API implements PlayerAPIExecutor {
                 () -> this.proxyServer.getPlayerCount(),
                 information -> this.thisProcessInformation = information
         );
-    }
-
-    public static ProcessInformation getBestLobbyForPlayer(ProcessInformation current, Function<String, Boolean> permissionCheck,
-                                                           @Nullable String excluded) {
-        final List<ProcessInformation> lobbies = new ArrayList<>(LOBBY_SERVERS);
-
-        // Filter all non java servers if this is a java proxy else all mcpe servers
-        Streams.others(lobbies, e -> {
-            Version version = e.getProcessDetail().getTemplate().getVersion();
-            if (version.equals(Version.NUKKIT_X) && current.getProcessDetail().getTemplate().getVersion().equals(Version.WATERDOG_PE)) {
-                return true;
-            }
-
-            return version.getId() == 1 && current.getProcessDetail().getTemplate().getVersion().getId() == 2;
-        }).forEach(lobbies::remove);
-
-        // Filter out all lobbies with join permission which the player does not have
-        Streams.others(lobbies, e -> {
-            final PlayerAccessConfiguration configuration = e.getProcessGroup().getPlayerAccessConfiguration();
-            if (!configuration.isJoinOnlyPerPermission()) {
-                return true;
-            }
-
-            return permissionCheck.apply(configuration.getJoinPermission());
-        }).forEach(lobbies::remove);
-
-        // Filter out all lobbies which are in maintenance and not joinable for the player
-        Streams.others(lobbies, e -> {
-            final PlayerAccessConfiguration configuration = e.getProcessGroup().getPlayerAccessConfiguration();
-            if (!configuration.isMaintenance()) {
-                return true;
-            }
-
-            return permissionCheck.apply(configuration.getMaintenanceJoinPermission());
-        }).forEach(lobbies::remove);
-
-        // Filter out all full server which the player cannot access
-        Streams.others(lobbies, e -> {
-            final PlayerAccessConfiguration configuration = e.getProcessGroup().getPlayerAccessConfiguration();
-            if (!configuration.isUseCloudPlayerLimit()) {
-                return true;
-            }
-
-            if (e.getProcessPlayerManager().getOnlineCount() < e.getProcessDetail().getMaxPlayers()) {
-                return true;
-            }
-
-            return permissionCheck.apply("reformcloud.join.full");
-        }).forEach(lobbies::remove);
-
-        // Filter out all excluded servers
-        if (excluded != null) {
-            Streams.allOf(lobbies, e -> e.getProcessDetail().getName().equals(excluded)).forEach(lobbies::remove);
-        }
-
-        if (lobbies.isEmpty()) {
-            return null;
-        }
-
-        if (lobbies.size() == 1) {
-            return lobbies.get(0);
-        }
-
-        return lobbies.get(new Random().nextInt(lobbies.size()));
     }
 
     public VelocityLauncher getPlugin() {

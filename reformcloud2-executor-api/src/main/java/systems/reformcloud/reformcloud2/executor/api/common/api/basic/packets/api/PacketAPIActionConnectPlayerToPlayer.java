@@ -40,6 +40,9 @@ import java.util.UUID;
 
 public class PacketAPIActionConnectPlayerToPlayer extends Packet {
 
+    private UUID playerToSent;
+    private UUID targetPlayer;
+
     public PacketAPIActionConnectPlayerToPlayer() {
     }
 
@@ -47,10 +50,6 @@ public class PacketAPIActionConnectPlayerToPlayer extends Packet {
         this.playerToSent = playerToSent;
         this.targetPlayer = targetPlayer;
     }
-
-    private UUID playerToSent;
-
-    private UUID targetPlayer;
 
     @Override
     public int getId() {

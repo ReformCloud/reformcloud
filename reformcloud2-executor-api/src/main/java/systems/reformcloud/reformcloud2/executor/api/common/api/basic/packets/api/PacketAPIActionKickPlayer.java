@@ -40,6 +40,9 @@ import java.util.UUID;
 
 public class PacketAPIActionKickPlayer extends Packet {
 
+    protected UUID targetPlayer;
+    protected String kickReason;
+
     public PacketAPIActionKickPlayer() {
     }
 
@@ -47,10 +50,6 @@ public class PacketAPIActionKickPlayer extends Packet {
         this.targetPlayer = targetPlayer;
         this.kickReason = kickReason;
     }
-
-    protected UUID targetPlayer;
-
-    protected String kickReason;
 
     @Override
     public int getId() {

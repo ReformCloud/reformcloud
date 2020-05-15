@@ -54,9 +54,9 @@ public interface WebRequester extends Nameable {
     /**
      * Checks if the specified permission is set
      *
-     * @see #hasPermissionValue(String)
      * @param perm The permission which should get checked
      * @return If the permission is set
+     * @see #hasPermissionValue(String)
      */
     default boolean hasPermission(@NotNull String perm) {
         return hasPermissionValue(perm).isAllowed();

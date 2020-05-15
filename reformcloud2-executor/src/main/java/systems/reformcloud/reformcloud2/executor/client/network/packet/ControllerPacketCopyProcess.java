@@ -40,6 +40,11 @@ import java.util.UUID;
 
 public class ControllerPacketCopyProcess extends Packet {
 
+    private UUID processUniqueID;
+    private String targetTemplate;
+    private String targetTemplateStorage;
+    private String targetTemplateGroup;
+
     public ControllerPacketCopyProcess() {
     }
 
@@ -49,14 +54,6 @@ public class ControllerPacketCopyProcess extends Packet {
         this.targetTemplateStorage = targetTemplateStorage;
         this.targetTemplateGroup = targetTemplateGroup;
     }
-
-    private UUID processUniqueID;
-
-    private String targetTemplate;
-
-    private String targetTemplateStorage;
-
-    private String targetTemplateGroup;
 
     @Override
     public int getId() {

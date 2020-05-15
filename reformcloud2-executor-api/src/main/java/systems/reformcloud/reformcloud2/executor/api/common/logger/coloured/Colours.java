@@ -50,18 +50,15 @@ public enum Colours {
     private static final char COLOR_CHAR = '\u0026';
 
     private static final Pattern STRIP_PATTERN = Pattern.compile("(?i)" + COLOR_CHAR + "[0-9A-FK-OR]");
+    private final String name;
+    private final String ansiCode;
+    private final char index;
 
     Colours(String name, char index, String ansiCode) {
         this.name = name;
         this.index = index;
         this.ansiCode = ansiCode;
     }
-
-    private final String name;
-
-    private final String ansiCode;
-
-    private final char index;
 
     public static String stripColor(String input) {
         return STRIP_PATTERN.matcher(input).replaceAll("");

@@ -39,6 +39,11 @@ import java.util.UUID;
 
 public class APIBungeePacketOutPlayerServerSwitch extends Packet {
 
+    protected UUID playerUniqueID;
+    protected String playerName;
+    protected String originalServer;
+    protected String targetServer;
+
     public APIBungeePacketOutPlayerServerSwitch() {
     }
 
@@ -47,14 +52,6 @@ public class APIBungeePacketOutPlayerServerSwitch extends Packet {
         this.originalServer = originalServer;
         this.targetServer = targetServer;
     }
-
-    protected UUID playerUniqueID;
-
-    protected String playerName;
-
-    protected String originalServer;
-
-    protected String targetServer;
 
     @Override
     public int getId() {

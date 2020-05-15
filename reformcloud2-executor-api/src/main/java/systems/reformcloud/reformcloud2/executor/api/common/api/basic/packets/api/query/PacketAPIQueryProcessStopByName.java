@@ -38,14 +38,14 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packe
 
 public class PacketAPIQueryProcessStopByName extends Packet {
 
+    private String processName;
+
     public PacketAPIQueryProcessStopByName() {
     }
 
     public PacketAPIQueryProcessStopByName(String processName) {
         this.processName = processName;
     }
-
-    private String processName;
 
     @Override
     public int getId() {

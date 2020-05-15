@@ -48,15 +48,13 @@ public class MongoDatabaseReader implements DatabaseReader {
     private static final String ID_NAME = "_identifier";
 
     private static final Gson GSON = new JsonConfiguration().getGson();
+    private final String table;
+    private final Database<MongoDatabase> parent;
 
     MongoDatabaseReader(String table, Database<MongoDatabase> parent) {
         this.table = table;
         this.parent = parent;
     }
-
-    private final String table;
-
-    private final Database<MongoDatabase> parent;
 
     @NotNull
     @Override

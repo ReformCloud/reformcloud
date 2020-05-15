@@ -40,14 +40,14 @@ import java.util.UUID;
 
 public class ControllerPacketProcessDisconnected extends Packet {
 
+    private UUID processUniqueID;
+
     public ControllerPacketProcessDisconnected() {
     }
 
     public ControllerPacketProcessDisconnected(UUID processUniqueID) {
         this.processUniqueID = processUniqueID;
     }
-
-    private UUID processUniqueID;
 
     @Override
     public int getId() {

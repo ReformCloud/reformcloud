@@ -44,7 +44,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class FileDatabaseReader implements DatabaseReader {
 
-     FileDatabaseReader(String parentTable, String table) {
+    private final String parentTable;
+    private final String table;
+    private final Database<SerializableJsonConfiguration> database;
+
+    FileDatabaseReader(String parentTable, String table) {
         this.parentTable = parentTable;
         this.table = table;
         this.database = DatabaseProvider.getDatabaseDriver().getDatabase(
@@ -53,12 +57,6 @@ public class FileDatabaseReader implements DatabaseReader {
                 1
         );
     }
-
-    private final String parentTable;
-
-    private final String table;
-
-    private final Database<SerializableJsonConfiguration> database;
 
     @NotNull
     @Override

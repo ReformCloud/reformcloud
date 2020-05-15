@@ -39,14 +39,14 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packe
 
 public final class EventPacketPlayerConnected extends Packet {
 
+    private String name;
+
     public EventPacketPlayerConnected() {
     }
 
     public EventPacketPlayerConnected(String name) {
         this.name = name;
     }
-
-    private String name;
 
     @Override
     public int getId() {

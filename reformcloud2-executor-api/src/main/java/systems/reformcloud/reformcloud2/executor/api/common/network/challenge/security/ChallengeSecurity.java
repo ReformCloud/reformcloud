@@ -40,12 +40,12 @@ import java.util.Base64;
 
 public final class ChallengeSecurity {
 
-    private ChallengeSecurity() {
-        throw new UnsupportedOperationException();
-    }
-
     static {
         Security.addProvider(new BouncyCastleProvider());
+    }
+
+    private ChallengeSecurity() {
+        throw new UnsupportedOperationException();
     }
 
     @Nullable

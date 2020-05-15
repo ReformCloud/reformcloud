@@ -41,14 +41,14 @@ import java.util.Collection;
 
 public class PacketOutSyncProcessInformation extends Packet {
 
+    private Collection<ProcessInformation> processInformation;
+
     public PacketOutSyncProcessInformation() {
     }
 
     public PacketOutSyncProcessInformation(Collection<ProcessInformation> processInformation) {
         this.processInformation = processInformation;
     }
-
-    private Collection<ProcessInformation> processInformation;
 
     @Override
     public int getId() {

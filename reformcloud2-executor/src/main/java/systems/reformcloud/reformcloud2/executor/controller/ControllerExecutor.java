@@ -117,40 +117,23 @@ public final class ControllerExecutor extends Controller {
     private static ControllerExecutor instance;
 
     private static volatile boolean running = false;
-
-    private LoggerBase loggerBase;
-
-    private AutoStartupHandler autoStartupHandler;
-
-    private ControllerExecutorConfig controllerExecutorConfig;
-
-    private ControllerConfig controllerConfig;
-
-    private Database<?> database;
-
-    private RequestListenerHandler requestListenerHandler;
-
-    private SyncAPI syncAPI;
-
-    private AsyncAPI asyncAPI;
-
     private final CommandManager commandManager = new DefaultCommandManager();
-
     private final CommandSource console = new ConsoleCommandSource(commandManager);
-
     private final ApplicationLoader applicationLoader = new DefaultApplicationLoader();
-
     private final NetworkServer networkServer = new DefaultNetworkServer();
-
     private final WebServer webServer = new DefaultWebServer();
-
     private final PacketHandler packetHandler = new DefaultPacketHandler();
-
     private final ProcessManager processManager = new DefaultProcessManager();
-
     private final DatabaseConfig databaseConfig = new DatabaseConfig();
-
     private final EventManager eventManager = new DefaultEventManager();
+    private LoggerBase loggerBase;
+    private AutoStartupHandler autoStartupHandler;
+    private ControllerExecutorConfig controllerExecutorConfig;
+    private ControllerConfig controllerConfig;
+    private Database<?> database;
+    private RequestListenerHandler requestListenerHandler;
+    private SyncAPI syncAPI;
+    private AsyncAPI asyncAPI;
 
     ControllerExecutor() {
         ExecutorAPI.setInstance(this);
@@ -165,6 +148,15 @@ public final class ControllerExecutor extends Controller {
         }, "Shutdown-Hook"));
 
         bootstrap();
+    }
+
+    @NotNull
+    public static ControllerExecutor getInstance() {
+        if (instance == null) {
+            return (ControllerExecutor) Controller.getInstance();
+        }
+
+        return instance;
     }
 
     @Override
@@ -345,15 +337,6 @@ public final class ControllerExecutor extends Controller {
 
     public ControllerExecutorConfig getControllerExecutorConfig() {
         return controllerExecutorConfig;
-    }
-
-    @NotNull
-    public static ControllerExecutor getInstance() {
-        if (instance == null) {
-            return (ControllerExecutor) Controller.getInstance();
-        }
-
-        return instance;
     }
 
     @NotNull

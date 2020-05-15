@@ -28,11 +28,11 @@ import systems.reformcloud.reformcloud2.executor.api.common.logger.Debugger;
 
 public final class DefaultDebugger implements Debugger {
 
+    private boolean debugState;
+
     public DefaultDebugger() {
         debugState = Boolean.getBoolean("reformcloud.executor.debug");
     }
-
-    private boolean debugState;
 
     @Override
     public void debug(String message) {

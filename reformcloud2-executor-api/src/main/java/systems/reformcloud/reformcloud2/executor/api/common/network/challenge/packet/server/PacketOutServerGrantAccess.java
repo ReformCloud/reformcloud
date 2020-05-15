@@ -37,6 +37,9 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packe
 
 public final class PacketOutServerGrantAccess extends Packet {
 
+    private String name;
+    private boolean access;
+
     public PacketOutServerGrantAccess() {
     }
 
@@ -44,10 +47,6 @@ public final class PacketOutServerGrantAccess extends Packet {
         this.name = name;
         this.access = access;
     }
-
-    private String name;
-
-    private boolean access;
 
     public boolean isAccess() {
         return access;

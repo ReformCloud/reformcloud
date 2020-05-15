@@ -39,11 +39,11 @@ import java.util.UUID;
 
 public class PlayerAPIImplementation implements PlayerAsyncAPI, PlayerSyncAPI {
 
+    private final ProcessManager processManager;
+
     public PlayerAPIImplementation(ProcessManager processManager) {
         this.processManager = processManager;
     }
-
-    private final ProcessManager processManager;
 
     @NotNull
     @Override

@@ -40,6 +40,14 @@ import java.util.UUID;
 
 public class PacketAPIActionTeleportPlayer extends Packet {
 
+    private UUID targetPlayer;
+    private String world;
+    private double x;
+    private double y;
+    private double z;
+    private float yaw;
+    private float pitch;
+
     public PacketAPIActionTeleportPlayer() {
     }
 
@@ -52,20 +60,6 @@ public class PacketAPIActionTeleportPlayer extends Packet {
         this.yaw = yaw;
         this.pitch = pitch;
     }
-
-    private UUID targetPlayer;
-
-    private String world;
-
-    private double x;
-
-    private double y;
-
-    private double z;
-
-    private float yaw;
-
-    private float pitch;
 
     @Override
     public int getId() {

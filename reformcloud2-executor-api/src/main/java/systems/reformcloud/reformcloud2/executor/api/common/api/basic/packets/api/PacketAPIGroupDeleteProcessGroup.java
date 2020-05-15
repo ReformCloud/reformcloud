@@ -38,14 +38,14 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packe
 
 public class PacketAPIGroupDeleteProcessGroup extends Packet {
 
+    private String groupName;
+
     public PacketAPIGroupDeleteProcessGroup() {
     }
 
     public PacketAPIGroupDeleteProcessGroup(String groupName) {
         this.groupName = groupName;
     }
-
-    private String groupName;
 
     @Override
     public int getId() {

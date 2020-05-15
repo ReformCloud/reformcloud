@@ -29,14 +29,13 @@ import systems.reformcloud.reformcloud2.executor.api.common.application.Installa
 
 public final class DefaultInstallableApplication implements InstallableApplication {
 
+    private final String url;
+    private final String name;
+
     public DefaultInstallableApplication(String url, String name) {
         this.url = url;
         this.name = name;
     }
-
-    private final String url;
-
-    private final String name;
 
     @NotNull
     @Override

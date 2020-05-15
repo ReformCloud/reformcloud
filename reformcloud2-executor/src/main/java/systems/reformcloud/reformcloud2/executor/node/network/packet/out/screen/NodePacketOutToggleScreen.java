@@ -41,14 +41,14 @@ import java.util.UUID;
 
 public class NodePacketOutToggleScreen extends Packet {
 
+    private UUID processUniqueID;
+
     public NodePacketOutToggleScreen() {
     }
 
     public NodePacketOutToggleScreen(UUID processUniqueID) {
         this.processUniqueID = processUniqueID;
     }
-
-    private UUID processUniqueID;
 
     @Override
     public int getId() {

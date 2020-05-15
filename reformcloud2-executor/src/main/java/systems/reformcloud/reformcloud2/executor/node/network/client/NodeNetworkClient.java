@@ -36,9 +36,8 @@ import java.util.function.Supplier;
 
 public final class NodeNetworkClient implements NetworkClient {
 
-    private static final NetworkClient CLIENT = new DefaultNetworkClient();
-
     public static final Collection<String> CONNECTIONS = new ArrayList<>();
+    private static final NetworkClient CLIENT = new DefaultNetworkClient();
 
     @Override
     public boolean connect(@NotNull String host, int port, @NotNull Supplier<NetworkChannelReader> supplier, @NotNull ChallengeAuthHandler challengeAuthHandler) {

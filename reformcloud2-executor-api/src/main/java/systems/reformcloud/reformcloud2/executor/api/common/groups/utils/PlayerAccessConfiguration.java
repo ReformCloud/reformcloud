@@ -33,6 +33,15 @@ import java.util.Objects;
 
 public final class PlayerAccessConfiguration implements SerializableObject {
 
+    private String fullJoinPermission;
+    private boolean maintenance;
+    private String maintenanceJoinPermission;
+    private boolean joinOnlyPerPermission;
+    private String joinPermission;
+    private boolean playerControllerCommandReporting;
+    private boolean useCloudPlayerLimit;
+    private int maxPlayers;
+
     @ApiStatus.Internal
     public PlayerAccessConfiguration() {
     }
@@ -50,22 +59,6 @@ public final class PlayerAccessConfiguration implements SerializableObject {
         this.maxPlayers = maxPlayers;
     }
 
-    private String fullJoinPermission;
-
-    private boolean maintenance;
-
-    private String maintenanceJoinPermission;
-
-    private boolean joinOnlyPerPermission;
-
-    private String joinPermission;
-
-    private boolean playerControllerCommandReporting;
-
-    private boolean useCloudPlayerLimit;
-
-    private int maxPlayers;
-
     @NotNull
     public String getFullJoinPermission() {
         return fullJoinPermission == null ? "reformcloud.join.full" : fullJoinPermission;
@@ -73,6 +66,10 @@ public final class PlayerAccessConfiguration implements SerializableObject {
 
     public boolean isMaintenance() {
         return maintenance;
+    }
+
+    public void setMaintenance(boolean maintenance) {
+        this.maintenance = maintenance;
     }
 
     @NotNull
@@ -101,17 +98,13 @@ public final class PlayerAccessConfiguration implements SerializableObject {
         return maxPlayers;
     }
 
-    public void setMaintenance(boolean maintenance) {
-        this.maintenance = maintenance;
+    public void setMaxPlayers(int maxPlayers) {
+        this.maxPlayers = maxPlayers;
+        this.useCloudPlayerLimit = true;
     }
 
     public void toggleMaintenance() {
         this.maintenance = !this.maintenance;
-    }
-
-    public void setMaxPlayers(int maxPlayers) {
-        this.maxPlayers = maxPlayers;
-        this.useCloudPlayerLimit = true;
     }
 
     @Override

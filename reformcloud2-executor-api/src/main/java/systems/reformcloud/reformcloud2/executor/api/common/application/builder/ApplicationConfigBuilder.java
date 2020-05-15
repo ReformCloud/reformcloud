@@ -35,6 +35,19 @@ import java.util.jar.JarEntry;
 
 public final class ApplicationConfigBuilder {
 
+    private final String name;
+    private final String main;
+    private final String author;
+    private final String version;
+    private final File appFile;
+    private final JarEntry descFile;
+    private final List<Dependency> dependencies = new ArrayList<>();
+    private String description = "A reformcloud application";
+
+    private String website = "https://reformcloud.systems";
+
+    private String implementedVersion = "2.3.0-SNAPSHOT";
+
     public ApplicationConfigBuilder(String name, String main, String author, String version, File appFile, JarEntry descFile) {
         this.name = name;
         this.main = main;
@@ -43,26 +56,6 @@ public final class ApplicationConfigBuilder {
         this.appFile = appFile;
         this.descFile = descFile;
     }
-
-    private final String name;
-
-    private final String main;
-
-    private final String author;
-
-    private final String version;
-
-    private final File appFile;
-
-    private final JarEntry descFile;
-
-    private String description = "A reformcloud application";
-
-    private String website = "https://reformcloud.systems";
-
-    private String implementedVersion = "2.3.0-SNAPSHOT";
-
-    private final List<Dependency> dependencies = new ArrayList<>();
 
     public ApplicationConfigBuilder withDependencies(List<Dependency> dependencies) {
         if (dependencies != null) {

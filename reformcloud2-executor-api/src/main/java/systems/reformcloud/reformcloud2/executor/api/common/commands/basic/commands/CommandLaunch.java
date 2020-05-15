@@ -48,6 +48,21 @@ public final class CommandLaunch extends GlobalCommand {
         super("launch", "reformcloud.command.launch", "Launches new processes", "start", "prepare", "new");
     }
 
+    @NotNull
+    private static Collection<ProcessInclusion> parseInclusions(@NotNull String from) {
+        Collection<ProcessInclusion> out = new ArrayList<>();
+        for (String inclusion : from.split(";")) {
+            String[] parts = inclusion.split(",");
+            if (parts.length != 2) {
+                continue;
+            }
+
+            out.add(new ProcessInclusion(parts[0], parts[1]));
+        }
+
+        return out;
+    }
+
     @Override
     public void describeCommandToSender(@NotNull CommandSource source) {
         source.sendMessages((
@@ -187,20 +202,5 @@ public final class CommandLaunch extends GlobalCommand {
         }
 
         return true;
-    }
-
-    @NotNull
-    private static Collection<ProcessInclusion> parseInclusions(@NotNull String from) {
-        Collection<ProcessInclusion> out = new ArrayList<>();
-        for (String inclusion : from.split(";")) {
-            String[] parts = inclusion.split(",");
-            if (parts.length != 2) {
-                continue;
-            }
-
-            out.add(new ProcessInclusion(parts[0], parts[1]));
-        }
-
-        return out;
     }
 }

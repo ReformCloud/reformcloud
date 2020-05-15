@@ -32,6 +32,9 @@ import java.util.Properties;
 
 public class ApplicationLanguage implements Language {
 
+    private final LanguageSource source;
+    private final Properties properties;
+
     public ApplicationLanguage(@NotNull String addon, @NotNull Properties properties) {
         this.source = new LanguageSource() {
             @Override
@@ -47,10 +50,6 @@ public class ApplicationLanguage implements Language {
         };
         this.properties = properties;
     }
-
-    private final LanguageSource source;
-
-    private final Properties properties;
 
     @Override
     public LanguageSource source() {

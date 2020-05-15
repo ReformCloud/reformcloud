@@ -36,6 +36,12 @@ import java.util.Properties;
 
 public class DefaultDependency implements Dependency {
 
+    private final Repository repository;
+    private final String groupID;
+    private final String artifactID;
+    private final String version;
+    private String url;
+
     public DefaultDependency(Repository repository, String groupID, String artifactID, Properties properties) {
         this(repository, groupID, artifactID, properties.getProperty(artifactID));
     }
@@ -46,16 +52,6 @@ public class DefaultDependency implements Dependency {
         this.artifactID = artifactID;
         this.version = version;
     }
-
-    private final Repository repository;
-
-    private final String groupID;
-
-    private final String artifactID;
-
-    private final String version;
-
-    private String url;
 
     @NotNull
     @Override

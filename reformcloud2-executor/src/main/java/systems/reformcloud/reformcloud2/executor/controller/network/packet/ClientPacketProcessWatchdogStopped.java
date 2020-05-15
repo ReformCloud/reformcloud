@@ -38,14 +38,14 @@ import systems.reformcloud.reformcloud2.executor.controller.ControllerExecutor;
 
 public class ClientPacketProcessWatchdogStopped extends Packet {
 
+    private String processName;
+
     public ClientPacketProcessWatchdogStopped() {
     }
 
     public ClientPacketProcessWatchdogStopped(String processName) {
         this.processName = processName;
     }
-
-    private String processName;
 
     @Override
     public int getId() {

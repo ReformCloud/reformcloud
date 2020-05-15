@@ -42,14 +42,14 @@ import systems.reformcloud.reformcloud2.executor.node.process.startup.LocalProce
 
 public class NodePacketOutStartPreparedProcess extends Packet {
 
+    private ProcessInformation processInformation;
+
     public NodePacketOutStartPreparedProcess() {
     }
 
     public NodePacketOutStartPreparedProcess(ProcessInformation processInformation) {
         this.processInformation = processInformation;
     }
-
-    private ProcessInformation processInformation;
 
     @Override
     public int getId() {

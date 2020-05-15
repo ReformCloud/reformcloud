@@ -38,14 +38,14 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packe
 
 public class PacketAPIQueryCommandDispatch extends Packet {
 
+    private String commandLine;
+
     public PacketAPIQueryCommandDispatch() {
     }
 
     public PacketAPIQueryCommandDispatch(String commandLine) {
         this.commandLine = commandLine;
     }
-
-    private String commandLine;
 
     @Override
     public int getId() {

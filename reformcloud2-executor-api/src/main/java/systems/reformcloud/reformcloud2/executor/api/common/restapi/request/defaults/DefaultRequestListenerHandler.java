@@ -37,13 +37,12 @@ import java.util.List;
 
 public final class DefaultRequestListenerHandler implements RequestListenerHandler {
 
+    private final List<RequestHandler> requestHandlers = new ArrayList<>();
+    private Auth auth;
+
     public DefaultRequestListenerHandler(Auth auth) {
         this.auth = auth;
     }
-
-    private Auth auth;
-
-    private final List<RequestHandler> requestHandlers = new ArrayList<>();
 
     @Override
     public void setAuth(@NotNull Auth auth) {

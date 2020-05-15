@@ -32,20 +32,17 @@ import java.util.function.Predicate;
 
 public final class DefaultSetupQuestion implements SetupQuestion {
 
+    private final String question;
+    private final String wrongAnswer;
+    private final Predicate<String> predicate;
+    private final Consumer<String> then;
+
     public DefaultSetupQuestion(String question, String wrongAnswer, Predicate<String> predicate, Consumer<String> then) {
         this.question = question;
         this.wrongAnswer = wrongAnswer;
         this.predicate = predicate;
         this.then = then;
     }
-
-    private final String question;
-
-    private final String wrongAnswer;
-
-    private final Predicate<String> predicate;
-
-    private final Consumer<String> then;
 
     @NotNull
     @Override

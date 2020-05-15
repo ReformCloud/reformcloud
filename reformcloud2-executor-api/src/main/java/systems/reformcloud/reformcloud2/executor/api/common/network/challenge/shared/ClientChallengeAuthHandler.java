@@ -40,20 +40,17 @@ import java.util.function.Supplier;
 
 public final class ClientChallengeAuthHandler implements ChallengeAuthHandler {
 
+    private final String key;
+    private final String name;
+    private final Supplier<JsonConfiguration> supplier;
+    private final Consumer<ChannelHandlerContext> channelHandlerContextConsumer;
+
     public ClientChallengeAuthHandler(String key, String name, Supplier<JsonConfiguration> supplier, Consumer<ChannelHandlerContext> consumer) {
         this.key = key;
         this.name = name;
         this.supplier = supplier;
         this.channelHandlerContextConsumer = consumer;
     }
-
-    private final String key;
-
-    private final String name;
-
-    private final Supplier<JsonConfiguration> supplier;
-
-    private final Consumer<ChannelHandlerContext> channelHandlerContextConsumer;
 
     @Override
     public boolean handle(@NotNull ChannelHandlerContext channelHandlerContext, @NotNull Packet input, @NotNull String name) {

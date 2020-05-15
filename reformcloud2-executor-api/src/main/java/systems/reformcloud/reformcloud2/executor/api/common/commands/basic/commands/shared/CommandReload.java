@@ -34,6 +34,8 @@ import java.util.Collections;
 
 public final class CommandReload extends GlobalCommand {
 
+    private final ReloadableRuntime reloadableRuntime;
+
     public CommandReload(ReloadableRuntime reloadableRuntime) {
         super("reload", null, GlobalCommand.DEFAULT_DESCRIPTION, Collections.singletonList(
                 "rl"
@@ -41,8 +43,6 @@ public final class CommandReload extends GlobalCommand {
 
         this.reloadableRuntime = reloadableRuntime;
     }
-
-    private final ReloadableRuntime reloadableRuntime;
 
     @Override
     public void describeCommandToSender(@NotNull CommandSource source) {

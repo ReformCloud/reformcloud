@@ -86,20 +86,13 @@ public final class BungeeExecutor extends API implements PlayerAPIExecutor {
     public static final List<ProcessInformation> LOBBY_SERVERS = new CopyOnWriteArrayList<>();
 
     private static BungeeExecutor instance;
-
-    private final PacketHandler packetHandler = new DefaultPacketHandler();
-
-    private final NetworkClient networkClient = new DefaultNetworkClient();
-
-    private final Plugin plugin;
-
-    private ProcessInformation thisProcessInformation;
-
-    private IngameMessages messages = new IngameMessages();
-
     private static boolean waterdog;
-
     private static boolean waterdogPE;
+    private final PacketHandler packetHandler = new DefaultPacketHandler();
+    private final NetworkClient networkClient = new DefaultNetworkClient();
+    private final Plugin plugin;
+    private ProcessInformation thisProcessInformation;
+    private IngameMessages messages = new IngameMessages();
 
     BungeeExecutor(Plugin plugin) {
         super.type = ExecutorType.API;
@@ -154,77 +147,13 @@ public final class BungeeExecutor extends API implements PlayerAPIExecutor {
     }
 
     @NotNull
-    public EventManager getEventManager() {
-        return ExternalEventBusHandler.getInstance().getEventManager();
-    }
-
-    public Plugin getPlugin() {
-        return plugin;
-    }
-
-    NetworkClient getNetworkClient() {
-        return networkClient;
-    }
-
-    @Override
-    public PacketHandler packetHandler() {
-        return packetHandler;
-    }
-
-    @NotNull
-    @Override
-    public ProcessInformation getCurrentProcessInformation() {
-        return this.thisProcessInformation;
-    }
-
-    @NotNull
     public static BungeeExecutor getInstance() {
         return instance;
     }
 
-    // ===============
-
     static void clearHandlers() {
         ProxyServer.getInstance().getConfig().getListeners().forEach(listenerInfo -> listenerInfo.getServerPriority().clear());
         ProxyServer.getInstance().getConfig().getServers().clear();
-    }
-
-    private void awaitConnectionAndUpdate() {
-        Task.EXECUTOR.execute(() -> {
-            PacketSender packetSender = DefaultChannelManager.INSTANCE.get("Controller").orElse(null);
-            while (packetSender == null) {
-                packetSender = DefaultChannelManager.INSTANCE.get("Controller").orElse(null);
-                AbsoluteThread.sleep(20);
-            }
-
-            getAllProcesses().forEach(BungeeExecutor::registerServer);
-            ProxyServer.getInstance().getPluginManager().registerListener(plugin, new PlayerListenerHandler());
-
-            thisProcessInformation.updateMaxPlayers(ProxyServer.getInstance().getConfig().getPlayerLimit());
-            thisProcessInformation.updateRuntimeInformation();
-            thisProcessInformation.getNetworkInfo().setConnected(true);
-            thisProcessInformation.getProcessDetail().setProcessState(thisProcessInformation.getProcessDetail().getInitialState());
-            ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(thisProcessInformation);
-
-            this.fixInvalidPlayers();
-
-            DefaultChannelManager.INSTANCE.get("Controller").ifPresent(controller -> packetHandler.getQueryHandler().sendQueryAsync(
-                    controller,
-                    new APIPacketOutRequestIngameMessages()
-            ).onComplete(packet -> {
-                if (packet instanceof APIPacketOutRequestIngameMessagesResult) {
-                    this.setMessages(((APIPacketOutRequestIngameMessagesResult) packet).getIngameMessages());
-                }
-            }));
-        });
-    }
-
-    private void fixInvalidPlayers() {
-        SharedInvalidPlayerFixer.start(
-                uuid -> ProxyServer.getInstance().getPlayer(uuid) != null,
-                () -> ProxyServer.getInstance().getOnlineCount(),
-                information -> this.thisProcessInformation = information
-        );
     }
 
     public static void registerServer(@NotNull ProcessInformation processInformation) {
@@ -363,6 +292,70 @@ public final class BungeeExecutor extends API implements PlayerAPIExecutor {
         }
 
         return lobbies.get(new Random().nextInt(lobbies.size()));
+    }
+
+    // ===============
+
+    @NotNull
+    public EventManager getEventManager() {
+        return ExternalEventBusHandler.getInstance().getEventManager();
+    }
+
+    public Plugin getPlugin() {
+        return plugin;
+    }
+
+    NetworkClient getNetworkClient() {
+        return networkClient;
+    }
+
+    @Override
+    public PacketHandler packetHandler() {
+        return packetHandler;
+    }
+
+    @NotNull
+    @Override
+    public ProcessInformation getCurrentProcessInformation() {
+        return this.thisProcessInformation;
+    }
+
+    private void awaitConnectionAndUpdate() {
+        Task.EXECUTOR.execute(() -> {
+            PacketSender packetSender = DefaultChannelManager.INSTANCE.get("Controller").orElse(null);
+            while (packetSender == null) {
+                packetSender = DefaultChannelManager.INSTANCE.get("Controller").orElse(null);
+                AbsoluteThread.sleep(20);
+            }
+
+            getAllProcesses().forEach(BungeeExecutor::registerServer);
+            ProxyServer.getInstance().getPluginManager().registerListener(plugin, new PlayerListenerHandler());
+
+            thisProcessInformation.updateMaxPlayers(ProxyServer.getInstance().getConfig().getPlayerLimit());
+            thisProcessInformation.updateRuntimeInformation();
+            thisProcessInformation.getNetworkInfo().setConnected(true);
+            thisProcessInformation.getProcessDetail().setProcessState(thisProcessInformation.getProcessDetail().getInitialState());
+            ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(thisProcessInformation);
+
+            this.fixInvalidPlayers();
+
+            DefaultChannelManager.INSTANCE.get("Controller").ifPresent(controller -> packetHandler.getQueryHandler().sendQueryAsync(
+                    controller,
+                    new APIPacketOutRequestIngameMessages()
+            ).onComplete(packet -> {
+                if (packet instanceof APIPacketOutRequestIngameMessagesResult) {
+                    this.setMessages(((APIPacketOutRequestIngameMessagesResult) packet).getIngameMessages());
+                }
+            }));
+        });
+    }
+
+    private void fixInvalidPlayers() {
+        SharedInvalidPlayerFixer.start(
+                uuid -> ProxyServer.getInstance().getPlayer(uuid) != null,
+                () -> ProxyServer.getInstance().getOnlineCount(),
+                information -> this.thisProcessInformation = information
+        );
     }
 
     public void setThisProcessInformation(ProcessInformation thisProcessInformation) {

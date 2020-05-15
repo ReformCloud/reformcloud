@@ -42,9 +42,8 @@ import java.util.Map;
 
 public final class FileDatabase extends Database<Path> {
 
-    private String table;
-
     private final Map<String, DatabaseReader> perTableReader = new AbsentMap<>();
+    private String table;
 
     public FileDatabase() {
         this.initDependencies();

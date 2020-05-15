@@ -80,33 +80,20 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public final class ClientExecutor extends Client {
 
-    private static ClientExecutor instance;
-
-    private static volatile boolean running = false;
-
-    private LoggerBase loggerBase;
-
-    private ClientConfig clientConfig;
-
-    private DefaultClientRuntimeInformation clientRuntimeInformation;
-
-    private ClientExecutorConfig clientExecutorConfig;
-
-    private final CommandManager commandManager = new DefaultCommandManager();
-
-    private final CommandSource console = new ConsoleCommandSource(commandManager);
-
-    private final NetworkClient networkClient = new DefaultNetworkClient();
-
-    private final PacketHandler packetHandler = new DefaultPacketHandler();
-
-    private final ProcessManager processManager = new DefaultProcessManager();
-
-    private final ProcessQueue processQueue = new ProcessQueue();
-
-    private final ApplicationLoader applicationLoader = new DefaultApplicationLoader();
-
     private static final AtomicBoolean GLOBAL_CONNECTION_STATUS = new AtomicBoolean(false);
+    private static ClientExecutor instance;
+    private static volatile boolean running = false;
+    private final CommandManager commandManager = new DefaultCommandManager();
+    private final CommandSource console = new ConsoleCommandSource(commandManager);
+    private final NetworkClient networkClient = new DefaultNetworkClient();
+    private final PacketHandler packetHandler = new DefaultPacketHandler();
+    private final ProcessManager processManager = new DefaultProcessManager();
+    private final ProcessQueue processQueue = new ProcessQueue();
+    private final ApplicationLoader applicationLoader = new DefaultApplicationLoader();
+    private LoggerBase loggerBase;
+    private ClientConfig clientConfig;
+    private DefaultClientRuntimeInformation clientRuntimeInformation;
+    private ClientExecutorConfig clientExecutorConfig;
 
     ClientExecutor() {
         ExecutorAPI.setInstance(this);
@@ -122,6 +109,10 @@ public final class ClientExecutor extends Client {
         }));
 
         bootstrap();
+    }
+
+    public static ClientExecutor getInstance() {
+        return instance;
     }
 
     @Override
@@ -259,10 +250,6 @@ public final class ClientExecutor extends Client {
 
     public LoggerBase getLoggerBase() {
         return loggerBase;
-    }
-
-    public static ClientExecutor getInstance() {
-        return instance;
     }
 
     public ProcessManager getProcessManager() {

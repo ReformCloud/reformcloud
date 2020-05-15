@@ -34,14 +34,14 @@ import java.util.List;
 
 public class PacketAPIQueryGetMainGroupsResult extends QueryResultPacket {
 
+    private List<MainGroup> mainGroups;
+
     public PacketAPIQueryGetMainGroupsResult() {
     }
 
     public PacketAPIQueryGetMainGroupsResult(List<MainGroup> mainGroups) {
         this.mainGroups = mainGroups;
     }
-
-    private List<MainGroup> mainGroups;
 
     public List<MainGroup> getMainGroups() {
         return mainGroups;

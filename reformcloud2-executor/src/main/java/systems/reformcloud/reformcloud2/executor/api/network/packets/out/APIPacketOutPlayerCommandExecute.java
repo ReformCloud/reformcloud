@@ -39,17 +39,15 @@ import java.util.UUID;
 
 public class APIPacketOutPlayerCommandExecute extends Packet {
 
+    protected String playerName;
+    protected UUID playerUniqueID;
+    protected String command;
+
     public APIPacketOutPlayerCommandExecute(String playerName, UUID playerUniqueID, String command) {
         this.playerName = playerName;
         this.playerUniqueID = playerUniqueID;
         this.command = command;
     }
-
-    protected String playerName;
-
-    protected UUID playerUniqueID;
-
-    protected String command;
 
     @Override
     public int getId() {

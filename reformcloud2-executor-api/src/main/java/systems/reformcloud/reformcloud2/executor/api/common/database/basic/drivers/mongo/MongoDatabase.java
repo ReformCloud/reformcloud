@@ -45,6 +45,13 @@ import java.util.Map;
 public final class MongoDatabase extends Database<com.mongodb.client.MongoDatabase> {
 
     private final Map<String, DatabaseReader> perTableReader = new AbsentMap<>();
+    private MongoClient mongoClient;
+    private com.mongodb.client.MongoDatabase mongoDatabase;
+    private String host;
+    private int port;
+    private String userName;
+    private String password;
+    private String table;
 
     public MongoDatabase() {
         URL dependency = DEPENDENCY_LOADER.loadDependency(new DefaultDependency(
@@ -56,20 +63,6 @@ public final class MongoDatabase extends Database<com.mongodb.client.MongoDataba
         Conditions.nonNull(dependency, StringUtil.formatError("dependency load for mongo database"));
         DEPENDENCY_LOADER.addDependency(dependency);
     }
-
-    private MongoClient mongoClient;
-
-    private com.mongodb.client.MongoDatabase mongoDatabase;
-
-    private String host;
-
-    private int port;
-
-    private String userName;
-
-    private String password;
-
-    private String table;
 
     @Override
     public void connect(@NotNull String host, int port, @NotNull String userName, @NotNull String password, @NotNull String table) {

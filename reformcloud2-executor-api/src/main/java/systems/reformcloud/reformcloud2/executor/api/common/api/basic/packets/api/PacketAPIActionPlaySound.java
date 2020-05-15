@@ -40,6 +40,11 @@ import java.util.UUID;
 
 public class PacketAPIActionPlaySound extends Packet {
 
+    private UUID player;
+    private String sound;
+    private float f1;
+    private float f2;
+
     public PacketAPIActionPlaySound() {
     }
 
@@ -49,14 +54,6 @@ public class PacketAPIActionPlaySound extends Packet {
         this.f1 = f1;
         this.f2 = f2;
     }
-
-    private UUID player;
-
-    private String sound;
-
-    private float f1;
-
-    private float f2;
 
     @Override
     public int getId() {

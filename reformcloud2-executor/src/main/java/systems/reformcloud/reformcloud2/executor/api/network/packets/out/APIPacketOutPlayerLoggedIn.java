@@ -37,11 +37,11 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packe
 
 public class APIPacketOutPlayerLoggedIn extends Packet {
 
+    protected String playerName;
+
     public APIPacketOutPlayerLoggedIn(String playerName) {
         this.playerName = playerName;
     }
-
-    protected String playerName;
 
     @Override
     public int getId() {

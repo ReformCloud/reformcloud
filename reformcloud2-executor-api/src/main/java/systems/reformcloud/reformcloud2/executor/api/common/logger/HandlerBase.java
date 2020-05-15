@@ -30,9 +30,9 @@ import java.util.logging.Handler;
 
 public abstract class HandlerBase extends Handler {
 
+    protected final LoggerBase loggerBase;
+
     public HandlerBase(@NotNull LoggerBase loggerBase) {
         this.loggerBase = loggerBase;
     }
-
-    protected final LoggerBase loggerBase;
 }

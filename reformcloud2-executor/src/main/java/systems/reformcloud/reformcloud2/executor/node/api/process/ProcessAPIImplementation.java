@@ -47,11 +47,11 @@ import java.util.concurrent.TimeUnit;
 
 public class ProcessAPIImplementation implements ProcessSyncAPI, ProcessAsyncAPI {
 
+    private final NodeNetworkManager nodeNetworkManager;
+
     public ProcessAPIImplementation(NodeNetworkManager nodeNetworkManager) {
         this.nodeNetworkManager = nodeNetworkManager;
     }
-
-    private final NodeNetworkManager nodeNetworkManager;
 
     @NotNull
     @Override

@@ -51,17 +51,20 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public final class DefaultClusterSyncManager implements ClusterSyncManager {
 
+    private final NodeNetworkClient nodeNetworkClient;
+    private final Collection<String> waiting = new CopyOnWriteArrayList<>();
+    private final Collection<ProcessGroup> processGroups = new CopyOnWriteArrayList<>();
+    private final Collection<MainGroup> mainGroups = new CopyOnWriteArrayList<>();
+
     public DefaultClusterSyncManager(NodeNetworkClient nodeNetworkClient) {
         this.nodeNetworkClient = nodeNetworkClient;
     }
 
-    private final NodeNetworkClient nodeNetworkClient;
-
-    private final Collection<String> waiting = new CopyOnWriteArrayList<>();
-
-    private final Collection<ProcessGroup> processGroups = new CopyOnWriteArrayList<>();
-
-    private final Collection<MainGroup> mainGroups = new CopyOnWriteArrayList<>();
+    public static void sendToAllExcludedNodes(Packet packet) {
+        Streams.allOf(DefaultChannelManager.INSTANCE.getAllSender(),
+                e -> NodeExecutor.getInstance().getNodeNetworkManager().getCluster().getNode(e.getName()) == null
+        ).forEach(e -> e.sendPacket(packet));
+    }
 
     @Override
     public void syncSelfInformation() {
@@ -332,11 +335,5 @@ public final class DefaultClusterSyncManager implements ClusterSyncManager {
     @Override
     public Collection<String> getWaitingConnections() {
         return waiting;
-    }
-
-    public static void sendToAllExcludedNodes(Packet packet) {
-        Streams.allOf(DefaultChannelManager.INSTANCE.getAllSender(),
-                e -> NodeExecutor.getInstance().getNodeNetworkManager().getCluster().getNode(e.getName()) == null
-        ).forEach(e -> e.sendPacket(packet));
     }
 }

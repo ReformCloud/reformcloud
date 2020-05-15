@@ -37,14 +37,13 @@ import java.util.function.Supplier;
 
 public final class ClientInitializerHandler extends ChannelInitializer<Channel> {
 
+    private final Supplier<NetworkChannelReader> supplier;
+    private final ChallengeAuthHandler challengeAuthHandler;
+
     public ClientInitializerHandler(Supplier<NetworkChannelReader> supplier, ChallengeAuthHandler challengeAuthHandler) {
         this.supplier = supplier;
         this.challengeAuthHandler = challengeAuthHandler;
     }
-
-    private final Supplier<NetworkChannelReader> supplier;
-
-    private final ChallengeAuthHandler challengeAuthHandler;
 
     @Override
     protected void initChannel(Channel channel) {

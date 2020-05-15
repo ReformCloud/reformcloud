@@ -31,6 +31,12 @@ import java.util.UUID;
 public final class ClientConfig {
 
     public static final Path PATH = Paths.get("reformcloud/config.json");
+    private final int maxMemory;
+    private final int maxProcesses;
+    private final double maxCpu;
+    private final String startHost;
+    private final String name;
+    private final UUID uniqueID;
 
     public ClientConfig(int maxMemory, int maxProcesses, double maxCpu, String startHost) {
         this.maxMemory = maxMemory;
@@ -40,18 +46,6 @@ public final class ClientConfig {
         this.name = "Client-" + UUID.randomUUID().toString().split("-")[0];
         this.uniqueID = UUID.randomUUID();
     }
-
-    private final int maxMemory;
-
-    private final int maxProcesses;
-
-    private final double maxCpu;
-
-    private final String startHost;
-
-    private final String name;
-
-    private final UUID uniqueID;
 
     public int getMaxMemory() {
         return maxMemory;

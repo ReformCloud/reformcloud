@@ -43,15 +43,15 @@ import java.util.concurrent.TimeUnit;
 
 public final class SharedRunningProcessManager {
 
-    private SharedRunningProcessManager() {
-        throw new UnsupportedOperationException();
-    }
+    private static final Collection<RunningProcess> ALL_PROCESSES = new CopyOnWriteArrayList<>();
 
     static {
         tick();
     }
 
-    private static final Collection<RunningProcess> ALL_PROCESSES = new CopyOnWriteArrayList<>();
+    private SharedRunningProcessManager() {
+        throw new UnsupportedOperationException();
+    }
 
     @NotNull
     public static ReferencedOptional<RunningProcess> getProcessByName(@NotNull String name) {

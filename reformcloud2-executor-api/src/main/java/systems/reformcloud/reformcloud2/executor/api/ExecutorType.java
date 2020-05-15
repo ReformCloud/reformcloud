@@ -39,25 +39,6 @@ public enum ExecutorType {
 
     UNKNOWN(-1, false);
 
-    ExecutorType(int id, boolean supported) {
-        this.id = id;
-        this.supported = supported;
-    }
-
-    private final int id;
-
-    private final boolean supported;
-
-    public int getId() {
-        return id;
-    }
-
-    public boolean isSupported() {
-        return supported;
-    }
-
-    /* ============================== */
-
     private static final Map<Integer, ExecutorType> BY_ID = new HashMap<>();
 
     static {
@@ -66,8 +47,26 @@ public enum ExecutorType {
         }
     }
 
+    private final int id;
+    private final boolean supported;
+
+    ExecutorType(int id, boolean supported) {
+        this.id = id;
+        this.supported = supported;
+    }
+
+    /* ============================== */
+
     public static ExecutorType getByID(int id) {
         return BY_ID.getOrDefault(id, UNKNOWN);
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public boolean isSupported() {
+        return supported;
     }
 
 }

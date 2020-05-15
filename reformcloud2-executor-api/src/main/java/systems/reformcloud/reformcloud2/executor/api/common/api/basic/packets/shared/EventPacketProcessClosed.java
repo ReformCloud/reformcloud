@@ -40,14 +40,14 @@ import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInfor
 
 public final class EventPacketProcessClosed extends Packet {
 
+    private ProcessInformation processInformation;
+
     public EventPacketProcessClosed() {
     }
 
     public EventPacketProcessClosed(ProcessInformation processInformation) {
         this.processInformation = processInformation;
     }
-
-    private ProcessInformation processInformation;
 
     @Override
     public int getId() {

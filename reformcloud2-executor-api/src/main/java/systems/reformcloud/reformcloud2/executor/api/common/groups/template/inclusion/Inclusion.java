@@ -31,6 +31,10 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.data.Protoco
 
 public class Inclusion implements SerializableObject {
 
+    private String key;
+    private String backend;
+    private InclusionLoadType inclusionLoadType;
+
     @ApiStatus.Internal
     public Inclusion() {
     }
@@ -40,12 +44,6 @@ public class Inclusion implements SerializableObject {
         this.backend = backend;
         this.inclusionLoadType = inclusionLoadType;
     }
-
-    private String key;
-
-    private String backend;
-
-    private InclusionLoadType inclusionLoadType;
 
     public String getKey() {
         return key;

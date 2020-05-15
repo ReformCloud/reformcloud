@@ -35,17 +35,15 @@ import java.util.Collection;
 
 public class DefaultWebRequester implements WebRequester {
 
+    private final ChannelHandlerContext context;
+    private final String name;
+    private final Collection<String> permissions;
+
     public DefaultWebRequester(ChannelHandlerContext context, String name, Collection<String> permissions) {
         this.context = context;
         this.name = name;
         this.permissions = Streams.toLowerCase(permissions);
     }
-
-    private final ChannelHandlerContext context;
-
-    private final String name;
-
-    private final Collection<String> permissions;
 
     @NotNull
     @Override

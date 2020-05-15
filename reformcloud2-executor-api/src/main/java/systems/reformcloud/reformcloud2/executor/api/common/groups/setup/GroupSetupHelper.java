@@ -38,10 +38,6 @@ import java.util.Collections;
 
 public final class GroupSetupHelper {
 
-    private GroupSetupHelper() {
-        throw new UnsupportedOperationException();
-    }
-
     private static final Collection<GroupSetupVersion> AVAILABLE = Arrays.asList(
             new BasicGroupSetupVersion(
                     "java-bungee-lobby-1.8.8",
@@ -200,6 +196,10 @@ public final class GroupSetupHelper {
             }
             ), new BasicGroupSetupVersion("nothing", new ProcessGroup[0], new MainGroup[0])
     );
+
+    private GroupSetupHelper() {
+        throw new UnsupportedOperationException();
+    }
 
     public static void printAvailable() {
         AVAILABLE.forEach(e -> System.out.println(e.getName()));

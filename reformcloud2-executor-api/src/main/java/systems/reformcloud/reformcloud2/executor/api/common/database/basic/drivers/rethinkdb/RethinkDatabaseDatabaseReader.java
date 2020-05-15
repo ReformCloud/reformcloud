@@ -45,18 +45,15 @@ public class RethinkDatabaseDatabaseReader implements DatabaseReader {
     private static final String KEY_NAME = "_key";
 
     private static final String ID_NAME = "_identifier";
+    private final Database<RethinkDB> parent;
+    private final Connection connection;
+    private final String table;
 
     public RethinkDatabaseDatabaseReader(Database<RethinkDB> parent, Connection connection, String table) {
         this.parent = parent;
         this.connection = connection;
         this.table = table;
     }
-
-    private final Database<RethinkDB> parent;
-
-    private final Connection connection;
-
-    private final String table;
 
     @NotNull
     @Override

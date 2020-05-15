@@ -33,14 +33,14 @@ import java.util.Collection;
 
 public class PacketAPIQueryCommandDispatchResult extends QueryResultPacket {
 
+    private Collection<String> result;
+
     public PacketAPIQueryCommandDispatchResult() {
     }
 
     public PacketAPIQueryCommandDispatchResult(Collection<String> result) {
         this.result = result;
     }
-
-    private Collection<String> result;
 
     public Collection<String> getResult() {
         return result;

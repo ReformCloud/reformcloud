@@ -43,6 +43,21 @@ import java.util.UUID;
  */
 public final class ProcessDetail implements Nameable, SerializableObject {
 
+    private UUID processUniqueID;
+    private UUID parentUniqueID;
+    private String parentName;
+    private String name;
+    private String displayName;
+    private int id;
+    private Template template;
+    private int maxMemory;
+    private long creationTime;
+    private ProcessState initialState;
+    private ProcessState processState;
+    private int maxPlayers = -1;
+    private String messageOfTheDay = "";
+    private ProcessRuntimeInformation processRuntimeInformation;
+
     @ApiStatus.Internal
     public ProcessDetail() {
     }
@@ -79,34 +94,6 @@ public final class ProcessDetail implements Nameable, SerializableObject {
 
         ExecutorAPI.getInstance().getEventManager().callEvent(new ProcessDetailConfigureEvent(this));
     }
-
-    private UUID processUniqueID;
-
-    private UUID parentUniqueID;
-
-    private String parentName;
-
-    private String name;
-
-    private String displayName;
-
-    private int id;
-
-    private Template template;
-
-    private int maxMemory;
-
-    private long creationTime;
-
-    private ProcessState initialState;
-
-    private ProcessState processState;
-
-    private int maxPlayers = -1;
-
-    private String messageOfTheDay = "";
-
-    private ProcessRuntimeInformation processRuntimeInformation;
 
     /**
      * @return The unique id of the process
@@ -195,35 +182,19 @@ public final class ProcessDetail implements Nameable, SerializableObject {
     }
 
     /**
-     * @return The maximum amount of player or {@code -1} if no amount is specified
-     */
-    public int getMaxPlayers() {
-        return maxPlayers;
-    }
-
-    /**
-     * @return The message of the day of the current process
-     */
-    @NotNull
-    public String getMessageOfTheDay() {
-        return messageOfTheDay;
-    }
-
-    /**
-     * @return The current runtime information about the process
-     */
-    @NotNull
-    public ProcessRuntimeInformation getProcessRuntimeInformation() {
-        return processRuntimeInformation;
-    }
-
-    /**
      * Sets the process state of the current process
      *
      * @param processState The new process state after the update
      */
     public void setProcessState(@NotNull ProcessState processState) {
         this.processState = processState;
+    }
+
+    /**
+     * @return The maximum amount of player or {@code -1} if no amount is specified
+     */
+    public int getMaxPlayers() {
+        return maxPlayers;
     }
 
     /**
@@ -238,12 +209,28 @@ public final class ProcessDetail implements Nameable, SerializableObject {
     }
 
     /**
+     * @return The message of the day of the current process
+     */
+    @NotNull
+    public String getMessageOfTheDay() {
+        return messageOfTheDay;
+    }
+
+    /**
      * Sets the message of the day for the current process
      *
      * @param messageOfTheDay The new message of the day which should get used
      */
     public void setMessageOfTheDay(@Nullable String messageOfTheDay) {
         this.messageOfTheDay = messageOfTheDay == null ? "" : messageOfTheDay;
+    }
+
+    /**
+     * @return The current runtime information about the process
+     */
+    @NotNull
+    public ProcessRuntimeInformation getProcessRuntimeInformation() {
+        return processRuntimeInformation;
     }
 
     /**

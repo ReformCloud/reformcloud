@@ -37,16 +37,16 @@ import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInfor
 public abstract class API extends ExternalAPIImplementation {
 
     /**
-     * @return The current process information the current api instance is using
-     */
-    @NotNull
-    public abstract ProcessInformation getCurrentProcessInformation();
-
-    /**
      * @return The current api instance the cloud is running on
      */
     @NotNull
     public static API getInstance() {
         return (API) ExecutorAPI.getInstance();
     }
+
+    /**
+     * @return The current process information the current api instance is using
+     */
+    @NotNull
+    public abstract ProcessInformation getCurrentProcessInformation();
 }

@@ -80,6 +80,10 @@ public abstract class ExternalAPIImplementation extends ExecutorAPI implements
         PlayerSyncAPI, PlayerAsyncAPI,
         MessageSyncAPI, MessageAsyncAPI {
 
+    public static final int EXTERNAL_PACKET_ID = 600;
+    public static final int EXTERNAL_PACKET_QUERY_RESULT_ID = 900;
+    private final GeneralAPI generalAPI = new GeneralAPI(this);
+
     protected void loadPacketHandlers() {
         this.packetHandler().registerNetworkHandlers(
                 // API
@@ -104,12 +108,6 @@ public abstract class ExternalAPIImplementation extends ExecutorAPI implements
                 ProxiedChannelMessage.class
         );
     }
-
-    public static final int EXTERNAL_PACKET_ID = 600;
-
-    public static final int EXTERNAL_PACKET_QUERY_RESULT_ID = 900;
-
-    private final GeneralAPI generalAPI = new GeneralAPI(this);
 
     @Override
     public boolean isReady() {
@@ -385,7 +383,7 @@ public abstract class ExternalAPIImplementation extends ExecutorAPI implements
     @NotNull
     @Override
     public Collection<JsonConfiguration> getCompleteDatabase(@NotNull String table) {
-        Collection<JsonConfiguration> result =  this.getCompleteDatabaseAsync(table).getUninterruptedly(TimeUnit.SECONDS, 5);
+        Collection<JsonConfiguration> result = this.getCompleteDatabaseAsync(table).getUninterruptedly(TimeUnit.SECONDS, 5);
         return result == null ? new ArrayList<>() : result;
     }
 

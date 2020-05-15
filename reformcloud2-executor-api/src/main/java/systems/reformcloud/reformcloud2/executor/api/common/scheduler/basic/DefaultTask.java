@@ -34,6 +34,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public final class DefaultTask implements ScheduledTask {
 
+    private final AtomicBoolean running = new AtomicBoolean(true);
+    private final ScheduledExecutorService executorService;
+    private final int id;
+    private final Runnable task;
+
     public DefaultTask(int id, Runnable run, long delay, long period, TimeUnit timeUnit) {
         this.id = id;
         this.task = run;
@@ -41,14 +46,6 @@ public final class DefaultTask implements ScheduledTask {
 
         this.executorService.scheduleAtFixedRate(this.task, delay, period, timeUnit);
     }
-
-    private final AtomicBoolean running = new AtomicBoolean(true);
-
-    private final ScheduledExecutorService executorService;
-
-    private final int id;
-
-    private final Runnable task;
 
     @Override
     public int getId() {

@@ -37,15 +37,13 @@ public class MainGroup implements Nameable, SerializableObject {
 
     public static final TypeToken<MainGroup> TYPE = new TypeToken<MainGroup>() {
     };
+    private String name;
+    private List<String> subGroups;
 
     public MainGroup(String name, List<String> subGroups) {
         this.name = name;
         this.subGroups = subGroups;
     }
-
-    private String name;
-
-    private List<String> subGroups;
 
     @NotNull
     @Override

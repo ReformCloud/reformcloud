@@ -44,14 +44,14 @@ import java.util.UUID;
 
 public class ControllerPacketStopProcess extends Packet {
 
+    private UUID processUniqueID;
+
     public ControllerPacketStopProcess() {
     }
 
     public ControllerPacketStopProcess(UUID processUniqueID) {
         this.processUniqueID = processUniqueID;
     }
-
-    private UUID processUniqueID;
 
     @Override
     public int getId() {

@@ -38,14 +38,14 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packe
 
 public final class PacketOutClientChallengeRequest extends Packet {
 
+    private String name;
+
     public PacketOutClientChallengeRequest() {
     }
 
     public PacketOutClientChallengeRequest(String name) {
         this.name = name;
     }
-
-    private String name;
 
     @Override
     public int getId() {

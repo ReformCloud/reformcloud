@@ -38,61 +38,40 @@ import java.util.Map;
 
 public class ProcessRuntimeInformation implements SerializableObject {
 
+    public static final long MEGABYTE = 1024L * 1024L;
+    private double cpuUsageSystem;
+    private double cpuUsageInternal;
+    private double loadAverageSystem;
+    private int processorCount;
+    private long memoryUsageSystem;
+    private long memoryUsageInternal;
+    private long nonHeapMemoryUsage;
+    private long collectionMemoryUsage;
+    private int loadedClasses;
+    private long unloadedClasses;
+    private long totalLoadedClasses;
+    private String osVersion;
+    private String javaVersion;
+    private String systemArchitecture;
+    private String[] startParameters;
+    private int stacktraces;
+    private long[] deadLockedThreads;
+    private Map<String, String> systemProperties;
+    private String classPath;
+    private String bootClassPath;
+    private List<ThreadInfo> threadInfos;
+
     @ApiStatus.Internal
     public ProcessRuntimeInformation() {
     }
 
-    public static final long MEGABYTE = 1024L * 1024L;
-
-    private double cpuUsageSystem;
-
-    private double cpuUsageInternal;
-
-    private double loadAverageSystem;
-
-    private int processorCount;
-
-    private long memoryUsageSystem;
-
-    private long memoryUsageInternal;
-
-    private long nonHeapMemoryUsage;
-
-    private long collectionMemoryUsage;
-
-    private int loadedClasses;
-
-    private long unloadedClasses;
-
-    private long totalLoadedClasses;
-
-    private String osVersion;
-
-    private String javaVersion;
-
-    private String systemArchitecture;
-
-    private String[] startParameters;
-
-    private int stacktraces;
-
-    private long[] deadLockedThreads;
-
-    private Map<String, String> systemProperties;
-
-    private String classPath;
-
-    private String bootClassPath;
-
-    private List<ThreadInfo> threadInfos;
-
     private ProcessRuntimeInformation(double cpuUsageSystem, double cpuUsageInternal, double loadAverageSystem,
-                                    int processorCount, long memoryUsageSystem, long memoryUsageInternal,
-                                    long nonHeapMemoryUsage, long collectionMemoryUsage, int loadedClasses,
-                                    long unloadedClasses, long totalLoadedClasses, String osVersion,
-                                    String javaVersion, String systemArchitecture, String[] startParameters,
-                                    int stacktraces, long[] deadLockedThreads, Map<String, String> systemProperties,
-                                     String classPath, String bootClassPath, List<ThreadInfo> threadInfos) {
+                                      int processorCount, long memoryUsageSystem, long memoryUsageInternal,
+                                      long nonHeapMemoryUsage, long collectionMemoryUsage, int loadedClasses,
+                                      long unloadedClasses, long totalLoadedClasses, String osVersion,
+                                      String javaVersion, String systemArchitecture, String[] startParameters,
+                                      int stacktraces, long[] deadLockedThreads, Map<String, String> systemProperties,
+                                      String classPath, String bootClassPath, List<ThreadInfo> threadInfos) {
         this.cpuUsageSystem = cpuUsageSystem;
         this.cpuUsageInternal = cpuUsageInternal;
         this.loadAverageSystem = loadAverageSystem;
@@ -114,6 +93,59 @@ public class ProcessRuntimeInformation implements SerializableObject {
         this.classPath = classPath;
         this.bootClassPath = bootClassPath;
         this.threadInfos = threadInfos;
+    }
+
+    public static ProcessRuntimeInformation create() {
+        long[] longs = CommonHelper.threadMXBean().findDeadlockedThreads();
+        return new ProcessRuntimeInformation(
+                CommonHelper.operatingSystemMXBean().getSystemCpuLoad() * 100,
+                CommonHelper.operatingSystemMXBean().getProcessCpuLoad() * 100,
+                CommonHelper.operatingSystemMXBean().getSystemLoadAverage() * 100,
+                Runtime.getRuntime().availableProcessors(),
+                Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory(),
+                CommonHelper.memoryMXBean().getHeapMemoryUsage().getUsed() / MEGABYTE,
+                CommonHelper.memoryMXBean().getNonHeapMemoryUsage().getUsed() / MEGABYTE,
+                CommonHelper.memoryPoolMXBeanCollectionUsage(),
+                CommonHelper.classLoadingMXBean().getLoadedClassCount(),
+                CommonHelper.classLoadingMXBean().getUnloadedClassCount(),
+                CommonHelper.classLoadingMXBean().getTotalLoadedClassCount(),
+                System.getProperty("os.name"),
+                System.getProperty("java.version"),
+                System.getProperty("os.arch"),
+                CommonHelper.runtimeMXBean().getInputArguments().toArray(new String[0]),
+                Thread.getAllStackTraces().size(),
+                longs == null ? new long[0] : longs,
+                CommonHelper.runtimeMXBean().getSystemProperties(),
+                CommonHelper.runtimeMXBean().getClassPath(),
+                CommonHelper.runtimeMXBean().isBootClassPathSupported() ? CommonHelper.runtimeMXBean().getBootClassPath() : "unknown",
+                Streams.keyApply(Thread.getAllStackTraces(), ThreadInfo::create)
+        );
+    }
+
+    public static ProcessRuntimeInformation empty() {
+        return new ProcessRuntimeInformation(
+                -1,
+                -1,
+                -1,
+                -1,
+                -1,
+                -1,
+                -1,
+                -1,
+                -1,
+                -1,
+                -1,
+                null,
+                null,
+                null,
+                new String[0],
+                -1,
+                new long[0],
+                new HashMap<>(),
+                null,
+                null,
+                new ArrayList<>()
+        );
     }
 
     public double getCpuUsageSystem() {
@@ -198,59 +230,6 @@ public class ProcessRuntimeInformation implements SerializableObject {
 
     public List<ThreadInfo> getThreadInfos() {
         return threadInfos;
-    }
-
-    public static ProcessRuntimeInformation create() {
-        long[] longs = CommonHelper.threadMXBean().findDeadlockedThreads();
-        return new ProcessRuntimeInformation(
-                CommonHelper.operatingSystemMXBean().getSystemCpuLoad() * 100,
-                CommonHelper.operatingSystemMXBean().getProcessCpuLoad() * 100,
-                CommonHelper.operatingSystemMXBean().getSystemLoadAverage() * 100,
-                Runtime.getRuntime().availableProcessors(),
-                Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory(),
-                CommonHelper.memoryMXBean().getHeapMemoryUsage().getUsed() / MEGABYTE,
-                CommonHelper.memoryMXBean().getNonHeapMemoryUsage().getUsed() / MEGABYTE,
-                CommonHelper.memoryPoolMXBeanCollectionUsage(),
-                CommonHelper.classLoadingMXBean().getLoadedClassCount(),
-                CommonHelper.classLoadingMXBean().getUnloadedClassCount(),
-                CommonHelper.classLoadingMXBean().getTotalLoadedClassCount(),
-                System.getProperty("os.name"),
-                System.getProperty("java.version"),
-                System.getProperty("os.arch"),
-                CommonHelper.runtimeMXBean().getInputArguments().toArray(new String[0]),
-                Thread.getAllStackTraces().size(),
-                longs == null ? new long[0] : longs,
-                CommonHelper.runtimeMXBean().getSystemProperties(),
-                CommonHelper.runtimeMXBean().getClassPath(),
-                CommonHelper.runtimeMXBean().isBootClassPathSupported() ? CommonHelper.runtimeMXBean().getBootClassPath() : "unknown",
-                Streams.keyApply(Thread.getAllStackTraces(), ThreadInfo::create)
-        );
-    }
-
-    public static ProcessRuntimeInformation empty() {
-        return new ProcessRuntimeInformation(
-                -1,
-                -1,
-                -1,
-                -1,
-                -1,
-                -1,
-                -1,
-                -1,
-                -1,
-                -1,
-                -1,
-                null,
-                null,
-                null,
-                new String[0],
-                -1,
-                new long[0],
-                new HashMap<>(),
-                null,
-                null,
-                new ArrayList<>()
-        );
     }
 
     @Override

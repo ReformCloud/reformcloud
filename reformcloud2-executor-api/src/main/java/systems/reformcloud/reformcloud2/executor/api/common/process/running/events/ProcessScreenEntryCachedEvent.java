@@ -29,14 +29,13 @@ import systems.reformcloud.reformcloud2.executor.api.common.process.running.scre
 
 public class ProcessScreenEntryCachedEvent extends Event {
 
+    private final RunningProcessScreen runningProcessScreen;
+    private final String cachedLogLine;
+
     public ProcessScreenEntryCachedEvent(RunningProcessScreen runningProcessScreen, String cachedLogLine) {
         this.runningProcessScreen = runningProcessScreen;
         this.cachedLogLine = cachedLogLine;
     }
-
-    private final RunningProcessScreen runningProcessScreen;
-
-    private final String cachedLogLine;
 
     public RunningProcessScreen getRunningProcessScreen() {
         return runningProcessScreen;

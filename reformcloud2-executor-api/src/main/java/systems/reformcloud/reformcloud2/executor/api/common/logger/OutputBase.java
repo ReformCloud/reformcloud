@@ -30,9 +30,9 @@ import java.io.ByteArrayOutputStream;
 
 public abstract class OutputBase extends ByteArrayOutputStream {
 
+    protected final LoggerBase loggerBase;
+
     public OutputBase(@NotNull LoggerBase loggerBase) {
         this.loggerBase = loggerBase;
     }
-
-    protected final LoggerBase loggerBase;
 }

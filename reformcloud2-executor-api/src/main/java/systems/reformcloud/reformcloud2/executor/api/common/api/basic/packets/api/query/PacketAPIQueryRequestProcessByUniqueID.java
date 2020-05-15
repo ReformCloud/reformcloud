@@ -40,14 +40,14 @@ import java.util.UUID;
 
 public class PacketAPIQueryRequestProcessByUniqueID extends Packet {
 
+    private UUID uniqueID;
+
     public PacketAPIQueryRequestProcessByUniqueID() {
     }
 
     public PacketAPIQueryRequestProcessByUniqueID(UUID uniqueID) {
         this.uniqueID = uniqueID;
     }
-
-    private UUID uniqueID;
 
     @Override
     public int getId() {

@@ -39,6 +39,9 @@ import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
 
 public class PacketNodeQueryStartProcess extends Packet {
 
+    private ProcessConfiguration processConfiguration;
+    private boolean start;
+
     public PacketNodeQueryStartProcess() {
     }
 
@@ -46,10 +49,6 @@ public class PacketNodeQueryStartProcess extends Packet {
         this.processConfiguration = processConfiguration;
         this.start = start;
     }
-
-    private ProcessConfiguration processConfiguration;
-
-    private boolean start;
 
     @Override
     public int getId() {

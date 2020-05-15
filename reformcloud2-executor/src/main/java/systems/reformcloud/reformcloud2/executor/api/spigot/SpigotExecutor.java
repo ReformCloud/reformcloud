@@ -125,6 +125,11 @@ public final class SpigotExecutor extends API implements PlayerAPIExecutor {
         awaitConnectionAndUpdate();
     }
 
+    @NotNull
+    public static SpigotExecutor getInstance() {
+        return instance;
+    }
+
     public JavaPlugin getPlugin() {
         return plugin;
     }
@@ -133,15 +138,14 @@ public final class SpigotExecutor extends API implements PlayerAPIExecutor {
         return messages;
     }
 
+    public void setMessages(IngameMessages messages) {
+        this.messages = messages;
+    }
+
     @NotNull
     @Override
     public ProcessInformation getCurrentProcessInformation() {
         return this.thisProcessInformation;
-    }
-
-    @NotNull
-    public static SpigotExecutor getInstance() {
-        return instance;
     }
 
     @NotNull
@@ -190,10 +194,6 @@ public final class SpigotExecutor extends API implements PlayerAPIExecutor {
                 }
             }));
         });
-    }
-
-    public void setMessages(IngameMessages messages) {
-        this.messages = messages;
     }
 
     private void fixInvalidPlayers() {

@@ -40,14 +40,14 @@ import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
 
 public class NodePacketOutConnectionInitDone extends Packet {
 
+    private NodeInformation nodeInformation;
+
     public NodePacketOutConnectionInitDone() {
     }
 
     public NodePacketOutConnectionInitDone(NodeInformation nodeInformation) {
         this.nodeInformation = nodeInformation;
     }
-
-    private NodeInformation nodeInformation;
 
     @Override
     public int getId() {

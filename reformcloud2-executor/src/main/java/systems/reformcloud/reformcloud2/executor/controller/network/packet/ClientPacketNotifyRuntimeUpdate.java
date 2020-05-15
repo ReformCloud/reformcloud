@@ -39,14 +39,14 @@ import systems.reformcloud.reformcloud2.executor.controller.process.ClientManage
 
 public class ClientPacketNotifyRuntimeUpdate extends Packet {
 
+    private DefaultClientRuntimeInformation clientRuntimeInformation;
+
     public ClientPacketNotifyRuntimeUpdate() {
     }
 
     public ClientPacketNotifyRuntimeUpdate(DefaultClientRuntimeInformation clientRuntimeInformation) {
         this.clientRuntimeInformation = clientRuntimeInformation;
     }
-
-    private DefaultClientRuntimeInformation clientRuntimeInformation;
 
     @Override
     public int getId() {

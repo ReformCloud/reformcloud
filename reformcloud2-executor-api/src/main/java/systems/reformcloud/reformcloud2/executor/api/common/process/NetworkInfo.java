@@ -33,6 +33,10 @@ import java.net.InetSocketAddress;
 
 public final class NetworkInfo implements SerializableObject {
 
+    private String host;
+    private int port;
+    private long connectTime;
+
     @ApiStatus.Internal
     public NetworkInfo() {
     }
@@ -42,12 +46,6 @@ public final class NetworkInfo implements SerializableObject {
         this.port = port;
         this.connectTime = -1L;
     }
-
-    private String host;
-
-    private int port;
-
-    private long connectTime;
 
     public String getHost() {
         return host;

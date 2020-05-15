@@ -40,6 +40,13 @@ import java.util.UUID;
 
 public class PacketAPISendTitle extends Packet {
 
+    private UUID player;
+    private String title;
+    private String subTitle;
+    private int fadeIn;
+    private int stay;
+    private int fadeOut;
+
     public PacketAPISendTitle() {
     }
 
@@ -51,18 +58,6 @@ public class PacketAPISendTitle extends Packet {
         this.stay = stay;
         this.fadeOut = fadeOut;
     }
-
-    private UUID player;
-
-    private String title;
-
-    private String subTitle;
-
-    private int fadeIn;
-
-    private int stay;
-
-    private int fadeOut;
 
     @Override
     public int getId() {

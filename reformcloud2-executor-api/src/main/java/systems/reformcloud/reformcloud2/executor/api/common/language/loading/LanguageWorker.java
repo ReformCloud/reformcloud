@@ -39,7 +39,8 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public final class LanguageWorker {
 
-    private LanguageWorker() {}
+    private LanguageWorker() {
+    }
 
     public static void doLoad() {
         Duo<String, LinkedList<Language>> in = detectLanguages();
@@ -114,14 +115,13 @@ public final class LanguageWorker {
 
     private static class InternalLanguageSource implements LanguageSource {
 
+        private final String name;
+        private final String display;
+
         InternalLanguageSource(Properties properties) {
             this.name = properties.getProperty("language.setting.name");
             this.display = properties.getProperty("language.setting.display");
         }
-
-        private final String name;
-
-        private final String display;
 
         @Override
         public String getSource() {

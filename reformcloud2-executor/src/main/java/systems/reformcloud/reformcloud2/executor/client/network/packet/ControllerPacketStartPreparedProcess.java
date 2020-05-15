@@ -41,14 +41,14 @@ import systems.reformcloud.reformcloud2.executor.client.process.ProcessQueue;
 
 public class ControllerPacketStartPreparedProcess extends Packet {
 
+    private ProcessInformation processInformation;
+
     public ControllerPacketStartPreparedProcess() {
     }
 
     public ControllerPacketStartPreparedProcess(ProcessInformation processInformation) {
         this.processInformation = processInformation;
     }
-
-    private ProcessInformation processInformation;
 
     @Override
     public int getId() {

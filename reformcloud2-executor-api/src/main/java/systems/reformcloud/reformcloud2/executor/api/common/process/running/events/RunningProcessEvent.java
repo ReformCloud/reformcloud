@@ -30,11 +30,11 @@ import systems.reformcloud.reformcloud2.executor.api.common.process.running.Runn
 
 public abstract class RunningProcessEvent extends Event {
 
+    private final RunningProcess runningProcess;
+
     public RunningProcessEvent(@NotNull RunningProcess runningProcess) {
         this.runningProcess = runningProcess;
     }
-
-    private final RunningProcess runningProcess;
 
     /**
      * @return The running process which the current event targets

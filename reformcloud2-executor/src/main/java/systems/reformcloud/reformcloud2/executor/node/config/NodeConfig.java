@@ -42,6 +42,13 @@ public final class NodeConfig {
     };
 
     static final Path PATH = Paths.get("reformcloud/config.json");
+    private final String name;
+    private final UUID uniqueID;
+    private final long maxMemory;
+    private final String startHost;
+    private List<NetworkAddress> networkListeners;
+    private List<NetworkAddress> httpNetworkListeners;
+    private List<NetworkAddress> clusterNodes;
 
     public NodeConfig(String name, UUID uniqueID, long maxMemory, String startHost,
                       List<NetworkAddress> networkListeners, List<NetworkAddress> httpNetworkListeners,
@@ -54,20 +61,6 @@ public final class NodeConfig {
         this.httpNetworkListeners = httpNetworkListeners;
         this.clusterNodes = clusterNodes;
     }
-
-    private final String name;
-
-    private final UUID uniqueID;
-
-    private final long maxMemory;
-
-    private final String startHost;
-
-    private List<NetworkAddress> networkListeners;
-
-    private List<NetworkAddress> httpNetworkListeners;
-
-    private List<NetworkAddress> clusterNodes;
 
     public String getName() {
         return name;
@@ -116,14 +109,13 @@ public final class NodeConfig {
 
     public static class NetworkAddress {
 
+        private final String host;
+        private final int port;
+
         public NetworkAddress(String host, int port) {
             this.host = host;
             this.port = port;
         }
-
-        private final String host;
-
-        private final int port;
 
         public String getHost() {
             return host;

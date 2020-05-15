@@ -32,20 +32,17 @@ import java.util.UUID;
 
 public class PlayerServerSwitchEvent extends Event {
 
+    private final UUID uniqueId;
+    private final String name;
+    private final String targetServer;
+    private final String previousServer;
+
     public PlayerServerSwitchEvent(UUID uniqueId, String name, String previousServer, String targetServer) {
         this.uniqueId = uniqueId;
         this.name = name;
         this.targetServer = targetServer;
         this.previousServer = previousServer;
     }
-
-    private final UUID uniqueId;
-
-    private final String name;
-
-    private final String targetServer;
-
-    private final String previousServer;
 
     @NotNull
     public UUID getUniqueId() {

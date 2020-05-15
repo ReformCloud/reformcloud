@@ -48,11 +48,11 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class DefaultProtocolBuffer extends ProtocolBuffer {
 
+    private final ByteBuf wrapped;
+
     public DefaultProtocolBuffer(@NotNull ByteBuf wrapped) {
         this.wrapped = wrapped;
     }
-
-    private final ByteBuf wrapped;
 
     @Override
     public void writeString(@Nullable String stringToWrite) {

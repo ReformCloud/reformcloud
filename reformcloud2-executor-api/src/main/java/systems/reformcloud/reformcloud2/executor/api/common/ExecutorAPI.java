@@ -39,13 +39,35 @@ import java.util.Objects;
  */
 public abstract class ExecutorAPI {
 
-    /* The executor type which is currently running */
-    protected ExecutorType type = ExecutorType.UNKNOWN;
+    /* The current instance of the executor */
+    private static ExecutorAPI instance;
 
     /* ========================== */
 
-    /* The current instance of the executor */
-    private static ExecutorAPI instance;
+    static {
+        System.setProperty("java.net.preferIPv4Stack", "true");
+        System.setProperty("io.netty.noPreferDirect", "true");
+        System.setProperty("io.netty.maxDirectMemory", "0");
+        System.setProperty("io.netty.leakDetectionLevel", "DISABLED");
+        System.setProperty("io.netty.recycler.maxCapacity", "0");
+        System.setProperty("io.netty.recycler.maxCapacity.default", "0");
+        System.setProperty("io.netty.allocator.type", "UNPOOLED");
+
+        Thread.setDefaultUncaughtExceptionHandler((t, ex) -> ex.printStackTrace());
+    }
+
+    /* The executor type which is currently running */
+    protected ExecutorType type = ExecutorType.UNKNOWN;
+
+    /**
+     * @return The current instance of this class
+     */
+    @NotNull
+    public static ExecutorAPI getInstance() {
+        return instance;
+    }
+
+    /* ========================== */
 
     /**
      * Updates the current instance of the cloud system
@@ -60,20 +82,12 @@ public abstract class ExecutorAPI {
     }
 
     /**
-     * @return The current instance of this class
-     */
-    @NotNull
-    public static ExecutorAPI getInstance() {
-        return instance;
-    }
-
-    /* ========================== */
-
-    /**
      * @return The current sync api instance of the api
      */
     @NotNull
     public abstract SyncAPI getSyncAPI();
+
+    /* ========================== */
 
     /**
      * @return The current async api instance
@@ -81,13 +95,13 @@ public abstract class ExecutorAPI {
     @NotNull
     public abstract AsyncAPI getAsyncAPI();
 
-    /* ========================== */
-
     /**
      * @return The current packet handler of the cloud
      */
     @NotNull
     public abstract PacketHandler getPacketHandler();
+
+    /* ========================== */
 
     /**
      * @return The current event manger of the cloud
@@ -102,25 +116,11 @@ public abstract class ExecutorAPI {
      */
     public abstract boolean isReady();
 
-    /* ========================== */
-
     /**
      * @return The current type which the cloud is executing
      */
     @NotNull
     public ExecutorType getType() {
         return type;
-    }
-
-    static {
-        System.setProperty("java.net.preferIPv4Stack", "true");
-        System.setProperty("io.netty.noPreferDirect", "true");
-        System.setProperty("io.netty.maxDirectMemory", "0");
-        System.setProperty("io.netty.leakDetectionLevel", "DISABLED");
-        System.setProperty("io.netty.recycler.maxCapacity", "0");
-        System.setProperty("io.netty.recycler.maxCapacity.default", "0");
-        System.setProperty("io.netty.allocator.type", "UNPOOLED");
-
-        Thread.setDefaultUncaughtExceptionHandler((t, ex) -> ex.printStackTrace());
     }
 }
