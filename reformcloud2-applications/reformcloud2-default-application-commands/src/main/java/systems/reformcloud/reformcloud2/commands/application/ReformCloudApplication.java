@@ -46,11 +46,17 @@ import java.util.Arrays;
 
 public class ReformCloudApplication extends Application {
 
+    private static final ApplicationUpdateRepository REPOSITORY = new CommandAddonUpdater();
     private static ReformCloudApplication instance;
-
     private static CommandsConfig commandsConfig;
 
-    private static final ApplicationUpdateRepository REPOSITORY = new CommandAddonUpdater();
+    public static CommandsConfig getCommandsConfig() {
+        return commandsConfig;
+    }
+
+    public static ReformCloudApplication getInstance() {
+        return instance;
+    }
 
     @Override
     public void onInstallable() {
@@ -90,13 +96,5 @@ public class ReformCloudApplication extends Application {
     @Override
     public ApplicationUpdateRepository getUpdateRepository() {
         return REPOSITORY;
-    }
-
-    public static CommandsConfig getCommandsConfig() {
-        return commandsConfig;
-    }
-
-    public static ReformCloudApplication getInstance() {
-        return instance;
     }
 }

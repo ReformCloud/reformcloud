@@ -28,11 +28,11 @@ import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 
 public final class PacketHelper {
 
+    public static final int PERMISSION_BUS = 8000;
+
     private PacketHelper() {
         throw new UnsupportedOperationException();
     }
-
-    public static final int PERMISSION_BUS = 8000;
 
     public static void addPacketHandler() {
         ExecutorAPI.getInstance().getPacketHandler().registerHandler(PacketGroupAction.class);

@@ -57,6 +57,26 @@ import java.util.stream.Collectors;
 public abstract class SharedSignSystemAdapter<T> implements SignSystemAdapter<T> {
 
     private static final String[] EMPTY_SIGN = new String[]{"", "", "", ""};
+    protected final UUID ownUniqueID = API.getInstance().getCurrentProcessInformation().getProcessDetail().getProcessUniqueID();
+    protected final Collection<CloudSign> signs = Collections.synchronizedCollection(new ArrayList<CloudSign>() {
+        @NotNull
+        @Override
+        public Iterator<CloudSign> iterator() {
+            synchronized (this) {
+                return super.iterator();
+            }
+        }
+    });
+    protected final Set<ProcessInformation> allProcesses = Collections.synchronizedSet(new HashSet<>());
+    protected final AtomicInteger[] counter = new AtomicInteger[]{
+            new AtomicInteger(-1), // start
+            new AtomicInteger(-1), // connecting
+            new AtomicInteger(-1), // empty
+            new AtomicInteger(-1), // online
+            new AtomicInteger(-1), // full
+            new AtomicInteger(-1)  // maintenance
+    };
+    protected SignConfig signConfig;
 
     public SharedSignSystemAdapter(@NotNull SignConfig signConfig) {
         this.signConfig = signConfig;
@@ -73,31 +93,6 @@ public abstract class SharedSignSystemAdapter<T> implements SignSystemAdapter<T>
 
         this.start();
     }
-
-    protected SignConfig signConfig;
-
-    protected final UUID ownUniqueID = API.getInstance().getCurrentProcessInformation().getProcessDetail().getProcessUniqueID();
-
-    protected final Collection<CloudSign> signs = Collections.synchronizedCollection(new ArrayList<CloudSign>() {
-        @NotNull
-        @Override
-        public Iterator<CloudSign> iterator() {
-            synchronized (this) {
-                return super.iterator();
-            }
-        }
-    });
-
-    protected final Set<ProcessInformation> allProcesses = Collections.synchronizedSet(new HashSet<>());
-
-    protected final AtomicInteger[] counter = new AtomicInteger[]{
-            new AtomicInteger(-1), // start
-            new AtomicInteger(-1), // connecting
-            new AtomicInteger(-1), // empty
-            new AtomicInteger(-1), // online
-            new AtomicInteger(-1), // full
-            new AtomicInteger(-1)  // maintenance
-    };
 
     @Override
     public void handleProcessStart(@NotNull ProcessInformation processInformation) {

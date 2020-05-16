@@ -34,18 +34,16 @@ import java.util.UUID;
 
 public class SpongeSubject extends AbstractUserSpongeSubject {
 
+    private final UUID uniqueUserID;
+    private final SubjectCollection source;
+    private final PermissionService service;
+
     public SpongeSubject(@NotNull UUID user, @NotNull SubjectCollection source, @NotNull PermissionService service) {
         super(user);
         this.uniqueUserID = user;
         this.source = source;
         this.service = service;
     }
-
-    private final UUID uniqueUserID;
-
-    private final SubjectCollection source;
-
-    private final PermissionService service;
 
     @Override
     protected PermissionService service() {

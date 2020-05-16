@@ -34,6 +34,17 @@ import java.util.List;
 
 public class SignLayout implements SerializableObject, Cloneable {
 
+    private LayoutContext context;
+    private String target;
+    private boolean searchingLayoutWhenFull;
+    private boolean showMaintenanceProcessesOnSigns;
+    private List<SignSubLayout> searchingLayouts;
+    private List<SignSubLayout> waitingForConnectLayout;
+    private List<SignSubLayout> emptyLayout;
+    private List<SignSubLayout> onlineLayout;
+    private List<SignSubLayout> fullLayout;
+    private List<SignSubLayout> maintenanceLayout;
+
     public SignLayout() {
     }
 
@@ -59,26 +70,6 @@ public class SignLayout implements SerializableObject, Cloneable {
         this.fullLayout = fullLayout;
         this.maintenanceLayout = maintenanceLayout;
     }
-
-    private LayoutContext context;
-
-    private String target;
-
-    private boolean searchingLayoutWhenFull;
-
-    private boolean showMaintenanceProcessesOnSigns;
-
-    private List<SignSubLayout> searchingLayouts;
-
-    private List<SignSubLayout> waitingForConnectLayout;
-
-    private List<SignSubLayout> emptyLayout;
-
-    private List<SignSubLayout> onlineLayout;
-
-    private List<SignSubLayout> fullLayout;
-
-    private List<SignSubLayout> maintenanceLayout;
 
     public LayoutContext getContext() {
         return context;

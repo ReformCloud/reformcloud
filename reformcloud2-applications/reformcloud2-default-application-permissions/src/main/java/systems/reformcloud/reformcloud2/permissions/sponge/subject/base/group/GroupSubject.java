@@ -33,18 +33,16 @@ import systems.reformcloud.reformcloud2.permissions.sponge.subject.impl.Abstract
 
 public class GroupSubject extends AbstractGroupSubject {
 
+    private final PermissionService service;
+    private final SubjectCollection source;
+    private final String group;
+
     public GroupSubject(@NotNull String group, @NotNull PermissionService service, @NotNull SubjectCollection source) {
         super(group);
         this.service = service;
         this.source = source;
         this.group = group;
     }
-
-    private final PermissionService service;
-
-    private final SubjectCollection source;
-
-    private final String group;
 
     @Override
     protected PermissionService service() {

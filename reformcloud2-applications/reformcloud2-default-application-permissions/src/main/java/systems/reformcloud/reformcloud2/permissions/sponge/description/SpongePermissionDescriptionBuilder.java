@@ -34,18 +34,16 @@ import systems.reformcloud.reformcloud2.permissions.sponge.service.SpongePermiss
 
 public class SpongePermissionDescriptionBuilder implements PermissionDescription.Builder {
 
-    public SpongePermissionDescriptionBuilder(@NotNull PermissionService service, @Nullable PluginContainer plugin) {
-        this.service = service;
-        this.pluginContainer = plugin;
-    }
-
     private final PermissionService service;
-
+    private final PluginContainer pluginContainer;
     private String id;
 
     private Text description;
 
-    private final PluginContainer pluginContainer;
+    public SpongePermissionDescriptionBuilder(@NotNull PermissionService service, @Nullable PluginContainer plugin) {
+        this.service = service;
+        this.pluginContainer = plugin;
+    }
 
     @Override
     @NotNull

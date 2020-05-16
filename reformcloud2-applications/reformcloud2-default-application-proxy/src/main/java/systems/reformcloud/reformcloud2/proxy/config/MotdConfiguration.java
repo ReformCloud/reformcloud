@@ -30,6 +30,12 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.data.Protoco
 
 public class MotdConfiguration implements SerializableObject {
 
+    private String firstLine;
+    private String secondLine;
+    private String[] playerInfo;
+    private String protocol;
+    private long waitUntilNextInSeconds;
+
     public MotdConfiguration() {
     }
 
@@ -40,16 +46,6 @@ public class MotdConfiguration implements SerializableObject {
         this.protocol = protocol;
         this.waitUntilNextInSeconds = waitUntilNextInSeconds;
     }
-
-    private String firstLine;
-
-    private String secondLine;
-
-    private String[] playerInfo;
-
-    private String protocol;
-
-    private long waitUntilNextInSeconds;
 
     public String getFirstLine() {
         return firstLine;

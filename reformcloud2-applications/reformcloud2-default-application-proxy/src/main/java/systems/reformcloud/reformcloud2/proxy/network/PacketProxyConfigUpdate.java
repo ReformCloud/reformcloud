@@ -39,14 +39,14 @@ import systems.reformcloud.reformcloud2.proxy.ProxyConfigurationHandler;
 
 public class PacketProxyConfigUpdate extends Packet {
 
+    private ProxyConfiguration proxyConfiguration;
+
     public PacketProxyConfigUpdate() {
     }
 
     public PacketProxyConfigUpdate(ProxyConfiguration proxyConfiguration) {
         this.proxyConfiguration = proxyConfiguration;
     }
-
-    private ProxyConfiguration proxyConfiguration;
 
     @Override
     public int getId() {

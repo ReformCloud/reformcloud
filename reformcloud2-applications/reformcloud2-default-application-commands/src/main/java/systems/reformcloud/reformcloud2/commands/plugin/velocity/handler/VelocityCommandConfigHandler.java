@@ -33,15 +33,13 @@ import systems.reformcloud.reformcloud2.commands.plugin.velocity.commands.Comman
 
 public class VelocityCommandConfigHandler extends CommandConfigHandler {
 
+    private final ProxyServer proxyServer;
+    private CommandLeave commandLeave;
+    private CommandReformCloud commandReformCloud;
+
     public VelocityCommandConfigHandler(ProxyServer proxyServer) {
         this.proxyServer = proxyServer;
     }
-
-    private final ProxyServer proxyServer;
-
-    private CommandLeave commandLeave;
-
-    private CommandReformCloud commandReformCloud;
 
     @Override
     public void handleCommandConfigRelease(@NotNull CommandsConfig commandsConfig) {

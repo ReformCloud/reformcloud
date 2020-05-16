@@ -44,6 +44,10 @@ public class ReformCloudApplication extends Application {
 
     private static ReformCloudApplication instance;
 
+    public static ReformCloudApplication getInstance() {
+        return instance;
+    }
+
     @Override
     public void onInstallable() {
         ExecutorAPI.getInstance().getEventManager().registerListener(new ProcessInclusionHandler());
@@ -65,10 +69,6 @@ public class ReformCloudApplication extends Application {
     @Override
     public ApplicationUpdateRepository getUpdateRepository() {
         return REPOSITORY;
-    }
-
-    public static ReformCloudApplication getInstance() {
-        return instance;
     }
 
     private CommandManager getCommandManager() {

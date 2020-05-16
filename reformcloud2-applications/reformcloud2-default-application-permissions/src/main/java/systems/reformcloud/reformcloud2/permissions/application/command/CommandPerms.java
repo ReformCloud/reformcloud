@@ -89,6 +89,47 @@ public class CommandPerms extends GlobalCommand {
         super("perms", "reformcloud.command.perms", "The main perms command", "permissions", "cloudperms");
     }
 
+    @NotNull
+    private static String formatPermissionNode(@NotNull PermissionNode node) {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        stringBuilder.append("  ").append(node.getActualPermission()).append(" | Since: ").append(CommonHelper.DATE_FORMAT.format(node.getAddTime())).append(" | Until: ");
+        if (node.getTimeout() == -1) {
+            stringBuilder.append("lifetime");
+        } else {
+            stringBuilder.append(CommonHelper.DATE_FORMAT.format(node.getTimeout()));
+        }
+
+        return stringBuilder.append("\n").toString();
+    }
+
+    @Nullable
+    private static Long parseTimeout(long givenTime, @NotNull String requestedTimeUnit) {
+        if (givenTime == -1) {
+            return givenTime;
+        }
+
+        switch (requestedTimeUnit.toLowerCase()) {
+            case "s":
+            case "seconds":
+                return System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(givenTime);
+            case "m":
+            case "minutes":
+                return System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(givenTime);
+            case "h":
+            case "hours":
+                return System.currentTimeMillis() + TimeUnit.HOURS.toMillis(givenTime);
+            case "d":
+            case "days":
+                return System.currentTimeMillis() + TimeUnit.DAYS.toMillis(givenTime);
+            case "mo":
+            case "months":
+                return System.currentTimeMillis() + 30 * givenTime * TimeUnit.DAYS.toMillis(1);
+            default:
+                return null;
+        }
+    }
+
     @Override
     public boolean handleCommand(@NotNull CommandSource commandSource, String @NotNull [] strings) {
         if (strings.length == 1 && strings[0].equalsIgnoreCase("groups")) {
@@ -947,46 +988,5 @@ public class CommandPerms extends GlobalCommand {
         }
 
         source.sendMessages(stringBuilder.toString().split("\n"));
-    }
-
-    @NotNull
-    private static String formatPermissionNode(@NotNull PermissionNode node) {
-        StringBuilder stringBuilder = new StringBuilder();
-
-        stringBuilder.append("  ").append(node.getActualPermission()).append(" | Since: ").append(CommonHelper.DATE_FORMAT.format(node.getAddTime())).append(" | Until: ");
-        if (node.getTimeout() == -1) {
-            stringBuilder.append("lifetime");
-        } else {
-            stringBuilder.append(CommonHelper.DATE_FORMAT.format(node.getTimeout()));
-        }
-
-        return stringBuilder.append("\n").toString();
-    }
-
-    @Nullable
-    private static Long parseTimeout(long givenTime, @NotNull String requestedTimeUnit) {
-        if (givenTime == -1) {
-            return givenTime;
-        }
-
-        switch (requestedTimeUnit.toLowerCase()) {
-            case "s":
-            case "seconds":
-                return System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(givenTime);
-            case "m":
-            case "minutes":
-                return System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(givenTime);
-            case "h":
-            case "hours":
-                return System.currentTimeMillis() + TimeUnit.HOURS.toMillis(givenTime);
-            case "d":
-            case "days":
-                return System.currentTimeMillis() + TimeUnit.DAYS.toMillis(givenTime);
-            case "mo":
-            case "months":
-                return System.currentTimeMillis() + 30 * givenTime * TimeUnit.DAYS.toMillis(1);
-            default:
-                return null;
-        }
     }
 }

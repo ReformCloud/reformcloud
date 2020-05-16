@@ -38,14 +38,14 @@ import systems.reformcloud.reformcloud2.signs.util.sign.config.SignConfig;
 
 public class PacketReloadSignConfig extends Packet {
 
+    private SignConfig signConfig;
+
     public PacketReloadSignConfig() {
     }
 
     public PacketReloadSignConfig(SignConfig signConfig) {
         this.signConfig = signConfig;
     }
-
-    private SignConfig signConfig;
 
     @Override
     public int getId() {

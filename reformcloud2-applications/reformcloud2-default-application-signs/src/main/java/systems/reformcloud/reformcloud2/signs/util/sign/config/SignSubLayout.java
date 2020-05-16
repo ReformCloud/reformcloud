@@ -30,6 +30,10 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.data.Protoco
 
 public class SignSubLayout implements SerializableObject {
 
+    private String[] lines;
+    private String block;
+    private int subID;
+
     public SignSubLayout() {
     }
 
@@ -38,12 +42,6 @@ public class SignSubLayout implements SerializableObject {
         this.block = block;
         this.subID = subID;
     }
-
-    private String[] lines;
-
-    private String block;
-
-    private int subID;
 
     public String[] getLines() {
         return lines;

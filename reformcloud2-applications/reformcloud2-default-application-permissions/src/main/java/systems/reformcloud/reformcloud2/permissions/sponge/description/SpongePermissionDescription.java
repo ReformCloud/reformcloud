@@ -40,6 +40,11 @@ import java.util.concurrent.CompletableFuture;
 
 public class SpongePermissionDescription implements PermissionDescription {
 
+    private final PermissionService service;
+    private final String id;
+    private final PluginContainer owner;
+    private final Text description;
+
     SpongePermissionDescription(
             @NotNull PermissionService service,
             @NotNull String id,
@@ -51,14 +56,6 @@ public class SpongePermissionDescription implements PermissionDescription {
         this.owner = owner;
         this.description = description;
     }
-
-    private final PermissionService service;
-
-    private final String id;
-
-    private final PluginContainer owner;
-
-    private final Text description;
 
     @Override
     @NotNull

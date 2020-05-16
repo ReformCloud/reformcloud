@@ -28,7 +28,13 @@ import com.google.gson.reflect.TypeToken;
 
 public class CloudFlareConfig {
 
-    public static final TypeToken<CloudFlareConfig> TYPE_TOKEN = new TypeToken<CloudFlareConfig>() {};
+    public static final TypeToken<CloudFlareConfig> TYPE_TOKEN = new TypeToken<CloudFlareConfig>() {
+    };
+    private final String email;
+    private final String apiToken;
+    private final String domainName;
+    private final String zoneId;
+    private final String subDomain;
 
     public CloudFlareConfig(String email, String apiToken, String domainName, String zoneId, String subDomain) {
         this.email = email;
@@ -37,16 +43,6 @@ public class CloudFlareConfig {
         this.zoneId = zoneId;
         this.subDomain = subDomain;
     }
-
-    private final String email;
-
-    private final String apiToken;
-
-    private final String domainName;
-
-    private final String zoneId;
-
-    private final String subDomain;
 
     public String getEmail() {
         return email;

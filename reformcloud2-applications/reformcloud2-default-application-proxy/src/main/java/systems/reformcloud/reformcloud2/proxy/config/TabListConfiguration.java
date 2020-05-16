@@ -30,6 +30,10 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.data.Protoco
 
 public class TabListConfiguration implements SerializableObject {
 
+    private String header;
+    private String footer;
+    private long waitUntilNextInSeconds;
+
     public TabListConfiguration() {
     }
 
@@ -38,12 +42,6 @@ public class TabListConfiguration implements SerializableObject {
         this.footer = footer;
         this.waitUntilNextInSeconds = waitUntilNextInSeconds;
     }
-
-    private String header;
-
-    private String footer;
-
-    private long waitUntilNextInSeconds;
 
     public String getHeader() {
         return header;

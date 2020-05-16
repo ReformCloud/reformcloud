@@ -29,11 +29,11 @@ import systems.reformcloud.reformcloud2.permissions.objects.user.PermissionUser;
 
 public class PermissionUserCreateEvent extends Event {
 
+    private final PermissionUser permissionUser;
+
     public PermissionUserCreateEvent(PermissionUser permissionUser) {
         this.permissionUser = permissionUser;
     }
-
-    private final PermissionUser permissionUser;
 
     public PermissionUser getPermissionUser() {
         return permissionUser;

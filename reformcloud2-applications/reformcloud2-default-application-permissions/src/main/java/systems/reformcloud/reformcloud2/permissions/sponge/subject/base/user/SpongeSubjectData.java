@@ -38,11 +38,11 @@ import java.util.*;
 
 public class SpongeSubjectData extends AbstractSpongeSubjectData {
 
+    private final UUID uniqueID;
+
     public SpongeSubjectData(@NotNull UUID user) {
         this.uniqueID = user;
     }
-
-    private final UUID uniqueID;
 
     @Override
     @NotNull

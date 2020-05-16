@@ -32,20 +32,17 @@ import java.util.List;
 
 public class CommandsConfig implements SerializableObject {
 
+    private boolean leaveCommandEnabled;
+    private List<String> leaveCommands;
+    private boolean reformCloudCommandEnabled;
+    private List<String> reformCloudCommands;
+
     public CommandsConfig(boolean leaveCommandEnabled, List<String> leaveCommands, boolean reformCloudCommandEnabled, List<String> reformCloudCommands) {
         this.leaveCommandEnabled = leaveCommandEnabled;
         this.leaveCommands = leaveCommands;
         this.reformCloudCommandEnabled = reformCloudCommandEnabled;
         this.reformCloudCommands = reformCloudCommands;
     }
-
-    private boolean leaveCommandEnabled;
-
-    private List<String> leaveCommands;
-
-    private boolean reformCloudCommandEnabled;
-
-    private List<String> reformCloudCommands;
 
     public boolean isLeaveCommandEnabled() {
         return leaveCommandEnabled;
