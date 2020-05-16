@@ -26,6 +26,7 @@ package systems.reformcloud.reformcloud2.executor.node.process;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnmodifiableView;
 import systems.reformcloud.reformcloud2.executor.api.common.api.basic.packets.shared.EventPacketProcessUpdated;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Template;
@@ -48,10 +49,7 @@ import systems.reformcloud.reformcloud2.executor.node.network.packet.out.PacketO
 import systems.reformcloud.reformcloud2.executor.node.process.basic.BasicLocalNodeProcess;
 import systems.reformcloud.reformcloud2.executor.node.process.startup.LocalProcessQueue;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
@@ -189,13 +187,19 @@ public final class LocalNodeProcessManager implements NodeProcessManager {
 
     @Override
     public void handleProcessStart(@NotNull ProcessInformation processInformation) {
-        this.information.remove(processInformation);
+        this.information
+                .stream()
+                .filter(e -> e.getProcessDetail().getProcessUniqueID().equals(processInformation.getProcessDetail().getProcessUniqueID()))
+                .forEach(this.information::remove);
         this.information.add(processInformation);
     }
 
     @Override
     public void handleProcessUpdate(@NotNull ProcessInformation processInformation) {
-        this.information.remove(processInformation);
+        this.information
+                .stream()
+                .filter(e -> e.getProcessDetail().getProcessUniqueID().equals(processInformation.getProcessDetail().getProcessUniqueID()))
+                .forEach(this.information::remove);
         this.information.add(processInformation);
     }
 
@@ -252,8 +256,8 @@ public final class LocalNodeProcessManager implements NodeProcessManager {
 
     @NotNull
     @Override
-    public Collection<ProcessInformation> getClusterProcesses() {
-        return this.information;
+    public @UnmodifiableView Collection<ProcessInformation> getClusterProcesses() {
+        return Collections.unmodifiableCollection(this.information);
     }
 
     @NotNull

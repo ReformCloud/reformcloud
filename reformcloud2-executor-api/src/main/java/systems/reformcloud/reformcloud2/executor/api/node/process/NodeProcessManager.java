@@ -26,6 +26,7 @@ package systems.reformcloud.reformcloud2.executor.api.node.process;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnmodifiableView;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Template;
 import systems.reformcloud.reformcloud2.executor.api.common.node.NodeInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
@@ -189,6 +190,7 @@ public interface NodeProcessManager extends Updateable<ProcessInformation>, Iter
      * @return All processes which are currently running in the cluster
      */
     @NotNull
+    @UnmodifiableView
     Collection<ProcessInformation> getClusterProcesses();
 
     /**

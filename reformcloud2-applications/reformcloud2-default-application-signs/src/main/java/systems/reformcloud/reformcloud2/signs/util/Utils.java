@@ -41,7 +41,7 @@ public final class Utils {
         }
 
         if (target.getProcessGroup().getPlayerAccessConfiguration().isMaintenance()) {
-            return layout.isShowMaintenanceProcessesOnSigns();
+            return false;
         }
 
         ProcessState state = target.getProcessDetail().getProcessState();

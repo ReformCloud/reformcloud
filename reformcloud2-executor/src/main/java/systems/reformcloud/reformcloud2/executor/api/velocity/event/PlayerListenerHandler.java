@@ -31,7 +31,6 @@ import com.velocitypowered.api.event.connection.DisconnectEvent;
 import com.velocitypowered.api.event.connection.LoginEvent;
 import com.velocitypowered.api.event.connection.PostLoginEvent;
 import com.velocitypowered.api.event.player.KickedFromServerEvent;
-import com.velocitypowered.api.event.player.PlayerChatEvent;
 import com.velocitypowered.api.event.player.ServerPreConnectEvent;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
@@ -47,7 +46,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState
 import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
 import systems.reformcloud.reformcloud2.executor.api.network.packets.out.APIBungeePacketOutPlayerServerSwitch;
 import systems.reformcloud.reformcloud2.executor.api.network.packets.out.APIPacketOutLogoutPlayer;
-import systems.reformcloud.reformcloud2.executor.api.network.packets.out.APIPacketOutPlayerCommandExecute;
 import systems.reformcloud.reformcloud2.executor.api.network.packets.out.APIPacketOutPlayerLoggedIn;
 import systems.reformcloud.reformcloud2.executor.api.velocity.VelocityExecutor;
 
@@ -192,6 +190,8 @@ public final class PlayerListenerHandler {
                 }).delay(20, TimeUnit.MILLISECONDS).schedule();
     }
 
+    /* todo: wait until velocity 1.1.0 is published. The chat event is not fired when the player types in a command
+       todo: see https://github.com/VelocityPowered/Velocity/blob/10680f16d376371401f4a203d94c888b22f24f14/proxy/src/main/java/com/velocitypowered/proxy/connection/client/ClientPlaySessionHandler.java#L115-L127
     @Subscribe
     public void handle(final PlayerChatEvent event) {
         if (API.getInstance().getCurrentProcessInformation().getProcessGroup().getPlayerAccessConfiguration().isPlayerControllerCommandReporting()
@@ -202,6 +202,6 @@ public final class PlayerListenerHandler {
                     event.getMessage().replaceFirst("/", "")
             )));
         }
-    }
+    }*/
 
 }

@@ -62,7 +62,8 @@ public final class CommandPlayers extends GlobalCommand {
 
         if (strings[0].equalsIgnoreCase("list")) {
             commandSource.sendMessage("Online-Players: ");
-            ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getAllProcesses().stream()
+            ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getAllProcesses()
+                    .stream()
                     .filter(e -> !e.getProcessDetail().getTemplate().isServer())
                     .map(e -> {
                         for (Player onlinePlayer : e.getProcessPlayerManager().getOnlinePlayers()) {
@@ -70,7 +71,9 @@ public final class CommandPlayers extends GlobalCommand {
                         }
 
                         return null;
-                    }).filter(Objects::nonNull).forEach(e -> commandSource.sendMessage(
+                    })
+                    .filter(Objects::nonNull)
+                    .forEach(e -> commandSource.sendMessage(
                     " > " + e.getThird().getName() + "/" + e.getThird().getUniqueID() + " on " + e.getFirst().getProcessDetail().getName()
                             + "/" + e.getSecond().getProcessDetail().getName()
             ));
