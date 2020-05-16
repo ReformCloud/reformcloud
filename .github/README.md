@@ -188,5 +188,13 @@ Because of this you don't need to provide any repository.
                 <sub><b>Project developer</b></sub>
             <br/>
         </td>
+        <td align="center">
+        <img src="https://avatars0.githubusercontent.com/u/40271530?s=400&v=4" width="100px;" alt=""/>
+            <br />
+                <sub><b>JanDragon</b></sub>
+                <br />
+                <sub><b>Contributor</b></sub>
+            <br/>
+        </td>
     </tr>
 </table>
