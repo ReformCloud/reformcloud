@@ -26,6 +26,7 @@ package systems.reformcloud.reformcloud2.executor.api.common;
 
 import com.sun.management.OperatingSystemMXBean;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessRuntimeInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.optional.ReferencedOptional;
 
@@ -172,6 +173,20 @@ public final class CommonHelper {
         } catch (final IOException ex) {
             ex.printStackTrace();
         }
+    }
+
+    @NotNull
+    public static Runnable newReportedRunnable(@NotNull Runnable source, @Nullable String reportedMessage) {
+        return () -> {
+            try {
+                source.run();
+            } catch (final Throwable throwable) {
+                System.err.println("An internal exception while execution of runnable:");
+                System.err.println(reportedMessage == null ? source.getClass().getName() : reportedMessage);
+                System.err.println("Please report this either on github or discord including the full stack trace and above message");
+                throwable.printStackTrace();
+            }
+        };
     }
 
     public static <T extends Enum<T>> ReferencedOptional<T> findEnumField(Class<T> enumClass, String field) {
