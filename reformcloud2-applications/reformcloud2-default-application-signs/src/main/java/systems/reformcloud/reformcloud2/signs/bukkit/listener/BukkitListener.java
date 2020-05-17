@@ -31,6 +31,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.signs.bukkit.adapter.BukkitSignSystemAdapter;
+import systems.reformcloud.reformcloud2.signs.event.UserSignPreConnectEvent;
 import systems.reformcloud.reformcloud2.signs.util.SignSystemAdapter;
 import systems.reformcloud.reformcloud2.signs.util.sign.CloudSign;
 
@@ -47,7 +48,14 @@ public class BukkitListener implements Listener {
                     BukkitSignSystemAdapter.getInstance().getSignConverter().to(sign)
             );
 
-            if (cloudSign == null || !SignSystemAdapter.getInstance().canConnect(cloudSign)) {
+            if (cloudSign == null) {
+                return;
+            }
+
+            boolean canConnect = SignSystemAdapter.getInstance().canConnect(cloudSign, event.getPlayer()::hasPermission);
+            if (!ExecutorAPI.getInstance().getEventManager().callEvent(new UserSignPreConnectEvent(
+                    event.getPlayer().getUniqueId(), event.getPlayer()::hasPermission, cloudSign, canConnect
+            )).isAllowConnection()) {
                 return;
             }
 

@@ -47,11 +47,6 @@ public final class MongoDatabase extends Database<com.mongodb.client.MongoDataba
     private final Map<String, DatabaseReader> perTableReader = new AbsentMap<>();
     private MongoClient mongoClient;
     private com.mongodb.client.MongoDatabase mongoDatabase;
-    private String host;
-    private int port;
-    private String userName;
-    private String password;
-    private String table;
 
     public MongoDatabase() {
         URL dependency = DEPENDENCY_LOADER.loadDependency(new DefaultDependency(
@@ -67,12 +62,6 @@ public final class MongoDatabase extends Database<com.mongodb.client.MongoDataba
     @Override
     public void connect(@NotNull String host, int port, @NotNull String userName, @NotNull String password, @NotNull String table) {
         if (!isConnected()) {
-            this.host = host;
-            this.port = port;
-            this.userName = userName;
-            this.password = password;
-            this.table = table;
-
             try {
                 this.mongoClient = MongoClients.create(
                         MessageFormat.format(
@@ -94,12 +83,6 @@ public final class MongoDatabase extends Database<com.mongodb.client.MongoDataba
     @Override
     public boolean isConnected() {
         return mongoClient != null;
-    }
-
-    @Override
-    public void reconnect() {
-        disconnect();
-        connect(host, port, userName, password, table);
     }
 
     @Override

@@ -47,23 +47,12 @@ public abstract class Database<V> {
      * @param password The password of the user
      * @param table    The table which the cloud system should use
      */
-    public abstract void connect(
-            @NotNull String host,
-            int port,
-            @NotNull String userName,
-            @NotNull String password,
-            @NotNull String table
-    );
+    public abstract void connect(@NotNull String host, int port, @NotNull String userName, @NotNull String password, @NotNull String table);
 
     /**
      * @return If the connection is open and writeable
      */
     public abstract boolean isConnected();
-
-    /**
-     * Reconnects to the database
-     */
-    public abstract void reconnect();
 
     /**
      * Disconnects from the database

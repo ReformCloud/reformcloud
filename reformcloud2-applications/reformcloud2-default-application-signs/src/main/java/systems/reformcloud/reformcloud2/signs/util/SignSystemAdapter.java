@@ -34,6 +34,7 @@ import systems.reformcloud.reformcloud2.signs.util.sign.CloudSign;
 import systems.reformcloud.reformcloud2.signs.util.sign.config.SignConfig;
 
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Function;
 
 public interface SignSystemAdapter<T> {
 
@@ -116,9 +117,10 @@ public interface SignSystemAdapter<T> {
      * Checks if a user can connect to the process which is associated with the sign
      *
      * @param cloudSign The sign for which the check should be made
+     * @param permissionChecker The permission checker used for permission checks
      * @return If a user can connect to the process
      */
-    boolean canConnect(@NotNull CloudSign cloudSign);
+    boolean canConnect(@NotNull CloudSign cloudSign, @NotNull Function<String, Boolean> permissionChecker);
 
     // ===================================
     // The following methods are not documented because they are for internal use only

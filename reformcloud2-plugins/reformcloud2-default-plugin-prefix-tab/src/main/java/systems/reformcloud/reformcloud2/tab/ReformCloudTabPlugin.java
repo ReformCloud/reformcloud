@@ -100,7 +100,7 @@ public class ReformCloudTabPlugin extends JavaPlugin {
 
     private static void registerPlayerTeam(@NotNull Player player, @NotNull Player other, @NotNull PermissionUser permissionUser) {
         int priority = 0;
-        String teamName = player.getUniqueId().toString();
+        String teamName = player.getName();
 
         PermissionGroup permissionGroup = permissionUser.getHighestPermissionGroup().orElse(null);
         if (permissionGroup != null) {
@@ -108,9 +108,7 @@ public class ReformCloudTabPlugin extends JavaPlugin {
         }
 
         teamName = priority + teamName;
-        if (setColor != null && teamName.length() > 64) {
-            teamName = teamName.substring(0, 64);
-        } else if (setColor == null && teamName.length() > 16) {
+        if (teamName.length() > 16) {
             teamName = teamName.substring(0, 16);
         }
 

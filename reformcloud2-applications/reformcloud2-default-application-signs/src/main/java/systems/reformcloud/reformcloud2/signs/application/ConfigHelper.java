@@ -28,7 +28,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonCo
 import systems.reformcloud.reformcloud2.signs.util.sign.config.SignConfig;
 import systems.reformcloud.reformcloud2.signs.util.sign.config.SignLayout;
 import systems.reformcloud.reformcloud2.signs.util.sign.config.SignSubLayout;
-import systems.reformcloud.reformcloud2.signs.util.sign.config.util.LayoutContext;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -59,7 +58,6 @@ final class ConfigHelper {
 
     private static SignLayout createDefaultLayout() {
         return new SignLayout(
-                LayoutContext.GLOBAL,
                 null,
                 true,
                 true,

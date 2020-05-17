@@ -93,7 +93,7 @@ public class NukkitSignSystemAdapter extends SharedSignSystemAdapter<BlockEntity
     @Override
     protected void runTasks() {
         Server.getInstance().getScheduler().scheduleRepeatingTask(
-                plugin, this::updateSigns, CommonHelper.longToInt(super.signConfig.getUpdateInterval() * 20)
+                plugin, this::updateSigns, CommonHelper.longToInt(Math.round(20 / super.signConfig.getUpdateInterval()))
         );
 
         double distance = super.signConfig.getKnockBackDistance();

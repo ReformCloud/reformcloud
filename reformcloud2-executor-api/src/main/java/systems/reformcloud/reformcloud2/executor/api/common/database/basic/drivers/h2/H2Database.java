@@ -86,12 +86,6 @@ public class H2Database extends Database<Connection> {
     }
 
     @Override
-    public void reconnect() {
-        disconnect();
-        connect("", -1, "", "", "");
-    }
-
-    @Override
     public void disconnect() {
         if (isConnected()) {
             try {

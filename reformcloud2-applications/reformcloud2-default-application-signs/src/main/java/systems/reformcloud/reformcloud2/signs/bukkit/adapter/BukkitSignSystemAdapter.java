@@ -175,7 +175,7 @@ public class BukkitSignSystemAdapter extends SharedSignSystemAdapter<Sign> {
 
     @Override
     protected void runTasks() {
-        Bukkit.getScheduler().runTaskTimer(plugin, this::updateSigns, 0, 20 * super.signConfig.getUpdateInterval());
+        Bukkit.getScheduler().runTaskTimer(plugin, this::updateSigns, 0, Math.round(20 / super.signConfig.getUpdateInterval()));
 
         double distance = super.signConfig.getKnockBackDistance();
         Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, () -> {

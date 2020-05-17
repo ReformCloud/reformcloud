@@ -221,7 +221,7 @@ public class CommandPerms extends GlobalCommand {
                 }
 
                 PermissionManagement.getInstance().updateUser(permissionUser);
-                source.sendMessage("Removed the permission " + strings[1] + " from the user " + strings[1]);
+                source.sendMessage("Removed the permission " + strings[3] + " from the user " + strings[1]);
                 return;
             }
 

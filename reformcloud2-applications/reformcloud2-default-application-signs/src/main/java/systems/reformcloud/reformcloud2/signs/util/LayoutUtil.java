@@ -24,9 +24,9 @@
  */
 package systems.reformcloud.reformcloud2.signs.util;
 
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.signs.util.sign.config.SignConfig;
 import systems.reformcloud.reformcloud2.signs.util.sign.config.SignLayout;
-import systems.reformcloud.reformcloud2.signs.util.sign.config.util.LayoutContext;
 
 import java.util.List;
 import java.util.Optional;
@@ -47,27 +47,29 @@ public final class LayoutUtil {
             return Optional.of(list.get(0));
         }
 
-        int i = atomicInteger.incrementAndGet();
-        if (list.size() <= i) {
-            atomicInteger.set(-1);
-            i = 0;
-        }
-
-        return Optional.of(list.get(i));
+        return Optional.of(list.get(atomicInteger.get()));
     }
 
-    public static Optional<SignLayout> getLayoutFor(String group, SignConfig config) {
+    public static <T> void flush(@NotNull List<T> list, @NotNull AtomicInteger integer) {
+        if (list.isEmpty() || list.size() == 1) {
+            return;
+        }
+
+        if (integer.incrementAndGet() >= list.size()) {
+            integer.set(0);
+        }
+    }
+
+    @NotNull
+    public static Optional<SignLayout> getLayoutFor(@NotNull String group, @NotNull SignConfig config) {
         SignLayout out = null;
 
         for (SignLayout layout : config.getLayouts()) {
-            if (layout.getTarget() != null
-                    && layout.getContext().equals(LayoutContext.GROUP_BOUND)
-                    && layout.getTarget().equals(group)
-            ) {
+            if (layout.getTarget() != null && layout.getTarget().equals(group)) {
                 return Optional.of(layout);
             }
 
-            if (layout.getContext().equals(LayoutContext.GLOBAL) && out == null) {
+            if (layout.getTarget() == null && out == null) {
                 out = layout;
             }
         }

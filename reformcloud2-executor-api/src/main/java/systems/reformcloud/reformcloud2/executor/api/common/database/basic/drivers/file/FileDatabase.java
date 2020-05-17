@@ -66,10 +66,6 @@ public final class FileDatabase extends Database<Path> {
     }
 
     @Override
-    public void reconnect() {
-    }
-
-    @Override
     public void disconnect() {
     }
 

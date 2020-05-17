@@ -83,6 +83,7 @@ public abstract class SharedNetworkChannelReader implements NetworkChannelReader
             try {
                 input.handlePacketReceive(this, authHandler, parent, this.packetSender, context);
             } catch (final Throwable throwable) {
+                System.err.println("Error while handling packet " + input.getId() + "@" + input.getClass().getName());
                 throw new SilentNetworkException(throwable);
             }
         });

@@ -32,6 +32,7 @@ import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.block.InteractBlockEvent;
 import org.spongepowered.api.event.filter.cause.First;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
+import systems.reformcloud.reformcloud2.signs.event.UserSignPreConnectEvent;
 import systems.reformcloud.reformcloud2.signs.sponge.adapter.SpongeSignSystemAdapter;
 import systems.reformcloud.reformcloud2.signs.util.SignSystemAdapter;
 import systems.reformcloud.reformcloud2.signs.util.sign.CloudSign;
@@ -50,7 +51,14 @@ public class SpongeListener {
                 CloudSign cloudSign = SpongeSignSystemAdapter.getInstance().getSignAt(
                         SpongeSignSystemAdapter.getInstance().getSignConverter().to(sign)
                 );
-                if (cloudSign == null || !SignSystemAdapter.getInstance().canConnect(cloudSign)) {
+                if (cloudSign == null) {
+                    return;
+                }
+
+                boolean canConnect = SignSystemAdapter.getInstance().canConnect(cloudSign, player::hasPermission);
+                if (!ExecutorAPI.getInstance().getEventManager().callEvent(new UserSignPreConnectEvent(
+                        player.getUniqueId(), player::hasPermission, cloudSign, canConnect
+                )).isAllowConnection()) {
                     return;
                 }
 

@@ -24,6 +24,7 @@
  */
 package systems.reformcloud.reformcloud2.commands.config;
 
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.network.SerializableObject;
 import systems.reformcloud.reformcloud2.executor.api.common.network.data.ProtocolBuffer;
@@ -31,6 +32,10 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.data.Protoco
 import java.util.List;
 
 public class CommandsConfig implements SerializableObject {
+
+    @ApiStatus.Internal
+    public CommandsConfig() {
+    }
 
     public CommandsConfig(boolean leaveCommandEnabled, List<String> leaveCommands, boolean reformCloudCommandEnabled, List<String> reformCloudCommands) {
         this.leaveCommandEnabled = leaveCommandEnabled;

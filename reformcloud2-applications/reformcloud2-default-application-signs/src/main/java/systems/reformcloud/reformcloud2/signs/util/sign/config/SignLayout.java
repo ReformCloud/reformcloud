@@ -28,7 +28,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.common.network.SerializableObject;
 import systems.reformcloud.reformcloud2.executor.api.common.network.data.ProtocolBuffer;
-import systems.reformcloud.reformcloud2.signs.util.sign.config.util.LayoutContext;
 
 import java.util.List;
 
@@ -38,7 +37,6 @@ public class SignLayout implements SerializableObject, Cloneable {
     }
 
     public SignLayout(
-            @NotNull LayoutContext context,
             @Nullable String target,
             boolean searchingLayoutWhenFull,
             boolean showMaintenanceProcessesOnSigns,
@@ -48,7 +46,6 @@ public class SignLayout implements SerializableObject, Cloneable {
             @NotNull List<SignSubLayout> onlineLayout,
             @NotNull List<SignSubLayout> fullLayout,
             @NotNull List<SignSubLayout> maintenanceLayout) {
-        this.context = context;
         this.target = target;
         this.searchingLayoutWhenFull = searchingLayoutWhenFull;
         this.showMaintenanceProcessesOnSigns = showMaintenanceProcessesOnSigns;
@@ -59,8 +56,6 @@ public class SignLayout implements SerializableObject, Cloneable {
         this.fullLayout = fullLayout;
         this.maintenanceLayout = maintenanceLayout;
     }
-
-    private LayoutContext context;
 
     private String target;
 
@@ -79,10 +74,6 @@ public class SignLayout implements SerializableObject, Cloneable {
     private List<SignSubLayout> fullLayout;
 
     private List<SignSubLayout> maintenanceLayout;
-
-    public LayoutContext getContext() {
-        return context;
-    }
 
     public String getTarget() {
         return target;
@@ -122,7 +113,6 @@ public class SignLayout implements SerializableObject, Cloneable {
 
     @Override
     public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeInt(this.context.ordinal());
         buffer.writeString(this.target);
         buffer.writeBoolean(this.searchingLayoutWhenFull);
         buffer.writeBoolean(this.showMaintenanceProcessesOnSigns);
@@ -136,7 +126,6 @@ public class SignLayout implements SerializableObject, Cloneable {
 
     @Override
     public void read(@NotNull ProtocolBuffer buffer) {
-        this.context = LayoutContext.values()[buffer.readInt()];
         this.target = buffer.readString();
         this.searchingLayoutWhenFull = buffer.readBoolean();
         this.showMaintenanceProcessesOnSigns = buffer.readBoolean();

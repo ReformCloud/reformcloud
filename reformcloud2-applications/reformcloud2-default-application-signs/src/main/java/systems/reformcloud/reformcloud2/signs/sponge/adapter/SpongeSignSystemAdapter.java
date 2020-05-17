@@ -122,7 +122,7 @@ public class SpongeSignSystemAdapter extends SharedSignSystemAdapter<Sign> {
                 .createTaskBuilder()
                 .execute(this::updateSigns)
                 .delayTicks(0)
-                .intervalTicks(20 * super.signConfig.getUpdateInterval())
+                .intervalTicks(Math.round(20 / super.signConfig.getUpdateInterval()))
                 .submit(this.plugin);
 
         double distance = super.signConfig.getKnockBackDistance();

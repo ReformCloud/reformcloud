@@ -52,6 +52,7 @@ import systems.reformcloud.reformcloud2.signs.util.sign.config.SignSubLayout;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public abstract class SharedSignSystemAdapter<T> implements SignSystemAdapter<T> {
@@ -90,7 +91,10 @@ public abstract class SharedSignSystemAdapter<T> implements SignSystemAdapter<T>
 
     protected final Set<ProcessInformation> allProcesses = Collections.synchronizedSet(new HashSet<>());
 
-    protected final AtomicInteger[] counter = new AtomicInteger[]{
+    protected final Map<String, AtomicInteger[]> perGroupLayoutCounter = new HashMap<>();
+
+    /*
+    AtomicInteger[] counter = new AtomicInteger[]{
             new AtomicInteger(-1), // start
             new AtomicInteger(-1), // connecting
             new AtomicInteger(-1), // empty
@@ -98,6 +102,7 @@ public abstract class SharedSignSystemAdapter<T> implements SignSystemAdapter<T>
             new AtomicInteger(-1), // full
             new AtomicInteger(-1)  // maintenance
     };
+     */
 
     @Override
     public void handleProcessStart(@NotNull ProcessInformation processInformation) {
@@ -208,13 +213,8 @@ public abstract class SharedSignSystemAdapter<T> implements SignSystemAdapter<T>
     }
 
     @Override
-    public boolean canConnect(@NotNull CloudSign cloudSign) {
-        SignLayout layout = this.getSignLayout();
-        if (layout == null) {
-            return false;
-        }
-
-        return cloudSign.getCurrentTarget() != null && Utils.canConnect(cloudSign.getCurrentTarget(), layout);
+    public boolean canConnect(@NotNull CloudSign cloudSign, @NotNull Function<String, Boolean> permissionChecker) {
+        return cloudSign.getCurrentTarget() != null && Utils.canConnect(cloudSign.getCurrentTarget(), permissionChecker);
     }
 
     @Override
@@ -264,30 +264,41 @@ public abstract class SharedSignSystemAdapter<T> implements SignSystemAdapter<T>
     protected abstract void setSignLines(@NotNull CloudSign cloudSign, @NotNull String[] lines);
 
     protected void updateSigns() {
-        SignLayout layout = this.getSignLayout();
-        if (layout == null) {
-            throw new RuntimeException("Unable to find sign layout of current group");
-        }
-
-        SignSubLayout searching = LayoutUtil.getNextAndCheckFor(layout.getSearchingLayouts(), counter[0])
-                .orElseThrow(() -> new RuntimeException("Waiting layout for current group not present"));
-
-        SignSubLayout maintenance = LayoutUtil.getNextAndCheckFor(layout.getMaintenanceLayout(), counter[5])
-                .orElseThrow(() -> new RuntimeException("Maintenance layout for current group not present"));
-
-        SignSubLayout connecting = LayoutUtil.getNextAndCheckFor(layout.getWaitingForConnectLayout(), counter[1])
-                .orElseThrow(() -> new RuntimeException("Connecting layout for current group not present"));
-
-        SignSubLayout empty = LayoutUtil.getNextAndCheckFor(layout.getEmptyLayout(), counter[2])
-                .orElseThrow(() -> new RuntimeException("Empty layout for current group not present"));
-
-        SignSubLayout full = LayoutUtil.getNextAndCheckFor(layout.getFullLayout(), counter[4])
-                .orElseThrow(() -> new RuntimeException("Full layout for current group not present"));
-
-        SignSubLayout online = LayoutUtil.getNextAndCheckFor(layout.getOnlineLayout(), counter[3])
-                .orElseThrow(() -> new RuntimeException("Online layout for current group not present"));
-
         for (CloudSign sign : this.signs) {
+            SignLayout layout = this.getSignLayout(sign.getGroup());
+            if (layout == null) {
+                System.err.println("Unable to find global layout / sign layout for group " + sign.getGroup());
+                continue;
+            }
+
+            this.perGroupLayoutCounter.putIfAbsent(sign.getGroup(), new AtomicInteger[]{
+                    new AtomicInteger(), // start
+                    new AtomicInteger(), // connecting
+                    new AtomicInteger(), // empty
+                    new AtomicInteger(), // online
+                    new AtomicInteger(), // full
+                    new AtomicInteger()  // maintenance
+            });
+            AtomicInteger[] counter = this.perGroupLayoutCounter.get(sign.getGroup());
+
+            SignSubLayout searching = LayoutUtil.getNextAndCheckFor(layout.getSearchingLayouts(), counter[0])
+                    .orElseThrow(() -> new RuntimeException("Waiting layout for current group not present"));
+
+            SignSubLayout maintenance = LayoutUtil.getNextAndCheckFor(layout.getMaintenanceLayout(), counter[5])
+                    .orElseThrow(() -> new RuntimeException("Maintenance layout for current group not present"));
+
+            SignSubLayout connecting = LayoutUtil.getNextAndCheckFor(layout.getWaitingForConnectLayout(), counter[1])
+                    .orElseThrow(() -> new RuntimeException("Connecting layout for current group not present"));
+
+            SignSubLayout empty = LayoutUtil.getNextAndCheckFor(layout.getEmptyLayout(), counter[2])
+                    .orElseThrow(() -> new RuntimeException("Empty layout for current group not present"));
+
+            SignSubLayout full = LayoutUtil.getNextAndCheckFor(layout.getFullLayout(), counter[4])
+                    .orElseThrow(() -> new RuntimeException("Full layout for current group not present"));
+
+            SignSubLayout online = LayoutUtil.getNextAndCheckFor(layout.getOnlineLayout(), counter[3])
+                    .orElseThrow(() -> new RuntimeException("Online layout for current group not present"));
+
             if (sign.getCurrentTarget() == null) {
                 this.setLines(sign, searching);
                 continue;
@@ -330,6 +341,25 @@ public abstract class SharedSignSystemAdapter<T> implements SignSystemAdapter<T>
 
             this.setLines(sign, online);
         }
+
+        this.signs.stream().map(CloudSign::getGroup).distinct().forEach(group -> {
+            SignLayout layout = this.getSignLayout(group);
+            if (layout == null) {
+                return;
+            }
+
+            AtomicInteger[] counter = this.perGroupLayoutCounter.get(group);
+            if (counter == null) {
+                return;
+            }
+
+            LayoutUtil.flush(layout.getSearchingLayouts(), counter[0]);
+            LayoutUtil.flush(layout.getMaintenanceLayout(), counter[5]);
+            LayoutUtil.flush(layout.getWaitingForConnectLayout(), counter[1]);
+            LayoutUtil.flush(layout.getEmptyLayout(), counter[2]);
+            LayoutUtil.flush(layout.getFullLayout(), counter[4]);
+            LayoutUtil.flush(layout.getOnlineLayout(), counter[3]);
+        });
     }
 
     protected abstract void runTasks();
@@ -354,11 +384,8 @@ public abstract class SharedSignSystemAdapter<T> implements SignSystemAdapter<T>
     }
 
     @Nullable
-    protected SignLayout getSignLayout() {
-        return LayoutUtil.getLayoutFor(
-                API.getInstance().getCurrentProcessInformation().getProcessGroup().getName(),
-                this.signConfig
-        ).orElse(null);
+    protected SignLayout getSignLayout(@NotNull String group) {
+        return LayoutUtil.getLayoutFor(group, this.signConfig).orElse(null);
     }
 
     private void sendPacketToController(@NotNull Packet packet) {

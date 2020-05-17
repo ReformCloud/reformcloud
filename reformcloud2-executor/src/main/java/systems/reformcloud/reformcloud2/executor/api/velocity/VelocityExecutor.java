@@ -27,6 +27,8 @@ package systems.reformcloud.reformcloud2.executor.api.velocity;
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 import com.velocitypowered.api.proxy.server.ServerInfo;
+import com.velocitypowered.api.util.title.Title;
+import com.velocitypowered.api.util.title.Titles;
 import net.kyori.text.serializer.legacy.LegacyComponentSerializer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -341,7 +343,16 @@ public final class VelocityExecutor extends API implements PlayerAPIExecutor {
 
     @Override
     public void executeSendTitle(UUID player, String title, String subTitle, int fadeIn, int stay, int fadeOut) {
-        throw new UnsupportedOperationException("Not supported on velocity");
+        proxyServer.getPlayer(player).ifPresent(e -> {
+            Title velocityTitle = Titles.text()
+                    .title(LegacyComponentSerializer.legacyLinking().deserialize(title))
+                    .subtitle(LegacyComponentSerializer.legacyLinking().deserialize(subTitle))
+                    .fadeIn(fadeIn)
+                    .stay(stay)
+                    .fadeOut(fadeOut)
+                    .build();
+            e.sendTitle(velocityTitle);
+        });
     }
 
     @Override

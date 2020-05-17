@@ -27,7 +27,8 @@ package systems.reformcloud.reformcloud2.signs.util;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState;
-import systems.reformcloud.reformcloud2.signs.util.sign.config.SignLayout;
+
+import java.util.function.Function;
 
 public final class Utils {
 
@@ -35,17 +36,31 @@ public final class Utils {
         throw new UnsupportedOperationException();
     }
 
-    public static boolean canConnect(@NotNull ProcessInformation target, @NotNull SignLayout layout) {
+    public static boolean canConnect(@NotNull ProcessInformation target, @NotNull Function<String, Boolean> permissionChecker) {
         if (!target.getNetworkInfo().isConnected()) {
             return false;
         }
 
+        boolean canConnect = true;
         if (target.getProcessGroup().getPlayerAccessConfiguration().isMaintenance()) {
-            return false;
+            canConnect = permissionChecker.apply(target.getProcessGroup().getPlayerAccessConfiguration().getMaintenanceJoinPermission());
+        }
+
+        if (canConnect && target.getProcessGroup().getPlayerAccessConfiguration().isUseCloudPlayerLimit()
+                && target.getProcessPlayerManager().getOnlineCount() >= target.getProcessGroup().getPlayerAccessConfiguration().getMaxPlayers()) {
+            canConnect = permissionChecker.apply(target.getProcessGroup().getPlayerAccessConfiguration().getFullJoinPermission());
+        }
+
+        if (canConnect && target.getProcessGroup().getPlayerAccessConfiguration().isJoinOnlyPerPermission()) {
+            canConnect = permissionChecker.apply(target.getProcessGroup().getPlayerAccessConfiguration().getJoinPermission());
         }
 
         ProcessState state = target.getProcessDetail().getProcessState();
-        return state.isReady() && !state.equals(ProcessState.INVISIBLE);
+        if (canConnect && (!state.isReady() || state.equals(ProcessState.INVISIBLE))) {
+            canConnect = permissionChecker.apply(target.getProcessGroup().getPlayerAccessConfiguration().getFullJoinPermission());
+        }
+
+        return canConnect;
     }
 
     public static boolean canConnectPerState(@NotNull ProcessInformation processInformation) {

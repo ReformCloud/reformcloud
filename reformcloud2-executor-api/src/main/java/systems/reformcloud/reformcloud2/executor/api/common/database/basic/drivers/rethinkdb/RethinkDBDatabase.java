@@ -66,7 +66,8 @@ public final class RethinkDBDatabase extends Database<RethinkDB> {
 
     @Override
     public void connect(@NotNull String host, int port, @NotNull String userName, @NotNull String password, @NotNull String table) {
-        this.connection = this.get().connection()
+        this.connection = this.get()
+                .connection()
                 .hostname(host)
                 .port(port)
                 .user(userName, password)
@@ -77,13 +78,6 @@ public final class RethinkDBDatabase extends Database<RethinkDB> {
     @Override
     public boolean isConnected() {
         return this.connection != null && this.connection.isOpen();
-    }
-
-    @Override
-    public void reconnect() {
-        if (this.isConnected()) {
-            this.connection.reconnect();
-        }
     }
 
     @Override

@@ -30,6 +30,7 @@ import cn.nukkit.event.Listener;
 import cn.nukkit.event.player.PlayerInteractEvent;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
+import systems.reformcloud.reformcloud2.signs.event.UserSignPreConnectEvent;
 import systems.reformcloud.reformcloud2.signs.nukkit.adapter.NukkitSignSystemAdapter;
 import systems.reformcloud.reformcloud2.signs.util.SignSystemAdapter;
 import systems.reformcloud.reformcloud2.signs.util.sign.CloudSign;
@@ -48,7 +49,14 @@ public class NukkitListener implements Listener {
 
                 BlockEntitySign sign = (BlockEntitySign) event.getBlock().getLevel().getBlockEntity(event.getBlock().getLocation());
                 CloudSign cloudSign = signSystemAdapter.getSignAt(signSystemAdapter.getSignConverter().to(sign));
-                if (cloudSign == null || !SignSystemAdapter.getInstance().canConnect(cloudSign)) {
+                if (cloudSign == null) {
+                    return;
+                }
+
+                boolean canConnect = SignSystemAdapter.getInstance().canConnect(cloudSign, event.getPlayer()::hasPermission);
+                if (!ExecutorAPI.getInstance().getEventManager().callEvent(new UserSignPreConnectEvent(
+                        event.getPlayer().getUniqueId(), event.getPlayer()::hasPermission, cloudSign, canConnect
+                )).isAllowConnection()) {
                     return;
                 }
 

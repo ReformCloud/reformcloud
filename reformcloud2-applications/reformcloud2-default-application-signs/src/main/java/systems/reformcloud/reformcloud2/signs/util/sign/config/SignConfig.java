@@ -48,7 +48,7 @@ public class SignConfig implements SerializableObject, Cloneable {
         this.knockBackStrength = knockBackStrength;
     }
 
-    private long updateIntervalInSeconds;
+    private double updateIntervalInSeconds;
 
     private Collection<SignLayout> layouts;
 
@@ -64,8 +64,8 @@ public class SignConfig implements SerializableObject, Cloneable {
         return layouts;
     }
 
-    public long getUpdateInterval() {
-        return updateIntervalInSeconds > 0 ? updateIntervalInSeconds : 1;
+    public double getUpdateInterval() {
+        return updateIntervalInSeconds >= 0 ? updateIntervalInSeconds : 1;
     }
 
     public boolean isKnockBackEnabled() {
@@ -86,7 +86,7 @@ public class SignConfig implements SerializableObject, Cloneable {
 
     @Override
     public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeLong(this.updateIntervalInSeconds);
+        buffer.writeDouble(this.updateIntervalInSeconds);
         buffer.writeObjects(this.layouts);
         buffer.writeBoolean(this.knockBackEnabled);
         buffer.writeString(this.knockBackBypassPermission);
@@ -96,7 +96,7 @@ public class SignConfig implements SerializableObject, Cloneable {
 
     @Override
     public void read(@NotNull ProtocolBuffer buffer) {
-        this.updateIntervalInSeconds = buffer.readLong();
+        this.updateIntervalInSeconds = buffer.readDouble();
         this.layouts = buffer.readObjects(SignLayout.class);
         this.knockBackEnabled = buffer.readBoolean();
         this.knockBackBypassPermission = buffer.readString();
