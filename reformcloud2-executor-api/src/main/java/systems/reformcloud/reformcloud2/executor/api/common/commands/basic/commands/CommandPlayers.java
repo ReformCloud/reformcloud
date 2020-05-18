@@ -41,6 +41,8 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public final class CommandPlayers extends GlobalCommand {
 
+    private static final String FORMAT_STRING = " > %s/%s is connected to %s <-> %s";
+
     public CommandPlayers() {
         super("players", "reformcloud.command.players", "Manage the players on the proxies", "pl");
     }
@@ -65,18 +67,22 @@ public final class CommandPlayers extends GlobalCommand {
             ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getAllProcesses()
                     .stream()
                     .filter(e -> !e.getProcessDetail().getTemplate().isServer())
-                    .map(e -> {
-                        for (Player onlinePlayer : e.getProcessPlayerManager().getOnlinePlayers()) {
-                            return findPlayer(onlinePlayer.getUniqueID());
-                        }
+                    .map(e -> e.getProcessPlayerManager().getOnlinePlayers())
+                    .map(players -> players.stream().map(p -> this.findPlayer(p.getUniqueID())).filter(Objects::nonNull))
+                    .forEach(trioStream -> {
+                        StringBuilder stringBuilder = new StringBuilder();
+                        trioStream.filter(e -> e.getThird() != null).forEach(player -> stringBuilder.append(String.format(
+                                FORMAT_STRING,
+                                player.getThird().getName(),
+                                player.getThird().getUniqueID().toString(),
+                                player.getSecond().getProcessDetail().getName(),
+                                player.getFirst().getProcessDetail().getName()
+                        )).append("\n"));
 
-                        return null;
-                    })
-                    .filter(Objects::nonNull)
-                    .forEach(e -> commandSource.sendMessage(
-                    " > " + e.getThird().getName() + "/" + e.getThird().getUniqueID() + " on " + e.getFirst().getProcessDetail().getName()
-                            + "/" + e.getSecond().getProcessDetail().getName()
-            ));
+                        if (stringBuilder.length() > 0) {
+                            commandSource.sendMessages(stringBuilder.substring(0, stringBuilder.length() - 1).split("\n"));
+                        }
+                    });
             return true;
         }
 
@@ -116,20 +122,25 @@ public final class CommandPlayers extends GlobalCommand {
         return true;
     }
 
+    @Nullable
     private Trio<ProcessInformation, ProcessInformation, Player> findPlayer(UUID uniqueID) {
-        ProcessInformation information = getProcess(null, uniqueID, false);
-        ProcessInformation proxy = getProcess(null, uniqueID, true);
-        return information == null || proxy == null ? null : new Trio<>(information, proxy, proxy.getProcessPlayerManager().getOnlinePlayers()
-                .stream().filter(e -> e.getUniqueID().equals(uniqueID)).findFirst().orElse(null));
+        ProcessInformation server = this.getProcess(null, uniqueID, false);
+        ProcessInformation proxy = this.getProcess(null, uniqueID, true);
+        return server == null || proxy == null
+                ? null
+                : new Trio<>(server, proxy, proxy.getProcessPlayerManager().getPlayerByUniqueID(uniqueID));
     }
 
-    private Trio<ProcessInformation, ProcessInformation, Player> findPlayer(String name) {
-        ProcessInformation information = getProcess(name, null, false);
-        ProcessInformation proxy = getProcess(name, null, true);
-        return information == null || proxy == null ? null : new Trio<>(information, proxy, proxy.getProcessPlayerManager().getOnlinePlayers()
-                .stream().filter(e -> e.getName().equals(name)).findFirst().orElse(null));
+    @Nullable
+    private Trio<ProcessInformation, ProcessInformation, Player> findPlayer(@NotNull String name) {
+        ProcessInformation server = this.getProcess(name, null, false);
+        ProcessInformation proxy = this.getProcess(name, null, true);
+        return server == null || proxy == null
+                ? null
+                : new Trio<>(server, proxy, proxy.getProcessPlayerManager().getPlayerByName(name));
     }
 
+    @Nullable
     private ProcessInformation getProcess(@Nullable String name, @Nullable UUID uuid, boolean proxy) {
         if (name == null && uuid == null) {
             return null;

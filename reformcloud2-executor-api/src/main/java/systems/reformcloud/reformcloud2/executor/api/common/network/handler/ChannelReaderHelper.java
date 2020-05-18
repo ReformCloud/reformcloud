@@ -74,7 +74,6 @@ public final class ChannelReaderHelper extends SimpleChannelInboundHandler<Packe
     protected void channelRead0(ChannelHandlerContext channelHandlerContext, Packet input) {
         if (!auth) {
             if (input.getId() > NetworkUtil.AUTH_BUS + 4 || input.getId() < NetworkUtil.AUTH_BUS) {
-                channelHandlerContext.channel().close().syncUninterruptibly();
                 return;
             }
         }
