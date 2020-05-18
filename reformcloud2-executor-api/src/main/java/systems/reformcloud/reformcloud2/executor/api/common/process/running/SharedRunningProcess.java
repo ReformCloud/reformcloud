@@ -202,11 +202,6 @@ public abstract class SharedRunningProcess implements RunningProcess {
 
         Collection<String> command = new ArrayList<>(Arrays.asList(
                 this.startupInformation.getProcessGroup().getStartupConfiguration().getJvmCommand(),
-                "-XX:+UseG1GC",
-                "-XX:MaxGCPauseMillis=50",
-                "-XX:-UseAdaptiveSizePolicy",
-                "-XX:CompileThreshold=100",
-                "-Dcom.mojang.eula.agree=true",
                 "-DIReallyKnowWhatIAmDoingISwear=true",
                 "-Djline.terminal=jline.UnsupportedTerminal",
 
