@@ -26,6 +26,7 @@ them in the group file and the cloud will copy the paths or templates at the nex
 | Torch                               | 1.8.8, 1.9.4, 1.12.2         | Java 8                       |
 | Taco                                | 1.8.8, 1.11.2, 1.12.2        | Java 8                       |
 | Hose                                | 1.8.8, 1.9.4, 1.10.2, 1.11.2 | Java 8                       |
+| Tuinity                             | 1.15.2                       | Java 11                      |
 | Glowstone                           | 1.10.2, 1.12.2               | Java 8                       |
 | Sponge (Forge)                      | 1.10.2 - 1.12.2              | Java 8                       |
 | Sponge (Vanilla)                    | 1.11.2, 1.12.2               | Java 8                       |
