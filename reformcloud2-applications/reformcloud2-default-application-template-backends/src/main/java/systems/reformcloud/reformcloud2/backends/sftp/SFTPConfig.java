@@ -26,6 +26,13 @@ package systems.reformcloud.reformcloud2.backends.sftp;
 
 public final class SFTPConfig {
 
+    private final boolean enabled;
+    private final String host;
+    private final int port;
+    private final String user;
+    private final String password;
+    private final String baseDirectory;
+
     public SFTPConfig(boolean enabled, String host, int port, String user, String password, String baseDirectory) {
         this.enabled = enabled;
         this.host = host;
@@ -34,18 +41,6 @@ public final class SFTPConfig {
         this.password = password;
         this.baseDirectory = baseDirectory;
     }
-
-    private final boolean enabled;
-
-    private final String host;
-
-    private final int port;
-
-    private final String user;
-
-    private final String password;
-
-    private final String baseDirectory;
 
     public boolean isEnabled() {
         return enabled;

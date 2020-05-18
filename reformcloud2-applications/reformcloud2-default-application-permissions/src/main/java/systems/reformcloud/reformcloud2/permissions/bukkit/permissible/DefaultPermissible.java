@@ -44,14 +44,13 @@ import java.util.stream.Stream;
 
 public class DefaultPermissible extends PermissibleBase {
 
+    private final UUID uuid;
+    private Set<PermissionAttachmentInfo> perms;
+
     public DefaultPermissible(Player player) {
         super(player);
         this.uuid = player.getUniqueId();
     }
-
-    private final UUID uuid;
-
-    private Set<PermissionAttachmentInfo> perms;
 
     @Override
     public boolean isOp() {
@@ -146,21 +145,21 @@ public class DefaultPermissible extends PermissibleBase {
                             .forEach(stream);
                     return stream.build();
                 }).forEach(g -> {
-                    g.getPermissionNodes().stream().filter(PermissionNode::isValid).forEach(e -> perms.add(new PermissionAttachmentInfo(
-                            this,
-                            e.getActualPermission(),
-                            null,
-                            e.isSet()
-                    )));
-                    Collection<PermissionNode> nodes = g.getPerGroupPermissions().get(current.getProcessGroup().getName());
-                    if (nodes != null) {
-                        nodes.stream().filter(PermissionNode::isValid).forEach(e -> perms.add(new PermissionAttachmentInfo(
-                                this,
-                                e.getActualPermission(),
-                                null,
-                                e.isSet()
-                        )));
-                    }
+            g.getPermissionNodes().stream().filter(PermissionNode::isValid).forEach(e -> perms.add(new PermissionAttachmentInfo(
+                    this,
+                    e.getActualPermission(),
+                    null,
+                    e.isSet()
+            )));
+            Collection<PermissionNode> nodes = g.getPerGroupPermissions().get(current.getProcessGroup().getName());
+            if (nodes != null) {
+                nodes.stream().filter(PermissionNode::isValid).forEach(e -> perms.add(new PermissionAttachmentInfo(
+                        this,
+                        e.getActualPermission(),
+                        null,
+                        e.isSet()
+                )));
+            }
         });
 
         return perms;

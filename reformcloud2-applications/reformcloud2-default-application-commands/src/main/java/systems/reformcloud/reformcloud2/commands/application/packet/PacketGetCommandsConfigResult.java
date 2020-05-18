@@ -32,14 +32,14 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.query
 
 public class PacketGetCommandsConfigResult extends QueryResultPacket {
 
+    private CommandsConfig commandsConfig;
+
     public PacketGetCommandsConfigResult() {
     }
 
     public PacketGetCommandsConfigResult(CommandsConfig commandsConfig) {
         this.commandsConfig = commandsConfig;
     }
-
-    private CommandsConfig commandsConfig;
 
     public CommandsConfig getCommandsConfig() {
         return commandsConfig;

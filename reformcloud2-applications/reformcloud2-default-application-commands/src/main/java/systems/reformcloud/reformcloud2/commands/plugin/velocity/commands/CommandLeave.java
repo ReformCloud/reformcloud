@@ -40,11 +40,11 @@ import java.util.Optional;
 
 public class CommandLeave implements Command {
 
+    private final List<String> aliases;
+
     public CommandLeave(@NotNull List<String> aliases) {
         this.aliases = aliases;
     }
-
-    private final List<String> aliases;
 
     @Override
     public void execute(CommandSource commandSource, @NotNull String[] strings) {

@@ -34,10 +34,6 @@ import java.lang.reflect.Field;
 
 public final class BukkitUtil {
 
-    private BukkitUtil() {
-        throw new UnsupportedOperationException();
-    }
-
     private static Field PERM_FIELD;
 
     static {
@@ -55,6 +51,10 @@ public final class BukkitUtil {
         } catch (final ClassNotFoundException | NoSuchFieldException ex) {
             throw new RuntimeException("Error while obtaining bukkit or glowstone perm fields (are you using your own build?)", ex);
         }
+    }
+
+    private BukkitUtil() {
+        throw new UnsupportedOperationException();
     }
 
     public static void injectPlayer(@NotNull Player player) {

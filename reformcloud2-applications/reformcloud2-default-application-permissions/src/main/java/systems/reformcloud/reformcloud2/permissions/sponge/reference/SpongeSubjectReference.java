@@ -34,6 +34,11 @@ import java.util.concurrent.CompletableFuture;
 
 public class SpongeSubjectReference implements SubjectReference {
 
+    private final PermissionService service;
+    private final String collection;
+    private final String id;
+    private Subject cache;
+
     public SpongeSubjectReference(
             @NotNull PermissionService service,
             @NotNull String collection,
@@ -43,14 +48,6 @@ public class SpongeSubjectReference implements SubjectReference {
         this.id = id;
         this.service = service;
     }
-
-    private final PermissionService service;
-
-    private final String collection;
-
-    private final String id;
-
-    private Subject cache;
 
     @Override
     @NotNull

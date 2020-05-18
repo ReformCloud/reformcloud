@@ -35,11 +35,11 @@ import java.util.List;
 
 public class CommandReformCloud implements Command {
 
+    private final List<String> aliases;
+
     public CommandReformCloud(@NotNull List<String> aliases) {
         this.aliases = aliases;
     }
-
-    private final List<String> aliases;
 
     @Override
     public void execute(CommandSource commandSender, @NotNull String[] strings) {

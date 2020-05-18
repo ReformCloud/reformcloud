@@ -63,6 +63,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class SpongeSignSystemAdapter extends SharedSignSystemAdapter<Sign> {
 
     private static final Map<String, BlockType> BLOCK_TYPES = new ConcurrentHashMap<>();
+    private static SpongeSignSystemAdapter instance;
 
     static {
         Arrays.stream(BlockTypes.class.getDeclaredFields()).filter(
@@ -75,6 +76,8 @@ public class SpongeSignSystemAdapter extends SharedSignSystemAdapter<Sign> {
             }
         });
     }
+
+    private final Object plugin;
 
     public SpongeSignSystemAdapter(@NotNull SignConfig signConfig, @NotNull Object plugin) {
         super(signConfig);
@@ -97,9 +100,10 @@ public class SpongeSignSystemAdapter extends SharedSignSystemAdapter<Sign> {
         Sponge.getCommandManager().register(plugin, signs, "signs");
     }
 
-    private static SpongeSignSystemAdapter instance;
-
-    private final Object plugin;
+    @UndefinedNullability
+    public static SpongeSignSystemAdapter getInstance() {
+        return instance;
+    }
 
     @Override
     protected void setSignLines(@NotNull CloudSign cloudSign, @NotNull String[] lines) {
@@ -190,11 +194,6 @@ public class SpongeSignSystemAdapter extends SharedSignSystemAdapter<Sign> {
     public void handleSignConfigUpdate(@NotNull SignConfig config) {
         super.signConfig = config;
         this.restartTasks();
-    }
-
-    @UndefinedNullability
-    public static SpongeSignSystemAdapter getInstance() {
-        return instance;
     }
 
     private void changeBlock0(@NotNull Sign sign, @NotNull SignSubLayout layout) {

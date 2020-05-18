@@ -43,14 +43,14 @@ import systems.reformcloud.reformcloud2.signs.util.sign.CloudSign;
 
 public class PacketDeleteSign extends Packet {
 
+    private CloudSign cloudSign;
+
     public PacketDeleteSign() {
     }
 
     public PacketDeleteSign(CloudSign cloudSign) {
         this.cloudSign = cloudSign;
     }
-
-    private CloudSign cloudSign;
 
     @Override
     public int getId() {

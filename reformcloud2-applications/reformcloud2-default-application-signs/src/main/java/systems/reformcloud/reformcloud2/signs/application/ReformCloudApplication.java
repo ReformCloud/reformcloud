@@ -49,60 +49,10 @@ import java.util.Collections;
 
 public class ReformCloudApplication extends Application {
 
-    private static SignConfig signConfig;
-
-    private static JsonConfiguration databaseEntry;
-
-    private static ReformCloudApplication instance;
-
     private static final ApplicationUpdateRepository REPOSITORY = new SignsUpdater();
-
-    @Override
-    public void onInstallable() {
-        ExecutorAPI.getInstance().getEventManager().registerListener(new ProcessInclusionHandler());
-    }
-
-    @Override
-    public void onLoad() {
-        instance = this;
-    }
-
-    @Override
-    public void onEnable() {
-        if (!dataFolder().exists()) {
-            SystemHelper.createDirectory(dataFolder().toPath());
-            ConfigHelper.createDefault(dataFolder().getPath());
-        }
-
-        ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().createDatabase(SignSystemAdapter.table);
-        if (!ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().contains(SignSystemAdapter.table, "signs")) {
-            ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().insert(
-                    SignSystemAdapter.table,
-                    "signs",
-                    null,
-                    new JsonConfiguration().add("signs", Collections.emptyList())
-            );
-        }
-
-        ExecutorAPI.getInstance().getPacketHandler().registerNetworkHandlers(
-                PacketCreateSign.class,
-                PacketDeleteSign.class,
-                PacketDeleteBulkSigns.class,
-                PacketRequestSignLayouts.class
-        );
-
-        databaseEntry = ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().find(SignSystemAdapter.table, "signs", null);
-        signConfig = ConfigHelper.read(dataFolder().getPath());
-        DefaultChannelManager.INSTANCE.getAllSender().forEach(e -> e.sendPacket(new PacketReloadSignConfig(signConfig)));
-    }
-
-    @Nullable
-    @Override
-    public ApplicationUpdateRepository getUpdateRepository() {
-        return REPOSITORY;
-    }
-
-    // ====
+    private static SignConfig signConfig;
+    private static JsonConfiguration databaseEntry;
+    private static ReformCloudApplication instance;
 
     public static ReformCloudApplication getInstance() {
         return instance;
@@ -111,8 +61,6 @@ public class ReformCloudApplication extends Application {
     public static SignConfig getSignConfig() {
         return signConfig;
     }
-
-    // ====
 
     public static void insert(CloudSign cloudSign) {
         Collection<CloudSign> signs = read();
@@ -147,5 +95,54 @@ public class ReformCloudApplication extends Application {
 
     private static void insert() {
         ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().update(SignSystemAdapter.table, "signs", databaseEntry);
+    }
+
+    // ====
+
+    @Override
+    public void onInstallable() {
+        ExecutorAPI.getInstance().getEventManager().registerListener(new ProcessInclusionHandler());
+    }
+
+    @Override
+    public void onLoad() {
+        instance = this;
+    }
+
+    // ====
+
+    @Override
+    public void onEnable() {
+        if (!dataFolder().exists()) {
+            SystemHelper.createDirectory(dataFolder().toPath());
+            ConfigHelper.createDefault(dataFolder().getPath());
+        }
+
+        ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().createDatabase(SignSystemAdapter.table);
+        if (!ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().contains(SignSystemAdapter.table, "signs")) {
+            ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().insert(
+                    SignSystemAdapter.table,
+                    "signs",
+                    null,
+                    new JsonConfiguration().add("signs", Collections.emptyList())
+            );
+        }
+
+        ExecutorAPI.getInstance().getPacketHandler().registerNetworkHandlers(
+                PacketCreateSign.class,
+                PacketDeleteSign.class,
+                PacketDeleteBulkSigns.class,
+                PacketRequestSignLayouts.class
+        );
+
+        databaseEntry = ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().find(SignSystemAdapter.table, "signs", null);
+        signConfig = ConfigHelper.read(dataFolder().getPath());
+        DefaultChannelManager.INSTANCE.getAllSender().forEach(e -> e.sendPacket(new PacketReloadSignConfig(signConfig)));
+    }
+
+    @Nullable
+    @Override
+    public ApplicationUpdateRepository getUpdateRepository() {
+        return REPOSITORY;
     }
 }

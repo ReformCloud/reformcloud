@@ -49,6 +49,33 @@ public final class BungeeCordListener implements Listener {
 
     private static final BaseComponent[] EMPTY = TextComponent.fromLegacyText("");
 
+    private static void initTab() {
+        ProxyServer.getInstance().getPlayers().forEach(BungeeCordListener::initTab0);
+    }
+
+    public static void initTab0(@NotNull ProxiedPlayer player) {
+        ProxyConfigurationHandler.getInstance().getCurrentTabListConfiguration().ifPresent(tabListConfiguration -> {
+            BaseComponent[] header = tabListConfiguration.getHeader() == null
+                    ? EMPTY
+                    : TextComponent.fromLegacyText(replaceBungeeCordPlaceHolders(player, tabListConfiguration.getHeader()));
+            BaseComponent[] footer = tabListConfiguration.getFooter() == null
+                    ? EMPTY
+                    : TextComponent.fromLegacyText(replaceBungeeCordPlaceHolders(player, tabListConfiguration.getFooter()));
+
+            player.setTabHeader(header, footer);
+        });
+    }
+
+    @NotNull
+    private static String replaceBungeeCordPlaceHolders(@NotNull ProxiedPlayer player, @NotNull String tablist) {
+        tablist = tablist
+                .replace("%player_server%", player.getServer() != null ? player.getServer().getInfo().getName() : "")
+                .replace("%player_name%", player.getName())
+                .replace("%player_unique_id%", player.getUniqueId().toString())
+                .replace("%player_ping%", Long.toString(player.getPing()));
+        return ProxyConfigurationHandler.getInstance().replaceTabListPlaceHolders(tablist);
+    }
+
     @EventHandler
     public void handle(final @NotNull ProxyPingEvent event) {
         ProxyConfigurationHandler.getInstance().getBestMessageOfTheDayConfiguration().ifPresent(motdConfiguration -> {
@@ -109,32 +136,5 @@ public final class BungeeCordListener implements Listener {
         if (event.getProcessInformation().getProcessDetail().getProcessUniqueID().equals(API.getInstance().getCurrentProcessInformation().getProcessDetail().getProcessUniqueID())) {
             initTab();
         }
-    }
-
-    private static void initTab() {
-        ProxyServer.getInstance().getPlayers().forEach(BungeeCordListener::initTab0);
-    }
-
-    public static void initTab0(@NotNull ProxiedPlayer player) {
-        ProxyConfigurationHandler.getInstance().getCurrentTabListConfiguration().ifPresent(tabListConfiguration -> {
-            BaseComponent[] header = tabListConfiguration.getHeader() == null
-                    ? EMPTY
-                    : TextComponent.fromLegacyText(replaceBungeeCordPlaceHolders(player, tabListConfiguration.getHeader()));
-            BaseComponent[] footer = tabListConfiguration.getFooter() == null
-                    ? EMPTY
-                    : TextComponent.fromLegacyText(replaceBungeeCordPlaceHolders(player, tabListConfiguration.getFooter()));
-
-            player.setTabHeader(header, footer);
-        });
-    }
-
-    @NotNull
-    private static String replaceBungeeCordPlaceHolders(@NotNull ProxiedPlayer player, @NotNull String tablist) {
-        tablist = tablist
-                .replace("%player_server%", player.getServer() != null ? player.getServer().getInfo().getName() : "")
-                .replace("%player_name%", player.getName())
-                .replace("%player_unique_id%", player.getUniqueId().toString())
-                .replace("%player_ping%", Long.toString(player.getPing()));
-        return ProxyConfigurationHandler.getInstance().replaceTabListPlaceHolders(tablist);
     }
 }

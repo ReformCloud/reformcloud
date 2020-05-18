@@ -40,6 +40,12 @@ public class WebApplication extends Application {
 
     public static final WebCommand WEB_COMMAND = new WebCommand();
 
+    public static RequestListenerHandler getListener() {
+        return ExecutorAPI.getInstance().getType().equals(ExecutorType.NODE)
+                ? NodeExecutor.getInstance().getRequestListenerHandler()
+                : ControllerExecutor.getInstance().getRequestListenerHandler();
+    }
+
     @Override
     public void onLoad() {
         TokenDatabase.load();
@@ -50,11 +56,5 @@ public class WebApplication extends Application {
     @Override
     public ApplicationUpdateRepository getUpdateRepository() {
         return null;
-    }
-
-    public static RequestListenerHandler getListener() {
-        return ExecutorAPI.getInstance().getType().equals(ExecutorType.NODE)
-                ? NodeExecutor.getInstance().getRequestListenerHandler()
-                : ControllerExecutor.getInstance().getRequestListenerHandler();
     }
 }

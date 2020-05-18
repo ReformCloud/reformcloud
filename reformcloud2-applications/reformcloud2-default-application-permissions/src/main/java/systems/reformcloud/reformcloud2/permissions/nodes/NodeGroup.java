@@ -30,6 +30,10 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.data.Protoco
 
 public class NodeGroup implements SerializableObject {
 
+    private long addTime;
+    private long timeout;
+    private String groupName;
+
     public NodeGroup() {
     }
 
@@ -38,12 +42,6 @@ public class NodeGroup implements SerializableObject {
         this.timeout = timeout;
         this.groupName = groupName;
     }
-
-    private long addTime;
-
-    private long timeout;
-
-    private String groupName;
 
     public long getAddTime() {
         return addTime;

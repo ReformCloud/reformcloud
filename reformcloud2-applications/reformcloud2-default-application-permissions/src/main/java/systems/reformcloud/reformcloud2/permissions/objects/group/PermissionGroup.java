@@ -25,10 +25,6 @@
 package systems.reformcloud.reformcloud2.permissions.objects.group;
 
 import com.google.gson.reflect.TypeToken;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -39,10 +35,26 @@ import systems.reformcloud.reformcloud2.permissions.checks.GeneralCheck;
 import systems.reformcloud.reformcloud2.permissions.checks.WildcardCheck;
 import systems.reformcloud.reformcloud2.permissions.nodes.PermissionNode;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+
 public class PermissionGroup implements SerializableObject {
 
     public static final TypeToken<PermissionGroup> TYPE = new TypeToken<PermissionGroup>() {
     };
+    private Collection<PermissionNode> permissionNodes;
+    private Map<String, Collection<PermissionNode>> perGroupPermissions;
+    private Collection<String> subGroups;
+    private String name;
+    private int priority;
+    private boolean defaultGroup;
+    private @Nullable String prefix;
+    private @Nullable String suffix;
+    private @Nullable String display;
+    private @Nullable String colour;
+    private JsonConfiguration extra;
 
     @ApiStatus.Internal
     public PermissionGroup() {
@@ -86,28 +98,6 @@ public class PermissionGroup implements SerializableObject {
         this.extra = extra;
     }
 
-    private Collection<PermissionNode> permissionNodes;
-
-    private Map<String, Collection<PermissionNode>> perGroupPermissions;
-
-    private Collection<String> subGroups;
-
-    private String name;
-
-    private int priority;
-
-    private boolean defaultGroup;
-
-    private @Nullable String prefix;
-
-    private @Nullable String suffix;
-
-    private @Nullable String display;
-
-    private @Nullable String colour;
-
-    private JsonConfiguration extra;
-
     @NotNull
     public Collection<PermissionNode> getPermissionNodes() {
         return permissionNodes;
@@ -132,12 +122,16 @@ public class PermissionGroup implements SerializableObject {
         return priority;
     }
 
+    public void setPriority(int priority) {
+        this.priority = priority;
+    }
+
     public boolean isDefaultGroup() {
         return defaultGroup;
     }
 
-    public void setPriority(int priority) {
-        this.priority = priority;
+    public void setDefaultGroup(boolean defaultGroup) {
+        this.defaultGroup = defaultGroup;
     }
 
     @NotNull
@@ -145,9 +139,17 @@ public class PermissionGroup implements SerializableObject {
         return Optional.ofNullable(this.prefix);
     }
 
+    public void setPrefix(@Nullable String prefix) {
+        this.prefix = prefix;
+    }
+
     @NotNull
     public Optional<String> getSuffix() {
         return Optional.ofNullable(this.suffix);
+    }
+
+    public void setSuffix(@Nullable String suffix) {
+        this.suffix = suffix;
     }
 
     @NotNull
@@ -155,29 +157,17 @@ public class PermissionGroup implements SerializableObject {
         return Optional.ofNullable(this.display);
     }
 
+    public void setDisplay(@Nullable String display) {
+        this.display = display;
+    }
+
     @NotNull
     public Optional<String> getColour() {
         return Optional.ofNullable(this.colour);
     }
 
-    public void setPrefix(@Nullable String prefix) {
-        this.prefix = prefix;
-    }
-
-    public void setSuffix(@Nullable String suffix) {
-        this.suffix = suffix;
-    }
-
-    public void setDisplay(@Nullable String display) {
-        this.display = display;
-    }
-
     public void setColour(@Nullable String colour) {
         this.colour = colour;
-    }
-
-    public void setDefaultGroup(boolean defaultGroup) {
-        this.defaultGroup = defaultGroup;
     }
 
     @NotNull

@@ -30,10 +30,10 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.data.Protoco
 
 public class PermissionNode implements SerializableObject {
 
-    @NotNull
-    public static PermissionNode createNode(@NotNull String permission, long timeout, boolean positive) {
-        return new PermissionNode(System.currentTimeMillis(), timeout, positive, permission);
-    }
+    private long addTime;
+    private long timeout;
+    private boolean set;
+    private String actualPermission;
 
     public PermissionNode() {
     }
@@ -45,13 +45,10 @@ public class PermissionNode implements SerializableObject {
         this.actualPermission = actualPermission;
     }
 
-    private long addTime;
-
-    private long timeout;
-
-    private boolean set;
-
-    private String actualPermission;
+    @NotNull
+    public static PermissionNode createNode(@NotNull String permission, long timeout, boolean positive) {
+        return new PermissionNode(System.currentTimeMillis(), timeout, positive, permission);
+    }
 
     public long getAddTime() {
         return addTime;

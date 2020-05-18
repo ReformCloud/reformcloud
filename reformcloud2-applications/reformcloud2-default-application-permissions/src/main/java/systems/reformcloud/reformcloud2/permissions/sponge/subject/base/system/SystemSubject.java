@@ -35,18 +35,16 @@ import java.util.Optional;
 
 public class SystemSubject extends AbstractSystemSubject {
 
+    private final String id;
+    private final PermissionService service;
+    private final SubjectCollection source;
+
     public SystemSubject(@NotNull String id, @NotNull PermissionService service, @NotNull SubjectCollection source) {
         super(new SystemSubjectData());
         this.id = id;
         this.service = service;
         this.source = source;
     }
-
-    private final String id;
-
-    private final PermissionService service;
-
-    private final SubjectCollection source;
 
     @NotNull
     @Override

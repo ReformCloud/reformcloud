@@ -42,6 +42,9 @@ import systems.reformcloud.reformcloud2.permissions.packets.util.PermissionActio
 
 public class PacketUserAction extends Packet {
 
+    private PermissionUser permissionUser;
+    private PermissionAction permissionAction;
+
     public PacketUserAction() {
     }
 
@@ -49,10 +52,6 @@ public class PacketUserAction extends Packet {
         this.permissionUser = permissionUser;
         this.permissionAction = permissionAction;
     }
-
-    private PermissionUser permissionUser;
-
-    private PermissionAction permissionAction;
 
     @Override
     public int getId() {

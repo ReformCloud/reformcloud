@@ -33,6 +33,8 @@ import java.util.Collection;
  */
 public abstract class InterpreterVariable {
 
+    private final String plain;
+
     /**
      * Creates a new variable
      *
@@ -41,8 +43,6 @@ public abstract class InterpreterVariable {
     public InterpreterVariable(@NotNull String plain) {
         this.plain = plain.toLowerCase();
     }
-
-    private final String plain;
 
     /**
      * @return The wrapped name of the variable

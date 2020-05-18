@@ -34,18 +34,15 @@ import systems.reformcloud.reformcloud2.permissions.sponge.subject.base.system.S
 public class FactorySubject extends AbstractSpongeSubject {
 
     private static final SubjectData DATA = new SystemSubjectData();
+    private final String id;
+    private final PermissionService service;
+    private final SubjectCollection source;
 
     public FactorySubject(String id, PermissionService service, SubjectCollection source) {
         this.id = id;
         this.service = service;
         this.source = source;
     }
-
-    private final String id;
-
-    private final PermissionService service;
-
-    private final SubjectCollection source;
 
     @Override
     protected PermissionService service() {

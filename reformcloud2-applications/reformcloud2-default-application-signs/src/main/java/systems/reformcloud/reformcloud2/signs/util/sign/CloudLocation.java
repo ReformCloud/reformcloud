@@ -32,6 +32,14 @@ import java.util.Objects;
 
 public class CloudLocation implements SerializableObject {
 
+    private String world;
+    private String group;
+    private double x;
+    private double y;
+    private double z;
+    private float yaw;
+    private float pitch;
+
     public CloudLocation() {
     }
 
@@ -44,20 +52,6 @@ public class CloudLocation implements SerializableObject {
         this.yaw = yaw;
         this.pitch = pitch;
     }
-
-    private String world;
-
-    private String group;
-
-    private double x;
-
-    private double y;
-
-    private double z;
-
-    private float yaw;
-
-    private float pitch;
 
     public String getWorld() {
         return world;

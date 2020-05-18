@@ -40,11 +40,11 @@ import java.util.Set;
 
 public class GroupSubjectData extends AbstractSpongeSubjectData {
 
+    private final String group;
+
     public GroupSubjectData(@NotNull String group) {
         this.group = group;
     }
-
-    private final String group;
 
     @Override
     @NotNull

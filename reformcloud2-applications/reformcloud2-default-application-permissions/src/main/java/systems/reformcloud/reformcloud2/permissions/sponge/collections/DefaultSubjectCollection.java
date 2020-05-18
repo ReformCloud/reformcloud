@@ -43,14 +43,13 @@ import java.util.stream.Collectors;
 
 public abstract class DefaultSubjectCollection implements SubjectCollection {
 
+    protected final PermissionService service;
+    private final String type;
+
     public DefaultSubjectCollection(String type, PermissionService service) {
         this.type = type;
         this.service = service;
     }
-
-    private final String type;
-
-    protected final PermissionService service;
 
     // ====
 

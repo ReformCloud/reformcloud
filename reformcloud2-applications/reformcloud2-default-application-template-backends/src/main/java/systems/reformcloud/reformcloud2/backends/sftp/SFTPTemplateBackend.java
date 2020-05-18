@@ -52,34 +52,10 @@ import java.util.concurrent.TimeUnit;
 
 public final class SFTPTemplateBackend implements TemplateBackend {
 
-    public static void load(String baseDirectory) {
-        if (Files.notExists(Paths.get(baseDirectory, "sftp.json"))) {
-            new JsonConfiguration()
-                    .add("config", new SFTPConfig(
-                            false, "127.0.0.1", 22, "rc", "password", "/home/templates/"
-                    )).write(Paths.get(baseDirectory, "sftp.json"));
-        }
-
-        SFTPConfig config = JsonConfiguration.read(Paths.get(baseDirectory, "sftp.json")).get("config", new TypeToken<SFTPConfig>() {
-        });
-        if (config == null || !config.isEnabled()) {
-            return;
-        }
-
-        TemplateBackendManager.registerBackend(new SFTPTemplateBackend(config));
-    }
-
-    public static void unload() {
-        TemplateBackendManager.unregisterBackend("SFTP");
-    }
-
     private static final BlockingDeque<Runnable> TASKS = new LinkedBlockingDeque<>();
-
-    private Session session;
-
-    private ChannelSftp channel;
-
     private final SFTPConfig config;
+    private Session session;
+    private ChannelSftp channel;
 
     private SFTPTemplateBackend(SFTPConfig config) {
         this.config = config;
@@ -109,6 +85,37 @@ public final class SFTPTemplateBackend implements TemplateBackend {
                 }
             }
         });
+    }
+
+    public static void load(String baseDirectory) {
+        if (Files.notExists(Paths.get(baseDirectory, "sftp.json"))) {
+            new JsonConfiguration()
+                    .add("config", new SFTPConfig(
+                            false, "127.0.0.1", 22, "rc", "password", "/home/templates/"
+                    )).write(Paths.get(baseDirectory, "sftp.json"));
+        }
+
+        SFTPConfig config = JsonConfiguration.read(Paths.get(baseDirectory, "sftp.json")).get("config", new TypeToken<SFTPConfig>() {
+        });
+        if (config == null || !config.isEnabled()) {
+            return;
+        }
+
+        TemplateBackendManager.registerBackend(new SFTPTemplateBackend(config));
+    }
+
+    public static void unload() {
+        TemplateBackendManager.unregisterBackend("SFTP");
+    }
+
+    private static Task<Void> future(@NotNull Runnable runnable) {
+        Task<Void> completableFuture = new DefaultTask<>();
+        Runnable newRunnable = () -> {
+            runnable.run();
+            completableFuture.complete(null);
+        };
+        TASKS.offerLast(newRunnable);
+        return completableFuture;
     }
 
     private boolean isDisconnected() {
@@ -308,16 +315,6 @@ public final class SFTPTemplateBackend implements TemplateBackend {
         }
 
         return entries;
-    }
-
-    private static Task<Void> future(@NotNull Runnable runnable) {
-        Task<Void> completableFuture = new DefaultTask<>();
-        Runnable newRunnable = () -> {
-            runnable.run();
-            completableFuture.complete(null);
-        };
-        TASKS.offerLast(newRunnable);
-        return completableFuture;
     }
 
     private void open() {
