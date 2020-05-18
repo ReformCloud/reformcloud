@@ -46,9 +46,10 @@ public final class NodeConfig {
     private final UUID uniqueID;
     private final long maxMemory;
     private final String startHost;
-    private List<NetworkAddress> networkListeners;
-    private List<NetworkAddress> httpNetworkListeners;
-    private List<NetworkAddress> clusterNodes;
+    private final double maxSystemCpuUsage;
+    private final List<NetworkAddress> networkListeners;
+    private final List<NetworkAddress> httpNetworkListeners;
+    private final List<NetworkAddress> clusterNodes;
 
     public NodeConfig(String name, UUID uniqueID, long maxMemory, String startHost,
                       List<NetworkAddress> networkListeners, List<NetworkAddress> httpNetworkListeners,
@@ -60,6 +61,7 @@ public final class NodeConfig {
         this.networkListeners = networkListeners;
         this.httpNetworkListeners = httpNetworkListeners;
         this.clusterNodes = clusterNodes;
+        this.maxSystemCpuUsage = 90D;
     }
 
     public String getName() {
@@ -76,6 +78,10 @@ public final class NodeConfig {
 
     public String getStartHost() {
         return startHost;
+    }
+
+    public double getMaxSystemCpuUsage() {
+        return maxSystemCpuUsage == 0 ? 90D : maxSystemCpuUsage;
     }
 
     public List<NetworkAddress> getNetworkListeners() {

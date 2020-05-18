@@ -64,7 +64,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -200,32 +200,30 @@ public abstract class SharedRunningProcess implements RunningProcess {
                 "Trying to start a process which is not prepared and ready to start"
         );
 
-        Collection<String> command = new ArrayList<>(Arrays.asList(
+        List<String> command = new ArrayList<>(Arrays.asList(
                 this.startupInformation.getProcessGroup().getStartupConfiguration().getJvmCommand(),
+
                 "-DIReallyKnowWhatIAmDoingISwear=true",
                 "-Djline.terminal=jline.UnsupportedTerminal",
-
                 "-Dreformcloud.runner.version=" + System.getProperty("reformcloud.runner.version"),
                 "-Dreformcloud.executor.type=3",
                 "-Dreformcloud.lib.path=" + LIB_PATH,
                 "-Dreformcloud.process.path=" + new File("reformcloud/files/" + Version.format(
                         this.startupInformation.getProcessDetail().getTemplate().getVersion()
-                )).getAbsolutePath(),
-
-                "-Xmx" + this.startupInformation.getProcessDetail().getMaxMemory() + "M"
+                )).getAbsolutePath()
         ));
-
-        command.addAll(this.startupInformation.getProcessDetail().getTemplate().getRuntimeConfiguration().getJvmOptions());
         this.startupInformation.getProcessDetail().getTemplate().getRuntimeConfiguration().getSystemProperties().forEach(
                 (key, value) -> command.add(String.format("-D%s=%s", key, value))
         );
-        command.addAll(this.startupInformation.getProcessDetail().getTemplate().getRuntimeConfiguration().getProcessParameters());
 
+        command.addAll(this.startupInformation.getProcessDetail().getTemplate().getRuntimeConfiguration().getJvmOptions());
         command.addAll(Arrays.asList(
+                "-Xmx" + this.startupInformation.getProcessDetail().getMaxMemory() + "M",
                 "-cp", StringUtil.NULL_PATH,
                 "-javaagent:runner.jar",
                 "systems.reformcloud.reformcloud2.runner.RunnerExecutor"
         ));
+        command.addAll(this.startupInformation.getProcessDetail().getTemplate().getRuntimeConfiguration().getProcessParameters());
 
         if (this.startupInformation.getProcessDetail().getTemplate().getVersion().getId() == 1) {
             command.add("nogui"); // Spigot server
@@ -234,7 +232,8 @@ public abstract class SharedRunningProcess implements RunningProcess {
         }
 
         try {
-            this.process = new ProcessBuilder(command.toArray(new String[0]))
+            this.process = new ProcessBuilder()
+                    .command(command)
                     .directory(path.toFile())
                     .redirectErrorStream(true)
                     .start();

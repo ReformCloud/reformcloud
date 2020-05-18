@@ -140,6 +140,7 @@ import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 public final class NodeExecutor extends Node {
 
@@ -686,6 +687,22 @@ public final class NodeExecutor extends Node {
 
     private void startSendUpdate() {
         CommonHelper.SCHEDULED_EXECUTOR_SERVICE.scheduleAtFixedRate(this.clusterSyncManager::syncSelfInformation, 10, 30, TimeUnit.SECONDS);
+    }
+
+    public boolean canStartProcesses(int neededMemory) {
+        AtomicLong atomicLong = new AtomicLong(neededMemory);
+        for (RunningProcess allProcess : SharedRunningProcessManager.getAllProcesses()) {
+            if (allProcess.getProcess().isPresent()) {
+                atomicLong.addAndGet(allProcess.getProcessInformation().getProcessDetail().getMaxMemory());
+            }
+        }
+
+        if (atomicLong.get() > this.nodeConfig.getMaxMemory()) {
+            return false;
+        }
+
+        double cpuUsageSystem = CommonHelper.operatingSystemMXBean().getSystemCpuLoad() * 100;
+        return cpuUsageSystem < this.nodeConfig.getMaxSystemCpuUsage();
     }
 
     public NetworkClient getNetworkClient() {

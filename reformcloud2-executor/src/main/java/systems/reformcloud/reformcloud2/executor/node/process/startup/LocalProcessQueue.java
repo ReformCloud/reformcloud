@@ -28,7 +28,6 @@ import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.process.running.RunningProcess;
-import systems.reformcloud.reformcloud2.executor.api.common.process.running.manager.SharedRunningProcessManager;
 import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
 import systems.reformcloud.reformcloud2.executor.node.process.basic.BasicLocalNodeProcess;
 
@@ -68,20 +67,11 @@ public class LocalProcessQueue implements Runnable {
             return;
         }
 
-        if (isMemoryFree(process.getProcessInformation().getProcessDetail().getMaxMemory()) && process.bootstrap()) {
+        if (NodeExecutor.getInstance().canStartProcesses(process.getProcessInformation().getProcessDetail().getMaxMemory()) && process.bootstrap()) {
             System.out.println(LanguageManager.get("node-process-start", process.getProcessInformation().getProcessDetail().getName()));
             return;
         }
 
         QUEUE.offerLast(process);
-    }
-
-    private boolean isMemoryFree(int memory) {
-        int current = SharedRunningProcessManager.getAllProcesses()
-                .stream()
-                .filter(e -> e.getProcess().isPresent())
-                .mapToInt(e -> e.getProcessInformation().getProcessDetail().getMaxMemory())
-                .sum() + memory;
-        return NodeExecutor.getInstance().getNodeConfig().getMaxMemory() >= current;
     }
 }
