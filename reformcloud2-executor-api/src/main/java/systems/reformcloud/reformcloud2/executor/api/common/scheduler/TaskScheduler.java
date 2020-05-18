@@ -79,4 +79,9 @@ public interface TaskScheduler {
      */
     @NotNull
     ScheduledTask schedule(@NotNull Runnable runnable, long delay, long period, @NotNull TimeUnit timeUnit);
+
+    /**
+     * Shutdown the current scheduler and cancel all running tasks in it
+     */
+    void shutdown();
 }

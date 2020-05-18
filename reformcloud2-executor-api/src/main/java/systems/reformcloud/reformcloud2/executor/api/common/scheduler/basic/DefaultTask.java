@@ -29,22 +29,23 @@ import systems.reformcloud.reformcloud2.executor.api.common.scheduler.ScheduledT
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public final class DefaultTask implements ScheduledTask {
 
+    private static final ScheduledExecutorService EXECUTOR_SERVICE = Executors.newSingleThreadScheduledExecutor();
+
     private final AtomicBoolean running = new AtomicBoolean(true);
-    private final ScheduledExecutorService executorService;
+    private final ScheduledFuture<?> future;
     private final int id;
     private final Runnable task;
 
     public DefaultTask(int id, Runnable run, long delay, long period, TimeUnit timeUnit) {
         this.id = id;
         this.task = run;
-        this.executorService = Executors.newSingleThreadScheduledExecutor(newThreadFactory(id));
-
-        this.executorService.scheduleAtFixedRate(this.task, delay, period, timeUnit);
+        this.future = EXECUTOR_SERVICE.scheduleAtFixedRate(this.task, delay, period, timeUnit);
     }
 
     @Override
@@ -65,10 +66,6 @@ public final class DefaultTask implements ScheduledTask {
 
     @Override
     public void cancel() {
-        if (executorService.isTerminated() || executorService.isShutdown()) {
-            return;
-        }
-
-        executorService.shutdownNow();
+        this.future.cancel(true);
     }
 }

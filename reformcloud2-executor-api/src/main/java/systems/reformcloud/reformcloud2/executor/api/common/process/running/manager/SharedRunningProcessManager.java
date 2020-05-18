@@ -98,6 +98,10 @@ public final class SharedRunningProcessManager {
     }
 
     private static void tick() {
+        if (CommonHelper.SCHEDULED_EXECUTOR_SERVICE.isShutdown()) {
+            return;
+        }
+
         CommonHelper.SCHEDULED_EXECUTOR_SERVICE.scheduleAtFixedRate(() -> {
             for (RunningProcess process : ALL_PROCESSES) {
                 if (!process.isAlive()

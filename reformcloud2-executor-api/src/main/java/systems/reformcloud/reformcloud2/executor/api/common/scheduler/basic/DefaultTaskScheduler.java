@@ -71,4 +71,13 @@ public final class DefaultTaskScheduler implements TaskScheduler {
         tasks.put(scheduledTask.getId(), scheduledTask);
         return scheduledTask;
     }
+
+    @Override
+    public void shutdown() {
+        for (ScheduledTask value : this.tasks.values()) {
+            value.cancel();
+        }
+
+        this.tasks.clear();
+    }
 }

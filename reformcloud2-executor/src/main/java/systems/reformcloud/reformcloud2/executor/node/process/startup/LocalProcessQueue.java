@@ -29,20 +29,15 @@ import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageMan
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.process.running.RunningProcess;
 import systems.reformcloud.reformcloud2.executor.api.common.process.running.manager.SharedRunningProcessManager;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
 import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
 import systems.reformcloud.reformcloud2.executor.node.process.basic.BasicLocalNodeProcess;
 
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.LinkedBlockingDeque;
 
-public class LocalProcessQueue extends AbsoluteThread {
+public class LocalProcessQueue implements Runnable {
 
     private static final BlockingDeque<RunningProcess> QUEUE = new LinkedBlockingDeque<>();
-
-    public LocalProcessQueue() {
-        enableDaemon().updatePriority(Thread.MIN_PRIORITY).start();
-    }
 
     public static void queue(@NotNull ProcessInformation processInformation) {
         RunningProcess localNodeProcess = new BasicLocalNodeProcess(processInformation);
@@ -64,26 +59,21 @@ public class LocalProcessQueue extends AbsoluteThread {
 
     @Override
     public void run() {
-        while (!isInterrupted()) {
-            if (!NodeExecutor.getInstance().getClusterSyncManager().isConnectedAndSyncWithCluster()) {
-                AbsoluteThread.sleep(500);
-                continue;
-            }
-
-            try {
-                RunningProcess process = QUEUE.takeFirst();
-                if (isMemoryFree(process.getProcessInformation().getProcessDetail().getMaxMemory())
-                        && process.bootstrap()) {
-                    System.out.println(LanguageManager.get("node-process-start", process.getProcessInformation().getProcessDetail().getName()));
-                    AbsoluteThread.sleep(50);
-                    continue;
-                }
-
-                QUEUE.offerLast(process);
-                AbsoluteThread.sleep(200);
-            } catch (final InterruptedException ignored) {
-            }
+        if (!NodeExecutor.getInstance().getClusterSyncManager().isConnectedAndSyncWithCluster()) {
+            return;
         }
+
+        RunningProcess process = QUEUE.pollFirst();
+        if (process == null) {
+            return;
+        }
+
+        if (isMemoryFree(process.getProcessInformation().getProcessDetail().getMaxMemory()) && process.bootstrap()) {
+            System.out.println(LanguageManager.get("node-process-start", process.getProcessInformation().getProcessDetail().getName()));
+            return;
+        }
+
+        QUEUE.offerLast(process);
     }
 
     private boolean isMemoryFree(int memory) {

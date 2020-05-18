@@ -86,6 +86,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.restapi.http.server.
 import systems.reformcloud.reformcloud2.executor.api.common.restapi.request.RequestListenerHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.restapi.request.defaults.DefaultRequestListenerHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.restapi.user.WebUser;
+import systems.reformcloud.reformcloud2.executor.api.common.scheduler.basic.DefaultTaskScheduler;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.StringUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Duo;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
@@ -164,13 +165,11 @@ public final class NodeExecutor extends Node {
 
     private final EventManager eventManager = new DefaultEventManager();
 
-    private LocalAutoStartupHandler localAutoStartupHandler;
+    private final LocalAutoStartupHandler localAutoStartupHandler = new LocalAutoStartupHandler();
 
     private SyncAPI syncAPI;
 
     private AsyncAPI asyncAPI;
-
-    private LocalProcessQueue localProcessQueue;
 
     private NetworkClient networkClient;
 
@@ -295,8 +294,6 @@ public final class NodeExecutor extends Node {
         ExecutorAPI.getInstance().getEventManager().registerListener(new RunningProcessStoppedListener());
         ExecutorAPI.getInstance().getEventManager().registerListener(new RunningProcessScreenListener());
 
-        this.localAutoStartupHandler = new LocalAutoStartupHandler();
-
         this.loadPacketHandlers();
 
         this.nodeConfig.getHttpNetworkListeners().forEach(e -> this.webServer.add(e.getHost(), e.getPort(), this.requestListenerHandler));
@@ -349,17 +346,30 @@ public final class NodeExecutor extends Node {
             }
         }
 
-        this.localProcessQueue = new LocalProcessQueue();
-        this.localAutoStartupHandler.update();
-        this.localAutoStartupHandler.doStart();
+        running = true;
+
         this.applicationLoader.enableApplications();
+
+        CommonHelper.SCHEDULED_EXECUTOR_SERVICE.scheduleAtFixedRate(
+                CommonHelper.newReportedRunnable(new LocalProcessQueue(), "Error in process queue"),
+                0,
+                1,
+                TimeUnit.SECONDS
+        );
+
+        this.localAutoStartupHandler.update();
+        CommonHelper.SCHEDULED_EXECUTOR_SERVICE.scheduleAtFixedRate(
+                CommonHelper.newReportedRunnable(this.localAutoStartupHandler, "Error in local startup handler"),
+                0,
+                1,
+                TimeUnit.SECONDS
+        );
 
         this.loadCommands();
         this.sendGroups();
 
         OnlinePercentCheckerTask.start();
 
-        running = true;
         System.out.println(LanguageManager.get("startup-done", Long.toString(System.currentTimeMillis() - current)));
 
         this.awaitConnectionsAndUpdate();
@@ -444,6 +454,10 @@ public final class NodeExecutor extends Node {
         System.out.println(LanguageManager.get("runtime-try-shutdown"));
 
         OnlinePercentCheckerTask.stop();
+        DefaultTaskScheduler.INSTANCE.shutdown();
+        CommonHelper.SCHEDULED_EXECUTOR_SERVICE.shutdownNow();
+        CommonHelper.EXECUTOR.shutdownNow();
+        Task.EXECUTOR.shutdownNow();
 
         this.clusterSyncManager.disconnectFromCluster();
 
@@ -451,22 +465,13 @@ public final class NodeExecutor extends Node {
         this.networkClient.disconnect();
         this.webServer.close();
 
-        this.localProcessQueue.interrupt();
-        this.localAutoStartupHandler.interrupt();
         this.nodeNetworkManager.close();
-
         SharedRunningProcessManager.shutdownAll();
 
         this.database.disconnect();
-
         this.applicationLoader.disableApplications();
 
-        CommonHelper.SCHEDULED_EXECUTOR_SERVICE.shutdownNow();
-        CommonHelper.EXECUTOR.shutdownNow();
-        Task.EXECUTOR.shutdownNow();
-
         SystemHelper.deleteDirectory(Paths.get("reformcloud/temp"));
-
         this.loggerBase.close();
     }
 
@@ -685,5 +690,9 @@ public final class NodeExecutor extends Node {
 
     public NetworkClient getNetworkClient() {
         return networkClient;
+    }
+
+    public static boolean isRunning() {
+        return running;
     }
 }
