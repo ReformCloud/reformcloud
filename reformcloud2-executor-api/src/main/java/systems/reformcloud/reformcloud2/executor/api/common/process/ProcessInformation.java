@@ -231,7 +231,7 @@ public final class ProcessInformation implements Clone<ProcessInformation>, Seri
         this.processDetail = buffer.readObject(ProcessDetail.class);
         this.networkInfo = buffer.readObject(NetworkInfo.class);
         this.plugins = buffer.readObjects(DefaultPlugin.class);
-        this.preInclusions = buffer.readObjects(ProcessInclusion.class);
+        this.preInclusions = new CopyOnWriteArrayList<>(buffer.readObjects(ProcessInclusion.class));
         this.processGroup = buffer.readObject(ProcessGroup.class);
 
         try (InputStream stream = new ByteArrayInputStream(buffer.readArray())) {

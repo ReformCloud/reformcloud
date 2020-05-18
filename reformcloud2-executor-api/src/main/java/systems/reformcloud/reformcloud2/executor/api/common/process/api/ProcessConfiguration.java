@@ -39,6 +39,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.UUID;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class ProcessConfiguration implements SerializableObject {
 
@@ -67,7 +68,7 @@ public class ProcessConfiguration implements SerializableObject {
         this.extra = extra;
         this.id = id;
         this.maxPlayers = maxPlayers;
-        this.inclusions = inclusions;
+        this.inclusions = new CopyOnWriteArrayList<>(inclusions);
         this.initialState = initialState;
     }
 
@@ -157,7 +158,7 @@ public class ProcessConfiguration implements SerializableObject {
 
         this.id = buffer.readVarInt();
         this.maxPlayers = buffer.readVarInt();
-        this.inclusions = buffer.readObjects(ProcessInclusion.class);
+        this.inclusions = new CopyOnWriteArrayList<>(buffer.readObjects(ProcessInclusion.class));
         this.initialState = ProcessState.values()[buffer.readVarInt()];
     }
 }
