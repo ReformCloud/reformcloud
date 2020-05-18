@@ -32,20 +32,17 @@ import java.util.function.Function;
 
 public class UserSignPreConnectEvent extends Event {
 
+    private final UUID playerUniqueId;
+    private final Function<String, Boolean> permissionChecker;
+    private final CloudSign target;
+    private boolean allowConnection;
+
     public UserSignPreConnectEvent(UUID playerUniqueId, Function<String, Boolean> permissionChecker, CloudSign target, boolean allowConnection) {
         this.playerUniqueId = playerUniqueId;
         this.permissionChecker = permissionChecker;
         this.target = target;
         this.allowConnection = allowConnection;
     }
-
-    private final UUID playerUniqueId;
-
-    private final Function<String, Boolean> permissionChecker;
-
-    private final CloudSign target;
-
-    private boolean allowConnection;
 
     public UUID getPlayerUniqueId() {
         return playerUniqueId;

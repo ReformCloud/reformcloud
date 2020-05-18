@@ -47,17 +47,14 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public final class CloudFlareHelper {
 
+    private static final String CLOUD_FLARE_API_URL = "https://api.cloudflare.com/client/v4/";
+    private static final Map<UUID, String> CACHE = new ConcurrentHashMap<>();
+    private static final Map<String, String> A_RECORD_CACHE = new ConcurrentHashMap<>();
+    private static CloudFlareConfig cloudFlareConfig;
+
     private CloudFlareHelper() {
         throw new UnsupportedOperationException();
     }
-
-    private static final String CLOUD_FLARE_API_URL = "https://api.cloudflare.com/client/v4/";
-
-    private static final Map<UUID, String> CACHE = new ConcurrentHashMap<>();
-
-    private static final Map<String, String> A_RECORD_CACHE = new ConcurrentHashMap<>();
-
-    private static CloudFlareConfig cloudFlareConfig;
 
     public static boolean init(@NotNull String baseFolder) {
 

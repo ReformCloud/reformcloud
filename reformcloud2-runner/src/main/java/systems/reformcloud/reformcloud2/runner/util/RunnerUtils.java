@@ -39,54 +39,46 @@ import java.util.function.UnaryOperator;
 
 public final class RunnerUtils {
 
-    private RunnerUtils() {
-        throw new UnsupportedOperationException();
-    }
-
     /**
      * The path where the executor file is located
      */
     public static final Path EXECUTOR_PATH = Paths.get("reformcloud/.bin/executor.jar");
-
     /**
      * The path of the folder in which the application updates are located
      */
     public static final Path APP_UPDATE_FOLDER = Paths.get("reformcloud/.update/apps");
-
     /**
      * The location of the runner in the node and client env
      */
     public static final Path RUNNER_FILES_FILE = Paths.get("reformcloud/files/runner.jar");
-
     /**
      * The file where the reform script is located by default
      */
     public static final File GLOBAL_SCRIPT_FILE = new File("global.reformscript");
-
     /**
      * The default discord invite for the reformcloud discord
      */
     public static final String DISCORD_INVITE = "https://discord.gg/uskXdVZ";
-
     /**
      * The base url of the reformcloud github repository
      */
     public static final String REPO_BASE_URL = "https://github.com/derklaro/reformcloud2/";
-
     /**
      * The file download format string
      */
     public static final String FILE_DOWNLOAD_FORMAT = "Downloading file %s... Size: %s";
-
     /**
      * The file downloaded format string
      */
     public static final String FILE_DOWNLOADED_FORMAT = "Download of file %s was completed successfully after %dms";
-
     /**
      * All available executors
      */
     public static final Collection<String> AVAILABLE_EXECUTORS = Arrays.asList("node", "controller", "client");
+
+    private RunnerUtils() {
+        throw new UnsupportedOperationException();
+    }
 
     /**
      * Handles the given error and prints an error message to the console

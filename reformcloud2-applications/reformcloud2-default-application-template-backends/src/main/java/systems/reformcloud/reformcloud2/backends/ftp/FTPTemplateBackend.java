@@ -51,31 +51,8 @@ import java.util.concurrent.TimeUnit;
 
 public final class FTPTemplateBackend implements TemplateBackend {
 
-    public static void load(String basePath) {
-        if (Files.notExists(Paths.get(basePath, "ftp.json"))) {
-            new JsonConfiguration()
-                    .add("config", new FTPConfig(
-                            false, false, "127.0.0.1", 21, "rc", "password", "rc/templates"
-                    )).write(Paths.get(basePath, "ftp.json"));
-        }
-
-        FTPConfig config = JsonConfiguration.read(Paths.get(basePath, "ftp.json")).get("config", new TypeToken<FTPConfig>() {
-        });
-        if (config == null || !config.isEnabled()) {
-            return;
-        }
-
-        TemplateBackendManager.registerBackend(new FTPTemplateBackend(config));
-    }
-
-    public static void unload() {
-        TemplateBackendManager.unregisterBackend("FTP");
-    }
-
     private static final BlockingDeque<Runnable> TASKS = new LinkedBlockingDeque<>();
-
     private final FTPClient ftpClient;
-
     private final FTPConfig config;
 
     private FTPTemplateBackend(FTPConfig ftpConfig) {
@@ -112,6 +89,37 @@ public final class FTPTemplateBackend implements TemplateBackend {
                 }
             }
         });
+    }
+
+    public static void load(String basePath) {
+        if (Files.notExists(Paths.get(basePath, "ftp.json"))) {
+            new JsonConfiguration()
+                    .add("config", new FTPConfig(
+                            false, false, "127.0.0.1", 21, "rc", "password", "rc/templates"
+                    )).write(Paths.get(basePath, "ftp.json"));
+        }
+
+        FTPConfig config = JsonConfiguration.read(Paths.get(basePath, "ftp.json")).get("config", new TypeToken<FTPConfig>() {
+        });
+        if (config == null || !config.isEnabled()) {
+            return;
+        }
+
+        TemplateBackendManager.registerBackend(new FTPTemplateBackend(config));
+    }
+
+    public static void unload() {
+        TemplateBackendManager.unregisterBackend("FTP");
+    }
+
+    private static Task<Void> future(@NotNull Runnable runnable) {
+        Task<Void> completableFuture = new DefaultTask<>();
+        Runnable newRunnable = () -> {
+            runnable.run();
+            completableFuture.complete(null);
+        };
+        TASKS.offerLast(newRunnable);
+        return completableFuture;
     }
 
     @Override
@@ -324,16 +332,6 @@ public final class FTPTemplateBackend implements TemplateBackend {
         } else {
             this.ftpClient.deleteFile(filePath);
         }
-    }
-
-    private static Task<Void> future(@NotNull Runnable runnable) {
-        Task<Void> completableFuture = new DefaultTask<>();
-        Runnable newRunnable = () -> {
-            runnable.run();
-            completableFuture.complete(null);
-        };
-        TASKS.offerLast(newRunnable);
-        return completableFuture;
     }
 
     private void open(FTPConfig ftpConfig) {

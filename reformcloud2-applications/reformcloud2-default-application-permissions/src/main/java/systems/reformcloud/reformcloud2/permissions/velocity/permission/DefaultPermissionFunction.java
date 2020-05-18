@@ -34,11 +34,11 @@ import java.util.UUID;
 
 public class DefaultPermissionFunction implements PermissionFunction {
 
+    private final UUID uuid;
+
     DefaultPermissionFunction(Player player) {
         this.uuid = player.getUniqueId();
     }
-
-    private final UUID uuid;
 
     @Override
     public Tristate getPermissionValue(String s) {

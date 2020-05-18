@@ -45,6 +45,12 @@ import java.util.Collection;
 
 public final class URLTemplateBackend implements TemplateBackend {
 
+    private final String basePath;
+
+    private URLTemplateBackend(JsonConfiguration configuration) {
+        this.basePath = configuration.getString("baseUrl");
+    }
+
     public static void load(String basePath) {
         if (!Files.exists(Paths.get(basePath + "/url.json"))) {
             new JsonConfiguration()
@@ -58,12 +64,6 @@ public final class URLTemplateBackend implements TemplateBackend {
     public static void unload() {
         TemplateBackendManager.unregisterBackend("URL");
     }
-
-    private URLTemplateBackend(JsonConfiguration configuration) {
-        this.basePath = configuration.getString("baseUrl");
-    }
-
-    private final String basePath;
 
     @Override
     public boolean existsTemplate(@NotNull String group, @NotNull String template) {

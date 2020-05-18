@@ -45,6 +45,15 @@ public class PermissionUser implements SerializableObject {
 
     public static final TypeToken<PermissionUser> TYPE = new TypeToken<PermissionUser>() {
     };
+    private UUID uuid;
+    private Collection<PermissionNode> permissionNodes;
+    private Collection<NodeGroup> groups;
+    private Map<String, Collection<PermissionNode>> perGroupPermissions;
+    private @Nullable String prefix;
+    private @Nullable String suffix;
+    private @Nullable String display;
+    private @Nullable String colour;
+    private JsonConfiguration extra;
 
     @ApiStatus.Internal
     public PermissionUser() {
@@ -61,24 +70,6 @@ public class PermissionUser implements SerializableObject {
         this.perGroupPermissions = new ConcurrentHashMap<>();
         this.extra = new JsonConfiguration();
     }
-
-    private UUID uuid;
-
-    private Collection<PermissionNode> permissionNodes;
-
-    private Collection<NodeGroup> groups;
-
-    private Map<String, Collection<PermissionNode>> perGroupPermissions;
-
-    private @Nullable String prefix;
-
-    private @Nullable String suffix;
-
-    private @Nullable String display;
-
-    private @Nullable String colour;
-
-    private JsonConfiguration extra;
 
     @NotNull
     public UUID getUniqueID() {
@@ -109,6 +100,10 @@ public class PermissionUser implements SerializableObject {
         return Optional.of(this.prefix);
     }
 
+    public void setPrefix(@Nullable String prefix) {
+        this.prefix = prefix;
+    }
+
     @NotNull
     public Optional<String> getSuffix() {
         if (this.suffix == null) {
@@ -116,6 +111,10 @@ public class PermissionUser implements SerializableObject {
         }
 
         return Optional.of(this.suffix);
+    }
+
+    public void setSuffix(@Nullable String suffix) {
+        this.suffix = suffix;
     }
 
     @NotNull
@@ -127,6 +126,10 @@ public class PermissionUser implements SerializableObject {
         return Optional.of(this.display);
     }
 
+    public void setDisplay(@Nullable String display) {
+        this.display = display;
+    }
+
     @NotNull
     public Optional<String> getColour() {
         if (this.colour == null) {
@@ -136,25 +139,13 @@ public class PermissionUser implements SerializableObject {
         return Optional.of(this.colour);
     }
 
+    public void setColour(@Nullable String colour) {
+        this.colour = colour;
+    }
+
     @NotNull
     public JsonConfiguration getExtra() {
         return extra == null ? new JsonConfiguration() : extra;
-    }
-
-    public void setPrefix(@Nullable String prefix) {
-        this.prefix = prefix;
-    }
-
-    public void setSuffix(@Nullable String suffix) {
-        this.suffix = suffix;
-    }
-
-    public void setDisplay(@Nullable String display) {
-        this.display = display;
-    }
-
-    public void setColour(@Nullable String colour) {
-        this.colour = colour;
     }
 
     @NotNull

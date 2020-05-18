@@ -39,14 +39,14 @@ import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packe
 
 public class PacketReleaseCommandsConfig extends Packet {
 
+    private CommandsConfig commandsConfig;
+
     public PacketReleaseCommandsConfig() {
     }
 
     public PacketReleaseCommandsConfig(CommandsConfig commandsConfig) {
         this.commandsConfig = commandsConfig;
     }
-
-    private CommandsConfig commandsConfig;
 
     @Override
     public int getId() {

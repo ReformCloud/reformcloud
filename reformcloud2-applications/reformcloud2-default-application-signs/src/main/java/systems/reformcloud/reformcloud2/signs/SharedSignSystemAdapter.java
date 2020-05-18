@@ -58,6 +58,19 @@ import java.util.stream.Collectors;
 public abstract class SharedSignSystemAdapter<T> implements SignSystemAdapter<T> {
 
     private static final String[] EMPTY_SIGN = new String[]{"", "", "", ""};
+    protected final UUID ownUniqueID = API.getInstance().getCurrentProcessInformation().getProcessDetail().getProcessUniqueID();
+    protected final Collection<CloudSign> signs = Collections.synchronizedCollection(new ArrayList<CloudSign>() {
+        @NotNull
+        @Override
+        public Iterator<CloudSign> iterator() {
+            synchronized (this) {
+                return super.iterator();
+            }
+        }
+    });
+    protected final Set<ProcessInformation> allProcesses = Collections.synchronizedSet(new HashSet<>());
+    protected final Map<String, AtomicInteger[]> perGroupLayoutCounter = new HashMap<>();
+    protected SignConfig signConfig;
 
     public SharedSignSystemAdapter(@NotNull SignConfig signConfig) {
         this.signConfig = signConfig;
@@ -74,24 +87,6 @@ public abstract class SharedSignSystemAdapter<T> implements SignSystemAdapter<T>
 
         this.start();
     }
-
-    protected SignConfig signConfig;
-
-    protected final UUID ownUniqueID = API.getInstance().getCurrentProcessInformation().getProcessDetail().getProcessUniqueID();
-
-    protected final Collection<CloudSign> signs = Collections.synchronizedCollection(new ArrayList<CloudSign>() {
-        @NotNull
-        @Override
-        public Iterator<CloudSign> iterator() {
-            synchronized (this) {
-                return super.iterator();
-            }
-        }
-    });
-
-    protected final Set<ProcessInformation> allProcesses = Collections.synchronizedSet(new HashSet<>());
-
-    protected final Map<String, AtomicInteger[]> perGroupLayoutCounter = new HashMap<>();
 
     /*
     AtomicInteger[] counter = new AtomicInteger[]{

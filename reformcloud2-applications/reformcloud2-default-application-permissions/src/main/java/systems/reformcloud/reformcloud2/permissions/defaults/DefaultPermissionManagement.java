@@ -53,14 +53,13 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class DefaultPermissionManagement extends PermissionManagement {
 
+    public static final String PERMISSION_GROUP_TABLE = "reformcloud_internal_db_perm_group";
+    public static final String PERMISSION_PLAYER_TABLE = "reformcloud_internal_db_perm_player";
+    public static final String PERMISSION_NAME_TO_UNIQUE_ID_TABLE = "reformcloud_internal_db_perm_name_uuid";
     private static final boolean CONTROLLER_OR_NODE = ExecutorAPI.getInstance().getType().equals(ExecutorType.CONTROLLER)
             || ExecutorAPI.getInstance().getType().equals(ExecutorType.NODE);
-
-    public static final String PERMISSION_GROUP_TABLE = "reformcloud_internal_db_perm_group";
-
-    public static final String PERMISSION_PLAYER_TABLE = "reformcloud_internal_db_perm_player";
-
-    public static final String PERMISSION_NAME_TO_UNIQUE_ID_TABLE = "reformcloud_internal_db_perm_name_uuid";
+    private final Map<String, PermissionGroup> nameToGroupCache = new ConcurrentHashMap<>();
+    private final Map<UUID, PermissionUser> uniqueIdToUserCache = new ConcurrentHashMap<>();
 
     public DefaultPermissionManagement() {
         ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().createDatabase(PERMISSION_GROUP_TABLE);
@@ -72,10 +71,6 @@ public class DefaultPermissionManagement extends PermissionManagement {
             this.nameToGroupCache.put(permissionGroup.getName(), permissionGroup);
         }
     }
-
-    private final Map<String, PermissionGroup> nameToGroupCache = new ConcurrentHashMap<>();
-
-    private final Map<UUID, PermissionUser> uniqueIdToUserCache = new ConcurrentHashMap<>();
 
     @Override
     public @NotNull Optional<PermissionGroup> getPermissionGroup(@NotNull String name) {

@@ -30,11 +30,11 @@ import java.util.UUID;
 
 public class PermissionUserDeleteEvent extends Event {
 
+    private final UUID uuid;
+
     public PermissionUserDeleteEvent(UUID uuid) {
         this.uuid = uuid;
     }
-
-    private final UUID uuid;
 
     public UUID getUuid() {
         return uuid;

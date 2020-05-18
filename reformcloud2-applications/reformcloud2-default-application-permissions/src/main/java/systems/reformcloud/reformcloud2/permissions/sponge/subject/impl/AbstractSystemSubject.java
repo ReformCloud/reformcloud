@@ -30,11 +30,11 @@ import systems.reformcloud.reformcloud2.permissions.sponge.subject.AbstractSpong
 
 public abstract class AbstractSystemSubject extends AbstractSpongeSubject {
 
+    private final SubjectData data;
+
     public AbstractSystemSubject(@NotNull SubjectData data) {
         this.data = data;
     }
-
-    private final SubjectData data;
 
     @Override
     @NotNull

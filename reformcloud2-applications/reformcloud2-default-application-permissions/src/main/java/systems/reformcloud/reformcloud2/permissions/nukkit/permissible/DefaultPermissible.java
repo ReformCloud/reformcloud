@@ -47,14 +47,13 @@ import java.util.stream.Stream;
 
 public class DefaultPermissible extends PermissibleBase {
 
+    private final UUID uuid;
+    private Map<String, PermissionAttachmentInfo> perms;
+
     public DefaultPermissible(Player player) {
         super(player);
         this.uuid = player.getUniqueId();
     }
-
-    private final UUID uuid;
-
-    private Map<String, PermissionAttachmentInfo> perms;
 
     @Override
     public boolean isOp() {

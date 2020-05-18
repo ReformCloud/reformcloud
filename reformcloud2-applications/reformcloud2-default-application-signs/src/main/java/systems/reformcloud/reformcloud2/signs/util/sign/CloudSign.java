@@ -33,6 +33,11 @@ import java.util.UUID;
 
 public class CloudSign implements SerializableObject {
 
+    private String group;
+    private CloudLocation location;
+    private UUID uniqueID;
+    private ProcessInformation currentTarget;
+
     public CloudSign() {
     }
 
@@ -42,14 +47,6 @@ public class CloudSign implements SerializableObject {
         this.uniqueID = UUID.randomUUID();
         this.currentTarget = null;
     }
-
-    private String group;
-
-    private CloudLocation location;
-
-    private UUID uniqueID;
-
-    private ProcessInformation currentTarget;
 
     public String getGroup() {
         return group;

@@ -32,11 +32,11 @@ import systems.reformcloud.reformcloud2.permissions.objects.user.PermissionUser;
 
 public class PermissionVaultChatImplementation extends Chat {
 
+    private final PermissionManagement permissionManagement = PermissionManagement.getInstance();
+
     PermissionVaultChatImplementation(Permission perms) {
         super(perms);
     }
-
-    private final PermissionManagement permissionManagement = PermissionManagement.getInstance();
 
     @Override
     public String getName() {

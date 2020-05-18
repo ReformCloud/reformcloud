@@ -28,11 +28,11 @@ import systems.reformcloud.reformcloud2.executor.api.common.event.Event;
 
 public class PermissionGroupDeleteEvent extends Event {
 
+    private final String name;
+
     public PermissionGroupDeleteEvent(String name) {
         this.name = name;
     }
-
-    private final String name;
 
     public String getName() {
         return name;

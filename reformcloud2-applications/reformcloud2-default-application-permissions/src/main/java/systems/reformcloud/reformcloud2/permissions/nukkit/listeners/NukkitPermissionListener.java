@@ -37,7 +37,7 @@ import java.lang.reflect.Field;
 
 public class NukkitPermissionListener implements Listener {
 
-    @EventHandler (priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.LOWEST)
     public void handle(final PlayerLoginEvent event) {
         try {
             Field field = Player.class.getDeclaredField("perm");

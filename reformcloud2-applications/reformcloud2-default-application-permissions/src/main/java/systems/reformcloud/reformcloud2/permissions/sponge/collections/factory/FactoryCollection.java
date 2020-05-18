@@ -37,11 +37,11 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class FactoryCollection extends DefaultSubjectCollection {
 
+    private final Map<String, Subject> cache = new ConcurrentHashMap<>();
+
     public FactoryCollection(PermissionService service) {
         super(PermissionService.SUBJECTS_DEFAULT, service);
     }
-
-    private final Map<String, Subject> cache = new ConcurrentHashMap<>();
 
     @NotNull
     @Override

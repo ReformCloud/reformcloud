@@ -35,11 +35,11 @@ import java.util.function.Consumer;
 
 public final class InternalReformCloudCommand {
 
+    private static final String PROCESS_DISPLAY_FORMAT = " * §7%s §8| §7%s §8| §7%d§8/§7%d §8| %s";
+
     private InternalReformCloudCommand() {
         throw new UnsupportedOperationException();
     }
-
-    private static final String PROCESS_DISPLAY_FORMAT = " * §7%s §8| §7%s §8| §7%d§8/§7%d §8| %s";
 
     public static void execute(@NotNull Consumer<String> messageSender,
                                @NotNull String[] strings, @NotNull String prefix,

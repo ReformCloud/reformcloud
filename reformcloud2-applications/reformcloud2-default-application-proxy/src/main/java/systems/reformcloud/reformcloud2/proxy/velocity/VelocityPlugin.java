@@ -46,12 +46,12 @@ import systems.reformcloud.reformcloud2.proxy.velocity.listener.VelocityProxyCon
 )
 public class VelocityPlugin {
 
+    private final ProxyServer server;
+
     @Inject
     public VelocityPlugin(ProxyServer server) {
         this.server = server;
     }
-
-    private final ProxyServer server;
 
     @Subscribe
     public void handle(final ProxyInitializeEvent event) {

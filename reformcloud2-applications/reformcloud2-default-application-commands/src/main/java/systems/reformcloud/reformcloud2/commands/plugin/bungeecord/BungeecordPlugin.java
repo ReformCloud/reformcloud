@@ -39,6 +39,10 @@ public class BungeecordPlugin extends Plugin {
 
     private static BungeecordPlugin instance;
 
+    public static BungeecordPlugin getInstance() {
+        return instance;
+    }
+
     @Override
     public void onEnable() {
         instance = this;
@@ -64,9 +68,5 @@ public class BungeecordPlugin extends Plugin {
     public void onDisable() {
         CommandConfigHandler.getInstance().unregisterAllCommands();
         ExecutorAPI.getInstance().getPacketHandler().unregisterNetworkHandler(NetworkUtil.EXTERNAL_BUS + 4);
-    }
-
-    public static BungeecordPlugin getInstance() {
-        return instance;
     }
 }

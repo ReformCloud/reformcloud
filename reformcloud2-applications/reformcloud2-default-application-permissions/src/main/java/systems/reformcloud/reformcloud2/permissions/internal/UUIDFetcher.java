@@ -41,13 +41,12 @@ import java.util.regex.Pattern;
 
 public final class UUIDFetcher {
 
+    private static final Pattern PATTERN = Pattern.compile("(\\w{8})(\\w{4})(\\w{4})(\\w{4})(\\w{12})");
+    private static final Map<String, UUID> CACHE = new ConcurrentHashMap<>();
+
     private UUIDFetcher() {
         throw new UnsupportedOperationException();
     }
-
-    private static final Pattern PATTERN = Pattern.compile("(\\w{8})(\\w{4})(\\w{4})(\\w{4})(\\w{12})");
-
-    private static final Map<String, UUID> CACHE = new ConcurrentHashMap<>();
 
     /**
      * Gets a uuid from the given name

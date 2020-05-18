@@ -34,6 +34,8 @@ import java.util.Collection;
  */
 public abstract class InterpreterCommand {
 
+    private final String command;
+
     /**
      * Creates new interpreter command
      *
@@ -42,8 +44,6 @@ public abstract class InterpreterCommand {
     public InterpreterCommand(@NotNull String command) {
         this.command = command.toUpperCase();
     }
-
-    private final String command;
 
     /**
      * @return The actual command name which is always upper-case

@@ -43,19 +43,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class AbstractProxyConfigurationHandler extends ProxyConfigurationHandler {
 
-    private @Nullable ProxyConfiguration proxyConfiguration;
-
-    private MotdConfiguration currentMessageOfTheDayConfiguration;
-
-    private MotdConfiguration currentMaintenanceMessageOfTheDayConfiguration;
-
-    private TabListConfiguration currentTabListConfiguration;
-
     private final AtomicInteger[] atomicIntegers = new AtomicInteger[]{
             new AtomicInteger(0),
             new AtomicInteger(0),
             new AtomicInteger(0)
     };
+    private @Nullable ProxyConfiguration proxyConfiguration;
+    private MotdConfiguration currentMessageOfTheDayConfiguration;
+    private MotdConfiguration currentMaintenanceMessageOfTheDayConfiguration;
+    private TabListConfiguration currentTabListConfiguration;
 
     @Override
     public @NotNull ProxyConfigurationHandler enable() {
