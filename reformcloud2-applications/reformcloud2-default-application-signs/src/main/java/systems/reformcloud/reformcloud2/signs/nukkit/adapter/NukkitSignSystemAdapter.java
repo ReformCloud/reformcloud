@@ -58,10 +58,13 @@ import java.util.concurrent.ConcurrentHashMap;
 public class NukkitSignSystemAdapter extends SharedSignSystemAdapter<BlockEntitySign> {
 
     private static final Map<String, Integer> BLOCKS = new ConcurrentHashMap<>();
+    private static NukkitSignSystemAdapter instance;
 
     static {
         Arrays.stream(Block.fullList).forEach(e -> BLOCKS.put(e.getName(), e.getId()));
     }
+
+    private final PluginBase plugin;
 
     public NukkitSignSystemAdapter(@NotNull SignConfig signConfig, @NotNull PluginBase plugin) {
         super(signConfig);
@@ -76,9 +79,10 @@ public class NukkitSignSystemAdapter extends SharedSignSystemAdapter<BlockEntity
         command.setPermission("reformcloud.command.signs");
     }
 
-    private final PluginBase plugin;
-
-    private static NukkitSignSystemAdapter instance;
+    @UndefinedNullability
+    public static NukkitSignSystemAdapter getInstance() {
+        return instance;
+    }
 
     @Override
     protected void setSignLines(@NotNull CloudSign cloudSign, @NotNull String[] lines) {
@@ -158,11 +162,6 @@ public class NukkitSignSystemAdapter extends SharedSignSystemAdapter<BlockEntity
     public void handleSignConfigUpdate(@NotNull SignConfig config) {
         super.signConfig = config;
         this.restartTasks();
-    }
-
-    @UndefinedNullability
-    public static NukkitSignSystemAdapter getInstance() {
-        return instance;
     }
 
     private void changeBlock0(@NotNull BlockEntitySign sign, @NotNull SignSubLayout layout) {

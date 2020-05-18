@@ -48,11 +48,34 @@ import java.util.UUID;
 
 public final class VelocityListener {
 
+    private final ProxyServer proxyServer;
+
     public VelocityListener(@NotNull ProxyServer proxyServer) {
         this.proxyServer = proxyServer;
     }
 
-    private final ProxyServer proxyServer;
+    public static void initTab0(@NotNull Player player) {
+        ProxyConfigurationHandler.getInstance().getCurrentTabListConfiguration().ifPresent(tabListConfiguration -> {
+            Component header = tabListConfiguration.getHeader() == null
+                    ? TextComponent.empty()
+                    : LegacyComponentSerializer.legacyLinking().deserialize(replaceVelocityPlaceHolders(player, tabListConfiguration.getHeader()));
+            Component footer = tabListConfiguration.getFooter() == null
+                    ? TextComponent.empty()
+                    : LegacyComponentSerializer.legacyLinking().deserialize(replaceVelocityPlaceHolders(player, tabListConfiguration.getFooter()));
+
+            player.getTabList().setHeaderAndFooter(header, footer);
+        });
+    }
+
+    @NotNull
+    private static String replaceVelocityPlaceHolders(@NotNull Player player, @NotNull String tablist) {
+        tablist = tablist
+                .replace("%player_server%", player.getCurrentServer().isPresent() ? player.getCurrentServer().get().getServerInfo().getName() : "")
+                .replace("%player_name%", player.getUsername())
+                .replace("%player_unique_id%", player.getUniqueId().toString())
+                .replace("%player_ping%", Long.toString(player.getPing()));
+        return ProxyConfigurationHandler.getInstance().replaceTabListPlaceHolders(tablist);
+    }
 
     @Subscribe
     public void handle(final @NotNull ProxyPingEvent event) {
@@ -121,28 +144,5 @@ public final class VelocityListener {
 
     public void initTab() {
         this.proxyServer.getAllPlayers().forEach(VelocityListener::initTab0);
-    }
-
-    public static void initTab0(@NotNull Player player) {
-        ProxyConfigurationHandler.getInstance().getCurrentTabListConfiguration().ifPresent(tabListConfiguration -> {
-            Component header = tabListConfiguration.getHeader() == null
-                    ? TextComponent.empty()
-                    : LegacyComponentSerializer.legacyLinking().deserialize(replaceVelocityPlaceHolders(player, tabListConfiguration.getHeader()));
-            Component footer = tabListConfiguration.getFooter() == null
-                    ? TextComponent.empty()
-                    : LegacyComponentSerializer.legacyLinking().deserialize(replaceVelocityPlaceHolders(player, tabListConfiguration.getFooter()));
-
-            player.getTabList().setHeaderAndFooter(header, footer);
-        });
-    }
-
-    @NotNull
-    private static String replaceVelocityPlaceHolders(@NotNull Player player, @NotNull String tablist) {
-        tablist = tablist
-                .replace("%player_server%", player.getCurrentServer().isPresent() ? player.getCurrentServer().get().getServerInfo().getName() : "")
-                .replace("%player_name%", player.getUsername())
-                .replace("%player_unique_id%", player.getUniqueId().toString())
-                .replace("%player_ping%", Long.toString(player.getPing()));
-        return ProxyConfigurationHandler.getInstance().replaceTabListPlaceHolders(tablist);
     }
 }

@@ -37,6 +37,12 @@ import java.util.Map;
 
 public final class RunnerInterpretedReformScript implements InterpretedReformScript {
 
+    private final Path file;
+    private final ReformScriptInterpreter parent;
+    private final Collection<String> allLines;
+    private final Collection<InterpreterTask> tasks;
+    private final Map<String, Map.Entry<Integer, InterpreterCommand>> commandsPerLine;
+
     RunnerInterpretedReformScript(@NotNull ReformScriptInterpreter parent,
                                   @NotNull Path file,
                                   @NotNull Collection<String> allLines,
@@ -48,16 +54,6 @@ public final class RunnerInterpretedReformScript implements InterpretedReformScr
         this.tasks = tasks;
         this.commandsPerLine = commandsPerLine;
     }
-
-    private final Path file;
-
-    private final ReformScriptInterpreter parent;
-
-    private final Collection<String> allLines;
-
-    private final Collection<InterpreterTask> tasks;
-
-    private final Map<String, Map.Entry<Integer, InterpreterCommand>> commandsPerLine;
 
     @NotNull
     @Override

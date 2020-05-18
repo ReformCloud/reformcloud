@@ -32,14 +32,14 @@ import systems.reformcloud.reformcloud2.signs.util.sign.config.SignConfig;
 
 public class PacketRequestSignLayoutsResult extends QueryResultPacket {
 
+    private SignConfig signConfig;
+
     public PacketRequestSignLayoutsResult() {
     }
 
     public PacketRequestSignLayoutsResult(SignConfig signConfig) {
         this.signConfig = signConfig;
     }
-
-    private SignConfig signConfig;
 
     public SignConfig getSignConfig() {
         return signConfig;

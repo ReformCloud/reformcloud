@@ -54,6 +54,7 @@ import java.lang.reflect.Method;
 public class BukkitSignSystemAdapter extends SharedSignSystemAdapter<Sign> {
 
     private static BukkitSignSystemAdapter instance;
+    private final Plugin plugin;
 
     public BukkitSignSystemAdapter(JavaPlugin plugin, SignConfig config) {
         super(config);
@@ -69,7 +70,9 @@ public class BukkitSignSystemAdapter extends SharedSignSystemAdapter<Sign> {
         signs.setPermission("reformcloud.command.signs");
     }
 
-    private final Plugin plugin;
+    public static BukkitSignSystemAdapter getInstance() {
+        return instance;
+    }
 
     @Override
     protected void setSignLines(@NotNull CloudSign cloudSign, @NotNull String[] lines) {
@@ -211,10 +214,6 @@ public class BukkitSignSystemAdapter extends SharedSignSystemAdapter<Sign> {
         } else {
             Bukkit.getScheduler().runTask(this.plugin, runnable);
         }
-    }
-
-    public static BukkitSignSystemAdapter getInstance() {
-        return instance;
     }
 
     public Plugin getPlugin() {

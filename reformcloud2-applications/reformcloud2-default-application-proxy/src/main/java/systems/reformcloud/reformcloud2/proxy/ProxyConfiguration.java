@@ -37,6 +37,9 @@ public class ProxyConfiguration implements SerializableObject {
 
     public static final TypeToken<ProxyConfiguration> TYPE = new TypeToken<ProxyConfiguration>() {
     };
+    private List<MotdConfiguration> motdDefaultConfig;
+    private List<MotdConfiguration> motdMaintenanceConfig;
+    private List<TabListConfiguration> tabListConfigurations;
 
     public ProxyConfiguration() {
     }
@@ -47,12 +50,6 @@ public class ProxyConfiguration implements SerializableObject {
         this.motdMaintenanceConfig = motdMaintenanceConfig;
         this.tabListConfigurations = tabListConfigurations;
     }
-
-    private List<MotdConfiguration> motdDefaultConfig;
-
-    private List<MotdConfiguration> motdMaintenanceConfig;
-
-    private List<TabListConfiguration> tabListConfigurations;
 
     public List<MotdConfiguration> getMotdDefaultConfig() {
         return motdDefaultConfig;

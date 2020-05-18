@@ -116,7 +116,7 @@ public interface SignSystemAdapter<T> {
     /**
      * Checks if a user can connect to the process which is associated with the sign
      *
-     * @param cloudSign The sign for which the check should be made
+     * @param cloudSign         The sign for which the check should be made
      * @param permissionChecker The permission checker used for permission checks
      * @return If a user can connect to the process
      */

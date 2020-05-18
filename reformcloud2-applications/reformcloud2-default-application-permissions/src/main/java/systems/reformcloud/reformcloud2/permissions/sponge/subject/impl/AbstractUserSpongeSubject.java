@@ -33,11 +33,11 @@ import java.util.UUID;
 
 public abstract class AbstractUserSpongeSubject extends AbstractSpongeSubject {
 
+    private final SubjectData userSubjectData;
+
     public AbstractUserSpongeSubject(@NotNull UUID user) {
         this.userSubjectData = new SpongeSubjectData(user);
     }
-
-    private final SubjectData userSubjectData;
 
     @Override
     @NotNull

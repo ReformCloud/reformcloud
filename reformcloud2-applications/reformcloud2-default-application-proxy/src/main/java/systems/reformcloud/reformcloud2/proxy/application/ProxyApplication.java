@@ -40,6 +40,10 @@ public class ProxyApplication extends Application {
 
     private static ProxyApplication instance;
 
+    public static ProxyApplication getInstance() {
+        return instance;
+    }
+
     @Override
     public void onInstallable() {
         ExecutorAPI.getInstance().getEventManager().registerListener(new ProcessInclusionHandler());
@@ -52,10 +56,6 @@ public class ProxyApplication extends Application {
 
         ExecutorAPI.getInstance().getPacketHandler().registerHandler(PacketRequestConfig.class);
         DefaultChannelManager.INSTANCE.getAllSender().forEach(e -> e.sendPacket(new PacketProxyConfigUpdate(ConfigHelper.getProxyConfiguration())));
-    }
-
-    public static ProxyApplication getInstance() {
-        return instance;
     }
 
     @Nullable

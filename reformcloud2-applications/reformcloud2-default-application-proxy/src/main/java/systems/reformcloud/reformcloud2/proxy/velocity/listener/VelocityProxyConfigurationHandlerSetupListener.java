@@ -32,11 +32,11 @@ import systems.reformcloud.reformcloud2.proxy.velocity.config.VelocityProxyConfi
 
 public final class VelocityProxyConfigurationHandlerSetupListener {
 
+    private final ProxyServer proxyServer;
+
     public VelocityProxyConfigurationHandlerSetupListener(ProxyServer proxyServer) {
         this.proxyServer = proxyServer;
     }
-
-    private final ProxyServer proxyServer;
 
     @Listener
     public void handle(final @NotNull ProxyConfigurationHandlerSetupEvent event) {

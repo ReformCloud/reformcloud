@@ -34,14 +34,13 @@ import java.util.Map;
 
 public final class RunnerInterpreterTask extends InterpreterTask {
 
+    private final String name;
+    private final Map<String, InterpreterCommand> commands;
+
     public RunnerInterpreterTask(@NotNull String name, @NotNull Map<String, InterpreterCommand> commands) {
         this.name = name;
         this.commands = commands;
     }
-
-    private final String name;
-
-    private final Map<String, InterpreterCommand> commands;
 
     @NotNull
     @Override

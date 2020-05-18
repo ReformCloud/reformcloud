@@ -41,9 +41,11 @@ import java.util.function.Predicate;
 
 public class SpongePermissionService implements PermissionService {
 
+    public static final Map<String, PermissionDescription> DESCRIPTIONS = new ConcurrentHashMap<>();
     private static final Map<String, SubjectCollection> LOADED = new HashMap<>();
 
-    public static final Map<String, PermissionDescription> DESCRIPTIONS = new ConcurrentHashMap<>();
+    // ======
+    private static SpongePermissionService instance;
 
     // ======
 
@@ -56,18 +58,14 @@ public class SpongePermissionService implements PermissionService {
         LOADED.put(SUBJECTS_ROLE_TEMPLATE, CollectionCatalog.GROUP_COLLECTION);
     }
 
-    // ======
-
-    private static SpongePermissionService instance;
-
-    public static SpongePermissionService getInstance() {
-        return instance;
+    public SpongePermissionService() {
+        instance = this;
     }
 
     // ======
 
-    public SpongePermissionService() {
-        instance = this;
+    public static SpongePermissionService getInstance() {
+        return instance;
     }
 
     // ======

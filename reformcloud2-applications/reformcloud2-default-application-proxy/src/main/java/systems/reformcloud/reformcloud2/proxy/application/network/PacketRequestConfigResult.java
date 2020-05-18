@@ -32,14 +32,14 @@ import systems.reformcloud.reformcloud2.proxy.ProxyConfiguration;
 
 public class PacketRequestConfigResult extends QueryResultPacket {
 
+    private ProxyConfiguration proxyConfiguration;
+
     public PacketRequestConfigResult() {
     }
 
     public PacketRequestConfigResult(ProxyConfiguration proxyConfiguration) {
         this.proxyConfiguration = proxyConfiguration;
     }
-
-    private ProxyConfiguration proxyConfiguration;
 
     public ProxyConfiguration getProxyConfiguration() {
         return proxyConfiguration;

@@ -42,14 +42,14 @@ import java.util.Collection;
 
 public class PacketDeleteBulkSigns extends Packet {
 
+    private Collection<CloudSign> cloudSigns;
+
     public PacketDeleteBulkSigns() {
     }
 
     public PacketDeleteBulkSigns(Collection<CloudSign> cloudSigns) {
         this.cloudSigns = cloudSigns;
     }
-
-    private Collection<CloudSign> cloudSigns;
 
     @Override
     public int getId() {

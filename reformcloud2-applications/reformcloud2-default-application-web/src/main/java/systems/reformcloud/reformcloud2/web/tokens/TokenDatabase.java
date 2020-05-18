@@ -31,13 +31,12 @@ import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonCo
 
 public final class TokenDatabase {
 
+    private static final String DB = "internal_web_db";
+    private static JsonConfiguration configuration;
+
     private TokenDatabase() {
         throw new UnsupportedOperationException();
     }
-
-    private static final String DB = "internal_web_db";
-
-    private static JsonConfiguration configuration;
 
     public static void load() {
         ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().createDatabase(DB);

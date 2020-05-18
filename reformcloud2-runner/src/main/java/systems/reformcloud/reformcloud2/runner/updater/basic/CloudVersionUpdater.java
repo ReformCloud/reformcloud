@@ -34,6 +34,9 @@ import java.util.Properties;
 
 public final class CloudVersionUpdater implements Updater {
 
+    private final File globalReformScriptFile;
+    private boolean versionAvailable = false;
+
     /**
      * Creates a new cloud version updater instance
      *
@@ -42,10 +45,6 @@ public final class CloudVersionUpdater implements Updater {
     public CloudVersionUpdater(@NotNull File globalReformScriptFile) {
         this.globalReformScriptFile = globalReformScriptFile;
     }
-
-    private final File globalReformScriptFile;
-
-    private boolean versionAvailable = false;
 
     @Override
     public void collectInformation() {

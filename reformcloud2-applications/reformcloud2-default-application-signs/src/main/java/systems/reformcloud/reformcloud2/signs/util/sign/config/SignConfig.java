@@ -35,6 +35,12 @@ public class SignConfig implements SerializableObject, Cloneable {
 
     public static final TypeToken<SignConfig> TYPE = new TypeToken<SignConfig>() {
     };
+    private double updateIntervalInSeconds;
+    private Collection<SignLayout> layouts;
+    private boolean knockBackEnabled;
+    private String knockBackBypassPermission;
+    private double knockBackDistance;
+    private double knockBackStrength;
 
     public SignConfig() {
     }
@@ -47,18 +53,6 @@ public class SignConfig implements SerializableObject, Cloneable {
         this.knockBackDistance = knockBackDistance;
         this.knockBackStrength = knockBackStrength;
     }
-
-    private double updateIntervalInSeconds;
-
-    private Collection<SignLayout> layouts;
-
-    private boolean knockBackEnabled;
-
-    private String knockBackBypassPermission;
-
-    private double knockBackDistance;
-
-    private double knockBackStrength;
 
     public Collection<SignLayout> getLayouts() {
         return layouts;

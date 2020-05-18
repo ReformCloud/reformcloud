@@ -26,6 +26,14 @@ package systems.reformcloud.reformcloud2.backends.ftp;
 
 public final class FTPConfig {
 
+    private final boolean sslEnabled;
+    private final boolean enabled;
+    private final String host;
+    private final int port;
+    private final String user;
+    private final String password;
+    private final String baseDirectory;
+
     public FTPConfig(boolean sslEnabled, boolean enabled, String host, int port, String user, String password, String baseDirectory) {
         this.sslEnabled = sslEnabled;
         this.enabled = enabled;
@@ -35,20 +43,6 @@ public final class FTPConfig {
         this.password = password;
         this.baseDirectory = baseDirectory;
     }
-
-    private final boolean sslEnabled;
-
-    private final boolean enabled;
-
-    private final String host;
-
-    private final int port;
-
-    private final String user;
-
-    private final String password;
-
-    private final String baseDirectory;
 
     public boolean isSslEnabled() {
         return sslEnabled;
