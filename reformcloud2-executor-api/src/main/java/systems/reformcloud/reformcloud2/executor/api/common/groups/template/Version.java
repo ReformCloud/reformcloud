@@ -115,6 +115,12 @@ public enum Version {
             "https://dl.reformcloud.systems/mcversions/paper/paper-1.15.2.jar", 1, 41000),
 
     /**
+     * Tuinity versions
+     */
+    TUINITY_1_15_2("Tuinity 1.15.2", "1.15.2",
+            "https://dl.reformcloud.systems/mcversions/tuinity/tunity-1.15.2.jar", 1, 41000),
+
+    /**
      * SpongeVanilla Versions
      */
     SPONGEVANILLA_1_11_2("SpongeVanilla 1.11.2", "1.11.2",
