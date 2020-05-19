@@ -66,6 +66,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -111,6 +113,10 @@ public abstract class SharedRunningProcess implements RunningProcess {
      * The screen of the current running process
      */
     protected RunningProcessScreen runningProcessScreen;
+    /**
+     * Lock to prevent multiple actions at the same time on the current process
+     */
+    protected final Lock lock = new ReentrantLock();
 
     /**
      * Creates a new shared process
@@ -138,63 +144,89 @@ public abstract class SharedRunningProcess implements RunningProcess {
     public Task<Void> prepare() {
         Task<Void> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
-            ExecutorAPI.getInstance().getEventManager().callEvent(new RunningProcessPrepareEvent(this));
-
-            this.startupInformation.getNetworkInfo().setPort(PortUtil.checkPort(
-                    this.startupInformation.getNetworkInfo().getPort()
-            ));
-
-            if (!this.startupInformation.getProcessGroup().isStaticProcess() || this.firstStartup) {
-                this.loadTemplateInclusions(Inclusion.InclusionLoadType.PRE);
-                this.loadPathInclusions(Inclusion.InclusionLoadType.PRE);
-
-                this.initGlobalTemplateAndCurrentTemplate();
+            this.lock.lock();
+            try {
+                this.prepare0();
+            } finally {
+                this.lock.unlock();
             }
 
-            InclusionLoader.loadInclusions(this.path, this.startupInformation.getPreInclusions());
-
-            if (!this.startupInformation.getProcessGroup().isStaticProcess() || this.firstStartup) {
-                this.loadTemplateInclusions(Inclusion.InclusionLoadType.PAST);
-                this.loadPathInclusions(Inclusion.InclusionLoadType.PAST);
-            }
-
-            this.chooseStartupEnvironmentAndPrepare();
-
-            if (!Files.exists(Paths.get("reformcloud/files/runner.jar"))) {
-                DownloadHelper.downloadAndDisconnect(StringUtil.RUNNER_DOWNLOAD_URL, "reformcloud/files/runner.jar");
-            }
-
-            SystemHelper.createDirectory(Paths.get(path + "/plugins"));
-            SystemHelper.createDirectory(Paths.get(path + "/reformcloud/.connection"));
-            new JsonConfiguration().add("key", this.getConnectionKey()).write(path + "/reformcloud/.connection/key.json");
-
-            SystemHelper.doCopy("reformcloud/files/runner.jar", path + "/runner.jar");
-            SystemHelper.doCopy("reformcloud/.bin/executor.jar", path + "/plugins/executor.jar");
-
-            Duo<String, Integer> connectHost = this.getAvailableConnectionHost();
-            new JsonConfiguration()
-                    .add("controller-host", connectHost.getFirst())
-                    .add("controller-port", connectHost.getSecond())
-                    .add("startInfo", this.startupInformation)
-                    .write(path + "/reformcloud/.connection/connection.json");
-
-            this.startupInformation.getProcessDetail().setProcessState(ProcessState.PREPARED);
-            ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(this.startupInformation);
-
-            ExecutorAPI.getInstance().getEventManager().callEvent(new RunningProcessPreparedEvent(this));
             task.complete(null);
         });
         return task;
     }
 
+    private void prepare0() {
+        ExecutorAPI.getInstance().getEventManager().callEvent(new RunningProcessPrepareEvent(this));
+
+        this.startupInformation.getNetworkInfo().setPort(PortUtil.checkPort(
+                this.startupInformation.getNetworkInfo().getPort()
+        ));
+
+        if (!this.startupInformation.getProcessGroup().isStaticProcess() || this.firstStartup) {
+            this.loadTemplateInclusions(Inclusion.InclusionLoadType.PRE);
+            this.loadPathInclusions(Inclusion.InclusionLoadType.PRE);
+
+            this.initGlobalTemplateAndCurrentTemplate();
+        }
+
+        InclusionLoader.loadInclusions(this.path, this.startupInformation.getPreInclusions());
+
+        if (!this.startupInformation.getProcessGroup().isStaticProcess() || this.firstStartup) {
+            this.loadTemplateInclusions(Inclusion.InclusionLoadType.PAST);
+            this.loadPathInclusions(Inclusion.InclusionLoadType.PAST);
+        }
+
+        this.chooseStartupEnvironmentAndPrepare();
+
+        if (!Files.exists(Paths.get("reformcloud/files/runner.jar"))) {
+            DownloadHelper.downloadAndDisconnect(StringUtil.RUNNER_DOWNLOAD_URL, "reformcloud/files/runner.jar");
+        }
+
+        SystemHelper.createDirectory(Paths.get(path + "/plugins"));
+        SystemHelper.createDirectory(Paths.get(path + "/reformcloud/.connection"));
+        new JsonConfiguration().add("key", this.getConnectionKey()).write(path + "/reformcloud/.connection/key.json");
+
+        SystemHelper.doCopy("reformcloud/files/runner.jar", path + "/runner.jar");
+        SystemHelper.doCopy("reformcloud/.bin/executor.jar", path + "/plugins/executor.jar");
+
+        Duo<String, Integer> connectHost = this.getAvailableConnectionHost();
+        new JsonConfiguration()
+                .add("controller-host", connectHost.getFirst())
+                .add("controller-port", connectHost.getSecond())
+                .add("startInfo", this.startupInformation)
+                .write(path + "/reformcloud/.connection/connection.json");
+
+        this.startupInformation.getProcessDetail().setProcessState(ProcessState.PREPARED);
+        ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(this.startupInformation);
+
+        ExecutorAPI.getInstance().getEventManager().callEvent(new RunningProcessPreparedEvent(this));
+    }
+
     @Override
     public void handleEnqueue() {
-        this.startupInformation.getProcessDetail().setProcessState(ProcessState.READY_TO_START);
-        ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(this.startupInformation);
+        this.lock.lock();
+
+        try {
+            this.startupInformation.getProcessDetail().setProcessState(ProcessState.READY_TO_START);
+            ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(this.startupInformation);
+        } finally {
+            this.lock.unlock();
+        }
     }
 
     @Override
     public boolean bootstrap() {
+        this.lock.lock();
+
+        try {
+            return this.bootstrap0();
+        } finally {
+            this.lock.unlock();
+        }
+    }
+
+    private boolean bootstrap0() {
         Conditions.isTrue(
                 this.startupInformation.getProcessDetail().getProcessState().equals(ProcessState.READY_TO_START),
                 "Trying to start a process which is not prepared and ready to start"
@@ -253,6 +285,16 @@ public abstract class SharedRunningProcess implements RunningProcess {
 
     @Override
     public void shutdown() {
+        this.lock.lock();
+
+        try {
+            this.shutdown0();
+        } finally {
+            this.lock.unlock();
+        }
+    }
+
+    private void shutdown0() {
         this.startupTime = -1;
 
         JavaProcessHelper.shutdown(
@@ -290,6 +332,16 @@ public abstract class SharedRunningProcess implements RunningProcess {
 
     @Override
     public void copy(@NotNull String targetTemplate, @NotNull String targetTemplateStorage, @NotNull String targetTemplateGroup) {
+        this.lock.lock();
+
+        try {
+            this.copy0(targetTemplate, targetTemplateStorage, targetTemplateGroup);
+        } finally {
+            this.lock.unlock();
+        }
+    }
+
+    public void copy0(@NotNull String targetTemplate, @NotNull String targetTemplateStorage, @NotNull String targetTemplateGroup) {
         this.sendCommand("save-all");
         AbsoluteThread.sleep(TimeUnit.SECONDS, 1);
 
