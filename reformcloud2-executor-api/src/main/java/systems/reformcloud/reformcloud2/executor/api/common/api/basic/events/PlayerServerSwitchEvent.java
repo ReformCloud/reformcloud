@@ -46,20 +46,20 @@ public class PlayerServerSwitchEvent extends Event {
 
     @NotNull
     public UUID getUniqueId() {
-        return uniqueId;
+        return this.uniqueId;
     }
 
     public String getName() {
-        return name;
+        return this.name;
     }
 
     @NotNull
     public String getTargetServer() {
-        return targetServer;
+        return this.targetServer;
     }
 
     @Nullable
     public String getPreviousServer() {
-        return previousServer;
+        return this.previousServer;
     }
 }

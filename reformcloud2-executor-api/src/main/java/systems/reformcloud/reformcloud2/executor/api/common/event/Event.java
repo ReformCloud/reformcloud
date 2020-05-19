@@ -49,7 +49,7 @@ public class Event {
     @Deprecated
     @ApiStatus.ScheduledForRemoval
     public final boolean isAsync() {
-        return async;
+        return this.async;
     }
 
     @Deprecated

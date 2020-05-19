@@ -124,7 +124,7 @@ public final class SFTPTemplateBackend implements TemplateBackend {
 
     @Override
     public boolean existsTemplate(@NotNull String group, @NotNull String template) {
-        if (isDisconnected()) {
+        if (this.isDisconnected()) {
             return false;
         }
 
@@ -138,7 +138,7 @@ public final class SFTPTemplateBackend implements TemplateBackend {
 
     @Override
     public void createTemplate(@NotNull String group, @NotNull String template) {
-        if (isDisconnected()) {
+        if (this.isDisconnected()) {
             return;
         }
 
@@ -148,7 +148,7 @@ public final class SFTPTemplateBackend implements TemplateBackend {
     @NotNull
     @Override
     public Task<Void> loadTemplate(@NotNull String group, @NotNull String template, @NotNull Path target) {
-        if (isDisconnected()) {
+        if (this.isDisconnected()) {
             return Task.completedTask(null);
         }
 
@@ -189,14 +189,14 @@ public final class SFTPTemplateBackend implements TemplateBackend {
     @NotNull
     @Override
     public Task<Void> loadGlobalTemplates(@NotNull ProcessGroup group, @NotNull Path target) {
-        return future(() -> Streams.allOf(group.getTemplates(), e -> e.getBackend().equals(getName())
+        return future(() -> Streams.allOf(group.getTemplates(), e -> e.getBackend().equals(this.getName())
                 && e.isGlobal()).forEach(e -> this.loadTemplate(group.getName(), e.getName(), target)));
     }
 
     @NotNull
     @Override
     public Task<Void> loadPath(@NotNull String path, @NotNull Path target) {
-        if (isDisconnected()) {
+        if (this.isDisconnected()) {
             return Task.completedTask(null);
         }
 
@@ -205,7 +205,7 @@ public final class SFTPTemplateBackend implements TemplateBackend {
 
     @Override
     public void deployTemplate(@NotNull String group, @NotNull String template, @NotNull Path current, @NotNull Collection<String> collection) {
-        if (isDisconnected()) {
+        if (this.isDisconnected()) {
             return;
         }
 
@@ -250,7 +250,7 @@ public final class SFTPTemplateBackend implements TemplateBackend {
 
     @Override
     public void deleteTemplate(@NotNull String group, @NotNull String template) {
-        if (isDisconnected()) {
+        if (this.isDisconnected()) {
             return;
         }
 
@@ -319,8 +319,8 @@ public final class SFTPTemplateBackend implements TemplateBackend {
 
     private void open() {
         try {
-            this.session = new JSch().getSession(config.getUser(), config.getHost(), config.getPort());
-            this.session.setPassword(config.getPassword());
+            this.session = new JSch().getSession(this.config.getUser(), this.config.getHost(), this.config.getPort());
+            this.session.setPassword(this.config.getPassword());
             this.session.setConfig("StrictHostKeyChecking", "no");
             this.session.connect(2500);
 

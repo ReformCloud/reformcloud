@@ -38,6 +38,6 @@ public class ProcessStartedEvent extends Event {
 
     @NotNull
     public ProcessInformation getProcessInformation() {
-        return processInformation;
+        return this.processInformation;
     }
 }

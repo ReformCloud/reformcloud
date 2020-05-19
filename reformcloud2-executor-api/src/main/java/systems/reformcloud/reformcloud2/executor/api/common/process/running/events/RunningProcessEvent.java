@@ -41,6 +41,6 @@ public abstract class RunningProcessEvent extends Event {
      */
     @NotNull
     public RunningProcess getRunningProcess() {
-        return runningProcess;
+        return this.runningProcess;
     }
 }

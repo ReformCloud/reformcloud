@@ -75,16 +75,16 @@ public final class RunnerInterpretedReformScript implements InterpretedReformScr
 
     @Override
     public void execute() {
-        for (String line : allLines) {
+        for (String line : this.allLines) {
             RunnerUtils.debug("Executing script line " + line);
 
-            Map.Entry<Integer, InterpreterCommand> entry = commandsPerLine.get(line);
+            Map.Entry<Integer, InterpreterCommand> entry = this.commandsPerLine.get(line);
             if (entry == null) {
                 continue;
             }
 
             RunnerUtils.debug("Executing cursor line " + entry.getKey() + "...");
-            entry.getValue().execute(line, this, allLines);
+            entry.getValue().execute(line, this, this.allLines);
             RunnerUtils.debug("Executed cursor line " + entry.getKey());
         }
     }

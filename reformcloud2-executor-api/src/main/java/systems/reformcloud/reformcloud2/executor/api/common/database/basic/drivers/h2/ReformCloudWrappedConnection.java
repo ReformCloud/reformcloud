@@ -42,42 +42,42 @@ public final class ReformCloudWrappedConnection implements Connection {
 
     @Override
     public Statement createStatement() throws SQLException {
-        return parent.createStatement();
+        return this.parent.createStatement();
     }
 
     @Override
     public PreparedStatement prepareStatement(String sql) throws SQLException {
-        return parent.prepareStatement(sql);
+        return this.parent.prepareStatement(sql);
     }
 
     @Override
     public CallableStatement prepareCall(String sql) throws SQLException {
-        return parent.prepareCall(sql);
+        return this.parent.prepareCall(sql);
     }
 
     @Override
     public String nativeSQL(String sql) throws SQLException {
-        return parent.nativeSQL(sql);
+        return this.parent.nativeSQL(sql);
     }
 
     @Override
     public boolean getAutoCommit() throws SQLException {
-        return parent.getAutoCommit();
+        return this.parent.getAutoCommit();
     }
 
     @Override
     public void setAutoCommit(boolean autoCommit) throws SQLException {
-        parent.setAutoCommit(autoCommit);
+        this.parent.setAutoCommit(autoCommit);
     }
 
     @Override
     public void commit() throws SQLException {
-        parent.commit();
+        this.parent.commit();
     }
 
     @Override
     public void rollback() throws SQLException {
-        parent.rollback();
+        this.parent.rollback();
     }
 
     @Override
@@ -86,231 +86,231 @@ public final class ReformCloudWrappedConnection implements Connection {
     }
 
     public void disconnect() throws SQLException {
-        parent.close();
+        this.parent.close();
     }
 
     @Override
     public boolean isClosed() throws SQLException {
-        return parent.isClosed();
+        return this.parent.isClosed();
     }
 
     @Override
     public DatabaseMetaData getMetaData() throws SQLException {
-        return parent.getMetaData();
+        return this.parent.getMetaData();
     }
 
     @Override
     public boolean isReadOnly() throws SQLException {
-        return parent.isReadOnly();
+        return this.parent.isReadOnly();
     }
 
     @Override
     public void setReadOnly(boolean readOnly) throws SQLException {
-        parent.setReadOnly(readOnly);
+        this.parent.setReadOnly(readOnly);
     }
 
     @Override
     public String getCatalog() throws SQLException {
-        return parent.getCatalog();
+        return this.parent.getCatalog();
     }
 
     @Override
     public void setCatalog(String catalog) throws SQLException {
-        parent.setCatalog(catalog);
+        this.parent.setCatalog(catalog);
     }
 
     @Override
     public int getTransactionIsolation() throws SQLException {
-        return parent.getTransactionIsolation();
+        return this.parent.getTransactionIsolation();
     }
 
     @Override
     public void setTransactionIsolation(int level) throws SQLException {
-        parent.setTransactionIsolation(level);
+        this.parent.setTransactionIsolation(level);
     }
 
     @Override
     public SQLWarning getWarnings() throws SQLException {
-        return parent.getWarnings();
+        return this.parent.getWarnings();
     }
 
     @Override
     public void clearWarnings() throws SQLException {
-        parent.clearWarnings();
+        this.parent.clearWarnings();
     }
 
     @Override
     public Statement createStatement(int resultSetType, int resultSetConcurrency) throws SQLException {
-        return parent.createStatement(resultSetType, resultSetConcurrency);
+        return this.parent.createStatement(resultSetType, resultSetConcurrency);
     }
 
     @Override
     public PreparedStatement prepareStatement(String sql, int resultSetType, int resultSetConcurrency) throws SQLException {
-        return parent.prepareStatement(sql, resultSetType, resultSetConcurrency);
+        return this.parent.prepareStatement(sql, resultSetType, resultSetConcurrency);
     }
 
     @Override
     public CallableStatement prepareCall(String sql, int resultSetType, int resultSetConcurrency) throws SQLException {
-        return parent.prepareCall(sql, resultSetType, resultSetConcurrency);
+        return this.parent.prepareCall(sql, resultSetType, resultSetConcurrency);
     }
 
     @Override
     public Map<String, Class<?>> getTypeMap() throws SQLException {
-        return parent.getTypeMap();
+        return this.parent.getTypeMap();
     }
 
     @Override
     public void setTypeMap(Map<String, Class<?>> map) throws SQLException {
-        parent.setTypeMap(map);
+        this.parent.setTypeMap(map);
     }
 
     @Override
     public int getHoldability() throws SQLException {
-        return parent.getHoldability();
+        return this.parent.getHoldability();
     }
 
     @Override
     public void setHoldability(int holdability) throws SQLException {
-        parent.setHoldability(holdability);
+        this.parent.setHoldability(holdability);
     }
 
     @Override
     public Savepoint setSavepoint() throws SQLException {
-        return parent.setSavepoint();
+        return this.parent.setSavepoint();
     }
 
     @Override
     public Savepoint setSavepoint(String name) throws SQLException {
-        return parent.setSavepoint(name);
+        return this.parent.setSavepoint(name);
     }
 
     @Override
     public void rollback(Savepoint savepoint) throws SQLException {
-        parent.rollback(savepoint);
+        this.parent.rollback(savepoint);
     }
 
     @Override
     public void releaseSavepoint(Savepoint savepoint) throws SQLException {
-        parent.releaseSavepoint(savepoint);
+        this.parent.releaseSavepoint(savepoint);
     }
 
     @Override
     public Statement createStatement(int resultSetType, int resultSetConcurrency, int resultSetHoldability) throws SQLException {
-        return parent.createStatement(resultSetType, resultSetConcurrency, resultSetHoldability);
+        return this.parent.createStatement(resultSetType, resultSetConcurrency, resultSetHoldability);
     }
 
     @Override
     public PreparedStatement prepareStatement(String sql, int resultSetType, int resultSetConcurrency, int resultSetHoldability) throws SQLException {
-        return parent.prepareStatement(sql, resultSetType, resultSetConcurrency, resultSetHoldability);
+        return this.parent.prepareStatement(sql, resultSetType, resultSetConcurrency, resultSetHoldability);
     }
 
     @Override
     public CallableStatement prepareCall(String sql, int resultSetType, int resultSetConcurrency, int resultSetHoldability) throws SQLException {
-        return parent.prepareCall(sql, resultSetType, resultSetConcurrency, resultSetHoldability);
+        return this.parent.prepareCall(sql, resultSetType, resultSetConcurrency, resultSetHoldability);
     }
 
     @Override
     public PreparedStatement prepareStatement(String sql, int autoGeneratedKeys) throws SQLException {
-        return parent.prepareStatement(sql, autoGeneratedKeys);
+        return this.parent.prepareStatement(sql, autoGeneratedKeys);
     }
 
     @Override
     public PreparedStatement prepareStatement(String sql, int[] columnIndexes) throws SQLException {
-        return parent.prepareStatement(sql, columnIndexes);
+        return this.parent.prepareStatement(sql, columnIndexes);
     }
 
     @Override
     public PreparedStatement prepareStatement(String sql, String[] columnNames) throws SQLException {
-        return parent.prepareStatement(sql, columnNames);
+        return this.parent.prepareStatement(sql, columnNames);
     }
 
     @Override
     public Clob createClob() throws SQLException {
-        return parent.createClob();
+        return this.parent.createClob();
     }
 
     @Override
     public Blob createBlob() throws SQLException {
-        return parent.createBlob();
+        return this.parent.createBlob();
     }
 
     @Override
     public NClob createNClob() throws SQLException {
-        return parent.createNClob();
+        return this.parent.createNClob();
     }
 
     @Override
     public SQLXML createSQLXML() throws SQLException {
-        return parent.createSQLXML();
+        return this.parent.createSQLXML();
     }
 
     @Override
     public boolean isValid(int timeout) throws SQLException {
-        return parent.isValid(timeout);
+        return this.parent.isValid(timeout);
     }
 
     @Override
     public void setClientInfo(String name, String value) throws SQLClientInfoException {
-        parent.setClientInfo(name, value);
+        this.parent.setClientInfo(name, value);
     }
 
     @Override
     public String getClientInfo(String name) throws SQLException {
-        return parent.getClientInfo(name);
+        return this.parent.getClientInfo(name);
     }
 
     @Override
     public Properties getClientInfo() throws SQLException {
-        return parent.getClientInfo();
+        return this.parent.getClientInfo();
     }
 
     @Override
     public void setClientInfo(Properties properties) throws SQLClientInfoException {
-        parent.setClientInfo(properties);
+        this.parent.setClientInfo(properties);
     }
 
     @Override
     public Array createArrayOf(String typeName, Object[] elements) throws SQLException {
-        return parent.createArrayOf(typeName, elements);
+        return this.parent.createArrayOf(typeName, elements);
     }
 
     @Override
     public Struct createStruct(String typeName, Object[] attributes) throws SQLException {
-        return parent.createStruct(typeName, attributes);
+        return this.parent.createStruct(typeName, attributes);
     }
 
     @Override
     public String getSchema() throws SQLException {
-        return parent.getSchema();
+        return this.parent.getSchema();
     }
 
     @Override
     public void setSchema(String schema) throws SQLException {
-        parent.setSchema(schema);
+        this.parent.setSchema(schema);
     }
 
     @Override
     public void abort(Executor executor) throws SQLException {
-        parent.abort(executor);
+        this.parent.abort(executor);
     }
 
     @Override
     public void setNetworkTimeout(Executor executor, int milliseconds) throws SQLException {
-        parent.setNetworkTimeout(executor, milliseconds);
+        this.parent.setNetworkTimeout(executor, milliseconds);
     }
 
     @Override
     public int getNetworkTimeout() throws SQLException {
-        return parent.getNetworkTimeout();
+        return this.parent.getNetworkTimeout();
     }
 
     @Override
     public <T> T unwrap(Class<T> iface) throws SQLException {
-        return parent.unwrap(iface);
+        return this.parent.unwrap(iface);
     }
 
     @Override
     public boolean isWrapperFor(Class<?> iface) throws SQLException {
-        return parent.isWrapperFor(iface);
+        return this.parent.isWrapperFor(iface);
     }
 }

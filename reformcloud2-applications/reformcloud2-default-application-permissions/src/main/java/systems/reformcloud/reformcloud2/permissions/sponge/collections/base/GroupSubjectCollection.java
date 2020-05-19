@@ -44,7 +44,7 @@ public class GroupSubjectCollection extends DefaultSubjectCollection {
     @NotNull
     @Override
     protected Subject load(String id) {
-        return new GroupSubject(id, service, this);
+        return new GroupSubject(id, this.service, this);
     }
 
     @Override

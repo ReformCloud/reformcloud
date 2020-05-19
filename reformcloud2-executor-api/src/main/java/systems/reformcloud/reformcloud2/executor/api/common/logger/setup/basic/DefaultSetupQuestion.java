@@ -47,24 +47,24 @@ public final class DefaultSetupQuestion implements SetupQuestion {
     @NotNull
     @Override
     public String question() {
-        return question;
+        return this.question;
     }
 
     @NotNull
     @Override
     public String wrongAnswerMessage() {
-        return wrongAnswer;
+        return this.wrongAnswer;
     }
 
     @NotNull
     @Override
     public Predicate<String> tester() {
-        return predicate;
+        return this.predicate;
     }
 
     @NotNull
     @Override
     public Consumer<String> then() {
-        return then;
+        return this.then;
     }
 }

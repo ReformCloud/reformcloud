@@ -40,9 +40,9 @@ public final class AbsentMap<K, V> extends ConcurrentHashMap<K, V> {
     @Override
     @NotNull
     public V putIfAbsent(K key, V value) {
-        V out = get(key);
+        V out = this.get(key);
         if (out == null) {
-            put(key, value);
+            this.put(key, value);
             return value;
         }
 

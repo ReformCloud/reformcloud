@@ -74,31 +74,31 @@ public class GeneralAPI implements SyncAPI, AsyncAPI {
     @NotNull
     @Override
     public ProcessAsyncAPI getProcessAsyncAPI() {
-        return processAPI;
+        return this.processAPI;
     }
 
     @NotNull
     @Override
     public GroupAsyncAPI getGroupAsyncAPI() {
-        return groupAPI;
+        return this.groupAPI;
     }
 
     @NotNull
     @Override
     public ConsoleAsyncAPI getConsoleAsyncAPI() {
-        return consoleAPI;
+        return this.consoleAPI;
     }
 
     @NotNull
     @Override
     public PlayerAsyncAPI getPlayerAsyncAPI() {
-        return playerAPI;
+        return this.playerAPI;
     }
 
     @NotNull
     @Override
     public DatabaseAsyncAPI getDatabaseAsyncAPI() {
-        return databaseAPI;
+        return this.databaseAPI;
     }
 
     @NotNull
@@ -110,31 +110,31 @@ public class GeneralAPI implements SyncAPI, AsyncAPI {
     @NotNull
     @Override
     public ProcessSyncAPI getProcessSyncAPI() {
-        return processAPI;
+        return this.processAPI;
     }
 
     @NotNull
     @Override
     public GroupSyncAPI getGroupSyncAPI() {
-        return groupAPI;
+        return this.groupAPI;
     }
 
     @NotNull
     @Override
     public ConsoleSyncAPI getConsoleSyncAPI() {
-        return consoleAPI;
+        return this.consoleAPI;
     }
 
     @NotNull
     @Override
     public PlayerSyncAPI getPlayerSyncAPI() {
-        return playerAPI;
+        return this.playerAPI;
     }
 
     @NotNull
     @Override
     public DatabaseSyncAPI getDatabaseSyncAPI() {
-        return databaseAPI;
+        return this.databaseAPI;
     }
 
     @NotNull

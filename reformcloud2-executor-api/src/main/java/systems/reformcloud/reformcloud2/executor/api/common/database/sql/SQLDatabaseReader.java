@@ -84,7 +84,7 @@ public class SQLDatabaseReader implements DatabaseReader {
             }
 
             try (Connection connection = this.database.get();
-                 PreparedStatement statement = prepareStatement("INSERT INTO `" + table + "` (`key`, `identifier`, `data`) VALUES (?, ?, ?);", connection)) {
+                 PreparedStatement statement = prepareStatement("INSERT INTO `" + this.table + "` (`key`, `identifier`, `data`) VALUES (?, ?, ?);", connection)) {
                 statement.setString(1, key);
                 statement.setString(2, identifier);
                 statement.setBytes(3, data.toPrettyBytes());
@@ -104,7 +104,7 @@ public class SQLDatabaseReader implements DatabaseReader {
         Task<Boolean> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             try (Connection connection = this.database.get();
-                 PreparedStatement statement = prepareStatement("UPDATE `" + table + "` SET `data` = ? WHERE `key` = ?", connection)) {
+                 PreparedStatement statement = prepareStatement("UPDATE `" + this.table + "` SET `data` = ? WHERE `key` = ?", connection)) {
                 statement.setBytes(1, newData.toPrettyBytes());
                 statement.setString(2, key);
                 statement.executeUpdate();
@@ -123,7 +123,7 @@ public class SQLDatabaseReader implements DatabaseReader {
         Task<Boolean> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             try (Connection connection = this.database.get();
-                 PreparedStatement statement = prepareStatement("UPDATE `" + table + "` SET `data` = ? WHERE `identifier` = ?", connection)) {
+                 PreparedStatement statement = prepareStatement("UPDATE `" + this.table + "` SET `data` = ? WHERE `identifier` = ?", connection)) {
                 statement.setBytes(1, newData.toPrettyBytes());
                 statement.setString(2, identifier);
                 statement.executeUpdate();
@@ -142,7 +142,7 @@ public class SQLDatabaseReader implements DatabaseReader {
         Task<Void> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             try (Connection connection = this.database.get();
-                 PreparedStatement statement = prepareStatement("DELETE FROM `" + table + "` WHERE `key` = ?", connection)) {
+                 PreparedStatement statement = prepareStatement("DELETE FROM `" + this.table + "` WHERE `key` = ?", connection)) {
                 statement.setString(1, key);
                 statement.executeUpdate();
             } catch (final SQLException ex) {
@@ -160,7 +160,7 @@ public class SQLDatabaseReader implements DatabaseReader {
         Task<Void> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             try (Connection connection = this.database.get();
-                 PreparedStatement statement = prepareStatement("DELETE FROM `" + table + "` WHERE `identifier` = ?", connection)) {
+                 PreparedStatement statement = prepareStatement("DELETE FROM `" + this.table + "` WHERE `identifier` = ?", connection)) {
                 statement.setString(1, identifier);
                 statement.executeUpdate();
             } catch (final SQLException ex) {
@@ -185,7 +185,7 @@ public class SQLDatabaseReader implements DatabaseReader {
     public Iterator<JsonConfiguration> iterator() {
         Collection<JsonConfiguration> list = new ArrayList<>();
         try (Connection connection = this.database.get();
-             PreparedStatement statement = prepareStatement("SELECT `data` FROM `" + table + "`", connection)) {
+             PreparedStatement statement = prepareStatement("SELECT `data` FROM `" + this.table + "`", connection)) {
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 byte[] bytes = resultSet.getBytes("data");
@@ -215,7 +215,7 @@ public class SQLDatabaseReader implements DatabaseReader {
         Task<JsonConfiguration> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             try (Connection connection = this.database.get();
-                 PreparedStatement statement = prepareStatement("SELECT `data` FROM `" + table + "` WHERE `" + keyName + "` = ?", connection)) {
+                 PreparedStatement statement = prepareStatement("SELECT `data` FROM `" + this.table + "` WHERE `" + keyName + "` = ?", connection)) {
                 statement.setString(1, key);
                 ResultSet resultSet = statement.executeQuery();
                 if (!resultSet.next()) {

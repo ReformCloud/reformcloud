@@ -89,7 +89,7 @@ public final class RethinkDBDatabase extends Database<RethinkDB> {
     @Override
     public boolean createDatabase(String name) {
         try {
-            this.get().tableCreate(name).run(connection);
+            this.get().tableCreate(name).run(this.connection);
             return true;
         } catch (final Throwable error) {
             return false;
@@ -99,7 +99,7 @@ public final class RethinkDBDatabase extends Database<RethinkDB> {
     @Override
     public boolean deleteDatabase(String name) {
         try {
-            this.get().tableDrop(name).run(connection);
+            this.get().tableDrop(name).run(this.connection);
             return true;
         } catch (final Throwable error) {
             return false;

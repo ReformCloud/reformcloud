@@ -68,39 +68,39 @@ public class SignLayout implements SerializableObject, Cloneable {
     }
 
     public String getTarget() {
-        return target;
+        return this.target;
     }
 
     public boolean isSearchingLayoutWhenFull() {
-        return searchingLayoutWhenFull;
+        return this.searchingLayoutWhenFull;
     }
 
     public boolean isShowMaintenanceProcessesOnSigns() {
-        return showMaintenanceProcessesOnSigns;
+        return this.showMaintenanceProcessesOnSigns;
     }
 
     public List<SignSubLayout> getSearchingLayouts() {
-        return searchingLayouts;
+        return this.searchingLayouts;
     }
 
     public List<SignSubLayout> getWaitingForConnectLayout() {
-        return waitingForConnectLayout;
+        return this.waitingForConnectLayout;
     }
 
     public List<SignSubLayout> getEmptyLayout() {
-        return emptyLayout;
+        return this.emptyLayout;
     }
 
     public List<SignSubLayout> getOnlineLayout() {
-        return onlineLayout;
+        return this.onlineLayout;
     }
 
     public List<SignSubLayout> getFullLayout() {
-        return fullLayout;
+        return this.fullLayout;
     }
 
     public List<SignSubLayout> getMaintenanceLayout() {
-        return maintenanceLayout;
+        return this.maintenanceLayout;
     }
 
     @Override

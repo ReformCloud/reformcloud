@@ -86,18 +86,18 @@ public final class ControllerExecutorConfig {
     private final AtomicBoolean firstStartup = new AtomicBoolean(false);
 
     public ControllerExecutorConfig() {
-        createDirectories();
+        this.createDirectories();
         this.subGroupRegistry = RegistryBuilder.newRegistry(Paths.get("reformcloud/groups/sub"));
         this.mainGroupRegistry = RegistryBuilder.newRegistry(Paths.get("reformcloud/groups/main"));
 
         if (!Files.exists(ControllerConfig.PATH)) {
             this.firstStartup.set(true);
-            firstSetup();
+            this.firstSetup();
         }
 
-        loadGroups();
-        this.controllerConfig = load();
-        this.connectionKey = connectionKey();
+        this.loadGroups();
+        this.controllerConfig = this.load();
+        this.connectionKey = this.connectionKey();
         this.ingameMessages = JsonConfiguration.read("reformcloud/configs/messages.json").get("messages", IngameMessages.TYPE);
     }
 
@@ -110,8 +110,8 @@ public final class ControllerExecutorConfig {
     }
 
     private void loadGroups() {
-        processGroups.addAll(this.subGroupRegistry.readKeys(e -> e.get("key", ProcessGroup.TYPE)));
-        mainGroups.addAll(this.mainGroupRegistry.readKeys(e -> e.get("key", MainGroup.TYPE)));
+        this.processGroups.addAll(this.subGroupRegistry.readKeys(e -> e.get("key", ProcessGroup.TYPE)));
+        this.mainGroups.addAll(this.mainGroupRegistry.readKeys(e -> e.get("key", MainGroup.TYPE)));
     }
 
     private void createDirectories() {
@@ -128,7 +128,7 @@ public final class ControllerExecutorConfig {
         ));
         new JsonConfiguration().add("messages", new IngameMessages()).write(Paths.get("reformcloud/configs/messages.json"));
 
-        setup.addQuestion(new DefaultSetupQuestion(
+        this.setup.addQuestion(new DefaultSetupQuestion(
                 LanguageManager.get("controller-setup-question-controller-address"),
                 LanguageManager.get("controller-setup-question-controller-address-wrong"),
                 s -> CommonHelper.getIpAddress(s.trim()) != null,
@@ -155,7 +155,7 @@ public final class ControllerExecutorConfig {
                 continue;
             }
 
-            version.install(e -> subGroupRegistry.createKey(e.getName(), e), e -> mainGroupRegistry.createKey(e.getName(), e));
+            version.install(e -> this.subGroupRegistry.createKey(e.getName(), e), e -> this.mainGroupRegistry.createKey(e.getName(), e));
             System.out.println(LanguageManager.get("general-setup-default-installation-done", version.getName()));
             break;
         }
@@ -163,7 +163,7 @@ public final class ControllerExecutorConfig {
 
     @NotNull
     public MainGroup createMainGroup(MainGroup mainGroup) {
-        MainGroup mainGroup1 = mainGroups.stream().filter(group -> mainGroup.getName().equals(group.getName())).findFirst().orElse(null);
+        MainGroup mainGroup1 = this.mainGroups.stream().filter(group -> mainGroup.getName().equals(group.getName())).findFirst().orElse(null);
         if (mainGroup1 == null) {
             this.mainGroups.add(mainGroup);
             return this.mainGroupRegistry.createKey(mainGroup.getName(), mainGroup);
@@ -174,7 +174,7 @@ public final class ControllerExecutorConfig {
 
     @NotNull
     public ProcessGroup createProcessGroup(ProcessGroup processGroup) {
-        ProcessGroup processGroup1 = processGroups.stream().filter(group -> processGroup.getName().equals(group.getName())).findFirst().orElse(null);
+        ProcessGroup processGroup1 = this.processGroups.stream().filter(group -> processGroup.getName().equals(group.getName())).findFirst().orElse(null);
         if (processGroup1 == null) {
             this.processGroups.add(processGroup);
             ControllerExecutor.getInstance().getAutoStartupHandler().update();
@@ -185,13 +185,13 @@ public final class ControllerExecutorConfig {
     }
 
     public void deleteMainGroup(MainGroup mainGroup) {
-        mainGroups.remove(mainGroup);
+        this.mainGroups.remove(mainGroup);
         this.mainGroupRegistry.deleteKey(mainGroup.getName());
     }
 
     public void deleteProcessGroup(ProcessGroup processGroup) {
         this.subGroupRegistry.deleteKey(processGroup.getName());
-        processGroups.remove(processGroup);
+        this.processGroups.remove(processGroup);
         ControllerExecutor.getInstance().getAutoStartupHandler().update();
 
         ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcesses(processGroup.getName()).forEach(processInformation -> {
@@ -201,9 +201,9 @@ public final class ControllerExecutorConfig {
     }
 
     public void updateProcessGroup(ProcessGroup processGroup) {
-        Streams.filterToReference(processGroups, group -> processGroup.getName().equals(group.getName())).ifPresent(group -> {
-            processGroups.remove(group);
-            processGroups.add(processGroup);
+        Streams.filterToReference(this.processGroups, group -> processGroup.getName().equals(group.getName())).ifPresent(group -> {
+            this.processGroups.remove(group);
+            this.processGroups.add(processGroup);
             this.subGroupRegistry.updateKey(processGroup.getName(), processGroup);
             ControllerExecutor.getInstance().getAutoStartupHandler().update();
         });
@@ -215,34 +215,34 @@ public final class ControllerExecutorConfig {
     }
 
     public void updateMainGroup(MainGroup mainGroup) {
-        Streams.filterToReference(mainGroups, group -> group.getName().equals(mainGroup.getName())).ifPresent(group -> {
-            mainGroups.remove(group);
-            mainGroups.add(mainGroup);
+        Streams.filterToReference(this.mainGroups, group -> group.getName().equals(mainGroup.getName())).ifPresent(group -> {
+            this.mainGroups.remove(group);
+            this.mainGroups.add(mainGroup);
             this.mainGroupRegistry.updateKey(mainGroup.getName(), mainGroup);
         });
     }
 
     public ControllerConfig getControllerConfig() {
-        return controllerConfig;
+        return this.controllerConfig;
     }
 
     public List<MainGroup> getMainGroups() {
-        return new ArrayList<>(mainGroups);
+        return new ArrayList<>(this.mainGroups);
     }
 
     public List<ProcessGroup> getProcessGroups() {
-        return new ArrayList<>(processGroups);
+        return new ArrayList<>(this.processGroups);
     }
 
     public String getConnectionKey() {
-        return connectionKey;
+        return this.connectionKey;
     }
 
     public IngameMessages getIngameMessages() {
-        return ingameMessages;
+        return this.ingameMessages;
     }
 
     public final boolean isFirstStartup() {
-        return firstStartup.get();
+        return this.firstStartup.get();
     }
 }

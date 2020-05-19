@@ -43,7 +43,7 @@ public class PacketAPIQueryCommandDispatchResult extends QueryResultPacket {
     }
 
     public Collection<String> getResult() {
-        return result;
+        return this.result;
     }
 
     @Override

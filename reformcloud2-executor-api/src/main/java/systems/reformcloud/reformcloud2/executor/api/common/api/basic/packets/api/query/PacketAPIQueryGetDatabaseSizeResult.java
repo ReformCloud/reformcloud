@@ -41,7 +41,7 @@ public class PacketAPIQueryGetDatabaseSizeResult extends QueryResultPacket {
     }
 
     public int getSize() {
-        return size;
+        return this.size;
     }
 
     @Override

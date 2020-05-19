@@ -59,6 +59,6 @@ public interface WebRequester extends Nameable {
      * @see #hasPermissionValue(String)
      */
     default boolean hasPermission(@NotNull String perm) {
-        return hasPermissionValue(perm).isAllowed();
+        return this.hasPermissionValue(perm).isAllowed();
     }
 }

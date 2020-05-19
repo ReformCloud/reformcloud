@@ -44,7 +44,7 @@ public class PacketAPIQueryGetProcessesResult extends QueryResultPacket {
     }
 
     public List<ProcessInformation> getProcessInformation() {
-        return processInformation;
+        return this.processInformation;
     }
 
     @Override

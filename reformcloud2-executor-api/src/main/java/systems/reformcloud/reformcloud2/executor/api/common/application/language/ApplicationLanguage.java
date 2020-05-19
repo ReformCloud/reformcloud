@@ -53,11 +53,11 @@ public class ApplicationLanguage implements Language {
 
     @Override
     public LanguageSource source() {
-        return source;
+        return this.source;
     }
 
     @Override
     public Properties messages() {
-        return properties;
+        return this.properties;
     }
 }

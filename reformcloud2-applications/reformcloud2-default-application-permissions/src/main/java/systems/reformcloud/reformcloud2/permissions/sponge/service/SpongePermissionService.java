@@ -103,13 +103,13 @@ public class SpongePermissionService implements PermissionService {
     @Override
     @NotNull
     public Optional<SubjectCollection> getCollection(@NotNull String identifier) {
-        return Optional.ofNullable(loadCollection(identifier).join());
+        return Optional.ofNullable(this.loadCollection(identifier).join());
     }
 
     @Override
     @NotNull
     public CompletableFuture<Boolean> hasCollection(@NotNull String identifier) {
-        return CompletableFuture.completedFuture(getCollection(identifier).isPresent());
+        return CompletableFuture.completedFuture(this.getCollection(identifier).isPresent());
     }
 
     @Override

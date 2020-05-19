@@ -51,18 +51,18 @@ public final class CheckForUpdatesCommand extends InterpreterCommand {
         }
 
         System.out.println("Collecting information about updates...");
-        runner.getApplicationsUpdater().collectInformation();
-        runner.getCloudVersionUpdater().collectInformation();
+        this.runner.getApplicationsUpdater().collectInformation();
+        this.runner.getCloudVersionUpdater().collectInformation();
         System.out.println("Collected all needed information");
 
-        if (runner.getCloudVersionUpdater().hasNewVersion()) {
-            System.out.println("The " + runner.getCloudVersionUpdater().getName() + " updater has a new version available");
-            runner.getCloudVersionUpdater().applyUpdates();
+        if (this.runner.getCloudVersionUpdater().hasNewVersion()) {
+            System.out.println("The " + this.runner.getCloudVersionUpdater().getName() + " updater has a new version available");
+            this.runner.getCloudVersionUpdater().applyUpdates();
         }
 
-        if (runner.getApplicationsUpdater().hasNewVersion()) {
-            System.out.println("The " + runner.getApplicationsUpdater().getName() + " updater has a new version available");
-            runner.getApplicationsUpdater().applyUpdates();
+        if (this.runner.getApplicationsUpdater().hasNewVersion()) {
+            System.out.println("The " + this.runner.getApplicationsUpdater().getName() + " updater has a new version available");
+            this.runner.getApplicationsUpdater().applyUpdates();
         }
     }
 }

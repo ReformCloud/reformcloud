@@ -54,23 +54,23 @@ public final class ThreadInfo implements SerializableObject {
     }
 
     public String getName() {
-        return name;
+        return this.name;
     }
 
     public long getId() {
-        return id;
+        return this.id;
     }
 
     public int getPriority() {
-        return priority;
+        return this.priority;
     }
 
     public boolean isDaemon() {
-        return daemon;
+        return this.daemon;
     }
 
     public Thread.State getState() {
-        return state;
+        return this.state;
     }
 
     @Override

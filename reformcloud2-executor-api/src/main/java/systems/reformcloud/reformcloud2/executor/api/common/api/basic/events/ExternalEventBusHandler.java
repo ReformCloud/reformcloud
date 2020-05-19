@@ -73,7 +73,7 @@ public class ExternalEventBusHandler {
      */
     @NotNull
     public EventManager getEventManager() {
-        return eventManager;
+        return this.eventManager;
     }
 
     /**
@@ -82,6 +82,6 @@ public class ExternalEventBusHandler {
      * @param event The event which should be called
      */
     public void callEvent(@NotNull Event event) {
-        eventManager.callEvent(event);
+        this.eventManager.callEvent(event);
     }
 }

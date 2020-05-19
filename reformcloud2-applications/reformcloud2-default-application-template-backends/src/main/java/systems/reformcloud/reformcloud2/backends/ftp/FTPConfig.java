@@ -45,30 +45,30 @@ public final class FTPConfig {
     }
 
     public boolean isSslEnabled() {
-        return sslEnabled;
+        return this.sslEnabled;
     }
 
     public boolean isEnabled() {
-        return enabled;
+        return this.enabled;
     }
 
     public String getHost() {
-        return host;
+        return this.host;
     }
 
     public int getPort() {
-        return port;
+        return this.port;
     }
 
     public String getUser() {
-        return user;
+        return this.user;
     }
 
     public String getPassword() {
-        return password;
+        return this.password;
     }
 
     public String getBaseDirectory() {
-        return baseDirectory;
+        return this.baseDirectory;
     }
 }

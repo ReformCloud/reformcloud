@@ -58,13 +58,13 @@ public class TokenWebServerAuth implements Auth {
             }
 
             System.out.println("Please verify that you've send the request to setup the web portal by typing \"web verify\"... (Request times out in 15 sec)");
-            while (!handled.containsKey(current)) {
+            while (!this.handled.containsKey(current)) {
                 if (current + TimeUnit.SECONDS.toMillis(15) <= System.currentTimeMillis()) {
                     break;
                 }
             }
 
-            WebRequester requester = handled.remove(current);
+            WebRequester requester = this.handled.remove(current);
             return new Duo<>(requester != null, requester);
         }
 

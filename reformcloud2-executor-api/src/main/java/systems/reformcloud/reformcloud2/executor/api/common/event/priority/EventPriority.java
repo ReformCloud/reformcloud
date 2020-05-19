@@ -45,6 +45,6 @@ public enum EventPriority {
     }
 
     public byte getPriority() {
-        return priority;
+        return this.priority;
     }
 }

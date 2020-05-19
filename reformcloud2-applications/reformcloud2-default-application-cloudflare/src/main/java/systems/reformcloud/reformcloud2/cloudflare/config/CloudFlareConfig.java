@@ -45,22 +45,22 @@ public class CloudFlareConfig {
     }
 
     public String getEmail() {
-        return email;
+        return this.email;
     }
 
     public String getApiToken() {
-        return apiToken;
+        return this.apiToken;
     }
 
     public String getDomainName() {
-        return domainName;
+        return this.domainName;
     }
 
     public String getZoneId() {
-        return zoneId;
+        return this.zoneId;
     }
 
     public String getSubDomain() {
-        return subDomain;
+        return this.subDomain;
     }
 }

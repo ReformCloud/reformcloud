@@ -45,12 +45,12 @@ public class ProcessInclusion implements SerializableObject {
 
     @NotNull
     public String getUrl() {
-        return url;
+        return this.url;
     }
 
     @NotNull
     public String getName() {
-        return name;
+        return this.name;
     }
 
     @Override

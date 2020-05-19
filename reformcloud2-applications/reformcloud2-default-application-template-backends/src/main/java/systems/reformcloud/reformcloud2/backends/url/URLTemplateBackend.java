@@ -68,7 +68,7 @@ public final class URLTemplateBackend implements TemplateBackend {
     @Override
     public boolean existsTemplate(@NotNull String group, @NotNull String template) {
         try {
-            HttpURLConnection connection = (HttpURLConnection) new URL(getBasePath() + group + "-" + template + ".zip").openConnection();
+            HttpURLConnection connection = (HttpURLConnection) new URL(this.getBasePath() + group + "-" + template + ".zip").openConnection();
             connection.setRequestProperty(
                     "User-Agent",
                     "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.95 Safari/537.11"
@@ -89,7 +89,7 @@ public final class URLTemplateBackend implements TemplateBackend {
     @NotNull
     @Override
     public Task<Void> loadTemplate(@NotNull String group, @NotNull String template, @NotNull Path target) {
-        DownloadHelper.downloadAndDisconnect(getBasePath() + group + "-" + template + ".zip", "reformcloud/files/temp/template.zip");
+        DownloadHelper.downloadAndDisconnect(this.getBasePath() + group + "-" + template + ".zip", "reformcloud/files/temp/template.zip");
         SystemHelper.unZip(new File("reformcloud/files/temp/template.zip"), target.toString());
         SystemHelper.deleteFile(new File("reformcloud/files/temp/template.zip"));
         return Task.completedTask(null);
@@ -98,7 +98,7 @@ public final class URLTemplateBackend implements TemplateBackend {
     @NotNull
     @Override
     public Task<Void> loadGlobalTemplates(@NotNull ProcessGroup group, @NotNull Path target) {
-        Streams.allOf(group.getTemplates(), e -> e.getBackend().equals(getName())
+        Streams.allOf(group.getTemplates(), e -> e.getBackend().equals(this.getName())
                 && e.isGlobal()).forEach(e -> this.loadTemplate(group.getName(), e.getName(), target));
         return Task.completedTask(null);
     }
@@ -106,7 +106,7 @@ public final class URLTemplateBackend implements TemplateBackend {
     @NotNull
     @Override
     public Task<Void> loadPath(@NotNull String path, @NotNull Path target) {
-        DownloadHelper.downloadAndDisconnect(getBasePath() + path, "reformcloud/files/temp/template.zip");
+        DownloadHelper.downloadAndDisconnect(this.getBasePath() + path, "reformcloud/files/temp/template.zip");
         SystemHelper.unZip(new File("reformcloud/files/temp/template.zip"), target.toString());
         SystemHelper.deleteFile(new File("reformcloud/files/temp/template.zip"));
         return Task.completedTask(null);
@@ -121,7 +121,7 @@ public final class URLTemplateBackend implements TemplateBackend {
     }
 
     private String getBasePath() {
-        return basePath.endsWith("/") ? basePath : basePath + "/";
+        return this.basePath.endsWith("/") ? this.basePath : this.basePath + "/";
     }
 
     @NotNull

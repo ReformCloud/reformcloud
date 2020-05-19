@@ -45,7 +45,7 @@ public class PacketAPIQueryGetBulkDocumentsResult extends QueryResultPacket {
     }
 
     public Collection<JsonConfiguration> getResult() {
-        return result;
+        return this.result;
     }
 
     @Override

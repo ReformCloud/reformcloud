@@ -53,21 +53,21 @@ public final class DatabaseConfig {
     }
 
     public void reload() {
-        load();
+        this.load();
     }
 
     public void connect(Database<?> database) {
         database.connect(
-                configuration.getString("host"),
-                configuration.getInteger("port"),
-                configuration.getString("user"),
-                configuration.getString("password"),
-                configuration.getString("table")
+                this.configuration.getString("host"),
+                this.configuration.getInteger("port"),
+                this.configuration.getString("user"),
+                this.configuration.getString("password"),
+                this.configuration.getString("table")
         );
     }
 
     public DatabaseType getType() {
-        return type;
+        return this.type;
     }
 
     public enum DatabaseType {

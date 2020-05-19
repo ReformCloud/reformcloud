@@ -60,7 +60,7 @@ public class JLine3Completer implements Completer {
         String buffer = parsedLine.line();
 
         if (buffer.lastIndexOf(' ') == -1) {
-            List<String> commands = commandManager.getCommands()
+            List<String> commands = this.commandManager.getCommands()
                     .stream()
                     .map(Command::mainCommand)
                     .collect(Collectors.toList());
@@ -71,7 +71,7 @@ public class JLine3Completer implements Completer {
         String[] splitBuffer = buffer.split(" ");
         String[] args = Arrays.copyOfRange(splitBuffer, 1, splitBuffer.length);
 
-        Command command = commandManager.findCommand(splitBuffer[0]);
+        Command command = this.commandManager.findCommand(splitBuffer[0]);
         if (command == null) {
             return;
         }

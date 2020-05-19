@@ -76,15 +76,15 @@ public final class DefaultProcessManager implements ProcessManager {
     public DefaultProcessManager() {
         CompletableFuture.runAsync(() -> {
             while (!Thread.currentThread().isInterrupted()) {
-                if (!noClientTryLater.isEmpty()) {
-                    Duo<ProcessConfiguration, Boolean> duo = noClientTryLater.peek();
+                if (!this.noClientTryLater.isEmpty()) {
+                    Duo<ProcessConfiguration, Boolean> duo = this.noClientTryLater.peek();
                     if (duo.getSecond()) {
-                        startProcess(duo.getFirst());
+                        this.startProcess(duo.getFirst());
                     } else {
-                        prepareProcess(duo.getFirst());
+                        this.prepareProcess(duo.getFirst());
                     }
 
-                    noClientTryLater.remove(duo);
+                    this.noClientTryLater.remove(duo);
                 }
 
                 AbsoluteThread.sleep(TimeUnit.MILLISECONDS, 200);
@@ -94,34 +94,34 @@ public final class DefaultProcessManager implements ProcessManager {
 
     @Override
     public List<ProcessInformation> getAllProcesses() {
-        return Streams.newList(processInformation);
+        return Streams.newList(this.processInformation);
     }
 
     @Override
     public List<ProcessInformation> getProcesses(String group) {
-        return Streams.list(getAllProcesses(), processInformation -> processInformation.getProcessGroup().getName().equals(group));
+        return Streams.list(this.getAllProcesses(), processInformation -> processInformation.getProcessGroup().getName().equals(group));
     }
 
     @Override
     public Long getOnlineAndWaitingProcessCount(String group) {
-        return getProcesses(group).stream().filter(e -> e.getProcessDetail().getProcessState().isValid()).count() + getWaitingProcesses(group);
+        return this.getProcesses(group).stream().filter(e -> e.getProcessDetail().getProcessState().isValid()).count() + this.getWaitingProcesses(group);
     }
 
     @Override
     public Integer getWaitingProcesses(String group) {
-        return noClientTryLater.stream().filter(e -> e.getFirst().getBase().getName().equals(group)).mapToInt(value -> 1).sum();
+        return this.noClientTryLater.stream().filter(e -> e.getFirst().getBase().getName().equals(group)).mapToInt(value -> 1).sum();
     }
 
     @Override
     public ProcessInformation getProcess(String name) {
         requireNonNull(name);
-        return Streams.filter(processInformation, processInformation -> processInformation.getProcessDetail().getName().equals(name));
+        return Streams.filter(this.processInformation, processInformation -> processInformation.getProcessDetail().getName().equals(name));
     }
 
     @Override
     public ProcessInformation getProcess(UUID uniqueID) {
         requireNonNull(uniqueID);
-        return Streams.filter(processInformation, processInformation -> processInformation.getProcessDetail().getProcessUniqueID().equals(uniqueID));
+        return Streams.filter(this.processInformation, processInformation -> processInformation.getProcessDetail().getProcessUniqueID().equals(uniqueID));
     }
 
     @Override
@@ -178,17 +178,17 @@ public final class DefaultProcessManager implements ProcessManager {
 
     @Override
     public ProcessInformation stopProcess(String name) {
-        ProcessInformation processInformation = getProcess(name);
+        ProcessInformation processInformation = this.getProcess(name);
         if (processInformation == null) {
             return null;
         }
 
-        return stopProcess(processInformation.getProcessDetail().getProcessUniqueID());
+        return this.stopProcess(processInformation.getProcessDetail().getProcessUniqueID());
     }
 
     @Override
     public ProcessInformation stopProcess(UUID uniqueID) {
-        ProcessInformation processInformation = getProcess(uniqueID);
+        ProcessInformation processInformation = this.getProcess(uniqueID);
         if (processInformation == null) {
             return null;
         }
@@ -199,9 +199,9 @@ public final class DefaultProcessManager implements ProcessManager {
 
     @Override
     public void onClientDisconnect(String clientName) {
-        Streams.allOf(processInformation, processInformation -> processInformation.getProcessDetail().getParentName().equals(clientName)).forEach(processInformation -> {
+        Streams.allOf(this.processInformation, processInformation -> processInformation.getProcessDetail().getParentName().equals(clientName)).forEach(processInformation -> {
             DefaultProcessManager.this.processInformation.remove(processInformation);
-            notifyDisconnect(processInformation);
+            this.notifyDisconnect(processInformation);
         });
     }
 
@@ -236,12 +236,12 @@ public final class DefaultProcessManager implements ProcessManager {
                 configuration.getMaxMemory() == null ? template.getRuntimeConfiguration().getMaxMemory() : configuration.getMaxMemory()
         );
         if (client == null) {
-            noClientTryLater.add(new Duo<>(configuration, start));
+            this.noClientTryLater.add(new Duo<>(configuration, start));
             return null;
         }
 
         int id = configuration.getId() == -1 ? this.nextID(configuration.getBase()) : configuration.getId();
-        int port = configuration.getPort() == null ? nextPort(configuration.getBase()) : configuration.getPort();
+        int port = configuration.getPort() == null ? this.nextPort(configuration.getBase()) : configuration.getPort();
         UUID uniqueID = configuration.getUniqueId();
 
         String displayName = configuration.getDisplayName();
@@ -260,11 +260,11 @@ public final class DefaultProcessManager implements ProcessManager {
 
         for (ProcessInformation allProcess : this.getAllProcesses()) {
             if (allProcess.getProcessDetail().getId() == id) {
-                id = nextID(configuration.getBase());
+                id = this.nextID(configuration.getBase());
             }
 
             if (allProcess.getNetworkInfo().getPort() == port) {
-                port = nextPort(configuration.getBase());
+                port = this.nextPort(configuration.getBase());
             }
 
             if (allProcess.getProcessDetail().getProcessUniqueID().equals(uniqueID)) {
@@ -300,7 +300,7 @@ public final class DefaultProcessManager implements ProcessManager {
 
     private int nextID(ProcessGroup processGroup) {
         int id = 1;
-        Collection<Integer> ids = Streams.newCollection(processInformation, processInformation -> processInformation.getProcessGroup().getName().equals(processGroup.getName()), e -> e.getProcessDetail().getId());
+        Collection<Integer> ids = Streams.newCollection(this.processInformation, processInformation -> processInformation.getProcessGroup().getName().equals(processGroup.getName()), e -> e.getProcessDetail().getId());
 
         while (ids.contains(id)) {
             id++;
@@ -311,7 +311,7 @@ public final class DefaultProcessManager implements ProcessManager {
 
     private int nextPort(ProcessGroup processGroup) {
         int port = processGroup.getStartupConfiguration().getStartPort();
-        Collection<Integer> ports = Streams.newCollection(processInformation, processInformation -> processInformation.getNetworkInfo().getPort());
+        Collection<Integer> ports = Streams.newCollection(this.processInformation, processInformation -> processInformation.getNetworkInfo().getPort());
 
         while (ports.contains(port)) {
             port++;
@@ -324,7 +324,7 @@ public final class DefaultProcessManager implements ProcessManager {
         if (processGroup.getStartupConfiguration().isSearchBestClientAlone()) {
             AtomicReference<ClientRuntimeInformation> best = new AtomicReference<>();
             Streams.newCollection(ClientManager.INSTANCE.getClientRuntimeInformation(), clientRuntimeInformation -> {
-                Collection<Integer> startedOn = Streams.newCollection(processInformation,
+                Collection<Integer> startedOn = Streams.newCollection(this.processInformation,
                         processInformation -> processInformation.getProcessDetail().getParentName().equals(clientRuntimeInformation.getName()),
                         processInformation -> processInformation.getProcessDetail().getMaxMemory()
                 );
@@ -354,7 +354,7 @@ public final class DefaultProcessManager implements ProcessManager {
                 }
 
                 Collection<Integer> startedOn = Streams.newCollection(
-                        processInformation,
+                        this.processInformation,
                         processInformation -> processInformation.getProcessDetail().getParentName().equals(clientRuntimeInformation.getName()),
                         processInformation -> processInformation.getProcessDetail().getMaxMemory()
                 );
@@ -381,13 +381,13 @@ public final class DefaultProcessManager implements ProcessManager {
 
     @Override
     public Iterator<ProcessInformation> iterator() {
-        return Streams.newList(processInformation).iterator();
+        return Streams.newList(this.processInformation).iterator();
     }
 
     @Override
     public void update(@NotNull ProcessInformation processInformation) {
         synchronized (processInformation) {
-            ProcessInformation current = getProcess(processInformation.getProcessDetail().getProcessUniqueID());
+            ProcessInformation current = this.getProcess(processInformation.getProcessDetail().getProcessUniqueID());
             if (current == null) {
                 return;
             }
@@ -405,7 +405,7 @@ public final class DefaultProcessManager implements ProcessManager {
 
     @Override
     public void onChannelClose(String name) {
-        final ProcessInformation info = getProcess(name);
+        final ProcessInformation info = this.getProcess(name);
         if (info != null) {
             DefaultChannelManager.INSTANCE.get(info.getProcessDetail().getParentName()).ifPresent(packetSender -> packetSender.sendPacket(
                     new ControllerPacketProcessDisconnected(info.getProcessDetail().getProcessUniqueID()))
@@ -419,19 +419,19 @@ public final class DefaultProcessManager implements ProcessManager {
             ));
         } else {
             //If the channel is not a process it may be a client
-            onClientDisconnect(name);
+            this.onClientDisconnect(name);
         }
     }
 
     @Override
     public void unregisterProcess(UUID uniqueID) {
-        ProcessInformation information = getProcess(uniqueID);
+        ProcessInformation information = this.getProcess(uniqueID);
         if (information == null) {
             return;
         }
 
-        notifyDisconnect(information);
-        processInformation.remove(information);
+        this.notifyDisconnect(information);
+        this.processInformation.remove(information);
     }
 
     // ==========================

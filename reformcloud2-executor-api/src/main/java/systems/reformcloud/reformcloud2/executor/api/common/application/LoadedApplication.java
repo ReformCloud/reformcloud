@@ -80,6 +80,6 @@ public interface LoadedApplication extends Nameable {
     @NotNull
     @Override
     default String getName() {
-        return getApplicationConfig().getName();
+        return this.getApplicationConfig().getName();
     }
 }

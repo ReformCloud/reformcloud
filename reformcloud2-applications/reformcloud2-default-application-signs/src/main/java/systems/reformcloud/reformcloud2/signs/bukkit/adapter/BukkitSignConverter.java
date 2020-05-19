@@ -44,20 +44,20 @@ public class BukkitSignConverter implements SignConverter<Sign> {
     public Sign from(@NotNull CloudSign cloudSign) {
         Conditions.isTrue(Bukkit.isPrimaryThread(), "Cannot call method from async on spigot servers!");
 
-        Location bukkit = accumulate(cloudSign.getLocation());
+        Location bukkit = this.accumulate(cloudSign.getLocation());
         return bukkit != null && bukkit.getBlock().getState() instanceof Sign ? (Sign) bukkit.getBlock().getState() : null;
     }
 
     @NotNull
     @Override
     public CloudSign to(@NotNull Sign sign, @NotNull String group) {
-        return new CloudSign(group, accumulate(sign.getLocation().clone()));
+        return new CloudSign(group, this.accumulate(sign.getLocation().clone()));
     }
 
     @NotNull
     @Override
     public CloudLocation to(@NotNull Sign sign) {
-        return accumulate(sign.getLocation().clone());
+        return this.accumulate(sign.getLocation().clone());
     }
 
     private Location accumulate(CloudLocation location) {

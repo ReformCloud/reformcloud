@@ -65,7 +65,7 @@ public class ProxiedChannelMessage extends Packet {
 
     @Override
     public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeBytes(message.toPrettyBytes());
+        buffer.writeBytes(this.message.toPrettyBytes());
         buffer.writeString(this.base);
         buffer.writeString(this.sub);
     }

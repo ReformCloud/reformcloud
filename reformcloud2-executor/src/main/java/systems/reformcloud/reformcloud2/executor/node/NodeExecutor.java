@@ -150,7 +150,7 @@ public final class NodeExecutor extends Node {
 
     private final CommandManager commandManager = new DefaultCommandManager();
 
-    private final CommandSource console = new ConsoleCommandSource(commandManager);
+    private final CommandSource console = new ConsoleCommandSource(this.commandManager);
 
     private final ApplicationLoader applicationLoader = new DefaultApplicationLoader();
 
@@ -192,13 +192,13 @@ public final class NodeExecutor extends Node {
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             try {
-                shutdown();
+                this.shutdown();
             } catch (final Throwable throwable) {
                 throwable.printStackTrace();
             }
         }, "Shutdown-Hook"));
 
-        bootstrap();
+        this.bootstrap();
     }
 
     @NotNull
@@ -226,8 +226,8 @@ public final class NodeExecutor extends Node {
         this.nodeExecutorConfig.init();
         this.nodeConfig = this.nodeExecutorConfig.getNodeConfig();
 
-        databaseConfig.load();
-        switch (databaseConfig.getType()) {
+        this.databaseConfig.load();
+        switch (this.databaseConfig.getType()) {
             case FILE: {
                 this.database = new FileDatabase();
                 this.databaseConfig.connect(this.database);
@@ -261,7 +261,7 @@ public final class NodeExecutor extends Node {
 
         this.nodeNetworkManager = new DefaultNodeNetworkManager(
                 new LocalNodeProcessManager(),
-                new DefaultNodeInternalCluster(new DefaultClusterManager(), nodeExecutorConfig.getSelf(), packetHandler)
+                new DefaultNodeInternalCluster(new DefaultClusterManager(), this.nodeExecutorConfig.getSelf(), this.packetHandler)
         );
         this.nodeNetworkManager.getCluster().getClusterManager().init();
 
@@ -269,8 +269,8 @@ public final class NodeExecutor extends Node {
         this.networkClient = nodeNetworkClient;
         this.clusterSyncManager = new DefaultClusterSyncManager(nodeNetworkClient);
 
-        this.clusterSyncManager.getProcessGroups().addAll(nodeExecutorConfig.getProcessGroups());
-        this.clusterSyncManager.getMainGroups().addAll(nodeExecutorConfig.getMainGroups());
+        this.clusterSyncManager.getProcessGroups().addAll(this.nodeExecutorConfig.getProcessGroups());
+        this.clusterSyncManager.getMainGroups().addAll(this.nodeExecutorConfig.getMainGroups());
 
         GeneralAPI generalAPI = new GeneralAPI(
                 new ConsoleAPIImplementation(this.commandManager),
@@ -381,50 +381,50 @@ public final class NodeExecutor extends Node {
     @NotNull
     @Override
     public SyncAPI getSyncAPI() {
-        return syncAPI;
+        return this.syncAPI;
     }
 
     @NotNull
     @Override
     public AsyncAPI getAsyncAPI() {
-        return asyncAPI;
+        return this.asyncAPI;
     }
 
     public RequestListenerHandler getRequestListenerHandler() {
-        return requestListenerHandler;
+        return this.requestListenerHandler;
     }
 
     public LoggerBase getLoggerBase() {
-        return loggerBase;
+        return this.loggerBase;
     }
 
     public NodeNetworkManager getNodeNetworkManager() {
-        return nodeNetworkManager;
+        return this.nodeNetworkManager;
     }
 
     public ClusterSyncManager getClusterSyncManager() {
-        return clusterSyncManager;
+        return this.clusterSyncManager;
     }
 
     public NodeConfig getNodeConfig() {
-        return nodeConfig;
+        return this.nodeConfig;
     }
 
     public NodeExecutorConfig getNodeExecutorConfig() {
-        return nodeExecutorConfig;
+        return this.nodeExecutorConfig;
     }
 
     public LocalAutoStartupHandler getLocalAutoStartupHandler() {
-        return localAutoStartupHandler;
+        return this.localAutoStartupHandler;
     }
 
     public Database<?> getDatabase() {
-        return database;
+        return this.database;
     }
 
     @NotNull
     public EventManager getEventManager() {
-        return eventManager;
+        return this.eventManager;
     }
 
     @Override
@@ -481,11 +481,11 @@ public final class NodeExecutor extends Node {
 
         while (!Thread.currentThread().isInterrupted()) {
             try {
-                line = loggerBase.readLine();
+                line = this.loggerBase.readLine();
                 while (!line.trim().isEmpty() && running) {
-                    commandManager.dispatchCommand(this.console, AllowedCommandSources.ALL, line, System.out::println);
+                    this.commandManager.dispatchCommand(this.console, AllowedCommandSources.ALL, line, System.out::println);
 
-                    line = loggerBase.readLine();
+                    line = this.loggerBase.readLine();
                 }
             } catch (final Throwable throwable) {
                 throwable.printStackTrace();
@@ -496,24 +496,24 @@ public final class NodeExecutor extends Node {
     @NotNull
     @Override
     public NetworkServer getNetworkServer() {
-        return networkServer;
+        return this.networkServer;
     }
 
     @NotNull
     @Override
     public CommandManager getCommandManager() {
-        return commandManager;
+        return this.commandManager;
     }
 
     @NotNull
     @Override
     public PacketHandler getPacketHandler() {
-        return packetHandler;
+        return this.packetHandler;
     }
 
     @Override
     public void reload() {
-        reload(true);
+        this.reload(true);
     }
 
     public void reload(boolean informCluster) {
@@ -538,8 +538,8 @@ public final class NodeExecutor extends Node {
         this.nodeConfig = this.nodeExecutorConfig.reload();
         this.clusterSyncManager.syncSelfInformation();
 
-        this.clusterSyncManager.getProcessGroups().addAll(nodeExecutorConfig.getProcessGroups());
-        this.clusterSyncManager.getMainGroups().addAll(nodeExecutorConfig.getMainGroups());
+        this.clusterSyncManager.getProcessGroups().addAll(this.nodeExecutorConfig.getProcessGroups());
+        this.clusterSyncManager.getMainGroups().addAll(this.nodeExecutorConfig.getMainGroups());
 
         this.localAutoStartupHandler.update();
 
@@ -610,8 +610,8 @@ public final class NodeExecutor extends Node {
                 .register(new CommandStop())
                 .register(new CommandLog())
                 .register(new CommandReload(this))
-                .register(new CommandClear(loggerBase))
-                .register(new CommandHelp(commandManager));
+                .register(new CommandClear(this.loggerBase))
+                .register(new CommandHelp(this.commandManager));
     }
 
     private void loadPacketHandlers() {
@@ -631,7 +631,7 @@ public final class NodeExecutor extends Node {
 
         new Reflections("systems.reformcloud.reformcloud2.executor.node.network.packet.out")
                 .getSubTypesOf(Packet.class)
-                .forEach(packetHandler::registerHandler);
+                .forEach(this.packetHandler::registerHandler);
 
         // Queries
         this.packetHandler.registerHandler(APIPacketOutRequestIngameMessagesHandler.class);
@@ -674,12 +674,12 @@ public final class NodeExecutor extends Node {
     }
 
     public void handleChannelDisconnect(@NotNull PacketSender packetSender) {
-        NodeInformation information = nodeNetworkManager.getCluster().getNode(packetSender.getName());
+        NodeInformation information = this.nodeNetworkManager.getCluster().getNode(packetSender.getName());
         if (information == null) {
-            nodeNetworkManager.getNodeProcessHelper().handleProcessDisconnect(packetSender.getName());
+            this.nodeNetworkManager.getNodeProcessHelper().handleProcessDisconnect(packetSender.getName());
         } else {
-            nodeNetworkManager.getCluster().getClusterManager().handleNodeDisconnect(
-                    nodeNetworkManager.getCluster(),
+            this.nodeNetworkManager.getCluster().getClusterManager().handleNodeDisconnect(
+                    this.nodeNetworkManager.getCluster(),
                     packetSender.getName()
             );
         }
@@ -706,7 +706,7 @@ public final class NodeExecutor extends Node {
     }
 
     public NetworkClient getNetworkClient() {
-        return networkClient;
+        return this.networkClient;
     }
 
     public static boolean isRunning() {

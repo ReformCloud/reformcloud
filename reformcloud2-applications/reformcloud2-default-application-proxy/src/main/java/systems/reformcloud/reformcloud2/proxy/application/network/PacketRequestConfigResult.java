@@ -42,7 +42,7 @@ public class PacketRequestConfigResult extends QueryResultPacket {
     }
 
     public ProxyConfiguration getProxyConfiguration() {
-        return proxyConfiguration;
+        return this.proxyConfiguration;
     }
 
     @Override

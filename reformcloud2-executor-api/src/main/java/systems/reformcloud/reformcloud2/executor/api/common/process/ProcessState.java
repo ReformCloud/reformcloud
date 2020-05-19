@@ -43,10 +43,10 @@ public enum ProcessState {
     STOPPED;
 
     public boolean isValid() {
-        return equals(CREATED) || equals(READY_TO_START) || equals(STARTED) || equals(READY) || equals(FULL) || equals(INVISIBLE);
+        return this.equals(CREATED) || this.equals(READY_TO_START) || this.equals(STARTED) || this.equals(READY) || this.equals(FULL) || this.equals(INVISIBLE);
     }
 
     public boolean isReady() {
-        return equals(READY) || equals(FULL) || equals(INVISIBLE);
+        return this.equals(READY) || this.equals(FULL) || this.equals(INVISIBLE);
     }
 }

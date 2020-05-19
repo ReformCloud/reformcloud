@@ -52,6 +52,6 @@ public final class ClientInitializerHandler extends ChannelInitializer<Channel> 
                 .addLast("packet-decoder", new PacketDecoder())
                 .addLast("encoder", new LengthSerializer())
                 .addLast("packet-encoder", new PacketEncoder())
-                .addLast("handler", new ChannelReaderHelper(supplier.get(), challengeAuthHandler));
+                .addLast("handler", new ChannelReaderHelper(this.supplier.get(), this.challengeAuthHandler));
     }
 }

@@ -120,10 +120,10 @@ public final class Runner {
     }
 
     public Updater getApplicationsUpdater() {
-        return applicationsUpdater;
+        return this.applicationsUpdater;
     }
 
     public Updater getCloudVersionUpdater() {
-        return cloudVersionUpdater;
+        return this.cloudVersionUpdater;
     }
 }

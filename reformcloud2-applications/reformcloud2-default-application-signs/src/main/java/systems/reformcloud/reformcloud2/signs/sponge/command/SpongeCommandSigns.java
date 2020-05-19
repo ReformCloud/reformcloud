@@ -64,7 +64,7 @@ public class SpongeCommandSigns implements CommandExecutor {
                 return CommandResult.success();
             }
 
-            Optional<BlockRayHit<World>> end = getSign(player);
+            Optional<BlockRayHit<World>> end = this.getSign(player);
             if (!end.isPresent() || !(end.get().getLocation().getTileEntity().orElse(null) instanceof Sign)) {
                 src.sendMessage(Text.of("§cThe target Block is not a sign, try step one block back"));
                 return CommandResult.success();
@@ -85,7 +85,7 @@ public class SpongeCommandSigns implements CommandExecutor {
         }
 
         if (type != null && type.equalsIgnoreCase("delete")) {
-            Optional<BlockRayHit<World>> end = getSign(player);
+            Optional<BlockRayHit<World>> end = this.getSign(player);
             if (!end.isPresent() || !(end.get().getLocation().getTileEntity().orElse(null) instanceof Sign)) {
                 src.sendMessage(Text.of("§cThe target Block is not a sign, try step one block back"));
                 return CommandResult.success();

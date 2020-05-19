@@ -45,7 +45,7 @@ public class CommandAddonUpdater extends DefaultApplicationUpdateRepository {
                 Properties properties = new Properties();
                 properties.load(inputStream);
 
-                newVersion = properties.getProperty("version");
+                this.newVersion = properties.getProperty("version");
             } catch (final IOException ex) {
                 ex.printStackTrace();
             }
@@ -54,17 +54,17 @@ public class CommandAddonUpdater extends DefaultApplicationUpdateRepository {
 
     @Override
     public boolean isNewVersionAvailable() {
-        return !ReformCloudApplication.self().getApplication().getApplicationConfig().getVersion().equals(newVersion);
+        return !ReformCloudApplication.self().getApplication().getApplicationConfig().getVersion().equals(this.newVersion);
     }
 
     @Nullable
     @Override
     public ApplicationRemoteUpdate getUpdate() {
-        if (!isNewVersionAvailable()) {
+        if (!this.isNewVersionAvailable()) {
             return null;
         }
 
-        return new BasicApplicationRemoteUpdate(newVersion,
-                "https://dl.reformcloud.systems/addonsv2/reformcloud2-default-application-commands-" + newVersion + ".jar");
+        return new BasicApplicationRemoteUpdate(this.newVersion,
+                "https://dl.reformcloud.systems/addonsv2/reformcloud2-default-application-commands-" + this.newVersion + ".jar");
     }
 }

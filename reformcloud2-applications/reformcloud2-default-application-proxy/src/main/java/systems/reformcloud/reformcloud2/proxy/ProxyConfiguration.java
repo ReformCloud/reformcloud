@@ -52,15 +52,15 @@ public class ProxyConfiguration implements SerializableObject {
     }
 
     public List<MotdConfiguration> getMotdDefaultConfig() {
-        return motdDefaultConfig;
+        return this.motdDefaultConfig;
     }
 
     public List<MotdConfiguration> getMotdMaintenanceConfig() {
-        return motdMaintenanceConfig;
+        return this.motdMaintenanceConfig;
     }
 
     public List<TabListConfiguration> getTabListConfigurations() {
-        return tabListConfigurations;
+        return this.tabListConfigurations;
     }
 
     @Override

@@ -38,7 +38,7 @@ public final class PrintlnCommand extends InterpreterCommand {
 
     @Override
     public void execute(@NotNull String cursorLine, @NotNull InterpretedReformScript script, @NotNull Collection<String> allLines) {
-        String line = cursorLine.replaceFirst(getCommand(), "");
+        String line = cursorLine.replaceFirst(this.getCommand(), "");
         System.out.println(line.trim().isEmpty() ? "" : line.replaceFirst(" ", ""));
     }
 }

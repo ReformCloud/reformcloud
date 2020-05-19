@@ -58,7 +58,7 @@ public class PacketDeleteBulkSigns extends Packet {
 
     @Override
     public void handlePacketReceive(@NotNull NetworkChannelReader reader, @NotNull ChallengeAuthHandler authHandler, @NotNull ChannelReaderHelper parent, @Nullable PacketSender sender, @NotNull ChannelHandlerContext channel) {
-        for (CloudSign cloudSign : cloudSigns) {
+        for (CloudSign cloudSign : this.cloudSigns) {
             ReformCloudApplication.delete(cloudSign);
             DefaultChannelManager.INSTANCE.getAllSender().forEach(e -> e.sendPacket(new PacketDeleteSign(cloudSign)));
         }

@@ -42,7 +42,7 @@ public class PacketAPIQueryRequestProcessResult extends QueryResultPacket {
     }
 
     public ProcessInformation getProcessInformation() {
-        return processInformation;
+        return this.processInformation;
     }
 
     @Override

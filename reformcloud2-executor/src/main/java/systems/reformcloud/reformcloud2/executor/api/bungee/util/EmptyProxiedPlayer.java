@@ -103,7 +103,7 @@ public class EmptyProxiedPlayer implements ProxiedPlayer {
 
     @Override
     public PendingConnection getPendingConnection() {
-        return pendingConnection;
+        return this.pendingConnection;
     }
 
     @Override
@@ -192,7 +192,7 @@ public class EmptyProxiedPlayer implements ProxiedPlayer {
 
     @Override
     public String getName() {
-        return pendingConnection.getName();
+        return this.pendingConnection.getName();
     }
 
     @Override

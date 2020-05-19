@@ -205,7 +205,7 @@ public final class FTPTemplateBackend implements TemplateBackend {
         }
 
         return future(() ->
-                Streams.allOf(group.getTemplates(), e -> e.getBackend().equals(getName())
+                Streams.allOf(group.getTemplates(), e -> e.getBackend().equals(this.getName())
                         && e.isGlobal()).forEach(e -> this.loadTemplate(group.getName(), e.getName(), target))
         );
     }

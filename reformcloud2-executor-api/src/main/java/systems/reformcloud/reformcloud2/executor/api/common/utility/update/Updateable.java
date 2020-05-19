@@ -44,6 +44,6 @@ public interface Updateable<T> {
      * @see #update(Object)
      */
     default void updateAsync(@NotNull T t) {
-        Task.EXECUTOR.execute(() -> update(t));
+        Task.EXECUTOR.execute(() -> this.update(t));
     }
 }

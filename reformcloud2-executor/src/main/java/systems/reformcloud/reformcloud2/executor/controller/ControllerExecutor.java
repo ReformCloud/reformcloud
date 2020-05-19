@@ -118,7 +118,7 @@ public final class ControllerExecutor extends Controller {
 
     private static volatile boolean running = false;
     private final CommandManager commandManager = new DefaultCommandManager();
-    private final CommandSource console = new ConsoleCommandSource(commandManager);
+    private final CommandSource console = new ConsoleCommandSource(this.commandManager);
     private final ApplicationLoader applicationLoader = new DefaultApplicationLoader();
     private final NetworkServer networkServer = new DefaultNetworkServer();
     private final WebServer webServer = new DefaultWebServer();
@@ -141,13 +141,13 @@ public final class ControllerExecutor extends Controller {
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             try {
-                shutdown();
+                this.shutdown();
             } catch (final Exception ex) {
                 ex.printStackTrace();
             }
         }, "Shutdown-Hook"));
 
-        bootstrap();
+        this.bootstrap();
     }
 
     @NotNull
@@ -175,9 +175,9 @@ public final class ControllerExecutor extends Controller {
         }
 
         this.controllerExecutorConfig = new ControllerExecutorConfig();
-        databaseConfig.load();
+        this.databaseConfig.load();
 
-        switch (databaseConfig.getType()) {
+        switch (this.databaseConfig.getType()) {
             case FILE: {
                 this.database = new FileDatabase();
                 this.databaseConfig.connect(this.database);
@@ -222,10 +222,10 @@ public final class ControllerExecutor extends Controller {
 
         this.requestListenerHandler = new DefaultRequestListenerHandler(new DefaultWebServerAuth(this.getSyncAPI().getDatabaseSyncAPI()));
 
-        applicationLoader.detectApplications();
-        applicationLoader.installApplications();
+        this.applicationLoader.detectApplications();
+        this.applicationLoader.installApplications();
 
-        this.controllerConfig = controllerExecutorConfig.getControllerConfig();
+        this.controllerConfig = this.controllerExecutorConfig.getControllerConfig();
         this.controllerConfig.getNetworkListener().forEach(e -> e.forEach((host, port) -> ControllerExecutor.this.networkServer.bind(
                 host,
                 port,
@@ -233,15 +233,15 @@ public final class ControllerExecutor extends Controller {
                 new ServerChallengeAuthHandler(new SharedChallengeProvider(this.controllerExecutorConfig.getConnectionKey()), new ControllerNetworkSuccessHandler())
         )));
 
-        applicationLoader.loadApplications();
+        this.applicationLoader.loadApplications();
 
         this.autoStartupHandler = new AutoStartupHandler();
-        sendGroups();
-        loadCommands();
-        loadPacketHandlers();
+        this.sendGroups();
+        this.loadCommands();
+        this.loadPacketHandlers();
 
         this.getSyncAPI().getDatabaseSyncAPI().createDatabase("internal_users");
-        if (controllerExecutorConfig.isFirstStartup()) {
+        if (this.controllerExecutorConfig.isFirstStartup()) {
             final String token = StringUtil.generateString(2);
             WebUser webUser = new WebUser("admin", token, Collections.singletonList("*"));
             this.getSyncAPI().getDatabaseSyncAPI().insert("internal_users", webUser.getName(), "", new JsonConfiguration().add("user", webUser));
@@ -254,7 +254,7 @@ public final class ControllerExecutor extends Controller {
                 })
         );
 
-        applicationLoader.enableApplications();
+        this.applicationLoader.enableApplications();
 
         if (Files.exists(Paths.get("reformcloud/.client"))) {
             try {
@@ -272,7 +272,7 @@ public final class ControllerExecutor extends Controller {
 
         running = true;
         System.out.println(LanguageManager.get("startup-done", Long.toString(System.currentTimeMillis() - current)));
-        runConsole();
+        this.runConsole();
     }
 
     @Override
@@ -300,7 +300,7 @@ public final class ControllerExecutor extends Controller {
 
         this.autoStartupHandler.update(); //Update the automatic startup handler to re-sort the groups per priority
 
-        this.controllerConfig = controllerExecutorConfig.getControllerConfig();
+        this.controllerConfig = this.controllerExecutorConfig.getControllerConfig();
 
         this.applicationLoader.loadApplications();
 
@@ -336,65 +336,65 @@ public final class ControllerExecutor extends Controller {
     }
 
     public ControllerExecutorConfig getControllerExecutorConfig() {
-        return controllerExecutorConfig;
+        return this.controllerExecutorConfig;
     }
 
     @NotNull
     @Override
     public SyncAPI getSyncAPI() {
-        return syncAPI;
+        return this.syncAPI;
     }
 
     @NotNull
     @Override
     public AsyncAPI getAsyncAPI() {
-        return asyncAPI;
+        return this.asyncAPI;
     }
 
     @Override
     public NetworkServer getNetworkServer() {
-        return networkServer;
+        return this.networkServer;
     }
 
     @NotNull
     @Override
     public PacketHandler getPacketHandler() {
-        return packetHandler;
+        return this.packetHandler;
     }
 
     @Override
     public CommandManager getCommandManager() {
-        return commandManager;
+        return this.commandManager;
     }
 
     public RequestListenerHandler getRequestListenerHandler() {
-        return requestListenerHandler;
+        return this.requestListenerHandler;
     }
 
     public LoggerBase getLoggerBase() {
-        return loggerBase;
+        return this.loggerBase;
     }
 
     public ProcessManager getProcessManager() {
-        return processManager;
+        return this.processManager;
     }
 
     public ControllerConfig getControllerConfig() {
-        return controllerConfig;
+        return this.controllerConfig;
     }
 
     public AutoStartupHandler getAutoStartupHandler() {
-        return autoStartupHandler;
+        return this.autoStartupHandler;
     }
 
     public Database<?> getDatabase() {
-        return database;
+        return this.database;
     }
 
     @NotNull
     @Override
     public EventManager getEventManager() {
-        return eventManager;
+        return this.eventManager;
     }
 
     @Override
@@ -407,11 +407,11 @@ public final class ControllerExecutor extends Controller {
 
         while (!Thread.currentThread().isInterrupted()) {
             try {
-                line = loggerBase.readLine();
+                line = this.loggerBase.readLine();
                 while (!line.trim().isEmpty() && running) {
-                    commandManager.dispatchCommand(console, AllowedCommandSources.ALL, line, System.out::println);
+                    this.commandManager.dispatchCommand(this.console, AllowedCommandSources.ALL, line, System.out::println);
 
-                    line = loggerBase.readLine();
+                    line = this.loggerBase.readLine();
                 }
             } catch (final Throwable throwable) {
                 throwable.printStackTrace();
@@ -439,8 +439,8 @@ public final class ControllerExecutor extends Controller {
                 .register(new CommandStop())
                 .register(new CommandCreate())
                 .register(new CommandReload(this))
-                .register(new CommandClear(loggerBase))
-                .register(new CommandHelp(commandManager));
+                .register(new CommandClear(this.loggerBase))
+                .register(new CommandHelp(this.commandManager));
     }
 
     private void loadPacketHandlers() {
@@ -460,7 +460,7 @@ public final class ControllerExecutor extends Controller {
 
         new Reflections("systems.reformcloud.reformcloud2.executor.controller.network.packet")
                 .getSubTypesOf(Packet.class)
-                .forEach(packetHandler::registerHandler);
+                .forEach(this.packetHandler::registerHandler);
 
         // API -> Controller handler
         this.packetHandler.registerHandler(PacketInAPILogoutPlayer.class);

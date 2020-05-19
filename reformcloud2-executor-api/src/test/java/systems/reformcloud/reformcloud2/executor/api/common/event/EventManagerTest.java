@@ -56,9 +56,9 @@ public class EventManagerTest {
 
         assertEquals(5, eventManager.getListeners().size());
         eventManager.callEvent(event);
-        assertEquals(9, countDownLatch.getCount());
+        assertEquals(9, this.countDownLatch.getCount());
         eventManager.callEvent(new EventTest2());
-        assertEquals(7, countDownLatch.getCount());
+        assertEquals(7, this.countDownLatch.getCount());
         eventManager.unregisterListener(listenerTest);
         assertEquals(3, eventManager.getListeners().size());
         eventManager.unregisterAll();
@@ -69,12 +69,12 @@ public class EventManagerTest {
 
         @Listener(priority = EventPriority.FIRST)
         public void handle(EventTest eventTest) {
-            countDownLatch.countDown();
+            EventManagerTest.this.countDownLatch.countDown();
         }
 
         @Listener(priority = EventPriority.SECOND)
         public void handleSecond(EventTest eventTest) {
-            countDownLatch.countDown();
+            EventManagerTest.this.countDownLatch.countDown();
         }
     }
 
@@ -82,19 +82,19 @@ public class EventManagerTest {
 
         @Listener(priority = EventPriority.MONITOR)
         public void handle(EventTest2 eventTest) {
-            assertEquals(8, countDownLatch.getCount());
-            countDownLatch.countDown();
+            assertEquals(8, EventManagerTest.this.countDownLatch.getCount());
+            EventManagerTest.this.countDownLatch.countDown();
         }
 
         @Listener(priority = EventPriority.FIRST)
         public void handleSecond(EventTest2 eventTest) {
-            assertEquals(9, countDownLatch.getCount());
-            countDownLatch.countDown();
+            assertEquals(9, EventManagerTest.this.countDownLatch.getCount());
+            EventManagerTest.this.countDownLatch.countDown();
         }
 
         @Listener(priority = EventPriority.PENULTIMATE)
         public void handleSecond(EventTest eventTest) {
-            countDownLatch.countDown();
+            EventManagerTest.this.countDownLatch.countDown();
         }
     }
 

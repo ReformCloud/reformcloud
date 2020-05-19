@@ -60,36 +60,36 @@ public class SpongePermissionDescription implements PermissionDescription {
     @Override
     @NotNull
     public String getId() {
-        return id;
+        return this.id;
     }
 
     @Override
     @NotNull
     public Optional<Text> getDescription() {
-        return Optional.ofNullable(description);
+        return Optional.ofNullable(this.description);
     }
 
     @Override
     @NotNull
     public Optional<PluginContainer> getOwner() {
-        return Optional.ofNullable(owner);
+        return Optional.ofNullable(this.owner);
     }
 
     @Override
     @NotNull
     public CompletableFuture<Map<SubjectReference, Boolean>> findAssignedSubjects(@NotNull String collectionIdentifier) {
-        return service.loadCollection(collectionIdentifier).thenCompose(e -> {
+        return this.service.loadCollection(collectionIdentifier).thenCompose(e -> {
             if (e == null) {
                 return CompletableFuture.completedFuture(new HashMap<>());
             }
 
-            return e.getAllWithPermission(getId());
+            return e.getAllWithPermission(this.getId());
         });
     }
 
     @Override
     @NotNull
     public Map<Subject, Boolean> getAssignedSubjects(@NotNull String collectionIdentifier) {
-        return service.getCollection(collectionIdentifier).map(e -> e.getLoadedWithPermission(getId())).orElseGet(HashMap::new);
+        return this.service.getCollection(collectionIdentifier).map(e -> e.getLoadedWithPermission(this.getId())).orElseGet(HashMap::new);
     }
 }

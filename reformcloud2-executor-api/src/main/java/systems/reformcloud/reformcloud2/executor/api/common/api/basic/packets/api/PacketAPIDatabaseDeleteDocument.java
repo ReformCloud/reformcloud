@@ -58,12 +58,12 @@ public class PacketAPIDatabaseDeleteDocument extends Packet {
 
     @Override
     public void handlePacketReceive(@NotNull NetworkChannelReader reader, @NotNull ChallengeAuthHandler authHandler, @NotNull ChannelReaderHelper parent, @Nullable PacketSender sender, @NotNull ChannelHandlerContext channel) {
-        if (entryKey != null) {
+        if (this.entryKey != null) {
             ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().remove(this.databaseName, this.entryKey, null);
             return;
         }
 
-        if (identifier != null) {
+        if (this.identifier != null) {
             ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().remove(this.databaseName, null, this.identifier);
         }
     }

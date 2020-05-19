@@ -47,15 +47,15 @@ public final class ColouredLogFormatter extends FormatterBase {
                 .append(CommonHelper.DATE_FORMAT.format(record.getMillis()))
                 .append(Colours.GRAY.toString())
                 .append(" ")
-                .append(getByLevel(record.getLevel()).toString())
+                .append(this.getByLevel(record.getLevel()).toString())
                 .append(record.getLevel().getLocalizedName())
                 .append(Colours.GRAY.toString())
                 .append("] ")
                 .append(Colours.RESET.toString())
-                .append(formatMessage(record))
+                .append(this.formatMessage(record))
                 .append("\n");
         if (record.getThrown() != null) {
-            stringBuilder.append(format(record.getThrown()));
+            stringBuilder.append(this.format(record.getThrown()));
         }
         return stringBuilder.toString();
     }

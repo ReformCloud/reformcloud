@@ -46,28 +46,28 @@ public final class StreamsTest {
 
     @Test
     public void testToLowerCase() {
-        this.collection = Streams.toLowerCase(collection);
-        for (String s : collection) {
+        this.collection = Streams.toLowerCase(this.collection);
+        for (String s : this.collection) {
             assertNotEquals(s.toUpperCase(), s);
         }
     }
 
     @Test
     public void testFilter() {
-        String s = Streams.filter(collection, e -> e.equals("test"));
+        String s = Streams.filter(this.collection, e -> e.equals("test"));
         assertNotNull(s);
     }
 
     @Test
     public void testFilterAndApply() {
-        Optional<String> optional = Streams.filterAndApply(collection, e -> e.equals("test"), Optional::ofNullable);
+        Optional<String> optional = Streams.filterAndApply(this.collection, e -> e.equals("test"), Optional::ofNullable);
         assertNotNull(optional);
         assertTrue(optional.isPresent());
     }
 
     @Test
     public void testOthers() {
-        Collection<String> others = Streams.others(collection, e -> e.equals("test"));
+        Collection<String> others = Streams.others(this.collection, e -> e.equals("test"));
         assertEquals(1, others.size());
     }
 

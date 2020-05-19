@@ -41,7 +41,7 @@ public final class ExecuteCommand extends InterpreterCommand {
     public void execute(@NotNull String cursorLine, @NotNull InterpretedReformScript script, @NotNull Collection<String> allLines) {
         InterpreterTask task = script.getAllTasks()
                 .stream()
-                .filter(e -> e.getName().equals(cursorLine.replaceFirst(getCommand() + " ", "")))
+                .filter(e -> e.getName().equals(cursorLine.replaceFirst(this.getCommand() + " ", "")))
                 .findFirst()
                 .orElse(null);
         if (task == null) {

@@ -44,10 +44,10 @@ public final class DefaultLogFormatter extends FormatterBase {
                 .append(" ")
                 .append(record.getLevel().getLocalizedName())
                 .append("] ")
-                .append(formatMessage(record))
+                .append(this.formatMessage(record))
                 .append("\n");
         if (record.getThrown() != null) {
-            stringBuilder.append(format(record.getThrown()));
+            stringBuilder.append(this.format(record.getThrown()));
         }
         return stringBuilder.toString();
     }

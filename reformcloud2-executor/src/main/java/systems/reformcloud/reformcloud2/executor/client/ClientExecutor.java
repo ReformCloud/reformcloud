@@ -84,7 +84,7 @@ public final class ClientExecutor extends Client {
     private static ClientExecutor instance;
     private static volatile boolean running = false;
     private final CommandManager commandManager = new DefaultCommandManager();
-    private final CommandSource console = new ConsoleCommandSource(commandManager);
+    private final CommandSource console = new ConsoleCommandSource(this.commandManager);
     private final NetworkClient networkClient = new DefaultNetworkClient();
     private final PacketHandler packetHandler = new DefaultPacketHandler();
     private final ProcessManager processManager = new DefaultProcessManager();
@@ -102,13 +102,13 @@ public final class ClientExecutor extends Client {
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             try {
-                shutdown();
+                this.shutdown();
             } catch (final Exception ex) {
                 ex.printStackTrace();
             }
         }));
 
-        bootstrap();
+        this.bootstrap();
     }
 
     public static ClientExecutor getInstance() {
@@ -133,7 +133,7 @@ public final class ClientExecutor extends Client {
         }
 
         new ExternalEventBusHandler(
-                packetHandler, new DefaultEventManager()
+                this.packetHandler, new DefaultEventManager()
         );
 
         ExecutorAPI.getInstance().getEventManager().registerListener(new RunningProcessPreparedListener());
@@ -141,47 +141,47 @@ public final class ClientExecutor extends Client {
         ExecutorAPI.getInstance().getEventManager().registerListener(new RunningProcessScreenListener());
 
         this.clientExecutorConfig = new ClientExecutorConfig();
-        this.clientConfig = clientExecutorConfig.getClientConfig();
+        this.clientConfig = this.clientExecutorConfig.getClientConfig();
         this.clientRuntimeInformation = new DefaultClientRuntimeInformation(
-                clientConfig.getStartHost(),
-                clientConfig.getMaxMemory(),
-                clientConfig.getMaxProcesses(),
-                clientConfig.getName(),
-                clientConfig.getUniqueID()
+                this.clientConfig.getStartHost(),
+                this.clientConfig.getMaxMemory(),
+                this.clientConfig.getMaxProcesses(),
+                this.clientConfig.getName(),
+                this.clientConfig.getUniqueID()
         );
 
-        applicationLoader.detectApplications();
-        applicationLoader.installApplications();
+        this.applicationLoader.detectApplications();
+        this.applicationLoader.installApplications();
 
         TemplateBackendManager.registerDefaults();
 
-        registerNetworkHandlers();
-        registerDefaultCommands();
+        this.registerNetworkHandlers();
+        this.registerDefaultCommands();
 
-        applicationLoader.loadApplications();
+        this.applicationLoader.loadApplications();
 
-        doConnect();
+        this.doConnect();
 
-        applicationLoader.enableApplications();
+        this.applicationLoader.enableApplications();
 
         running = true;
         System.out.println(LanguageManager.get("startup-done", Long.toString(System.currentTimeMillis() - current)));
-        runConsole();
+        this.runConsole();
     }
 
     private void registerNetworkHandlers() {
         new Reflections("systems.reformcloud.reformcloud2.executor.client.network.packet")
                 .getSubTypesOf(Packet.class)
-                .forEach(packetHandler::registerHandler);
+                .forEach(this.packetHandler::registerHandler);
     }
 
     private void registerDefaultCommands() {
-        commandManager
+        this.commandManager
                 .register(new CommandDump(new ClientDumpUtil()))
                 .register(CommandStop.class)
                 .register(new CommandReload(this))
-                .register(new CommandClear(loggerBase))
-                .register(new CommandHelp(commandManager));
+                .register(new CommandClear(this.loggerBase))
+                .register(new CommandHelp(this.commandManager));
     }
 
     @Override
@@ -189,27 +189,27 @@ public final class ClientExecutor extends Client {
         this.applicationLoader.disableApplications();
 
         this.clientExecutorConfig = new ClientExecutorConfig();
-        this.clientConfig = clientExecutorConfig.getClientConfig();
+        this.clientConfig = this.clientExecutorConfig.getClientConfig();
         this.clientRuntimeInformation = new DefaultClientRuntimeInformation(
-                clientConfig.getStartHost(),
-                clientConfig.getMaxMemory(),
-                clientConfig.getMaxProcesses(),
-                clientConfig.getName(),
-                clientConfig.getUniqueID()
+                this.clientConfig.getStartHost(),
+                this.clientConfig.getMaxMemory(),
+                this.clientConfig.getMaxProcesses(),
+                this.clientConfig.getName(),
+                this.clientConfig.getUniqueID()
         );
         this.packetHandler.clearHandlers();
         this.packetHandler.getQueryHandler().clearQueries();
         this.commandManager.unregisterAll();
 
-        registerDefaultCommands();
-        registerNetworkHandlers();
+        this.registerDefaultCommands();
+        this.registerNetworkHandlers();
 
         this.applicationLoader.detectApplications();
         this.applicationLoader.installApplications();
         this.applicationLoader.loadApplications();
         this.applicationLoader.enableApplications();
 
-        notifyUpdate();
+        this.notifyUpdate();
     }
 
     @Override
@@ -229,39 +229,39 @@ public final class ClientExecutor extends Client {
 
     @Override
     public CommandManager getCommandManager() {
-        return commandManager;
+        return this.commandManager;
     }
 
     @Override
     public NetworkClient getNetworkClient() {
-        return networkClient;
+        return this.networkClient;
     }
 
     @Override
     protected PacketHandler packetHandler() {
-        return packetHandler;
+        return this.packetHandler;
     }
 
     @NotNull
     @Override
     public PacketHandler getPacketHandler() {
-        return packetHandler;
+        return this.packetHandler;
     }
 
     public LoggerBase getLoggerBase() {
-        return loggerBase;
+        return this.loggerBase;
     }
 
     public ProcessManager getProcessManager() {
-        return processManager;
+        return this.processManager;
     }
 
     public ClientConfig getClientConfig() {
-        return clientConfig;
+        return this.clientConfig;
     }
 
     public ClientExecutorConfig getClientExecutorConfig() {
-        return clientExecutorConfig;
+        return this.clientExecutorConfig;
     }
 
     @NotNull
@@ -274,11 +274,11 @@ public final class ClientExecutor extends Client {
 
         while (!Thread.currentThread().isInterrupted()) {
             try {
-                line = loggerBase.readLine();
+                line = this.loggerBase.readLine();
                 while (!line.trim().isEmpty() && running) {
-                    commandManager.dispatchCommand(console, AllowedCommandSources.ALL, line, System.out::println);
+                    this.commandManager.dispatchCommand(this.console, AllowedCommandSources.ALL, line, System.out::println);
 
-                    line = loggerBase.readLine();
+                    line = this.loggerBase.readLine();
                 }
             } catch (final Throwable throwable) {
                 throwable.printStackTrace();
@@ -289,11 +289,11 @@ public final class ClientExecutor extends Client {
     private void notifyUpdate() {
         DefaultChannelManager.INSTANCE.get("Controller").ifPresent(packetSender -> {
             DefaultClientRuntimeInformation information = new DefaultClientRuntimeInformation(
-                    clientConfig.getStartHost(),
-                    clientConfig.getMaxMemory(),
-                    clientConfig.getMaxProcesses(),
-                    clientConfig.getName(),
-                    clientConfig.getUniqueID()
+                    this.clientConfig.getStartHost(),
+                    this.clientConfig.getMaxMemory(),
+                    this.clientConfig.getMaxProcesses(),
+                    this.clientConfig.getName(),
+                    this.clientConfig.getUniqueID()
             );
 
             packetSender.sendPacket(new ClientPacketNotifyRuntimeUpdate(information));
@@ -311,11 +311,11 @@ public final class ClientExecutor extends Client {
         while (atomicInteger.get() <= 10) {
             System.out.println(LanguageManager.get(
                     "network-client-try-connect",
-                    clientExecutorConfig.getClientConnectionConfig().getHost(),
-                    Integer.toString(clientExecutorConfig.getClientConnectionConfig().getPort()),
+                    this.clientExecutorConfig.getClientConnectionConfig().getHost(),
+                    Integer.toString(this.clientExecutorConfig.getClientConnectionConfig().getPort()),
                     atomicInteger.getAndIncrement()
             ));
-            isConnected = tryConnect();
+            isConnected = this.tryConnect();
             if (isConnected) {
                 break;
             }
@@ -326,16 +326,16 @@ public final class ClientExecutor extends Client {
         if (isConnected) {
             System.out.println(LanguageManager.get(
                     "network-client-connect-success",
-                    clientExecutorConfig.getClientConnectionConfig().getHost(),
-                    Integer.toString(clientExecutorConfig.getClientConnectionConfig().getPort()),
+                    this.clientExecutorConfig.getClientConnectionConfig().getHost(),
+                    Integer.toString(this.clientExecutorConfig.getClientConnectionConfig().getPort()),
                     atomicInteger.get()
             ));
             GLOBAL_CONNECTION_STATUS.set(true);
         } else {
             System.out.println(LanguageManager.get(
                     "network-client-connection-refused",
-                    clientExecutorConfig.getClientConnectionConfig().getHost(),
-                    Integer.toString(clientExecutorConfig.getClientConnectionConfig().getPort())
+                    this.clientExecutorConfig.getClientConnectionConfig().getHost(),
+                    Integer.toString(this.clientExecutorConfig.getClientConnectionConfig().getPort())
             ));
             AbsoluteThread.sleep(TimeUnit.SECONDS, 1);
             System.exit(-1);
@@ -344,8 +344,8 @@ public final class ClientExecutor extends Client {
 
     private boolean tryConnect() {
         return this.networkClient.connect(
-                clientExecutorConfig.getClientConnectionConfig().getHost(),
-                clientExecutorConfig.getClientConnectionConfig().getPort(),
+                this.clientExecutorConfig.getClientConnectionConfig().getHost(),
+                this.clientExecutorConfig.getClientConnectionConfig().getPort(),
                 () -> new ClientNetworkChannelReader(),
                 new ClientChallengeAuthHandler(
                         this.clientExecutorConfig.getConnectionKey(),
@@ -364,7 +364,7 @@ public final class ClientExecutor extends Client {
         if (GLOBAL_CONNECTION_STATUS.get()) {
             GLOBAL_CONNECTION_STATUS.set(false);
             System.out.println(LanguageManager.get("network-client-connection-lost"));
-            doConnect();
+            this.doConnect();
         }
     }
 }

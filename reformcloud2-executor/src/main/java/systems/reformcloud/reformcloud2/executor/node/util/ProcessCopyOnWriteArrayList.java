@@ -61,14 +61,14 @@ public final class ProcessCopyOnWriteArrayList extends CopyOnWriteArrayList<Proc
 
     @Override
     public Stream<ProcessInformation> stream() {
-        synchronized (lock) {
+        synchronized (this.lock) {
             return super.stream();
         }
     }
 
     @Override
     public Stream<ProcessInformation> parallelStream() {
-        synchronized (lock) {
+        synchronized (this.lock) {
             return super.parallelStream();
         }
     }

@@ -39,10 +39,10 @@ public final class ClientConnectionConfig {
     }
 
     public String getHost() {
-        return host;
+        return this.host;
     }
 
     public int getPort() {
-        return port;
+        return this.port;
     }
 }

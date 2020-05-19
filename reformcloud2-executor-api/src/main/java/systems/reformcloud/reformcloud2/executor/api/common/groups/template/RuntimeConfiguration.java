@@ -72,7 +72,7 @@ public final class RuntimeConfiguration implements SerializableObject {
     }
 
     public int getMaxMemory() {
-        return maxMemory;
+        return this.maxMemory;
     }
 
     public void setMaxMemory(int maxMemory) {
@@ -80,24 +80,24 @@ public final class RuntimeConfiguration implements SerializableObject {
     }
 
     public int getDynamicMemory() {
-        return dynamicMemory;
+        return this.dynamicMemory;
     }
 
     public List<String> getProcessParameters() {
-        return processParameters;
+        return this.processParameters;
     }
 
     public List<String> getJvmOptions() {
-        return jvmOptions;
+        return this.jvmOptions;
     }
 
     public Map<String, String> getSystemProperties() {
-        return systemProperties;
+        return this.systemProperties;
     }
 
     /* Needs a null check because of add in version 2.0.2 */
     public Collection<String> getShutdownCommands() {
-        return shutdownCommands == null ? new CopyOnWriteArrayList<>() : new CopyOnWriteArrayList<>(shutdownCommands);
+        return this.shutdownCommands == null ? new CopyOnWriteArrayList<>() : new CopyOnWriteArrayList<>(this.shutdownCommands);
     }
 
     @Override

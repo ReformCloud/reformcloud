@@ -109,7 +109,7 @@ public class TypeMessagePacket extends Packet {
         this.receivers = new ArrayList<>(size);
 
         for (int i = 0; i < size; i++) {
-            receivers.add(ReceiverType.values()[buffer.readVarInt()]);
+            this.receivers.add(ReceiverType.values()[buffer.readVarInt()]);
         }
 
         try (InputStream stream = new ByteArrayInputStream(buffer.readArray())) {

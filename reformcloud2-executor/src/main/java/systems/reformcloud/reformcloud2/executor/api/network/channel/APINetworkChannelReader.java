@@ -34,9 +34,9 @@ public class APINetworkChannelReader extends SharedNetworkChannelReader {
 
     @Override
     public void channelInactive(@NotNull ChannelHandlerContext context) {
-        if (packetSender != null) {
-            DefaultChannelManager.INSTANCE.unregisterChannel(packetSender);
-            System.out.println(LanguageManager.get("network-channel-disconnected", packetSender.getName()));
+        if (this.packetSender != null) {
+            DefaultChannelManager.INSTANCE.unregisterChannel(this.packetSender);
+            System.out.println(LanguageManager.get("network-channel-disconnected", this.packetSender.getName()));
             System.exit(0);
         }
     }

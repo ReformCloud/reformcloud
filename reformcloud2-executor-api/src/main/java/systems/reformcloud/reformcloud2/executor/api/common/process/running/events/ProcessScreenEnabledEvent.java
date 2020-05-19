@@ -38,10 +38,10 @@ public class ProcessScreenEnabledEvent extends Event {
     }
 
     public RunningProcessScreen getRunningProcessScreen() {
-        return runningProcessScreen;
+        return this.runningProcessScreen;
     }
 
     public String getEnabledFor() {
-        return enabledFor;
+        return this.enabledFor;
     }
 }

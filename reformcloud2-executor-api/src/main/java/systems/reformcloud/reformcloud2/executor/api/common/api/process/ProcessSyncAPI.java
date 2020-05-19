@@ -774,7 +774,7 @@ public interface ProcessSyncAPI {
      * @param action The consumer which will accept by each {@link ProcessInformation}
      */
     default void forEach(@NotNull Consumer<ProcessInformation> action) {
-        getAllProcesses().forEach(action);
+        this.getAllProcesses().forEach(action);
     }
 
     /**

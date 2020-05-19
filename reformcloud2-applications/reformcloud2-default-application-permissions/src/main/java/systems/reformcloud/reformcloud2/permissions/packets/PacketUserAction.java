@@ -62,27 +62,27 @@ public class PacketUserAction extends Packet {
     public void handlePacketReceive(@NotNull NetworkChannelReader reader, @NotNull ChallengeAuthHandler authHandler, @NotNull ChannelReaderHelper parent, @Nullable PacketSender sender, @NotNull ChannelHandlerContext channel) {
         switch (this.permissionAction) {
             case DELETE: {
-                PermissionManagement.getInstance().handleInternalUserDelete(permissionUser);
+                PermissionManagement.getInstance().handleInternalUserDelete(this.permissionUser);
                 if (ExecutorAPI.getInstance().getType() != ExecutorType.API) {
-                    DefaultChannelManager.INSTANCE.getAllSender().forEach(e -> e.sendPacket(new PacketUserAction(permissionUser, PermissionAction.DELETE)));
+                    DefaultChannelManager.INSTANCE.getAllSender().forEach(e -> e.sendPacket(new PacketUserAction(this.permissionUser, PermissionAction.DELETE)));
                 }
 
                 break;
             }
 
             case UPDATE: {
-                PermissionManagement.getInstance().handleInternalUserUpdate(permissionUser);
+                PermissionManagement.getInstance().handleInternalUserUpdate(this.permissionUser);
                 if (ExecutorAPI.getInstance().getType() != ExecutorType.API) {
-                    DefaultChannelManager.INSTANCE.getAllSender().forEach(e -> e.sendPacket(new PacketUserAction(permissionUser, PermissionAction.UPDATE)));
+                    DefaultChannelManager.INSTANCE.getAllSender().forEach(e -> e.sendPacket(new PacketUserAction(this.permissionUser, PermissionAction.UPDATE)));
                 }
 
                 break;
             }
 
             case CREATE: {
-                PermissionManagement.getInstance().handleInternalUserCreate(permissionUser);
+                PermissionManagement.getInstance().handleInternalUserCreate(this.permissionUser);
                 if (ExecutorAPI.getInstance().getType() != ExecutorType.API) {
-                    DefaultChannelManager.INSTANCE.getAllSender().forEach(e -> e.sendPacket(new PacketUserAction(permissionUser, PermissionAction.CREATE)));
+                    DefaultChannelManager.INSTANCE.getAllSender().forEach(e -> e.sendPacket(new PacketUserAction(this.permissionUser, PermissionAction.CREATE)));
                 }
 
                 break;

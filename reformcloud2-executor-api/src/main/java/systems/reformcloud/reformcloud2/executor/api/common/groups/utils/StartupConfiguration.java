@@ -79,7 +79,7 @@ public final class StartupConfiguration implements SerializableObject {
     }
 
     public int getMaxOnlineProcesses() {
-        return maxOnlineProcesses;
+        return this.maxOnlineProcesses;
     }
 
     public void setMaxOnlineProcesses(int maxOnlineProcesses) {
@@ -87,7 +87,7 @@ public final class StartupConfiguration implements SerializableObject {
     }
 
     public int getMinOnlineProcesses() {
-        return minOnlineProcesses;
+        return this.minOnlineProcesses;
     }
 
     public void setMinOnlineProcesses(int minOnlineProcesses) {
@@ -95,7 +95,7 @@ public final class StartupConfiguration implements SerializableObject {
     }
 
     public int getAlwaysPreparedProcesses() {
-        return alwaysPreparedProcesses;
+        return this.alwaysPreparedProcesses;
     }
 
     public void setAlwaysPreparedProcesses(int alwaysPreparedProcesses) {
@@ -103,7 +103,7 @@ public final class StartupConfiguration implements SerializableObject {
     }
 
     public int getStartupPriority() {
-        return startupPriority;
+        return this.startupPriority;
     }
 
     public void setStartupPriority(int startupPriority) {
@@ -111,7 +111,7 @@ public final class StartupConfiguration implements SerializableObject {
     }
 
     public int getStartPort() {
-        return startPort;
+        return this.startPort;
     }
 
     public void setStartPort(int startPort) {
@@ -119,21 +119,21 @@ public final class StartupConfiguration implements SerializableObject {
     }
 
     public String getJvmCommand() {
-        return jvmCommand == null ? "java" : jvmCommand;
+        return this.jvmCommand == null ? "java" : this.jvmCommand;
     }
 
     @NotNull
     public AutomaticStartupConfiguration getAutomaticStartupConfiguration() {
-        return automaticStartupConfiguration;
+        return this.automaticStartupConfiguration;
     }
 
     public boolean isSearchBestClientAlone() {
-        return searchBestClientAlone;
+        return this.searchBestClientAlone;
     }
 
     @NotNull
     public List<String> getUseOnlyTheseClients() {
-        return useOnlyTheseClients;
+        return this.useOnlyTheseClients;
     }
 
     public void setUseOnlyTheseClients(List<String> useOnlyTheseClients) {
@@ -146,13 +146,13 @@ public final class StartupConfiguration implements SerializableObject {
         if (this == o) return true;
         if (!(o instanceof StartupConfiguration)) return false;
         StartupConfiguration that = (StartupConfiguration) o;
-        return getMaxOnlineProcesses() == that.getMaxOnlineProcesses() &&
-                getMinOnlineProcesses() == that.getMinOnlineProcesses() &&
-                getStartupPriority() == that.getStartupPriority() &&
-                getStartPort() == that.getStartPort() &&
-                isSearchBestClientAlone() == that.isSearchBestClientAlone() &&
-                getJvmCommand().equals(that.getJvmCommand()) &&
-                Objects.equals(getUseOnlyTheseClients(), that.getUseOnlyTheseClients());
+        return this.getMaxOnlineProcesses() == that.getMaxOnlineProcesses() &&
+                this.getMinOnlineProcesses() == that.getMinOnlineProcesses() &&
+                this.getStartupPriority() == that.getStartupPriority() &&
+                this.getStartPort() == that.getStartPort() &&
+                this.isSearchBestClientAlone() == that.isSearchBestClientAlone() &&
+                this.getJvmCommand().equals(that.getJvmCommand()) &&
+                Objects.equals(this.getUseOnlyTheseClients(), that.getUseOnlyTheseClients());
     }
 
     @Override

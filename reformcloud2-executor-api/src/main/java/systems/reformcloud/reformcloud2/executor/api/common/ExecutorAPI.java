@@ -121,6 +121,6 @@ public abstract class ExecutorAPI {
      */
     @NotNull
     public ExecutorType getType() {
-        return type;
+        return this.type;
     }
 }

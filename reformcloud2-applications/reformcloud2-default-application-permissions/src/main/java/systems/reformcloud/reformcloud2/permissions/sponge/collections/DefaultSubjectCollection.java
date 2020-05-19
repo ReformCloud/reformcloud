@@ -61,7 +61,7 @@ public abstract class DefaultSubjectCollection implements SubjectCollection {
     @Override
     @NotNull
     public String getIdentifier() {
-        return type;
+        return this.type;
     }
 
     @Override
@@ -73,33 +73,33 @@ public abstract class DefaultSubjectCollection implements SubjectCollection {
     @Override
     @NotNull
     public SubjectReference newSubjectReference(@NotNull String subjectIdentifier) {
-        return service.newSubjectReference(type, subjectIdentifier);
+        return this.service.newSubjectReference(this.type, subjectIdentifier);
     }
 
     @Override
     @NotNull
     public CompletableFuture<Subject> loadSubject(@NotNull String identifier) {
-        return CompletableFuture.completedFuture(load(identifier));
+        return CompletableFuture.completedFuture(this.load(identifier));
     }
 
     @Override
     @NotNull
     public Optional<Subject> getSubject(@NotNull String identifier) {
-        return Optional.of(load(identifier));
+        return Optional.of(this.load(identifier));
     }
 
     @Override
     @NotNull
     public CompletableFuture<Map<String, Subject>> loadSubjects(@NotNull Set<String> identifiers) {
         Map<String, Subject> ref = new ConcurrentHashMap<>();
-        identifiers.forEach(id -> ref.put(id, load(id)));
+        identifiers.forEach(id -> ref.put(id, this.load(id)));
         return CompletableFuture.completedFuture(ref);
     }
 
     @Override
     @NotNull
     public Map<Subject, Boolean> getLoadedWithPermission(@NotNull String permission) {
-        return getLoadedWithPermission(null, permission);
+        return this.getLoadedWithPermission(null, permission);
     }
 
     @Override
@@ -109,7 +109,7 @@ public abstract class DefaultSubjectCollection implements SubjectCollection {
             @NotNull String permission
     ) {
         Map<Subject, Boolean> out = new ConcurrentHashMap<>();
-        getLoadedSubjects().forEach(e -> {
+        this.getLoadedSubjects().forEach(e -> {
             Tristate tristate = e.getPermissionValue(contexts == null ? e.getActiveContexts() : contexts, permission);
             if (tristate.equals(Tristate.UNDEFINED)) {
                 return;
@@ -123,7 +123,7 @@ public abstract class DefaultSubjectCollection implements SubjectCollection {
     @Override
     @NotNull
     public CompletableFuture<Map<SubjectReference, Boolean>> getAllWithPermission(@NotNull String permission) {
-        return CompletableFuture.completedFuture(getLoadedWithPermission(permission).entrySet().stream().collect(Collectors.toMap(
+        return CompletableFuture.completedFuture(this.getLoadedWithPermission(permission).entrySet().stream().collect(Collectors.toMap(
                 e -> e.getKey().asSubjectReference(),
                 Map.Entry::getValue
         )));
@@ -132,7 +132,7 @@ public abstract class DefaultSubjectCollection implements SubjectCollection {
     @Override
     @NotNull
     public CompletableFuture<Map<SubjectReference, Boolean>> getAllWithPermission(@NotNull Set<Context> contexts, @NotNull String permission) {
-        return CompletableFuture.completedFuture(getLoadedWithPermission(contexts, permission).entrySet().stream().collect(Collectors.toMap(
+        return CompletableFuture.completedFuture(this.getLoadedWithPermission(contexts, permission).entrySet().stream().collect(Collectors.toMap(
                 e -> e.getKey().asSubjectReference(),
                 Map.Entry::getValue
         )));
@@ -141,7 +141,7 @@ public abstract class DefaultSubjectCollection implements SubjectCollection {
     @Override
     @NotNull
     public CompletableFuture<Set<String>> getAllIdentifiers() {
-        return CompletableFuture.completedFuture(getLoadedSubjects().stream()
+        return CompletableFuture.completedFuture(this.getLoadedSubjects().stream()
                 .map(Subject::getIdentifier)
                 .collect(Collectors.toSet())
         );

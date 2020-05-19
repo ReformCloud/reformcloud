@@ -40,14 +40,14 @@ public class ChannelMessageReceivedEvent extends Event {
     }
 
     public JsonConfiguration getContent() {
-        return content;
+        return this.content;
     }
 
     public String getBaseChannel() {
-        return baseChannel;
+        return this.baseChannel;
     }
 
     public String getSubChannel() {
-        return subChannel;
+        return this.subChannel;
     }
 }

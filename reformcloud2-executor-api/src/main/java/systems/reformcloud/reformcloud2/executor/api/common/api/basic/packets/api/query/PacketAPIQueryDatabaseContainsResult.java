@@ -41,7 +41,7 @@ public class PacketAPIQueryDatabaseContainsResult extends QueryResultPacket {
     }
 
     public boolean isResult() {
-        return result;
+        return this.result;
     }
 
     @Override

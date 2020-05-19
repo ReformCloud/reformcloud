@@ -44,7 +44,7 @@ public class PacketAPIQueryGetMainGroupsResult extends QueryResultPacket {
     }
 
     public List<MainGroup> getMainGroups() {
-        return mainGroups;
+        return this.mainGroups;
     }
 
     @Override

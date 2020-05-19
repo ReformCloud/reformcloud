@@ -44,15 +44,15 @@ public class TabListConfiguration implements SerializableObject {
     }
 
     public String getHeader() {
-        return header;
+        return this.header;
     }
 
     public String getFooter() {
-        return footer;
+        return this.footer;
     }
 
     public long getWaitUntilNextInSeconds() {
-        return waitUntilNextInSeconds;
+        return this.waitUntilNextInSeconds;
     }
 
     @Override

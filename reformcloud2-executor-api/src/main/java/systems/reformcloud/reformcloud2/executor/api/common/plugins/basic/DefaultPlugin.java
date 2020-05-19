@@ -59,40 +59,40 @@ public final class DefaultPlugin extends Plugin {
     @NotNull
     @Override
     public String version() {
-        return version;
+        return this.version;
     }
 
     @Nullable
     @Override
     public String author() {
-        return author;
+        return this.author;
     }
 
     @NotNull
     @Override
     public String main() {
-        return main;
+        return this.main;
     }
 
     @Override
     public List<String> depends() {
-        return depends;
+        return this.depends;
     }
 
     @Override
     public List<String> softpends() {
-        return softpends;
+        return this.softpends;
     }
 
     @Override
     public boolean enabled() {
-        return enabled;
+        return this.enabled;
     }
 
     @NotNull
     @Override
     public String getName() {
-        return name;
+        return this.name;
     }
 
     @Override

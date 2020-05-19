@@ -31,19 +31,19 @@ public final class ColouredDebugger implements Debugger {
     private boolean debugState;
 
     public ColouredDebugger() {
-        debugState = Boolean.getBoolean("reformcloud.executor.debug");
+        this.debugState = Boolean.getBoolean("reformcloud.executor.debug");
     }
 
     @Override
     public void debug(String message) {
-        if (debugState) {
+        if (this.debugState) {
             System.out.println("&b[DEBUG] " + message);
         }
     }
 
     @Override
     public void toggleDebugState() {
-        debugState = !debugState;
+        this.debugState = !this.debugState;
     }
 
     @Override

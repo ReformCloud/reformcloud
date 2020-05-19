@@ -47,14 +47,14 @@ public class WebUser implements Nameable {
     @NotNull
     @Override
     public String getName() {
-        return name;
+        return this.name;
     }
 
     public String getToken() {
-        return token;
+        return this.token;
     }
 
     public Collection<String> getPermissions() {
-        return permissions;
+        return this.permissions;
     }
 }

@@ -44,6 +44,6 @@ public final class ProcessDetailConfigureEvent extends Event {
      */
     @NotNull
     public ProcessDetail getProcessDetail() {
-        return processDetail;
+        return this.processDetail;
     }
 }

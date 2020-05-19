@@ -130,12 +130,12 @@ public abstract class SharedRunningProcess implements RunningProcess {
         if (processInformation.getProcessGroup().isStaticProcess()) {
             this.path = Paths.get("reformcloud/static/" + processInformation.getProcessDetail().getName());
             this.firstStartup = Files.notExists(this.path);
-            SystemHelper.createDirectory(Paths.get(path + "/plugins"));
+            SystemHelper.createDirectory(Paths.get(this.path + "/plugins"));
         } else {
             this.path = Paths.get("reformcloud/temp/" + processInformation.getProcessDetail().getName()
                     + "-" + processInformation.getProcessDetail().getProcessUniqueID());
             this.firstStartup = Files.notExists(this.path);
-            SystemHelper.recreateDirectory(path);
+            SystemHelper.recreateDirectory(this.path);
         }
     }
 
@@ -183,19 +183,19 @@ public abstract class SharedRunningProcess implements RunningProcess {
             DownloadHelper.downloadAndDisconnect(StringUtil.RUNNER_DOWNLOAD_URL, "reformcloud/files/runner.jar");
         }
 
-        SystemHelper.createDirectory(Paths.get(path + "/plugins"));
-        SystemHelper.createDirectory(Paths.get(path + "/reformcloud/.connection"));
-        new JsonConfiguration().add("key", this.getConnectionKey()).write(path + "/reformcloud/.connection/key.json");
+        SystemHelper.createDirectory(Paths.get(this.path + "/plugins"));
+        SystemHelper.createDirectory(Paths.get(this.path + "/reformcloud/.connection"));
+        new JsonConfiguration().add("key", this.getConnectionKey()).write(this.path + "/reformcloud/.connection/key.json");
 
-        SystemHelper.doCopy("reformcloud/files/runner.jar", path + "/runner.jar");
-        SystemHelper.doCopy("reformcloud/.bin/executor.jar", path + "/plugins/executor.jar");
+        SystemHelper.doCopy("reformcloud/files/runner.jar", this.path + "/runner.jar");
+        SystemHelper.doCopy("reformcloud/.bin/executor.jar", this.path + "/plugins/executor.jar");
 
         Duo<String, Integer> connectHost = this.getAvailableConnectionHost();
         new JsonConfiguration()
                 .add("controller-host", connectHost.getFirst())
                 .add("controller-port", connectHost.getSecond())
                 .add("startInfo", this.startupInformation)
-                .write(path + "/reformcloud/.connection/connection.json");
+                .write(this.path + "/reformcloud/.connection/connection.json");
 
         this.startupInformation.getProcessDetail().setProcessState(ProcessState.PREPARED);
         ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(this.startupInformation);
@@ -266,7 +266,7 @@ public abstract class SharedRunningProcess implements RunningProcess {
         try {
             this.process = new ProcessBuilder()
                     .command(command)
-                    .directory(path.toFile())
+                    .directory(this.path.toFile())
                     .redirectErrorStream(true)
                     .start();
             this.startupTime = System.currentTimeMillis();
@@ -403,7 +403,7 @@ public abstract class SharedRunningProcess implements RunningProcess {
     @Override
     public boolean isAlive() {
         try {
-            return process != null && process.getInputStream().available() != -1 && process.isAlive();
+            return this.process != null && this.process.getInputStream().available() != -1 && this.process.isAlive();
         } catch (final IOException ex) {
             return false;
         }

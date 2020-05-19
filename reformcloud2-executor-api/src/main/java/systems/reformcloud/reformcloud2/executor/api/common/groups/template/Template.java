@@ -84,55 +84,55 @@ public final class Template implements Nameable, SerializableObject {
     }
 
     public int getPriority() {
-        return priority;
+        return this.priority;
     }
 
     @NotNull
     @Override
     public String getName() {
-        return name;
+        return this.name;
     }
 
     public boolean isGlobal() {
-        return global;
+        return this.global;
     }
 
     public boolean isAutoReleaseOnClose() {
-        return autoReleaseOnClose;
+        return this.autoReleaseOnClose;
     }
 
     @NotNull
     public String getBackend() {
-        return backend;
+        return this.backend;
     }
 
     @Nullable
     public String getServerNameSplitter() {
-        return serverNameSplitter;
+        return this.serverNameSplitter;
     }
 
     @NotNull
     public RuntimeConfiguration getRuntimeConfiguration() {
-        return runtimeConfiguration;
+        return this.runtimeConfiguration;
     }
 
     @NotNull
     public Version getVersion() {
-        return version;
+        return this.version;
     }
 
     public boolean isServer() {
-        return version.isServer();
+        return this.version.isServer();
     }
 
     /* Needs null check, added in version 2.0.4 */
     public Collection<Inclusion> getTemplateInclusions() {
-        return templateInclusions == null ? new ArrayList<>() : templateInclusions;
+        return this.templateInclusions == null ? new ArrayList<>() : this.templateInclusions;
     }
 
     /* Needs null check, added in version 2.0.4 */
     public Collection<Inclusion> getPathInclusions() {
-        return pathInclusions == null ? new ArrayList<>() : pathInclusions;
+        return this.pathInclusions == null ? new ArrayList<>() : this.pathInclusions;
     }
 
     public Collection<Duo<String, String>> getPathInclusionsOfType(@NotNull Inclusion.InclusionLoadType type) {

@@ -46,7 +46,7 @@ public class PacketAPIQueryDatabaseGetDocumentResult extends QueryResultPacket {
     }
 
     public JsonConfiguration getResult() {
-        return result;
+        return this.result;
     }
 
     @Override

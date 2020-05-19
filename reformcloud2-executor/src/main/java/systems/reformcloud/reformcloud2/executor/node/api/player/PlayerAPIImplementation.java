@@ -257,7 +257,7 @@ public class PlayerAPIImplementation implements PlayerAsyncAPI, PlayerSyncAPI {
     @NotNull
     @Override
     public Task<Void> connectAsync(@NotNull UUID player, @NotNull ProcessInformation server) {
-        return connectAsync(player, server.getProcessDetail().getName());
+        return this.connectAsync(player, server.getProcessDetail().getName());
     }
 
     @NotNull
@@ -265,9 +265,9 @@ public class PlayerAPIImplementation implements PlayerAsyncAPI, PlayerSyncAPI {
     public Task<Void> connectAsync(@NotNull UUID player, @NotNull UUID target) {
         Task<Void> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
-            ProcessInformation targetServer = getPlayerOnServer(target);
+            ProcessInformation targetServer = this.getPlayerOnServer(target);
             if (targetServer != null) {
-                connectAsync(player, targetServer).awaitUninterruptedly();
+                this.connectAsync(player, targetServer).awaitUninterruptedly();
             }
 
             task.complete(null);
@@ -277,52 +277,52 @@ public class PlayerAPIImplementation implements PlayerAsyncAPI, PlayerSyncAPI {
 
     @Override
     public void sendMessage(@NotNull UUID player, @NotNull String message) {
-        sendMessageAsync(player, message).awaitUninterruptedly();
+        this.sendMessageAsync(player, message).awaitUninterruptedly();
     }
 
     @Override
     public void kickPlayer(@NotNull UUID player, @NotNull String message) {
-        kickPlayerAsync(player, message).awaitUninterruptedly();
+        this.kickPlayerAsync(player, message).awaitUninterruptedly();
     }
 
     @Override
     public void kickPlayerFromServer(@NotNull UUID player, @NotNull String message) {
-        kickPlayerFromServerAsync(player, message).awaitUninterruptedly();
+        this.kickPlayerFromServerAsync(player, message).awaitUninterruptedly();
     }
 
     @Override
     public void playSound(@NotNull UUID player, @NotNull String sound, float f1, float f2) {
-        playSoundAsync(player, sound, f1, f2).awaitUninterruptedly();
+        this.playSoundAsync(player, sound, f1, f2).awaitUninterruptedly();
     }
 
     @Override
     public void sendTitle(@NotNull UUID player, @NotNull String title, @NotNull String subTitle, int fadeIn, int stay, int fadeOut) {
-        sendTitleAsync(player, title, subTitle, fadeIn, stay, fadeOut).awaitUninterruptedly();
+        this.sendTitleAsync(player, title, subTitle, fadeIn, stay, fadeOut).awaitUninterruptedly();
     }
 
     @Override
     public void playEffect(@NotNull UUID player, @NotNull String entityEffect) {
-        playEffectAsync(player, entityEffect).awaitUninterruptedly();
+        this.playEffectAsync(player, entityEffect).awaitUninterruptedly();
     }
 
     @Override
     public void teleport(@NotNull UUID player, @NotNull String world, double x, double y, double z, float yaw, float pitch) {
-        teleportAsync(player, world, x, y, z, yaw, pitch).awaitUninterruptedly();
+        this.teleportAsync(player, world, x, y, z, yaw, pitch).awaitUninterruptedly();
     }
 
     @Override
     public void connect(@NotNull UUID player, @NotNull String server) {
-        connectAsync(player, server).awaitUninterruptedly();
+        this.connectAsync(player, server).awaitUninterruptedly();
     }
 
     @Override
     public void connect(@NotNull UUID player, @NotNull ProcessInformation server) {
-        connectAsync(player, server).awaitUninterruptedly();
+        this.connectAsync(player, server).awaitUninterruptedly();
     }
 
     @Override
     public void connect(@NotNull UUID player, @NotNull UUID target) {
-        connectAsync(player, target).awaitUninterruptedly();
+        this.connectAsync(player, target).awaitUninterruptedly();
     }
 
     private ProcessInformation getPlayerOnProxy(UUID uniqueID) {

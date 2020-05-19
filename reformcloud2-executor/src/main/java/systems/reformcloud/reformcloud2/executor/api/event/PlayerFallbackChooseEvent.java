@@ -50,12 +50,12 @@ public class PlayerFallbackChooseEvent extends Event {
 
     @NotNull
     public UUID getPlayerUniqueId() {
-        return playerUniqueId;
+        return this.playerUniqueId;
     }
 
     @NotNull
     public ReferencedOptional<ProcessInformation> getFilteredFallback() {
-        return ReferencedOptional.build(filteredFallback);
+        return ReferencedOptional.build(this.filteredFallback);
     }
 
     public void setFilteredFallback(@Nullable ProcessInformation filteredFallback) {
@@ -64,6 +64,6 @@ public class PlayerFallbackChooseEvent extends Event {
 
     @NotNull
     public Collection<ProcessInformation> getAllLobbies() {
-        return allLobbies;
+        return this.allLobbies;
     }
 }

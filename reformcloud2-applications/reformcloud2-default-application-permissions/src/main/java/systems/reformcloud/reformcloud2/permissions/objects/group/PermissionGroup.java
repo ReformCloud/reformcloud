@@ -100,26 +100,26 @@ public class PermissionGroup implements SerializableObject {
 
     @NotNull
     public Collection<PermissionNode> getPermissionNodes() {
-        return permissionNodes;
+        return this.permissionNodes;
     }
 
     @NotNull
     public Map<String, Collection<PermissionNode>> getPerGroupPermissions() {
-        return perGroupPermissions;
+        return this.perGroupPermissions;
     }
 
     @NotNull
     public Collection<String> getSubGroups() {
-        return subGroups;
+        return this.subGroups;
     }
 
     @NotNull
     public String getName() {
-        return name;
+        return this.name;
     }
 
     public int getPriority() {
-        return priority;
+        return this.priority;
     }
 
     public void setPriority(int priority) {
@@ -127,7 +127,7 @@ public class PermissionGroup implements SerializableObject {
     }
 
     public boolean isDefaultGroup() {
-        return defaultGroup;
+        return this.defaultGroup;
     }
 
     public void setDefaultGroup(boolean defaultGroup) {
@@ -172,7 +172,7 @@ public class PermissionGroup implements SerializableObject {
 
     @NotNull
     public JsonConfiguration getExtra() {
-        return extra == null ? new JsonConfiguration() : extra;
+        return this.extra == null ? new JsonConfiguration() : this.extra;
     }
 
     @Nullable

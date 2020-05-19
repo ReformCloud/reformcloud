@@ -52,21 +52,21 @@ public class SpongeSubjectReference implements SubjectReference {
     @Override
     @NotNull
     public String getCollectionIdentifier() {
-        return collection;
+        return this.collection;
     }
 
     @Override
     @NotNull
     public String getSubjectIdentifier() {
-        return id;
+        return this.id;
     }
 
     @Override
     @NotNull
     public CompletableFuture<Subject> resolve() {
-        if (cache == null) {
-            SubjectCollection subjectCollection = service.getCollection(collection).orElseThrow(() -> new IllegalArgumentException("Collection not loaded"));
-            this.cache = subjectCollection.loadSubject(id).join();
+        if (this.cache == null) {
+            SubjectCollection subjectCollection = this.service.getCollection(this.collection).orElseThrow(() -> new IllegalArgumentException("Collection not loaded"));
+            this.cache = subjectCollection.loadSubject(this.id).join();
         }
 
         return CompletableFuture.completedFuture(this.cache);

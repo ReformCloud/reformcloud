@@ -50,11 +50,11 @@ public final class DefaultWebServer implements WebServer {
 
     @Override
     public void add(String host, int port, RequestListenerHandler requestListenerHandler) {
-        if (!channelFutures.containsKey(port)) {
+        if (!this.channelFutures.containsKey(port)) {
             try {
-                channelFutures.put(port, new ServerBootstrap()
-                        .channel(socketClass)
-                        .group(boss, worker)
+                this.channelFutures.put(port, new ServerBootstrap()
+                        .channel(this.socketClass)
+                        .group(this.boss, this.worker)
 
                         .childOption(ChannelOption.TCP_NODELAY, true)
                         .childOption(ChannelOption.IP_TOS, 24)
@@ -88,10 +88,10 @@ public final class DefaultWebServer implements WebServer {
 
     @Override
     public void close() {
-        channelFutures.forEach((integer, channelFuture) -> channelFuture.cancel(true));
-        channelFutures.clear();
+        this.channelFutures.forEach((integer, channelFuture) -> channelFuture.cancel(true));
+        this.channelFutures.clear();
 
-        worker.shutdownGracefully();
-        boss.shutdownGracefully();
+        this.worker.shutdownGracefully();
+        this.boss.shutdownGracefully();
     }
 }

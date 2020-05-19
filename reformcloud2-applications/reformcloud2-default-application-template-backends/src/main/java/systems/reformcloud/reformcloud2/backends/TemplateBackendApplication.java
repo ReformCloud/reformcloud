@@ -48,9 +48,9 @@ public class TemplateBackendApplication extends Application {
             TemplateBackendApplication.LOADER.addDependency(dependencyURL);
         });
 
-        FTPTemplateBackend.load(dataFolder().getPath());
-        SFTPTemplateBackend.load(dataFolder().getPath());
-        URLTemplateBackend.load(dataFolder().getPath());
+        FTPTemplateBackend.load(this.dataFolder().getPath());
+        SFTPTemplateBackend.load(this.dataFolder().getPath());
+        URLTemplateBackend.load(this.dataFolder().getPath());
     }
 
     @Override

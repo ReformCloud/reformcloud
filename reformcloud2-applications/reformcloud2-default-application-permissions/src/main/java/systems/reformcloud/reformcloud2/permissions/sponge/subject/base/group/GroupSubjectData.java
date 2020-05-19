@@ -49,30 +49,30 @@ public class GroupSubjectData extends AbstractSpongeSubjectData {
     @Override
     @NotNull
     public Map<Set<Context>, Map<String, Boolean>> getAllPermissions() {
-        return Collections.singletonMap(SubjectData.GLOBAL_CONTEXT, getPermissions());
+        return Collections.singletonMap(SubjectData.GLOBAL_CONTEXT, this.getPermissions());
     }
 
     @Override
     @NotNull
     public Map<String, Boolean> getPermissions(@Nullable Set<Context> contexts) {
-        return getPermissions();
+        return this.getPermissions();
     }
 
     private Map<String, Boolean> getPermissions() {
         Map<String, Boolean> out = new HashMap<>();
-        PermissionGroup permissionGroup = PermissionManagement.getInstance().getGroup(group);
+        PermissionGroup permissionGroup = PermissionManagement.getInstance().getGroup(this.group);
         if (permissionGroup == null) {
             return out;
         }
 
-        out.putAll(getPermissionsOf(permissionGroup));
+        out.putAll(this.getPermissionsOf(permissionGroup));
         permissionGroup.getSubGroups().forEach(e -> {
             PermissionGroup sub = PermissionManagement.getInstance().getGroup(e);
             if (sub == null) {
                 return;
             }
 
-            out.putAll(getPermissionsOf(sub));
+            out.putAll(this.getPermissionsOf(sub));
         });
 
         return out;

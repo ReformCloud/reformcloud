@@ -61,9 +61,9 @@ public class ControllerPacketStartProcess extends Packet {
     @Override
     public void handlePacketReceive(@NotNull NetworkChannelReader reader, @NotNull ChallengeAuthHandler authHandler, @NotNull ChannelReaderHelper parent, @Nullable PacketSender sender, @NotNull ChannelHandlerContext channel) {
         if (this.start) {
-            ProcessQueue.queue(processInformation);
+            ProcessQueue.queue(this.processInformation);
         } else {
-            RunningProcess process = new DefaultRunningProcess(processInformation);
+            RunningProcess process = new DefaultRunningProcess(this.processInformation);
             process.prepare().onComplete(e -> ClientExecutor.getInstance().getProcessManager().registerProcess(process));
         }
     }

@@ -66,7 +66,7 @@ public class NodePacketOutScreenEnabled extends Packet {
             return;
         }
 
-        for (String line : lines) {
+        for (String line : this.lines) {
             System.out.println(LanguageManager.get("screen-line-added", processInformation.getProcessDetail().getName(), line));
         }
     }

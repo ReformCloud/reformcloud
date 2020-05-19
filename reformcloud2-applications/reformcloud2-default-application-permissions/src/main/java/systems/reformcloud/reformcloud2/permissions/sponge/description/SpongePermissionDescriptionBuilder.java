@@ -69,7 +69,7 @@ public class SpongePermissionDescriptionBuilder implements PermissionDescription
     @NotNull
     public PermissionDescription register() throws IllegalStateException {
         PermissionDescription permissionDescription = new SpongePermissionDescription(
-                service, id, pluginContainer, description
+                this.service, this.id, this.pluginContainer, this.description
         );
         SpongePermissionService.DESCRIPTIONS.put(permissionDescription.getId(), permissionDescription);
         return permissionDescription;

@@ -47,54 +47,54 @@ public class DefaultPacketSender extends PacketSender {
 
     @Override
     public long getConnectionTime() {
-        return connectionTime;
+        return this.connectionTime;
     }
 
     @NotNull
     @Override
     public String getAddress() {
-        return getEthernetAddress().getAddress().getHostAddress();
+        return this.getEthernetAddress().getAddress().getHostAddress();
     }
 
     @NotNull
     @Override
     public InetSocketAddress getEthernetAddress() {
-        return (InetSocketAddress) channel.channel().remoteAddress();
+        return (InetSocketAddress) this.channel.channel().remoteAddress();
     }
 
     @Override
     public boolean isLoopBackSender() {
-        return !getEthernetAddress().getAddress().isLoopbackAddress();
+        return !this.getEthernetAddress().getAddress().isLoopbackAddress();
     }
 
     @Override
     public void sendPacket(@NotNull Object packet) {
-        if (isConnected()) {
-            channel.writeAndFlush(packet);
+        if (this.isConnected()) {
+            this.channel.writeAndFlush(packet);
         }
     }
 
     @Override
     public void sendPacketSync(@NotNull Object packet) {
-        if (isConnected()) {
-            channel.writeAndFlush(packet).syncUninterruptibly();
+        if (this.isConnected()) {
+            this.channel.writeAndFlush(packet).syncUninterruptibly();
         }
     }
 
     @Override
     public void sendPackets(@NotNull Object... packets) {
-        if (isConnected()) {
+        if (this.isConnected()) {
             for (Object packet : packets) {
-                sendPacket(packet);
+                this.sendPacket(packet);
             }
         }
     }
 
     @Override
     public void sendPacketsSync(@NotNull Object... packets) {
-        if (isConnected()) {
+        if (this.isConnected()) {
             for (Object packet : packets) {
-                sendPacketSync(packet);
+                this.sendPacketSync(packet);
             }
         }
     }
@@ -110,18 +110,18 @@ public class DefaultPacketSender extends PacketSender {
 
     @Override
     public boolean isConnected() {
-        return channel != null && channel.channel().isOpen();
+        return this.channel != null && this.channel.channel().isOpen();
     }
 
     @Override
     public void close() {
-        channel.close();
+        this.channel.close();
     }
 
     @NotNull
     @Override
     public String getName() {
-        return name;
+        return this.name;
     }
 
     @Override

@@ -50,7 +50,7 @@ public final class RunnerInterpreterTask extends InterpreterTask {
 
     @Override
     public void executeTask(@NotNull String callerLine, @NotNull InterpretedReformScript script, @NotNull Collection<String> allLines) {
-        for (Map.Entry<String, InterpreterCommand> commandEntry : commands.entrySet()) {
+        for (Map.Entry<String, InterpreterCommand> commandEntry : this.commands.entrySet()) {
             commandEntry.getValue().execute(commandEntry.getKey(), script, allLines);
         }
     }

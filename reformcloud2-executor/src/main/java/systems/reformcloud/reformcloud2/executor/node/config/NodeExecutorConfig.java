@@ -80,9 +80,9 @@ public final class NodeExecutorConfig {
     private IngameMessages ingameMessages;
 
     public void init() {
-        createDirectories();
+        this.createDirectories();
         if (!Files.exists(NodeConfig.PATH)) {
-            firstStartup.set(true);
+            this.firstStartup.set(true);
 
             AtomicReference<String> nodeName = new AtomicReference<>();
             AtomicReference<String> networkAddress = new AtomicReference<>();
@@ -91,7 +91,7 @@ public final class NodeExecutorConfig {
             AtomicBoolean runClusterSetup = new AtomicBoolean(false);
             List<NodeConfig.NetworkAddress> clusterNodes = new ArrayList<>();
 
-            setup.addQuestion(new DefaultSetupQuestion(
+            this.setup.addQuestion(new DefaultSetupQuestion(
                     LanguageManager.get("node-setup-question-node-name"),
                     "",
                     s -> true,
@@ -202,11 +202,11 @@ public final class NodeExecutorConfig {
     }
 
     private void loadGroups() {
-        processGroups.clear();
-        mainGroups.clear();
+        this.processGroups.clear();
+        this.mainGroups.clear();
 
-        processGroups.addAll(this.localSubGroupsRegistry.readKeys(e -> e.get("key", ProcessGroup.TYPE)));
-        mainGroups.addAll(this.localMainGroupsRegistry.readKeys(e -> e.get("key", MainGroup.TYPE)));
+        this.processGroups.addAll(this.localSubGroupsRegistry.readKeys(e -> e.get("key", ProcessGroup.TYPE)));
+        this.mainGroups.addAll(this.localMainGroupsRegistry.readKeys(e -> e.get("key", MainGroup.TYPE)));
     }
 
     public void handleProcessGroupCreate(ProcessGroup processGroup) {
@@ -308,30 +308,30 @@ public final class NodeExecutorConfig {
     }
 
     public NodeInformation getSelf() {
-        return self;
+        return this.self;
     }
 
     public NodeConfig getNodeConfig() {
-        return nodeConfig;
+        return this.nodeConfig;
     }
 
     public String getConnectionKey() {
-        return connectionKey;
+        return this.connectionKey;
     }
 
     public boolean isFirstStartup() {
-        return firstStartup.get();
+        return this.firstStartup.get();
     }
 
     public List<MainGroup> getMainGroups() {
-        return new ArrayList<>(mainGroups);
+        return new ArrayList<>(this.mainGroups);
     }
 
     public IngameMessages getIngameMessages() {
-        return ingameMessages;
+        return this.ingameMessages;
     }
 
     public List<ProcessGroup> getProcessGroups() {
-        return new ArrayList<>(processGroups);
+        return new ArrayList<>(this.processGroups);
     }
 }

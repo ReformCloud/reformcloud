@@ -64,7 +64,7 @@ public abstract class AbstractSpongeSubject implements Subject {
     @Override
     @NotNull
     public SubjectData getTransientSubjectData() {
-        return getSubjectData();
+        return this.getSubjectData();
     }
 
     @Override
@@ -75,23 +75,23 @@ public abstract class AbstractSpongeSubject implements Subject {
     @Override
     @NotNull
     public SubjectReference asSubjectReference() {
-        return service().newSubjectReference(getContainingCollection().getIdentifier(), getIdentifier());
+        return this.service().newSubjectReference(this.getContainingCollection().getIdentifier(), this.getIdentifier());
     }
 
     @Override
     public boolean hasPermission(@NotNull String permission) {
-        return has(permission);
+        return this.has(permission);
     }
 
     @Override
     public boolean hasPermission(@Nullable Set<Context> contexts, @NotNull String permission) {
-        return hasPermission(permission);
+        return this.hasPermission(permission);
     }
 
     @Override
     @NotNull
     public Tristate getPermissionValue(@Nullable Set<Context> contexts, @NotNull String permission) {
-        return hasPermission(permission) ? Tristate.TRUE : Tristate.FALSE;
+        return this.hasPermission(permission) ? Tristate.TRUE : Tristate.FALSE;
     }
 
     @Override

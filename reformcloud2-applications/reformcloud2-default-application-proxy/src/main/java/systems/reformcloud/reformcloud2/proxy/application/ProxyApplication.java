@@ -52,7 +52,7 @@ public class ProxyApplication extends Application {
     @Override
     public void onLoad() {
         instance = this;
-        ConfigHelper.init(dataFolder());
+        ConfigHelper.init(this.dataFolder());
 
         ExecutorAPI.getInstance().getPacketHandler().registerHandler(PacketRequestConfig.class);
         DefaultChannelManager.INSTANCE.getAllSender().forEach(e -> e.sendPacket(new PacketProxyConfigUpdate(ConfigHelper.getProxyConfiguration())));

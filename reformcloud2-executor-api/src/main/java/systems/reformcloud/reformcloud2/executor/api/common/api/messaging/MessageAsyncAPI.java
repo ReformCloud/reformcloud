@@ -41,7 +41,7 @@ public interface MessageAsyncAPI {
      */
     @NotNull
     default Task<Void> sendChannelMessageAsync(@NotNull String receiver, @NotNull JsonConfiguration jsonConfiguration) {
-        return sendChannelMessageAsync(jsonConfiguration, ErrorReportHandling.NOTHING, receiver);
+        return this.sendChannelMessageAsync(jsonConfiguration, ErrorReportHandling.NOTHING, receiver);
     }
 
     /**
@@ -53,7 +53,7 @@ public interface MessageAsyncAPI {
      */
     @NotNull
     default Task<Void> sendChannelMessageAsync(@NotNull JsonConfiguration jsonConfiguration, @NotNull String... receivers) {
-        return sendChannelMessageAsync(jsonConfiguration, ErrorReportHandling.NOTHING, receivers);
+        return this.sendChannelMessageAsync(jsonConfiguration, ErrorReportHandling.NOTHING, receivers);
     }
 
     /**
@@ -69,7 +69,7 @@ public interface MessageAsyncAPI {
     default Task<Void> sendChannelMessageAsync(@NotNull JsonConfiguration jsonConfiguration,
                                                @NotNull ErrorReportHandling errorReportHandling,
                                                @NotNull String... receivers) {
-        return sendChannelMessageAsync(jsonConfiguration, "unknown", errorReportHandling, receivers);
+        return this.sendChannelMessageAsync(jsonConfiguration, "unknown", errorReportHandling, receivers);
     }
 
     /**
@@ -88,7 +88,7 @@ public interface MessageAsyncAPI {
             @NotNull String baseChannel,
             @NotNull ErrorReportHandling errorReportHandling,
             @NotNull String... receivers) {
-        return sendChannelMessageAsync(jsonConfiguration, baseChannel, "unknown", errorReportHandling, receivers);
+        return this.sendChannelMessageAsync(jsonConfiguration, baseChannel, "unknown", errorReportHandling, receivers);
     }
 
     /**
@@ -120,7 +120,7 @@ public interface MessageAsyncAPI {
      */
     @NotNull
     default Task<Void> sendChannelMessageAsync(@NotNull JsonConfiguration configuration, @NotNull ReceiverType... receiverTypes) {
-        return sendChannelMessageAsync(configuration, "unknown", receiverTypes);
+        return this.sendChannelMessageAsync(configuration, "unknown", receiverTypes);
     }
 
     /**
@@ -135,7 +135,7 @@ public interface MessageAsyncAPI {
     default Task<Void> sendChannelMessageAsync(@NotNull JsonConfiguration configuration,
                                                @NotNull String baseChannel,
                                                @NotNull ReceiverType... receiverTypes) {
-        return sendChannelMessageAsync(configuration, baseChannel, "unknown", receiverTypes);
+        return this.sendChannelMessageAsync(configuration, baseChannel, "unknown", receiverTypes);
     }
 
     /**

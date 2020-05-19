@@ -39,7 +39,7 @@ public final class VariableCommand extends InterpreterCommand {
 
     @Override
     public void execute(@NotNull String cursorLine, @NotNull InterpretedReformScript script, @NotNull Collection<String> allLines) {
-        cursorLine = cursorLine.replaceFirst(getCommand() + " ", "");
+        cursorLine = cursorLine.replaceFirst(this.getCommand() + " ", "");
         String[] parts = cursorLine.split("=");
         if (parts.length != 2) {
             throw new RuntimeException("Unable to execute Variable command correctly! Missing identifiers");

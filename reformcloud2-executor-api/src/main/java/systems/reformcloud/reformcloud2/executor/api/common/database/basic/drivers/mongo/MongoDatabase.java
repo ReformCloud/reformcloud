@@ -61,7 +61,7 @@ public final class MongoDatabase extends Database<com.mongodb.client.MongoDataba
 
     @Override
     public void connect(@NotNull String host, int port, @NotNull String userName, @NotNull String password, @NotNull String table) {
-        if (!isConnected()) {
+        if (!this.isConnected()) {
             try {
                 this.mongoClient = MongoClients.create(
                         MessageFormat.format(
@@ -73,7 +73,7 @@ public final class MongoDatabase extends Database<com.mongodb.client.MongoDataba
                                 table
                         )
                 );
-                this.mongoDatabase = mongoClient.getDatabase(table);
+                this.mongoDatabase = this.mongoClient.getDatabase(table);
             } catch (final UnsupportedEncodingException ex) {
                 ex.printStackTrace(); //Should never happen
             }
@@ -82,12 +82,12 @@ public final class MongoDatabase extends Database<com.mongodb.client.MongoDataba
 
     @Override
     public boolean isConnected() {
-        return mongoClient != null;
+        return this.mongoClient != null;
     }
 
     @Override
     public void disconnect() {
-        if (isConnected()) {
+        if (this.isConnected()) {
             this.mongoClient.close();
             this.mongoClient = null;
         }
@@ -95,25 +95,25 @@ public final class MongoDatabase extends Database<com.mongodb.client.MongoDataba
 
     @Override
     public boolean createDatabase(String name) {
-        mongoDatabase.getCollection(name);
+        this.mongoDatabase.getCollection(name);
         return true;
     }
 
     @Override
     public boolean deleteDatabase(String name) {
-        mongoDatabase.getCollection(name).drop();
+        this.mongoDatabase.getCollection(name).drop();
         return true;
     }
 
     @Override
     public DatabaseReader createForTable(String table) {
         this.createDatabase(table);
-        return perTableReader.putIfAbsent(table, new MongoDatabaseReader(table, this));
+        return this.perTableReader.putIfAbsent(table, new MongoDatabaseReader(table, this));
     }
 
     @NotNull
     @Override
     public com.mongodb.client.MongoDatabase get() {
-        return mongoDatabase;
+        return this.mongoDatabase;
     }
 }

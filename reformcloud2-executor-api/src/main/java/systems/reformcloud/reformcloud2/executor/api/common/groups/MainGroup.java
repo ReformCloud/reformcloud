@@ -48,11 +48,11 @@ public class MainGroup implements Nameable, SerializableObject {
     @NotNull
     @Override
     public String getName() {
-        return name;
+        return this.name;
     }
 
     public List<String> getSubGroups() {
-        return subGroups;
+        return this.subGroups;
     }
 
     public void setSubGroups(List<String> subGroups) {
@@ -64,8 +64,8 @@ public class MainGroup implements Nameable, SerializableObject {
         if (this == o) return true;
         if (!(o instanceof MainGroup)) return false;
         MainGroup mainGroup = (MainGroup) o;
-        return Objects.equals(getName(), mainGroup.getName()) &&
-                Objects.equals(getSubGroups(), mainGroup.getSubGroups());
+        return Objects.equals(this.getName(), mainGroup.getName()) &&
+                Objects.equals(this.getSubGroups(), mainGroup.getSubGroups());
     }
 
     @Override

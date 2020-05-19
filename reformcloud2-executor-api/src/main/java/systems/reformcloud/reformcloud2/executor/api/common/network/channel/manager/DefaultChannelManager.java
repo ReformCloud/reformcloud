@@ -47,17 +47,17 @@ public final class DefaultChannelManager implements ChannelManager {
 
     @Override
     public void registerChannel(@NotNull PacketSender packetSender) {
-        senders.add(packetSender);
+        this.senders.add(packetSender);
     }
 
     @Override
     public void unregisterChannel(@NotNull PacketSender packetSender) {
-        PacketSender current = Streams.filter(senders, sender -> packetSender.getName().equals(sender.getName()));
+        PacketSender current = Streams.filter(this.senders, sender -> packetSender.getName().equals(sender.getName()));
         if (current == null) {
             return;
         }
 
-        senders.remove(current);
+        this.senders.remove(current);
     }
 
     @Override
@@ -77,19 +77,19 @@ public final class DefaultChannelManager implements ChannelManager {
 
     @Override
     public void unregisterAll() {
-        senders.forEach(NetworkChannel::close);
-        senders.clear();
+        this.senders.forEach(NetworkChannel::close);
+        this.senders.clear();
     }
 
     @NotNull
     @Override
     public ReferencedOptional<PacketSender> get(@NotNull String name) {
-        return Streams.filterToReference(senders, packetSender -> packetSender.getName().equals(name));
+        return Streams.filterToReference(this.senders, packetSender -> packetSender.getName().equals(name));
     }
 
     @NotNull
     @Override
     public List<PacketSender> getAllSender() {
-        return Collections.unmodifiableList(senders);
+        return Collections.unmodifiableList(this.senders);
     }
 }

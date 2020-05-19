@@ -44,7 +44,7 @@ public class SpongeSignConverter implements SignConverter<Sign> {
     @Nullable
     @Override
     public Sign from(@NotNull CloudSign cloudSign) {
-        Location<World> sponge = accumulate(cloudSign.getLocation());
+        Location<World> sponge = this.accumulate(cloudSign.getLocation());
         if (sponge == null) {
             return null;
         }
@@ -61,13 +61,13 @@ public class SpongeSignConverter implements SignConverter<Sign> {
     @NotNull
     @Override
     public CloudSign to(@NotNull Sign sign, @NotNull String group) {
-        return new CloudSign(group, accumulate(sign.getLocation()));
+        return new CloudSign(group, this.accumulate(sign.getLocation()));
     }
 
     @NotNull
     @Override
     public CloudLocation to(@NotNull Sign sign) {
-        return accumulate(sign.getLocation());
+        return this.accumulate(sign.getLocation());
     }
 
     private Location<World> accumulate(CloudLocation location) {

@@ -49,7 +49,7 @@ public class SystemSubject extends AbstractSystemSubject {
     @NotNull
     @Override
     public Optional<CommandSource> getCommandSource() {
-        if (id.equals(PermissionService.SUBJECTS_SYSTEM)) {
+        if (this.id.equals(PermissionService.SUBJECTS_SYSTEM)) {
             return Sponge.getServer().getConsole().getCommandSource();
         }
 

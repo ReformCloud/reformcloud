@@ -51,22 +51,22 @@ public final class AutoStartupHandler extends AbsoluteThread {
     });
 
     public AutoStartupHandler() {
-        update();
-        enableDaemon().updatePriority(Thread.MIN_PRIORITY).start();
+        this.update();
+        this.enableDaemon().updatePriority(Thread.MIN_PRIORITY).start();
     }
 
     public void update() {
-        if (perPriorityStartup.size() > 0) {
-            perPriorityStartup.clear();
+        if (this.perPriorityStartup.size() > 0) {
+            this.perPriorityStartup.clear();
         }
 
-        perPriorityStartup.addAll(ControllerExecutor.getInstance().getControllerExecutorConfig().getProcessGroups());
+        this.perPriorityStartup.addAll(ControllerExecutor.getInstance().getControllerExecutorConfig().getProcessGroups());
     }
 
     @Override
     public void run() {
         while (!Thread.currentThread().isInterrupted()) {
-            Streams.copySortedSet(perPriorityStartup).forEach(processGroup -> {
+            Streams.copySortedSet(this.perPriorityStartup).forEach(processGroup -> {
                 long started = ControllerExecutor.getInstance().getProcessManager().getOnlineAndWaitingProcessCount(processGroup.getName());
                 int waiting = ControllerExecutor.getInstance().getProcessManager().getWaitingProcesses(processGroup.getName());
 

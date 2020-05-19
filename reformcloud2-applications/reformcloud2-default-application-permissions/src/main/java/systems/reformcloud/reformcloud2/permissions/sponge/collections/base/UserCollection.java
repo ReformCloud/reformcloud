@@ -49,7 +49,7 @@ public class UserCollection extends DefaultSubjectCollection {
     protected Subject load(String id) {
         UUID uniqueID = CommonHelper.tryParse(id);
         Conditions.isTrue(uniqueID != null);
-        return new SpongeSubject(uniqueID, this, service);
+        return new SpongeSubject(uniqueID, this, this.service);
     }
 
     @Override

@@ -35,6 +35,6 @@ public class PermissionGroupDeleteEvent extends Event {
     }
 
     public String getName() {
-        return name;
+        return this.name;
     }
 }

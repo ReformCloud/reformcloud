@@ -78,19 +78,19 @@ public final class FileDatabase extends Database<Path> {
     @Override
     public boolean deleteDatabase(String name) {
         DatabaseProvider.getDatabaseDriver().deleteDatabase(new File(this.table, name));
-        perTableReader.remove(name);
+        this.perTableReader.remove(name);
         return true;
     }
 
     @Override
     public DatabaseReader createForTable(String table) {
-        return perTableReader.putIfAbsent(table, new FileDatabaseReader(this.table, table));
+        return this.perTableReader.putIfAbsent(table, new FileDatabaseReader(this.table, table));
     }
 
     @NotNull
     @Override
     public Path get() {
-        return Paths.get(table);
+        return Paths.get(this.table);
     }
 
     private void initDependencies() {

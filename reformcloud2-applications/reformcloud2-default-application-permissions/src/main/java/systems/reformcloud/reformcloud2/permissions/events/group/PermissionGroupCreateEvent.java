@@ -36,6 +36,6 @@ public class PermissionGroupCreateEvent extends Event {
     }
 
     public PermissionGroup getPermissionGroup() {
-        return permissionGroup;
+        return this.permissionGroup;
     }
 }

@@ -49,19 +49,19 @@ public class CloudSign implements SerializableObject {
     }
 
     public String getGroup() {
-        return group;
+        return this.group;
     }
 
     public CloudLocation getLocation() {
-        return location;
+        return this.location;
     }
 
     public UUID getUniqueID() {
-        return uniqueID;
+        return this.uniqueID;
     }
 
     public ProcessInformation getCurrentTarget() {
-        return currentTarget;
+        return this.currentTarget;
     }
 
     public void setCurrentTarget(ProcessInformation currentTarget) {

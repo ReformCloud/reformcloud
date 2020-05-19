@@ -53,29 +53,29 @@ public final class DefaultClientRuntimeInformation implements ClientRuntimeInfor
     @NotNull
     @Override
     public String startHost() {
-        return startHost;
+        return this.startHost;
     }
 
     @NotNull
     @Override
     public UUID uniqueID() {
-        return uniqueID;
+        return this.uniqueID;
     }
 
     @Override
     public int maxMemory() {
-        return maxMemory;
+        return this.maxMemory;
     }
 
     @Override
     public int maxProcessCount() {
-        return maxProcesses;
+        return this.maxProcesses;
     }
 
     @NotNull
     @Override
     public String getName() {
-        return name;
+        return this.name;
     }
 
     @Override

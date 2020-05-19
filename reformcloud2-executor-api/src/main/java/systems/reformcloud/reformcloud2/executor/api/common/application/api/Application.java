@@ -88,30 +88,30 @@ public class Application {
 
     @NotNull
     public final File dataFolder() {
-        return new File("reformcloud/applications", application.getName());
+        return new File("reformcloud/applications", this.application.getName());
     }
 
     @Nullable
     public final InputStream getResourceAsStream(String name) {
-        return getClass().getClassLoader().getResourceAsStream(name);
+        return this.getClass().getClassLoader().getResourceAsStream(name);
     }
 
     public final void registerLanguage(Properties properties) {
-        Language language = new ApplicationLanguage(application.getName(), properties);
-        LanguageManager.loadAddonMessageFile(application.getName(), language);
+        Language language = new ApplicationLanguage(this.application.getName(), properties);
+        LanguageManager.loadAddonMessageFile(this.application.getName(), language);
     }
 
     public final void unloadAllLanguageFiles() {
-        LanguageManager.unregisterMessageFile(application.getName());
+        LanguageManager.unregisterMessageFile(this.application.getName());
     }
 
     public final AppClassLoader getAppClassLoader() {
-        return appClassLoader;
+        return this.appClassLoader;
     }
 
     @NotNull
     public final LoadedApplication getApplication() {
-        return application;
+        return this.application;
     }
 
     public void log(String log) {
@@ -120,6 +120,6 @@ public class Application {
 
     @NotNull
     public final ExecutorService getExecutorService() {
-        return executorService;
+        return this.executorService;
     }
 }

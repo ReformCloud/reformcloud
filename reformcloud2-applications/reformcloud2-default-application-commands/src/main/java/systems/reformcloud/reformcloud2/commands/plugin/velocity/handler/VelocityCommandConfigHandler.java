@@ -43,7 +43,7 @@ public class VelocityCommandConfigHandler extends CommandConfigHandler {
 
     @Override
     public void handleCommandConfigRelease(@NotNull CommandsConfig commandsConfig) {
-        unregisterAllCommands();
+        this.unregisterAllCommands();
         if (commandsConfig.isLeaveCommandEnabled() && commandsConfig.getLeaveCommands().size() > 0) {
             this.commandLeave = new CommandLeave(commandsConfig.getLeaveCommands());
             this.proxyServer.getCommandManager().register(

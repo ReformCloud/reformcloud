@@ -86,7 +86,7 @@ public final class SpigotExecutor extends API implements PlayerAPIExecutor {
         instance = this;
         this.plugin = plugin;
 
-        new ExternalEventBusHandler(packetHandler, new DefaultEventManager());
+        new ExternalEventBusHandler(this.packetHandler, new DefaultEventManager());
         this.getEventManager().registerListener(this);
 
         this.packetHandler.registerNetworkHandlers(
@@ -104,7 +104,7 @@ public final class SpigotExecutor extends API implements PlayerAPIExecutor {
         JsonConfiguration connectionConfig = JsonConfiguration.read("reformcloud/.connection/connection.json");
 
         this.thisProcessInformation = connectionConfig.get("startInfo", ProcessInformation.TYPE);
-        if (thisProcessInformation == null) {
+        if (this.thisProcessInformation == null) {
             System.exit(0);
             return;
         }
@@ -115,14 +115,14 @@ public final class SpigotExecutor extends API implements PlayerAPIExecutor {
                 () -> new APINetworkChannelReader(),
                 new ClientChallengeAuthHandler(
                         connectionKey,
-                        thisProcessInformation.getProcessDetail().getName(),
+                        this.thisProcessInformation.getProcessDetail().getName(),
                         () -> new JsonConfiguration(),
                         context -> {
                         } // unused here
                 )
         );
         ExecutorAPI.setInstance(this);
-        awaitConnectionAndUpdate();
+        this.awaitConnectionAndUpdate();
     }
 
     @NotNull
@@ -131,11 +131,11 @@ public final class SpigotExecutor extends API implements PlayerAPIExecutor {
     }
 
     public JavaPlugin getPlugin() {
-        return plugin;
+        return this.plugin;
     }
 
     public IngameMessages getMessages() {
-        return messages;
+        return this.messages;
     }
 
     public void setMessages(IngameMessages messages) {
@@ -154,18 +154,18 @@ public final class SpigotExecutor extends API implements PlayerAPIExecutor {
     }
 
     NetworkClient getNetworkClient() {
-        return networkClient;
+        return this.networkClient;
     }
 
     @Override
     public PacketHandler packetHandler() {
-        return packetHandler;
+        return this.packetHandler;
     }
 
     @Listener
     public void handle(final ProcessUpdatedEvent event) {
-        if (event.getProcessInformation().getProcessDetail().getProcessUniqueID().equals(thisProcessInformation.getProcessDetail().getProcessUniqueID())) {
-            thisProcessInformation = event.getProcessInformation();
+        if (event.getProcessInformation().getProcessDetail().getProcessUniqueID().equals(this.thisProcessInformation.getProcessDetail().getProcessUniqueID())) {
+            this.thisProcessInformation = event.getProcessInformation();
         }
     }
 
@@ -177,15 +177,15 @@ public final class SpigotExecutor extends API implements PlayerAPIExecutor {
                 AbsoluteThread.sleep(100);
             }
 
-            thisProcessInformation.updateMaxPlayers(Bukkit.getMaxPlayers());
-            thisProcessInformation.getNetworkInfo().setConnected(true);
-            thisProcessInformation.getProcessDetail().setProcessState(thisProcessInformation.getProcessDetail().getInitialState());
-            thisProcessInformation.updateRuntimeInformation();
-            ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(thisProcessInformation);
+            this.thisProcessInformation.updateMaxPlayers(Bukkit.getMaxPlayers());
+            this.thisProcessInformation.getNetworkInfo().setConnected(true);
+            this.thisProcessInformation.getProcessDetail().setProcessState(this.thisProcessInformation.getProcessDetail().getInitialState());
+            this.thisProcessInformation.updateRuntimeInformation();
+            ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(this.thisProcessInformation);
 
             this.fixInvalidPlayers();
 
-            DefaultChannelManager.INSTANCE.get("Controller").ifPresent(controller -> packetHandler.getQueryHandler().sendQueryAsync(
+            DefaultChannelManager.INSTANCE.get("Controller").ifPresent(controller -> this.packetHandler.getQueryHandler().sendQueryAsync(
                     controller,
                     new APIPacketOutRequestIngameMessages()
             ).onComplete(packet -> {
@@ -222,7 +222,7 @@ public final class SpigotExecutor extends API implements PlayerAPIExecutor {
     public void executeKickPlayer(UUID player, String message) {
         Player player1 = Bukkit.getPlayer(player);
         if (player1 != null) {
-            Bukkit.getScheduler().runTask(plugin, () -> player1.kickPlayer(message));
+            Bukkit.getScheduler().runTask(this.plugin, () -> player1.kickPlayer(message));
         }
     }
 
@@ -231,7 +231,7 @@ public final class SpigotExecutor extends API implements PlayerAPIExecutor {
         Player player1 = Bukkit.getPlayer(player);
         Sound sound1 = Enums.getIfPresent(Sound.class, sound).orNull();
         if (player1 != null && sound1 != null) {
-            Bukkit.getScheduler().runTask(plugin, () -> player1.playSound(player1.getLocation(), sound1, f1, f2));
+            Bukkit.getScheduler().runTask(this.plugin, () -> player1.playSound(player1.getLocation(), sound1, f1, f2));
         }
     }
 
@@ -239,7 +239,7 @@ public final class SpigotExecutor extends API implements PlayerAPIExecutor {
     public void executeSendTitle(UUID player, String title, String subTitle, int fadeIn, int stay, int fadeOut) {
         Player player1 = Bukkit.getPlayer(player);
         if (player1 != null) {
-            Bukkit.getScheduler().runTask(plugin, () -> player1.sendTitle(title, subTitle, fadeIn, stay, fadeOut));
+            Bukkit.getScheduler().runTask(this.plugin, () -> player1.sendTitle(title, subTitle, fadeIn, stay, fadeOut));
         }
     }
 
@@ -248,7 +248,7 @@ public final class SpigotExecutor extends API implements PlayerAPIExecutor {
         Player player1 = Bukkit.getPlayer(player);
         EntityEffect entityEffect1 = Enums.getIfPresent(EntityEffect.class, entityEffect).orNull();
         if (player1 != null && entityEffect1 != null) {
-            Bukkit.getScheduler().runTask(plugin, () -> player1.playEffect(entityEffect1));
+            Bukkit.getScheduler().runTask(this.plugin, () -> player1.playEffect(entityEffect1));
         }
     }
 
@@ -256,7 +256,7 @@ public final class SpigotExecutor extends API implements PlayerAPIExecutor {
     public void executeTeleport(UUID player, String world, double x, double y, double z, float yaw, float pitch) {
         Player player1 = Bukkit.getPlayer(player);
         if (player1 != null) {
-            Bukkit.getScheduler().runTask(plugin, () -> player1.teleport(new Location(Bukkit.getWorld(world), x, y, z, yaw, pitch)));
+            Bukkit.getScheduler().runTask(this.plugin, () -> player1.teleport(new Location(Bukkit.getWorld(world), x, y, z, yaw, pitch)));
         }
     }
 

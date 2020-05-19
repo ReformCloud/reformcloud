@@ -54,7 +54,7 @@ public class ConsoleAPIImplementation implements ConsoleSyncAPI, ConsoleAsyncAPI
     public Task<String> dispatchCommandAndGetResultAsync(@NotNull String commandLine) {
         Task<String> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
-            this.commandManager.dispatchCommand(console, AllowedCommandSources.ALL, commandLine, s -> {
+            this.commandManager.dispatchCommand(this.console, AllowedCommandSources.ALL, commandLine, s -> {
             });
             task.complete("Success");
         });
@@ -80,7 +80,7 @@ public class ConsoleAPIImplementation implements ConsoleSyncAPI, ConsoleAsyncAPI
 
     @Override
     public String dispatchCommandAndGetResult(@NotNull String commandLine) {
-        return dispatchCommandAndGetResultAsync(commandLine).getUninterruptedly();
+        return this.dispatchCommandAndGetResultAsync(commandLine).getUninterruptedly();
     }
 
     @NotNull
@@ -91,6 +91,6 @@ public class ConsoleAPIImplementation implements ConsoleSyncAPI, ConsoleAsyncAPI
     }
 
     public final CommandSource getConsole() {
-        return console;
+        return this.console;
     }
 }

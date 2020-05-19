@@ -42,21 +42,21 @@ public final class MemoryCachedCommandSource extends ConsoleCommandSource {
 
     @Override
     public void sendMessage(@NotNull String message) {
-        messageCache.add(message);
+        this.messageCache.add(message);
     }
 
     @Override
     public void sendRawMessage(@NotNull String message) {
-        messageCache.add(message);
+        this.messageCache.add(message);
     }
 
     @Override
     public void sendMessages(@NotNull String[] messages) {
-        messageCache.addAll(Arrays.asList(messages));
+        this.messageCache.addAll(Arrays.asList(messages));
     }
 
     @Override
     public void sendRawMessages(@NotNull String[] messages) {
-        messageCache.addAll(Arrays.asList(messages));
+        this.messageCache.addAll(Arrays.asList(messages));
     }
 }

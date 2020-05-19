@@ -52,15 +52,15 @@ public class PacketOutClientChallengeResponse extends Packet {
     }
 
     public String getName() {
-        return name;
+        return this.name;
     }
 
     public String getHashedResult() {
-        return hashedResult;
+        return this.hashedResult;
     }
 
     public JsonConfiguration getExtraData() {
-        return extraData;
+        return this.extraData;
     }
 
     @Override

@@ -51,11 +51,11 @@ public class DefaultWebServerAuth implements Auth {
             return new Duo<>(false, null);
         }
 
-        if (!api.contains("internal_users", userName)) {
+        if (!this.api.contains("internal_users", userName)) {
             return new Duo<>(false, null);
         }
 
-        WebUser webUser = api.find("internal_users", userName, null, config -> config.get("user", WebUser.TYPE));
+        WebUser webUser = this.api.find("internal_users", userName, null, config -> config.get("user", WebUser.TYPE));
         if (webUser == null || !token.equals(webUser.getToken())) {
             return new Duo<>(false, null);
         }

@@ -69,28 +69,28 @@ public class NodeInformation implements SerializableObject {
 
     @NotNull
     public String getName() {
-        return name;
+        return this.name;
     }
 
     @NotNull
     public UUID getNodeUniqueID() {
-        return nodeUniqueID;
+        return this.nodeUniqueID;
     }
 
     public long getStartupTime() {
-        return startupTime;
+        return this.startupTime;
     }
 
     public long getLastUpdate() {
-        return lastUpdate;
+        return this.lastUpdate;
     }
 
     public long getUsedMemory() {
-        return usedMemory;
+        return this.usedMemory;
     }
 
     public long getMaxMemory() {
-        return maxMemory;
+        return this.maxMemory;
     }
 
     public void setMaxMemory(long maxMemory) {
@@ -99,12 +99,12 @@ public class NodeInformation implements SerializableObject {
 
     @NotNull
     public ProcessRuntimeInformation getProcessRuntimeInformation() {
-        return processRuntimeInformation;
+        return this.processRuntimeInformation;
     }
 
     @NotNull
     public Collection<NodeProcess> getStartedProcesses() {
-        return startedProcesses;
+        return this.startedProcesses;
     }
 
     public void addUsedMemory(int memory) {
@@ -125,18 +125,18 @@ public class NodeInformation implements SerializableObject {
         if (this == o) return true;
         if (!(o instanceof NodeInformation)) return false;
         NodeInformation that = (NodeInformation) o;
-        return getStartupTime() == that.getStartupTime() &&
-                getLastUpdate() == that.getLastUpdate() &&
-                getUsedMemory() == that.getUsedMemory() &&
-                getMaxMemory() == that.getMaxMemory() &&
-                Objects.equals(getName(), that.getName()) &&
-                Objects.equals(getNodeUniqueID(), that.getNodeUniqueID()) &&
-                Objects.equals(getProcessRuntimeInformation(), that.getProcessRuntimeInformation()) &&
-                Objects.equals(getStartedProcesses(), that.getStartedProcesses());
+        return this.getStartupTime() == that.getStartupTime() &&
+                this.getLastUpdate() == that.getLastUpdate() &&
+                this.getUsedMemory() == that.getUsedMemory() &&
+                this.getMaxMemory() == that.getMaxMemory() &&
+                Objects.equals(this.getName(), that.getName()) &&
+                Objects.equals(this.getNodeUniqueID(), that.getNodeUniqueID()) &&
+                Objects.equals(this.getProcessRuntimeInformation(), that.getProcessRuntimeInformation()) &&
+                Objects.equals(this.getStartedProcesses(), that.getStartedProcesses());
     }
 
     public boolean canEqual(@NotNull NodeInformation other) {
-        return getNodeUniqueID().equals(other.getNodeUniqueID());
+        return this.getNodeUniqueID().equals(other.getNodeUniqueID());
     }
 
     @Override

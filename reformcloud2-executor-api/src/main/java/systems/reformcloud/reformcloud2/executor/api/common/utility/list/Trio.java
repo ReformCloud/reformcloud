@@ -37,14 +37,14 @@ public final class Trio<F, S, T> {
     }
 
     public F getFirst() {
-        return first;
+        return this.first;
     }
 
     public S getSecond() {
-        return second;
+        return this.second;
     }
 
     public T getThird() {
-        return third;
+        return this.third;
     }
 }

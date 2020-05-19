@@ -45,15 +45,15 @@ public class NodeProcess implements SerializableObject {
     }
 
     public String getGroup() {
-        return group;
+        return this.group;
     }
 
     public String getName() {
-        return name;
+        return this.name;
     }
 
     public UUID getUniqueID() {
-        return uniqueID;
+        return this.uniqueID;
     }
 
     @Override

@@ -44,7 +44,7 @@ public class NukkitSignConverter implements SignConverter<BlockEntitySign> {
     @Nullable
     @Override
     public BlockEntitySign from(@NotNull CloudSign cloudSign) {
-        Location location = accumulate(cloudSign.getLocation());
+        Location location = this.accumulate(cloudSign.getLocation());
         return location != null && location.getLevel().getBlockEntity(location) instanceof BlockEntitySign
                 ? (BlockEntitySign) location.getLevel().getBlockEntity(location)
                 : null;
@@ -53,13 +53,13 @@ public class NukkitSignConverter implements SignConverter<BlockEntitySign> {
     @NotNull
     @Override
     public CloudSign to(@NotNull BlockEntitySign blockEntitySign, @NotNull String group) {
-        return new CloudSign(group, accumulate(blockEntitySign.getLocation().clone()));
+        return new CloudSign(group, this.accumulate(blockEntitySign.getLocation().clone()));
     }
 
     @NotNull
     @Override
     public CloudLocation to(@NotNull BlockEntitySign blockEntitySign) {
-        return accumulate(blockEntitySign.getLocation().clone());
+        return this.accumulate(blockEntitySign.getLocation().clone());
     }
 
     private Location accumulate(CloudLocation cloudLocation) {

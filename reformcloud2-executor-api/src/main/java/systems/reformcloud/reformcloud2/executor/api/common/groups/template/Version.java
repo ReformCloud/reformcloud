@@ -287,27 +287,27 @@ public enum Version {
     }
 
     public String getName() {
-        return name;
+        return this.name;
     }
 
     public String getVersion() {
-        return version;
+        return this.version;
     }
 
     public String getUrl() {
-        return url;
+        return this.url;
     }
 
     public int getId() {
-        return id;
+        return this.id;
     }
 
     public int getDefaultPort() {
-        return defaultPort;
+        return this.defaultPort;
     }
 
     public boolean isServer() {
-        return getId() == 1 || getId() == 3;
+        return this.getId() == 1 || this.getId() == 3;
     }
 
     public boolean isSponge() {

@@ -60,9 +60,9 @@ public final class ClientExecutorConfig {
     private final String connectionKey;
 
     public ClientExecutorConfig() {
-        createDirectories();
+        this.createDirectories();
         if (!Files.exists(ClientConfig.PATH) || !Files.exists(ClientConnectionConfig.PATH)) {
-            firstSetup();
+            this.firstSetup();
         }
 
         this.clientConfig = JsonConfiguration.read(ClientConfig.PATH).get("config", new TypeToken<ClientConfig>() {
@@ -75,7 +75,7 @@ public final class ClientExecutorConfig {
     private void firstSetup() {
         AtomicReference<String> startHost = new AtomicReference<>();
         AtomicReference<String> controllerHost = new AtomicReference<>();
-        setup.addQuestion(new DefaultSetupQuestion("Please copy the connection key into the console (controller/reformcloud/.bin/connection.json)",
+        this.setup.addQuestion(new DefaultSetupQuestion("Please copy the connection key into the console (controller/reformcloud/.bin/connection.json)",
                 "Please copy the real key",
                 s -> true,
                 s -> new JsonConfiguration().add("key", s).write("reformcloud/files/.connection/connection.json"))
@@ -123,14 +123,14 @@ public final class ClientExecutorConfig {
     }
 
     public String getConnectionKey() {
-        return connectionKey;
+        return this.connectionKey;
     }
 
     public ClientConnectionConfig getClientConnectionConfig() {
-        return clientConnectionConfig;
+        return this.clientConnectionConfig;
     }
 
     public ClientConfig getClientConfig() {
-        return clientConfig;
+        return this.clientConfig;
     }
 }

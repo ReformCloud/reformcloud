@@ -45,12 +45,12 @@ public class PlayerLogoutEvent extends Event {
 
     @NotNull
     public String getName() {
-        return name;
+        return this.name;
     }
 
     @NotNull
     public UUID getUuid() {
-        return uuid;
+        return this.uuid;
     }
 
     @NotNull

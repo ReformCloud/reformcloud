@@ -57,13 +57,13 @@ public final class VelocityLauncher {
 
     @Subscribe(order = PostOrder.FIRST)
     public void handleInit(ProxyInitializeEvent event) {
-        new VelocityExecutor(this, proxyServer);
+        new VelocityExecutor(this, this.proxyServer);
     }
 
     @Subscribe
     public void handleStop(ProxyShutdownEvent event) {
         VelocityExecutor.getInstance().getNetworkClient().disconnect();
-        proxyServer.getAllPlayers().forEach(e -> e.disconnect(LegacyComponentSerializer.legacyLinking().deserialize(
+        this.proxyServer.getAllPlayers().forEach(e -> e.disconnect(LegacyComponentSerializer.legacyLinking().deserialize(
                 VelocityExecutor.getInstance().getMessages().getCurrentProcessClosed()
         )));
     }

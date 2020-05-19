@@ -100,7 +100,7 @@ public final class ProcessDetail implements Nameable, SerializableObject {
      */
     @NotNull
     public UUID getProcessUniqueID() {
-        return processUniqueID;
+        return this.processUniqueID;
     }
 
     /**
@@ -108,7 +108,7 @@ public final class ProcessDetail implements Nameable, SerializableObject {
      */
     @NotNull
     public UUID getParentUniqueID() {
-        return parentUniqueID;
+        return this.parentUniqueID;
     }
 
     /**
@@ -116,7 +116,7 @@ public final class ProcessDetail implements Nameable, SerializableObject {
      */
     @NotNull
     public String getParentName() {
-        return parentName;
+        return this.parentName;
     }
 
     /**
@@ -125,7 +125,7 @@ public final class ProcessDetail implements Nameable, SerializableObject {
     @NotNull
     @Override
     public String getName() {
-        return name;
+        return this.name;
     }
 
     /**
@@ -133,14 +133,14 @@ public final class ProcessDetail implements Nameable, SerializableObject {
      */
     @NotNull
     public String getDisplayName() {
-        return displayName;
+        return this.displayName;
     }
 
     /**
      * @return The id of the process
      */
     public int getId() {
-        return id;
+        return this.id;
     }
 
     /**
@@ -148,21 +148,21 @@ public final class ProcessDetail implements Nameable, SerializableObject {
      */
     @NotNull
     public Template getTemplate() {
-        return template;
+        return this.template;
     }
 
     /**
      * @return The max memory which is used for the current process
      */
     public int getMaxMemory() {
-        return maxMemory == -1 ? this.template.getRuntimeConfiguration().getMaxMemory() : this.maxMemory;
+        return this.maxMemory == -1 ? this.template.getRuntimeConfiguration().getMaxMemory() : this.maxMemory;
     }
 
     /**
      * @return The milli time when this detail got created
      */
     public long getCreationTime() {
-        return creationTime;
+        return this.creationTime;
     }
 
     /**
@@ -170,7 +170,7 @@ public final class ProcessDetail implements Nameable, SerializableObject {
      */
     @NotNull
     public ProcessState getInitialState() {
-        return initialState;
+        return this.initialState;
     }
 
     /**
@@ -178,7 +178,7 @@ public final class ProcessDetail implements Nameable, SerializableObject {
      */
     @NotNull
     public ProcessState getProcessState() {
-        return processState;
+        return this.processState;
     }
 
     /**
@@ -194,7 +194,7 @@ public final class ProcessDetail implements Nameable, SerializableObject {
      * @return The maximum amount of player or {@code -1} if no amount is specified
      */
     public int getMaxPlayers() {
-        return maxPlayers;
+        return this.maxPlayers;
     }
 
     /**
@@ -213,7 +213,7 @@ public final class ProcessDetail implements Nameable, SerializableObject {
      */
     @NotNull
     public String getMessageOfTheDay() {
-        return messageOfTheDay;
+        return this.messageOfTheDay;
     }
 
     /**
@@ -230,7 +230,7 @@ public final class ProcessDetail implements Nameable, SerializableObject {
      */
     @NotNull
     public ProcessRuntimeInformation getProcessRuntimeInformation() {
-        return processRuntimeInformation;
+        return this.processRuntimeInformation;
     }
 
     /**

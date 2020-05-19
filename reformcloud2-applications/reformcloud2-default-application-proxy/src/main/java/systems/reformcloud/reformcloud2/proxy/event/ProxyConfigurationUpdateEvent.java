@@ -36,6 +36,6 @@ public class ProxyConfigurationUpdateEvent extends Event {
     }
 
     public ProxyConfiguration getProxyConfiguration() {
-        return proxyConfiguration;
+        return this.proxyConfiguration;
     }
 }

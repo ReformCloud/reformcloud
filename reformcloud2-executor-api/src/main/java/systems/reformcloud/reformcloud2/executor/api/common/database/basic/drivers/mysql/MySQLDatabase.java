@@ -51,7 +51,7 @@ public final class MySQLDatabase extends Database<Connection> {
 
     @Override
     public void connect(@NotNull String host, int port, @NotNull String userName, @NotNull String password, @NotNull String table) {
-        if (isConnected()) {
+        if (this.isConnected()) {
             return;
         }
 
@@ -83,7 +83,7 @@ public final class MySQLDatabase extends Database<Connection> {
 
     @Override
     public void disconnect() {
-        if (isConnected()) {
+        if (this.isConnected()) {
             this.hikariDataSource.close();
             this.hikariDataSource = null;
         }

@@ -60,13 +60,13 @@ public final class LocalNodeProcessManager implements NodeProcessManager {
     @Nullable
     @Override
     public ProcessInformation getLocalCloudProcess(@NotNull String name) {
-        return Streams.filterToReference(information, e -> e.getProcessDetail().getName().equals(name) && isLocal(e.getProcessDetail().getProcessUniqueID())).orNothing();
+        return Streams.filterToReference(this.information, e -> e.getProcessDetail().getName().equals(name) && this.isLocal(e.getProcessDetail().getProcessUniqueID())).orNothing();
     }
 
     @Nullable
     @Override
     public ProcessInformation getLocalCloudProcess(@NotNull UUID uuid) {
-        return Streams.filterToReference(information, e -> e.getProcessDetail().getProcessUniqueID().equals(uuid) && isLocal(e.getProcessDetail().getProcessUniqueID())).orNothing();
+        return Streams.filterToReference(this.information, e -> e.getProcessDetail().getProcessUniqueID().equals(uuid) && this.isLocal(e.getProcessDetail().getProcessUniqueID())).orNothing();
     }
 
     @NotNull
@@ -135,7 +135,7 @@ public final class LocalNodeProcessManager implements NodeProcessManager {
     @Override
     public synchronized ProcessInformation queueProcess(@NotNull ProcessConfiguration configuration, @NotNull Template template,
                                                         @NotNull NodeInformation node, boolean start) {
-        ProcessInformation processInformation = constructInfo(configuration, template, node);
+        ProcessInformation processInformation = this.constructInfo(configuration, template, node);
         this.handleProcessStart(processInformation);
 
         DefaultChannelManager.INSTANCE.get(node.getName()).ifPresent(e -> e.sendPacket(new PacketOutHeadNodeStartProcess(
@@ -152,9 +152,9 @@ public final class LocalNodeProcessManager implements NodeProcessManager {
     @Override
     public void unregisterLocalProcess(@NotNull UUID uniqueID) {
         Streams.filterToReference(
-                information,
+                this.information,
                 e -> e.getProcessDetail().getProcessUniqueID().equals(uniqueID)
-        ).ifPresent(information::remove);
+        ).ifPresent(this.information::remove);
     }
 
     @Override
@@ -246,7 +246,7 @@ public final class LocalNodeProcessManager implements NodeProcessManager {
     @Override
     public boolean isLocal(@NotNull UUID uniqueID) {
         return Streams.filterToReference(
-                information,
+                this.information,
                 e -> e.getProcessDetail().getProcessUniqueID().equals(uniqueID)
                         && e.getProcessDetail().getParentUniqueID().equals(
                         NodeExecutor.getInstance().getNodeNetworkManager().getCluster().getSelfNode().getNodeUniqueID()
@@ -298,7 +298,7 @@ public final class LocalNodeProcessManager implements NodeProcessManager {
     @NotNull
     @Override
     public Iterator<ProcessInformation> iterator() {
-        return Streams.newList(information).iterator();
+        return Streams.newList(this.information).iterator();
     }
 
     @Override
@@ -357,7 +357,7 @@ public final class LocalNodeProcessManager implements NodeProcessManager {
                 : configuration.getId();
 
         int port = configuration.getPort() == null
-                ? nextPort(configuration.getBase().getStartupConfiguration().getStartPort())
+                ? this.nextPort(configuration.getBase().getStartupConfiguration().getStartPort())
                 : configuration.getPort();
 
         UUID uniqueID = configuration.getUniqueId();
@@ -378,11 +378,11 @@ public final class LocalNodeProcessManager implements NodeProcessManager {
 
         for (ProcessInformation allProcess : this.getClusterProcesses()) {
             if (allProcess.getProcessDetail().getId() == id) {
-                id = nextID(configuration.getBase());
+                id = this.nextID(configuration.getBase());
             }
 
             if (allProcess.getNetworkInfo().getPort() == port) {
-                port = nextPort(configuration.getBase().getStartupConfiguration().getStartPort());
+                port = this.nextPort(configuration.getBase().getStartupConfiguration().getStartPort());
             }
 
             if (allProcess.getProcessDetail().getProcessUniqueID().equals(uniqueID)) {

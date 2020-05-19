@@ -56,36 +56,36 @@ public class DefaultDependency implements Dependency {
     @NotNull
     @Override
     public Repository getRepository() {
-        return repository;
+        return this.repository;
     }
 
     @NotNull
     @Override
     public String getGroupID() {
-        return groupID;
+        return this.groupID;
     }
 
     @NotNull
     @Override
     public String getArtifactID() {
-        return artifactID;
+        return this.artifactID;
     }
 
     @NotNull
     @Override
     public String getVersion() {
-        return version;
+        return this.version;
     }
 
     @NotNull
     @Override
     public Path getPath() {
-        return Paths.get("reformcloud/.bin/libs/" + getArtifactID() + "-" + getVersion() + ".jar");
+        return Paths.get("reformcloud/.bin/libs/" + this.getArtifactID() + "-" + this.getVersion() + ".jar");
     }
 
     @Override
     public void prepareIfUpdate() {
-        File[] files = new File("reformcloud/.bin/libs/").listFiles(pathname -> pathname.getName().startsWith(getArtifactID()) && pathname.getName().endsWith(".jar"));
+        File[] files = new File("reformcloud/.bin/libs/").listFiles(pathname -> pathname.getName().startsWith(this.getArtifactID()) && pathname.getName().endsWith(".jar"));
         if (files == null || files.length == 0) {
             return;
         }
@@ -93,20 +93,20 @@ public class DefaultDependency implements Dependency {
         if (files.length > 1) {
             for (File file : files) {
                 String version = file.getName()
-                        .replaceFirst(getArtifactID(), "") // Replace the name of the dependency (netty-all-4.1.42.Final.jar -> -4.1.42.Final.jar)
+                        .replaceFirst(this.getArtifactID(), "") // Replace the name of the dependency (netty-all-4.1.42.Final.jar -> -4.1.42.Final.jar)
                         .replaceFirst("-", "") // Replaces the first name (-4.1.42.Final.jar -> 4.1.42.Final.jar)
                         .replace(".jar", ""); // Replaces the .jar (4.1.42.Final.jar -> 4.1.42.Final)
-                if (!version.equals(getVersion())) {
+                if (!version.equals(this.getVersion())) {
                     SystemHelper.deleteFile(file);
                 }
             }
         } else {
             File dependency = files[0];
             String version = dependency.getName()
-                    .replaceFirst(getArtifactID(), "") // Replace the name of the dependency (netty-all-4.1.42.Final.jar -> -4.1.42.Final.jar)
+                    .replaceFirst(this.getArtifactID(), "") // Replace the name of the dependency (netty-all-4.1.42.Final.jar -> -4.1.42.Final.jar)
                     .replaceFirst("-", "") // Replaces the first name (-4.1.42.Final.jar -> 4.1.42.Final.jar)
                     .replace(".jar", ""); // Replaces the .jar (4.1.42.Final.jar -> 4.1.42.Final)
-            if (!version.equals(getVersion())) {
+            if (!version.equals(this.getVersion())) {
                 SystemHelper.deleteFile(dependency);
             }
         }
@@ -114,15 +114,15 @@ public class DefaultDependency implements Dependency {
 
     @Override
     public void download() {
-        if (url == null) {
-            recalculateDownloadURL();
+        if (this.url == null) {
+            this.recalculateDownloadURL();
         }
 
-        DownloadHelper.downloadAndDisconnect(url, "reformcloud/.bin/libs/" + getArtifactID() + "-" + getVersion() + ".jar");
+        DownloadHelper.downloadAndDisconnect(this.url, "reformcloud/.bin/libs/" + this.getArtifactID() + "-" + this.getVersion() + ".jar");
     }
 
     private void recalculateDownloadURL() {
-        this.url = repository.getURL() + getGroupID().replace(".", "/")
-                + "/" + getArtifactID() + "/" + getVersion() + "/" + getArtifactID() + "-" + getVersion() + ".jar";
+        this.url = this.repository.getURL() + this.getGroupID().replace(".", "/")
+                + "/" + this.getArtifactID() + "/" + this.getVersion() + "/" + this.getArtifactID() + "-" + this.getVersion() + ".jar";
     }
 }

@@ -72,12 +72,12 @@ public final class ChannelReaderHelper extends SimpleChannelInboundHandler<Packe
 
     @Override
     protected void channelRead0(ChannelHandlerContext channelHandlerContext, Packet input) {
-        if (!auth) {
+        if (!this.auth) {
             if (input.getId() > NetworkUtil.AUTH_BUS + 4 || input.getId() < NetworkUtil.AUTH_BUS) {
                 return;
             }
         }
 
-        channelReader.read(channelHandlerContext, this.authHandler, this, input);
+        this.channelReader.read(channelHandlerContext, this.authHandler, this, input);
     }
 }

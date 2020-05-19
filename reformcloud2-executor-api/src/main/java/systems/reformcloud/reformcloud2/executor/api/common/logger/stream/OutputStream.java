@@ -45,10 +45,10 @@ public final class OutputStream extends OutputBase {
     public void flush() throws IOException {
         synchronized (this) {
             super.flush();
-            String content = toString(StandardCharsets.UTF_8.name());
+            String content = this.toString(StandardCharsets.UTF_8.name());
             super.reset();
             if (!content.isEmpty() && !content.equals(LINE_SEPARATOR)) {
-                loggerBase.logp(level, "", "", content);
+                this.loggerBase.logp(this.level, "", "", content);
             }
         }
     }

@@ -49,14 +49,14 @@ public final class ControllerConfig {
     }
 
     public int getMaxProcesses() {
-        return maxProcesses;
+        return this.maxProcesses;
     }
 
     public List<Map<String, Integer>> getNetworkListener() {
-        return networkListener;
+        return this.networkListener;
     }
 
     public List<Map<String, Integer>> getHttpNetworkListener() {
-        return httpNetworkListener;
+        return this.httpNetworkListener;
     }
 }

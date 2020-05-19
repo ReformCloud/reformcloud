@@ -74,12 +74,12 @@ public class DefaultPermissionManagement extends PermissionManagement {
 
     @Override
     public @NotNull Optional<PermissionGroup> getPermissionGroup(@NotNull String name) {
-        return Optional.ofNullable(nameToGroupCache.get(name));
+        return Optional.ofNullable(this.nameToGroupCache.get(name));
     }
 
     @Override
     public void updateGroup(@NotNull PermissionGroup permissionGroup) {
-        nameToGroupCache.put(permissionGroup.getName(), permissionGroup);
+        this.nameToGroupCache.put(permissionGroup.getName(), permissionGroup);
 
         if (CONTROLLER_OR_NODE) {
             ExecutorAPI.getInstance()
@@ -166,7 +166,7 @@ public class DefaultPermissionManagement extends PermissionManagement {
             }
 
             DefaultChannelManager.INSTANCE.getAllSender().forEach(e -> e.sendPacket(new PacketGroupAction(permissionGroup, PermissionAction.DELETE)));
-            nameToGroupCache.remove(name);
+            this.nameToGroupCache.remove(name);
         });
     }
 
@@ -356,7 +356,7 @@ public class DefaultPermissionManagement extends PermissionManagement {
 
     @Override
     public void handleInternalUserUpdate(PermissionUser permissionUser) {
-        if (uniqueIdToUserCache.containsKey(permissionUser.getUniqueID())) {
+        if (this.uniqueIdToUserCache.containsKey(permissionUser.getUniqueID())) {
             this.uniqueIdToUserCache.put(permissionUser.getUniqueID(), permissionUser);
         }
 

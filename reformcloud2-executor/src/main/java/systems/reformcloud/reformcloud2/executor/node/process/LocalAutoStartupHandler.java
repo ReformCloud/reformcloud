@@ -51,8 +51,8 @@ public final class LocalAutoStartupHandler implements Runnable {
     });
 
     public void update() {
-        perPriorityStartup.clear();
-        perPriorityStartup.addAll(NodeExecutor.getInstance().getClusterSyncManager().getProcessGroups());
+        this.perPriorityStartup.clear();
+        this.perPriorityStartup.addAll(NodeExecutor.getInstance().getClusterSyncManager().getProcessGroups());
     }
 
     @Override
@@ -70,7 +70,7 @@ public final class LocalAutoStartupHandler implements Runnable {
     }
 
     private void handleProcessPrepare() {
-        for (ProcessGroup processGroup : Streams.copySortedSet(perPriorityStartup)) {
+        for (ProcessGroup processGroup : Streams.copySortedSet(this.perPriorityStartup)) {
             List<ProcessInformation> preparedProcesses = this.getPreparedProcesses(processGroup.getName());
 
             int total = preparedProcesses.size() + NodeExecutor
@@ -94,7 +94,7 @@ public final class LocalAutoStartupHandler implements Runnable {
 
     private void handleProcessStarts() {
         try {
-            for (ProcessGroup processGroup : Streams.copySortedSet(perPriorityStartup)) {
+            for (ProcessGroup processGroup : Streams.copySortedSet(this.perPriorityStartup)) {
                 int online = NodeExecutor
                         .getInstance()
                         .getNodeNetworkManager()

@@ -56,8 +56,8 @@ public final class DefaultNetworkClient implements NetworkClient {
 
         try {
             this.channel = new Bootstrap()
-                    .group(eventLoopGroup)
-                    .channel(channelClass)
+                    .group(this.eventLoopGroup)
+                    .channel(this.channelClass)
 
                     .option(ChannelOption.SO_REUSEADDR, true)
                     .option(ChannelOption.SO_KEEPALIVE, true)
@@ -84,10 +84,10 @@ public final class DefaultNetworkClient implements NetworkClient {
 
     @Override
     public void disconnect() {
-        if (this.channel != null && channel.isOpen()) {
-            channel.close();
+        if (this.channel != null && this.channel.isOpen()) {
+            this.channel.close();
         }
 
-        eventLoopGroup.shutdownGracefully();
+        this.eventLoopGroup.shutdownGracefully();
     }
 }

@@ -41,12 +41,12 @@ public final class DefaultQueryHandler implements QueryHandler {
 
     @Override
     public Task<Packet> getWaitingQuery(@NotNull UUID uuid) {
-        return waiting.remove(uuid);
+        return this.waiting.remove(uuid);
     }
 
     @Override
     public boolean hasWaitingQuery(@NotNull UUID uuid) {
-        return waiting.containsKey(uuid);
+        return this.waiting.containsKey(uuid);
     }
 
     @NotNull

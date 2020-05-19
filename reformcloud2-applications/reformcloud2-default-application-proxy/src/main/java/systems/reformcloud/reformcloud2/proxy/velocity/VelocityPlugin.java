@@ -55,12 +55,12 @@ public class VelocityPlugin {
 
     @Subscribe
     public void handle(final ProxyInitializeEvent event) {
-        ExecutorAPI.getInstance().getEventManager().registerListener(new VelocityProxyConfigurationHandlerSetupListener(server));
+        ExecutorAPI.getInstance().getEventManager().registerListener(new VelocityProxyConfigurationHandlerSetupListener(this.server));
 
         PluginConfigHandler.request(() -> {
-            VelocityListener listener = new VelocityListener(server);
+            VelocityListener listener = new VelocityListener(this.server);
 
-            server.getEventManager().register(this, listener);
+            this.server.getEventManager().register(this, listener);
             ExecutorAPI.getInstance().getEventManager().registerListener(listener);
         });
     }

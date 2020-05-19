@@ -62,7 +62,7 @@ public abstract class SharedNetworkChannelReader implements NetworkChannelReader
 
     @Override
     public void channelActive(@NotNull ChannelHandlerContext context) {
-        if (packetSender == null) {
+        if (this.packetSender == null) {
             String address = ((InetSocketAddress) context.channel().remoteAddress()).getAddress().getHostAddress();
             System.out.println(LanguageManager.get("network-channel-connected", address));
         }

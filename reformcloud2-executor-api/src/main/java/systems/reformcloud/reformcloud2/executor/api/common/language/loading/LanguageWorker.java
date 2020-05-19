@@ -125,13 +125,13 @@ public final class LanguageWorker {
 
         @Override
         public String getSource() {
-            return name;
+            return this.name;
         }
 
         @NotNull
         @Override
         public String getName() {
-            return display;
+            return this.display;
         }
     }
 }

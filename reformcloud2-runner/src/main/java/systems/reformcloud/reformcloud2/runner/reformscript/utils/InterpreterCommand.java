@@ -50,7 +50,7 @@ public abstract class InterpreterCommand {
      */
     @NotNull
     public String getCommand() {
-        return command;
+        return this.command;
     }
 
     /**

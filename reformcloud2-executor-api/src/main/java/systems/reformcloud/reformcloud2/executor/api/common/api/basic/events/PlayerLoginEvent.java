@@ -48,6 +48,6 @@ public class PlayerLoginEvent extends Event {
      */
     @NotNull
     public String getName() {
-        return name;
+        return this.name;
     }
 }

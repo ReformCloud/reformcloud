@@ -48,7 +48,7 @@ public final class NetworkInfo implements SerializableObject {
     }
 
     public String getHost() {
-        return host;
+        return this.host;
     }
 
     public void setHost(String host) {
@@ -56,11 +56,11 @@ public final class NetworkInfo implements SerializableObject {
     }
 
     public InetSocketAddress toInet() {
-        return new InetSocketAddress(getHost(), getPort());
+        return new InetSocketAddress(this.getHost(), this.getPort());
     }
 
     public int getPort() {
-        return port;
+        return this.port;
     }
 
     public void setPort(int port) {
@@ -68,7 +68,7 @@ public final class NetworkInfo implements SerializableObject {
     }
 
     public boolean isConnected() {
-        return connectTime != -1;
+        return this.connectTime != -1;
     }
 
     public void setConnected(boolean connected) {
@@ -80,12 +80,12 @@ public final class NetworkInfo implements SerializableObject {
     }
 
     public long getConnectTime() {
-        return connectTime;
+        return this.connectTime;
     }
 
     @Override
     public String toString() {
-        return host + ":" + port;
+        return this.host + ":" + this.port;
     }
 
     @Override

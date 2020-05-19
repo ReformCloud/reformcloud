@@ -41,12 +41,12 @@ public final class DefaultPermission implements Permission {
     @NotNull
     @Override
     public String permission() {
-        return permission;
+        return this.permission;
     }
 
     @NotNull
     @Override
     public PermissionResult defaultResult() {
-        return defaultResult;
+        return this.defaultResult;
     }
 }

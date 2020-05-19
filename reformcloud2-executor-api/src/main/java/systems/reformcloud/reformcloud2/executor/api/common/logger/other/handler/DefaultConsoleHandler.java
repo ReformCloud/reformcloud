@@ -37,8 +37,8 @@ public final class DefaultConsoleHandler extends HandlerBase {
 
     @Override
     public void publish(LogRecord record) {
-        if (isLoggable(record)) {
-            loggerBase.log(getFormatter().format(record));
+        if (this.isLoggable(record)) {
+            this.loggerBase.log(this.getFormatter().format(record));
         }
     }
 

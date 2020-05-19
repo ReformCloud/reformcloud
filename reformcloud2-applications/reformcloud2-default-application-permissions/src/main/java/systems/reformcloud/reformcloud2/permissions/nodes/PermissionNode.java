@@ -51,24 +51,24 @@ public class PermissionNode implements SerializableObject {
     }
 
     public long getAddTime() {
-        return addTime;
+        return this.addTime;
     }
 
     public long getTimeout() {
-        return timeout;
+        return this.timeout;
     }
 
     public boolean isSet() {
-        return set && (timeout == -1 || timeout > System.currentTimeMillis());
+        return this.set && (this.timeout == -1 || this.timeout > System.currentTimeMillis());
     }
 
     public boolean isValid() {
-        return timeout == -1 || timeout > System.currentTimeMillis();
+        return this.timeout == -1 || this.timeout > System.currentTimeMillis();
     }
 
     @NotNull
     public String getActualPermission() {
-        return actualPermission;
+        return this.actualPermission;
     }
 
     @Override

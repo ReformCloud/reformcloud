@@ -102,7 +102,7 @@ public final class CommandProcess extends GlobalCommand {
         }
 
         if (strings.length == 2 && strings[1].equalsIgnoreCase("screen")) {
-            if (screenToggle.apply(target)) {
+            if (this.screenToggle.apply(target)) {
                 commandSource.sendMessage(LanguageManager.get("command-process-screen-toggle-activated", strings[0]));
             } else {
                 commandSource.sendMessage(LanguageManager.get("command-process-screen-toggle-disabled", strings[0]));

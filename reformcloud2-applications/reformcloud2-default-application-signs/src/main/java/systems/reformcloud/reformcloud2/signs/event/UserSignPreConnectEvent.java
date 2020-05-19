@@ -45,19 +45,19 @@ public class UserSignPreConnectEvent extends Event {
     }
 
     public UUID getPlayerUniqueId() {
-        return playerUniqueId;
+        return this.playerUniqueId;
     }
 
     public Function<String, Boolean> getPermissionChecker() {
-        return permissionChecker;
+        return this.permissionChecker;
     }
 
     public CloudSign getTarget() {
-        return target;
+        return this.target;
     }
 
     public boolean isAllowConnection() {
-        return allowConnection;
+        return this.allowConnection;
     }
 
     public void setAllowConnection(boolean allowConnection) {

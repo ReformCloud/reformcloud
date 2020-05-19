@@ -48,26 +48,26 @@ public final class ClientConfig {
     }
 
     public int getMaxMemory() {
-        return maxMemory;
+        return this.maxMemory;
     }
 
     public int getMaxProcesses() {
-        return maxProcesses;
+        return this.maxProcesses;
     }
 
     public double getMaxCpu() {
-        return maxCpu;
+        return this.maxCpu;
     }
 
     public String getStartHost() {
-        return startHost;
+        return this.startHost;
     }
 
     public String getName() {
-        return name;
+        return this.name;
     }
 
     public UUID getUniqueID() {
-        return uniqueID;
+        return this.uniqueID;
     }
 }

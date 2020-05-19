@@ -59,7 +59,7 @@ public class PortValidatorTest {
 
         @Override
         public boolean matches(Object o) {
-            return o instanceof Integer && (int) o >= min;
+            return o instanceof Integer && (int) o >= this.min;
         }
 
         @Override

@@ -42,34 +42,34 @@ public abstract class AbsoluteThread extends Thread {
     }
 
     public AbsoluteThread enableDaemon() {
-        setDaemon(true);
+        this.setDaemon(true);
         return this;
     }
 
     public AbsoluteThread updatePriority(int priority) {
-        setPriority(priority);
+        this.setPriority(priority);
         return this;
     }
 
     public AbsoluteThread setExceptionHandler(UncaughtExceptionHandler handler) {
-        setUncaughtExceptionHandler(handler);
+        this.setUncaughtExceptionHandler(handler);
         return this;
     }
 
     public AbsoluteThread updateClassLoader(ClassLoader classLoader) {
-        setContextClassLoader(classLoader);
+        this.setContextClassLoader(classLoader);
         return this;
     }
 
     @Override
     public void interrupt() {
-        interrupted = true;
+        this.interrupted = true;
         super.interrupt();
     }
 
     @Override
     public boolean isInterrupted() {
-        return interrupted;
+        return this.interrupted;
     }
 
     @Override

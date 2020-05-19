@@ -37,11 +37,11 @@ public class ApplicationDisableEvent extends Event {
     }
 
     public LoadedApplication getApplication() {
-        return application;
+        return this.application;
     }
 
     public boolean isCancelled() {
-        return cancelled;
+        return this.cancelled;
     }
 
     public void setCancelled(boolean cancelled) {

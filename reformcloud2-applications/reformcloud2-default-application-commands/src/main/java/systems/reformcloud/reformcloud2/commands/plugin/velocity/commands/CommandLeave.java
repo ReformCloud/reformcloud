@@ -94,6 +94,6 @@ public class CommandLeave implements Command {
 
     @NotNull
     public List<String> getAliases() {
-        return aliases;
+        return this.aliases;
     }
 }

@@ -49,7 +49,7 @@ public class CommandReformCloud implements Command {
                 strings,
                 prefix,
                 this.getCommandSuccessMessage(),
-                aliases.isEmpty() ? "rc" : aliases.get(0)
+                this.aliases.isEmpty() ? "rc" : this.aliases.get(0)
         );
     }
 
@@ -61,7 +61,7 @@ public class CommandReformCloud implements Command {
 
     @NotNull
     public List<String> getAliases() {
-        return aliases;
+        return this.aliases;
     }
 
     @Override

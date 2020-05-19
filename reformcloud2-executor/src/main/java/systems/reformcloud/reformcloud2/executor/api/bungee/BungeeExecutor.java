@@ -97,7 +97,7 @@ public final class BungeeExecutor extends API implements PlayerAPIExecutor {
         this.plugin = plugin;
         instance = this;
 
-        new ExternalEventBusHandler(packetHandler, new DefaultEventManager());
+        new ExternalEventBusHandler(this.packetHandler, new DefaultEventManager());
         this.getEventManager().registerListener(new ProcessEventHandler());
         this.getEventManager().registerListener(this);
 
@@ -119,9 +119,9 @@ public final class BungeeExecutor extends API implements PlayerAPIExecutor {
             return;
         }
 
-        waterdog = thisProcessInformation.getProcessDetail().getTemplate().getVersion().equals(Version.WATERDOG)
-                || thisProcessInformation.getProcessDetail().getTemplate().getVersion().equals(Version.WATERDOG_PE);
-        waterdogPE = thisProcessInformation.getProcessDetail().getTemplate().getVersion().equals(Version.WATERDOG_PE);
+        waterdog = this.thisProcessInformation.getProcessDetail().getTemplate().getVersion().equals(Version.WATERDOG)
+                || this.thisProcessInformation.getProcessDetail().getTemplate().getVersion().equals(Version.WATERDOG_PE);
+        waterdogPE = this.thisProcessInformation.getProcessDetail().getTemplate().getVersion().equals(Version.WATERDOG_PE);
 
         this.networkClient.connect(
                 connectionConfig.getString("controller-host"),
@@ -129,7 +129,7 @@ public final class BungeeExecutor extends API implements PlayerAPIExecutor {
                 () -> new APINetworkChannelReader(),
                 new ClientChallengeAuthHandler(
                         connectionKey,
-                        thisProcessInformation.getProcessDetail().getName(),
+                        this.thisProcessInformation.getProcessDetail().getName(),
                         () -> new JsonConfiguration(),
                         context -> {
                         } // unused here
@@ -138,7 +138,7 @@ public final class BungeeExecutor extends API implements PlayerAPIExecutor {
 
         ExecutorAPI.setInstance(this);
         ProxyServer.getInstance().setReconnectHandler(new ReformCloudReconnectHandler());
-        awaitConnectionAndUpdate();
+        this.awaitConnectionAndUpdate();
     }
 
     @NotNull
@@ -147,7 +147,7 @@ public final class BungeeExecutor extends API implements PlayerAPIExecutor {
     }
 
     public List<ProcessInformation> getCachedLobbyServices() {
-        return cachedLobbyServices;
+        return this.cachedLobbyServices;
     }
 
     static void clearHandlers() {
@@ -236,16 +236,16 @@ public final class BungeeExecutor extends API implements PlayerAPIExecutor {
     }
 
     public Plugin getPlugin() {
-        return plugin;
+        return this.plugin;
     }
 
     NetworkClient getNetworkClient() {
-        return networkClient;
+        return this.networkClient;
     }
 
     @Override
     public PacketHandler packetHandler() {
-        return packetHandler;
+        return this.packetHandler;
     }
 
     @NotNull
@@ -262,18 +262,18 @@ public final class BungeeExecutor extends API implements PlayerAPIExecutor {
                 AbsoluteThread.sleep(20);
             }
 
-            getAllProcesses().forEach(BungeeExecutor::registerServer);
-            ProxyServer.getInstance().getPluginManager().registerListener(plugin, new PlayerListenerHandler());
+            this.getAllProcesses().forEach(BungeeExecutor::registerServer);
+            ProxyServer.getInstance().getPluginManager().registerListener(this.plugin, new PlayerListenerHandler());
 
-            thisProcessInformation.updateMaxPlayers(ProxyServer.getInstance().getConfig().getPlayerLimit());
-            thisProcessInformation.updateRuntimeInformation();
-            thisProcessInformation.getNetworkInfo().setConnected(true);
-            thisProcessInformation.getProcessDetail().setProcessState(thisProcessInformation.getProcessDetail().getInitialState());
-            ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(thisProcessInformation);
+            this.thisProcessInformation.updateMaxPlayers(ProxyServer.getInstance().getConfig().getPlayerLimit());
+            this.thisProcessInformation.updateRuntimeInformation();
+            this.thisProcessInformation.getNetworkInfo().setConnected(true);
+            this.thisProcessInformation.getProcessDetail().setProcessState(this.thisProcessInformation.getProcessDetail().getInitialState());
+            ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(this.thisProcessInformation);
 
             this.fixInvalidPlayers();
 
-            DefaultChannelManager.INSTANCE.get("Controller").ifPresent(controller -> packetHandler.getQueryHandler().sendQueryAsync(
+            DefaultChannelManager.INSTANCE.get("Controller").ifPresent(controller -> this.packetHandler.getQueryHandler().sendQueryAsync(
                     controller,
                     new APIPacketOutRequestIngameMessages()
             ).onComplete(packet -> {
@@ -297,7 +297,7 @@ public final class BungeeExecutor extends API implements PlayerAPIExecutor {
     }
 
     public IngameMessages getMessages() {
-        return messages;
+        return this.messages;
     }
 
     private void setMessages(@NotNull IngameMessages messages) {
@@ -306,8 +306,8 @@ public final class BungeeExecutor extends API implements PlayerAPIExecutor {
 
     @Listener
     public void handle(final ProcessUpdatedEvent event) {
-        if (event.getProcessInformation().getProcessDetail().getProcessUniqueID().equals(thisProcessInformation.getProcessDetail().getProcessUniqueID())) {
-            thisProcessInformation = event.getProcessInformation();
+        if (event.getProcessInformation().getProcessDetail().getProcessUniqueID().equals(this.thisProcessInformation.getProcessDetail().getProcessUniqueID())) {
+            this.thisProcessInformation = event.getProcessInformation();
         }
     }
 
@@ -370,7 +370,7 @@ public final class BungeeExecutor extends API implements PlayerAPIExecutor {
 
     @Override
     public void executeConnect(UUID player, ProcessInformation server) {
-        executeConnect(player, server.getProcessDetail().getName());
+        this.executeConnect(player, server.getProcessDetail().getName());
     }
 
     @Override

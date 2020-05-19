@@ -51,7 +51,7 @@ public class GroupSubject extends AbstractGroupSubject {
 
     @Override
     protected boolean has(String permission) {
-        PermissionGroup permissionGroup = PermissionManagement.getInstance().getGroup(group);
+        PermissionGroup permissionGroup = PermissionManagement.getInstance().getGroup(this.group);
         if (permissionGroup == null) {
             return false;
         }

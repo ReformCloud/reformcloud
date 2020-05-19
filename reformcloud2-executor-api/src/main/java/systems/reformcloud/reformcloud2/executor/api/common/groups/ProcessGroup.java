@@ -80,17 +80,17 @@ public class ProcessGroup implements Nameable, SerializableObject {
     }
 
     public boolean isShowIdInName() {
-        return showIdInName;
+        return this.showIdInName;
     }
 
     @NotNull
     public StartupConfiguration getStartupConfiguration() {
-        return startupConfiguration;
+        return this.startupConfiguration;
     }
 
     @NotNull
     public List<Template> getTemplates() {
-        return templates;
+        return this.templates;
     }
 
     public void setTemplates(List<Template> templates) {
@@ -99,11 +99,11 @@ public class ProcessGroup implements Nameable, SerializableObject {
 
     @NotNull
     public PlayerAccessConfiguration getPlayerAccessConfiguration() {
-        return playerAccessConfiguration;
+        return this.playerAccessConfiguration;
     }
 
     public boolean isStaticProcess() {
-        return staticProcess;
+        return this.staticProcess;
     }
 
     public void setStaticProcess(boolean staticProcess) {
@@ -111,7 +111,7 @@ public class ProcessGroup implements Nameable, SerializableObject {
     }
 
     public boolean isCanBeUsedAsLobby() {
-        return canBeUsedAsLobby;
+        return this.canBeUsedAsLobby;
     }
 
     public void setCanBeUsedAsLobby(boolean canBeUsedAsLobby) {
@@ -126,7 +126,7 @@ public class ProcessGroup implements Nameable, SerializableObject {
     @NotNull
     @Override
     public String getName() {
-        return name;
+        return this.name;
     }
 
     @Override
@@ -134,13 +134,13 @@ public class ProcessGroup implements Nameable, SerializableObject {
         if (this == o) return true;
         if (!(o instanceof ProcessGroup)) return false;
         ProcessGroup that = (ProcessGroup) o;
-        return isShowIdInName() == that.isShowIdInName() &&
-                isStaticProcess() == that.isStaticProcess() &&
-                isCanBeUsedAsLobby() == that.isCanBeUsedAsLobby() &&
-                Objects.equals(getName(), that.getName()) &&
-                Objects.equals(getStartupConfiguration(), that.getStartupConfiguration()) &&
-                Objects.equals(getTemplates(), that.getTemplates()) &&
-                Objects.equals(getPlayerAccessConfiguration(), that.getPlayerAccessConfiguration());
+        return this.isShowIdInName() == that.isShowIdInName() &&
+                this.isStaticProcess() == that.isStaticProcess() &&
+                this.isCanBeUsedAsLobby() == that.isCanBeUsedAsLobby() &&
+                Objects.equals(this.getName(), that.getName()) &&
+                Objects.equals(this.getStartupConfiguration(), that.getStartupConfiguration()) &&
+                Objects.equals(this.getTemplates(), that.getTemplates()) &&
+                Objects.equals(this.getPlayerAccessConfiguration(), that.getPlayerAccessConfiguration());
     }
 
     @Override

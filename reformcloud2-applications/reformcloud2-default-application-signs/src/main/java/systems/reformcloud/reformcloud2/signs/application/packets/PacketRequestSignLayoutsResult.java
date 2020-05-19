@@ -42,7 +42,7 @@ public class PacketRequestSignLayoutsResult extends QueryResultPacket {
     }
 
     public SignConfig getSignConfig() {
-        return signConfig;
+        return this.signConfig;
     }
 
     @Override

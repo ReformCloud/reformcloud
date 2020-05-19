@@ -46,12 +46,12 @@ public final class DefaultClusterManager implements ClusterManager {
 
     @Override
     public void init() {
-        nodeInformation.add(NodeExecutor.getInstance().getNodeNetworkManager().getCluster().getSelfNode());
+        this.nodeInformation.add(NodeExecutor.getInstance().getNodeNetworkManager().getCluster().getSelfNode());
     }
 
     @Override
     public void handleNodeDisconnect(@NotNull InternalNetworkCluster cluster, @NotNull String name) {
-        Streams.allOf(nodeInformation, e -> e.getName().equals(name)).forEach(e -> {
+        Streams.allOf(this.nodeInformation, e -> e.getName().equals(name)).forEach(e -> {
             this.nodeInformation.remove(e);
             cluster.getConnectedNodes().remove(e);
 
@@ -63,8 +63,8 @@ public final class DefaultClusterManager implements ClusterManager {
                 DefaultClusterSyncManager.sendToAllExcludedNodes(new EventPacketProcessClosed(i));
             });
 
-            if (head != null && head.getNodeUniqueID().equals(e.getNodeUniqueID())) {
-                head = null;
+            if (this.head != null && this.head.getNodeUniqueID().equals(e.getNodeUniqueID())) {
+                this.head = null;
             }
         });
 
@@ -99,11 +99,11 @@ public final class DefaultClusterManager implements ClusterManager {
 
     @Override
     public NodeInformation getHeadNode() {
-        if (head == null) {
+        if (this.head == null) {
             this.recalculateHead();
         }
 
-        return head;
+        return this.head;
     }
 
     @Override
@@ -112,11 +112,11 @@ public final class DefaultClusterManager implements ClusterManager {
     }
 
     private void recalculateHead() {
-        for (NodeInformation information : nodeInformation) {
-            if (head == null) {
-                head = information;
-            } else if (information.getStartupTime() < head.getStartupTime()) {
-                head = information;
+        for (NodeInformation information : this.nodeInformation) {
+            if (this.head == null) {
+                this.head = information;
+            } else if (information.getStartupTime() < this.head.getStartupTime()) {
+                this.head = information;
             }
         }
     }

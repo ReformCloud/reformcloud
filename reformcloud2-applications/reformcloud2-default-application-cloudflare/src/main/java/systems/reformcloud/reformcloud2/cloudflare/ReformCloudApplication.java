@@ -48,18 +48,18 @@ public class ReformCloudApplication extends Application {
 
     @Override
     public void onEnable() {
-        try (InputStream stream = getClass().getClassLoader().getResourceAsStream("language-cloudflare.properties")) {
+        try (InputStream stream = this.getClass().getClassLoader().getResourceAsStream("language-cloudflare.properties")) {
             Properties properties = new Properties();
             properties.load(stream);
 
-            LanguageManager.loadAddonMessageFile(getApplication().getName(), new ApplicationLanguage(
-                    getApplication().getName(), properties
+            LanguageManager.loadAddonMessageFile(this.getApplication().getName(), new ApplicationLanguage(
+                    this.getApplication().getName(), properties
             ));
         } catch (final IOException ex) {
             ex.printStackTrace();
         }
 
-        if (CloudFlareHelper.init(dataFolder().getPath())) {
+        if (CloudFlareHelper.init(this.dataFolder().getPath())) {
             System.err.println(LanguageManager.get("cloudflare-first-init"));
             return;
         }

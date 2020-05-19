@@ -40,12 +40,12 @@ public final class DefaultInstallableApplication implements InstallableApplicati
     @NotNull
     @Override
     public String getDownloadUrl() {
-        return url;
+        return this.url;
     }
 
     @NotNull
     @Override
     public String getName() {
-        return name;
+        return this.name;
     }
 }

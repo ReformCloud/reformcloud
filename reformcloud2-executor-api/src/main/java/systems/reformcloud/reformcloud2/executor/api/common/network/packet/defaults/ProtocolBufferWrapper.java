@@ -41,14 +41,14 @@ public class ProtocolBufferWrapper {
     }
 
     public int getId() {
-        return id;
+        return this.id;
     }
 
     public UUID getUuid() {
-        return uuid;
+        return this.uuid;
     }
 
     public ProtocolBuffer getProtocolBuffer() {
-        return protocolBuffer;
+        return this.protocolBuffer;
     }
 }

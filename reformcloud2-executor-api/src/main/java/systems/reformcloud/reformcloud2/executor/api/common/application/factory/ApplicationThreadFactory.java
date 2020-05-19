@@ -38,6 +38,6 @@ public final class ApplicationThreadFactory implements ThreadFactory {
 
     @Override
     public Thread newThread(@NotNull Runnable r) {
-        return new Thread(threadGroup, r);
+        return new Thread(this.threadGroup, r);
     }
 }

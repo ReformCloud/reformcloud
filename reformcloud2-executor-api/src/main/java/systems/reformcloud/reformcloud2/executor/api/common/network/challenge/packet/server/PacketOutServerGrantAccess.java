@@ -49,7 +49,7 @@ public final class PacketOutServerGrantAccess extends Packet {
     }
 
     public boolean isAccess() {
-        return access;
+        return this.access;
     }
 
     @Override

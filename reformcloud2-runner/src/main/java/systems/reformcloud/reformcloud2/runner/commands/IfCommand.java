@@ -41,10 +41,10 @@ public final class IfCommand extends InterpreterCommand {
 
     @Override
     public void execute(@NotNull String cursorLine, @NotNull InterpretedReformScript script, @NotNull Collection<String> allLines) {
-        cursorLine = cursorLine.replaceFirst(getCommand() + " ", "");
+        cursorLine = cursorLine.replaceFirst(this.getCommand() + " ", "");
 
         String[] splitLine = cursorLine.split(" ");
-        Boolean parsed = parse(splitLine[0]);
+        Boolean parsed = this.parse(splitLine[0]);
         if (parsed == null) {
             throw new RuntimeException("Unable to parse second parameter (should be boolean) of line: IF " + cursorLine);
         }

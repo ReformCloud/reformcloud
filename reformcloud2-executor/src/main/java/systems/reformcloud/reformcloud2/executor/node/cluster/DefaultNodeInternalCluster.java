@@ -97,7 +97,7 @@ public final class DefaultNodeInternalCluster implements InternalNetworkCluster 
     @Override
     public void handleNodeUpdate(@NotNull NodeInformation nodeInformation) {
         Streams
-                .filterToReference(connectedNodes, e -> e.getNodeUniqueID().equals(nodeInformation.getNodeUniqueID()))
+                .filterToReference(this.connectedNodes, e -> e.getNodeUniqueID().equals(nodeInformation.getNodeUniqueID()))
                 .ifPresent(e -> {
                     this.connectedNodes.remove(e);
                     this.connectedNodes.add(nodeInformation);

@@ -63,7 +63,7 @@ public final class RegistryBuilder {
         @NotNull
         @Override
         public <T> T createKey(@NotNull String keyName, @NotNull T t) {
-            Path target = Paths.get(folder + "/" + keyName + ".json");
+            Path target = Paths.get(this.folder + "/" + keyName + ".json");
             if (Files.exists(target)) {
                 return t;
             }
@@ -74,7 +74,7 @@ public final class RegistryBuilder {
 
         @Override
         public <T> T getKey(@NotNull String keyName) {
-            Path target = Paths.get(folder + "/" + keyName + ".json");
+            Path target = Paths.get(this.folder + "/" + keyName + ".json");
             if (Files.exists(target)) {
                 return null;
             }
@@ -85,13 +85,13 @@ public final class RegistryBuilder {
 
         @Override
         public void deleteKey(@NotNull String key) {
-            Path target = Paths.get(folder + "/" + key + ".json");
+            Path target = Paths.get(this.folder + "/" + key + ".json");
             SystemHelper.deleteFile(target.toFile());
         }
 
         @Override
         public <T> T updateKey(@NotNull String key, @NotNull T newValue) {
-            Path target = Paths.get(folder + "/" + key + ".json");
+            Path target = Paths.get(this.folder + "/" + key + ".json");
             if (!Files.exists(target)) {
                 return null;
             }
@@ -105,12 +105,12 @@ public final class RegistryBuilder {
         @NotNull
         @Override
         public <T> Collection<T> readKeys(@NotNull Function<JsonConfiguration, T> function) {
-            if (!Files.exists(folder)) {
+            if (!Files.exists(this.folder)) {
                 return Collections.emptyList();
             }
 
             final Collection<T> out = new ArrayList<>();
-            try (DirectoryStream<Path> stream = Files.newDirectoryStream(folder)) {
+            try (DirectoryStream<Path> stream = Files.newDirectoryStream(this.folder)) {
                 for (Path path : stream) {
                     out.add(function.apply(JsonConfiguration.read(path)));
                 }

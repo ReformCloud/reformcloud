@@ -82,8 +82,8 @@ public final class NukkitExecutor extends API implements PlayerAPIExecutor {
         instance = this;
         this.plugin = plugin;
 
-        new ExternalEventBusHandler(packetHandler, new DefaultEventManager());
-        getEventManager().registerListener(this);
+        new ExternalEventBusHandler(this.packetHandler, new DefaultEventManager());
+        this.getEventManager().registerListener(this);
 
         this.packetHandler.registerNetworkHandlers(
                 PacketAPIPlayEntityEffect.class,
@@ -100,7 +100,7 @@ public final class NukkitExecutor extends API implements PlayerAPIExecutor {
         JsonConfiguration connectionConfig = JsonConfiguration.read("reformcloud/.connection/connection.json");
 
         this.thisProcessInformation = connectionConfig.get("startInfo", ProcessInformation.TYPE);
-        if (thisProcessInformation == null) {
+        if (this.thisProcessInformation == null) {
             System.exit(0);
             return;
         }
@@ -111,14 +111,14 @@ public final class NukkitExecutor extends API implements PlayerAPIExecutor {
                 () -> new APINetworkChannelReader(),
                 new ClientChallengeAuthHandler(
                         connectionKey,
-                        thisProcessInformation.getProcessDetail().getName(),
+                        this.thisProcessInformation.getProcessDetail().getName(),
                         () -> new JsonConfiguration(),
                         context -> {
                         } // unused here
                 )
         );
         ExecutorAPI.setInstance(this);
-        awaitConnectionAndUpdate();
+        this.awaitConnectionAndUpdate();
     }
 
     @NotNull
@@ -127,16 +127,16 @@ public final class NukkitExecutor extends API implements PlayerAPIExecutor {
     }
 
     NetworkClient getNetworkClient() {
-        return networkClient;
+        return this.networkClient;
     }
 
     public Plugin getPlugin() {
-        return plugin;
+        return this.plugin;
     }
 
     @NotNull
     public IngameMessages getMessages() {
-        return messages;
+        return this.messages;
     }
 
     public void setMessages(IngameMessages messages) {
@@ -150,7 +150,7 @@ public final class NukkitExecutor extends API implements PlayerAPIExecutor {
 
     @Override
     public PacketHandler packetHandler() {
-        return packetHandler;
+        return this.packetHandler;
     }
 
     @NotNull
@@ -171,15 +171,15 @@ public final class NukkitExecutor extends API implements PlayerAPIExecutor {
                 AbsoluteThread.sleep(100);
             }
 
-            thisProcessInformation.updateMaxPlayers(Server.getInstance().getMaxPlayers());
-            thisProcessInformation.updateRuntimeInformation();
-            thisProcessInformation.getNetworkInfo().setConnected(true);
-            thisProcessInformation.getProcessDetail().setProcessState(thisProcessInformation.getProcessDetail().getInitialState());
-            ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(thisProcessInformation);
+            this.thisProcessInformation.updateMaxPlayers(Server.getInstance().getMaxPlayers());
+            this.thisProcessInformation.updateRuntimeInformation();
+            this.thisProcessInformation.getNetworkInfo().setConnected(true);
+            this.thisProcessInformation.getProcessDetail().setProcessState(this.thisProcessInformation.getProcessDetail().getInitialState());
+            ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(this.thisProcessInformation);
 
             this.fixInvalidPlayers();
 
-            DefaultChannelManager.INSTANCE.get("Controller").ifPresent(controller -> packetHandler.getQueryHandler().sendQueryAsync(
+            DefaultChannelManager.INSTANCE.get("Controller").ifPresent(controller -> this.packetHandler.getQueryHandler().sendQueryAsync(
                     controller,
                     new APIPacketOutRequestIngameMessages()
                     ).onComplete(packet -> {
@@ -201,8 +201,8 @@ public final class NukkitExecutor extends API implements PlayerAPIExecutor {
 
     @Listener
     public void handle(final ProcessUpdatedEvent event) {
-        if (event.getProcessInformation().getProcessDetail().getProcessUniqueID().equals(thisProcessInformation.getProcessDetail().getProcessUniqueID())) {
-            thisProcessInformation = event.getProcessInformation();
+        if (event.getProcessInformation().getProcessDetail().getProcessUniqueID().equals(this.thisProcessInformation.getProcessDetail().getProcessUniqueID())) {
+            this.thisProcessInformation = event.getProcessInformation();
         }
     }
 

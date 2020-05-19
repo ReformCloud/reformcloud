@@ -42,7 +42,7 @@ public class PacketGetCommandsConfigResult extends QueryResultPacket {
     }
 
     public CommandsConfig getCommandsConfig() {
-        return commandsConfig;
+        return this.commandsConfig;
     }
 
     @Override

@@ -76,68 +76,68 @@ public final class IngameMessages implements SerializableObject {
     }
 
     public String getPrefix() {
-        return prefix;
+        return this.prefix;
     }
 
     public String getProcessRegistered() {
-        return processRegistered;
+        return this.processRegistered;
     }
 
     public String getProcessStarted() {
-        return processStarted;
+        return this.processStarted;
     }
 
     public String getProcessConnected() {
-        return processConnected;
+        return this.processConnected;
     }
 
     public String getProcessStopped() {
-        return processStopped;
+        return this.processStopped;
     }
 
     public String getNoHubServerAvailable() {
-        return noHubServerAvailable;
+        return this.noHubServerAvailable;
     }
 
     public String getAlreadyConnectedToHub() {
-        return alreadyConnectedToHub;
+        return this.alreadyConnectedToHub;
     }
 
     public String getConnectingToHub() {
-        return connectingToHub;
+        return this.connectingToHub;
     }
 
     public String getCurrentProcessClosed() {
-        return currentProcessClosed;
+        return this.currentProcessClosed;
     }
 
     public String getProcessFullMessage() {
-        return processFullMessage;
+        return this.processFullMessage;
     }
 
     public String getProcessEnterPermissionNotSet() {
-        return processEnterPermissionNotSet;
+        return this.processEnterPermissionNotSet;
     }
 
     public String getProcessInMaintenanceMessage() {
-        return processInMaintenanceMessage;
+        return this.processInMaintenanceMessage;
     }
 
     public String getAlreadyConnectedMessage() {
-        return alreadyConnectedMessage;
+        return this.alreadyConnectedMessage;
     }
 
     public String getCommandExecuteSuccess() {
-        return commandExecuteSuccess;
+        return this.commandExecuteSuccess;
     }
 
     public String getProcessNotReadyToAcceptPlayersMessage() {
-        return processNotReadyToAcceptPlayersMessage;
+        return this.processNotReadyToAcceptPlayersMessage;
     }
 
     @NotNull
     public String format(@NotNull String message, @NotNull Object... replacements) {
-        message = message.replace("%prefix%", prefix).replace("&", "§");
+        message = message.replace("%prefix%", this.prefix).replace("&", "§");
         return MessageFormat.format(message, replacements);
     }
 

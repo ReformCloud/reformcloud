@@ -76,12 +76,12 @@ public final class ColouredLoggerHandler extends LoggerBase {
         FileHandler fileHandler = new FileHandler("logs/cloud.log", 70000000, 8, true);
         fileHandler.setLevel(Level.ALL);
         fileHandler.setFormatter(new LogFileFormatter(this));
-        addHandler(fileHandler);
+        this.addHandler(fileHandler);
 
         HandlerBase consoleHandler = new ColouredConsoleHandler(this);
         consoleHandler.setLevel(Level.ALL);
         consoleHandler.setFormatter(new ColouredLogFormatter(this));
-        addHandler(consoleHandler);
+        this.addHandler(consoleHandler);
 
         System.setOut(new PrintStream(new OutputStream(this, Level.INFO), true));
         System.setErr(new PrintStream(new OutputStream(this, Level.SEVERE), true));
@@ -90,28 +90,28 @@ public final class ColouredLoggerHandler extends LoggerBase {
     @NotNull
     @Override
     public LineReader getLineReader() {
-        return lineReader;
+        return this.lineReader;
     }
 
     @NotNull
     @Override
     public String readLine() {
-        return TerminalLineHandler.readLine(lineReader, prompt);
+        return TerminalLineHandler.readLine(this.lineReader, prompt);
     }
 
     @NotNull
     @Override
     public String readLineNoPrompt() {
-        return TerminalLineHandler.readLine(lineReader, null);
+        return TerminalLineHandler.readLine(this.lineReader, null);
     }
 
     @NotNull
     @Override
     public String readString(@NotNull Predicate<String> predicate, @NotNull Runnable invalidInputMessage) {
-        String line = readLine();
+        String line = this.readLine();
         while (!predicate.test(line)) {
             invalidInputMessage.run();
-            line = readLine();
+            line = this.readLine();
         }
 
         return line;
@@ -120,11 +120,11 @@ public final class ColouredLoggerHandler extends LoggerBase {
     @NotNull
     @Override
     public <T> T read(@NotNull Function<String, T> function, @NotNull Runnable invalidInputMessage) {
-        String line = readLine();
+        String line = this.readLine();
         T result;
         while ((result = function.apply(line)) == null) {
             invalidInputMessage.run();
-            line = readLine();
+            line = this.readLine();
         }
 
         return result;
@@ -134,28 +134,28 @@ public final class ColouredLoggerHandler extends LoggerBase {
     public void log(@NotNull String message) {
         message = Colours.coloured(message);
         message += '\r';
-        handleLine(message);
+        this.handleLine(message);
 
-        lineReader.getTerminal().puts(InfoCmp.Capability.carriage_return);
-        lineReader.getTerminal().puts(InfoCmp.Capability.clr_eol);
-        lineReader.getTerminal().writer().print(message);
-        lineReader.getTerminal().writer().flush();
+        this.lineReader.getTerminal().puts(InfoCmp.Capability.carriage_return);
+        this.lineReader.getTerminal().puts(InfoCmp.Capability.clr_eol);
+        this.lineReader.getTerminal().writer().print(message);
+        this.lineReader.getTerminal().writer().flush();
 
-        TerminalLineHandler.tryRedisplay(lineReader);
+        TerminalLineHandler.tryRedisplay(this.lineReader);
     }
 
     @Override
     public void logRaw(@NotNull String message) {
         message = Colours.stripColor(message);
         message += '\r';
-        handleLine(message);
+        this.handleLine(message);
 
-        lineReader.getTerminal().puts(InfoCmp.Capability.carriage_return);
-        lineReader.getTerminal().puts(InfoCmp.Capability.clr_eol);
-        lineReader.getTerminal().writer().print(message);
-        lineReader.getTerminal().writer().flush();
+        this.lineReader.getTerminal().puts(InfoCmp.Capability.carriage_return);
+        this.lineReader.getTerminal().puts(InfoCmp.Capability.clr_eol);
+        this.lineReader.getTerminal().writer().print(message);
+        this.lineReader.getTerminal().writer().flush();
 
-        TerminalLineHandler.tryRedisplay(lineReader);
+        TerminalLineHandler.tryRedisplay(this.lineReader);
     }
 
     @NotNull
@@ -173,7 +173,7 @@ public final class ColouredLoggerHandler extends LoggerBase {
     @NotNull
     @Override
     public Debugger getDebugger() {
-        return debugger;
+        return this.debugger;
     }
 
     @Override
@@ -183,12 +183,12 @@ public final class ColouredLoggerHandler extends LoggerBase {
 
     @Override
     public void close() throws Exception {
-        lineReader.getTerminal().flush();
-        lineReader.getTerminal().close();
+        this.lineReader.getTerminal().flush();
+        this.lineReader.getTerminal().close();
     }
 
     private void handleLine(String line) {
-        handlers.forEach(handler -> {
+        this.handlers.forEach(handler -> {
             handler.handleLine(line, ColouredLoggerHandler.this);
             handler.handleRaw(Colours.stripColor(line), ColouredLoggerHandler.this);
         });

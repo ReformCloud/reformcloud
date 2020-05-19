@@ -140,11 +140,11 @@ public class ChannelMessageAPIImplementation implements MessageSyncAPI, MessageA
 
     @Override
     public void sendChannelMessageSync(@NotNull JsonConfiguration jsonConfiguration, @NotNull String baseChannel, @NotNull String subChannel, @NotNull ErrorReportHandling errorReportHandling, String @NotNull ... receivers) {
-        sendChannelMessageAsync(jsonConfiguration, baseChannel, subChannel, errorReportHandling, receivers).awaitUninterruptedly();
+        this.sendChannelMessageAsync(jsonConfiguration, baseChannel, subChannel, errorReportHandling, receivers).awaitUninterruptedly();
     }
 
     @Override
     public void sendChannelMessageSync(@NotNull JsonConfiguration configuration, @NotNull String baseChannel, @NotNull String subChannel, ReceiverType @NotNull ... receiverTypes) {
-        sendChannelMessageAsync(configuration, baseChannel, subChannel, receiverTypes).awaitUninterruptedly();
+        this.sendChannelMessageAsync(configuration, baseChannel, subChannel, receiverTypes).awaitUninterruptedly();
     }
 }

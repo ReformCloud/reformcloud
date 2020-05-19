@@ -48,6 +48,6 @@ public enum PermissionResult {
     }
 
     public boolean isAllowed() {
-        return javaValue;
+        return this.javaValue;
     }
 }

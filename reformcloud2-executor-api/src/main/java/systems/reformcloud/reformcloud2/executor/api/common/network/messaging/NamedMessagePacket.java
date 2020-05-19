@@ -79,7 +79,7 @@ public class NamedMessagePacket extends Packet {
     @Override
     public void write(@NotNull ProtocolBuffer buffer) {
         buffer.writeStringArray(this.receivers);
-        buffer.writeArray(content.toPrettyBytes());
+        buffer.writeArray(this.content.toPrettyBytes());
         buffer.writeVarInt(this.handling.ordinal());
         buffer.writeString(this.baseChannel);
         buffer.writeString(this.subChannel);

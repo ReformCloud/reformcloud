@@ -46,7 +46,7 @@ public class FactorySubject extends AbstractSpongeSubject {
 
     @Override
     protected PermissionService service() {
-        return service;
+        return this.service;
     }
 
     @Override
@@ -69,6 +69,6 @@ public class FactorySubject extends AbstractSpongeSubject {
     @Override
     @NotNull
     public String getIdentifier() {
-        return id;
+        return this.id;
     }
 }

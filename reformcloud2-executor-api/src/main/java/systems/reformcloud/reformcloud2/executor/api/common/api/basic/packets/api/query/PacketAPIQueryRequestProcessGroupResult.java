@@ -42,7 +42,7 @@ public class PacketAPIQueryRequestProcessGroupResult extends QueryResultPacket {
     }
 
     public ProcessGroup getProcessGroup() {
-        return processGroup;
+        return this.processGroup;
     }
 
     @Override

@@ -40,7 +40,7 @@ public class PermissionManagerSetupEvent extends Event {
 
     @NotNull
     public PermissionManagement getPermissionManagement() {
-        return permissionManagement;
+        return this.permissionManagement;
     }
 
     public void setPermissionManagement(@NotNull PermissionManagement permissionManagement) {

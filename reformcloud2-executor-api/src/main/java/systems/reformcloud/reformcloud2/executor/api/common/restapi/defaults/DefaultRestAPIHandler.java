@@ -57,7 +57,7 @@ public final class DefaultRestAPIHandler extends RestAPIHandler {
     protected void channelRead0(ChannelHandlerContext channelHandlerContext, HttpRequest httpRequest) {
         try {
             String requestUri = new URI(httpRequest.uri()).getRawPath();
-            handleHttpRequest(channelHandlerContext, requestUri, httpRequest);
+            this.handleHttpRequest(channelHandlerContext, requestUri, httpRequest);
         } catch (final URISyntaxException ex) {
             channelHandlerContext.writeAndFlush(
                     new DefaultFullHttpResponse(httpRequest.protocolVersion(),
@@ -80,7 +80,7 @@ public final class DefaultRestAPIHandler extends RestAPIHandler {
         JsonConfiguration configurable = new JsonConfiguration()
                 .add("name", httpHeaders.get("-XUser"))
                 .add("token", httpHeaders.get("-XToken"));
-        Duo<Boolean, WebRequester> auth = tryAuth(channelHandlerContext, configurable);
+        Duo<Boolean, WebRequester> auth = this.tryAuth(channelHandlerContext, configurable);
         if (!auth.getFirst() || auth.getSecond() == null) {
             channelHandlerContext.channel().writeAndFlush(new DefaultFullHttpResponse(
                     httpRequest.protocolVersion(),
@@ -90,7 +90,7 @@ public final class DefaultRestAPIHandler extends RestAPIHandler {
         }
 
         Collection<UUID> collection = new CopyOnWriteArrayList<>();
-        Streams.allOf(requestHandler.getHandlers(), e -> e.path().equals(path) && e.canAccess(auth.getSecond())).forEach(e -> e.handleRequest(auth.getSecond(), httpRequest, httpResponse -> {
+        Streams.allOf(this.requestHandler.getHandlers(), e -> e.path().equals(path) && e.canAccess(auth.getSecond())).forEach(e -> e.handleRequest(auth.getSecond(), httpRequest, httpResponse -> {
             UUID next = UUID.randomUUID();
             collection.add(next);
             channelHandlerContext.channel().writeAndFlush(
@@ -112,6 +112,6 @@ public final class DefaultRestAPIHandler extends RestAPIHandler {
     }
 
     private Duo<Boolean, WebRequester> tryAuth(ChannelHandlerContext channelHandlerContext, JsonConfiguration configurable) {
-        return requestHandler.authHandler().handleAuth(configurable, channelHandlerContext);
+        return this.requestHandler.authHandler().handleAuth(configurable, channelHandlerContext);
     }
 }

@@ -42,7 +42,7 @@ public class PacketAPIQueryRequestMainGroupResult extends QueryResultPacket {
     }
 
     public MainGroup getMainGroup() {
-        return mainGroup;
+        return this.mainGroup;
     }
 
     @Override

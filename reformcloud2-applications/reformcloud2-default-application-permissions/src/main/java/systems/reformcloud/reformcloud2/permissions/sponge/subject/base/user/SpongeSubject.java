@@ -52,7 +52,7 @@ public class SpongeSubject extends AbstractUserSpongeSubject {
 
     @Override
     protected boolean has(String permission) {
-        return PermissionManagement.getInstance().loadUser(uniqueUserID).hasPermission(permission);
+        return PermissionManagement.getInstance().loadUser(this.uniqueUserID).hasPermission(permission);
     }
 
     @Override

@@ -48,18 +48,18 @@ public class DefaultWebRequester implements WebRequester {
     @NotNull
     @Override
     public Channel channel() {
-        return context.channel();
+        return this.context.channel();
     }
 
     @Override
     public boolean isConnected() {
-        return context != null && context.channel().isOpen();
+        return this.context != null && this.context.channel().isOpen();
     }
 
     @NotNull
     @Override
     public PermissionResult hasPermissionValue(@NotNull String perm) {
-        String matched = Streams.filter(permissions, permission -> {
+        String matched = Streams.filter(this.permissions, permission -> {
             if (permission.equals("*")) {
                 return true;
             }
@@ -76,6 +76,6 @@ public class DefaultWebRequester implements WebRequester {
     @NotNull
     @Override
     public String getName() {
-        return name;
+        return this.name;
     }
 }

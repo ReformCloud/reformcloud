@@ -81,18 +81,18 @@ public final class ProcessInformation implements Clone<ProcessInformation>, Seri
     }
 
     public ProcessPlayerManager getProcessPlayerManager() {
-        return processPlayerManager;
+        return this.processPlayerManager;
     }
 
     public ProcessDetail getProcessDetail() {
-        return processDetail;
+        return this.processDetail;
     }
 
     /**
      * @return If the current process is a lobby process
      */
     public boolean isLobby() {
-        return this.processDetail.getTemplate().isServer() && processGroup.isCanBeUsedAsLobby();
+        return this.processDetail.getTemplate().isServer() && this.processGroup.isCanBeUsedAsLobby();
     }
 
     /**
@@ -100,7 +100,7 @@ public final class ProcessInformation implements Clone<ProcessInformation>, Seri
      */
     @NotNull
     public NetworkInfo getNetworkInfo() {
-        return networkInfo;
+        return this.networkInfo;
     }
 
     /**
@@ -108,7 +108,7 @@ public final class ProcessInformation implements Clone<ProcessInformation>, Seri
      */
     @NotNull
     public ProcessGroup getProcessGroup() {
-        return processGroup;
+        return this.processGroup;
     }
 
     /**
@@ -126,7 +126,7 @@ public final class ProcessInformation implements Clone<ProcessInformation>, Seri
      */
     @NotNull
     public List<DefaultPlugin> getPlugins() {
-        return plugins;
+        return this.plugins;
     }
 
     /**
@@ -134,7 +134,7 @@ public final class ProcessInformation implements Clone<ProcessInformation>, Seri
      */
     @NotNull
     public JsonConfiguration getExtra() {
-        return extra;
+        return this.extra;
     }
 
     /**
@@ -142,7 +142,7 @@ public final class ProcessInformation implements Clone<ProcessInformation>, Seri
      */
     @NotNull
     public Collection<ProcessInclusion> getPreInclusions() {
-        return preInclusions;
+        return this.preInclusions;
     }
 
     /**
@@ -157,8 +157,8 @@ public final class ProcessInformation implements Clone<ProcessInformation>, Seri
      */
     @NotNull
     public ProcessInformation updateMaxPlayers(@Nullable Integer value) {
-        if (processGroup.getPlayerAccessConfiguration().isUseCloudPlayerLimit()) {
-            this.processDetail.setMaxPlayers(processGroup.getPlayerAccessConfiguration().getMaxPlayers());
+        if (this.processGroup.getPlayerAccessConfiguration().isUseCloudPlayerLimit()) {
+            this.processDetail.setMaxPlayers(this.processGroup.getPlayerAccessConfiguration().getMaxPlayers());
         } else {
             if (value != null) {
                 this.processDetail.setMaxPlayers(value);
@@ -200,7 +200,7 @@ public final class ProcessInformation implements Clone<ProcessInformation>, Seri
         }
 
         ProcessInformation compare = (ProcessInformation) obj;
-        return Objects.equals(compare.getProcessDetail().getProcessUniqueID(), getProcessDetail().getProcessUniqueID());
+        return Objects.equals(compare.getProcessDetail().getProcessUniqueID(), this.getProcessDetail().getProcessUniqueID());
     }
 
     @Override
@@ -211,7 +211,7 @@ public final class ProcessInformation implements Clone<ProcessInformation>, Seri
     @Override
     @NotNull
     public String toString() {
-        return this.getProcessDetail().getName() + "/" + getProcessDetail().getProcessUniqueID();
+        return this.getProcessDetail().getName() + "/" + this.getProcessDetail().getProcessUniqueID();
     }
 
     @Override

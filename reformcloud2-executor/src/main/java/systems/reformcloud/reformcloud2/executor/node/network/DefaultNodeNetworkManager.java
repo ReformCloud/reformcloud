@@ -117,11 +117,11 @@ public final class DefaultNodeNetworkManager implements NodeNetworkManager {
     @Override
     public synchronized ProcessInformation startProcess(@NotNull ProcessInformation processInformation) {
         synchronized (this) {
-            if (getCluster().isSelfNodeHead()) {
+            if (this.getCluster().isSelfNodeHead()) {
                 DefaultChannelManager.INSTANCE.get(processInformation.getProcessDetail().getParentName()).ifPresent(
                         e -> e.sendPacket(new NodePacketOutStartPreparedProcess(processInformation))
                 ).ifEmpty(e -> {
-                    if (processInformation.getProcessDetail().getParentUniqueID().equals(cluster.getSelfNode().getNodeUniqueID())
+                    if (processInformation.getProcessDetail().getParentUniqueID().equals(this.cluster.getSelfNode().getNodeUniqueID())
                             && processInformation.getProcessDetail().getProcessState().equals(ProcessState.PREPARED)) {
                         SharedRunningProcessManager.getAllProcesses()
                                 .stream()
@@ -175,10 +175,10 @@ public final class DefaultNodeNetworkManager implements NodeNetworkManager {
 
         Conditions.nonNull(template, "Unable to find any template to start the process with");
 
-        if (getCluster().isSelfNodeHead()) {
+        if (this.getCluster().isSelfNodeHead()) {
             PER_GROUP_WAITING.add(configuration.getBase().getName(), configuration.getUniqueId());
 
-            if (getCluster().noOtherNodes()) {
+            if (this.getCluster().noOtherNodes()) {
                 if (configuration.getBase().getStartupConfiguration().isSearchBestClientAlone()
                         || configuration.getBase().getStartupConfiguration().getUseOnlyTheseClients()
                         .contains(NodeExecutor.getInstance().getNodeConfig().getName())) {
@@ -239,7 +239,7 @@ public final class DefaultNodeNetworkManager implements NodeNetworkManager {
 
     @Override
     public void stopProcess(@NotNull UUID uuid) {
-        if (localNodeProcessManager.isLocal(uuid)) {
+        if (this.localNodeProcessManager.isLocal(uuid)) {
             this.localNodeProcessManager.stopLocalProcess(uuid);
             return;
         }

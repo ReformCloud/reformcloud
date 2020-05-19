@@ -42,7 +42,7 @@ public class APIPacketOutRequestIngameMessagesResult extends QueryResultPacket {
     }
 
     public IngameMessages getIngameMessages() {
-        return ingameMessages;
+        return this.ingameMessages;
     }
 
     @Override

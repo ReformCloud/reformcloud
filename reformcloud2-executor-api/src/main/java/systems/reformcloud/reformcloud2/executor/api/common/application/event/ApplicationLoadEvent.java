@@ -37,7 +37,7 @@ public class ApplicationLoadEvent extends Event {
     }
 
     public boolean isCancelled() {
-        return cancelled;
+        return this.cancelled;
     }
 
     public void setCancelled(boolean cancelled) {
@@ -45,6 +45,6 @@ public class ApplicationLoadEvent extends Event {
     }
 
     public LoadedApplication getApplication() {
-        return application;
+        return this.application;
     }
 }

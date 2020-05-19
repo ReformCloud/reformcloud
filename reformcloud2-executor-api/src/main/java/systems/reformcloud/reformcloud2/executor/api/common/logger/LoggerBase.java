@@ -48,8 +48,8 @@ public abstract class LoggerBase extends Logger implements AutoCloseable {
      * Clears the screen of the console
      */
     public void clearScreen() {
-        getLineReader().getTerminal().puts(InfoCmp.Capability.clear_screen);
-        getLineReader().getTerminal().flush();
+        this.getLineReader().getTerminal().puts(InfoCmp.Capability.clear_screen);
+        this.getLineReader().getTerminal().flush();
     }
 
     /**

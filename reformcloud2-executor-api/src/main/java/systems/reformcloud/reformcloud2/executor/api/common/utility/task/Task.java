@@ -110,7 +110,7 @@ public abstract class Task<V> extends CompletableFuture<V> {
      */
     @NotNull
     public Task<V> onComplete(@NotNull Consumer<V> consumer) {
-        thenAccept(consumer);
+        this.thenAccept(consumer);
         return this;
     }
 

@@ -50,18 +50,18 @@ public final class DefaultTask implements ScheduledTask {
 
     @Override
     public int getId() {
-        return id;
+        return this.id;
     }
 
     @NotNull
     @Override
     public Runnable getTask() {
-        return task;
+        return this.task;
     }
 
     @Override
     public boolean isRunning() {
-        return running.get();
+        return this.running.get();
     }
 
     @Override

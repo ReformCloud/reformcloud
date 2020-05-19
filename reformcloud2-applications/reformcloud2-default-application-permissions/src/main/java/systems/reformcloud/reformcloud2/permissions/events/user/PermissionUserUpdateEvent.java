@@ -36,6 +36,6 @@ public class PermissionUserUpdateEvent extends Event {
     }
 
     public PermissionUser getPermissionUser() {
-        return permissionUser;
+        return this.permissionUser;
     }
 }

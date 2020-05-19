@@ -62,7 +62,7 @@ public class FileDatabaseReader implements DatabaseReader {
     @Override
     public Task<JsonConfiguration> find(@NotNull String key) {
         Task<JsonConfiguration> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> task.complete(database.getEntry(Filters.keyEq(key)).orElse(new SerializableJsonConfiguration())));
+        Task.EXECUTOR.execute(() -> task.complete(this.database.getEntry(Filters.keyEq(key)).orElse(new SerializableJsonConfiguration())));
         return task;
     }
 
@@ -70,7 +70,7 @@ public class FileDatabaseReader implements DatabaseReader {
     @Override
     public Task<JsonConfiguration> findIfAbsent(@NotNull String identifier) {
         Task<JsonConfiguration> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> task.complete(database.getEntry(Filters.anyValueMatch(identifier)).orElse(new SerializableJsonConfiguration())));
+        Task.EXECUTOR.execute(() -> task.complete(this.database.getEntry(Filters.anyValueMatch(identifier)).orElse(new SerializableJsonConfiguration())));
         return task;
     }
 
@@ -79,13 +79,13 @@ public class FileDatabaseReader implements DatabaseReader {
     public Task<JsonConfiguration> insert(@NotNull String key, String identifier, @NotNull JsonConfiguration data) {
         Task<JsonConfiguration> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
-            Optional<SerializableJsonConfiguration> optional = database.getEntry(Filters.keyEq(key));
+            Optional<SerializableJsonConfiguration> optional = this.database.getEntry(Filters.keyEq(key));
             if (optional.isPresent()) {
                 task.complete(optional.get());
                 return;
             }
 
-            database.insert(key, new String[]{identifier}, new SerializableJsonConfiguration(data));
+            this.database.insert(key, new String[]{identifier}, new SerializableJsonConfiguration(data));
             task.complete(data);
         });
         return task;
@@ -96,7 +96,7 @@ public class FileDatabaseReader implements DatabaseReader {
     public Task<Boolean> update(@NotNull String key, @NotNull JsonConfiguration newData) {
         Task<Boolean> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
-            database.updateKey(Filters.keyEq(key), new SerializableJsonConfiguration(newData));
+            this.database.updateKey(Filters.keyEq(key), new SerializableJsonConfiguration(newData));
             task.complete(true);
         });
         return task;
@@ -107,7 +107,7 @@ public class FileDatabaseReader implements DatabaseReader {
     public Task<Boolean> updateIfAbsent(@NotNull String identifier, @NotNull JsonConfiguration newData) {
         Task<Boolean> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
-            database.updateKey(Filters.anyValueMatch(identifier), new SerializableJsonConfiguration(newData));
+            this.database.updateKey(Filters.anyValueMatch(identifier), new SerializableJsonConfiguration(newData));
             task.complete(true);
         });
         return task;
@@ -118,7 +118,7 @@ public class FileDatabaseReader implements DatabaseReader {
     public Task<Void> remove(@NotNull String key) {
         Task<Void> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
-            database.delete(Filters.keyEq(key));
+            this.database.delete(Filters.keyEq(key));
             task.complete(null);
         });
         return task;
@@ -129,7 +129,7 @@ public class FileDatabaseReader implements DatabaseReader {
     public Task<Void> removeIfAbsent(@NotNull String identifier) {
         Task<Void> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
-            database.delete(Filters.anyValueMatch(identifier));
+            this.database.delete(Filters.anyValueMatch(identifier));
             task.complete(null);
         });
         return task;
@@ -139,7 +139,7 @@ public class FileDatabaseReader implements DatabaseReader {
     @Override
     public Task<Boolean> contains(@NotNull String key) {
         Task<Boolean> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> task.complete(database.getEntry(Filters.keyEq(key)).isPresent()));
+        Task.EXECUTOR.execute(() -> task.complete(this.database.getEntry(Filters.keyEq(key)).isPresent()));
         return task;
     }
 
@@ -148,7 +148,7 @@ public class FileDatabaseReader implements DatabaseReader {
     public Task<Integer> size() {
         Task<Integer> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
-            try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(this.parentTable + "/" + table))) {
+            try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(this.parentTable + "/" + this.table))) {
                 AtomicInteger count = new AtomicInteger();
                 stream.forEach(files -> {
                     if (!files.getFileName().toString().endsWith(".properties")) {
@@ -167,14 +167,14 @@ public class FileDatabaseReader implements DatabaseReader {
     @NotNull
     @Override
     public String getName() {
-        return table;
+        return this.table;
     }
 
     @Override
     @NotNull
     public Iterator<JsonConfiguration> iterator() {
         List<JsonConfiguration> list = new ArrayList<>();
-        for (File file : Objects.requireNonNull(new File(this.parentTable + "/" + table).listFiles(pathname -> pathname.isFile() && pathname.getName().endsWith(".json")))) {
+        for (File file : Objects.requireNonNull(new File(this.parentTable + "/" + this.table).listFiles(pathname -> pathname.isFile() && pathname.getName().endsWith(".json")))) {
             list.add(JsonConfiguration.read(file));
         }
 

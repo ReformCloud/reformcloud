@@ -173,15 +173,15 @@ public class BukkitSignSystemAdapter extends SharedSignSystemAdapter<Sign> {
 
     private void restartTask() {
         Bukkit.getScheduler().cancelTasks(this.plugin);
-        runTasks();
+        this.runTasks();
     }
 
     @Override
     protected void runTasks() {
-        Bukkit.getScheduler().runTaskTimer(plugin, this::updateSigns, 0, Math.round(20 / super.signConfig.getUpdateInterval()));
+        Bukkit.getScheduler().runTaskTimer(this.plugin, this::updateSigns, 0, Math.round(20 / super.signConfig.getUpdateInterval()));
 
         double distance = super.signConfig.getKnockBackDistance();
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(this.plugin, () -> {
             for (CloudSign cachedSign : this.signs) {
                 Sign bukkitSign = this.getSignConverter().from(cachedSign);
                 if (bukkitSign == null) {
@@ -217,6 +217,6 @@ public class BukkitSignSystemAdapter extends SharedSignSystemAdapter<Sign> {
     }
 
     public Plugin getPlugin() {
-        return plugin;
+        return this.plugin;
     }
 }

@@ -59,18 +59,18 @@ public final class ReferencedOptional<T> implements Serializable {
 
     @NotNull
     public ReferencedOptional<T> update(@Nullable T newValue) {
-        reference.set(newValue);
+        this.reference.set(newValue);
         return this;
     }
 
     @Nullable
     public T orNothing() {
-        return orElse(null);
+        return this.orElse(null);
     }
 
     @NotNull
     public ReferencedOptional<T> ifPresent(@NotNull Consumer<T> consumer) {
-        T value = reference.get();
+        T value = this.reference.get();
         if (value != null) {
             consumer.accept(value);
         }
@@ -80,7 +80,7 @@ public final class ReferencedOptional<T> implements Serializable {
 
     @NotNull
     public ReferencedOptional<T> ifEmpty(@NotNull Consumer<Void> consumer) {
-        if (isEmpty()) {
+        if (this.isEmpty()) {
             consumer.accept(null);
         }
 
@@ -89,7 +89,7 @@ public final class ReferencedOptional<T> implements Serializable {
 
     @Nullable
     public T orElse(@Nullable T t) {
-        T value = reference.get();
+        T value = this.reference.get();
         if (value == null) {
             return t;
         }
@@ -98,7 +98,7 @@ public final class ReferencedOptional<T> implements Serializable {
     }
 
     public void orElseDo(@NotNull Predicate<T> predicate, @NotNull Runnable ifFalse, @NotNull Consumer<T> or) {
-        T value = reference.get();
+        T value = this.reference.get();
         if (!predicate.test(value)) {
             ifFalse.run();
             return;
@@ -117,19 +117,19 @@ public final class ReferencedOptional<T> implements Serializable {
     }
 
     public boolean isPresent() {
-        return reference.get() != null;
+        return this.reference.get() != null;
     }
 
     public boolean isEmpty() {
-        return reference.get() == null;
+        return this.reference.get() == null;
     }
 
     @NotNull
     public T get() {
-        if (isEmpty()) {
+        if (this.isEmpty()) {
             throw new IllegalStateException("Reference is not present");
         }
 
-        return reference.get();
+        return this.reference.get();
     }
 }

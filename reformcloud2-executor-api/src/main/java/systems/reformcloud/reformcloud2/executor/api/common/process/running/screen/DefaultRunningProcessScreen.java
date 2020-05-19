@@ -59,8 +59,8 @@ public class DefaultRunningProcessScreen implements RunningProcessScreen {
 
     @Override
     public void callUpdate() {
-        if (runningProcess.isAlive()) {
-            runningProcess.getProcess().ifPresent(process -> {
+        if (this.runningProcess.isAlive()) {
+            this.runningProcess.getProcess().ifPresent(process -> {
                 this.readStream(process.getInputStream());
                 this.readStream(process.getErrorStream());
             });
@@ -104,11 +104,11 @@ public class DefaultRunningProcessScreen implements RunningProcessScreen {
     private synchronized void readStream(@NotNull InputStream inputStream) {
         try {
             int length;
-            while (inputStream.available() > 0 && (length = inputStream.read(buffer, 0, buffer.length)) != -1) {
-                stringBuffer.append(new String(buffer, 0, length, StandardCharsets.UTF_8));
+            while (inputStream.available() > 0 && (length = inputStream.read(this.buffer, 0, this.buffer.length)) != -1) {
+                this.stringBuffer.append(new String(this.buffer, 0, length, StandardCharsets.UTF_8));
             }
 
-            String string = stringBuffer.toString();
+            String string = this.stringBuffer.toString();
             if (!string.contains("\n") && !string.contains("\r")) {
                 return;
             }
@@ -121,9 +121,9 @@ public class DefaultRunningProcessScreen implements RunningProcessScreen {
                 }
             }
 
-            stringBuffer.setLength(0);
+            this.stringBuffer.setLength(0);
         } catch (final IOException exception) {
-            stringBuffer.setLength(0);
+            this.stringBuffer.setLength(0);
         }
     }
 

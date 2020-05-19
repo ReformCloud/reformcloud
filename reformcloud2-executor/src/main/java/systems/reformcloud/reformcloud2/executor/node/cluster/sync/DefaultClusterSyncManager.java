@@ -124,13 +124,13 @@ public final class DefaultClusterSyncManager implements ClusterSyncManager {
     @NotNull
     @Override
     public Collection<ProcessGroup> getProcessGroups() {
-        return processGroups;
+        return this.processGroups;
     }
 
     @NotNull
     @Override
     public Collection<MainGroup> getMainGroups() {
-        return mainGroups;
+        return this.mainGroups;
     }
 
     @Override
@@ -165,7 +165,7 @@ public final class DefaultClusterSyncManager implements ClusterSyncManager {
         Streams.filterToReference(this.processGroups, e -> e.getName().equals(processGroup.getName())).ifPresent(e -> {
             this.processGroups.remove(e);
             this.processGroups.add(processGroup);
-            this.syncProcessGroups(processGroups, SyncAction.UPDATE);
+            this.syncProcessGroups(this.processGroups, SyncAction.UPDATE);
 
             NodeExecutor.getInstance().getNodeExecutorConfig().handleProcessGroupUpdate(processGroup);
             NodeExecutor.getInstance().getLocalAutoStartupHandler().update();
@@ -177,7 +177,7 @@ public final class DefaultClusterSyncManager implements ClusterSyncManager {
         Streams.filterToReference(this.mainGroups, e -> e.getName().equals(mainGroup.getName())).ifPresent(e -> {
             this.mainGroups.remove(e);
             this.mainGroups.add(mainGroup);
-            this.syncMainGroups(mainGroups, SyncAction.UPDATE);
+            this.syncMainGroups(this.mainGroups, SyncAction.UPDATE);
 
             NodeExecutor.getInstance().getNodeExecutorConfig().handleMainGroupUpdate(mainGroup);
         });
@@ -187,7 +187,7 @@ public final class DefaultClusterSyncManager implements ClusterSyncManager {
     public void syncProcessGroupDelete(@NotNull String name) {
         Streams.filterToReference(this.processGroups, e -> e.getName().equals(name)).ifPresent(e -> {
             this.processGroups.remove(e);
-            this.syncProcessGroups(processGroups, SyncAction.DELETE);
+            this.syncProcessGroups(this.processGroups, SyncAction.DELETE);
 
             NodeExecutor.getInstance().getLocalAutoStartupHandler().update();
             NodeExecutor.getInstance().getNodeExecutorConfig().handleProcessGroupDelete(e);
@@ -198,7 +198,7 @@ public final class DefaultClusterSyncManager implements ClusterSyncManager {
     public void syncMainGroupDelete(@NotNull String name) {
         Streams.filterToReference(this.mainGroups, e -> e.getName().equals(name)).ifPresent(e -> {
             this.mainGroups.remove(e);
-            this.syncMainGroups(mainGroups, SyncAction.DELETE);
+            this.syncMainGroups(this.mainGroups, SyncAction.DELETE);
 
             NodeExecutor.getInstance().getNodeExecutorConfig().handleMainGroupDelete(e);
         });
@@ -238,7 +238,7 @@ public final class DefaultClusterSyncManager implements ClusterSyncManager {
             }
 
             case DELETE: {
-                Streams.allOf(processGroups, e -> groups.stream().noneMatch(g -> g.getName().equals(e.getName()))).forEach(e -> {
+                Streams.allOf(this.processGroups, e -> groups.stream().noneMatch(g -> g.getName().equals(e.getName()))).forEach(e -> {
                     this.processGroups.remove(e);
                     NodeExecutor.getInstance().getNodeExecutorConfig().handleProcessGroupDelete(e);
                 });
@@ -257,7 +257,7 @@ public final class DefaultClusterSyncManager implements ClusterSyncManager {
                         .stream()
                         .filter(e -> this.mainGroups.stream().noneMatch(g -> g.getName().equals(e.getName())))
                         .forEach(e -> {
-                            mainGroups.add(e);
+                            this.mainGroups.add(e);
                             NodeExecutor.getInstance().getNodeExecutorConfig().handleMainGroupCreate(e);
                         });
                 break;
@@ -283,7 +283,7 @@ public final class DefaultClusterSyncManager implements ClusterSyncManager {
             }
 
             case DELETE: {
-                Streams.allOf(mainGroups, e -> groups.stream().noneMatch(g -> g.getName().equals(e.getName()))).forEach(e -> {
+                Streams.allOf(this.mainGroups, e -> groups.stream().noneMatch(g -> g.getName().equals(e.getName()))).forEach(e -> {
                     this.mainGroups.remove(e);
                     NodeExecutor.getInstance().getNodeExecutorConfig().handleMainGroupDelete(e);
                 });
@@ -323,17 +323,17 @@ public final class DefaultClusterSyncManager implements ClusterSyncManager {
 
     @Override
     public void disconnectFromCluster() {
-        nodeNetworkClient.disconnect();
+        this.nodeNetworkClient.disconnect();
     }
 
     @Override
     public boolean isConnectedAndSyncWithCluster() {
-        return waiting.isEmpty();
+        return this.waiting.isEmpty();
     }
 
     @NotNull
     @Override
     public Collection<String> getWaitingConnections() {
-        return waiting;
+        return this.waiting;
     }
 }

@@ -71,7 +71,7 @@ public class ConsoleCommandSource implements CommandSource {
 
     @Override
     public boolean hasPermission(@NotNull Permission permission) {
-        if (hasPermission(permission.permission())) {
+        if (this.hasPermission(permission.permission())) {
             return true;
         }
 
@@ -80,7 +80,7 @@ public class ConsoleCommandSource implements CommandSource {
 
     @Override
     public boolean isPermissionSet(@NotNull Permission permission) {
-        if (isPermissionSet(permission.permission())) {
+        if (this.isPermissionSet(permission.permission())) {
             return true;
         }
 
@@ -122,21 +122,21 @@ public class ConsoleCommandSource implements CommandSource {
     @Override
     public void sendMessages(@NotNull String[] messages) {
         for (String message : messages) {
-            sendMessage(message);
+            this.sendMessage(message);
         }
     }
 
     @Override
     public void sendRawMessages(@NotNull String[] messages) {
         for (String message : messages) {
-            sendRawMessage(message);
+            this.sendRawMessage(message);
         }
     }
 
     @NotNull
     @Override
     public CommandManager commandManager() {
-        return commandManager;
+        return this.commandManager;
     }
 
     private static class ConsoleCommandCheck implements PermissionCheck {

@@ -46,7 +46,7 @@ public class DefaultPermissionFunction implements PermissionFunction {
             return Tristate.FALSE;
         }
 
-        final PermissionUser permissionUser = PermissionManagement.getInstance().loadUser(uuid);
+        final PermissionUser permissionUser = PermissionManagement.getInstance().loadUser(this.uuid);
         return permissionUser.hasPermission(s) ? Tristate.TRUE : Tristate.FALSE;
     }
 }

@@ -41,6 +41,6 @@ public class ProcessInformationConfigureEvent extends Event {
 
     @NotNull
     public ProcessInformation getInformation() {
-        return information;
+        return this.information;
     }
 }

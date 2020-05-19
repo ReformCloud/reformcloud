@@ -55,27 +55,27 @@ public class SignConfig implements SerializableObject, Cloneable {
     }
 
     public Collection<SignLayout> getLayouts() {
-        return layouts;
+        return this.layouts;
     }
 
     public double getUpdateInterval() {
-        return updateIntervalInSeconds >= 0 ? updateIntervalInSeconds : 1;
+        return this.updateIntervalInSeconds >= 0 ? this.updateIntervalInSeconds : 1;
     }
 
     public boolean isKnockBackEnabled() {
-        return knockBackEnabled;
+        return this.knockBackEnabled;
     }
 
     public String getKnockBackBypassPermission() {
-        return knockBackBypassPermission == null ? "reformcloud.knockback.bypass" : knockBackBypassPermission;
+        return this.knockBackBypassPermission == null ? "reformcloud.knockback.bypass" : this.knockBackBypassPermission;
     }
 
     public double getKnockBackDistance() {
-        return knockBackDistance;
+        return this.knockBackDistance;
     }
 
     public double getKnockBackStrength() {
-        return knockBackStrength;
+        return this.knockBackStrength;
     }
 
     @Override

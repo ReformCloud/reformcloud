@@ -62,20 +62,20 @@ public class PacketGroupAction extends Packet {
         if (ExecutorAPI.getInstance().getType() != ExecutorType.API) {
             switch (this.permissionAction) {
                 case CREATE: {
-                    PermissionManagement.getInstance().createPermissionGroup(permissionGroup);
-                    PermissionManagement.getInstance().handleInternalPermissionGroupCreate(permissionGroup);
+                    PermissionManagement.getInstance().createPermissionGroup(this.permissionGroup);
+                    PermissionManagement.getInstance().handleInternalPermissionGroupCreate(this.permissionGroup);
                     break;
                 }
 
                 case UPDATE: {
-                    PermissionManagement.getInstance().updateGroup(permissionGroup);
-                    PermissionManagement.getInstance().handleInternalPermissionGroupUpdate(permissionGroup);
+                    PermissionManagement.getInstance().updateGroup(this.permissionGroup);
+                    PermissionManagement.getInstance().handleInternalPermissionGroupUpdate(this.permissionGroup);
                     break;
                 }
 
                 case DELETE: {
-                    PermissionManagement.getInstance().deleteGroup(permissionGroup.getName());
-                    PermissionManagement.getInstance().handleInternalPermissionGroupDelete(permissionGroup);
+                    PermissionManagement.getInstance().deleteGroup(this.permissionGroup.getName());
+                    PermissionManagement.getInstance().handleInternalPermissionGroupDelete(this.permissionGroup);
                     break;
                 }
             }
@@ -83,19 +83,19 @@ public class PacketGroupAction extends Packet {
             return;
         }
 
-        switch (permissionAction) {
+        switch (this.permissionAction) {
             case UPDATE: {
-                PermissionManagement.getInstance().handleInternalPermissionGroupUpdate(permissionGroup);
+                PermissionManagement.getInstance().handleInternalPermissionGroupUpdate(this.permissionGroup);
                 break;
             }
 
             case DELETE: {
-                PermissionManagement.getInstance().handleInternalPermissionGroupDelete(permissionGroup);
+                PermissionManagement.getInstance().handleInternalPermissionGroupDelete(this.permissionGroup);
                 break;
             }
 
             case CREATE: {
-                PermissionManagement.getInstance().handleInternalPermissionGroupCreate(permissionGroup);
+                PermissionManagement.getInstance().handleInternalPermissionGroupCreate(this.permissionGroup);
                 break;
             }
         }

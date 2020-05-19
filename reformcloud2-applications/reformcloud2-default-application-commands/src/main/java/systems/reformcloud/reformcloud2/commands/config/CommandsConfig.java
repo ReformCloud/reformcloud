@@ -50,19 +50,19 @@ public class CommandsConfig implements SerializableObject {
     }
 
     public boolean isLeaveCommandEnabled() {
-        return leaveCommandEnabled;
+        return this.leaveCommandEnabled;
     }
 
     public List<String> getLeaveCommands() {
-        return leaveCommands;
+        return this.leaveCommands;
     }
 
     public boolean isReformCloudCommandEnabled() {
-        return reformCloudCommandEnabled;
+        return this.reformCloudCommandEnabled;
     }
 
     public List<String> getReformCloudCommands() {
-        return reformCloudCommands;
+        return this.reformCloudCommands;
     }
 
     @Override

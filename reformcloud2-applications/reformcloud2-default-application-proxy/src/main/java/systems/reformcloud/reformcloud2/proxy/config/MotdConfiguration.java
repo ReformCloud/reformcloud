@@ -48,23 +48,23 @@ public class MotdConfiguration implements SerializableObject {
     }
 
     public String getFirstLine() {
-        return firstLine;
+        return this.firstLine;
     }
 
     public String getSecondLine() {
-        return secondLine;
+        return this.secondLine;
     }
 
     public String[] getPlayerInfo() {
-        return playerInfo;
+        return this.playerInfo;
     }
 
     public String getProtocol() {
-        return protocol;
+        return this.protocol;
     }
 
     public long getWaitUntilNextInSeconds() {
-        return waitUntilNextInSeconds;
+        return this.waitUntilNextInSeconds;
     }
 
     @Override

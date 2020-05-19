@@ -43,7 +43,7 @@ public final class Duo<F, S> {
      */
     @NotNull
     public F getFirst() {
-        return first;
+        return this.first;
     }
 
     /**
@@ -51,6 +51,6 @@ public final class Duo<F, S> {
      */
     @UndefinedNullability
     public S getSecond() {
-        return second;
+        return this.second;
     }
 }

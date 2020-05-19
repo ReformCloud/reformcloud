@@ -73,22 +73,22 @@ public class PermissionUser implements SerializableObject {
 
     @NotNull
     public UUID getUniqueID() {
-        return uuid;
+        return this.uuid;
     }
 
     @NotNull
     public Collection<PermissionNode> getPermissionNodes() {
-        return permissionNodes;
+        return this.permissionNodes;
     }
 
     @NotNull
     public Collection<NodeGroup> getGroups() {
-        return groups;
+        return this.groups;
     }
 
     @NotNull
     public Map<String, Collection<PermissionNode>> getPerGroupPermissions() {
-        return perGroupPermissions == null ? new HashMap<>() : perGroupPermissions;
+        return this.perGroupPermissions == null ? new HashMap<>() : this.perGroupPermissions;
     }
 
     @NotNull
@@ -145,7 +145,7 @@ public class PermissionUser implements SerializableObject {
 
     @NotNull
     public JsonConfiguration getExtra() {
-        return extra == null ? new JsonConfiguration() : extra;
+        return this.extra == null ? new JsonConfiguration() : this.extra;
     }
 
     @NotNull

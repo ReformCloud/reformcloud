@@ -43,7 +43,7 @@ public class SystemSubjectCollection extends DefaultSubjectCollection {
     @NotNull
     @Override
     protected Subject load(String id) {
-        return new SystemSubject(id, service, this);
+        return new SystemSubject(id, this.service, this);
     }
 
     @Override

@@ -56,14 +56,14 @@ public final class SharedChallengeProvider implements ChallengeProvider {
             return null;
         }
 
-        runningChallenges.put(sender, hashedChallenge);
+        this.runningChallenges.put(sender, hashedChallenge);
         this.removeLater(sender);
         return result;
     }
 
     @Override
     public boolean checkResult(@NotNull String sender, @NotNull String challengeResult) {
-        String expected = runningChallenges.get(sender);
+        String expected = this.runningChallenges.get(sender);
         return expected != null && expected.equals(challengeResult);
     }
 

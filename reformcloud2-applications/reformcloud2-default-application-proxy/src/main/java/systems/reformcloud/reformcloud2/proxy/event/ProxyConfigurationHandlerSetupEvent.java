@@ -36,7 +36,7 @@ public class ProxyConfigurationHandlerSetupEvent extends Event {
 
     @NotNull
     public ProxyConfigurationHandler getProxyConfigurationHandler() {
-        return Objects.requireNonNull(proxyConfigurationHandler, "No handler was registered by any plugin");
+        return Objects.requireNonNull(this.proxyConfigurationHandler, "No handler was registered by any plugin");
     }
 
     public void setProxyConfigurationHandler(@NotNull ProxyConfigurationHandler proxyConfigurationHandler) {

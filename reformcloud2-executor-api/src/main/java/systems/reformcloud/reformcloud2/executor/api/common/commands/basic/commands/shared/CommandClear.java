@@ -46,7 +46,7 @@ public final class CommandClear extends GlobalCommand {
 
     @Override
     public boolean handleCommand(@NotNull CommandSource commandSource, @NotNull String[] strings) {
-        loggerBase.clearScreen();
+        this.loggerBase.clearScreen();
         return true;
     }
 }

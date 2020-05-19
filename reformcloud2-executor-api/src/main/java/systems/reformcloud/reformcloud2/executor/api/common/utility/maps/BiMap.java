@@ -43,7 +43,7 @@ public final class BiMap<K, V> {
     }
 
     public void removeRandom(@NotNull K key) {
-        Collection<V> all = parent.get(key);
+        Collection<V> all = this.parent.get(key);
         if (all == null) {
             return;
         }

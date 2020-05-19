@@ -52,13 +52,13 @@ public final class DefaultRequestListenerHandler implements RequestListenerHandl
     @NotNull
     @Override
     public Auth authHandler() {
-        return auth;
+        return this.auth;
     }
 
     @NotNull
     @Override
     public RequestListenerHandler registerListener(@NotNull RequestHandler requestHandler) {
-        requestHandlers.add(requestHandler);
+        this.requestHandlers.add(requestHandler);
         return this;
     }
 
@@ -66,7 +66,7 @@ public final class DefaultRequestListenerHandler implements RequestListenerHandl
     @Override
     public RequestListenerHandler registerListener(@NotNull Class<? extends RequestHandler> requestHandler) {
         try {
-            return registerListener(requestHandler.getDeclaredConstructor().newInstance());
+            return this.registerListener(requestHandler.getDeclaredConstructor().newInstance());
         } catch (final IllegalAccessException | NoSuchMethodException | InvocationTargetException | InstantiationException ex) {
             ex.printStackTrace();
         }
@@ -81,6 +81,6 @@ public final class DefaultRequestListenerHandler implements RequestListenerHandl
     @NotNull
     @Override
     public Collection<RequestHandler> getHandlers() {
-        return Collections.unmodifiableList(requestHandlers);
+        return Collections.unmodifiableList(this.requestHandlers);
     }
 }

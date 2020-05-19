@@ -43,6 +43,6 @@ public final class DefaultChannelInitializerHandler extends ChannelInitializerHa
                 .addLast(new HttpServerCodec())
                 .addLast(new HttpObjectAggregator(65535))
                 .addLast(new WebSocketServerProtocolHandler("/"))
-                .addLast(new DefaultRestAPIHandler(requestListenerHandler));
+                .addLast(new DefaultRestAPIHandler(this.requestListenerHandler));
     }
 }

@@ -149,87 +149,87 @@ public class ProcessRuntimeInformation implements SerializableObject {
     }
 
     public double getCpuUsageSystem() {
-        return cpuUsageSystem;
+        return this.cpuUsageSystem;
     }
 
     public double getCpuUsageInternal() {
-        return cpuUsageInternal;
+        return this.cpuUsageInternal;
     }
 
     public double getLoadAverageSystem() {
-        return loadAverageSystem;
+        return this.loadAverageSystem;
     }
 
     public int getProcessorCount() {
-        return processorCount;
+        return this.processorCount;
     }
 
     public long getMemoryUsageSystem() {
-        return memoryUsageSystem;
+        return this.memoryUsageSystem;
     }
 
     public long getMemoryUsageInternal() {
-        return memoryUsageInternal;
+        return this.memoryUsageInternal;
     }
 
     public long getNonHeapMemoryUsage() {
-        return nonHeapMemoryUsage;
+        return this.nonHeapMemoryUsage;
     }
 
     public long getCollectionMemoryUsage() {
-        return collectionMemoryUsage;
+        return this.collectionMemoryUsage;
     }
 
     public int getLoadedClasses() {
-        return loadedClasses;
+        return this.loadedClasses;
     }
 
     public long getUnloadedClasses() {
-        return unloadedClasses;
+        return this.unloadedClasses;
     }
 
     public long getTotalLoadedClasses() {
-        return totalLoadedClasses;
+        return this.totalLoadedClasses;
     }
 
     public String getOsVersion() {
-        return osVersion;
+        return this.osVersion;
     }
 
     public String getJavaVersion() {
-        return javaVersion;
+        return this.javaVersion;
     }
 
     public String getSystemArchitecture() {
-        return systemArchitecture;
+        return this.systemArchitecture;
     }
 
     public String[] getStartParameters() {
-        return startParameters;
+        return this.startParameters;
     }
 
     public int getStacktraces() {
-        return stacktraces;
+        return this.stacktraces;
     }
 
     public long[] getDeadLockedThreads() {
-        return deadLockedThreads;
+        return this.deadLockedThreads;
     }
 
     public Map<String, String> getSystemProperties() {
-        return systemProperties;
+        return this.systemProperties;
     }
 
     public String getClassPath() {
-        return classPath;
+        return this.classPath;
     }
 
     public String getBootClassPath() {
-        return bootClassPath;
+        return this.bootClassPath;
     }
 
     public List<ThreadInfo> getThreadInfos() {
-        return threadInfos;
+        return this.threadInfos;
     }
 
     @Override

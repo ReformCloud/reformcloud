@@ -62,11 +62,11 @@ public enum ExecutorType {
     }
 
     public int getId() {
-        return id;
+        return this.id;
     }
 
     public boolean isSupported() {
-        return supported;
+        return this.supported;
     }
 
 }

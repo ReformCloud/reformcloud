@@ -46,15 +46,15 @@ public class Inclusion implements SerializableObject {
     }
 
     public String getKey() {
-        return key;
+        return this.key;
     }
 
     public String getBackend() {
-        return backend;
+        return this.backend;
     }
 
     public InclusionLoadType getInclusionLoadType() {
-        return inclusionLoadType;
+        return this.inclusionLoadType;
     }
 
     @Override

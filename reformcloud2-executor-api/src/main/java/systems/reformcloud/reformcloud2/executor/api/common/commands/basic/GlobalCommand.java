@@ -81,24 +81,24 @@ public abstract class GlobalCommand implements Command {
     @NotNull
     @Override
     public String mainCommand() {
-        return mainCommand;
+        return this.mainCommand;
     }
 
     @Override
     public Permission permission() {
-        return permissionCheck;
+        return this.permissionCheck;
     }
 
     @NotNull
     @Override
     public List<String> aliases() {
-        return aliases;
+        return this.aliases;
     }
 
     @NotNull
     @Override
     public String description() {
-        return description;
+        return this.description;
     }
 
     @NotNull
@@ -109,7 +109,7 @@ public abstract class GlobalCommand implements Command {
 
     @Override
     public void describeCommandToSender(@NotNull CommandSource source) {
-        source.sendMessage(description);
+        source.sendMessage(this.description);
     }
 
     @NotNull

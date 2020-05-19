@@ -46,19 +46,19 @@ public class FactoryCollection extends DefaultSubjectCollection {
     @NotNull
     @Override
     protected Subject load(String id) {
-        cache.putIfAbsent(id, new FactorySubject(id, service, this));
-        return cache.get(id);
+        this.cache.putIfAbsent(id, new FactorySubject(id, this.service, this));
+        return this.cache.get(id);
     }
 
     @Override
     @NotNull
     public CompletableFuture<Boolean> hasSubject(@NotNull String identifier) {
-        return CompletableFuture.completedFuture(cache.containsKey(identifier));
+        return CompletableFuture.completedFuture(this.cache.containsKey(identifier));
     }
 
     @Override
     @NotNull
     public Collection<Subject> getLoadedSubjects() {
-        return cache.values();
+        return this.cache.values();
     }
 }

@@ -113,9 +113,9 @@ public class ReformCloudApplication extends Application {
 
     @Override
     public void onEnable() {
-        if (!dataFolder().exists()) {
-            SystemHelper.createDirectory(dataFolder().toPath());
-            ConfigHelper.createDefault(dataFolder().getPath());
+        if (!this.dataFolder().exists()) {
+            SystemHelper.createDirectory(this.dataFolder().toPath());
+            ConfigHelper.createDefault(this.dataFolder().getPath());
         }
 
         ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().createDatabase(SignSystemAdapter.table);
@@ -136,7 +136,7 @@ public class ReformCloudApplication extends Application {
         );
 
         databaseEntry = ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().find(SignSystemAdapter.table, "signs", null);
-        signConfig = ConfigHelper.read(dataFolder().getPath());
+        signConfig = ConfigHelper.read(this.dataFolder().getPath());
         DefaultChannelManager.INSTANCE.getAllSender().forEach(e -> e.sendPacket(new PacketReloadSignConfig(signConfig)));
     }
 

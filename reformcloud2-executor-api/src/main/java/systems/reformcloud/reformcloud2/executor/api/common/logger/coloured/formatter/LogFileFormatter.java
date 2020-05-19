@@ -48,10 +48,10 @@ public final class LogFileFormatter extends FormatterBase {
                 .append(" ")
                 .append(record.getLevel().getLocalizedName())
                 .append("] ")
-                .append(Colours.stripColor(formatMessage(record)))
+                .append(Colours.stripColor(this.formatMessage(record)))
                 .append("\n");
         if (record.getThrown() != null) {
-            stringBuilder.append(format(record.getThrown()));
+            stringBuilder.append(this.format(record.getThrown()));
         }
         return stringBuilder.toString();
     }

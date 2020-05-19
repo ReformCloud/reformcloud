@@ -42,7 +42,7 @@ public final class ProcessQueue extends AbsoluteThread {
     private static final BlockingDeque<RunningProcess> QUEUE = new LinkedBlockingDeque<>();
 
     public ProcessQueue() {
-        enableDaemon().updatePriority(Thread.MIN_PRIORITY).start();
+        this.enableDaemon().updatePriority(Thread.MIN_PRIORITY).start();
     }
 
     public static void queue(ProcessInformation information) {

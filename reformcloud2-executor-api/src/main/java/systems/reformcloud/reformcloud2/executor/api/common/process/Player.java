@@ -49,21 +49,21 @@ public final class Player implements Comparable<Player>, SerializableObject {
 
     @NotNull
     public UUID getUniqueID() {
-        return uniqueID;
+        return this.uniqueID;
     }
 
     @NotNull
     public String getName() {
-        return name;
+        return this.name;
     }
 
     public long getJoined() {
-        return joined;
+        return this.joined;
     }
 
     @Override
     public int compareTo(@NotNull Player o) {
-        return Long.compare(getJoined(), o.getJoined());
+        return Long.compare(this.getJoined(), o.getJoined());
     }
 
     @Override
@@ -71,12 +71,12 @@ public final class Player implements Comparable<Player>, SerializableObject {
         if (this == o) return true;
         if (!(o instanceof Player)) return false;
         Player player = (Player) o;
-        return getUniqueID().equals(player.getUniqueID());
+        return this.getUniqueID().equals(player.getUniqueID());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getUniqueID());
+        return Objects.hash(this.getUniqueID());
     }
 
     @Override

@@ -64,7 +64,7 @@ public class H2Database extends Database<Connection> {
 
     @Override
     public void connect(@NotNull String host, int port, @NotNull String userName, @NotNull String password, @NotNull String table) {
-        if (!isConnected()) {
+        if (!this.isConnected()) {
             try {
                 Driver.load();
 
@@ -79,15 +79,15 @@ public class H2Database extends Database<Connection> {
     @Override
     public boolean isConnected() {
         try {
-            return connection != null && !connection.isClosed() && connection.isValid(250);
+            return this.connection != null && !this.connection.isClosed() && this.connection.isValid(250);
         } catch (final SQLException ex) {
-            return connection != null;
+            return this.connection != null;
         }
     }
 
     @Override
     public void disconnect() {
-        if (isConnected()) {
+        if (this.isConnected()) {
             try {
                 this.connection.disconnect();
             } catch (final SQLException ex) {
@@ -122,12 +122,12 @@ public class H2Database extends Database<Connection> {
     @Override
     public DatabaseReader createForTable(String table) {
         this.createDatabase(table);
-        return perTableReader.putIfAbsent(table, new SQLDatabaseReader(table, this));
+        return this.perTableReader.putIfAbsent(table, new SQLDatabaseReader(table, this));
     }
 
     @NotNull
     @Override
     public Connection get() {
-        return connection;
+        return this.connection;
     }
 }

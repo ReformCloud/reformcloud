@@ -76,7 +76,7 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
     public void detectApplications() {
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(APPLICATION_DIRECTORY, path -> path.toString().endsWith(".jar"))) {
             for (Path path : stream) {
-                if (loadedApplications.values().stream().anyMatch(e -> e.getApplication().getApplicationConfig().getApplicationFile().toPath().toString().equals(path.toString()))) {
+                if (this.loadedApplications.values().stream().anyMatch(e -> e.getApplication().getApplicationConfig().getApplicationFile().toPath().toString().equals(path.toString()))) {
                     continue;
                 }
 

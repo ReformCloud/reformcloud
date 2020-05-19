@@ -44,16 +44,16 @@ public final class ClientManager {
     private Process process;
 
     public void connectClient(ClientRuntimeInformation info) {
-        clientRuntimeInformation.add(info);
+        this.clientRuntimeInformation.add(info);
     }
 
     public void disconnectClient(String name) {
-        ClientRuntimeInformation found = Streams.filter(clientRuntimeInformation, clientRuntimeInformation -> clientRuntimeInformation.getName().equals(name));
+        ClientRuntimeInformation found = Streams.filter(this.clientRuntimeInformation, clientRuntimeInformation -> clientRuntimeInformation.getName().equals(name));
         if (found == null) {
             return;
         }
 
-        clientRuntimeInformation.remove(found);
+        this.clientRuntimeInformation.remove(found);
         System.out.println(LanguageManager.get(
                 "client-connection-lost",
                 found.getName()
@@ -61,26 +61,26 @@ public final class ClientManager {
     }
 
     public void updateClient(ClientRuntimeInformation information) {
-        ClientRuntimeInformation found = Streams.filter(clientRuntimeInformation, clientRuntimeInformation -> clientRuntimeInformation.getName().equals(information.getName()));
+        ClientRuntimeInformation found = Streams.filter(this.clientRuntimeInformation, clientRuntimeInformation -> clientRuntimeInformation.getName().equals(information.getName()));
         if (found == null) {
             return;
         }
 
-        clientRuntimeInformation.remove(found);
-        clientRuntimeInformation.add(information);
+        this.clientRuntimeInformation.remove(found);
+        this.clientRuntimeInformation.add(information);
     }
 
     public void onShutdown() {
-        clientRuntimeInformation.clear();
-        if (process == null) {
+        this.clientRuntimeInformation.clear();
+        if (this.process == null) {
             return;
         }
 
-        JavaProcessHelper.shutdown(process, true, true, TimeUnit.SECONDS.toMillis(10), "stop\n");
+        JavaProcessHelper.shutdown(this.process, true, true, TimeUnit.SECONDS.toMillis(10), "stop\n");
     }
 
     public Process getProcess() {
-        return process;
+        return this.process;
     }
 
     public void setProcess(Process process) {
@@ -92,6 +92,6 @@ public final class ClientManager {
     }
 
     public Collection<ClientRuntimeInformation> getClientRuntimeInformation() {
-        return clientRuntimeInformation;
+        return this.clientRuntimeInformation;
     }
 }

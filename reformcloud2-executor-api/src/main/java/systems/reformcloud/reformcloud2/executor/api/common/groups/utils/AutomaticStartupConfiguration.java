@@ -54,15 +54,15 @@ public class AutomaticStartupConfiguration implements SerializableObject {
     }
 
     public boolean isEnabled() {
-        return enabled;
+        return this.enabled;
     }
 
     public int getMaxPercentOfPlayers() {
-        return maxPercentOfPlayers;
+        return this.maxPercentOfPlayers;
     }
 
     public long getCheckIntervalInSeconds() {
-        return checkIntervalInSeconds;
+        return this.checkIntervalInSeconds;
     }
 
     @Override

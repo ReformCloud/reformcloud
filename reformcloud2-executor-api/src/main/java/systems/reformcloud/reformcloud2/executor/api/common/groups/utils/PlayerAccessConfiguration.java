@@ -61,11 +61,11 @@ public final class PlayerAccessConfiguration implements SerializableObject {
 
     @NotNull
     public String getFullJoinPermission() {
-        return fullJoinPermission == null ? "reformcloud.join.full" : fullJoinPermission;
+        return this.fullJoinPermission == null ? "reformcloud.join.full" : this.fullJoinPermission;
     }
 
     public boolean isMaintenance() {
-        return maintenance;
+        return this.maintenance;
     }
 
     public void setMaintenance(boolean maintenance) {
@@ -74,28 +74,28 @@ public final class PlayerAccessConfiguration implements SerializableObject {
 
     @NotNull
     public String getMaintenanceJoinPermission() {
-        return maintenanceJoinPermission == null ? "reformcloud.join.maintenance" : maintenanceJoinPermission;
+        return this.maintenanceJoinPermission == null ? "reformcloud.join.maintenance" : this.maintenanceJoinPermission;
     }
 
     public boolean isJoinOnlyPerPermission() {
-        return joinOnlyPerPermission;
+        return this.joinOnlyPerPermission;
     }
 
     @NotNull
     public String getJoinPermission() {
-        return joinPermission == null ? "reformcloud.custom.permission" : joinPermission;
+        return this.joinPermission == null ? "reformcloud.custom.permission" : this.joinPermission;
     }
 
     public boolean isPlayerControllerCommandReporting() {
-        return playerControllerCommandReporting;
+        return this.playerControllerCommandReporting;
     }
 
     public boolean isUseCloudPlayerLimit() {
-        return useCloudPlayerLimit;
+        return this.useCloudPlayerLimit;
     }
 
     public int getMaxPlayers() {
-        return maxPlayers;
+        return this.maxPlayers;
     }
 
     public void setMaxPlayers(int maxPlayers) {
@@ -112,13 +112,13 @@ public final class PlayerAccessConfiguration implements SerializableObject {
         if (this == o) return true;
         if (!(o instanceof PlayerAccessConfiguration)) return false;
         PlayerAccessConfiguration that = (PlayerAccessConfiguration) o;
-        return isMaintenance() == that.isMaintenance() &&
-                isJoinOnlyPerPermission() == that.isJoinOnlyPerPermission() &&
-                isPlayerControllerCommandReporting() == that.isPlayerControllerCommandReporting() &&
-                isUseCloudPlayerLimit() == that.isUseCloudPlayerLimit() &&
-                getMaxPlayers() == that.getMaxPlayers() &&
-                Objects.equals(getMaintenanceJoinPermission(), that.getMaintenanceJoinPermission()) &&
-                Objects.equals(getJoinPermission(), that.getJoinPermission());
+        return this.isMaintenance() == that.isMaintenance() &&
+                this.isJoinOnlyPerPermission() == that.isJoinOnlyPerPermission() &&
+                this.isPlayerControllerCommandReporting() == that.isPlayerControllerCommandReporting() &&
+                this.isUseCloudPlayerLimit() == that.isUseCloudPlayerLimit() &&
+                this.getMaxPlayers() == that.getMaxPlayers() &&
+                Objects.equals(this.getMaintenanceJoinPermission(), that.getMaintenanceJoinPermission()) &&
+                Objects.equals(this.getJoinPermission(), that.getJoinPermission());
     }
 
     @Override

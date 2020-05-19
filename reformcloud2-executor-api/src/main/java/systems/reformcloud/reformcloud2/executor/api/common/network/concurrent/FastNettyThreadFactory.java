@@ -41,7 +41,7 @@ public class FastNettyThreadFactory implements ThreadFactory {
 
     @Override
     public Thread newThread(@NotNull Runnable r) {
-        String name = String.format(this.nameFormat, threadNumber.getAndIncrement());
+        String name = String.format(this.nameFormat, this.threadNumber.getAndIncrement());
         return new FastThreadLocalThread(r, name);
     }
 }

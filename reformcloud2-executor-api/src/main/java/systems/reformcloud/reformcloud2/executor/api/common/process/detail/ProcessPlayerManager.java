@@ -117,7 +117,7 @@ public final class ProcessPlayerManager {
      * @return {@code true} if the player was not already connected
      */
     public boolean onLogin(@NotNull UUID playerUniqueID, @NotNull String playerName) {
-        return onlinePlayers.add(new Player(playerUniqueID, playerName));
+        return this.onlinePlayers.add(new Player(playerUniqueID, playerName));
     }
 
     /**

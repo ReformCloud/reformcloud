@@ -122,12 +122,12 @@ public final class VelocityListener {
 
     @Subscribe(order = PostOrder.LAST)
     public void handle(final PostLoginEvent event) {
-        initTab();
+        this.initTab();
     }
 
     @Subscribe
     public void handle(final DisconnectEvent event) {
-        initTab();
+        this.initTab();
     }
 
     @Subscribe
@@ -138,7 +138,7 @@ public final class VelocityListener {
     @Listener
     public void handle(final @NotNull ProcessUpdatedEvent event) {
         if (event.getProcessInformation().getProcessDetail().getProcessUniqueID().equals(API.getInstance().getCurrentProcessInformation().getProcessDetail().getProcessUniqueID())) {
-            initTab();
+            this.initTab();
         }
     }
 

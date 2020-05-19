@@ -66,22 +66,22 @@ public class DefaultPermissible extends PermissibleBase {
 
     @Override
     public boolean isPermissionSet(String name) {
-        return has(name);
+        return this.has(name);
     }
 
     @Override
     public boolean isPermissionSet(Permission perm) {
-        return has(perm.getName());
+        return this.has(perm.getName());
     }
 
     @Override
     public boolean hasPermission(String name) {
-        return has(name);
+        return this.has(name);
     }
 
     @Override
     public boolean hasPermission(Permission perm) {
-        return has(perm.getName());
+        return this.has(perm.getName());
     }
 
     @Override
@@ -110,11 +110,11 @@ public class DefaultPermissible extends PermissibleBase {
     public Map<String, PermissionAttachmentInfo> getEffectivePermissions() {
         this.perms = new ConcurrentHashMap<>();
 
-        final PermissionUser permissionUser = PermissionManagement.getInstance().loadUser(uuid);
+        final PermissionUser permissionUser = PermissionManagement.getInstance().loadUser(this.uuid);
         final ProcessInformation current = API.getInstance().getCurrentProcessInformation();
 
         permissionUser.getPermissionNodes().stream().filter(PermissionNode::isValid)
-                .forEach(e -> perms.put(e.getActualPermission(), new PermissionAttachmentInfo(
+                .forEach(e -> this.perms.put(e.getActualPermission(), new PermissionAttachmentInfo(
                         this,
                         e.getActualPermission(),
                         null,
@@ -135,7 +135,7 @@ public class DefaultPermissible extends PermissibleBase {
                             .forEach(stream);
                     return stream.build();
                 }).forEach(g -> {
-            g.getPermissionNodes().stream().filter(PermissionNode::isValid).forEach(e -> perms.put(e.getActualPermission(), new PermissionAttachmentInfo(
+            g.getPermissionNodes().stream().filter(PermissionNode::isValid).forEach(e -> this.perms.put(e.getActualPermission(), new PermissionAttachmentInfo(
                     this,
                     e.getActualPermission(),
                     null,
@@ -143,7 +143,7 @@ public class DefaultPermissible extends PermissibleBase {
             )));
             Collection<PermissionNode> nodes = g.getPerGroupPermissions().get(current.getProcessGroup().getName());
             if (nodes != null) {
-                nodes.stream().filter(PermissionNode::isValid).forEach(e -> perms.put(e.getActualPermission(), new PermissionAttachmentInfo(
+                nodes.stream().filter(PermissionNode::isValid).forEach(e -> this.perms.put(e.getActualPermission(), new PermissionAttachmentInfo(
                         this,
                         e.getActualPermission(),
                         null,
@@ -152,7 +152,7 @@ public class DefaultPermissible extends PermissibleBase {
             }
         });
 
-        return perms;
+        return this.perms;
     }
 
     @Override
@@ -161,7 +161,7 @@ public class DefaultPermissible extends PermissibleBase {
     }
 
     private boolean has(String name) {
-        final PermissionUser permissionUser = PermissionManagement.getInstance().loadUser(uuid);
+        final PermissionUser permissionUser = PermissionManagement.getInstance().loadUser(this.uuid);
         return permissionUser.hasPermission(name);
     }
 }

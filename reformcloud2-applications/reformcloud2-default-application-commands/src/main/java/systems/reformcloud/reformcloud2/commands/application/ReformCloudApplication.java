@@ -70,9 +70,9 @@ public class ReformCloudApplication extends Application {
 
     @Override
     public void onEnable() {
-        final Path path = Paths.get(dataFolder().getPath(), "config.json");
+        final Path path = Paths.get(this.dataFolder().getPath(), "config.json");
         if (!Files.exists(path)) {
-            SystemHelper.createDirectory(dataFolder().toPath());
+            SystemHelper.createDirectory(this.dataFolder().toPath());
             new JsonConfiguration()
                     .add("config", new CommandsConfig(
                             true, Arrays.asList("l", "leave", "lobby", "hub", "quit"),

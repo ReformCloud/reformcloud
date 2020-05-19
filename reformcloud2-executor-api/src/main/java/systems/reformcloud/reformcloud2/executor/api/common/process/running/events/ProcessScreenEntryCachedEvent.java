@@ -38,10 +38,10 @@ public class ProcessScreenEntryCachedEvent extends Event {
     }
 
     public RunningProcessScreen getRunningProcessScreen() {
-        return runningProcessScreen;
+        return this.runningProcessScreen;
     }
 
     public String getCachedLogLine() {
-        return cachedLogLine;
+        return this.cachedLogLine;
     }
 }

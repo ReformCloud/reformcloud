@@ -58,11 +58,11 @@ public final class ProcessUtil {
      * @see systems.reformcloud.reformcloud2.executor.api.common.api.process.ProcessSyncAPI#prepareProcess(ProcessConfiguration)
      */
     public void start() {
-        if (!parent.getProcessDetail().getProcessState().equals(ProcessState.PREPARED)) {
+        if (!this.parent.getProcessDetail().getProcessState().equals(ProcessState.PREPARED)) {
             return;
         }
 
-        ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().startProcess(parent);
+        ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().startProcess(this.parent);
     }
 
     /**
@@ -76,7 +76,7 @@ public final class ProcessUtil {
      * Starts a new process for the same group as the process util was created for
      */
     public void startNewOfSameGroup() {
-        ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().startProcess(parent.getProcessGroup().getName());
+        ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().startProcess(this.parent.getProcessGroup().getName());
     }
 
     /**
@@ -86,7 +86,7 @@ public final class ProcessUtil {
      */
     public void sendCommand(@NotNull String command) {
         ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().executeProcessCommand(
-                parent.getProcessDetail().getName(), command
+                this.parent.getProcessDetail().getName(), command
         );
     }
 
@@ -104,8 +104,8 @@ public final class ProcessUtil {
      * @param consumer The consumer which should consume the information before the stop
      */
     public void acceptAndStop(@NotNull Consumer<ProcessInformation> consumer) {
-        consumer.accept(parent);
-        ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().stopProcess(parent.getProcessDetail().getProcessUniqueID());
+        consumer.accept(this.parent);
+        ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().stopProcess(this.parent.getProcessDetail().getProcessUniqueID());
     }
 
     /**
@@ -122,7 +122,7 @@ public final class ProcessUtil {
      * @param consumer The consumer which should handle the process info before the update
      */
     public void acceptAndUpdate(@NotNull Consumer<ProcessInformation> consumer) {
-        consumer.accept(parent);
-        ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(parent);
+        consumer.accept(this.parent);
+        ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(this.parent);
     }
 }

@@ -41,7 +41,7 @@ public final class DefaultTaskScheduler implements TaskScheduler {
 
     @Override
     public void cancel(int id) {
-        ScheduledTask task = tasks.remove(id);
+        ScheduledTask task = this.tasks.remove(id);
         if (task != null) {
             task.cancel();
         }
@@ -55,20 +55,20 @@ public final class DefaultTaskScheduler implements TaskScheduler {
     @NotNull
     @Override
     public ScheduledTask runAsync(@NotNull Runnable runnable) {
-        return schedule(runnable, 0, TimeUnit.MILLISECONDS);
+        return this.schedule(runnable, 0, TimeUnit.MILLISECONDS);
     }
 
     @NotNull
     @Override
     public ScheduledTask schedule(@NotNull Runnable runnable, long delay, @NotNull TimeUnit timeUnit) {
-        return schedule(runnable, 0, delay, timeUnit);
+        return this.schedule(runnable, 0, delay, timeUnit);
     }
 
     @NotNull
     @Override
     public ScheduledTask schedule(@NotNull Runnable runnable, long delay, long period, @NotNull TimeUnit timeUnit) {
-        ScheduledTask scheduledTask = new DefaultTask(atomicInteger.getAndIncrement(), runnable, delay, period, timeUnit);
-        tasks.put(scheduledTask.getId(), scheduledTask);
+        ScheduledTask scheduledTask = new DefaultTask(this.atomicInteger.getAndIncrement(), runnable, delay, period, timeUnit);
+        this.tasks.put(scheduledTask.getId(), scheduledTask);
         return scheduledTask;
     }
 

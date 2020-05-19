@@ -45,10 +45,10 @@ public final class DefaultTask<V> extends Task<V> {
         try {
             return super.get(timeout, unit);
         } catch (final InterruptedException | ExecutionException | TimeoutException ex) {
-            handleFailure(ex);
+            this.handleFailure(ex);
         }
 
-        handleFailure(new NullPointerException("A task returned null as response"));
+        this.handleFailure(new NullPointerException("A task returned null as response"));
         return null;
     }
 
@@ -57,10 +57,10 @@ public final class DefaultTask<V> extends Task<V> {
         try {
             return super.get();
         } catch (final InterruptedException | ExecutionException ex) {
-            handleFailure(ex);
+            this.handleFailure(ex);
         }
 
-        handleFailure(new NullPointerException("A task returned null as response"));
+        this.handleFailure(new NullPointerException("A task returned null as response"));
         return null;
     }
 
@@ -99,8 +99,8 @@ public final class DefaultTask<V> extends Task<V> {
     }
 
     private void handleFailure(Throwable throwable) {
-        if (failureConsumer != null) {
-            failureConsumer.accept(new TaskCompletionException("A task raised an exception", throwable));
+        if (this.failureConsumer != null) {
+            this.failureConsumer.accept(new TaskCompletionException("A task raised an exception", throwable));
         }
     }
 }

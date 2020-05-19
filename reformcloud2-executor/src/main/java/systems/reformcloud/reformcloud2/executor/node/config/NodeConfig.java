@@ -65,46 +65,46 @@ public final class NodeConfig {
     }
 
     public String getName() {
-        return name;
+        return this.name;
     }
 
     public UUID getUniqueID() {
-        return uniqueID;
+        return this.uniqueID;
     }
 
     public long getMaxMemory() {
-        return maxMemory;
+        return this.maxMemory;
     }
 
     public String getStartHost() {
-        return startHost;
+        return this.startHost;
     }
 
     public double getMaxSystemCpuUsage() {
-        return maxSystemCpuUsage == 0 ? 90D : maxSystemCpuUsage;
+        return this.maxSystemCpuUsage == 0 ? 90D : this.maxSystemCpuUsage;
     }
 
     public List<NetworkAddress> getNetworkListeners() {
-        return networkListeners;
+        return this.networkListeners;
     }
 
     public List<NetworkAddress> getHttpNetworkListeners() {
-        return httpNetworkListeners;
+        return this.httpNetworkListeners;
     }
 
     public List<NetworkAddress> getClusterNodes() {
-        return clusterNodes;
+        return this.clusterNodes;
     }
 
     @NotNull
     @Contract(" -> new")
     NodeInformation prepare() {
         return new NodeInformation(
-                name,
-                uniqueID,
+                this.name,
+                this.uniqueID,
                 System.currentTimeMillis(),
                 0L,
-                maxMemory,
+                this.maxMemory,
                 new CopyOnWriteArrayList<>()
         );
     }
@@ -124,11 +124,11 @@ public final class NodeConfig {
         }
 
         public String getHost() {
-            return host;
+            return this.host;
         }
 
         public int getPort() {
-            return port;
+            return this.port;
         }
     }
 }

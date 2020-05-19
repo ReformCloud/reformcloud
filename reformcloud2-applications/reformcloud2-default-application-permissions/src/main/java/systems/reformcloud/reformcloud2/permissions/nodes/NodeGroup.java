@@ -44,20 +44,20 @@ public class NodeGroup implements SerializableObject {
     }
 
     public long getAddTime() {
-        return addTime;
+        return this.addTime;
     }
 
     public long getTimeout() {
-        return timeout;
+        return this.timeout;
     }
 
     public boolean isValid() {
-        return timeout == -1 || timeout > System.currentTimeMillis();
+        return this.timeout == -1 || this.timeout > System.currentTimeMillis();
     }
 
     @NotNull
     public String getGroupName() {
-        return groupName;
+        return this.groupName;
     }
 
     @Override

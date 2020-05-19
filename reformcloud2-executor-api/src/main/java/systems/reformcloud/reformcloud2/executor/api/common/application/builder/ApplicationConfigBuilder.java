@@ -95,61 +95,61 @@ public final class ApplicationConfigBuilder {
             @Override
             @NotNull
             public String getVersion() {
-                return version;
+                return ApplicationConfigBuilder.this.version;
             }
 
             @NotNull
             @Override
             public String getAuthor() {
-                return author;
+                return ApplicationConfigBuilder.this.author;
             }
 
             @NotNull
             @Override
             public String getMainClassName() {
-                return main;
+                return ApplicationConfigBuilder.this.main;
             }
 
             @NotNull
             @Override
             public Dependency[] getDependencies() {
-                return dependencies.toArray(new Dependency[0]);
+                return ApplicationConfigBuilder.this.dependencies.toArray(new Dependency[0]);
             }
 
             @NotNull
             @Override
             public String getDescription() {
-                return description;
+                return ApplicationConfigBuilder.this.description;
             }
 
             @NotNull
             @Override
             public String getWebsite() {
-                return website;
+                return ApplicationConfigBuilder.this.website;
             }
 
             @NotNull
             @Override
             public String getImplementedVersion() {
-                return implementedVersion;
+                return ApplicationConfigBuilder.this.implementedVersion;
             }
 
             @NotNull
             @Override
             public File getApplicationFile() {
-                return appFile;
+                return ApplicationConfigBuilder.this.appFile;
             }
 
             @NotNull
             @Override
             public JarEntry getApplicationConfigJarEntry() {
-                return descFile;
+                return ApplicationConfigBuilder.this.descFile;
             }
 
             @NotNull
             @Override
             public String getName() {
-                return name;
+                return ApplicationConfigBuilder.this.name;
             }
         };
     }

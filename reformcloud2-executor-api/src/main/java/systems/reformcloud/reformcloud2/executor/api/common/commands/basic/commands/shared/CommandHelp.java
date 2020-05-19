@@ -57,13 +57,13 @@ public final class CommandHelp extends GlobalCommand {
             commandSource.sendMessage("Discord: https://discord.gg/uskXdVZ");
             commandSource.sendMessage(" ");
 
-            commandManager.getCommands().forEach(command -> commandSource.sendMessage("   -> " + command.mainCommand() + " " + command.aliases()));
+            this.commandManager.getCommands().forEach(command -> commandSource.sendMessage("   -> " + command.mainCommand() + " " + command.aliases()));
             commandSource.sendMessage(" ");
             commandSource.sendMessage(LanguageManager.get("command-help-use"));
             return true;
         }
 
-        Command command = commandManager.getCommand(strings[0]);
+        Command command = this.commandManager.getCommand(strings[0]);
         if (command == null) {
             commandSource.sendMessage(LanguageManager.get("command-help-command-unknown"));
             return true;

@@ -39,13 +39,13 @@ public final class DefaultSetup implements Setup {
     @NotNull
     @Override
     public Setup addQuestion(@NotNull SetupQuestion setupQuestion) {
-        questions.add(setupQuestion);
+        this.questions.add(setupQuestion);
         return this;
     }
 
     @Override
     public void startSetup(@NotNull LoggerBase loggerBase) {
-        questions.forEach(setupQuestion -> {
+        this.questions.forEach(setupQuestion -> {
             System.out.println(setupQuestion.question());
             String line = loggerBase.readLineNoPrompt();
             while (line.trim().isEmpty() || !setupQuestion.tester().test(line)) {

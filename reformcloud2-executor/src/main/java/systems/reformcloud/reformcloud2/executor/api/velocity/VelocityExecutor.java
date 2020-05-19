@@ -92,9 +92,9 @@ public final class VelocityExecutor extends API implements PlayerAPIExecutor {
         instance = this;
         this.proxyServer = proxyServer;
 
-        new ExternalEventBusHandler(packetHandler, new DefaultEventManager());
-        getEventManager().registerListener(new ProcessEventHandler());
-        getEventManager().registerListener(this);
+        new ExternalEventBusHandler(this.packetHandler, new DefaultEventManager());
+        this.getEventManager().registerListener(new ProcessEventHandler());
+        this.getEventManager().registerListener(this);
         proxyServer.getEventManager().register(this.plugin = launcher, new PlayerListenerHandler());
 
         this.packetHandler.registerNetworkHandlers(
@@ -110,7 +110,7 @@ public final class VelocityExecutor extends API implements PlayerAPIExecutor {
         JsonConfiguration connectionConfig = JsonConfiguration.read("reformcloud/.connection/connection.json");
 
         this.thisProcessInformation = connectionConfig.get("startInfo", ProcessInformation.TYPE);
-        if (thisProcessInformation == null) {
+        if (this.thisProcessInformation == null) {
             System.exit(0);
             return;
         }
@@ -121,14 +121,14 @@ public final class VelocityExecutor extends API implements PlayerAPIExecutor {
                 () -> new APINetworkChannelReader(),
                 new ClientChallengeAuthHandler(
                         connectionKey,
-                        thisProcessInformation.getProcessDetail().getName(),
+                        this.thisProcessInformation.getProcessDetail().getName(),
                         () -> new JsonConfiguration(),
                         context -> {
                         } // unused here
                 )
         );
         ExecutorAPI.setInstance(this);
-        awaitConnectionAndUpdate();
+        this.awaitConnectionAndUpdate();
     }
 
     @NotNull
@@ -137,12 +137,12 @@ public final class VelocityExecutor extends API implements PlayerAPIExecutor {
     }
 
     NetworkClient getNetworkClient() {
-        return networkClient;
+        return this.networkClient;
     }
 
     @Override
     public PacketHandler packetHandler() {
-        return packetHandler;
+        return this.packetHandler;
     }
 
     @NotNull
@@ -152,7 +152,7 @@ public final class VelocityExecutor extends API implements PlayerAPIExecutor {
     }
 
     public ProxyServer getProxyServer() {
-        return proxyServer;
+        return this.proxyServer;
     }
 
     @NotNull
@@ -163,7 +163,7 @@ public final class VelocityExecutor extends API implements PlayerAPIExecutor {
 
     @NotNull
     public List<ProcessInformation> getCachedLobbyServices() {
-        return cachedLobbyServices;
+        return this.cachedLobbyServices;
     }
 
     public void handleProcessUpdate(@NotNull ProcessInformation processInformation) {
@@ -183,7 +183,7 @@ public final class VelocityExecutor extends API implements PlayerAPIExecutor {
                 return;
             }
 
-            handleProcessRemove(processInformation);
+            this.handleProcessRemove(processInformation);
         }
 
         if (processInformation.getNetworkInfo().isConnected() && processInformation.getProcessDetail().getTemplate().getVersion().getId() == 1) {
@@ -191,13 +191,13 @@ public final class VelocityExecutor extends API implements PlayerAPIExecutor {
                     processInformation.getProcessDetail().getName(),
                     processInformation.getNetworkInfo().toInet()
             );
-            proxyServer.registerServer(serverInfo);
+            this.proxyServer.registerServer(serverInfo);
         }
     }
 
     public void handleProcessRemove(@NotNull ProcessInformation processInformation) {
-        proxyServer.getServer(processInformation.getProcessDetail().getName())
-                .ifPresent(registeredServer -> proxyServer.unregisterServer(registeredServer.getServerInfo()));
+        this.proxyServer.getServer(processInformation.getProcessDetail().getName())
+                .ifPresent(registeredServer -> this.proxyServer.unregisterServer(registeredServer.getServerInfo()));
 
         if (processInformation.isLobby()) {
             this.cachedLobbyServices.removeIf(e -> e.getProcessDetail().getProcessUniqueID().equals(processInformation.getProcessDetail().getProcessUniqueID()));
@@ -205,7 +205,7 @@ public final class VelocityExecutor extends API implements PlayerAPIExecutor {
     }
 
     private boolean isServerRegistered(String name) {
-        return proxyServer.getServer(name).isPresent();
+        return this.proxyServer.getServer(name).isPresent();
     }
 
     private void awaitConnectionAndUpdate() {
@@ -216,17 +216,17 @@ public final class VelocityExecutor extends API implements PlayerAPIExecutor {
                 AbsoluteThread.sleep(100);
             }
 
-            getAllProcesses().forEach(this::handleProcessUpdate);
+            this.getAllProcesses().forEach(this::handleProcessUpdate);
 
-            thisProcessInformation.updateMaxPlayers(proxyServer.getConfiguration().getShowMaxPlayers());
-            thisProcessInformation.updateRuntimeInformation();
-            thisProcessInformation.getNetworkInfo().setConnected(true);
-            thisProcessInformation.getProcessDetail().setProcessState(thisProcessInformation.getProcessDetail().getInitialState());
-            ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(thisProcessInformation);
+            this.thisProcessInformation.updateMaxPlayers(this.proxyServer.getConfiguration().getShowMaxPlayers());
+            this.thisProcessInformation.updateRuntimeInformation();
+            this.thisProcessInformation.getNetworkInfo().setConnected(true);
+            this.thisProcessInformation.getProcessDetail().setProcessState(this.thisProcessInformation.getProcessDetail().getInitialState());
+            ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(this.thisProcessInformation);
 
             this.fixInvalidPlayers();
 
-            DefaultChannelManager.INSTANCE.get("Controller").ifPresent(controller -> packetHandler.getQueryHandler().sendQueryAsync(
+            DefaultChannelManager.INSTANCE.get("Controller").ifPresent(controller -> this.packetHandler.getQueryHandler().sendQueryAsync(
                     controller,
                     new APIPacketOutRequestIngameMessages()
             ).onComplete(packet -> {
@@ -246,18 +246,18 @@ public final class VelocityExecutor extends API implements PlayerAPIExecutor {
     }
 
     public VelocityLauncher getPlugin() {
-        return plugin;
+        return this.plugin;
     }
 
     @Listener
     public void handle(final ProcessUpdatedEvent event) {
-        if (event.getProcessInformation().getProcessDetail().getProcessUniqueID().equals(thisProcessInformation.getProcessDetail().getProcessUniqueID())) {
-            thisProcessInformation = event.getProcessInformation();
+        if (event.getProcessInformation().getProcessDetail().getProcessUniqueID().equals(this.thisProcessInformation.getProcessDetail().getProcessUniqueID())) {
+            this.thisProcessInformation = event.getProcessInformation();
         }
     }
 
     public IngameMessages getMessages() {
-        return messages;
+        return this.messages;
     }
 
     private void setMessages(IngameMessages messages) {
@@ -272,12 +272,12 @@ public final class VelocityExecutor extends API implements PlayerAPIExecutor {
 
     @Override
     public void executeSendMessage(UUID player, String message) {
-        proxyServer.getPlayer(player).ifPresent(player1 -> player1.sendMessage(LegacyComponentSerializer.legacyLinking().deserialize(message)));
+        this.proxyServer.getPlayer(player).ifPresent(player1 -> player1.sendMessage(LegacyComponentSerializer.legacyLinking().deserialize(message)));
     }
 
     @Override
     public void executeKickPlayer(UUID player, String message) {
-        proxyServer.getPlayer(player).ifPresent(player1 -> player1.disconnect(LegacyComponentSerializer.legacyLinking().deserialize(message)));
+        this.proxyServer.getPlayer(player).ifPresent(player1 -> player1.disconnect(LegacyComponentSerializer.legacyLinking().deserialize(message)));
     }
 
     @Override
@@ -287,7 +287,7 @@ public final class VelocityExecutor extends API implements PlayerAPIExecutor {
 
     @Override
     public void executeSendTitle(UUID player, String title, String subTitle, int fadeIn, int stay, int fadeOut) {
-        proxyServer.getPlayer(player).ifPresent(e -> {
+        this.proxyServer.getPlayer(player).ifPresent(e -> {
             Title velocityTitle = Titles.text()
                     .title(LegacyComponentSerializer.legacyLinking().deserialize(title))
                     .subtitle(LegacyComponentSerializer.legacyLinking().deserialize(subTitle))
@@ -311,19 +311,19 @@ public final class VelocityExecutor extends API implements PlayerAPIExecutor {
 
     @Override
     public void executeConnect(UUID player, String server) {
-        proxyServer.getPlayer(player).ifPresent(player1 -> proxyServer.getServer(server).ifPresent(e -> player1.createConnectionRequest(e).fireAndForget()));
+        this.proxyServer.getPlayer(player).ifPresent(player1 -> this.proxyServer.getServer(server).ifPresent(e -> player1.createConnectionRequest(e).fireAndForget()));
     }
 
     @Override
     public void executeConnect(UUID player, ProcessInformation server) {
-        executeConnect(player, server.getProcessDetail().getName());
+        this.executeConnect(player, server.getProcessDetail().getName());
     }
 
     @Override
     public void executeConnect(UUID player, UUID target) {
-        proxyServer.getPlayer(player).ifPresent(player1 -> proxyServer.getPlayer(target).ifPresent(targetPlayer -> {
+        this.proxyServer.getPlayer(player).ifPresent(player1 -> this.proxyServer.getPlayer(target).ifPresent(targetPlayer -> {
             if (targetPlayer.getCurrentServer().isPresent()
-                    && isServerRegistered(targetPlayer.getCurrentServer().get().getServerInfo().getName())) {
+                    && this.isServerRegistered(targetPlayer.getCurrentServer().get().getServerInfo().getName())) {
                 player1.createConnectionRequest(
                         targetPlayer.getCurrentServer().get().getServer()
                 ).fireAndForget();

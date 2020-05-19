@@ -44,15 +44,15 @@ public class SignSubLayout implements SerializableObject {
     }
 
     public String[] getLines() {
-        return lines;
+        return this.lines;
     }
 
     public String getBlock() {
-        return block;
+        return this.block;
     }
 
     public int getSubID() {
-        return subID;
+        return this.subID;
     }
 
     @Override

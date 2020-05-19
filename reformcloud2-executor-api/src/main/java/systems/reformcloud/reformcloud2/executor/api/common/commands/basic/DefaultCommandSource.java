@@ -48,28 +48,28 @@ public final class DefaultCommandSource implements CommandSource {
 
     @Override
     public void sendMessage(@NotNull String message) {
-        result.accept(message);
+        this.result.accept(message);
     }
 
     @Override
     public void sendRawMessage(@NotNull String message) {
-        result.accept(message);
+        this.result.accept(message);
     }
 
     @Override
     public void sendMessages(@NotNull String[] messages) {
-        sendMessage(messages[0]);
+        this.sendMessage(messages[0]);
     }
 
     @Override
     public void sendRawMessages(@NotNull String[] messages) {
-        sendRawMessage(messages[0]);
+        this.sendRawMessage(messages[0]);
     }
 
     @NotNull
     @Override
     public CommandManager commandManager() {
-        return commandManager;
+        return this.commandManager;
     }
 
     @Override

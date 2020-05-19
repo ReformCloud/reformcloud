@@ -38,7 +38,7 @@ public interface MessageSyncAPI {
      * @param jsonConfiguration The content which should get sent
      */
     default void sendChannelMessageSync(@NotNull String receiver, @NotNull JsonConfiguration jsonConfiguration) {
-        sendChannelMessageSync(jsonConfiguration, ErrorReportHandling.NOTHING, receiver);
+        this.sendChannelMessageSync(jsonConfiguration, ErrorReportHandling.NOTHING, receiver);
     }
 
     /**
@@ -48,7 +48,7 @@ public interface MessageSyncAPI {
      * @param receivers         The receivers of the channel message
      */
     default void sendChannelMessageSync(@NotNull JsonConfiguration jsonConfiguration, @NotNull String... receivers) {
-        sendChannelMessageSync(jsonConfiguration, ErrorReportHandling.NOTHING, receivers);
+        this.sendChannelMessageSync(jsonConfiguration, ErrorReportHandling.NOTHING, receivers);
     }
 
     /**
@@ -62,7 +62,7 @@ public interface MessageSyncAPI {
     default void sendChannelMessageSync(@NotNull JsonConfiguration jsonConfiguration,
                                         @NotNull ErrorReportHandling errorReportHandling,
                                         @NotNull String... receivers) {
-        sendChannelMessageSync(jsonConfiguration, "unknown", errorReportHandling, receivers);
+        this.sendChannelMessageSync(jsonConfiguration, "unknown", errorReportHandling, receivers);
     }
 
     /**
@@ -79,7 +79,7 @@ public interface MessageSyncAPI {
             @NotNull String baseChannel,
             @NotNull ErrorReportHandling errorReportHandling,
             @NotNull String... receivers) {
-        sendChannelMessageSync(jsonConfiguration, baseChannel, "unknown", errorReportHandling, receivers);
+        this.sendChannelMessageSync(jsonConfiguration, baseChannel, "unknown", errorReportHandling, receivers);
     }
 
     /**
@@ -107,7 +107,7 @@ public interface MessageSyncAPI {
      * @param receiverTypes The type of receivers which should get the message
      */
     default void sendChannelMessageSync(@NotNull JsonConfiguration configuration, @NotNull ReceiverType... receiverTypes) {
-        sendChannelMessageSync(configuration, "unknown", receiverTypes);
+        this.sendChannelMessageSync(configuration, "unknown", receiverTypes);
     }
 
     /**
@@ -120,7 +120,7 @@ public interface MessageSyncAPI {
     default void sendChannelMessageSync(@NotNull JsonConfiguration configuration,
                                         @NotNull String baseChannel,
                                         @NotNull ReceiverType... receiverTypes) {
-        sendChannelMessageSync(configuration, baseChannel, "unknown", receiverTypes);
+        this.sendChannelMessageSync(configuration, baseChannel, "unknown", receiverTypes);
     }
 
     /**

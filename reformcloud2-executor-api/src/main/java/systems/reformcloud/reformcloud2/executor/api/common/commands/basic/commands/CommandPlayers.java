@@ -90,9 +90,9 @@ public final class CommandPlayers extends GlobalCommand {
             Trio<ProcessInformation, ProcessInformation, Player> trio;
             UUID uniqueID;
             if ((uniqueID = CommonHelper.tryParse(strings[0])) != null) {
-                trio = findPlayer(uniqueID);
+                trio = this.findPlayer(uniqueID);
             } else {
-                trio = findPlayer(strings[0]);
+                trio = this.findPlayer(strings[0]);
             }
 
             if (trio == null) {

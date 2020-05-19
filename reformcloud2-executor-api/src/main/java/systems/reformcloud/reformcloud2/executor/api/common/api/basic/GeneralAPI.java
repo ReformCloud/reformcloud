@@ -51,72 +51,72 @@ public class GeneralAPI implements SyncAPI, AsyncAPI {
     @NotNull
     @Override
     public ProcessAsyncAPI getProcessAsyncAPI() {
-        return externalAPIImplementation;
+        return this.externalAPIImplementation;
     }
 
     @NotNull
     @Override
     public GroupAsyncAPI getGroupAsyncAPI() {
-        return externalAPIImplementation;
+        return this.externalAPIImplementation;
     }
 
     @NotNull
     @Override
     public ConsoleAsyncAPI getConsoleAsyncAPI() {
-        return externalAPIImplementation;
+        return this.externalAPIImplementation;
     }
 
     @NotNull
     @Override
     public PlayerAsyncAPI getPlayerAsyncAPI() {
-        return externalAPIImplementation;
+        return this.externalAPIImplementation;
     }
 
     @NotNull
     @Override
     public DatabaseAsyncAPI getDatabaseAsyncAPI() {
-        return externalAPIImplementation;
+        return this.externalAPIImplementation;
     }
 
     @NotNull
     @Override
     public MessageAsyncAPI getMessageAsyncAPI() {
-        return externalAPIImplementation;
+        return this.externalAPIImplementation;
     }
 
     @NotNull
     @Override
     public ProcessSyncAPI getProcessSyncAPI() {
-        return externalAPIImplementation;
+        return this.externalAPIImplementation;
     }
 
     @NotNull
     @Override
     public GroupSyncAPI getGroupSyncAPI() {
-        return externalAPIImplementation;
+        return this.externalAPIImplementation;
     }
 
     @NotNull
     @Override
     public ConsoleSyncAPI getConsoleSyncAPI() {
-        return externalAPIImplementation;
+        return this.externalAPIImplementation;
     }
 
     @NotNull
     @Override
     public PlayerSyncAPI getPlayerSyncAPI() {
-        return externalAPIImplementation;
+        return this.externalAPIImplementation;
     }
 
     @NotNull
     @Override
     public DatabaseSyncAPI getDatabaseSyncAPI() {
-        return externalAPIImplementation;
+        return this.externalAPIImplementation;
     }
 
     @NotNull
     @Override
     public MessageSyncAPI getMessageSyncAPI() {
-        return externalAPIImplementation;
+        return this.externalAPIImplementation;
     }
 }

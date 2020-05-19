@@ -44,7 +44,7 @@ public class PacketAPIQueryGetProcessGroupsResult extends QueryResultPacket {
     }
 
     public List<ProcessGroup> getProcessGroups() {
-        return processGroups;
+        return this.processGroups;
     }
 
     @Override

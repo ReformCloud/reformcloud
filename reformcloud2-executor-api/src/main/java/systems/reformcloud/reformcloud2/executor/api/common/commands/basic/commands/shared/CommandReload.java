@@ -52,7 +52,7 @@ public final class CommandReload extends GlobalCommand {
     @Override
     public boolean handleCommand(@NotNull CommandSource commandSource, @NotNull String[] strings) {
         try {
-            reloadableRuntime.reload();
+            this.reloadableRuntime.reload();
         } catch (final Exception ex) {
             ex.printStackTrace();
         }

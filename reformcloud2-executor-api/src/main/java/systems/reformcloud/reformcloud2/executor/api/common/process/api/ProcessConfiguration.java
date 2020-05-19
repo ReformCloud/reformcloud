@@ -74,55 +74,55 @@ public class ProcessConfiguration implements SerializableObject {
 
     @NotNull
     public ProcessGroup getBase() {
-        return base;
+        return this.base;
     }
 
     @NotNull
     public UUID getUniqueId() {
-        return uniqueId;
+        return this.uniqueId;
     }
 
     @Nullable
     public String getDisplayName() {
-        return displayName;
+        return this.displayName;
     }
 
     @Nullable
     public Integer getMaxMemory() {
-        return maxMemory;
+        return this.maxMemory;
     }
 
     @Nullable
     public Integer getPort() {
-        return port;
+        return this.port;
     }
 
     @Nullable
     public Template getTemplate() {
-        return template;
+        return this.template;
     }
 
     @NotNull
     public JsonConfiguration getExtra() {
-        return extra;
+        return this.extra;
     }
 
     public int getId() {
-        return id;
+        return this.id;
     }
 
     public int getMaxPlayers() {
-        return maxPlayers;
+        return this.maxPlayers;
     }
 
     @NotNull
     public ProcessState getInitialState() {
-        return initialState;
+        return this.initialState;
     }
 
     @NotNull
     public Collection<ProcessInclusion> getInclusions() {
-        return inclusions;
+        return this.inclusions;
     }
 
     @Override

@@ -48,13 +48,13 @@ public final class DefaultDependencyLoader extends DependencyLoader {
     public void loadDependencies() {
         DependencyParser.getAllDependencies("internal/dependencies.txt", new HashMap<>(), DefaultDependencyLoader.class.getClassLoader()).forEach(e -> {
             System.out.println(String.format(LOADING, e.getArtifactID(), e.getVersion(), e.getRepository().getName()));
-            urls.add(loadDependency(e));
+            this.urls.add(this.loadDependency(e));
         });
     }
 
     @Override
     public void addDependencies() {
-        urls.forEach(this::addDependency);
+        this.urls.forEach(this::addDependency);
     }
 
     @Override

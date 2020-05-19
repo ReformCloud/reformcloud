@@ -78,10 +78,10 @@ public enum Colours {
 
     @Override
     public String toString() {
-        return ansiCode;
+        return this.ansiCode;
     }
 
     public String getName() {
-        return name;
+        return this.name;
     }
 }

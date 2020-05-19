@@ -45,10 +45,10 @@ public class DefaultDumpUtil implements DumpUtil {
 
     @Override
     public void appendCurrentDump(StringBuilder stringBuilder) {
-        bumpMainGroups(stringBuilder);
-        bumpProcessGroups(stringBuilder);
-        bumpStartedProcesses(stringBuilder);
-        bumpNetwork(stringBuilder);
+        this.bumpMainGroups(stringBuilder);
+        this.bumpProcessGroups(stringBuilder);
+        this.bumpStartedProcesses(stringBuilder);
+        this.bumpNetwork(stringBuilder);
     }
 
     private void bumpNetwork(StringBuilder stringBuilder) {
@@ -64,7 +64,7 @@ public class DefaultDumpUtil implements DumpUtil {
                         .append(e.getName())
                         .append("\n")
                         .append("Connected Since: ")
-                        .append(dateFormat.format(e.getConnectionTime()))
+                        .append(this.dateFormat.format(e.getConnectionTime()))
                         .append(" (")
                         .append(connectionTime)
                         .append("ms / ")

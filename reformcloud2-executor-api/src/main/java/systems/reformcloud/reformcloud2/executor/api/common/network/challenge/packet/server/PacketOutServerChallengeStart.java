@@ -49,7 +49,7 @@ public final class PacketOutServerChallengeStart extends Packet {
     }
 
     public byte[] getChallenge() {
-        return challenge;
+        return this.challenge;
     }
 
     @Override

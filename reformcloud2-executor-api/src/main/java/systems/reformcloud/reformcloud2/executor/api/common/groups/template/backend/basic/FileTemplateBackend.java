@@ -44,12 +44,12 @@ public class FileTemplateBackend implements TemplateBackend {
 
     @Override
     public boolean existsTemplate(@NotNull String group, @NotNull String template) {
-        return Files.exists(format(group, template));
+        return Files.exists(this.format(group, template));
     }
 
     @Override
     public void createTemplate(@NotNull String group, @NotNull String template) {
-        if (!existsTemplate(group, template)) {
+        if (!this.existsTemplate(group, template)) {
             SystemHelper.createDirectory(Paths.get("reformcloud/templates", group, template, "plugins"));
         }
     }
@@ -57,19 +57,19 @@ public class FileTemplateBackend implements TemplateBackend {
     @NotNull
     @Override
     public Task<Void> loadTemplate(@NotNull String group, @NotNull String template, @NotNull Path target) {
-        if (!existsTemplate(group, template)) {
-            createTemplate(group, template);
+        if (!this.existsTemplate(group, template)) {
+            this.createTemplate(group, template);
             return Task.completedTask(null);
         }
 
-        SystemHelper.copyDirectory(format(group, template), target);
+        SystemHelper.copyDirectory(this.format(group, template), target);
         return Task.completedTask(null);
     }
 
     @NotNull
     @Override
     public Task<Void> loadGlobalTemplates(@NotNull ProcessGroup group, @NotNull Path target) {
-        Streams.allOf(group.getTemplates(), Template::isGlobal).forEach(e -> loadTemplate(group.getName(), e.getName(), target));
+        Streams.allOf(group.getTemplates(), Template::isGlobal).forEach(e -> this.loadTemplate(group.getName(), e.getName(), target));
         return Task.completedTask(null);
     }
 
@@ -91,18 +91,18 @@ public class FileTemplateBackend implements TemplateBackend {
 
     @Override
     public void deployTemplate(@NotNull String group, @NotNull String template, @NotNull Path current, @NotNull Collection<String> collection) {
-        if (existsTemplate(group, template)) {
-            SystemHelper.copyDirectory(current, format(group, template), collection);
+        if (this.existsTemplate(group, template)) {
+            SystemHelper.copyDirectory(current, this.format(group, template), collection);
         }
     }
 
     @Override
     public void deleteTemplate(@NotNull String group, @NotNull String template) {
-        if (!existsTemplate(group, template)) {
+        if (!this.existsTemplate(group, template)) {
             return;
         }
 
-        SystemHelper.deleteDirectory(format(group, template));
+        SystemHelper.deleteDirectory(this.format(group, template));
     }
 
     @NotNull

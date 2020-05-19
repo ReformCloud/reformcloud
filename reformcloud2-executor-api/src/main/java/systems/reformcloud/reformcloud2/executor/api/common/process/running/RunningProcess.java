@@ -132,7 +132,7 @@ public interface RunningProcess {
      */
     @NotNull
     default String[] getShutdownCommands() {
-        Collection<String> commands = getProcessInformation().getProcessDetail().getTemplate().getRuntimeConfiguration().getShutdownCommands();
+        Collection<String> commands = this.getProcessInformation().getProcessDetail().getTemplate().getRuntimeConfiguration().getShutdownCommands();
         commands.addAll(Arrays.asList("stop", "end"));
         return commands.stream().map(e -> e + "\n").toArray(String[]::new);
     }

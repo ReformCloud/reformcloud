@@ -52,10 +52,10 @@ public final class DefaultNetworkServer implements NetworkServer {
 
     @Override
     public void bind(@NotNull String host, int port, @NotNull Supplier<NetworkChannelReader> readerHelper, @NotNull ChallengeAuthHandler challengeAuthHandler) {
-        if (!channelFutures.containsKey(port)) {
+        if (!this.channelFutures.containsKey(port)) {
             new ServerBootstrap()
-                    .channel(channelClass)
-                    .group(boss, worker)
+                    .channel(this.channelClass)
+                    .group(this.boss, this.worker)
 
                     .childOption(ChannelOption.SO_REUSEADDR, true)
                     .childOption(ChannelOption.SO_KEEPALIVE, true)
@@ -87,8 +87,8 @@ public final class DefaultNetworkServer implements NetworkServer {
 
     @Override
     public void closeAll() {
-        channelFutures.forEach((integer, channelFuture) -> channelFuture.cancel(true));
-        channelFutures.clear();
+        this.channelFutures.forEach((integer, channelFuture) -> channelFuture.cancel(true));
+        this.channelFutures.clear();
 
         this.worker.shutdownGracefully();
         this.boss.shutdownGracefully();

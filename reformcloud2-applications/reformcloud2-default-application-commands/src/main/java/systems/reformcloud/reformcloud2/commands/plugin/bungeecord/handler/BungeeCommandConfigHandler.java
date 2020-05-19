@@ -60,12 +60,12 @@ public class BungeeCommandConfigHandler extends CommandConfigHandler {
     @Override
     public void unregisterAllCommands() {
         if (this.leave != null) {
-            ProxyServer.getInstance().getPluginManager().unregisterCommand(leave);
+            ProxyServer.getInstance().getPluginManager().unregisterCommand(this.leave);
             this.leave = null;
         }
 
         if (this.reformCloud != null) {
-            ProxyServer.getInstance().getPluginManager().unregisterCommand(reformCloud);
+            ProxyServer.getInstance().getPluginManager().unregisterCommand(this.reformCloud);
             this.reformCloud = null;
         }
     }

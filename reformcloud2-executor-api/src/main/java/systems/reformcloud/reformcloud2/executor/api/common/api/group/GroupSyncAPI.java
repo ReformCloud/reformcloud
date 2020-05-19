@@ -207,7 +207,7 @@ public interface GroupSyncAPI {
      * @param action The consumer which will handle all process groups
      */
     default void forEachProcessGroups(@NotNull Consumer<ProcessGroup> action) {
-        getProcessGroups().forEach(action);
+        this.getProcessGroups().forEach(action);
     }
 
     /**
@@ -216,6 +216,6 @@ public interface GroupSyncAPI {
      * @param action The consumer which will handle all main groups
      */
     default void forEachMainGroups(@NotNull Consumer<MainGroup> action) {
-        getMainGroups().forEach(action);
+        this.getMainGroups().forEach(action);
     }
 }

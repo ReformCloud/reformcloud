@@ -57,7 +57,7 @@ public class ProcessAPIImplementation implements ProcessSyncAPI, ProcessAsyncAPI
     @Override
     public Task<ProcessInformation> startProcessAsync(@NotNull ProcessConfiguration configuration) {
         Task<ProcessInformation> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> task.complete(nodeNetworkManager.prepareProcess(configuration, true)));
+        Task.EXECUTOR.execute(() -> task.complete(this.nodeNetworkManager.prepareProcess(configuration, true)));
         return task;
     }
 
@@ -65,7 +65,7 @@ public class ProcessAPIImplementation implements ProcessSyncAPI, ProcessAsyncAPI
     @Override
     public Task<ProcessInformation> startProcessAsync(@NotNull ProcessInformation processInformation) {
         Task<ProcessInformation> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> task.complete(nodeNetworkManager.startProcess(processInformation)));
+        Task.EXECUTOR.execute(() -> task.complete(this.nodeNetworkManager.startProcess(processInformation)));
         return task;
     }
 
@@ -73,7 +73,7 @@ public class ProcessAPIImplementation implements ProcessSyncAPI, ProcessAsyncAPI
     @Override
     public Task<ProcessInformation> prepareProcessAsync(@NotNull ProcessConfiguration configuration) {
         Task<ProcessInformation> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> task.complete(nodeNetworkManager.prepareProcess(configuration, false)));
+        Task.EXECUTOR.execute(() -> task.complete(this.nodeNetworkManager.prepareProcess(configuration, false)));
         return task;
     }
 
@@ -82,13 +82,13 @@ public class ProcessAPIImplementation implements ProcessSyncAPI, ProcessAsyncAPI
     public Task<ProcessInformation> stopProcessAsync(@NotNull String name) {
         Task<ProcessInformation> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
-            ProcessInformation old = nodeNetworkManager.getNodeProcessHelper().getClusterProcess(name);
+            ProcessInformation old = this.nodeNetworkManager.getNodeProcessHelper().getClusterProcess(name);
             if (old == null) {
                 task.complete(null);
                 return;
             }
 
-            nodeNetworkManager.stopProcess(old.getProcessDetail().getName());
+            this.nodeNetworkManager.stopProcess(old.getProcessDetail().getName());
             task.complete(old);
         });
         return task;
@@ -99,13 +99,13 @@ public class ProcessAPIImplementation implements ProcessSyncAPI, ProcessAsyncAPI
     public Task<ProcessInformation> stopProcessAsync(@NotNull UUID uniqueID) {
         Task<ProcessInformation> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
-            ProcessInformation old = nodeNetworkManager.getNodeProcessHelper().getClusterProcess(uniqueID);
+            ProcessInformation old = this.nodeNetworkManager.getNodeProcessHelper().getClusterProcess(uniqueID);
             if (old == null) {
                 task.complete(null);
                 return;
             }
 
-            nodeNetworkManager.stopProcess(old.getProcessDetail().getProcessUniqueID());
+            this.nodeNetworkManager.stopProcess(old.getProcessDetail().getProcessUniqueID());
             task.complete(old);
         });
         return task;
@@ -269,7 +269,7 @@ public class ProcessAPIImplementation implements ProcessSyncAPI, ProcessAsyncAPI
     @Override
     public Task<ProcessInformation> getProcessAsync(@NotNull String name) {
         Task<ProcessInformation> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> task.complete(nodeNetworkManager.getNodeProcessHelper().getClusterProcess(name)));
+        Task.EXECUTOR.execute(() -> task.complete(this.nodeNetworkManager.getNodeProcessHelper().getClusterProcess(name)));
         return task;
     }
 
@@ -277,7 +277,7 @@ public class ProcessAPIImplementation implements ProcessSyncAPI, ProcessAsyncAPI
     @Override
     public Task<ProcessInformation> getProcessAsync(@NotNull UUID uniqueID) {
         Task<ProcessInformation> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> task.complete(nodeNetworkManager.getNodeProcessHelper().getClusterProcess(uniqueID)));
+        Task.EXECUTOR.execute(() -> task.complete(this.nodeNetworkManager.getNodeProcessHelper().getClusterProcess(uniqueID)));
         return task;
     }
 
@@ -285,7 +285,7 @@ public class ProcessAPIImplementation implements ProcessSyncAPI, ProcessAsyncAPI
     @Override
     public Task<List<ProcessInformation>> getAllProcessesAsync() {
         Task<List<ProcessInformation>> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> task.complete(Streams.newList(nodeNetworkManager.getNodeProcessHelper().getClusterProcesses())));
+        Task.EXECUTOR.execute(() -> task.complete(Streams.newList(this.nodeNetworkManager.getNodeProcessHelper().getClusterProcesses())));
         return task;
     }
 
@@ -293,7 +293,7 @@ public class ProcessAPIImplementation implements ProcessSyncAPI, ProcessAsyncAPI
     @Override
     public Task<List<ProcessInformation>> getProcessesAsync(@NotNull String group) {
         Task<List<ProcessInformation>> task = new DefaultTask<>();
-        Task.EXECUTOR.execute(() -> task.complete(Streams.newList(nodeNetworkManager.getNodeProcessHelper().getClusterProcesses(group))));
+        Task.EXECUTOR.execute(() -> task.complete(Streams.newList(this.nodeNetworkManager.getNodeProcessHelper().getClusterProcesses(group))));
         return task;
     }
 
@@ -344,12 +344,12 @@ public class ProcessAPIImplementation implements ProcessSyncAPI, ProcessAsyncAPI
 
     @Override
     public ProcessInformation stopProcess(@NotNull String name) {
-        return stopProcessAsync(name).getUninterruptedly();
+        return this.stopProcessAsync(name).getUninterruptedly();
     }
 
     @Override
     public ProcessInformation stopProcess(@NotNull UUID uniqueID) {
-        return stopProcessAsync(uniqueID).getUninterruptedly();
+        return this.stopProcessAsync(uniqueID).getUninterruptedly();
     }
 
     @Override
@@ -394,18 +394,18 @@ public class ProcessAPIImplementation implements ProcessSyncAPI, ProcessAsyncAPI
 
     @Override
     public ProcessInformation getProcess(@NotNull String name) {
-        return getProcessAsync(name).getUninterruptedly();
+        return this.getProcessAsync(name).getUninterruptedly();
     }
 
     @Override
     public ProcessInformation getProcess(@NotNull UUID uniqueID) {
-        return getProcessAsync(uniqueID).getUninterruptedly();
+        return this.getProcessAsync(uniqueID).getUninterruptedly();
     }
 
     @NotNull
     @Override
     public List<ProcessInformation> getAllProcesses() {
-        List<ProcessInformation> list = getAllProcessesAsync().getUninterruptedly();
+        List<ProcessInformation> list = this.getAllProcessesAsync().getUninterruptedly();
         Conditions.nonNull(list);
         return list;
     }
@@ -413,14 +413,14 @@ public class ProcessAPIImplementation implements ProcessSyncAPI, ProcessAsyncAPI
     @NotNull
     @Override
     public List<ProcessInformation> getProcesses(@NotNull String group) {
-        List<ProcessInformation> information = getProcessesAsync(group).getUninterruptedly();
+        List<ProcessInformation> information = this.getProcessesAsync(group).getUninterruptedly();
         Conditions.nonNull(information);
         return information;
     }
 
     @Override
     public void executeProcessCommand(@NotNull String name, @NotNull String commandLine) {
-        executeProcessCommandAsync(name, commandLine).awaitUninterruptedly();
+        this.executeProcessCommandAsync(name, commandLine).awaitUninterruptedly();
     }
 
     @Override
