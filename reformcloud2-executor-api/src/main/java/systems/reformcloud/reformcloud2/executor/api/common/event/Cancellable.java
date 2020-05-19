@@ -22,29 +22,22 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.bungee.event;
+package systems.reformcloud.reformcloud2.executor.api.common.event;
 
-import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.bungee.BungeeExecutor;
-import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.ProcessStartedEvent;
-import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.ProcessStoppedEvent;
-import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.ProcessUpdatedEvent;
-import systems.reformcloud.reformcloud2.executor.api.common.event.handler.Listener;
+/**
+ * Indicates that a user is able to cancel a specific event
+ */
+public interface Cancellable {
 
-public final class ProcessEventHandler {
+    /**
+     * @return If the current will get cancelled
+     */
+    boolean isCancelled();
 
-    @Listener
-    public void handleStart(final @NotNull ProcessStartedEvent event) {
-        BungeeExecutor.registerServer(event.getProcessInformation());
-    }
-
-    @Listener
-    public void handleUpdate(final @NotNull ProcessUpdatedEvent event) {
-        BungeeExecutor.registerServer(event.getProcessInformation());
-    }
-
-    @Listener
-    public void handleRemove(final @NotNull ProcessStoppedEvent event) {
-        BungeeExecutor.unregisterServer(event.getProcessInformation());
-    }
+    /**
+     * Sets if the event will get cancelled or not
+     *
+     * @param cancelled If the event should get cancelled
+     */
+    void setCancelled(boolean cancelled);
 }

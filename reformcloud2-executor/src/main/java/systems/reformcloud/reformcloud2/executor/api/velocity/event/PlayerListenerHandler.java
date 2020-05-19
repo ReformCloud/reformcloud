@@ -32,22 +32,24 @@ import com.velocitypowered.api.event.connection.LoginEvent;
 import com.velocitypowered.api.event.connection.PostLoginEvent;
 import com.velocitypowered.api.event.player.KickedFromServerEvent;
 import com.velocitypowered.api.event.player.ServerPreConnectEvent;
-import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 import net.kyori.text.serializer.legacy.LegacyComponentSerializer;
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.api.API;
 import systems.reformcloud.reformcloud2.executor.api.common.CommonHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.PlayerAccessConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Duo;
 import systems.reformcloud.reformcloud2.executor.api.network.packets.out.APIBungeePacketOutPlayerServerSwitch;
 import systems.reformcloud.reformcloud2.executor.api.network.packets.out.APIPacketOutLogoutPlayer;
 import systems.reformcloud.reformcloud2.executor.api.network.packets.out.APIPacketOutPlayerLoggedIn;
+import systems.reformcloud.reformcloud2.executor.api.shared.SharedJoinAllowChecker;
+import systems.reformcloud.reformcloud2.executor.api.shared.SharedPlayerFallbackFilter;
 import systems.reformcloud.reformcloud2.executor.api.velocity.VelocityExecutor;
+import systems.reformcloud.reformcloud2.executor.api.velocity.fallback.VelocityFallbackExtraFilter;
 
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -55,25 +57,32 @@ import java.util.concurrent.TimeUnit;
 public final class PlayerListenerHandler {
 
     @Subscribe(order = PostOrder.FIRST)
-    public void handle(final ServerPreConnectEvent event) {
-        final Player player = event.getPlayer();
-        if (!player.getCurrentServer().isPresent()) {
-            ProcessInformation lobby = VelocityExecutor.getBestLobbyForPlayer(
-                    API.getInstance().getCurrentProcessInformation(),
-                    player::hasPermission,
+    public void handle(final @NotNull ServerPreConnectEvent event) {
+        if (!event.getPlayer().getCurrentServer().isPresent()) {
+            SharedPlayerFallbackFilter.filterFallback(
+                    event.getPlayer().getUniqueId(),
+                    VelocityExecutor.getInstance().getCachedLobbyServices(),
+                    event.getPlayer()::hasPermission,
+                    VelocityFallbackExtraFilter.INSTANCE,
                     null
-            );
-            if (lobby != null) {
-                Optional<RegisteredServer> server = VelocityExecutor.getInstance().getProxyServer().getServer(lobby.getProcessDetail().getName());
+            ).ifPresent(processInformation -> {
+                Optional<RegisteredServer> server = VelocityExecutor.getInstance().getProxyServer().getServer(processInformation.getProcessDetail().getName());
                 if (!server.isPresent()) {
-                    event.setResult(ServerPreConnectEvent.ServerResult.denied());
+                    System.out.println("Unable to find reg server");
+                    event.getPlayer().disconnect(LegacyComponentSerializer.legacyLinking().deserialize(VelocityExecutor.getInstance().getMessages().format(
+                            VelocityExecutor.getInstance().getMessages().getNoHubServerAvailable()
+                    )));
                     return;
                 }
 
+                System.out.println("redirect");
                 event.setResult(ServerPreConnectEvent.ServerResult.allowed(server.get()));
-            } else {
-                event.setResult(ServerPreConnectEvent.ServerResult.denied());
-            }
+            }).ifEmpty(v -> {
+                System.out.println("nop");
+                event.getPlayer().disconnect(LegacyComponentSerializer.legacyLinking().deserialize(VelocityExecutor.getInstance().getMessages().format(
+                        VelocityExecutor.getInstance().getMessages().getNoHubServerAvailable()
+                )));
+            });
         }
 
         if (event.getResult().getServer().isPresent()) {
@@ -82,87 +91,59 @@ public final class PlayerListenerHandler {
                     event.getPlayer().getCurrentServer().isPresent() ? event.getPlayer().getCurrentServer().get().getServerInfo().getName() : null,
                     event.getResult().getServer().get().getServerInfo().getName()
             )));
-            AbsoluteThread.sleep(20);
         }
     }
 
     @Subscribe(order = PostOrder.FIRST)
-    public void handle(final LoginEvent event) {
+    public void handle(final @NotNull LoginEvent event) {
         PacketSender sender = DefaultChannelManager.INSTANCE.get("Controller").orElse(null);
         if (sender == null) {
-            event.setResult(ResultedEvent.ComponentResult.denied(LegacyComponentSerializer.legacyLinking().deserialize("§4§lThe current proxy is not connected to the controller")));
+            event.setResult(ResultedEvent.ComponentResult.denied(LegacyComponentSerializer.legacyLinking().deserialize(VelocityExecutor.getInstance().getMessages().format(
+                    VelocityExecutor.getInstance().getMessages().getProcessNotReadyToAcceptPlayersMessage()
+            ))));
+            return;
+        }
+
+        Duo<Boolean, String> checked = SharedJoinAllowChecker.checkIfConnectAllowed(
+                event.getPlayer()::hasPermission,
+                VelocityExecutor.getInstance().getMessages(),
+                event.getPlayer().getUniqueId(),
+                event.getPlayer().getUsername()
+        );
+        if (!checked.getFirst() && checked.getSecond() != null) {
+            event.setResult(ResultedEvent.ComponentResult.denied(LegacyComponentSerializer.legacyLinking().deserialize(checked.getSecond())));
         }
     }
 
     @Subscribe
     public void handle(final PostLoginEvent event) {
-        final Player player = event.getPlayer();
-        final ProcessInformation current = API.getInstance().getCurrentProcessInformation();
-        final PlayerAccessConfiguration configuration = current.getProcessGroup().getPlayerAccessConfiguration();
-
-        if (configuration.isUseCloudPlayerLimit()
-                && current.getProcessDetail().getMaxPlayers() < current.getProcessPlayerManager().getOnlineCount() + 1
-                && !player.hasPermission(configuration.getFullJoinPermission())) {
-            player.disconnect(LegacyComponentSerializer.legacyLinking().deserialize("§4§lThe proxy is full"));
-            return;
-        }
-
-        if (configuration.isJoinOnlyPerPermission() && !player.hasPermission(configuration.getJoinPermission())) {
-            player.disconnect(LegacyComponentSerializer.legacyLinking().deserialize("§4§lYou do not have permission to enter this proxy"));
-            return;
-        }
-
-        if (configuration.isMaintenance() && !player.hasPermission(configuration.getMaintenanceJoinPermission())) {
-            player.disconnect(LegacyComponentSerializer.legacyLinking().deserialize("§4§lThis proxy is currently in maintenance"));
-            return;
-        }
-
-        if (current.getProcessDetail().getProcessState().equals(ProcessState.FULL) && !player.hasPermission(configuration.getFullJoinPermission())) {
-            player.disconnect(LegacyComponentSerializer.legacyLinking().deserialize("§4§lYou are not allowed to join this server in the current state"));
-            return;
-        }
-
-        if (!current.getProcessPlayerManager().onLogin(event.getPlayer().getUniqueId(), event.getPlayer().getUsername())) {
-            player.disconnect(LegacyComponentSerializer.legacyLinking().deserialize("§4§lYou are not allowed to join this proxy"));
-            return;
-        }
-
-        if (VelocityExecutor.getInstance().getProxyServer().getPlayerCount() >= current.getProcessDetail().getMaxPlayers()
-                && !current.getProcessDetail().getProcessState().equals(ProcessState.FULL)
-                && !current.getProcessDetail().getProcessState().equals(ProcessState.INVISIBLE)) {
-            current.getProcessDetail().setProcessState(ProcessState.FULL);
-        }
-
-        current.updateRuntimeInformation();
-        VelocityExecutor.getInstance().setThisProcessInformation(current); //Update it directly on the current host to prevent issues
-        ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(current);
-
-        CommonHelper.EXECUTOR.execute(() -> DefaultChannelManager.INSTANCE.get("Controller").ifPresent(packetSender -> packetSender.sendPacket(new APIPacketOutPlayerLoggedIn(event.getPlayer().getUsername()))));
+        CommonHelper.EXECUTOR.execute(() -> DefaultChannelManager.INSTANCE
+                .get("Controller")
+                .ifPresent(packetSender -> packetSender.sendPacket(new APIPacketOutPlayerLoggedIn(event.getPlayer().getUsername())))
+        );
     }
 
     @Subscribe(order = PostOrder.FIRST)
-    public void handle(final KickedFromServerEvent event) {
-        Player player = event.getPlayer();
-        ProcessInformation lobby = VelocityExecutor.getBestLobbyForPlayer(
-                API.getInstance().getCurrentProcessInformation(),
-                player::hasPermission,
-                event.getServer().getServerInfo().getName()
-        );
-        if (lobby != null) {
-            Optional<RegisteredServer> server = VelocityExecutor.getInstance().getProxyServer().getServer(lobby.getProcessDetail().getName());
+    public void handle(final @NotNull KickedFromServerEvent event) {
+        SharedPlayerFallbackFilter.filterFallback(
+                event.getPlayer().getUniqueId(),
+                VelocityExecutor.getInstance().getCachedLobbyServices(),
+                event.getPlayer()::hasPermission,
+                VelocityFallbackExtraFilter.INSTANCE,
+                event.getPlayer().getCurrentServer().map(e -> e.getServerInfo().getName()).orElse(null)
+        ).ifPresent(processInformation -> {
+            Optional<RegisteredServer> server = VelocityExecutor.getInstance().getProxyServer().getServer(processInformation.getProcessDetail().getName());
             if (!server.isPresent()) {
-                event.setResult(KickedFromServerEvent.DisconnectPlayer.create(LegacyComponentSerializer.legacyLinking().deserialize(VelocityExecutor.getInstance().getMessages().format(
-                        VelocityExecutor.getInstance().getMessages().getNoHubServerAvailable()
-                ))));
+                event.setResult(KickedFromServerEvent.DisconnectPlayer.create(LegacyComponentSerializer.legacyLinking().deserialize(
+                        VelocityExecutor.getInstance().getMessages().format(VelocityExecutor.getInstance().getMessages().getNoHubServerAvailable())
+                )));
                 return;
             }
 
             event.setResult(KickedFromServerEvent.RedirectPlayer.create(server.get()));
-            return;
-        }
-
-        event.setResult(KickedFromServerEvent.DisconnectPlayer.create(LegacyComponentSerializer.legacyLinking().deserialize(VelocityExecutor.getInstance().getMessages().format(
-                VelocityExecutor.getInstance().getMessages().getNoHubServerAvailable()
+            event.getOriginalReason().ifPresent(event.getPlayer()::sendMessage);
+        }).ifEmpty(v -> event.setResult(KickedFromServerEvent.DisconnectPlayer.create(LegacyComponentSerializer.legacyLinking().deserialize(
+                VelocityExecutor.getInstance().getMessages().format(VelocityExecutor.getInstance().getMessages().getNoHubServerAvailable())
         ))));
     }
 
@@ -174,20 +155,18 @@ public final class PlayerListenerHandler {
                 event.getPlayer().getCurrentServer().isPresent() ? event.getPlayer().getCurrentServer().get().getServerInfo().getName() : null
         )));
 
-        VelocityExecutor.getInstance().getProxyServer().getScheduler()
-                .buildTask(VelocityExecutor.getInstance().getPlugin(), () -> {
-                    ProcessInformation current = API.getInstance().getCurrentProcessInformation();
-                    if (VelocityExecutor.getInstance().getProxyServer().getPlayerCount() < current.getProcessDetail().getMaxPlayers()
-                            && !current.getProcessDetail().getProcessState().equals(ProcessState.READY)
-                            && !current.getProcessDetail().getProcessState().equals(ProcessState.INVISIBLE)) {
-                        current.getProcessDetail().setProcessState(ProcessState.READY);
-                    }
+        VelocityExecutor.getInstance().getProxyServer().getScheduler().buildTask(VelocityExecutor.getInstance().getPlugin(), () -> {
+            ProcessInformation current = API.getInstance().getCurrentProcessInformation();
+            if (VelocityExecutor.getInstance().getProxyServer().getPlayerCount() < current.getProcessDetail().getMaxPlayers()
+                    && !current.getProcessDetail().getProcessState().equals(ProcessState.READY)
+                    && !current.getProcessDetail().getProcessState().equals(ProcessState.INVISIBLE)) {
+                current.getProcessDetail().setProcessState(ProcessState.READY);
+            }
 
-                    current.updateRuntimeInformation();
-                    current.getProcessPlayerManager().onLogout(event.getPlayer().getUniqueId());
-                    VelocityExecutor.getInstance().setThisProcessInformation(current);
-                    ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(current);
-                }).delay(20, TimeUnit.MILLISECONDS).schedule();
+            current.updateRuntimeInformation();
+            current.getProcessPlayerManager().onLogout(event.getPlayer().getUniqueId());
+            ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(current);
+        }).delay(20, TimeUnit.MILLISECONDS).schedule();
     }
 
     /* todo: wait until velocity 1.1.0 is published. The chat event is not fired when the player types in a command

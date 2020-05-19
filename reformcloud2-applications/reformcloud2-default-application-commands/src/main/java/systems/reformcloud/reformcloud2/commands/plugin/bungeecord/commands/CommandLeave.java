@@ -27,18 +27,19 @@ package systems.reformcloud.reformcloud2.commands.plugin.bungeecord.commands;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
-import systems.reformcloud.reformcloud2.executor.api.api.API;
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.bungee.BungeeExecutor;
-import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
+import systems.reformcloud.reformcloud2.executor.api.bungee.fallback.BungeeFallbackExtraFilter;
+import systems.reformcloud.reformcloud2.executor.api.shared.SharedPlayerFallbackFilter;
 
 import java.util.List;
 
 public class CommandLeave extends Command {
 
-    public CommandLeave(String name, List<String> aliases) {
+    public CommandLeave(@NotNull String name, @NotNull List<String> aliases) {
         super(name, null, aliases.toArray(new String[0]));
     }
 
@@ -49,35 +50,40 @@ public class CommandLeave extends Command {
         }
 
         final ProxiedPlayer proxiedPlayer = (ProxiedPlayer) commandSender;
-        ProcessInformation process = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcess(proxiedPlayer.getServer().getInfo().getName());
-        if (process == null || process.isLobby()) {
-            proxiedPlayer.sendMessage(TextComponent.fromLegacyText(
-                    BungeeExecutor.getInstance().getMessages().format(
-                            BungeeExecutor.getInstance().getMessages().getAlreadyConnectedToHub()
-                    )
-            ));
+        if (proxiedPlayer.getServer() == null) {
             return;
         }
 
-        ProcessInformation lobby = BungeeExecutor.getBestLobbyForPlayer(
-                API.getInstance().getCurrentProcessInformation(),
+        if (BungeeExecutor.getInstance().getCachedLobbyServices().stream().anyMatch(
+                e -> e.getProcessDetail().getName().equals(proxiedPlayer.getServer().getInfo().getName()))
+        ) {
+            proxiedPlayer.sendMessage(TextComponent.fromLegacyText(BungeeExecutor.getInstance().getMessages().format(
+                    BungeeExecutor.getInstance().getMessages().getAlreadyConnectedToHub()
+            )));
+            return;
+        }
+
+        SharedPlayerFallbackFilter.filterFallback(
+                proxiedPlayer.getUniqueId(),
+                BungeeExecutor.getInstance().getCachedLobbyServices(),
                 proxiedPlayer::hasPermission,
-                null
-        );
-        if (lobby != null) {
-            proxiedPlayer.sendMessage(TextComponent.fromLegacyText(
-                    BungeeExecutor.getInstance().getMessages().format(
-                            BungeeExecutor.getInstance().getMessages().getConnectingToHub(), lobby.getProcessDetail().getName()
-                    )
-            ));
-            proxiedPlayer.connect(ProxyServer.getInstance().getServerInfo(lobby.getProcessDetail().getName()));
-            return;
-        }
-
-        proxiedPlayer.sendMessage(TextComponent.fromLegacyText(
-                BungeeExecutor.getInstance().getMessages().format(
+                BungeeFallbackExtraFilter.INSTANCE,
+                proxiedPlayer.getServer().getInfo().getName()
+        ).ifPresent(processInformation -> {
+            ServerInfo serverInfo = ProxyServer.getInstance().getServerInfo(processInformation.getProcessDetail().getName());
+            if (serverInfo == null) {
+                proxiedPlayer.sendMessage(TextComponent.fromLegacyText(BungeeExecutor.getInstance().getMessages().format(
                         BungeeExecutor.getInstance().getMessages().getNoHubServerAvailable()
-                )
-        ));
+                )));
+                return;
+            }
+
+            proxiedPlayer.sendMessage(TextComponent.fromLegacyText(BungeeExecutor.getInstance().getMessages().format(
+                    BungeeExecutor.getInstance().getMessages().getConnectingToHub(), processInformation.getProcessDetail().getName()
+            )));
+            proxiedPlayer.connect(serverInfo);
+        }).ifEmpty(v -> proxiedPlayer.sendMessage(TextComponent.fromLegacyText(BungeeExecutor.getInstance().getMessages().format(
+                BungeeExecutor.getInstance().getMessages().getNoHubServerAvailable()
+        ))));
     }
 }

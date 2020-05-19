@@ -28,51 +28,29 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.LoginEvent;
 import net.md_5.bungee.api.event.PermissionCheckEvent;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
-import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.permissions.PermissionManagement;
-import systems.reformcloud.reformcloud2.permissions.nodes.NodeGroup;
 import systems.reformcloud.reformcloud2.permissions.objects.user.PermissionUser;
 
 public class BungeeCordPermissionListener implements Listener {
 
     @EventHandler
-    public void handle(final LoginEvent event) {
+    public void handle(final @NotNull LoginEvent event) {
         // Push user into name to unique ID DB
         PermissionManagement.getInstance().loadUser(event.getConnection().getUniqueId(), event.getConnection().getName());
+        PermissionManagement.getInstance().assignDefaultGroups(event.getConnection().getUniqueId());
     }
 
     @EventHandler
-    public void handle(final PostLoginEvent event) {
-        final PermissionUser permissionUser = PermissionManagement.getInstance().loadUser(event.getPlayer().getUniqueId());
-        Task.EXECUTOR.execute(() -> {
-            PermissionManagement.getInstance().getDefaultGroups().forEach(e -> {
-                if (Streams.filterToReference(permissionUser.getGroups(), g -> g.getGroupName().equals(e.getName())).isPresent()) {
-                    return;
-                }
-
-                permissionUser.getGroups().add(new NodeGroup(
-                        System.currentTimeMillis(),
-                        -1,
-                        e.getName()
-                ));
-            });
-
-            PermissionManagement.getInstance().updateUser(permissionUser);
-        });
-    }
-
-    @EventHandler
-    public void handle(final PermissionCheckEvent event) {
+    public void handle(final @NotNull PermissionCheckEvent event) {
         if (!(event.getSender() instanceof ProxiedPlayer)) {
             return;
         }
 
-        final ProxiedPlayer player = (ProxiedPlayer) event.getSender();
-        final PermissionUser permissionUser = PermissionManagement.getInstance().loadUser(player.getUniqueId());
+        ProxiedPlayer player = (ProxiedPlayer) event.getSender();
+        PermissionUser permissionUser = PermissionManagement.getInstance().loadUser(player.getUniqueId());
         event.setHasPermission(permissionUser.hasPermission(event.getPermission()));
     }
 

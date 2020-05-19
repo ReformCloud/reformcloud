@@ -31,7 +31,6 @@ import com.velocitypowered.api.util.title.Title;
 import com.velocitypowered.api.util.title.Titles;
 import net.kyori.text.serializer.legacy.LegacyComponentSerializer;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.APIConstants;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorType;
 import systems.reformcloud.reformcloud2.executor.api.api.API;
@@ -43,8 +42,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.event.EventManager;
 import systems.reformcloud.reformcloud2.executor.api.common.event.basic.DefaultEventManager;
 import systems.reformcloud.reformcloud2.executor.api.common.event.handler.Listener;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.messages.IngameMessages;
-import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Version;
-import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.PlayerAccessConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.network.challenge.shared.ClientChallengeAuthHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
@@ -70,19 +67,18 @@ import systems.reformcloud.reformcloud2.executor.api.velocity.event.PlayerListen
 import systems.reformcloud.reformcloud2.executor.api.velocity.event.ProcessEventHandler;
 
 import java.io.File;
-import java.util.*;
-import java.util.function.Function;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public final class VelocityExecutor extends API implements PlayerAPIExecutor {
 
-    private static final List<ProcessInformation> LOBBY_SERVERS = new ArrayList<>();
-
     private static VelocityExecutor instance;
 
+    private final List<ProcessInformation> cachedLobbyServices = new CopyOnWriteArrayList<>();
     private final ProxyServer proxyServer;
-
     private final PacketHandler packetHandler = new DefaultPacketHandler();
-
     private final NetworkClient networkClient = new DefaultNetworkClient();
     private final VelocityLauncher plugin;
     private IngameMessages messages = new IngameMessages();
@@ -140,70 +136,6 @@ public final class VelocityExecutor extends API implements PlayerAPIExecutor {
         return instance;
     }
 
-    public static ProcessInformation getBestLobbyForPlayer(ProcessInformation current, Function<String, Boolean> permissionCheck,
-                                                           @Nullable String excluded) {
-        final List<ProcessInformation> lobbies = new ArrayList<>(LOBBY_SERVERS);
-
-        // Filter all non java servers if this is a java proxy else all mcpe servers
-        Streams.others(lobbies, e -> {
-            Version version = e.getProcessDetail().getTemplate().getVersion();
-            if (version.equals(Version.NUKKIT_X) && current.getProcessDetail().getTemplate().getVersion().equals(Version.WATERDOG_PE)) {
-                return true;
-            }
-
-            return version.getId() == 1 && current.getProcessDetail().getTemplate().getVersion().getId() == 2;
-        }).forEach(lobbies::remove);
-
-        // Filter out all lobbies with join permission which the player does not have
-        Streams.others(lobbies, e -> {
-            final PlayerAccessConfiguration configuration = e.getProcessGroup().getPlayerAccessConfiguration();
-            if (!configuration.isJoinOnlyPerPermission()) {
-                return true;
-            }
-
-            return permissionCheck.apply(configuration.getJoinPermission());
-        }).forEach(lobbies::remove);
-
-        // Filter out all lobbies which are in maintenance and not joinable for the player
-        Streams.others(lobbies, e -> {
-            final PlayerAccessConfiguration configuration = e.getProcessGroup().getPlayerAccessConfiguration();
-            if (!configuration.isMaintenance()) {
-                return true;
-            }
-
-            return permissionCheck.apply(configuration.getMaintenanceJoinPermission());
-        }).forEach(lobbies::remove);
-
-        // Filter out all full server which the player cannot access
-        Streams.others(lobbies, e -> {
-            final PlayerAccessConfiguration configuration = e.getProcessGroup().getPlayerAccessConfiguration();
-            if (!configuration.isUseCloudPlayerLimit()) {
-                return true;
-            }
-
-            if (e.getProcessPlayerManager().getOnlineCount() < e.getProcessDetail().getMaxPlayers()) {
-                return true;
-            }
-
-            return permissionCheck.apply("reformcloud.join.full");
-        }).forEach(lobbies::remove);
-
-        // Filter out all excluded servers
-        if (excluded != null) {
-            Streams.allOf(lobbies, e -> e.getProcessDetail().getName().equals(excluded)).forEach(lobbies::remove);
-        }
-
-        if (lobbies.isEmpty()) {
-            return null;
-        }
-
-        if (lobbies.size() == 1) {
-            return lobbies.get(0);
-        }
-
-        return lobbies.get(new Random().nextInt(lobbies.size()));
-    }
-
     NetworkClient getNetworkClient() {
         return networkClient;
     }
@@ -229,8 +161,23 @@ public final class VelocityExecutor extends API implements PlayerAPIExecutor {
         return this.thisProcessInformation;
     }
 
-    public void handleProcessUpdate(ProcessInformation processInformation) {
+    @NotNull
+    public List<ProcessInformation> getCachedLobbyServices() {
+        return cachedLobbyServices;
+    }
+
+    public void handleProcessUpdate(@NotNull ProcessInformation processInformation) {
         Optional<RegisteredServer> server = this.proxyServer.getServer(processInformation.getProcessDetail().getName());
+        if (processInformation.isLobby()) {
+            Streams.filterToReference(
+                    this.cachedLobbyServices,
+                    e -> e.getProcessDetail().getProcessUniqueID().equals(processInformation.getProcessDetail().getProcessUniqueID())
+            ).ifPresent(info -> {
+                this.cachedLobbyServices.remove(info);
+                this.cachedLobbyServices.add(processInformation);
+            }).ifEmpty(v -> this.cachedLobbyServices.add(processInformation));
+        }
+
         if (server.isPresent()) {
             if (server.get().getServerInfo().getAddress().getPort() == processInformation.getNetworkInfo().getPort()) {
                 return;
@@ -245,18 +192,15 @@ public final class VelocityExecutor extends API implements PlayerAPIExecutor {
                     processInformation.getNetworkInfo().toInet()
             );
             proxyServer.registerServer(serverInfo);
-            if (processInformation.isLobby()) {
-                LOBBY_SERVERS.add(processInformation);
-            }
         }
     }
 
-    public void handleProcessRemove(ProcessInformation processInformation) {
+    public void handleProcessRemove(@NotNull ProcessInformation processInformation) {
         proxyServer.getServer(processInformation.getProcessDetail().getName())
                 .ifPresent(registeredServer -> proxyServer.unregisterServer(registeredServer.getServerInfo()));
 
         if (processInformation.isLobby()) {
-            LOBBY_SERVERS.remove(processInformation);
+            this.cachedLobbyServices.removeIf(e -> e.getProcessDetail().getProcessUniqueID().equals(processInformation.getProcessDetail().getProcessUniqueID()));
         }
     }
 

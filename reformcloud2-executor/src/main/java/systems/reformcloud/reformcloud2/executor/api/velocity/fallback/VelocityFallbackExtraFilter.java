@@ -22,29 +22,21 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.bungee.event;
+package systems.reformcloud.reformcloud2.executor.api.velocity.fallback;
 
-import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.bungee.BungeeExecutor;
-import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.ProcessStartedEvent;
-import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.ProcessStoppedEvent;
-import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.ProcessUpdatedEvent;
-import systems.reformcloud.reformcloud2.executor.api.common.event.handler.Listener;
+import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 
-public final class ProcessEventHandler {
+import java.util.function.Predicate;
 
-    @Listener
-    public void handleStart(final @NotNull ProcessStartedEvent event) {
-        BungeeExecutor.registerServer(event.getProcessInformation());
+public final class VelocityFallbackExtraFilter implements Predicate<ProcessInformation> {
+
+    public static final VelocityFallbackExtraFilter INSTANCE = new VelocityFallbackExtraFilter();
+
+    private VelocityFallbackExtraFilter() {
     }
 
-    @Listener
-    public void handleUpdate(final @NotNull ProcessUpdatedEvent event) {
-        BungeeExecutor.registerServer(event.getProcessInformation());
-    }
-
-    @Listener
-    public void handleRemove(final @NotNull ProcessStoppedEvent event) {
-        BungeeExecutor.unregisterServer(event.getProcessInformation());
+    @Override
+    public boolean test(ProcessInformation processInformation) {
+        return processInformation.getProcessDetail().getTemplate().getVersion().getId() == 1;
     }
 }

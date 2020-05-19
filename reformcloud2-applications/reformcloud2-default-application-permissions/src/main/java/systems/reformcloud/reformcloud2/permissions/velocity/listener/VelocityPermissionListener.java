@@ -27,49 +27,26 @@ package systems.reformcloud.reformcloud2.permissions.velocity.listener;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.DisconnectEvent;
 import com.velocitypowered.api.event.connection.LoginEvent;
-import com.velocitypowered.api.event.connection.PostLoginEvent;
 import com.velocitypowered.api.event.permission.PermissionsSetupEvent;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.permissions.PermissionManagement;
-import systems.reformcloud.reformcloud2.permissions.nodes.NodeGroup;
-import systems.reformcloud.reformcloud2.permissions.objects.user.PermissionUser;
 import systems.reformcloud.reformcloud2.permissions.velocity.permission.DefaultPermissionProvider;
 
 public class VelocityPermissionListener {
 
     @Subscribe
-    public void handle(final LoginEvent event) {
+    public void handle(final @NotNull LoginEvent event) {
         PermissionManagement.getInstance().loadUser(event.getPlayer().getUniqueId(), event.getPlayer().getUsername());
+        PermissionManagement.getInstance().assignDefaultGroups(event.getPlayer().getUniqueId());
     }
 
     @Subscribe
-    public void handle(final PostLoginEvent event) {
-        final PermissionUser permissionUser = PermissionManagement.getInstance().loadUser(event.getPlayer().getUniqueId());
-        Task.EXECUTOR.execute(() -> {
-            PermissionManagement.getInstance().getDefaultGroups().forEach(e -> {
-                if (Streams.filterToReference(permissionUser.getGroups(), g -> g.getGroupName().equals(e.getName())).isPresent()) {
-                    return;
-                }
-
-                permissionUser.getGroups().add(new NodeGroup(
-                        System.currentTimeMillis(),
-                        -1,
-                        e.getName()
-                ));
-            });
-
-            PermissionManagement.getInstance().updateUser(permissionUser);
-        });
-    }
-
-    @Subscribe
-    public void handle(final PermissionsSetupEvent event) {
+    public void handle(final @NotNull PermissionsSetupEvent event) {
         event.setProvider(DefaultPermissionProvider.INSTANCE);
     }
 
     @Subscribe
-    public void handle(final DisconnectEvent event) {
+    public void handle(final @NotNull DisconnectEvent event) {
         PermissionManagement.getInstance().handleDisconnect(event.getPlayer().getUniqueId());
     }
 }

@@ -49,7 +49,7 @@ public final class IngameMessages implements SerializableObject {
     private String processEnterPermissionNotSet = "§4§lYou do not have permission to join this process";
     private String processInMaintenanceMessage = "§4§lThis process is currently in maintenance";
     private String alreadyConnectedMessage = "§4§lYou are not allowed to join this process";
-    private String notUsingInternalProxy = "§4§lTo connect to this server please use an internal proxy server";
+    private String processNotReadyToAcceptPlayersMessage = "§4§lThis process is not ready to accept connections";
 
     public IngameMessages() {
     }
@@ -58,7 +58,7 @@ public final class IngameMessages implements SerializableObject {
                           String processStopped, String noHubServerAvailable, String alreadyConnectedToHub,
                           String connectingToHub, String currentProcessClosed, String commandExecuteSuccess,
                           String processFullMessage, String processEnterPermissionNotSet, String processInMaintenanceMessage,
-                          String alreadyConnectedMessage, String notUsingInternalProxy) {
+                          String alreadyConnectedMessage) {
         this.prefix = prefix;
         this.processRegistered = processRegistered;
         this.processStarted = processStarted;
@@ -73,7 +73,6 @@ public final class IngameMessages implements SerializableObject {
         this.processEnterPermissionNotSet = processEnterPermissionNotSet;
         this.processInMaintenanceMessage = processInMaintenanceMessage;
         this.alreadyConnectedMessage = alreadyConnectedMessage;
-        this.notUsingInternalProxy = notUsingInternalProxy;
     }
 
     public String getPrefix() {
@@ -132,8 +131,8 @@ public final class IngameMessages implements SerializableObject {
         return commandExecuteSuccess;
     }
 
-    public String getNotUsingInternalProxy() {
-        return notUsingInternalProxy;
+    public String getProcessNotReadyToAcceptPlayersMessage() {
+        return processNotReadyToAcceptPlayersMessage;
     }
 
     @NotNull
@@ -158,7 +157,7 @@ public final class IngameMessages implements SerializableObject {
         buffer.writeString(this.processEnterPermissionNotSet);
         buffer.writeString(this.processInMaintenanceMessage);
         buffer.writeString(this.alreadyConnectedMessage);
-        buffer.writeString(this.notUsingInternalProxy);
+        buffer.writeString(this.processNotReadyToAcceptPlayersMessage);
     }
 
     @Override
@@ -177,6 +176,6 @@ public final class IngameMessages implements SerializableObject {
         this.processEnterPermissionNotSet = buffer.readString();
         this.processInMaintenanceMessage = buffer.readString();
         this.alreadyConnectedMessage = buffer.readString();
-        this.notUsingInternalProxy = buffer.readString();
+        this.processNotReadyToAcceptPlayersMessage = buffer.readString();
     }
 }

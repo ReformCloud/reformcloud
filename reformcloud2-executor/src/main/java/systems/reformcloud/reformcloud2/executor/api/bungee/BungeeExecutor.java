@@ -46,7 +46,6 @@ import systems.reformcloud.reformcloud2.executor.api.common.event.basic.DefaultE
 import systems.reformcloud.reformcloud2.executor.api.common.event.handler.Listener;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.messages.IngameMessages;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Version;
-import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.PlayerAccessConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.network.challenge.shared.ClientChallengeAuthHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
@@ -74,20 +73,16 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.function.Function;
 
 public final class BungeeExecutor extends API implements PlayerAPIExecutor {
-
-    public static final List<ProcessInformation> LOBBY_SERVERS = new CopyOnWriteArrayList<>();
 
     private static BungeeExecutor instance;
     private static boolean waterdog;
     private static boolean waterdogPE;
+    private final List<ProcessInformation> cachedLobbyServices = new CopyOnWriteArrayList<>();
     private final PacketHandler packetHandler = new DefaultPacketHandler();
     private final NetworkClient networkClient = new DefaultNetworkClient();
     private final Plugin plugin;
@@ -151,12 +146,26 @@ public final class BungeeExecutor extends API implements PlayerAPIExecutor {
         return instance;
     }
 
+    public List<ProcessInformation> getCachedLobbyServices() {
+        return cachedLobbyServices;
+    }
+
     static void clearHandlers() {
         ProxyServer.getInstance().getConfig().getListeners().forEach(listenerInfo -> listenerInfo.getServerPriority().clear());
         ProxyServer.getInstance().getConfig().getServers().clear();
     }
 
     public static void registerServer(@NotNull ProcessInformation processInformation) {
+        if (processInformation.isLobby()) {
+            Streams.filterToReference(
+                    BungeeExecutor.getInstance().getCachedLobbyServices(),
+                    e -> e.getProcessDetail().getProcessUniqueID().equals(processInformation.getProcessDetail().getProcessUniqueID())
+            ).ifPresent(info -> {
+                BungeeExecutor.getInstance().getCachedLobbyServices().remove(info);
+                BungeeExecutor.getInstance().getCachedLobbyServices().add(processInformation);
+            }).ifEmpty(v -> BungeeExecutor.getInstance().getCachedLobbyServices().add(processInformation));
+        }
+
         ServerInfo oldInfo = ProxyServer.getInstance().getServerInfo(processInformation.getProcessDetail().getName());
         if (oldInfo != null) {
             if (!(oldInfo.getSocketAddress() instanceof InetSocketAddress)) {
@@ -178,20 +187,13 @@ public final class BungeeExecutor extends API implements PlayerAPIExecutor {
             }
 
             ProxyServer.getInstance().getServers().put(processInformation.getProcessDetail().getName(), serverInfo);
-            if (processInformation.isLobby()) {
-                LOBBY_SERVERS.add(processInformation);
-                ProxyServer.getInstance().getConfig().getListeners().forEach(listenerInfo -> listenerInfo.getServerPriority().add(processInformation.getProcessDetail().getName()));
-            }
         }
     }
 
     public static void unregisterServer(ProcessInformation processInformation) {
         ProxyServer.getInstance().getServers().remove(processInformation.getProcessDetail().getName());
         if (processInformation.isLobby()) {
-            BungeeExecutor.LOBBY_SERVERS.remove(processInformation);
-            ProxyServer.getInstance().getConfig().getListeners().forEach(
-                    listenerInfo -> listenerInfo.getServerPriority().remove(processInformation.getProcessDetail().getName())
-            );
+            BungeeExecutor.getInstance().getCachedLobbyServices().removeIf(e -> e.getProcessDetail().getProcessUniqueID().equals(processInformation.getProcessDetail().getProcessUniqueID()));
         }
     }
 
@@ -224,74 +226,6 @@ public final class BungeeExecutor extends API implements PlayerAPIExecutor {
                 processInformation.getProcessDetail().getName(),
                 processInformation.getNetworkInfo().toInet(),
                 "ReformCloud2", false);
-    }
-
-    @Nullable
-    public static ProcessInformation getBestLobbyForPlayer(@NotNull ProcessInformation current,
-                                                           @NotNull Function<String, Boolean> permissionCheck,
-                                                           @Nullable String excluded) {
-        final List<ProcessInformation> lobbies = new ArrayList<>(LOBBY_SERVERS);
-
-        // Filter all non java servers if this is a java proxy else all mcpe servers
-        Streams.others(lobbies, e -> {
-            Version version = e.getProcessDetail().getTemplate().getVersion();
-            if (version.equals(Version.NUKKIT_X) && current.getProcessDetail().getTemplate().getVersion().equals(Version.WATERDOG_PE)) {
-                return true;
-            }
-
-            return version.getId() == 1 && current.getProcessDetail().getTemplate().getVersion().getId() == 2;
-        }).forEach(lobbies::remove);
-
-        // Filter out all lobbies with join permission which the player does not
-        // have
-        Streams.others(lobbies, e -> {
-            final PlayerAccessConfiguration configuration = e.getProcessGroup().getPlayerAccessConfiguration();
-            if (!configuration.isJoinOnlyPerPermission()) {
-                return true;
-            }
-
-            return permissionCheck.apply(configuration.getJoinPermission());
-        }).forEach(lobbies::remove);
-
-        // Filter out all lobbies which are in maintenance and not joinable for the
-        // player
-        Streams.others(lobbies, e -> {
-            final PlayerAccessConfiguration configuration = e.getProcessGroup().getPlayerAccessConfiguration();
-            if (!configuration.isMaintenance()) {
-                return true;
-            }
-
-            return permissionCheck.apply(configuration.getMaintenanceJoinPermission());
-        }).forEach(lobbies::remove);
-
-        // Filter out all full server which the player cannot access
-        Streams.others(lobbies, e -> {
-            final PlayerAccessConfiguration configuration = e.getProcessGroup().getPlayerAccessConfiguration();
-            if (!configuration.isUseCloudPlayerLimit()) {
-                return true;
-            }
-
-            if (e.getProcessPlayerManager().getOnlineCount() < e.getProcessDetail().getMaxPlayers()) {
-                return true;
-            }
-
-            return permissionCheck.apply("reformcloud.join.full");
-        }).forEach(lobbies::remove);
-
-        // Filter out all excluded servers
-        if (excluded != null) {
-            Streams.allOf(lobbies, e -> e.getProcessDetail().getName().equals(excluded)).forEach(lobbies::remove);
-        }
-
-        if (lobbies.isEmpty()) {
-            return null;
-        }
-
-        if (lobbies.size() == 1) {
-            return lobbies.get(0);
-        }
-
-        return lobbies.get(new Random().nextInt(lobbies.size()));
     }
 
     // ===============

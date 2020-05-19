@@ -28,21 +28,22 @@ import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.ReconnectHandler;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
-import systems.reformcloud.reformcloud2.executor.api.api.API;
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.bungee.BungeeExecutor;
-import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
+import systems.reformcloud.reformcloud2.executor.api.bungee.fallback.BungeeFallbackExtraFilter;
+import systems.reformcloud.reformcloud2.executor.api.shared.SharedPlayerFallbackFilter;
 
 public class ReformCloudReconnectHandler implements ReconnectHandler {
 
     @Override
-    public ServerInfo getServer(ProxiedPlayer proxiedPlayer) {
-        ProcessInformation information = BungeeExecutor.getBestLobbyForPlayer(
-                API.getInstance().getCurrentProcessInformation(),
+    public ServerInfo getServer(@NotNull ProxiedPlayer proxiedPlayer) {
+        return SharedPlayerFallbackFilter.filterFallback(
+                proxiedPlayer.getUniqueId(),
+                BungeeExecutor.getInstance().getCachedLobbyServices(),
                 proxiedPlayer::hasPermission,
-                null
-        );
-
-        return information == null ? null : ProxyServer.getInstance().getServerInfo(information.getProcessDetail().getName());
+                BungeeFallbackExtraFilter.INSTANCE,
+                proxiedPlayer.getServer() == null ? null : proxiedPlayer.getServer().getInfo().getName()
+        ).map(info -> ProxyServer.getInstance().getServerInfo(info.getProcessDetail().getName())).orNothing();
     }
 
     @Override

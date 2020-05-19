@@ -26,7 +26,6 @@ package systems.reformcloud.reformcloud2.permissions.nukkit.listeners;
 
 import cn.nukkit.Player;
 import cn.nukkit.event.EventHandler;
-import cn.nukkit.event.EventPriority;
 import cn.nukkit.event.Listener;
 import cn.nukkit.event.player.PlayerLoginEvent;
 import cn.nukkit.event.player.PlayerQuitEvent;
@@ -37,7 +36,7 @@ import java.lang.reflect.Field;
 
 public class NukkitPermissionListener implements Listener {
 
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler
     public void handle(final PlayerLoginEvent event) {
         try {
             Field field = Player.class.getDeclaredField("perm");

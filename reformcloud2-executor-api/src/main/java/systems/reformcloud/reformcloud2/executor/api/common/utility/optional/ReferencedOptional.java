@@ -42,27 +42,24 @@ public final class ReferencedOptional<T> implements Serializable {
 
     private static final long serialVersionUID = 2358039311687874123L;
 
-    // =======================
+    private static final ReferencedOptional<?> EMPTY = new ReferencedOptional<>();
+
     private final AtomicReference<T> reference = new AtomicReference<>();
 
     @NotNull
+    @SuppressWarnings("unchecked")
     public static <T> ReferencedOptional<T> empty() {
-        return new ReferencedOptional<>();
+        return (ReferencedOptional<T>) EMPTY;
     }
-
-    // =======================
 
     @NotNull
     public static <T> ReferencedOptional<T> build(@Nullable T value) {
-        return new ReferencedOptional<T>().update(value);
+        return value == null ? empty() : new ReferencedOptional<T>().update(value);
     }
 
     @NotNull
     public ReferencedOptional<T> update(@Nullable T newValue) {
-        if (newValue != null) {
-            reference.set(newValue);
-        }
-
+        reference.set(newValue);
         return this;
     }
 
@@ -71,6 +68,7 @@ public final class ReferencedOptional<T> implements Serializable {
         return orElse(null);
     }
 
+    @NotNull
     public ReferencedOptional<T> ifPresent(@NotNull Consumer<T> consumer) {
         T value = reference.get();
         if (value != null) {
@@ -80,6 +78,7 @@ public final class ReferencedOptional<T> implements Serializable {
         return this;
     }
 
+    @NotNull
     public ReferencedOptional<T> ifEmpty(@NotNull Consumer<Void> consumer) {
         if (isEmpty()) {
             consumer.accept(null);
@@ -118,14 +117,19 @@ public final class ReferencedOptional<T> implements Serializable {
     }
 
     public boolean isPresent() {
-        return get() != null;
+        return reference.get() != null;
     }
 
     public boolean isEmpty() {
-        return get() == null;
+        return reference.get() == null;
     }
 
+    @NotNull
     public T get() {
+        if (isEmpty()) {
+            throw new IllegalStateException("Reference is not present");
+        }
+
         return reference.get();
     }
 }
