@@ -221,7 +221,14 @@ public final class VelocityExecutor extends API implements PlayerAPIExecutor {
                 AbsoluteThread.sleep(100);
             }
 
-            this.getAllProcesses().forEach(this::handleProcessUpdate);
+            this.getAllProcesses().forEach(process -> {
+                if (!process.getProcessDetail().getTemplate().isServer()) {
+                    this.cachedProxyServices.add(process);
+                    return;
+                }
+
+                this.handleProcessUpdate(process);
+            });
 
             this.thisProcessInformation.updateMaxPlayers(this.proxyServer.getConfiguration().getShowMaxPlayers());
             this.thisProcessInformation.updateRuntimeInformation();

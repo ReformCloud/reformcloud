@@ -197,6 +197,7 @@ public final class BungeeExecutor extends API implements PlayerAPIExecutor {
 
     public static void unregisterServer(ProcessInformation processInformation) {
         ProxyServer.getInstance().getServers().remove(processInformation.getProcessDetail().getName());
+        BungeeExecutor.getInstance().getCachedProxyServices().removeIf(e -> e.equals(processInformation));
         if (processInformation.isLobby()) {
             BungeeExecutor.getInstance().getCachedLobbyServices().removeIf(e -> e.getProcessDetail().getProcessUniqueID().equals(processInformation.getProcessDetail().getProcessUniqueID()));
         }
@@ -269,7 +270,14 @@ public final class BungeeExecutor extends API implements PlayerAPIExecutor {
                 AbsoluteThread.sleep(20);
             }
 
-            this.getAllProcesses().forEach(BungeeExecutor::registerServer);
+            this.getAllProcesses().forEach(process -> {
+                if (!process.getProcessDetail().getTemplate().isServer()) {
+                    this.cachedProxyServices.add(process);
+                    return;
+                }
+
+                BungeeExecutor.registerServer(process);
+            });
             ProxyServer.getInstance().getPluginManager().registerListener(this.plugin, new PlayerListenerHandler());
 
             this.thisProcessInformation.updateMaxPlayers(ProxyServer.getInstance().getConfig().getPlayerLimit());

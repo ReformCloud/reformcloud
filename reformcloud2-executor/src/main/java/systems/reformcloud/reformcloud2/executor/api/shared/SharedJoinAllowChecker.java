@@ -55,25 +55,25 @@ public final class SharedJoinAllowChecker {
 
         if (checkedConnectedServices != null
                 && checkedConnectedServices.stream().anyMatch(e -> e.getProcessPlayerManager().isPlayerOnlineOnCurrentProcess(playerUniqueId))) {
-            return new Duo<>(false, messages.getAlreadyConnectedToNetwork());
+            return new Duo<>(false, messages.format(messages.getAlreadyConnectedToNetwork()));
         }
 
         if (configuration.isUseCloudPlayerLimit()
                 && current.getProcessDetail().getMaxPlayers() < current.getProcessPlayerManager().getOnlineCount() + 1
                 && !permissionChecker.apply(configuration.getFullJoinPermission())) {
-            return new Duo<>(false, messages.getProcessFullMessage());
+            return new Duo<>(false, messages.format(messages.getProcessFullMessage()));
         }
 
         if (configuration.isJoinOnlyPerPermission() && !permissionChecker.apply(configuration.getJoinPermission())) {
-            return new Duo<>(false, messages.getProcessEnterPermissionNotSet());
+            return new Duo<>(false, messages.format(messages.getProcessEnterPermissionNotSet()));
         }
 
         if (configuration.isMaintenance() && !permissionChecker.apply(configuration.getMaintenanceJoinPermission())) {
-            return new Duo<>(false, messages.getProcessInMaintenanceMessage());
+            return new Duo<>(false, messages.format(messages.getProcessInMaintenanceMessage()));
         }
 
         if (!current.getProcessPlayerManager().onLogin(playerUniqueId, username)) {
-            return new Duo<>(false, messages.getAlreadyConnectedMessage());
+            return new Duo<>(false, messages.format(messages.getAlreadyConnectedMessage()));
         }
 
         if (configuration.isUseCloudPlayerLimit()
