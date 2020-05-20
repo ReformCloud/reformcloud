@@ -107,6 +107,7 @@ public final class PlayerListenerHandler {
         Duo<Boolean, String> checked = SharedJoinAllowChecker.checkIfConnectAllowed(
                 event.getPlayer()::hasPermission,
                 VelocityExecutor.getInstance().getMessages(),
+                VelocityExecutor.getInstance().getCachedProxyServices(),
                 event.getPlayer().getUniqueId(),
                 event.getPlayer().getUsername()
         );

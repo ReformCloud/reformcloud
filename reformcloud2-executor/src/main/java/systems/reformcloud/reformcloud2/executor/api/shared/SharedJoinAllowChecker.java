@@ -25,6 +25,7 @@
 package systems.reformcloud.reformcloud2.executor.api.shared;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.api.API;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.messages.IngameMessages;
@@ -33,6 +34,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInfor
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Duo;
 
+import java.util.Collection;
 import java.util.UUID;
 import java.util.function.Function;
 
@@ -45,10 +47,16 @@ public final class SharedJoinAllowChecker {
     @NotNull
     public static Duo<Boolean, String> checkIfConnectAllowed(@NotNull Function<String, Boolean> permissionChecker,
                                                              @NotNull IngameMessages messages,
+                                                             @Nullable Collection<ProcessInformation> checkedConnectedServices,
                                                              @NotNull UUID playerUniqueId,
                                                              @NotNull String username) {
         ProcessInformation current = API.getInstance().getCurrentProcessInformation();
         PlayerAccessConfiguration configuration = current.getProcessGroup().getPlayerAccessConfiguration();
+
+        if (checkedConnectedServices != null
+                && checkedConnectedServices.stream().anyMatch(e -> e.getProcessPlayerManager().isPlayerOnlineOnCurrentProcess(playerUniqueId))) {
+            return new Duo<>(false, messages.getAlreadyConnectedToNetwork());
+        }
 
         if (configuration.isUseCloudPlayerLimit()
                 && current.getProcessDetail().getMaxPlayers() < current.getProcessPlayerManager().getOnlineCount() + 1

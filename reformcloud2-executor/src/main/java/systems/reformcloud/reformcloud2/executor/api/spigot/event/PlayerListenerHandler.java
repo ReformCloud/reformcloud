@@ -57,6 +57,7 @@ public final class PlayerListenerHandler implements Listener {
         Duo<Boolean, String> checked = SharedJoinAllowChecker.checkIfConnectAllowed(
                 event.getPlayer()::hasPermission,
                 SpigotExecutor.getInstance().getMessages(),
+                null,
                 event.getPlayer().getUniqueId(),
                 event.getPlayer().getName()
         );

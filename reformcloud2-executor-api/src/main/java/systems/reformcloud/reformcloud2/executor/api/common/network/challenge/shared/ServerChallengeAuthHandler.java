@@ -60,7 +60,7 @@ public class ServerChallengeAuthHandler implements ChallengeAuthHandler {
             byte[] challenge = this.provider.createChallenge(name);
             if (challenge == null) {
                 channelHandlerContext.channel().close().syncUninterruptibly();
-                throw new RuntimeException("Unexpected issue while generating challenge for sender " + name);
+                throw new RuntimeException("DO NOT REPORT THIS TO RC: Issue while generating challenge for sender: " + name);
             }
 
             channelHandlerContext.channel().writeAndFlush(new PacketOutServerChallengeStart(this.name.apply(name), challenge)).syncUninterruptibly();

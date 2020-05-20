@@ -77,6 +77,7 @@ public final class VelocityExecutor extends API implements PlayerAPIExecutor {
     private static VelocityExecutor instance;
 
     private final List<ProcessInformation> cachedLobbyServices = new CopyOnWriteArrayList<>();
+    private final List<ProcessInformation> cachedProxyServices = new CopyOnWriteArrayList<>();
     private final ProxyServer proxyServer;
     private final PacketHandler packetHandler = new DefaultPacketHandler();
     private final NetworkClient networkClient = new DefaultNetworkClient();
@@ -166,6 +167,10 @@ public final class VelocityExecutor extends API implements PlayerAPIExecutor {
         return this.cachedLobbyServices;
     }
 
+    public List<ProcessInformation> getCachedProxyServices() {
+        return this.cachedProxyServices;
+    }
+
     public void handleProcessUpdate(@NotNull ProcessInformation processInformation) {
         Optional<RegisteredServer> server = this.proxyServer.getServer(processInformation.getProcessDetail().getName());
         if (processInformation.isLobby()) {
@@ -253,6 +258,11 @@ public final class VelocityExecutor extends API implements PlayerAPIExecutor {
     public void handle(final ProcessUpdatedEvent event) {
         if (event.getProcessInformation().getProcessDetail().getProcessUniqueID().equals(this.thisProcessInformation.getProcessDetail().getProcessUniqueID())) {
             this.thisProcessInformation = event.getProcessInformation();
+        }
+
+        if (!event.getProcessInformation().getProcessDetail().getTemplate().isServer()) {
+            this.cachedProxyServices.removeIf(e -> e.equals(event.getProcessInformation()));
+            this.cachedProxyServices.add(event.getProcessInformation());
         }
     }
 

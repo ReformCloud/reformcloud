@@ -96,6 +96,7 @@ public final class PlayerListenerHandler implements Listener {
         Duo<Boolean, String> checked = SharedJoinAllowChecker.checkIfConnectAllowed(
                 perm -> new EmptyProxiedPlayer(event.getConnection()).hasPermission(perm),
                 BungeeExecutor.getInstance().getMessages(),
+                BungeeExecutor.getInstance().getCachedProxyServices(),
                 event.getConnection().getUniqueId(),
                 event.getConnection().getName()
         );

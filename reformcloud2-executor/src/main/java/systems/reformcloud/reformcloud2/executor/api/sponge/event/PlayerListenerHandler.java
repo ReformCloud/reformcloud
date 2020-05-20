@@ -58,6 +58,7 @@ public final class PlayerListenerHandler {
         Duo<Boolean, String> checked = SharedJoinAllowChecker.checkIfConnectAllowed(
                 event.getTargetUser()::hasPermission,
                 SpongeExecutor.getInstance().getMessages(),
+                null,
                 event.getTargetUser().getUniqueId(),
                 event.getTargetUser().getName()
         );

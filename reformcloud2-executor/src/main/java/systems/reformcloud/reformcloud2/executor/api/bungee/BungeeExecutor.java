@@ -83,6 +83,7 @@ public final class BungeeExecutor extends API implements PlayerAPIExecutor {
     private static boolean waterdog;
     private static boolean waterdogPE;
     private final List<ProcessInformation> cachedLobbyServices = new CopyOnWriteArrayList<>();
+    private final List<ProcessInformation> cachedProxyServices = new CopyOnWriteArrayList<>();
     private final PacketHandler packetHandler = new DefaultPacketHandler();
     private final NetworkClient networkClient = new DefaultNetworkClient();
     private final Plugin plugin;
@@ -148,6 +149,10 @@ public final class BungeeExecutor extends API implements PlayerAPIExecutor {
 
     public List<ProcessInformation> getCachedLobbyServices() {
         return this.cachedLobbyServices;
+    }
+
+    public List<ProcessInformation> getCachedProxyServices() {
+        return this.cachedProxyServices;
     }
 
     static void clearHandlers() {
@@ -225,7 +230,9 @@ public final class BungeeExecutor extends API implements PlayerAPIExecutor {
         return ProxyServer.getInstance().constructServerInfo(
                 processInformation.getProcessDetail().getName(),
                 processInformation.getNetworkInfo().toInet(),
-                "ReformCloud2", false);
+                "ReformCloud2",
+                false
+        );
     }
 
     // ===============
@@ -292,10 +299,6 @@ public final class BungeeExecutor extends API implements PlayerAPIExecutor {
         );
     }
 
-    public void setThisProcessInformation(ProcessInformation thisProcessInformation) {
-        this.thisProcessInformation = thisProcessInformation;
-    }
-
     public IngameMessages getMessages() {
         return this.messages;
     }
@@ -308,6 +311,11 @@ public final class BungeeExecutor extends API implements PlayerAPIExecutor {
     public void handle(final ProcessUpdatedEvent event) {
         if (event.getProcessInformation().getProcessDetail().getProcessUniqueID().equals(this.thisProcessInformation.getProcessDetail().getProcessUniqueID())) {
             this.thisProcessInformation = event.getProcessInformation();
+        }
+
+        if (!event.getProcessInformation().getProcessDetail().getTemplate().isServer()) {
+            this.cachedProxyServices.removeIf(e -> e.equals(event.getProcessInformation()));
+            this.cachedProxyServices.add(event.getProcessInformation());
         }
     }
 

@@ -209,7 +209,7 @@ public final class RunnerReformScriptInterpreter implements ReformScriptInterpre
             }
 
             if (!line.startsWith(TASK_LINE_START)) {
-                throw new IllegalArgumentException("Unexpected line " + line);
+                throw new IllegalArgumentException("Invalid task line " + line + "(expected \"" + TASK_LINE_START + "\")");
             }
 
             task.add(line.replaceFirst(TASK_LINE_START, ""));

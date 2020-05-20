@@ -50,15 +50,14 @@ public final class IngameMessages implements SerializableObject {
     private String processInMaintenanceMessage = "§4§lThis process is currently in maintenance";
     private String alreadyConnectedMessage = "§4§lYou are not allowed to join this process";
     private String processNotReadyToAcceptPlayersMessage = "§4§lThis process is not ready to accept connections";
+    private String alreadyConnectedToNetwork = "§cYou are already on the network";
 
     public IngameMessages() {
     }
 
-    public IngameMessages(String prefix, String processRegistered, String processStarted, String processConnected,
-                          String processStopped, String noHubServerAvailable, String alreadyConnectedToHub,
-                          String connectingToHub, String currentProcessClosed, String commandExecuteSuccess,
-                          String processFullMessage, String processEnterPermissionNotSet, String processInMaintenanceMessage,
-                          String alreadyConnectedMessage) {
+    public IngameMessages(String prefix, String processRegistered, String processStarted, String processConnected, String processStopped, String noHubServerAvailable,
+                          String alreadyConnectedToHub, String connectingToHub, String currentProcessClosed, String commandExecuteSuccess, String processFullMessage,
+                          String processEnterPermissionNotSet, String processInMaintenanceMessage, String alreadyConnectedMessage, String processNotReadyToAcceptPlayersMessage, String alreadyConnectedToNetwork) {
         this.prefix = prefix;
         this.processRegistered = processRegistered;
         this.processStarted = processStarted;
@@ -73,6 +72,8 @@ public final class IngameMessages implements SerializableObject {
         this.processEnterPermissionNotSet = processEnterPermissionNotSet;
         this.processInMaintenanceMessage = processInMaintenanceMessage;
         this.alreadyConnectedMessage = alreadyConnectedMessage;
+        this.processNotReadyToAcceptPlayersMessage = processNotReadyToAcceptPlayersMessage;
+        this.alreadyConnectedToNetwork = alreadyConnectedToNetwork;
     }
 
     public String getPrefix() {
@@ -135,6 +136,10 @@ public final class IngameMessages implements SerializableObject {
         return this.processNotReadyToAcceptPlayersMessage;
     }
 
+    public String getAlreadyConnectedToNetwork() {
+        return this.alreadyConnectedToNetwork;
+    }
+
     @NotNull
     public String format(@NotNull String message, @NotNull Object... replacements) {
         message = message.replace("%prefix%", this.prefix).replace("&", "§");
@@ -158,6 +163,7 @@ public final class IngameMessages implements SerializableObject {
         buffer.writeString(this.processInMaintenanceMessage);
         buffer.writeString(this.alreadyConnectedMessage);
         buffer.writeString(this.processNotReadyToAcceptPlayersMessage);
+        buffer.writeString(this.alreadyConnectedToNetwork);
     }
 
     @Override
@@ -177,5 +183,6 @@ public final class IngameMessages implements SerializableObject {
         this.processInMaintenanceMessage = buffer.readString();
         this.alreadyConnectedMessage = buffer.readString();
         this.processNotReadyToAcceptPlayersMessage = buffer.readString();
+        this.alreadyConnectedToNetwork = buffer.readString();
     }
 }
