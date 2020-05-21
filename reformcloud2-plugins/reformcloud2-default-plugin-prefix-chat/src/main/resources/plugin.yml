@@ -1,5 +1,5 @@
 name: ReformCloud2Chat
-version: '2.3.0-SNAPSHOT'
+version: '2.2.2'
 author: derklaro
 main: systems.reformcloud.reformcloud2.chat.ReformCloudChatPlugin
 api-version: '1.13'

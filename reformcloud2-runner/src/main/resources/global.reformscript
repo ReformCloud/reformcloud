@@ -20,7 +20,7 @@ PRINTLN
 # VARIABLE reformcloud.disable.colours=true
 # VARIABLE reformcloud.indev.builds=true
 # VARIABLE reformcloud.executor.type=-1
-# VARIABLE reformcloud.runner.version=2.3.0-SNAPSHOT
+# VARIABLE reformcloud.runner.version=2.2.2
 VARIABLE reformcloud.indev.build.url=https://ci.reformcloud.systems/job/reformcloud/job/reformcloud2/job/indev/lastSuccessfulBuild/artifact/reformcloud2-executor/target/executor.jar
 VARIABLE reformcloud.version.url=https://internal.reformcloud.systems/version.properties
 VARIABLE reformcloud.auto.update=true
