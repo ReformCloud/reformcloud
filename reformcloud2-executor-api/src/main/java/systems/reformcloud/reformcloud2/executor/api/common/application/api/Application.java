@@ -1,3 +1,27 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) ReformCloud-Team
+ * Copyright (c) contributors
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 package systems.reformcloud.reformcloud2.executor.api.common.application.api;
 
 import org.jetbrains.annotations.NotNull;
@@ -19,13 +43,14 @@ import java.util.concurrent.Executors;
 
 public class Application {
 
+    private static Application self;
     private LoadedApplication application;
-
     private ExecutorService executorService;
-
     private AppClassLoader appClassLoader;
 
-    private static Application self;
+    public static Application self() {
+        return self;
+    }
 
     public final void init(@NotNull LoadedApplication application, AppClassLoader loader) {
         self = this;
@@ -56,10 +81,6 @@ public class Application {
     public void onUninstall() {
     }
 
-    public static Application self() {
-        return self;
-    }
-
     @Nullable
     public ApplicationUpdateRepository getUpdateRepository() {
         return null;
@@ -67,30 +88,30 @@ public class Application {
 
     @NotNull
     public final File dataFolder() {
-        return new File("reformcloud/applications", application.getName());
+        return new File("reformcloud/applications", this.application.getName());
     }
 
     @Nullable
     public final InputStream getResourceAsStream(String name) {
-        return getClass().getClassLoader().getResourceAsStream(name);
+        return this.getClass().getClassLoader().getResourceAsStream(name);
     }
 
     public final void registerLanguage(Properties properties) {
-        Language language = new ApplicationLanguage(application.getName(), properties);
-        LanguageManager.loadAddonMessageFile(application.getName(), language);
+        Language language = new ApplicationLanguage(this.application.getName(), properties);
+        LanguageManager.loadAddonMessageFile(this.application.getName(), language);
     }
 
     public final void unloadAllLanguageFiles() {
-        LanguageManager.unregisterMessageFile(application.getName());
+        LanguageManager.unregisterMessageFile(this.application.getName());
     }
 
     public final AppClassLoader getAppClassLoader() {
-        return appClassLoader;
+        return this.appClassLoader;
     }
 
     @NotNull
     public final LoadedApplication getApplication() {
-        return application;
+        return this.application;
     }
 
     public void log(String log) {
@@ -99,6 +120,6 @@ public class Application {
 
     @NotNull
     public final ExecutorService getExecutorService() {
-        return executorService;
+        return this.executorService;
     }
 }

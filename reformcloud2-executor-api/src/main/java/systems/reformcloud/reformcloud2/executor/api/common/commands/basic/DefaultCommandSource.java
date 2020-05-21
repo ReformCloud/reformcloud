@@ -1,3 +1,27 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) ReformCloud-Team
+ * Copyright (c) contributors
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 package systems.reformcloud.reformcloud2.executor.api.common.commands.basic;
 
 import org.jetbrains.annotations.NotNull;
@@ -14,39 +38,38 @@ import java.util.function.Consumer;
 
 public final class DefaultCommandSource implements CommandSource {
 
+    private final Consumer<String> result;
+    private final CommandManager commandManager;
+
     public DefaultCommandSource(Consumer<String> result, CommandManager commandManager) {
         this.result = result;
         this.commandManager = commandManager;
     }
 
-    private final Consumer<String> result;
-
-    private final CommandManager commandManager;
-
     @Override
     public void sendMessage(@NotNull String message) {
-        result.accept(message);
+        this.result.accept(message);
     }
 
     @Override
     public void sendRawMessage(@NotNull String message) {
-        result.accept(message);
+        this.result.accept(message);
     }
 
     @Override
     public void sendMessages(@NotNull String[] messages) {
-        sendMessage(messages[0]);
+        this.sendMessage(messages[0]);
     }
 
     @Override
     public void sendRawMessages(@NotNull String[] messages) {
-        sendRawMessage(messages[0]);
+        this.sendRawMessage(messages[0]);
     }
 
     @NotNull
     @Override
     public CommandManager commandManager() {
-        return commandManager;
+        return this.commandManager;
     }
 
     @Override

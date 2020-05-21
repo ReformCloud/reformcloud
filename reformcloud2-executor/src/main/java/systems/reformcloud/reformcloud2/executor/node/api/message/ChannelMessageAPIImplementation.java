@@ -1,3 +1,27 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) ReformCloud-Team
+ * Copyright (c) contributors
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 package systems.reformcloud.reformcloud2.executor.node.api.message;
 
 import org.jetbrains.annotations.NotNull;
@@ -10,12 +34,13 @@ import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonCo
 import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.NetworkChannel;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
-import systems.reformcloud.reformcloud2.executor.api.common.network.messaging.DefaultMessageJsonPacket;
+import systems.reformcloud.reformcloud2.executor.api.common.network.messaging.NamedMessagePacket;
+import systems.reformcloud.reformcloud2.executor.api.common.network.messaging.ProxiedChannelMessage;
+import systems.reformcloud.reformcloud2.executor.api.common.network.messaging.TypeMessagePacket;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.optional.ReferencedOptional;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.defaults.DefaultTask;
-import systems.reformcloud.reformcloud2.executor.controller.network.packets.out.messaging.ProxiedChannelMessage;
 import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
 
 import java.util.ArrayList;
@@ -28,7 +53,7 @@ public class ChannelMessageAPIImplementation implements MessageSyncAPI, MessageA
     @NotNull
     @Override
     public Task<Void> sendChannelMessageAsync(@NotNull JsonConfiguration jsonConfiguration, @NotNull String baseChannel,
-                                              @NotNull String subChannel, @NotNull ErrorReportHandling errorReportHandling, @NotNull String... receivers) {
+                                              @NotNull String subChannel, @NotNull ErrorReportHandling errorReportHandling, String @NotNull ... receivers) {
         Task<Void> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             Arrays.stream(receivers).forEach(receiver -> DefaultChannelManager.INSTANCE.get(receiver).orElseDo(Objects::nonNull, () -> {
@@ -48,7 +73,7 @@ public class ChannelMessageAPIImplementation implements MessageSyncAPI, MessageA
                 }
             }, sender -> {
                 if (NodeExecutor.getInstance().getNodeNetworkManager().getCluster().getNode(sender.getName()) != null) {
-                    sender.sendPacket(new DefaultMessageJsonPacket(jsonConfiguration, Arrays.asList(receivers), errorReportHandling, baseChannel, subChannel));
+                    sender.sendPacket(new NamedMessagePacket(Arrays.asList(receivers), jsonConfiguration, errorReportHandling, baseChannel, subChannel));
                     return;
                 }
 
@@ -61,7 +86,7 @@ public class ChannelMessageAPIImplementation implements MessageSyncAPI, MessageA
 
     @NotNull
     @Override
-    public Task<Void> sendChannelMessageAsync(@NotNull JsonConfiguration configuration, @NotNull String baseChannel, @NotNull String subChannel, @NotNull ReceiverType... receiverTypes) {
+    public Task<Void> sendChannelMessageAsync(@NotNull JsonConfiguration configuration, @NotNull String baseChannel, @NotNull String subChannel, ReceiverType @NotNull ... receiverTypes) {
         Task<Void> task = new DefaultTask<>();
         Task.EXECUTOR.execute(() -> {
             Collection<NetworkChannel> channels = new ArrayList<>();
@@ -102,7 +127,7 @@ public class ChannelMessageAPIImplementation implements MessageSyncAPI, MessageA
             });
             channels.forEach(e -> {
                 if (NodeExecutor.getInstance().getNodeNetworkManager().getCluster().getNode(e.getName()) != null) {
-                    e.sendPacket(new DefaultMessageJsonPacket(Arrays.asList(receiverTypes), configuration, baseChannel, subChannel));
+                    e.sendPacket(new TypeMessagePacket(Arrays.asList(receiverTypes), configuration, baseChannel, subChannel));
                     return;
                 }
 
@@ -114,12 +139,12 @@ public class ChannelMessageAPIImplementation implements MessageSyncAPI, MessageA
     }
 
     @Override
-    public void sendChannelMessageSync(@NotNull JsonConfiguration jsonConfiguration, @NotNull String baseChannel, @NotNull String subChannel, @NotNull ErrorReportHandling errorReportHandling, @NotNull String... receivers) {
-        sendChannelMessageAsync(jsonConfiguration, baseChannel, subChannel, errorReportHandling, receivers).awaitUninterruptedly();
+    public void sendChannelMessageSync(@NotNull JsonConfiguration jsonConfiguration, @NotNull String baseChannel, @NotNull String subChannel, @NotNull ErrorReportHandling errorReportHandling, String @NotNull ... receivers) {
+        this.sendChannelMessageAsync(jsonConfiguration, baseChannel, subChannel, errorReportHandling, receivers).awaitUninterruptedly();
     }
 
     @Override
-    public void sendChannelMessageSync(@NotNull JsonConfiguration configuration, @NotNull String baseChannel, @NotNull String subChannel, @NotNull ReceiverType... receiverTypes) {
-        sendChannelMessageAsync(configuration, baseChannel, subChannel, receiverTypes).awaitUninterruptedly();
+    public void sendChannelMessageSync(@NotNull JsonConfiguration configuration, @NotNull String baseChannel, @NotNull String subChannel, ReceiverType @NotNull ... receiverTypes) {
+        this.sendChannelMessageAsync(configuration, baseChannel, subChannel, receiverTypes).awaitUninterruptedly();
     }
 }

@@ -1,3 +1,27 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) ReformCloud-Team
+ * Copyright (c) contributors
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 package systems.reformcloud.reformcloud2.executor.api.common.event;
 
 import org.junit.Test;
@@ -30,11 +54,13 @@ public class EventManagerTest {
         eventManager.registerListener(listenerTest);
         eventManager.registerListener(listenerTest2);
 
-        assertEquals(1, eventManager.getListeners().size());
+        assertEquals(5, eventManager.getListeners().size());
         eventManager.callEvent(event);
-        assertEquals(7, countDownLatch.getCount());
+        assertEquals(9, this.countDownLatch.getCount());
+        eventManager.callEvent(new EventTest2());
+        assertEquals(7, this.countDownLatch.getCount());
         eventManager.unregisterListener(listenerTest);
-        assertEquals(1, eventManager.getListeners().size());
+        assertEquals(3, eventManager.getListeners().size());
         eventManager.unregisterAll();
         assertEquals(0, eventManager.getListeners().size());
     }
@@ -43,40 +69,39 @@ public class EventManagerTest {
 
         @Listener(priority = EventPriority.FIRST)
         public void handle(EventTest eventTest) {
-            countDownLatch.countDown();
+            EventManagerTest.this.countDownLatch.countDown();
         }
 
         @Listener(priority = EventPriority.SECOND)
         public void handleSecond(EventTest eventTest) {
-            countDownLatch.countDown();
+            EventManagerTest.this.countDownLatch.countDown();
         }
     }
 
     public final class ListenerTest2 {
 
         @Listener(priority = EventPriority.MONITOR)
-        public void handle(EventTest eventTest) {
-            countDownLatch.countDown();
+        public void handle(EventTest2 eventTest) {
+            assertEquals(8, EventManagerTest.this.countDownLatch.getCount());
+            EventManagerTest.this.countDownLatch.countDown();
+        }
+
+        @Listener(priority = EventPriority.FIRST)
+        public void handleSecond(EventTest2 eventTest) {
+            assertEquals(9, EventManagerTest.this.countDownLatch.getCount());
+            EventManagerTest.this.countDownLatch.countDown();
         }
 
         @Listener(priority = EventPriority.PENULTIMATE)
         public void handleSecond(EventTest eventTest) {
-            countDownLatch.countDown();
+            EventManagerTest.this.countDownLatch.countDown();
         }
     }
 
-    public final class EventTest extends Event {
+    public static class EventTest extends Event {
+    }
 
-        @Override
-        public void preCall() {
-            assertEquals(12, countDownLatch.getCount());
-            countDownLatch.countDown();
-        }
-
-        @Override
-        public void postCall() {
-
-        }
+    public static class EventTest2 extends Event {
     }
 
 }

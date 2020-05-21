@@ -1,0 +1,8 @@
+name: ReformCloud2Chat
+version: '2.2.2'
+author: derklaro
+main: systems.reformcloud.reformcloud2.chat.ReformCloudChatPlugin
+api-version: '1.13'
+
+softdepend:
+  - ReformCloud2BukkitPermissions

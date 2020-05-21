@@ -1,9 +1,35 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) ReformCloud-Team
+ * Copyright (c) contributors
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 package systems.reformcloud.reformcloud2.executor.api.common.api.database;
 
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 
+import java.util.Collection;
 import java.util.function.Function;
 
 public interface DatabaseSyncAPI {
@@ -30,12 +56,27 @@ public interface DatabaseSyncAPI {
      * @return The object or {@code null}
      */
     @Nullable
-    <T> T find(
-            @NotNull String table,
-            @NotNull String key,
-            @Nullable String identifier,
-            @NotNull Function<JsonConfiguration, T> function
-    );
+    <T> T find(@NotNull String table, @NotNull String key, @Nullable String identifier, @NotNull Function<JsonConfiguration, T> function);
+
+    /**
+     * Gets all entries from a specific database
+     *
+     * @param table The table name from which all entries are needed
+     * @return A collection of all documents in the given database table
+     */
+    @NotNull
+    Collection<JsonConfiguration> getCompleteDatabase(@NotNull String table);
+
+    /**
+     * Gets all entries from a specific database applied to the given mapping function
+     *
+     * @param table  The table name in which should be searched
+     * @param mapper Tries to apply the json config to, to get the final needed object
+     * @param <T>    The type which should be get out of the json config
+     * @return A collection of all documents in the given database table applied to the function and filtered for not-null
+     */
+    @NotNull
+    <T> Collection<T> getCompleteDatabase(@NotNull String table, @NotNull Function<JsonConfiguration, T> mapper);
 
     /**
      * Inserts a json config into the database
@@ -54,7 +95,10 @@ public interface DatabaseSyncAPI {
      * @param key     The key of the document
      * @param newData The new value of the entry
      * @return {@code true} if the config got updated or {@code false}
+     * @deprecated Use {@link #update(String, String, String, JsonConfiguration)} instead
      */
+    @Deprecated
+    @ApiStatus.ScheduledForRemoval
     boolean update(@NotNull String table, @NotNull String key, @NotNull JsonConfiguration newData);
 
     /**
@@ -64,15 +108,31 @@ public interface DatabaseSyncAPI {
      * @param identifier The identifier of the json config if the key is unknown
      * @param newData    The new value of the entry
      * @return {@code true} if the config got updated or {@code false}
+     * @deprecated Use {@link #update(String, String, String, JsonConfiguration)} instead
      */
+    @Deprecated
+    @ApiStatus.ScheduledForRemoval
     boolean updateIfAbsent(@NotNull String table, @NotNull String identifier, @NotNull JsonConfiguration newData);
+
+    /**
+     * Updates a json config in the database
+     *
+     * @param table      The table in which the document is
+     * @param key        The key of the document
+     * @param identifier The identifier of the json config if the key is unknown
+     * @param newData    The new value of the entry
+     */
+    void update(@NotNull String table, @Nullable String key, @Nullable String identifier, @NotNull JsonConfiguration newData);
 
     /**
      * Removes an json config out of the database
      *
      * @param table The table in which the config is
      * @param key   The key of the config
+     * @deprecated Use {@link #remove(String, String, String)} instead
      */
+    @Deprecated
+    @ApiStatus.ScheduledForRemoval
     void remove(@NotNull String table, @NotNull String key);
 
     /**
@@ -80,8 +140,20 @@ public interface DatabaseSyncAPI {
      *
      * @param table      The table in which the config is
      * @param identifier The id of the config if the key is unknown
+     * @deprecated Use {@link #remove(String, String, String)} instead
      */
+    @Deprecated
+    @ApiStatus.ScheduledForRemoval
     void removeIfAbsent(@NotNull String table, @NotNull String identifier);
+
+    /**
+     * Removes an json config out of the database
+     *
+     * @param table      The table in which the config is
+     * @param key        The key of the config
+     * @param identifier The id of the config if the key is unknown
+     */
+    void remove(@NotNull String table, @Nullable String key, @Nullable String identifier);
 
     /**
      * Creates a new database with the given name

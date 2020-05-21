@@ -1,3 +1,27 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) ReformCloud-Team
+ * Copyright (c) contributors
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 package systems.reformcloud.reformcloud2.executor.controller.process;
 
 import org.jetbrains.annotations.NotNull;
@@ -5,12 +29,15 @@ import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.ProcessStartedEvent;
 import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.ProcessStoppedEvent;
 import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.ProcessUpdatedEvent;
+import systems.reformcloud.reformcloud2.executor.api.common.api.basic.packets.shared.EventPacketProcessClosed;
+import systems.reformcloud.reformcloud2.executor.api.common.api.basic.packets.shared.EventPacketProcessStarted;
+import systems.reformcloud.reformcloud2.executor.api.common.api.basic.packets.shared.EventPacketProcessUpdated;
 import systems.reformcloud.reformcloud2.executor.api.common.client.ClientRuntimeInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.RuntimeConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Template;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Version;
-import systems.reformcloud.reformcloud2.executor.api.common.groups.template.backend.basic.FileBackend;
+import systems.reformcloud.reformcloud2.executor.api.common.groups.template.backend.basic.FileTemplateBackend;
 import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.common.process.NetworkInfo;
@@ -24,14 +51,11 @@ import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Duo;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
 import systems.reformcloud.reformcloud2.executor.api.controller.process.ProcessManager;
+import systems.reformcloud.reformcloud2.executor.client.network.packet.ControllerPacketProcessDisconnected;
+import systems.reformcloud.reformcloud2.executor.client.network.packet.ControllerPacketStartPreparedProcess;
+import systems.reformcloud.reformcloud2.executor.client.network.packet.ControllerPacketStartProcess;
+import systems.reformcloud.reformcloud2.executor.client.network.packet.ControllerPacketStopProcess;
 import systems.reformcloud.reformcloud2.executor.controller.ControllerExecutor;
-import systems.reformcloud.reformcloud2.executor.controller.network.packets.out.ControllerPacketOutProcessDisconnected;
-import systems.reformcloud.reformcloud2.executor.controller.network.packets.out.ControllerPacketOutStartPreparedProcess;
-import systems.reformcloud.reformcloud2.executor.controller.network.packets.out.ControllerPacketOutStartProcess;
-import systems.reformcloud.reformcloud2.executor.controller.network.packets.out.ControllerPacketOutStopProcess;
-import systems.reformcloud.reformcloud2.executor.controller.network.packets.out.event.ControllerEventProcessClosed;
-import systems.reformcloud.reformcloud2.executor.controller.network.packets.out.event.ControllerEventProcessStarted;
-import systems.reformcloud.reformcloud2.executor.controller.network.packets.out.event.ControllerEventProcessUpdated;
 import systems.reformcloud.reformcloud2.executor.node.util.ProcessCopyOnWriteArrayList;
 
 import java.util.*;
@@ -52,15 +76,15 @@ public final class DefaultProcessManager implements ProcessManager {
     public DefaultProcessManager() {
         CompletableFuture.runAsync(() -> {
             while (!Thread.currentThread().isInterrupted()) {
-                if (!noClientTryLater.isEmpty()) {
-                    Duo<ProcessConfiguration, Boolean> duo = noClientTryLater.peek();
+                if (!this.noClientTryLater.isEmpty()) {
+                    Duo<ProcessConfiguration, Boolean> duo = this.noClientTryLater.peek();
                     if (duo.getSecond()) {
-                        startProcess(duo.getFirst());
+                        this.startProcess(duo.getFirst());
                     } else {
-                        prepareProcess(duo.getFirst());
+                        this.prepareProcess(duo.getFirst());
                     }
 
-                    noClientTryLater.remove(duo);
+                    this.noClientTryLater.remove(duo);
                 }
 
                 AbsoluteThread.sleep(TimeUnit.MILLISECONDS, 200);
@@ -70,34 +94,34 @@ public final class DefaultProcessManager implements ProcessManager {
 
     @Override
     public List<ProcessInformation> getAllProcesses() {
-        return Streams.newList(processInformation);
+        return Streams.newList(this.processInformation);
     }
 
     @Override
     public List<ProcessInformation> getProcesses(String group) {
-        return Streams.list(getAllProcesses(), processInformation -> processInformation.getProcessGroup().getName().equals(group));
+        return Streams.list(this.getAllProcesses(), processInformation -> processInformation.getProcessGroup().getName().equals(group));
     }
 
     @Override
     public Long getOnlineAndWaitingProcessCount(String group) {
-        return getProcesses(group).stream().filter(e -> e.getProcessDetail().getProcessState().isValid()).count() + getWaitingProcesses(group);
+        return this.getProcesses(group).stream().filter(e -> e.getProcessDetail().getProcessState().isValid()).count() + this.getWaitingProcesses(group);
     }
 
     @Override
     public Integer getWaitingProcesses(String group) {
-        return noClientTryLater.stream().filter(e -> e.getFirst().getBase().getName().equals(group)).mapToInt(value -> 1).sum();
+        return this.noClientTryLater.stream().filter(e -> e.getFirst().getBase().getName().equals(group)).mapToInt(value -> 1).sum();
     }
 
     @Override
     public ProcessInformation getProcess(String name) {
         requireNonNull(name);
-        return Streams.filter(processInformation, processInformation -> processInformation.getProcessDetail().getName().equals(name));
+        return Streams.filter(this.processInformation, processInformation -> processInformation.getProcessDetail().getName().equals(name));
     }
 
     @Override
     public ProcessInformation getProcess(UUID uniqueID) {
         requireNonNull(uniqueID);
-        return Streams.filter(processInformation, processInformation -> processInformation.getProcessDetail().getProcessUniqueID().equals(uniqueID));
+        return Streams.filter(this.processInformation, processInformation -> processInformation.getProcessDetail().getProcessUniqueID().equals(uniqueID));
     }
 
     @Override
@@ -121,9 +145,9 @@ public final class DefaultProcessManager implements ProcessManager {
         }
 
         this.processInformation.add(processInformation);
-        DefaultChannelManager.INSTANCE.get(processInformation.getProcessDetail().getParentName()).ifPresent(packetSender -> packetSender.sendPacket(new ControllerPacketOutStartProcess(processInformation, true)));
+        DefaultChannelManager.INSTANCE.get(processInformation.getProcessDetail().getParentName()).ifPresent(packetSender -> packetSender.sendPacket(new ControllerPacketStartProcess(processInformation, true)));
         //Send event packet to notify processes
-        DefaultChannelManager.INSTANCE.getAllSender().forEach(packetSender -> packetSender.sendPacket(new ControllerEventProcessStarted(processInformation)));
+        DefaultChannelManager.INSTANCE.getAllSender().forEach(packetSender -> packetSender.sendPacket(new EventPacketProcessStarted(processInformation)));
         ControllerExecutor.getInstance().getEventManager().callEvent(new ProcessStartedEvent(processInformation));
         return processInformation;
     }
@@ -133,7 +157,7 @@ public final class DefaultProcessManager implements ProcessManager {
     public synchronized ProcessInformation startProcess(@NotNull ProcessInformation processInformation) {
         if (processInformation.getProcessDetail().getProcessState().equals(ProcessState.PREPARED)) {
             DefaultChannelManager.INSTANCE.get(processInformation.getProcessDetail().getParentName()).ifPresent(
-                    e -> e.sendPacket(new ControllerPacketOutStartPreparedProcess(processInformation))
+                    e -> e.sendPacket(new ControllerPacketStartPreparedProcess(processInformation))
             );
         }
 
@@ -148,36 +172,36 @@ public final class DefaultProcessManager implements ProcessManager {
         }
 
         this.processInformation.add(processInformation);
-        DefaultChannelManager.INSTANCE.get(processInformation.getProcessDetail().getParentName()).ifPresent(packetSender -> packetSender.sendPacket(new ControllerPacketOutStartProcess(processInformation, false)));
+        DefaultChannelManager.INSTANCE.get(processInformation.getProcessDetail().getParentName()).ifPresent(packetSender -> packetSender.sendPacket(new ControllerPacketStartProcess(processInformation, false)));
         return processInformation;
     }
 
     @Override
     public ProcessInformation stopProcess(String name) {
-        ProcessInformation processInformation = getProcess(name);
+        ProcessInformation processInformation = this.getProcess(name);
         if (processInformation == null) {
             return null;
         }
 
-        return stopProcess(processInformation.getProcessDetail().getProcessUniqueID());
+        return this.stopProcess(processInformation.getProcessDetail().getProcessUniqueID());
     }
 
     @Override
     public ProcessInformation stopProcess(UUID uniqueID) {
-        ProcessInformation processInformation = getProcess(uniqueID);
+        ProcessInformation processInformation = this.getProcess(uniqueID);
         if (processInformation == null) {
             return null;
         }
 
-        DefaultChannelManager.INSTANCE.get(processInformation.getProcessDetail().getParentName()).ifPresent(packetSender -> packetSender.sendPacket(new ControllerPacketOutStopProcess(processInformation.getProcessDetail().getProcessUniqueID())));
+        DefaultChannelManager.INSTANCE.get(processInformation.getProcessDetail().getParentName()).ifPresent(packetSender -> packetSender.sendPacket(new ControllerPacketStopProcess(processInformation.getProcessDetail().getProcessUniqueID())));
         return processInformation;
     }
 
     @Override
     public void onClientDisconnect(String clientName) {
-        Streams.allOf(processInformation, processInformation -> processInformation.getProcessDetail().getParentName().equals(clientName)).forEach(processInformation -> {
+        Streams.allOf(this.processInformation, processInformation -> processInformation.getProcessDetail().getParentName().equals(clientName)).forEach(processInformation -> {
             DefaultProcessManager.this.processInformation.remove(processInformation);
-            notifyDisconnect(processInformation);
+            this.notifyDisconnect(processInformation);
         });
     }
 
@@ -196,7 +220,7 @@ public final class DefaultProcessManager implements ProcessManager {
             });
 
             if (bestTemplate.get() == null) {
-                bestTemplate.set(new Template(0, "default", false, FileBackend.NAME, "#", new RuntimeConfiguration(
+                bestTemplate.set(new Template(0, "default", false, FileTemplateBackend.NAME, "#", new RuntimeConfiguration(
                         512, new ArrayList<>(), new HashMap<>()
                 ), Version.PAPER_1_8_8));
 
@@ -212,12 +236,12 @@ public final class DefaultProcessManager implements ProcessManager {
                 configuration.getMaxMemory() == null ? template.getRuntimeConfiguration().getMaxMemory() : configuration.getMaxMemory()
         );
         if (client == null) {
-            noClientTryLater.add(new Duo<>(configuration, start));
+            this.noClientTryLater.add(new Duo<>(configuration, start));
             return null;
         }
 
         int id = configuration.getId() == -1 ? this.nextID(configuration.getBase()) : configuration.getId();
-        int port = configuration.getPort() == null ? nextPort(configuration.getBase()) : configuration.getPort();
+        int port = configuration.getPort() == null ? this.nextPort(configuration.getBase()) : configuration.getPort();
         UUID uniqueID = configuration.getUniqueId();
 
         String displayName = configuration.getDisplayName();
@@ -236,11 +260,11 @@ public final class DefaultProcessManager implements ProcessManager {
 
         for (ProcessInformation allProcess : this.getAllProcesses()) {
             if (allProcess.getProcessDetail().getId() == id) {
-                id = nextID(configuration.getBase());
+                id = this.nextID(configuration.getBase());
             }
 
             if (allProcess.getNetworkInfo().getPort() == port) {
-                port = nextPort(configuration.getBase());
+                port = this.nextPort(configuration.getBase());
             }
 
             if (allProcess.getProcessDetail().getProcessUniqueID().equals(uniqueID)) {
@@ -263,7 +287,8 @@ public final class DefaultProcessManager implements ProcessManager {
                         template,
                         configuration.getMaxMemory() == null
                                 ? MemoryCalculator.calcMemory(configuration.getBase().getName(), template)
-                                : configuration.getMaxMemory()
+                                : configuration.getMaxMemory(),
+                        configuration.getInitialState()
                 ),
                 new NetworkInfo(
                         client.startHost(),
@@ -275,7 +300,7 @@ public final class DefaultProcessManager implements ProcessManager {
 
     private int nextID(ProcessGroup processGroup) {
         int id = 1;
-        Collection<Integer> ids = Streams.newCollection(processInformation, processInformation -> processInformation.getProcessGroup().getName().equals(processGroup.getName()), e -> e.getProcessDetail().getId());
+        Collection<Integer> ids = Streams.newCollection(this.processInformation, processInformation -> processInformation.getProcessGroup().getName().equals(processGroup.getName()), e -> e.getProcessDetail().getId());
 
         while (ids.contains(id)) {
             id++;
@@ -286,7 +311,7 @@ public final class DefaultProcessManager implements ProcessManager {
 
     private int nextPort(ProcessGroup processGroup) {
         int port = processGroup.getStartupConfiguration().getStartPort();
-        Collection<Integer> ports = Streams.newCollection(processInformation, processInformation -> processInformation.getNetworkInfo().getPort());
+        Collection<Integer> ports = Streams.newCollection(this.processInformation, processInformation -> processInformation.getNetworkInfo().getPort());
 
         while (ports.contains(port)) {
             port++;
@@ -299,7 +324,7 @@ public final class DefaultProcessManager implements ProcessManager {
         if (processGroup.getStartupConfiguration().isSearchBestClientAlone()) {
             AtomicReference<ClientRuntimeInformation> best = new AtomicReference<>();
             Streams.newCollection(ClientManager.INSTANCE.getClientRuntimeInformation(), clientRuntimeInformation -> {
-                Collection<Integer> startedOn = Streams.newCollection(processInformation,
+                Collection<Integer> startedOn = Streams.newCollection(this.processInformation,
                         processInformation -> processInformation.getProcessDetail().getParentName().equals(clientRuntimeInformation.getName()),
                         processInformation -> processInformation.getProcessDetail().getMaxMemory()
                 );
@@ -329,7 +354,7 @@ public final class DefaultProcessManager implements ProcessManager {
                 }
 
                 Collection<Integer> startedOn = Streams.newCollection(
-                        processInformation,
+                        this.processInformation,
                         processInformation -> processInformation.getProcessDetail().getParentName().equals(clientRuntimeInformation.getName()),
                         processInformation -> processInformation.getProcessDetail().getMaxMemory()
                 );
@@ -356,13 +381,13 @@ public final class DefaultProcessManager implements ProcessManager {
 
     @Override
     public Iterator<ProcessInformation> iterator() {
-        return Streams.newList(processInformation).iterator();
+        return Streams.newList(this.processInformation).iterator();
     }
 
     @Override
     public void update(@NotNull ProcessInformation processInformation) {
         synchronized (processInformation) {
-            ProcessInformation current = getProcess(processInformation.getProcessDetail().getProcessUniqueID());
+            ProcessInformation current = this.getProcess(processInformation.getProcessDetail().getProcessUniqueID());
             if (current == null) {
                 return;
             }
@@ -374,16 +399,16 @@ public final class DefaultProcessManager implements ProcessManager {
             });
         }
 
-        DefaultChannelManager.INSTANCE.getAllSender().forEach(packetSender -> packetSender.sendPacket(new ControllerEventProcessUpdated(processInformation)));
+        DefaultChannelManager.INSTANCE.getAllSender().forEach(packetSender -> packetSender.sendPacket(new EventPacketProcessUpdated(processInformation)));
         ControllerExecutor.getInstance().getEventManager().callEvent(new ProcessUpdatedEvent(processInformation));
     }
 
     @Override
     public void onChannelClose(String name) {
-        final ProcessInformation info = getProcess(name);
+        final ProcessInformation info = this.getProcess(name);
         if (info != null) {
             DefaultChannelManager.INSTANCE.get(info.getProcessDetail().getParentName()).ifPresent(packetSender -> packetSender.sendPacket(
-                    new ControllerPacketOutProcessDisconnected(info.getProcessDetail().getProcessUniqueID()))
+                    new ControllerPacketProcessDisconnected(info.getProcessDetail().getProcessUniqueID()))
             );
 
             System.out.println(LanguageManager.get(
@@ -394,24 +419,26 @@ public final class DefaultProcessManager implements ProcessManager {
             ));
         } else {
             //If the channel is not a process it may be a client
-            onClientDisconnect(name);
+            this.onClientDisconnect(name);
         }
     }
 
     @Override
     public void unregisterProcess(UUID uniqueID) {
-        ProcessInformation information = getProcess(uniqueID);
+        ProcessInformation information = this.getProcess(uniqueID);
         if (information == null) {
             return;
         }
 
-        notifyDisconnect(information);
-        processInformation.remove(information);
+        this.notifyDisconnect(information);
+        this.processInformation.remove(information);
     }
 
     // ==========================
     private void notifyDisconnect(ProcessInformation processInformation) {
-        DefaultChannelManager.INSTANCE.getAllSender().forEach(packetSender -> packetSender.sendPacket(new ControllerEventProcessClosed(processInformation)));
+        DefaultChannelManager.INSTANCE
+                .getAllSender()
+                .forEach(packetSender -> packetSender.sendPacket(new EventPacketProcessClosed(processInformation)));
         ControllerExecutor.getInstance().getEventManager().callEvent(new ProcessStoppedEvent(processInformation));
     }
 

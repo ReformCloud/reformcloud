@@ -17,14 +17,20 @@ If you need **more than one template** for a group to start or need a **path inc
 them in the group file and the cloud will copy the paths or templates at the next startup of a process.
 
 ### Currently supported minecraft-java-edition versions:
-| Version Name                        | Version ID      | Recommended Java Version     |
-|-------------------------------------|-----------------|------------------------------|
-| Bungeecord (Waterfall, Hexacord...) | 1.8 - 1.15.2    | Java 11                      |
-| Velocity                            | 1.8 - 1.15.2    | Java 11                      |
-| Waterdog                            | 1.8 - 1.15.2    | Java 8                       | 
-| Spigot (Paper, Taco, Torch...)      | 1.8 - 1.15.2    | <1.12 Java 8 / >1.12 Java 11 |
-| Sponge                              | 1.10.2 - 1.12.2 | Java 8                       |
-| Akarin                              | 1.12.2          | Java 8                       |
+| Version Name                        | Version ID                   | Recommended Java Version     |
+|-------------------------------------|------------------------------|------------------------------|
+| Bungeecord (Waterfall, Hexacord...) | 1.8 - 1.15.2                 | Java 11                      |
+| Velocity                            | 1.8 - 1.15.2                 | Java 11                      |
+| Waterdog                            | 1.8 - 1.15.2                 | Java 8                       | 
+| Spigot & Paper                      | 1.8 - 1.15.2                 | <1.12 Java 8 / >1.12 Java 11 |
+| Torch                               | 1.8.8, 1.9.4, 1.12.2         | Java 8                       |
+| Taco                                | 1.8.8, 1.11.2, 1.12.2        | Java 8                       |
+| Hose                                | 1.8.8, 1.9.4, 1.10.2, 1.11.2 | Java 8                       |
+| Tuinity                             | 1.15.2                       | Java 11                      |
+| Glowstone                           | 1.10.2, 1.12.2               | Java 8                       |
+| Sponge (Forge)                      | 1.10.2 - 1.12.2              | Java 8                       |
+| Sponge (Vanilla)                    | 1.11.2, 1.12.2               | Java 8                       |
+| Akarin                              | 1.12.2                       | Java 8                       |
 
 ### Currently supported minecraft-pocket-edition versions:
 | Version Name  | Recommended Java Version |                
@@ -157,7 +163,7 @@ Because of this you don't need to provide any repository.
         <groupId>systems.reformcloud.reformcloud2</groupId>
         <!-- replace with needed artifact for example 'reformcloud2-executor' or 'reformcloud2-default-application-permissions' -->
         <artifactId>reformcloud2-executor-api</artifactId>
-        <version>2.2.1</version>
+        <version>2.2.2</version>
         <scope>provided</scope>
     </dependency>
 ```
@@ -181,6 +187,14 @@ Because of this you don't need to provide any repository.
                 <sub><b>Lukas B. (Lvkas_)</b></sub>
                 <br />
                 <sub><b>Project developer</b></sub>
+            <br/>
+        </td>
+        <td align="center">
+        <img src="https://avatars0.githubusercontent.com/u/40271530?s=400&v=4" width="100px;" alt=""/>
+            <br />
+                <sub><b>JanDragon</b></sub>
+                <br />
+                <sub><b>Contributor</b></sub>
             <br/>
         </td>
     </tr>

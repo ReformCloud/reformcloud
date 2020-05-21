@@ -1,3 +1,27 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) ReformCloud-Team
+ * Copyright (c) contributors
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 package systems.reformcloud.reformcloud2.executor.api.common.database.basic.drivers.h2;
 
 import org.h2.Driver;
@@ -23,6 +47,7 @@ import java.util.Map;
 public class H2Database extends Database<Connection> {
 
     private final Map<String, DatabaseReader> perTableReader = new AbsentMap<>();
+    private ReformCloudWrappedConnection connection;
 
     public H2Database() {
         URL url = DEPENDENCY_LOADER.loadDependency(new DefaultDependency(
@@ -37,11 +62,9 @@ public class H2Database extends Database<Connection> {
         FileUtils.createDirectories("reformcloud/.database/h2");
     }
 
-    private ReformCloudWrappedConnection connection;
-
     @Override
     public void connect(@NotNull String host, int port, @NotNull String userName, @NotNull String password, @NotNull String table) {
-        if (!isConnected()) {
+        if (!this.isConnected()) {
             try {
                 Driver.load();
 
@@ -56,21 +79,15 @@ public class H2Database extends Database<Connection> {
     @Override
     public boolean isConnected() {
         try {
-            return connection != null && !connection.isClosed() && connection.isValid(250);
+            return this.connection != null && !this.connection.isClosed() && this.connection.isValid(250);
         } catch (final SQLException ex) {
-            return connection != null;
+            return this.connection != null;
         }
     }
 
     @Override
-    public void reconnect() {
-        disconnect();
-        connect("", -1, "", "", "");
-    }
-
-    @Override
     public void disconnect() {
-        if (isConnected()) {
+        if (this.isConnected()) {
             try {
                 this.connection.disconnect();
             } catch (final SQLException ex) {
@@ -105,12 +122,12 @@ public class H2Database extends Database<Connection> {
     @Override
     public DatabaseReader createForTable(String table) {
         this.createDatabase(table);
-        return perTableReader.putIfAbsent(table, new SQLDatabaseReader(table, this));
+        return this.perTableReader.putIfAbsent(table, new SQLDatabaseReader(table, this));
     }
 
     @NotNull
     @Override
     public Connection get() {
-        return connection;
+        return this.connection;
     }
 }

@@ -1,3 +1,27 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) ReformCloud-Team
+ * Copyright (c) contributors
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 package systems.reformcloud.reformcloud2.executor.api.common.api.messaging;
 
 import org.jetbrains.annotations.NotNull;
@@ -17,7 +41,7 @@ public interface MessageAsyncAPI {
      */
     @NotNull
     default Task<Void> sendChannelMessageAsync(@NotNull String receiver, @NotNull JsonConfiguration jsonConfiguration) {
-        return sendChannelMessageAsync(jsonConfiguration, ErrorReportHandling.NOTHING, receiver);
+        return this.sendChannelMessageAsync(jsonConfiguration, ErrorReportHandling.NOTHING, receiver);
     }
 
     /**
@@ -29,7 +53,7 @@ public interface MessageAsyncAPI {
      */
     @NotNull
     default Task<Void> sendChannelMessageAsync(@NotNull JsonConfiguration jsonConfiguration, @NotNull String... receivers) {
-        return sendChannelMessageAsync(jsonConfiguration, ErrorReportHandling.NOTHING, receivers);
+        return this.sendChannelMessageAsync(jsonConfiguration, ErrorReportHandling.NOTHING, receivers);
     }
 
     /**
@@ -45,7 +69,7 @@ public interface MessageAsyncAPI {
     default Task<Void> sendChannelMessageAsync(@NotNull JsonConfiguration jsonConfiguration,
                                                @NotNull ErrorReportHandling errorReportHandling,
                                                @NotNull String... receivers) {
-        return sendChannelMessageAsync(jsonConfiguration, "unknown", errorReportHandling, receivers);
+        return this.sendChannelMessageAsync(jsonConfiguration, "unknown", errorReportHandling, receivers);
     }
 
     /**
@@ -64,7 +88,7 @@ public interface MessageAsyncAPI {
             @NotNull String baseChannel,
             @NotNull ErrorReportHandling errorReportHandling,
             @NotNull String... receivers) {
-        return sendChannelMessageAsync(jsonConfiguration, baseChannel, "unknown", errorReportHandling, receivers);
+        return this.sendChannelMessageAsync(jsonConfiguration, baseChannel, "unknown", errorReportHandling, receivers);
     }
 
     /**
@@ -96,7 +120,7 @@ public interface MessageAsyncAPI {
      */
     @NotNull
     default Task<Void> sendChannelMessageAsync(@NotNull JsonConfiguration configuration, @NotNull ReceiverType... receiverTypes) {
-        return sendChannelMessageAsync(configuration, "unknown", receiverTypes);
+        return this.sendChannelMessageAsync(configuration, "unknown", receiverTypes);
     }
 
     /**
@@ -111,7 +135,7 @@ public interface MessageAsyncAPI {
     default Task<Void> sendChannelMessageAsync(@NotNull JsonConfiguration configuration,
                                                @NotNull String baseChannel,
                                                @NotNull ReceiverType... receiverTypes) {
-        return sendChannelMessageAsync(configuration, baseChannel, "unknown", receiverTypes);
+        return this.sendChannelMessageAsync(configuration, baseChannel, "unknown", receiverTypes);
     }
 
     /**

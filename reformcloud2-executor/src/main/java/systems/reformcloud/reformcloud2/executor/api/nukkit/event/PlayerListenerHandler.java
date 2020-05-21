@@ -1,126 +1,89 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) ReformCloud-Team
+ * Copyright (c) contributors
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 package systems.reformcloud.reformcloud2.executor.api.nukkit.event;
 
-import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.event.EventHandler;
 import cn.nukkit.event.EventPriority;
 import cn.nukkit.event.Listener;
-import cn.nukkit.event.player.PlayerJoinEvent;
 import cn.nukkit.event.player.PlayerLoginEvent;
 import cn.nukkit.event.player.PlayerQuitEvent;
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.api.API;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.PlayerAccessConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
-import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState;
-import systems.reformcloud.reformcloud2.executor.api.network.packets.out.APIPacketOutHasPlayerAccess;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Duo;
 import systems.reformcloud.reformcloud2.executor.api.nukkit.NukkitExecutor;
-
-import java.util.concurrent.TimeUnit;
+import systems.reformcloud.reformcloud2.executor.api.shared.SharedJoinAllowChecker;
 
 public final class PlayerListenerHandler implements Listener {
 
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void handle(final PlayerLoginEvent event) {
-        if (API.getInstance().getCurrentProcessInformation().getProcessGroup().getPlayerAccessConfiguration().isOnlyProxyJoin()) {
-            PacketSender packetSender = DefaultChannelManager.INSTANCE.get("Controller").orElse(null);
-            if (packetSender == null) {
-                event.setCancelled(true);
-                event.setKickMessage("§4§lThe current server is not connected to the controller");
-                return;
-            }
+    @EventHandler(priority = EventPriority.HIGH)
+    public void handle(final @NotNull PlayerLoginEvent event) {
+        PacketSender sender = DefaultChannelManager.INSTANCE.get("Controller").orElse(null);
+        if (sender == null) {
+            event.setCancelled(true);
+            event.setKickMessage(NukkitExecutor.getInstance().getMessages().format(
+                    NukkitExecutor.getInstance().getMessages().getProcessNotReadyToAcceptPlayersMessage()
+            ));
+            return;
+        }
 
-            Packet result = NukkitExecutor.getInstance().packetHandler().getQueryHandler().sendQueryAsync(packetSender, new APIPacketOutHasPlayerAccess(
-                    event.getPlayer().getAddress()
-            )).getTask().getUninterruptedly(TimeUnit.SECONDS, 5);
-            if (result != null && result.content().getBoolean("access")) {
-                event.setCancelled(false);
-            } else {
-                event.setKickMessage(format(
-                        NukkitExecutor.getInstance().getMessages().getNotUsingInternalProxy()
-                ));
-                event.setCancelled(true);
-            }
+        Duo<Boolean, String> checked = SharedJoinAllowChecker.checkIfConnectAllowed(
+                event.getPlayer()::hasPermission,
+                NukkitExecutor.getInstance().getMessages(),
+                null,
+                event.getPlayer().getUniqueId(),
+                event.getPlayer().getName()
+        );
+        if (!checked.getFirst() && checked.getSecond() != null) {
+            event.setCancelled(true);
+            event.setKickMessage(checked.getSecond());
         }
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
-    public void handle(final PlayerJoinEvent event) {
-        final Player player = event.getPlayer();
-        final ProcessInformation current = API.getInstance().getCurrentProcessInformation();
-        final PlayerAccessConfiguration configuration = current.getProcessGroup().getPlayerAccessConfiguration();
-
-        if (configuration.isUseCloudPlayerLimit()
-                && current.getProcessDetail().getMaxPlayers() < current.getProcessPlayerManager().getOnlineCount() + 1
-                && !player.hasPermission(configuration.getFullJoinPermission())) {
-            player.kick(format(
-                    NukkitExecutor.getInstance().getMessages().getProcessFullMessage()
-            ));
-            return;
-        }
-
-        if (configuration.isJoinOnlyPerPermission() && !player.hasPermission(configuration.getJoinPermission())) {
-            player.kick(format(
-                    NukkitExecutor.getInstance().getMessages().getProcessEnterPermissionNotSet()
-            ));
-            return;
-        }
-
-        if (configuration.isMaintenance() && !player.hasPermission(configuration.getMaintenanceJoinPermission())) {
-            player.kick(format(
-                    NukkitExecutor.getInstance().getMessages().getProcessInMaintenanceMessage()
-            ));
-            return;
-        }
-
-        if (current.getProcessDetail().getProcessState().equals(ProcessState.FULL) && !player.hasPermission(configuration.getFullJoinPermission())) {
-            player.kick(format(
-                    NukkitExecutor.getInstance().getMessages().getProcessFullMessage()
-            ));
-            return;
-        }
-
-        if (!current.getProcessPlayerManager().onLogin(player.getUniqueId(), player.getName())) {
-            player.kick(format(
-                    NukkitExecutor.getInstance().getMessages().getAlreadyConnectedMessage()
-            ));
-            return;
-        }
-
-        if (Server.getInstance().getOnlinePlayers().size() >= current.getProcessDetail().getMaxPlayers()
-                && !current.getProcessDetail().getProcessState().equals(ProcessState.FULL)
-                && !current.getProcessDetail().getProcessState().equals(ProcessState.INVISIBLE)) {
-            current.getProcessDetail().setProcessState(ProcessState.FULL);
-        }
-
-        current.updateRuntimeInformation();
-        NukkitExecutor.getInstance().setThisProcessInformation(current);
-        ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(current);
-    }
-
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void handle(final PlayerQuitEvent event) {
+    public void handle(final @NotNull PlayerQuitEvent event) {
         ProcessInformation current = API.getInstance().getCurrentProcessInformation();
         if (!current.getProcessPlayerManager().isPlayerOnlineOnCurrentProcess(event.getPlayer().getUniqueId())) {
             return;
         }
 
-        if (Server.getInstance().getOnlinePlayers().size() < current.getProcessDetail().getMaxPlayers()
-                && !current.getProcessDetail().getProcessState().equals(ProcessState.READY)
-                && !current.getProcessDetail().getProcessState().equals(ProcessState.INVISIBLE)) {
-            current.getProcessDetail().setProcessState(ProcessState.READY);
-        }
+        Server.getInstance().getScheduler().scheduleTask(NukkitExecutor.getInstance().getPlugin(), () -> {
+            if (Server.getInstance().getOnlinePlayers().size() < current.getProcessDetail().getMaxPlayers()
+                    && !current.getProcessDetail().getProcessState().equals(ProcessState.READY)
+                    && !current.getProcessDetail().getProcessState().equals(ProcessState.INVISIBLE)) {
+                current.getProcessDetail().setProcessState(ProcessState.READY);
+            }
 
-        current.updateRuntimeInformation();
-        current.getProcessPlayerManager().onLogout(event.getPlayer().getUniqueId());
-        NukkitExecutor.getInstance().setThisProcessInformation(current);
-        ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(current);
-    }
-
-    private String format(String msg) {
-        return NukkitExecutor.getInstance().getMessages().format(msg);
+            current.updateRuntimeInformation();
+            current.getProcessPlayerManager().onLogout(event.getPlayer().getUniqueId());
+            ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(current);
+        });
     }
 }

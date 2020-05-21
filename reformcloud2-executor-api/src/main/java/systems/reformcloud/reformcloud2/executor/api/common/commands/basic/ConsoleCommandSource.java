@@ -1,3 +1,27 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) ReformCloud-Team
+ * Copyright (c) contributors
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 package systems.reformcloud.reformcloud2.executor.api.common.commands.basic;
 
 import org.jetbrains.annotations.NotNull;
@@ -12,7 +36,7 @@ import systems.reformcloud.reformcloud2.executor.api.common.logger.coloured.Colo
 import java.util.Collection;
 import java.util.Collections;
 
-public final class ConsoleCommandSource implements CommandSource {
+public class ConsoleCommandSource implements CommandSource {
 
     private static final PermissionCheck CONSOLE_COMMAND_CHECK = new ConsoleCommandCheck();
 
@@ -29,12 +53,11 @@ public final class ConsoleCommandSource implements CommandSource {
             return PermissionResult.ALLOWED;
         }
     });
+    private final CommandManager commandManager;
 
     public ConsoleCommandSource(CommandManager commandManager) {
         this.commandManager = commandManager;
     }
-
-    private final CommandManager commandManager;
 
     @Override
     public boolean hasPermission(@NotNull String permission) {
@@ -48,7 +71,7 @@ public final class ConsoleCommandSource implements CommandSource {
 
     @Override
     public boolean hasPermission(@NotNull Permission permission) {
-        if (hasPermission(permission.permission())) {
+        if (this.hasPermission(permission.permission())) {
             return true;
         }
 
@@ -57,7 +80,7 @@ public final class ConsoleCommandSource implements CommandSource {
 
     @Override
     public boolean isPermissionSet(@NotNull Permission permission) {
-        if (isPermissionSet(permission.permission())) {
+        if (this.isPermissionSet(permission.permission())) {
             return true;
         }
 
@@ -99,21 +122,21 @@ public final class ConsoleCommandSource implements CommandSource {
     @Override
     public void sendMessages(@NotNull String[] messages) {
         for (String message : messages) {
-            sendMessage(message);
+            this.sendMessage(message);
         }
     }
 
     @Override
     public void sendRawMessages(@NotNull String[] messages) {
         for (String message : messages) {
-            sendRawMessage(message);
+            this.sendRawMessage(message);
         }
     }
 
     @NotNull
     @Override
     public CommandManager commandManager() {
-        return commandManager;
+        return this.commandManager;
     }
 
     private static class ConsoleCommandCheck implements PermissionCheck {

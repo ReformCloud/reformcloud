@@ -1,7 +1,30 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) ReformCloud-Team
+ * Copyright (c) contributors
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 package systems.reformcloud.reformcloud2.executor.api.common.api.player;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
 
@@ -76,27 +99,6 @@ public interface PlayerAsyncAPI {
     Task<Void> playEffectAsync(@NotNull UUID player, @NotNull String entityEffect);
 
     /**
-     * Plays a player effect
-     *
-     * @param player The uuid of the player which should be sent
-     * @param effect The effect which should be played
-     * @param data   A bit needed for some effects
-     * @param <T>    The data depending to the effect
-     * @return A task which will be completed after the completion of the packet sent
-     */
-    @NotNull
-    <T> Task<Void> playEffectAsync(@NotNull UUID player, @NotNull String effect, @Nullable T data);
-
-    /**
-     * Respawn a player
-     *
-     * @param player The uuid of the player which should be re-spawned
-     * @return A task which will be completed after the completion of the packet sent
-     */
-    @NotNull
-    Task<Void> respawnAsync(@NotNull UUID player);
-
-    /**
      * Teleports a player
      *
      * @param player The uuid of the player which should be teleported
@@ -140,14 +142,4 @@ public interface PlayerAsyncAPI {
      */
     @NotNull
     Task<Void> connectAsync(@NotNull UUID player, @NotNull UUID target);
-
-    /**
-     * Sets a player resource pack
-     *
-     * @param player The player who should get the resource pack
-     * @param pack   The url of the resource pack
-     * @return A task which will be completed after the completion of the packet sent
-     */
-    @NotNull
-    Task<Void> setResourcePackAsync(@NotNull UUID player, @NotNull String pack);
 }

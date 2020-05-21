@@ -1,3 +1,27 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) ReformCloud-Team
+ * Copyright (c) contributors
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 package systems.reformcloud.reformcloud2.executor.api.common.process.detail;
 
 import org.jetbrains.annotations.ApiStatus;
@@ -16,6 +40,8 @@ import java.util.function.Consumer;
  */
 public final class ProcessUtil {
 
+    private final ProcessInformation parent;
+
     /**
      * Creates a new instance of the process util
      *
@@ -26,35 +52,31 @@ public final class ProcessUtil {
         this.parent = parent;
     }
 
-    private final ProcessInformation parent;
-
     /**
      * Starts the current process information if the process is only prepared and ready to start
      *
      * @see systems.reformcloud.reformcloud2.executor.api.common.api.process.ProcessSyncAPI#prepareProcess(ProcessConfiguration)
      */
     public void start() {
-        if (!parent.getProcessDetail().getProcessState().equals(ProcessState.PREPARED)) {
+        if (!this.parent.getProcessDetail().getProcessState().equals(ProcessState.PREPARED)) {
             return;
         }
 
-        ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().startProcess(parent);
+        ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().startProcess(this.parent);
     }
 
     /**
      * Copies the current process into the loaded template
      */
     public void copy() {
-        ExecutorAPI.getInstance().getAsyncAPI().getConsoleAsyncAPI().dispatchCommandAndGetResultAsync(
-                "p " + parent.getProcessDetail().getProcessUniqueID() + " copy"
-        );
+        ExecutorAPI.getInstance().getAsyncAPI().getProcessAsyncAPI().copyProcessAsync(this.parent);
     }
 
     /**
      * Starts a new process for the same group as the process util was created for
      */
     public void startNewOfSameGroup() {
-        ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().startProcess(parent.getProcessGroup().getName());
+        ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().startProcess(this.parent.getProcessGroup().getName());
     }
 
     /**
@@ -64,7 +86,7 @@ public final class ProcessUtil {
      */
     public void sendCommand(@NotNull String command) {
         ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().executeProcessCommand(
-                parent.getProcessDetail().getName(), command
+                this.parent.getProcessDetail().getName(), command
         );
     }
 
@@ -82,8 +104,8 @@ public final class ProcessUtil {
      * @param consumer The consumer which should consume the information before the stop
      */
     public void acceptAndStop(@NotNull Consumer<ProcessInformation> consumer) {
-        consumer.accept(parent);
-        ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().stopProcess(parent.getProcessDetail().getProcessUniqueID());
+        consumer.accept(this.parent);
+        ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().stopProcess(this.parent.getProcessDetail().getProcessUniqueID());
     }
 
     /**
@@ -100,7 +122,7 @@ public final class ProcessUtil {
      * @param consumer The consumer which should handle the process info before the update
      */
     public void acceptAndUpdate(@NotNull Consumer<ProcessInformation> consumer) {
-        consumer.accept(parent);
-        ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(parent);
+        consumer.accept(this.parent);
+        ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(this.parent);
     }
 }

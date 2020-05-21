@@ -1,32 +1,70 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) ReformCloud-Team
+ * Copyright (c) contributors
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 package systems.reformcloud.reformcloud2.executor.api.common.process;
 
 import com.google.gson.reflect.TypeToken;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
-import systems.reformcloud.reformcloud2.executor.api.common.groups.template.Template;
 import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.PlayerAccessConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.common.network.SerializableObject;
+import systems.reformcloud.reformcloud2.executor.api.common.network.data.ProtocolBuffer;
 import systems.reformcloud.reformcloud2.executor.api.common.plugins.basic.DefaultPlugin;
 import systems.reformcloud.reformcloud2.executor.api.common.process.api.ProcessInclusion;
 import systems.reformcloud.reformcloud2.executor.api.common.process.detail.ProcessDetail;
 import systems.reformcloud.reformcloud2.executor.api.common.process.detail.ProcessPlayerManager;
 import systems.reformcloud.reformcloud2.executor.api.common.process.detail.ProcessUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.process.event.ProcessInformationConfigureEvent;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.annotiations.ReplacedWith;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.clone.Clone;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.name.Nameable;
 
-import java.util.*;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public final class ProcessInformation implements Nameable, Clone<ProcessInformation> {
+public final class ProcessInformation implements Clone<ProcessInformation>, SerializableObject {
 
     public static final TypeToken<ProcessInformation> TYPE = new TypeToken<ProcessInformation>() {
     };
+    private ProcessPlayerManager processPlayerManager = new ProcessPlayerManager();
+    private ProcessDetail processDetail;
+    private NetworkInfo networkInfo;
+    private JsonConfiguration extra;
+    private List<DefaultPlugin> plugins = new CopyOnWriteArrayList<>();
+    private Collection<ProcessInclusion> preInclusions;
+    private ProcessGroup processGroup;
+
+    @ApiStatus.Internal
+    public ProcessInformation() {
+    }
 
     @ApiStatus.Internal
     public ProcessInformation(
@@ -42,33 +80,19 @@ public final class ProcessInformation implements Nameable, Clone<ProcessInformat
         ExecutorAPI.getInstance().getEventManager().callEvent(new ProcessInformationConfigureEvent(this));
     }
 
-    private final ProcessPlayerManager processPlayerManager = new ProcessPlayerManager();
-
-    private final ProcessDetail processDetail;
-
-    private final NetworkInfo networkInfo;
-
-    private final JsonConfiguration extra;
-
-    private final List<DefaultPlugin> plugins = new CopyOnWriteArrayList<>();
-
-    private final Collection<ProcessInclusion> preInclusions;
-
-    private ProcessGroup processGroup;
-
     public ProcessPlayerManager getProcessPlayerManager() {
-        return processPlayerManager;
+        return this.processPlayerManager;
     }
 
     public ProcessDetail getProcessDetail() {
-        return processDetail;
+        return this.processDetail;
     }
 
     /**
      * @return If the current process is a lobby process
      */
     public boolean isLobby() {
-        return this.processDetail.getTemplate().isServer() && processGroup.isCanBeUsedAsLobby();
+        return this.processDetail.getTemplate().isServer() && this.processGroup.isCanBeUsedAsLobby();
     }
 
     /**
@@ -76,7 +100,7 @@ public final class ProcessInformation implements Nameable, Clone<ProcessInformat
      */
     @NotNull
     public NetworkInfo getNetworkInfo() {
-        return networkInfo;
+        return this.networkInfo;
     }
 
     /**
@@ -84,31 +108,7 @@ public final class ProcessInformation implements Nameable, Clone<ProcessInformat
      */
     @NotNull
     public ProcessGroup getProcessGroup() {
-        return processGroup;
-    }
-
-    /**
-     * @return All plugins which are registered on the current process
-     */
-    @NotNull
-    public List<DefaultPlugin> getPlugins() {
-        return plugins;
-    }
-
-    /**
-     * @return The extra configuration which was given by the user
-     */
-    @NotNull
-    public JsonConfiguration getExtra() {
-        return extra;
-    }
-
-    /**
-     * @return All inclusions which are loaded before the start of the process
-     */
-    @NotNull
-    public Collection<ProcessInclusion> getPreInclusions() {
-        return preInclusions;
+        return this.processGroup;
     }
 
     /**
@@ -119,6 +119,30 @@ public final class ProcessInformation implements Nameable, Clone<ProcessInformat
     @ApiStatus.Internal
     public void setProcessGroup(@NotNull ProcessGroup processGroup) {
         this.processGroup = processGroup;
+    }
+
+    /**
+     * @return All plugins which are registered on the current process
+     */
+    @NotNull
+    public List<DefaultPlugin> getPlugins() {
+        return this.plugins;
+    }
+
+    /**
+     * @return The extra configuration which was given by the user
+     */
+    @NotNull
+    public JsonConfiguration getExtra() {
+        return this.extra;
+    }
+
+    /**
+     * @return All inclusions which are loaded before the start of the process
+     */
+    @NotNull
+    public Collection<ProcessInclusion> getPreInclusions() {
+        return this.preInclusions;
     }
 
     /**
@@ -133,8 +157,8 @@ public final class ProcessInformation implements Nameable, Clone<ProcessInformat
      */
     @NotNull
     public ProcessInformation updateMaxPlayers(@Nullable Integer value) {
-        if (processGroup.getPlayerAccessConfiguration().isUseCloudPlayerLimit()) {
-            this.processDetail.setMaxPlayers(processGroup.getPlayerAccessConfiguration().getMaxPlayers());
+        if (this.processGroup.getPlayerAccessConfiguration().isUseCloudPlayerLimit()) {
+            this.processDetail.setMaxPlayers(this.processGroup.getPlayerAccessConfiguration().getMaxPlayers());
         } else {
             if (value != null) {
                 this.processDetail.setMaxPlayers(value);
@@ -176,7 +200,7 @@ public final class ProcessInformation implements Nameable, Clone<ProcessInformat
         }
 
         ProcessInformation compare = (ProcessInformation) obj;
-        return Objects.equals(compare.getProcessDetail().getProcessUniqueID(), getProcessDetail().getProcessUniqueID());
+        return Objects.equals(compare.getProcessDetail().getProcessUniqueID(), this.getProcessDetail().getProcessUniqueID());
     }
 
     @Override
@@ -187,146 +211,34 @@ public final class ProcessInformation implements Nameable, Clone<ProcessInformat
     @Override
     @NotNull
     public String toString() {
-        return getName() + "/" + getProcessDetail().getProcessUniqueID();
+        return this.getProcessDetail().getName() + "/" + this.getProcessDetail().getProcessUniqueID();
     }
 
-    /* =========== Scheduled for removal =========== */
-
-    @NotNull
-    @ApiStatus.ScheduledForRemoval(inVersion = "2.3")
-    @Deprecated
-    @ReplacedWith("#getProcessDetail#getProcessState")
-    public ProcessState getProcessState() {
-        return this.processDetail.getProcessState();
-    }
-
-    @NotNull
-    @ApiStatus.ScheduledForRemoval(inVersion = "2.3")
-    @Deprecated
-    @ReplacedWith("#getProcessDetail#getProcessRuntimeInformation")
-    public ProcessRuntimeInformation getProcessRuntimeInformation() {
-        return this.processDetail.getProcessRuntimeInformation();
-    }
-
-    @ApiStatus.ScheduledForRemoval(inVersion = "2.3")
-    @Deprecated
-    @ReplacedWith("#getProcessDetail#setProcessState")
-    public void setProcessState(@NotNull ProcessState processState) {
-        this.processDetail.setProcessState(processState);
-    }
-
-    @NotNull
-    @ApiStatus.ScheduledForRemoval(inVersion = "2.3")
-    @Deprecated
-    @ReplacedWith("#getProcessDetail#getTemplate")
-    public Template getTemplate() {
-        return this.processDetail.getTemplate();
-    }
-
-    @ApiStatus.ScheduledForRemoval(inVersion = "2.3")
-    @Deprecated
-    @ReplacedWith("#getProcessDetail#getMaxPlayers")
-    public int getMaxPlayers() {
-        return this.processDetail.getMaxPlayers();
-    }
-
-    @NotNull
-    @ApiStatus.ScheduledForRemoval(inVersion = "2.3")
-    @Deprecated
-    @ReplacedWith("#getProcessDetail#getMaxMemory")
-    public Integer getMaxMemory() {
-        return this.processDetail.getMaxMemory();
-    }
-
-    @NotNull
-    @ApiStatus.ScheduledForRemoval(inVersion = "2.3")
-    @Deprecated
-    @ReplacedWith("#getProcessDetail#getDisplayName")
-    public String getDisplayName() {
-        return this.processDetail.getDisplayName();
-    }
-
-    @NotNull
-    @ApiStatus.ScheduledForRemoval(inVersion = "2.3")
-    @Deprecated
-    @ReplacedWith("#getProcessDetail#getParentName")
-    public String getParent() {
-        return this.processDetail.getParentName();
-    }
-
-    @Contract(pure = true)
-    @ApiStatus.ScheduledForRemoval(inVersion = "2.3")
-    @Deprecated
-    @ReplacedWith("#getProcessDetail#getParentUniqueID")
-    @NotNull
-    public UUID getNodeUniqueID() {
-        return this.processDetail.getParentUniqueID();
-    }
-
-    @NotNull
-    @ApiStatus.ScheduledForRemoval(inVersion = "2.3")
-    @Deprecated
-    @ReplacedWith("#getProcessDetail#getProcessDetail().getProcessUniqueID")
-    public UUID getProcessUniqueID() {
-        return this.processDetail.getProcessUniqueID();
-    }
-
-    @ApiStatus.ScheduledForRemoval(inVersion = "2.3")
-    @Deprecated
-    @ReplacedWith("#getProcessDetail#getId")
-    public int getId() {
-        return this.processDetail.getId();
-    }
-
-    @ApiStatus.ScheduledForRemoval(inVersion = "2.3")
-    @Deprecated
-    @ReplacedWith("#getProcessPlayerManager#getOnlineCount")
-    public int getOnlineCount() {
-        return this.processPlayerManager.getOnlineCount();
-    }
-
-    @NotNull
-    @ApiStatus.ScheduledForRemoval(inVersion = "2.3")
-    @Deprecated
-    @ReplacedWith("#getProcessPlayerManager#getOnlinePlayers")
-    public SortedSet<Player> getOnlinePlayers() {
-        return new TreeSet<>(this.processPlayerManager.getOnlinePlayers());
-    }
-
-    @NotNull
-    @ApiStatus.ScheduledForRemoval(inVersion = "2.3")
-    @Deprecated
     @Override
-    @ReplacedWith("#getProcessDetail#getName")
-    public String getName() {
-        return this.processDetail.getName();
+    public void write(@NotNull ProtocolBuffer buffer) {
+        buffer.writeObjects(this.processPlayerManager.getOnlinePlayers());
+        buffer.writeObject(this.processDetail);
+        buffer.writeObject(this.networkInfo);
+        buffer.writeObjects(this.plugins);
+        buffer.writeObjects(this.preInclusions);
+        buffer.writeObject(this.processGroup);
+        buffer.writeArray(this.extra.toPrettyBytes());
     }
 
-    @ApiStatus.ScheduledForRemoval(inVersion = "2.3")
-    @Deprecated
-    @ReplacedWith("#getProcessPlayerManager#onLogin")
-    public boolean onLogin(@NotNull UUID playerUuid, @NotNull String playerName) {
-        return this.processPlayerManager.onLogin(playerUuid, playerName);
-    }
+    @Override
+    public void read(@NotNull ProtocolBuffer buffer) {
+        this.processPlayerManager = new ProcessPlayerManager(buffer.readObjects(Player.class));
+        this.processDetail = buffer.readObject(ProcessDetail.class);
+        this.networkInfo = buffer.readObject(NetworkInfo.class);
+        this.plugins = buffer.readObjects(DefaultPlugin.class);
+        this.preInclusions = new CopyOnWriteArrayList<>(buffer.readObjects(ProcessInclusion.class));
+        this.processGroup = buffer.readObject(ProcessGroup.class);
 
-    @ApiStatus.ScheduledForRemoval(inVersion = "2.3")
-    @Deprecated
-    @ReplacedWith("#getProcessPlayerManager#onLogout")
-    public void onLogout(@NotNull UUID uniqueID) {
-        this.processPlayerManager.onLogout(uniqueID);
-    }
-
-    @ApiStatus.ScheduledForRemoval(inVersion = "2.3")
-    @Deprecated
-    @ReplacedWith("#getProcessPlayerManager#isPlayerOnlineOnCurrentProcess")
-    public boolean isPlayerOnline(@NotNull UUID uniqueID) {
-        return this.processPlayerManager.isPlayerOnlineOnCurrentProcess(uniqueID);
-    }
-
-    @ApiStatus.ScheduledForRemoval(inVersion = "2.3")
-    @Deprecated
-    @ReplacedWith("#getProcessPlayerManager#isPlayerOnlineOnCurrentProcess")
-    public boolean isPlayerOnline(@NotNull String name) {
-        return this.processPlayerManager.isPlayerOnlineOnCurrentProcess(name);
+        try (InputStream stream = new ByteArrayInputStream(buffer.readArray())) {
+            this.extra = new JsonConfiguration(stream);
+        } catch (final IOException ex) {
+            ex.printStackTrace();
+            this.extra = new JsonConfiguration();
+        }
     }
 }

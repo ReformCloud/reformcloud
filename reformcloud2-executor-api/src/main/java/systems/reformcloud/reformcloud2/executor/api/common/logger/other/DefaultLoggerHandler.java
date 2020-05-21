@@ -1,3 +1,27 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) ReformCloud-Team
+ * Copyright (c) contributors
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 package systems.reformcloud.reformcloud2.executor.api.common.logger.other;
 
 import org.jetbrains.annotations.NotNull;
@@ -30,6 +54,9 @@ import java.util.logging.Level;
 public final class DefaultLoggerHandler extends LoggerBase {
 
     private static String prompt = StringUtil.getConsolePrompt();
+    private final LineReader lineReader;
+    private final Debugger debugger = new DefaultDebugger();
+    private final List<LoggerLineHandler> handlers = new ArrayList<>();
 
     public DefaultLoggerHandler(@NotNull CommandManager commandManager) throws IOException {
         Terminal terminal = TerminalLineHandler.newTerminal(false);
@@ -38,48 +65,42 @@ public final class DefaultLoggerHandler extends LoggerBase {
         FileHandler fileHandler = new FileHandler("logs/cloud.log", 70000000, 8, true);
         fileHandler.setLevel(Level.ALL);
         fileHandler.setFormatter(new LogFileFormatter(this));
-        addHandler(fileHandler);
+        this.addHandler(fileHandler);
 
         HandlerBase consoleHandler = new DefaultConsoleHandler(this);
         consoleHandler.setLevel(Level.ALL);
         consoleHandler.setFormatter(new DefaultLogFormatter(this));
-        addHandler(consoleHandler);
+        this.addHandler(consoleHandler);
 
         System.setOut(new PrintStream(new OutputStream(this, Level.INFO), true));
         System.setErr(new PrintStream(new OutputStream(this, Level.SEVERE), true));
     }
 
-    private final LineReader lineReader;
-
-    private final Debugger debugger = new DefaultDebugger();
-
-    private final List<LoggerLineHandler> handlers = new ArrayList<>();
-
     @NotNull
     @Override
     public LineReader getLineReader() {
-        return lineReader;
+        return this.lineReader;
     }
 
     @NotNull
     @Override
     public String readLine() {
-        return TerminalLineHandler.readLine(lineReader, prompt);
+        return TerminalLineHandler.readLine(this.lineReader, prompt);
     }
 
     @NotNull
     @Override
     public String readLineNoPrompt() {
-        return TerminalLineHandler.readLine(lineReader, null);
+        return TerminalLineHandler.readLine(this.lineReader, null);
     }
 
     @NotNull
     @Override
     public String readString(@NotNull Predicate<String> predicate, @NotNull Runnable invalidInputMessage) {
-        String line = readLine();
+        String line = this.readLine();
         while (!predicate.test(line)) {
             invalidInputMessage.run();
-            line = readLine();
+            line = this.readLine();
         }
 
         return line;
@@ -88,11 +109,11 @@ public final class DefaultLoggerHandler extends LoggerBase {
     @NotNull
     @Override
     public <T> T read(@NotNull Function<String, T> function, @NotNull Runnable invalidInputMessage) {
-        String line = readLine();
+        String line = this.readLine();
         T result;
         while ((result = function.apply(line)) == null) {
             invalidInputMessage.run();
-            line = readLine();
+            line = this.readLine();
         }
 
         return result;
@@ -101,31 +122,31 @@ public final class DefaultLoggerHandler extends LoggerBase {
     @Override
     public void log(@NotNull String message) {
         message += '\r';
-        handleLine(message);
+        this.handleLine(message);
 
-        lineReader.getTerminal().puts(InfoCmp.Capability.carriage_return);
-        lineReader.getTerminal().writer().print(message);
-        lineReader.getTerminal().flush();
+        this.lineReader.getTerminal().puts(InfoCmp.Capability.carriage_return);
+        this.lineReader.getTerminal().writer().print(message);
+        this.lineReader.getTerminal().flush();
 
-        TerminalLineHandler.tryRedisplay(lineReader);
+        TerminalLineHandler.tryRedisplay(this.lineReader);
     }
 
     @Override
     public void logRaw(@NotNull String message) {
         message += '\r';
-        handleLine(message);
+        this.handleLine(message);
 
-        lineReader.getTerminal().puts(InfoCmp.Capability.carriage_return);
-        lineReader.getTerminal().writer().print(message);
-        lineReader.getTerminal().flush();
+        this.lineReader.getTerminal().puts(InfoCmp.Capability.carriage_return);
+        this.lineReader.getTerminal().writer().print(message);
+        this.lineReader.getTerminal().flush();
 
-        TerminalLineHandler.tryRedisplay(lineReader);
+        TerminalLineHandler.tryRedisplay(this.lineReader);
     }
 
     @NotNull
     @Override
     public LoggerBase addLogLineHandler(@NotNull LoggerLineHandler handler) {
-        handlers.add(handler);
+        this.handlers.add(handler);
         return this;
     }
 
@@ -137,7 +158,7 @@ public final class DefaultLoggerHandler extends LoggerBase {
     @NotNull
     @Override
     public Debugger getDebugger() {
-        return debugger;
+        return this.debugger;
     }
 
     @Override
@@ -147,12 +168,12 @@ public final class DefaultLoggerHandler extends LoggerBase {
 
     @Override
     public void close() throws Exception {
-        lineReader.getTerminal().flush();
-        lineReader.getTerminal().close();
+        this.lineReader.getTerminal().flush();
+        this.lineReader.getTerminal().close();
     }
 
     private void handleLine(String line) {
-        handlers.forEach(handler -> {
+        this.handlers.forEach(handler -> {
             handler.handleLine(line, DefaultLoggerHandler.this);
             handler.handleRaw(line, DefaultLoggerHandler.this); //Line is always raw because no colour is used
         });

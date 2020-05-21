@@ -7,12 +7,12 @@
     <groupId>systems.reformcloud.reformcloud2</groupId>
     <artifactId>reformcloud2</artifactId>
     <packaging>pom</packaging>
-    <version>2.2.1</version>
+    <version>2.2.2</version>
 
     <licenses>
         <license>
-            <name>The Apache License, Version 2.0</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <name>MIT License</name>
+            <url>https://opensource.org/licenses/MIT</url>
         </license>
     </licenses>
 
@@ -65,7 +65,9 @@
     <modules>
         <module>reformcloud2-executor-api</module>
         <module>reformcloud2-executor</module>
-        <module>reformcloud2-external</module>
+        <module>reformcloud2-plugins</module>
+        <module>reformcloud2-applications</module>
+        <module>reformcloud2-examples</module>
         <module>reformcloud2-runner</module>
     </modules>
 
@@ -95,7 +97,7 @@
             <plugin>
                 <groupId>net.md-5</groupId>
                 <artifactId>scriptus</artifactId>
-                <version>0.3.2</version>
+                <version>0.4.1</version>
                 <configuration>
                     <format>%s</format>
                 </configuration>

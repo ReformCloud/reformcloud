@@ -1,3 +1,27 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) ReformCloud-Team
+ * Copyright (c) contributors
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 package systems.reformcloud.reformcloud2.executor.api.common.configuration;
 
 import com.google.gson.*;
@@ -23,18 +47,36 @@ import java.util.function.Predicate;
 
 public class JsonConfiguration implements Configurable<JsonElement, JsonConfiguration> {
 
-    public static final ThreadLocal<Gson> GSON = ThreadLocal.withInitial(
-            () -> new GsonBuilder()
-                    .setPrettyPrinting()
-                    .serializeNulls()
-                    .disableHtmlEscaping()
-                    .serializeSpecialFloatingPointValues()
-                    .setDateFormat(DateFormat.LONG)
-                    .registerTypeAdapterFactory(TypeAdapters.newTypeHierarchyFactory(JsonConfiguration.class, new JsonConfigurationTypeAdapter()))
-                    .create()
-    );
+    private Gson gson = new GsonBuilder()
+            .setPrettyPrinting()
+            .serializeNulls()
+            .disableHtmlEscaping()
+            .serializeSpecialFloatingPointValues()
+            .setDateFormat(DateFormat.LONG)
+            .registerTypeAdapterFactory(TypeAdapters.newTypeHierarchyFactory(JsonConfiguration.class, new JsonConfigurationTypeAdapter()))
+            .create();
+    private JsonObject jsonObject = new JsonObject();
 
     public JsonConfiguration() {
+    }
+
+    public JsonConfiguration(@NotNull Gson gson) {
+        this.gson = gson;
+    }
+
+    public JsonConfiguration(@NotNull byte[] bytes) {
+        try (InputStreamReader stream = new InputStreamReader(new ByteArrayInputStream(bytes))) {
+            JsonElement element = InternalJsonParser.parseReader(stream);
+            if (!element.isJsonObject()) {
+                this.jsonObject = new JsonObject();
+                return;
+            }
+
+            this.jsonObject = element.getAsJsonObject();
+        } catch (final Throwable throwable) {
+            throwable.printStackTrace();
+            this.jsonObject = new JsonObject();
+        }
     }
 
     public JsonConfiguration(String json) {
@@ -90,13 +132,44 @@ public class JsonConfiguration implements Configurable<JsonElement, JsonConfigur
         this.jsonObject = jsonObject;
     }
 
-    private JsonObject jsonObject = new JsonObject();
+    public static JsonConfiguration read(Path path) {
+        if (!Files.exists(path)) {
+            return new JsonConfiguration();
+        }
+
+        try (InputStreamReader inputStreamReader = new InputStreamReader(Files.newInputStream(path), StandardCharsets.UTF_8)) {
+            return new JsonConfiguration(inputStreamReader);
+        } catch (final IOException ex) {
+            ex.printStackTrace();
+        }
+
+        return new JsonConfiguration();
+    }
+
+    @NotNull
+    public static JsonConfiguration fromMap(@NotNull Map<String, JsonElement> map) {
+        JsonConfiguration out = new JsonConfiguration();
+
+        for (Map.Entry<String, JsonElement> stringJsonElementEntry : map.entrySet()) {
+            out.getJsonObject().add(stringJsonElementEntry.getKey(), stringJsonElementEntry.getValue());
+        }
+
+        return out;
+    }
+
+    public static JsonConfiguration read(String path) {
+        return read(Paths.get(path));
+    }
+
+    public static JsonConfiguration read(File path) {
+        return read(path.toPath());
+    }
 
     @NotNull
     @Override
     public JsonConfiguration add(@NotNull String key, @Nullable JsonConfiguration value) {
         if (value == null) {
-            jsonObject.add(key, JsonNull.INSTANCE);
+            this.jsonObject.add(key, JsonNull.INSTANCE);
             return this;
         }
 
@@ -108,11 +181,11 @@ public class JsonConfiguration implements Configurable<JsonElement, JsonConfigur
     @Override
     public JsonConfiguration add(@NotNull String key, @Nullable Object value) {
         if (value == null) {
-            jsonObject.add(key, JsonNull.INSTANCE);
+            this.jsonObject.add(key, JsonNull.INSTANCE);
             return this;
         }
 
-        this.jsonObject.add(key, GSON.get().toJsonTree(value));
+        this.jsonObject.add(key, this.gson.toJsonTree(value));
         return this;
     }
 
@@ -182,120 +255,120 @@ public class JsonConfiguration implements Configurable<JsonElement, JsonConfigur
     @NotNull
     @Override
     public JsonConfiguration get(@NotNull String key) {
-        return getOrDefault(key, new JsonConfiguration());
+        return this.getOrDefault(key, new JsonConfiguration());
     }
 
     @Override
     public <T> T get(@NotNull String key, @NotNull TypeToken<T> type) {
-        return getOrDefault(key, type.getType(), null);
+        return this.getOrDefault(key, type.getType(), null);
     }
 
     @Override
     public <T> T get(@NotNull String key, @NotNull Class<T> type) {
-        return getOrDefault(key, type, null);
+        return this.getOrDefault(key, type, null);
     }
 
     @NotNull
     @Override
     public String getString(@NotNull String key) {
-        return getOrDefault(key, "");
+        return this.getOrDefault(key, "");
     }
 
     @NotNull
     @Override
     public Integer getInteger(String key) {
-        return getOrDefault(key, -1);
+        return this.getOrDefault(key, -1);
     }
 
     @NotNull
     @Override
     public Long getLong(String key) {
-        return getOrDefault(key, (long) -1);
+        return this.getOrDefault(key, (long) -1);
     }
 
     @NotNull
     @Override
     public Short getShort(String key) {
-        return getOrDefault(key, (short) -1);
+        return this.getOrDefault(key, (short) -1);
     }
 
     @NotNull
     @Override
     public Byte getByte(String key) {
-        return getOrDefault(key, (byte) -1);
+        return this.getOrDefault(key, (byte) -1);
     }
 
     @NotNull
     @Override
     public Boolean getBoolean(String key) {
-        return getOrDefault(key, false);
+        return this.getOrDefault(key, false);
     }
 
     @NotNull
     @Override
     public Double getDouble(String key) {
-        return getOrDefault(key, -1D);
+        return this.getOrDefault(key, -1D);
     }
 
     @NotNull
     @Override
     public Float getFloat(String key) {
-        return getOrDefault(key, -1F);
+        return this.getOrDefault(key, -1F);
     }
 
     @Override
     public JsonConfiguration getOrDefault(String key, JsonConfiguration def) {
-        return getOrDefaultIf(key, def, jsonConfiguration -> true);
+        return this.getOrDefaultIf(key, def, jsonConfiguration -> true);
     }
 
     @Override
     public <T> T getOrDefault(String key, Type type, T def) {
-        return getOrDefaultIf(key, type, def, t -> true);
+        return this.getOrDefaultIf(key, type, def, t -> true);
     }
 
     @Override
     public <T> T getOrDefault(String key, Class<T> type, T def) {
-        return getOrDefaultIf(key, type, def, t -> true);
+        return this.getOrDefaultIf(key, type, def, t -> true);
     }
 
     @Override
     public String getOrDefault(String key, String def) {
-        return getOrDefaultIf(key, def, s -> true);
+        return this.getOrDefaultIf(key, def, s -> true);
     }
 
     @Override
     public Integer getOrDefault(String key, Integer def) {
-        return getOrDefaultIf(key, def, integer -> true);
+        return this.getOrDefaultIf(key, def, integer -> true);
     }
 
     @Override
     public Long getOrDefault(String key, Long def) {
-        return getOrDefaultIf(key, def, aLong -> true);
+        return this.getOrDefaultIf(key, def, aLong -> true);
     }
 
     @Override
     public Short getOrDefault(String key, Short def) {
-        return getOrDefaultIf(key, def, aShort -> true);
+        return this.getOrDefaultIf(key, def, aShort -> true);
     }
 
     @Override
     public Byte getOrDefault(String key, Byte def) {
-        return getOrDefaultIf(key, def, aByte -> true);
+        return this.getOrDefaultIf(key, def, aByte -> true);
     }
 
     @Override
     public Boolean getOrDefault(String key, Boolean def) {
-        return getOrDefaultIf(key, def, aBoolean -> true);
+        return this.getOrDefaultIf(key, def, aBoolean -> true);
     }
 
     @Override
     public Double getOrDefault(String key, Double def) {
-        return getOrDefaultIf(key, def, s -> true);
+        return this.getOrDefaultIf(key, def, s -> true);
     }
 
     @Override
     public Float getOrDefault(String key, Float def) {
-        return getOrDefaultIf(key, def, aFloat -> true);
+        return this.getOrDefaultIf(key, def, aFloat -> true);
     }
 
     private JsonElement getElement(String key) {
@@ -328,7 +401,7 @@ public class JsonConfiguration implements Configurable<JsonElement, JsonConfigur
             return def;
         }
 
-        T result = GSON.get().fromJson(jsonElement, type);
+        T result = this.gson.fromJson(jsonElement, type);
         if (predicate.test(result)) {
             return result;
         }
@@ -343,7 +416,7 @@ public class JsonConfiguration implements Configurable<JsonElement, JsonConfigur
             return def;
         }
 
-        T result = GSON.get().fromJson(jsonElement, type);
+        T result = this.gson.fromJson(jsonElement, type);
         if (predicate.test(result)) {
             return result;
         }
@@ -353,11 +426,11 @@ public class JsonConfiguration implements Configurable<JsonElement, JsonConfigur
 
     @Override
     public String getOrDefaultIf(String key, String def, Predicate<String> predicate) {
-        if (!has(key)) {
+        if (!this.has(key)) {
             return def;
         }
 
-        String result = jsonObject.get(key).getAsString();
+        String result = this.jsonObject.get(key).getAsString();
         if (predicate.test(result)) {
             return result;
         }
@@ -366,11 +439,11 @@ public class JsonConfiguration implements Configurable<JsonElement, JsonConfigur
 
     @Override
     public Integer getOrDefaultIf(String key, Integer def, Predicate<Integer> predicate) {
-        if (!has(key)) {
+        if (!this.has(key)) {
             return def;
         }
 
-        Integer result = jsonObject.get(key).getAsInt();
+        Integer result = this.jsonObject.get(key).getAsInt();
         if (predicate.test(result)) {
             return result;
         }
@@ -379,11 +452,11 @@ public class JsonConfiguration implements Configurable<JsonElement, JsonConfigur
 
     @Override
     public Long getOrDefaultIf(String key, Long def, Predicate<Long> predicate) {
-        if (!has(key)) {
+        if (!this.has(key)) {
             return def;
         }
 
-        Long result = jsonObject.get(key).getAsLong();
+        Long result = this.jsonObject.get(key).getAsLong();
         if (predicate.test(result)) {
             return result;
         }
@@ -392,11 +465,11 @@ public class JsonConfiguration implements Configurable<JsonElement, JsonConfigur
 
     @Override
     public Short getOrDefaultIf(String key, Short def, Predicate<Short> predicate) {
-        if (!has(key)) {
+        if (!this.has(key)) {
             return def;
         }
 
-        Short result = jsonObject.get(key).getAsShort();
+        Short result = this.jsonObject.get(key).getAsShort();
         if (predicate.test(result)) {
             return result;
         }
@@ -405,11 +478,11 @@ public class JsonConfiguration implements Configurable<JsonElement, JsonConfigur
 
     @Override
     public Byte getOrDefaultIf(String key, Byte def, Predicate<Byte> predicate) {
-        if (!has(key)) {
+        if (!this.has(key)) {
             return def;
         }
 
-        Byte result = jsonObject.get(key).getAsByte();
+        Byte result = this.jsonObject.get(key).getAsByte();
         if (predicate.test(result)) {
             return result;
         }
@@ -418,11 +491,11 @@ public class JsonConfiguration implements Configurable<JsonElement, JsonConfigur
 
     @Override
     public Boolean getOrDefaultIf(String key, Boolean def, Predicate<Boolean> predicate) {
-        if (!has(key)) {
+        if (!this.has(key)) {
             return def;
         }
 
-        Boolean result = jsonObject.get(key).getAsBoolean();
+        Boolean result = this.jsonObject.get(key).getAsBoolean();
         if (predicate.test(result)) {
             return result;
         }
@@ -431,11 +504,11 @@ public class JsonConfiguration implements Configurable<JsonElement, JsonConfigur
 
     @Override
     public Double getOrDefaultIf(String key, Double def, Predicate<Double> predicate) {
-        if (!has(key)) {
+        if (!this.has(key)) {
             return def;
         }
 
-        Double result = jsonObject.get(key).getAsDouble();
+        Double result = this.jsonObject.get(key).getAsDouble();
         if (predicate.test(result)) {
             return result;
         }
@@ -445,11 +518,11 @@ public class JsonConfiguration implements Configurable<JsonElement, JsonConfigur
 
     @Override
     public Float getOrDefaultIf(String key, Float def, Predicate<Float> predicate) {
-        if (!has(key)) {
+        if (!this.has(key)) {
             return def;
         }
 
-        Float result = jsonObject.get(key).getAsFloat();
+        Float result = this.jsonObject.get(key).getAsFloat();
         if (predicate.test(result)) {
             return result;
         }
@@ -459,7 +532,7 @@ public class JsonConfiguration implements Configurable<JsonElement, JsonConfigur
 
     @Override
     public boolean has(String key) {
-        return jsonObject.has(key) && getElement(key) != null;
+        return this.jsonObject.has(key) && this.getElement(key) != null;
     }
 
     @Override
@@ -468,7 +541,7 @@ public class JsonConfiguration implements Configurable<JsonElement, JsonConfigur
         SystemHelper.createFile(path);
 
         try (OutputStreamWriter outputStreamWriter = new OutputStreamWriter(Files.newOutputStream(path), StandardCharsets.UTF_8)) {
-            GSON.get().toJson(jsonObject, outputStreamWriter);
+            this.gson.toJson(this.jsonObject, outputStreamWriter);
         } catch (final IOException ex) {
             ex.printStackTrace();
         }
@@ -476,24 +549,24 @@ public class JsonConfiguration implements Configurable<JsonElement, JsonConfigur
 
     @Override
     public void write(String path) {
-        write(Paths.get(path));
+        this.write(Paths.get(path));
     }
 
     @Override
     public void write(File path) {
-        write(path.toPath());
+        this.write(path.toPath());
     }
 
     @NotNull
     @Override
     public String toPrettyString() {
-        return GSON.get().toJson(jsonObject);
+        return this.gson.toJson(this.jsonObject);
     }
 
     @NotNull
     @Override
     public byte[] toPrettyBytes() {
-        return toPrettyString().getBytes(StandardCharsets.UTF_8);
+        return this.toPrettyString().getBytes(StandardCharsets.UTF_8);
     }
 
     @NotNull
@@ -514,38 +587,11 @@ public class JsonConfiguration implements Configurable<JsonElement, JsonConfigur
     }
 
     public JsonObject getJsonObject() {
-        return jsonObject;
+        return this.jsonObject;
     }
 
-    public static JsonConfiguration read(Path path) {
-        if (!Files.exists(path)) {
-            return new JsonConfiguration();
-        }
-
-        try (InputStreamReader inputStreamReader = new InputStreamReader(Files.newInputStream(path), StandardCharsets.UTF_8)) {
-            return new JsonConfiguration(inputStreamReader);
-        } catch (final IOException ex) {
-            ex.printStackTrace();
-        }
-
-        return new JsonConfiguration();
-    }
-
-    public static JsonConfiguration fromMap(@NotNull Map<String, JsonElement> map) {
-        JsonConfiguration out = new JsonConfiguration();
-
-        for (Map.Entry<String, JsonElement> stringJsonElementEntry : map.entrySet()) {
-            out.getJsonObject().add(stringJsonElementEntry.getKey(), stringJsonElementEntry.getValue());
-        }
-
-        return out;
-    }
-
-    public static JsonConfiguration read(String path) {
-        return read(Paths.get(path));
-    }
-
-    public static JsonConfiguration read(File path) {
-        return read(path.toPath());
+    @NotNull
+    public Gson getGson() {
+        return this.gson;
     }
 }

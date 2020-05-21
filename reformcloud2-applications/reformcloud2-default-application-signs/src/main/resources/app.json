@@ -1,0 +1,7 @@
+{
+  "name": "SignAddon",
+  "author": "derklaro",
+  "main": "systems.reformcloud.reformcloud2.signs.application.ReformCloudApplication",
+  "version": "2.2.2",
+  "impl-version": "2.2.2"
+}

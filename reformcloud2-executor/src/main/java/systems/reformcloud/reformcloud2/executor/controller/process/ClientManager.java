@@ -1,3 +1,27 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) ReformCloud-Team
+ * Copyright (c) contributors
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 package systems.reformcloud.reformcloud2.executor.controller.process;
 
 import org.jetbrains.annotations.NotNull;
@@ -12,26 +36,24 @@ import java.util.concurrent.TimeUnit;
 
 public final class ClientManager {
 
+    public static final ClientManager INSTANCE = new ClientManager();
     private final Collection<ClientRuntimeInformation> clientRuntimeInformation = new CopyOnWriteArrayList<>();
-
     /**
      * Represents the internal client process
      */
     private Process process;
 
-    public static final ClientManager INSTANCE = new ClientManager();
-
     public void connectClient(ClientRuntimeInformation info) {
-        clientRuntimeInformation.add(info);
+        this.clientRuntimeInformation.add(info);
     }
 
     public void disconnectClient(String name) {
-        ClientRuntimeInformation found = Streams.filter(clientRuntimeInformation, clientRuntimeInformation -> clientRuntimeInformation.getName().equals(name));
+        ClientRuntimeInformation found = Streams.filter(this.clientRuntimeInformation, clientRuntimeInformation -> clientRuntimeInformation.getName().equals(name));
         if (found == null) {
             return;
         }
 
-        clientRuntimeInformation.remove(found);
+        this.clientRuntimeInformation.remove(found);
         System.out.println(LanguageManager.get(
                 "client-connection-lost",
                 found.getName()
@@ -39,26 +61,26 @@ public final class ClientManager {
     }
 
     public void updateClient(ClientRuntimeInformation information) {
-        ClientRuntimeInformation found = Streams.filter(clientRuntimeInformation, clientRuntimeInformation -> clientRuntimeInformation.getName().equals(information.getName()));
+        ClientRuntimeInformation found = Streams.filter(this.clientRuntimeInformation, clientRuntimeInformation -> clientRuntimeInformation.getName().equals(information.getName()));
         if (found == null) {
             return;
         }
 
-        clientRuntimeInformation.remove(found);
-        clientRuntimeInformation.add(information);
+        this.clientRuntimeInformation.remove(found);
+        this.clientRuntimeInformation.add(information);
     }
 
     public void onShutdown() {
-        clientRuntimeInformation.clear();
-        if (process == null) {
+        this.clientRuntimeInformation.clear();
+        if (this.process == null) {
             return;
         }
 
-        JavaProcessHelper.shutdown(process, true, true, TimeUnit.SECONDS.toMillis(10), "stop\n");
+        JavaProcessHelper.shutdown(this.process, true, true, TimeUnit.SECONDS.toMillis(10), "stop\n");
     }
 
     public Process getProcess() {
-        return process;
+        return this.process;
     }
 
     public void setProcess(Process process) {
@@ -70,6 +92,6 @@ public final class ClientManager {
     }
 
     public Collection<ClientRuntimeInformation> getClientRuntimeInformation() {
-        return clientRuntimeInformation;
+        return this.clientRuntimeInformation;
     }
 }

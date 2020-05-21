@@ -1,163 +1,161 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) ReformCloud-Team
+ * Copyright (c) contributors
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 package systems.reformcloud.reformcloud2.executor.api.bungee.event;
 
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.*;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 import net.md_5.bungee.event.EventPriority;
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.api.API;
 import systems.reformcloud.reformcloud2.executor.api.bungee.BungeeExecutor;
+import systems.reformcloud.reformcloud2.executor.api.bungee.fallback.BungeeFallbackExtraFilter;
+import systems.reformcloud.reformcloud2.executor.api.bungee.util.EmptyProxiedPlayer;
 import systems.reformcloud.reformcloud2.executor.api.common.CommonHelper;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.PlayerAccessConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
+import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Duo;
 import systems.reformcloud.reformcloud2.executor.api.network.packets.out.APIBungeePacketOutPlayerServerSwitch;
 import systems.reformcloud.reformcloud2.executor.api.network.packets.out.APIPacketOutLogoutPlayer;
 import systems.reformcloud.reformcloud2.executor.api.network.packets.out.APIPacketOutPlayerCommandExecute;
 import systems.reformcloud.reformcloud2.executor.api.network.packets.out.APIPacketOutPlayerLoggedIn;
+import systems.reformcloud.reformcloud2.executor.api.shared.SharedJoinAllowChecker;
+import systems.reformcloud.reformcloud2.executor.api.shared.SharedPlayerFallbackFilter;
 
 public final class PlayerListenerHandler implements Listener {
 
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void handle(final ServerConnectEvent event) {
-        final ProxiedPlayer proxiedPlayer = event.getPlayer();
-        proxiedPlayer.setReconnectServer(null);
-        if (proxiedPlayer.getServer() == null) {
-            ProcessInformation lobby = BungeeExecutor.getBestLobbyForPlayer(
-                    API.getInstance().getCurrentProcessInformation(),
-                    proxiedPlayer::hasPermission,
+    @EventHandler
+    public void handle(final @NotNull ServerConnectEvent event) {
+        event.getPlayer().setReconnectServer(null);
+        if (event.getPlayer().getServer() == null) {
+            SharedPlayerFallbackFilter.filterFallback(
+                    event.getPlayer().getUniqueId(),
+                    BungeeExecutor.getInstance().getCachedLobbyServices(),
+                    event.getPlayer()::hasPermission,
+                    BungeeFallbackExtraFilter.INSTANCE,
                     null
-            );
-            if (lobby != null) {
-                event.setTarget(ProxyServer.getInstance().getServerInfo(lobby.getProcessDetail().getName()));
-            } else {
-                proxiedPlayer.disconnect(TextComponent.fromLegacyText(BungeeExecutor.getInstance().getMessages().format(
-                        BungeeExecutor.getInstance().getMessages().getNoHubServerAvailable()
-                )));
-                event.setCancelled(true);
-            }
+            )
+                    .ifPresent(processInformation -> event.setTarget(ProxyServer.getInstance().getServerInfo(processInformation.getProcessDetail().getName())))
+                    .ifEmpty(v -> {
+                        event.getPlayer().disconnect(TextComponent.fromLegacyText(BungeeExecutor.getInstance().getMessages().format(
+                                BungeeExecutor.getInstance().getMessages().getNoHubServerAvailable()
+                        )));
+                        event.setCancelled(true);
+                    });
         }
 
-        if (!event.isCancelled()) {
+        if (!event.isCancelled() && event.getTarget() != null) {
             DefaultChannelManager.INSTANCE.get("Controller").ifPresent(sender -> sender.sendPacket(new APIBungeePacketOutPlayerServerSwitch(
                     event.getPlayer().getUniqueId(),
+                    event.getPlayer().getServer() == null ? null : event.getPlayer().getServer().getInfo().getName(),
                     event.getTarget().getName()
             )));
-            AbsoluteThread.sleep(20);
         }
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.HIGH)
     public void handle(final LoginEvent event) {
         PacketSender sender = DefaultChannelManager.INSTANCE.get("Controller").orElse(null);
         if (sender == null) {
-            event.setCancelReason(TextComponent.fromLegacyText("§4§lThe current proxy is not connected to the controller"));
+            event.setCancelReason(TextComponent.fromLegacyText(BungeeExecutor.getInstance().getMessages().format(
+                    BungeeExecutor.getInstance().getMessages().getProcessNotReadyToAcceptPlayersMessage()
+            )));
+            event.setCancelled(true);
+            return;
+        }
+
+        Duo<Boolean, String> checked = SharedJoinAllowChecker.checkIfConnectAllowed(
+                perm -> new EmptyProxiedPlayer(event.getConnection()).hasPermission(perm),
+                BungeeExecutor.getInstance().getMessages(),
+                BungeeExecutor.getInstance().getCachedProxyServices(),
+                event.getConnection().getUniqueId(),
+                event.getConnection().getName()
+        );
+        if (!checked.getFirst() && checked.getSecond() != null) {
+            event.setCancelReason(TextComponent.fromLegacyText(checked.getSecond()));
             event.setCancelled(true);
         }
     }
 
     @EventHandler
     public void handle(final PostLoginEvent event) {
-        final ProxiedPlayer player = event.getPlayer();
-        final ProcessInformation current = API.getInstance().getCurrentProcessInformation();
-        final PlayerAccessConfiguration configuration = current.getProcessGroup().getPlayerAccessConfiguration();
-
-        if (configuration.isUseCloudPlayerLimit()
-                && configuration.getMaxPlayers() < current.getProcessPlayerManager().getOnlineCount() + 1
-                && !player.hasPermission(configuration.getFullJoinPermission())) {
-            player.disconnect(TextComponent.fromLegacyText(format(
-                    BungeeExecutor.getInstance().getMessages().getProcessFullMessage()
-            )));
-            return;
-        }
-
-        if (configuration.isJoinOnlyPerPermission() && !player.hasPermission(configuration.getJoinPermission())) {
-            player.disconnect(TextComponent.fromLegacyText(format(
-                    BungeeExecutor.getInstance().getMessages().getProcessEnterPermissionNotSet()
-            )));
-            return;
-        }
-
-        if (configuration.isMaintenance() && !player.hasPermission(configuration.getMaintenanceJoinPermission())) {
-            player.disconnect(TextComponent.fromLegacyText(format(
-                    BungeeExecutor.getInstance().getMessages().getProcessInMaintenanceMessage()
-            )));
-            return;
-        }
-
-        if (current.getProcessDetail().getProcessState().equals(ProcessState.FULL) && !player.hasPermission(configuration.getFullJoinPermission())) {
-            player.disconnect(TextComponent.fromLegacyText(format(
-                    BungeeExecutor.getInstance().getMessages().getProcessFullMessage()
-            )));
-            return;
-        }
-
-        if (!current.getProcessPlayerManager().onLogin(event.getPlayer().getUniqueId(), event.getPlayer().getName())) {
-            player.disconnect(TextComponent.fromLegacyText(format(
-                    BungeeExecutor.getInstance().getMessages().getAlreadyConnectedMessage()
-            )));
-            return;
-        }
-
-        if (ProxyServer.getInstance().getOnlineCount() >= current.getProcessDetail().getMaxPlayers()
-                && !current.getProcessDetail().getProcessState().equals(ProcessState.FULL)
-                && !current.getProcessDetail().getProcessState().equals(ProcessState.INVISIBLE)) {
-            current.getProcessDetail().setProcessState(ProcessState.FULL);
-        }
-
-        current.updateRuntimeInformation();
-        BungeeExecutor.getInstance().setThisProcessInformation(current); //Update it directly on the current host to prevent issues
-        ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(current);
-
-        CommonHelper.EXECUTOR.execute(() -> DefaultChannelManager.INSTANCE.get("Controller").ifPresent(packetSender -> packetSender.sendPacket(new APIPacketOutPlayerLoggedIn(event.getPlayer().getName()))));
+        CommonHelper.EXECUTOR.execute(() -> DefaultChannelManager.INSTANCE
+                .get("Controller")
+                .ifPresent(packetSender -> packetSender.sendPacket(new APIPacketOutPlayerLoggedIn(event.getPlayer().getName())))
+        );
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
-    public void handle(final ServerKickEvent event) {
-        ProxiedPlayer proxiedPlayer = event.getPlayer();
-        ProcessInformation lobby = BungeeExecutor.getBestLobbyForPlayer(
-                API.getInstance().getCurrentProcessInformation(),
-                proxiedPlayer::hasPermission,
+    public void handle(final @NotNull ServerKickEvent event) {
+        SharedPlayerFallbackFilter.filterFallback(
+                event.getPlayer().getUniqueId(),
+                BungeeExecutor.getInstance().getCachedLobbyServices(),
+                event.getPlayer()::hasPermission,
+                BungeeFallbackExtraFilter.INSTANCE,
                 event.getKickedFrom() == null ? null : event.getKickedFrom().getName()
-        );
-        if (lobby != null) {
-            event.setCancelServer(ProxyServer.getInstance().getServerInfo(lobby.getProcessDetail().getName()));
-            event.setCancelled(true);
-            return;
-        }
+        ).ifPresent(processInformation -> {
+            ServerInfo serverInfo = ProxyServer.getInstance().getServerInfo(processInformation.getProcessDetail().getName());
+            if (serverInfo != null) {
+                event.setCancelServer(serverInfo);
+                event.setCancelled(true);
+                return;
+            }
 
-        proxiedPlayer.disconnect(TextComponent.fromLegacyText(BungeeExecutor.getInstance().getMessages().format(
+            event.getPlayer().disconnect(TextComponent.fromLegacyText(BungeeExecutor.getInstance().getMessages().format(
+                    BungeeExecutor.getInstance().getMessages().getNoHubServerAvailable()
+            )));
+        }).ifEmpty(v -> event.getPlayer().disconnect(TextComponent.fromLegacyText(BungeeExecutor.getInstance().getMessages().format(
                 BungeeExecutor.getInstance().getMessages().getNoHubServerAvailable()
-        )));
-        event.setCancelled(false);
+        ))));
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void handle(final PlayerDisconnectEvent event) {
         DefaultChannelManager.INSTANCE.get("Controller").ifPresent(packetSender -> packetSender.sendPacket(new APIPacketOutLogoutPlayer(
                 event.getPlayer().getUniqueId(),
-                event.getPlayer().getName()
+                event.getPlayer().getName(),
+                event.getPlayer().getServer() != null ? event.getPlayer().getServer().getInfo().getName() : null
         )));
 
-        CommonHelper.EXECUTOR.execute(() -> {
-            ProcessInformation current = API.getInstance().getCurrentProcessInformation();
-            if (ProxyServer.getInstance().getOnlineCount() < current.getProcessDetail().getMaxPlayers()
-                    && !current.getProcessDetail().getProcessState().equals(ProcessState.READY)
-                    && !current.getProcessDetail().getProcessState().equals(ProcessState.INVISIBLE)) {
-                current.getProcessDetail().setProcessState(ProcessState.READY);
-            }
+        ProcessInformation current = API.getInstance().getCurrentProcessInformation();
+        if (ProxyServer.getInstance().getOnlineCount() < current.getProcessDetail().getMaxPlayers()
+                && !current.getProcessDetail().getProcessState().equals(ProcessState.READY)
+                && !current.getProcessDetail().getProcessState().equals(ProcessState.INVISIBLE)) {
+            current.getProcessDetail().setProcessState(ProcessState.READY);
+        }
 
-            current.updateRuntimeInformation();
-            current.getProcessPlayerManager().onLogout(event.getPlayer().getUniqueId());
-            BungeeExecutor.getInstance().setThisProcessInformation(current);
-            ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(current);
-        });
+        current.updateRuntimeInformation();
+        current.getProcessPlayerManager().onLogout(event.getPlayer().getUniqueId());
+        ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(current);
     }
 
     @EventHandler
@@ -172,9 +170,5 @@ public final class PlayerListenerHandler implements Listener {
                 proxiedPlayer.getUniqueId(),
                 event.getMessage().replaceFirst("/", "")
         )));
-    }
-
-    private String format(String msg) {
-        return BungeeExecutor.getInstance().getMessages().format(msg);
     }
 }

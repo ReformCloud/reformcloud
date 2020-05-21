@@ -1,0 +1,7 @@
+{
+  "name": "TemplateBackendApplication",
+  "author": "derklaro",
+  "main": "systems.reformcloud.reformcloud2.backends.TemplateBackendApplication",
+  "version": "2.2.2",
+  "impl-version": "2.2.2"
+}

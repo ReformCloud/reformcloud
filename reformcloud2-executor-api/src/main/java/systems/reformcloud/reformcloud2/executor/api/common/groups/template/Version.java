@@ -1,3 +1,27 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) ReformCloud-Team
+ * Copyright (c) contributors
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 package systems.reformcloud.reformcloud2.executor.api.common.groups.template;
 
 import systems.reformcloud.reformcloud2.executor.api.common.utility.system.DownloadHelper;
@@ -91,6 +115,12 @@ public enum Version {
             "https://dl.reformcloud.systems/mcversions/paper/paper-1.15.2.jar", 1, 41000),
 
     /**
+     * Tuinity versions
+     */
+    TUINITY_1_15_2("Tuinity 1.15.2", "1.15.2",
+            "https://dl.reformcloud.systems/mcversions/tuinity/tunity-1.15.2.jar", 1, 41000),
+
+    /**
      * SpongeVanilla Versions
      */
     SPONGEVANILLA_1_11_2("SpongeVanilla 1.11.2", "1.11.2",
@@ -166,7 +196,7 @@ public enum Version {
     TRAVERTINE("Travertine", "1.7-1.14",
             "https://papermc.io/ci/job/Travertine/lastSuccessfulBuild/artifact/Travertine-Proxy/bootstrap/target/Travertine.jar", 2, 25565),
     VELOCITY("Velocity", "1.8-1.14",
-            "https://ci.velocitypowered.com/job/velocity/lastSuccessfulBuild/artifact/proxy/build/libs/velocity-proxy-1.0.6-SNAPSHOT-all.jar", 2, 25565),
+            "https://dl.reformcloud.systems/mcversions/velocity/velocity-proxy-1.0.7-all.jar", 2, 25565),
 
     /**
      * MCPE server
@@ -242,30 +272,6 @@ public enum Version {
         return POCKET_PROXY_PROVIDERS;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public String getVersion() {
-        return version;
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public int getDefaultPort() {
-        return defaultPort;
-    }
-
-    public boolean isServer() {
-        return getId() == 1 || getId() == 3;
-    }
-
     public static void downloadVersion(Version version) {
         DownloadHelper.downloadAndDisconnect(version.url, "reformcloud/files/" + format(version));
     }
@@ -278,5 +284,34 @@ public enum Version {
         }
 
         return version.name.toLowerCase().replace(" ", "-") + ".jar";
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public String getVersion() {
+        return this.version;
+    }
+
+    public String getUrl() {
+        return this.url;
+    }
+
+    public int getId() {
+        return this.id;
+    }
+
+    public int getDefaultPort() {
+        return this.defaultPort;
+    }
+
+    public boolean isServer() {
+        return this.getId() == 1 || this.getId() == 3;
+    }
+
+    public boolean isSponge() {
+        return this == SPONGEFORGE_1_10_2 || this == SPONGEFORGE_1_11_2 || this == SPONGEFORGE_1_12_2
+                || this == SPONGEVANILLA_1_11_2 || this == SPONGEVANILLA_1_12_2;
     }
 }

@@ -1,7 +1,32 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) ReformCloud-Team
+ * Copyright (c) contributors
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 package systems.reformcloud.reformcloud2.executor.api.common;
 
 import com.sun.management.OperatingSystemMXBean;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessRuntimeInformation;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.optional.ReferencedOptional;
 
@@ -26,17 +51,15 @@ import java.util.function.Function;
 
 public final class CommonHelper {
 
+    public static final ExecutorService EXECUTOR = Executors.newCachedThreadPool();
+    public static final ScheduledExecutorService SCHEDULED_EXECUTOR_SERVICE = Executors.newSingleThreadScheduledExecutor();
+    public static final DateFormat DATE_FORMAT = new SimpleDateFormat("dd.MM.yyyy kk:mm:ss");
+    public static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("##.###");
+    private static final Map<Class<? extends Enum<?>>, Map<String, WeakReference<? extends Enum<?>>>> CACHE = new HashMap<>();
+
     private CommonHelper() {
         throw new UnsupportedOperationException();
     }
-
-    public static final ExecutorService EXECUTOR = Executors.newCachedThreadPool();
-
-    public static final ScheduledExecutorService SCHEDULED_EXECUTOR_SERVICE = Executors.newSingleThreadScheduledExecutor();
-
-    public static final DateFormat DATE_FORMAT = new SimpleDateFormat("dd.MM.yyyy kk:mm:ss");
-
-    public static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("##.###");
 
     public static MemoryMXBean memoryMXBean() {
         return ManagementFactory.getMemoryMXBean();
@@ -131,6 +154,8 @@ public final class CommonHelper {
         }
     }
 
+    /* == Enum Helper == */
+
     public static void rewriteProperties(String path, String saveComment, Function<String, String> function) {
         if (!Files.exists(Paths.get(path))) {
             return;
@@ -150,9 +175,19 @@ public final class CommonHelper {
         }
     }
 
-    /* == Enum Helper == */
-
-    private static final Map<Class<? extends Enum<?>>, Map<String, WeakReference<? extends Enum<?>>>> CACHE = new HashMap<>();
+    @NotNull
+    public static Runnable newReportedRunnable(@NotNull Runnable source, @Nullable String reportedMessage) {
+        return () -> {
+            try {
+                source.run();
+            } catch (final Throwable throwable) {
+                System.err.println("An internal exception while execution of runnable:");
+                System.err.println(reportedMessage == null ? source.getClass().getName() : reportedMessage);
+                System.err.println("Please report this either on github or discord including the full stack trace and above message");
+                throwable.printStackTrace();
+            }
+        };
+    }
 
     public static <T extends Enum<T>> ReferencedOptional<T> findEnumField(Class<T> enumClass, String field) {
         Map<String, WeakReference<? extends Enum<?>>> cached = CACHE.computeIfAbsent(enumClass, aClass -> cache(enumClass));

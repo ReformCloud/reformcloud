@@ -1,6 +1,45 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) ReformCloud-Team
+ * Copyright (c) contributors
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 package systems.reformcloud.reformcloud2.executor.api.common.process;
 
-public final class ThreadInfo {
+import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
+import systems.reformcloud.reformcloud2.executor.api.common.network.SerializableObject;
+import systems.reformcloud.reformcloud2.executor.api.common.network.data.ProtocolBuffer;
+
+public final class ThreadInfo implements SerializableObject {
+
+    private String name;
+    private long id;
+    private int priority;
+    private boolean daemon;
+    private Thread.State state;
+
+    @ApiStatus.Internal
+    public ThreadInfo() {
+    }
 
     private ThreadInfo(String name, long id, int priority, boolean daemon, Thread.State state) {
         this.name = name;
@@ -10,37 +49,45 @@ public final class ThreadInfo {
         this.state = state;
     }
 
-    private final String name;
-
-    private final long id;
-
-    private final int priority;
-
-    private final boolean daemon;
-
-    private final Thread.State state;
+    public static ThreadInfo create(Thread thread) {
+        return new ThreadInfo(thread.getName(), thread.getId(), thread.getPriority(), thread.isDaemon(), thread.getState());
+    }
 
     public String getName() {
-        return name;
+        return this.name;
     }
 
     public long getId() {
-        return id;
+        return this.id;
     }
 
     public int getPriority() {
-        return priority;
+        return this.priority;
     }
 
     public boolean isDaemon() {
-        return daemon;
+        return this.daemon;
     }
 
     public Thread.State getState() {
-        return state;
+        return this.state;
     }
 
-    public static ThreadInfo create(Thread thread) {
-        return new ThreadInfo(thread.getName(), thread.getId(), thread.getPriority(), thread.isDaemon(), thread.getState());
+    @Override
+    public void write(@NotNull ProtocolBuffer buffer) {
+        buffer.writeString(this.name);
+        buffer.writeLong(this.id);
+        buffer.writeInt(this.priority);
+        buffer.writeBoolean(this.daemon);
+        buffer.writeVarInt(this.state.ordinal());
+    }
+
+    @Override
+    public void read(@NotNull ProtocolBuffer buffer) {
+        this.name = buffer.readString();
+        this.id = buffer.readLong();
+        this.priority = buffer.readInt();
+        this.daemon = buffer.readBoolean();
+        this.state = Thread.State.values()[buffer.readVarInt()];
     }
 }

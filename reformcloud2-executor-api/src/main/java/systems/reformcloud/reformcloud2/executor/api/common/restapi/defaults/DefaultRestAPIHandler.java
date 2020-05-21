@@ -1,3 +1,27 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) ReformCloud-Team
+ * Copyright (c) contributors
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 package systems.reformcloud.reformcloud2.executor.api.common.restapi.defaults;
 
 import io.netty.buffer.Unpooled;
@@ -33,7 +57,7 @@ public final class DefaultRestAPIHandler extends RestAPIHandler {
     protected void channelRead0(ChannelHandlerContext channelHandlerContext, HttpRequest httpRequest) {
         try {
             String requestUri = new URI(httpRequest.uri()).getRawPath();
-            handleHttpRequest(channelHandlerContext, requestUri, httpRequest);
+            this.handleHttpRequest(channelHandlerContext, requestUri, httpRequest);
         } catch (final URISyntaxException ex) {
             channelHandlerContext.writeAndFlush(
                     new DefaultFullHttpResponse(httpRequest.protocolVersion(),
@@ -56,7 +80,7 @@ public final class DefaultRestAPIHandler extends RestAPIHandler {
         JsonConfiguration configurable = new JsonConfiguration()
                 .add("name", httpHeaders.get("-XUser"))
                 .add("token", httpHeaders.get("-XToken"));
-        Duo<Boolean, WebRequester> auth = tryAuth(channelHandlerContext, configurable);
+        Duo<Boolean, WebRequester> auth = this.tryAuth(channelHandlerContext, configurable);
         if (!auth.getFirst() || auth.getSecond() == null) {
             channelHandlerContext.channel().writeAndFlush(new DefaultFullHttpResponse(
                     httpRequest.protocolVersion(),
@@ -66,7 +90,7 @@ public final class DefaultRestAPIHandler extends RestAPIHandler {
         }
 
         Collection<UUID> collection = new CopyOnWriteArrayList<>();
-        Streams.allOf(requestHandler.getHandlers(), e -> e.path().equals(path) && e.canAccess(auth.getSecond())).forEach(e -> e.handleRequest(auth.getSecond(), httpRequest, httpResponse -> {
+        Streams.allOf(this.requestHandler.getHandlers(), e -> e.path().equals(path) && e.canAccess(auth.getSecond())).forEach(e -> e.handleRequest(auth.getSecond(), httpRequest, httpResponse -> {
             UUID next = UUID.randomUUID();
             collection.add(next);
             channelHandlerContext.channel().writeAndFlush(
@@ -88,6 +112,6 @@ public final class DefaultRestAPIHandler extends RestAPIHandler {
     }
 
     private Duo<Boolean, WebRequester> tryAuth(ChannelHandlerContext channelHandlerContext, JsonConfiguration configurable) {
-        return requestHandler.authHandler().handleAuth(configurable, channelHandlerContext);
+        return this.requestHandler.authHandler().handleAuth(configurable, channelHandlerContext);
     }
 }

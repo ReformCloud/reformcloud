@@ -1,3 +1,27 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) ReformCloud-Team
+ * Copyright (c) contributors
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 package systems.reformcloud.reformcloud2.executor.api.common.network.server;
 
 import io.netty.bootstrap.ServerBootstrap;
@@ -28,28 +52,28 @@ public final class DefaultNetworkServer implements NetworkServer {
 
     @Override
     public void bind(@NotNull String host, int port, @NotNull Supplier<NetworkChannelReader> readerHelper, @NotNull ChallengeAuthHandler challengeAuthHandler) {
-        if (!channelFutures.containsKey(port)) {
-                new ServerBootstrap()
-                        .channel(channelClass)
-                        .group(boss, worker)
+        if (!this.channelFutures.containsKey(port)) {
+            new ServerBootstrap()
+                    .channel(this.channelClass)
+                    .group(this.boss, this.worker)
 
-                        .childOption(ChannelOption.SO_REUSEADDR, true)
-                        .childOption(ChannelOption.SO_KEEPALIVE, true)
-                        .childOption(ChannelOption.AUTO_READ, true)
-                        .childOption(ChannelOption.IP_TOS, 0x18)
-                        .childOption(ChannelOption.TCP_NODELAY, true)
+                    .childOption(ChannelOption.SO_REUSEADDR, true)
+                    .childOption(ChannelOption.SO_KEEPALIVE, true)
+                    .childOption(ChannelOption.AUTO_READ, true)
+                    .childOption(ChannelOption.IP_TOS, 0x18)
+                    .childOption(ChannelOption.TCP_NODELAY, true)
 
-                        .childHandler(new ServerInitializerHandler(readerHelper, challengeAuthHandler))
+                    .childHandler(new ServerInitializerHandler(readerHelper, challengeAuthHandler))
 
-                        .bind(host, port)
+                    .bind(host, port)
 
-                        .addListener((ChannelFutureListener) channelFuture -> {
-                            if (channelFuture.isSuccess()) {
-                                DefaultNetworkServer.this.channelFutures.put(port, channelFuture);
-                            } else {
-                                channelFuture.cause().printStackTrace();
-                            }
-                        });
+                    .addListener((ChannelFutureListener) channelFuture -> {
+                        if (channelFuture.isSuccess()) {
+                            DefaultNetworkServer.this.channelFutures.put(port, channelFuture);
+                        } else {
+                            channelFuture.cause().printStackTrace();
+                        }
+                    });
         }
     }
 
@@ -63,8 +87,8 @@ public final class DefaultNetworkServer implements NetworkServer {
 
     @Override
     public void closeAll() {
-        channelFutures.forEach((integer, channelFuture) -> channelFuture.cancel(true));
-        channelFutures.clear();
+        this.channelFutures.forEach((integer, channelFuture) -> channelFuture.cancel(true));
+        this.channelFutures.clear();
 
         this.worker.shutdownGracefully();
         this.boss.shutdownGracefully();

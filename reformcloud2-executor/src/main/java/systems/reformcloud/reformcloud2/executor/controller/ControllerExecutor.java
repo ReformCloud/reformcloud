@@ -1,3 +1,27 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) ReformCloud-Team
+ * Copyright (c) contributors
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 package systems.reformcloud.reformcloud2.executor.controller;
 
 import org.jetbrains.annotations.NotNull;
@@ -6,6 +30,8 @@ import systems.reformcloud.reformcloud2.executor.api.ExecutorType;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.AsyncAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.SyncAPI;
+import systems.reformcloud.reformcloud2.executor.api.common.api.basic.packets.api.PacketAPIProcessCopyByName;
+import systems.reformcloud.reformcloud2.executor.api.common.api.basic.packets.api.PacketAPIProcessCopyByUniqueID;
 import systems.reformcloud.reformcloud2.executor.api.common.application.ApplicationLoader;
 import systems.reformcloud.reformcloud2.executor.api.common.application.basic.DefaultApplicationLoader;
 import systems.reformcloud.reformcloud2.executor.api.common.client.ClientRuntimeInformation;
@@ -37,11 +63,13 @@ import systems.reformcloud.reformcloud2.executor.api.common.language.loading.Lan
 import systems.reformcloud.reformcloud2.executor.api.common.logger.LoggerBase;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.coloured.ColouredLoggerHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.logger.other.DefaultLoggerHandler;
+import systems.reformcloud.reformcloud2.executor.api.common.network.challenge.packet.client.PacketOutClientChallengeRequest;
+import systems.reformcloud.reformcloud2.executor.api.common.network.challenge.packet.client.PacketOutClientChallengeResponse;
 import systems.reformcloud.reformcloud2.executor.api.common.network.challenge.shared.ServerChallengeAuthHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.challenge.shared.SharedChallengeProvider;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
-import systems.reformcloud.reformcloud2.executor.api.common.network.channel.handler.DefaultJsonNetworkHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
+import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.defaults.DefaultPacketHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.packet.handler.PacketHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.network.server.DefaultNetworkServer;
@@ -56,22 +84,23 @@ import systems.reformcloud.reformcloud2.executor.api.common.utility.StringUtil;
 import systems.reformcloud.reformcloud2.executor.api.common.utility.optional.ReferencedOptional;
 import systems.reformcloud.reformcloud2.executor.api.controller.Controller;
 import systems.reformcloud.reformcloud2.executor.api.controller.process.ProcessManager;
+import systems.reformcloud.reformcloud2.executor.client.network.packet.ControllerPacketToggleScreen;
 import systems.reformcloud.reformcloud2.executor.controller.api.GeneralAPI;
-import systems.reformcloud.reformcloud2.executor.controller.api.applications.ApplicationAPIImplementation;
 import systems.reformcloud.reformcloud2.executor.controller.api.console.ConsoleAPIImplementation;
 import systems.reformcloud.reformcloud2.executor.controller.api.database.DatabaseAPIImplementation;
 import systems.reformcloud.reformcloud2.executor.controller.api.group.GroupAPIImplementation;
 import systems.reformcloud.reformcloud2.executor.controller.api.message.ChannelMessageAPIImplementation;
 import systems.reformcloud.reformcloud2.executor.controller.api.player.PlayerAPIImplementation;
-import systems.reformcloud.reformcloud2.executor.controller.api.plugins.PluginAPIImplementation;
 import systems.reformcloud.reformcloud2.executor.controller.api.process.ProcessAPIImplementation;
 import systems.reformcloud.reformcloud2.executor.controller.commands.CommandClients;
 import systems.reformcloud.reformcloud2.executor.controller.config.ControllerConfig;
 import systems.reformcloud.reformcloud2.executor.controller.config.ControllerExecutorConfig;
 import systems.reformcloud.reformcloud2.executor.controller.network.channel.ControllerNetworkChannelReader;
 import systems.reformcloud.reformcloud2.executor.controller.network.channel.ControllerNetworkSuccessHandler;
-import systems.reformcloud.reformcloud2.executor.controller.network.packets.out.ControllerPacketOutCopyProcess;
-import systems.reformcloud.reformcloud2.executor.controller.network.packets.out.ControllerPacketOutToggleScreen;
+import systems.reformcloud.reformcloud2.executor.controller.network.packet.handler.PacketInAPILogoutPlayer;
+import systems.reformcloud.reformcloud2.executor.controller.network.packet.handler.PacketInAPIPlayerCommandExecute;
+import systems.reformcloud.reformcloud2.executor.controller.network.packet.handler.PacketInAPIPlayerLoggedIn;
+import systems.reformcloud.reformcloud2.executor.controller.network.packet.handler.PacketInAPIServerSwitchPlayer;
 import systems.reformcloud.reformcloud2.executor.controller.process.ClientManager;
 import systems.reformcloud.reformcloud2.executor.controller.process.DefaultProcessManager;
 import systems.reformcloud.reformcloud2.executor.controller.process.startup.AutoStartupHandler;
@@ -88,40 +117,23 @@ public final class ControllerExecutor extends Controller {
     private static ControllerExecutor instance;
 
     private static volatile boolean running = false;
-
-    private LoggerBase loggerBase;
-
-    private AutoStartupHandler autoStartupHandler;
-
-    private ControllerExecutorConfig controllerExecutorConfig;
-
-    private ControllerConfig controllerConfig;
-
-    private Database<?> database;
-
-    private RequestListenerHandler requestListenerHandler;
-
-    private SyncAPI syncAPI;
-
-    private AsyncAPI asyncAPI;
-
     private final CommandManager commandManager = new DefaultCommandManager();
-
-    private final CommandSource console = new ConsoleCommandSource(commandManager);
-
+    private final CommandSource console = new ConsoleCommandSource(this.commandManager);
     private final ApplicationLoader applicationLoader = new DefaultApplicationLoader();
-
     private final NetworkServer networkServer = new DefaultNetworkServer();
-
     private final WebServer webServer = new DefaultWebServer();
-
     private final PacketHandler packetHandler = new DefaultPacketHandler();
-
     private final ProcessManager processManager = new DefaultProcessManager();
-
     private final DatabaseConfig databaseConfig = new DatabaseConfig();
-
     private final EventManager eventManager = new DefaultEventManager();
+    private LoggerBase loggerBase;
+    private AutoStartupHandler autoStartupHandler;
+    private ControllerExecutorConfig controllerExecutorConfig;
+    private ControllerConfig controllerConfig;
+    private Database<?> database;
+    private RequestListenerHandler requestListenerHandler;
+    private SyncAPI syncAPI;
+    private AsyncAPI asyncAPI;
 
     ControllerExecutor() {
         ExecutorAPI.setInstance(this);
@@ -129,13 +141,22 @@ public final class ControllerExecutor extends Controller {
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             try {
-                shutdown();
+                this.shutdown();
             } catch (final Exception ex) {
                 ex.printStackTrace();
             }
         }, "Shutdown-Hook"));
 
-        bootstrap();
+        this.bootstrap();
+    }
+
+    @NotNull
+    public static ControllerExecutor getInstance() {
+        if (instance == null) {
+            return (ControllerExecutor) Controller.getInstance();
+        }
+
+        return instance;
     }
 
     @Override
@@ -154,9 +175,9 @@ public final class ControllerExecutor extends Controller {
         }
 
         this.controllerExecutorConfig = new ControllerExecutorConfig();
-        databaseConfig.load();
+        this.databaseConfig.load();
 
-        switch (databaseConfig.getType()) {
+        switch (this.databaseConfig.getType()) {
             case FILE: {
                 this.database = new FileDatabase();
                 this.databaseConfig.connect(this.database);
@@ -189,12 +210,10 @@ public final class ControllerExecutor extends Controller {
         }
 
         GeneralAPI generalAPI = new GeneralAPI(
-                new ApplicationAPIImplementation(this.applicationLoader),
                 new ConsoleAPIImplementation(this.commandManager),
                 new DatabaseAPIImplementation(this.database),
                 new GroupAPIImplementation(),
                 new PlayerAPIImplementation(this.processManager),
-                new PluginAPIImplementation(),
                 new ProcessAPIImplementation(this.processManager),
                 new ChannelMessageAPIImplementation()
         );
@@ -203,26 +222,26 @@ public final class ControllerExecutor extends Controller {
 
         this.requestListenerHandler = new DefaultRequestListenerHandler(new DefaultWebServerAuth(this.getSyncAPI().getDatabaseSyncAPI()));
 
-        applicationLoader.detectApplications();
-        applicationLoader.installApplications();
+        this.applicationLoader.detectApplications();
+        this.applicationLoader.installApplications();
 
-        this.controllerConfig = controllerExecutorConfig.getControllerConfig();
+        this.controllerConfig = this.controllerExecutorConfig.getControllerConfig();
         this.controllerConfig.getNetworkListener().forEach(e -> e.forEach((host, port) -> ControllerExecutor.this.networkServer.bind(
                 host,
                 port,
-                () -> new ControllerNetworkChannelReader(this.packetHandler),
+                () -> new ControllerNetworkChannelReader(),
                 new ServerChallengeAuthHandler(new SharedChallengeProvider(this.controllerExecutorConfig.getConnectionKey()), new ControllerNetworkSuccessHandler())
         )));
 
-        applicationLoader.loadApplications();
+        this.applicationLoader.loadApplications();
 
         this.autoStartupHandler = new AutoStartupHandler();
-        sendGroups();
-        loadCommands();
-        loadPacketHandlers();
+        this.sendGroups();
+        this.loadCommands();
+        this.loadPacketHandlers();
 
         this.getSyncAPI().getDatabaseSyncAPI().createDatabase("internal_users");
-        if (controllerExecutorConfig.isFirstStartup()) {
+        if (this.controllerExecutorConfig.isFirstStartup()) {
             final String token = StringUtil.generateString(2);
             WebUser webUser = new WebUser("admin", token, Collections.singletonList("*"));
             this.getSyncAPI().getDatabaseSyncAPI().insert("internal_users", webUser.getName(), "", new JsonConfiguration().add("user", webUser));
@@ -235,7 +254,7 @@ public final class ControllerExecutor extends Controller {
                 })
         );
 
-        applicationLoader.enableApplications();
+        this.applicationLoader.enableApplications();
 
         if (Files.exists(Paths.get("reformcloud/.client"))) {
             try {
@@ -253,7 +272,7 @@ public final class ControllerExecutor extends Controller {
 
         running = true;
         System.out.println(LanguageManager.get("startup-done", Long.toString(System.currentTimeMillis() - current)));
-        runConsole();
+        this.runConsole();
     }
 
     @Override
@@ -281,7 +300,7 @@ public final class ControllerExecutor extends Controller {
 
         this.autoStartupHandler.update(); //Update the automatic startup handler to re-sort the groups per priority
 
-        this.controllerConfig = controllerExecutorConfig.getControllerConfig();
+        this.controllerConfig = this.controllerExecutorConfig.getControllerConfig();
 
         this.applicationLoader.loadApplications();
 
@@ -317,74 +336,65 @@ public final class ControllerExecutor extends Controller {
     }
 
     public ControllerExecutorConfig getControllerExecutorConfig() {
-        return controllerExecutorConfig;
-    }
-
-    @NotNull
-    public static ControllerExecutor getInstance() {
-        if (instance == null) {
-            return (ControllerExecutor) Controller.getInstance();
-        }
-
-        return instance;
+        return this.controllerExecutorConfig;
     }
 
     @NotNull
     @Override
     public SyncAPI getSyncAPI() {
-        return syncAPI;
+        return this.syncAPI;
     }
 
     @NotNull
     @Override
     public AsyncAPI getAsyncAPI() {
-        return asyncAPI;
+        return this.asyncAPI;
     }
 
     @Override
     public NetworkServer getNetworkServer() {
-        return networkServer;
+        return this.networkServer;
     }
 
     @NotNull
     @Override
     public PacketHandler getPacketHandler() {
-        return packetHandler;
+        return this.packetHandler;
     }
 
     @Override
     public CommandManager getCommandManager() {
-        return commandManager;
+        return this.commandManager;
     }
 
     public RequestListenerHandler getRequestListenerHandler() {
-        return requestListenerHandler;
+        return this.requestListenerHandler;
     }
 
     public LoggerBase getLoggerBase() {
-        return loggerBase;
+        return this.loggerBase;
     }
 
     public ProcessManager getProcessManager() {
-        return processManager;
+        return this.processManager;
     }
 
     public ControllerConfig getControllerConfig() {
-        return controllerConfig;
+        return this.controllerConfig;
     }
 
     public AutoStartupHandler getAutoStartupHandler() {
-        return autoStartupHandler;
+        return this.autoStartupHandler;
     }
 
     public Database<?> getDatabase() {
-        return database;
+        return this.database;
     }
 
     @NotNull
     @Override
     public EventManager getEventManager() {
-        return eventManager;
+        return this.eventManager;
     }
 
     @Override
@@ -397,11 +407,11 @@ public final class ControllerExecutor extends Controller {
 
         while (!Thread.currentThread().isInterrupted()) {
             try {
-                line = loggerBase.readLine();
+                line = this.loggerBase.readLine();
                 while (!line.trim().isEmpty() && running) {
-                    commandManager.dispatchCommand(console, AllowedCommandSources.ALL, line, System.out::println);
+                    this.commandManager.dispatchCommand(this.console, AllowedCommandSources.ALL, line, System.out::println);
 
-                    line = loggerBase.readLine();
+                    line = this.loggerBase.readLine();
                 }
             } catch (final Throwable throwable) {
                 throwable.printStackTrace();
@@ -418,26 +428,49 @@ public final class ControllerExecutor extends Controller {
         this.commandManager
                 .register(new CommandProcess(target -> {
                     ReferencedOptional<PacketSender> optional = DefaultChannelManager.INSTANCE.get(target.getProcessDetail().getParentName());
-                    optional.ifPresent(packetSender -> packetSender.sendPacket(new ControllerPacketOutToggleScreen(target.getProcessDetail().getProcessUniqueID())));
+                    optional.ifPresent(packetSender -> packetSender.sendPacket(new ControllerPacketToggleScreen(target.getProcessDetail().getProcessUniqueID())));
                     return optional.isPresent();
-                }, e -> DefaultChannelManager.INSTANCE.get(e.getProcessDetail().getParentName()).ifPresent(packetSender -> packetSender.sendPacket(
-                        new ControllerPacketOutCopyProcess(e.getProcessDetail().getProcessUniqueID())
-                ))))
+                }))
                 .register(new CommandClients())
                 .register(new CommandPlayers())
                 .register(new CommandGroup())
-                .register(new CommandApplication())
                 .register(new CommandDump(new DefaultDumpUtil()))
                 .register(new CommandLaunch())
                 .register(new CommandStop())
                 .register(new CommandCreate())
                 .register(new CommandReload(this))
-                .register(new CommandClear(loggerBase))
-                .register(new CommandHelp(commandManager));
+                .register(new CommandClear(this.loggerBase))
+                .register(new CommandHelp(this.commandManager));
     }
 
     private void loadPacketHandlers() {
-        new Reflections("systems.reformcloud.reformcloud2.executor.controller.network.packets.in").getSubTypesOf(DefaultJsonNetworkHandler.class).forEach(packetHandler::registerHandler);
+        new Reflections("systems.reformcloud.reformcloud2.executor.api.common.api.basic.packets.api")
+                .getSubTypesOf(Packet.class)
+                .forEach(e -> {
+                    if (e.getSimpleName().equals("PacketAPIProcessCopy") || e.getSimpleName().equals("QueryResultPacket")) {
+                        return;
+                    }
+
+                    this.packetHandler.registerHandler(e);
+                });
+
+        // Copy api
+        this.packetHandler.registerHandler(PacketAPIProcessCopyByName.class);
+        this.packetHandler.registerHandler(PacketAPIProcessCopyByUniqueID.class);
+
+        new Reflections("systems.reformcloud.reformcloud2.executor.controller.network.packet")
+                .getSubTypesOf(Packet.class)
+                .forEach(this.packetHandler::registerHandler);
+
+        // API -> Controller handler
+        this.packetHandler.registerHandler(PacketInAPILogoutPlayer.class);
+        this.packetHandler.registerHandler(PacketInAPIPlayerCommandExecute.class);
+        this.packetHandler.registerHandler(PacketInAPIPlayerLoggedIn.class);
+        this.packetHandler.registerHandler(PacketInAPIServerSwitchPlayer.class);
+
+        // Auth
+        this.packetHandler.registerHandler(PacketOutClientChallengeRequest.class);
+        this.packetHandler.registerHandler(PacketOutClientChallengeResponse.class);
     }
 
     public void handleChannelDisconnect(PacketSender packetSender) {

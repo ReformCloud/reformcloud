@@ -1,3 +1,27 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) ReformCloud-Team
+ * Copyright (c) contributors
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 package systems.reformcloud.reformcloud2.executor.api.common.database.basic.drivers.file;
 
 import de.derklaro.projects.deer.api.provider.DatabaseProvider;
@@ -18,9 +42,8 @@ import java.util.Map;
 
 public final class FileDatabase extends Database<Path> {
 
-    private String table;
-
     private final Map<String, DatabaseReader> perTableReader = new AbsentMap<>();
+    private String table;
 
     public FileDatabase() {
         this.initDependencies();
@@ -43,10 +66,6 @@ public final class FileDatabase extends Database<Path> {
     }
 
     @Override
-    public void reconnect() {
-    }
-
-    @Override
     public void disconnect() {
     }
 
@@ -59,38 +78,29 @@ public final class FileDatabase extends Database<Path> {
     @Override
     public boolean deleteDatabase(String name) {
         DatabaseProvider.getDatabaseDriver().deleteDatabase(new File(this.table, name));
-        perTableReader.remove(name);
+        this.perTableReader.remove(name);
         return true;
     }
 
     @Override
     public DatabaseReader createForTable(String table) {
-        return perTableReader.putIfAbsent(table, new FileDatabaseReader(this.table, table));
+        return this.perTableReader.putIfAbsent(table, new FileDatabaseReader(this.table, table));
     }
 
     @NotNull
     @Override
     public Path get() {
-        return Paths.get(table);
+        return Paths.get(this.table);
     }
 
     private void initDependencies() {
         URL url = DEPENDENCY_LOADER.loadDependency(new DefaultDependency(
-                DefaultRepositories.REFORMCLOUD,
-                "de.derklaro.projects.deer",
-                "project-deer-executor",
-                "1.0-SNAPSHOT"
+                DefaultRepositories.JITPACK,
+                "com.github.derklaro",
+                "project-deer",
+                "1.0.0"
         ));
         Conditions.nonNull(url, StringUtil.formatError("dependency executor load for file database"));
         DEPENDENCY_LOADER.addDependency(url);
-
-        URL apiUrl = DEPENDENCY_LOADER.loadDependency(new DefaultDependency(
-                DefaultRepositories.REFORMCLOUD,
-                "de.derklaro.projects.deer",
-                "project-deer-api",
-                "1.0-SNAPSHOT"
-        ));
-        Conditions.nonNull(apiUrl, StringUtil.formatError("dependency api load for file database"));
-        DEPENDENCY_LOADER.addDependency(apiUrl);
     }
 }

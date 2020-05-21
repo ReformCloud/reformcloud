@@ -1,3 +1,27 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) ReformCloud-Team
+ * Copyright (c) contributors
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 package systems.reformcloud.reformcloud2.executor.api.common.database.basic.drivers.mongo;
 
 import com.mongodb.client.MongoClient;
@@ -21,41 +45,23 @@ import java.util.Map;
 public final class MongoDatabase extends Database<com.mongodb.client.MongoDatabase> {
 
     private final Map<String, DatabaseReader> perTableReader = new AbsentMap<>();
+    private MongoClient mongoClient;
+    private com.mongodb.client.MongoDatabase mongoDatabase;
 
     public MongoDatabase() {
         URL dependency = DEPENDENCY_LOADER.loadDependency(new DefaultDependency(
                 DefaultRepositories.MAVEN_CENTRAL,
                 "org.mongodb",
                 "mongo-java-driver",
-                "3.12.3"
+                "3.12.4"
         ));
         Conditions.nonNull(dependency, StringUtil.formatError("dependency load for mongo database"));
         DEPENDENCY_LOADER.addDependency(dependency);
     }
 
-    private MongoClient mongoClient;
-
-    private com.mongodb.client.MongoDatabase mongoDatabase;
-
-    private String host;
-
-    private int port;
-
-    private String userName;
-
-    private String password;
-
-    private String table;
-
     @Override
     public void connect(@NotNull String host, int port, @NotNull String userName, @NotNull String password, @NotNull String table) {
-        if (!isConnected()) {
-            this.host = host;
-            this.port = port;
-            this.userName = userName;
-            this.password = password;
-            this.table = table;
-
+        if (!this.isConnected()) {
             try {
                 this.mongoClient = MongoClients.create(
                         MessageFormat.format(
@@ -67,7 +73,7 @@ public final class MongoDatabase extends Database<com.mongodb.client.MongoDataba
                                 table
                         )
                 );
-                this.mongoDatabase = mongoClient.getDatabase(table);
+                this.mongoDatabase = this.mongoClient.getDatabase(table);
             } catch (final UnsupportedEncodingException ex) {
                 ex.printStackTrace(); //Should never happen
             }
@@ -76,18 +82,12 @@ public final class MongoDatabase extends Database<com.mongodb.client.MongoDataba
 
     @Override
     public boolean isConnected() {
-        return mongoClient != null;
-    }
-
-    @Override
-    public void reconnect() {
-        disconnect();
-        connect(host, port, userName, password, table);
+        return this.mongoClient != null;
     }
 
     @Override
     public void disconnect() {
-        if (isConnected()) {
+        if (this.isConnected()) {
             this.mongoClient.close();
             this.mongoClient = null;
         }
@@ -95,25 +95,25 @@ public final class MongoDatabase extends Database<com.mongodb.client.MongoDataba
 
     @Override
     public boolean createDatabase(String name) {
-        mongoDatabase.getCollection(name);
+        this.mongoDatabase.getCollection(name);
         return true;
     }
 
     @Override
     public boolean deleteDatabase(String name) {
-        mongoDatabase.getCollection(name).drop();
+        this.mongoDatabase.getCollection(name).drop();
         return true;
     }
 
     @Override
     public DatabaseReader createForTable(String table) {
         this.createDatabase(table);
-        return perTableReader.putIfAbsent(table, new MongoDatabaseReader(table, this));
+        return this.perTableReader.putIfAbsent(table, new MongoDatabaseReader(table, this));
     }
 
     @NotNull
     @Override
     public com.mongodb.client.MongoDatabase get() {
-        return mongoDatabase;
+        return this.mongoDatabase;
     }
 }

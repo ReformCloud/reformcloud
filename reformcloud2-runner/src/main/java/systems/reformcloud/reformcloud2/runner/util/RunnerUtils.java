@@ -1,3 +1,27 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) ReformCloud-Team
+ * Copyright (c) contributors
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 package systems.reformcloud.reformcloud2.runner.util;
 
 import org.jetbrains.annotations.NotNull;
@@ -15,54 +39,46 @@ import java.util.function.UnaryOperator;
 
 public final class RunnerUtils {
 
-    private RunnerUtils() {
-        throw new UnsupportedOperationException();
-    }
-
     /**
      * The path where the executor file is located
      */
     public static final Path EXECUTOR_PATH = Paths.get("reformcloud/.bin/executor.jar");
-
     /**
      * The path of the folder in which the application updates are located
      */
     public static final Path APP_UPDATE_FOLDER = Paths.get("reformcloud/.update/apps");
-
     /**
      * The location of the runner in the node and client env
      */
     public static final Path RUNNER_FILES_FILE = Paths.get("reformcloud/files/runner.jar");
-
     /**
      * The file where the reform script is located by default
      */
     public static final File GLOBAL_SCRIPT_FILE = new File("global.reformscript");
-
     /**
      * The default discord invite for the reformcloud discord
      */
     public static final String DISCORD_INVITE = "https://discord.gg/uskXdVZ";
-
     /**
      * The base url of the reformcloud github repository
      */
     public static final String REPO_BASE_URL = "https://github.com/derklaro/reformcloud2/";
-
     /**
      * The file download format string
      */
     public static final String FILE_DOWNLOAD_FORMAT = "Downloading file %s... Size: %s";
-
     /**
      * The file downloaded format string
      */
     public static final String FILE_DOWNLOADED_FORMAT = "Download of file %s was completed successfully after %dms";
-
     /**
      * All available executors
      */
     public static final Collection<String> AVAILABLE_EXECUTORS = Arrays.asList("node", "controller", "client");
+
+    private RunnerUtils() {
+        throw new UnsupportedOperationException();
+    }
 
     /**
      * Handles the given error and prints an error message to the console
