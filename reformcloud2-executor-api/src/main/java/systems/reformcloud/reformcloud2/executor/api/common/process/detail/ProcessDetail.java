@@ -73,6 +73,7 @@ public final class ProcessDetail implements Nameable, SerializableObject {
      * @param id              The internal id of the process
      * @param template        The template from which the process is started
      * @param maxMemory       The maximum amount of memory the process is able to use
+     * @param initialState    The state which should get set after the connect of the process to the network
      */
     @ApiStatus.Internal
     public ProcessDetail(@NotNull UUID processUniqueID, @NotNull UUID parentUniqueID, @NotNull String parentName,

@@ -24,14 +24,13 @@
  */
 package systems.reformcloud.reformcloud2.executor.api.common.language;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import systems.reformcloud.reformcloud2.executor.api.common.application.language.ApplicationLanguage;
 import systems.reformcloud.reformcloud2.executor.api.common.language.loading.LanguageWorker;
 
 import java.util.Properties;
-
-import static org.junit.Assert.assertNotEquals;
 
 public final class ApplicationLanguageLoadTest {
 
@@ -47,6 +46,6 @@ public final class ApplicationLanguageLoadTest {
     @Test
     public void testApplicationLanguage() {
         String message = LanguageManager.get("test");
-        assertNotEquals("<message 'test' missing>", message);
+        Assert.assertNotEquals("<message 'test' missing>", message);
     }
 }

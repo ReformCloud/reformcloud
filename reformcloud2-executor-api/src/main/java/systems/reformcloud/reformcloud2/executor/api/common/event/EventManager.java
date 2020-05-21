@@ -33,70 +33,26 @@ import java.util.List;
 
 public interface EventManager {
 
-    /**
-     * Calls an event
-     *
-     * @param event The class of the event which get instantiated and then called
-     * @see #callEvent(Event)
-     */
     @Nullable
     <T extends Event> T callEvent(@NotNull Class<? extends T> event);
 
-    /**
-     * Calls an event
-     *
-     * @param event The event which should be called
-     */
     @NotNull
     <T extends Event> T callEvent(@NotNull T event);
 
-    /**
-     * Calls an event async
-     *
-     * @param event The class of the event which get instantiated and then called
-     * @see #callEventAsync(Event)
-     */
     @NotNull
     <T extends Event> Task<T> callEventAsync(@NotNull Class<? extends T> event);
 
-    /**
-     * Calls an event async
-     *
-     * @param event The event which should be called
-     */
     @NotNull
     <T extends Event> Task<T> callEventAsync(@NotNull T event);
 
-    /**
-     * Registers a event listener
-     *
-     * @param listener The listener which should get registered
-     */
     void registerListener(@NotNull Object listener);
 
-    /**
-     * Registers a listener
-     *
-     * @param listener The listener class which will get instantiated and then registered
-     * @see #registerListener(Object)
-     */
     void registerListener(@NotNull Class<?> listener);
 
-    /**
-     * Unregisters a specific listener
-     *
-     * @param listener The listener which should get unregistered
-     */
     void unregisterListener(@NotNull Object listener);
 
-    /**
-     * Unregisters all listeners
-     */
     void unregisterAll();
 
-    /**
-     * @return All registered listeners
-     */
     @NotNull
     @UnmodifiableView
     List<ListenerContainer> getListeners();

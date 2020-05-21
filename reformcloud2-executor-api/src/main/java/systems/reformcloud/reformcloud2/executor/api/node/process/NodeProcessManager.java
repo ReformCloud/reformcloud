@@ -100,6 +100,7 @@ public interface NodeProcessManager extends Updateable<ProcessInformation>, Iter
      * Queues a specific process on another node
      *
      * @param configuration The configuration of the process
+     * @param template      The template which should get used to start the process
      * @param node          The node on which the process should get started
      * @param start         If the process should get started after the prepare
      * @return A new created process information with the provided data

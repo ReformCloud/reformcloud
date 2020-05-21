@@ -68,8 +68,10 @@ public interface NetworkChannelReader {
     /**
      * Gets called when a packet comes into the channel
      *
-     * @param context The context of the channel where the packet is from
-     * @param input   The sent content by the sender
+     * @param context     The context of the channel where the packet is from
+     * @param authHandler The handler with did the auth of the channel
+     * @param parent      The handle which read the packet from the channel
+     * @param input       The sent content by the sender
      */
     void read(@NotNull ChannelHandlerContext context, @NotNull ChallengeAuthHandler authHandler,
               @NotNull ChannelReaderHelper parent, @NotNull Packet input);
