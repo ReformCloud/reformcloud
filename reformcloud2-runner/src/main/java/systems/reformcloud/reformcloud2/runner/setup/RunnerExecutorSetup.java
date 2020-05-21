@@ -42,6 +42,7 @@ public final class RunnerExecutorSetup {
      */
     public static void executeSetup() {
         System.out.println("Please choose an executor: \"node\" (recommended), \"controller\", \"client\"");
+        System.out.println("!! Please note that you should use the recommended installation because the controller/client system is deprecated and will be removed in a further release !!");
         System.out.println("For more information check out the README on GitHub: " + RunnerUtils.REPO_BASE_URL);
 
         String executor = readFromConsoleOrFromSystemProperties(
