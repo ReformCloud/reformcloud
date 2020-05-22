@@ -55,7 +55,7 @@ public class APIBungeePacketOutPlayerServerSwitch extends Packet {
 
     @Override
     public int getId() {
-        return NetworkUtil.CONTROLLER_INFORMATION_BUS + 12;
+        return NetworkUtil.PLAYER_INFORMATION_BUS + 1;
     }
 
     @Override

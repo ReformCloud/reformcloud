@@ -238,7 +238,7 @@ public abstract class SharedRunningProcess implements RunningProcess {
                 "-DIReallyKnowWhatIAmDoingISwear=true",
                 "-Djline.terminal=jline.UnsupportedTerminal",
                 "-Dreformcloud.runner.version=" + System.getProperty("reformcloud.runner.version"),
-                "-Dreformcloud.executor.type=3",
+                "-Dreformcloud.executor.type=2",
                 "-Dreformcloud.lib.path=" + LIB_PATH,
                 "-Dreformcloud.process.path=" + new File("reformcloud/files/" + Version.format(
                         this.startupInformation.getProcessDetail().getTemplate().getVersion()

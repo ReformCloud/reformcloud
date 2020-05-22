@@ -66,7 +66,6 @@ public final class Runner {
                 .registerInterpreterCommand(new IfCommand())
                 .registerInterpreterCommand(new PrintlnCommand())
                 .registerInterpreterCommand(new SetSystemPropertiesCommand())
-                .registerInterpreterCommand(new SetupCommand())
                 .registerInterpreterCommand(new StartApplicationCommand(this))
                 .registerInterpreterCommand(new UnpackApplicationCommand())
                 .registerInterpreterCommand(new VariableCommand())
@@ -97,8 +96,9 @@ public final class Runner {
 
     public void startApplication() {
         Path applicationFile = System.getProperties().containsKey("reformcloud.process.path")
-                ? Paths.get(System.getProperty("reformcloud.process.path")) : RunnerUtils.EXECUTOR_PATH;
-        if (!Files.exists(applicationFile) || Files.isDirectory(applicationFile)) {
+                ? Paths.get(System.getProperty("reformcloud.process.path"))
+                : RunnerUtils.EXECUTOR_PATH;
+        if (Files.notExists(applicationFile) || Files.isDirectory(applicationFile)) {
             throw new UnsupportedOperationException("Unable to start non-executable file: " + applicationFile.toString());
         }
 

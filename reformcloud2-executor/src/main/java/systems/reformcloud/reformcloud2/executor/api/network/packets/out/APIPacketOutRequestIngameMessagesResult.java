@@ -47,7 +47,7 @@ public class APIPacketOutRequestIngameMessagesResult extends QueryResultPacket {
 
     @Override
     public int getId() {
-        return NetworkUtil.CONTROLLER_QUERY_BUS + 1;
+        return NetworkUtil.EXTERNAL_BUS + 11;
     }
 
     @Override

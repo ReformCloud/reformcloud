@@ -187,12 +187,11 @@
                 <configuration>
                     <archive>
                         <manifestEntries>
-                            <!-- set the main class to the executor chooser !! This will start the application based on the runner input -->
-                            <Main-Class>systems.reformcloud.reformcloud2.executor.ExecutorChooser</Main-Class>
+                            <Main-Class>systems.reformcloud.reformcloud2.executor.node.NodeLauncher</Main-Class>
                             <Version>${project.version}</Version>
                             <Implementation-Version>${project.version}</Implementation-Version>
                             <!--suppress UnresolvedMavenProperty -->
-                            <!-- set by another plugin -->
+                            <!-- set by another maven plugin -->
                             <Specification-Version>${describe}</Specification-Version>
                         </manifestEntries>
                     </archive>

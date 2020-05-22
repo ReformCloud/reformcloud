@@ -47,7 +47,7 @@ public interface ConsoleSyncAPI {
     String dispatchCommandAndGetResult(@NotNull String commandLine);
 
     /**
-     * Executes a command in the controller/node console
+     * Executes a command in the node console
      *
      * @param commandLine The command line which should be executed
      * @return The full result of messages sent by the console command

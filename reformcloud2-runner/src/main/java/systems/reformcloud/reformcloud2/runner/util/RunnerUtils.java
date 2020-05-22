@@ -32,7 +32,9 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
@@ -71,10 +73,6 @@ public final class RunnerUtils {
      * The file downloaded format string
      */
     public static final String FILE_DOWNLOADED_FORMAT = "Download of file %s was completed successfully after %dms";
-    /**
-     * All available executors
-     */
-    public static final Collection<String> AVAILABLE_EXECUTORS = Arrays.asList("node", "controller", "client");
 
     private RunnerUtils() {
         throw new UnsupportedOperationException();

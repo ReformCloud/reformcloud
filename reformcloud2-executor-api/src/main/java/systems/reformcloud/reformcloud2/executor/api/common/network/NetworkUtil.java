@@ -50,9 +50,7 @@ public final class NetworkUtil {
     /* ============================= */
     public static final int NODE_TO_NODE_BUS = 20000;
     public static final int NODE_TO_NODE_QUERY_BUS = 25000;
-    public static final int CONTROLLER_INFORMATION_BUS = 2000;
     public static final int EVENT_BUS = 3000;
-    public static final int CONTROLLER_QUERY_BUS = 4000;
     public static final int PLAYER_INFORMATION_BUS = 5000;
     public static final int EXTERNAL_BUS = 50000;
     public static final int MESSAGING_BUS = 60000;

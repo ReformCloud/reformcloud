@@ -29,15 +29,11 @@ import java.util.Map;
 
 public enum ExecutorType {
 
-    CONTROLLER(1, true),
+    NODE(1),
 
-    CLIENT(2, true),
+    API(2),
 
-    NODE(4, true),
-
-    API(3, true),
-
-    UNKNOWN(-1, false);
+    UNKNOWN(-1);
 
     private static final Map<Integer, ExecutorType> BY_ID = new HashMap<>();
 
@@ -48,25 +44,12 @@ public enum ExecutorType {
     }
 
     private final int id;
-    private final boolean supported;
 
-    ExecutorType(int id, boolean supported) {
+    ExecutorType(int id) {
         this.id = id;
-        this.supported = supported;
-    }
-
-    /* ============================== */
-
-    public static ExecutorType getByID(int id) {
-        return BY_ID.getOrDefault(id, UNKNOWN);
     }
 
     public int getId() {
         return this.id;
     }
-
-    public boolean isSupported() {
-        return this.supported;
-    }
-
 }

@@ -42,7 +42,7 @@ public class APIPacketOutRequestIngameMessages extends Packet {
 
     @Override
     public int getId() {
-        return NetworkUtil.CONTROLLER_QUERY_BUS + 2;
+        return NetworkUtil.EXTERNAL_BUS + 10;
     }
 
     @Override

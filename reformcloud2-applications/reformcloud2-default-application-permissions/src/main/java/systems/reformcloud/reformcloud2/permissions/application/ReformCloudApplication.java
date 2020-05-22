@@ -25,12 +25,9 @@
 package systems.reformcloud.reformcloud2.permissions.application;
 
 import org.jetbrains.annotations.Nullable;
-import systems.reformcloud.reformcloud2.executor.api.ExecutorType;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.application.api.Application;
 import systems.reformcloud.reformcloud2.executor.api.common.application.updater.ApplicationUpdateRepository;
-import systems.reformcloud.reformcloud2.executor.api.common.commands.manager.CommandManager;
-import systems.reformcloud.reformcloud2.executor.controller.ControllerExecutor;
 import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
 import systems.reformcloud.reformcloud2.permissions.PermissionManagement;
 import systems.reformcloud.reformcloud2.permissions.application.command.CommandPerms;
@@ -62,18 +59,12 @@ public class ReformCloudApplication extends Application {
     public void onEnable() {
         PermissionManagement.setup();
         PacketHelper.addPacketHandler();
-        this.getCommandManager().register(new CommandPerms());
+        NodeExecutor.getInstance().getCommandManager().register(new CommandPerms());
     }
 
     @Nullable
     @Override
     public ApplicationUpdateRepository getUpdateRepository() {
         return REPOSITORY;
-    }
-
-    private CommandManager getCommandManager() {
-        return ExecutorAPI.getInstance().getType().equals(ExecutorType.CONTROLLER)
-                ? ControllerExecutor.getInstance().getCommandManager()
-                : NodeExecutor.getInstance().getCommandManager();
     }
 }
