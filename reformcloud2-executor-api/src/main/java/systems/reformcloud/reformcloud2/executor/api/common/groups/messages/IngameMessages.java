@@ -35,7 +35,7 @@ public final class IngameMessages implements SerializableObject {
 
     public static final TypeToken<IngameMessages> TYPE = new TypeToken<IngameMessages>() {
     };
-    private String prefix = "§6Cloud§62 §7|";
+    private String prefix = "§6Cloud §7|";
     private String processRegistered = "%prefix% §7Registered process §e{0}";
     private String processStarted = "%prefix% §7The process §e{0} §7is §astarting §7now...";
     private String processConnected = "%prefix% §7The process §e{0} §7 is §aconnected to the network";
