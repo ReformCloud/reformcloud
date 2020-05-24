@@ -25,17 +25,15 @@
 package systems.reformcloud.reformcloud2.executor.api.bungee;
 
 import net.md_5.bungee.api.ProxyServer;
-import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.config.ServerInfo;
-import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import systems.reformcloud.reformcloud2.executor.api.APIConstants;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorType;
 import systems.reformcloud.reformcloud2.executor.api.api.API;
 import systems.reformcloud.reformcloud2.executor.api.bungee.event.PlayerListenerHandler;
 import systems.reformcloud.reformcloud2.executor.api.bungee.event.ProcessEventHandler;
+import systems.reformcloud.reformcloud2.executor.api.bungee.executor.BungeePlayerAPIExecutor;
 import systems.reformcloud.reformcloud2.executor.api.bungee.reconnect.ReformCloudReconnectHandler;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.ExternalEventBusHandler;
@@ -74,10 +72,9 @@ import java.lang.reflect.Method;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.List;
-import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public final class BungeeExecutor extends API implements PlayerAPIExecutor {
+public final class BungeeExecutor extends API {
 
     private static BungeeExecutor instance;
     private static boolean waterdog;
@@ -93,7 +90,7 @@ public final class BungeeExecutor extends API implements PlayerAPIExecutor {
     BungeeExecutor(Plugin plugin) {
         super.type = ExecutorType.API;
         super.loadPacketHandlers();
-        APIConstants.playerAPIExecutor = this;
+        PlayerAPIExecutor.setInstance(new BungeePlayerAPIExecutor());
 
         this.plugin = plugin;
         instance = this;
@@ -324,77 +321,6 @@ public final class BungeeExecutor extends API implements PlayerAPIExecutor {
         if (!event.getProcessInformation().getProcessDetail().getTemplate().isServer()) {
             this.cachedProxyServices.removeIf(e -> e.equals(event.getProcessInformation()));
             this.cachedProxyServices.add(event.getProcessInformation());
-        }
-    }
-
-    /* ======================== Player API ======================== */
-
-    @Override
-    public void executeSendMessage(UUID player, String message) {
-        ProxiedPlayer proxiedPlayer = ProxyServer.getInstance().getPlayer(player);
-        if (proxiedPlayer != null) {
-            proxiedPlayer.sendMessage(TextComponent.fromLegacyText(message));
-        }
-    }
-
-    @Override
-    public void executeKickPlayer(UUID player, String message) {
-        ProxiedPlayer proxiedPlayer = ProxyServer.getInstance().getPlayer(player);
-        if (proxiedPlayer != null) {
-            proxiedPlayer.disconnect(TextComponent.fromLegacyText(message));
-        }
-    }
-
-    @Override
-    public void executePlaySound(UUID player, String sound, float f1, float f2) {
-        throw new UnsupportedOperationException("Not supported on proxy server");
-    }
-
-    @Override
-    public void executeSendTitle(UUID player, String title, String subTitle, int fadeIn, int stay, int fadeOut) {
-        ProxiedPlayer proxiedPlayer = ProxyServer.getInstance().getPlayer(player);
-        if (proxiedPlayer != null) {
-            ProxyServer.getInstance()
-                    .createTitle()
-                    .title(TextComponent.fromLegacyText(title))
-                    .subTitle(TextComponent.fromLegacyText(subTitle))
-                    .fadeIn(fadeIn)
-                    .stay(stay)
-                    .fadeOut(fadeOut)
-                    .send(proxiedPlayer);
-        }
-    }
-
-    @Override
-    public void executePlayEffect(UUID player, String entityEffect) {
-        throw new UnsupportedOperationException("Not supported on proxy server");
-    }
-
-    @Override
-    public void executeTeleport(UUID player, String world, double x, double y, double z, float yaw, float pitch) {
-        throw new UnsupportedOperationException("Not supported on proxy server");
-    }
-
-    @Override
-    public void executeConnect(UUID player, String server) {
-        ProxiedPlayer proxiedPlayer = ProxyServer.getInstance().getPlayer(player);
-        ServerInfo serverInfo = ProxyServer.getInstance().getServerInfo(server);
-        if (proxiedPlayer != null && serverInfo != null) {
-            proxiedPlayer.connect(serverInfo);
-        }
-    }
-
-    @Override
-    public void executeConnect(UUID player, ProcessInformation server) {
-        this.executeConnect(player, server.getProcessDetail().getName());
-    }
-
-    @Override
-    public void executeConnect(UUID player, UUID target) {
-        ProxiedPlayer proxiedPlayer = ProxyServer.getInstance().getPlayer(player);
-        ProxiedPlayer targetPlayer = ProxyServer.getInstance().getPlayer(target);
-        if (proxiedPlayer != null && targetPlayer != null) {
-            proxiedPlayer.connect(targetPlayer.getServer().getInfo());
         }
     }
 }

@@ -35,7 +35,6 @@ import java.util.UUID;
 
 public class PlayerFallbackChooseEvent extends Event {
 
-
     public PlayerFallbackChooseEvent(UUID playerUniqueId, ProcessInformation filteredFallback, Collection<ProcessInformation> allLobbies) {
         this.playerUniqueId = playerUniqueId;
         this.filteredFallback = filteredFallback;

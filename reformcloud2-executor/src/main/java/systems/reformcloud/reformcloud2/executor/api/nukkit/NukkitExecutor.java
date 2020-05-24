@@ -25,10 +25,8 @@
 package systems.reformcloud.reformcloud2.executor.api.nukkit;
 
 import cn.nukkit.Server;
-import cn.nukkit.level.Location;
 import cn.nukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.APIConstants;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorType;
 import systems.reformcloud.reformcloud2.executor.api.api.API;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
@@ -55,12 +53,12 @@ import systems.reformcloud.reformcloud2.executor.api.network.api.*;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.APINetworkChannelReader;
 import systems.reformcloud.reformcloud2.executor.api.network.packets.out.APIPacketOutRequestIngameMessages;
 import systems.reformcloud.reformcloud2.executor.api.network.packets.out.APIPacketOutRequestIngameMessagesResult;
+import systems.reformcloud.reformcloud2.executor.api.nukkit.executor.NukkitPlayerAPIExecutor;
 import systems.reformcloud.reformcloud2.executor.api.shared.SharedInvalidPlayerFixer;
 
 import java.io.File;
-import java.util.UUID;
 
-public final class NukkitExecutor extends API implements PlayerAPIExecutor {
+public final class NukkitExecutor extends API {
 
     private static NukkitExecutor instance;
 
@@ -77,7 +75,7 @@ public final class NukkitExecutor extends API implements PlayerAPIExecutor {
     NukkitExecutor(Plugin plugin) {
         super.type = ExecutorType.API;
         super.loadPacketHandlers();
-        APIConstants.playerAPIExecutor = this;
+        PlayerAPIExecutor.setInstance(new NukkitPlayerAPIExecutor());
 
         instance = this;
         this.plugin = plugin;
@@ -204,52 +202,5 @@ public final class NukkitExecutor extends API implements PlayerAPIExecutor {
         if (event.getProcessInformation().getProcessDetail().getProcessUniqueID().equals(this.thisProcessInformation.getProcessDetail().getProcessUniqueID())) {
             this.thisProcessInformation = event.getProcessInformation();
         }
-    }
-
-    /* ======================== Player API ======================== */
-
-    @Override
-    public void executeSendMessage(UUID player, String message) {
-        Server.getInstance().getPlayer(player).ifPresent(player1 -> player1.sendMessage(message));
-    }
-
-    @Override
-    public void executeKickPlayer(UUID player, String message) {
-        Server.getInstance().getPlayer(player).ifPresent(player1 -> player1.kick(message));
-    }
-
-    @Override
-    public void executePlaySound(UUID player, String sound, float f1, float f2) {
-        throw new UnsupportedOperationException("Not supported on nukkit");
-    }
-
-    @Override
-    public void executeSendTitle(UUID player, String title, String subTitle, int fadeIn, int stay, int fadeOut) {
-        Server.getInstance().getPlayer(player).ifPresent(player1 -> player1.sendTitle(title, subTitle, fadeIn, stay, fadeOut));
-    }
-
-    @Override
-    public void executePlayEffect(UUID player, String entityEffect) {
-        throw new UnsupportedOperationException("Not supported on nukkit");
-    }
-
-    @Override
-    public void executeTeleport(UUID player, String world, double x, double y, double z, float yaw, float pitch) {
-        Server.getInstance().getPlayer(player).ifPresent(player1 -> player1.teleport(new Location(x, y, z, yaw, pitch)));
-    }
-
-    @Override
-    public void executeConnect(UUID player, String server) {
-        throw new UnsupportedOperationException("Not supported on nukkit");
-    }
-
-    @Override
-    public void executeConnect(UUID player, ProcessInformation server) {
-        throw new UnsupportedOperationException("Not supported on nukkit");
-    }
-
-    @Override
-    public void executeConnect(UUID player, UUID target) {
-        throw new UnsupportedOperationException("Not supported on nukkit");
     }
 }

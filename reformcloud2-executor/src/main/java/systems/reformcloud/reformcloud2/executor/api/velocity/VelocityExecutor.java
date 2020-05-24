@@ -27,11 +27,7 @@ package systems.reformcloud.reformcloud2.executor.api.velocity;
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 import com.velocitypowered.api.proxy.server.ServerInfo;
-import com.velocitypowered.api.util.title.Title;
-import com.velocitypowered.api.util.title.Titles;
-import net.kyori.text.serializer.legacy.LegacyComponentSerializer;
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.APIConstants;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorType;
 import systems.reformcloud.reformcloud2.executor.api.api.API;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
@@ -65,14 +61,14 @@ import systems.reformcloud.reformcloud2.executor.api.network.packets.out.APIPack
 import systems.reformcloud.reformcloud2.executor.api.shared.SharedInvalidPlayerFixer;
 import systems.reformcloud.reformcloud2.executor.api.velocity.event.PlayerListenerHandler;
 import systems.reformcloud.reformcloud2.executor.api.velocity.event.ProcessEventHandler;
+import systems.reformcloud.reformcloud2.executor.api.velocity.executor.VelocityPlayerAPIExecutor;
 
 import java.io.File;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public final class VelocityExecutor extends API implements PlayerAPIExecutor {
+public final class VelocityExecutor extends API {
 
     private static VelocityExecutor instance;
 
@@ -88,7 +84,7 @@ public final class VelocityExecutor extends API implements PlayerAPIExecutor {
     VelocityExecutor(VelocityLauncher launcher, ProxyServer proxyServer) {
         super.type = ExecutorType.API;
         super.loadPacketHandlers();
-        APIConstants.playerAPIExecutor = this;
+        PlayerAPIExecutor.setInstance(new VelocityPlayerAPIExecutor(proxyServer));
 
         instance = this;
         this.proxyServer = proxyServer;
@@ -283,68 +279,5 @@ public final class VelocityExecutor extends API implements PlayerAPIExecutor {
 
     public void setThisProcessInformation(ProcessInformation thisProcessInformation) {
         this.thisProcessInformation = thisProcessInformation;
-    }
-
-    /* ======================== Player API ======================== */
-
-    @Override
-    public void executeSendMessage(UUID player, String message) {
-        this.proxyServer.getPlayer(player).ifPresent(player1 -> player1.sendMessage(LegacyComponentSerializer.legacyLinking().deserialize(message)));
-    }
-
-    @Override
-    public void executeKickPlayer(UUID player, String message) {
-        this.proxyServer.getPlayer(player).ifPresent(player1 -> player1.disconnect(LegacyComponentSerializer.legacyLinking().deserialize(message)));
-    }
-
-    @Override
-    public void executePlaySound(UUID player, String sound, float f1, float f2) {
-        throw new UnsupportedOperationException("Not supported on velocity");
-    }
-
-    @Override
-    public void executeSendTitle(UUID player, String title, String subTitle, int fadeIn, int stay, int fadeOut) {
-        this.proxyServer.getPlayer(player).ifPresent(e -> {
-            Title velocityTitle = Titles.text()
-                    .title(LegacyComponentSerializer.legacyLinking().deserialize(title))
-                    .subtitle(LegacyComponentSerializer.legacyLinking().deserialize(subTitle))
-                    .fadeIn(fadeIn)
-                    .stay(stay)
-                    .fadeOut(fadeOut)
-                    .build();
-            e.sendTitle(velocityTitle);
-        });
-    }
-
-    @Override
-    public void executePlayEffect(UUID player, String entityEffect) {
-        throw new UnsupportedOperationException("Not supported on velocity");
-    }
-
-    @Override
-    public void executeTeleport(UUID player, String world, double x, double y, double z, float yaw, float pitch) {
-        throw new UnsupportedOperationException("Not supported on velocity");
-    }
-
-    @Override
-    public void executeConnect(UUID player, String server) {
-        this.proxyServer.getPlayer(player).ifPresent(player1 -> this.proxyServer.getServer(server).ifPresent(e -> player1.createConnectionRequest(e).fireAndForget()));
-    }
-
-    @Override
-    public void executeConnect(UUID player, ProcessInformation server) {
-        this.executeConnect(player, server.getProcessDetail().getName());
-    }
-
-    @Override
-    public void executeConnect(UUID player, UUID target) {
-        this.proxyServer.getPlayer(player).ifPresent(player1 -> this.proxyServer.getPlayer(target).ifPresent(targetPlayer -> {
-            if (targetPlayer.getCurrentServer().isPresent()
-                    && this.isServerRegistered(targetPlayer.getCurrentServer().get().getServerInfo().getName())) {
-                player1.createConnectionRequest(
-                        targetPlayer.getCurrentServer().get().getServer()
-                ).fireAndForget();
-            }
-        }));
     }
 }

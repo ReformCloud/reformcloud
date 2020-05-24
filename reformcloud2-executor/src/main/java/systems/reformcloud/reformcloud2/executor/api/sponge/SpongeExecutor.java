@@ -26,11 +26,6 @@ package systems.reformcloud.reformcloud2.executor.api.sponge;
 
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.effect.sound.SoundType;
-import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.title.Title;
-import org.spongepowered.api.world.Location;
-import systems.reformcloud.reformcloud2.executor.api.APIConstants;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorType;
 import systems.reformcloud.reformcloud2.executor.api.api.API;
 import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
@@ -59,11 +54,11 @@ import systems.reformcloud.reformcloud2.executor.api.network.packets.out.APIPack
 import systems.reformcloud.reformcloud2.executor.api.network.packets.out.APIPacketOutRequestIngameMessagesResult;
 import systems.reformcloud.reformcloud2.executor.api.shared.SharedInvalidPlayerFixer;
 import systems.reformcloud.reformcloud2.executor.api.sponge.event.PlayerListenerHandler;
+import systems.reformcloud.reformcloud2.executor.api.sponge.executor.SpongePlayerExecutor;
 
 import java.io.File;
-import java.util.UUID;
 
-public class SpongeExecutor extends API implements PlayerAPIExecutor {
+public class SpongeExecutor extends API {
 
     private static SpongeExecutor instance;
 
@@ -80,7 +75,7 @@ public class SpongeExecutor extends API implements PlayerAPIExecutor {
     SpongeExecutor(SpongeLauncher launcher) {
         super.type = ExecutorType.API;
         super.loadPacketHandlers();
-        APIConstants.playerAPIExecutor = this;
+        PlayerAPIExecutor.setInstance(new SpongePlayerExecutor());
 
         this.plugin = launcher;
         instance = this;
@@ -208,66 +203,5 @@ public class SpongeExecutor extends API implements PlayerAPIExecutor {
                 () -> Sponge.getServer().getOnlinePlayers().size(),
                 information -> this.thisProcessInformation = information
         );
-    }
-
-    @Override
-    public void executeSendMessage(UUID player, String message) {
-        Sponge.getServer().getPlayer(player).ifPresent(e -> e.sendMessage(Text.of(message)));
-    }
-
-    @Override
-    public void executeKickPlayer(UUID player, String message) {
-        Sponge.getServer().getPlayer(player).ifPresent(e -> e.kick(Text.of(message)));
-    }
-
-    @Override
-    public void executePlaySound(UUID player, String sound, float f1, float f2) {
-        Sponge.getServer().getPlayer(player).ifPresent(e -> {
-            try {
-                SoundType soundType = SoundType.of(sound);
-                e.playSound(soundType, e.getLocation().getPosition(), f1, f2);
-            } catch (final Throwable ignored) {
-            }
-        });
-    }
-
-    @Override
-    public void executeSendTitle(UUID player, String title, String subTitle, int fadeIn, int stay, int fadeOut) {
-        Sponge.getServer().getPlayer(player).ifPresent(e ->
-                e.sendTitle(Title.CLEAR.toBuilder()
-                        .title(Text.of(title))
-                        .subtitle(Text.of(subTitle))
-                        .fadeIn(fadeIn)
-                        .stay(stay)
-                        .fadeOut(fadeOut)
-                        .build()
-                )
-        );
-    }
-
-    @Override
-    public void executePlayEffect(UUID player, String entityEffect) {
-    }
-
-    @Override
-    public void executeTeleport(UUID player, String world, double x, double y, double z, float yaw, float pitch) {
-        Sponge.getServer().getPlayer(player).ifPresent(e -> Sponge.getServer().getWorld(world).ifPresent(w ->
-                e.setLocationSafely(new Location<>(w, x, y, z))
-        ));
-    }
-
-    @Override
-    public void executeConnect(UUID player, String server) {
-
-    }
-
-    @Override
-    public void executeConnect(UUID player, ProcessInformation server) {
-
-    }
-
-    @Override
-    public void executeConnect(UUID player, UUID target) {
-
     }
 }

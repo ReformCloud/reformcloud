@@ -24,27 +24,32 @@
  */
 package systems.reformcloud.reformcloud2.executor.api.executor;
 
-import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
-
+import java.util.Objects;
 import java.util.UUID;
 
-public interface PlayerAPIExecutor {
+public abstract class PlayerAPIExecutor {
 
-    void executeSendMessage(UUID player, String message);
+    private static PlayerAPIExecutor instance;
 
-    void executeKickPlayer(UUID player, String message);
+    public static PlayerAPIExecutor getInstance() {
+        return instance;
+    }
 
-    void executePlaySound(UUID player, String sound, float f1, float f2);
+    public static void setInstance(PlayerAPIExecutor instance) {
+        PlayerAPIExecutor.instance = Objects.requireNonNull(instance);
+    }
 
-    void executeSendTitle(UUID player, String title, String subTitle, int fadeIn, int stay, int fadeOut);
+    public abstract void executeSendMessage(UUID player, String message);
 
-    void executePlayEffect(UUID player, String entityEffect);
+    public abstract void executeKickPlayer(UUID player, String message);
 
-    void executeTeleport(UUID player, String world, double x, double y, double z, float yaw, float pitch);
+    public abstract void executePlaySound(UUID player, String sound, float f1, float f2);
 
-    void executeConnect(UUID player, String server);
+    public abstract void executeSendTitle(UUID player, String title, String subTitle, int fadeIn, int stay, int fadeOut);
 
-    void executeConnect(UUID player, ProcessInformation server);
+    public abstract void executePlayEffect(UUID player, String entityEffect);
 
-    void executeConnect(UUID player, UUID target);
+    public abstract void executeTeleport(UUID player, String world, double x, double y, double z, float yaw, float pitch);
+
+    public abstract void executeConnect(UUID player, String server);
 }
