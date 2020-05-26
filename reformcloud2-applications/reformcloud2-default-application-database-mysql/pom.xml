@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>reformcloud2</artifactId>
+        <groupId>systems.reformcloud.reformcloud2</groupId>
+        <version>2.2.2</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>reformcloud2-default-application-database-mysql</artifactId>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>reformcloud</id>
+            <url>https://repo.reformcloud.systems/</url>
+        </pluginRepository>
+    </pluginRepositories>
+
+    <dependencies>
+        <!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.20</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/com.zaxxer/HikariCP -->
+        <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+            <version>3.4.5</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <!-- https://github.com/derklaro/maven-dependency-list-plugin -->
+            <plugin>
+                <groupId>de.derklaro</groupId>
+                <artifactId>dependency-list-maven-plugin</artifactId>
+                <version>1.2</version>
+                <configuration>
+                    <excludedScopes>
+                        <excludedScope>test</excludedScope>
+                        <excludedScope>compile</excludedScope>
+                    </excludedScopes>
+
+                    <outputFileName>
+                        reformcloud2-applications/reformcloud2-default-application-database-mysql/src/main/resources/dependencies.txt
+                    </outputFileName>
+
+                    <overrideExistingFile>true</overrideExistingFile>
+                    <resolveDependenciesOfDependencies>true</resolveDependenciesOfDependencies>
+                    <includeOptionalDependencies>false</includeOptionalDependencies>
+                    <createParentFiles>true</createParentFiles>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>dependency-list</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

@@ -22,18 +22,18 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.common.command;
+package systems.reformcloud.reformcloud2.executor.api.command;
 
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
-import systems.reformcloud.reformcloud2.executor.api.common.commands.AllowedCommandSources;
-import systems.reformcloud.reformcloud2.executor.api.common.commands.Command;
-import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.ConsoleCommandSource;
-import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.command.sources.ConsoleCommand;
-import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.manager.DefaultCommandManager;
-import systems.reformcloud.reformcloud2.executor.api.common.commands.manager.CommandManager;
-import systems.reformcloud.reformcloud2.executor.api.common.commands.source.CommandSource;
-import systems.reformcloud.reformcloud2.executor.api.common.language.loading.LanguageWorker;
+import systems.reformcloud.reformcloud2.executor.api.commands.AllowedCommandSources;
+import systems.reformcloud.reformcloud2.executor.api.commands.Command;
+import systems.reformcloud.reformcloud2.executor.api.commands.basic.ConsoleCommandSource;
+import systems.reformcloud.reformcloud2.executor.api.commands.basic.command.sources.ConsoleCommand;
+import systems.reformcloud.reformcloud2.executor.api.commands.basic.manager.DefaultCommandManager;
+import systems.reformcloud.reformcloud2.executor.api.commands.manager.CommandManager;
+import systems.reformcloud.reformcloud2.executor.api.commands.source.CommandSource;
+import systems.reformcloud.reformcloud2.executor.api.language.loading.LanguageWorker;
 
 import java.util.Collections;
 

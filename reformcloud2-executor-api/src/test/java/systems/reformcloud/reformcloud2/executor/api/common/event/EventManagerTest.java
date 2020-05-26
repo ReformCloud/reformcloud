@@ -22,12 +22,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.common.event;
+package systems.reformcloud.reformcloud2.executor.api.event;
 
 import org.junit.Test;
-import systems.reformcloud.reformcloud2.executor.api.common.event.basic.DefaultEventManager;
-import systems.reformcloud.reformcloud2.executor.api.common.event.handler.Listener;
-import systems.reformcloud.reformcloud2.executor.api.common.event.priority.EventPriority;
+import systems.reformcloud.reformcloud2.executor.api.event.basic.DefaultEventManager;
+import systems.reformcloud.reformcloud2.executor.api.event.handler.Listener;
+import systems.reformcloud.reformcloud2.executor.api.event.priority.EventPriority;
 
 import java.util.concurrent.CountDownLatch;
 

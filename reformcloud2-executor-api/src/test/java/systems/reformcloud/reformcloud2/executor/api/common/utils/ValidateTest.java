@@ -22,11 +22,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.common.utils;
+package systems.reformcloud.reformcloud2.executor.api.utils;
 
 import org.junit.Assert;
 import org.junit.Test;
-import systems.reformcloud.reformcloud2.executor.api.common.base.Conditions;
+import systems.reformcloud.reformcloud2.executor.api.base.Conditions;
 
 import java.util.UUID;
 

@@ -22,14 +22,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.common.utils;
+package systems.reformcloud.reformcloud2.executor.api.utils;
 
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Test;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.PortUtil;
+import systems.reformcloud.reformcloud2.executor.api.utility.PortUtil;
 
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;

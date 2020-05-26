@@ -22,11 +22,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.common.streams;
+package systems.reformcloud.reformcloud2.executor.api.streams;
 
 import org.junit.Before;
 import org.junit.Test;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
+import systems.reformcloud.reformcloud2.executor.api.utility.list.Streams;
 
 import java.util.Arrays;
 import java.util.Collection;
