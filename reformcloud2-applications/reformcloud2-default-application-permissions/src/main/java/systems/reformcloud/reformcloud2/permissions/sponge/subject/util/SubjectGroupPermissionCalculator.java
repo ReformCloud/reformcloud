@@ -25,7 +25,7 @@
 package systems.reformcloud.reformcloud2.permissions.sponge.subject.util;
 
 import systems.reformcloud.reformcloud2.executor.api.api.API;
-import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
+import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.permissions.nodes.PermissionNode;
 import systems.reformcloud.reformcloud2.permissions.objects.group.PermissionGroup;
 

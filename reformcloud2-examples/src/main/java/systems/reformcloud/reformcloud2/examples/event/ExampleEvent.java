@@ -24,7 +24,7 @@
  */
 package systems.reformcloud.reformcloud2.examples.event;
 
-import systems.reformcloud.reformcloud2.executor.api.common.event.Event;
+import systems.reformcloud.reformcloud2.executor.api.event.Event;
 
 /**
  * Represents an event which can be listen to by the event manager

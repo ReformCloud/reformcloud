@@ -22,9 +22,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.velocity.fallback;
+package systems.refomcloud.reformcloud2.embedded.velocity.fallback;
 
-import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
+import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 
 import java.util.function.Predicate;
 

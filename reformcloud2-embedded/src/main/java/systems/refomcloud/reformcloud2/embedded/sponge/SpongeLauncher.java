@@ -22,7 +22,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.sponge;
+package systems.refomcloud.reformcloud2.embedded.sponge;
 
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
@@ -31,7 +31,7 @@ import org.spongepowered.api.event.game.state.GameLoadCompleteEvent;
 import org.spongepowered.api.event.game.state.GameStartingServerEvent;
 import org.spongepowered.api.event.game.state.GameStoppingServerEvent;
 import org.spongepowered.api.plugin.Plugin;
-import systems.reformcloud.reformcloud2.executor.api.common.language.loading.LanguageWorker;
+import systems.reformcloud.reformcloud2.executor.api.language.loading.LanguageLoader;
 
 @Plugin(
         id = "reformcloud_2_api_executor",
@@ -48,7 +48,7 @@ public class SpongeLauncher {
 
     @Listener
     public void handle(final GameLoadCompleteEvent event) {
-        LanguageWorker.doLoad();
+        LanguageLoader.doLoad();
     }
 
     @Listener

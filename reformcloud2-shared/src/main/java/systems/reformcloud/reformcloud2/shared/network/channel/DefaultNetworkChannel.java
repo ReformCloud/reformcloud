@@ -24,5 +24,95 @@
  */
 package systems.reformcloud.reformcloud2.shared.network.channel;
 
-public class DefaultNetworkChannel {
+import io.netty.channel.Channel;
+import org.jetbrains.annotations.NonNls;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
+import systems.reformcloud.reformcloud2.executor.api.network.packet.Packet;
+
+import java.net.InetSocketAddress;
+import java.util.UUID;
+
+public final class DefaultNetworkChannel implements NetworkChannel {
+
+    DefaultNetworkChannel(Channel channel) {
+        this.channel = channel;
+    }
+
+    private final Channel channel;
+    private final long connectionTime = System.currentTimeMillis();
+    private InetSocketAddress address;
+    private boolean authenticated;
+    private String name;
+
+    @Override
+    public void sendPacket(@NotNull Object packet) {
+        this.channel.writeAndFlush(packet, this.channel.voidPromise());
+    }
+
+    @Override
+    public void sendPackets(@NonNls Object... packets) {
+        for (Object packet : packets) {
+            this.sendPacket(packet);
+        }
+    }
+
+    @Override
+    public void sendQueryResult(@Nullable UUID queryUniqueID, @NotNull Packet result) {
+
+    }
+
+    @Override
+    public long getConnectionTime() {
+        return this.connectionTime;
+    }
+
+    @NotNull
+    @Override
+    public String getAddress() {
+        return this.address.getAddress().getHostAddress();
+    }
+
+    @NotNull
+    @Override
+    public InetSocketAddress getEthernetAddress() {
+        return this.address;
+    }
+
+    @Override
+    public void setRemoteAddress(@NotNull InetSocketAddress address) {
+        this.address = address;
+    }
+
+    @Override
+    public boolean isConnected() {
+        return this.channel.isOpen() && this.channel.isWritable();
+    }
+
+    @Override
+    public boolean isAuthenticated() {
+        return this.authenticated;
+    }
+
+    @Override
+    public void setAuthenticated(boolean authenticated) {
+        this.authenticated = authenticated;
+    }
+
+    @Override
+    public void close() {
+        this.channel.close(this.channel.voidPromise());
+    }
+
+    @Override
+    public void setName(@NotNull String newName) {
+        this.name = newName;
+    }
+
+    @NotNull
+    @Override
+    public String getName() {
+        return this.name == null ? "" : this.name;
+    }
 }

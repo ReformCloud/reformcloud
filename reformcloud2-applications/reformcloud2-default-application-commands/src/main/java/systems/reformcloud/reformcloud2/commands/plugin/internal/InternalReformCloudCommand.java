@@ -25,10 +25,10 @@
 package systems.reformcloud.reformcloud2.commands.plugin.internal;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.common.CommonHelper;
-import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
+import systems.reformcloud.reformcloud2.executor.api.CommonHelper;
+import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
+import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
+import systems.reformcloud.reformcloud2.executor.api.utility.task.Task;
 
 import java.util.Arrays;
 import java.util.function.Consumer;

@@ -22,18 +22,18 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.network.packets.out;
+package systems.refomcloud.reformcloud2.embedded.network.packets.out;
 
 import io.netty.channel.ChannelHandlerContext;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import systems.reformcloud.reformcloud2.executor.api.common.network.NetworkUtil;
-import systems.reformcloud.reformcloud2.executor.api.common.network.challenge.ChallengeAuthHandler;
-import systems.reformcloud.reformcloud2.executor.api.common.network.channel.NetworkChannelReader;
-import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
-import systems.reformcloud.reformcloud2.executor.api.common.network.data.ProtocolBuffer;
-import systems.reformcloud.reformcloud2.executor.api.common.network.handler.ChannelReaderHelper;
-import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
+import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
+import systems.reformcloud.reformcloud2.executor.api.network.challenge.ChallengeAuthHandler;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.PacketSender;
+import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
+import systems.reformcloud.reformcloud2.executor.api.network.netty.NettyChannelEndpoint;
+import systems.reformcloud.reformcloud2.executor.api.network.packet.Packet;
 
 public class APIPacketOutRequestIngameMessages extends Packet {
 
@@ -46,7 +46,7 @@ public class APIPacketOutRequestIngameMessages extends Packet {
     }
 
     @Override
-    public void handlePacketReceive(@NotNull NetworkChannelReader reader, @NotNull ChallengeAuthHandler authHandler, @NotNull ChannelReaderHelper parent, @Nullable PacketSender sender, @NotNull ChannelHandlerContext channel) {
+    public void handlePacketReceive(@NotNull EndpointChannelReader reader, @NotNull ChallengeAuthHandler authHandler, @NotNull NettyChannelEndpoint parent, @Nullable PacketSender sender, @NotNull ChannelHandlerContext channel) {
     }
 
     @Override

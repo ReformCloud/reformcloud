@@ -25,14 +25,14 @@
 package systems.reformcloud.reformcloud2.backends.url;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
-import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
-import systems.reformcloud.reformcloud2.executor.api.common.groups.template.backend.TemplateBackend;
-import systems.reformcloud.reformcloud2.executor.api.common.groups.template.backend.TemplateBackendManager;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.system.DownloadHelper;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.system.SystemHelper;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
+import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.groups.ProcessGroup;
+import systems.reformcloud.reformcloud2.executor.api.groups.template.backend.TemplateBackend;
+import systems.reformcloud.reformcloud2.executor.api.groups.template.backend.TemplateBackendManager;
+import systems.reformcloud.reformcloud2.executor.api.io.DownloadHelper;
+import systems.reformcloud.reformcloud2.executor.api.io.IOUtils;
+import systems.reformcloud.reformcloud2.executor.api.task.Task;
+import systems.reformcloud.reformcloud2.executor.api.utility.list.Streams;
 
 import java.io.File;
 import java.io.IOException;
@@ -90,8 +90,8 @@ public final class URLTemplateBackend implements TemplateBackend {
     @Override
     public Task<Void> loadTemplate(@NotNull String group, @NotNull String template, @NotNull Path target) {
         DownloadHelper.downloadAndDisconnect(this.getBasePath() + group + "-" + template + ".zip", "reformcloud/files/temp/template.zip");
-        SystemHelper.unZip(new File("reformcloud/files/temp/template.zip"), target.toString());
-        SystemHelper.deleteFile(new File("reformcloud/files/temp/template.zip"));
+        IOUtils.unZip(new File("reformcloud/files/temp/template.zip"), target.toString());
+        IOUtils.deleteFile(new File("reformcloud/files/temp/template.zip"));
         return Task.completedTask(null);
     }
 
@@ -107,8 +107,8 @@ public final class URLTemplateBackend implements TemplateBackend {
     @Override
     public Task<Void> loadPath(@NotNull String path, @NotNull Path target) {
         DownloadHelper.downloadAndDisconnect(this.getBasePath() + path, "reformcloud/files/temp/template.zip");
-        SystemHelper.unZip(new File("reformcloud/files/temp/template.zip"), target.toString());
-        SystemHelper.deleteFile(new File("reformcloud/files/temp/template.zip"));
+        IOUtils.unZip(new File("reformcloud/files/temp/template.zip"), target.toString());
+        IOUtils.deleteFile(new File("reformcloud/files/temp/template.zip"));
         return Task.completedTask(null);
     }
 

@@ -24,7 +24,7 @@
  */
 package systems.reformcloud.reformcloud2.permissions.packets;
 
-import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
+import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 
 public final class PacketHelper {
 

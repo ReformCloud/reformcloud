@@ -22,7 +22,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.spigot.event;
+package systems.refomcloud.reformcloud2.embedded.spigot.event;
 
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
@@ -31,15 +31,15 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.jetbrains.annotations.NotNull;
+import systems.refomcloud.reformcloud2.embedded.shared.SharedJoinAllowChecker;
+import systems.refomcloud.reformcloud2.embedded.spigot.SpigotExecutor;
+import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.api.API;
-import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
-import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
-import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
-import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Duo;
-import systems.reformcloud.reformcloud2.executor.api.shared.SharedJoinAllowChecker;
-import systems.reformcloud.reformcloud2.executor.api.spigot.SpigotExecutor;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.PacketSender;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.manager.DefaultChannelManager;
+import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
+import systems.reformcloud.reformcloud2.executor.api.process.ProcessState;
+import systems.reformcloud.reformcloud2.executor.api.utility.list.Duo;
 
 public final class PlayerListenerHandler implements Listener {
 

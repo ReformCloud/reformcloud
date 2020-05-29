@@ -25,23 +25,15 @@
 package systems.reformcloud.reformcloud2.node.config;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.common.CommonHelper;
-import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
-import systems.reformcloud.reformcloud2.executor.api.common.groups.MainGroup;
-import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
-import systems.reformcloud.reformcloud2.executor.api.common.groups.messages.IngameMessages;
-import systems.reformcloud.reformcloud2.executor.api.common.groups.setup.GroupSetupHelper;
-import systems.reformcloud.reformcloud2.executor.api.common.groups.setup.GroupSetupVersion;
-import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
-import systems.reformcloud.reformcloud2.executor.api.common.logger.setup.Setup;
-import systems.reformcloud.reformcloud2.executor.api.common.logger.setup.basic.DefaultSetup;
-import systems.reformcloud.reformcloud2.executor.api.common.logger.setup.basic.DefaultSetupQuestion;
-import systems.reformcloud.reformcloud2.executor.api.common.node.NodeInformation;
-import systems.reformcloud.reformcloud2.executor.api.common.registry.Registry;
-import systems.reformcloud.reformcloud2.executor.api.common.registry.basic.RegistryBuilder;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.StringUtil;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.system.SystemHelper;
+import systems.reformcloud.reformcloud2.executor.api.CommonHelper;
+import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.groups.messages.IngameMessages;
+import systems.reformcloud.reformcloud2.executor.api.groups.setup.GroupSetupHelper;
+import systems.reformcloud.reformcloud2.executor.api.groups.setup.GroupSetupVersion;
+import systems.reformcloud.reformcloud2.executor.api.io.IOUtils;
+import systems.reformcloud.reformcloud2.executor.api.language.LanguageManager;
+import systems.reformcloud.reformcloud2.executor.api.node.NodeInformation;
+import systems.reformcloud.reformcloud2.executor.api.utility.StringUtil;
 import systems.reformcloud.reformcloud2.node.NodeExecutor;
 
 import java.nio.file.Files;
@@ -52,7 +44,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams.newCollection;
+import static systems.reformcloud.reformcloud2.executor.api.utility.list.Streams.newCollection;
 
 public final class NodeExecutorConfig {
 
@@ -69,11 +61,6 @@ public final class NodeExecutorConfig {
     );
 
     private final Setup setup = new DefaultSetup();
-    private final List<MainGroup> mainGroups = new ArrayList<>();
-    private final List<ProcessGroup> processGroups = new ArrayList<>();
-    private final AtomicBoolean firstStartup = new AtomicBoolean(false);
-    private final Registry localMainGroupsRegistry = RegistryBuilder.newRegistry(Paths.get("reformcloud/groups/main"));
-    private final Registry localSubGroupsRegistry = RegistryBuilder.newRegistry(Paths.get("reformcloud/groups/sub"));
     private NodeInformation self;
     private NodeConfig nodeConfig;
     private String connectionKey;
@@ -82,8 +69,6 @@ public final class NodeExecutorConfig {
     public void init() {
         this.createDirectories();
         if (!Files.exists(NodeConfig.PATH)) {
-            this.firstStartup.set(true);
-
             AtomicReference<String> nodeName = new AtomicReference<>();
             AtomicReference<String> networkAddress = new AtomicReference<>();
             AtomicInteger networkPort = new AtomicInteger();
@@ -201,48 +186,11 @@ public final class NodeExecutorConfig {
         this.loadGroups();
     }
 
-    private void loadGroups() {
-        this.processGroups.clear();
-        this.mainGroups.clear();
-
-        this.processGroups.addAll(this.localSubGroupsRegistry.readKeys(e -> e.get("key", ProcessGroup.TYPE)));
-        this.mainGroups.addAll(this.localMainGroupsRegistry.readKeys(e -> e.get("key", MainGroup.TYPE)));
-    }
-
-    public void handleProcessGroupCreate(ProcessGroup processGroup) {
-        this.localSubGroupsRegistry.createKey(processGroup.getName(), processGroup);
-    }
-
-    public void handleMainGroupCreate(MainGroup mainGroup) {
-        this.localMainGroupsRegistry.createKey(mainGroup.getName(), mainGroup);
-    }
-
-    public void handleProcessGroupUpdate(ProcessGroup processGroup) {
-        this.localSubGroupsRegistry.updateKey(processGroup.getName(), processGroup);
-    }
-
-    public void handleMainGroupUpdate(MainGroup mainGroup) {
-        this.localMainGroupsRegistry.updateKey(mainGroup.getName(), mainGroup);
-    }
-
-    public void handleProcessGroupDelete(ProcessGroup processGroup) {
-        this.localSubGroupsRegistry.deleteKey(processGroup.getName());
-
-        ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcesses(processGroup.getName()).forEach(
-                e -> ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().stopProcess(e.getProcessDetail().getProcessUniqueID())
-        );
-    }
-
-    public void handleMainGroupDelete(MainGroup mainGroup) {
-        this.localMainGroupsRegistry.deleteKey(mainGroup.getName());
-    }
-
     public NodeConfig reload() {
         this.nodeConfig = JsonConfiguration.read(NodeConfig.PATH).get("config", NodeConfig.TYPE);
         this.ingameMessages = JsonConfiguration.read("reformcloud/configs/messages.json").get("messages", IngameMessages.TYPE);
         this.self.setMaxMemory(this.nodeConfig.getMaxMemory());
         this.connectionKey = JsonConfiguration.read("reformcloud/files/.connection/connection.json").getOrDefault("key", (String) null);
-        this.loadGroups();
 
         return this.nodeConfig;
     }
@@ -304,7 +252,7 @@ public final class NodeExecutorConfig {
     }
 
     private void createDirectories() {
-        PATHS.forEach(SystemHelper::createDirectory);
+        PATHS.forEach(IOUtils::createDirectory);
     }
 
     public NodeInformation getSelf() {
@@ -319,19 +267,7 @@ public final class NodeExecutorConfig {
         return this.connectionKey;
     }
 
-    public boolean isFirstStartup() {
-        return this.firstStartup.get();
-    }
-
-    public List<MainGroup> getMainGroups() {
-        return new ArrayList<>(this.mainGroups);
-    }
-
     public IngameMessages getIngameMessages() {
         return this.ingameMessages;
-    }
-
-    public List<ProcessGroup> getProcessGroups() {
-        return new ArrayList<>(this.processGroups);
     }
 }

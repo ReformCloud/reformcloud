@@ -24,8 +24,9 @@
  */
 package systems.reformcloud.reformcloud2.executor.api.builder;
 
+import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.configuration.JsonConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.groups.template.Template;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessState;
@@ -66,7 +67,7 @@ public interface ProcessBuilder {
     ProcessBuilder template(@NotNull Template template);
 
     @NotNull
-    ProcessBuilder inclusions(@NotNull ProcessInclusion... inclusions);
+    ProcessBuilder inclusions(@NonNls ProcessInclusion... inclusions);
 
     @NotNull
     ProcessBuilder inclusions(@NotNull Collection<ProcessInclusion> inclusions);

@@ -22,27 +22,16 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.shared;
+package systems.reformcloud.reformcloud2.node.commands;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.GlobalCommand;
-import systems.reformcloud.reformcloud2.executor.api.common.commands.source.CommandSource;
-import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
+import systems.reformcloud.reformcloud2.executor.api.command.Command;
+import systems.reformcloud.reformcloud2.executor.api.command.CommandSender;
 
-public final class CommandStop extends GlobalCommand {
-
-    public CommandStop() {
-        super("stop", "reformcloud.command.permissions", "The stop command", "exit", "close", "end");
-    }
+public final class CommandStop implements Command {
 
     @Override
-    public void describeCommandToSender(@NotNull CommandSource source) {
-        source.sendMessage(LanguageManager.get("command-stop-description"));
-    }
-
-    @Override
-    public boolean handleCommand(@NotNull CommandSource commandSource, @NotNull String[] strings) {
+    public void process(@NotNull CommandSender sender, String[] strings, @NotNull String commandLine) {
         System.exit(0);
-        return true;
     }
 }

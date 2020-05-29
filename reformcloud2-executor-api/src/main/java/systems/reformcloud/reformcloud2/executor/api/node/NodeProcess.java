@@ -33,9 +33,7 @@ import java.util.UUID;
 public class NodeProcess implements SerializableObject {
 
     private String group;
-
     private String name;
-
     private UUID uniqueID;
 
     public NodeProcess(String group, String name, UUID uniqueID) {

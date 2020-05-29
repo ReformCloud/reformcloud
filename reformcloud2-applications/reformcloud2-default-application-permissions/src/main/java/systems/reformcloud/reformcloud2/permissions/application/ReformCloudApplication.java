@@ -25,10 +25,10 @@
 package systems.reformcloud.reformcloud2.permissions.application;
 
 import org.jetbrains.annotations.Nullable;
-import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.common.application.api.Application;
-import systems.reformcloud.reformcloud2.executor.api.common.application.updater.ApplicationUpdateRepository;
-import systems.reformcloud.reformcloud2.executor.node.NodeExecutor;
+import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
+import systems.reformcloud.reformcloud2.executor.api.application.api.Application;
+import systems.reformcloud.reformcloud2.executor.api.application.updater.ApplicationUpdateRepository;
+import systems.reformcloud.reformcloud2.node.NodeExecutor;
 import systems.reformcloud.reformcloud2.permissions.PermissionManagement;
 import systems.reformcloud.reformcloud2.permissions.application.command.CommandPerms;
 import systems.reformcloud.reformcloud2.permissions.application.listener.ProcessInclusionHandler;

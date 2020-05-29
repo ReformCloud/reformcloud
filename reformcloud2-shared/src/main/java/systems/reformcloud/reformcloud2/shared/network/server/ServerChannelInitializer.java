@@ -22,7 +22,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.network.server;
+package systems.reformcloud.reformcloud2.shared.network.server;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;

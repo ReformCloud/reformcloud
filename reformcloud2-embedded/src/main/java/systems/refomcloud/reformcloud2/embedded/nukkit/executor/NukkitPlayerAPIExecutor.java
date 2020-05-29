@@ -22,15 +22,15 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.nukkit.executor;
+package systems.refomcloud.reformcloud2.embedded.nukkit.executor;
 
 import cn.nukkit.Server;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.ParticleEffect;
 import cn.nukkit.level.Sound;
-import systems.reformcloud.reformcloud2.executor.api.common.CommonHelper;
-import systems.reformcloud.reformcloud2.executor.api.executor.PlayerAPIExecutor;
+import systems.refomcloud.reformcloud2.embedded.executor.PlayerAPIExecutor;
+import systems.reformcloud.reformcloud2.executor.api.CommonHelper;
 
 import java.util.UUID;
 

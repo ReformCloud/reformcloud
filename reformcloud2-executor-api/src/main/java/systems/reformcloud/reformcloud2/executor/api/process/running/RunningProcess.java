@@ -27,8 +27,8 @@ package systems.reformcloud.reformcloud2.executor.api.process.running;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.process.running.screen.RunningProcessScreen;
-import systems.reformcloud.reformcloud2.executor.api.utility.optional.ReferencedOptional;
 import systems.reformcloud.reformcloud2.executor.api.task.Task;
+import systems.reformcloud.reformcloud2.executor.api.utility.optional.ReferencedOptional;
 
 import java.nio.file.Path;
 import java.util.Arrays;

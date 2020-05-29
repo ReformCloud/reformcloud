@@ -22,7 +22,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.sponge.event;
+package systems.refomcloud.reformcloud2.embedded.sponge.event;
 
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.Sponge;
@@ -30,15 +30,15 @@ import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.text.Text;
+import systems.refomcloud.reformcloud2.embedded.shared.SharedJoinAllowChecker;
+import systems.refomcloud.reformcloud2.embedded.sponge.SpongeExecutor;
+import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.api.API;
-import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
-import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
-import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
-import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Duo;
-import systems.reformcloud.reformcloud2.executor.api.shared.SharedJoinAllowChecker;
-import systems.reformcloud.reformcloud2.executor.api.sponge.SpongeExecutor;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.PacketSender;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.manager.DefaultChannelManager;
+import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
+import systems.reformcloud.reformcloud2.executor.api.process.ProcessState;
+import systems.reformcloud.reformcloud2.executor.api.utility.list.Duo;
 
 import java.util.concurrent.TimeUnit;
 

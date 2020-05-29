@@ -25,9 +25,9 @@
 package systems.reformcloud.reformcloud2.proxy.application.network;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.common.network.NetworkUtil;
-import systems.reformcloud.reformcloud2.executor.api.common.network.data.ProtocolBuffer;
-import systems.reformcloud.reformcloud2.executor.api.common.network.packet.query.QueryResultPacket;
+import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
+import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
+import systems.reformcloud.reformcloud2.executor.api.network.packet.query.QueryResultPacket;
 import systems.reformcloud.reformcloud2.proxy.ProxyConfiguration;
 
 public class PacketRequestConfigResult extends QueryResultPacket {

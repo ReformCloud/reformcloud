@@ -24,5 +24,85 @@
  */
 package systems.reformcloud.reformcloud2.shared.registry.service;
 
-public class DefaultServiceRegistry {
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnmodifiableView;
+import systems.reformcloud.reformcloud2.executor.api.registry.service.ServiceRegistry;
+import systems.reformcloud.reformcloud2.executor.api.registry.service.ServiceRegistryEntry;
+import systems.reformcloud.reformcloud2.executor.api.registry.service.exception.ProviderImmutableException;
+import systems.reformcloud.reformcloud2.executor.api.registry.service.exception.ProviderNeedsReplacementException;
+import systems.reformcloud.reformcloud2.executor.api.registry.service.exception.ProviderNotRegisteredException;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
+
+public class DefaultServiceRegistry implements ServiceRegistry {
+
+    private final Map<Class<?>, ServiceRegistryEntry<?>> entries = new ConcurrentHashMap<>();
+
+    @Override
+    public <T> void setProvider(@NotNull Class<T> service, @NotNull T provider, boolean immutable, boolean needsReplacement) throws ProviderImmutableException {
+        ServiceRegistryEntry<?> current = this.entries.get(service);
+        if (current != null && current.isImmutable()) {
+            throw new ProviderImmutableException(service);
+        }
+
+        this.entries.put(service, new DefaultServiceRegistryEntry<>(service, provider, immutable, needsReplacement));
+    }
+
+    @NotNull
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> Optional<T> getProvider(@NotNull Class<T> service) {
+        ServiceRegistryEntry<T> entry = (ServiceRegistryEntry<T>) this.entries.get(service);
+        return entry == null ? Optional.empty() : Optional.of(entry.getProvider());
+    }
+
+    @NotNull
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> Optional<ServiceRegistryEntry<T>> getRegisteredEntry(@NotNull Class<T> service) {
+        ServiceRegistryEntry<T> entry = (ServiceRegistryEntry<T>) this.entries.get(service);
+        return Optional.ofNullable(entry);
+    }
+
+    @NotNull
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> T getProviderUnchecked(@NotNull Class<T> service) throws ProviderNotRegisteredException {
+        ServiceRegistryEntry<T> entry = (ServiceRegistryEntry<T>) this.entries.get(service);
+        if (entry == null) {
+            throw new ProviderNotRegisteredException(service);
+        }
+
+        return entry.getProvider();
+    }
+
+    @NotNull
+    @Override
+    public @UnmodifiableView Collection<ServiceRegistryEntry<?>> getRegisteredServices() {
+        return Collections.unmodifiableCollection(this.entries.values());
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> void unregisterService(@NotNull Class<T> service, @Nullable T replacement) throws ProviderNotRegisteredException, ProviderImmutableException, ProviderNeedsReplacementException {
+        ServiceRegistryEntry<T> entry = (ServiceRegistryEntry<T>) this.entries.get(service);
+        if (entry == null) {
+            throw new ProviderNotRegisteredException(service);
+        }
+
+        if (entry.isImmutable()) {
+            throw new ProviderImmutableException(service);
+        }
+
+        if (entry.needsReplacement() && replacement == null) {
+            throw new ProviderNeedsReplacementException(service);
+        }
+
+        this.entries.remove(service);
+    }
 }

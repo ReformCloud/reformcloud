@@ -26,7 +26,7 @@ package systems.reformcloud.reformcloud2.executor.api.database.sql;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import systems.reformcloud.reformcloud2.executor.api.configuration.JsonConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.database.Database;
 import systems.reformcloud.reformcloud2.executor.api.database.DatabaseReader;
 import systems.reformcloud.reformcloud2.executor.api.task.Task;

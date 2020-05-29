@@ -22,14 +22,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.bungee.event;
+package systems.refomcloud.reformcloud2.embedded.bungee.event;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.bungee.BungeeExecutor;
-import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.ProcessStartedEvent;
-import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.ProcessStoppedEvent;
-import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.ProcessUpdatedEvent;
-import systems.reformcloud.reformcloud2.executor.api.common.event.handler.Listener;
+import systems.refomcloud.reformcloud2.embedded.bungee.BungeeExecutor;
+import systems.reformcloud.reformcloud2.executor.api.api.basic.events.ProcessStartedEvent;
+import systems.reformcloud.reformcloud2.executor.api.api.basic.events.ProcessStoppedEvent;
+import systems.reformcloud.reformcloud2.executor.api.api.basic.events.ProcessUpdatedEvent;
+import systems.reformcloud.reformcloud2.executor.api.event.handler.Listener;
 
 public final class ProcessEventHandler {
 

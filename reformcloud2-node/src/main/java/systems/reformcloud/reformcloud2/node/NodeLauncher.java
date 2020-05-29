@@ -24,15 +24,19 @@
  */
 package systems.reformcloud.reformcloud2.node;
 
-import systems.reformcloud.reformcloud2.executor.api.common.dependency.DependencyLoader;
-import systems.reformcloud.reformcloud2.executor.api.common.language.loading.LanguageWorker;
+import systems.reformcloud.reformcloud2.executor.api.dependency.DependencyLoader;
+import systems.reformcloud.reformcloud2.executor.api.io.IOUtils;
+import systems.reformcloud.reformcloud2.executor.api.language.loading.LanguageLoader;
+
+import java.nio.file.Paths;
 
 public final class NodeLauncher {
 
     public static synchronized void main(String[] args) {
-        LanguageWorker.doLoad();
+        LanguageLoader.doLoad();
         DependencyLoader.doLoad();
 
+        IOUtils.deleteDirectory(Paths.get("reformcloud/temp"));
         new NodeExecutor();
     }
 }

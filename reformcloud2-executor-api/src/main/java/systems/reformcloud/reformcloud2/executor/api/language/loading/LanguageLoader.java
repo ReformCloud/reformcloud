@@ -26,9 +26,9 @@ package systems.reformcloud.reformcloud2.executor.api.language.loading;
 
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.base.Conditions;
+import systems.reformcloud.reformcloud2.executor.api.language.Language;
 import systems.reformcloud.reformcloud2.executor.api.language.LanguageManager;
-import systems.reformcloud.reformcloud2.executor.api.language.language.Language;
-import systems.reformcloud.reformcloud2.executor.api.language.language.source.LanguageSource;
+import systems.reformcloud.reformcloud2.executor.api.language.LanguageSource;
 import systems.reformcloud.reformcloud2.executor.api.utility.list.Duo;
 
 import java.io.IOException;
@@ -37,9 +37,9 @@ import java.util.LinkedList;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicReference;
 
-public final class LanguageWorker {
+public final class LanguageLoader {
 
-    private LanguageWorker() {
+    private LanguageLoader() {
     }
 
     public static void doLoad() {
@@ -109,7 +109,7 @@ public final class LanguageWorker {
 
     private static Properties open(String path) throws IOException {
         Properties properties = new Properties();
-        properties.load(LanguageWorker.class.getClassLoader().getResourceAsStream(path));
+        properties.load(LanguageLoader.class.getClassLoader().getResourceAsStream(path));
         return properties;
     }
 

@@ -22,30 +22,33 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.application.basic;
+package systems.reformcloud.reformcloud2.node.application;
 
 import com.google.gson.reflect.TypeToken;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.application.*;
+import systems.reformcloud.reformcloud2.executor.api.application.ApplicationConfig;
+import systems.reformcloud.reformcloud2.executor.api.application.ApplicationLoader;
+import systems.reformcloud.reformcloud2.executor.api.application.ApplicationStatus;
+import systems.reformcloud.reformcloud2.executor.api.application.LoadedApplication;
 import systems.reformcloud.reformcloud2.executor.api.application.api.Application;
 import systems.reformcloud.reformcloud2.executor.api.application.builder.ApplicationConfigBuilder;
-import systems.reformcloud.reformcloud2.executor.api.application.event.ApplicationDisableEvent;
-import systems.reformcloud.reformcloud2.executor.api.application.event.ApplicationLoadEvent;
-import systems.reformcloud.reformcloud2.executor.api.application.event.ApplicationLoaderDetectedApplicationEvent;
 import systems.reformcloud.reformcloud2.executor.api.application.loader.AppClassLoader;
-import systems.reformcloud.reformcloud2.executor.api.application.unsafe.ApplicationUnsafe;
 import systems.reformcloud.reformcloud2.executor.api.application.updater.ApplicationUpdateRepository;
-import systems.reformcloud.reformcloud2.executor.api.configuration.JsonConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.dependency.DefaultDependencyLoader;
 import systems.reformcloud.reformcloud2.executor.api.dependency.Dependency;
 import systems.reformcloud.reformcloud2.executor.api.dependency.DependencyLoader;
-import systems.reformcloud.reformcloud2.executor.api.language.LanguageManager;
-import systems.reformcloud.reformcloud2.executor.api.utility.list.Streams;
+import systems.reformcloud.reformcloud2.executor.api.event.EventManager;
 import systems.reformcloud.reformcloud2.executor.api.io.DownloadHelper;
 import systems.reformcloud.reformcloud2.executor.api.io.IOUtils;
+import systems.reformcloud.reformcloud2.executor.api.language.LanguageManager;
+import systems.reformcloud.reformcloud2.executor.api.utility.list.Streams;
+import systems.reformcloud.reformcloud2.node.event.application.ApplicationDisableEvent;
+import systems.reformcloud.reformcloud2.node.event.application.ApplicationLoadEvent;
+import systems.reformcloud.reformcloud2.node.event.application.ApplicationLoaderDetectedApplicationEvent;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -88,16 +91,13 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
     }
 
     @Override
-    public void installApplications() {
+    public void loadApplications() {
         this.toLoad.forEach(this::installApplication);
         this.toLoad.clear();
-    }
 
-    @Override
-    public void loadApplications() {
         for (Application value : this.loadedApplications.values()) {
             ApplicationLoadEvent event = new ApplicationLoadEvent(value.getApplication());
-            ExecutorAPI.getInstance().getEventManager().callEvent(event);
+            ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).callEvent(event);
             if (event.isCancelled()) {
                 continue;
             }
@@ -133,10 +133,7 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
     }
 
     @Override
-    public boolean doSpecificApplicationInstall(@NotNull InstallableApplication application) {
-        DownloadHelper.downloadAndDisconnect(application.getDownloadUrl(), "reformcloud/applications/" + application.getName());
-        Path path = Paths.get("reformcloud/applications/" + application.getName());
-
+    public boolean doSpecificApplicationInstall(@NotNull Path path) {
         if (Files.exists(path)) {
             ApplicationConfig config = this.detectApplication(path);
             if (config == null) {
@@ -207,14 +204,13 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
                         .withImplementedVersion(jsonConfiguration.getOrDefault("impl-version", (String) null))
                         .create();
 
-                ApplicationUnsafe.checkIfUnsafe(applicationConfig);
                 if (this.getApplication(applicationConfig.getName()).isPresent()) {
                     System.err.println("Detected duplicate application " + applicationConfig.getName() + " @ " + path.toString());
                     return null;
                 }
 
                 ApplicationLoaderDetectedApplicationEvent event = new ApplicationLoaderDetectedApplicationEvent(applicationConfig);
-                ExecutorAPI.getInstance().getEventManager().callEvent(event);
+                ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).callEvent(event);
                 if (event.isCancelled()) {
                     return null;
                 }
@@ -251,11 +247,7 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
             Application instance = (Application) mainClass.getDeclaredConstructor().newInstance();
             System.out.println(LanguageManager.get("successfully-pre-installed-app", applicationConfig.getName(), applicationConfig.getAuthor()));
 
-            instance.onInstallable();
             instance.init(new DefaultLoadedApplication(this, applicationConfig, mainClass), loader);
-            instance.onInstalled();
-            instance.getApplication().setApplicationStatus(ApplicationStatus.INSTALLED);
-
             if (instance.getUpdateRepository() != null) {
                 instance.getUpdateRepository().fetchOrigin();
             }
@@ -276,7 +268,7 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
 
     private void disableApplication(@NotNull Application application) {
         ApplicationDisableEvent event = new ApplicationDisableEvent(application.getApplication());
-        ExecutorAPI.getInstance().getEventManager().callEvent(event);
+        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).callEvent(event);
         if (event.isCancelled()) {
             return;
         }
@@ -288,15 +280,8 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
         application.getApplication().setApplicationStatus(ApplicationStatus.DISABLED);
         application.onDisable();
 
-        application.getApplication().setApplicationStatus(ApplicationStatus.UNINSTALLING);
-        application.onUninstall();
-
-        System.out.println(LanguageManager.get("successfully-uninstalled-app", application.getApplication().getName()));
-        application.getApplication().setApplicationStatus(ApplicationStatus.UNINSTALLED);
-
         this.handleUpdate(application);
 
-        application.unloadAllLanguageFiles();
         this.loadedApplications.remove(application.getApplication().getName());
         application.getAppClassLoader().close();
     }

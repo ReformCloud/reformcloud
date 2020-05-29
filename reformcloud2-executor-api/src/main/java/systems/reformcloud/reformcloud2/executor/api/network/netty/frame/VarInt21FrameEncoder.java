@@ -24,5 +24,28 @@
  */
 package systems.reformcloud.reformcloud2.executor.api.network.netty.frame;
 
-public class VarInt21FrameEncoder {
+import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelHandler;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.handler.codec.MessageToMessageEncoder;
+import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
+
+import java.util.List;
+
+@ChannelHandler.Sharable
+public class VarInt21FrameEncoder extends MessageToMessageEncoder<ByteBuf> {
+
+    public static final VarInt21FrameEncoder INSTANCE = new VarInt21FrameEncoder();
+
+    private VarInt21FrameEncoder() {
+    }
+
+    @Override
+    protected void encode(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf, List<Object> list) {
+        ByteBuf buf = channelHandlerContext.alloc().buffer(5);
+        NetworkUtil.writeVarInt(buf, byteBuf.readableBytes());
+
+        list.add(buf);
+        list.add(byteBuf.retain());
+    }
 }

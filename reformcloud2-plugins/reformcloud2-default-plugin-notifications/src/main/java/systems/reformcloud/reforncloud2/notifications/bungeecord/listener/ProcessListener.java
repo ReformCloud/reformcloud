@@ -26,16 +26,16 @@ package systems.reformcloud.reforncloud2.notifications.bungeecord.listener;
 
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
+import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
+import systems.reformcloud.reformcloud2.executor.api.api.basic.events.ProcessStartedEvent;
+import systems.reformcloud.reformcloud2.executor.api.api.basic.events.ProcessStoppedEvent;
+import systems.reformcloud.reformcloud2.executor.api.api.basic.events.ProcessUpdatedEvent;
 import systems.reformcloud.reformcloud2.executor.api.bungee.BungeeExecutor;
-import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.ProcessStartedEvent;
-import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.ProcessStoppedEvent;
-import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.ProcessUpdatedEvent;
-import systems.reformcloud.reformcloud2.executor.api.common.event.handler.Listener;
-import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
-import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
+import systems.reformcloud.reformcloud2.executor.api.event.handler.Listener;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.manager.DefaultChannelManager;
+import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
+import systems.reformcloud.reformcloud2.executor.api.utility.task.Task;
+import systems.reformcloud.reformcloud2.executor.api.utility.thread.AbsoluteThread;
 
 import java.util.Map;
 import java.util.UUID;

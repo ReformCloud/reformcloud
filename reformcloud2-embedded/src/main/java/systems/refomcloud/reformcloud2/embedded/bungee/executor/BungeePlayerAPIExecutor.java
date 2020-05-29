@@ -22,13 +22,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.bungee.executor;
+package systems.refomcloud.reformcloud2.embedded.bungee.executor;
 
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
-import systems.reformcloud.reformcloud2.executor.api.executor.PlayerAPIExecutor;
+import systems.refomcloud.reformcloud2.embedded.executor.PlayerAPIExecutor;
 
 import java.util.UUID;
 

@@ -26,14 +26,14 @@ package systems.reformcloud.reformcloud2.examples.process;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
-import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
-import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState;
-import systems.reformcloud.reformcloud2.executor.api.common.process.api.ProcessConfiguration;
-import systems.reformcloud.reformcloud2.executor.api.common.process.api.ProcessConfigurationBuilder;
-import systems.reformcloud.reformcloud2.executor.api.common.process.api.ProcessInclusion;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
+import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
+import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
+import systems.reformcloud.reformcloud2.executor.api.process.ProcessState;
+import systems.reformcloud.reformcloud2.executor.api.process.api.ProcessConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.process.api.ProcessConfigurationBuilder;
+import systems.reformcloud.reformcloud2.executor.api.process.api.ProcessInclusion;
+import systems.reformcloud.reformcloud2.executor.api.task.Task;
 
 import java.util.UUID;
 

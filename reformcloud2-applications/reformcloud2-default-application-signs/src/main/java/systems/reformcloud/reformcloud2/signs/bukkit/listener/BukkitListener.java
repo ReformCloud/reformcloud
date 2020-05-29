@@ -29,7 +29,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
-import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
+import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.signs.bukkit.adapter.BukkitSignSystemAdapter;
 import systems.reformcloud.reformcloud2.signs.event.UserSignPreConnectEvent;
 import systems.reformcloud.reformcloud2.signs.util.SignSystemAdapter;

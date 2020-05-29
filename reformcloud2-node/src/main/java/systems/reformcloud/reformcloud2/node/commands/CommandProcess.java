@@ -22,38 +22,30 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands;
+package systems.reformcloud.reformcloud2.node.commands;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import systems.reformcloud.reformcloud2.executor.api.common.CommonHelper;
-import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.GlobalCommand;
-import systems.reformcloud.reformcloud2.executor.api.common.commands.source.CommandSource;
-import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
-import systems.reformcloud.reformcloud2.executor.api.common.groups.template.inclusion.Inclusion;
-import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
-import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
-import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.StringUtil;
+import systems.reformcloud.reformcloud2.executor.api.CommonHelper;
+import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
+import systems.reformcloud.reformcloud2.executor.api.command.Command;
+import systems.reformcloud.reformcloud2.executor.api.command.CommandSender;
+import systems.reformcloud.reformcloud2.executor.api.groups.ProcessGroup;
+import systems.reformcloud.reformcloud2.executor.api.groups.template.inclusion.Inclusion;
+import systems.reformcloud.reformcloud2.executor.api.language.LanguageManager;
+import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
+import systems.reformcloud.reformcloud2.executor.api.process.ProcessState;
+import systems.reformcloud.reformcloud2.executor.api.utility.StringUtil;
 
 import java.util.*;
-import java.util.function.Function;
 
-import static systems.reformcloud.reformcloud2.executor.api.common.CommonHelper.DECIMAL_FORMAT;
+import static systems.reformcloud.reformcloud2.executor.api.CommonHelper.DECIMAL_FORMAT;
 
-public final class CommandProcess extends GlobalCommand {
+public final class CommandProcess implements Command {
 
     private static final String FORMAT_LIST = " - %s - %d/%d - %s - %s";
-    private final Function<ProcessInformation, Boolean> screenToggle;
 
-    public CommandProcess(@NotNull Function<ProcessInformation, Boolean> screenToggle) {
-        super("process", "reformcloud.command.process", "The process management command", "p", "processes");
-        this.screenToggle = screenToggle;
-    }
-
-    @Override
-    public void describeCommandToSender(@NotNull CommandSource source) {
+    public void describeCommandToSender(@NotNull CommandSender source) {
         source.sendMessages((
                 "process list                                  | Lists all processes\n" +
                         " --group=[group]                              | Lists all processes of the specified group\n" +
@@ -70,10 +62,10 @@ public final class CommandProcess extends GlobalCommand {
     }
 
     @Override
-    public boolean handleCommand(@NotNull CommandSource commandSource, @NotNull String[] strings) {
+    public void process(@NotNull CommandSender commandSource, @NotNull String[] strings, @NotNull String fullLine) {
         if (strings.length == 0) {
             this.describeCommandToSender(commandSource);
-            return true;
+            return;
         }
 
         Properties properties = StringUtil.calcProperties(strings, 1);
@@ -82,7 +74,7 @@ public final class CommandProcess extends GlobalCommand {
                 ProcessGroup group = ExecutorAPI.getInstance().getSyncAPI().getGroupSyncAPI().getProcessGroup(properties.getProperty("group"));
                 if (group == null) {
                     commandSource.sendMessage(LanguageManager.get("command-process-group-unavailable", properties.getProperty("group")));
-                    return true;
+                    return;
                 }
 
                 this.showAllProcesses(commandSource, group);
@@ -92,13 +84,13 @@ public final class CommandProcess extends GlobalCommand {
                 }
             }
 
-            return true;
+            return;
         }
 
         ProcessInformation target = this.getProcess(strings[0]);
         if (target == null) {
             commandSource.sendMessage(LanguageManager.get("command-process-process-unknown", strings[0]));
-            return true;
+            return;
         }
 
         if (strings.length == 2 && strings[1].equalsIgnoreCase("screen")) {
@@ -108,7 +100,7 @@ public final class CommandProcess extends GlobalCommand {
                 commandSource.sendMessage(LanguageManager.get("command-process-screen-toggle-disabled", strings[0]));
             }
 
-            return true;
+            return;
         }
 
         if (strings.length == 2 && strings[1].equalsIgnoreCase("copy")) {
@@ -119,7 +111,7 @@ public final class CommandProcess extends GlobalCommand {
                     target.getProcessDetail().getTemplate().getBackend())
             );
             ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().copyProcess(target);
-            return true;
+            return;
         }
 
         if (strings.length >= 2 && strings[1].equalsIgnoreCase("info")) {
@@ -127,34 +119,34 @@ public final class CommandProcess extends GlobalCommand {
                 Boolean full = CommonHelper.booleanFromString(properties.getProperty("full"));
                 if (full == null) {
                     commandSource.sendMessage(LanguageManager.get("command-required-boolean", properties.getProperty("full")));
-                    return true;
+                    return;
                 }
 
                 this.describeProcessToSender(commandSource, target, full);
-                return true;
+                return;
             }
 
             this.describeProcessToSender(commandSource, target, false);
-            return true;
+            return;
         }
 
         if (strings.length == 2 && (strings[1].equalsIgnoreCase("stop") || strings[1].equalsIgnoreCase("kill"))) {
             ExecutorAPI.getInstance().getAsyncAPI().getProcessAsyncAPI().stopProcessAsync(target.getProcessDetail().getProcessUniqueID()).onComplete(info -> {
             });
             commandSource.sendMessage(LanguageManager.get("command-process-stop-proceed", strings[0]));
-            return true;
+            return;
         }
 
         if (strings.length == 2 && strings[1].equalsIgnoreCase("start")) {
             if (!target.getProcessDetail().getProcessState().equals(ProcessState.PREPARED)) {
                 commandSource.sendMessage(LanguageManager.get("command-process-process-not-prepared", strings[0]));
-                return true;
+                return;
             }
 
             ExecutorAPI.getInstance().getAsyncAPI().getProcessAsyncAPI().startProcessAsync(target).onComplete(e -> {
             });
             commandSource.sendMessage(LanguageManager.get("command-process-starting-prepared", strings[0]));
-            return true;
+            return;
         }
 
         if (strings.length > 2 && (strings[1].equalsIgnoreCase("command")
@@ -163,11 +155,11 @@ public final class CommandProcess extends GlobalCommand {
             String command = String.join(" ", Arrays.copyOfRange(strings, 2, strings.length));
             ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().executeProcessCommand(target.getProcessDetail().getName(), command);
             commandSource.sendMessage(LanguageManager.get("command-process-command-execute", command, strings[0]));
-            return true;
+            return;
         }
 
         this.describeCommandToSender(commandSource);
-        return true;
+        return;
     }
 
     private void describeProcessToSender(CommandSource source, ProcessInformation information, boolean full) {
@@ -236,7 +228,7 @@ public final class CommandProcess extends GlobalCommand {
                 : ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcess(process);
     }
 
-    private void showAllProcesses(@NotNull CommandSource source, @NotNull ProcessGroup group) {
+    private void showAllProcesses(@NotNull CommandSender source, @NotNull ProcessGroup group) {
         Set<ProcessInformation> all = this.sort(ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcesses(group.getName()));
         all.forEach(
                 e -> source.sendMessage(String.format(

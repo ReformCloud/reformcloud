@@ -24,5 +24,37 @@
  */
 package systems.reformcloud.reformcloud2.shared.network.packet;
 
-public class DefaultQueryManager {
+import org.jetbrains.annotations.NotNull;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
+import systems.reformcloud.reformcloud2.executor.api.network.packet.Packet;
+import systems.reformcloud.reformcloud2.executor.api.network.packet.query.QueryManager;
+import systems.reformcloud.reformcloud2.executor.api.task.Task;
+import systems.reformcloud.reformcloud2.executor.api.task.defaults.DefaultTask;
+
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+
+public class DefaultQueryManager implements QueryManager {
+
+    private final Map<UUID, Task<Packet>> waitingQueries = new ConcurrentHashMap<>();
+
+    @NotNull
+    @Override
+    public Optional<Task<Packet>> getWaitingQuery(@NotNull UUID queryUniqueId) {
+        return Optional.ofNullable(this.waitingQueries.remove(queryUniqueId));
+    }
+
+    @NotNull
+    @Override
+    public Task<Packet> sendPacketQuery(@NotNull NetworkChannel channel, @NotNull UUID queryUniqueId, @NotNull Packet packet) {
+        packet.setQueryUniqueID(queryUniqueId);
+
+        Task<Packet> task = new DefaultTask<>();
+        this.waitingQueries.put(queryUniqueId, task);
+
+        channel.sendPacket(packet);
+        return task;
+    }
 }

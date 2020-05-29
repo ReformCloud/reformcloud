@@ -22,19 +22,19 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.spigot;
+package systems.refomcloud.reformcloud2.embedded.spigot;
 
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
-import systems.reformcloud.reformcloud2.executor.api.common.language.loading.LanguageWorker;
-import systems.reformcloud.reformcloud2.executor.api.spigot.event.ExtraListenerHandler;
-import systems.reformcloud.reformcloud2.executor.api.spigot.event.PlayerListenerHandler;
+import systems.refomcloud.reformcloud2.embedded.spigot.event.ExtraListenerHandler;
+import systems.refomcloud.reformcloud2.embedded.spigot.event.PlayerListenerHandler;
+import systems.reformcloud.reformcloud2.executor.api.language.loading.LanguageLoader;
 
 public final class SpigotLauncher extends JavaPlugin {
 
     @Override
     public void onLoad() {
-        LanguageWorker.doLoad();
+        LanguageLoader.doLoad();
         Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
     }
 

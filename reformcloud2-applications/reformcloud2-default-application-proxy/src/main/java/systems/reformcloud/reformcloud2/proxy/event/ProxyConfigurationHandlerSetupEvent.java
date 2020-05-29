@@ -25,7 +25,7 @@
 package systems.reformcloud.reformcloud2.proxy.event;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.common.event.Event;
+import systems.reformcloud.reformcloud2.executor.api.event.Event;
 import systems.reformcloud.reformcloud2.proxy.ProxyConfigurationHandler;
 
 import java.util.Objects;

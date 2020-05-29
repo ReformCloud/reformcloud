@@ -24,5 +24,13 @@
  */
 package systems.reformcloud.reformcloud2.executor.api.registry.service.exception;
 
-public class ProviderImmutableException {
+import org.jetbrains.annotations.NotNull;
+
+public class ProviderImmutableException extends RuntimeException {
+
+    private static final long serialVersionUID = -4558245546379032533L;
+
+    public ProviderImmutableException(@NotNull Class<?> service) {
+        super("The provider of service " + service.getName() + " is immutable");
+    }
 }

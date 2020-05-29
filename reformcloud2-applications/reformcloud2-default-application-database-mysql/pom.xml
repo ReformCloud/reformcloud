@@ -3,7 +3,7 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>reformcloud2</artifactId>
+        <artifactId>reformcloud2-applications</artifactId>
         <groupId>systems.reformcloud.reformcloud2</groupId>
         <version>2.2.2</version>
     </parent>
@@ -34,6 +34,13 @@
             <version>3.4.5</version>
             <scope>provided</scope>
         </dependency>
+
+        <dependency>
+            <groupId>systems.reformcloud.reformcloud2</groupId>
+            <artifactId>reformcloud2-node</artifactId>
+            <version>2.2.2</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -48,6 +55,10 @@
                         <excludedScope>test</excludedScope>
                         <excludedScope>compile</excludedScope>
                     </excludedScopes>
+
+                    <excludes>
+                        <exclude>*:reformcloud2-executor-api</exclude>
+                    </excludes>
 
                     <outputFileName>
                         reformcloud2-applications/reformcloud2-default-application-database-mysql/src/main/resources/dependencies.txt

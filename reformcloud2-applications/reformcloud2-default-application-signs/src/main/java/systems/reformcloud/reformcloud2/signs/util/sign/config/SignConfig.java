@@ -26,8 +26,8 @@ package systems.reformcloud.reformcloud2.signs.util.sign.config;
 
 import com.google.gson.reflect.TypeToken;
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.common.network.SerializableObject;
-import systems.reformcloud.reformcloud2.executor.api.common.network.data.ProtocolBuffer;
+import systems.reformcloud.reformcloud2.executor.api.network.SerializableObject;
+import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
 
 import java.util.Collection;
 

@@ -25,7 +25,7 @@
 package systems.reformcloud.reformcloud2.executor.api.provider;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.configuration.JsonConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 
 public interface ChannelMessageProvider {

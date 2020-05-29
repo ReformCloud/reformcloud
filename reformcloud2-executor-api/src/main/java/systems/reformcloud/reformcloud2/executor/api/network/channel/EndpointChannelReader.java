@@ -26,30 +26,19 @@ package systems.reformcloud.reformcloud2.executor.api.network.channel;
 
 import io.netty.channel.ChannelHandlerContext;
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.network.challenge.ChallengeAuthHandler;
-import systems.reformcloud.reformcloud2.executor.api.network.handler.ChannelReaderHelper;
 import systems.reformcloud.reformcloud2.executor.api.network.packet.Packet;
 
 import java.io.IOException;
 
-public interface NetworkChannelReader {
+public interface EndpointChannelReader {
 
-    /**
-     * @return The current packet sender of the reader
-     */
+    boolean shouldHandle(@NotNull Packet packet);
+
     @NotNull
-    PacketSender sender();
+    NetworkChannel getNetworkChannel();
 
-    /**
-     * Sets the context of the channel and the name if the current channel.
-     * <br>
-     * This method can only get called once. If you call it twice it will throws an exception.
-     *
-     * @param channelHandlerContext The context of the channel which should get registered
-     * @param name                  The name of the channel which should get registered
-     * @see systems.reformcloud.reformcloud2.executor.api.network.handler.ChannelReaderHelper Gets called there
-     */
-    void setChannelHandlerContext(@NotNull ChannelHandlerContext channelHandlerContext, @NotNull String name);
+    @NotNull
+    EndpointChannelReader setNetworkChannel(@NotNull NetworkChannel channel);
 
     /**
      * Gets called when a channel opens
@@ -68,13 +57,9 @@ public interface NetworkChannelReader {
     /**
      * Gets called when a packet comes into the channel
      *
-     * @param context     The context of the channel where the packet is from
-     * @param authHandler The handler with did the auth of the channel
-     * @param parent      The handle which read the packet from the channel
-     * @param input       The sent content by the sender
+     * @param input The sent content by the sender
      */
-    void read(@NotNull ChannelHandlerContext context, @NotNull ChallengeAuthHandler authHandler,
-              @NotNull ChannelReaderHelper parent, @NotNull Packet input);
+    void read(@NotNull Packet input);
 
     /**
      * Handles the exceptions which will occur in the channel

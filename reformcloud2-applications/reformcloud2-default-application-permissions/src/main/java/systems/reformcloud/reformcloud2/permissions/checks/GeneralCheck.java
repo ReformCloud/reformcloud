@@ -27,7 +27,7 @@ package systems.reformcloud.reformcloud2.permissions.checks;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.api.API;
-import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
+import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.permissions.nodes.PermissionNode;
 import systems.reformcloud.reformcloud2.permissions.objects.group.PermissionGroup;
 import systems.reformcloud.reformcloud2.permissions.objects.user.PermissionUser;

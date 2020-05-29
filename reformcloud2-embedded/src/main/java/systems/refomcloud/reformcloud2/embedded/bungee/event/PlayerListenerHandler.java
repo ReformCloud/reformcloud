@@ -22,34 +22,33 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.bungee.event;
+package systems.refomcloud.reformcloud2.embedded.bungee.event;
 
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.md_5.bungee.api.event.*;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 import net.md_5.bungee.event.EventPriority;
 import org.jetbrains.annotations.NotNull;
+import systems.refomcloud.reformcloud2.embedded.bungee.BungeeExecutor;
+import systems.refomcloud.reformcloud2.embedded.bungee.fallback.BungeeFallbackExtraFilter;
+import systems.refomcloud.reformcloud2.embedded.bungee.util.EmptyProxiedPlayer;
+import systems.refomcloud.reformcloud2.embedded.network.packets.out.APIBungeePacketOutPlayerServerSwitch;
+import systems.refomcloud.reformcloud2.embedded.network.packets.out.APIPacketOutLogoutPlayer;
+import systems.refomcloud.reformcloud2.embedded.network.packets.out.APIPacketOutPlayerCommandExecute;
+import systems.refomcloud.reformcloud2.embedded.network.packets.out.APIPacketOutPlayerLoggedIn;
+import systems.refomcloud.reformcloud2.embedded.shared.SharedJoinAllowChecker;
+import systems.refomcloud.reformcloud2.embedded.shared.SharedPlayerFallbackFilter;
+import systems.reformcloud.reformcloud2.executor.api.CommonHelper;
+import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.api.API;
-import systems.reformcloud.reformcloud2.executor.api.bungee.BungeeExecutor;
-import systems.reformcloud.reformcloud2.executor.api.bungee.fallback.BungeeFallbackExtraFilter;
-import systems.reformcloud.reformcloud2.executor.api.bungee.util.EmptyProxiedPlayer;
-import systems.reformcloud.reformcloud2.executor.api.common.CommonHelper;
-import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
-import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
-import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
-import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Duo;
-import systems.reformcloud.reformcloud2.executor.api.network.packets.out.APIBungeePacketOutPlayerServerSwitch;
-import systems.reformcloud.reformcloud2.executor.api.network.packets.out.APIPacketOutLogoutPlayer;
-import systems.reformcloud.reformcloud2.executor.api.network.packets.out.APIPacketOutPlayerCommandExecute;
-import systems.reformcloud.reformcloud2.executor.api.network.packets.out.APIPacketOutPlayerLoggedIn;
-import systems.reformcloud.reformcloud2.executor.api.shared.SharedJoinAllowChecker;
-import systems.reformcloud.reformcloud2.executor.api.shared.SharedPlayerFallbackFilter;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.PacketSender;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.manager.DefaultChannelManager;
+import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
+import systems.reformcloud.reformcloud2.executor.api.process.ProcessState;
+import systems.reformcloud.reformcloud2.executor.api.utility.list.Duo;
 
 public final class PlayerListenerHandler implements Listener {
 

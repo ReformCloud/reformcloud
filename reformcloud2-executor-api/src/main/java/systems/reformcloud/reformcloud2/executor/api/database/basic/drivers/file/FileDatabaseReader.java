@@ -28,7 +28,7 @@ import de.derklaro.projects.deer.api.Database;
 import de.derklaro.projects.deer.api.basic.Filters;
 import de.derklaro.projects.deer.api.provider.DatabaseProvider;
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.configuration.JsonConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.database.DatabaseReader;
 import systems.reformcloud.reformcloud2.executor.api.task.Task;
 import systems.reformcloud.reformcloud2.executor.api.task.defaults.DefaultTask;

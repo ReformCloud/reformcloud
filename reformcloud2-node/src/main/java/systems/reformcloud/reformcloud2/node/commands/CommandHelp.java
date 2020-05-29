@@ -22,54 +22,28 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.shared;
+package systems.reformcloud.reformcloud2.node.commands;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.common.commands.Command;
-import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.GlobalCommand;
-import systems.reformcloud.reformcloud2.executor.api.common.commands.manager.CommandManager;
-import systems.reformcloud.reformcloud2.executor.api.common.commands.source.CommandSource;
-import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
+import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
+import systems.reformcloud.reformcloud2.executor.api.command.Command;
+import systems.reformcloud.reformcloud2.executor.api.command.CommandManager;
+import systems.reformcloud.reformcloud2.executor.api.command.CommandSender;
 
-public final class CommandHelp extends GlobalCommand {
-
-    private final CommandManager commandManager;
-
-    public CommandHelp(CommandManager commandManager) {
-        super("help", null, GlobalCommand.DEFAULT_DESCRIPTION, "ask", "?");
-        this.commandManager = commandManager;
-    }
+public final class CommandHelp implements Command {
 
     @Override
-    public void describeCommandToSender(@NotNull CommandSource source) {
-        source.sendMessage(LanguageManager.get("command-help-description"));
-    }
+    public void process(@NotNull CommandSender sender, @NotNull String[] strings, @NotNull String commandLine) {
+        sender.sendMessage("ReformCloud git:runner:"
+                + System.getProperty("reformcloud.runner.version", "c-build")
+                + ":"
+                + CommandHelp.class.getPackage().getSpecificationVersion()
+                + " by derklaro and ReformCloud-Community"
+        );
+        sender.sendMessage("Discord: https://discord.gg/uskXdVZ");
+        sender.sendMessage(" ");
 
-    @Override
-    public boolean handleCommand(@NotNull CommandSource commandSource, @NotNull String[] strings) {
-        if (strings.length != 1) {
-            commandSource.sendMessage("ReformCloud git:runner:"
-                    + System.getProperty("reformcloud.runner.version", "c-build")
-                    + ":"
-                    + CommandHelp.class.getPackage().getSpecificationVersion()
-                    + " by derklaro and ReformCloud-Community"
-            );
-            commandSource.sendMessage("Discord: https://discord.gg/uskXdVZ");
-            commandSource.sendMessage(" ");
-
-            this.commandManager.getCommands().forEach(command -> commandSource.sendMessage("   -> " + command.mainCommand() + " " + command.aliases()));
-            commandSource.sendMessage(" ");
-            commandSource.sendMessage(LanguageManager.get("command-help-use"));
-            return true;
-        }
-
-        Command command = this.commandManager.getCommand(strings[0]);
-        if (command == null) {
-            commandSource.sendMessage(LanguageManager.get("command-help-command-unknown"));
-            return true;
-        }
-
-        command.describeCommandToSender(commandSource);
-        return true;
+        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(CommandManager.class)
+                .getCommands().forEach(command -> sender.sendMessage("   -> " + command.mainCommand() + " " + command.aliases()));
     }
 }

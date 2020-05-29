@@ -24,5 +24,34 @@
  */
 package systems.reformcloud.reformcloud2.executor.api.command;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.UnmodifiableView;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+
 public interface CommandManager {
+
+    @NotNull
+    default CommandManager registerCommand(@NotNull Command command, @NotNull String... aliases) {
+        return this.registerCommand(command, Arrays.asList(aliases));
+    }
+
+    @NotNull
+    CommandManager registerCommand(@NotNull Command command, @NotNull List<String> aliases);
+
+    void unregisterCommand(@NotNull CommandContainer command);
+
+    @NotNull
+    Optional<CommandContainer> getCommand(@NotNull String anyAlias);
+
+    @NotNull
+    @UnmodifiableView Collection<CommandContainer> getCommands();
+
+    boolean process(@NotNull String commandLine, @NotNull CommandSender commandSender);
+
+    @NotNull
+    List<String> suggest(@NotNull String commandLine, @NotNull CommandSender commandSender);
 }

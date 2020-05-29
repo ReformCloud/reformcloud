@@ -25,7 +25,7 @@
 package systems.reformcloud.reformcloud2.permissions.events.system;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.common.event.Event;
+import systems.reformcloud.reformcloud2.executor.api.event.Event;
 import systems.reformcloud.reformcloud2.permissions.PermissionManagement;
 
 import java.util.Objects;

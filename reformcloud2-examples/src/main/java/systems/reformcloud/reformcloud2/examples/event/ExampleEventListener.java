@@ -25,9 +25,9 @@
 package systems.reformcloud.reformcloud2.examples.event;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.ProcessStartedEvent;
-import systems.reformcloud.reformcloud2.executor.api.common.event.handler.Listener;
-import systems.reformcloud.reformcloud2.executor.api.common.event.priority.EventPriority;
+import systems.reformcloud.reformcloud2.executor.api.api.basic.events.ProcessStartedEvent;
+import systems.reformcloud.reformcloud2.executor.api.event.handler.Listener;
+import systems.reformcloud.reformcloud2.executor.api.event.priority.EventPriority;
 
 /**
  * This class shows how you can access to events

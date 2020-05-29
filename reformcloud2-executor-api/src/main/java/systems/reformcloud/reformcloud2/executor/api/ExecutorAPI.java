@@ -24,14 +24,9 @@
  */
 package systems.reformcloud.reformcloud2.executor.api;
 
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.ExecutorType;
-import systems.reformcloud.reformcloud2.executor.api.api.AsyncAPI;
-import systems.reformcloud.reformcloud2.executor.api.api.SyncAPI;
-import systems.reformcloud.reformcloud2.executor.api.base.Conditions;
-import systems.reformcloud.reformcloud2.executor.api.event.EventManager;
-import systems.reformcloud.reformcloud2.executor.api.network.packet.handler.PacketHandler;
+import systems.reformcloud.reformcloud2.executor.api.provider.*;
+import systems.reformcloud.reformcloud2.executor.api.registry.service.ServiceRegistry;
 
 import java.util.Objects;
 
@@ -74,37 +69,32 @@ public abstract class ExecutorAPI {
      * @param instance The new instance of the executor api
      */
     protected static void setInstance(@NotNull ExecutorAPI instance) {
-        Conditions.isTrue(ExecutorAPI.instance == null, "Executor api instance is already defined");
         ExecutorAPI.instance = Objects.requireNonNull(instance, "instance");
     }
 
-    /**
-     * @return The current sync api instance of the api
-     */
     @NotNull
-    public abstract SyncAPI getSyncAPI();
+    public abstract ChannelMessageProvider getChannelMessageProvider();
 
-    /**
-     * @return The current async api instance
-     */
     @NotNull
-    @Deprecated
-    @ApiStatus.ScheduledForRemoval
-    public abstract AsyncAPI getAsyncAPI();
+    public abstract DatabaseProvider getDatabaseProvider();
 
-    /**
-     * @return The current packet handler of the cloud
-     */
     @NotNull
-    @Deprecated
-    @ApiStatus.ScheduledForRemoval
-    public abstract PacketHandler getPacketHandler();
+    public abstract MainGroupProvider getMainGroupProvider();
 
-    /**
-     * @return The current event manger of the cloud
-     */
     @NotNull
-    public abstract EventManager getEventManager();
+    public abstract NodeInformationProvider getNodeInformationProvider();
+
+    @NotNull
+    public abstract PlayerProvider getPlayerProvider();
+
+    @NotNull
+    public abstract ProcessGroupProvider getProcessGroupProvider();
+
+    @NotNull
+    public abstract ProcessProvider getProcessProvider();
+
+    @NotNull
+    public abstract ServiceRegistry getServiceRegistry();
 
     /**
      * @return If the current cloud instance is ready

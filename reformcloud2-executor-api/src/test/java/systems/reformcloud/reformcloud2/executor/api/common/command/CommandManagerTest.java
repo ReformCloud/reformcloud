@@ -27,13 +27,11 @@ package systems.reformcloud.reformcloud2.executor.api.command;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 import systems.reformcloud.reformcloud2.executor.api.commands.AllowedCommandSources;
-import systems.reformcloud.reformcloud2.executor.api.commands.Command;
 import systems.reformcloud.reformcloud2.executor.api.commands.basic.ConsoleCommandSource;
 import systems.reformcloud.reformcloud2.executor.api.commands.basic.command.sources.ConsoleCommand;
 import systems.reformcloud.reformcloud2.executor.api.commands.basic.manager.DefaultCommandManager;
-import systems.reformcloud.reformcloud2.executor.api.commands.manager.CommandManager;
 import systems.reformcloud.reformcloud2.executor.api.commands.source.CommandSource;
-import systems.reformcloud.reformcloud2.executor.api.language.loading.LanguageWorker;
+import systems.reformcloud.reformcloud2.executor.api.language.loading.LanguageLoader;
 
 import java.util.Collections;
 
@@ -46,7 +44,7 @@ public final class CommandManagerTest {
     public void testCommandManager() {
         CommandManager commandManager = new DefaultCommandManager();
         Command command = new TestCommand();
-        LanguageWorker.doLoad();
+        LanguageLoader.doLoad();
 
         assertNotNull(commandManager);
         assertNotNull(command);

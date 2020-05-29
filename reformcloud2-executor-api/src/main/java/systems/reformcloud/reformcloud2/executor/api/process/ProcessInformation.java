@@ -29,12 +29,11 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.configuration.JsonConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.groups.utils.PlayerAccessConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.network.SerializableObject;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
-import systems.reformcloud.reformcloud2.executor.api.plugins.basic.DefaultPlugin;
 import systems.reformcloud.reformcloud2.executor.api.process.api.ProcessInclusion;
 import systems.reformcloud.reformcloud2.executor.api.process.detail.ProcessDetail;
 import systems.reformcloud.reformcloud2.executor.api.process.detail.ProcessPlayerManager;
@@ -45,7 +44,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
-import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -57,7 +55,6 @@ public final class ProcessInformation implements SerializableObject {
     private ProcessDetail processDetail;
     private NetworkInfo networkInfo;
     private JsonConfiguration extra;
-    private List<DefaultPlugin> plugins = new CopyOnWriteArrayList<>();
     private Collection<ProcessInclusion> preInclusions;
     private ProcessGroup processGroup;
 
@@ -118,14 +115,6 @@ public final class ProcessInformation implements SerializableObject {
     @ApiStatus.Internal
     public void setProcessGroup(@NotNull ProcessGroup processGroup) {
         this.processGroup = processGroup;
-    }
-
-    /**
-     * @return All plugins which are registered on the current process
-     */
-    @NotNull
-    public List<DefaultPlugin> getPlugins() {
-        return this.plugins;
     }
 
     /**
@@ -218,7 +207,6 @@ public final class ProcessInformation implements SerializableObject {
         buffer.writeObjects(this.processPlayerManager.getOnlinePlayers());
         buffer.writeObject(this.processDetail);
         buffer.writeObject(this.networkInfo);
-        buffer.writeObjects(this.plugins);
         buffer.writeObjects(this.preInclusions);
         buffer.writeObject(this.processGroup);
         buffer.writeArray(this.extra.toPrettyBytes());
@@ -229,7 +217,6 @@ public final class ProcessInformation implements SerializableObject {
         this.processPlayerManager = new ProcessPlayerManager(buffer.readObjects(Player.class));
         this.processDetail = buffer.readObject(ProcessDetail.class);
         this.networkInfo = buffer.readObject(NetworkInfo.class);
-        this.plugins = buffer.readObjects(DefaultPlugin.class);
         this.preInclusions = new CopyOnWriteArrayList<>(buffer.readObjects(ProcessInclusion.class));
         this.processGroup = buffer.readObject(ProcessGroup.class);
 

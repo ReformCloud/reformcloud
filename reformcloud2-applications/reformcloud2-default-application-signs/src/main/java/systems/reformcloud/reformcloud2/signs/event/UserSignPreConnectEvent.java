@@ -24,7 +24,7 @@
  */
 package systems.reformcloud.reformcloud2.signs.event;
 
-import systems.reformcloud.reformcloud2.executor.api.common.event.Event;
+import systems.reformcloud.reformcloud2.executor.api.event.Event;
 import systems.reformcloud.reformcloud2.signs.util.sign.CloudSign;
 
 import java.util.UUID;

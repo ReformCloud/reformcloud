@@ -27,8 +27,9 @@ package systems.reformcloud.reformcloud2.node.config;
 import com.google.gson.reflect.TypeToken;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
-import systems.reformcloud.reformcloud2.executor.api.common.node.NodeInformation;
+import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.node.NodeInformation;
+import systems.reformcloud.reformcloud2.executor.api.utility.NetworkAddress;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -111,24 +112,5 @@ public final class NodeConfig {
 
     public void save() {
         new JsonConfiguration().add("config", this).write(PATH);
-    }
-
-    public static class NetworkAddress {
-
-        private final String host;
-        private final int port;
-
-        public NetworkAddress(String host, int port) {
-            this.host = host;
-            this.port = port;
-        }
-
-        public String getHost() {
-            return this.host;
-        }
-
-        public int getPort() {
-            return this.port;
-        }
     }
 }

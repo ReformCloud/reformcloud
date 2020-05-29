@@ -44,8 +44,12 @@ public final class IOUtils {
     }
 
     public static void deleteFile(File file) {
+        deleteFile(file.toPath());
+    }
+
+    public static void deleteFile(Path file) {
         try {
-            Files.deleteIfExists(file.toPath());
+            Files.deleteIfExists(file);
         } catch (final IOException ex) {
             ex.printStackTrace();
         }
@@ -94,21 +98,20 @@ public final class IOUtils {
         }
     }
 
-    public static void deleteDirectory(Path path) {
-        final File[] files = path.toFile().listFiles();
-        if (files == null) {
-            return;
-        }
-
-        for (File file : files) {
-            if (file.isDirectory()) {
-                deleteDirectory(file.toPath());
-            } else {
-                deleteFile(file);
+    public static void deleteDirectory(Path dirPath) {
+        try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(dirPath)) {
+            for (Path path : directoryStream) {
+                if (Files.isDirectory(path)) {
+                    deleteDirectory(path);
+                } else {
+                    deleteFile(path);
+                }
             }
+        } catch (IOException exception) {
+            exception.printStackTrace();
         }
 
-        deleteFile(path.toFile());
+        deleteFile(dirPath);
     }
 
     public static void recreateDirectory(Path path) {

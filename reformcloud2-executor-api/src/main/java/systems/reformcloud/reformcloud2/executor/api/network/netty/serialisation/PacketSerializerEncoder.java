@@ -24,5 +24,30 @@
  */
 package systems.reformcloud.reformcloud2.executor.api.network.netty.serialisation;
 
-public class PacketSerializerEncoder {
+import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.handler.codec.MessageToByteEncoder;
+import systems.reformcloud.reformcloud2.executor.api.network.data.DefaultProtocolBuffer;
+import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
+import systems.reformcloud.reformcloud2.executor.api.network.packet.Packet;
+
+public class PacketSerializerEncoder extends MessageToByteEncoder<Packet> {
+
+    @Override
+    protected void encode(ChannelHandlerContext channelHandlerContext, Packet packet, ByteBuf byteBuf) {
+        if (!byteBuf.isWritable()) {
+            return;
+        }
+
+        ProtocolBuffer buffer = new DefaultProtocolBuffer(byteBuf);
+
+        try {
+            buffer.writeVarInt(packet.getId());
+            buffer.writeUniqueId(packet.getQueryUniqueID());
+
+            packet.write(buffer);
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
+        }
+    }
 }

@@ -31,6 +31,7 @@ import org.jetbrains.annotations.UnmodifiableView;
 import systems.reformcloud.reformcloud2.executor.api.utility.optional.ReferencedOptional;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -308,7 +309,10 @@ public final class Streams {
         Collection<F> out = new ArrayList<>();
         for (S s : in) {
             if (predicate.test(s)) {
-                out.add(function.apply(s));
+                F result = function.apply(s);
+                if (result != null) {
+                    out.add(result);
+                }
             }
         }
 
@@ -417,6 +421,30 @@ public final class Streams {
     public static <T> T[] concat(@NotNull T[] first, @NotNull T[] second) {
         T[] result = Arrays.copyOf(first, first.length + second.length);
         System.arraycopy(second, 0, result, first.length, second.length);
+        return result;
+    }
+
+    public static <T> int count(@NotNull Collection<T> collection, @NotNull Predicate<T> predicate) {
+        AtomicInteger atomicInteger = new AtomicInteger();
+        for (T t : collection) {
+            if (predicate.test(t)) {
+                atomicInteger.getAndIncrement();
+            }
+        }
+
+        return atomicInteger.get();
+    }
+
+    @NotNull
+    public static <I, O> Collection<O> map(@NotNull Collection<I> collection, @NotNull Function<I, O> mapper) {
+        Collection<O> result = new ArrayList<>();
+        for (I i : collection) {
+            O out = mapper.apply(i);
+            if (out != null) {
+                result.add(out);
+            }
+        }
+
         return result;
     }
 }

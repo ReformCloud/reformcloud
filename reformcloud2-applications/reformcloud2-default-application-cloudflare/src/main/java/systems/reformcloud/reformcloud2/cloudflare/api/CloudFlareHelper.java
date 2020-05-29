@@ -27,12 +27,12 @@ package systems.reformcloud.reformcloud2.cloudflare.api;
 import com.google.gson.JsonArray;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.cloudflare.config.CloudFlareConfig;
-import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
-import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
-import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.system.SystemHelper;
+import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
+import systems.reformcloud.reformcloud2.executor.api.configuration.JsonConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.language.LanguageManager;
+import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
+import systems.reformcloud.reformcloud2.executor.api.utility.list.Streams;
+import systems.reformcloud.reformcloud2.executor.api.utility.system.SystemHelper;
 
 import java.io.DataOutputStream;
 import java.io.IOException;

@@ -25,10 +25,10 @@
 package systems.reformcloud.reformcloud2.web.commands;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.GlobalCommand;
-import systems.reformcloud.reformcloud2.executor.api.common.commands.source.CommandSource;
-import systems.reformcloud.reformcloud2.executor.api.common.restapi.request.WebRequester;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Trio;
+import systems.reformcloud.reformcloud2.executor.api.commands.basic.GlobalCommand;
+import systems.reformcloud.reformcloud2.executor.api.commands.source.CommandSource;
+import systems.reformcloud.reformcloud2.executor.api.restapi.request.WebRequester;
+import systems.reformcloud.reformcloud2.executor.api.utility.list.Trio;
 import systems.reformcloud.reformcloud2.web.tokens.TokenWebServerAuth;
 
 import java.util.ArrayList;

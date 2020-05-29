@@ -22,15 +22,15 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.spigot.executor;
+package systems.refomcloud.reformcloud2.embedded.spigot.executor;
 
 import org.bukkit.Bukkit;
 import org.bukkit.EntityEffect;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
-import systems.reformcloud.reformcloud2.executor.api.common.CommonHelper;
-import systems.reformcloud.reformcloud2.executor.api.executor.PlayerAPIExecutor;
+import systems.refomcloud.reformcloud2.embedded.executor.PlayerAPIExecutor;
+import systems.reformcloud.reformcloud2.executor.api.CommonHelper;
 
 import java.util.UUID;
 

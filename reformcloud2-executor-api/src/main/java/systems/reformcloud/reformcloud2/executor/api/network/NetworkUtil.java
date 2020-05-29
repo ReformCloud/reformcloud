@@ -37,7 +37,7 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.network.concurrent.FastNettyThreadFactory;
+import systems.reformcloud.reformcloud2.executor.api.network.netty.concurrent.FastNettyThreadFactory;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -45,18 +45,11 @@ import java.util.concurrent.ThreadFactory;
 
 public final class NetworkUtil {
 
-    public static final int AUTH_BUS = -550;
-
-    /* ============================= */
-    public static final int NODE_TO_NODE_BUS = 20000;
-    public static final int NODE_TO_NODE_QUERY_BUS = 25000;
-    public static final int EVENT_BUS = 3000;
-    public static final int PLAYER_INFORMATION_BUS = 5000;
-    public static final int EXTERNAL_BUS = 50000;
-    public static final int MESSAGING_BUS = 60000;
+    public static final int NODE_BUS = 0;
+    public static final int API_BUS = 1000;
+    public static final int PLAYER_INFORMATION_BUS = 4000;
     public static final Executor EXECUTOR = Executors.newCachedThreadPool();
 
-    /* ============================ */
     public static final WriteBufferWaterMark WATER_MARK = new WriteBufferWaterMark(524288, 2097152);
     private static final boolean EPOLL = Epoll.isAvailable();
 
@@ -93,50 +86,34 @@ public final class NetworkUtil {
         return NioSocketChannel.class;
     }
 
-    @NotNull
-    public static ByteBuf write(@NotNull ByteBuf byteBuf, int value) {
-        do {
-            byte temp = (byte) (value & 0b01111111);
+    public static void writeVarInt(@NotNull ByteBuf buf, int value) {
+        while (true) {
+            if ((value & 0xFFFFFF80) == 0) {
+                buf.writeByte(value);
+                return;
+            }
+
+            buf.writeByte(value & 0x7F | 0x80);
             value >>>= 7;
-            if (value != 0) {
-                temp |= 0b10000000;
-            }
-            byteBuf.writeByte(temp);
-        } while (value != 0);
-
-        return byteBuf;
+        }
     }
 
-    public static int read(@NotNull ByteBuf byteBuf) {
-        int numRead = 0;
-        int result = 0;
-        byte read;
-        do {
-            read = byteBuf.readByte();
-            int value = (read & 0b01111111);
-            result |= (value << (7 * numRead));
-
-            numRead++;
-            if (numRead > 5) {
-                throw new RuntimeException("VarInt is too big");
+    public static int readVarInt(@NotNull ByteBuf buf) {
+        int i = 0;
+        int j = 0;
+        while (true) {
+            int k = buf.readByte();
+            i |= (k & 0x7F) << j++ * 7;
+            if (j > 5) {
+                throw new RuntimeException("VarInt too big");
             }
-        } while ((read & 0b10000000) != 0);
 
-        return result;
-    }
-
-    public static int getVarIntSize(int readable) {
-        if ((readable & -128) == 0) {
-            return 1;
-        } else if ((readable & -16384) == 0) {
-            return 2;
-        } else if ((readable & -2097152) == 0) {
-            return 3;
-        } else if ((readable & -268435456) == 0) {
-            return 4;
+            if ((k & 0x80) != 128) {
+                break;
+            }
         }
 
-        return 5;
+        return i;
     }
 
     @NotNull

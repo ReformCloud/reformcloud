@@ -33,10 +33,10 @@ import systems.reformcloud.reformcloud2.commands.application.packet.PacketGetCom
 import systems.reformcloud.reformcloud2.commands.plugin.CommandConfigHandler;
 import systems.reformcloud.reformcloud2.commands.plugin.packet.PacketReleaseCommandsConfig;
 import systems.reformcloud.reformcloud2.commands.plugin.velocity.handler.VelocityCommandConfigHandler;
-import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.common.network.NetworkUtil;
-import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
-import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
+import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
+import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.PacketSender;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.manager.DefaultChannelManager;
 
 @Plugin(
         id = "reformcloud_2_commands",

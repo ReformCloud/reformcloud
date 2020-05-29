@@ -22,16 +22,20 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.network.client;
+package systems.reformcloud.reformcloud2.shared.network.client;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
+import io.netty.handler.codec.haproxy.HAProxyMessageDecoder;
+import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.manager.ChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.network.netty.NettyChannelEndpoint;
-import systems.reformcloud.reformcloud2.executor.api.network.packet.netty.PacketDecoder;
-import systems.reformcloud.reformcloud2.executor.api.network.packet.netty.PacketEncoder;
-import systems.reformcloud.reformcloud2.executor.api.network.packet.netty.serialisation.LengthDeserializer;
-import systems.reformcloud.reformcloud2.executor.api.network.packet.netty.serialisation.LengthSerializer;
+import systems.reformcloud.reformcloud2.executor.api.network.netty.frame.VarInt21FrameDecoder;
+import systems.reformcloud.reformcloud2.executor.api.network.netty.frame.VarInt21FrameEncoder;
+import systems.reformcloud.reformcloud2.executor.api.network.netty.serialisation.PacketSerializerEncoder;
+import systems.reformcloud.reformcloud2.executor.api.network.netty.serialisation.SerializedPacketDecoder;
 
 import java.util.function.Supplier;
 
@@ -45,11 +49,14 @@ public final class ClientChannelInitializer extends ChannelInitializer<Channel> 
 
     @Override
     protected void initChannel(Channel channel) {
+        NetworkChannel networkChannel = ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ChannelManager.class).createChannel(channel);
+
         channel.pipeline()
-                .addLast("decoder", new LengthDeserializer())
-                .addLast("packet-decoder", new PacketDecoder())
-                .addLast("encoder", new LengthSerializer())
-                .addLast("packet-encoder", new PacketEncoder())
-                .addLast("handler", new NettyChannelEndpoint(this.supplier.get(), this.challengeAuthHandler));
+                .addLast("ha_proxy_decoder", new HAProxyMessageDecoder())
+                .addLast("deserializer", new VarInt21FrameDecoder())
+                .addLast("serializer", VarInt21FrameEncoder.INSTANCE)
+                .addLast("decoder", new SerializedPacketDecoder())
+                .addLast("encoder", new PacketSerializerEncoder())
+                .addLast("handler", new NettyChannelEndpoint(this.supplier.get().setNetworkChannel(networkChannel)));
     }
 }

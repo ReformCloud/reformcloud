@@ -22,7 +22,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.network.handler;
+package systems.reformcloud.reformcloud2.executor.api.network.netty;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -33,11 +33,11 @@ import systems.reformcloud.reformcloud2.executor.api.network.packet.Packet;
 
 import java.net.InetSocketAddress;
 
-public final class ChannelReaderHelper extends ChannelInboundHandlerAdapter {
+public final class NettyChannelEndpoint extends ChannelInboundHandlerAdapter {
 
     private final EndpointChannelReader channelReader;
 
-    public ChannelReaderHelper(EndpointChannelReader channelReader) {
+    public NettyChannelEndpoint(EndpointChannelReader channelReader) {
         this.channelReader = channelReader;
     }
 

@@ -22,7 +22,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.language.language.source;
+package systems.reformcloud.reformcloud2.executor.api.language;
 
 import systems.reformcloud.reformcloud2.executor.api.utility.name.Nameable;
 

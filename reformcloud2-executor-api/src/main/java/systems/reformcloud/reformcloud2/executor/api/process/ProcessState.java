@@ -30,8 +30,6 @@ public enum ProcessState {
 
     PREPARED,
 
-    READY_TO_START,
-
     STARTED,
 
     READY,
@@ -40,13 +38,21 @@ public enum ProcessState {
 
     INVISIBLE,
 
+    RESTARTING,
+
+    PAUSED,
+
     STOPPED;
 
     public boolean isValid() {
-        return this.equals(CREATED) || this.equals(READY_TO_START) || this.equals(STARTED) || this.equals(READY) || this.equals(FULL) || this.equals(INVISIBLE);
+        return this.equals(CREATED) || this.equals(STARTED) || this.equals(READY) || this.equals(FULL) || this.equals(INVISIBLE);
     }
 
     public boolean isReady() {
         return this.equals(READY) || this.equals(FULL) || this.equals(INVISIBLE);
+    }
+
+    public boolean isRuntimeState() {
+        return this == PREPARED || this == STARTED || this == RESTARTING || this == PAUSED || this == STOPPED;
     }
 }

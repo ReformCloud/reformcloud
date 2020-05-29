@@ -40,6 +40,8 @@ public interface ProcessGroupProvider {
 
     void deleteProcessGroup(@NotNull String name);
 
+    void updateProcessGroup(@NotNull ProcessGroup processGroup);
+
     @NotNull
     @UnmodifiableView Collection<ProcessGroup> getProcessGroups();
 
@@ -60,6 +62,14 @@ public interface ProcessGroupProvider {
     default Task<Void> deleteProcessGroupAsync(@NotNull String name) {
         return Task.supply(() -> {
             this.deleteProcessGroup(name);
+            return null;
+        });
+    }
+
+    @NotNull
+    default Task<Void> updateProcessGroupAsync(@NotNull ProcessGroup processGroup) {
+        return Task.supply(() -> {
+            this.updateProcessGroup(processGroup);
             return null;
         });
     }

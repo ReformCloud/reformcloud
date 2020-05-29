@@ -25,8 +25,8 @@
 package systems.reformcloud.reformcloud2.examples;
 
 import systems.reformcloud.reformcloud2.examples.event.ExampleEventListener;
-import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.common.application.api.Application;
+import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
+import systems.reformcloud.reformcloud2.executor.api.application.api.Application;
 
 /**
  * For this example class only the executor-api is required. For a example app.json please look into

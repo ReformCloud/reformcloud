@@ -29,7 +29,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.api.API;
-import systems.reformcloud.reformcloud2.executor.api.common.event.handler.Listener;
+import systems.reformcloud.reformcloud2.executor.api.event.handler.Listener;
 import systems.reformcloud.reformcloud2.permissions.PermissionManagement;
 import systems.reformcloud.reformcloud2.permissions.events.group.PermissionGroupUpdateEvent;
 import systems.reformcloud.reformcloud2.permissions.events.user.PermissionUserUpdateEvent;

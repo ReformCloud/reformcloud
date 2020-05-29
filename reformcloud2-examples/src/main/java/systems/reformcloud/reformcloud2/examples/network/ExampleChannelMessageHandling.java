@@ -25,11 +25,11 @@
 package systems.reformcloud.reformcloud2.examples.network;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.ChannelMessageReceivedEvent;
-import systems.reformcloud.reformcloud2.executor.api.common.api.messaging.util.ErrorReportHandling;
-import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
-import systems.reformcloud.reformcloud2.executor.api.common.event.handler.Listener;
+import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
+import systems.reformcloud.reformcloud2.executor.api.api.basic.events.ChannelMessageReceivedEvent;
+import systems.reformcloud.reformcloud2.executor.api.api.messaging.util.ErrorReportHandling;
+import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.event.handler.Listener;
 
 public class ExampleChannelMessageHandling {
 

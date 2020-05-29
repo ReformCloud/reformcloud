@@ -26,7 +26,7 @@ package systems.reformcloud.reformcloud2.executor.api.database.basic.drivers.fil
 
 import de.derklaro.projects.deer.api.writer.FileWriter;
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.configuration.JsonConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
 
 import java.io.File;
 

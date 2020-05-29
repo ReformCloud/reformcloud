@@ -11,47 +11,13 @@
 
     <artifactId>reformcloud2-node</artifactId>
 
-    <repositories>
-        <!-- spigot mc repo -->
-        <repository>
-            <id>spigotmc-repo</id>
-            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
-        </repository>
-
-        <!-- bungee repo -->
-        <repository>
-            <id>bungeecord-repo</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
-        </repository>
-
-        <!-- velocity repo -->
-        <repository>
-            <id>velocity</id>
-            <url>https://repo.velocitypowered.com/snapshots/</url>
-        </repository>
-
-        <!-- sponge repo -->
-        <repository>
-            <id>sponge-repo</id>
-            <name>Sponge Maven Repository</name>
-            <url>https://repo.spongepowered.org/maven/</url>
-        </repository>
-
-        <!-- nukkit repo -->
-        <repository>
-            <id>nukkit-repo</id>
-            <url>https://repo.nukkitx.com/maven-snapshots/</url>
-        </repository>
-    </repositories>
-
     <dependencies>
         <!-- default api for all methods -->
         <dependency>
             <groupId>systems.reformcloud.reformcloud2</groupId>
-            <artifactId>reformcloud2-executor-api</artifactId>
+            <artifactId>reformcloud2-shared</artifactId>
             <version>2.2.2</version>
             <scope>compile</scope>
-            <type>jar</type>
         </dependency>
 
         <!-- dependencies for reformcloud -->
@@ -71,55 +37,33 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- dependencies for apis -->
-        <!-- spigot api -->
+        <!-- https://mvnrepository.com/artifact/org.fusesource.jansi/jansi -->
         <dependency>
-            <groupId>org.spigotmc</groupId>
-            <artifactId>spigot-api</artifactId>
-            <version>1.15-R0.1-SNAPSHOT</version>
+            <groupId>org.fusesource.jansi</groupId>
+            <artifactId>jansi</artifactId>
+            <version>1.18</version>
             <scope>provided</scope>
-            <type>jar</type>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.google.guava</groupId>
-                    <artifactId>guava</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
-        <!-- bungee api -->
         <dependency>
-            <groupId>net.md-5</groupId>
-            <artifactId>bungeecord-api</artifactId>
-            <version>1.15-SNAPSHOT</version>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-all</artifactId>
+            <version>4.1.50.Final</version>
             <scope>provided</scope>
-            <type>jar</type>
         </dependency>
 
-        <!-- velocity api -->
+        <!-- https://mvnrepository.com/artifact/com.h2database/h2 -->
         <dependency>
-            <groupId>com.velocitypowered</groupId>
-            <artifactId>velocity-api</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>1.4.200</version>
             <scope>provided</scope>
-            <type>jar</type>
         </dependency>
 
-        <!-- NukkitX api -->
         <dependency>
-            <groupId>cn.nukkit</groupId>
-            <artifactId>nukkit</artifactId>
-            <version>1.0-SNAPSHOT</version>
-            <scope>provided</scope>
-            <type>jar</type>
-        </dependency>
-
-        <!-- sponge api -->
-        <dependency>
-            <groupId>org.spongepowered</groupId>
-            <artifactId>spongeapi</artifactId>
-            <version>7.2.0</version>
-            <type>jar</type>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.8.6</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

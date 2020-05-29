@@ -22,7 +22,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.executor;
+package systems.refomcloud.reformcloud2.embedded.executor;
 
 import java.util.Objects;
 import java.util.UUID;

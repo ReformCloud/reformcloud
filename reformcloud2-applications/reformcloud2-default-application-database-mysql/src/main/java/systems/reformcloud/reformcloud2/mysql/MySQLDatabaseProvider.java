@@ -28,20 +28,16 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.UnmodifiableView;
-import systems.reformcloud.reformcloud2.executor.api.provider.DatabaseProvider;
-import systems.reformcloud.reformcloud2.executor.api.wrappers.DatabaseTableWrapper;
 import systems.reformcloud.reformcloud2.mysql.config.MySQLDatabaseConfig;
-import systems.reformcloud.reformcloud2.mysql.util.SQLFunction;
+import systems.reformcloud.reformcloud2.node.database.sql.AbstractSQLDatabaseProvider;
+import systems.reformcloud.reformcloud2.node.database.util.SQLFunction;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
 
-public class MySQLDatabaseProvider implements DatabaseProvider {
+public class MySQLDatabaseProvider extends AbstractSQLDatabaseProvider {
 
     private static final String CONNECT_ARGUMENTS = "jdbc:mysql://%s:%d/%s?serverTimezone=UTC";
 
@@ -69,59 +65,27 @@ public class MySQLDatabaseProvider implements DatabaseProvider {
 
     private final HikariDataSource hikariDataSource;
 
-    @NotNull
-    @Override
-    public DatabaseTableWrapper createTable(@NotNull String tableName) {
-        return new MySQLTableWrapper(tableName, this);
-    }
-
-    @Override
-    public void deleteTable(@NotNull String tableName) {
-        this.executeUpdate("DROP TABLE " + tableName);
-    }
-
-    @NotNull
-    @Override
-    public @UnmodifiableView Collection<String> getTableNames() {
-        return this.executeQuery(
-                "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES where TABLE_SCHEMA='PUBLIC'",
-                resultSet -> {
-                    Collection<String> collection = new ArrayList<>();
-                    while (resultSet.next()) {
-                        collection.add(resultSet.getString("table_name"));
-                    }
-
-                    return collection;
-                }, new ArrayList<>()
-        );
-    }
-
-    @NotNull
-    @Override
-    public DatabaseTableWrapper getDatabase(@NotNull String tableName) {
-        return new MySQLTableWrapper(tableName, this);
-    }
-
     public void close() {
         this.hikariDataSource.close();
     }
 
-    int executeUpdate(@NotNull String query, @NonNls Object @NotNull ... objects) {
+    @Override
+    public void executeUpdate(@NotNull String query, @NonNls Object... objects) {
         try (Connection connection = this.hikariDataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             int i = 1;
             for (Object object : objects) {
                 preparedStatement.setString(i++, object.toString());
             }
 
-            return preparedStatement.executeUpdate();
+            preparedStatement.executeUpdate();
         } catch (SQLException exception) {
             exception.printStackTrace();
         }
-
-        return -1;
     }
 
-    @NotNull <T> T executeQuery(@NotNull String query, SQLFunction<ResultSet, T> function, @NotNull T defaultValue, @NonNls Object @NotNull ... objects) {
+    @Override
+    @NotNull
+    public <T> T executeQuery(@NotNull String query, SQLFunction<ResultSet, T> function, @NotNull T defaultValue, @NonNls Object... objects) {
         try (Connection connection = this.hikariDataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             int i = 1;
             for (Object object : objects) {

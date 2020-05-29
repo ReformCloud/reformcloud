@@ -24,67 +24,50 @@
  */
 package systems.reformcloud.reformcloud2.executor.api.network.channel.shared;
 
-import io.netty.channel.ChannelHandlerContext;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.base.Conditions;
-import systems.reformcloud.reformcloud2.executor.api.language.LanguageManager;
 import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
-import systems.reformcloud.reformcloud2.executor.api.network.challenge.ChallengeAuthHandler;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannelReader;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.PacketSender;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.defaults.DefaultPacketSender;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.manager.DefaultChannelManager;
-import systems.reformcloud.reformcloud2.executor.api.network.exception.SilentNetworkException;
-import systems.reformcloud.reformcloud2.executor.api.network.handler.ChannelReaderHelper;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
 import systems.reformcloud.reformcloud2.executor.api.network.packet.Packet;
+import systems.reformcloud.reformcloud2.executor.api.network.packet.query.QueryManager;
 import systems.reformcloud.reformcloud2.executor.api.task.Task;
 
-import java.net.InetSocketAddress;
+import java.util.Optional;
 
-public abstract class SharedNetworkChannelReader implements NetworkChannelReader {
+public abstract class SharedEndpointChannelReader implements EndpointChannelReader {
 
-    protected PacketSender packetSender;
+    protected NetworkChannel networkChannel;
 
     @NotNull
     @Override
-    public PacketSender sender() {
-        return this.packetSender;
+    public NetworkChannel getNetworkChannel() {
+        return this.networkChannel;
+    }
+
+    @NotNull
+    @Override
+    public EndpointChannelReader setNetworkChannel(@NotNull NetworkChannel channel) {
+        this.networkChannel = channel;
+        return this;
     }
 
     @Override
-    public void setChannelHandlerContext(@NotNull ChannelHandlerContext channelHandlerContext, @NotNull String name) {
-        Conditions.isTrue(this.packetSender == null, "Cannot redefine packet sender");
-        this.packetSender = new DefaultPacketSender(channelHandlerContext);
-        this.packetSender.setName(name);
-        DefaultChannelManager.INSTANCE.registerChannel(this.packetSender);
-    }
-
-    @Override
-    public void channelActive(@NotNull ChannelHandlerContext context) {
-        if (this.packetSender == null) {
-            String address = ((InetSocketAddress) context.channel().remoteAddress()).getAddress().getHostAddress();
-            System.out.println(LanguageManager.get("network-channel-connected", address));
-        }
-    }
-
-    @Override
-    public void read(@NotNull ChannelHandlerContext context, @NotNull ChallengeAuthHandler authHandler,
-                     @NotNull ChannelReaderHelper parent, @NotNull Packet input) {
+    public void read(@NotNull Packet input) {
         NetworkUtil.EXECUTOR.execute(() -> {
             if (input.getQueryUniqueID() != null) {
-                Task<Packet> waitingQuery = ExecutorAPI.getInstance().getPacketHandler().getQueryHandler().getWaitingQuery(input.getQueryUniqueID());
-                if (waitingQuery != null) {
-                    waitingQuery.complete(input);
+                Optional<Task<Packet>> waitingQuery = ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(QueryManager.class).getWaitingQuery(input.getQueryUniqueID());
+                if (waitingQuery.isPresent()) {
+                    waitingQuery.get().complete(input);
                     return;
                 }
             }
 
             try {
-                input.handlePacketReceive(this, authHandler, parent, this.packetSender, context);
+                input.handlePacketReceive(this, this.networkChannel);
             } catch (final Throwable throwable) {
                 System.err.println("Error while handling packet " + input.getId() + "@" + input.getClass().getName());
-                throw new SilentNetworkException(throwable);
+                throwable.printStackTrace();
             }
         });
     }

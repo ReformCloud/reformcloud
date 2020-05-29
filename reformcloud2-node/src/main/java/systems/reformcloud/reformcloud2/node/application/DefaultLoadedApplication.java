@@ -22,7 +22,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.application.basic;
+package systems.reformcloud.reformcloud2.node.application;
 
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
@@ -42,7 +42,7 @@ public final class DefaultLoadedApplication implements LoadedApplication {
         this.loader = loader;
         this.application = application;
         this.main = main;
-        this.applicationStatus = ApplicationStatus.INSTALLABLE;
+        this.applicationStatus = ApplicationStatus.LOADED;
     }
 
     @NotNull

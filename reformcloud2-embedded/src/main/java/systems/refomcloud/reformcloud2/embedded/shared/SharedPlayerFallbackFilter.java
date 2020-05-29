@@ -22,14 +22,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.shared;
+package systems.refomcloud.reformcloud2.embedded.shared;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.optional.ReferencedOptional;
-import systems.reformcloud.reformcloud2.executor.api.event.PlayerFallbackChooseEvent;
+import systems.refomcloud.reformcloud2.embedded.event.PlayerFallbackChooseEvent;
+import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
+import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
+import systems.reformcloud.reformcloud2.executor.api.utility.optional.ReferencedOptional;
 
 import java.util.Collection;
 import java.util.Comparator;

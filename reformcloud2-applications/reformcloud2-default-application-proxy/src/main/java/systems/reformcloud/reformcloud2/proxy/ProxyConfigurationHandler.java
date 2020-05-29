@@ -26,7 +26,7 @@ package systems.reformcloud.reformcloud2.proxy;
 
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
+import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.proxy.config.MotdConfiguration;
 import systems.reformcloud.reformcloud2.proxy.config.TabListConfiguration;
 import systems.reformcloud.reformcloud2.proxy.event.ProxyConfigurationHandlerSetupEvent;

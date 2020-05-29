@@ -24,10 +24,10 @@
  */
 package systems.reformcloud.reformcloud2.signs.util;
 
-import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
+import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.manager.DefaultChannelManager;
+import systems.reformcloud.reformcloud2.executor.api.utility.task.Task;
+import systems.reformcloud.reformcloud2.executor.api.utility.thread.AbsoluteThread;
 import systems.reformcloud.reformcloud2.signs.application.packets.PacketRequestSignLayouts;
 import systems.reformcloud.reformcloud2.signs.application.packets.PacketRequestSignLayoutsResult;
 import systems.reformcloud.reformcloud2.signs.util.sign.config.SignConfig;

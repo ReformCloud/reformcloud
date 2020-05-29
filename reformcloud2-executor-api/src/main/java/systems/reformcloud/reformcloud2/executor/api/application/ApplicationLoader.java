@@ -27,6 +27,7 @@ package systems.reformcloud.reformcloud2.executor.api.application;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnmodifiableView;
 
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Optional;
 
@@ -39,11 +40,6 @@ public interface ApplicationLoader {
      * Detects all applications
      */
     void detectApplications();
-
-    /**
-     * Installs all applications
-     */
-    void installApplications();
 
     /**
      * Loads all applications
@@ -78,7 +74,7 @@ public interface ApplicationLoader {
      * @param application The application which should get installed
      * @return If the cloud can find the application and install it {@code true} else {@code false}
      */
-    boolean doSpecificApplicationInstall(@NotNull InstallableApplication application);
+    boolean doSpecificApplicationInstall(@NotNull Path application);
 
     /**
      * Unloads a specific application

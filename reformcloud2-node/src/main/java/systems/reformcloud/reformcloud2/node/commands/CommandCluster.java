@@ -25,13 +25,13 @@
 package systems.reformcloud.reformcloud2.node.commands;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.common.CommonHelper;
-import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.GlobalCommand;
-import systems.reformcloud.reformcloud2.executor.api.common.commands.source.CommandSource;
-import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
-import systems.reformcloud.reformcloud2.executor.api.common.node.NodeInformation;
-import systems.reformcloud.reformcloud2.executor.api.common.node.NodeProcess;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
+import systems.reformcloud.reformcloud2.executor.api.CommonHelper;
+import systems.reformcloud.reformcloud2.executor.api.commands.basic.GlobalCommand;
+import systems.reformcloud.reformcloud2.executor.api.commands.source.CommandSource;
+import systems.reformcloud.reformcloud2.executor.api.language.LanguageManager;
+import systems.reformcloud.reformcloud2.executor.api.node.NodeInformation;
+import systems.reformcloud.reformcloud2.executor.api.node.NodeProcess;
+import systems.reformcloud.reformcloud2.executor.api.utility.list.Streams;
 import systems.reformcloud.reformcloud2.node.NodeExecutor;
 import systems.reformcloud.reformcloud2.node.config.NodeConfig;
 

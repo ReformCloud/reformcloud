@@ -25,7 +25,7 @@
 package systems.reformcloud.reformcloud2.executor.api.event;
 
 import org.junit.Test;
-import systems.reformcloud.reformcloud2.executor.api.event.basic.DefaultEventManager;
+import systems.reformcloud.reformcloud2.executor.api.event.defaults.DefaultEventManager;
 import systems.reformcloud.reformcloud2.executor.api.event.handler.Listener;
 import systems.reformcloud.reformcloud2.executor.api.event.priority.EventPriority;
 

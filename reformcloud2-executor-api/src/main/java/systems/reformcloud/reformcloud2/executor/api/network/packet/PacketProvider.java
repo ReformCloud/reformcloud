@@ -22,43 +22,28 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.network.packet.handler;
+package systems.reformcloud.reformcloud2.executor.api.network.packet;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import systems.reformcloud.reformcloud2.executor.api.network.packet.Packet;
-import systems.reformcloud.reformcloud2.executor.api.network.packet.query.QueryHandler;
+import systems.reformcloud.reformcloud2.executor.api.network.packet.exception.PacketAlreadyRegisteredException;
 
-public interface PacketHandler {
+import java.util.Collection;
+import java.util.Optional;
 
-    void registerHandler(Class<? extends Packet> packetClass);
+public interface PacketProvider {
 
-    void registerNetworkHandlers(Class<? extends Packet>... packetClasses);
+    void registerPacket(@NotNull Class<? extends Packet> packetClass) throws PacketAlreadyRegisteredException;
 
-    /**
-     * Unregisters all packet handler of the given type-id
-     *
-     * @param id The id of the packet handlers which should get unregistered
-     */
-    void unregisterNetworkHandler(int id);
+    void registerPacket(@NotNull Packet packet) throws PacketAlreadyRegisteredException;
 
-    /**
-     * Get all network handlers of a specific id
-     *
-     * @param id The id which should get filtered
-     * @return All registered network handlers handling the given id
-     */
-    @Nullable
-    Packet getNetworkHandler(int id);
+    void registerPackets(@NotNull Collection<Class<? extends Packet>> packetClasses) throws PacketAlreadyRegisteredException;
 
-    /**
-     * @return The query handler of the current instance
-     */
+    void registerPacket(@NotNull Collection<Packet> packets) throws PacketAlreadyRegisteredException;
+
+    void unregisterPacket(int id);
+
     @NotNull
-    QueryHandler getQueryHandler();
+    Optional<Packet> getPacketById(int id);
 
-    /**
-     * Unregisters all waiting queries
-     */
-    void clearHandlers();
+    void clearRegisteredPackets();
 }

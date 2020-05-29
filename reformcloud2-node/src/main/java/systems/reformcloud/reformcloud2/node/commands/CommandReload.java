@@ -22,40 +22,23 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.shared;
+package systems.reformcloud.reformcloud2.node.commands;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.GlobalCommand;
-import systems.reformcloud.reformcloud2.executor.api.common.commands.source.CommandSource;
-import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.runtime.ReloadableRuntime;
+import systems.reformcloud.reformcloud2.executor.api.command.Command;
+import systems.reformcloud.reformcloud2.executor.api.command.CommandSender;
+import systems.reformcloud.reformcloud2.node.NodeExecutor;
+import systems.reformcloud.reformcloud2.shared.command.sources.ConsoleCommandSender;
 
-import java.util.Collections;
+public final class CommandReload implements Command {
 
-public final class CommandReload extends GlobalCommand {
-
-    private final ReloadableRuntime reloadableRuntime;
-
-    public CommandReload(ReloadableRuntime reloadableRuntime) {
-        super("reload", null, GlobalCommand.DEFAULT_DESCRIPTION, Collections.singletonList(
-                "rl"
-        ));
-
-        this.reloadableRuntime = reloadableRuntime;
+    @Override
+    public void process(@NotNull CommandSender sender, @NotNull String[] strings, @NotNull String commandLine) {
+        NodeExecutor.getInstance().reload(true);
     }
 
     @Override
-    public void describeCommandToSender(@NotNull CommandSource source) {
-        source.sendMessage(LanguageManager.get("command-reload-description"));
-    }
-
-    @Override
-    public boolean handleCommand(@NotNull CommandSource commandSource, @NotNull String[] strings) {
-        try {
-            this.reloadableRuntime.reload();
-        } catch (final Exception ex) {
-            ex.printStackTrace();
-        }
-        return true;
+    public boolean canAccess(@NotNull CommandSender commandSender) {
+        return commandSender instanceof ConsoleCommandSender;
     }
 }

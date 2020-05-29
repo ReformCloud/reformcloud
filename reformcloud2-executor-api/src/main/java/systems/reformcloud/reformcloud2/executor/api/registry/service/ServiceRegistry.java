@@ -24,5 +24,47 @@
  */
 package systems.reformcloud.reformcloud2.executor.api.registry.service;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnmodifiableView;
+import systems.reformcloud.reformcloud2.executor.api.registry.service.exception.ProviderImmutableException;
+import systems.reformcloud.reformcloud2.executor.api.registry.service.exception.ProviderNeedsReplacementException;
+import systems.reformcloud.reformcloud2.executor.api.registry.service.exception.ProviderNotRegisteredException;
+
+import java.util.Collection;
+import java.util.Optional;
+
 public interface ServiceRegistry {
+
+    default <T> void setProvider(@NotNull Class<T> service, @NotNull T provider) throws ProviderImmutableException {
+        this.setProvider(service, provider, false);
+    }
+
+    default <T> void setProvider(@NotNull Class<T> service, @NotNull T provider, boolean immutable) throws ProviderImmutableException {
+        this.setProvider(service, provider, immutable, false);
+    }
+
+    <T> void setProvider(@NotNull Class<T> service, @NotNull T provider, boolean immutable, boolean needsReplacement) throws ProviderImmutableException;
+
+    @NotNull
+    <T> Optional<T> getProvider(@NotNull Class<T> service);
+
+    @NotNull
+    <T> Optional<ServiceRegistryEntry<T>> getRegisteredEntry(@NotNull Class<T> service);
+
+    @NotNull
+    <T> T getProviderUnchecked(@NotNull Class<T> service) throws ProviderNotRegisteredException;
+
+    @NotNull
+    @UnmodifiableView Collection<ServiceRegistryEntry<?>> getRegisteredServices();
+
+    default <T> void unregisterService(@NotNull Class<T> service) throws ProviderNotRegisteredException, ProviderImmutableException, ProviderNeedsReplacementException {
+        this.unregisterService(service, null);
+    }
+
+    <T> void unregisterService(@NotNull Class<T> service, @Nullable T replacement) throws ProviderNotRegisteredException, ProviderImmutableException, ProviderNeedsReplacementException;
+
+    default boolean isRegistered(@NotNull Class<?> service) {
+        return this.getProvider(service).isPresent();
+    }
 }

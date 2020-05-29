@@ -24,41 +24,8 @@
  */
 package systems.reformcloud.reformcloud2.executor.api.event;
 
-import org.jetbrains.annotations.ApiStatus;
-
 /**
- * Represents a callable event of the runtime
- *
- * @see EventManager#callEvent(Event)
- * @see EventManager#registerListener(Object)
+ * Dummy class which represents an event which can get called in the runtime
  */
 public class Event {
-
-    private final boolean async;
-
-    public Event() {
-        this(false);
-    }
-
-    @Deprecated
-    @ApiStatus.ScheduledForRemoval
-    public Event(boolean isAsync) {
-        this.async = isAsync;
-    }
-
-    @Deprecated
-    @ApiStatus.ScheduledForRemoval
-    public final boolean isAsync() {
-        return this.async;
-    }
-
-    @Deprecated
-    @ApiStatus.ScheduledForRemoval
-    public void preCall() {
-    }
-
-    @Deprecated
-    @ApiStatus.ScheduledForRemoval
-    public void postCall() {
-    }
 }

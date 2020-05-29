@@ -25,19 +25,13 @@
 package systems.reformcloud.reformcloud2.executor.api.network.client;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.network.challenge.ChallengeAuthHandler;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannelReader;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
 
 import java.util.function.Supplier;
 
 public interface NetworkClient {
 
-    boolean connect(
-            @NotNull String host,
-            int port,
-            @NotNull Supplier<NetworkChannelReader> supplier,
-            @NotNull ChallengeAuthHandler challengeAuthHandler
-    );
+    boolean connect(@NotNull String host, int port, @NotNull Supplier<EndpointChannelReader> supplier);
 
     /**
      * Disconnects all open connections

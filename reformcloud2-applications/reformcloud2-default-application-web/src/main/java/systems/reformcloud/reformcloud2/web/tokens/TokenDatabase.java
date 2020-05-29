@@ -26,8 +26,8 @@ package systems.reformcloud.reformcloud2.web.tokens;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
+import systems.reformcloud.reformcloud2.executor.api.configuration.JsonConfiguration;
 
 public final class TokenDatabase {
 

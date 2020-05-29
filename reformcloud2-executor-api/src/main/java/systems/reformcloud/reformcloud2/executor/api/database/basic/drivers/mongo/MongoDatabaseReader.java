@@ -29,7 +29,7 @@ import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 import org.bson.Document;
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.configuration.JsonConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.database.Database;
 import systems.reformcloud.reformcloud2.executor.api.database.DatabaseReader;
 import systems.reformcloud.reformcloud2.executor.api.task.Task;

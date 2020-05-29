@@ -38,23 +38,16 @@ public abstract class ProtocolBuffer extends ByteBuf {
 
     public abstract void writeString(@Nullable String stringToWrite);
 
-    public abstract void writeString(@Nullable String stringToWrite, int maxLength);
-
     @Nullable
     public abstract String readString();
 
     public abstract void writeArray(@NotNull byte[] bytes);
 
-    public abstract void writeArray(@NotNull byte[] bytes, int limit);
-
     @NotNull
     public abstract byte[] readArray();
 
     @NotNull
-    public abstract byte[] readArray(int limit);
-
-    @NotNull
-    public abstract byte[] toArray();
+    public abstract byte[] toByteArray();
 
     public abstract void writeStringArray(@NotNull Collection<String> list);
 

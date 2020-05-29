@@ -40,6 +40,8 @@ public interface MainGroupProvider {
 
     void deleteMainGroup(@NotNull String name);
 
+    void updateMainGroup(@NotNull MainGroup mainGroup);
+
     @NotNull
     @UnmodifiableView Collection<MainGroup> getMainGroups();
 
@@ -60,6 +62,14 @@ public interface MainGroupProvider {
     default Task<Void> deleteMainGroupAsync(@NotNull String name) {
         return Task.supply(() -> {
             this.deleteMainGroup(name);
+            return null;
+        });
+    }
+
+    @NotNull
+    default Task<Void> updateMainGroupAsync(@NotNull MainGroup mainGroup) {
+        return Task.supply(() -> {
+            this.updateMainGroup(mainGroup);
             return null;
         });
     }

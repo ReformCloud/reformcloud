@@ -24,6 +24,7 @@
  */
 package systems.reformcloud.reformcloud2.executor.api.utility.process;
 
+import org.jetbrains.annotations.NonNls;
 import systems.reformcloud.reformcloud2.executor.api.base.Conditions;
 import systems.reformcloud.reformcloud2.executor.api.utility.thread.AbsoluteThread;
 
@@ -39,7 +40,7 @@ public final class JavaProcessHelper {
         throw new UnsupportedOperationException();
     }
 
-    public static int shutdown(Process process, boolean force, boolean await, long timeOut, String... shutdownCommands) {
+    public static int shutdown(Process process, boolean force, boolean await, long timeOut, @NonNls String... shutdownCommands) {
         if (process == null) {
             return -1;
         }

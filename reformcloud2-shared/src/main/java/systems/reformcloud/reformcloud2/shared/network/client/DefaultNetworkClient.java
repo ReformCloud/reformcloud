@@ -22,7 +22,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.network.client;
+package systems.reformcloud.reformcloud2.shared.network.client;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
@@ -33,8 +33,8 @@ import io.netty.channel.socket.SocketChannel;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.CommonHelper;
 import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
-import systems.reformcloud.reformcloud2.executor.api.network.challenge.ChallengeAuthHandler;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
+import systems.reformcloud.reformcloud2.executor.api.network.client.NetworkClient;
 import systems.reformcloud.reformcloud2.executor.api.task.Task;
 import systems.reformcloud.reformcloud2.executor.api.task.defaults.DefaultTask;
 
@@ -50,7 +50,7 @@ public final class DefaultNetworkClient implements NetworkClient {
     private Channel channel;
 
     @Override
-    public boolean connect(@NotNull String host, int port, @NotNull Supplier<EndpointChannelReader> supplier, @NotNull ChallengeAuthHandler challengeAuthHandler) {
+    public boolean connect(@NotNull String host, int port, @NotNull Supplier<EndpointChannelReader> supplier) {
         final Task<Boolean> connectTask = new DefaultTask<>();
 
         try {
@@ -65,10 +65,9 @@ public final class DefaultNetworkClient implements NetworkClient {
                     .option(ChannelOption.TCP_NODELAY, true)
                     .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, CommonHelper.longToInt(TimeUnit.SECONDS.toMillis(5)))
 
-                    .handler(new ClientChannelInitializer(supplier, challengeAuthHandler))
+                    .handler(new ClientChannelInitializer(supplier))
 
                     .connect(host, port)
-
                     .addListener(future -> connectTask.complete(future.isSuccess()))
                     .addListeners(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE, ChannelFutureListener.CLOSE_ON_FAILURE)
                     .channel();

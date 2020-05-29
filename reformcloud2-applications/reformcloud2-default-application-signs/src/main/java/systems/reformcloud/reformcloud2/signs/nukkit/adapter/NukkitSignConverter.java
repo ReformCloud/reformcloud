@@ -30,7 +30,7 @@ import cn.nukkit.level.Location;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.api.API;
-import systems.reformcloud.reformcloud2.executor.api.common.base.Conditions;
+import systems.reformcloud.reformcloud2.executor.api.base.Conditions;
 import systems.reformcloud.reformcloud2.signs.util.converter.SignConverter;
 import systems.reformcloud.reformcloud2.signs.util.sign.CloudLocation;
 import systems.reformcloud.reformcloud2.signs.util.sign.CloudSign;

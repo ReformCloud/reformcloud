@@ -31,13 +31,13 @@ import systems.reformcloud.reformcloud2.commands.application.packet.PacketGetCom
 import systems.reformcloud.reformcloud2.commands.application.update.CommandAddonUpdater;
 import systems.reformcloud.reformcloud2.commands.config.CommandsConfig;
 import systems.reformcloud.reformcloud2.commands.plugin.packet.PacketReleaseCommandsConfig;
-import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.common.application.api.Application;
-import systems.reformcloud.reformcloud2.executor.api.common.application.updater.ApplicationUpdateRepository;
-import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
-import systems.reformcloud.reformcloud2.executor.api.common.network.NetworkUtil;
-import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.system.SystemHelper;
+import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
+import systems.reformcloud.reformcloud2.executor.api.application.api.Application;
+import systems.reformcloud.reformcloud2.executor.api.application.updater.ApplicationUpdateRepository;
+import systems.reformcloud.reformcloud2.executor.api.configuration.JsonConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.manager.DefaultChannelManager;
+import systems.reformcloud.reformcloud2.executor.api.utility.system.SystemHelper;
 
 import java.nio.file.Files;
 import java.nio.file.Path;

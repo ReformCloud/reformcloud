@@ -25,10 +25,10 @@
 package systems.reformcloud.reformcloud2.permissions.application.listener;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.common.event.handler.Listener;
-import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
-import systems.reformcloud.reformcloud2.executor.api.common.process.api.ProcessInclusion;
-import systems.reformcloud.reformcloud2.executor.api.common.process.running.events.RunningProcessPrepareEvent;
+import systems.reformcloud.reformcloud2.executor.api.event.handler.Listener;
+import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
+import systems.reformcloud.reformcloud2.executor.api.process.api.ProcessInclusion;
+import systems.reformcloud.reformcloud2.executor.api.process.running.events.RunningProcessPrepareEvent;
 import systems.reformcloud.reformcloud2.permissions.application.ReformCloudApplication;
 
 public final class ProcessInclusionHandler {

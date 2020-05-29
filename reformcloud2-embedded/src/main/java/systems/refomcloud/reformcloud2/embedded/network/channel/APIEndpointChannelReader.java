@@ -28,9 +28,9 @@ import io.netty.channel.ChannelHandlerContext;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.language.LanguageManager;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.manager.DefaultChannelManager;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.shared.SharedNetworkChannelReader;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.shared.SharedEndpointChannelReader;
 
-public class APINetworkChannelReader extends SharedNetworkChannelReader {
+public class APIEndpointChannelReader extends SharedEndpointChannelReader {
 
     @Override
     public void channelInactive(@NotNull ChannelHandlerContext context) {

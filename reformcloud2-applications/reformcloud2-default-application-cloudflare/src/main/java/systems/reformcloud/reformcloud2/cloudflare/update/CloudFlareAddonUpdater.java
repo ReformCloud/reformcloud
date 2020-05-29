@@ -26,10 +26,10 @@ package systems.reformcloud.reformcloud2.cloudflare.update;
 
 import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.cloudflare.ReformCloudApplication;
-import systems.reformcloud.reformcloud2.executor.api.common.application.updater.ApplicationRemoteUpdate;
-import systems.reformcloud.reformcloud2.executor.api.common.application.updater.basic.BasicApplicationRemoteUpdate;
-import systems.reformcloud.reformcloud2.executor.api.common.application.updater.basic.DefaultApplicationUpdateRepository;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.system.DownloadHelper;
+import systems.reformcloud.reformcloud2.executor.api.application.updater.ApplicationRemoteUpdate;
+import systems.reformcloud.reformcloud2.executor.api.application.updater.basic.BasicApplicationRemoteUpdate;
+import systems.reformcloud.reformcloud2.executor.api.application.updater.basic.DefaultApplicationUpdateRepository;
+import systems.reformcloud.reformcloud2.executor.api.utility.system.DownloadHelper;
 
 import java.io.IOException;
 import java.util.Properties;

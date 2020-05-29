@@ -24,6 +24,7 @@
  */
 package systems.reformcloud.reformcloud2.executor.api.builder;
 
+import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.groups.MainGroup;
 import systems.reformcloud.reformcloud2.executor.api.task.Task;
@@ -36,7 +37,7 @@ public interface MainGroupBuilder {
     MainGroupBuilder name(@NotNull String name);
 
     @NotNull
-    MainGroupBuilder subGroups(@NotNull String... subGroups);
+    MainGroupBuilder subGroups(@NonNls String... subGroups);
 
     @NotNull
     MainGroupBuilder subGroups(@NotNull Collection<String> subGroups);

@@ -22,7 +22,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.sponge.executor;
+package systems.refomcloud.reformcloud2.embedded.sponge.executor;
 
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.effect.particle.ParticleEffect;
@@ -33,7 +33,7 @@ import org.spongepowered.api.effect.sound.SoundTypes;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.title.Title;
 import org.spongepowered.api.world.Location;
-import systems.reformcloud.reformcloud2.executor.api.executor.PlayerAPIExecutor;
+import systems.refomcloud.reformcloud2.embedded.executor.PlayerAPIExecutor;
 
 import java.lang.reflect.Field;
 import java.util.UUID;

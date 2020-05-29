@@ -29,13 +29,13 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.commands.config.CommandsConfig;
 import systems.reformcloud.reformcloud2.commands.plugin.CommandConfigHandler;
-import systems.reformcloud.reformcloud2.executor.api.common.network.NetworkUtil;
-import systems.reformcloud.reformcloud2.executor.api.common.network.challenge.ChallengeAuthHandler;
-import systems.reformcloud.reformcloud2.executor.api.common.network.channel.NetworkChannelReader;
-import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
-import systems.reformcloud.reformcloud2.executor.api.common.network.data.ProtocolBuffer;
-import systems.reformcloud.reformcloud2.executor.api.common.network.handler.ChannelReaderHelper;
-import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
+import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
+import systems.reformcloud.reformcloud2.executor.api.network.challenge.ChallengeAuthHandler;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannelReader;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.PacketSender;
+import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
+import systems.reformcloud.reformcloud2.executor.api.network.handler.ChannelReaderHelper;
+import systems.reformcloud.reformcloud2.executor.api.network.packet.Packet;
 
 public class PacketReleaseCommandsConfig extends Packet {
 

@@ -24,5 +24,15 @@
  */
 package systems.reformcloud.reformcloud2.executor.api.command;
 
-public interface CommandSender {
+import org.jetbrains.annotations.NonNls;
+import org.jetbrains.annotations.NotNull;
+import systems.reformcloud.reformcloud2.executor.api.utility.name.Nameable;
+
+public interface CommandSender extends Nameable {
+
+    void sendMessage(@NotNull String message);
+
+    void sendMessages(@NonNls String[] messages);
+
+    boolean hasPermission(@NotNull String permission);
 }

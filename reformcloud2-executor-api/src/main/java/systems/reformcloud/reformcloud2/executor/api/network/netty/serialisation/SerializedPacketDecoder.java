@@ -24,5 +24,46 @@
  */
 package systems.reformcloud.reformcloud2.executor.api.network.netty.serialisation;
 
-public class SerializedPacketDecoder {
+import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.handler.codec.MessageToMessageDecoder;
+import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
+import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
+import systems.reformcloud.reformcloud2.executor.api.network.data.DefaultProtocolBuffer;
+import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
+import systems.reformcloud.reformcloud2.executor.api.network.packet.Packet;
+import systems.reformcloud.reformcloud2.executor.api.network.packet.PacketProvider;
+
+import java.util.List;
+import java.util.Optional;
+
+public class SerializedPacketDecoder extends MessageToMessageDecoder<ByteBuf> {
+
+    @Override
+    protected void decode(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf, List<Object> list) {
+        if (!byteBuf.isReadable()) {
+            return;
+        }
+
+        int packetId = NetworkUtil.read(byteBuf);
+
+        Optional<Packet> optionalPacket = ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).getPacketById(packetId);
+        if (optionalPacket.isPresent()) {
+            Packet packet = optionalPacket.get();
+            ProtocolBuffer buffer = new DefaultProtocolBuffer(byteBuf);
+
+            try {
+                packet.setQueryUniqueID(buffer.readUniqueId());
+                packet.read(buffer);
+
+                list.add(packet);
+            } catch (Throwable throwable) {
+                throwable.printStackTrace();
+            }
+
+            return;
+        }
+
+        byteBuf.skipBytes(byteBuf.readableBytes());
+    }
 }

@@ -22,17 +22,17 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.shared;
+package systems.refomcloud.reformcloud2.embedded.shared;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.api.API;
-import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.common.groups.messages.IngameMessages;
-import systems.reformcloud.reformcloud2.executor.api.common.groups.utils.PlayerAccessConfiguration;
-import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
-import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Duo;
+import systems.reformcloud.reformcloud2.executor.api.groups.messages.IngameMessages;
+import systems.reformcloud.reformcloud2.executor.api.groups.utils.PlayerAccessConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
+import systems.reformcloud.reformcloud2.executor.api.process.ProcessState;
+import systems.reformcloud.reformcloud2.executor.api.utility.list.Duo;
 
 import java.util.Collection;
 import java.util.UUID;

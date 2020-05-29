@@ -24,6 +24,7 @@
  */
 package systems.reformcloud.reformcloud2.executor.api.builder;
 
+import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.groups.template.Template;
@@ -45,7 +46,7 @@ public interface ProcessGroupBuilder {
     ProcessGroupBuilder lobby(boolean lobby);
 
     @NotNull
-    ProcessGroupBuilder templates(@NotNull Template... templates);
+    ProcessGroupBuilder templates(@NonNls Template... templates);
 
     @NotNull
     ProcessGroupBuilder templates(@NotNull Collection<Template> templates);

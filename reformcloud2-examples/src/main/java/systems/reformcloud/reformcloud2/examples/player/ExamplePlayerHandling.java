@@ -25,9 +25,9 @@
 package systems.reformcloud.reformcloud2.examples.player;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.PlayerServerSwitchEvent;
-import systems.reformcloud.reformcloud2.executor.api.common.event.handler.Listener;
+import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
+import systems.reformcloud.reformcloud2.executor.api.api.basic.events.PlayerServerSwitchEvent;
+import systems.reformcloud.reformcloud2.executor.api.event.handler.Listener;
 
 public class ExamplePlayerHandling {
 

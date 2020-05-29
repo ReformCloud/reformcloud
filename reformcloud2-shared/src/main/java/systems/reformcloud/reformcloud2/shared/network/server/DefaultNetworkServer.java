@@ -22,7 +22,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.network.server;
+package systems.reformcloud.reformcloud2.shared.network.server;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
@@ -33,6 +33,7 @@ import io.netty.channel.socket.ServerSocketChannel;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
+import systems.reformcloud.reformcloud2.executor.api.network.server.NetworkServer;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -83,9 +84,11 @@ public final class DefaultNetworkServer implements NetworkServer {
 
     @Override
     public void closeAll() {
-        this.channelFutures.forEach((integer, channelFuture) -> channelFuture.cancel(true));
-        this.channelFutures.clear();
+        for (ChannelFuture value : this.channelFutures.values()) {
+            value.cancel(true);
+        }
 
+        this.channelFutures.clear();
         this.worker.shutdownGracefully();
         this.boss.shutdownGracefully();
     }

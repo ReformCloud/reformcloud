@@ -22,16 +22,16 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.bungee.reconnect;
+package systems.refomcloud.reformcloud2.embedded.bungee.reconnect;
 
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.ReconnectHandler;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.bungee.BungeeExecutor;
-import systems.reformcloud.reformcloud2.executor.api.bungee.fallback.BungeeFallbackExtraFilter;
-import systems.reformcloud.reformcloud2.executor.api.shared.SharedPlayerFallbackFilter;
+import systems.refomcloud.reformcloud2.embedded.bungee.BungeeExecutor;
+import systems.refomcloud.reformcloud2.embedded.bungee.fallback.BungeeFallbackExtraFilter;
+import systems.refomcloud.reformcloud2.embedded.shared.SharedPlayerFallbackFilter;
 
 public class ReformCloudReconnectHandler implements ReconnectHandler {
 

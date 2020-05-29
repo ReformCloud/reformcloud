@@ -28,6 +28,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnmodifiableView;
 import systems.reformcloud.reformcloud2.executor.api.groups.template.Template;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
+import systems.reformcloud.reformcloud2.executor.api.process.ProcessState;
 import systems.reformcloud.reformcloud2.executor.api.task.Task;
 
 import java.util.Optional;
@@ -50,15 +51,7 @@ public interface ProcessWrapper {
     @NotNull
     @UnmodifiableView Queue<String> getLastLogLines();
 
-    void start();
-
-    void stop();
-
-    void restart();
-
-    void stopAndDelete();
-
-    void reset();
+    void setRuntimeState(@NotNull ProcessState state);
 
     void copy(@NotNull Template template);
 
@@ -94,41 +87,9 @@ public interface ProcessWrapper {
     }
 
     @NotNull
-    default Task<Void> startAsync() {
+    default Task<Void> setRuntimeStateAsync(@NotNull ProcessState state) {
         return Task.supply(() -> {
-            this.start();
-            return null;
-        });
-    }
-
-    @NotNull
-    default Task<Void> stopAsync() {
-        return Task.supply(() -> {
-            this.stop();
-            return null;
-        });
-    }
-
-    @NotNull
-    default Task<Void> restartAsync() {
-        return Task.supply(() -> {
-            this.restart();
-            return null;
-        });
-    }
-
-    @NotNull
-    default Task<Void> stopAndDeleteAsync() {
-        return Task.supply(() -> {
-            this.stopAndDelete();
-            return null;
-        });
-    }
-
-    @NotNull
-    default Task<Void> resetAsync() {
-        return Task.supply(() -> {
-            this.reset();
+            this.setRuntimeState(state);
             return null;
         });
     }

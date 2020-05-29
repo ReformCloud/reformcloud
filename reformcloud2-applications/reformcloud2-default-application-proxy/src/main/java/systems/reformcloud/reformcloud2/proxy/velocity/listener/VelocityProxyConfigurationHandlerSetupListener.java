@@ -26,7 +26,7 @@ package systems.reformcloud.reformcloud2.proxy.velocity.listener;
 
 import com.velocitypowered.api.proxy.ProxyServer;
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.common.event.handler.Listener;
+import systems.reformcloud.reformcloud2.executor.api.event.handler.Listener;
 import systems.reformcloud.reformcloud2.proxy.event.ProxyConfigurationHandlerSetupEvent;
 import systems.reformcloud.reformcloud2.proxy.velocity.config.VelocityProxyConfigurationHandler;
 

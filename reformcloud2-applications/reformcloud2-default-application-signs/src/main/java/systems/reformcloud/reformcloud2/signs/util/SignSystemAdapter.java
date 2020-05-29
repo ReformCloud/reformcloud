@@ -27,7 +27,7 @@ package systems.reformcloud.reformcloud2.signs.util;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
+import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.signs.util.converter.SignConverter;
 import systems.reformcloud.reformcloud2.signs.util.sign.CloudLocation;
 import systems.reformcloud.reformcloud2.signs.util.sign.CloudSign;

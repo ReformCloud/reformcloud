@@ -27,7 +27,7 @@ package systems.reformcloud.reformcloud2.permissions.bukkit;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.common.base.Conditions;
+import systems.reformcloud.reformcloud2.executor.api.base.Conditions;
 import systems.reformcloud.reformcloud2.permissions.bukkit.permissible.DefaultPermissible;
 
 import java.lang.reflect.Field;

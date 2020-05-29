@@ -25,10 +25,10 @@
 package systems.reformcloud.reformcloud2.node.commands;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.GlobalCommand;
-import systems.reformcloud.reformcloud2.executor.api.common.commands.source.CommandSource;
-import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
-import systems.reformcloud.reformcloud2.executor.api.common.process.running.manager.SharedRunningProcessManager;
+import systems.reformcloud.reformcloud2.executor.api.commands.basic.GlobalCommand;
+import systems.reformcloud.reformcloud2.executor.api.commands.source.CommandSource;
+import systems.reformcloud.reformcloud2.executor.api.language.LanguageManager;
+import systems.reformcloud.reformcloud2.executor.api.process.running.manager.SharedRunningProcessManager;
 
 public final class CommandLog extends GlobalCommand {
 

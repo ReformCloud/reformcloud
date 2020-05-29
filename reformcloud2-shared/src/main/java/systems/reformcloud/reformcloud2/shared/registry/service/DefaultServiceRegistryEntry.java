@@ -24,5 +24,45 @@
  */
 package systems.reformcloud.reformcloud2.shared.registry.service;
 
-public class DefaultServiceRegistryEntry {
+import org.jetbrains.annotations.NotNull;
+import systems.reformcloud.reformcloud2.executor.api.registry.service.ServiceRegistryEntry;
+
+public class DefaultServiceRegistryEntry<T> implements ServiceRegistryEntry<T> {
+
+    DefaultServiceRegistryEntry(Class<T> service, T provider, boolean immutable, boolean needsReplacement) {
+        this.service = service;
+        this.provider = provider;
+        this.immutable = immutable;
+        this.needsReplacement = needsReplacement;
+    }
+
+    private final Class<T> service;
+
+    private final T provider;
+
+    private final boolean immutable;
+
+    private final boolean needsReplacement;
+
+    @NotNull
+    @Override
+    public Class<T> getService() {
+        return this.service;
+    }
+
+    @NotNull
+    @Override
+    public T getProvider() {
+        return this.provider;
+    }
+
+    @Override
+    public boolean isImmutable() {
+        return this.immutable;
+    }
+
+    @Override
+    public boolean needsReplacement() {
+        return this.needsReplacement;
+    }
 }

@@ -24,5 +24,13 @@
  */
 package systems.reformcloud.reformcloud2.executor.api.registry.service.exception;
 
-public class ProviderNotRegistredException {
+import org.jetbrains.annotations.NotNull;
+
+public class ProviderNotRegisteredException extends RuntimeException {
+
+    private static final long serialVersionUID = -4706963432668698438L;
+
+    public ProviderNotRegisteredException(@NotNull Class<?> service) {
+        super("No provider for service " + service.getName() + " is registered");
+    }
 }

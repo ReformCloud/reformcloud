@@ -22,7 +22,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.velocity;
+package systems.refomcloud.reformcloud2.embedded.velocity;
 
 import com.google.inject.Inject;
 import com.velocitypowered.api.event.PostOrder;
@@ -32,7 +32,7 @@ import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.proxy.ProxyServer;
 import net.kyori.text.serializer.legacy.LegacyComponentSerializer;
-import systems.reformcloud.reformcloud2.executor.api.common.language.loading.LanguageWorker;
+import systems.reformcloud.reformcloud2.executor.api.language.loading.LanguageLoader;
 
 @Plugin(
         id = "reformcloud_2_api_executor",
@@ -51,7 +51,7 @@ public final class VelocityLauncher {
 
     @Inject
     public VelocityLauncher(ProxyServer proxyServer) {
-        LanguageWorker.doLoad();
+        LanguageLoader.doLoad();
         this.proxyServer = proxyServer;
     }
 

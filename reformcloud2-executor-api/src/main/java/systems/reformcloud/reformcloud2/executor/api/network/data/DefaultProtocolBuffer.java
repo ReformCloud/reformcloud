@@ -29,8 +29,8 @@ import io.netty.buffer.ByteBufAllocator;
 import io.netty.util.ByteProcessor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
 import systems.reformcloud.reformcloud2.executor.api.network.SerializableObject;
-import systems.reformcloud.reformcloud2.executor.api.network.exception.SilentNetworkException;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -56,18 +56,9 @@ public class DefaultProtocolBuffer extends ProtocolBuffer {
 
     @Override
     public void writeString(@Nullable String stringToWrite) {
-        this.writeString(stringToWrite, Integer.MAX_VALUE);
-    }
-
-    @Override
-    public void writeString(@Nullable String stringToWrite, int maxLength) {
         this.writeBoolean(stringToWrite == null);
         if (stringToWrite == null) {
             return;
-        }
-
-        if (stringToWrite.length() > maxLength) {
-            throw new SilentNetworkException(String.format("String length limit of %d reached. (currently %d)", maxLength, stringToWrite.length()));
         }
 
         byte[] bytes = stringToWrite.getBytes(StandardCharsets.UTF_8);
@@ -76,8 +67,8 @@ public class DefaultProtocolBuffer extends ProtocolBuffer {
     }
 
     @Override
-    public @Nullable
-    String readString() {
+    @Nullable
+    public String readString() {
         if (this.readBoolean()) {
             return null;
         }
@@ -96,33 +87,16 @@ public class DefaultProtocolBuffer extends ProtocolBuffer {
     }
 
     @Override
-    public void writeArray(@NotNull byte[] bytes, int limit) {
-        if (bytes.length > limit) {
-            throw new SilentNetworkException(String.format("Array length limit of %d reached. (currently %d)", limit, bytes.length));
-        }
-
-        this.writeArray(bytes);
-    }
-
-    @Override
-    public @NotNull
-    byte[] readArray() {
-        return this.readArray(this.readableBytes());
-    }
-
-    @Override
-    public @NotNull
-    byte[] readArray(int limit) {
-        int length = this.readVarInt();
-
-        byte[] bytes = new byte[length];
+    @NotNull
+    public byte[] readArray() {
+        byte[] bytes = new byte[this.readVarInt()];
         this.readBytes(bytes);
         return bytes;
     }
 
     @Override
-    public @NotNull
-    byte[] toArray() {
+    @NotNull
+    public byte[] toByteArray() {
         byte[] bytes = new byte[this.readableBytes()];
         this.readBytes(bytes);
         return bytes;
@@ -137,8 +111,8 @@ public class DefaultProtocolBuffer extends ProtocolBuffer {
     }
 
     @Override
-    public @NotNull
-    List<String> readStringArray() {
+    @NotNull
+    public List<String> readStringArray() {
         int length = this.readVarInt();
         List<String> out = new ArrayList<>(length);
         for (int i = 0; i < length; i++) {
@@ -269,21 +243,7 @@ public class DefaultProtocolBuffer extends ProtocolBuffer {
 
     @Override
     public int readVarInt() {
-        int numRead = 0;
-        int result = 0;
-        byte read;
-
-        do {
-            read = this.readByte();
-            int value = (read & 0b01111111);
-            result |= (value << (7 * numRead));
-
-            if (numRead++ > 5) {
-                throw new SilentNetworkException("VarInt is too big!");
-            }
-        } while ((read & 0b10000000) != 0);
-
-        return result;
+        return NetworkUtil.readVarInt(this);
     }
 
     @Override
@@ -310,7 +270,7 @@ public class DefaultProtocolBuffer extends ProtocolBuffer {
             result |= (value << (7 * numRead));
 
             if (numRead++ > 10) {
-                throw new SilentNetworkException("VarInt is too big!");
+                throw new RuntimeException("VarLong is too big!");
             }
         } while ((read & 0b10000000) != 0);
 

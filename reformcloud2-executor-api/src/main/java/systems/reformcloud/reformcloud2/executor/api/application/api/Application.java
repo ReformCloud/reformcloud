@@ -27,43 +27,25 @@ package systems.reformcloud.reformcloud2.executor.api.application.api;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.application.LoadedApplication;
-import systems.reformcloud.reformcloud2.executor.api.application.factory.ApplicationThreadFactory;
-import systems.reformcloud.reformcloud2.executor.api.application.factory.ApplicationThreadGroup;
-import systems.reformcloud.reformcloud2.executor.api.application.language.ApplicationLanguage;
 import systems.reformcloud.reformcloud2.executor.api.application.loader.AppClassLoader;
 import systems.reformcloud.reformcloud2.executor.api.application.updater.ApplicationUpdateRepository;
-import systems.reformcloud.reformcloud2.executor.api.language.LanguageManager;
-import systems.reformcloud.reformcloud2.executor.api.language.language.Language;
+import systems.reformcloud.reformcloud2.executor.api.network.netty.concurrent.FastNettyThreadFactory;
 
 import java.io.File;
 import java.io.InputStream;
-import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class Application {
 
-    private static Application self;
     private LoadedApplication application;
     private ExecutorService executorService;
     private AppClassLoader appClassLoader;
 
-    public static Application self() {
-        return self;
-    }
-
     public final void init(@NotNull LoadedApplication application, AppClassLoader loader) {
-        self = this;
-
         this.application = application;
-        this.executorService = Executors.newCachedThreadPool(new ApplicationThreadFactory(new ApplicationThreadGroup(application)));
+        this.executorService = Executors.newCachedThreadPool(new FastNettyThreadFactory("Application-Thread-%d"));
         this.appClassLoader = loader;
-    }
-
-    public void onInstallable() {
-    }
-
-    public void onInstalled() {
     }
 
     public void onLoad() {
@@ -78,31 +60,19 @@ public class Application {
     public void onDisable() {
     }
 
-    public void onUninstall() {
-    }
-
     @Nullable
     public ApplicationUpdateRepository getUpdateRepository() {
         return null;
     }
 
     @NotNull
-    public final File dataFolder() {
+    public final File getDataFolder() {
         return new File("reformcloud/applications", this.application.getName());
     }
 
     @Nullable
     public final InputStream getResourceAsStream(String name) {
         return this.getClass().getClassLoader().getResourceAsStream(name);
-    }
-
-    public final void registerLanguage(Properties properties) {
-        Language language = new ApplicationLanguage(this.application.getName(), properties);
-        LanguageManager.loadAddonMessageFile(this.application.getName(), language);
-    }
-
-    public final void unloadAllLanguageFiles() {
-        LanguageManager.unregisterMessageFile(this.application.getName());
     }
 
     public final AppClassLoader getAppClassLoader() {

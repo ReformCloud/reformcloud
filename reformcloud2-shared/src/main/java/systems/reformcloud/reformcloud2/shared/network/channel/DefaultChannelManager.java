@@ -24,5 +24,54 @@
  */
 package systems.reformcloud.reformcloud2.shared.network.channel;
 
-public class DefaultChannelManager {
+import io.netty.channel.Channel;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.UnmodifiableView;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.manager.ChannelManager;
+import systems.reformcloud.reformcloud2.executor.api.utility.list.Streams;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
+
+public class DefaultChannelManager implements ChannelManager {
+
+    private final Map<String, NetworkChannel> channels = new ConcurrentHashMap<>();
+
+    @NotNull
+    @Override
+    public Optional<NetworkChannel> getChannel(@NotNull String name) {
+        return Optional.ofNullable(this.channels.get(name));
+    }
+
+    @NotNull
+    @Override
+    public @UnmodifiableView Collection<NetworkChannel> getNetworkChannels(@NotNull String remoteAddress) {
+        return Streams.allOf(this.channels.values(), channel -> channel.getAddress().equals(remoteAddress));
+    }
+
+    @NotNull
+    @Override
+    public @UnmodifiableView Collection<NetworkChannel> getRegisteredChannels() {
+        return Collections.unmodifiableCollection(this.channels.values());
+    }
+
+    @NotNull
+    @Override
+    public NetworkChannel createChannel(@NotNull Channel channel) {
+        return new DefaultNetworkChannel(channel);
+    }
+
+    @Override
+    public void registerChannel(@NotNull NetworkChannel channel) {
+        this.channels.put(channel.getName(), channel);
+    }
+
+    @Override
+    public void unregisterChannel(@NotNull String name) {
+        this.channels.remove(name);
+    }
 }

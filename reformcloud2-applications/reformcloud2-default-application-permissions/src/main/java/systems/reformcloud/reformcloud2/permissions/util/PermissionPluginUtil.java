@@ -25,11 +25,11 @@
 package systems.reformcloud.reformcloud2.permissions.util;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.common.network.NetworkUtil;
-import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
-import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.optional.ReferencedOptional;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
+import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.PacketSender;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.manager.DefaultChannelManager;
+import systems.reformcloud.reformcloud2.executor.api.utility.optional.ReferencedOptional;
+import systems.reformcloud.reformcloud2.executor.api.utility.thread.AbsoluteThread;
 import systems.reformcloud.reformcloud2.permissions.PermissionManagement;
 import systems.reformcloud.reformcloud2.permissions.packets.PacketHelper;
 

@@ -22,7 +22,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.configuration;
+package systems.reformcloud.reformcloud2.executor.api.configuration.gson;
 
 import com.google.gson.*;
 import com.google.gson.internal.bind.TypeAdapters;
@@ -30,8 +30,7 @@ import com.google.gson.reflect.TypeToken;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.base.Conditions;
-import systems.reformcloud.reformcloud2.executor.api.configuration.gson.InternalJsonParser;
-import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfigurationTypeAdapter;
+import systems.reformcloud.reformcloud2.executor.api.configuration.Configurable;
 import systems.reformcloud.reformcloud2.executor.api.io.IOUtils;
 
 import java.io.*;

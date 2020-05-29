@@ -26,11 +26,11 @@ package systems.reformcloud.reformcloud2.proxy.defaults;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import systems.reformcloud.reformcloud2.executor.api.CommonHelper;
+import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.api.API;
-import systems.reformcloud.reformcloud2.executor.api.common.CommonHelper;
-import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
+import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
+import systems.reformcloud.reformcloud2.executor.api.utility.thread.AbsoluteThread;
 import systems.reformcloud.reformcloud2.proxy.ProxyConfiguration;
 import systems.reformcloud.reformcloud2.proxy.ProxyConfigurationHandler;
 import systems.reformcloud.reformcloud2.proxy.config.MotdConfiguration;

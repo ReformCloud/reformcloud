@@ -29,11 +29,13 @@ import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.CommonHelper;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.base.Conditions;
-import systems.reformcloud.reformcloud2.executor.api.configuration.JsonConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.groups.template.Version;
 import systems.reformcloud.reformcloud2.executor.api.groups.template.backend.TemplateBackend;
 import systems.reformcloud.reformcloud2.executor.api.groups.template.backend.TemplateBackendManager;
 import systems.reformcloud.reformcloud2.executor.api.groups.template.inclusion.Inclusion;
+import systems.reformcloud.reformcloud2.executor.api.io.DownloadHelper;
+import systems.reformcloud.reformcloud2.executor.api.io.IOUtils;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessState;
 import systems.reformcloud.reformcloud2.executor.api.process.api.ProcessInclusion;
@@ -44,15 +46,13 @@ import systems.reformcloud.reformcloud2.executor.api.process.running.events.Runn
 import systems.reformcloud.reformcloud2.executor.api.process.running.inclusions.InclusionLoader;
 import systems.reformcloud.reformcloud2.executor.api.process.running.screen.DefaultRunningProcessScreen;
 import systems.reformcloud.reformcloud2.executor.api.process.running.screen.RunningProcessScreen;
+import systems.reformcloud.reformcloud2.executor.api.task.Task;
+import systems.reformcloud.reformcloud2.executor.api.task.defaults.DefaultTask;
 import systems.reformcloud.reformcloud2.executor.api.utility.PortUtil;
 import systems.reformcloud.reformcloud2.executor.api.utility.StringUtil;
 import systems.reformcloud.reformcloud2.executor.api.utility.list.Duo;
 import systems.reformcloud.reformcloud2.executor.api.utility.optional.ReferencedOptional;
 import systems.reformcloud.reformcloud2.executor.api.utility.process.JavaProcessHelper;
-import systems.reformcloud.reformcloud2.executor.api.io.DownloadHelper;
-import systems.reformcloud.reformcloud2.executor.api.io.IOUtils;
-import systems.reformcloud.reformcloud2.executor.api.task.Task;
-import systems.reformcloud.reformcloud2.executor.api.task.defaults.DefaultTask;
 import systems.reformcloud.reformcloud2.executor.api.utility.thread.AbsoluteThread;
 
 import java.io.*;
@@ -425,50 +425,7 @@ public abstract class SharedRunningProcess implements RunningProcess {
      *
      * @param loadType The type of inclusion which should get loaded
      */
-    protected void loadTemplateInclusions(@NotNull Inclusion.InclusionLoadType loadType) {
-        this.startupInformation.getProcessDetail().getTemplate().getTemplateInclusionsOfType(loadType).forEach(e -> {
-            String[] splitTemplate = e.getFirst().split("/");
-            if (splitTemplate.length != 2) {
-                return;
-            }
 
-            TemplateBackendManager.getOrDefault(e.getSecond()).loadTemplate(
-                    splitTemplate[0],
-                    splitTemplate[1],
-                    this.path
-            ).awaitUninterruptedly();
-        });
-    }
-
-    /**
-     * Loads all specified path inclusions of the provided type
-     *
-     * @param loadType The type of inclusion which should get loaded
-     */
-    protected void loadPathInclusions(@NotNull Inclusion.InclusionLoadType loadType) {
-        this.startupInformation.getProcessDetail().getTemplate().getPathInclusionsOfType(loadType).forEach(e -> {
-            TemplateBackendManager.getOrDefault(e.getSecond()).loadPath(
-                    e.getFirst(),
-                    this.path
-            ).awaitUninterruptedly();
-        });
-    }
-
-    /**
-     * Loads all global templates of the current group first and then the current startup template
-     */
-    private void initGlobalTemplateAndCurrentTemplate() {
-        TemplateBackendManager.getOrDefault(this.startupInformation.getProcessDetail().getTemplate().getBackend()).loadGlobalTemplates(
-                this.startupInformation.getProcessGroup(),
-                this.path
-        ).awaitUninterruptedly();
-
-        TemplateBackendManager.getOrDefault(this.startupInformation.getProcessDetail().getTemplate().getBackend()).loadTemplate(
-                this.startupInformation.getProcessGroup().getName(),
-                this.startupInformation.getProcessDetail().getTemplate().getName(),
-                this.path
-        ).awaitUninterruptedly();
-    }
 
     @Nullable
     private String uploadLog0(@NotNull String pasteServerUrl, @NotNull String text) {

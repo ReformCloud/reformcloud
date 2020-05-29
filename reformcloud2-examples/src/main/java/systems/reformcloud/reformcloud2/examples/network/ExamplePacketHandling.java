@@ -24,8 +24,8 @@
  */
 package systems.reformcloud.reformcloud2.examples.network;
 
-import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
+import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.manager.DefaultChannelManager;
 
 /**
  * This class shows how you can handle the packet you have created

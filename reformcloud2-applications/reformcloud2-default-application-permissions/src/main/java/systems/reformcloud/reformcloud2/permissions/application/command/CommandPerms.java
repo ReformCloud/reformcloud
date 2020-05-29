@@ -26,9 +26,9 @@ package systems.reformcloud.reformcloud2.permissions.application.command;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import systems.reformcloud.reformcloud2.executor.api.common.CommonHelper;
-import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.GlobalCommand;
-import systems.reformcloud.reformcloud2.executor.api.common.commands.source.CommandSource;
+import systems.reformcloud.reformcloud2.executor.api.CommonHelper;
+import systems.reformcloud.reformcloud2.executor.api.commands.basic.GlobalCommand;
+import systems.reformcloud.reformcloud2.executor.api.commands.source.CommandSource;
 import systems.reformcloud.reformcloud2.permissions.PermissionManagement;
 import systems.reformcloud.reformcloud2.permissions.nodes.NodeGroup;
 import systems.reformcloud.reformcloud2.permissions.nodes.PermissionNode;

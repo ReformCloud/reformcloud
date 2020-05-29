@@ -22,14 +22,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.velocity.executor;
+package systems.refomcloud.reformcloud2.embedded.velocity.executor;
 
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.util.title.TextTitle;
 import com.velocitypowered.api.util.title.Titles;
 import net.kyori.text.serializer.legacy.LegacyComponentSerializer;
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.executor.PlayerAPIExecutor;
+import systems.refomcloud.reformcloud2.embedded.executor.PlayerAPIExecutor;
 
 import java.util.UUID;
 

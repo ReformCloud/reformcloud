@@ -25,10 +25,10 @@
 package systems.reformcloud.reformcloud2.proxy.plugin;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
+import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.manager.DefaultChannelManager;
+import systems.reformcloud.reformcloud2.executor.api.utility.task.Task;
+import systems.reformcloud.reformcloud2.executor.api.utility.thread.AbsoluteThread;
 import systems.reformcloud.reformcloud2.proxy.ProxyConfigurationHandler;
 import systems.reformcloud.reformcloud2.proxy.application.network.PacketRequestConfig;
 import systems.reformcloud.reformcloud2.proxy.application.network.PacketRequestConfigResult;

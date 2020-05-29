@@ -24,13 +24,16 @@
  */
 package systems.reformcloud.reformcloud2.executor.api.network.channel;
 
+import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.network.packet.Packet;
+import systems.reformcloud.reformcloud2.executor.api.utility.name.ReNameable;
 
+import java.net.InetSocketAddress;
 import java.util.UUID;
 
-public interface NetworkChannel extends DirectIdentifiableChannel {
+public interface NetworkChannel extends ReNameable {
 
     /**
      * Sends a packet into the channel
@@ -40,32 +43,41 @@ public interface NetworkChannel extends DirectIdentifiableChannel {
     void sendPacket(@NotNull Object packet);
 
     /**
-     * Sends a packet sync into the channel
-     *
-     * @param packet The packet which should get sent
-     */
-    void sendPacketSync(@NotNull Object packet);
-
-    /**
      * Sends many packets into the channel
      *
      * @param packets The packets which should be sent
      */
-    void sendPackets(@NotNull Object... packets);
-
-    /**
-     * Sends many sync packets into the channel
-     *
-     * @param packets The packets which should be sent
-     */
-    void sendPacketsSync(@NotNull Object... packets);
+    void sendPackets(@NonNls Object... packets);
 
     void sendQueryResult(@Nullable UUID queryUniqueID, @NotNull Packet result);
+
+    /**
+     * @return The connection time of the network channel
+     */
+    long getConnectionTime();
+
+    /**
+     * @return The ip-address if the channel
+     */
+    @NotNull
+    String getAddress();
+
+    /**
+     * @return The socket address of the channel
+     */
+    @NotNull
+    InetSocketAddress getEthernetAddress();
+
+    void setRemoteAddress(@NotNull InetSocketAddress address);
 
     /**
      * @return If the current network channel is connected
      */
     boolean isConnected();
+
+    boolean isAuthenticated();
+
+    void setAuthenticated(boolean authenticated);
 
     /**
      * @see #isConnected()

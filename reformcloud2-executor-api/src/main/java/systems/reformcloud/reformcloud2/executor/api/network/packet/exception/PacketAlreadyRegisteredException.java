@@ -24,5 +24,11 @@
  */
 package systems.reformcloud.reformcloud2.executor.api.network.packet.exception;
 
-public class PacketAlreadyRegisteredException {
+public class PacketAlreadyRegisteredException extends RuntimeException {
+
+    private static final long serialVersionUID = 4583959756540765602L;
+
+    public PacketAlreadyRegisteredException(String packetName, String otherPacketName, int id) {
+        super("Packet " + packetName + " clashes with packet " + otherPacketName + " because of the same id " + id);
+    }
 }

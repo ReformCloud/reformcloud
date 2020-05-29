@@ -24,5 +24,44 @@
  */
 package systems.reformcloud.reformcloud2.executor.api.network.netty.frame;
 
-public class VarInt21FrameDecoder {
+import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.handler.codec.ByteToMessageDecoder;
+import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
+
+import java.util.List;
+
+public class VarInt21FrameDecoder extends ByteToMessageDecoder {
+
+    @Override
+    protected void decode(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf, List<Object> list) {
+        if (!byteBuf.isReadable()) {
+            return;
+        }
+
+        int readerIndex = byteBuf.readerIndex();
+        for (int i = 0; i < 5; i++) {
+            if (!byteBuf.isReadable()) {
+                byteBuf.readerIndex(readerIndex);
+                return;
+            }
+
+            byte read = byteBuf.readByte();
+            if (read >= 0) {
+                byteBuf.readerIndex(readerIndex);
+                int packetLength = NetworkUtil.readVarInt(byteBuf);
+                if (packetLength == 0) {
+                    return;
+                }
+
+                if (byteBuf.readableBytes() < packetLength) {
+                    byteBuf.readerIndex(readerIndex);
+                    return;
+                }
+
+                list.add(byteBuf.readRetainedSlice(packetLength));
+                return;
+            }
+        }
+    }
 }

@@ -25,8 +25,6 @@
 package systems.reformcloud.reformcloud2.executor.api.language;
 
 import systems.reformcloud.reformcloud2.executor.api.base.Conditions;
-import systems.reformcloud.reformcloud2.executor.api.language.language.Language;
-import systems.reformcloud.reformcloud2.executor.api.language.language.source.LanguageSource;
 
 import java.text.MessageFormat;
 import java.util.Arrays;

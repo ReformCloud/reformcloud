@@ -22,20 +22,20 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.nukkit;
+package systems.refomcloud.reformcloud2.embedded.nukkit;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.plugin.PluginBase;
-import systems.reformcloud.reformcloud2.executor.api.common.language.loading.LanguageWorker;
-import systems.reformcloud.reformcloud2.executor.api.nukkit.event.ExtraListenerHandler;
-import systems.reformcloud.reformcloud2.executor.api.nukkit.event.PlayerListenerHandler;
+import systems.refomcloud.reformcloud2.embedded.nukkit.event.ExtraListenerHandler;
+import systems.refomcloud.reformcloud2.embedded.nukkit.event.PlayerListenerHandler;
+import systems.reformcloud.reformcloud2.executor.api.language.loading.LanguageLoader;
 
 public final class NukkitLauncher extends PluginBase {
 
     @Override
     public void onLoad() {
-        LanguageWorker.doLoad();
+        LanguageLoader.doLoad();
     }
 
     @Override

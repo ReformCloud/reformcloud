@@ -26,11 +26,11 @@ package systems.reformcloud.reformcloud2.web.tokens;
 
 import io.netty.channel.ChannelHandlerContext;
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
-import systems.reformcloud.reformcloud2.executor.api.common.restapi.auth.Auth;
-import systems.reformcloud.reformcloud2.executor.api.common.restapi.request.WebRequester;
-import systems.reformcloud.reformcloud2.executor.api.common.restapi.request.defaults.DefaultWebRequester;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Duo;
+import systems.reformcloud.reformcloud2.executor.api.configuration.JsonConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.restapi.auth.Auth;
+import systems.reformcloud.reformcloud2.executor.api.restapi.request.WebRequester;
+import systems.reformcloud.reformcloud2.executor.api.restapi.request.defaults.DefaultWebRequester;
+import systems.reformcloud.reformcloud2.executor.api.utility.list.Duo;
 import systems.reformcloud.reformcloud2.web.WebApplication;
 
 import java.util.Collections;

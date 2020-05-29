@@ -25,16 +25,16 @@
 package systems.reformcloud.reformcloud2.executor.api.registry.io;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import systems.reformcloud.reformcloud2.executor.api.configuration.JsonConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
 
 import java.util.Collection;
+import java.util.Optional;
 import java.util.function.Function;
 
 /**
  * This class represents a registry with all keys in it
  */
-public interface Registry {
+public interface FileRegistry {
 
     /**
      * Creates a new key in the registry
@@ -54,8 +54,8 @@ public interface Registry {
      * @param <T>     The type of the object
      * @return The key in the registry or {@code null}
      */
-    @Nullable
-    <T> T getKey(@NotNull String keyName);
+    @NotNull
+    <T> Optional<T> getKey(@NotNull String keyName);
 
     /**
      * Deletes a key from the registry
@@ -72,8 +72,8 @@ public interface Registry {
      * @param <T>      The type of the new value
      * @return The value which should get updated
      */
-    @Nullable
-    <T> T updateKey(@NotNull String key, @NotNull T newValue);
+    @NotNull
+    <T> Optional<T> updateKey(@NotNull String key, @NotNull T newValue);
 
     /**
      * Reads all keys from the registry

@@ -24,18 +24,14 @@
  */
 package systems.reformcloud.reformcloud2.executor.api.network.packet.query;
 
-import io.netty.channel.ChannelHandlerContext;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import systems.reformcloud.reformcloud2.executor.api.network.challenge.ChallengeAuthHandler;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannelReader;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.PacketSender;
-import systems.reformcloud.reformcloud2.executor.api.network.handler.ChannelReaderHelper;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
 import systems.reformcloud.reformcloud2.executor.api.network.packet.Packet;
 
 public abstract class QueryResultPacket extends Packet {
 
     @Override
-    public void handlePacketReceive(@NotNull NetworkChannelReader reader, @NotNull ChallengeAuthHandler authHandler, @NotNull ChannelReaderHelper parent, @Nullable PacketSender sender, @NotNull ChannelHandlerContext channel) {
+    public final void handlePacketReceive(@NotNull EndpointChannelReader reader, @NotNull NetworkChannel channel) {
     }
 }

@@ -22,39 +22,39 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.spigot;
+package systems.refomcloud.reformcloud2.embedded.spigot;
 
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
+import systems.refomcloud.reformcloud2.embedded.executor.PlayerAPIExecutor;
+import systems.refomcloud.reformcloud2.embedded.network.api.*;
+import systems.refomcloud.reformcloud2.embedded.network.channel.APIEndpointChannelReader;
+import systems.refomcloud.reformcloud2.embedded.network.packets.out.APIPacketOutRequestIngameMessages;
+import systems.refomcloud.reformcloud2.embedded.network.packets.out.APIPacketOutRequestIngameMessagesResult;
+import systems.refomcloud.reformcloud2.embedded.shared.SharedInvalidPlayerFixer;
+import systems.refomcloud.reformcloud2.embedded.spigot.executor.SpigotPlayerAPIExecutor;
+import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorType;
 import systems.reformcloud.reformcloud2.executor.api.api.API;
-import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.ExternalEventBusHandler;
-import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.ProcessUpdatedEvent;
-import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
-import systems.reformcloud.reformcloud2.executor.api.common.event.EventManager;
-import systems.reformcloud.reformcloud2.executor.api.common.event.basic.DefaultEventManager;
-import systems.reformcloud.reformcloud2.executor.api.common.event.handler.Listener;
-import systems.reformcloud.reformcloud2.executor.api.common.groups.messages.IngameMessages;
-import systems.reformcloud.reformcloud2.executor.api.common.network.challenge.shared.ClientChallengeAuthHandler;
-import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
-import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
-import systems.reformcloud.reformcloud2.executor.api.common.network.client.DefaultNetworkClient;
-import systems.reformcloud.reformcloud2.executor.api.common.network.client.NetworkClient;
-import systems.reformcloud.reformcloud2.executor.api.common.network.packet.defaults.DefaultPacketHandler;
-import systems.reformcloud.reformcloud2.executor.api.common.network.packet.handler.PacketHandler;
-import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.system.SystemHelper;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
-import systems.reformcloud.reformcloud2.executor.api.executor.PlayerAPIExecutor;
-import systems.reformcloud.reformcloud2.executor.api.network.api.*;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.APINetworkChannelReader;
-import systems.reformcloud.reformcloud2.executor.api.network.packets.out.APIPacketOutRequestIngameMessages;
-import systems.reformcloud.reformcloud2.executor.api.network.packets.out.APIPacketOutRequestIngameMessagesResult;
-import systems.reformcloud.reformcloud2.executor.api.shared.SharedInvalidPlayerFixer;
-import systems.reformcloud.reformcloud2.executor.api.spigot.executor.SpigotPlayerAPIExecutor;
+import systems.reformcloud.reformcloud2.executor.api.api.basic.events.ExternalEventBusHandler;
+import systems.reformcloud.reformcloud2.executor.api.api.basic.events.ProcessUpdatedEvent;
+import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.event.EventManager;
+import systems.reformcloud.reformcloud2.executor.api.event.handler.Listener;
+import systems.reformcloud.reformcloud2.executor.api.groups.messages.IngameMessages;
+import systems.reformcloud.reformcloud2.executor.api.io.IOUtils;
+import systems.reformcloud.reformcloud2.executor.api.network.challenge.shared.ClientChallengeAuthHandler;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.PacketSender;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.manager.DefaultChannelManager;
+import systems.reformcloud.reformcloud2.executor.api.network.client.NetworkClient;
+import systems.reformcloud.reformcloud2.executor.api.network.packet.PacketProvider;
+import systems.reformcloud.reformcloud2.executor.api.network.packet.defaults.DefaultPacketProvider;
+import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
+import systems.reformcloud.reformcloud2.executor.api.task.Task;
+import systems.reformcloud.reformcloud2.executor.api.utility.thread.AbsoluteThread;
+import systems.reformcloud.reformcloud2.shared.event.DefaultEventManager;
+import systems.reformcloud.reformcloud2.shared.network.client.DefaultNetworkClient;
 
 import java.io.File;
 
@@ -64,7 +64,7 @@ public final class SpigotExecutor extends API {
 
     private final JavaPlugin plugin;
 
-    private final PacketHandler packetHandler = new DefaultPacketHandler();
+    private final PacketProvider packetProvider = new DefaultPacketProvider();
 
     private final NetworkClient networkClient = new DefaultNetworkClient();
 
@@ -80,10 +80,10 @@ public final class SpigotExecutor extends API {
         instance = this;
         this.plugin = plugin;
 
-        new ExternalEventBusHandler(this.packetHandler, new DefaultEventManager());
+        new ExternalEventBusHandler(this.packetProvider, new DefaultEventManager());
         this.getEventManager().registerListener(this);
 
-        this.packetHandler.registerNetworkHandlers(
+        this.packetProvider.registerNetworkHandlers(
                 PacketAPIPlayEntityEffect.class,
                 PacketAPIPlaySound.class,
                 PacketAPIKickPlayer.class,
@@ -94,7 +94,7 @@ public final class SpigotExecutor extends API {
         );
 
         String connectionKey = JsonConfiguration.read("reformcloud/.connection/key.json").getString("key");
-        SystemHelper.deleteFile(new File("reformcloud/.connection/key.json"));
+        IOUtils.deleteFile(new File("reformcloud/.connection/key.json"));
         JsonConfiguration connectionConfig = JsonConfiguration.read("reformcloud/.connection/connection.json");
 
         this.thisProcessInformation = connectionConfig.get("startInfo", ProcessInformation.TYPE);
@@ -106,7 +106,7 @@ public final class SpigotExecutor extends API {
         this.networkClient.connect(
                 connectionConfig.getString("controller-host"),
                 connectionConfig.getInteger("controller-port"),
-                () -> new APINetworkChannelReader(),
+                () -> new APIEndpointChannelReader(),
                 new ClientChallengeAuthHandler(
                         connectionKey,
                         this.thisProcessInformation.getProcessDetail().getName(),
@@ -152,8 +152,8 @@ public final class SpigotExecutor extends API {
     }
 
     @Override
-    public PacketHandler packetHandler() {
-        return this.packetHandler;
+    public PacketProvider packetHandler() {
+        return this.packetProvider;
     }
 
     @Listener
@@ -179,7 +179,7 @@ public final class SpigotExecutor extends API {
 
             this.fixInvalidPlayers();
 
-            DefaultChannelManager.INSTANCE.get("Controller").ifPresent(controller -> this.packetHandler.getQueryHandler().sendQueryAsync(
+            DefaultChannelManager.INSTANCE.get("Controller").ifPresent(controller -> this.packetProvider.getQueryHandler().sendQueryAsync(
                     controller,
                     new APIPacketOutRequestIngameMessages()
             ).onComplete(packet -> {

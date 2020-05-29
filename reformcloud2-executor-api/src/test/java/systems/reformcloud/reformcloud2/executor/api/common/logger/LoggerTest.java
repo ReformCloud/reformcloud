@@ -27,7 +27,7 @@ package systems.reformcloud.reformcloud2.executor.api.logger;
 import org.junit.Before;
 import org.junit.Test;
 import systems.reformcloud.reformcloud2.executor.api.commands.basic.manager.DefaultCommandManager;
-import systems.reformcloud.reformcloud2.executor.api.language.loading.LanguageWorker;
+import systems.reformcloud.reformcloud2.executor.api.language.loading.LanguageLoader;
 import systems.reformcloud.reformcloud2.executor.api.logger.coloured.ColouredLoggerHandler;
 
 import java.io.IOException;
@@ -42,7 +42,7 @@ public final class LoggerTest {
 
     @Before
     public void initEnv() {
-        LanguageWorker.doLoad();
+        LanguageLoader.doLoad();
     }
 
     @Test

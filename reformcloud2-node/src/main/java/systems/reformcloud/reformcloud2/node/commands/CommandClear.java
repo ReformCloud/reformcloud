@@ -22,31 +22,17 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.common.commands.basic.commands.shared;
+package systems.reformcloud.reformcloud2.node.commands;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.common.commands.basic.GlobalCommand;
-import systems.reformcloud.reformcloud2.executor.api.common.commands.source.CommandSource;
-import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
-import systems.reformcloud.reformcloud2.executor.api.common.logger.LoggerBase;
+import systems.reformcloud.reformcloud2.executor.api.command.Command;
+import systems.reformcloud.reformcloud2.executor.api.command.CommandSender;
+import systems.reformcloud.reformcloud2.node.NodeExecutor;
 
-public final class CommandClear extends GlobalCommand {
-
-    private final LoggerBase loggerBase;
-
-    public CommandClear(LoggerBase loggerBase) {
-        super("clear", "reformcloud.command.clear", "Clears the console", "cls");
-        this.loggerBase = loggerBase;
-    }
+public final class CommandClear implements Command {
 
     @Override
-    public void describeCommandToSender(@NotNull CommandSource source) {
-        source.sendMessage(LanguageManager.get("command-clear-description"));
-    }
-
-    @Override
-    public boolean handleCommand(@NotNull CommandSource commandSource, @NotNull String[] strings) {
-        this.loggerBase.clearScreen();
-        return true;
+    public void process(@NotNull CommandSender sender, String[] strings, @NotNull String commandLine) {
+        NodeExecutor.getInstance().getConsole().clearScreen();
     }
 }

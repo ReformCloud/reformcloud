@@ -24,5 +24,17 @@
  */
 package systems.reformcloud.reformcloud2.executor.api.registry.service;
 
-public interface ServiceRegistryEntry {
+import org.jetbrains.annotations.NotNull;
+
+public interface ServiceRegistryEntry<T> {
+
+    @NotNull
+    Class<T> getService();
+
+    @NotNull
+    T getProvider();
+
+    boolean isImmutable();
+
+    boolean needsReplacement();
 }

@@ -30,6 +30,7 @@ import systems.reformcloud.reformcloud2.executor.api.network.SerializableObject;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
 import systems.reformcloud.reformcloud2.executor.api.utility.name.Nameable;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
@@ -38,9 +39,9 @@ public class MainGroup implements Nameable, SerializableObject {
     public static final TypeToken<MainGroup> TYPE = new TypeToken<MainGroup>() {
     };
     private String name;
-    private List<String> subGroups;
+    private Collection<String> subGroups;
 
-    public MainGroup(String name, List<String> subGroups) {
+    public MainGroup(String name, Collection<String> subGroups) {
         this.name = name;
         this.subGroups = subGroups;
     }
@@ -51,7 +52,7 @@ public class MainGroup implements Nameable, SerializableObject {
         return this.name;
     }
 
-    public List<String> getSubGroups() {
+    public Collection<String> getSubGroups() {
         return this.subGroups;
     }
 

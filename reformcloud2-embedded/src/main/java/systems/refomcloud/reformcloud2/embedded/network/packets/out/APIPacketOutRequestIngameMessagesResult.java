@@ -22,13 +22,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.network.packets.out;
+package systems.refomcloud.reformcloud2.embedded.network.packets.out;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.common.groups.messages.IngameMessages;
-import systems.reformcloud.reformcloud2.executor.api.common.network.NetworkUtil;
-import systems.reformcloud.reformcloud2.executor.api.common.network.data.ProtocolBuffer;
-import systems.reformcloud.reformcloud2.executor.api.common.network.packet.query.QueryResultPacket;
+import systems.reformcloud.reformcloud2.executor.api.groups.messages.IngameMessages;
+import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
+import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
+import systems.reformcloud.reformcloud2.executor.api.network.packet.query.QueryResultPacket;
 
 public class APIPacketOutRequestIngameMessagesResult extends QueryResultPacket {
 

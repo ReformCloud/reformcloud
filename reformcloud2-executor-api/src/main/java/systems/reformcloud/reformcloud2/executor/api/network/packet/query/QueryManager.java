@@ -25,50 +25,23 @@
 package systems.reformcloud.reformcloud2.executor.api.network.packet.query;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.PacketSender;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
 import systems.reformcloud.reformcloud2.executor.api.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.api.task.Task;
 
+import java.util.Optional;
 import java.util.UUID;
 
-public interface QueryHandler {
-
-    /**
-     * Tries to get the waiting query of the given id
-     *
-     * @param queryUniqueId The id of the query
-     * @return The waiting query request or {@code null} if no such request is known
-     */
-    @Nullable
-    Task<Packet> getWaitingQuery(@NotNull UUID queryUniqueId);
-
-    /**
-     * Checks if a id has a waiting query
-     *
-     * @param queryUniqueId The id of the query
-     * @return If the id has a waiting query
-     */
-    boolean hasWaitingQuery(@NotNull UUID queryUniqueId);
-
-    /**
-     * Sends a query async to a packet sender
-     * Note: It's not needed to give the packet as a query packet, because the cloud is going to convert it internal
-     *
-     * @param sender The sender who should receive the packet
-     * @param packet The packet itself which will be converted to q query packet
-     * @return The query request which got created
-     */
-    @NotNull
-    Task<Packet> sendQueryAsync(@NotNull PacketSender sender, @NotNull Packet packet);
+public interface QueryManager {
 
     @NotNull
-    Task<Packet> sendQueryAsync(@NotNull PacketSender sender, @NotNull UUID queryUniqueID, @NotNull Packet packet);
+    Optional<Task<Packet>> getWaitingQuery(@NotNull UUID queryUniqueId);
 
-    void sendQueryResultAsync(@NotNull PacketSender sender, @NotNull UUID queryUniqueID, @NotNull Packet packet);
+    @NotNull
+    default Task<Packet> sendPacketQuery(@NotNull NetworkChannel channel, @NotNull Packet packet) {
+        return this.sendPacketQuery(channel, UUID.randomUUID(), packet);
+    }
 
-    /**
-     * Clears all waiting queries
-     */
-    void clearQueries();
+    @NotNull
+    Task<Packet> sendPacketQuery(@NotNull NetworkChannel channel, @NotNull UUID queryUniqueId, @NotNull Packet packet);
 }

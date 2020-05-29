@@ -22,18 +22,18 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.bungee;
+package systems.refomcloud.reformcloud2.embedded.bungee;
 
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.plugin.Plugin;
-import systems.reformcloud.reformcloud2.executor.api.common.language.loading.LanguageWorker;
+import systems.reformcloud.reformcloud2.executor.api.language.loading.LanguageLoader;
 
 public final class BungeeLauncher extends Plugin {
 
     @Override
     public void onLoad() {
-        LanguageWorker.doLoad();
+        LanguageLoader.doLoad();
     }
 
     @Override

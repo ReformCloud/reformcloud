@@ -24,5 +24,85 @@
  */
 package systems.reformcloud.reformcloud2.shared.registry.io;
 
-public class FileRegistry {
+import com.google.gson.reflect.TypeToken;
+import org.jetbrains.annotations.NotNull;
+import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.io.IOUtils;
+import systems.reformcloud.reformcloud2.executor.api.registry.io.FileRegistry;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Collection;
+import java.util.Optional;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.Function;
+
+public class DefaultFileRegistry implements FileRegistry {
+
+    public DefaultFileRegistry(String operatingFolder) {
+        this.operatingFolder = operatingFolder;
+        IOUtils.createDirectory(Paths.get(operatingFolder));
+    }
+
+    private final String operatingFolder;
+
+    @NotNull
+    @Override
+    public <T> T createKey(@NotNull String keyName, @NotNull T t) {
+        Path filePath = Paths.get(this.operatingFolder, keyName + ".json");
+        if (Files.exists(filePath)) {
+            return t;
+        }
+
+        new JsonConfiguration().add("key", t).write(filePath);
+        return t;
+    }
+
+    @NotNull
+    @Override
+    public <T> Optional<T> getKey(@NotNull String keyName) {
+        Path filePath = Paths.get(this.operatingFolder, keyName + ".json");
+        if (Files.notExists(filePath)) {
+            return Optional.empty();
+        }
+
+        return Optional.ofNullable(JsonConfiguration.read(filePath).get("key", new TypeToken<T>() {
+        }));
+    }
+
+    @Override
+    public void deleteKey(@NotNull String key) {
+        IOUtils.deleteFile(new File(this.operatingFolder, key + ".json"));
+    }
+
+    @NotNull
+    @Override
+    public <T> Optional<T> updateKey(@NotNull String key, @NotNull T newValue) {
+        Path filePath = Paths.get(this.operatingFolder, key + ".json");
+        if (Files.notExists(filePath)) {
+            return Optional.empty();
+        }
+
+        new JsonConfiguration().add("key", newValue).write(filePath);
+        return Optional.of(newValue);
+    }
+
+    @NotNull
+    @Override
+    public <T> Collection<T> readKeys(@NotNull Function<JsonConfiguration, T> function) {
+        Collection<T> result = new CopyOnWriteArrayList<>();
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(this.operatingFolder), path -> path.toString().endsWith(".json"))) {
+            for (Path path : stream) {
+                result.add(function.apply(JsonConfiguration.read(path)));
+            }
+        } catch (IOException exception) {
+            exception.printStackTrace();
+        }
+
+        return result;
+    }
 }

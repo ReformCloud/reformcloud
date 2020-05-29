@@ -30,7 +30,6 @@ import com.google.gson.TypeAdapter;
 import com.google.gson.internal.bind.TypeAdapters;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import systems.reformcloud.reformcloud2.executor.api.configuration.JsonConfiguration;
 
 import java.io.IOException;
 

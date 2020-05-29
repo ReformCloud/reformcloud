@@ -24,5 +24,45 @@
  */
 package systems.reformcloud.reformcloud2.executor.api.wrappers;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.UnmodifiableView;
+import systems.reformcloud.reformcloud2.executor.api.node.NodeInformation;
+import systems.reformcloud.reformcloud2.executor.api.task.Task;
+
+import java.util.Collection;
+import java.util.Optional;
+
 public interface NodeProcessWrapper {
+
+    @NotNull
+    Optional<NodeInformation> getNodeInformation();
+
+    @NotNull
+    Optional<NodeInformation> requestNodeInformationUpdate();
+
+    @NotNull
+    @UnmodifiableView Collection<String> sendCommandLine(@NotNull String commandLine);
+
+    @NotNull
+    @UnmodifiableView Collection<String> tabCompleteCommandLine(@NotNull String commandLine);
+
+    @NotNull
+    default Task<Optional<NodeInformation>> getNodeInformationAsync() {
+        return Task.supply(this::getNodeInformation);
+    }
+
+    @NotNull
+    default Task<Optional<NodeInformation>> requestNodeInformationUpdateAsync() {
+        return Task.supply(this::requestNodeInformationUpdate);
+    }
+
+    @NotNull
+    default Task<Collection<String>> sendCommandLineAsync(@NotNull String commandLine) {
+        return Task.supply(() -> this.sendCommandLine(commandLine));
+    }
+
+    @NotNull
+    default Task<Collection<String>> tabCompleteCommandLineAsync(@NotNull String commandLine) {
+        return Task.supply(() -> this.tabCompleteCommandLine(commandLine));
+    }
 }

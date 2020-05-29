@@ -24,54 +24,32 @@
  */
 package systems.reformcloud.reformcloud2.executor.api.network.channel.manager;
 
+import io.netty.channel.Channel;
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.PacketSender;
-import systems.reformcloud.reformcloud2.executor.api.network.packet.Packet;
-import systems.reformcloud.reformcloud2.executor.api.utility.optional.ReferencedOptional;
+import org.jetbrains.annotations.UnmodifiableView;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
 
-import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
+import java.util.Collection;
+import java.util.Optional;
 
 public interface ChannelManager {
 
-    /**
-     * Registers a network channel
-     *
-     * @param packetSender The network channel which should get registered
-     */
-    void registerChannel(@NotNull PacketSender packetSender);
-
-    /**
-     * Unregisters a channel
-     *
-     * @param packetSender The packet sender of the channel which should get unregistered
-     */
-    void unregisterChannel(@NotNull PacketSender packetSender);
-
-    void broadcast(@NotNull Packet packet);
-
-    void broadcast(@NotNull Packet packet, @NotNull Predicate<PacketSender> packetSenderPredicate);
-
-    /**
-     * Unregisters all channels
-     */
-    void unregisterAll();
-
-    /**
-     * @param name The name of the packet sender who should be found
-     * @return A {@link ReferencedOptional} which is
-     * a) empty if the packet sender is not registered
-     * b) contains the packet sender if the channel is registered
-     * @see ReferencedOptional#isPresent()
-     * @see ReferencedOptional#ifPresent(Consumer)
-     */
     @NotNull
-    ReferencedOptional<PacketSender> get(@NotNull String name);
+    Optional<NetworkChannel> getChannel(@NotNull String name);
 
-    /**
-     * @return All registered packet senders
-     */
     @NotNull
-    List<PacketSender> getAllSender();
+    @UnmodifiableView Collection<NetworkChannel> getNetworkChannels(@NotNull String remoteAddress);
+
+    @NotNull
+    @UnmodifiableView Collection<NetworkChannel> getRegisteredChannels();
+
+    @NotNull NetworkChannel createChannel(@NotNull Channel channel);
+
+    void registerChannel(@NotNull NetworkChannel channel);
+
+    default void unregisterChannel(@NotNull NetworkChannel channel) {
+        this.unregisterChannel(channel.getName());
+    }
+
+    void unregisterChannel(@NotNull String name);
 }

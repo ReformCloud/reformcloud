@@ -24,5 +24,13 @@
  */
 package systems.reformcloud.reformcloud2.executor.api.registry.service.exception;
 
-public class ProviderNeedsReplacementException {
+import org.jetbrains.annotations.NotNull;
+
+public class ProviderNeedsReplacementException extends RuntimeException {
+
+    private static final long serialVersionUID = -775167073540473896L;
+
+    public ProviderNeedsReplacementException(@NotNull Class<?> service) {
+        super("The service " + service.getName() + " needs a replacement");
+    }
 }

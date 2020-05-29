@@ -30,7 +30,7 @@ import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.plugin.Dependency;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.proxy.ProxyServer;
-import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
+import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.proxy.plugin.PluginConfigHandler;
 import systems.reformcloud.reformcloud2.proxy.velocity.listener.VelocityListener;
 import systems.reformcloud.reformcloud2.proxy.velocity.listener.VelocityProxyConfigurationHandlerSetupListener;

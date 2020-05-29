@@ -24,10 +24,10 @@
  */
 package systems.reformcloud.reformcloud2.signs.listener;
 
-import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.ProcessStartedEvent;
-import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.ProcessStoppedEvent;
-import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.ProcessUpdatedEvent;
-import systems.reformcloud.reformcloud2.executor.api.common.event.handler.Listener;
+import systems.reformcloud.reformcloud2.executor.api.api.basic.events.ProcessStartedEvent;
+import systems.reformcloud.reformcloud2.executor.api.api.basic.events.ProcessStoppedEvent;
+import systems.reformcloud.reformcloud2.executor.api.api.basic.events.ProcessUpdatedEvent;
+import systems.reformcloud.reformcloud2.executor.api.event.handler.Listener;
 import systems.reformcloud.reformcloud2.signs.util.SignSystemAdapter;
 
 public class CloudListener {
