@@ -110,6 +110,18 @@ public final class DefaultNodeProcessWrapper implements ProcessWrapper {
     }
 
     @Override
+    public void sendCommand(@NotNull String commandLine) {
+        if (this.isAlive()) {
+            try {
+                this.process.getOutputStream().write((commandLine + "\n").getBytes());
+                this.process.getOutputStream().flush();
+            } catch (final IOException ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
+
+    @Override
     public void setRuntimeState(@NotNull ProcessState state) {
         this.processInformation.getProcessDetail().setProcessState(state);
         ExecutorAPI.getInstance().getProcessProvider().updateProcessInformation(this.processInformation);
@@ -245,5 +257,13 @@ public final class DefaultNodeProcessWrapper implements ProcessWrapper {
 
     public String getConnectionKey() {
         return this.connectionKey;
+    }
+
+    public boolean isAlive() {
+        try {
+            return this.process != null && this.process.getInputStream().available() != -1 && this.process.isAlive();
+        } catch (final IOException ex) {
+            return false;
+        }
     }
 }

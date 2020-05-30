@@ -51,6 +51,8 @@ public interface ProcessWrapper {
     @NotNull
     @UnmodifiableView Queue<String> getLastLogLines();
 
+    void sendCommand(@NotNull String commandLine);
+
     void setRuntimeState(@NotNull ProcessState state);
 
     void copy(@NotNull Template template);
@@ -84,6 +86,14 @@ public interface ProcessWrapper {
     @NotNull
     default Task<Queue<String>> getLastLogLinesAsync() {
         return Task.supply(this::getLastLogLines);
+    }
+
+    @NotNull
+    default Task<Void> sendCommandAsync(@NotNull String commandLine) {
+        return Task.supply(() -> {
+            this.sendCommand(commandLine);
+            return null;
+        });
     }
 
     @NotNull
