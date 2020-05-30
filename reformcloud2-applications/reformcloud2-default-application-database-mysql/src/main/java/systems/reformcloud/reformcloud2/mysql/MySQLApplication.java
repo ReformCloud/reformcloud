@@ -35,6 +35,13 @@ import java.nio.file.Path;
 
 public class MySQLApplication extends Application {
 
+    private DatabaseProvider previous;
+
+    @Override
+    public void onLoad() {
+        this.previous = ExecutorAPI.getInstance().getDatabaseProvider();
+    }
+
     @Override
     public void onEnable() {
         Path configPath = this.getDataFolder().toPath().resolve("config.json");
@@ -56,6 +63,10 @@ public class MySQLApplication extends Application {
         DatabaseProvider providerUnchecked = ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(DatabaseProvider.class);
         if (providerUnchecked instanceof MySQLDatabaseProvider) {
             ((MySQLDatabaseProvider) providerUnchecked).close();
+
+            if (this.previous != null) {
+                ExecutorAPI.getInstance().getServiceRegistry().setProvider(DatabaseProvider.class, this.previous, false, true);
+            }
         }
     }
 }
