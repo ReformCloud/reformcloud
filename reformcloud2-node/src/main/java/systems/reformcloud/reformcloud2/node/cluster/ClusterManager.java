@@ -64,7 +64,7 @@ public interface ClusterManager {
 
     void handleProcessUnregister(@NotNull String name);
 
-    void publishProcessUnregister(@NotNull String name);
+    void publishProcessUnregister(@NotNull ProcessInformation processInformation);
 
     void handleProcessSet(@NotNull Collection<ProcessInformation> processInformation);
 

@@ -86,7 +86,6 @@ public class DefaultClusterManager implements ClusterManager {
 
     @Override
     public void publishNodeUpdate(@NotNull NodeInformation nodeInformation) {
-        this.handleNodeUpdate(nodeInformation);
         this.sendPacketToNodes(new NodeToNodeUpdateNodeInformation(nodeInformation));
     }
 
@@ -104,8 +103,8 @@ public class DefaultClusterManager implements ClusterManager {
 
     @Override
     public void publishProcessRegister(@NotNull ProcessInformation processInformation) {
-        this.handleProcessRegister(processInformation);
         this.sendPacketToNodes(new NodeToNodeRegisterProcess(processInformation));
+        this.sendPacketToProcesses(new NodeToApiProcessRegister(processInformation));
     }
 
     @Override
@@ -116,8 +115,8 @@ public class DefaultClusterManager implements ClusterManager {
 
     @Override
     public void publishProcessUpdate(@NotNull ProcessInformation processInformation) {
-        this.handleProcessUpdate(processInformation);
         this.sendPacketToNodes(new NodeToNodeUpdateProcess(processInformation));
+        this.sendPacketToProcesses(new NodeToApiProcessUpdated(processInformation));
     }
 
     @Override
@@ -129,9 +128,9 @@ public class DefaultClusterManager implements ClusterManager {
     }
 
     @Override
-    public void publishProcessUnregister(@NotNull String name) {
-        this.handleProcessUnregister(name);
-        this.sendPacketToNodes(new NodeToNodeUnregisterProcess(name));
+    public void publishProcessUnregister(@NotNull ProcessInformation processInformation) {
+        this.sendPacketToNodes(new NodeToNodeUnregisterProcess(processInformation.getProcessDetail().getName()));
+        this.sendPacketToProcesses(new NodeToApiProcessUnregister(processInformation));
     }
 
     @Override
@@ -154,8 +153,8 @@ public class DefaultClusterManager implements ClusterManager {
 
     @Override
     public void publishProcessGroupCreate(@NotNull ProcessGroup processGroup) {
-        this.handleProcessGroupCreate(processGroup);
         this.sendPacketToNodes(new NodeToNodeCreateProcessGroup(processGroup));
+        this.sendPacketToProcesses(new NodeToApiProcessGroupCreate(processGroup));
     }
 
     @Override
@@ -166,8 +165,8 @@ public class DefaultClusterManager implements ClusterManager {
 
     @Override
     public void publishProcessGroupUpdate(@NotNull ProcessGroup processGroup) {
-        this.handleProcessGroupUpdate(processGroup);
         this.sendPacketToNodes(new NodeToNodeUpdateProcessGroup(processGroup));
+        this.sendPacketToProcesses(new NodeToApiProcessGroupUpdated(processGroup));
     }
 
     @Override
@@ -178,8 +177,8 @@ public class DefaultClusterManager implements ClusterManager {
 
     @Override
     public void publishProcessGroupDelete(@NotNull ProcessGroup processGroup) {
-        this.handleProcessGroupDelete(processGroup);
         this.sendPacketToNodes(new NodeToNodeDeleteProcessGroup(processGroup));
+        this.sendPacketToProcesses(new NodeToApiProcessGroupDelete(processGroup));
     }
 
     @Override
@@ -206,8 +205,8 @@ public class DefaultClusterManager implements ClusterManager {
 
     @Override
     public void publishMainGroupCreate(@NotNull MainGroup mainGroup) {
-        this.handleMainGroupCreate(mainGroup);
         this.sendPacketToNodes(new NodeToNodeCreateMainGroup(mainGroup));
+        this.sendPacketToProcesses(new NodeToApiMainGroupCreate(mainGroup));
     }
 
     @Override
@@ -218,8 +217,8 @@ public class DefaultClusterManager implements ClusterManager {
 
     @Override
     public void publishMainGroupUpdate(@NotNull MainGroup mainGroup) {
-        this.handleMainGroupUpdate(mainGroup);
         this.sendPacketToNodes(new NodeToNodeUpdateMainGroup(mainGroup));
+        this.sendPacketToProcesses(new NodeToApiMainGroupUpdated(mainGroup));
     }
 
     @Override
@@ -230,8 +229,8 @@ public class DefaultClusterManager implements ClusterManager {
 
     @Override
     public void publishMainGroupDelete(@NotNull MainGroup mainGroup) {
-        this.handleMainGroupDelete(mainGroup);
         this.sendPacketToNodes(new NodeToNodeDeleteMainGroup(mainGroup));
+        this.sendPacketToProcesses(new NodeToApiMainGroupDelete(mainGroup));
     }
 
     @Override
