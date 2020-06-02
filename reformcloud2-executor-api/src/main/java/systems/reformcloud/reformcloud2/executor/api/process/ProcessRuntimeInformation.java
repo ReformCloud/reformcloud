@@ -30,9 +30,7 @@ import systems.reformcloud.reformcloud2.executor.api.CommonHelper;
 import systems.reformcloud.reformcloud2.executor.api.network.SerializableObject;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class ProcessRuntimeInformation implements SerializableObject {
@@ -221,12 +219,6 @@ public class ProcessRuntimeInformation implements SerializableObject {
 
     public String getBootClassPath() {
         return this.bootClassPath;
-    }
-
-    @Deprecated
-    @ApiStatus.ScheduledForRemoval
-    public List<ThreadInfo> getThreadInfos() {
-        return new ArrayList<>();
     }
 
     @Override

@@ -29,10 +29,23 @@ import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.network.SerializableObject;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
 public final class StartupConfiguration implements SerializableObject {
+
+    public static StartupConfiguration createDefault() {
+        return new StartupConfiguration(
+                -1,
+                1,
+                0,
+                41000,
+                "java",
+                true,
+                Collections.emptyList()
+        );
+    }
 
     private int maxOnlineProcesses;
     private int minOnlineProcesses;

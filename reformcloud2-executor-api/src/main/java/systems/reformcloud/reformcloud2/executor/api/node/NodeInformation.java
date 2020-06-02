@@ -41,19 +41,14 @@ public class NodeInformation implements SerializableObject {
     };
 
     private String name;
-
     private UUID nodeUniqueID;
 
     private long startupTime;
-
     private long lastUpdate;
-
     private long usedMemory;
-
     private long maxMemory;
 
     private ProcessRuntimeInformation processRuntimeInformation;
-
     private Collection<NodeProcess> startedProcesses;
 
     public NodeInformation(String name, UUID nodeUniqueID, long startupTime,

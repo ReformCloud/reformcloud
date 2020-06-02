@@ -27,19 +27,12 @@ package systems.reformcloud.reformcloud2.executor.api;
 import com.sun.management.OperatingSystemMXBean;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessRuntimeInformation;
 import systems.reformcloud.reformcloud2.executor.api.utility.optional.ReferencedOptional;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStreamWriter;
 import java.lang.management.*;
 import java.lang.ref.WeakReference;
 import java.net.InetAddress;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -48,7 +41,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.function.Function;
 
 @ApiStatus.Internal
 public final class CommonHelper {
@@ -154,41 +146,6 @@ public final class CommonHelper {
         } catch (final Throwable throwable) {
             return null;
         }
-    }
-
-    /* == Enum Helper == */
-
-    public static void rewriteProperties(String path, String saveComment, Function<String, String> function) {
-        if (!Files.exists(Paths.get(path))) {
-            return;
-        }
-
-        try (InputStream inputStream = Files.newInputStream(Paths.get(path))) {
-            Properties properties = new Properties();
-            properties.load(inputStream);
-
-            properties.stringPropertyNames().forEach(s -> properties.setProperty(s, function.apply(s)));
-
-            try (OutputStreamWriter outputStreamWriter = new OutputStreamWriter(Files.newOutputStream(Paths.get(path)), StandardCharsets.UTF_8)) {
-                properties.store(outputStreamWriter, saveComment);
-            }
-        } catch (final IOException ex) {
-            ex.printStackTrace();
-        }
-    }
-
-    @NotNull
-    public static Runnable newReportedRunnable(@NotNull Runnable source, @Nullable String reportedMessage) {
-        return () -> {
-            try {
-                source.run();
-            } catch (final Throwable throwable) {
-                System.err.println("An internal exception while execution of runnable:");
-                System.err.println(reportedMessage == null ? source.getClass().getName() : reportedMessage);
-                System.err.println("Please report this either on github or discord including the full stack trace and above message");
-                throwable.printStackTrace();
-            }
-        };
     }
 
     public static <T extends Enum<T>> ReferencedOptional<T> findEnumField(Class<T> enumClass, String field) {

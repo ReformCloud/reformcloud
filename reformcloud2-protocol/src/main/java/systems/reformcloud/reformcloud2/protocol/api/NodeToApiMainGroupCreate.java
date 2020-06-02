@@ -22,28 +22,48 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.node.network;
+package systems.reformcloud.reformcloud2.protocol.api;
 
-import io.netty.channel.ChannelHandlerContext;
 import org.jetbrains.annotations.NotNull;
+import systems.reformcloud.reformcloud2.executor.api.groups.MainGroup;
 import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.shared.SharedEndpointChannelReader;
-import systems.reformcloud.reformcloud2.executor.api.network.packet.Packet;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
+import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
+import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
 
-public final class NodeEndpointChannelReader extends SharedEndpointChannelReader {
+public class NodeToApiMainGroupCreate extends ProtocolPacket {
 
-    @Override
-    public boolean shouldHandle(@NotNull Packet packet) {
-        return super.networkChannel.isAuthenticated() || packet.getId() >= NetworkUtil.AUTH_BUS && packet.getId() <= NetworkUtil.AUTH_BUS_END;
+    public NodeToApiMainGroupCreate() {
+    }
+
+    public NodeToApiMainGroupCreate(MainGroup mainGroup) {
+        this.mainGroup = mainGroup;
+    }
+
+    private MainGroup mainGroup;
+
+    public MainGroup getMainGroup() {
+        return this.mainGroup;
     }
 
     @Override
-    public void channelInactive(@NotNull ChannelHandlerContext context) {
-
+    public int getId() {
+        return NetworkUtil.API_BUS + 7;
     }
 
     @Override
-    public void channelActive(@NotNull ChannelHandlerContext context) {
+    public void handlePacketReceive(@NotNull EndpointChannelReader reader, @NotNull NetworkChannel channel) {
+        super.post(channel, NodeToApiMainGroupCreate.class, this);
+    }
 
+    @Override
+    public void write(@NotNull ProtocolBuffer buffer) {
+        buffer.writeObject(this.mainGroup);
+    }
+
+    @Override
+    public void read(@NotNull ProtocolBuffer buffer) {
+        this.mainGroup = buffer.readObject(MainGroup.class);
     }
 }

@@ -28,7 +28,6 @@ import com.google.gson.reflect.TypeToken;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.groups.utils.PlayerAccessConfiguration;
@@ -37,8 +36,6 @@ import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer
 import systems.reformcloud.reformcloud2.executor.api.process.api.ProcessInclusion;
 import systems.reformcloud.reformcloud2.executor.api.process.detail.ProcessDetail;
 import systems.reformcloud.reformcloud2.executor.api.process.detail.ProcessPlayerManager;
-import systems.reformcloud.reformcloud2.executor.api.process.detail.ProcessUtil;
-import systems.reformcloud.reformcloud2.executor.api.process.event.ProcessInformationConfigureEvent;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -72,8 +69,6 @@ public final class ProcessInformation implements SerializableObject {
         this.processGroup = processGroup;
         this.extra = extra;
         this.preInclusions = preInclusions;
-
-        ExecutorAPI.getInstance().getEventManager().callEvent(new ProcessInformationConfigureEvent(this));
     }
 
     public ProcessPlayerManager getProcessPlayerManager() {
@@ -161,14 +156,6 @@ public final class ProcessInformation implements SerializableObject {
      */
     public void updateRuntimeInformation() {
         this.processDetail.setProcessRuntimeInformation(ProcessRuntimeInformation.create());
-    }
-
-    /**
-     * @return A new process util which wraps the current process information and brings some util methods
-     */
-    @NotNull
-    public ProcessUtil toWrapped() {
-        return new ProcessUtil(this);
     }
 
     @Override

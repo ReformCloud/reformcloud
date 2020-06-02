@@ -22,28 +22,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.process.event;
+package systems.reformcloud.reformcloud2.executor.api.task.exception;
 
-import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.event.Event;
-import systems.reformcloud.reformcloud2.executor.api.process.detail.ProcessDetail;
+public final class TaskCompletionException extends RuntimeException {
 
-/**
- * Gets called when a new process detail gets created
- */
-public final class ProcessDetailConfigureEvent extends Event {
-
-    private final ProcessDetail processDetail;
-
-    public ProcessDetailConfigureEvent(@NotNull ProcessDetail processDetail) {
-        this.processDetail = processDetail;
-    }
-
-    /**
-     * @return The process detail which got created
-     */
-    @NotNull
-    public ProcessDetail getProcessDetail() {
-        return this.processDetail;
+    public TaskCompletionException(String message, Throwable cause) {
+        super(message, cause);
     }
 }

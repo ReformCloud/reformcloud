@@ -22,11 +22,26 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.task.excepetion;
+package systems.reformcloud.reformcloud2.executor.api.event.events.messaging;
 
-public final class TaskCompletionException extends RuntimeException {
+import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.event.Event;
 
-    public TaskCompletionException(String message, Throwable cause) {
-        super(message, cause);
+public class ChannelMessageReceiveEvent extends Event {
+
+    public ChannelMessageReceiveEvent(String channel, JsonConfiguration data) {
+        this.channel = channel;
+        this.data = data;
+    }
+
+    private final String channel;
+    private final JsonConfiguration data;
+
+    public String getChannel() {
+        return this.channel;
+    }
+
+    public JsonConfiguration getData() {
+        return this.data;
     }
 }

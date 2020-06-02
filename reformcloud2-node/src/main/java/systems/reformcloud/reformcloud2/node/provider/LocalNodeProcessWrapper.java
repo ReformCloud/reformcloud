@@ -22,7 +22,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.node.cluster;
+package systems.reformcloud.reformcloud2.node.provider;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnmodifiableView;
@@ -45,7 +45,7 @@ public class LocalNodeProcessWrapper extends DefaultNodeProcessWrapper {
 
     @Override
     public @NotNull Optional<NodeInformation> requestNodeInformationUpdate() {
-        return Optional.of(NodeExecutor.getInstance().createNodeInformation());
+        return Optional.of(super.nodeInformation = NodeExecutor.getInstance().createNodeInformation());
     }
 
     @Override

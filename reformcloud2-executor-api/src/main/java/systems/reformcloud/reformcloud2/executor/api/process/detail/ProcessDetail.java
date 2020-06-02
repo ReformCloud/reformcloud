@@ -27,13 +27,11 @@ package systems.reformcloud.reformcloud2.executor.api.process.detail;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.groups.template.Template;
 import systems.reformcloud.reformcloud2.executor.api.network.SerializableObject;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessRuntimeInformation;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessState;
-import systems.reformcloud.reformcloud2.executor.api.process.event.ProcessDetailConfigureEvent;
 import systems.reformcloud.reformcloud2.executor.api.utility.name.Nameable;
 
 import java.util.UUID;
@@ -92,8 +90,6 @@ public final class ProcessDetail implements Nameable, SerializableObject {
         this.initialState = initialState;
         this.processState = ProcessState.CREATED;
         this.processRuntimeInformation = ProcessRuntimeInformation.empty();
-
-        ExecutorAPI.getInstance().getEventManager().callEvent(new ProcessDetailConfigureEvent(this));
     }
 
     /**

@@ -68,11 +68,9 @@ import java.util.stream.Collectors;
 public final class DefaultApplicationLoader implements ApplicationLoader {
 
     private static final Path APPLICATION_DIRECTORY = Paths.get("reformcloud", "applications");
-
     private static final DependencyLoader APP_LOADER = new DefaultDependencyLoader();
 
     private final Map<String, Application> loadedApplications = new ConcurrentHashMap<>();
-
     private final Collection<ApplicationConfig> toLoad = new CopyOnWriteArrayList<>();
 
     @Override

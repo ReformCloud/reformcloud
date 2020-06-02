@@ -60,7 +60,8 @@ public final class DefaultNetworkChannel implements NetworkChannel {
 
     @Override
     public void sendQueryResult(@Nullable UUID queryUniqueID, @NotNull Packet result) {
-
+        result.setQueryUniqueID(queryUniqueID);
+        this.sendPacket(result);
     }
 
     @Override

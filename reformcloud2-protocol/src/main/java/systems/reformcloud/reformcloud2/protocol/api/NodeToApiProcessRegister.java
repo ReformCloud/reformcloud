@@ -22,28 +22,44 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.node.network;
+package systems.reformcloud.reformcloud2.protocol.api;
 
-import io.netty.channel.ChannelHandlerContext;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.shared.SharedEndpointChannelReader;
-import systems.reformcloud.reformcloud2.executor.api.network.packet.Packet;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
+import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
+import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
+import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
 
-public final class NodeEndpointChannelReader extends SharedEndpointChannelReader {
+public class NodeToApiProcessRegister extends ProtocolPacket {
+
+    public NodeToApiProcessRegister() {
+    }
+
+    public NodeToApiProcessRegister(ProcessInformation processInformation) {
+        this.processInformation = processInformation;
+    }
+
+    private ProcessInformation processInformation;
 
     @Override
-    public boolean shouldHandle(@NotNull Packet packet) {
-        return super.networkChannel.isAuthenticated() || packet.getId() >= NetworkUtil.AUTH_BUS && packet.getId() <= NetworkUtil.AUTH_BUS_END;
+    public int getId() {
+        return NetworkUtil.API_BUS + 2;
     }
 
     @Override
-    public void channelInactive(@NotNull ChannelHandlerContext context) {
-
+    public void handlePacketReceive(@NotNull EndpointChannelReader reader, @NotNull NetworkChannel channel) {
+        super.post(channel, NodeToApiProcessRegister.class, this);
     }
 
     @Override
-    public void channelActive(@NotNull ChannelHandlerContext context) {
+    public void write(@NotNull ProtocolBuffer buffer) {
+        buffer.writeObject(this.processInformation);
+    }
 
+    @Override
+    public void read(@NotNull ProtocolBuffer buffer) {
+        this.processInformation = buffer.readObject(ProcessInformation.class);
     }
 }

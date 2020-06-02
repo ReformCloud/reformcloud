@@ -41,6 +41,7 @@ import systems.reformcloud.reformcloud2.executor.api.language.loading.LanguageLo
 import systems.reformcloud.reformcloud2.executor.api.logger.CloudLogger;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.manager.ChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.network.packet.PacketProvider;
+import systems.reformcloud.reformcloud2.executor.api.network.packet.query.QueryManager;
 import systems.reformcloud.reformcloud2.executor.api.network.server.NetworkServer;
 import systems.reformcloud.reformcloud2.executor.api.node.NodeInformation;
 import systems.reformcloud.reformcloud2.executor.api.process.running.RunningProcess;
@@ -52,7 +53,6 @@ import systems.reformcloud.reformcloud2.executor.api.utility.NetworkAddress;
 import systems.reformcloud.reformcloud2.executor.api.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.utility.thread.AbsoluteThread;
 import systems.reformcloud.reformcloud2.node.application.DefaultApplicationLoader;
-import systems.reformcloud.reformcloud2.node.cluster.DefaultNodeNodeInformationProvider;
 import systems.reformcloud.reformcloud2.node.commands.*;
 import systems.reformcloud.reformcloud2.node.config.NodeConfig;
 import systems.reformcloud.reformcloud2.node.config.NodeExecutorConfig;
@@ -61,12 +61,14 @@ import systems.reformcloud.reformcloud2.node.database.H2DatabaseProvider;
 import systems.reformcloud.reformcloud2.node.network.NodeEndpointChannelReader;
 import systems.reformcloud.reformcloud2.node.network.NodeNetworkClient;
 import systems.reformcloud.reformcloud2.node.process.DefaultNodeProcessProvider;
+import systems.reformcloud.reformcloud2.node.provider.DefaultNodeNodeInformationProvider;
 import systems.reformcloud.reformcloud2.node.tick.CloudTickWorker;
 import systems.reformcloud.reformcloud2.node.tick.TickedTaskScheduler;
 import systems.reformcloud.reformcloud2.shared.command.DefaultCommandManager;
 import systems.reformcloud.reformcloud2.shared.event.DefaultEventManager;
 import systems.reformcloud.reformcloud2.shared.network.channel.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.shared.network.packet.DefaultPacketProvider;
+import systems.reformcloud.reformcloud2.shared.network.packet.DefaultQueryManager;
 import systems.reformcloud.reformcloud2.shared.network.server.DefaultNetworkServer;
 import systems.reformcloud.reformcloud2.shared.registry.service.DefaultServiceRegistry;
 
@@ -86,7 +88,7 @@ public final class NodeExecutor extends ExecutorAPI {
     private final NodeExecutorConfig nodeExecutorConfig = new NodeExecutorConfig();
     private final ServiceRegistry serviceRegistry = new DefaultServiceRegistry();
     private final NodeInformationProvider nodeInformationProvider = new DefaultNodeNodeInformationProvider();
-    private final ProcessProvider processProvider = new DefaultNodeProcessProvider();
+    private final DefaultNodeProcessProvider processProvider = new DefaultNodeProcessProvider();
     private final TickedTaskScheduler taskScheduler = new TickedTaskScheduler();
     private final CloudTickWorker cloudTickWorker = new CloudTickWorker(this.taskScheduler);
 
@@ -155,7 +157,7 @@ public final class NodeExecutor extends ExecutorAPI {
 
     @NotNull
     @Override
-    public ProcessProvider getProcessProvider() {
+    public DefaultNodeProcessProvider getProcessProvider() {
         return this.processProvider;
     }
 
@@ -419,9 +421,14 @@ public final class NodeExecutor extends ExecutorAPI {
         this.serviceRegistry.setProvider(EventManager.class, new DefaultEventManager(), false, true);
         this.serviceRegistry.setProvider(ChannelManager.class, new DefaultChannelManager(), false, true);
         this.serviceRegistry.setProvider(PacketProvider.class, new DefaultPacketProvider(), false, true);
+        this.serviceRegistry.setProvider(QueryManager.class, new DefaultQueryManager(), false, true);
     }
 
     public @NotNull NodeInformation createNodeInformation() {
+        return null; // todo
+    }
+
+    public @NotNull NodeInformation getCurrentNodeInformation() {
         return null; // todo
     }
 

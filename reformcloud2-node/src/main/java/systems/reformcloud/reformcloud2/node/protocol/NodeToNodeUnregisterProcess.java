@@ -22,74 +22,45 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.process;
+package systems.reformcloud.reformcloud2.node.protocol;
 
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.network.SerializableObject;
+import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
+import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
+import systems.reformcloud.reformcloud2.node.cluster.ClusterManager;
+import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
 
-@Deprecated
-@ApiStatus.ScheduledForRemoval
-public final class ThreadInfo implements SerializableObject {
+public class NodeToNodeUnregisterProcess extends ProtocolPacket {
+
+    public NodeToNodeUnregisterProcess() {
+    }
+
+    public NodeToNodeUnregisterProcess(String name) {
+        this.name = name;
+    }
 
     private String name;
-    private long id;
-    private int priority;
-    private boolean daemon;
-    private Thread.State state;
 
-    @ApiStatus.Internal
-    public ThreadInfo() {
+    @Override
+    public int getId() {
+        return NetworkUtil.NODE_BUS + 11;
     }
 
-    private ThreadInfo(String name, long id, int priority, boolean daemon, Thread.State state) {
-        this.name = name;
-        this.id = id;
-        this.priority = priority;
-        this.daemon = daemon;
-        this.state = state;
-    }
-
-    public static ThreadInfo create(Thread thread) {
-        return new ThreadInfo(thread.getName(), thread.getId(), thread.getPriority(), thread.isDaemon(), thread.getState());
-    }
-
-    public String getName() {
-        return this.name;
-    }
-
-    public long getId() {
-        return this.id;
-    }
-
-    public int getPriority() {
-        return this.priority;
-    }
-
-    public boolean isDaemon() {
-        return this.daemon;
-    }
-
-    public Thread.State getState() {
-        return this.state;
+    @Override
+    public void handlePacketReceive(@NotNull EndpointChannelReader reader, @NotNull NetworkChannel channel) {
+        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ClusterManager.class).handleProcessUnregister(this.name);
     }
 
     @Override
     public void write(@NotNull ProtocolBuffer buffer) {
         buffer.writeString(this.name);
-        buffer.writeLong(this.id);
-        buffer.writeInt(this.priority);
-        buffer.writeBoolean(this.daemon);
-        buffer.writeVarInt(this.state.ordinal());
     }
 
     @Override
     public void read(@NotNull ProtocolBuffer buffer) {
         this.name = buffer.readString();
-        this.id = buffer.readLong();
-        this.priority = buffer.readInt();
-        this.daemon = buffer.readBoolean();
-        this.state = Thread.State.values()[buffer.readVarInt()];
     }
 }

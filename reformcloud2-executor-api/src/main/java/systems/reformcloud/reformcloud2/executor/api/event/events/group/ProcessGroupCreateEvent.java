@@ -22,26 +22,20 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.event.events;
+package systems.reformcloud.reformcloud2.executor.api.event.events.group;
 
-import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.event.Event;
+import systems.reformcloud.reformcloud2.executor.api.groups.ProcessGroup;
 
-public class ChannelMessageReceiveEvent extends Event {
+public class ProcessGroupCreateEvent extends Event {
 
-    public ChannelMessageReceiveEvent(String channel, JsonConfiguration data) {
-        this.channel = channel;
-        this.data = data;
+    private final ProcessGroup processGroup;
+
+    public ProcessGroupCreateEvent(ProcessGroup processGroup) {
+        this.processGroup = processGroup;
     }
 
-    private final String channel;
-    private final JsonConfiguration data;
-
-    public String getChannel() {
-        return this.channel;
-    }
-
-    public JsonConfiguration getData() {
-        return this.data;
+    public ProcessGroup getProcessGroup() {
+        return this.processGroup;
     }
 }

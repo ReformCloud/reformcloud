@@ -25,67 +25,97 @@
 package systems.reformcloud.reformcloud2.shared.group;
 
 import org.jetbrains.annotations.NotNull;
+import systems.reformcloud.reformcloud2.executor.api.base.Conditions;
 import systems.reformcloud.reformcloud2.executor.api.builder.ProcessGroupBuilder;
 import systems.reformcloud.reformcloud2.executor.api.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.groups.template.Template;
 import systems.reformcloud.reformcloud2.executor.api.groups.utils.PlayerAccessConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.groups.utils.StartupConfiguration;
-import systems.reformcloud.reformcloud2.executor.api.task.Task;
 
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public abstract class DefaultProcessGroupBuilder implements ProcessGroupBuilder {
+
+    protected String name;
+
+    protected boolean staticGroup = false;
+    protected boolean lobby = false;
+    protected boolean showId = true;
+
+    protected List<Template> templates = new ArrayList<>();
+    protected PlayerAccessConfiguration playerAccessConfiguration = PlayerAccessConfiguration.createDefault();
+    protected StartupConfiguration startupConfiguration = StartupConfiguration.createDefault();
+
     @NotNull
     @Override
     public ProcessGroupBuilder name(@NotNull String name) {
-        return null;
+        this.name = name;
+        return this;
     }
 
     @NotNull
     @Override
     public ProcessGroupBuilder staticGroup(boolean staticGroup) {
-        return null;
+        this.staticGroup = staticGroup;
+        return this;
     }
 
     @NotNull
     @Override
     public ProcessGroupBuilder lobby(boolean lobby) {
-        return null;
+        this.lobby = lobby;
+        return this;
     }
 
     @NotNull
     @Override
     public ProcessGroupBuilder templates(Template... templates) {
-        return null;
+        this.templates = Arrays.asList(templates);
+        return this;
     }
 
     @NotNull
     @Override
-    public ProcessGroupBuilder templates(@NotNull Collection<Template> templates) {
-        return null;
+    public ProcessGroupBuilder templates(@NotNull List<Template> templates) {
+        this.templates = templates;
+        return this;
     }
 
     @NotNull
     @Override
     public ProcessGroupBuilder playerAccessConfig(@NotNull PlayerAccessConfiguration configuration) {
-        return null;
+        this.playerAccessConfiguration = configuration;
+        return this;
     }
 
     @NotNull
     @Override
     public ProcessGroupBuilder startupConfiguration(@NotNull StartupConfiguration configuration) {
-        return null;
+        this.startupConfiguration = configuration;
+        return this;
     }
 
     @NotNull
     @Override
     public ProcessGroupBuilder showId(boolean showId) {
-        return null;
+        this.showId = showId;
+        return this;
     }
 
     @NotNull
     @Override
-    public Task<ProcessGroup> createTemporary() {
-        return null;
+    public ProcessGroup createTemporary() {
+        Conditions.nonNull(this.name, "Unable to create process group without a name");
+        return new ProcessGroup(
+                this.name,
+                this.showId,
+                this.startupConfiguration,
+                this.templates,
+                this.playerAccessConfiguration,
+                this.staticGroup,
+                this.lobby
+        );
     }
 }

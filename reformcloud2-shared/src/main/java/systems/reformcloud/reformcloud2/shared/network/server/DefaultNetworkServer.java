@@ -42,10 +42,9 @@ import java.util.function.Supplier;
 public final class DefaultNetworkServer implements NetworkServer {
 
     private final Map<Integer, ChannelFuture> channelFutures = new ConcurrentHashMap<>();
-
+    private final Class<? extends ServerSocketChannel> channelClass = NetworkUtil.serverSocketChannel();
     private final EventLoopGroup boss = NetworkUtil.eventLoopGroup();
     private final EventLoopGroup worker = NetworkUtil.eventLoopGroup();
-    private final Class<? extends ServerSocketChannel> channelClass = NetworkUtil.serverSocketChannel();
 
     @Override
     public void bind(@NotNull String host, int port, @NotNull Supplier<EndpointChannelReader> readerHelper) {

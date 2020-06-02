@@ -54,6 +54,11 @@ public final class DefaultNodeProcessProvider implements ProcessProvider {
     }
 
     @NotNull
+    public Optional<DefaultNodeProcessWrapper> getProcess(@NotNull UUID uniqueId) {
+        return Optional.ofNullable(Streams.filter(this.processes, process -> process.getProcessInformation().getProcessDetail().getProcessUniqueID().equals(uniqueId)));
+    }
+
+    @NotNull
     @Override
     public ProcessBuilder createProcess() {
         return new DefaultNodeProcessBuilder();
@@ -124,5 +129,13 @@ public final class DefaultNodeProcessProvider implements ProcessProvider {
         if (old != null) {
             old.setProcessInformation(processInformation);
         }
+    }
+
+    public void registerProcess(@NotNull ProcessInformation processInformation) {
+        this.processes.add(new DefaultNodeProcessWrapper(processInformation));
+    }
+
+    public void unregisterProcess(@NotNull String name) {
+        this.processes.removeIf(process -> process.getProcessInformation().getProcessDetail().getName().equals(name));
     }
 }

@@ -22,28 +22,48 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.node.network;
+package systems.reformcloud.reformcloud2.protocol.api;
 
-import io.netty.channel.ChannelHandlerContext;
 import org.jetbrains.annotations.NotNull;
+import systems.reformcloud.reformcloud2.executor.api.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.shared.SharedEndpointChannelReader;
-import systems.reformcloud.reformcloud2.executor.api.network.packet.Packet;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
+import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
+import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
 
-public final class NodeEndpointChannelReader extends SharedEndpointChannelReader {
+public class NodeToApiProcessGroupCreate extends ProtocolPacket {
 
-    @Override
-    public boolean shouldHandle(@NotNull Packet packet) {
-        return super.networkChannel.isAuthenticated() || packet.getId() >= NetworkUtil.AUTH_BUS && packet.getId() <= NetworkUtil.AUTH_BUS_END;
+    public NodeToApiProcessGroupCreate() {
+    }
+
+    public NodeToApiProcessGroupCreate(ProcessGroup processGroup) {
+        this.processGroup = processGroup;
+    }
+
+    private ProcessGroup processGroup;
+
+    public ProcessGroup getProcessGroup() {
+        return this.processGroup;
     }
 
     @Override
-    public void channelInactive(@NotNull ChannelHandlerContext context) {
-
+    public int getId() {
+        return NetworkUtil.API_BUS + 4;
     }
 
     @Override
-    public void channelActive(@NotNull ChannelHandlerContext context) {
+    public void handlePacketReceive(@NotNull EndpointChannelReader reader, @NotNull NetworkChannel channel) {
+        super.post(channel, NodeToApiProcessGroupCreate.class, this);
+    }
 
+    @Override
+    public void write(@NotNull ProtocolBuffer buffer) {
+        buffer.writeObject(this.processGroup);
+    }
+
+    @Override
+    public void read(@NotNull ProtocolBuffer buffer) {
+        this.processGroup = buffer.readObject(ProcessGroup.class);
     }
 }

@@ -22,47 +22,44 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.builder;
+package systems.reformcloud.reformcloud2.protocol.api;
 
-import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.groups.ProcessGroup;
-import systems.reformcloud.reformcloud2.executor.api.groups.template.Template;
-import systems.reformcloud.reformcloud2.executor.api.groups.utils.PlayerAccessConfiguration;
-import systems.reformcloud.reformcloud2.executor.api.groups.utils.StartupConfiguration;
-import systems.reformcloud.reformcloud2.executor.api.task.Task;
+import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
+import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
+import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
 
-import java.util.List;
+public class NodeToApiProcessGroupDelete extends ProtocolPacket {
 
-public interface ProcessGroupBuilder {
+    public NodeToApiProcessGroupDelete() {
+    }
 
-    @NotNull
-    ProcessGroupBuilder name(@NotNull String name);
+    public NodeToApiProcessGroupDelete(ProcessGroup processGroup) {
+        this.processGroup = processGroup;
+    }
 
-    @NotNull
-    ProcessGroupBuilder staticGroup(boolean staticGroup);
+    private ProcessGroup processGroup;
 
-    @NotNull
-    ProcessGroupBuilder lobby(boolean lobby);
+    @Override
+    public int getId() {
+        return NetworkUtil.API_BUS + 6;
+    }
 
-    @NotNull
-    ProcessGroupBuilder templates(@NonNls Template... templates);
+    @Override
+    public void handlePacketReceive(@NotNull EndpointChannelReader reader, @NotNull NetworkChannel channel) {
+        super.post(channel, NodeToApiProcessGroupDelete.class, this);
+    }
 
-    @NotNull
-    ProcessGroupBuilder templates(@NotNull List<Template> templates);
+    @Override
+    public void write(@NotNull ProtocolBuffer buffer) {
+        buffer.writeObject(this.processGroup);
+    }
 
-    @NotNull
-    ProcessGroupBuilder playerAccessConfig(@NotNull PlayerAccessConfiguration configuration);
-
-    @NotNull
-    ProcessGroupBuilder startupConfiguration(@NotNull StartupConfiguration configuration);
-
-    @NotNull
-    ProcessGroupBuilder showId(boolean showId);
-
-    @NotNull
-    Task<ProcessGroup> createPermanently();
-
-    @NotNull
-    ProcessGroup createTemporary();
+    @Override
+    public void read(@NotNull ProtocolBuffer buffer) {
+        this.processGroup = buffer.readObject(ProcessGroup.class);
+    }
 }

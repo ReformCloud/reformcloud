@@ -94,7 +94,7 @@ public class DefaultNodeProcessGroupProvider implements ProcessGroupProvider {
         return new NodeProcessGroupBuilder();
     }
 
-    void addProcessGroup(@NotNull ProcessGroup processGroup) {
+    public void addProcessGroup(@NotNull ProcessGroup processGroup) {
         this.processGroups.add(processGroup);
         this.fileRegistry.createKey(processGroup.getName(), processGroup);
     }

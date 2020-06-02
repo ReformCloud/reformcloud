@@ -94,7 +94,7 @@ public class DefaultNodeMainGroupProvider implements MainGroupProvider {
         return new NodeMainGroupBuilder(this);
     }
 
-    void addGroup(@NotNull MainGroup mainGroup) {
+    public void addGroup(@NotNull MainGroup mainGroup) {
         this.mainGroups.add(mainGroup);
         this.fileRegistry.createKey(mainGroup.getName(), mainGroup);
     }

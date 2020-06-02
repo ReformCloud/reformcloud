@@ -33,6 +33,19 @@ import java.util.Objects;
 
 public final class PlayerAccessConfiguration implements SerializableObject {
 
+    public static PlayerAccessConfiguration createDefault() {
+        return new PlayerAccessConfiguration(
+                "reformcloud.join.full",
+                true,
+                "reformcloud.join.maintenance",
+                false,
+                null,
+                true,
+                true,
+                512
+        );
+    }
+
     private String fullJoinPermission;
     private boolean maintenance;
     private String maintenanceJoinPermission;

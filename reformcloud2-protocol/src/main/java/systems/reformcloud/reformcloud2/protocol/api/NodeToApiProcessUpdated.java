@@ -22,25 +22,44 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.process.event;
+package systems.reformcloud.reformcloud2.protocol.api;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.event.Event;
+import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
+import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
+import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
 
-/**
- * This event gets only called on nodes/controller
- */
-public class ProcessInformationConfigureEvent extends Event {
+public class NodeToApiProcessUpdated extends ProtocolPacket {
 
-    private final ProcessInformation information;
-
-    public ProcessInformationConfigureEvent(@NotNull ProcessInformation information) {
-        this.information = information;
+    public NodeToApiProcessUpdated() {
     }
 
-    @NotNull
-    public ProcessInformation getInformation() {
-        return this.information;
+    public NodeToApiProcessUpdated(ProcessInformation processInformation) {
+        this.processInformation = processInformation;
+    }
+
+    private ProcessInformation processInformation;
+
+    @Override
+    public int getId() {
+        return NetworkUtil.API_BUS + 1;
+    }
+
+    @Override
+    public void handlePacketReceive(@NotNull EndpointChannelReader reader, @NotNull NetworkChannel channel) {
+        super.post(channel, NodeToApiProcessUpdated.class, this);
+    }
+
+    @Override
+    public void write(@NotNull ProtocolBuffer buffer) {
+        buffer.writeObject(this.processInformation);
+    }
+
+    @Override
+    public void read(@NotNull ProtocolBuffer buffer) {
+        this.processInformation = buffer.readObject(ProcessInformation.class);
     }
 }

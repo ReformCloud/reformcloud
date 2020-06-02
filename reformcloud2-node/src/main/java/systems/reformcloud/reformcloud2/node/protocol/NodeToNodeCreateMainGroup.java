@@ -22,29 +22,46 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.node.process;
+package systems.reformcloud.reformcloud2.node.protocol;
 
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.base.Conditions;
-import systems.reformcloud.reformcloud2.executor.api.task.Task;
-import systems.reformcloud.reformcloud2.executor.api.wrappers.ProcessWrapper;
+import systems.reformcloud.reformcloud2.executor.api.groups.MainGroup;
+import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
+import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
 import systems.reformcloud.reformcloud2.node.cluster.ClusterManager;
-import systems.reformcloud.reformcloud2.shared.process.AbstractProcessBuilder;
+import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
 
-final class DefaultNodeProcessBuilder extends AbstractProcessBuilder {
+public class NodeToNodeCreateMainGroup extends ProtocolPacket {
 
-    @NotNull
+    public NodeToNodeCreateMainGroup() {
+    }
+
+    public NodeToNodeCreateMainGroup(MainGroup mainGroup) {
+        this.mainGroup = mainGroup;
+    }
+
+    private MainGroup mainGroup;
+
     @Override
-    public Task<ProcessWrapper> prepare() {
-        if (super.processGroupName != null) {
-            super.processGroup = ExecutorAPI.getInstance().getProcessGroupProvider().getProcessGroup(super.processGroupName).orElse(null);
-        }
+    public int getId() {
+        return NetworkUtil.NODE_BUS + 18;
+    }
 
-        Conditions.nonNull(super.processGroup, "Unable to create process with no group defined to prepare from");
-        return ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ClusterManager.class).createProcess(
-                super.processGroup, super.node, super.displayName, super.messageOfTheDay, super.template, super.inclusions,
-                super.extra, super.processUniqueId, super.memory, super.id, super.maxPlayers
-        );
+    @Override
+    public void handlePacketReceive(@NotNull EndpointChannelReader reader, @NotNull NetworkChannel channel) {
+        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ClusterManager.class).handleMainGroupCreate(this.mainGroup);
+    }
+
+    @Override
+    public void write(@NotNull ProtocolBuffer buffer) {
+        buffer.writeObject(this.mainGroup);
+    }
+
+    @Override
+    public void read(@NotNull ProtocolBuffer buffer) {
+        this.mainGroup = buffer.readObject(MainGroup.class);
     }
 }

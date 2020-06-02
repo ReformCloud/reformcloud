@@ -27,7 +27,7 @@ package systems.reformcloud.reformcloud2.executor.api.task;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.task.defaults.DefaultTask;
-import systems.reformcloud.reformcloud2.executor.api.task.excepetion.TaskCompletionException;
+import systems.reformcloud.reformcloud2.executor.api.task.exception.TaskCompletionException;
 
 import java.util.concurrent.*;
 import java.util.function.Consumer;

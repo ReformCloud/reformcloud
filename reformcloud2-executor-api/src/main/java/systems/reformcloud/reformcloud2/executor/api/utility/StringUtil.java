@@ -26,7 +26,6 @@ package systems.reformcloud.reformcloud2.executor.api.utility;
 
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.base.Conditions;
-import systems.reformcloud.reformcloud2.executor.api.language.LanguageManager;
 
 import java.io.File;
 import java.util.Arrays;
@@ -36,7 +35,6 @@ import java.util.UUID;
 public final class StringUtil {
 
     public static final String RUNNER_DOWNLOAD_URL = "https://internal.reformcloud.systems/runner.jar";
-
     public static final String NULL_PATH = new File("reformcloud/.bin/dev/null").getAbsolutePath();
 
     @NotNull
@@ -48,17 +46,6 @@ public final class StringUtil {
         }
 
         return stringBuilder.toString();
-    }
-
-    @NotNull
-    public static String getConsolePrompt() {
-        return LanguageManager.get("logger.console.prompt")
-                .replace("%version%", System.getProperty("reformcloud.runner.version", "c-build"))
-                .replace("%user_name%", System.getProperty("user.name", "unknown")) + " ";
-    }
-
-    public static String formatError(@NotNull String error) {
-        return String.format("Unable to process action %s. Please report this DIRECTLY to reformcloud it is a fatal error", error);
     }
 
     @NotNull

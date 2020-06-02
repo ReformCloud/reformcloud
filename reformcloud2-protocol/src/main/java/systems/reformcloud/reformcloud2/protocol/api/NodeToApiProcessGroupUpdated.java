@@ -24,19 +24,46 @@
  */
 package systems.reformcloud.reformcloud2.protocol.api;
 
+import org.jetbrains.annotations.NotNull;
+import systems.reformcloud.reformcloud2.executor.api.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
-import systems.reformcloud.reformcloud2.executor.api.network.packet.Packet;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
+import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
+import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
 
-public abstract class ApplicationProgrammingInterfacePacket extends Packet {
+public class NodeToApiProcessGroupUpdated extends ProtocolPacket {
 
-    public ApplicationProgrammingInterfacePacket(int id) {
-        this.id = NetworkUtil.API_BUS + id;
+    public NodeToApiProcessGroupUpdated() {
     }
 
-    private final int id;
+    public NodeToApiProcessGroupUpdated(ProcessGroup processGroup) {
+        this.processGroup = processGroup;
+    }
+
+    private ProcessGroup processGroup;
+
+    public ProcessGroup getProcessGroup() {
+        return this.processGroup;
+    }
 
     @Override
     public int getId() {
-        return this.id;
+        return NetworkUtil.API_BUS + 5;
+    }
+
+    @Override
+    public void handlePacketReceive(@NotNull EndpointChannelReader reader, @NotNull NetworkChannel channel) {
+        super.post(channel, NodeToApiProcessGroupUpdated.class, this);
+    }
+
+    @Override
+    public void write(@NotNull ProtocolBuffer buffer) {
+        buffer.writeObject(this.processGroup);
+    }
+
+    @Override
+    public void read(@NotNull ProtocolBuffer buffer) {
+        this.processGroup = buffer.readObject(ProcessGroup.class);
     }
 }

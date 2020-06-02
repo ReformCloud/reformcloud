@@ -26,7 +26,7 @@ package systems.reformcloud.reformcloud2.executor.api.task.defaults;
 
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.task.Task;
-import systems.reformcloud.reformcloud2.executor.api.task.excepetion.TaskCompletionException;
+import systems.reformcloud.reformcloud2.executor.api.task.exception.TaskCompletionException;
 
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
@@ -37,8 +37,6 @@ import java.util.function.Consumer;
 public final class DefaultTask<V> extends Task<V> {
 
     private Consumer<TaskCompletionException> failureConsumer;
-
-    /* ======================== */
 
     @Override
     public V get(long timeout, TimeUnit unit) {

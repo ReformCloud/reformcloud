@@ -22,7 +22,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.node.cluster;
+package systems.reformcloud.reformcloud2.node.provider;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnmodifiableView;
@@ -90,5 +90,22 @@ public class DefaultNodeNodeInformationProvider implements NodeInformationProvid
     @Override
     public boolean isNodePresent(@NotNull UUID nodeUniqueId) {
         return this.getNodeInformation(nodeUniqueId).isPresent();
+    }
+
+    public void updateNode(@NotNull NodeInformation nodeInformation) {
+        for (DefaultNodeProcessWrapper defaultNodeProcessWrapper : this.nodeInformation) {
+            if (defaultNodeProcessWrapper.nodeInformation.getNodeUniqueID().equals(nodeInformation.getNodeUniqueID())) {
+                defaultNodeProcessWrapper.nodeInformation = nodeInformation;
+                break;
+            }
+        }
+    }
+
+    public void removeNode(@NotNull String name) {
+        this.nodeInformation.removeIf(defaultNodeProcessWrapper -> defaultNodeProcessWrapper.nodeInformation.getName().equals(name));
+    }
+
+    public void addNode(@NotNull NodeInformation nodeInformation) {
+        this.nodeInformation.add(new DefaultNodeProcessWrapper(nodeInformation));
     }
 }
