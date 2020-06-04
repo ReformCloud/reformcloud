@@ -30,6 +30,10 @@ import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.groups.template.Version;
 import systems.reformcloud.reformcloud2.executor.api.groups.template.backend.TemplateBackendManager;
 import systems.reformcloud.reformcloud2.executor.api.io.IOUtils;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.manager.ChannelManager;
+import systems.reformcloud.reformcloud2.executor.api.network.packet.Packet;
+import systems.reformcloud.reformcloud2.executor.api.network.packet.query.QueryManager;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessState;
 import systems.reformcloud.reformcloud2.executor.api.process.api.ProcessInclusion;
@@ -38,6 +42,8 @@ import systems.reformcloud.reformcloud2.executor.api.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.utility.process.JavaProcessHelper;
 import systems.reformcloud.reformcloud2.node.process.screen.ProcessScreen;
 import systems.reformcloud.reformcloud2.node.process.screen.ProcessScreenController;
+import systems.reformcloud.reformcloud2.protocol.api.NodeToApiRequestProcessInformationUpdate;
+import systems.reformcloud.reformcloud2.protocol.api.NodeToApiRequestProcessInformationUpdateResult;
 
 import java.io.File;
 import java.io.IOException;
@@ -79,7 +85,21 @@ public class DefaultNodeLocalProcessWrapper extends DefaultNodeRemoteProcessWrap
     @NotNull
     @Override
     public Optional<ProcessInformation> requestProcessInformationUpdate() {
-        return Optional.empty(); // todo
+        NetworkChannel channel = ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ChannelManager.class)
+                .getChannel(this.processInformation.getProcessDetail().getName())
+                .orElse(null);
+        if (channel == null) {
+            return Optional.empty();
+        }
+
+        Packet result = ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(QueryManager.class)
+                .sendPacketQuery(channel, new NodeToApiRequestProcessInformationUpdate())
+                .getUninterruptedly(TimeUnit.SECONDS, 5);
+        if (!(result instanceof NodeToApiRequestProcessInformationUpdateResult)) {
+            return Optional.empty();
+        }
+
+        return Optional.ofNullable(((NodeToApiRequestProcessInformationUpdateResult) result).getProcessInformation());
     }
 
     @NotNull
