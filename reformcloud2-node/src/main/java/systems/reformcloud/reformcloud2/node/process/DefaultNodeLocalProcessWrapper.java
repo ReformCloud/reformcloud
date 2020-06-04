@@ -40,6 +40,7 @@ import systems.reformcloud.reformcloud2.executor.api.process.api.ProcessInclusio
 import systems.reformcloud.reformcloud2.executor.api.utility.StringUtil;
 import systems.reformcloud.reformcloud2.executor.api.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.utility.process.JavaProcessHelper;
+import systems.reformcloud.reformcloud2.node.NodeExecutor;
 import systems.reformcloud.reformcloud2.node.process.screen.ProcessScreen;
 import systems.reformcloud.reformcloud2.node.process.screen.ProcessScreenController;
 import systems.reformcloud.reformcloud2.protocol.api.NodeToApiRequestProcessInformationUpdate;
@@ -71,6 +72,9 @@ public class DefaultNodeLocalProcessWrapper extends DefaultNodeRemoteProcessWrap
         this.processScreen = ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ProcessScreenController.class).createScreen(this);
 
         IOUtils.createDirectory(this.path);
+
+        processInformation.getNetworkInfo().setHost(NodeExecutor.getInstance().getNodeConfig().getStartHost());
+        this.setRuntimeState(ProcessState.PREPARED);
     }
 
     private final Lock lock = new ReentrantLock();
@@ -129,12 +133,12 @@ public class DefaultNodeLocalProcessWrapper extends DefaultNodeRemoteProcessWrap
     @Override
     public void setRuntimeState(@NotNull ProcessState state) {
         this.processInformation.getProcessDetail().setProcessState(state);
-        ExecutorAPI.getInstance().getProcessProvider().updateProcessInformation(this.processInformation);
-
         if (state.isRuntimeState() && this.runtimeState != state) {
             this.runtimeState = state;
             this.callRuntimeStateUpdate();
         }
+
+        ExecutorAPI.getInstance().getProcessProvider().updateProcessInformation(this.processInformation);
     }
 
     @Override
