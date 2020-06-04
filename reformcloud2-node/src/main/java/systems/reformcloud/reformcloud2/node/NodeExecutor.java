@@ -35,7 +35,6 @@ import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConf
 import systems.reformcloud.reformcloud2.executor.api.event.EventManager;
 import systems.reformcloud.reformcloud2.executor.api.groups.template.backend.TemplateBackendManager;
 import systems.reformcloud.reformcloud2.executor.api.language.LanguageManager;
-import systems.reformcloud.reformcloud2.executor.api.logger.CloudLogger;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.manager.ChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.network.packet.PacketProvider;
 import systems.reformcloud.reformcloud2.executor.api.network.packet.query.QueryManager;
@@ -54,6 +53,7 @@ import systems.reformcloud.reformcloud2.node.factory.DefaultProcessFactoryContro
 import systems.reformcloud.reformcloud2.node.factory.ProcessFactoryController;
 import systems.reformcloud.reformcloud2.node.group.DefaultNodeMainGroupProvider;
 import systems.reformcloud.reformcloud2.node.group.DefaultNodeProcessGroupProvider;
+import systems.reformcloud.reformcloud2.node.logger.CloudLogger;
 import systems.reformcloud.reformcloud2.node.messaging.DefaultNodeChannelMessageProvider;
 import systems.reformcloud.reformcloud2.node.network.NodeEndpointChannelReader;
 import systems.reformcloud.reformcloud2.node.network.NodeNetworkClient;
@@ -182,7 +182,7 @@ public final class NodeExecutor extends ExecutorAPI {
 
     @Override
     public boolean isReady() {
-        return true;
+        return NodeNetworkClient.CONNECTIONS.isEmpty();
     }
 
     @NotNull

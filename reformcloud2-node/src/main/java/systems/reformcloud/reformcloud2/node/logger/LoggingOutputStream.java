@@ -22,7 +22,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.logger;
+package systems.reformcloud.reformcloud2.node.logger;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

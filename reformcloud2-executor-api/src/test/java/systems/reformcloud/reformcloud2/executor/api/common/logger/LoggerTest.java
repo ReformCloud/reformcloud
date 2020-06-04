@@ -22,13 +22,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.logger;
+package systems.reformcloud.reformcloud2.node.logger;
 
 import org.junit.Before;
 import org.junit.Test;
 import systems.reformcloud.reformcloud2.executor.api.commands.basic.manager.DefaultCommandManager;
 import systems.reformcloud.reformcloud2.executor.api.language.loading.LanguageLoader;
-import systems.reformcloud.reformcloud2.executor.api.logger.coloured.ColouredLoggerHandler;
+import systems.reformcloud.reformcloud2.node.logger.coloured.ColouredLoggerHandler;
 
 import java.io.IOException;
 import java.nio.file.*;
