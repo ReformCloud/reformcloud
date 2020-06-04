@@ -22,32 +22,21 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.process.running.screen;
+package systems.reformcloud.reformcloud2.node.process.screen;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.UnmodifiableView;
-import systems.reformcloud.reformcloud2.executor.api.process.running.RunningProcess;
+import systems.reformcloud.reformcloud2.node.process.DefaultNodeLocalProcessWrapper;
 
-import java.util.Collection;
-import java.util.Queue;
+import java.util.Optional;
+import java.util.UUID;
 
-public interface RunningProcessScreen {
+public interface ProcessScreenController {
 
-    void callUpdate();
+    @NotNull ProcessScreen createScreen(@NotNull DefaultNodeLocalProcessWrapper wrapper);
 
-    @NotNull
-    Queue<String> getLastLogLines();
+    @NotNull Optional<ProcessScreen> getScreen(@NotNull UUID processUniqueId);
 
-    @NotNull
-    RunningProcess getTargetProcess();
+    void unregisterScreen(@NotNull UUID processUniqueId);
 
-    @NotNull
-    @UnmodifiableView
-    Collection<String> getReceivers();
-
-    void enableScreen(@NotNull String receiver);
-
-    void disableScreen(@NotNull String receiver);
-
-    boolean isEnabledFor(@NotNull String receiver);
+    void tick();
 }

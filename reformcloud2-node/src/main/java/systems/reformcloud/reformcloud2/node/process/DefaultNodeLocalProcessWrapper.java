@@ -36,6 +36,8 @@ import systems.reformcloud.reformcloud2.executor.api.process.api.ProcessInclusio
 import systems.reformcloud.reformcloud2.executor.api.utility.StringUtil;
 import systems.reformcloud.reformcloud2.executor.api.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.utility.process.JavaProcessHelper;
+import systems.reformcloud.reformcloud2.node.process.screen.ProcessScreen;
+import systems.reformcloud.reformcloud2.node.process.screen.ProcessScreenController;
 
 import java.io.File;
 import java.io.IOException;
@@ -60,12 +62,14 @@ public class DefaultNodeLocalProcessWrapper extends DefaultNodeRemoteProcessWrap
                 ? Paths.get("reformcloud/static", processInformation.getProcessDetail().getName())
                 : Paths.get("reformcloud/temp", processInformation.getProcessDetail().getName() + "-" + processInformation.getProcessDetail().getProcessUniqueID());
         this.firstStart = Files.notExists(this.path);
+        this.processScreen = ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ProcessScreenController.class).createScreen(this);
 
         IOUtils.createDirectory(this.path);
     }
 
     private final Lock lock = new ReentrantLock();
     private final String connectionKey = StringUtil.generateString(16);
+    private final ProcessScreen processScreen;
     private final Path path;
     private final boolean firstStart;
 
@@ -87,7 +91,7 @@ public class DefaultNodeLocalProcessWrapper extends DefaultNodeRemoteProcessWrap
     @NotNull
     @Override
     public @UnmodifiableView Queue<String> getLastLogLines() {
-        return null; // todo
+        return this.processScreen.getCachedLogLines();
     }
 
     @Override
@@ -241,5 +245,9 @@ public class DefaultNodeLocalProcessWrapper extends DefaultNodeRemoteProcessWrap
 
     public boolean isStarted() {
         return this.process != null;
+    }
+
+    public @NotNull Optional<Process> getProcess() {
+        return Optional.ofNullable(this.process);
     }
 }
