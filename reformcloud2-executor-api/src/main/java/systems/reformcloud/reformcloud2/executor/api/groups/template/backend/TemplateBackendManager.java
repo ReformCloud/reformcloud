@@ -25,11 +25,11 @@
 package systems.reformcloud.reformcloud2.executor.api.groups.template.backend;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.groups.template.backend.basic.FileTemplateBackend;
 import systems.reformcloud.reformcloud2.executor.api.utility.list.Streams;
 
 import java.util.Collection;
+import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -62,11 +62,11 @@ public final class TemplateBackendManager {
      * Gets a specified template
      *
      * @param name The name of the template which should get loaded
-     * @return The template backend with the given name or {@code null}
+     * @return The template backend with the given name or an empty optional
      */
-    @Nullable
-    public static TemplateBackend get(@NotNull String name) {
-        return Streams.filterToReference(LOADED, e -> e.getName().equalsIgnoreCase(name)).orNothing();
+    @NotNull
+    public static Optional<TemplateBackend> get(@NotNull String name) {
+        return Optional.ofNullable(Streams.filter(LOADED, e -> e.getName().equalsIgnoreCase(name)));
     }
 
     /**

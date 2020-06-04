@@ -61,7 +61,7 @@ public final class EnvironmentBuilder {
      *
      * @param runningProcess The process for which we are building the env
      */
-    static void constructEnvFor(@NotNull DefaultNodeProcessWrapper runningProcess, boolean firstStart) {
+    static void constructEnvFor(@NotNull DefaultNodeLocalProcessWrapper runningProcess, boolean firstStart, @NotNull String connectionKey) {
         NetworkInfo networkInfo = runningProcess.getProcessInformation().getNetworkInfo();
         networkInfo.setPort(PortUtil.checkPort(networkInfo.getPort()));
 
@@ -71,7 +71,7 @@ public final class EnvironmentBuilder {
             initGlobalTemplateAndCurrentTemplate(runningProcess);
         }
 
-        InclusionLoader.loadInclusions(runningProcess.getPath(), runningProcess.getProcessInformation().getPreInclusions());
+        ProcessUtil.loadInclusions(runningProcess.getPath(), runningProcess.getProcessInformation().getPreInclusions());
         if (!runningProcess.getProcessInformation().getProcessGroup().isStaticProcess() || firstStart) {
             loadTemplateInclusions(runningProcess, Inclusion.InclusionLoadType.PAST);
             loadPathInclusions(runningProcess, Inclusion.InclusionLoadType.PAST);
@@ -94,6 +94,7 @@ public final class EnvironmentBuilder {
         new JsonConfiguration()
                 .add("host", connectHost.getHost())
                 .add("port", connectHost.getPort())
+                .add("key", connectionKey)
                 .add("startInfo", runningProcess.getProcessInformation())
                 .write(runningProcess.getPath() + "/reformcloud/.connection/connection.json");
 
@@ -104,7 +105,7 @@ public final class EnvironmentBuilder {
         }
     }
 
-    private static void serverStartup(@NotNull DefaultNodeProcessWrapper runningProcess) {
+    private static void serverStartup(@NotNull DefaultNodeLocalProcessWrapper runningProcess) {
         createEula(runningProcess);
 
         if (isLogicallySpongeForge(runningProcess)) {
@@ -181,7 +182,7 @@ public final class EnvironmentBuilder {
         }
     }
 
-    private static void proxyStartup(@NotNull DefaultNodeProcessWrapper runningProcess) {
+    private static void proxyStartup(@NotNull DefaultNodeLocalProcessWrapper runningProcess) {
         if (!Files.exists(Paths.get(runningProcess.getPath() + "/server-icon.png"))) {
             IOUtils.doInternalCopy(EnvironmentBuilder.class.getClassLoader(), "files/server-icon.png", runningProcess.getPath() + "/server-icon.png");
         }
@@ -216,7 +217,7 @@ public final class EnvironmentBuilder {
         }
     }
 
-    private static void createEula(@NotNull DefaultNodeProcessWrapper runningProcess) {
+    private static void createEula(@NotNull DefaultNodeLocalProcessWrapper runningProcess) {
         try (InputStream inputStream = EnvironmentBuilder.class.getClassLoader().getResourceAsStream("files/java/bukkit/eula.txt")) {
             Files.copy(Objects.requireNonNull(inputStream), Paths.get(runningProcess.getPath() + "/eula.txt"), StandardCopyOption.REPLACE_EXISTING);
         } catch (final IOException ex) {
@@ -225,17 +226,17 @@ public final class EnvironmentBuilder {
     }
 
     //Sponge
-    private static boolean isLogicallySpongeVanilla(@NotNull DefaultNodeProcessWrapper runningProcess) {
+    private static boolean isLogicallySpongeVanilla(@NotNull DefaultNodeLocalProcessWrapper runningProcess) {
         Version version = runningProcess.getProcessInformation().getProcessDetail().getTemplate().getVersion();
         return version.equals(Version.SPONGEVANILLA_1_11_2) || version.equals(Version.SPONGEVANILLA_1_12_2);
     }
 
-    private static boolean isLogicallySpongeForge(@NotNull DefaultNodeProcessWrapper runningProcess) {
+    private static boolean isLogicallySpongeForge(@NotNull DefaultNodeLocalProcessWrapper runningProcess) {
         Version version = runningProcess.getProcessInformation().getProcessDetail().getTemplate().getVersion();
         return version.equals(Version.SPONGEFORGE_1_10_2) || version.equals(Version.SPONGEFORGE_1_11_2) || version.equals(Version.SPONGEFORGE_1_12_2);
     }
 
-    private static void rewriteSpongeConfig(@NotNull DefaultNodeProcessWrapper runningProcess) {
+    private static void rewriteSpongeConfig(@NotNull DefaultNodeLocalProcessWrapper runningProcess) {
         File config = Paths.get(runningProcess.getPath() + "/config/sponge/global.conf").toFile();
         rewriteFile(config, s -> {
             if (s.startsWith("ip-forwarding=")) {
@@ -249,12 +250,12 @@ public final class EnvironmentBuilder {
     }
 
     //Bungee
-    private static boolean isLogicallyBungee(@NotNull DefaultNodeProcessWrapper runningProcess) {
+    private static boolean isLogicallyBungee(@NotNull DefaultNodeLocalProcessWrapper runningProcess) {
         Version version = runningProcess.getProcessInformation().getProcessDetail().getTemplate().getVersion();
         return version.equals(Version.WATERFALL) || version.equals(Version.TRAVERTINE) || version.equals(Version.HEXACORD) || version.equals(Version.BUNGEECORD);
     }
 
-    private static void rewriteBungeeConfig(@NotNull DefaultNodeProcessWrapper runningProcess) {
+    private static void rewriteBungeeConfig(@NotNull DefaultNodeLocalProcessWrapper runningProcess) {
         File file = Paths.get(runningProcess.getPath() + "/config.yml").toFile();
         rewriteFile(file, s -> {
             if (s.startsWith("  host:")) {
@@ -270,12 +271,12 @@ public final class EnvironmentBuilder {
     }
 
     //Waterdog
-    private static boolean isLogicallyWaterDog(@NotNull DefaultNodeProcessWrapper runningProcess) {
+    private static boolean isLogicallyWaterDog(@NotNull DefaultNodeLocalProcessWrapper runningProcess) {
         Version version = runningProcess.getProcessInformation().getProcessDetail().getTemplate().getVersion();
         return version.equals(Version.WATERDOG) || version.equals(Version.WATERDOG_PE);
     }
 
-    private static void rewriteWaterDogConfig(@NotNull DefaultNodeProcessWrapper runningProcess) {
+    private static void rewriteWaterDogConfig(@NotNull DefaultNodeLocalProcessWrapper runningProcess) {
         File file = Paths.get(runningProcess.getPath() + "/config.yml").toFile();
         rewriteFile(file, s -> {
             if (s.startsWith("  host:")) {
@@ -295,7 +296,7 @@ public final class EnvironmentBuilder {
     }
 
     //Velocity
-    private static void rewriteVelocityConfig(@NotNull DefaultNodeProcessWrapper runningProcess) {
+    private static void rewriteVelocityConfig(@NotNull DefaultNodeLocalProcessWrapper runningProcess) {
         File file = Paths.get(runningProcess.getPath() + "/velocity.toml").toFile();
         rewriteFile(file, s -> {
             if (s.startsWith("bind")) {
@@ -311,12 +312,12 @@ public final class EnvironmentBuilder {
     }
 
     //Glowstone
-    private static boolean isLogicallyGlowstone(@NotNull DefaultNodeProcessWrapper runningProcess) {
+    private static boolean isLogicallyGlowstone(@NotNull DefaultNodeLocalProcessWrapper runningProcess) {
         Version version = runningProcess.getProcessInformation().getProcessDetail().getTemplate().getVersion();
         return version.equals(Version.GLOWSTONE_1_10_2) || version.equals(Version.GLOWSTONE_1_12_2);
     }
 
-    private static void rewriteGlowstoneConfig(@NotNull DefaultNodeProcessWrapper runningProcess) {
+    private static void rewriteGlowstoneConfig(@NotNull DefaultNodeLocalProcessWrapper runningProcess) {
         rewriteFile(new File(runningProcess.getPath() + "/config/glowstone.yml"), s -> {
             if (s.trim().startsWith("ip:")) {
                 s = "  ip: '" + runningProcess.getProcessInformation().getNetworkInfo().getHost() + "'";
@@ -339,7 +340,7 @@ public final class EnvironmentBuilder {
     }
 
     //Spigot
-    private static void rewriteSpigotConfig(@NotNull DefaultNodeProcessWrapper runningProcess) {
+    private static void rewriteSpigotConfig(@NotNull DefaultNodeLocalProcessWrapper runningProcess) {
         rewriteFile(new File(runningProcess.getPath() + "/spigot.yml"), s -> {
             if (s.trim().startsWith("bungeecord:")) {
                 s = "  bungeecord: true";
@@ -367,7 +368,7 @@ public final class EnvironmentBuilder {
         }
     }
 
-    private static void loadTemplateInclusions(@NotNull DefaultNodeProcessWrapper processInformation, @NotNull Inclusion.InclusionLoadType loadType) {
+    private static void loadTemplateInclusions(@NotNull DefaultNodeLocalProcessWrapper processInformation, @NotNull Inclusion.InclusionLoadType loadType) {
         processInformation.getProcessInformation().getProcessDetail().getTemplate().getTemplateInclusionsOfType(loadType).forEach(e -> {
             String[] splitTemplate = e.getFirst().split("/");
             if (splitTemplate.length != 2) {
@@ -382,7 +383,7 @@ public final class EnvironmentBuilder {
         });
     }
 
-    private static void loadPathInclusions(@NotNull DefaultNodeProcessWrapper processInformation, @NotNull Inclusion.InclusionLoadType loadType) {
+    private static void loadPathInclusions(@NotNull DefaultNodeLocalProcessWrapper processInformation, @NotNull Inclusion.InclusionLoadType loadType) {
         processInformation.getProcessInformation().getProcessDetail().getTemplate().getPathInclusionsOfType(loadType).forEach(e -> {
             TemplateBackendManager.getOrDefault(e.getSecond()).loadPath(
                     e.getFirst(),
@@ -391,7 +392,7 @@ public final class EnvironmentBuilder {
         });
     }
 
-    private static void initGlobalTemplateAndCurrentTemplate(@NotNull DefaultNodeProcessWrapper processInformation) {
+    private static void initGlobalTemplateAndCurrentTemplate(@NotNull DefaultNodeLocalProcessWrapper processInformation) {
         TemplateBackendManager.getOrDefault(processInformation.getProcessInformation().getProcessDetail().getTemplate().getBackend()).loadGlobalTemplates(
                 processInformation.getProcessInformation().getProcessGroup(),
                 processInformation.getPath()

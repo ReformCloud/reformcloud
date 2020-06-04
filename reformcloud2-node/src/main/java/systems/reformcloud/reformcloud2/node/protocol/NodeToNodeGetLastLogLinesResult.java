@@ -22,33 +22,43 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.wrappers;
+package systems.reformcloud.reformcloud2.node.protocol;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.utility.list.Duo;
+import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
+import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
+import systems.reformcloud.reformcloud2.executor.api.network.packet.query.QueryResultPacket;
 
-import java.util.Optional;
-import java.util.UUID;
+import java.util.ArrayDeque;
+import java.util.Queue;
 
-public interface PlayerWrapper {
+public class NodeToNodeGetLastLogLinesResult extends QueryResultPacket {
 
-    /* left (<-) proxy process, right (->) server process */
-    @NotNull
-    Optional<Duo<UUID, UUID>> getPlayerProcess();
+    public NodeToNodeGetLastLogLinesResult() {
+    }
 
-    void sendMessage(@NotNull String message);
+    public NodeToNodeGetLastLogLinesResult(Queue<String> lastLogLines) {
+        this.lastLogLines = lastLogLines;
+    }
 
-    void disconnect(@NotNull String kickReason);
+    private Queue<String> lastLogLines;
 
-    void playSound(@NotNull String sound, float volume, float pitch);
+    public Queue<String> getLastLogLines() {
+        return this.lastLogLines;
+    }
 
-    void sendTitle(@NotNull String title, @NotNull String subTitle, int fadeIn, int stay, int fadeOut);
+    @Override
+    public int getId() {
+        return NetworkUtil.NODE_BUS + 30;
+    }
 
-    void playEffect(@NotNull String effect);
+    @Override
+    public void write(@NotNull ProtocolBuffer buffer) {
+        buffer.writeStringArray(this.lastLogLines);
+    }
 
-    void setLocation(@NotNull String world, double x, double y, double z, float yaw, float pitch);
-
-    void connect(@NotNull String server);
-
-    void connect(@NotNull UUID otherPlayer);
+    @Override
+    public void read(@NotNull ProtocolBuffer buffer) {
+        this.lastLogLines = new ArrayDeque<>(buffer.readStringArray());
+    }
 }

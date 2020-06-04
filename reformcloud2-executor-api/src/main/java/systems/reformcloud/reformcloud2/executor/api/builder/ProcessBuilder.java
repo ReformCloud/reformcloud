@@ -26,6 +26,7 @@ package systems.reformcloud.reformcloud2.executor.api.builder;
 
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.groups.template.Template;
@@ -38,6 +39,9 @@ import java.util.Collection;
 import java.util.UUID;
 
 public interface ProcessBuilder {
+
+    @NotNull
+    ProcessBuilder targetProcessFactory(@Nullable String targetProcessFactory);
 
     @NotNull
     ProcessBuilder group(@NotNull String processGroupName);

@@ -22,33 +22,34 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.wrappers;
+package systems.reformcloud.reformcloud2.node.protocol;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.utility.list.Duo;
+import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
+import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
+import systems.reformcloud.reformcloud2.protocol.api.NodeToApiSetPlayerLocation;
 
-import java.util.Optional;
 import java.util.UUID;
 
-public interface PlayerWrapper {
+public class NodeToNodeSetPlayerLocation extends NodeToApiSetPlayerLocation {
 
-    /* left (<-) proxy process, right (->) server process */
-    @NotNull
-    Optional<Duo<UUID, UUID>> getPlayerProcess();
+    public NodeToNodeSetPlayerLocation() {
+    }
 
-    void sendMessage(@NotNull String message);
+    public NodeToNodeSetPlayerLocation(UUID uniqueId, String world, double x, double y, double z, float yaw, float pitch) {
+        super(uniqueId, world, x, y, z, yaw, pitch);
+    }
 
-    void disconnect(@NotNull String kickReason);
+    @Override
+    public int getId() {
+        return NetworkUtil.NODE_BUS + 38;
+    }
 
-    void playSound(@NotNull String sound, float volume, float pitch);
-
-    void sendTitle(@NotNull String title, @NotNull String subTitle, int fadeIn, int stay, int fadeOut);
-
-    void playEffect(@NotNull String effect);
-
-    void setLocation(@NotNull String world, double x, double y, double z, float yaw, float pitch);
-
-    void connect(@NotNull String server);
-
-    void connect(@NotNull UUID otherPlayer);
+    @Override
+    public void handlePacketReceive(@NotNull EndpointChannelReader reader, @NotNull NetworkChannel channel) {
+        ExecutorAPI.getInstance().getPlayerProvider().getPlayer(this.uniqueId)
+                .ifPresent(player -> player.setLocation(this.world, this.x, this.y, this.z, this.yaw, this.pitch));
+    }
 }

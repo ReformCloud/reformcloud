@@ -22,33 +22,41 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.wrappers;
+package systems.reformcloud.reformcloud2.node.protocol;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.utility.list.Duo;
+import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
+import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
+import systems.reformcloud.reformcloud2.executor.api.network.packet.query.QueryResultPacket;
+import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 
-import java.util.Optional;
-import java.util.UUID;
+public class NodeToNodeRequestProcessUpdateResult extends QueryResultPacket {
 
-public interface PlayerWrapper {
+    public NodeToNodeRequestProcessUpdateResult() {
+    }
 
-    /* left (<-) proxy process, right (->) server process */
-    @NotNull
-    Optional<Duo<UUID, UUID>> getPlayerProcess();
+    public NodeToNodeRequestProcessUpdateResult(ProcessInformation processInformation) {
+        this.processInformation = processInformation;
+    }
 
-    void sendMessage(@NotNull String message);
+    private ProcessInformation processInformation;
 
-    void disconnect(@NotNull String kickReason);
+    public ProcessInformation getProcessInformation() {
+        return this.processInformation;
+    }
 
-    void playSound(@NotNull String sound, float volume, float pitch);
+    @Override
+    public int getId() {
+        return NetworkUtil.NODE_BUS + 32;
+    }
 
-    void sendTitle(@NotNull String title, @NotNull String subTitle, int fadeIn, int stay, int fadeOut);
+    @Override
+    public void write(@NotNull ProtocolBuffer buffer) {
+        buffer.writeObject(this.processInformation);
+    }
 
-    void playEffect(@NotNull String effect);
-
-    void setLocation(@NotNull String world, double x, double y, double z, float yaw, float pitch);
-
-    void connect(@NotNull String server);
-
-    void connect(@NotNull UUID otherPlayer);
+    @Override
+    public void read(@NotNull ProtocolBuffer buffer) {
+        this.processInformation = buffer.readObject(ProcessInformation.class);
+    }
 }

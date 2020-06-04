@@ -40,6 +40,10 @@ public class DefaultNodeNodeInformationProvider implements NodeInformationProvid
 
     private final Collection<DefaultNodeProcessWrapper> nodeInformation = new CopyOnWriteArrayList<>();
 
+    public DefaultNodeNodeInformationProvider(@NotNull NodeInformation currentNode) {
+        this.nodeInformation.add(new LocalNodeProcessWrapper(currentNode));
+    }
+
     @NotNull
     @Override
     public Optional<NodeProcessWrapper> getNodeInformation(@NotNull String name) {

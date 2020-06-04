@@ -45,7 +45,7 @@ public class LocalNodeProcessWrapper extends DefaultNodeProcessWrapper {
 
     @Override
     public @NotNull Optional<NodeInformation> requestNodeInformationUpdate() {
-        return Optional.of(super.nodeInformation = NodeExecutor.getInstance().createNodeInformation());
+        return Optional.of(super.nodeInformation = NodeExecutor.getInstance().updateCurrentNodeInformation());
     }
 
     @Override

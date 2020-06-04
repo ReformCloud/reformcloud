@@ -35,6 +35,6 @@ public class NodeToNodeRequestNodeInformationUpdateProcessor implements PacketPr
 
     @Override
     public void process(@NotNull NetworkChannel channel, @NotNull NodeToNodeRequestNodeInformationUpdate packet) {
-        channel.sendQueryResult(packet.getQueryUniqueID(), new NodeToNodeRequestNodeInformationUpdateResult(NodeExecutor.getInstance().createNodeInformation()));
+        channel.sendQueryResult(packet.getQueryUniqueID(), new NodeToNodeRequestNodeInformationUpdateResult(NodeExecutor.getInstance().updateCurrentNodeInformation()));
     }
 }

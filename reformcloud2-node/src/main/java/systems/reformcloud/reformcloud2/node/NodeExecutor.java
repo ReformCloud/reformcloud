@@ -33,33 +33,32 @@ import systems.reformcloud.reformcloud2.executor.api.base.Conditions;
 import systems.reformcloud.reformcloud2.executor.api.command.CommandManager;
 import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.event.EventManager;
-import systems.reformcloud.reformcloud2.executor.api.groups.task.OnlinePercentCheckerTask;
 import systems.reformcloud.reformcloud2.executor.api.groups.template.backend.TemplateBackendManager;
-import systems.reformcloud.reformcloud2.executor.api.io.IOUtils;
 import systems.reformcloud.reformcloud2.executor.api.language.LanguageManager;
-import systems.reformcloud.reformcloud2.executor.api.language.loading.LanguageLoader;
 import systems.reformcloud.reformcloud2.executor.api.logger.CloudLogger;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.manager.ChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.network.packet.PacketProvider;
 import systems.reformcloud.reformcloud2.executor.api.network.packet.query.QueryManager;
 import systems.reformcloud.reformcloud2.executor.api.network.server.NetworkServer;
 import systems.reformcloud.reformcloud2.executor.api.node.NodeInformation;
-import systems.reformcloud.reformcloud2.executor.api.process.running.RunningProcess;
-import systems.reformcloud.reformcloud2.executor.api.process.running.manager.SharedRunningProcessManager;
 import systems.reformcloud.reformcloud2.executor.api.provider.*;
 import systems.reformcloud.reformcloud2.executor.api.registry.service.ServiceRegistry;
-import systems.reformcloud.reformcloud2.executor.api.task.Task;
 import systems.reformcloud.reformcloud2.executor.api.utility.NetworkAddress;
-import systems.reformcloud.reformcloud2.executor.api.utility.list.Streams;
-import systems.reformcloud.reformcloud2.executor.api.utility.thread.AbsoluteThread;
 import systems.reformcloud.reformcloud2.node.application.DefaultApplicationLoader;
 import systems.reformcloud.reformcloud2.node.commands.*;
 import systems.reformcloud.reformcloud2.node.config.NodeConfig;
 import systems.reformcloud.reformcloud2.node.config.NodeExecutorConfig;
 import systems.reformcloud.reformcloud2.node.console.DefaultNodeConsole;
 import systems.reformcloud.reformcloud2.node.database.H2DatabaseProvider;
+import systems.reformcloud.reformcloud2.node.factory.DefaultProcessFactoryController;
+import systems.reformcloud.reformcloud2.node.factory.ProcessFactoryController;
+import systems.reformcloud.reformcloud2.node.group.DefaultNodeMainGroupProvider;
+import systems.reformcloud.reformcloud2.node.group.DefaultNodeProcessGroupProvider;
+import systems.reformcloud.reformcloud2.node.messaging.DefaultNodeChannelMessageProvider;
 import systems.reformcloud.reformcloud2.node.network.NodeEndpointChannelReader;
 import systems.reformcloud.reformcloud2.node.network.NodeNetworkClient;
+import systems.reformcloud.reformcloud2.node.player.DefaultNodePlayerProvider;
+import systems.reformcloud.reformcloud2.node.process.DefaultNodeLocalProcessWrapper;
 import systems.reformcloud.reformcloud2.node.process.DefaultNodeProcessProvider;
 import systems.reformcloud.reformcloud2.node.provider.DefaultNodeNodeInformationProvider;
 import systems.reformcloud.reformcloud2.node.tick.CloudTickWorker;
@@ -74,7 +73,7 @@ import systems.reformcloud.reformcloud2.shared.registry.service.DefaultServiceRe
 
 import java.io.File;
 import java.net.InetSocketAddress;
-import java.nio.file.Paths;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicLong;
@@ -85,16 +84,25 @@ public final class NodeExecutor extends ExecutorAPI {
 
     private final NetworkServer networkServer = new DefaultNetworkServer();
     private final NodeNetworkClient networkClient = new NodeNetworkClient();
+
     private final NodeExecutorConfig nodeExecutorConfig = new NodeExecutorConfig();
+    private NodeConfig nodeConfig;
+
     private final ServiceRegistry serviceRegistry = new DefaultServiceRegistry();
-    private final NodeInformationProvider nodeInformationProvider = new DefaultNodeNodeInformationProvider();
     private final DefaultNodeProcessProvider processProvider = new DefaultNodeProcessProvider();
+    private final PlayerProvider playerProvider = new DefaultNodePlayerProvider();
+    private final ChannelMessageProvider channelMessageProvider = new DefaultNodeChannelMessageProvider();
+    private final DefaultNodeMainGroupProvider mainGroupProvider;
+    private final DefaultNodeProcessGroupProvider processGroupProvider;
+    private NodeInformationProvider nodeInformationProvider;
+
     private final TickedTaskScheduler taskScheduler = new TickedTaskScheduler();
     private final CloudTickWorker cloudTickWorker = new CloudTickWorker(this.taskScheduler);
 
-    private NodeConfig nodeConfig;
     private DefaultNodeConsole console;
     private CloudLogger logger;
+
+    private NodeInformation currentNodeInformation;
 
     NodeExecutor() {
         Conditions.isTrue(new File(".").getAbsolutePath().indexOf('!') == -1, "Cannot run ReformCloud in directory with ! in path.");
@@ -111,6 +119,9 @@ public final class NodeExecutor extends ExecutorAPI {
         }, "Shutdown-Hook"));
 
         this.registerDefaultServices();
+
+        this.mainGroupProvider = new DefaultNodeMainGroupProvider(System.getProperty("systems.reformcloud.main-group-dir", "reformcloud/groups/main"));
+        this.processGroupProvider = new DefaultNodeProcessGroupProvider(System.getProperty("systems.reformcloud.sub-group-dir", "reformcloud/groups/sub"));
         this.bootstrap();
     }
 
@@ -122,7 +133,7 @@ public final class NodeExecutor extends ExecutorAPI {
     @NotNull
     @Override
     public ChannelMessageProvider getChannelMessageProvider() {
-        return null;
+        return this.channelMessageProvider;
     }
 
     @NotNull
@@ -134,7 +145,7 @@ public final class NodeExecutor extends ExecutorAPI {
     @NotNull
     @Override
     public MainGroupProvider getMainGroupProvider() {
-        return null;
+        return this.mainGroupProvider;
     }
 
     @NotNull
@@ -146,13 +157,13 @@ public final class NodeExecutor extends ExecutorAPI {
     @NotNull
     @Override
     public PlayerProvider getPlayerProvider() {
-        return null;
+        return this.playerProvider;
     }
 
     @NotNull
     @Override
     public ProcessGroupProvider getProcessGroupProvider() {
-        return null;
+        return this.processGroupProvider;
     }
 
     @NotNull
@@ -183,6 +194,14 @@ public final class NodeExecutor extends ExecutorAPI {
 
         this.nodeExecutorConfig.init();
         this.nodeConfig = this.nodeExecutorConfig.getNodeConfig();
+        this.nodeInformationProvider = new DefaultNodeNodeInformationProvider(this.currentNodeInformation = new NodeInformation(
+                this.nodeConfig.getName(),
+                this.nodeConfig.getUniqueID(),
+                System.currentTimeMillis(),
+                0L,
+                this.nodeConfig.getMaxMemory(),
+                Collections.emptyList()
+        ));
 
         TemplateBackendManager.registerDefaults();
 
@@ -229,7 +248,6 @@ public final class NodeExecutor extends ExecutorAPI {
         }
 
         this.loadCommands();
-        this.sendGroups();
         this.cloudTickWorker.startTick();
     }
 
@@ -239,100 +257,6 @@ public final class NodeExecutor extends ExecutorAPI {
 
     public NodeExecutorConfig getNodeExecutorConfig() {
         return this.nodeExecutorConfig;
-    }
-
-    public void shutdown() throws Exception {
-        if (running) {
-            running = false;
-        } else {
-            return;
-        }
-
-        System.out.println(LanguageManager.get("runtime-try-shutdown"));
-
-        OnlinePercentCheckerTask.stop();
-        DefaultTaskScheduler.INSTANCE.shutdown();
-        CommonHelper.SCHEDULED_EXECUTOR_SERVICE.shutdownNow();
-        CommonHelper.EXECUTOR.shutdownNow();
-        Task.EXECUTOR.shutdownNow();
-
-        this.clusterSyncManager.disconnectFromCluster();
-
-        this.networkServer.closeAll();
-        this.networkClient.disconnect();
-        this.webServer.close();
-
-        this.nodeNetworkManager.close();
-        SharedRunningProcessManager.shutdownAll();
-
-        this.database.disconnect();
-        this.applicationLoader.disableApplications();
-
-        IOUtils.deleteDirectory(Paths.get("reformcloud/temp"));
-        this.loggerBase.close();
-    }
-
-    public void reload(boolean informCluster) {
-        final long current = System.currentTimeMillis();
-        System.out.println(LanguageManager.get("runtime-try-reload"));
-
-        OnlinePercentCheckerTask.stop();
-
-        this.applicationLoader.disableApplications();
-
-        this.commandManager.unregisterAll();
-        this.packetProvider.clearHandlers();
-
-        this.clusterSyncManager.getProcessGroups().clear();
-        this.clusterSyncManager.getMainGroups().clear();
-
-        this.applicationLoader.detectApplications();
-        this.applicationLoader.installApplications();
-
-        LanguageLoader.doReload();
-
-        this.nodeConfig = this.nodeExecutorConfig.reload();
-        this.clusterSyncManager.syncSelfInformation();
-
-        this.clusterSyncManager.getProcessGroups().addAll(this.nodeExecutorConfig.getProcessGroups());
-        this.clusterSyncManager.getMainGroups().addAll(this.nodeExecutorConfig.getMainGroups());
-
-        this.localAutoStartupHandler.update();
-
-        this.applicationLoader.loadApplications();
-
-        this.sendGroups();
-        this.loadCommands();
-        this.loadPacketHandlers();
-
-        this.applicationLoader.enableApplications();
-
-        if (informCluster) {
-            this.clusterSyncManager.doClusterReload();
-        }
-
-        OnlinePercentCheckerTask.start();
-        System.out.println(LanguageManager.get("runtime-reload-done", Long.toString(System.currentTimeMillis() - current)));
-    }
-
-    private void awaitConnectionsAndUpdate() {
-        CommonHelper.EXECUTOR.execute(() -> {
-            while (!this.clusterSyncManager.isConnectedAndSyncWithCluster()) {
-                AbsoluteThread.sleep(100);
-            }
-
-            AbsoluteThread.sleep(100);
-            if (this.nodeNetworkManager.getCluster().isSelfNodeHead()) {
-                return;
-            }
-
-            this.clusterSyncManager.syncProcessGroups(
-                    this.nodeExecutorConfig.getProcessGroups(), SyncAction.SYNC
-            );
-            this.clusterSyncManager.syncMainGroups(
-                    this.nodeExecutorConfig.getMainGroups(), SyncAction.SYNC
-            );
-        });
     }
 
     private void loadCommands() {
@@ -358,43 +282,11 @@ public final class NodeExecutor extends ExecutorAPI {
         return this.cloudTickWorker;
     }
 
-    public void sync(String name) {
-        Task.EXECUTOR.execute(() -> {
-            while (DefaultChannelManager.INSTANCE.get(name).isEmpty()) {
-                AbsoluteThread.sleep(20);
-            }
-
-            this.clusterSyncManager.syncMainGroups(this.nodeExecutorConfig.getMainGroups(), SyncAction.SYNC);
-            this.clusterSyncManager.syncProcessGroups(this.nodeExecutorConfig.getProcessGroups(), SyncAction.SYNC);
-            this.clusterSyncManager.syncProcessInformation(Streams.allOf(
-                    this.nodeNetworkManager.getNodeProcessHelper().getClusterProcesses(),
-                    e -> this.nodeNetworkManager.getNodeProcessHelper().isLocal(e.getProcessDetail().getProcessUniqueID())
-            ));
-        });
-    }
-
-    private void sendGroups() {
-        this.nodeExecutorConfig.getMainGroups().forEach(mainGroup -> System.out.println(LanguageManager.get("loading-main-group", mainGroup.getName())));
-        this.nodeExecutorConfig.getProcessGroups().forEach(processGroup -> System.out.println(LanguageManager.get("loading-process-group", processGroup.getName())));
-    }
-
-    public void handleChannelDisconnect(@NotNull PacketSender packetSender) {
-        NodeInformation information = this.nodeNetworkManager.getCluster().getNode(packetSender.getName());
-        if (information == null) {
-            this.nodeNetworkManager.getNodeProcessHelper().handleProcessDisconnect(packetSender.getName());
-        } else {
-            this.nodeNetworkManager.getCluster().getClusterManager().handleNodeDisconnect(
-                    this.nodeNetworkManager.getCluster(),
-                    packetSender.getName()
-            );
-        }
-    }
-
     public boolean canStartProcesses(int neededMemory) {
         AtomicLong atomicLong = new AtomicLong(neededMemory);
-        for (RunningProcess allProcess : SharedRunningProcessManager.getAllProcesses()) {
-            if (allProcess.getProcess().isPresent()) {
-                atomicLong.addAndGet(allProcess.getProcessInformation().getProcessDetail().getMaxMemory());
+        for (DefaultNodeLocalProcessWrapper processWrapper : this.processProvider.getProcessWrappers()) {
+            if (processWrapper.isStarted()) {
+                atomicLong.addAndGet(processWrapper.getProcessInformation().getProcessDetail().getMaxMemory());
             }
         }
 
@@ -402,8 +294,8 @@ public final class NodeExecutor extends ExecutorAPI {
             return false;
         }
 
-        double cpuUsageSystem = CommonHelper.operatingSystemMXBean().getSystemCpuLoad() * 100;
-        return cpuUsageSystem < this.nodeConfig.getMaxSystemCpuUsage();
+        double cpuUsageSystem = CommonHelper.operatingSystemMXBean().getSystemCpuLoad();
+        return cpuUsageSystem <= 0 || cpuUsageSystem * 100 < this.nodeConfig.getMaxSystemCpuUsage();
     }
 
     public static boolean isRunning() {
@@ -422,14 +314,16 @@ public final class NodeExecutor extends ExecutorAPI {
         this.serviceRegistry.setProvider(ChannelManager.class, new DefaultChannelManager(), false, true);
         this.serviceRegistry.setProvider(PacketProvider.class, new DefaultPacketProvider(), false, true);
         this.serviceRegistry.setProvider(QueryManager.class, new DefaultQueryManager(), false, true);
+        this.serviceRegistry.setProvider(ProcessFactoryController.class, new DefaultProcessFactoryController(this.processProvider), false, true);
     }
 
-    public @NotNull NodeInformation createNodeInformation() {
-        return null; // todo
+    public @NotNull NodeInformation updateCurrentNodeInformation() {
+        this.currentNodeInformation.update();
+        return this.currentNodeInformation;
     }
 
     public @NotNull NodeInformation getCurrentNodeInformation() {
-        return null; // todo
+        return this.currentNodeInformation;
     }
 
     public @NotNull NetworkAddress getAnyAddress() {
@@ -443,6 +337,6 @@ public final class NodeExecutor extends ExecutorAPI {
     }
 
     public boolean isOwnIdentity(@NotNull String name) {
-        return false; // todo
+        return this.nodeConfig.getName().equals(name);
     }
 }

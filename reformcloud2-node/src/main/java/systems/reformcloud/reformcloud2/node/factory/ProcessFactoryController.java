@@ -22,33 +22,21 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.wrappers;
+package systems.reformcloud.reformcloud2.node.factory;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.utility.list.Duo;
 
 import java.util.Optional;
-import java.util.UUID;
 
-public interface PlayerWrapper {
+public interface ProcessFactoryController {
 
-    /* left (<-) proxy process, right (->) server process */
-    @NotNull
-    Optional<Duo<UUID, UUID>> getPlayerProcess();
+    void registerProcessFactory(@NotNull ProcessFactory factory);
 
-    void sendMessage(@NotNull String message);
+    void unregisterFactory(@NotNull ProcessFactory factory);
 
-    void disconnect(@NotNull String kickReason);
+    void unregisterFactoryByName(@NotNull String name);
 
-    void playSound(@NotNull String sound, float volume, float pitch);
+    @NotNull Optional<ProcessFactory> getProcessFactoryByName(@NotNull String name);
 
-    void sendTitle(@NotNull String title, @NotNull String subTitle, int fadeIn, int stay, int fadeOut);
-
-    void playEffect(@NotNull String effect);
-
-    void setLocation(@NotNull String world, double x, double y, double z, float yaw, float pitch);
-
-    void connect(@NotNull String server);
-
-    void connect(@NotNull UUID otherPlayer);
+    @NotNull ProcessFactory getDefaultProcessFactory();
 }

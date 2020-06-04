@@ -22,20 +22,20 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.process.util;
+package systems.reformcloud.reformcloud2.node.factory;
 
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.groups.template.RuntimeConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.groups.template.Template;
 
-public final class MemoryCalculator {
+final class MemoryCalculator {
 
     private MemoryCalculator() {
         throw new UnsupportedOperationException();
     }
 
-    public static int calcMemory(@NotNull String group, @NotNull Template template) {
+    static int calcMemory(@NotNull String group, @NotNull Template template) {
         RuntimeConfiguration configuration = template.getRuntimeConfiguration();
         if (configuration.getMaxMemory() < 0 || configuration.getDynamicMemory() < 0) {
             return configuration.getMaxMemory() < 0 ? 512 : configuration.getMaxMemory();
@@ -45,7 +45,7 @@ public final class MemoryCalculator {
             return configuration.getMaxMemory();
         }
 
-        int online = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcesses(group).size();
+        int online = ExecutorAPI.getInstance().getProcessProvider().getProcessesByProcessGroup(group).size();
         if (online > 9) {
             return configuration.getMaxMemory();
         }

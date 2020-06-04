@@ -27,6 +27,7 @@ package systems.reformcloud.reformcloud2.node.cluster;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
+import systems.reformcloud.reformcloud2.executor.api.base.Conditions;
 import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.groups.MainGroup;
 import systems.reformcloud.reformcloud2.executor.api.groups.ProcessGroup;
@@ -35,12 +36,15 @@ import systems.reformcloud.reformcloud2.executor.api.network.channel.manager.Cha
 import systems.reformcloud.reformcloud2.executor.api.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.api.node.NodeInformation;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
+import systems.reformcloud.reformcloud2.executor.api.process.ProcessState;
 import systems.reformcloud.reformcloud2.executor.api.process.api.ProcessInclusion;
 import systems.reformcloud.reformcloud2.executor.api.task.Task;
 import systems.reformcloud.reformcloud2.executor.api.wrappers.ProcessWrapper;
 import systems.reformcloud.reformcloud2.node.NodeExecutor;
+import systems.reformcloud.reformcloud2.node.access.ClusterAccessController;
 import systems.reformcloud.reformcloud2.node.group.DefaultNodeMainGroupProvider;
 import systems.reformcloud.reformcloud2.node.group.DefaultNodeProcessGroupProvider;
+import systems.reformcloud.reformcloud2.node.process.DefaultNodeLocalProcessWrapper;
 import systems.reformcloud.reformcloud2.node.process.DefaultNodeProcessProvider;
 import systems.reformcloud.reformcloud2.node.protocol.*;
 import systems.reformcloud.reformcloud2.node.provider.DefaultNodeNodeInformationProvider;
@@ -48,6 +52,7 @@ import systems.reformcloud.reformcloud2.protocol.api.*;
 
 import java.util.Collection;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 public class DefaultClusterManager implements ClusterManager {
 
@@ -69,8 +74,12 @@ public class DefaultClusterManager implements ClusterManager {
     private NodeInformation head;
 
     @Override
-    public @NotNull Task<ProcessWrapper> createProcess(@NotNull ProcessGroup processGroup, @Nullable String node, @Nullable String displayName, @Nullable String messageOfTheDay, @Nullable Template template, @NotNull Collection<ProcessInclusion> inclusions, @NotNull JsonConfiguration jsonConfiguration, @NotNull UUID uniqueId, int memory, int id, int maxPlayers) {
-        return null;
+    public @NotNull Task<ProcessWrapper> createProcess(@NotNull ProcessGroup processGroup, @Nullable String node, @Nullable String displayName, @Nullable String messageOfTheDay, @Nullable Template template, @NotNull Collection<ProcessInclusion> inclusions, @NotNull JsonConfiguration jsonConfiguration, @NotNull ProcessState initialState, @NotNull UUID uniqueId, int memory, int id, int maxPlayers, @Nullable String targetProcessFactory) {
+        Task<ProcessInformation> task = ClusterAccessController.createProcessPrivileged(processGroup, node, displayName, messageOfTheDay, template, inclusions, jsonConfiguration, initialState, uniqueId, memory, id, maxPlayers, targetProcessFactory);
+        return Task.supply(() -> {
+            ProcessInformation result = task.getUninterruptedly(TimeUnit.SECONDS, 10);
+            return result == null ? null : new DefaultNodeLocalProcessWrapper(result);
+        });
     }
 
     @Override
@@ -261,10 +270,7 @@ public class DefaultClusterManager implements ClusterManager {
 
     private void updateHead() {
         Collection<NodeInformation> nodes = ExecutorAPI.getInstance().getNodeInformationProvider().getNodes();
-        if (nodes.isEmpty()) {
-            this.head = NodeExecutor.getInstance().createNodeInformation();
-            return;
-        }
+        Conditions.isTrue(nodes.size() > 0, "All node information were unregistered");
 
         for (NodeInformation node : nodes) {
             if (node.getStartupTime() < this.head.getStartupTime()) {

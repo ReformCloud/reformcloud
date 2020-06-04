@@ -33,13 +33,14 @@ import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.provider.ProcessProvider;
 import systems.reformcloud.reformcloud2.executor.api.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.wrappers.ProcessWrapper;
+import systems.reformcloud.reformcloud2.node.NodeExecutor;
 
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public final class DefaultNodeProcessProvider implements ProcessProvider {
 
-    private final Collection<DefaultNodeProcessWrapper> processes = new CopyOnWriteArrayList<>();
+    private final Collection<DefaultNodeRemoteProcessWrapper> processes = new CopyOnWriteArrayList<>();
 
     @NotNull
     @Override
@@ -50,11 +51,6 @@ public final class DefaultNodeProcessProvider implements ProcessProvider {
     @NotNull
     @Override
     public Optional<ProcessWrapper> getProcessByUniqueId(@NotNull UUID uniqueId) {
-        return Optional.ofNullable(Streams.filter(this.processes, process -> process.getProcessInformation().getProcessDetail().getProcessUniqueID().equals(uniqueId)));
-    }
-
-    @NotNull
-    public Optional<DefaultNodeProcessWrapper> getProcess(@NotNull UUID uniqueId) {
         return Optional.ofNullable(Streams.filter(this.processes, process -> process.getProcessInformation().getProcessDetail().getProcessUniqueID().equals(uniqueId)));
     }
 
@@ -122,7 +118,7 @@ public final class DefaultNodeProcessProvider implements ProcessProvider {
 
     @Override
     public void updateProcessInformation(@NotNull ProcessInformation processInformation) {
-        DefaultNodeProcessWrapper old = Streams.filter(
+        DefaultNodeRemoteProcessWrapper old = Streams.filter(
                 this.processes,
                 process -> process.getProcessInformation().getProcessDetail().getProcessUniqueID().equals(processInformation.getProcessDetail().getProcessUniqueID())
         );
@@ -132,10 +128,25 @@ public final class DefaultNodeProcessProvider implements ProcessProvider {
     }
 
     public void registerProcess(@NotNull ProcessInformation processInformation) {
-        this.processes.add(new DefaultNodeProcessWrapper(processInformation));
+        if (processInformation.getProcessDetail().getParentUniqueID().equals(NodeExecutor.getInstance().getNodeConfig().getUniqueID())) {
+            this.processes.add(new DefaultNodeLocalProcessWrapper(processInformation));
+        } else {
+            this.processes.add(new DefaultNodeRemoteProcessWrapper(processInformation));
+        }
     }
 
     public void unregisterProcess(@NotNull String name) {
         this.processes.removeIf(process -> process.getProcessInformation().getProcessDetail().getName().equals(name));
+    }
+
+    public @NotNull Collection<DefaultNodeLocalProcessWrapper> getProcessWrappers() {
+        Collection<DefaultNodeLocalProcessWrapper> wrappers = new CopyOnWriteArrayList<>();
+        for (DefaultNodeRemoteProcessWrapper process : this.processes) {
+            if (process instanceof DefaultNodeLocalProcessWrapper) {
+                wrappers.add((DefaultNodeLocalProcessWrapper) process);
+            }
+        }
+
+        return wrappers;
     }
 }

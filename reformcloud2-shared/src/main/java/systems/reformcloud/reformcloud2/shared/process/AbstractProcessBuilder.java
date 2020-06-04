@@ -25,6 +25,7 @@
 package systems.reformcloud.reformcloud2.shared.process;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.builder.ProcessBuilder;
 import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.groups.ProcessGroup;
@@ -46,6 +47,7 @@ public abstract class AbstractProcessBuilder implements ProcessBuilder {
     protected String node;
     protected String displayName;
     protected String messageOfTheDay;
+    protected String targetProcessFactory;
 
     protected ProcessGroup processGroup;
     protected Template template;
@@ -57,6 +59,13 @@ public abstract class AbstractProcessBuilder implements ProcessBuilder {
     protected int memory = -1;
     protected int id = -1;
     protected int maxPlayers = -1;
+
+    @NotNull
+    @Override
+    public ProcessBuilder targetProcessFactory(@Nullable String targetProcessFactory) {
+        this.targetProcessFactory = targetProcessFactory;
+        return this;
+    }
 
     @NotNull
     @Override

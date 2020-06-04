@@ -27,7 +27,6 @@ package systems.reformcloud.reformcloud2.node.process;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnmodifiableView;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.groups.template.Template;
 import systems.reformcloud.reformcloud2.executor.api.groups.template.Version;
 import systems.reformcloud.reformcloud2.executor.api.groups.template.backend.TemplateBackendManager;
 import systems.reformcloud.reformcloud2.executor.api.io.IOUtils;
@@ -37,7 +36,6 @@ import systems.reformcloud.reformcloud2.executor.api.process.api.ProcessInclusio
 import systems.reformcloud.reformcloud2.executor.api.utility.StringUtil;
 import systems.reformcloud.reformcloud2.executor.api.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.utility.process.JavaProcessHelper;
-import systems.reformcloud.reformcloud2.executor.api.wrappers.ProcessWrapper;
 
 import java.io.File;
 import java.io.IOException;
@@ -50,13 +48,13 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
-public final class DefaultNodeProcessWrapper implements ProcessWrapper {
+public class DefaultNodeLocalProcessWrapper extends DefaultNodeRemoteProcessWrapper {
 
     private static final String LIB_PATH = Paths.get("").toAbsolutePath().toString();
     private static final String[] DEFAULT_SHUTDOWN_COMMANDS = new String[]{"end", "stop"};
 
-    public DefaultNodeProcessWrapper(ProcessInformation processInformation) {
-        this.processInformation = processInformation;
+    public DefaultNodeLocalProcessWrapper(ProcessInformation processInformation) {
+        super(processInformation);
 
         this.path = processInformation.getProcessGroup().isStaticProcess()
                 ? Paths.get("reformcloud/static", processInformation.getProcessDetail().getName())
@@ -71,25 +69,8 @@ public final class DefaultNodeProcessWrapper implements ProcessWrapper {
     private final Path path;
     private final boolean firstStart;
 
-    private ProcessInformation processInformation;
     private ProcessState runtimeState;
     private Process process;
-
-    @NotNull
-    @Override
-    public ProcessInformation getProcessInformation() {
-        return this.processInformation;
-    }
-
-    void setProcessInformation(@NotNull ProcessInformation information) {
-        this.processInformation = information;
-    }
-
-    @NotNull
-    @Override
-    public Optional<ProcessInformation> requestProcessInformation() {
-        return Optional.of(this.processInformation);
-    }
 
     @NotNull
     @Override
@@ -100,7 +81,7 @@ public final class DefaultNodeProcessWrapper implements ProcessWrapper {
     @NotNull
     @Override
     public Optional<String> uploadLog() {
-        return Optional.empty(); // todo
+        return ProcessUtil.uploadLog(this.getLastLogLines());
     }
 
     @NotNull
@@ -133,20 +114,10 @@ public final class DefaultNodeProcessWrapper implements ProcessWrapper {
     }
 
     @Override
-    public void copy(@NotNull Template template) {
-        this.copy(this.processInformation.getProcessGroup().getName(), template.getName(), template.getBackend());
-    }
-
-    @Override
-    public void copy(@NotNull String path) {
-    }
-
-    @Override
-    public void copy(@NotNull String templateGroup, @NotNull String templateName) {
-    }
-
-    @Override
     public void copy(@NotNull String templateGroup, @NotNull String templateName, @NotNull String templateBackend) {
+        TemplateBackendManager.get(templateBackend).ifPresent(
+                backend -> backend.deployTemplate(templateGroup, templateName, this.path)
+        );
     }
 
     private void callRuntimeStateUpdate() {
@@ -176,7 +147,7 @@ public final class DefaultNodeProcessWrapper implements ProcessWrapper {
     }
 
     private void prepare() {
-        EnvironmentBuilder.constructEnvFor(this, this.firstStart);
+        EnvironmentBuilder.constructEnvFor(this, this.firstStart, this.connectionKey);
     }
 
     private void start() {
@@ -229,6 +200,7 @@ public final class DefaultNodeProcessWrapper implements ProcessWrapper {
 
     private void stop(boolean finalStop) {
         JavaProcessHelper.shutdown(this.process, true, true, TimeUnit.SECONDS.toDays(5), this.getShutdownCommands());
+        this.process = null;
 
         if (finalStop) {
             if (this.processInformation.getProcessDetail().getTemplate().isAutoReleaseOnClose()) {
@@ -265,5 +237,9 @@ public final class DefaultNodeProcessWrapper implements ProcessWrapper {
         } catch (final IOException ex) {
             return false;
         }
+    }
+
+    public boolean isStarted() {
+        return this.process != null;
     }
 }

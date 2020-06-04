@@ -27,6 +27,7 @@ package systems.reformcloud.reformcloud2.executor.api.wrappers;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnmodifiableView;
 import systems.reformcloud.reformcloud2.executor.api.groups.template.Template;
+import systems.reformcloud.reformcloud2.executor.api.groups.template.backend.basic.FileTemplateBackend;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessState;
 import systems.reformcloud.reformcloud2.executor.api.task.Task;
@@ -38,9 +39,6 @@ public interface ProcessWrapper {
 
     @NotNull
     ProcessInformation getProcessInformation();
-
-    @NotNull
-    Optional<ProcessInformation> requestProcessInformation();
 
     @NotNull
     Optional<ProcessInformation> requestProcessInformationUpdate();
@@ -55,22 +53,19 @@ public interface ProcessWrapper {
 
     void setRuntimeState(@NotNull ProcessState state);
 
-    void copy(@NotNull Template template);
+    default void copy(@NotNull Template template) {
+        this.copy(this.getProcessInformation().getProcessGroup().getName(), template.getName());
+    }
 
-    void copy(@NotNull String path);
-
-    void copy(@NotNull String templateGroup, @NotNull String templateName);
+    default void copy(@NotNull String templateGroup, @NotNull String templateName) {
+        this.copy(templateGroup, templateName, FileTemplateBackend.NAME);
+    }
 
     void copy(@NotNull String templateGroup, @NotNull String templateName, @NotNull String templateBackend);
 
     @NotNull
     default Task<ProcessInformation> getProcessInformationAsync() {
         return Task.supply(this::getProcessInformation);
-    }
-
-    @NotNull
-    default Task<Optional<ProcessInformation>> requestProcessInformationAsync() {
-        return Task.supply(this::requestProcessInformation);
     }
 
     @NotNull
@@ -108,14 +103,6 @@ public interface ProcessWrapper {
     default Task<Void> copyAsync(@NotNull Template template) {
         return Task.supply(() -> {
             this.copy(template);
-            return null;
-        });
-    }
-
-    @NotNull
-    default Task<Void> copyAsync(@NotNull String path) {
-        return Task.supply(() -> {
-            this.copy(path);
             return null;
         });
     }
