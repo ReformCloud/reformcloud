@@ -25,17 +25,13 @@
 package systems.reformcloud.reformcloud2.node.config;
 
 import com.google.gson.reflect.TypeToken;
-import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
-import systems.reformcloud.reformcloud2.executor.api.node.NodeInformation;
 import systems.reformcloud.reformcloud2.executor.api.utility.NetworkAddress;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 public final class NodeConfig {
 
@@ -95,19 +91,6 @@ public final class NodeConfig {
 
     public List<NetworkAddress> getClusterNodes() {
         return this.clusterNodes;
-    }
-
-    @NotNull
-    @Contract(" -> new")
-    NodeInformation prepare() {
-        return new NodeInformation(
-                this.name,
-                this.uniqueID,
-                System.currentTimeMillis(),
-                0L,
-                this.maxMemory,
-                new CopyOnWriteArrayList<>()
-        );
     }
 
     public void save() {

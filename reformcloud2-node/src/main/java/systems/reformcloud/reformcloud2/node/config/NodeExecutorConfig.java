@@ -32,9 +32,12 @@ import systems.reformcloud.reformcloud2.executor.api.groups.setup.GroupSetupHelp
 import systems.reformcloud.reformcloud2.executor.api.groups.setup.GroupSetupVersion;
 import systems.reformcloud.reformcloud2.executor.api.io.IOUtils;
 import systems.reformcloud.reformcloud2.executor.api.language.LanguageManager;
-import systems.reformcloud.reformcloud2.executor.api.node.NodeInformation;
+import systems.reformcloud.reformcloud2.executor.api.utility.NetworkAddress;
 import systems.reformcloud.reformcloud2.executor.api.utility.StringUtil;
 import systems.reformcloud.reformcloud2.node.NodeExecutor;
+import systems.reformcloud.reformcloud2.node.setup.DefaultSetup;
+import systems.reformcloud.reformcloud2.node.setup.DefaultSetupQuestion;
+import systems.reformcloud.reformcloud2.node.setup.Setup;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -61,7 +64,7 @@ public final class NodeExecutorConfig {
     );
 
     private final Setup setup = new DefaultSetup();
-    private NodeInformation self;
+
     private NodeConfig nodeConfig;
     private String connectionKey;
     private IngameMessages ingameMessages;
@@ -74,76 +77,79 @@ public final class NodeExecutorConfig {
             AtomicInteger networkPort = new AtomicInteger();
             AtomicInteger httpPort = new AtomicInteger();
             AtomicBoolean runClusterSetup = new AtomicBoolean(false);
-            List<NodeConfig.NetworkAddress> clusterNodes = new ArrayList<>();
+            List<NetworkAddress> clusterNodes = new ArrayList<>();
 
             this.setup.addQuestion(new DefaultSetupQuestion(
-                    LanguageManager.get("node-setup-question-node-name"),
-                    "",
-                    s -> true,
-                    e -> {
-                        String name = e;
-                        if (e.trim().equals("null")) {
-                            name = "Node-" + UUID.randomUUID().toString().split("-")[0];
+                    setupAnswer -> {
+                        if (setupAnswer.getOriginalAnswer().equalsIgnoreCase("null")) {
+                            nodeName.set("Node-" + UUID.randomUUID().toString().split("-")[0]);
+                        } else {
+                            nodeName.set(setupAnswer.getOriginalAnswer());
                         }
 
-                        nodeName.set(name);
-                    }
+                        return true;
+                    },
+                    "",
+                    LanguageManager.get("node-setup-question-node-name")
             )).addQuestion(new DefaultSetupQuestion(
-                    LanguageManager.get("node-setup-question-node-address"),
+                    setupAnswer -> {
+                        String address = CommonHelper.getIpAddress(setupAnswer.getOriginalAnswer());
+                        if (address != null) {
+                            networkAddress.set(address);
+                        }
+
+                        return address != null;
+                    },
                     LanguageManager.get("node-setup-question-node-address-wrong"),
-                    e -> CommonHelper.getIpAddress(e.trim()) != null,
-                    e -> networkAddress.set(CommonHelper.getIpAddress(e.trim()))
+                    LanguageManager.get("node-setup-question-node-address")
             )).addQuestion(new DefaultSetupQuestion(
-                    LanguageManager.get("node-setup-question-node-network-port"),
-                    LanguageManager.get("node-setup-question-integer", 0, 65535),
-                    e -> {
-                        Integer integer = CommonHelper.fromString(e);
-                        return integer != null && integer > 0 && integer < 65535;
-                    },
-                    e -> {
-                        Integer integer = CommonHelper.fromString(e);
-                        if (integer == null) {
-                            throw new RuntimeException(e);
+                    setupAnswer -> {
+                        Integer port = setupAnswer.getAsInt();
+                        if (port != null && port > 0 && port < 65535) {
+                            networkPort.set(port);
+                            return true;
                         }
 
-                        networkPort.set(integer);
-                    }
-            )).addQuestion(new DefaultSetupQuestion(
-                    LanguageManager.get("node-setup-question-node-web-port"),
-                    LanguageManager.get("node-setup-question-integer", 0, 65535),
-                    e -> {
-                        Integer integer = CommonHelper.fromString(e);
-                        return integer != null && integer > 0 && integer < 65535;
+                        return false;
                     },
-                    e -> {
-                        Integer integer = CommonHelper.fromString(e);
-                        if (integer == null) {
-                            throw new RuntimeException(e);
+                    LanguageManager.get("node-setup-question-integer", 0, 65535),
+                    LanguageManager.get("node-setup-question-node-network-port")
+            )).addQuestion(new DefaultSetupQuestion(
+                    setupAnswer -> {
+                        Integer webPort = setupAnswer.getAsInt();
+                        if (webPort != null && webPort > 0 && webPort < 65535) {
+                            httpPort.set(webPort);
+                            return true;
                         }
 
-                        httpPort.set(integer);
-                    }
+                        return false;
+                    },
+                    LanguageManager.get("node-setup-question-integer", 0, 65535),
+                    LanguageManager.get("node-setup-question-node-web-port")
             )).addQuestion(new DefaultSetupQuestion(
-                    LanguageManager.get("node-setup-question-connection-key"),
+                    setupAnswer -> {
+                        String key = setupAnswer.getOriginalAnswer();
+                        if (setupAnswer.getOriginalAnswer().equalsIgnoreCase("gen")) {
+                            key = StringUtil.generateString(16);
+                        }
+
+                        new JsonConfiguration().add("key", key).write("reformcloud/files/.connection/connection.json");
+                        return true;
+                    },
                     "",
-                    s -> true,
-                    s -> {
-                        if (s.equalsIgnoreCase("gen")) {
-                            s = StringUtil.generateString(1);
+                    LanguageManager.get("node-setup-question-connection-key")
+            )).addQuestion(new DefaultSetupQuestion(
+                    setupAnswer -> {
+                        Boolean clusterSetup = setupAnswer.getAsBoolean();
+                        if (clusterSetup != null) {
+                            runClusterSetup.set(clusterSetup);
                         }
 
-                        new JsonConfiguration().add("key", s).write("reformcloud/files/.connection/connection.json");
-                    }
-            )).addQuestion(new DefaultSetupQuestion(
-                    LanguageManager.get("node-setup-in-cluster"),
+                        return clusterSetup != null;
+                    },
                     LanguageManager.get("node-setup-question-boolean"),
-                    s -> CommonHelper.booleanFromString(s) != null,
-                    s -> {
-                        if (s.equalsIgnoreCase("true")) {
-                            runClusterSetup.set(true);
-                        }
-                    }
-            )).startSetup(NodeExecutor.getInstance().getLoggerBase());
+                    LanguageManager.get("node-setup-in-cluster")
+            )).runSetup();
 
             if (runClusterSetup.get()) {
                 clusterNodes.addAll(this.runClusterSetup());
@@ -154,24 +160,27 @@ public final class NodeExecutorConfig {
                     UUID.randomUUID(),
                     CommonHelper.calculateMaxMemory(),
                     networkAddress.get(),
-                    new ArrayList<>(Collections.singletonList(new NodeConfig.NetworkAddress(networkAddress.get(), networkPort.get()))),
-                    new ArrayList<>(Collections.singletonList(new NodeConfig.NetworkAddress(networkAddress.get(), httpPort.get()))),
+                    new ArrayList<>(Collections.singletonList(new NetworkAddress(networkAddress.get(), networkPort.get()))),
+                    new ArrayList<>(Collections.singletonList(new NetworkAddress(networkAddress.get(), httpPort.get()))),
                     clusterNodes
             )).write(NodeConfig.PATH);
 
             System.out.println(LanguageManager.get("general-setup-choose-default-installation"));
             GroupSetupHelper.printAvailable();
 
-            String result = NodeExecutor.getInstance().getLoggerBase().readLineNoPrompt();
+            String result = NodeExecutor.getInstance().getConsole().readString();
             while (!result.trim().isEmpty()) {
                 GroupSetupVersion version = GroupSetupHelper.findByName(result);
                 if (version == null) {
                     System.out.println(LanguageManager.get("general-setup-choose-default-installation-wrong"));
-                    result = NodeExecutor.getInstance().getLoggerBase().readLineNoPrompt();
+                    result = NodeExecutor.getInstance().getConsole().readString();
                     continue;
                 }
 
-                version.install(this::handleProcessGroupCreate, this::handleMainGroupCreate);
+                version.install(
+                        NodeExecutor.getInstance().getDefaultProcessGroupProvider()::addProcessGroup,
+                        NodeExecutor.getInstance().getDefaultMainGroupProvider()::addGroup
+                );
                 System.out.println(LanguageManager.get("general-setup-default-installation-done", version.getName()));
                 break;
             }
@@ -181,71 +190,68 @@ public final class NodeExecutorConfig {
 
         this.nodeConfig = JsonConfiguration.read(NodeConfig.PATH).get("config", NodeConfig.TYPE);
         this.ingameMessages = JsonConfiguration.read("reformcloud/configs/messages.json").get("messages", IngameMessages.TYPE);
-        this.self = this.nodeConfig.prepare();
         this.connectionKey = JsonConfiguration.read("reformcloud/files/.connection/connection.json").getOrDefault("key", (String) null);
-        this.loadGroups();
     }
 
     public NodeConfig reload() {
         this.nodeConfig = JsonConfiguration.read(NodeConfig.PATH).get("config", NodeConfig.TYPE);
         this.ingameMessages = JsonConfiguration.read("reformcloud/configs/messages.json").get("messages", IngameMessages.TYPE);
-        this.self.setMaxMemory(this.nodeConfig.getMaxMemory());
         this.connectionKey = JsonConfiguration.read("reformcloud/files/.connection/connection.json").getOrDefault("key", (String) null);
 
         return this.nodeConfig;
     }
 
     @NotNull
-    private Collection<NodeConfig.NetworkAddress> runClusterSetup() {
+    private Collection<NetworkAddress> runClusterSetup() {
         this.setup.clear();
 
         AtomicInteger nodeCount = new AtomicInteger(1);
         this.setup.addQuestion(new DefaultSetupQuestion(
-                LanguageManager.get("node-cluster-setup-node-count"),
-                LanguageManager.get("node-setup-question-integer", 0, 100),
-                s -> {
-                    Integer integer = CommonHelper.fromString(s);
-                    return integer != null && integer > 0 && integer < 100;
-                },
-                s -> {
-                    Integer integer = CommonHelper.fromString(s);
-                    if (integer == null) {
-                        throw new IllegalStateException();
+                setupAnswer -> {
+                    Integer count = setupAnswer.getAsInt();
+                    if (count != null && count > 0 && count < 100) {
+                        nodeCount.set(count);
+                        return true;
                     }
 
-                    nodeCount.set(integer);
-                }
-        )).startSetup(NodeExecutor.getInstance().getLoggerBase());
+                    return false;
+                },
+                LanguageManager.get("node-setup-question-integer", 0, 100),
+                LanguageManager.get("node-cluster-setup-node-count")
+        )).runSetup();
 
         AtomicReference<String> nodeHost = new AtomicReference<>();
-        Collection<NodeConfig.NetworkAddress> out = new ArrayList<>();
+        Collection<NetworkAddress> out = new ArrayList<>();
 
         this.setup.clear();
         this.setup.addQuestion(new DefaultSetupQuestion(
-                LanguageManager.get("node-cluster-setup-new-node-host"),
-                LanguageManager.get("node-setup-question-node-address-wrong"),
-                s -> {
-                    String ipAddress = CommonHelper.getIpAddress(s.trim());
-                    return ipAddress != null && out.stream().noneMatch(e -> e.getHost().equals(ipAddress));
-                },
-                s -> nodeHost.set(CommonHelper.getIpAddress(s.trim()))
-        )).addQuestion(new DefaultSetupQuestion(
-                LanguageManager.get("node-cluster-setup-new-node-port"),
-                LanguageManager.get("node-setup-question-integer", 0, 65535),
-                s -> CommonHelper.fromString(s) != null,
-                s -> {
-                    Integer integer = CommonHelper.fromString(s);
-                    if (integer == null) {
-                        throw new IllegalStateException();
+                setupAnswer -> {
+                    String address = CommonHelper.getIpAddress(setupAnswer.getOriginalAnswer());
+                    if (address != null) {
+                        nodeHost.set(address);
                     }
 
-                    out.add(new NodeConfig.NetworkAddress(nodeHost.get(), integer));
-                }
+                    return address != null;
+                },
+                LanguageManager.get("node-setup-question-node-address-wrong"),
+                LanguageManager.get("node-cluster-setup-new-node-host")
+        )).addQuestion(new DefaultSetupQuestion(
+                setupAnswer -> {
+                    Integer nodePort = setupAnswer.getAsInt();
+                    if (nodePort != null && nodePort > 0 && nodePort < 65535) {
+                        out.add(new NetworkAddress(nodeHost.get(), nodePort));
+                        return true;
+                    }
+
+                    return false;
+                },
+                LanguageManager.get("node-setup-question-integer", 0, 65535),
+                LanguageManager.get("node-cluster-setup-new-node-port")
         ));
 
         for (int i = 1; i <= nodeCount.get(); i++) {
             System.out.println(LanguageManager.get("node-cluster-setup-new-node", i));
-            this.setup.startSetup(NodeExecutor.getInstance().getLoggerBase());
+            this.setup.runSetup();
         }
 
         return out;
@@ -253,10 +259,6 @@ public final class NodeExecutorConfig {
 
     private void createDirectories() {
         PATHS.forEach(IOUtils::createDirectory);
-    }
-
-    public NodeInformation getSelf() {
-        return this.self;
     }
 
     public NodeConfig getNodeConfig() {

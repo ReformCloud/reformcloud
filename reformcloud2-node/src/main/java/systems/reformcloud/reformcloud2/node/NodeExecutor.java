@@ -308,6 +308,14 @@ public final class NodeExecutor extends ExecutorAPI {
         return this.console;
     }
 
+    public DefaultNodeMainGroupProvider getDefaultMainGroupProvider() {
+        return this.mainGroupProvider;
+    }
+
+    public DefaultNodeProcessGroupProvider getDefaultProcessGroupProvider() {
+        return this.processGroupProvider;
+    }
+
     private void registerDefaultServices() {
         this.serviceRegistry.setProvider(CommandManager.class, new DefaultCommandManager(), false, true);
         this.serviceRegistry.setProvider(ApplicationLoader.class, new DefaultApplicationLoader(), false, true);
