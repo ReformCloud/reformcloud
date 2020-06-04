@@ -25,12 +25,15 @@
 package systems.reformcloud.reformcloud2.node.group;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
+import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.builder.MainGroupBuilder;
 import systems.reformcloud.reformcloud2.executor.api.groups.MainGroup;
 import systems.reformcloud.reformcloud2.executor.api.provider.MainGroupProvider;
 import systems.reformcloud.reformcloud2.executor.api.registry.io.FileRegistry;
 import systems.reformcloud.reformcloud2.executor.api.utility.list.Streams;
+import systems.reformcloud.reformcloud2.node.cluster.ClusterManager;
 import systems.reformcloud.reformcloud2.shared.registry.io.DefaultFileRegistry;
 
 import java.util.Collection;
@@ -55,20 +58,18 @@ public class DefaultNodeMainGroupProvider implements MainGroupProvider {
 
     @Override
     public void deleteMainGroup(@NotNull String name) {
-        this.getMainGroup(name).ifPresent(group -> {
-            this.fileRegistry.deleteKey(group.getName());
-            this.mainGroups.remove(group);
-        });
+        MainGroup mainGroup = this.deleteMainGroup0(name);
+        if (mainGroup == null) {
+            return;
+        }
+
+        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ClusterManager.class).publishMainGroupDelete(mainGroup);
     }
 
     @Override
     public void updateMainGroup(@NotNull MainGroup mainGroup) {
-        this.getMainGroup(mainGroup.getName()).ifPresent(group -> {
-            this.mainGroups.remove(group);
-            this.mainGroups.add(mainGroup);
-
-            this.fileRegistry.updateKey(mainGroup.getName(), mainGroup);
-        });
+        this.updateMainGroup0(mainGroup);
+        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ClusterManager.class).publishMainGroupUpdate(mainGroup);
     }
 
     @NotNull
@@ -95,7 +96,30 @@ public class DefaultNodeMainGroupProvider implements MainGroupProvider {
     }
 
     public void addGroup(@NotNull MainGroup mainGroup) {
+        this.addGroup0(mainGroup);
+        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ClusterManager.class).publishMainGroupCreate(mainGroup);
+    }
+
+    public void addGroup0(@NotNull MainGroup mainGroup) {
         this.mainGroups.add(mainGroup);
         this.fileRegistry.createKey(mainGroup.getName(), mainGroup);
+    }
+
+    public @Nullable MainGroup deleteMainGroup0(@NotNull String name) {
+        Optional<MainGroup> mainGroup = this.getMainGroup(name);
+        mainGroup.ifPresent(group -> {
+            this.fileRegistry.deleteKey(group.getName());
+            this.mainGroups.remove(group);
+        });
+        return mainGroup.orElse(null);
+    }
+
+    public void updateMainGroup0(@NotNull MainGroup mainGroup) {
+        this.getMainGroup(mainGroup.getName()).ifPresent(group -> {
+            this.mainGroups.remove(group);
+            this.mainGroups.add(mainGroup);
+
+            this.fileRegistry.updateKey(mainGroup.getName(), mainGroup);
+        });
     }
 }

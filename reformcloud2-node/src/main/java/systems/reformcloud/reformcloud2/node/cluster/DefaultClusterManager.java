@@ -156,7 +156,7 @@ public class DefaultClusterManager implements ClusterManager {
 
     @Override
     public void handleProcessGroupCreate(@NotNull ProcessGroup processGroup) {
-        this.processGroupProvider.addProcessGroup(processGroup);
+        this.processGroupProvider.addProcessGroup0(processGroup);
         this.sendPacketToProcesses(new NodeToApiProcessGroupCreate(processGroup));
     }
 
@@ -168,7 +168,7 @@ public class DefaultClusterManager implements ClusterManager {
 
     @Override
     public void handleProcessGroupUpdate(@NotNull ProcessGroup processGroup) {
-        this.processGroupProvider.updateProcessGroup(processGroup);
+        this.processGroupProvider.updateProcessGroup0(processGroup);
         this.sendPacketToProcesses(new NodeToApiProcessGroupUpdated(processGroup));
     }
 
@@ -180,7 +180,7 @@ public class DefaultClusterManager implements ClusterManager {
 
     @Override
     public void handleProcessGroupDelete(@NotNull ProcessGroup processGroup) {
-        this.processGroupProvider.deleteProcessGroup(processGroup.getName());
+        this.processGroupProvider.deleteProcessGroup0(processGroup.getName());
         this.sendPacketToProcesses(new NodeToApiProcessGroupDelete(processGroup));
     }
 
@@ -194,9 +194,9 @@ public class DefaultClusterManager implements ClusterManager {
     public void handleProcessGroupSet(@NotNull Collection<ProcessGroup> processGroups) {
         for (ProcessGroup processGroup : processGroups) {
             if (!this.processGroupProvider.getProcessGroup(processGroup.getName()).isPresent()) {
-                this.processGroupProvider.addProcessGroup(processGroup);
+                this.processGroupProvider.addProcessGroup0(processGroup);
             } else {
-                this.processGroupProvider.updateProcessGroup(processGroup);
+                this.processGroupProvider.updateProcessGroup0(processGroup);
             }
         }
     }
@@ -208,7 +208,7 @@ public class DefaultClusterManager implements ClusterManager {
 
     @Override
     public void handleMainGroupCreate(@NotNull MainGroup mainGroup) {
-        this.mainGroupProvider.addGroup(mainGroup);
+        this.mainGroupProvider.addGroup0(mainGroup);
         this.sendPacketToProcesses(new NodeToApiMainGroupCreate(mainGroup));
     }
 
@@ -220,7 +220,7 @@ public class DefaultClusterManager implements ClusterManager {
 
     @Override
     public void handleMainGroupUpdate(@NotNull MainGroup mainGroup) {
-        this.mainGroupProvider.updateMainGroup(mainGroup);
+        this.mainGroupProvider.updateMainGroup0(mainGroup);
         this.sendPacketToProcesses(new NodeToApiMainGroupUpdated(mainGroup));
     }
 
@@ -232,7 +232,7 @@ public class DefaultClusterManager implements ClusterManager {
 
     @Override
     public void handleMainGroupDelete(@NotNull MainGroup mainGroup) {
-        this.mainGroupProvider.deleteMainGroup(mainGroup.getName());
+        this.mainGroupProvider.deleteMainGroup0(mainGroup.getName());
         this.sendPacketToProcesses(new NodeToApiMainGroupDelete(mainGroup));
     }
 
@@ -246,9 +246,9 @@ public class DefaultClusterManager implements ClusterManager {
     public void handleMainGroupSet(@NotNull Collection<MainGroup> mainGroups) {
         for (MainGroup mainGroup : mainGroups) {
             if (!this.mainGroupProvider.getMainGroup(mainGroup.getName()).isPresent()) {
-                this.mainGroupProvider.addGroup(mainGroup);
+                this.mainGroupProvider.addGroup0(mainGroup);
             } else {
-                this.mainGroupProvider.updateMainGroup(mainGroup);
+                this.mainGroupProvider.updateMainGroup0(mainGroup);
             }
         }
     }

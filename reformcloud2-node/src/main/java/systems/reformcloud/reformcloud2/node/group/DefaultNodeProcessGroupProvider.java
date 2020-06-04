@@ -25,12 +25,15 @@
 package systems.reformcloud.reformcloud2.node.group;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
+import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.builder.ProcessGroupBuilder;
 import systems.reformcloud.reformcloud2.executor.api.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.provider.ProcessGroupProvider;
 import systems.reformcloud.reformcloud2.executor.api.registry.io.FileRegistry;
 import systems.reformcloud.reformcloud2.executor.api.utility.list.Streams;
+import systems.reformcloud.reformcloud2.node.cluster.ClusterManager;
 import systems.reformcloud.reformcloud2.shared.registry.io.DefaultFileRegistry;
 
 import java.util.Collection;
@@ -55,20 +58,18 @@ public class DefaultNodeProcessGroupProvider implements ProcessGroupProvider {
 
     @Override
     public void deleteProcessGroup(@NotNull String name) {
-        this.getProcessGroup(name).ifPresent(group -> {
-            this.processGroups.remove(group);
-            this.fileRegistry.deleteKey(group.getName());
-        });
+        ProcessGroup group = this.deleteProcessGroup0(name);
+        if (group == null) {
+            return;
+        }
+
+        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ClusterManager.class).publishProcessGroupDelete(group);
     }
 
     @Override
     public void updateProcessGroup(@NotNull ProcessGroup processGroup) {
-        this.getProcessGroup(processGroup.getName()).ifPresent(group -> {
-            this.processGroups.remove(group);
-            this.processGroups.add(processGroup);
-
-            this.fileRegistry.updateKey(processGroup.getName(), processGroup);
-        });
+        this.updateProcessGroup0(processGroup);
+        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ClusterManager.class).publishProcessGroupUpdate(processGroup);
     }
 
     @NotNull
@@ -95,7 +96,30 @@ public class DefaultNodeProcessGroupProvider implements ProcessGroupProvider {
     }
 
     public void addProcessGroup(@NotNull ProcessGroup processGroup) {
+        this.addProcessGroup0(processGroup);
+        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ClusterManager.class).publishProcessGroupCreate(processGroup);
+    }
+
+    public void addProcessGroup0(@NotNull ProcessGroup processGroup) {
         this.processGroups.add(processGroup);
         this.fileRegistry.createKey(processGroup.getName(), processGroup);
+    }
+
+    public void updateProcessGroup0(@NotNull ProcessGroup processGroup) {
+        this.getProcessGroup(processGroup.getName()).ifPresent(group -> {
+            this.processGroups.remove(group);
+            this.processGroups.add(processGroup);
+
+            this.fileRegistry.updateKey(processGroup.getName(), processGroup);
+        });
+    }
+
+    public @Nullable ProcessGroup deleteProcessGroup0(@NotNull String name) {
+        Optional<ProcessGroup> processGroup = this.getProcessGroup(name);
+        processGroup.ifPresent(group -> {
+            this.processGroups.remove(group);
+            this.fileRegistry.deleteKey(group.getName());
+        });
+        return processGroup.orElse(null);
     }
 }
