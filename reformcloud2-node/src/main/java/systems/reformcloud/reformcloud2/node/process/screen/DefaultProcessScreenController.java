@@ -25,7 +25,6 @@
 package systems.reformcloud.reformcloud2.node.process.screen;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.node.NodeExecutor;
 import systems.reformcloud.reformcloud2.node.process.DefaultNodeLocalProcessWrapper;
 
 import java.util.Map;
@@ -33,7 +32,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class DefaultProcessScreenController extends Thread implements ProcessScreenController {
+public class DefaultProcessScreenController implements ProcessScreenController {
 
     private final Map<UUID, ProcessScreen> processScreens = new ConcurrentHashMap<>();
 
@@ -57,17 +56,5 @@ public class DefaultProcessScreenController extends Thread implements ProcessScr
     @Override
     public void tick() {
         this.processScreens.values().forEach(ProcessScreen::tick);
-    }
-
-    @Override
-    public void run() {
-        while (NodeExecutor.isRunning()) {
-            this.tick();
-
-            try {
-                sleep(1000);
-            } catch (InterruptedException ignored) {
-            }
-        }
     }
 }

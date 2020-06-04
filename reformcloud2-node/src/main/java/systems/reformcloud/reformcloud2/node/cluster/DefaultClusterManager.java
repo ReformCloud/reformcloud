@@ -118,7 +118,7 @@ public class DefaultClusterManager implements ClusterManager {
 
     @Override
     public void handleProcessUpdate(@NotNull ProcessInformation processInformation) {
-        this.processProvider.updateProcessInformation(processInformation);
+        this.processProvider.updateProcessInformation0(processInformation);
         this.sendPacketToProcesses(new NodeToApiProcessUpdated(processInformation));
     }
 

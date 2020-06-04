@@ -34,6 +34,7 @@ import systems.reformcloud.reformcloud2.executor.api.provider.ProcessProvider;
 import systems.reformcloud.reformcloud2.executor.api.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.wrappers.ProcessWrapper;
 import systems.reformcloud.reformcloud2.node.NodeExecutor;
+import systems.reformcloud.reformcloud2.node.cluster.ClusterManager;
 
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -118,13 +119,8 @@ public final class DefaultNodeProcessProvider implements ProcessProvider {
 
     @Override
     public void updateProcessInformation(@NotNull ProcessInformation processInformation) {
-        DefaultNodeRemoteProcessWrapper old = Streams.filter(
-                this.processes,
-                process -> process.getProcessInformation().getProcessDetail().getProcessUniqueID().equals(processInformation.getProcessDetail().getProcessUniqueID())
-        );
-        if (old != null) {
-            old.setProcessInformation(processInformation);
-        }
+        this.updateProcessInformation0(processInformation);
+        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ClusterManager.class).publishProcessUpdate(processInformation);
     }
 
     public void registerProcess(@NotNull ProcessInformation processInformation) {
@@ -148,5 +144,15 @@ public final class DefaultNodeProcessProvider implements ProcessProvider {
         }
 
         return wrappers;
+    }
+
+    public void updateProcessInformation0(@NotNull ProcessInformation processInformation) {
+        DefaultNodeRemoteProcessWrapper old = Streams.filter(
+                this.processes,
+                process -> process.getProcessInformation().getProcessDetail().getProcessUniqueID().equals(processInformation.getProcessDetail().getProcessUniqueID())
+        );
+        if (old != null) {
+            old.setProcessInformation(processInformation);
+        }
     }
 }

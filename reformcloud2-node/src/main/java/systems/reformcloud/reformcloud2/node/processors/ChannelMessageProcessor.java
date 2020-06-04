@@ -27,6 +27,7 @@ package systems.reformcloud.reformcloud2.node.processors;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.event.EventManager;
+import systems.reformcloud.reformcloud2.executor.api.event.events.messaging.ChannelMessageReceiveEvent;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
 import systems.reformcloud.reformcloud2.protocol.processor.PacketProcessor;
 import systems.reformcloud.reformcloud2.protocol.shared.PacketChannelMessage;
@@ -34,7 +35,8 @@ import systems.reformcloud.reformcloud2.protocol.shared.PacketChannelMessage;
 public class ChannelMessageProcessor implements PacketProcessor<PacketChannelMessage> {
 
     @Override
-    public void process(@NotNull NetworkChannel channel, @NotNull PacketChannelMessage packetChannelMessage) {
-        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class);
+    public void process(@NotNull NetworkChannel channel, @NotNull PacketChannelMessage packet) {
+        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class)
+                .callEvent(new ChannelMessageReceiveEvent(packet.getChannel(), packet.getData()));
     }
 }

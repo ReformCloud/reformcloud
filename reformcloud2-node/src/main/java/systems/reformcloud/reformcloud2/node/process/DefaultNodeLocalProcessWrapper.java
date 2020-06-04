@@ -41,6 +41,7 @@ import systems.reformcloud.reformcloud2.executor.api.utility.StringUtil;
 import systems.reformcloud.reformcloud2.executor.api.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.utility.process.JavaProcessHelper;
 import systems.reformcloud.reformcloud2.node.NodeExecutor;
+import systems.reformcloud.reformcloud2.node.cluster.ClusterManager;
 import systems.reformcloud.reformcloud2.node.process.screen.ProcessScreen;
 import systems.reformcloud.reformcloud2.node.process.screen.ProcessScreenController;
 import systems.reformcloud.reformcloud2.protocol.api.NodeToApiRequestProcessInformationUpdate;
@@ -74,6 +75,7 @@ public class DefaultNodeLocalProcessWrapper extends DefaultNodeRemoteProcessWrap
         IOUtils.createDirectory(this.path);
 
         processInformation.getNetworkInfo().setHost(NodeExecutor.getInstance().getNodeConfig().getStartHost());
+        this.prepare();
         this.setRuntimeState(ProcessState.PREPARED);
     }
 
@@ -132,12 +134,15 @@ public class DefaultNodeLocalProcessWrapper extends DefaultNodeRemoteProcessWrap
 
     @Override
     public void setRuntimeState(@NotNull ProcessState state) {
-        this.processInformation.getProcessDetail().setProcessState(state);
         if (state.isRuntimeState() && this.runtimeState != state) {
-            this.runtimeState = state;
-            this.callRuntimeStateUpdate();
+            if (this.callRuntimeStateUpdate()) {
+                this.runtimeState = state;
+            } else {
+                return;
+            }
         }
 
+        this.processInformation.getProcessDetail().setProcessState(state);
         ExecutorAPI.getInstance().getProcessProvider().updateProcessInformation(this.processInformation);
     }
 
@@ -148,17 +153,13 @@ public class DefaultNodeLocalProcessWrapper extends DefaultNodeRemoteProcessWrap
         );
     }
 
-    private void callRuntimeStateUpdate() {
+    private boolean callRuntimeStateUpdate() {
         try {
             this.lock.lock();
 
             switch (this.runtimeState) {
-                case PREPARED:
-                    this.prepare();
-                    break;
                 case STARTED:
-                    this.start();
-                    break;
+                    return this.start();
                 case RESTARTING:
                     this.restart();
                     break;
@@ -172,13 +173,20 @@ public class DefaultNodeLocalProcessWrapper extends DefaultNodeRemoteProcessWrap
         } finally {
             this.lock.unlock();
         }
+
+        return true;
     }
 
     private void prepare() {
         EnvironmentBuilder.constructEnvFor(this, this.firstStart, this.connectionKey);
     }
 
-    private void start() {
+    private boolean start() {
+        if (!NodeExecutor.getInstance().canStartProcesses(this.processInformation.getProcessDetail().getMaxMemory())) {
+            return false;
+        }
+
+        NodeExecutor.getInstance().getCurrentNodeInformation().addUsedMemory(this.processInformation.getProcessDetail().getMaxMemory());
         List<String> command = new ArrayList<>(Arrays.asList(
                 this.processInformation.getProcessGroup().getStartupConfiguration().getJvmCommand(),
 
@@ -219,6 +227,8 @@ public class DefaultNodeLocalProcessWrapper extends DefaultNodeRemoteProcessWrap
         } catch (IOException exception) {
             exception.printStackTrace();
         }
+
+        return true;
     }
 
     private void restart() {
@@ -243,7 +253,14 @@ public class DefaultNodeLocalProcessWrapper extends DefaultNodeRemoteProcessWrap
             if (!this.processInformation.getProcessGroup().isStaticProcess()) {
                 IOUtils.deleteDirectory(this.path);
             }
+
+            ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ClusterManager.class).publishProcessUnregister(this.processInformation);
+            ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ClusterManager.class).handleProcessUnregister(
+                    this.processInformation.getProcessDetail().getName()
+            );
         }
+
+        NodeExecutor.getInstance().getCurrentNodeInformation().removeUsedMemory(this.processInformation.getProcessDetail().getMaxMemory());
     }
 
     private @NotNull String[] getShutdownCommands() {

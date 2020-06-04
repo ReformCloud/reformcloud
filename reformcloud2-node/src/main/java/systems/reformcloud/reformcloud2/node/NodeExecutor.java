@@ -63,6 +63,7 @@ import systems.reformcloud.reformcloud2.node.process.DefaultNodeProcessProvider;
 import systems.reformcloud.reformcloud2.node.process.screen.DefaultProcessScreenController;
 import systems.reformcloud.reformcloud2.node.process.screen.ProcessScreenController;
 import systems.reformcloud.reformcloud2.node.provider.DefaultNodeNodeInformationProvider;
+import systems.reformcloud.reformcloud2.node.runnables.*;
 import systems.reformcloud.reformcloud2.node.tick.CloudTickWorker;
 import systems.reformcloud.reformcloud2.node.tick.TickedTaskScheduler;
 import systems.reformcloud.reformcloud2.shared.command.DefaultCommandManager;
@@ -207,6 +208,12 @@ public final class NodeExecutor extends ExecutorAPI {
 
         TemplateBackendManager.registerDefaults();
 
+        this.taskScheduler.addPermanentTask(new AutoStartRunnable());
+        this.taskScheduler.addPermanentTask(new AutoStopRunnable());
+        this.taskScheduler.addPermanentTask(new NodeInformationUpdateRunnable());
+        this.taskScheduler.addPermanentTask(new ServerWatchdogRunnable());
+        this.taskScheduler.addPermanentTask(new ProcessScreenTickRunnable());
+
         this.loadPacketHandlers();
 
         this.nodeConfig.getNetworkListeners().forEach(e -> this.networkServer.bind(
@@ -314,6 +321,10 @@ public final class NodeExecutor extends ExecutorAPI {
 
     public DefaultNodeProcessGroupProvider getDefaultProcessGroupProvider() {
         return this.processGroupProvider;
+    }
+
+    public DefaultNodeProcessProvider getDefaultNodeProcessProvider() {
+        return this.processProvider;
     }
 
     private void registerDefaultServices() {

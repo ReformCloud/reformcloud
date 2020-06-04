@@ -42,6 +42,14 @@ public class PacketChannelMessage extends NodePacket {
     private String channel;
     private JsonConfiguration data;
 
+    public String getChannel() {
+        return this.channel;
+    }
+
+    public JsonConfiguration getData() {
+        return this.data;
+    }
+
     @Override
     public void handlePacketReceive(@NotNull EndpointChannelReader reader, @NotNull NetworkChannel channel) {
         super.post(channel, PacketChannelMessage.class, this);

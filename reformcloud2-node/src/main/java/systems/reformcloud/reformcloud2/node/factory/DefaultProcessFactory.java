@@ -40,7 +40,6 @@ import systems.reformcloud.reformcloud2.node.cluster.ClusterManager;
 import systems.reformcloud.reformcloud2.node.process.DefaultNodeProcessProvider;
 
 import java.util.Collection;
-import java.util.Objects;
 import java.util.Random;
 
 public class DefaultProcessFactory implements ProcessFactory {
@@ -61,9 +60,13 @@ public class DefaultProcessFactory implements ProcessFactory {
                 return null;
             }
 
-            NodeInformation nodeInformation = this.getBestNode();
-            int id = this.nextId(configuration.getProcessGroup().getName());
+            NodeInformation nodeInformation = this.getBestNode(configuration.getProcessGroup());
+            if (nodeInformation == null) {
+                return null;
+            }
+
             int memory = MemoryCalculator.calcMemory(configuration.getProcessGroup().getName(), template);
+            int id = this.nextId(configuration.getProcessGroup().getName());
 
             ProcessInformation processInformation = new ProcessInformation(new ProcessDetail(
                     configuration.getProcessUniqueId(),
@@ -98,11 +101,15 @@ public class DefaultProcessFactory implements ProcessFactory {
         return DefaultProcessFactory.class.getName();
     }
 
-    private @NotNull NodeInformation getBestNode() {
-        Collection<NodeInformation> nodes = ExecutorAPI.getInstance().getNodeInformationProvider().getNodes();
+    private @Nullable NodeInformation getBestNode(@NotNull ProcessGroup processGroup) {
         NodeInformation best = null;
 
-        for (NodeInformation node : nodes) {
+        for (NodeInformation node : ExecutorAPI.getInstance().getNodeInformationProvider().getNodes()) {
+            if (processGroup.getStartupConfiguration().isSearchBestClientAlone()
+                    && !processGroup.getStartupConfiguration().getUseOnlyTheseClients().contains(node.getName())) {
+                continue;
+            }
+
             if (best == null) {
                 best = node;
                 continue;
@@ -120,7 +127,7 @@ public class DefaultProcessFactory implements ProcessFactory {
             }
         }
 
-        return Objects.requireNonNull(best, "Unable to find a node for the process to start (self node is unregistered)");
+        return best;
     }
 
     private int nextId(@NotNull String groupName) {

@@ -22,37 +22,20 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.process;
+package systems.reformcloud.reformcloud2.node.runnables;
 
-public enum ProcessState {
+import systems.reformcloud.reformcloud2.executor.api.process.ProcessState;
+import systems.reformcloud.reformcloud2.node.NodeExecutor;
+import systems.reformcloud.reformcloud2.node.process.DefaultNodeLocalProcessWrapper;
 
-    CREATED,
+public class ServerWatchdogRunnable implements Runnable {
 
-    PREPARED,
-
-    STARTED,
-
-    READY,
-
-    FULL,
-
-    INVISIBLE,
-
-    RESTARTING,
-
-    PAUSED,
-
-    STOPPED;
-
-    public boolean isValid() {
-        return this.equals(STARTED) || this.equals(READY) || this.equals(FULL) || this.equals(INVISIBLE);
-    }
-
-    public boolean isReady() {
-        return this.equals(READY) || this.equals(FULL) || this.equals(INVISIBLE);
-    }
-
-    public boolean isRuntimeState() {
-        return this == STARTED || this == RESTARTING || this == PAUSED || this == STOPPED;
+    @Override
+    public void run() {
+        for (DefaultNodeLocalProcessWrapper processWrapper : NodeExecutor.getInstance().getDefaultNodeProcessProvider().getProcessWrappers()) {
+            if (!processWrapper.isAlive()) {
+                processWrapper.setRuntimeState(ProcessState.STOPPED);
+            }
+        }
     }
 }
