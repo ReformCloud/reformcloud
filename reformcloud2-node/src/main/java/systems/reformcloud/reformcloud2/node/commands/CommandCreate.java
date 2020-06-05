@@ -27,27 +27,24 @@ package systems.reformcloud.reformcloud2.node.commands;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.CommonHelper;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.commands.basic.GlobalCommand;
-import systems.reformcloud.reformcloud2.executor.api.commands.source.CommandSource;
+import systems.reformcloud.reformcloud2.executor.api.command.Command;
+import systems.reformcloud.reformcloud2.executor.api.command.CommandSender;
 import systems.reformcloud.reformcloud2.executor.api.groups.MainGroup;
-import systems.reformcloud.reformcloud2.executor.api.groups.basic.DefaultProcessGroup;
+import systems.reformcloud.reformcloud2.executor.api.groups.template.RuntimeConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.groups.template.Template;
 import systems.reformcloud.reformcloud2.executor.api.groups.template.Version;
+import systems.reformcloud.reformcloud2.executor.api.groups.template.backend.basic.FileTemplateBackend;
+import systems.reformcloud.reformcloud2.executor.api.groups.utils.AutomaticStartupConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.groups.utils.PlayerAccessConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.groups.utils.StartupConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.language.LanguageManager;
 import systems.reformcloud.reformcloud2.executor.api.utility.StringUtil;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
-public final class CommandCreate extends GlobalCommand {
+public final class CommandCreate implements Command {
 
-    public CommandCreate() {
-        super("create", "reformcloud.command.create", "The create command for reformcloud things", "");
-    }
-
-    @Override
-    public void describeCommandToSender(@NotNull CommandSource source) {
+    public void describeCommandToSender(@NotNull CommandSender source) {
         source.sendMessages((
                 "create new pg <name> <version>     | Creates a new process group\n" +
                         " --start-port=[port]               | Sets the start port of the new process group\n" +
@@ -71,27 +68,26 @@ public final class CommandCreate extends GlobalCommand {
     }
 
     @Override
-    public boolean handleCommand(@NotNull CommandSource commandSource, @NotNull String[] strings) {
+    public void process(@NotNull CommandSender sender, String[] strings, @NotNull String commandLine) {
         if (strings.length <= 2 || !strings[0].equalsIgnoreCase("new")) {
-            this.describeCommandToSender(commandSource);
-            return true;
+            this.describeCommandToSender(sender);
+            return;
         }
 
         if (strings[1].equalsIgnoreCase("pg")) {
-            this.handleProcessGroupRequest(commandSource, strings);
-            return true;
+            this.handleProcessGroupRequest(sender, strings);
+            return;
         }
 
         if (strings[1].equalsIgnoreCase("mg")) {
-            this.handleMainGroupRequest(commandSource, strings);
-            return true;
+            this.handleMainGroupRequest(sender, strings);
+            return;
         }
 
-        this.describeCommandToSender(commandSource);
-        return true;
+        this.describeCommandToSender(sender);
     }
 
-    private void handleMainGroupRequest(CommandSource source, String[] strings) {
+    private void handleMainGroupRequest(CommandSender source, String[] strings) {
         if (strings.length != 3 && strings.length != 4) {
             this.describeCommandToSender(source);
             return;
@@ -99,7 +95,7 @@ public final class CommandCreate extends GlobalCommand {
 
         String name = strings[2];
         List<String> subGroups = new ArrayList<>();
-        if (ExecutorAPI.getInstance().getSyncAPI().getGroupSyncAPI().getMainGroup(name) != null) {
+        if (ExecutorAPI.getInstance().getMainGroupProvider().getMainGroup(name).isPresent()) {
             source.sendMessage(LanguageManager.get("command-create-main-group-already-exists", name));
             return;
         }
@@ -111,7 +107,7 @@ public final class CommandCreate extends GlobalCommand {
                     : new String[]{properties.getProperty("sub-groups")};
 
             for (String subGroup : subGroupsStrings) {
-                if (ExecutorAPI.getInstance().getSyncAPI().getGroupSyncAPI().getProcessGroup(subGroup) == null) {
+                if (!ExecutorAPI.getInstance().getProcessGroupProvider().getProcessGroup(subGroup).isPresent()) {
                     source.sendMessage(LanguageManager.get("command-create-sub-group-does-not-exists", subGroup));
                     return;
                 }
@@ -124,11 +120,11 @@ public final class CommandCreate extends GlobalCommand {
             }
         }
 
-        ExecutorAPI.getInstance().getSyncAPI().getGroupSyncAPI().createMainGroup(name, subGroups);
+        ExecutorAPI.getInstance().getMainGroupProvider().createMainGroup(name).subGroups(subGroups).create();
         source.sendMessage(LanguageManager.get("command-create-mg", name));
     }
 
-    private void handleProcessGroupRequest(CommandSource source, String[] strings) {
+    private void handleProcessGroupRequest(CommandSender source, String[] strings) {
         if (strings.length <= 3) {
             this.describeCommandToSender(source);
             return;
@@ -141,7 +137,7 @@ public final class CommandCreate extends GlobalCommand {
             return;
         }
 
-        if (ExecutorAPI.getInstance().getSyncAPI().getGroupSyncAPI().getProcessGroup(name) != null) {
+        if (ExecutorAPI.getInstance().getProcessGroupProvider().getProcessGroup(name).isPresent()) {
             source.sendMessage(LanguageManager.get("command-create-sub-group-already-exists", name));
             return;
         }
@@ -267,22 +263,22 @@ public final class CommandCreate extends GlobalCommand {
 
             Collection<MainGroup> basedOn = new ArrayList<>();
             for (String mainGroup : mainGroups) {
-                MainGroup group = ExecutorAPI.getInstance().getSyncAPI().getGroupSyncAPI().getMainGroup(mainGroup);
-                if (group == null) {
+                Optional<MainGroup> group = ExecutorAPI.getInstance().getMainGroupProvider().getMainGroup(mainGroup);
+                if (!group.isPresent()) {
                     source.sendMessage(LanguageManager.get("command-create-main-group-does-not-exists", mainGroup));
                     return;
                 }
 
-                if (basedOn.contains(group) || group.getSubGroups().contains(name)) {
+                if (basedOn.contains(group.get()) || group.get().getSubGroups().contains(name)) {
                     continue;
                 }
 
-                basedOn.add(group);
+                basedOn.add(group.get());
             }
 
             basedOn.forEach(e -> {
                 e.getSubGroups().add(name);
-                ExecutorAPI.getInstance().getSyncAPI().getGroupSyncAPI().updateMainGroup(e);
+                ExecutorAPI.getInstance().getMainGroupProvider().updateMainGroup(e);
             });
         }
 
@@ -300,21 +296,43 @@ public final class CommandCreate extends GlobalCommand {
             }
         }
 
-        ExecutorAPI.getInstance().getSyncAPI().getGroupSyncAPI().createProcessGroup(new DefaultProcessGroup(
-                name,
-                port,
-                version,
-                memory,
-                maintenance,
-                min,
-                max,
-                prepared,
-                priority,
-                staticProcess,
-                lobby,
-                clients,
-                maxPlayers
-        ));
+        ExecutorAPI.getInstance().getProcessGroupProvider().createProcessGroup(name)
+                .templates(new Template(
+                        0,
+                        "default",
+                        false,
+                        FileTemplateBackend.NAME,
+                        "-",
+                        new RuntimeConfiguration(
+                                memory,
+                                new ArrayList<>(),
+                                new HashMap<>()
+                        ), version
+                ))
+                .startupConfiguration(new StartupConfiguration(
+                        max,
+                        min,
+                        prepared,
+                        priority,
+                        port,
+                        "java",
+                        new AutomaticStartupConfiguration(false, 90, 30),
+                        clients.isEmpty(),
+                        clients
+                ))
+                .playerAccessConfig(new PlayerAccessConfiguration(
+                        "reformcloud.join.full",
+                        maintenance,
+                        "reformcloud.join.maintenance",
+                        false,
+                        "reformcloud.custom.permission",
+                        true,
+                        true,
+                        maxPlayers
+                ))
+                .staticGroup(staticProcess)
+                .lobby(lobby)
+                .createPermanently();
         source.sendMessage(LanguageManager.get("command-create-pg", name, version.getName()));
     }
 }

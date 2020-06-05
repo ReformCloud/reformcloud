@@ -155,10 +155,16 @@ public final class NodeExecutorConfig {
                 clusterNodes.addAll(this.runClusterSetup());
             }
 
+            int maxMemory = CommonHelper.calculateMaxMemory();
+            if (maxMemory < 512) {
+                System.err.println(LanguageManager.get("start-config-low-memory"));
+                maxMemory = 512;
+            }
+
             new JsonConfiguration().add("config", new NodeConfig(
                     nodeName.get(),
                     UUID.randomUUID(),
-                    CommonHelper.calculateMaxMemory(),
+                    maxMemory,
                     networkAddress.get(),
                     new ArrayList<>(Collections.singletonList(new NetworkAddress(networkAddress.get(), networkPort.get()))),
                     new ArrayList<>(Collections.singletonList(new NetworkAddress(networkAddress.get(), httpPort.get()))),

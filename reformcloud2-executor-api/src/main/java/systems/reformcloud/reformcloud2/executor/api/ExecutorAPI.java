@@ -24,6 +24,7 @@
  */
 package systems.reformcloud.reformcloud2.executor.api;
 
+import io.netty.util.ResourceLeakDetector;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.provider.*;
 import systems.reformcloud.reformcloud2.executor.api.registry.service.ServiceRegistry;
@@ -36,12 +37,20 @@ import java.util.Objects;
 public abstract class ExecutorAPI {
 
     static {
+        if (System.getProperty("io.netty.leakDetectionLevel") == null) {
+            ResourceLeakDetector.setLevel(ResourceLeakDetector.Level.DISABLED);
+        }
+
+        if (System.getProperty("io.netty.allocator.maxOrder") == null) {
+            System.setProperty("io.netty.allocator.maxOrder", "9");
+        }
+
         System.setProperty("java.net.preferIPv4Stack", "true");
         System.setProperty("io.netty.noPreferDirect", "true");
         System.setProperty("io.netty.maxDirectMemory", "0");
-        System.setProperty("io.netty.leakDetectionLevel", "DISABLED");
         System.setProperty("io.netty.recycler.maxCapacity", "0");
         System.setProperty("io.netty.recycler.maxCapacity.default", "0");
+        System.setProperty("io.netty.selectorAutoRebuildThreshold", "0");
         System.setProperty("io.netty.allocator.type", "UNPOOLED");
 
         Thread.setDefaultUncaughtExceptionHandler((t, ex) -> ex.printStackTrace());

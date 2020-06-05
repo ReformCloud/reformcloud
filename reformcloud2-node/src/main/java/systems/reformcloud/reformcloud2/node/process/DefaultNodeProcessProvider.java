@@ -30,6 +30,7 @@ import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.builder.ProcessBuilder;
 import systems.reformcloud.reformcloud2.executor.api.groups.template.Version;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
+import systems.reformcloud.reformcloud2.executor.api.process.ProcessState;
 import systems.reformcloud.reformcloud2.executor.api.provider.ProcessProvider;
 import systems.reformcloud.reformcloud2.executor.api.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.wrappers.ProcessWrapper;
@@ -38,6 +39,9 @@ import systems.reformcloud.reformcloud2.node.cluster.ClusterManager;
 
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public final class DefaultNodeProcessProvider implements ProcessProvider {
 
@@ -144,6 +148,30 @@ public final class DefaultNodeProcessProvider implements ProcessProvider {
         }
 
         return wrappers;
+    }
+
+    public @NotNull Optional<DefaultNodeLocalProcessWrapper> getProcessWrapperByUniqueId(@NotNull UUID uniqueId) {
+        for (DefaultNodeLocalProcessWrapper processWrapper : this.getProcessWrappers()) {
+            if (processWrapper.getProcessInformation().getProcessDetail().getProcessUniqueID().equals(uniqueId)) {
+                return Optional.of(processWrapper);
+            }
+        }
+
+        return Optional.empty();
+    }
+
+    public void closeNow() {
+        ExecutorService executorService = Executors.newFixedThreadPool((this.processes.size() / 2) + 1);
+        for (DefaultNodeLocalProcessWrapper processWrapper : this.getProcessWrappers()) {
+            executorService.submit(() -> processWrapper.setRuntimeState(ProcessState.STOPPED));
+        }
+
+        try {
+            executorService.shutdown();
+            executorService.awaitTermination(2, TimeUnit.MINUTES);
+        } catch (InterruptedException exception) {
+            exception.printStackTrace();
+        }
     }
 
     public void updateProcessInformation0(@NotNull ProcessInformation processInformation) {

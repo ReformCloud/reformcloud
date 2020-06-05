@@ -31,6 +31,8 @@ import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessState;
 import systems.reformcloud.reformcloud2.executor.api.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.wrappers.ProcessWrapper;
+import systems.reformcloud.reformcloud2.node.NodeExecutor;
+import systems.reformcloud.reformcloud2.node.cluster.ClusterManager;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -39,6 +41,11 @@ public class AutoStartRunnable implements Runnable {
 
     @Override
     public void run() {
+        if (!NodeExecutor.getInstance().isReady()
+                || !ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ClusterManager.class).isHeadNode()) {
+            return;
+        }
+
         for (ProcessGroup processGroup : ExecutorAPI.getInstance().getProcessGroupProvider().getProcessGroups()) {
             if (processGroup.getTemplates().isEmpty()) {
                 continue;

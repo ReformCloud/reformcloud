@@ -28,8 +28,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.CommonHelper;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.commands.basic.GlobalCommand;
-import systems.reformcloud.reformcloud2.executor.api.commands.source.CommandSource;
+import systems.reformcloud.reformcloud2.executor.api.command.Command;
+import systems.reformcloud.reformcloud2.executor.api.command.CommandSender;
 import systems.reformcloud.reformcloud2.executor.api.language.LanguageManager;
 import systems.reformcloud.reformcloud2.executor.api.process.Player;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
@@ -39,16 +39,11 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 
-public final class CommandPlayers extends GlobalCommand {
+public final class CommandPlayers implements Command {
 
     private static final String FORMAT_STRING = " > %s/%s is connected to %s <-> %s";
 
-    public CommandPlayers() {
-        super("players", "reformcloud.command.players", "Manage the players on the proxies", "pl");
-    }
-
-    @Override
-    public void describeCommandToSender(@NotNull CommandSource source) {
+    public void describeCommandToSender(@NotNull CommandSender source) {
         source.sendMessages((
                 "players [list]               | Lists all connected players\n" +
                         "players <name | uuid> [info] | Shows information about a specific online player"
@@ -56,15 +51,15 @@ public final class CommandPlayers extends GlobalCommand {
     }
 
     @Override
-    public boolean handleCommand(@NotNull CommandSource commandSource, @NotNull String[] strings) {
+    public void process(@NotNull CommandSender sender, String[] strings, @NotNull String commandLine) {
         if (strings.length == 0) {
-            this.describeCommandToSender(commandSource);
-            return true;
+            this.describeCommandToSender(sender);
+            return;
         }
 
         if (strings[0].equalsIgnoreCase("list")) {
-            commandSource.sendMessage("Online-Players: ");
-            ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getAllProcesses()
+            sender.sendMessage("Online-Players: ");
+            ExecutorAPI.getInstance().getProcessProvider().getProcesses()
                     .stream()
                     .filter(e -> !e.getProcessDetail().getTemplate().isServer())
                     .map(e -> e.getProcessPlayerManager().getOnlinePlayers())
@@ -80,10 +75,10 @@ public final class CommandPlayers extends GlobalCommand {
                         )).append("\n"));
 
                         if (stringBuilder.length() > 0) {
-                            commandSource.sendMessages(stringBuilder.substring(0, stringBuilder.length() - 1).split("\n"));
+                            sender.sendMessages(stringBuilder.substring(0, stringBuilder.length() - 1).split("\n"));
                         }
                     });
-            return true;
+            return;
         }
 
         if (strings.length == 2 && strings[1].equalsIgnoreCase("info")) {
@@ -96,15 +91,15 @@ public final class CommandPlayers extends GlobalCommand {
             }
 
             if (trio == null) {
-                commandSource.sendMessage(LanguageManager.get("command-players-player-not-found", strings[0]));
-                return true;
+                sender.sendMessage(LanguageManager.get("command-players-player-not-found", strings[0]));
+                return;
             }
 
             Player subServerPlayer = trio.getFirst().getProcessPlayerManager().getOnlinePlayers().stream().filter(e -> uniqueID == null
                     ? e.getName().equals(strings[0]) : e.getUniqueID().equals(uniqueID)).findAny().orElse(null);
             if (subServerPlayer == null) {
-                commandSource.sendMessage(LanguageManager.get("command-players-player-not-found", strings[0]));
-                return true;
+                sender.sendMessage(LanguageManager.get("command-players-player-not-found", strings[0]));
+                return;
             }
 
             AtomicReference<StringBuilder> stringBuilder = new AtomicReference<>(new StringBuilder());
@@ -114,12 +109,11 @@ public final class CommandPlayers extends GlobalCommand {
             stringBuilder.get().append(" > Connected (Proxy)  - ").append(CommonHelper.DATE_FORMAT.format(trio.getThird().getJoined())).append("\n");
             stringBuilder.get().append(" > Server             - ").append(trio.getFirst().getProcessDetail().getName()).append("\n");
             stringBuilder.get().append(" > Connected (Server) - ").append(CommonHelper.DATE_FORMAT.format(subServerPlayer.getJoined())).append("\n");
-            commandSource.sendMessages(stringBuilder.get().toString().split("\n"));
-            return true;
+            sender.sendMessages(stringBuilder.get().toString().split("\n"));
+            return;
         }
 
-        this.describeCommandToSender(commandSource);
-        return true;
+        this.describeCommandToSender(sender);
     }
 
     @Nullable
@@ -146,7 +140,7 @@ public final class CommandPlayers extends GlobalCommand {
             return null;
         }
 
-        return ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getAllProcesses()
+        return ExecutorAPI.getInstance().getProcessProvider().getProcesses()
                 .stream()
                 .filter(e -> proxy != e.getProcessDetail().getTemplate().isServer())
                 .filter(e -> name == null ? e.getProcessPlayerManager().isPlayerOnlineOnCurrentProcess(uuid) : e.getProcessPlayerManager().isPlayerOnlineOnCurrentProcess(name))

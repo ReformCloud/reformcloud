@@ -24,8 +24,10 @@
  */
 package systems.reformcloud.reformcloud2.node;
 
+import systems.reformcloud.reformcloud2.executor.api.CommonHelper;
 import systems.reformcloud.reformcloud2.executor.api.dependency.DependencyLoader;
 import systems.reformcloud.reformcloud2.executor.api.io.IOUtils;
+import systems.reformcloud.reformcloud2.executor.api.language.LanguageManager;
 import systems.reformcloud.reformcloud2.executor.api.language.loading.LanguageLoader;
 
 import java.nio.file.Paths;
@@ -36,7 +38,15 @@ public final class NodeLauncher {
         LanguageLoader.doLoad();
         DependencyLoader.doLoad();
 
-        IOUtils.deleteDirectory(Paths.get("reformcloud/temp"));
-        new NodeExecutor();
+        long startTime = System.currentTimeMillis();
+
+        IOUtils.recreateDirectory(Paths.get("reformcloud/temp"));
+        NodeExecutor nodeExecutor = new NodeExecutor();
+        nodeExecutor.bootstrap();
+
+        double bootTime = (System.currentTimeMillis() - startTime) / 1000d;
+        System.out.println(LanguageManager.get("startup-done", CommonHelper.DECIMAL_FORMAT.format(bootTime)));
+
+        nodeExecutor.getCloudTickWorker().startTick();
     }
 }

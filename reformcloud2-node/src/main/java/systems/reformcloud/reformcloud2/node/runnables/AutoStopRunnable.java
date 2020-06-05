@@ -30,6 +30,8 @@ import systems.reformcloud.reformcloud2.executor.api.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.groups.utils.AutomaticStartupConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.utility.list.Streams;
+import systems.reformcloud.reformcloud2.node.NodeExecutor;
+import systems.reformcloud.reformcloud2.node.cluster.ClusterManager;
 
 import java.util.Collection;
 
@@ -37,6 +39,11 @@ public class AutoStopRunnable implements Runnable {
 
     @Override
     public void run() {
+        if (!NodeExecutor.getInstance().isReady()
+                || !ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ClusterManager.class).isHeadNode()) {
+            return;
+        }
+
         for (ProcessGroup processGroup : ExecutorAPI.getInstance().getProcessGroupProvider().getProcessGroups()) {
             AutomaticStartupConfiguration configuration = processGroup.getStartupConfiguration().getAutomaticStartupConfiguration();
             if (configuration.isEnabled() && configuration.getCheckIntervalInSeconds() > 0 && configuration.getMaxPercentOfPlayers() > 0) {

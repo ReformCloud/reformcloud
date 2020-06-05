@@ -28,17 +28,11 @@ import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.command.Command;
 import systems.reformcloud.reformcloud2.executor.api.command.CommandSender;
 import systems.reformcloud.reformcloud2.node.NodeExecutor;
-import systems.reformcloud.reformcloud2.shared.command.sources.ConsoleCommandSender;
 
 public final class CommandReload implements Command {
 
     @Override
     public void process(@NotNull CommandSender sender, @NotNull String[] strings, @NotNull String commandLine) {
-        NodeExecutor.getInstance().reload(true);
-    }
-
-    @Override
-    public boolean canAccess(@NotNull CommandSender commandSender) {
-        return commandSender instanceof ConsoleCommandSender;
+        NodeExecutor.getInstance().reload();
     }
 }

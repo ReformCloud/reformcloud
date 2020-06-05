@@ -122,4 +122,9 @@ public class DefaultNodeMainGroupProvider implements MainGroupProvider {
             this.fileRegistry.updateKey(mainGroup.getName(), mainGroup);
         });
     }
+
+    public void reload() {
+        this.mainGroups.clear();
+        this.mainGroups.addAll(this.fileRegistry.readKeys(e -> e.get("key", MainGroup.TYPE)));
+    }
 }

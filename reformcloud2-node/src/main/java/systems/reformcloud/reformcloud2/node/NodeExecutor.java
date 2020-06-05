@@ -31,19 +31,23 @@ import systems.reformcloud.reformcloud2.executor.api.ExecutorType;
 import systems.reformcloud.reformcloud2.executor.api.application.ApplicationLoader;
 import systems.reformcloud.reformcloud2.executor.api.base.Conditions;
 import systems.reformcloud.reformcloud2.executor.api.command.CommandManager;
-import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.event.EventManager;
+import systems.reformcloud.reformcloud2.executor.api.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.groups.template.backend.TemplateBackendManager;
+import systems.reformcloud.reformcloud2.executor.api.io.IOUtils;
 import systems.reformcloud.reformcloud2.executor.api.language.LanguageManager;
+import systems.reformcloud.reformcloud2.executor.api.language.loading.LanguageLoader;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.manager.ChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.network.packet.PacketProvider;
 import systems.reformcloud.reformcloud2.executor.api.network.packet.query.QueryManager;
 import systems.reformcloud.reformcloud2.executor.api.network.server.NetworkServer;
 import systems.reformcloud.reformcloud2.executor.api.node.NodeInformation;
+import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.provider.*;
 import systems.reformcloud.reformcloud2.executor.api.registry.service.ServiceRegistry;
 import systems.reformcloud.reformcloud2.executor.api.utility.NetworkAddress;
 import systems.reformcloud.reformcloud2.node.application.DefaultApplicationLoader;
+import systems.reformcloud.reformcloud2.node.cluster.ClusterManager;
 import systems.reformcloud.reformcloud2.node.commands.*;
 import systems.reformcloud.reformcloud2.node.config.NodeConfig;
 import systems.reformcloud.reformcloud2.node.config.NodeExecutorConfig;
@@ -55,8 +59,9 @@ import systems.reformcloud.reformcloud2.node.group.DefaultNodeMainGroupProvider;
 import systems.reformcloud.reformcloud2.node.group.DefaultNodeProcessGroupProvider;
 import systems.reformcloud.reformcloud2.node.logger.CloudLogger;
 import systems.reformcloud.reformcloud2.node.messaging.DefaultNodeChannelMessageProvider;
-import systems.reformcloud.reformcloud2.node.network.NodeEndpointChannelReader;
+import systems.reformcloud.reformcloud2.node.network.NodeClientEndpointChannelReader;
 import systems.reformcloud.reformcloud2.node.network.NodeNetworkClient;
+import systems.reformcloud.reformcloud2.node.network.NodeServerEndpointChannelReader;
 import systems.reformcloud.reformcloud2.node.player.DefaultNodePlayerProvider;
 import systems.reformcloud.reformcloud2.node.process.DefaultNodeLocalProcessWrapper;
 import systems.reformcloud.reformcloud2.node.process.DefaultNodeProcessProvider;
@@ -75,8 +80,7 @@ import systems.reformcloud.reformcloud2.shared.network.server.DefaultNetworkServ
 import systems.reformcloud.reformcloud2.shared.registry.service.DefaultServiceRegistry;
 
 import java.io.File;
-import java.net.InetSocketAddress;
-import java.util.Collections;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicLong;
@@ -125,7 +129,153 @@ public final class NodeExecutor extends ExecutorAPI {
 
         this.mainGroupProvider = new DefaultNodeMainGroupProvider(System.getProperty("systems.reformcloud.main-group-dir", "reformcloud/groups/main"));
         this.processGroupProvider = new DefaultNodeProcessGroupProvider(System.getProperty("systems.reformcloud.sub-group-dir", "reformcloud/groups/sub"));
-        this.bootstrap();
+    }
+
+    synchronized void bootstrap() {
+        this.console = new DefaultNodeConsole();
+        this.logger = new CloudLogger(this.console.getLineReader());
+
+        this.nodeExecutorConfig.init();
+        this.nodeConfig = this.nodeExecutorConfig.getNodeConfig();
+        this.nodeInformationProvider = new DefaultNodeNodeInformationProvider(this.currentNodeInformation = new NodeInformation(
+                this.nodeConfig.getName(),
+                this.nodeConfig.getUniqueID(),
+                System.currentTimeMillis(),
+                0L,
+                this.nodeConfig.getMaxMemory()
+        ));
+
+        this.serviceRegistry.getProviderUnchecked(ApplicationLoader.class).detectApplications();
+        this.serviceRegistry.getProviderUnchecked(ApplicationLoader.class).loadApplications();
+
+        TemplateBackendManager.registerDefaults();
+        this.startNetworkListeners();
+
+        this.taskScheduler.addPermanentTask(new AutoStartRunnable());
+        this.taskScheduler.addPermanentTask(new AutoStopRunnable());
+        this.taskScheduler.addPermanentTask(new NodeInformationUpdateRunnable());
+        this.taskScheduler.addPermanentTask(new ServerWatchdogRunnable());
+        this.taskScheduler.addPermanentTask(new ProcessScreenTickRunnable());
+
+        this.loadPacketHandlers();
+        this.loadCommands();
+
+        this.serviceRegistry.getProviderUnchecked(ApplicationLoader.class).enableApplications();
+    }
+
+    public synchronized void reload() {
+        System.out.println(LanguageManager.get("runtime-try-reload"));
+
+        long startTime = System.currentTimeMillis();
+        this.serviceRegistry.getProviderUnchecked(ApplicationLoader.class).disableApplications();
+
+        this.mainGroupProvider.reload();
+        this.processGroupProvider.reload();
+
+        for (ProcessGroup processGroup : this.processGroupProvider.getProcessGroups()) {
+            for (ProcessInformation information : this.processProvider.getProcessesByProcessGroup(processGroup.getName())) {
+                information.setProcessGroup(processGroup);
+                this.processProvider.updateProcessInformation(information);
+            }
+        }
+
+        LanguageLoader.doReload();
+        this.nodeConfig = this.nodeExecutorConfig.reload();
+
+        this.currentNodeInformation = new NodeInformation(
+                this.currentNodeInformation.getName(),
+                this.currentNodeInformation.getNodeUniqueID(),
+                this.currentNodeInformation.getStartupTime(),
+                this.currentNodeInformation.getUsedMemory(),
+                this.nodeConfig.getMaxMemory()
+        );
+
+        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ClusterManager.class).publishProcessGroupSet(
+                ExecutorAPI.getInstance().getProcessGroupProvider().getProcessGroups()
+        );
+        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ClusterManager.class).publishMainGroupSet(
+                ExecutorAPI.getInstance().getMainGroupProvider().getMainGroups()
+        );
+
+        this.serviceRegistry.getProviderUnchecked(ApplicationLoader.class).detectApplications();
+        this.serviceRegistry.getProviderUnchecked(ApplicationLoader.class).loadApplications();
+        this.serviceRegistry.getProviderUnchecked(ApplicationLoader.class).enableApplications();
+
+        System.out.println(LanguageManager.get("runtime-reload-done", CommonHelper.DECIMAL_FORMAT.format((System.currentTimeMillis() - startTime) / 1000d)));
+    }
+
+    private void shutdown() throws Exception {
+        if (!Thread.currentThread().getName().equals("Shutdown-Hook")) {
+            // prevent call from not shutdown hook thread
+            System.exit(0);
+            return;
+        }
+
+        synchronized (this) {
+            if (running) {
+                running = false;
+            } else {
+                return;
+            }
+        }
+
+        System.out.println(LanguageManager.get("application-stop"));
+
+        System.out.println(LanguageManager.get("application-net-server-close"));
+        this.networkServer.closeAll();
+        System.out.println(LanguageManager.get("application-net-client-close"));
+        this.networkClient.disconnect();
+
+        this.taskScheduler.close();
+        this.serviceRegistry.getProviderUnchecked(ApplicationLoader.class).disableApplications();
+
+        System.out.println(LanguageManager.get("application-stop-processes"));
+        this.processProvider.closeNow(); // important to close the scheduler BEFORE the processes to prevent new processes to start
+        System.out.println(LanguageManager.get("application-stop-process-done"));
+        IOUtils.deleteDirectory(Paths.get("reformcloud/temp"));
+
+        this.console.close(); // close console before logger
+        this.logger.close();
+    }
+
+    private void startNetworkListeners() {
+        for (NetworkAddress networkListener : this.nodeConfig.getNetworkListeners()) {
+            if (networkListener.getHost() == null || networkListener.getPort() < 0) {
+                System.err.println(LanguageManager.get(
+                        "startup-bind-net-listener-fail", networkListener.getHost(), networkListener.getPort()
+                ));
+                continue;
+            }
+
+            this.networkServer.bind(
+                    networkListener.getHost(),
+                    networkListener.getPort(),
+                    () -> new NodeServerEndpointChannelReader()
+            );
+        }
+
+        for (NetworkAddress clusterNode : this.nodeConfig.getClusterNodes()) {
+            if (clusterNode.getHost() == null || clusterNode.getPort() < 0) {
+                System.err.println(LanguageManager.get(
+                        "startup-connect-node-fail", clusterNode.getHost(), clusterNode.getPort()
+                ));
+                continue;
+            }
+
+            if (this.networkClient.connect(
+                    clusterNode.getHost(),
+                    clusterNode.getPort(),
+                    () -> new NodeClientEndpointChannelReader()
+            )) {
+                System.out.println(LanguageManager.get(
+                        "network-node-connection-to-other-node-success", clusterNode.getHost(), clusterNode.getPort()
+                ));
+            } else {
+                System.out.println(LanguageManager.get(
+                        "network-node-connection-to-other-node-not-successful", clusterNode.getHost(), clusterNode.getPort()
+                ));
+            }
+        }
     }
 
     @NotNull
@@ -191,81 +341,70 @@ public final class NodeExecutor extends ExecutorAPI {
         return this.taskScheduler;
     }
 
-    private void bootstrap() {
-        this.console = new DefaultNodeConsole();
-        this.logger = new CloudLogger(this.console.getLineReader());
-
-        this.nodeExecutorConfig.init();
-        this.nodeConfig = this.nodeExecutorConfig.getNodeConfig();
-        this.nodeInformationProvider = new DefaultNodeNodeInformationProvider(this.currentNodeInformation = new NodeInformation(
-                this.nodeConfig.getName(),
-                this.nodeConfig.getUniqueID(),
-                System.currentTimeMillis(),
-                0L,
-                this.nodeConfig.getMaxMemory(),
-                Collections.emptyList()
-        ));
-
-        TemplateBackendManager.registerDefaults();
-
-        this.taskScheduler.addPermanentTask(new AutoStartRunnable());
-        this.taskScheduler.addPermanentTask(new AutoStopRunnable());
-        this.taskScheduler.addPermanentTask(new NodeInformationUpdateRunnable());
-        this.taskScheduler.addPermanentTask(new ServerWatchdogRunnable());
-        this.taskScheduler.addPermanentTask(new ProcessScreenTickRunnable());
-
-        this.loadPacketHandlers();
-
-        this.nodeConfig.getNetworkListeners().forEach(e -> this.networkServer.bind(
-                e.getHost(),
-                e.getPort(),
-                () -> new NodeEndpointChannelReader(),
-                new NodeChallengeAuthHandler(new SharedChallengeProvider(this.nodeExecutorConfig.getConnectionKey()), new NodeNetworkSuccessHandler())
-        ));
-
-        this.applicationLoader.loadApplications();
-
-        if (this.nodeConfig.getClusterNodes().isEmpty()) {
-            System.out.println(LanguageManager.get("network-node-no-other-nodes-defined"));
-        } else {
-            if (this.nodeExecutorConfig.getConnectionKey() == null) {
-                System.out.println(LanguageManager.get("network-node-try-connect-with-no-key"));
-            } else {
-                this.nodeConfig.getClusterNodes().forEach(e -> {
-                    if (this.networkClient.connect(
-                            e.getHost(),
-                            e.getPort(),
-                            () -> new NodeEndpointChannelReader(),
-                            new ClientChallengeAuthHandler(
-                                    NodeExecutor.getInstance().getNodeExecutorConfig().getConnectionKey(),
-                                    NodeExecutor.getInstance().getNodeConfig().getName(),
-                                    () -> new JsonConfiguration().add("info", NodeExecutor.getInstance().getNodeNetworkManager().getCluster().getSelfNode()),
-                                    context -> NodeNetworkClient.CONNECTIONS.remove(((InetSocketAddress) context.channel().remoteAddress()).getAddress().getHostAddress())
-                            ))
-                    ) {
-                        System.out.println(LanguageManager.get(
-                                "network-node-connection-to-other-node-success", e.getHost(), e.getPort()
-                        ));
-                        this.clusterSyncManager.getWaitingConnections().add(e.getHost());
-                    } else {
-                        System.out.println(LanguageManager.get(
-                                "network-node-connection-to-other-node-not-successful", e.getHost(), e.getPort()
-                        ));
-                    }
-                });
-            }
-        }
-
-        this.loadCommands();
-        this.cloudTickWorker.startTick();
+    @NotNull
+    public CloudTickWorker getCloudTickWorker() {
+        return this.cloudTickWorker;
     }
 
+    @NotNull
     public NodeConfig getNodeConfig() {
         return this.nodeConfig;
     }
 
+    @NotNull
     public NodeExecutorConfig getNodeExecutorConfig() {
         return this.nodeExecutorConfig;
+    }
+
+    @NotNull
+    public NodeInformation updateCurrentNodeInformation() {
+        this.currentNodeInformation.update();
+        return this.currentNodeInformation;
+    }
+
+    @NotNull
+    public NodeInformation getCurrentNodeInformation() {
+        return this.currentNodeInformation;
+    }
+
+    @NotNull
+    public NetworkAddress getAnyAddress() {
+        List<NetworkAddress> networkListeners = this.nodeConfig.getNetworkListeners();
+        Conditions.isTrue(!networkListeners.isEmpty(), "Try to run cloud system with no network listener configured");
+        return networkListeners.size() == 1 ? networkListeners.get(0) : networkListeners.get(new Random().nextInt(networkListeners.size()));
+    }
+
+    @NotNull
+    public String getSelfName() {
+        return this.nodeConfig.getName();
+    }
+
+    @NotNull
+    public DefaultNodeConsole getConsole() {
+        return this.console;
+    }
+
+    @NotNull
+    public DefaultNodeMainGroupProvider getDefaultMainGroupProvider() {
+        return this.mainGroupProvider;
+    }
+
+    @NotNull
+    public DefaultNodeProcessGroupProvider getDefaultProcessGroupProvider() {
+        return this.processGroupProvider;
+    }
+
+    @NotNull
+    public DefaultNodeProcessProvider getDefaultNodeProcessProvider() {
+        return this.processProvider;
+    }
+
+    public boolean isOwnIdentity(@NotNull String name) {
+        return this.nodeConfig.getName().equals(name);
+    }
+
+    public static boolean isRunning() {
+        return running;
     }
 
     private void loadCommands() {
@@ -287,10 +426,6 @@ public final class NodeExecutor extends ExecutorAPI {
         PacketProvider packetProvider = ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class);
     }
 
-    public CloudTickWorker getCloudTickWorker() {
-        return this.cloudTickWorker;
-    }
-
     public boolean canStartProcesses(int neededMemory) {
         AtomicLong atomicLong = new AtomicLong(neededMemory);
         for (DefaultNodeLocalProcessWrapper processWrapper : this.processProvider.getProcessWrappers()) {
@@ -307,26 +442,6 @@ public final class NodeExecutor extends ExecutorAPI {
         return cpuUsageSystem <= 0 || cpuUsageSystem * 100 < this.nodeConfig.getMaxSystemCpuUsage();
     }
 
-    public static boolean isRunning() {
-        return running;
-    }
-
-    public DefaultNodeConsole getConsole() {
-        return this.console;
-    }
-
-    public DefaultNodeMainGroupProvider getDefaultMainGroupProvider() {
-        return this.mainGroupProvider;
-    }
-
-    public DefaultNodeProcessGroupProvider getDefaultProcessGroupProvider() {
-        return this.processGroupProvider;
-    }
-
-    public DefaultNodeProcessProvider getDefaultNodeProcessProvider() {
-        return this.processProvider;
-    }
-
     private void registerDefaultServices() {
         this.serviceRegistry.setProvider(CommandManager.class, new DefaultCommandManager(), false, true);
         this.serviceRegistry.setProvider(ApplicationLoader.class, new DefaultApplicationLoader(), false, true);
@@ -337,28 +452,5 @@ public final class NodeExecutor extends ExecutorAPI {
         this.serviceRegistry.setProvider(QueryManager.class, new DefaultQueryManager(), false, true);
         this.serviceRegistry.setProvider(ProcessFactoryController.class, new DefaultProcessFactoryController(this.processProvider), false, true);
         this.serviceRegistry.setProvider(ProcessScreenController.class, new DefaultProcessScreenController(), false, true);
-    }
-
-    public @NotNull NodeInformation updateCurrentNodeInformation() {
-        this.currentNodeInformation.update();
-        return this.currentNodeInformation;
-    }
-
-    public @NotNull NodeInformation getCurrentNodeInformation() {
-        return this.currentNodeInformation;
-    }
-
-    public @NotNull NetworkAddress getAnyAddress() {
-        List<NetworkAddress> networkListeners = this.nodeConfig.getNetworkListeners();
-        Conditions.isTrue(!networkListeners.isEmpty(), "Try to run cloud system with no network listener configured");
-        return networkListeners.size() == 1 ? networkListeners.get(0) : networkListeners.get(new Random().nextInt(networkListeners.size()));
-    }
-
-    public @NotNull String getSelfName() {
-        return this.nodeConfig.getName();
-    }
-
-    public boolean isOwnIdentity(@NotNull String name) {
-        return this.nodeConfig.getName().equals(name);
     }
 }

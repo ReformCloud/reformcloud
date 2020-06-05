@@ -22,28 +22,47 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.node.network;
+package systems.reformcloud.reformcloud2.protocol.shared;
 
-import io.netty.channel.ChannelHandlerContext;
 import org.jetbrains.annotations.NotNull;
+import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.shared.SharedEndpointChannelReader;
-import systems.reformcloud.reformcloud2.executor.api.network.packet.Packet;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
+import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
+import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
 
-public final class NodeEndpointChannelReader extends SharedEndpointChannelReader {
+public class PacketAuthSuccess extends ProtocolPacket {
 
-    @Override
-    public boolean shouldHandle(@NotNull Packet packet) {
-        return super.networkChannel.isAuthenticated() || packet.getId() >= NetworkUtil.AUTH_BUS && packet.getId() <= NetworkUtil.AUTH_BUS_END;
+    public PacketAuthSuccess() {
+    }
+
+    public PacketAuthSuccess(JsonConfiguration data) {
+        this.data = data;
+    }
+
+    private JsonConfiguration data;
+
+    public JsonConfiguration getData() {
+        return this.data;
     }
 
     @Override
-    public void channelInactive(@NotNull ChannelHandlerContext context) {
-
+    public int getId() {
+        return NetworkUtil.AUTH_BUS_END;
     }
 
     @Override
-    public void channelActive(@NotNull ChannelHandlerContext context) {
+    public void handlePacketReceive(@NotNull EndpointChannelReader reader, @NotNull NetworkChannel channel) {
+    }
 
+    @Override
+    public void write(@NotNull ProtocolBuffer buffer) {
+        buffer.writeArray(this.data.toPrettyBytes());
+    }
+
+    @Override
+    public void read(@NotNull ProtocolBuffer buffer) {
+        this.data = new JsonConfiguration(buffer.readArray());
     }
 }

@@ -25,27 +25,30 @@
 package systems.reformcloud.reformcloud2.node.commands;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.commands.basic.GlobalCommand;
-import systems.reformcloud.reformcloud2.executor.api.commands.source.CommandSource;
+import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
+import systems.reformcloud.reformcloud2.executor.api.command.Command;
+import systems.reformcloud.reformcloud2.executor.api.command.CommandSender;
 import systems.reformcloud.reformcloud2.executor.api.language.LanguageManager;
-import systems.reformcloud.reformcloud2.executor.api.process.running.manager.SharedRunningProcessManager;
+import systems.reformcloud.reformcloud2.executor.api.wrappers.ProcessWrapper;
 
-public final class CommandLog extends GlobalCommand {
+import java.util.Optional;
 
-    public CommandLog() {
-        super("log", "reformcloud.command.log", "Uploads the log of a process");
-    }
+public final class CommandLog implements Command {
 
     @Override
-    public boolean handleCommand(@NotNull CommandSource commandSource, String @NotNull [] strings) {
+    public void process(@NotNull CommandSender sender, String[] strings, @NotNull String commandLine) {
         if (strings.length == 0) {
-            commandSource.sendMessage("log <name>");
-            return true;
+            sender.sendMessage("log <name>");
+            return;
         }
 
-        SharedRunningProcessManager.getProcessByName(strings[0])
-                .ifPresent(runningProcess -> System.out.println(runningProcess.uploadLog()))
-                .ifEmpty(e -> System.out.println(LanguageManager.get("command-process-process-unknown", strings[0])));
-        return true;
+        Optional<ProcessWrapper> wrapper = ExecutorAPI.getInstance().getProcessProvider().getProcessByName(strings[0]);
+        if (!wrapper.isPresent()) {
+            sender.sendMessage(LanguageManager.get("command-process-process-unknown", strings[0]));
+            return;
+        }
+
+        Optional<String> logUrl = wrapper.get().uploadLog();
+        logUrl.ifPresent(e -> sender.sendMessage(e));
     }
 }

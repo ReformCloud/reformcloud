@@ -122,4 +122,9 @@ public class DefaultNodeProcessGroupProvider implements ProcessGroupProvider {
         });
         return processGroup.orElse(null);
     }
+
+    public void reload() {
+        this.processGroups.clear();
+        this.processGroups.addAll(this.fileRegistry.readKeys(e -> e.get("key", ProcessGroup.TYPE)));
+    }
 }

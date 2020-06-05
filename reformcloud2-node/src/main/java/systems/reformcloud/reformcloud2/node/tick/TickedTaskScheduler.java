@@ -45,6 +45,8 @@ public final class TickedTaskScheduler {
     private final Queue<TickedTaskSchedulerTask<?>> queue = new ConcurrentLinkedQueue<>();
     private final Collection<Runnable> permanentTasks = new CopyOnWriteArrayList<>();
 
+    private boolean closed = false;
+
     @NotNull
     public <T> Task<T> queue(@NotNull Callable<T> callable) {
         Task<T> task = new DefaultTask<>();
@@ -71,7 +73,21 @@ public final class TickedTaskScheduler {
         this.permanentTasks.add(runnable);
     }
 
+    public void close() {
+        synchronized (this) {
+            if (this.closed) {
+                return;
+            }
+
+            this.closed = true;
+        }
+    }
+
     void heartBeat() {
+        if (this.closed) {
+            return;
+        }
+
         AsyncCatcher.ensureMainThread("scheduler heart beat");
 
         TickedTaskSchedulerTask<?> next = this.element();
@@ -86,6 +102,10 @@ public final class TickedTaskScheduler {
     }
 
     void fullHeartBeat() {
+        if (this.closed) {
+            return;
+        }
+
         AsyncCatcher.ensureMainThread("scheduler full heart beat");
 
         for (Runnable permanentTask : this.permanentTasks) {

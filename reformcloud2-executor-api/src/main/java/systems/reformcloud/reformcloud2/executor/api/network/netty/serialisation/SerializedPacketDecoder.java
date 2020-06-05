@@ -45,7 +45,7 @@ public class SerializedPacketDecoder extends MessageToMessageDecoder<ByteBuf> {
             return;
         }
 
-        int packetId = NetworkUtil.read(byteBuf);
+        int packetId = NetworkUtil.readVarInt(byteBuf);
 
         Optional<Packet> optionalPacket = ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).getPacketById(packetId);
         if (optionalPacket.isPresent()) {

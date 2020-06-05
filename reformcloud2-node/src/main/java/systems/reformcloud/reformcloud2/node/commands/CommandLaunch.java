@@ -27,26 +27,20 @@ package systems.reformcloud.reformcloud2.node.commands;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.CommonHelper;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.commands.basic.GlobalCommand;
-import systems.reformcloud.reformcloud2.executor.api.commands.source.CommandSource;
+import systems.reformcloud.reformcloud2.executor.api.builder.ProcessBuilder;
+import systems.reformcloud.reformcloud2.executor.api.command.Command;
+import systems.reformcloud.reformcloud2.executor.api.command.CommandSender;
 import systems.reformcloud.reformcloud2.executor.api.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.groups.template.Template;
 import systems.reformcloud.reformcloud2.executor.api.language.LanguageManager;
-import systems.reformcloud.reformcloud2.executor.api.process.api.ProcessConfigurationBuilder;
+import systems.reformcloud.reformcloud2.executor.api.process.ProcessState;
 import systems.reformcloud.reformcloud2.executor.api.process.api.ProcessInclusion;
 import systems.reformcloud.reformcloud2.executor.api.utility.StringUtil;
 import systems.reformcloud.reformcloud2.executor.api.utility.list.Streams;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Properties;
-import java.util.UUID;
+import java.util.*;
 
-public final class CommandLaunch extends GlobalCommand {
-
-    public CommandLaunch() {
-        super("launch", "reformcloud.command.launch", "Launches new processes", "start", "prepare", "new");
-    }
+public final class CommandLaunch implements Command {
 
     @NotNull
     private static Collection<ProcessInclusion> parseInclusions(@NotNull String from) {
@@ -63,8 +57,7 @@ public final class CommandLaunch extends GlobalCommand {
         return out;
     }
 
-    @Override
-    public void describeCommandToSender(@NotNull CommandSource source) {
+    public void describeCommandToSender(@NotNull CommandSender source) {
         source.sendMessages((
                 "launch <group-name>            | Creates a new process bases on the group\n" +
                         " --template=[template]         | Uses a specific template for the startup (default: random)\n" +
@@ -81,29 +74,29 @@ public final class CommandLaunch extends GlobalCommand {
     }
 
     @Override
-    public boolean handleCommand(@NotNull CommandSource commandSource, @NotNull String[] strings) {
+    public void process(@NotNull CommandSender sender, String[] strings, @NotNull String commandLine) {
         if (strings.length == 0) {
-            this.describeCommandToSender(commandSource);
-            return true;
+            this.describeCommandToSender(sender);
+            return;
         }
 
-        ProcessGroup base = ExecutorAPI.getInstance().getSyncAPI().getGroupSyncAPI().getProcessGroup(strings[0]);
-        if (base == null) {
-            commandSource.sendMessage(LanguageManager.get("command-launch-start-not-possible-group-not-exists", strings[0]));
-            return true;
+        Optional<ProcessGroup> base = ExecutorAPI.getInstance().getProcessGroupProvider().getProcessGroup(strings[0]);
+        if (!base.isPresent()) {
+            sender.sendMessage(LanguageManager.get("command-launch-start-not-possible-group-not-exists", strings[0]));
+            return;
         }
 
-        ProcessConfigurationBuilder builder = ProcessConfigurationBuilder.newBuilder(base);
+        ProcessBuilder builder = ExecutorAPI.getInstance().getProcessProvider().createProcess().group(base.get());
         Properties properties = StringUtil.calcProperties(strings, 1);
 
         boolean prepareOnly = false;
         int amount = 1;
 
         if (properties.containsKey("template")) {
-            Template baseTemplate = Streams.filter(base.getTemplates(), e -> e.getName().equals(properties.getProperty("template")));
+            Template baseTemplate = Streams.filter(base.get().getTemplates(), e -> e.getName().equals(properties.getProperty("template")));
             if (baseTemplate == null) {
-                commandSource.sendMessage(LanguageManager.get("command-launch-template-not-exists", properties.getProperty("template"), base.getName()));
-                return true;
+                sender.sendMessage(LanguageManager.get("command-launch-template-not-exists", properties.getProperty("template"), base.get().getName()));
+                return;
             }
 
             builder.template(baseTemplate);
@@ -112,8 +105,8 @@ public final class CommandLaunch extends GlobalCommand {
         if (properties.containsKey("unique-id")) {
             UUID uniqueID = CommonHelper.tryParse(properties.getProperty("unique-id"));
             if (uniqueID == null) {
-                commandSource.sendMessage(LanguageManager.get("command-unique-id-failed", properties.getProperty("unique-id")));
-                return true;
+                sender.sendMessage(LanguageManager.get("command-unique-id-failed", properties.getProperty("unique-id")));
+                return;
             }
 
             builder.uniqueId(uniqueID);
@@ -126,28 +119,18 @@ public final class CommandLaunch extends GlobalCommand {
         if (properties.containsKey("max-memory")) {
             Integer maxMemory = CommonHelper.fromString(properties.getProperty("max-memory"));
             if (maxMemory == null || maxMemory <= 100) {
-                commandSource.sendMessage(LanguageManager.get("command-integer-failed", 100, properties.getProperty("max-memory")));
-                return true;
+                sender.sendMessage(LanguageManager.get("command-integer-failed", 100, properties.getProperty("max-memory")));
+                return;
             }
 
-            builder.maxMemory(maxMemory);
-        }
-
-        if (properties.containsKey("port")) {
-            Integer port = CommonHelper.fromString(properties.getProperty("port"));
-            if (port == null || port <= 0) {
-                commandSource.sendMessage(LanguageManager.get("command-integer-failed", 0, properties.getProperty("port")));
-                return true;
-            }
-
-            builder.port(port);
+            builder.memory(maxMemory);
         }
 
         if (properties.containsKey("id")) {
             Integer id = CommonHelper.fromString(properties.getProperty("id"));
             if (id == null || id <= 0) {
-                commandSource.sendMessage(LanguageManager.get("command-integer-failed", 0, properties.getProperty("id")));
-                return true;
+                sender.sendMessage(LanguageManager.get("command-integer-failed", 0, properties.getProperty("id")));
+                return;
             }
 
             builder.id(id);
@@ -156,8 +139,8 @@ public final class CommandLaunch extends GlobalCommand {
         if (properties.containsKey("max-players")) {
             Integer maxPlayers = CommonHelper.fromString(properties.getProperty("max-players"));
             if (maxPlayers == null || maxPlayers <= 0) {
-                commandSource.sendMessage(LanguageManager.get("command-integer-failed", 0, properties.getProperty("max-players")));
-                return true;
+                sender.sendMessage(LanguageManager.get("command-integer-failed", 0, properties.getProperty("max-players")));
+                return;
             }
 
             builder.maxPlayers(maxPlayers);
@@ -170,8 +153,8 @@ public final class CommandLaunch extends GlobalCommand {
         if (properties.containsKey("prepare-only")) {
             Boolean prepare = CommonHelper.booleanFromString(properties.getProperty("prepare-only"));
             if (prepare == null) {
-                commandSource.sendMessage(LanguageManager.get("command-required-boolean", properties.getProperty("prepare-only")));
-                return true;
+                sender.sendMessage(LanguageManager.get("command-required-boolean", properties.getProperty("prepare-only")));
+                return;
             }
 
             prepareOnly = prepare;
@@ -180,8 +163,8 @@ public final class CommandLaunch extends GlobalCommand {
         if (properties.containsKey("amount")) {
             Integer amountToStart = CommonHelper.fromString(properties.getProperty("amount"));
             if (amountToStart == null || amountToStart <= 0) {
-                commandSource.sendMessage(LanguageManager.get("command-integer-failed", 0, properties.getProperty("amount")));
-                return true;
+                sender.sendMessage(LanguageManager.get("command-integer-failed", 0, properties.getProperty("amount")));
+                return;
             }
 
             amount = amountToStart;
@@ -189,18 +172,16 @@ public final class CommandLaunch extends GlobalCommand {
 
         if (prepareOnly) {
             for (int i = 1; i <= amount; i++) {
-                ExecutorAPI.getInstance().getAsyncAPI().getProcessAsyncAPI().prepareProcessAsync(builder.build()).onComplete(info -> {
-                });
+                builder.prepare();
             }
-            commandSource.sendMessage(LanguageManager.get("command-launch-prepared-processes", amount, base.getName()));
+
+            sender.sendMessage(LanguageManager.get("command-launch-prepared-processes", amount, base.get().getName()));
         } else {
             for (int i = 1; i <= amount; i++) {
-                ExecutorAPI.getInstance().getAsyncAPI().getProcessAsyncAPI().startProcessAsync(builder.build()).onComplete(info -> {
-                });
+                builder.prepare().thenAccept(e -> e.setRuntimeStateAsync(ProcessState.STARTED));
             }
-            commandSource.sendMessage(LanguageManager.get("command-launch-started-processes", amount, base.getName()));
-        }
 
-        return true;
+            sender.sendMessage(LanguageManager.get("command-launch-started-processes", amount, base.get().getName()));
+        }
     }
 }

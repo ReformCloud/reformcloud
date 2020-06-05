@@ -35,7 +35,7 @@ import java.util.Optional;
 public interface NodeProcessWrapper {
 
     @NotNull
-    Optional<NodeInformation> getNodeInformation();
+    NodeInformation getNodeInformation();
 
     @NotNull
     Optional<NodeInformation> requestNodeInformationUpdate();
@@ -47,7 +47,7 @@ public interface NodeProcessWrapper {
     @UnmodifiableView Collection<String> tabCompleteCommandLine(@NotNull String commandLine);
 
     @NotNull
-    default Task<Optional<NodeInformation>> getNodeInformationAsync() {
+    default Task<NodeInformation> getNodeInformationAsync() {
         return Task.supply(this::getNodeInformation);
     }
 

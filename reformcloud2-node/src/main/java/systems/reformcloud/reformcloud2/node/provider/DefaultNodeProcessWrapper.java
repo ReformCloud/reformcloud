@@ -50,8 +50,8 @@ public class DefaultNodeProcessWrapper implements NodeProcessWrapper {
 
     @NotNull
     @Override
-    public Optional<NodeInformation> getNodeInformation() {
-        return Optional.of(this.nodeInformation);
+    public NodeInformation getNodeInformation() {
+        return this.nodeInformation;
     }
 
     @NotNull

@@ -68,7 +68,8 @@ public interface EndpointChannelReader {
      * @param cause   The cause why the exception occurred
      */
     default void exceptionCaught(@NotNull ChannelHandlerContext context, @NotNull Throwable cause) {
-        if (!(cause instanceof IOException)) {
+        boolean debug = Boolean.getBoolean("systems.reformcloud.debug-net");
+        if (!(cause instanceof IOException) && debug) {
             System.err.println("Exception in channel " + context.channel().remoteAddress());
             cause.printStackTrace();
         }

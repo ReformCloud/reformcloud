@@ -30,10 +30,8 @@ import systems.reformcloud.reformcloud2.executor.api.network.SerializableObject;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessRuntimeInformation;
 
-import java.util.Collection;
 import java.util.Objects;
 import java.util.UUID;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 public class NodeInformation implements SerializableObject {
 
@@ -49,17 +47,14 @@ public class NodeInformation implements SerializableObject {
     private long maxMemory;
 
     private ProcessRuntimeInformation processRuntimeInformation;
-    private Collection<NodeProcess> startedProcesses;
 
-    public NodeInformation(String name, UUID nodeUniqueID, long startupTime,
-                           long usedMemory, long maxMemory, Collection<NodeProcess> startedProcesses) {
+    public NodeInformation(String name, UUID nodeUniqueID, long startupTime, long usedMemory, long maxMemory) {
         this.name = name;
         this.nodeUniqueID = nodeUniqueID;
         this.startupTime = this.lastUpdate = startupTime;
         this.usedMemory = usedMemory;
         this.maxMemory = maxMemory;
         this.processRuntimeInformation = ProcessRuntimeInformation.create();
-        this.startedProcesses = new CopyOnWriteArrayList<>(startedProcesses);
     }
 
     @NotNull
@@ -97,11 +92,6 @@ public class NodeInformation implements SerializableObject {
         return this.processRuntimeInformation;
     }
 
-    @NotNull
-    public Collection<NodeProcess> getStartedProcesses() {
-        return this.startedProcesses;
-    }
-
     public void addUsedMemory(int memory) {
         this.usedMemory += memory;
     }
@@ -126,12 +116,7 @@ public class NodeInformation implements SerializableObject {
                 this.getMaxMemory() == that.getMaxMemory() &&
                 Objects.equals(this.getName(), that.getName()) &&
                 Objects.equals(this.getNodeUniqueID(), that.getNodeUniqueID()) &&
-                Objects.equals(this.getProcessRuntimeInformation(), that.getProcessRuntimeInformation()) &&
-                Objects.equals(this.getStartedProcesses(), that.getStartedProcesses());
-    }
-
-    public boolean canEqual(@NotNull NodeInformation other) {
-        return this.getNodeUniqueID().equals(other.getNodeUniqueID());
+                Objects.equals(this.getProcessRuntimeInformation(), that.getProcessRuntimeInformation());
     }
 
     @Override
@@ -145,7 +130,6 @@ public class NodeInformation implements SerializableObject {
         buffer.writeLong(this.maxMemory);
 
         buffer.writeObject(this.processRuntimeInformation);
-        buffer.writeObjects(this.startedProcesses);
     }
 
     @Override
@@ -159,6 +143,5 @@ public class NodeInformation implements SerializableObject {
         this.maxMemory = buffer.readLong();
 
         this.processRuntimeInformation = buffer.readObject(ProcessRuntimeInformation.class);
-        this.startedProcesses = buffer.readObjects(NodeProcess.class);
     }
 }

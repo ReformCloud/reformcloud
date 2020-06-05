@@ -70,7 +70,7 @@ public final class NodeConfig {
     }
 
     public long getMaxMemory() {
-        return this.maxMemory;
+        return this.maxMemory < 512 ? 512 : this.maxMemory;
     }
 
     public String getStartHost() {

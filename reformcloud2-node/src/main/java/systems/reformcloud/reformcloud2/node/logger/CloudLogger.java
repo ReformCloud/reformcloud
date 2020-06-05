@@ -73,4 +73,8 @@ public class CloudLogger extends Logger {
     void doLog(@NotNull LogRecord record) {
         super.log(record);
     }
+
+    public void close() {
+        this.dispatcher.interrupt();
+    }
 }

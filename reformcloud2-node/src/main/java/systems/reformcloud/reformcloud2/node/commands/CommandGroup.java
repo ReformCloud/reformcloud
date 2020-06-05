@@ -27,8 +27,8 @@ package systems.reformcloud.reformcloud2.node.commands;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.CommonHelper;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.commands.basic.GlobalCommand;
-import systems.reformcloud.reformcloud2.executor.api.commands.source.CommandSource;
+import systems.reformcloud.reformcloud2.executor.api.command.Command;
+import systems.reformcloud.reformcloud2.executor.api.command.CommandSender;
 import systems.reformcloud.reformcloud2.executor.api.groups.MainGroup;
 import systems.reformcloud.reformcloud2.executor.api.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.groups.template.RuntimeConfiguration;
@@ -41,7 +41,7 @@ import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessState;
 import systems.reformcloud.reformcloud2.executor.api.utility.StringUtil;
 import systems.reformcloud.reformcloud2.executor.api.utility.list.Streams;
-import systems.reformcloud.reformcloud2.executor.api.utility.thread.AbsoluteThread;
+import systems.reformcloud.reformcloud2.executor.api.wrappers.ProcessWrapper;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -49,14 +49,9 @@ import java.util.stream.Collectors;
 import static systems.reformcloud.reformcloud2.executor.api.groups.basic.DefaultProcessGroup.PROXY_INCLUSION;
 import static systems.reformcloud.reformcloud2.executor.api.groups.basic.DefaultProcessGroup.SERVER_INCLUSION;
 
-public final class CommandGroup extends GlobalCommand {
+public final class CommandGroup implements Command {
 
-    public CommandGroup() {
-        super("group", "reformcloud.command.group", "Manage all sub and main groups", "g", "groups");
-    }
-
-    @Override
-    public void describeCommandToSender(@NotNull CommandSource source) {
+    public void describeCommandToSender(@NotNull CommandSender source) {
         source.sendMessages((
                 "group <list>                                   | Shows all registered main and process groups\n" +
                         "group <sub | main> <name> [info]               | Shows information about a specific group\n" +
@@ -93,71 +88,83 @@ public final class CommandGroup extends GlobalCommand {
     }
 
     @Override
-    public boolean handleCommand(@NotNull CommandSource commandSource, @NotNull String[] strings) {
+    public void process(@NotNull CommandSender sender, String[] strings, @NotNull String commandLine) {
         if (strings.length == 1 && strings[0].equalsIgnoreCase("list")) {
-            this.listGroupsToSender(commandSource);
-            return true;
+            this.listGroupsToSender(sender);
+            return;
         }
 
         if (strings.length <= 2) {
-            this.describeCommandToSender(commandSource);
-            return true;
+            this.describeCommandToSender(sender);
+            return;
         }
 
         Properties properties = StringUtil.calcProperties(strings, 2);
         if (strings[0].equalsIgnoreCase("sub")) {
-            this.handleSubGroupRequest(commandSource, strings, properties);
-            return true;
+            this.handleSubGroupRequest(sender, strings, properties);
+            return;
         }
 
         if (strings[0].equalsIgnoreCase("main")) {
-            this.handleMainGroupRequest(commandSource, strings, properties);
-            return true;
+            this.handleMainGroupRequest(sender, strings, properties);
+            return;
         }
 
-        this.describeCommandToSender(commandSource);
-        return true;
+        this.describeCommandToSender(sender);
     }
 
-    private void handleSubGroupRequest(CommandSource source, String[] strings, Properties properties) {
-        ProcessGroup processGroup = ExecutorAPI.getInstance().getSyncAPI().getGroupSyncAPI().getProcessGroup(strings[1]);
-        if (processGroup == null) {
+    private void handleSubGroupRequest(CommandSender source, String[] strings, Properties properties) {
+        Optional<ProcessGroup> processGroup = ExecutorAPI.getInstance().getProcessGroupProvider().getProcessGroup(strings[1]);
+        if (!processGroup.isPresent()) {
             source.sendMessage(LanguageManager.get("command-group-sub-group-not-exists", strings[1]));
             return;
         }
 
         if (strings.length == 3 && strings[2].equalsIgnoreCase("stop")) {
             List<ProcessInformation> processes = ExecutorAPI.getInstance()
-                    .getSyncAPI()
-                    .getProcessSyncAPI()
-                    .getProcesses(processGroup.getName())
+                    .getProcessProvider()
+                    .getProcessesByProcessGroup(processGroup.get().getName())
                     .stream()
                     .filter(e -> !e.getProcessDetail().getProcessState().equals(ProcessState.PREPARED))
                     .collect(Collectors.toList());
-            source.sendMessage(LanguageManager.get("command-group-stopping-all-not-prepared", processGroup.getName()));
-            processes.forEach(e -> ExecutorAPI.getInstance().getAsyncAPI().getProcessAsyncAPI().stopProcessAsync(e.getProcessDetail().getProcessUniqueID()).onComplete(f -> {
-            }));
+            source.sendMessage(LanguageManager.get("command-group-stopping-all-not-prepared", processGroup.get().getName()));
 
+            for (ProcessInformation process : processes) {
+                Optional<ProcessWrapper> wrapper = ExecutorAPI.getInstance().getProcessProvider().getProcessByUniqueId(process.getProcessDetail().getProcessUniqueID());
+                wrapper.ifPresent(processWrapper -> processWrapper.setRuntimeStateAsync(ProcessState.STOPPED));
+            }
             return;
         }
 
         if (strings.length == 3 && strings[2].equalsIgnoreCase("kill")) {
-            List<ProcessInformation> processes = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcesses(processGroup.getName());
-            source.sendMessage(LanguageManager.get("command-group-stopping-all", processGroup.getName()));
-            processes.forEach(e -> ExecutorAPI.getInstance().getAsyncAPI().getProcessAsyncAPI().stopProcessAsync(e.getProcessDetail().getProcessUniqueID()).onComplete(f -> {
-            }));
-
+            Collection<ProcessInformation> processes = ExecutorAPI.getInstance()
+                    .getProcessProvider()
+                    .getProcessesByProcessGroup(processGroup.get().getName());
+            source.sendMessage(LanguageManager.get("command-group-stopping-all", processGroup.get().getName()));
+            for (ProcessInformation process : processes) {
+                Optional<ProcessWrapper> wrapper = ExecutorAPI.getInstance().getProcessProvider().getProcessByUniqueId(process.getProcessDetail().getProcessUniqueID());
+                wrapper.ifPresent(processWrapper -> processWrapper.setRuntimeStateAsync(ProcessState.STOPPED));
+            }
             return;
         }
 
         if (strings.length == 3 && strings[2].equalsIgnoreCase("info")) {
-            this.describeProcessGroupToSender(source, processGroup);
+            this.describeProcessGroupToSender(source, processGroup.get());
             return;
         }
 
         if (strings.length == 3 && strings[2].equalsIgnoreCase("delete")) {
-            ExecutorAPI.getInstance().getSyncAPI().getGroupSyncAPI().deleteProcessGroup(processGroup.getName());
-            source.sendMessage(LanguageManager.get("command-group-sub-delete", processGroup.getName()));
+            ExecutorAPI.getInstance().getProcessGroupProvider().deleteProcessGroup(processGroup.get().getName());
+
+            Collection<ProcessInformation> processes = ExecutorAPI.getInstance()
+                    .getProcessProvider()
+                    .getProcessesByProcessGroup(processGroup.get().getName());
+            for (ProcessInformation process : processes) {
+                Optional<ProcessWrapper> wrapper = ExecutorAPI.getInstance().getProcessProvider().getProcessByUniqueId(process.getProcessDetail().getProcessUniqueID());
+                wrapper.ifPresent(processWrapper -> processWrapper.setRuntimeStateAsync(ProcessState.STOPPED));
+            }
+
+            source.sendMessage(LanguageManager.get("command-group-sub-delete", processGroup.get().getName()));
             return;
         }
 
@@ -169,11 +176,11 @@ public final class CommandGroup extends GlobalCommand {
                     return;
                 }
 
-                processGroup.getPlayerAccessConfiguration().setMaintenance(maintenance);
+                processGroup.get().getPlayerAccessConfiguration().setMaintenance(maintenance);
                 source.sendMessage(LanguageManager.get(
                         "command-group-edit",
                         "maintenance",
-                        processGroup.getPlayerAccessConfiguration().isMaintenance()
+                        processGroup.get().getPlayerAccessConfiguration().isMaintenance()
                 ));
             }
 
@@ -184,11 +191,11 @@ public final class CommandGroup extends GlobalCommand {
                     return;
                 }
 
-                processGroup.setStaticProcess(isStatic);
+                processGroup.get().setStaticProcess(isStatic);
                 source.sendMessage(LanguageManager.get(
                         "command-group-edit",
                         "static",
-                        processGroup.isStaticProcess()
+                        processGroup.get().isStaticProcess()
                 ));
             }
 
@@ -199,7 +206,7 @@ public final class CommandGroup extends GlobalCommand {
                     return;
                 }
 
-                processGroup.setCanBeUsedAsLobby(isLobby);
+                processGroup.get().setCanBeUsedAsLobby(isLobby);
                 source.sendMessage(LanguageManager.get(
                         "command-group-edit",
                         "lobby",
@@ -214,11 +221,11 @@ public final class CommandGroup extends GlobalCommand {
                     return;
                 }
 
-                processGroup.getPlayerAccessConfiguration().setMaxPlayers(maxPlayers);
+                processGroup.get().getPlayerAccessConfiguration().setMaxPlayers(maxPlayers);
                 source.sendMessage(LanguageManager.get(
                         "command-group-edit",
                         "max-players",
-                        processGroup.getPlayerAccessConfiguration().getMaxPlayers()
+                        processGroup.get().getPlayerAccessConfiguration().getMaxPlayers()
                 ));
             }
 
@@ -231,7 +238,7 @@ public final class CommandGroup extends GlobalCommand {
                         return;
                     }
 
-                    Template template = processGroup.getTemplate(split[0]);
+                    Template template = processGroup.get().getTemplate(split[0]);
                     if (template != null) {
                         template.getRuntimeConfiguration().setMaxMemory(maxMemory);
                         source.sendMessage(LanguageManager.get(
@@ -250,11 +257,11 @@ public final class CommandGroup extends GlobalCommand {
                     return;
                 }
 
-                processGroup.getStartupConfiguration().setMinOnlineProcesses(minProcessCount);
+                processGroup.get().getStartupConfiguration().setMinOnlineProcesses(minProcessCount);
                 source.sendMessage(LanguageManager.get(
                         "command-group-edit",
                         "min-process-count",
-                        processGroup.getStartupConfiguration().getMinOnlineProcesses()
+                        processGroup.get().getStartupConfiguration().getMinOnlineProcesses()
                 ));
             }
 
@@ -265,11 +272,11 @@ public final class CommandGroup extends GlobalCommand {
                     return;
                 }
 
-                processGroup.getStartupConfiguration().setMaxOnlineProcesses(maxProcessCount);
+                processGroup.get().getStartupConfiguration().setMaxOnlineProcesses(maxProcessCount);
                 source.sendMessage(LanguageManager.get(
                         "command-group-edit",
                         "max-process-count",
-                        processGroup.getStartupConfiguration().getMaxOnlineProcesses()
+                        processGroup.get().getStartupConfiguration().getMaxOnlineProcesses()
                 ));
             }
 
@@ -280,11 +287,11 @@ public final class CommandGroup extends GlobalCommand {
                     return;
                 }
 
-                processGroup.getStartupConfiguration().setAlwaysPreparedProcesses(alwaysPreparedCount);
+                processGroup.get().getStartupConfiguration().setAlwaysPreparedProcesses(alwaysPreparedCount);
                 source.sendMessage(LanguageManager.get(
                         "command-group-edit",
                         "always-prepared-process-count",
-                        processGroup.getStartupConfiguration().getAlwaysPreparedProcesses()
+                        processGroup.get().getStartupConfiguration().getAlwaysPreparedProcesses()
                 ));
             }
 
@@ -295,11 +302,11 @@ public final class CommandGroup extends GlobalCommand {
                     return;
                 }
 
-                processGroup.getStartupConfiguration().setStartPort(startPort);
+                processGroup.get().getStartupConfiguration().setStartPort(startPort);
                 source.sendMessage(LanguageManager.get(
                         "command-group-edit",
                         "start-port",
-                        processGroup.getStartupConfiguration().getStartPort()
+                        processGroup.get().getStartupConfiguration().getStartPort()
                 ));
             }
 
@@ -310,7 +317,7 @@ public final class CommandGroup extends GlobalCommand {
                     return;
                 }
 
-                processGroup.getStartupConfiguration().setStartupPriority(startPriority);
+                processGroup.get().getStartupConfiguration().setStartupPriority(startPriority);
                 source.sendMessage(LanguageManager.get(
                         "command-group-edit",
                         "start-priority",
@@ -320,7 +327,7 @@ public final class CommandGroup extends GlobalCommand {
 
             if (properties.containsKey("startup-pickers")) {
                 List<String> startPickers = this.parseStrings(properties.getProperty("startup-pickers"));
-                processGroup.getStartupConfiguration().setUseOnlyTheseClients(startPickers);
+                processGroup.get().getStartupConfiguration().setUseOnlyTheseClients(startPickers);
                 source.sendMessage(LanguageManager.get(
                         "command-group-edit",
                         "startup-pickers",
@@ -330,8 +337,8 @@ public final class CommandGroup extends GlobalCommand {
 
             if (properties.containsKey("add-startup-pickers")) {
                 List<String> startPickers = this.parseStrings(properties.getProperty("add-startup-pickers"));
-                startPickers.addAll(processGroup.getStartupConfiguration().getUseOnlyTheseClients());
-                processGroup.getStartupConfiguration().setUseOnlyTheseClients(startPickers);
+                startPickers.addAll(processGroup.get().getStartupConfiguration().getUseOnlyTheseClients());
+                processGroup.get().getStartupConfiguration().setUseOnlyTheseClients(startPickers);
                 source.sendMessage(LanguageManager.get(
                         "command-group-edit",
                         "startup-pickers",
@@ -340,9 +347,9 @@ public final class CommandGroup extends GlobalCommand {
             }
 
             if (properties.containsKey("remove-startup-pickers")) {
-                List<String> startPickers = processGroup.getStartupConfiguration().getUseOnlyTheseClients();
+                List<String> startPickers = processGroup.get().getStartupConfiguration().getUseOnlyTheseClients();
                 startPickers.removeAll(this.parseStrings(properties.getProperty("remove-startup-pickers")));
-                processGroup.getStartupConfiguration().setUseOnlyTheseClients(startPickers);
+                processGroup.get().getStartupConfiguration().setUseOnlyTheseClients(startPickers);
                 source.sendMessage(LanguageManager.get(
                         "command-group-edit",
                         "startup-pickers",
@@ -358,7 +365,7 @@ public final class CommandGroup extends GlobalCommand {
                 }
 
                 if (clear) {
-                    processGroup.getStartupConfiguration().setUseOnlyTheseClients(new ArrayList<>());
+                    processGroup.get().getStartupConfiguration().setUseOnlyTheseClients(new ArrayList<>());
                     source.sendMessage(LanguageManager.get(
                             "command-group-edit",
                             "use-specific-start-picker",
@@ -368,9 +375,9 @@ public final class CommandGroup extends GlobalCommand {
             }
 
             if (properties.containsKey("templates")) {
-                List<Template> newTemplates = this.parseTemplates(this.parseStrings(properties.getProperty("templates")), source, processGroup);
+                List<Template> newTemplates = this.parseTemplates(this.parseStrings(properties.getProperty("templates")), source, processGroup.get());
                 if (!newTemplates.isEmpty()) {
-                    processGroup.setTemplates(newTemplates);
+                    processGroup.get().setTemplates(newTemplates);
                     source.sendMessage(LanguageManager.get(
                             "command-group-edit",
                             "templates",
@@ -380,10 +387,10 @@ public final class CommandGroup extends GlobalCommand {
             }
 
             if (properties.containsKey("add-templates")) {
-                List<Template> newTemplates = this.parseTemplates(this.parseStrings(properties.getProperty("add-templates")), source, processGroup);
+                List<Template> newTemplates = this.parseTemplates(this.parseStrings(properties.getProperty("add-templates")), source, processGroup.get());
                 if (!newTemplates.isEmpty()) {
-                    newTemplates.addAll(processGroup.getTemplates());
-                    processGroup.setTemplates(newTemplates);
+                    newTemplates.addAll(processGroup.get().getTemplates());
+                    processGroup.get().setTemplates(newTemplates);
                     source.sendMessage(LanguageManager.get(
                             "command-group-edit",
                             "add-templates",
@@ -394,8 +401,8 @@ public final class CommandGroup extends GlobalCommand {
 
             if (properties.containsKey("remove-templates")) {
                 Collection<String> templatesToRemove = this.parseStrings(properties.getProperty("remove-templates"));
-                Collection<Template> toRemove = Streams.allOf(processGroup.getTemplates(), e -> templatesToRemove.contains(e.getName()));
-                processGroup.getTemplates().removeAll(toRemove);
+                Collection<Template> toRemove = Streams.allOf(processGroup.get().getTemplates(), e -> templatesToRemove.contains(e.getName()));
+                processGroup.get().getTemplates().removeAll(toRemove);
                 source.sendMessage(LanguageManager.get(
                         "command-group-edit",
                         "remove-templates",
@@ -411,7 +418,7 @@ public final class CommandGroup extends GlobalCommand {
                 }
 
                 if (clear) {
-                    processGroup.getTemplates().clear();
+                    processGroup.get().getTemplates().clear();
                     source.sendMessage(LanguageManager.get(
                             "command-group-edit",
                             "templates",
@@ -420,10 +427,10 @@ public final class CommandGroup extends GlobalCommand {
                 }
             }
 
-            ExecutorAPI.getInstance().getSyncAPI().getGroupSyncAPI().updateProcessGroup(processGroup);
-            ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcesses(processGroup.getName()).forEach(e -> {
-                e.setProcessGroup(processGroup);
-                ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(e);
+            ExecutorAPI.getInstance().getProcessGroupProvider().updateProcessGroup(processGroup.get());
+            ExecutorAPI.getInstance().getProcessProvider().getProcessesByProcessGroup(processGroup.get().getName()).forEach(e -> {
+                e.setProcessGroup(processGroup.get());
+                ExecutorAPI.getInstance().getProcessProvider().updateProcessInformation(e);
                 System.out.println(LanguageManager.get("command-group-edited-running-process", e.getProcessDetail().getName()));
             });
             return;
@@ -432,49 +439,52 @@ public final class CommandGroup extends GlobalCommand {
         this.describeCommandToSender(source);
     }
 
-    private void handleMainGroupRequest(CommandSource source, String[] strings, Properties properties) {
-        MainGroup mainGroup = ExecutorAPI.getInstance().getSyncAPI().getGroupSyncAPI().getMainGroup(strings[1]);
-        if (mainGroup == null) {
+    private void handleMainGroupRequest(CommandSender source, String[] strings, Properties properties) {
+        Optional<MainGroup> mainGroup = ExecutorAPI.getInstance().getMainGroupProvider().getMainGroup(strings[1]);
+        if (!mainGroup.isPresent()) {
             source.sendMessage(LanguageManager.get("command-group-main-group-not-exists", strings[1]));
             return;
         }
 
         if (strings.length == 3 && strings[2].equalsIgnoreCase("info")) {
-            this.describeMainGroupToSender(source, mainGroup);
+            this.describeMainGroupToSender(source, mainGroup.get());
             return;
         }
 
         if (strings.length == 3 && strings[2].equalsIgnoreCase("delete")) {
-            ExecutorAPI.getInstance().getSyncAPI().getGroupSyncAPI().deleteMainGroup(mainGroup.getName());
-            source.sendMessage(LanguageManager.get("command-group-main-delete", mainGroup.getName()));
+            ExecutorAPI.getInstance().getMainGroupProvider().deleteMainGroup(mainGroup.get().getName());
+            source.sendMessage(LanguageManager.get("command-group-main-delete", mainGroup.get().getName()));
             return;
         }
 
         if (strings.length == 3 && strings[2].equalsIgnoreCase("stop")) {
-            for (String subGroup : mainGroup.getSubGroups()) {
+            for (String subGroup : mainGroup.get().getSubGroups()) {
                 Collection<ProcessInformation> running = ExecutorAPI.getInstance()
-                        .getSyncAPI()
-                        .getProcessSyncAPI()
-                        .getProcesses(subGroup)
+                        .getProcessProvider()
+                        .getProcessesByProcessGroup(subGroup)
                         .stream()
                         .filter(e -> !e.getProcessDetail().getProcessState().equals(ProcessState.PREPARED))
                         .collect(Collectors.toList());
                 source.sendMessage(LanguageManager.get("command-group-stopping-all-not-prepared", subGroup));
-                running.forEach(e -> ExecutorAPI.getInstance().getAsyncAPI().getProcessAsyncAPI().stopProcessAsync(e.getProcessDetail().getProcessUniqueID()).onComplete(f -> {
-                }));
-                AbsoluteThread.sleep(50);
+
+                for (ProcessInformation information : running) {
+                    Optional<ProcessWrapper> wrapper = ExecutorAPI.getInstance().getProcessProvider().getProcessByUniqueId(information.getProcessDetail().getProcessUniqueID());
+                    wrapper.ifPresent(processWrapper -> processWrapper.setRuntimeStateAsync(ProcessState.STOPPED));
+                }
             }
 
             return;
         }
 
         if (strings.length == 3 && strings[2].equalsIgnoreCase("kill")) {
-            for (String subGroup : mainGroup.getSubGroups()) {
-                Collection<ProcessInformation> running = ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getProcesses(subGroup);
-                source.sendMessage(LanguageManager.get("command-group-stopping-all", subGroup));
-                running.forEach(e -> ExecutorAPI.getInstance().getAsyncAPI().getProcessAsyncAPI().stopProcessAsync(e.getProcessDetail().getProcessUniqueID()).onComplete(f -> {
-                }));
-                AbsoluteThread.sleep(50);
+            for (String subGroup : mainGroup.get().getSubGroups()) {
+                Collection<ProcessInformation> running = ExecutorAPI.getInstance()
+                        .getProcessProvider()
+                        .getProcessesByProcessGroup(subGroup);
+                for (ProcessInformation information : running) {
+                    Optional<ProcessWrapper> wrapper = ExecutorAPI.getInstance().getProcessProvider().getProcessByUniqueId(information.getProcessDetail().getProcessUniqueID());
+                    wrapper.ifPresent(processWrapper -> processWrapper.setRuntimeStateAsync(ProcessState.STOPPED));
+                }
             }
 
             return;
@@ -483,7 +493,7 @@ public final class CommandGroup extends GlobalCommand {
         if (strings.length >= 4 && strings[2].equalsIgnoreCase("edit")) {
             if (properties.containsKey("sub-groups")) {
                 List<String> groups = this.parseStrings(properties.getProperty("sub-groups"));
-                mainGroup.setSubGroups(groups);
+                mainGroup.get().setSubGroups(groups);
                 source.sendMessage(LanguageManager.get(
                         "command-group-edit",
                         "sub-groups",
@@ -493,18 +503,18 @@ public final class CommandGroup extends GlobalCommand {
 
             if (properties.containsKey("add-sub-groups")) {
                 List<String> groups = this.parseStrings(properties.getProperty("add-sub-groups"));
-                Streams.allOf(mainGroup.getSubGroups(), e -> groups.contains(e)).forEach(groups::remove);
-                mainGroup.getSubGroups().addAll(groups);
+                Streams.allOf(mainGroup.get().getSubGroups(), e -> groups.contains(e)).forEach(groups::remove);
+                mainGroup.get().getSubGroups().addAll(groups);
                 source.sendMessage(LanguageManager.get(
                         "command-group-edit",
                         "sub-groups",
-                        String.join(", ", mainGroup.getSubGroups())
+                        String.join(", ", mainGroup.get().getSubGroups())
                 ));
             }
 
             if (properties.containsKey("remove-sub-groups")) {
                 List<String> groups = this.parseStrings(properties.getProperty("remove-sub-groups"));
-                mainGroup.getSubGroups().removeAll(groups);
+                mainGroup.get().getSubGroups().removeAll(groups);
                 source.sendMessage(LanguageManager.get(
                         "command-group-edit",
                         "sub-groups-remove",
@@ -520,7 +530,7 @@ public final class CommandGroup extends GlobalCommand {
                 }
 
                 if (clear) {
-                    mainGroup.getSubGroups().clear();
+                    mainGroup.get().getSubGroups().clear();
                     source.sendMessage(LanguageManager.get(
                             "command-group-edit",
                             "sub-groups",
@@ -529,14 +539,14 @@ public final class CommandGroup extends GlobalCommand {
                 }
             }
 
-            ExecutorAPI.getInstance().getSyncAPI().getGroupSyncAPI().updateMainGroup(mainGroup);
+            ExecutorAPI.getInstance().getMainGroupProvider().updateMainGroup(mainGroup.get());
             return;
         }
 
         this.describeCommandToSender(source);
     }
 
-    private void describeProcessGroupToSender(CommandSource source, ProcessGroup group) {
+    private void describeProcessGroupToSender(CommandSender source, ProcessGroup group) {
         StringBuilder builder = new StringBuilder();
 
         builder.append(" > Name        - ").append(group.getName()).append("\n");
@@ -564,7 +574,7 @@ public final class CommandGroup extends GlobalCommand {
         source.sendMessages(builder.toString().split("\n"));
     }
 
-    private void describeMainGroupToSender(CommandSource source, MainGroup mainGroup) {
+    private void describeMainGroupToSender(CommandSender source, MainGroup mainGroup) {
         String prefix = " > Sub-Groups (" + mainGroup.getSubGroups().size() + ")";
         StringBuilder append = new StringBuilder();
         for (int i = 7; i <= prefix.length(); i++) {
@@ -578,11 +588,11 @@ public final class CommandGroup extends GlobalCommand {
         source.sendMessages(s.split("\n"));
     }
 
-    private void listGroupsToSender(CommandSource source) {
+    private void listGroupsToSender(CommandSender source) {
         StringBuilder builder = new StringBuilder();
 
-        List<MainGroup> mainGroups = ExecutorAPI.getInstance().getSyncAPI().getGroupSyncAPI().getMainGroups();
-        List<ProcessGroup> processGroups = ExecutorAPI.getInstance().getSyncAPI().getGroupSyncAPI().getProcessGroups();
+        Collection<MainGroup> mainGroups = ExecutorAPI.getInstance().getMainGroupProvider().getMainGroups();
+        Collection<ProcessGroup> processGroups = ExecutorAPI.getInstance().getProcessGroupProvider().getProcessGroups();
 
         builder.append(" Main-Groups (").append(mainGroups.size()).append(")");
         for (MainGroup mainGroup : mainGroups) {
@@ -628,7 +638,7 @@ public final class CommandGroup extends GlobalCommand {
         return out;
     }
 
-    private List<Template> parseTemplates(Collection<String> collection, CommandSource source, ProcessGroup processGroup) {
+    private List<Template> parseTemplates(Collection<String> collection, CommandSender source, ProcessGroup processGroup) {
         List<Template> newTemplates = new ArrayList<>();
         for (String template : collection) {
             String[] templateConfig = template.split("/");
@@ -642,8 +652,8 @@ public final class CommandGroup extends GlobalCommand {
                 continue;
             }
 
-            TemplateBackend backend = TemplateBackendManager.get(templateConfig[1]);
-            if (backend == null) {
+            Optional<TemplateBackend> backend = TemplateBackendManager.get(templateConfig[1]);
+            if (!backend.isPresent()) {
                 source.sendMessage(LanguageManager.get("command-group-template-backend-invalid", templateConfig[1]));
                 continue;
             }
@@ -654,10 +664,11 @@ public final class CommandGroup extends GlobalCommand {
                 continue;
             }
 
-            newTemplates.add(new Template(0, templateConfig[0], false, backend.getName(), "#", new RuntimeConfiguration(
+            newTemplates.add(new Template(0, templateConfig[0], false, backend.get().getName(), "#", new RuntimeConfiguration(
                     version.isServer() ? 512 : 256, new ArrayList<>(), new HashMap<>()
             ), version, new ArrayList<>(), new ArrayList<>(Collections.singletonList(version.isServer() ? SERVER_INCLUSION : PROXY_INCLUSION))));
         }
+
         return newTemplates;
     }
 }

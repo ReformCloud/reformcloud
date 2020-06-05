@@ -46,7 +46,7 @@ import java.util.concurrent.ThreadFactory;
 public final class NetworkUtil {
 
     public static final int AUTH_BUS = 2000;
-    public static final int AUTH_BUS_END = 2004;
+    public static final int AUTH_BUS_END = 2001;
 
     public static final int NODE_BUS = 0;
     public static final int API_BUS = 1000;

@@ -48,7 +48,7 @@ public class DefaultNodeNodeInformationProvider implements NodeInformationProvid
     @Override
     public Optional<NodeProcessWrapper> getNodeInformation(@NotNull String name) {
         for (NodeProcessWrapper information : this.nodeInformation) {
-            if (information.getNodeInformation().isPresent() && information.getNodeInformation().get().getName().equals(name)) {
+            if (information.getNodeInformation().getName().equals(name)) {
                 return Optional.of(information);
             }
         }
@@ -60,7 +60,7 @@ public class DefaultNodeNodeInformationProvider implements NodeInformationProvid
     @Override
     public Optional<NodeProcessWrapper> getNodeInformation(@NotNull UUID nodeUniqueId) {
         for (NodeProcessWrapper information : this.nodeInformation) {
-            if (information.getNodeInformation().isPresent() && information.getNodeInformation().get().getNodeUniqueID().equals(nodeUniqueId)) {
+            if (information.getNodeInformation().getNodeUniqueID().equals(nodeUniqueId)) {
                 return Optional.of(information);
             }
         }
@@ -71,19 +71,19 @@ public class DefaultNodeNodeInformationProvider implements NodeInformationProvid
     @NotNull
     @Override
     public @UnmodifiableView Collection<String> getNodeNames() {
-        return Streams.newCollection(this.nodeInformation, e -> e.getNodeInformation().map(NodeInformation::getName).orElse(null));
+        return Streams.newCollection(this.nodeInformation, e -> e.getNodeInformation().getName());
     }
 
     @NotNull
     @Override
     public @UnmodifiableView Collection<UUID> getNodeUniqueIds() {
-        return Streams.newCollection(this.nodeInformation, e -> e.getNodeInformation().map(NodeInformation::getNodeUniqueID).orElse(null));
+        return Streams.newCollection(this.nodeInformation, e -> e.getNodeInformation().getNodeUniqueID());
     }
 
     @NotNull
     @Override
     public @UnmodifiableView Collection<NodeInformation> getNodes() {
-        return Streams.map(this.nodeInformation, e -> e.getNodeInformation().orElse(null));
+        return Streams.map(this.nodeInformation, e -> e.getNodeInformation());
     }
 
     @Override
@@ -99,7 +99,7 @@ public class DefaultNodeNodeInformationProvider implements NodeInformationProvid
     public void updateNode(@NotNull NodeInformation nodeInformation) {
         for (DefaultNodeProcessWrapper defaultNodeProcessWrapper : this.nodeInformation) {
             if (defaultNodeProcessWrapper.nodeInformation.getNodeUniqueID().equals(nodeInformation.getNodeUniqueID())) {
-                defaultNodeProcessWrapper.nodeInformation = nodeInformation;
+                defaultNodeProcessWrapper.updateNodeInformation(nodeInformation);
                 break;
             }
         }
