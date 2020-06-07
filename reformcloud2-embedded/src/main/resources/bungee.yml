@@ -1,0 +1,4 @@
+name: 'ReformCloud2BungeeExecutor'
+version: '2'
+author: 'derklaro'
+main: systems.refomcloud.reformcloud2.embedded.plugin.bungee.BungeeLauncher

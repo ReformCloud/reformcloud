@@ -22,9 +22,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.protocol.shared;
+package systems.reformcloud.reformcloud2.protocol.node;
 
 import org.jetbrains.annotations.NotNull;
+import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
@@ -32,42 +33,43 @@ import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChan
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
 import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
 
-public class PacketChannelMessage extends ProtocolPacket {
+public class ApiToNodeSendChannelMessageToProcessGroup extends ProtocolPacket {
 
-    public PacketChannelMessage(@NotNull String channel, @NotNull JsonConfiguration data) {
+    public ApiToNodeSendChannelMessageToProcessGroup() {
+    }
+
+    public ApiToNodeSendChannelMessageToProcessGroup(String processGroup, String channel, JsonConfiguration data) {
+        this.processGroup = processGroup;
         this.channel = channel;
         this.data = data;
     }
 
+    private String processGroup;
     private String channel;
     private JsonConfiguration data;
 
-    public String getChannel() {
-        return this.channel;
-    }
-
-    public JsonConfiguration getData() {
-        return this.data;
-    }
-
     @Override
     public int getId() {
-        return NetworkUtil.API_BUS + 19;
+        return NetworkUtil.EMBEDDED_BUS + 22;
     }
 
     @Override
     public void handlePacketReceive(@NotNull EndpointChannelReader reader, @NotNull NetworkChannel channel) {
-        super.post(channel, PacketChannelMessage.class, this);
+        ExecutorAPI.getInstance().getChannelMessageProvider().sendChannelMessage(
+                this.processGroup, this.channel, this.data
+        );
     }
 
     @Override
     public void write(@NotNull ProtocolBuffer buffer) {
+        buffer.writeString(this.processGroup);
         buffer.writeString(this.channel);
         buffer.writeArray(this.data.toPrettyBytes());
     }
 
     @Override
     public void read(@NotNull ProtocolBuffer buffer) {
+        this.processGroup = buffer.readString();
         this.channel = buffer.readString();
         this.data = new JsonConfiguration(buffer.readArray());
     }

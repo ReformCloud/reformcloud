@@ -27,6 +27,7 @@ package systems.refomcloud.reformcloud2.embedded;
 import org.jetbrains.annotations.NotNull;
 import systems.refomcloud.reformcloud2.embedded.config.EmbeddedConfig;
 import systems.refomcloud.reformcloud2.embedded.database.DefaultEmbeddedDatabaseProvider;
+import systems.refomcloud.reformcloud2.embedded.messaging.DefaultEmbeddedChannelMessageProvider;
 import systems.refomcloud.reformcloud2.embedded.network.EmbeddedEndpointChannelReader;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.event.EventManager;
@@ -71,6 +72,7 @@ public class Embedded extends ExecutorAPI {
     protected final EmbeddedConfig config = new EmbeddedConfig();
 
     private final DatabaseProvider databaseProvider = new DefaultEmbeddedDatabaseProvider();
+    private final ChannelMessageProvider channelMessageProvider = new DefaultEmbeddedChannelMessageProvider();
 
     protected Embedded() {
         ExecutorAPI.setInstance(this);
@@ -108,7 +110,7 @@ public class Embedded extends ExecutorAPI {
     @NotNull
     @Override
     public ChannelMessageProvider getChannelMessageProvider() {
-        return null;
+        return this.channelMessageProvider;
     }
 
     @NotNull
