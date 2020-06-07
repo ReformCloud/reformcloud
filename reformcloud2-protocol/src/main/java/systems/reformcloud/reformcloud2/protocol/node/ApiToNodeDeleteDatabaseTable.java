@@ -22,54 +22,44 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.refomcloud.reformcloud2.embedded.network.api;
+package systems.reformcloud.reformcloud2.protocol.node;
 
-import io.netty.channel.ChannelHandlerContext;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import systems.refomcloud.reformcloud2.embedded.executor.PlayerAPIExecutor;
-import systems.reformcloud.reformcloud2.executor.api.api.basic.ExternalAPIImplementation;
-import systems.reformcloud.reformcloud2.executor.api.network.challenge.ChallengeAuthHandler;
+import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
+import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.PacketSender;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
-import systems.reformcloud.reformcloud2.executor.api.network.netty.NettyChannelEndpoint;
-import systems.reformcloud.reformcloud2.executor.api.network.packet.Packet;
+import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
 
-import java.util.UUID;
+public class ApiToNodeDeleteDatabaseTable extends ProtocolPacket {
 
-public class PacketAPIKickPlayer extends Packet {
-
-    protected UUID targetPlayer;
-    protected String kickReason;
-
-    public PacketAPIKickPlayer() {
+    public ApiToNodeDeleteDatabaseTable() {
     }
 
-    public PacketAPIKickPlayer(UUID targetPlayer, String kickReason) {
-        this.targetPlayer = targetPlayer;
-        this.kickReason = kickReason;
+    public ApiToNodeDeleteDatabaseTable(String tableName) {
+        this.tableName = tableName;
     }
+
+    private String tableName;
 
     @Override
     public int getId() {
-        return ExternalAPIImplementation.EXTERNAL_PACKET_ID + 202;
+        return NetworkUtil.EMBEDDED_BUS + 1;
     }
 
     @Override
-    public void handlePacketReceive(@NotNull EndpointChannelReader reader, @NotNull ChallengeAuthHandler authHandler, @NotNull NettyChannelEndpoint parent, @Nullable PacketSender sender, @NotNull ChannelHandlerContext channel) {
-        PlayerAPIExecutor.getInstance().executeKickPlayer(this.targetPlayer, this.kickReason);
+    public void handlePacketReceive(@NotNull EndpointChannelReader reader, @NotNull NetworkChannel channel) {
+        ExecutorAPI.getInstance().getDatabaseProvider().deleteTable(this.tableName);
     }
 
     @Override
     public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeUniqueId(this.targetPlayer);
-        buffer.writeString(this.kickReason);
+        buffer.writeString(this.tableName);
     }
 
     @Override
     public void read(@NotNull ProtocolBuffer buffer) {
-        this.targetPlayer = buffer.readUniqueId();
-        this.kickReason = buffer.readString();
+        this.tableName = buffer.readString();
     }
 }

@@ -22,22 +22,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.refomcloud.reformcloud2.embedded.network.channel;
+package systems.reformcloud.reformcloud2.executor.api.event.events.process;
 
-import io.netty.channel.ChannelHandlerContext;
-import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.language.LanguageManager;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.manager.DefaultChannelManager;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.shared.SharedEndpointChannelReader;
+import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 
-public class APIEndpointChannelReader extends SharedEndpointChannelReader {
+public class ProcessUpdateEvent extends ProcessEvent {
 
-    @Override
-    public void channelInactive(@NotNull ChannelHandlerContext context) {
-        if (this.packetSender != null) {
-            DefaultChannelManager.INSTANCE.unregisterChannel(this.packetSender);
-            System.out.println(LanguageManager.get("network-channel-disconnected", this.packetSender.getName()));
-            System.exit(0);
-        }
+    public ProcessUpdateEvent(ProcessInformation processInformation) {
+        super(processInformation);
     }
 }

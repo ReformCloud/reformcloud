@@ -22,41 +22,31 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.refomcloud.reformcloud2.embedded.network.packets.out;
+package systems.reformcloud.reformcloud2.protocol.node;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.groups.messages.IngameMessages;
+import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
+import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
-import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
-import systems.reformcloud.reformcloud2.executor.api.network.packet.query.QueryResultPacket;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
 
-public class APIPacketOutRequestIngameMessagesResult extends QueryResultPacket {
+public class ApiToNodeUpdateDocumentInTable extends ApiToNodeInsertDocumentIntoTable {
 
-    private IngameMessages ingameMessages;
-
-    public APIPacketOutRequestIngameMessagesResult() {
+    public ApiToNodeUpdateDocumentInTable() {
     }
 
-    public APIPacketOutRequestIngameMessagesResult(IngameMessages ingameMessages) {
-        this.ingameMessages = ingameMessages;
-    }
-
-    public IngameMessages getIngameMessages() {
-        return this.ingameMessages;
+    public ApiToNodeUpdateDocumentInTable(String tableName, String key, String id, JsonConfiguration data) {
+        super(tableName, key, id, data);
     }
 
     @Override
     public int getId() {
-        return NetworkUtil.EXTERNAL_BUS + 11;
+        return NetworkUtil.EMBEDDED_BUS + 5;
     }
 
     @Override
-    public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeObject(this.ingameMessages);
-    }
-
-    @Override
-    public void read(@NotNull ProtocolBuffer buffer) {
-        this.ingameMessages = buffer.readObject(IngameMessages.class);
+    public void handlePacketReceive(@NotNull EndpointChannelReader reader, @NotNull NetworkChannel channel) {
+        ExecutorAPI.getInstance().getDatabaseProvider().getDatabase(this.tableName).update(this.key, this.id, this.data);
     }
 }

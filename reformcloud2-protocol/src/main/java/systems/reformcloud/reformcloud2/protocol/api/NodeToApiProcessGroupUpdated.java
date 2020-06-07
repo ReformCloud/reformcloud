@@ -25,6 +25,9 @@
 package systems.reformcloud.reformcloud2.protocol.api;
 
 import org.jetbrains.annotations.NotNull;
+import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
+import systems.reformcloud.reformcloud2.executor.api.event.EventManager;
+import systems.reformcloud.reformcloud2.executor.api.event.events.group.ProcessGroupUpdateEvent;
 import systems.reformcloud.reformcloud2.executor.api.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
@@ -54,7 +57,8 @@ public class NodeToApiProcessGroupUpdated extends ProtocolPacket {
 
     @Override
     public void handlePacketReceive(@NotNull EndpointChannelReader reader, @NotNull NetworkChannel channel) {
-        super.post(channel, NodeToApiProcessGroupUpdated.class, this);
+        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class)
+                .callEvent(new ProcessGroupUpdateEvent(this.processGroup));
     }
 
     @Override

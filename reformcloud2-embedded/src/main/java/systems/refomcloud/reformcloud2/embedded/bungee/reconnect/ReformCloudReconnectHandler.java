@@ -29,9 +29,10 @@ import net.md_5.bungee.api.ReconnectHandler;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import org.jetbrains.annotations.NotNull;
-import systems.refomcloud.reformcloud2.embedded.bungee.BungeeExecutor;
 import systems.refomcloud.reformcloud2.embedded.bungee.fallback.BungeeFallbackExtraFilter;
+import systems.refomcloud.reformcloud2.embedded.controller.ProxyServerController;
 import systems.refomcloud.reformcloud2.embedded.shared.SharedPlayerFallbackFilter;
+import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 
 public class ReformCloudReconnectHandler implements ReconnectHandler {
 
@@ -39,7 +40,7 @@ public class ReformCloudReconnectHandler implements ReconnectHandler {
     public ServerInfo getServer(@NotNull ProxiedPlayer proxiedPlayer) {
         return SharedPlayerFallbackFilter.filterFallback(
                 proxiedPlayer.getUniqueId(),
-                BungeeExecutor.getInstance().getCachedLobbyServices(),
+                ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ProxyServerController.class).getCachedLobbyServers(),
                 proxiedPlayer::hasPermission,
                 BungeeFallbackExtraFilter.INSTANCE,
                 proxiedPlayer.getServer() == null ? null : proxiedPlayer.getServer().getInfo().getName()

@@ -22,21 +22,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.protocol.node;
+package systems.reformcloud.reformcloud2.executor.api.event.events.group;
 
-import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
-import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
+import systems.reformcloud.reformcloud2.executor.api.groups.ProcessGroup;
 
-public abstract class NodePacket extends ProtocolPacket {
+public class ProcessGroupUpdateEvent extends ProcessGroupEvent {
 
-    public NodePacket(int id) {
-        this.id = NetworkUtil.NODE_BUS + id;
-    }
-
-    private final int id;
-
-    @Override
-    public int getId() {
-        return this.id;
+    public ProcessGroupUpdateEvent(ProcessGroup processGroup) {
+        super(processGroup);
     }
 }

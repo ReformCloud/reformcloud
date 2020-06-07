@@ -22,53 +22,44 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.refomcloud.reformcloud2.embedded.network.packets.out;
+package systems.reformcloud.reformcloud2.protocol.node;
 
-import io.netty.channel.ChannelHandlerContext;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
-import systems.reformcloud.reformcloud2.executor.api.network.challenge.ChallengeAuthHandler;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.PacketSender;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
-import systems.reformcloud.reformcloud2.executor.api.network.netty.NettyChannelEndpoint;
-import systems.reformcloud.reformcloud2.executor.api.network.packet.Packet;
+import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
 
-import java.util.UUID;
+public class ApiToNodeClearDatabaseTable extends ProtocolPacket {
 
-public class APIPacketOutLogoutPlayer extends Packet {
-
-    protected UUID playerUniqueID;
-    protected String playerName;
-    protected String lastServer;
-
-    public APIPacketOutLogoutPlayer(UUID playerUniqueID, String playerName, String lastServer) {
-        this.playerUniqueID = playerUniqueID;
-        this.playerName = playerName;
-        this.lastServer = lastServer;
+    public ApiToNodeClearDatabaseTable() {
     }
+
+    public ApiToNodeClearDatabaseTable(String tableName) {
+        this.tableName = tableName;
+    }
+
+    private String tableName;
 
     @Override
     public int getId() {
-        return NetworkUtil.PLAYER_INFORMATION_BUS + 3;
+        return NetworkUtil.EMBEDDED_BUS + 13;
     }
 
     @Override
-    public void handlePacketReceive(@NotNull EndpointChannelReader reader, @NotNull ChallengeAuthHandler authHandler, @NotNull NettyChannelEndpoint parent, @Nullable PacketSender sender, @NotNull ChannelHandlerContext channel) {
+    public void handlePacketReceive(@NotNull EndpointChannelReader reader, @NotNull NetworkChannel channel) {
+        ExecutorAPI.getInstance().getDatabaseProvider().getDatabase(this.tableName).clear();
     }
 
     @Override
     public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeUniqueId(this.playerUniqueID);
-        buffer.writeString(this.playerName);
-        buffer.writeString(this.lastServer);
+        buffer.writeString(this.tableName);
     }
 
     @Override
     public void read(@NotNull ProtocolBuffer buffer) {
-        this.playerUniqueID = buffer.readUniqueId();
-        this.playerName = buffer.readString();
-        this.lastServer = buffer.readString();
+        this.tableName = buffer.readString();
     }
 }

@@ -22,54 +22,52 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.refomcloud.reformcloud2.embedded.network.api;
+package systems.reformcloud.reformcloud2.protocol.node;
 
-import io.netty.channel.ChannelHandlerContext;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import systems.refomcloud.reformcloud2.embedded.executor.PlayerAPIExecutor;
-import systems.reformcloud.reformcloud2.executor.api.api.basic.ExternalAPIImplementation;
-import systems.reformcloud.reformcloud2.executor.api.network.challenge.ChallengeAuthHandler;
+import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
+import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.PacketSender;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
-import systems.reformcloud.reformcloud2.executor.api.network.netty.NettyChannelEndpoint;
-import systems.reformcloud.reformcloud2.executor.api.network.packet.Packet;
+import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
 
-import java.util.UUID;
+public class ApiToNodeRemoveDocumentFromTable extends ProtocolPacket {
 
-public class PacketAPIConnectPlayerToServer extends Packet {
-
-    private UUID targetPlayer;
-    private String targetServer;
-
-    public PacketAPIConnectPlayerToServer() {
+    public ApiToNodeRemoveDocumentFromTable() {
     }
 
-    public PacketAPIConnectPlayerToServer(UUID targetPlayer, String targetServer) {
-        this.targetPlayer = targetPlayer;
-        this.targetServer = targetServer;
+    public ApiToNodeRemoveDocumentFromTable(String table, String key, String id) {
+        this.table = table;
+        this.key = key;
+        this.id = id;
     }
+
+    private String table;
+    private String key;
+    private String id;
 
     @Override
     public int getId() {
-        return ExternalAPIImplementation.EXTERNAL_PACKET_ID + 201;
+        return NetworkUtil.EMBEDDED_BUS + 6;
     }
 
     @Override
-    public void handlePacketReceive(@NotNull EndpointChannelReader reader, @NotNull ChallengeAuthHandler authHandler, @NotNull NettyChannelEndpoint parent, @Nullable PacketSender sender, @NotNull ChannelHandlerContext channel) {
-        PlayerAPIExecutor.getInstance().executeConnect(this.targetPlayer, this.targetServer);
+    public void handlePacketReceive(@NotNull EndpointChannelReader reader, @NotNull NetworkChannel channel) {
+        ExecutorAPI.getInstance().getDatabaseProvider().getDatabase(this.table).remove(this.key, this.id);
     }
 
     @Override
     public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeUniqueId(this.targetPlayer);
-        buffer.writeString(this.targetServer);
+        buffer.writeString(this.table);
+        buffer.writeString(this.key);
+        buffer.writeString(this.id);
     }
 
     @Override
     public void read(@NotNull ProtocolBuffer buffer) {
-        this.targetPlayer = buffer.readUniqueId();
-        this.targetServer = buffer.readString();
+        this.table = buffer.readString();
+        this.key = buffer.readString();
+        this.id = buffer.readString();
     }
 }

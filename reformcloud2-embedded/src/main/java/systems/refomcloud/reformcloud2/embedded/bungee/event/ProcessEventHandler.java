@@ -25,26 +25,31 @@
 package systems.refomcloud.reformcloud2.embedded.bungee.event;
 
 import org.jetbrains.annotations.NotNull;
-import systems.refomcloud.reformcloud2.embedded.bungee.BungeeExecutor;
-import systems.reformcloud.reformcloud2.executor.api.api.basic.events.ProcessStartedEvent;
-import systems.reformcloud.reformcloud2.executor.api.api.basic.events.ProcessStoppedEvent;
-import systems.reformcloud.reformcloud2.executor.api.api.basic.events.ProcessUpdatedEvent;
+import systems.refomcloud.reformcloud2.embedded.controller.ProxyServerController;
+import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
+import systems.reformcloud.reformcloud2.executor.api.event.events.process.ProcessRegisterEvent;
+import systems.reformcloud.reformcloud2.executor.api.event.events.process.ProcessUnregisterEvent;
+import systems.reformcloud.reformcloud2.executor.api.event.events.process.ProcessUpdateEvent;
 import systems.reformcloud.reformcloud2.executor.api.event.handler.Listener;
 
 public final class ProcessEventHandler {
 
     @Listener
-    public void handleStart(final @NotNull ProcessStartedEvent event) {
-        BungeeExecutor.registerServer(event.getProcessInformation());
+    public void handleStart(final @NotNull ProcessRegisterEvent event) {
+        this.getServerController().registerProcess(event.getProcessInformation());
     }
 
     @Listener
-    public void handleUpdate(final @NotNull ProcessUpdatedEvent event) {
-        BungeeExecutor.registerServer(event.getProcessInformation());
+    public void handleUpdate(final @NotNull ProcessUpdateEvent event) {
+        this.getServerController().handleProcessUpdate(event.getProcessInformation());
     }
 
     @Listener
-    public void handleRemove(final @NotNull ProcessStoppedEvent event) {
-        BungeeExecutor.unregisterServer(event.getProcessInformation());
+    public void handleRemove(final @NotNull ProcessUnregisterEvent event) {
+        this.getServerController().unregisterProcess(event.getProcessInformation());
+    }
+
+    private @NotNull ProxyServerController getServerController() {
+        return ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ProxyServerController.class);
     }
 }

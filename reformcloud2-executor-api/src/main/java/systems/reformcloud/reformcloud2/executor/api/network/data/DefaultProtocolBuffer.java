@@ -214,7 +214,7 @@ public class DefaultProtocolBuffer extends ProtocolBuffer {
         } catch (final NoSuchMethodException exception) {
             System.err.println("Unable to find NoArgsConstructor for object class " + tClass.getName());
         } catch (final IllegalAccessException | InvocationTargetException | InstantiationException exception) {
-            System.err.println("An exception occured while reading object class " + tClass.getName());
+            System.err.println("An exception occurred while reading object class " + tClass.getName());
             exception.printStackTrace();
         }
 

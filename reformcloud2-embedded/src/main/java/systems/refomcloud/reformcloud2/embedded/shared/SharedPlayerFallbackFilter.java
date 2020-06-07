@@ -28,6 +28,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import systems.refomcloud.reformcloud2.embedded.event.PlayerFallbackChooseEvent;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
+import systems.reformcloud.reformcloud2.executor.api.event.EventManager;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.utility.optional.ReferencedOptional;
 
@@ -75,7 +76,7 @@ public final class SharedPlayerFallbackFilter {
                 .min(ProcessPriorityComparable.INSTANCE::compare)
                 .orElse(null);
 
-        return ExecutorAPI.getInstance().getEventManager().callEvent(new PlayerFallbackChooseEvent(
+        return ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).callEvent(new PlayerFallbackChooseEvent(
                 playerUniqueId, filtered, lobbies
         )).getFilteredFallback();
     }

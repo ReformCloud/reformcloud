@@ -22,44 +22,41 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.refomcloud.reformcloud2.embedded.network.packets.out;
+package systems.reformcloud.reformcloud2.protocol.node;
 
-import io.netty.channel.ChannelHandlerContext;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import systems.reformcloud.reformcloud2.executor.api.groups.messages.IngameMessages;
 import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
-import systems.reformcloud.reformcloud2.executor.api.network.challenge.ChallengeAuthHandler;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.PacketSender;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
-import systems.reformcloud.reformcloud2.executor.api.network.netty.NettyChannelEndpoint;
-import systems.reformcloud.reformcloud2.executor.api.network.packet.Packet;
+import systems.reformcloud.reformcloud2.executor.api.network.packet.query.QueryResultPacket;
 
-public class APIPacketOutPlayerLoggedIn extends Packet {
+public class ApiToNodeGetIngameMessagesResult extends QueryResultPacket {
 
-    protected String playerName;
+    public ApiToNodeGetIngameMessagesResult() {
+    }
 
-    public APIPacketOutPlayerLoggedIn(String playerName) {
-        this.playerName = playerName;
+    public ApiToNodeGetIngameMessagesResult(IngameMessages messages) {
+        this.messages = messages;
+    }
+
+    private IngameMessages messages;
+
+    public IngameMessages getMessages() {
+        return this.messages;
     }
 
     @Override
     public int getId() {
-        return NetworkUtil.PLAYER_INFORMATION_BUS + 2;
-    }
-
-    @Override
-    public void handlePacketReceive(@NotNull EndpointChannelReader reader, @NotNull ChallengeAuthHandler authHandler, @NotNull NettyChannelEndpoint parent, @Nullable PacketSender sender, @NotNull ChannelHandlerContext channel) {
-
+        return NetworkUtil.EMBEDDED_BUS + 21;
     }
 
     @Override
     public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeString(this.playerName);
+        buffer.writeObject(this.messages);
     }
 
     @Override
     public void read(@NotNull ProtocolBuffer buffer) {
-        this.playerName = buffer.readString();
+        this.messages = buffer.readObject(IngameMessages.class);
     }
 }

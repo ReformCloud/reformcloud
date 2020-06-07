@@ -22,54 +22,45 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.refomcloud.reformcloud2.embedded.network.api;
+package systems.reformcloud.reformcloud2.protocol.node;
 
-import io.netty.channel.ChannelHandlerContext;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import systems.refomcloud.reformcloud2.embedded.executor.PlayerAPIExecutor;
-import systems.reformcloud.reformcloud2.executor.api.api.basic.ExternalAPIImplementation;
-import systems.reformcloud.reformcloud2.executor.api.network.challenge.ChallengeAuthHandler;
+import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
+import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.PacketSender;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
-import systems.reformcloud.reformcloud2.executor.api.network.netty.NettyChannelEndpoint;
-import systems.reformcloud.reformcloud2.executor.api.network.packet.Packet;
+import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
+import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
 
-import java.util.UUID;
+public class ApiToNodeUpdateProcessInformation extends ProtocolPacket {
 
-public class PacketAPIPlayEntityEffect extends Packet {
-
-    protected UUID targetPlayer;
-    protected String entityEffect;
-
-    public PacketAPIPlayEntityEffect() {
+    public ApiToNodeUpdateProcessInformation() {
     }
 
-    public PacketAPIPlayEntityEffect(UUID targetPlayer, String entityEffect) {
-        this.targetPlayer = targetPlayer;
-        this.entityEffect = entityEffect;
+    public ApiToNodeUpdateProcessInformation(ProcessInformation processInformation) {
+        this.processInformation = processInformation;
     }
+
+    private ProcessInformation processInformation;
 
     @Override
     public int getId() {
-        return ExternalAPIImplementation.EXTERNAL_PACKET_ID + 203;
+        return NetworkUtil.EMBEDDED_BUS + 18;
     }
 
     @Override
-    public void handlePacketReceive(@NotNull EndpointChannelReader reader, @NotNull ChallengeAuthHandler authHandler, @NotNull NettyChannelEndpoint parent, @Nullable PacketSender sender, @NotNull ChannelHandlerContext channel) {
-        PlayerAPIExecutor.getInstance().executePlayEffect(this.targetPlayer, this.entityEffect);
+    public void handlePacketReceive(@NotNull EndpointChannelReader reader, @NotNull NetworkChannel channel) {
+        ExecutorAPI.getInstance().getProcessProvider().updateProcessInformation(this.processInformation);
     }
 
     @Override
     public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeUniqueId(this.targetPlayer);
-        buffer.writeString(this.entityEffect);
+        buffer.writeObject(this.processInformation);
     }
 
     @Override
     public void read(@NotNull ProtocolBuffer buffer) {
-        this.targetPlayer = buffer.readUniqueId();
-        this.entityEffect = buffer.readString();
+        this.processInformation = buffer.readObject(ProcessInformation.class);
     }
 }

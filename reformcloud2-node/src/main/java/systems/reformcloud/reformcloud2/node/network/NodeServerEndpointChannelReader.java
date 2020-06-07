@@ -35,7 +35,6 @@ import systems.reformcloud.reformcloud2.executor.api.network.channel.shared.Shar
 import systems.reformcloud.reformcloud2.executor.api.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.api.node.NodeInformation;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
-import systems.reformcloud.reformcloud2.executor.api.process.ProcessState;
 import systems.reformcloud.reformcloud2.node.NodeExecutor;
 import systems.reformcloud.reformcloud2.node.cluster.ClusterManager;
 import systems.reformcloud.reformcloud2.node.process.DefaultNodeLocalProcessWrapper;
@@ -71,12 +70,10 @@ public class NodeServerEndpointChannelReader extends SharedEndpointChannelReader
         }
 
         if (this.type == 1) {
-            ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ChannelManager.class).unregisterChannel(super.networkChannel);
             ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ClusterManager.class).handleNodeDisconnect(super.networkChannel.getName());
-        } else if (this.type == 2) {
-            ExecutorAPI.getInstance().getProcessProvider().getProcessByName(super.networkChannel.getName())
-                    .ifPresent(processWrapper -> processWrapper.setRuntimeState(ProcessState.STOPPED));
         }
+
+        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ChannelManager.class).unregisterChannel(super.networkChannel);
     }
 
     @Override

@@ -25,10 +25,7 @@
 package systems.reformcloud.reformcloud2.shared.network.client;
 
 import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelFutureListener;
-import io.netty.channel.ChannelOption;
-import io.netty.channel.EventLoopGroup;
+import io.netty.channel.*;
 import io.netty.channel.socket.SocketChannel;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.CommonHelper;
@@ -78,6 +75,36 @@ public final class DefaultNetworkClient implements NetworkClient {
 
         Boolean result = connectTask.getUninterruptedly();
         return result != null && result;
+    }
+
+    @Override
+    public boolean connectSync(@NotNull String host, int port, @NotNull Supplier<EndpointChannelReader> supplier) {
+        try {
+            ChannelFuture future = new Bootstrap()
+                    .group(this.eventLoopGroup)
+                    .channel(this.channelClass)
+
+                    .option(ChannelOption.SO_REUSEADDR, true)
+                    .option(ChannelOption.SO_KEEPALIVE, true)
+                    .option(ChannelOption.AUTO_READ, true)
+                    .option(ChannelOption.IP_TOS, 24)
+                    .option(ChannelOption.TCP_NODELAY, true)
+                    .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, CommonHelper.longToInt(TimeUnit.SECONDS.toMillis(5)))
+
+                    .handler(new ClientChannelInitializer(supplier))
+
+                    .connect(host, port)
+                    .addListeners(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE, ChannelFutureListener.CLOSE_ON_FAILURE)
+                    .sync();
+            if (future.isSuccess()) {
+                this.channel = future.channel();
+            }
+
+            return future.isSuccess();
+        } catch (final Exception ex) {
+            ex.printStackTrace();
+            return true;
+        }
     }
 
     @Override

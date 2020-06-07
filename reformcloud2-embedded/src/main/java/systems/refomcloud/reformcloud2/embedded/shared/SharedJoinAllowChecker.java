@@ -26,8 +26,7 @@ package systems.refomcloud.reformcloud2.embedded.shared;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.api.API;
+import systems.refomcloud.reformcloud2.embedded.Embedded;
 import systems.reformcloud.reformcloud2.executor.api.groups.messages.IngameMessages;
 import systems.reformcloud.reformcloud2.executor.api.groups.utils.PlayerAccessConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
@@ -50,7 +49,7 @@ public final class SharedJoinAllowChecker {
                                                              @Nullable Collection<ProcessInformation> checkedConnectedServices,
                                                              @NotNull UUID playerUniqueId,
                                                              @NotNull String username) {
-        ProcessInformation current = API.getInstance().getCurrentProcessInformation();
+        ProcessInformation current = Embedded.getInstance().getCurrentProcessInformation();
         PlayerAccessConfiguration configuration = current.getProcessGroup().getPlayerAccessConfiguration();
 
         if (checkedConnectedServices != null
@@ -82,8 +81,7 @@ public final class SharedJoinAllowChecker {
             current.getProcessDetail().setProcessState(ProcessState.FULL);
         }
 
-        current.updateRuntimeInformation();
-        ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(current);
+        Embedded.getInstance().updateCurrentProcessInformation();
         return new Duo<>(true, null);
     }
 }

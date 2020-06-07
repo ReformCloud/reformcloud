@@ -24,7 +24,7 @@
  */
 package systems.refomcloud.reformcloud2.embedded.bungee.fallback;
 
-import systems.reformcloud.reformcloud2.executor.api.api.API;
+import systems.refomcloud.reformcloud2.embedded.Embedded;
 import systems.reformcloud.reformcloud2.executor.api.groups.template.Version;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 
@@ -39,7 +39,7 @@ public final class BungeeFallbackExtraFilter implements Predicate<ProcessInforma
 
     @Override
     public boolean test(ProcessInformation processInformation) {
-        Version proxy = API.getInstance().getCurrentProcessInformation().getProcessDetail().getTemplate().getVersion();
+        Version proxy = Embedded.getInstance().getCurrentProcessInformation().getProcessDetail().getTemplate().getVersion();
         Version server = processInformation.getProcessDetail().getTemplate().getVersion();
 
         return (proxy.getId() == 2 && server.getId() == 1) || (proxy.getId() == 4 && server.getId() == 3);

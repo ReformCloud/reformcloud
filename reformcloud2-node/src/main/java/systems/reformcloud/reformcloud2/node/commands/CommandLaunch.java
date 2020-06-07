@@ -64,7 +64,6 @@ public final class CommandLaunch implements Command {
                         " --unique-id=[unique-id]       | Sets the unique id of the new process (default: random)\n" +
                         " --display-name=[display-name] | Sets the display name of the new process (default: none)\n" +
                         " --max-memory=[memory]         | Sets the maximum amount of memory for the new process (default: group-based)\n" +
-                        " --port=[port]                 | Sets the port of the new process (default: group-based)\n" +
                         " --id=[id]                     | Sets the id of the new process (default: chosen from amount of online processes)\n" +
                         " --max-players=[max-players]   | Sets the maximum amount of players for the process (default: group-based)\n" +
                         " --inclusions=[url,name;...]   | Sets the inclusions of the process (default: none)\n" +

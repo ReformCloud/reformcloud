@@ -29,6 +29,12 @@ import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.base.Conditions;
 import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.event.Event;
+import systems.reformcloud.reformcloud2.executor.api.event.EventManager;
+import systems.reformcloud.reformcloud2.executor.api.event.events.group.*;
+import systems.reformcloud.reformcloud2.executor.api.event.events.process.ProcessRegisterEvent;
+import systems.reformcloud.reformcloud2.executor.api.event.events.process.ProcessUnregisterEvent;
+import systems.reformcloud.reformcloud2.executor.api.event.events.process.ProcessUpdateEvent;
 import systems.reformcloud.reformcloud2.executor.api.groups.MainGroup;
 import systems.reformcloud.reformcloud2.executor.api.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.groups.template.Template;
@@ -108,31 +114,40 @@ public class DefaultClusterManager implements ClusterManager {
     public void handleProcessRegister(@NotNull ProcessInformation processInformation) {
         this.processProvider.registerProcess(processInformation);
         this.sendPacketToProcesses(new NodeToApiProcessRegister(processInformation));
+
+        this.callEvent(new ProcessRegisterEvent(processInformation));
     }
 
     @Override
     public void publishProcessRegister(@NotNull ProcessInformation processInformation) {
         this.sendPacketToNodes(new NodeToNodeRegisterProcess(processInformation));
         this.sendPacketToProcesses(new NodeToApiProcessRegister(processInformation));
+
+        this.callEvent(new ProcessRegisterEvent(processInformation));
     }
 
     @Override
     public void handleProcessUpdate(@NotNull ProcessInformation processInformation) {
         this.processProvider.updateProcessInformation0(processInformation);
         this.sendPacketToProcesses(new NodeToApiProcessUpdated(processInformation));
+
+        this.callEvent(new ProcessUpdateEvent(processInformation));
     }
 
     @Override
     public void publishProcessUpdate(@NotNull ProcessInformation processInformation) {
         this.sendPacketToNodes(new NodeToNodeUpdateProcess(processInformation));
         this.sendPacketToProcesses(new NodeToApiProcessUpdated(processInformation));
+
+        this.callEvent(new ProcessUpdateEvent(processInformation));
     }
 
     @Override
     public void handleProcessUnregister(@NotNull String name) {
-        this.processProvider.getProcessByName(name).ifPresent(
-                processWrapper -> this.sendPacketToProcesses(new NodeToApiProcessUnregister(processWrapper.getProcessInformation()))
-        );
+        this.processProvider.getProcessByName(name).ifPresent(processWrapper -> {
+            this.sendPacketToProcesses(new NodeToApiProcessUnregister(processWrapper.getProcessInformation()));
+            this.callEvent(new ProcessUnregisterEvent(processWrapper.getProcessInformation()));
+        });
         this.processProvider.unregisterProcess(name);
     }
 
@@ -140,6 +155,8 @@ public class DefaultClusterManager implements ClusterManager {
     public void publishProcessUnregister(@NotNull ProcessInformation processInformation) {
         this.sendPacketToNodes(new NodeToNodeUnregisterProcess(processInformation.getProcessDetail().getName()));
         this.sendPacketToProcesses(new NodeToApiProcessUnregister(processInformation));
+
+        this.callEvent(new ProcessUnregisterEvent(processInformation));
     }
 
     @Override
@@ -158,36 +175,48 @@ public class DefaultClusterManager implements ClusterManager {
     public void handleProcessGroupCreate(@NotNull ProcessGroup processGroup) {
         this.processGroupProvider.addProcessGroup0(processGroup);
         this.sendPacketToProcesses(new NodeToApiProcessGroupCreate(processGroup));
+
+        this.callEvent(new ProcessGroupCreateEvent(processGroup));
     }
 
     @Override
     public void publishProcessGroupCreate(@NotNull ProcessGroup processGroup) {
         this.sendPacketToNodes(new NodeToNodeCreateProcessGroup(processGroup));
         this.sendPacketToProcesses(new NodeToApiProcessGroupCreate(processGroup));
+
+        this.callEvent(new ProcessGroupCreateEvent(processGroup));
     }
 
     @Override
     public void handleProcessGroupUpdate(@NotNull ProcessGroup processGroup) {
         this.processGroupProvider.updateProcessGroup0(processGroup);
         this.sendPacketToProcesses(new NodeToApiProcessGroupUpdated(processGroup));
+
+        this.callEvent(new ProcessGroupUpdateEvent(processGroup));
     }
 
     @Override
     public void publishProcessGroupUpdate(@NotNull ProcessGroup processGroup) {
         this.sendPacketToNodes(new NodeToNodeUpdateProcessGroup(processGroup));
         this.sendPacketToProcesses(new NodeToApiProcessGroupUpdated(processGroup));
+
+        this.callEvent(new ProcessGroupUpdateEvent(processGroup));
     }
 
     @Override
     public void handleProcessGroupDelete(@NotNull ProcessGroup processGroup) {
         this.processGroupProvider.deleteProcessGroup0(processGroup.getName());
         this.sendPacketToProcesses(new NodeToApiProcessGroupDelete(processGroup));
+
+        this.callEvent(new ProcessGroupDeleteEvent(processGroup));
     }
 
     @Override
     public void publishProcessGroupDelete(@NotNull ProcessGroup processGroup) {
         this.sendPacketToNodes(new NodeToNodeDeleteProcessGroup(processGroup));
         this.sendPacketToProcesses(new NodeToApiProcessGroupDelete(processGroup));
+
+        this.callEvent(new ProcessGroupDeleteEvent(processGroup));
     }
 
     @Override
@@ -210,36 +239,48 @@ public class DefaultClusterManager implements ClusterManager {
     public void handleMainGroupCreate(@NotNull MainGroup mainGroup) {
         this.mainGroupProvider.addGroup0(mainGroup);
         this.sendPacketToProcesses(new NodeToApiMainGroupCreate(mainGroup));
+
+        this.callEvent(new MainGroupCreateEvent(mainGroup));
     }
 
     @Override
     public void publishMainGroupCreate(@NotNull MainGroup mainGroup) {
         this.sendPacketToNodes(new NodeToNodeCreateMainGroup(mainGroup));
         this.sendPacketToProcesses(new NodeToApiMainGroupCreate(mainGroup));
+
+        this.callEvent(new MainGroupCreateEvent(mainGroup));
     }
 
     @Override
     public void handleMainGroupUpdate(@NotNull MainGroup mainGroup) {
         this.mainGroupProvider.updateMainGroup0(mainGroup);
         this.sendPacketToProcesses(new NodeToApiMainGroupUpdated(mainGroup));
+
+        this.callEvent(new MainGroupUpdateEvent(mainGroup));
     }
 
     @Override
     public void publishMainGroupUpdate(@NotNull MainGroup mainGroup) {
         this.sendPacketToNodes(new NodeToNodeUpdateMainGroup(mainGroup));
         this.sendPacketToProcesses(new NodeToApiMainGroupUpdated(mainGroup));
+
+        this.callEvent(new MainGroupUpdateEvent(mainGroup));
     }
 
     @Override
     public void handleMainGroupDelete(@NotNull MainGroup mainGroup) {
         this.mainGroupProvider.deleteMainGroup0(mainGroup.getName());
         this.sendPacketToProcesses(new NodeToApiMainGroupDelete(mainGroup));
+
+        this.callEvent(new MainGroupDeleteEvent(mainGroup));
     }
 
     @Override
     public void publishMainGroupDelete(@NotNull MainGroup mainGroup) {
         this.sendPacketToNodes(new NodeToNodeDeleteMainGroup(mainGroup));
         this.sendPacketToProcesses(new NodeToApiMainGroupDelete(mainGroup));
+
+        this.callEvent(new MainGroupDeleteEvent(mainGroup));
     }
 
     @Override
@@ -293,5 +334,9 @@ public class DefaultClusterManager implements ClusterManager {
                     .getChannel(process.getProcessDetail().getName())
                     .ifPresent(channel -> channel.sendPacket(packet));
         }
+    }
+
+    private void callEvent(@NotNull Event event) {
+        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).callEvent(event);
     }
 }

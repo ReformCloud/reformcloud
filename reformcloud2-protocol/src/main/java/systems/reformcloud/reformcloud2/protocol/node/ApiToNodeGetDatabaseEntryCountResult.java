@@ -22,38 +22,40 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.refomcloud.reformcloud2.embedded.network.packets.out;
+package systems.reformcloud.reformcloud2.protocol.node;
 
-import io.netty.channel.ChannelHandlerContext;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
-import systems.reformcloud.reformcloud2.executor.api.network.challenge.ChallengeAuthHandler;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.PacketSender;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
-import systems.reformcloud.reformcloud2.executor.api.network.netty.NettyChannelEndpoint;
-import systems.reformcloud.reformcloud2.executor.api.network.packet.Packet;
+import systems.reformcloud.reformcloud2.executor.api.network.packet.query.QueryResultPacket;
 
-public class APIPacketOutRequestIngameMessages extends Packet {
+public class ApiToNodeGetDatabaseEntryCountResult extends QueryResultPacket {
 
-    public APIPacketOutRequestIngameMessages() {
+    public ApiToNodeGetDatabaseEntryCountResult() {
+    }
+
+    public ApiToNodeGetDatabaseEntryCountResult(long count) {
+        this.count = count;
+    }
+
+    private long count;
+
+    public long getCount() {
+        return this.count;
     }
 
     @Override
     public int getId() {
-        return NetworkUtil.EXTERNAL_BUS + 10;
-    }
-
-    @Override
-    public void handlePacketReceive(@NotNull EndpointChannelReader reader, @NotNull ChallengeAuthHandler authHandler, @NotNull NettyChannelEndpoint parent, @Nullable PacketSender sender, @NotNull ChannelHandlerContext channel) {
+        return NetworkUtil.EMBEDDED_BUS + 12;
     }
 
     @Override
     public void write(@NotNull ProtocolBuffer buffer) {
+        buffer.writeLong(this.count);
     }
 
     @Override
     public void read(@NotNull ProtocolBuffer buffer) {
+        this.count = buffer.readLong();
     }
 }

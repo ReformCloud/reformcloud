@@ -86,17 +86,13 @@ public final class EnvironmentBuilder {
         IOUtils.doCopy("reformcloud/files/runner.jar", runningProcess.getPath() + "/runner.jar");
         IOUtils.doCopy("reformcloud/.bin/executor.jar", runningProcess.getPath() + "/plugins/executor.jar");
 
-        new JsonConfiguration()
-                .add("key", runningProcess.getConnectionKey())
-                .write(runningProcess.getPath() + "/reformcloud/.connection/key.json");
-
         NetworkAddress connectHost = NodeExecutor.getInstance().getAnyAddress();
         new JsonConfiguration()
                 .add("host", connectHost.getHost())
                 .add("port", connectHost.getPort())
                 .add("key", connectionKey)
                 .add("startInfo", runningProcess.getProcessInformation())
-                .write(runningProcess.getPath() + "/reformcloud/.connection/connection.json");
+                .write(runningProcess.getPath() + "/.reformcloud/config.json");
 
         if (runningProcess.getProcessInformation().getProcessDetail().getTemplate().isServer()) {
             serverStartup(runningProcess);

@@ -22,59 +22,54 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.refomcloud.reformcloud2.embedded.network.packets.out;
+package systems.reformcloud.reformcloud2.node.protocol;
 
-import io.netty.channel.ChannelHandlerContext;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
-import systems.reformcloud.reformcloud2.executor.api.network.challenge.ChallengeAuthHandler;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.PacketSender;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
-import systems.reformcloud.reformcloud2.executor.api.network.netty.NettyChannelEndpoint;
-import systems.reformcloud.reformcloud2.executor.api.network.packet.Packet;
+import systems.reformcloud.reformcloud2.node.process.screen.ProcessScreenController;
+import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
 
 import java.util.UUID;
 
-public class APIBungeePacketOutPlayerServerSwitch extends Packet {
+public class NodeToNodeToggleProcessScreen extends ProtocolPacket {
 
-    protected UUID playerUniqueID;
-    protected String playerName;
-    protected String originalServer;
-    protected String targetServer;
-
-    public APIBungeePacketOutPlayerServerSwitch() {
+    public NodeToNodeToggleProcessScreen() {
     }
 
-    public APIBungeePacketOutPlayerServerSwitch(UUID playerUniqueID, String originalServer, String targetServer) {
-        this.playerUniqueID = playerUniqueID;
-        this.originalServer = originalServer;
-        this.targetServer = targetServer;
+    public NodeToNodeToggleProcessScreen(UUID processUniqueId) {
+        this.processUniqueId = processUniqueId;
     }
+
+    private UUID processUniqueId;
 
     @Override
     public int getId() {
-        return NetworkUtil.PLAYER_INFORMATION_BUS + 1;
+        return NetworkUtil.NODE_BUS + 40;
     }
 
     @Override
-    public void handlePacketReceive(@NotNull EndpointChannelReader reader, @NotNull ChallengeAuthHandler authHandler, @NotNull NettyChannelEndpoint parent, @Nullable PacketSender sender, @NotNull ChannelHandlerContext channel) {
+    public void handlePacketReceive(@NotNull EndpointChannelReader reader, @NotNull NetworkChannel channel) {
+        ProcessScreenController controller = ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ProcessScreenController.class);
+        controller.getScreen(this.processUniqueId).ifPresent(screen -> {
+            if (screen.getListeningNodes().contains(channel.getName())) {
+                screen.removeListeningNode(channel.getName());
+            } else {
+                screen.addListeningNode(channel.getName());
+            }
+        });
     }
 
     @Override
     public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeUniqueId(this.playerUniqueID);
-        buffer.writeString(this.playerName);
-        buffer.writeString(this.originalServer);
-        buffer.writeString(this.targetServer);
+        buffer.writeUniqueId(this.processUniqueId);
     }
 
     @Override
     public void read(@NotNull ProtocolBuffer buffer) {
-        this.playerUniqueID = buffer.readUniqueId();
-        this.playerName = buffer.readString();
-        this.originalServer = buffer.readString();
-        this.targetServer = buffer.readString();
+        this.processUniqueId = buffer.readUniqueId();
     }
 }

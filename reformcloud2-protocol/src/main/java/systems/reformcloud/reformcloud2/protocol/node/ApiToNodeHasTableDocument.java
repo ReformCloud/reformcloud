@@ -22,54 +22,49 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.refomcloud.reformcloud2.embedded.network.api;
+package systems.reformcloud.reformcloud2.protocol.node;
 
-import io.netty.channel.ChannelHandlerContext;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import systems.refomcloud.reformcloud2.embedded.executor.PlayerAPIExecutor;
-import systems.reformcloud.reformcloud2.executor.api.api.basic.ExternalAPIImplementation;
-import systems.reformcloud.reformcloud2.executor.api.network.challenge.ChallengeAuthHandler;
+import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
+import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.PacketSender;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
-import systems.reformcloud.reformcloud2.executor.api.network.netty.NettyChannelEndpoint;
-import systems.reformcloud.reformcloud2.executor.api.network.packet.Packet;
+import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
 
-import java.util.UUID;
+public class ApiToNodeHasTableDocument extends ProtocolPacket {
 
-public class PacketAPISendMessage extends Packet {
-
-    private UUID targetPlayer;
-    private String message;
-
-    public PacketAPISendMessage() {
+    public ApiToNodeHasTableDocument() {
     }
 
-    public PacketAPISendMessage(UUID targetPlayer, String message) {
-        this.targetPlayer = targetPlayer;
-        this.message = message;
+    public ApiToNodeHasTableDocument(String tableName, String key) {
+        this.tableName = tableName;
+        this.key = key;
     }
+
+    private String tableName;
+    private String key;
 
     @Override
     public int getId() {
-        return ExternalAPIImplementation.EXTERNAL_PACKET_ID + 205;
+        return NetworkUtil.EMBEDDED_BUS + 16;
     }
 
     @Override
-    public void handlePacketReceive(@NotNull EndpointChannelReader reader, @NotNull ChallengeAuthHandler authHandler, @NotNull NettyChannelEndpoint parent, @Nullable PacketSender sender, @NotNull ChannelHandlerContext channel) {
-        PlayerAPIExecutor.getInstance().executeSendMessage(this.targetPlayer, this.message);
+    public void handlePacketReceive(@NotNull EndpointChannelReader reader, @NotNull NetworkChannel channel) {
+        boolean has = ExecutorAPI.getInstance().getDatabaseProvider().getDatabase(this.tableName).has(this.key);
+        channel.sendQueryResult(this.getQueryUniqueID(), new ApiToNodeHasTableDocumentResult(has));
     }
 
     @Override
     public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeUniqueId(this.targetPlayer);
-        buffer.writeString(this.message);
+        buffer.writeString(this.tableName);
+        buffer.writeString(this.key);
     }
 
     @Override
     public void read(@NotNull ProtocolBuffer buffer) {
-        this.targetPlayer = buffer.readUniqueId();
-        this.message = buffer.readString();
+        this.tableName = buffer.readString();
+        this.key = buffer.readString();
     }
 }

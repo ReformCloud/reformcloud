@@ -48,6 +48,7 @@ import systems.reformcloud.reformcloud2.executor.api.registry.service.ServiceReg
 import systems.reformcloud.reformcloud2.executor.api.utility.NetworkAddress;
 import systems.reformcloud.reformcloud2.node.application.DefaultApplicationLoader;
 import systems.reformcloud.reformcloud2.node.cluster.ClusterManager;
+import systems.reformcloud.reformcloud2.node.cluster.DefaultClusterManager;
 import systems.reformcloud.reformcloud2.node.commands.*;
 import systems.reformcloud.reformcloud2.node.config.NodeConfig;
 import systems.reformcloud.reformcloud2.node.config.NodeExecutorConfig;
@@ -101,7 +102,7 @@ public final class NodeExecutor extends ExecutorAPI {
     private final ChannelMessageProvider channelMessageProvider = new DefaultNodeChannelMessageProvider();
     private final DefaultNodeMainGroupProvider mainGroupProvider;
     private final DefaultNodeProcessGroupProvider processGroupProvider;
-    private NodeInformationProvider nodeInformationProvider;
+    private DefaultNodeNodeInformationProvider nodeInformationProvider;
 
     private final TickedTaskScheduler taskScheduler = new TickedTaskScheduler();
     private final CloudTickWorker cloudTickWorker = new CloudTickWorker(this.taskScheduler);
@@ -144,6 +145,14 @@ public final class NodeExecutor extends ExecutorAPI {
                 0L,
                 this.nodeConfig.getMaxMemory()
         ));
+
+        this.serviceRegistry.setProvider(ClusterManager.class, new DefaultClusterManager(
+                this.nodeInformationProvider,
+                this.processProvider,
+                this.processGroupProvider,
+                this.mainGroupProvider,
+                this.currentNodeInformation
+        ), true);
 
         this.serviceRegistry.getProviderUnchecked(ApplicationLoader.class).detectApplications();
         this.serviceRegistry.getProviderUnchecked(ApplicationLoader.class).loadApplications();

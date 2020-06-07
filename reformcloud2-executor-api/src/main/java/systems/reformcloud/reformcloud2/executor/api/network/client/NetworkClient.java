@@ -33,6 +33,8 @@ public interface NetworkClient {
 
     boolean connect(@NotNull String host, int port, @NotNull Supplier<EndpointChannelReader> supplier);
 
+    boolean connectSync(@NotNull String host, int port, @NotNull Supplier<EndpointChannelReader> supplier);
+
     /**
      * Disconnects all open connections
      */

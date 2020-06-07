@@ -41,9 +41,13 @@ public interface ChannelManager {
     @UnmodifiableView Collection<NetworkChannel> getNetworkChannels(@NotNull String remoteAddress);
 
     @NotNull
+    Optional<NetworkChannel> getFirstChannel();
+
+    @NotNull
     @UnmodifiableView Collection<NetworkChannel> getRegisteredChannels();
 
-    @NotNull NetworkChannel createChannel(@NotNull Channel channel);
+    @NotNull
+    NetworkChannel createChannel(@NotNull Channel channel);
 
     void registerChannel(@NotNull NetworkChannel channel);
 

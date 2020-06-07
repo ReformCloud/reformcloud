@@ -31,10 +31,7 @@ import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChan
 import systems.reformcloud.reformcloud2.executor.api.network.channel.manager.ChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.utility.list.Streams;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class DefaultChannelManager implements ChannelManager {
@@ -51,6 +48,13 @@ public class DefaultChannelManager implements ChannelManager {
     @Override
     public @UnmodifiableView Collection<NetworkChannel> getNetworkChannels(@NotNull String remoteAddress) {
         return Streams.allOf(this.channels.values(), channel -> channel.getAddress().equals(remoteAddress));
+    }
+
+    @NotNull
+    @Override
+    public Optional<NetworkChannel> getFirstChannel() {
+        Iterator<NetworkChannel> iterator = this.channels.values().iterator();
+        return iterator.hasNext() ? Optional.of(iterator.next()) : Optional.empty();
     }
 
     @NotNull

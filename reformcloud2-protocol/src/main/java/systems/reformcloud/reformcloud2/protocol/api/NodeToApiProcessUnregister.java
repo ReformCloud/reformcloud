@@ -25,6 +25,9 @@
 package systems.reformcloud.reformcloud2.protocol.api;
 
 import org.jetbrains.annotations.NotNull;
+import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
+import systems.reformcloud.reformcloud2.executor.api.event.EventManager;
+import systems.reformcloud.reformcloud2.executor.api.event.events.process.ProcessUnregisterEvent;
 import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
@@ -50,7 +53,8 @@ public class NodeToApiProcessUnregister extends ProtocolPacket {
 
     @Override
     public void handlePacketReceive(@NotNull EndpointChannelReader reader, @NotNull NetworkChannel channel) {
-        super.post(channel, NodeToApiProcessUnregister.class, this);
+        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class)
+                .callEvent(new ProcessUnregisterEvent(this.processInformation));
     }
 
     @Override

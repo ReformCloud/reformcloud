@@ -22,53 +22,48 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.refomcloud.reformcloud2.embedded.network.packets.out;
+package systems.reformcloud.reformcloud2.protocol.node;
 
-import io.netty.channel.ChannelHandlerContext;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
-import systems.reformcloud.reformcloud2.executor.api.network.challenge.ChallengeAuthHandler;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.PacketSender;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
-import systems.reformcloud.reformcloud2.executor.api.network.netty.NettyChannelEndpoint;
-import systems.reformcloud.reformcloud2.executor.api.network.packet.Packet;
+import systems.reformcloud.reformcloud2.executor.api.network.packet.query.QueryResultPacket;
 
-import java.util.UUID;
+public class ApiToNodeGetDatabaseDocumentResult extends QueryResultPacket {
 
-public class APIPacketOutPlayerCommandExecute extends Packet {
+    public ApiToNodeGetDatabaseDocumentResult() {
+    }
 
-    protected String playerName;
-    protected UUID playerUniqueID;
-    protected String command;
+    public ApiToNodeGetDatabaseDocumentResult(JsonConfiguration result) {
+        this.result = result;
+    }
 
-    public APIPacketOutPlayerCommandExecute(String playerName, UUID playerUniqueID, String command) {
-        this.playerName = playerName;
-        this.playerUniqueID = playerUniqueID;
-        this.command = command;
+    private JsonConfiguration result;
+
+    @Nullable
+    public JsonConfiguration getResult() {
+        return this.result;
     }
 
     @Override
     public int getId() {
-        return NetworkUtil.PLAYER_INFORMATION_BUS + 5;
-    }
-
-    @Override
-    public void handlePacketReceive(@NotNull EndpointChannelReader reader, @NotNull ChallengeAuthHandler authHandler, @NotNull NettyChannelEndpoint parent, @Nullable PacketSender sender, @NotNull ChannelHandlerContext channel) {
+        return NetworkUtil.EMBEDDED_BUS + 8;
     }
 
     @Override
     public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeString(this.playerName);
-        buffer.writeUniqueId(this.playerUniqueID);
-        buffer.writeString(this.command);
+        buffer.writeBoolean(this.result != null);
+        if (this.result != null) {
+            buffer.writeArray(this.result.toPrettyBytes());
+        }
     }
 
     @Override
     public void read(@NotNull ProtocolBuffer buffer) {
-        this.playerName = buffer.readString();
-        this.playerUniqueID = buffer.readUniqueId();
-        this.command = buffer.readString();
+        if (buffer.readBoolean()) {
+            this.result = new JsonConfiguration(buffer.readArray());
+        }
     }
 }
