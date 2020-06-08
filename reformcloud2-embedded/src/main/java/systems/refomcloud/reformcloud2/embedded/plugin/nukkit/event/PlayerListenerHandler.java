@@ -31,12 +31,9 @@ import cn.nukkit.event.Listener;
 import cn.nukkit.event.player.PlayerLoginEvent;
 import cn.nukkit.event.player.PlayerQuitEvent;
 import org.jetbrains.annotations.NotNull;
+import systems.refomcloud.reformcloud2.embedded.Embedded;
 import systems.refomcloud.reformcloud2.embedded.plugin.nukkit.NukkitExecutor;
 import systems.refomcloud.reformcloud2.embedded.shared.SharedJoinAllowChecker;
-import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.api.API;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.PacketSender;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.manager.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessState;
 import systems.reformcloud.reformcloud2.executor.api.utility.list.Duo;
@@ -45,18 +42,17 @@ public final class PlayerListenerHandler implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH)
     public void handle(final @NotNull PlayerLoginEvent event) {
-        PacketSender sender = DefaultChannelManager.INSTANCE.get("Controller").orElse(null);
-        if (sender == null) {
+        if (!Embedded.getInstance().isReady()) {
             event.setCancelled(true);
-            event.setKickMessage(NukkitExecutor.getInstance().getMessages().format(
-                    NukkitExecutor.getInstance().getMessages().getProcessNotReadyToAcceptPlayersMessage()
+            event.setKickMessage(NukkitExecutor.getInstance().getIngameMessages().format(
+                    NukkitExecutor.getInstance().getIngameMessages().getProcessNotReadyToAcceptPlayersMessage()
             ));
             return;
         }
 
         Duo<Boolean, String> checked = SharedJoinAllowChecker.checkIfConnectAllowed(
                 event.getPlayer()::hasPermission,
-                NukkitExecutor.getInstance().getMessages(),
+                NukkitExecutor.getInstance().getIngameMessages(),
                 null,
                 event.getPlayer().getUniqueId(),
                 event.getPlayer().getName()
@@ -69,7 +65,7 @@ public final class PlayerListenerHandler implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void handle(final @NotNull PlayerQuitEvent event) {
-        ProcessInformation current = API.getInstance().getCurrentProcessInformation();
+        ProcessInformation current = Embedded.getInstance().getCurrentProcessInformation();
         if (!current.getProcessPlayerManager().isPlayerOnlineOnCurrentProcess(event.getPlayer().getUniqueId())) {
             return;
         }
@@ -83,7 +79,7 @@ public final class PlayerListenerHandler implements Listener {
 
             current.updateRuntimeInformation();
             current.getProcessPlayerManager().onLogout(event.getPlayer().getUniqueId());
-            ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(current);
+            Embedded.getInstance().updateCurrentProcessInformation();
         });
     }
 }

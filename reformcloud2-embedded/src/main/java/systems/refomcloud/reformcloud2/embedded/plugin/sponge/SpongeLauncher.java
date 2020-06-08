@@ -25,12 +25,12 @@
 package systems.refomcloud.reformcloud2.embedded.plugin.sponge;
 
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GameLoadCompleteEvent;
 import org.spongepowered.api.event.game.state.GameStartingServerEvent;
 import org.spongepowered.api.event.game.state.GameStoppingServerEvent;
 import org.spongepowered.api.plugin.Plugin;
+import systems.refomcloud.reformcloud2.embedded.plugin.sponge.event.PlayerListenerHandler;
 import systems.reformcloud.reformcloud2.executor.api.language.loading.LanguageLoader;
 
 @Plugin(
@@ -49,17 +49,17 @@ public class SpongeLauncher {
     @Listener
     public void handle(final GameLoadCompleteEvent event) {
         LanguageLoader.doLoad();
+        Sponge.getChannelRegistrar().createChannel(this, "BungeeCord");
     }
 
     @Listener
     public void handle(final GameStartingServerEvent event) {
-        Sponge.getChannelRegistrar().createChannel(this, "BungeeCord");
+        Sponge.getEventManager().registerListeners(this, new PlayerListenerHandler());
         new SpongeExecutor(this);
     }
 
     @Listener
     public void handle(final GameStoppingServerEvent event) {
-        SpongeExecutor.getInstance().getNetworkClient().disconnect();
-        Sponge.getServer().getOnlinePlayers().forEach(Player::kick);
+        SpongeExecutor.getInstance().getExecutorService().shutdownNow();
     }
 }

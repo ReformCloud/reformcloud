@@ -30,12 +30,9 @@ import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.text.Text;
+import systems.refomcloud.reformcloud2.embedded.Embedded;
 import systems.refomcloud.reformcloud2.embedded.plugin.sponge.SpongeExecutor;
 import systems.refomcloud.reformcloud2.embedded.shared.SharedJoinAllowChecker;
-import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.api.API;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.PacketSender;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.manager.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessState;
 import systems.reformcloud.reformcloud2.executor.api.utility.list.Duo;
@@ -46,18 +43,17 @@ public final class PlayerListenerHandler {
 
     @Listener(order = Order.LATE)
     public void handle(final @NotNull ClientConnectionEvent.Login event) {
-        PacketSender sender = DefaultChannelManager.INSTANCE.get("Controller").orElse(null);
-        if (sender == null) {
+        if (!Embedded.getInstance().isReady()) {
             event.setCancelled(true);
-            event.setMessage(Text.of(SpongeExecutor.getInstance().getMessages().format(
-                    SpongeExecutor.getInstance().getMessages().getProcessNotReadyToAcceptPlayersMessage()
+            event.setMessage(Text.of(SpongeExecutor.getInstance().getIngameMessages().format(
+                    SpongeExecutor.getInstance().getIngameMessages().getProcessNotReadyToAcceptPlayersMessage()
             )));
             return;
         }
 
         Duo<Boolean, String> checked = SharedJoinAllowChecker.checkIfConnectAllowed(
                 event.getTargetUser()::hasPermission,
-                SpongeExecutor.getInstance().getMessages(),
+                SpongeExecutor.getInstance().getIngameMessages(),
                 null,
                 event.getTargetUser().getUniqueId(),
                 event.getTargetUser().getName()
@@ -70,24 +66,22 @@ public final class PlayerListenerHandler {
 
     @Listener(order = Order.FIRST)
     public void handle(final @NotNull ClientConnectionEvent.Disconnect event) {
-        ProcessInformation current = API.getInstance().getCurrentProcessInformation();
+        ProcessInformation current = Embedded.getInstance().getCurrentProcessInformation();
         if (!current.getProcessPlayerManager().isPlayerOnlineOnCurrentProcess(event.getTargetEntity().getUniqueId())) {
             return;
         }
 
-        Sponge.getScheduler()
-                .createSyncExecutor(SpongeExecutor.getInstance().getPlugin())
-                .schedule(() -> {
-                    if (Sponge.getServer().getOnlinePlayers().size() < current.getProcessDetail().getMaxPlayers()
-                            && !current.getProcessDetail().getProcessState().equals(ProcessState.READY)
-                            && !current.getProcessDetail().getProcessState().equals(ProcessState.INVISIBLE)) {
-                        current.getProcessDetail().setProcessState(ProcessState.READY);
-                    }
+        SpongeExecutor.getInstance().getExecutorService().schedule(() -> {
+            if (Sponge.getServer().getOnlinePlayers().size() < current.getProcessDetail().getMaxPlayers()
+                    && !current.getProcessDetail().getProcessState().equals(ProcessState.READY)
+                    && !current.getProcessDetail().getProcessState().equals(ProcessState.INVISIBLE)) {
+                current.getProcessDetail().setProcessState(ProcessState.READY);
+            }
 
-                    current.updateRuntimeInformation();
-                    current.getProcessPlayerManager().onLogout(event.getTargetEntity().getUniqueId());
-                    SpongeExecutor.getInstance().setThisProcessInformation(current);
-                    ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().update(current);
-                }, 20, TimeUnit.MILLISECONDS);
+            current.updateRuntimeInformation();
+            current.getProcessPlayerManager().onLogout(event.getTargetEntity().getUniqueId());
+
+            Embedded.getInstance().updateCurrentProcessInformation();
+        }, 20, TimeUnit.MILLISECONDS);
     }
 }

@@ -65,8 +65,7 @@ public final class BungeeExecutor extends Embedded {
     private void fixInvalidPlayers() {
         SharedInvalidPlayerFixer.start(
                 uuid -> ProxyServer.getInstance().getPlayer(uuid) != null,
-                () -> ProxyServer.getInstance().getOnlineCount(),
-                information -> super.processInformation = information
+                () -> ProxyServer.getInstance().getOnlineCount()
         );
     }
 

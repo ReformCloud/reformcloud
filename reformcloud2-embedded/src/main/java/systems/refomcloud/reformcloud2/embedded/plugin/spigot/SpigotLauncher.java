@@ -26,7 +26,6 @@ package systems.refomcloud.reformcloud2.embedded.plugin.spigot;
 
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
-import systems.refomcloud.reformcloud2.embedded.plugin.spigot.event.ExtraListenerHandler;
 import systems.refomcloud.reformcloud2.embedded.plugin.spigot.event.PlayerListenerHandler;
 import systems.reformcloud.reformcloud2.executor.api.language.loading.LanguageLoader;
 
@@ -42,14 +41,10 @@ public final class SpigotLauncher extends JavaPlugin {
     public void onEnable() {
         new SpigotExecutor(this);
         Bukkit.getServer().getPluginManager().registerEvents(new PlayerListenerHandler(), this);
-        Bukkit.getServer().getPluginManager().registerEvents(new ExtraListenerHandler(), this);
     }
 
     @Override
     public void onDisable() {
-        SpigotExecutor.getInstance().getNetworkClient().disconnect();
         Bukkit.getScheduler().cancelTasks(this);
-
-        Bukkit.getOnlinePlayers().forEach(e -> e.kickPlayer(""));
     }
 }

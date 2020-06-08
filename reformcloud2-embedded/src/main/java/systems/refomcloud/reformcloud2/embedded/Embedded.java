@@ -66,7 +66,7 @@ import java.util.concurrent.TimeUnit;
 public class Embedded extends ExecutorAPI {
 
     protected ProcessInformation processInformation;
-    protected IngameMessages ingameMessages;
+    protected IngameMessages ingameMessages = new IngameMessages();
 
     protected final ServiceRegistry serviceRegistry = new DefaultServiceRegistry();
     protected final NetworkClient networkClient = new DefaultNetworkClient();
