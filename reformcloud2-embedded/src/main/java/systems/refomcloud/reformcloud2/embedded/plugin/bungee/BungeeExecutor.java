@@ -28,6 +28,7 @@ import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import systems.refomcloud.reformcloud2.embedded.Embedded;
+import systems.refomcloud.reformcloud2.embedded.controller.ProcessEventHandler;
 import systems.refomcloud.reformcloud2.embedded.controller.ProxyServerController;
 import systems.refomcloud.reformcloud2.embedded.executor.PlayerAPIExecutor;
 import systems.refomcloud.reformcloud2.embedded.plugin.bungee.controller.BungeeProxyServerController;
@@ -36,6 +37,7 @@ import systems.refomcloud.reformcloud2.embedded.plugin.bungee.executor.BungeePla
 import systems.refomcloud.reformcloud2.embedded.plugin.bungee.reconnect.ReformCloudReconnectHandler;
 import systems.refomcloud.reformcloud2.embedded.shared.SharedInvalidPlayerFixer;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorType;
+import systems.reformcloud.reformcloud2.executor.api.event.EventManager;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 
 public final class BungeeExecutor extends Embedded {
@@ -44,7 +46,6 @@ public final class BungeeExecutor extends Embedded {
     private final Plugin plugin;
 
     BungeeExecutor(Plugin plugin) {
-        super();
         super.type = ExecutorType.API;
 
         instance = this;
@@ -52,7 +53,9 @@ public final class BungeeExecutor extends Embedded {
 
         PlayerAPIExecutor.setInstance(new BungeePlayerAPIExecutor());
         ProxyServer.getInstance().setReconnectHandler(new ReformCloudReconnectHandler());
+
         super.getServiceRegistry().setProvider(ProxyServerController.class, new BungeeProxyServerController(), true);
+        super.getServiceRegistry().getProviderUnchecked(EventManager.class).registerListener(new ProcessEventHandler());
 
         for (ProcessInformation process : super.getProcessProvider().getProcesses()) {
             this.getServiceRegistry().getProviderUnchecked(ProxyServerController.class).registerProcess(process);

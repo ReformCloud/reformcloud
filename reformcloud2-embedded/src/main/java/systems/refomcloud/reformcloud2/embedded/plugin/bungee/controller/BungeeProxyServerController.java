@@ -79,7 +79,10 @@ public class BungeeProxyServerController implements ProxyServerController {
             return;
         }
 
-        this.cachedLobbyServices.add(processInformation);
+        if (processInformation.getProcessGroup().isCanBeUsedAsLobby()) {
+            this.cachedLobbyServices.add(processInformation);
+        }
+
         this.constructServerInfo(processInformation).ifPresent(
                 info -> ProxyServer.getInstance().getServers().put(info.getName(), info)
         );
@@ -97,8 +100,10 @@ public class BungeeProxyServerController implements ProxyServerController {
             return;
         }
 
-        this.cachedLobbyServices.removeIf(e -> e.getProcessDetail().getProcessUniqueID().equals(processInformation.getProcessDetail().getProcessUniqueID()));
-        this.cachedLobbyServices.add(processInformation);
+        if (processInformation.getProcessGroup().isCanBeUsedAsLobby()) {
+            this.cachedLobbyServices.removeIf(e -> e.getProcessDetail().getProcessUniqueID().equals(processInformation.getProcessDetail().getProcessUniqueID()));
+            this.cachedLobbyServices.add(processInformation);
+        }
 
         if (ProxyServer.getInstance().getServerInfo(processInformation.getProcessDetail().getName()) != null) {
             return;

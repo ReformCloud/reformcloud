@@ -22,10 +22,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.refomcloud.reformcloud2.embedded.plugin.bungee.event;
+package systems.refomcloud.reformcloud2.embedded.controller;
 
 import org.jetbrains.annotations.NotNull;
-import systems.refomcloud.reformcloud2.embedded.controller.ProxyServerController;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.event.events.process.ProcessRegisterEvent;
 import systems.reformcloud.reformcloud2.executor.api.event.events.process.ProcessUnregisterEvent;
@@ -35,17 +34,17 @@ import systems.reformcloud.reformcloud2.executor.api.event.handler.Listener;
 public final class ProcessEventHandler {
 
     @Listener
-    public void handleStart(final @NotNull ProcessRegisterEvent event) {
+    public void handle(final @NotNull ProcessRegisterEvent event) {
         this.getServerController().registerProcess(event.getProcessInformation());
     }
 
     @Listener
-    public void handleUpdate(final @NotNull ProcessUpdateEvent event) {
+    public void handle(final @NotNull ProcessUpdateEvent event) {
         this.getServerController().handleProcessUpdate(event.getProcessInformation());
     }
 
     @Listener
-    public void handleRemove(final @NotNull ProcessUnregisterEvent event) {
+    public void handle(final @NotNull ProcessUnregisterEvent event) {
         this.getServerController().unregisterProcess(event.getProcessInformation());
     }
 
