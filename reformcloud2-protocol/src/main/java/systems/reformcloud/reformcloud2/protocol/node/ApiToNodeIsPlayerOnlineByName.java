@@ -22,57 +22,45 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.protocol.api;
+package systems.reformcloud.reformcloud2.protocol.node;
 
 import org.jetbrains.annotations.NotNull;
+import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
 import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
 
-import java.util.UUID;
+public class ApiToNodeIsPlayerOnlineByName extends ProtocolPacket {
 
-public class NodeToApiConnectPlayerToServer extends ProtocolPacket {
-
-    public NodeToApiConnectPlayerToServer() {
+    public ApiToNodeIsPlayerOnlineByName() {
     }
 
-    public NodeToApiConnectPlayerToServer(UUID uniqueId, String server) {
-        this.uniqueId = uniqueId;
-        this.server = server;
+    public ApiToNodeIsPlayerOnlineByName(String playerName) {
+        this.playerName = playerName;
     }
 
-    private UUID uniqueId;
-    private String server;
-
-    public UUID getUniqueId() {
-        return this.uniqueId;
-    }
-
-    public String getServer() {
-        return this.server;
-    }
+    private String playerName;
 
     @Override
     public int getId() {
-        return NetworkUtil.API_BUS + 13;
+        return NetworkUtil.EMBEDDED_BUS + 41;
     }
 
     @Override
     public void handlePacketReceive(@NotNull EndpointChannelReader reader, @NotNull NetworkChannel channel) {
-        super.post(channel, NodeToApiConnectPlayerToServer.class, this);
+        boolean online = ExecutorAPI.getInstance().getPlayerProvider().isPlayerOnline(this.playerName);
+        channel.sendQueryResult(this.getQueryUniqueID(), new ApiToNodeIsPlayerOnlineResult(online));
     }
 
     @Override
     public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeUniqueId(this.uniqueId);
-        buffer.writeString(this.server);
+        buffer.writeString(this.playerName);
     }
 
     @Override
     public void read(@NotNull ProtocolBuffer buffer) {
-        this.uniqueId = buffer.readUniqueId();
-        this.server = buffer.readString();
+        this.playerName = buffer.readString();
     }
 }

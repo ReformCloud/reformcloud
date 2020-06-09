@@ -22,57 +22,56 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.protocol.api;
+package systems.reformcloud.reformcloud2.protocol.node;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
-import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
+import systems.reformcloud.reformcloud2.executor.api.network.packet.query.QueryResultPacket;
+import systems.reformcloud.reformcloud2.executor.api.utility.list.Duo;
 
+import java.util.Objects;
 import java.util.UUID;
 
-public class NodeToApiDisconnectPlayer extends ProtocolPacket {
+public class ApiToNodeGetCurrentPlayerProcessUniqueIdsResult extends QueryResultPacket {
 
-    public NodeToApiDisconnectPlayer() {
+    public ApiToNodeGetCurrentPlayerProcessUniqueIdsResult() {
     }
 
-    public NodeToApiDisconnectPlayer(UUID player, String reason) {
-        this.player = player;
-        this.reason = reason;
+    public ApiToNodeGetCurrentPlayerProcessUniqueIdsResult(Duo<UUID, UUID> result) {
+        this.result = result;
     }
 
-    private UUID player;
-    private String reason;
+    private Duo<UUID, UUID> result;
 
-    public UUID getPlayer() {
-        return this.player;
-    }
-
-    public String getReason() {
-        return this.reason;
+    @Nullable
+    public Duo<UUID, UUID> getResult() {
+        return this.result;
     }
 
     @Override
     public int getId() {
-        return NetworkUtil.API_BUS + 11;
-    }
-
-    @Override
-    public void handlePacketReceive(@NotNull EndpointChannelReader reader, @NotNull NetworkChannel channel) {
-        super.post(channel, NodeToApiDisconnectPlayer.class, this);
+        return NetworkUtil.EMBEDDED_BUS + 48;
     }
 
     @Override
     public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeUniqueId(this.player);
-        buffer.writeString(this.reason);
+        buffer.writeBoolean(this.result == null);
+        if (this.result == null) {
+            return;
+        }
+
+        buffer.writeUniqueId(this.result.getFirst());
+        buffer.writeUniqueId(this.result.getSecond());
     }
 
     @Override
     public void read(@NotNull ProtocolBuffer buffer) {
-        this.player = buffer.readUniqueId();
-        this.reason = buffer.readString();
+        if (buffer.readBoolean()) {
+            return;
+        }
+
+        this.result = new Duo<>(Objects.requireNonNull(buffer.readUniqueId()), buffer.readUniqueId());
     }
 }

@@ -22,34 +22,57 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.node.protocol;
+package systems.reformcloud.reformcloud2.protocol.shared;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
-import systems.reformcloud.reformcloud2.protocol.shared.PacketSetPlayerLocation;
+import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
+import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
 
 import java.util.UUID;
 
-public class NodeToNodeSetPlayerLocation extends PacketSetPlayerLocation {
+public class PacketConnectPlayerToServer extends ProtocolPacket {
 
-    public NodeToNodeSetPlayerLocation() {
+    public PacketConnectPlayerToServer() {
     }
 
-    public NodeToNodeSetPlayerLocation(UUID uniqueId, String world, double x, double y, double z, float yaw, float pitch) {
-        super(uniqueId, world, x, y, z, yaw, pitch);
+    public PacketConnectPlayerToServer(UUID uniqueId, String server) {
+        this.uniqueId = uniqueId;
+        this.server = server;
+    }
+
+    private UUID uniqueId;
+    private String server;
+
+    public UUID getUniqueId() {
+        return this.uniqueId;
+    }
+
+    public String getServer() {
+        return this.server;
     }
 
     @Override
     public int getId() {
-        return NetworkUtil.NODE_BUS + 38;
+        return NetworkUtil.API_BUS + 13;
     }
 
     @Override
     public void handlePacketReceive(@NotNull EndpointChannelReader reader, @NotNull NetworkChannel channel) {
-        ExecutorAPI.getInstance().getPlayerProvider().getPlayer(this.uniqueId)
-                .ifPresent(player -> player.setLocation(this.world, this.x, this.y, this.z, this.yaw, this.pitch));
+        super.post(channel, PacketConnectPlayerToServer.class, this);
+    }
+
+    @Override
+    public void write(@NotNull ProtocolBuffer buffer) {
+        buffer.writeUniqueId(this.uniqueId);
+        buffer.writeString(this.server);
+    }
+
+    @Override
+    public void read(@NotNull ProtocolBuffer buffer) {
+        this.uniqueId = buffer.readUniqueId();
+        this.server = buffer.readString();
     }
 }

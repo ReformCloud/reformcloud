@@ -22,34 +22,73 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.node.protocol;
+package systems.reformcloud.reformcloud2.protocol.shared;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
-import systems.reformcloud.reformcloud2.protocol.shared.PacketSetPlayerLocation;
+import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
+import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
 
 import java.util.UUID;
 
-public class NodeToNodeSetPlayerLocation extends PacketSetPlayerLocation {
+public class PacketPlaySoundToPlayer extends ProtocolPacket {
 
-    public NodeToNodeSetPlayerLocation() {
+    public PacketPlaySoundToPlayer() {
     }
 
-    public NodeToNodeSetPlayerLocation(UUID uniqueId, String world, double x, double y, double z, float yaw, float pitch) {
-        super(uniqueId, world, x, y, z, yaw, pitch);
+    public PacketPlaySoundToPlayer(UUID uniqueId, String sound, float volume, float pitch) {
+        this.uniqueId = uniqueId;
+        this.sound = sound;
+        this.volume = volume;
+        this.pitch = pitch;
+    }
+
+    private UUID uniqueId;
+    private String sound;
+    private float volume;
+    private float pitch;
+
+    public UUID getUniqueId() {
+        return this.uniqueId;
+    }
+
+    public String getSound() {
+        return this.sound;
+    }
+
+    public float getVolume() {
+        return this.volume;
+    }
+
+    public float getPitch() {
+        return this.pitch;
     }
 
     @Override
     public int getId() {
-        return NetworkUtil.NODE_BUS + 38;
+        return NetworkUtil.API_BUS + 14;
     }
 
     @Override
     public void handlePacketReceive(@NotNull EndpointChannelReader reader, @NotNull NetworkChannel channel) {
-        ExecutorAPI.getInstance().getPlayerProvider().getPlayer(this.uniqueId)
-                .ifPresent(player -> player.setLocation(this.world, this.x, this.y, this.z, this.yaw, this.pitch));
+        super.post(channel, PacketPlaySoundToPlayer.class, this);
+    }
+
+    @Override
+    public void write(@NotNull ProtocolBuffer buffer) {
+        buffer.writeUniqueId(this.uniqueId);
+        buffer.writeString(this.sound);
+        buffer.writeFloat(this.volume);
+        buffer.writeFloat(this.pitch);
+    }
+
+    @Override
+    public void read(@NotNull ProtocolBuffer buffer) {
+        this.uniqueId = buffer.readUniqueId();
+        this.sound = buffer.readString();
+        this.volume = buffer.readFloat();
+        this.pitch = buffer.readFloat();
     }
 }

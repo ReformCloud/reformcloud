@@ -39,6 +39,10 @@ import systems.reformcloud.reformcloud2.protocol.shared.PacketAuthSuccess;
 
 public class EmbeddedEndpointChannelReader extends SharedEndpointChannelReader {
 
+    public EmbeddedEndpointChannelReader() {
+        PacketRegister.preAuth();
+    }
+
     private boolean wasActive = false;
 
     @Override
@@ -87,6 +91,7 @@ public class EmbeddedEndpointChannelReader extends SharedEndpointChannelReader {
             super.networkChannel.setName("Controller");
             super.networkChannel.setAuthenticated(true);
             ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ChannelManager.class).registerChannel(super.networkChannel);
+            PacketRegister.postAuth();
             return;
         }
 

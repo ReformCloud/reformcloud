@@ -22,34 +22,47 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.node.protocol;
+package systems.reformcloud.reformcloud2.protocol.node;
 
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
-import systems.reformcloud.reformcloud2.protocol.shared.PacketSetPlayerLocation;
+import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
+import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
 
 import java.util.UUID;
 
-public class NodeToNodeSetPlayerLocation extends PacketSetPlayerLocation {
+public class ApiToNodeIsPlayerOnlineByUniqueId extends ProtocolPacket {
 
-    public NodeToNodeSetPlayerLocation() {
+    public ApiToNodeIsPlayerOnlineByUniqueId() {
     }
 
-    public NodeToNodeSetPlayerLocation(UUID uniqueId, String world, double x, double y, double z, float yaw, float pitch) {
-        super(uniqueId, world, x, y, z, yaw, pitch);
+    public ApiToNodeIsPlayerOnlineByUniqueId(UUID uniqueId) {
+        this.uniqueId = uniqueId;
     }
+
+    private UUID uniqueId;
 
     @Override
     public int getId() {
-        return NetworkUtil.NODE_BUS + 38;
+        return NetworkUtil.EMBEDDED_BUS + 42;
     }
 
     @Override
     public void handlePacketReceive(@NotNull EndpointChannelReader reader, @NotNull NetworkChannel channel) {
-        ExecutorAPI.getInstance().getPlayerProvider().getPlayer(this.uniqueId)
-                .ifPresent(player -> player.setLocation(this.world, this.x, this.y, this.z, this.yaw, this.pitch));
+        boolean online = ExecutorAPI.getInstance().getPlayerProvider().isPlayerOnline(this.uniqueId);
+        channel.sendQueryResult(this.getQueryUniqueID(), new ApiToNodeIsPlayerOnlineResult(online));
+    }
+
+    @Override
+    public void write(@NotNull ProtocolBuffer buffer) {
+        buffer.writeUniqueId(this.uniqueId);
+    }
+
+    @Override
+    public void read(@NotNull ProtocolBuffer buffer) {
+        this.uniqueId = buffer.readUniqueId();
     }
 }

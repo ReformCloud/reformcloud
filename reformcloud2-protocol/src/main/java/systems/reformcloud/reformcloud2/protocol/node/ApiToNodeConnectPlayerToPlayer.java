@@ -22,34 +22,58 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.node.protocol;
+package systems.reformcloud.reformcloud2.protocol.node;
 
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
-import systems.reformcloud.reformcloud2.protocol.shared.PacketSetPlayerLocation;
+import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
+import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
 
 import java.util.UUID;
 
-public class NodeToNodeSetPlayerLocation extends PacketSetPlayerLocation {
+public class ApiToNodeConnectPlayerToPlayer extends ProtocolPacket {
 
-    public NodeToNodeSetPlayerLocation() {
+    public ApiToNodeConnectPlayerToPlayer() {
     }
 
-    public NodeToNodeSetPlayerLocation(UUID uniqueId, String world, double x, double y, double z, float yaw, float pitch) {
-        super(uniqueId, world, x, y, z, yaw, pitch);
+    public ApiToNodeConnectPlayerToPlayer(UUID playerUniqueId, UUID otherPlayer) {
+        this.playerUniqueId = playerUniqueId;
+        this.otherPlayer = otherPlayer;
+    }
+
+    private UUID playerUniqueId;
+    private UUID otherPlayer;
+
+    public UUID getOtherPlayer() {
+        return this.otherPlayer;
+    }
+
+    public UUID getPlayerUniqueId() {
+        return this.playerUniqueId;
     }
 
     @Override
     public int getId() {
-        return NetworkUtil.NODE_BUS + 38;
+        return NetworkUtil.EMBEDDED_BUS + 46;
     }
 
     @Override
     public void handlePacketReceive(@NotNull EndpointChannelReader reader, @NotNull NetworkChannel channel) {
-        ExecutorAPI.getInstance().getPlayerProvider().getPlayer(this.uniqueId)
-                .ifPresent(player -> player.setLocation(this.world, this.x, this.y, this.z, this.yaw, this.pitch));
+        ExecutorAPI.getInstance().getPlayerProvider().getPlayer(this.playerUniqueId).ifPresent(e -> e.connect(this.otherPlayer));
+    }
+
+    @Override
+    public void write(@NotNull ProtocolBuffer buffer) {
+        buffer.writeUniqueId(this.playerUniqueId);
+        buffer.writeUniqueId(this.otherPlayer);
+    }
+
+    @Override
+    public void read(@NotNull ProtocolBuffer buffer) {
+        this.playerUniqueId = buffer.readUniqueId();
+        this.otherPlayer = buffer.readUniqueId();
     }
 }

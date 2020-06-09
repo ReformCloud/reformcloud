@@ -34,7 +34,7 @@ import systems.reformcloud.reformcloud2.executor.api.utility.list.Duo;
 import systems.reformcloud.reformcloud2.executor.api.wrappers.PlayerWrapper;
 import systems.reformcloud.reformcloud2.node.NodeExecutor;
 import systems.reformcloud.reformcloud2.node.protocol.*;
-import systems.reformcloud.reformcloud2.protocol.api.*;
+import systems.reformcloud.reformcloud2.protocol.shared.*;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -76,7 +76,7 @@ public class DefaultNodePlayerWrapper implements PlayerWrapper {
         }
 
         if (proxy.getProcessDetail().getParentUniqueID().equals(NodeExecutor.getInstance().getNodeConfig().getUniqueID())) {
-            this.sendPacketToPlayerProxy(new NodeToApiSendPlayerMessage(this.uniqueId, message));
+            this.sendPacketToPlayerProxy(new PacketSendPlayerMessage(this.uniqueId, message));
         } else {
             this.sendPacketToParent(proxy, new NodeToNodeSendPlayerMessage(this.uniqueId, message));
         }
@@ -90,7 +90,7 @@ public class DefaultNodePlayerWrapper implements PlayerWrapper {
         }
 
         if (proxy.getProcessDetail().getParentUniqueID().equals(NodeExecutor.getInstance().getNodeConfig().getUniqueID())) {
-            this.sendPacketToPlayerProxy(new NodeToApiDisconnectPlayer(this.uniqueId, kickReason));
+            this.sendPacketToPlayerProxy(new PacketDisconnectPlayer(this.uniqueId, kickReason));
         } else {
             this.sendPacketToParent(proxy, new NodeToNodeDisconnectPlayer(this.uniqueId, kickReason));
         }
@@ -104,7 +104,7 @@ public class DefaultNodePlayerWrapper implements PlayerWrapper {
         }
 
         if (server.getProcessDetail().getParentUniqueID().equals(NodeExecutor.getInstance().getNodeConfig().getUniqueID())) {
-            this.sendPacketToPlayerProxy(new NodeToApiPlaySoundToPlayer(this.uniqueId, sound, volume, pitch));
+            this.sendPacketToPlayerProxy(new PacketPlaySoundToPlayer(this.uniqueId, sound, volume, pitch));
         } else {
             this.sendPacketToParent(server, new NodeToNodePlaySoundToPlayer(this.uniqueId, sound, volume, pitch));
         }
@@ -118,7 +118,7 @@ public class DefaultNodePlayerWrapper implements PlayerWrapper {
         }
 
         if (proxy.getProcessDetail().getParentUniqueID().equals(NodeExecutor.getInstance().getNodeConfig().getUniqueID())) {
-            this.sendPacketToPlayerProxy(new NodeToApiSendPlayerTitle(this.uniqueId, title, subTitle, fadeIn, stay, fadeOut));
+            this.sendPacketToPlayerProxy(new PacketSendPlayerTitle(this.uniqueId, title, subTitle, fadeIn, stay, fadeOut));
         } else {
             this.sendPacketToParent(proxy, new NodeToNodeSendPlayerTitle(this.uniqueId, title, subTitle, fadeIn, stay, fadeOut));
         }
@@ -132,7 +132,7 @@ public class DefaultNodePlayerWrapper implements PlayerWrapper {
         }
 
         if (server.getProcessDetail().getParentUniqueID().equals(NodeExecutor.getInstance().getNodeConfig().getUniqueID())) {
-            this.sendPacketToPlayerProxy(new NodeToApiPlayEffectToPlayer(this.uniqueId, effect));
+            this.sendPacketToPlayerProxy(new PacketPlayEffectToPlayer(this.uniqueId, effect));
         } else {
             this.sendPacketToParent(server, new NodeToNodePlayEffectToPlayer(this.uniqueId, effect));
         }
@@ -146,7 +146,7 @@ public class DefaultNodePlayerWrapper implements PlayerWrapper {
         }
 
         if (server.getProcessDetail().getParentUniqueID().equals(NodeExecutor.getInstance().getNodeConfig().getUniqueID())) {
-            this.sendPacketToPlayerProxy(new NodeToApiSetPlayerLocation(this.uniqueId, world, x, y, z, yaw, pitch));
+            this.sendPacketToPlayerProxy(new PacketSetPlayerLocation(this.uniqueId, world, x, y, z, yaw, pitch));
         } else {
             this.sendPacketToParent(server, new NodeToNodeSetPlayerLocation(this.uniqueId, world, x, y, z, yaw, pitch));
         }
@@ -160,7 +160,7 @@ public class DefaultNodePlayerWrapper implements PlayerWrapper {
         }
 
         if (proxy.getProcessDetail().getParentUniqueID().equals(NodeExecutor.getInstance().getNodeConfig().getUniqueID())) {
-            this.sendPacketToPlayerProxy(new NodeToApiConnectPlayerToServer(this.uniqueId, server));
+            this.sendPacketToPlayerProxy(new PacketConnectPlayerToServer(this.uniqueId, server));
         } else {
             this.sendPacketToParent(proxy, new NodeToNodeSendPlayerToServer(this.uniqueId, server));
         }

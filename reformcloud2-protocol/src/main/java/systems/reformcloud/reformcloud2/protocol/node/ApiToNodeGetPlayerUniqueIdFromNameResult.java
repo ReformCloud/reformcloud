@@ -22,57 +22,42 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.protocol.api;
+package systems.reformcloud.reformcloud2.protocol.node;
 
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
-import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
+import systems.reformcloud.reformcloud2.executor.api.network.packet.query.QueryResultPacket;
 
 import java.util.UUID;
 
-public class NodeToApiSendPlayerMessage extends ProtocolPacket {
+public class ApiToNodeGetPlayerUniqueIdFromNameResult extends QueryResultPacket {
 
-    public NodeToApiSendPlayerMessage() {
+    public ApiToNodeGetPlayerUniqueIdFromNameResult() {
     }
 
-    public NodeToApiSendPlayerMessage(UUID player, String message) {
-        this.player = player;
-        this.message = message;
+    public ApiToNodeGetPlayerUniqueIdFromNameResult(UUID uniqueId) {
+        this.uniqueId = uniqueId;
     }
 
-    private UUID player;
-    private String message;
+    private UUID uniqueId;
 
-    public UUID getPlayer() {
-        return this.player;
-    }
-
-    public String getMessage() {
-        return this.message;
+    public UUID getUniqueId() {
+        return this.uniqueId;
     }
 
     @Override
     public int getId() {
-        return NetworkUtil.API_BUS + 10;
-    }
-
-    @Override
-    public void handlePacketReceive(@NotNull EndpointChannelReader reader, @NotNull NetworkChannel channel) {
-        super.post(channel, NodeToApiSendPlayerMessage.class, this);
+        return NetworkUtil.EMBEDDED_BUS + 45;
     }
 
     @Override
     public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeUniqueId(this.player);
-        buffer.writeString(this.message);
+        buffer.writeUniqueId(this.uniqueId);
     }
 
     @Override
     public void read(@NotNull ProtocolBuffer buffer) {
-        this.player = buffer.readUniqueId();
-        this.message = buffer.readString();
+        this.uniqueId = buffer.readUniqueId();
     }
 }

@@ -22,34 +22,16 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.node.protocol;
+package systems.refomcloud.reformcloud2.embedded.processors;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
-import systems.reformcloud.reformcloud2.protocol.shared.PacketSetPlayerLocation;
+import systems.reformcloud.reformcloud2.protocol.shared.PacketDisconnectPlayer;
 
-import java.util.UUID;
-
-public class NodeToNodeSetPlayerLocation extends PacketSetPlayerLocation {
-
-    public NodeToNodeSetPlayerLocation() {
-    }
-
-    public NodeToNodeSetPlayerLocation(UUID uniqueId, String world, double x, double y, double z, float yaw, float pitch) {
-        super(uniqueId, world, x, y, z, yaw, pitch);
-    }
+public class PacketDisconnectPlayerProcessor extends PlayerApiToNodePacketProcessor<PacketDisconnectPlayer> {
 
     @Override
-    public int getId() {
-        return NetworkUtil.NODE_BUS + 38;
-    }
-
-    @Override
-    public void handlePacketReceive(@NotNull EndpointChannelReader reader, @NotNull NetworkChannel channel) {
-        ExecutorAPI.getInstance().getPlayerProvider().getPlayer(this.uniqueId)
-                .ifPresent(player -> player.setLocation(this.world, this.x, this.y, this.z, this.yaw, this.pitch));
+    public void process(@NotNull NetworkChannel channel, @NotNull PacketDisconnectPlayer packet) {
+        this.getPlayerExecutor().executeKickPlayer(packet.getPlayer(), packet.getReason());
     }
 }

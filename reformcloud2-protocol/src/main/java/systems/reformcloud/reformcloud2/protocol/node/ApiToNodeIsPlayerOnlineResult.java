@@ -22,57 +22,40 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.protocol.api;
+package systems.reformcloud.reformcloud2.protocol.node;
 
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
-import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
+import systems.reformcloud.reformcloud2.executor.api.network.packet.query.QueryResultPacket;
 
-import java.util.UUID;
+public class ApiToNodeIsPlayerOnlineResult extends QueryResultPacket {
 
-public class NodeToApiPlayEffectToPlayer extends ProtocolPacket {
-
-    public NodeToApiPlayEffectToPlayer() {
+    public ApiToNodeIsPlayerOnlineResult() {
     }
 
-    public NodeToApiPlayEffectToPlayer(UUID uniqueId, String effect) {
-        this.uniqueId = uniqueId;
-        this.effect = effect;
+    public ApiToNodeIsPlayerOnlineResult(boolean online) {
+        this.online = online;
     }
 
-    private UUID uniqueId;
-    private String effect;
+    private boolean online;
 
-    public UUID getUniqueId() {
-        return this.uniqueId;
-    }
-
-    public String getEffect() {
-        return this.effect;
+    public boolean isOnline() {
+        return this.online;
     }
 
     @Override
     public int getId() {
-        return NetworkUtil.API_BUS + 15;
-    }
-
-    @Override
-    public void handlePacketReceive(@NotNull EndpointChannelReader reader, @NotNull NetworkChannel channel) {
-        super.post(channel, NodeToApiPlayEffectToPlayer.class, this);
+        return NetworkUtil.EMBEDDED_BUS + 43;
     }
 
     @Override
     public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeUniqueId(this.uniqueId);
-        buffer.writeString(this.effect);
+        buffer.writeBoolean(this.online);
     }
 
     @Override
     public void read(@NotNull ProtocolBuffer buffer) {
-        this.uniqueId = buffer.readUniqueId();
-        this.effect = buffer.readString();
+        this.online = buffer.readBoolean();
     }
 }

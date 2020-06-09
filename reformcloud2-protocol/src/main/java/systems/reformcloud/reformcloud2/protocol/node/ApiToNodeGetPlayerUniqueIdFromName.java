@@ -22,97 +22,53 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.protocol.api;
+package systems.reformcloud.reformcloud2.protocol.node;
 
 import org.jetbrains.annotations.NotNull;
+import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
+import systems.reformcloud.reformcloud2.executor.api.process.Player;
+import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
 
-import java.util.UUID;
+public class ApiToNodeGetPlayerUniqueIdFromName extends ProtocolPacket {
 
-public class NodeToApiSetPlayerLocation extends ProtocolPacket {
-
-    public NodeToApiSetPlayerLocation() {
+    public ApiToNodeGetPlayerUniqueIdFromName() {
     }
 
-    public NodeToApiSetPlayerLocation(UUID uniqueId, String world, double x, double y, double z, float yaw, float pitch) {
-        this.uniqueId = uniqueId;
-        this.world = world;
-        this.x = x;
-        this.y = y;
-        this.z = z;
-        this.yaw = yaw;
-        this.pitch = pitch;
+    public ApiToNodeGetPlayerUniqueIdFromName(String playerName) {
+        this.playerName = playerName;
     }
 
-    protected UUID uniqueId;
-    protected String world;
-    protected double x;
-    protected double y;
-    protected double z;
-    protected float yaw;
-    protected float pitch;
-
-    public UUID getUniqueId() {
-        return this.uniqueId;
-    }
-
-    public String getWorld() {
-        return this.world;
-    }
-
-    public double getX() {
-        return this.x;
-    }
-
-    public double getY() {
-        return this.y;
-    }
-
-    public double getZ() {
-        return this.z;
-    }
-
-    public float getYaw() {
-        return this.yaw;
-    }
-
-    public float getPitch() {
-        return this.pitch;
-    }
+    private String playerName;
 
     @Override
     public int getId() {
-        return NetworkUtil.API_BUS + 16;
+        return NetworkUtil.EMBEDDED_BUS + 44;
     }
 
     @Override
     public void handlePacketReceive(@NotNull EndpointChannelReader reader, @NotNull NetworkChannel channel) {
-        super.post(channel, NodeToApiSetPlayerLocation.class, this);
+        for (ProcessInformation process : ExecutorAPI.getInstance().getProcessProvider().getProcesses()) {
+            for (Player onlinePlayer : process.getProcessPlayerManager().getOnlinePlayers()) {
+                if (onlinePlayer.getName().equals(this.playerName)) {
+                    channel.sendQueryResult(this.getQueryUniqueID(), new ApiToNodeGetPlayerUniqueIdFromNameResult(onlinePlayer.getUniqueID()));
+                    return;
+                }
+            }
+        }
     }
 
     @Override
     public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeUniqueId(this.uniqueId);
-        buffer.writeString(this.world);
-        buffer.writeDouble(this.x);
-        buffer.writeDouble(this.y);
-        buffer.writeDouble(this.z);
-        buffer.writeFloat(this.yaw);
-        buffer.writeFloat(this.pitch);
+        buffer.writeString(this.playerName);
     }
 
     @Override
     public void read(@NotNull ProtocolBuffer buffer) {
-        this.uniqueId = buffer.readUniqueId();
-        this.world = buffer.readString();
-        this.x = buffer.readDouble();
-        this.y = buffer.readDouble();
-        this.z = buffer.readDouble();
-        this.yaw = buffer.readFloat();
-        this.pitch = buffer.readFloat();
+        this.playerName = buffer.readString();
     }
 }

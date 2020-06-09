@@ -22,34 +22,57 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.node.protocol;
+package systems.reformcloud.reformcloud2.protocol.shared;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
-import systems.reformcloud.reformcloud2.protocol.shared.PacketSetPlayerLocation;
+import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
+import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
 
 import java.util.UUID;
 
-public class NodeToNodeSetPlayerLocation extends PacketSetPlayerLocation {
+public class PacketDisconnectPlayer extends ProtocolPacket {
 
-    public NodeToNodeSetPlayerLocation() {
+    public PacketDisconnectPlayer() {
     }
 
-    public NodeToNodeSetPlayerLocation(UUID uniqueId, String world, double x, double y, double z, float yaw, float pitch) {
-        super(uniqueId, world, x, y, z, yaw, pitch);
+    public PacketDisconnectPlayer(UUID player, String reason) {
+        this.player = player;
+        this.reason = reason;
+    }
+
+    private UUID player;
+    private String reason;
+
+    public UUID getPlayer() {
+        return this.player;
+    }
+
+    public String getReason() {
+        return this.reason;
     }
 
     @Override
     public int getId() {
-        return NetworkUtil.NODE_BUS + 38;
+        return NetworkUtil.API_BUS + 11;
     }
 
     @Override
     public void handlePacketReceive(@NotNull EndpointChannelReader reader, @NotNull NetworkChannel channel) {
-        ExecutorAPI.getInstance().getPlayerProvider().getPlayer(this.uniqueId)
-                .ifPresent(player -> player.setLocation(this.world, this.x, this.y, this.z, this.yaw, this.pitch));
+        super.post(channel, PacketDisconnectPlayer.class, this);
+    }
+
+    @Override
+    public void write(@NotNull ProtocolBuffer buffer) {
+        buffer.writeUniqueId(this.player);
+        buffer.writeString(this.reason);
+    }
+
+    @Override
+    public void read(@NotNull ProtocolBuffer buffer) {
+        this.player = buffer.readUniqueId();
+        this.reason = buffer.readString();
     }
 }

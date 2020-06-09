@@ -22,89 +22,58 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.protocol.api;
+package systems.reformcloud.reformcloud2.protocol.node;
 
 import org.jetbrains.annotations.NotNull;
+import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
+import systems.reformcloud.reformcloud2.executor.api.utility.list.Duo;
+import systems.reformcloud.reformcloud2.executor.api.wrappers.PlayerWrapper;
 import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
 
+import java.util.Optional;
 import java.util.UUID;
 
-public class NodeToApiSendPlayerTitle extends ProtocolPacket {
+public class ApiToNodeGetCurrentPlayerProcessUniqueIds extends ProtocolPacket {
 
-    public NodeToApiSendPlayerTitle() {
+    public ApiToNodeGetCurrentPlayerProcessUniqueIds() {
     }
 
-    public NodeToApiSendPlayerTitle(UUID uniqueId, String title, String subTitle, int fadeIn, int stay, int fadeOut) {
-        this.uniqueId = uniqueId;
-        this.title = title;
-        this.subTitle = subTitle;
-        this.fadeIn = fadeIn;
-        this.stay = stay;
-        this.fadeOut = fadeOut;
+    public ApiToNodeGetCurrentPlayerProcessUniqueIds(UUID playerUniqueId) {
+        this.playerUniqueId = playerUniqueId;
     }
 
-    private UUID uniqueId;
-    private String title;
-    private String subTitle;
-    private int fadeIn;
-    private int stay;
-    private int fadeOut;
-
-    public UUID getUniqueId() {
-        return this.uniqueId;
-    }
-
-    public String getTitle() {
-        return this.title;
-    }
-
-    public String getSubTitle() {
-        return this.subTitle;
-    }
-
-    public int getFadeIn() {
-        return this.fadeIn;
-    }
-
-    public int getStay() {
-        return this.stay;
-    }
-
-    public int getFadeOut() {
-        return this.fadeOut;
-    }
+    private UUID playerUniqueId;
 
     @Override
     public int getId() {
-        return NetworkUtil.API_BUS + 12;
+        return NetworkUtil.EMBEDDED_BUS + 47;
     }
 
     @Override
     public void handlePacketReceive(@NotNull EndpointChannelReader reader, @NotNull NetworkChannel channel) {
-        super.post(channel, NodeToApiSendPlayerTitle.class, this);
+        Optional<PlayerWrapper> player = ExecutorAPI.getInstance().getPlayerProvider().getPlayer(this.playerUniqueId);
+        if (player.isPresent()) {
+            Optional<Duo<UUID, UUID>> playerProcess = player.get().getPlayerProcess();
+            if (playerProcess.isPresent()) {
+                channel.sendQueryResult(this.getQueryUniqueID(), new ApiToNodeGetCurrentPlayerProcessUniqueIdsResult(playerProcess.get()));
+                return;
+            }
+        }
+
+        channel.sendQueryResult(this.getQueryUniqueID(), new ApiToNodeGetCurrentPlayerProcessUniqueIdsResult());
     }
 
     @Override
     public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeUniqueId(this.uniqueId);
-        buffer.writeString(this.title);
-        buffer.writeString(this.subTitle);
-        buffer.writeInt(this.fadeIn);
-        buffer.writeInt(this.stay);
-        buffer.writeInt(this.fadeOut);
+        buffer.writeUniqueId(this.playerUniqueId);
     }
 
     @Override
     public void read(@NotNull ProtocolBuffer buffer) {
-        this.uniqueId = buffer.readUniqueId();
-        this.title = buffer.readString();
-        this.subTitle = buffer.readString();
-        this.fadeIn = buffer.readInt();
-        this.stay = buffer.readInt();
-        this.fadeOut = buffer.readInt();
+        this.playerUniqueId = buffer.readUniqueId();
     }
 }

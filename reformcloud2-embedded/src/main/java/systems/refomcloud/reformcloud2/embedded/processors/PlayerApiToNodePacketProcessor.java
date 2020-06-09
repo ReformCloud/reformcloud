@@ -22,34 +22,16 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.node.protocol;
+package systems.refomcloud.reformcloud2.embedded.processors;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
-import systems.reformcloud.reformcloud2.protocol.shared.PacketSetPlayerLocation;
+import systems.refomcloud.reformcloud2.embedded.executor.PlayerAPIExecutor;
+import systems.reformcloud.reformcloud2.executor.api.network.packet.Packet;
+import systems.reformcloud.reformcloud2.protocol.processor.PacketProcessor;
 
-import java.util.UUID;
+abstract class PlayerApiToNodePacketProcessor<T extends Packet> implements PacketProcessor<T> {
 
-public class NodeToNodeSetPlayerLocation extends PacketSetPlayerLocation {
-
-    public NodeToNodeSetPlayerLocation() {
-    }
-
-    public NodeToNodeSetPlayerLocation(UUID uniqueId, String world, double x, double y, double z, float yaw, float pitch) {
-        super(uniqueId, world, x, y, z, yaw, pitch);
-    }
-
-    @Override
-    public int getId() {
-        return NetworkUtil.NODE_BUS + 38;
-    }
-
-    @Override
-    public void handlePacketReceive(@NotNull EndpointChannelReader reader, @NotNull NetworkChannel channel) {
-        ExecutorAPI.getInstance().getPlayerProvider().getPlayer(this.uniqueId)
-                .ifPresent(player -> player.setLocation(this.world, this.x, this.y, this.z, this.yaw, this.pitch));
+    protected @NotNull PlayerAPIExecutor getPlayerExecutor() {
+        return PlayerAPIExecutor.getInstance();
     }
 }

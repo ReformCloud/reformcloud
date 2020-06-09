@@ -30,6 +30,8 @@ import systems.refomcloud.reformcloud2.embedded.database.DefaultEmbeddedDatabase
 import systems.refomcloud.reformcloud2.embedded.messaging.DefaultEmbeddedChannelMessageProvider;
 import systems.refomcloud.reformcloud2.embedded.network.EmbeddedEndpointChannelReader;
 import systems.refomcloud.reformcloud2.embedded.node.DefaultEmbeddedNodeInformationProvider;
+import systems.refomcloud.reformcloud2.embedded.player.DefaultEmbeddedPlayerProvider;
+import systems.refomcloud.reformcloud2.embedded.processors.*;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.event.EventManager;
 import systems.reformcloud.reformcloud2.executor.api.event.events.process.ProcessUpdateEvent;
@@ -48,6 +50,8 @@ import systems.reformcloud.reformcloud2.executor.api.task.Task;
 import systems.reformcloud.reformcloud2.protocol.node.ApiToNodeGetIngameMessages;
 import systems.reformcloud.reformcloud2.protocol.node.ApiToNodeGetIngameMessagesResult;
 import systems.reformcloud.reformcloud2.protocol.node.ApiToNodeUpdateProcessInformation;
+import systems.reformcloud.reformcloud2.protocol.processor.PacketProcessorManager;
+import systems.reformcloud.reformcloud2.protocol.shared.*;
 import systems.reformcloud.reformcloud2.shared.event.DefaultEventManager;
 import systems.reformcloud.reformcloud2.shared.network.channel.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.shared.network.client.DefaultNetworkClient;
@@ -75,6 +79,7 @@ public class Embedded extends ExecutorAPI {
     private final DatabaseProvider databaseProvider = new DefaultEmbeddedDatabaseProvider();
     private final ChannelMessageProvider channelMessageProvider = new DefaultEmbeddedChannelMessageProvider();
     private final NodeInformationProvider nodeInformationProvider = new DefaultEmbeddedNodeInformationProvider();
+    private final PlayerProvider playerProvider = new DefaultEmbeddedPlayerProvider();
 
     protected Embedded() {
         ExecutorAPI.setInstance(this);
@@ -99,6 +104,16 @@ public class Embedded extends ExecutorAPI {
 
         this.processInformation.getProcessDetail().setProcessState(this.processInformation.getProcessDetail().getInitialState());
         this.processInformation.getNetworkInfo().setConnected(true);
+
+        PacketProcessorManager.getInstance()
+                .registerProcessor(new ChannelMessageProcessor(), PacketChannelMessage.class)
+                .registerProcessor(new PacketConnectPlayerToServerProcessor(), PacketConnectPlayerToServer.class)
+                .registerProcessor(new PacketDisconnectPlayerProcessor(), PacketDisconnectPlayer.class)
+                .registerProcessor(new PacketPlayEffectToPlayerProcessor(), PacketPlayEffectToPlayer.class)
+                .registerProcessor(new PacketPlaySoundToPlayerProcessor(), PacketPlaySoundToPlayer.class)
+                .registerProcessor(new PacketSendPlayerMessageProcessor(), PacketSendPlayerMessage.class)
+                .registerProcessor(new PacketSendPlayerTitleProcessor(), PacketSendPlayerTitle.class)
+                .registerProcessor(new PacketSetPlayerLocationProcessor(), PacketSetPlayerLocation.class);
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> this.networkClient.disconnect()));
         this.updateCurrentProcessInformation();
@@ -136,7 +151,7 @@ public class Embedded extends ExecutorAPI {
     @NotNull
     @Override
     public PlayerProvider getPlayerProvider() {
-        return null;
+        return this.playerProvider;
     }
 
     @NotNull
