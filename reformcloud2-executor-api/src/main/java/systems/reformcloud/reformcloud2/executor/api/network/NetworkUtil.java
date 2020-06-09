@@ -45,12 +45,12 @@ import java.util.concurrent.ThreadFactory;
 
 public final class NetworkUtil {
 
-    public static final int AUTH_BUS = 2000;
-    public static final int AUTH_BUS_END = 2001;
+    public static final int AUTH_BUS = 0;
+    public static final int AUTH_BUS_END = 1;
 
-    public static final int EMBEDDED_BUS = 3000;
-    public static final int NODE_BUS = 0;
-    public static final int API_BUS = 1000;
+    public static final int EMBEDDED_BUS = 1000;
+    public static final int NODE_BUS = 2000;
+    public static final int API_BUS = 3000;
     public static final Executor EXECUTOR = Executors.newCachedThreadPool();
 
     public static final WriteBufferWaterMark WATER_MARK = new WriteBufferWaterMark(524288, 2097152);
