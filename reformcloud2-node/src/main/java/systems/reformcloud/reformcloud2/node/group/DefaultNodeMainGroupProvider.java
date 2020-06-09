@@ -92,7 +92,7 @@ public class DefaultNodeMainGroupProvider implements MainGroupProvider {
     @NotNull
     @Override
     public MainGroupBuilder createMainGroup(@NotNull String name) {
-        return new NodeMainGroupBuilder(this);
+        return new NodeMainGroupBuilder(this).name(name);
     }
 
     public void addGroup(@NotNull MainGroup mainGroup) {

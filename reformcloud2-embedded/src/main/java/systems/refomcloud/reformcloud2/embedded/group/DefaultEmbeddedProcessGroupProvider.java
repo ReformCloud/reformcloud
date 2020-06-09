@@ -22,40 +22,55 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.node.group;
+package systems.refomcloud.reformcloud2.embedded.group;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.UnmodifiableView;
+import systems.reformcloud.reformcloud2.executor.api.builder.ProcessGroupBuilder;
 import systems.reformcloud.reformcloud2.executor.api.groups.ProcessGroup;
-import systems.reformcloud.reformcloud2.executor.api.task.Task;
-import systems.reformcloud.reformcloud2.shared.group.DefaultProcessGroupBuilder;
+import systems.reformcloud.reformcloud2.executor.api.provider.ProcessGroupProvider;
 
-public class NodeProcessGroupBuilder extends DefaultProcessGroupBuilder {
+import java.util.Collection;
+import java.util.Optional;
 
-    public NodeProcessGroupBuilder(DefaultNodeProcessGroupProvider processGroupProvider) {
-        this.processGroupProvider = processGroupProvider;
-    }
-
-    private final DefaultNodeProcessGroupProvider processGroupProvider;
+public class DefaultEmbeddedProcessGroupProvider implements ProcessGroupProvider {
 
     @NotNull
     @Override
-    public Task<ProcessGroup> createPermanently() {
-        return Task.supply(() -> {
-            if (this.processGroupProvider.getProcessGroup(super.name).isPresent()) {
-                return null;
-            }
+    public Optional<ProcessGroup> getProcessGroup(@NotNull String name) {
+        return Optional.empty();
+    }
 
-            ProcessGroup processGroup = new ProcessGroup(
-                    super.name,
-                    super.showId,
-                    super.startupConfiguration,
-                    super.templates,
-                    super.playerAccessConfiguration,
-                    super.staticGroup,
-                    super.lobby
-            );
-            this.processGroupProvider.addProcessGroup(processGroup);
-            return processGroup;
-        });
+    @Override
+    public void deleteProcessGroup(@NotNull String name) {
+
+    }
+
+    @Override
+    public void updateProcessGroup(@NotNull ProcessGroup processGroup) {
+
+    }
+
+    @NotNull
+    @Override
+    public @UnmodifiableView Collection<ProcessGroup> getProcessGroups() {
+        return null;
+    }
+
+    @Override
+    public long getProcessGroupCount() {
+        return 0;
+    }
+
+    @NotNull
+    @Override
+    public @UnmodifiableView Collection<String> getProcessGroupNames() {
+        return null;
+    }
+
+    @NotNull
+    @Override
+    public ProcessGroupBuilder createProcessGroup(@NotNull String name) {
+        return new DefaultEmbeddedProcessGroupBuilder().name(name);
     }
 }

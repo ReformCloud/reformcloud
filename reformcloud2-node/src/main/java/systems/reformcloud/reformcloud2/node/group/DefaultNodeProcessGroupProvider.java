@@ -92,7 +92,7 @@ public class DefaultNodeProcessGroupProvider implements ProcessGroupProvider {
     @NotNull
     @Override
     public ProcessGroupBuilder createProcessGroup(@NotNull String name) {
-        return new NodeProcessGroupBuilder();
+        return new NodeProcessGroupBuilder(this).name(name);
     }
 
     public void addProcessGroup(@NotNull ProcessGroup processGroup) {

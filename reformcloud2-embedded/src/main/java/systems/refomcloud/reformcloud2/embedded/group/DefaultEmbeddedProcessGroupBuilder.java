@@ -22,40 +22,18 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.node.group;
+package systems.refomcloud.reformcloud2.embedded.group;
 
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.task.Task;
 import systems.reformcloud.reformcloud2.shared.group.DefaultProcessGroupBuilder;
 
-public class NodeProcessGroupBuilder extends DefaultProcessGroupBuilder {
-
-    public NodeProcessGroupBuilder(DefaultNodeProcessGroupProvider processGroupProvider) {
-        this.processGroupProvider = processGroupProvider;
-    }
-
-    private final DefaultNodeProcessGroupProvider processGroupProvider;
+class DefaultEmbeddedProcessGroupBuilder extends DefaultProcessGroupBuilder {
 
     @NotNull
     @Override
     public Task<ProcessGroup> createPermanently() {
-        return Task.supply(() -> {
-            if (this.processGroupProvider.getProcessGroup(super.name).isPresent()) {
-                return null;
-            }
-
-            ProcessGroup processGroup = new ProcessGroup(
-                    super.name,
-                    super.showId,
-                    super.startupConfiguration,
-                    super.templates,
-                    super.playerAccessConfiguration,
-                    super.staticGroup,
-                    super.lobby
-            );
-            this.processGroupProvider.addProcessGroup(processGroup);
-            return processGroup;
-        });
+        return null;
     }
 }
