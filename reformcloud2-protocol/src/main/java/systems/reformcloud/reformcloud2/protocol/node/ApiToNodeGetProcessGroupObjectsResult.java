@@ -25,37 +25,40 @@
 package systems.reformcloud.reformcloud2.protocol.node;
 
 import org.jetbrains.annotations.NotNull;
+import systems.reformcloud.reformcloud2.executor.api.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
 import systems.reformcloud.reformcloud2.executor.api.network.packet.query.QueryResultPacket;
 
-public class ApiToNodeGetMainGroupCountResult extends QueryResultPacket {
+import java.util.Collection;
 
-    public ApiToNodeGetMainGroupCountResult() {
+public class ApiToNodeGetProcessGroupObjectsResult extends QueryResultPacket {
+
+    public ApiToNodeGetProcessGroupObjectsResult() {
     }
 
-    public ApiToNodeGetMainGroupCountResult(long count) {
-        this.count = count;
+    public ApiToNodeGetProcessGroupObjectsResult(Collection<ProcessGroup> processGroups) {
+        this.processGroups = processGroups;
     }
 
-    private long count;
+    private Collection<ProcessGroup> processGroups;
 
-    public long getCount() {
-        return this.count;
+    public Collection<ProcessGroup> getProcessGroups() {
+        return this.processGroups;
     }
 
     @Override
     public int getId() {
-        return NetworkUtil.EMBEDDED_BUS + 58;
+        return NetworkUtil.EMBEDDED_BUS + 66;
     }
 
     @Override
     public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeLong(this.count);
+        buffer.writeObjects(this.processGroups);
     }
 
     @Override
     public void read(@NotNull ProtocolBuffer buffer) {
-        this.count = buffer.readLong();
+        this.processGroups = buffer.readObjects(ProcessGroup.class);
     }
 }

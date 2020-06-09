@@ -26,11 +26,15 @@ package systems.refomcloud.reformcloud2.embedded.group;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnmodifiableView;
+import systems.refomcloud.reformcloud2.embedded.Embedded;
 import systems.reformcloud.reformcloud2.executor.api.builder.ProcessGroupBuilder;
 import systems.reformcloud.reformcloud2.executor.api.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.provider.ProcessGroupProvider;
+import systems.reformcloud.reformcloud2.protocol.node.*;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Optional;
 
 public class DefaultEmbeddedProcessGroupProvider implements ProcessGroupProvider {
@@ -38,34 +42,62 @@ public class DefaultEmbeddedProcessGroupProvider implements ProcessGroupProvider
     @NotNull
     @Override
     public Optional<ProcessGroup> getProcessGroup(@NotNull String name) {
-        return Optional.empty();
+        return Embedded.getInstance().sendSyncQuery(new ApiToNodeGetProcessGroup(name))
+                .map(result -> {
+                    if (result instanceof ApiToNodeGetProcessGroupResult) {
+                        return ((ApiToNodeGetProcessGroupResult) result).getProcessGroup();
+                    }
+
+                    return null;
+                });
     }
 
     @Override
     public void deleteProcessGroup(@NotNull String name) {
-
+        Embedded.getInstance().sendPacket(new ApiToNodeDeleteProcessGroup(name));
     }
 
     @Override
     public void updateProcessGroup(@NotNull ProcessGroup processGroup) {
-
+        Embedded.getInstance().sendPacket(new ApiToNodeUpdateProcessGroup(processGroup));
     }
 
     @NotNull
     @Override
     public @UnmodifiableView Collection<ProcessGroup> getProcessGroups() {
-        return null;
+        return Embedded.getInstance().sendSyncQuery(new ApiToNodeGetProcessGroupObjects())
+                .map(result -> {
+                    if (result instanceof ApiToNodeGetProcessGroupObjectsResult) {
+                        return ((ApiToNodeGetProcessGroupObjectsResult) result).getProcessGroups();
+                    }
+
+                    return new ArrayList<ProcessGroup>();
+                }).orElseGet(() -> Collections.emptyList());
     }
 
     @Override
     public long getProcessGroupCount() {
-        return 0;
+        return Embedded.getInstance().sendSyncQuery(new ApiToNodeGetProcessGroupCount())
+                .map(result -> {
+                    if (result instanceof ApiToNodeGetProcessGroupCountResult) {
+                        return ((ApiToNodeGetProcessGroupCountResult) result).getCount();
+                    }
+
+                    return 0L;
+                }).orElseGet(() -> 0L);
     }
 
     @NotNull
     @Override
     public @UnmodifiableView Collection<String> getProcessGroupNames() {
-        return null;
+        return Embedded.getInstance().sendSyncQuery(new ApiToNodeGetProcessGroupNames())
+                .map(result -> {
+                    if (result instanceof ApiToNodeGetStringCollectionResult) {
+                        return ((ApiToNodeGetStringCollectionResult) result).getResult();
+                    }
+
+                    return new ArrayList<String>();
+                }).orElseGet(() -> Collections.emptyList());
     }
 
     @NotNull

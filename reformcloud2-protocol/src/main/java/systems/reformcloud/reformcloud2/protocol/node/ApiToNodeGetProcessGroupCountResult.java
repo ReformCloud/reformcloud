@@ -29,12 +29,12 @@ import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
 import systems.reformcloud.reformcloud2.executor.api.network.packet.query.QueryResultPacket;
 
-public class ApiToNodeGetMainGroupCountResult extends QueryResultPacket {
+public class ApiToNodeGetProcessGroupCountResult extends QueryResultPacket {
 
-    public ApiToNodeGetMainGroupCountResult() {
+    public ApiToNodeGetProcessGroupCountResult() {
     }
 
-    public ApiToNodeGetMainGroupCountResult(long count) {
+    public ApiToNodeGetProcessGroupCountResult(long count) {
         this.count = count;
     }
 
@@ -46,7 +46,7 @@ public class ApiToNodeGetMainGroupCountResult extends QueryResultPacket {
 
     @Override
     public int getId() {
-        return NetworkUtil.EMBEDDED_BUS + 58;
+        return NetworkUtil.EMBEDDED_BUS + 68;
     }
 
     @Override

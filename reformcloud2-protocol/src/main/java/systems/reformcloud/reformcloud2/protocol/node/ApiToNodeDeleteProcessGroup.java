@@ -25,37 +25,41 @@
 package systems.reformcloud.reformcloud2.protocol.node;
 
 import org.jetbrains.annotations.NotNull;
+import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
-import systems.reformcloud.reformcloud2.executor.api.network.packet.query.QueryResultPacket;
+import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
 
-public class ApiToNodeGetMainGroupCountResult extends QueryResultPacket {
+public class ApiToNodeDeleteProcessGroup extends ProtocolPacket {
 
-    public ApiToNodeGetMainGroupCountResult() {
+    public ApiToNodeDeleteProcessGroup() {
     }
 
-    public ApiToNodeGetMainGroupCountResult(long count) {
-        this.count = count;
+    public ApiToNodeDeleteProcessGroup(String name) {
+        this.name = name;
     }
 
-    private long count;
-
-    public long getCount() {
-        return this.count;
-    }
+    private String name;
 
     @Override
     public int getId() {
-        return NetworkUtil.EMBEDDED_BUS + 58;
+        return NetworkUtil.EMBEDDED_BUS + 61;
+    }
+
+    @Override
+    public void handlePacketReceive(@NotNull EndpointChannelReader reader, @NotNull NetworkChannel channel) {
+        ExecutorAPI.getInstance().getProcessGroupProvider().deleteProcessGroup(this.name);
     }
 
     @Override
     public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeLong(this.count);
+        buffer.writeString(this.name);
     }
 
     @Override
     public void read(@NotNull ProtocolBuffer buffer) {
-        this.count = buffer.readLong();
+        this.name = buffer.readString();
     }
 }

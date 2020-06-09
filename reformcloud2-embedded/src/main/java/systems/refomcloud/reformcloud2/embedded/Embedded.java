@@ -28,6 +28,7 @@ import org.jetbrains.annotations.NotNull;
 import systems.refomcloud.reformcloud2.embedded.config.EmbeddedConfig;
 import systems.refomcloud.reformcloud2.embedded.database.DefaultEmbeddedDatabaseProvider;
 import systems.refomcloud.reformcloud2.embedded.group.DefaultEmbeddedMainGroupProvider;
+import systems.refomcloud.reformcloud2.embedded.group.DefaultEmbeddedProcessGroupProvider;
 import systems.refomcloud.reformcloud2.embedded.messaging.DefaultEmbeddedChannelMessageProvider;
 import systems.refomcloud.reformcloud2.embedded.network.EmbeddedEndpointChannelReader;
 import systems.refomcloud.reformcloud2.embedded.node.DefaultEmbeddedNodeInformationProvider;
@@ -82,6 +83,7 @@ public class Embedded extends ExecutorAPI {
     private final NodeInformationProvider nodeInformationProvider = new DefaultEmbeddedNodeInformationProvider();
     private final PlayerProvider playerProvider = new DefaultEmbeddedPlayerProvider();
     private final MainGroupProvider mainGroupProvider = new DefaultEmbeddedMainGroupProvider();
+    private final ProcessGroupProvider processGroupProvider = new DefaultEmbeddedProcessGroupProvider();
 
     protected Embedded() {
         ExecutorAPI.setInstance(this);
@@ -159,7 +161,7 @@ public class Embedded extends ExecutorAPI {
     @NotNull
     @Override
     public ProcessGroupProvider getProcessGroupProvider() {
-        return null;
+        return this.processGroupProvider;
     }
 
     @NotNull

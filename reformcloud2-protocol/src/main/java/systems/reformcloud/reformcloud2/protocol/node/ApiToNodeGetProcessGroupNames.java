@@ -25,37 +25,36 @@
 package systems.reformcloud.reformcloud2.protocol.node;
 
 import org.jetbrains.annotations.NotNull;
+import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
-import systems.reformcloud.reformcloud2.executor.api.network.packet.query.QueryResultPacket;
+import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
 
-public class ApiToNodeGetMainGroupCountResult extends QueryResultPacket {
+import java.util.Collection;
 
-    public ApiToNodeGetMainGroupCountResult() {
-    }
+public class ApiToNodeGetProcessGroupNames extends ProtocolPacket {
 
-    public ApiToNodeGetMainGroupCountResult(long count) {
-        this.count = count;
-    }
-
-    private long count;
-
-    public long getCount() {
-        return this.count;
+    public ApiToNodeGetProcessGroupNames() {
     }
 
     @Override
     public int getId() {
-        return NetworkUtil.EMBEDDED_BUS + 58;
+        return NetworkUtil.EMBEDDED_BUS + 69;
+    }
+
+    @Override
+    public void handlePacketReceive(@NotNull EndpointChannelReader reader, @NotNull NetworkChannel channel) {
+        Collection<String> processGroupNames = ExecutorAPI.getInstance().getProcessGroupProvider().getProcessGroupNames();
+        channel.sendQueryResult(this.getQueryUniqueID(), new ApiToNodeGetStringCollectionResult(processGroupNames));
     }
 
     @Override
     public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeLong(this.count);
     }
 
     @Override
     public void read(@NotNull ProtocolBuffer buffer) {
-        this.count = buffer.readLong();
     }
 }
