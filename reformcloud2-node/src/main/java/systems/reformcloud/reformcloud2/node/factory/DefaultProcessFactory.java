@@ -35,11 +35,13 @@ import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.process.detail.ProcessDetail;
 import systems.reformcloud.reformcloud2.executor.api.task.Task;
 import systems.reformcloud.reformcloud2.executor.api.utility.list.Streams;
+import systems.reformcloud.reformcloud2.executor.api.wrappers.NodeProcessWrapper;
 import systems.reformcloud.reformcloud2.node.NodeExecutor;
 import systems.reformcloud.reformcloud2.node.cluster.ClusterManager;
 import systems.reformcloud.reformcloud2.node.process.DefaultNodeProcessProvider;
 
 import java.util.Collection;
+import java.util.Optional;
 import java.util.Random;
 
 public class DefaultProcessFactory implements ProcessFactory {
@@ -60,7 +62,7 @@ public class DefaultProcessFactory implements ProcessFactory {
                 return null;
             }
 
-            NodeInformation nodeInformation = this.getBestNode(configuration.getProcessGroup());
+            NodeInformation nodeInformation = this.getNode(configuration.getNode()).orElseGet(() -> this.getBestNode(configuration.getProcessGroup()));
             if (nodeInformation == null) {
                 return null;
             }
@@ -99,6 +101,14 @@ public class DefaultProcessFactory implements ProcessFactory {
     @Override
     public String getName() {
         return DefaultProcessFactory.class.getName();
+    }
+
+    private @NotNull Optional<NodeInformation> getNode(@Nullable String nodeName) {
+        if (nodeName == null) {
+            return Optional.empty();
+        }
+
+        return ExecutorAPI.getInstance().getNodeInformationProvider().getNodeInformation(nodeName).map(NodeProcessWrapper::getNodeInformation);
     }
 
     private @Nullable NodeInformation getBestNode(@NotNull ProcessGroup processGroup) {

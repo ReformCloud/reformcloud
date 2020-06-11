@@ -47,7 +47,7 @@ public final class CommonHelper {
 
     public static final ExecutorService EXECUTOR = Executors.newCachedThreadPool();
     public static final ScheduledExecutorService SCHEDULED_EXECUTOR_SERVICE = Executors.newSingleThreadScheduledExecutor();
-    public static final Queue<String> EMPTY_STRING_QUEUE = new ArrayDeque<>();
+    public static final ArrayDeque<String> EMPTY_STRING_QUEUE = new ArrayDeque<>();
     public static final DateFormat DATE_FORMAT = new SimpleDateFormat("dd.MM.yyyy kk:mm:ss");
     public static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("##.###");
     private static final Map<Class<? extends Enum<?>>, Map<String, WeakReference<? extends Enum<?>>>> CACHE = new HashMap<>();

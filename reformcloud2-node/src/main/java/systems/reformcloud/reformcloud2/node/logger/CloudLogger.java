@@ -26,10 +26,12 @@ package systems.reformcloud.reformcloud2.node.logger;
 
 import org.jetbrains.annotations.NotNull;
 import org.jline.reader.LineReader;
+import systems.reformcloud.reformcloud2.executor.api.io.IOUtils;
 
 import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Paths;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
@@ -44,7 +46,10 @@ public class CloudLogger extends Logger {
         super.setLevel(Level.ALL);
 
         try {
-            FileHandler fileHandler = new FileHandler(System.getProperty("systems.reformcloud.console-log-file", "logs/cloud.log"), 1 << 24, 8, true);
+            String logFile = System.getProperty("systems.reformcloud.console-log-file", "logs/cloud.log");
+            IOUtils.createDirectory(Paths.get(logFile).getParent());
+
+            FileHandler fileHandler = new FileHandler(logFile, 1 << 24, 8, true);
             fileHandler.setFormatter(new DefaultFormatter(false));
             fileHandler.setEncoding(StandardCharsets.UTF_8.name());
             super.addHandler(fileHandler);

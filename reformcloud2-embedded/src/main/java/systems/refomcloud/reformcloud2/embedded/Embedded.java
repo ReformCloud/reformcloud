@@ -33,6 +33,7 @@ import systems.refomcloud.reformcloud2.embedded.messaging.DefaultEmbeddedChannel
 import systems.refomcloud.reformcloud2.embedded.network.EmbeddedEndpointChannelReader;
 import systems.refomcloud.reformcloud2.embedded.node.DefaultEmbeddedNodeInformationProvider;
 import systems.refomcloud.reformcloud2.embedded.player.DefaultEmbeddedPlayerProvider;
+import systems.refomcloud.reformcloud2.embedded.process.DefaultEmbeddedProcessProvider;
 import systems.refomcloud.reformcloud2.embedded.processors.*;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.event.EventManager;
@@ -51,7 +52,6 @@ import systems.reformcloud.reformcloud2.executor.api.registry.service.ServiceReg
 import systems.reformcloud.reformcloud2.executor.api.task.Task;
 import systems.reformcloud.reformcloud2.protocol.node.ApiToNodeGetIngameMessages;
 import systems.reformcloud.reformcloud2.protocol.node.ApiToNodeGetIngameMessagesResult;
-import systems.reformcloud.reformcloud2.protocol.node.ApiToNodeUpdateProcessInformation;
 import systems.reformcloud.reformcloud2.protocol.processor.PacketProcessorManager;
 import systems.reformcloud.reformcloud2.protocol.shared.*;
 import systems.reformcloud.reformcloud2.shared.event.DefaultEventManager;
@@ -84,6 +84,7 @@ public class Embedded extends ExecutorAPI {
     private final PlayerProvider playerProvider = new DefaultEmbeddedPlayerProvider();
     private final MainGroupProvider mainGroupProvider = new DefaultEmbeddedMainGroupProvider();
     private final ProcessGroupProvider processGroupProvider = new DefaultEmbeddedProcessGroupProvider();
+    private final ProcessProvider processProvider = new DefaultEmbeddedProcessProvider();
 
     protected Embedded() {
         ExecutorAPI.setInstance(this);
@@ -167,7 +168,7 @@ public class Embedded extends ExecutorAPI {
     @NotNull
     @Override
     public ProcessProvider getProcessProvider() {
-        return null;
+        return this.processProvider;
     }
 
     @NotNull
@@ -216,7 +217,7 @@ public class Embedded extends ExecutorAPI {
 
     public void updateCurrentProcessInformation() {
         this.processInformation.updateRuntimeInformation();
-        this.sendPacket(new ApiToNodeUpdateProcessInformation(this.processInformation));
+        this.processProvider.updateProcessInformation(this.processInformation);
     }
 
     @Listener
