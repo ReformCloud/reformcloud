@@ -24,6 +24,7 @@
  */
 package systems.reformcloud.reformcloud2.executor.api.language.loading;
 
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.base.Conditions;
 import systems.reformcloud.reformcloud2.executor.api.language.Language;
@@ -118,7 +119,7 @@ public final class LanguageLoader {
         private final String name;
         private final String display;
 
-        InternalLanguageSource(Properties properties) {
+        private InternalLanguageSource(Properties properties) {
             this.name = properties.getProperty("language.setting.name");
             this.display = properties.getProperty("language.setting.display");
         }
@@ -132,6 +133,28 @@ public final class LanguageLoader {
         @Override
         public String getName() {
             return this.display;
+        }
+    }
+
+    @ApiStatus.Internal
+    public static class InternalLanguage implements Language {
+
+        private final LanguageSource source;
+        private final Properties properties;
+
+        public InternalLanguage(Properties properties) {
+            this.properties = properties;
+            this.source = new InternalLanguageSource(properties);
+        }
+
+        @Override
+        public LanguageSource source() {
+            return this.source;
+        }
+
+        @Override
+        public Properties messages() {
+            return this.properties;
         }
     }
 }

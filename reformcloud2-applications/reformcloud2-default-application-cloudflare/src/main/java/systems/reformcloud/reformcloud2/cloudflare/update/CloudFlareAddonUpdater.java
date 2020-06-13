@@ -29,13 +29,18 @@ import systems.reformcloud.reformcloud2.cloudflare.ReformCloudApplication;
 import systems.reformcloud.reformcloud2.executor.api.application.updater.ApplicationRemoteUpdate;
 import systems.reformcloud.reformcloud2.executor.api.application.updater.basic.BasicApplicationRemoteUpdate;
 import systems.reformcloud.reformcloud2.executor.api.application.updater.basic.DefaultApplicationUpdateRepository;
-import systems.reformcloud.reformcloud2.executor.api.utility.system.DownloadHelper;
+import systems.reformcloud.reformcloud2.executor.api.io.DownloadHelper;
 
 import java.io.IOException;
 import java.util.Properties;
 
 public class CloudFlareAddonUpdater extends DefaultApplicationUpdateRepository {
 
+    public CloudFlareAddonUpdater(ReformCloudApplication application) {
+        this.application = application;
+    }
+
+    private final ReformCloudApplication application;
     private String newVersion;
 
     @Override
@@ -54,7 +59,7 @@ public class CloudFlareAddonUpdater extends DefaultApplicationUpdateRepository {
 
     @Override
     public boolean isNewVersionAvailable() {
-        return !ReformCloudApplication.self().getApplication().getApplicationConfig().getVersion().equals(this.newVersion);
+        return !this.application.getApplication().getApplicationConfig().getVersion().equals(this.newVersion);
     }
 
     @Nullable
