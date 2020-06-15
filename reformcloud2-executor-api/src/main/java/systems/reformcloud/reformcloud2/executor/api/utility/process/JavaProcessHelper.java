@@ -26,7 +26,6 @@ package systems.reformcloud.reformcloud2.executor.api.utility.process;
 
 import org.jetbrains.annotations.NonNls;
 import systems.reformcloud.reformcloud2.executor.api.base.Conditions;
-import systems.reformcloud.reformcloud2.executor.api.utility.thread.AbsoluteThread;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -40,15 +39,15 @@ public final class JavaProcessHelper {
         throw new UnsupportedOperationException();
     }
 
-    public static int shutdown(Process process, boolean force, boolean await, long timeOut, @NonNls String... shutdownCommands) {
+    public static void shutdown(Process process, boolean force, boolean await, long timeOut, @NonNls String... shutdownCommands) {
         if (process == null) {
-            return -1;
+            return;
         }
 
         Conditions.isTrue(timeOut > 0);
 
         if (!process.isAlive()) {
-            return process.exitValue();
+            return;
         }
 
         try {
@@ -63,7 +62,8 @@ public final class JavaProcessHelper {
             });
 
             if (process.waitFor(5, TimeUnit.SECONDS)) {
-                return process.exitValue();
+                process.exitValue();
+                return;
             }
         } catch (final Throwable ignored) {
         }
@@ -75,13 +75,13 @@ public final class JavaProcessHelper {
         }
 
         try {
-            return process.exitValue();
+            return;
         } catch (final Throwable throwable) {
             process.destroyForcibly();
         }
 
         try {
-            return process.exitValue();
+            process.exitValue();
         } catch (final Throwable throwable) {
             if (await) {
                 boolean closed = false;
@@ -97,12 +97,14 @@ public final class JavaProcessHelper {
                         closed = true;
                     } catch (final Throwable throwable1) {
                         process.destroyForcibly();
-                        AbsoluteThread.sleep(20);
+
+                        try {
+                            Thread.sleep(20);
+                        } catch (InterruptedException ignored) {
+                        }
                     }
                 }
             }
         }
-
-        return process.isAlive() ? -1 : process.exitValue();
     }
 }
