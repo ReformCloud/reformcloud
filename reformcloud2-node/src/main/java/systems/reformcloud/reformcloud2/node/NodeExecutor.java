@@ -68,6 +68,7 @@ import systems.reformcloud.reformcloud2.node.process.DefaultNodeLocalProcessWrap
 import systems.reformcloud.reformcloud2.node.process.DefaultNodeProcessProvider;
 import systems.reformcloud.reformcloud2.node.process.screen.DefaultProcessScreenController;
 import systems.reformcloud.reformcloud2.node.process.screen.ProcessScreenController;
+import systems.reformcloud.reformcloud2.node.protocol.PacketRegister;
 import systems.reformcloud.reformcloud2.node.provider.DefaultNodeNodeInformationProvider;
 import systems.reformcloud.reformcloud2.node.runnables.*;
 import systems.reformcloud.reformcloud2.node.tick.CloudTickWorker;
@@ -136,6 +137,8 @@ public final class NodeExecutor extends ExecutorAPI {
         this.console = new DefaultNodeConsole();
         this.logger = new CloudLogger(this.console.getLineReader());
 
+        PacketRegister.register();
+
         this.nodeExecutorConfig.init();
         this.nodeConfig = this.nodeExecutorConfig.getNodeConfig();
         this.nodeInformationProvider = new DefaultNodeNodeInformationProvider(this.currentNodeInformation = new NodeInformation(
@@ -166,9 +169,7 @@ public final class NodeExecutor extends ExecutorAPI {
         this.taskScheduler.addPermanentTask(new ServerWatchdogRunnable());
         this.taskScheduler.addPermanentTask(new ProcessScreenTickRunnable());
 
-        this.loadPacketHandlers();
         this.loadCommands();
-
         this.serviceRegistry.getProviderUnchecked(ApplicationLoader.class).enableApplications();
     }
 
@@ -429,10 +430,6 @@ public final class NodeExecutor extends ExecutorAPI {
                 .registerCommand(new CommandReload(), "reload", "rl")
                 .registerCommand(new CommandClear(), "clear", "cls")
                 .registerCommand(new CommandHelp(), "help", "ask", "?");
-    }
-
-    private void loadPacketHandlers() {
-        PacketProvider packetProvider = ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class);
     }
 
     public boolean canStartProcesses(int neededMemory) {
