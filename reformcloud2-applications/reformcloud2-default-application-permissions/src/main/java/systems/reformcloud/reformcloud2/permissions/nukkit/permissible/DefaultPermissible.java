@@ -30,7 +30,7 @@ import cn.nukkit.permission.Permission;
 import cn.nukkit.permission.PermissionAttachment;
 import cn.nukkit.permission.PermissionAttachmentInfo;
 import cn.nukkit.plugin.Plugin;
-import systems.reformcloud.reformcloud2.executor.api.api.API;
+import systems.refomcloud.reformcloud2.embedded.Embedded;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.permissions.PermissionManagement;
 import systems.reformcloud.reformcloud2.permissions.nodes.NodeGroup;
@@ -111,7 +111,7 @@ public class DefaultPermissible extends PermissibleBase {
         this.perms = new ConcurrentHashMap<>();
 
         final PermissionUser permissionUser = PermissionManagement.getInstance().loadUser(this.uuid);
-        final ProcessInformation current = API.getInstance().getCurrentProcessInformation();
+        final ProcessInformation current = Embedded.getInstance().getCurrentProcessInformation();
 
         permissionUser.getPermissionNodes().stream().filter(PermissionNode::isValid)
                 .forEach(e -> this.perms.put(e.getActualPermission(), new PermissionAttachmentInfo(

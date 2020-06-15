@@ -26,11 +26,11 @@ package systems.reformcloud.reformcloud2.proxy.defaults;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import systems.refomcloud.reformcloud2.embedded.Embedded;
 import systems.reformcloud.reformcloud2.executor.api.CommonHelper;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.api.API;
+import systems.reformcloud.reformcloud2.executor.api.event.EventManager;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
-import systems.reformcloud.reformcloud2.executor.api.utility.thread.AbsoluteThread;
 import systems.reformcloud.reformcloud2.proxy.ProxyConfiguration;
 import systems.reformcloud.reformcloud2.proxy.ProxyConfigurationHandler;
 import systems.reformcloud.reformcloud2.proxy.config.MotdConfiguration;
@@ -81,14 +81,14 @@ public abstract class AbstractProxyConfigurationHandler extends ProxyConfigurati
 
     @Override
     public @NotNull Optional<MotdConfiguration> getBestMessageOfTheDayConfiguration() {
-        return API.getInstance().getCurrentProcessInformation().getProcessGroup().getPlayerAccessConfiguration().isMaintenance()
+        return Embedded.getInstance().getCurrentProcessInformation().getProcessGroup().getPlayerAccessConfiguration().isMaintenance()
                 ? this.getCurrentMaintenanceMessageOfTheDayConfiguration()
                 : this.getCurrentMessageOfTheDayConfiguration();
     }
 
     @Override
     public @NotNull String replaceMessageOfTheDayPlaceHolders(@NotNull String messageOfTheDay) {
-        ProcessInformation current = API.getInstance().getCurrentProcessInformation();
+        ProcessInformation current = Embedded.getInstance().getCurrentProcessInformation();
         messageOfTheDay = messageOfTheDay
                 .replace("%proxy_name%", current.getProcessDetail().getName())
                 .replace("%proxy_display_name%", current.getProcessDetail().getDisplayName())
@@ -108,14 +108,18 @@ public abstract class AbstractProxyConfigurationHandler extends ProxyConfigurati
 
     @Override
     public void handleProxyConfigUpdate(@NotNull ProxyConfiguration proxyConfiguration) {
-        ExecutorAPI.getInstance().getEventManager().callEvent(new ProxyConfigurationUpdateEvent(this.proxyConfiguration = proxyConfiguration));
+        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).callEvent(new ProxyConfigurationUpdateEvent(this.proxyConfiguration = proxyConfiguration));
     }
 
     private void startTasks() {
         CommonHelper.EXECUTOR.execute(() -> {
             while (!Thread.interrupted()) {
                 if (this.proxyConfiguration == null || this.proxyConfiguration.getMotdDefaultConfig().isEmpty()) {
-                    AbsoluteThread.sleep(500);
+                    try {
+                        Thread.sleep(500);
+                    } catch (InterruptedException ignored) {
+                    }
+
                     continue;
                 }
 
@@ -126,14 +130,21 @@ public abstract class AbstractProxyConfigurationHandler extends ProxyConfigurati
                     this.atomicIntegers[0].set(0);
                 }
 
-                AbsoluteThread.sleep(TimeUnit.SECONDS, this.currentMessageOfTheDayConfiguration.getWaitUntilNextInSeconds());
+                try {
+                    Thread.sleep(TimeUnit.SECONDS.toMillis(this.currentMessageOfTheDayConfiguration.getWaitUntilNextInSeconds()));
+                } catch (InterruptedException ignored) {
+                }
             }
         });
 
         CommonHelper.EXECUTOR.execute(() -> {
             while (!Thread.interrupted()) {
                 if (this.proxyConfiguration == null || this.proxyConfiguration.getMotdMaintenanceConfig().isEmpty()) {
-                    AbsoluteThread.sleep(500);
+                    try {
+                        Thread.sleep(500);
+                    } catch (InterruptedException ignored) {
+                    }
+
                     continue;
                 }
 
@@ -144,14 +155,21 @@ public abstract class AbstractProxyConfigurationHandler extends ProxyConfigurati
                     this.atomicIntegers[1].set(0);
                 }
 
-                AbsoluteThread.sleep(TimeUnit.SECONDS, this.currentMaintenanceMessageOfTheDayConfiguration.getWaitUntilNextInSeconds());
+                try {
+                    Thread.sleep(TimeUnit.SECONDS.toMillis(this.currentMaintenanceMessageOfTheDayConfiguration.getWaitUntilNextInSeconds()));
+                } catch (InterruptedException ignored) {
+                }
             }
         });
 
         CommonHelper.EXECUTOR.execute(() -> {
             while (!Thread.interrupted()) {
                 if (this.proxyConfiguration == null || this.proxyConfiguration.getTabListConfigurations().isEmpty()) {
-                    AbsoluteThread.sleep(500);
+                    try {
+                        Thread.sleep(500);
+                    } catch (InterruptedException ignored) {
+                    }
+
                     continue;
                 }
 
@@ -163,7 +181,10 @@ public abstract class AbstractProxyConfigurationHandler extends ProxyConfigurati
                     this.atomicIntegers[2].set(0);
                 }
 
-                AbsoluteThread.sleep(TimeUnit.SECONDS, this.currentTabListConfiguration.getWaitUntilNextInSeconds());
+                try {
+                    Thread.sleep(TimeUnit.SECONDS.toMillis(this.currentTabListConfiguration.getWaitUntilNextInSeconds()));
+                } catch (InterruptedException ignored) {
+                }
             }
         });
     }

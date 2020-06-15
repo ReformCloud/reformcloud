@@ -25,11 +25,6 @@
 package systems.reformcloud.reformcloud2.permissions.util;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.PacketSender;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.manager.DefaultChannelManager;
-import systems.reformcloud.reformcloud2.executor.api.utility.optional.ReferencedOptional;
-import systems.reformcloud.reformcloud2.executor.api.utility.thread.AbsoluteThread;
 import systems.reformcloud.reformcloud2.permissions.PermissionManagement;
 import systems.reformcloud.reformcloud2.permissions.packets.PacketHelper;
 
@@ -40,17 +35,8 @@ public final class PermissionPluginUtil {
     }
 
     public static void awaitConnection(@NotNull Runnable then) {
-        NetworkUtil.EXECUTOR.execute(() -> {
-            ReferencedOptional<PacketSender> optionalPacketSender = DefaultChannelManager.INSTANCE.get("Controller");
-            while (!optionalPacketSender.isPresent()) {
-                AbsoluteThread.sleep(5);
-                optionalPacketSender = DefaultChannelManager.INSTANCE.get("Controller");
-            }
-
-            PacketHelper.addPacketHandler();
-            PermissionManagement.setup();
-            then.run();
-        });
+        PacketHelper.addPacketHandler();
+        PermissionManagement.setup();
+        then.run();
     }
-
 }

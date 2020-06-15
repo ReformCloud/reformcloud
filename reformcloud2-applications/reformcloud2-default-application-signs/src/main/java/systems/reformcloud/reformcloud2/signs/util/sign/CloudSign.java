@@ -24,14 +24,19 @@
  */
 package systems.reformcloud.reformcloud2.signs.util.sign;
 
+import com.google.gson.reflect.TypeToken;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.network.SerializableObject;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 
+import java.util.Collection;
 import java.util.UUID;
 
 public class CloudSign implements SerializableObject {
+
+    public static final TypeToken<Collection<CloudSign>> COLLECTION_SIGN_TYPE = new TypeToken<Collection<CloudSign>>() {
+    };
 
     private String group;
     private CloudLocation location;

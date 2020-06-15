@@ -28,7 +28,7 @@ import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.application.updater.ApplicationRemoteUpdate;
 import systems.reformcloud.reformcloud2.executor.api.application.updater.basic.BasicApplicationRemoteUpdate;
 import systems.reformcloud.reformcloud2.executor.api.application.updater.basic.DefaultApplicationUpdateRepository;
-import systems.reformcloud.reformcloud2.executor.api.utility.system.DownloadHelper;
+import systems.reformcloud.reformcloud2.executor.api.io.DownloadHelper;
 import systems.reformcloud.reformcloud2.proxy.application.ProxyApplication;
 
 import java.io.IOException;
@@ -54,7 +54,7 @@ public class ProxyAddonUpdater extends DefaultApplicationUpdateRepository {
 
     @Override
     public boolean isNewVersionAvailable() {
-        return !ProxyApplication.self().getApplication().getApplicationConfig().getVersion().equals(this.newVersion);
+        return !ProxyApplication.getInstance().getApplication().getApplicationConfig().getVersion().equals(this.newVersion);
     }
 
     @Nullable

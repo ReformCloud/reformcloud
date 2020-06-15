@@ -24,15 +24,11 @@
  */
 package systems.reformcloud.reformcloud2.proxy.network;
 
-import io.netty.channel.ChannelHandlerContext;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
-import systems.reformcloud.reformcloud2.executor.api.network.challenge.ChallengeAuthHandler;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannelReader;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.PacketSender;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
-import systems.reformcloud.reformcloud2.executor.api.network.handler.ChannelReaderHelper;
 import systems.reformcloud.reformcloud2.executor.api.network.packet.Packet;
 import systems.reformcloud.reformcloud2.proxy.ProxyConfiguration;
 import systems.reformcloud.reformcloud2.proxy.ProxyConfigurationHandler;
@@ -50,11 +46,11 @@ public class PacketProxyConfigUpdate extends Packet {
 
     @Override
     public int getId() {
-        return NetworkUtil.EXTERNAL_BUS + 3;
+        return NetworkUtil.RESERVED_EXTRA_BUS + 5;
     }
 
     @Override
-    public void handlePacketReceive(@NotNull NetworkChannelReader reader, @NotNull ChallengeAuthHandler authHandler, @NotNull ChannelReaderHelper parent, @Nullable PacketSender sender, @NotNull ChannelHandlerContext channel) {
+    public void handlePacketReceive(@NotNull EndpointChannelReader reader, @NotNull NetworkChannel channel) {
         ProxyConfigurationHandler.getInstance().handleProxyConfigUpdate(this.proxyConfiguration);
     }
 

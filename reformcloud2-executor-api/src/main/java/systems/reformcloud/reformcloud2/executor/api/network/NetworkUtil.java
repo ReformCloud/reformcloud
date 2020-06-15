@@ -51,9 +51,11 @@ public final class NetworkUtil {
     public static final int EMBEDDED_BUS = 1000;
     public static final int NODE_BUS = 2000;
     public static final int API_BUS = 3000;
+    public static final int RESERVED_EXTRA_BUS = 4000;
+
     public static final Executor EXECUTOR = Executors.newCachedThreadPool();
 
-    public static final WriteBufferWaterMark WATER_MARK = new WriteBufferWaterMark(524288, 2097152);
+    public static final WriteBufferWaterMark WATER_MARK = new WriteBufferWaterMark(0x80000, 0x200000);
     private static final boolean EPOLL = Epoll.isAvailable();
 
     private NetworkUtil() {

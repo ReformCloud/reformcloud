@@ -16,7 +16,6 @@
         <module>reformcloud2-default-application-permissions</module>
         <module>reformcloud2-default-application-commands</module>
         <module>reformcloud2-default-application-signs</module>
-        <module>reformcloud2-default-application-web</module>
         <module>reformcloud2-default-application-proxy</module>
         <module>reformcloud2-default-application-cloudflare</module>
         <module>reformcloud2-default-application-template-backends</module>

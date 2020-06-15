@@ -24,7 +24,7 @@
  */
 package systems.reformcloud.reformcloud2.signs.application;
 
-import systems.reformcloud.reformcloud2.executor.api.configuration.JsonConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
 import systems.reformcloud.reformcloud2.signs.util.sign.config.SignConfig;
 import systems.reformcloud.reformcloud2.signs.util.sign.config.SignLayout;
 import systems.reformcloud.reformcloud2.signs.util.sign.config.SignSubLayout;

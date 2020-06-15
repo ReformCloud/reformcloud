@@ -47,7 +47,7 @@ public class NukkitCommandSigns implements CommandExecutor {
         Player player = (Player) commandSender;
 
         if (strings.length == 2 && strings[0].equalsIgnoreCase("create")) {
-            if (ExecutorAPI.getInstance().getSyncAPI().getGroupSyncAPI().getProcessGroup(strings[1]) == null) {
+            if (!ExecutorAPI.getInstance().getProcessGroupProvider().getProcessGroup(strings[1]).isPresent()) {
                 commandSender.sendMessage("§7The process group " + strings[1] + " does not exists");
                 return true;
             }

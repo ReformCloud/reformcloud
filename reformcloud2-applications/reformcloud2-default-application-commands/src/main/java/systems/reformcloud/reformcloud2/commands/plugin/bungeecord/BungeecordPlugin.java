@@ -25,6 +25,7 @@
 package systems.reformcloud.reformcloud2.commands.plugin.bungeecord;
 
 import net.md_5.bungee.api.plugin.Plugin;
+import systems.refomcloud.reformcloud2.embedded.Embedded;
 import systems.reformcloud.reformcloud2.commands.application.packet.PacketGetCommandsConfig;
 import systems.reformcloud.reformcloud2.commands.application.packet.PacketGetCommandsConfigResult;
 import systems.reformcloud.reformcloud2.commands.plugin.CommandConfigHandler;
@@ -32,8 +33,7 @@ import systems.reformcloud.reformcloud2.commands.plugin.bungeecord.handler.Bunge
 import systems.reformcloud.reformcloud2.commands.plugin.packet.PacketReleaseCommandsConfig;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.PacketSender;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.manager.DefaultChannelManager;
+import systems.reformcloud.reformcloud2.executor.api.network.packet.PacketProvider;
 
 public class BungeecordPlugin extends Plugin {
 
@@ -48,25 +48,20 @@ public class BungeecordPlugin extends Plugin {
         instance = this;
         CommandConfigHandler.setInstance(new BungeeCommandConfigHandler());
 
-        NetworkUtil.EXECUTOR.execute(() -> {
-            PacketSender sender = DefaultChannelManager.INSTANCE.get("Controller").orNothing();
-            while (sender == null) {
-                sender = DefaultChannelManager.INSTANCE.get("Controller").orNothing();
-            }
+        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).registerPacket(PacketGetCommandsConfigResult.class);
+        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).registerPacket(PacketReleaseCommandsConfig.class);
 
-            ExecutorAPI.getInstance().getPacketHandler().registerHandler(PacketGetCommandsConfigResult.class);
-            ExecutorAPI.getInstance().getPacketHandler().getQueryHandler().sendQueryAsync(sender, new PacketGetCommandsConfig()).onComplete(e -> {
-                if (e instanceof PacketGetCommandsConfigResult) {
-                    CommandConfigHandler.getInstance().handleCommandConfigRelease(((PacketGetCommandsConfigResult) e).getCommandsConfig());
-                    ExecutorAPI.getInstance().getPacketHandler().registerHandler(PacketReleaseCommandsConfig.class);
-                }
-            });
+        Embedded.getInstance().sendSyncQuery(new PacketGetCommandsConfig()).ifPresent(e -> {
+            if (e instanceof PacketGetCommandsConfigResult) {
+                CommandConfigHandler.getInstance().handleCommandConfigRelease(((PacketGetCommandsConfigResult) e).getCommandsConfig());
+            }
         });
     }
 
     @Override
     public void onDisable() {
         CommandConfigHandler.getInstance().unregisterAllCommands();
-        ExecutorAPI.getInstance().getPacketHandler().unregisterNetworkHandler(NetworkUtil.EXTERNAL_BUS + 4);
+        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).unregisterPacket(NetworkUtil.RESERVED_EXTRA_BUS + 3);
+        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).unregisterPacket(NetworkUtil.RESERVED_EXTRA_BUS + 2);
     }
 }

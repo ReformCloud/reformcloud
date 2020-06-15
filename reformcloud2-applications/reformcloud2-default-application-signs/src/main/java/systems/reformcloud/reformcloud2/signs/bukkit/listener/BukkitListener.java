@@ -30,6 +30,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
+import systems.reformcloud.reformcloud2.executor.api.event.EventManager;
 import systems.reformcloud.reformcloud2.signs.bukkit.adapter.BukkitSignSystemAdapter;
 import systems.reformcloud.reformcloud2.signs.event.UserSignPreConnectEvent;
 import systems.reformcloud.reformcloud2.signs.util.SignSystemAdapter;
@@ -53,16 +54,14 @@ public class BukkitListener implements Listener {
             }
 
             boolean canConnect = SignSystemAdapter.getInstance().canConnect(cloudSign, event.getPlayer()::hasPermission);
-            if (!ExecutorAPI.getInstance().getEventManager().callEvent(new UserSignPreConnectEvent(
+            if (!ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).callEvent(new UserSignPreConnectEvent(
                     event.getPlayer().getUniqueId(), event.getPlayer()::hasPermission, cloudSign, canConnect
             )).isAllowConnection()) {
                 return;
             }
 
-            ExecutorAPI.getInstance().getSyncAPI().getPlayerSyncAPI().connect(
-                    event.getPlayer().getUniqueId(),
-                    cloudSign.getCurrentTarget().getProcessDetail().getName()
-            );
+            ExecutorAPI.getInstance().getPlayerProvider().getPlayer(event.getPlayer().getUniqueId())
+                    .ifPresent(wrapper -> wrapper.connect(cloudSign.getCurrentTarget().getProcessDetail().getName()));
         }
     }
 }

@@ -31,9 +31,11 @@ import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.bungee.BungeeExecutor;
-import systems.reformcloud.reformcloud2.executor.api.bungee.fallback.BungeeFallbackExtraFilter;
-import systems.reformcloud.reformcloud2.executor.api.shared.SharedPlayerFallbackFilter;
+import systems.refomcloud.reformcloud2.embedded.Embedded;
+import systems.refomcloud.reformcloud2.embedded.controller.ProxyServerController;
+import systems.refomcloud.reformcloud2.embedded.plugin.bungee.fallback.BungeeFallbackExtraFilter;
+import systems.refomcloud.reformcloud2.embedded.shared.SharedPlayerFallbackFilter;
+import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 
 import java.util.List;
 
@@ -54,36 +56,36 @@ public class CommandLeave extends Command {
             return;
         }
 
-        if (BungeeExecutor.getInstance().getCachedLobbyServices().stream().anyMatch(
+        if (ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ProxyServerController.class).getCachedLobbyServers().stream().anyMatch(
                 e -> e.getProcessDetail().getName().equals(proxiedPlayer.getServer().getInfo().getName()))
         ) {
-            proxiedPlayer.sendMessage(TextComponent.fromLegacyText(BungeeExecutor.getInstance().getMessages().format(
-                    BungeeExecutor.getInstance().getMessages().getAlreadyConnectedToHub()
+            proxiedPlayer.sendMessage(TextComponent.fromLegacyText(Embedded.getInstance().getIngameMessages().format(
+                    Embedded.getInstance().getIngameMessages().getAlreadyConnectedToHub()
             )));
             return;
         }
 
         SharedPlayerFallbackFilter.filterFallback(
                 proxiedPlayer.getUniqueId(),
-                BungeeExecutor.getInstance().getCachedLobbyServices(),
+                ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ProxyServerController.class).getCachedLobbyServers(),
                 proxiedPlayer::hasPermission,
                 BungeeFallbackExtraFilter.INSTANCE,
                 proxiedPlayer.getServer().getInfo().getName()
         ).ifPresent(processInformation -> {
             ServerInfo serverInfo = ProxyServer.getInstance().getServerInfo(processInformation.getProcessDetail().getName());
             if (serverInfo == null) {
-                proxiedPlayer.sendMessage(TextComponent.fromLegacyText(BungeeExecutor.getInstance().getMessages().format(
-                        BungeeExecutor.getInstance().getMessages().getNoHubServerAvailable()
+                proxiedPlayer.sendMessage(TextComponent.fromLegacyText(Embedded.getInstance().getIngameMessages().format(
+                        Embedded.getInstance().getIngameMessages().getNoHubServerAvailable()
                 )));
                 return;
             }
 
-            proxiedPlayer.sendMessage(TextComponent.fromLegacyText(BungeeExecutor.getInstance().getMessages().format(
-                    BungeeExecutor.getInstance().getMessages().getConnectingToHub(), processInformation.getProcessDetail().getName()
+            proxiedPlayer.sendMessage(TextComponent.fromLegacyText(Embedded.getInstance().getIngameMessages().format(
+                    Embedded.getInstance().getIngameMessages().getConnectingToHub(), processInformation.getProcessDetail().getName()
             )));
             proxiedPlayer.connect(serverInfo);
-        }).ifEmpty(v -> proxiedPlayer.sendMessage(TextComponent.fromLegacyText(BungeeExecutor.getInstance().getMessages().format(
-                BungeeExecutor.getInstance().getMessages().getNoHubServerAvailable()
+        }).ifEmpty(v -> proxiedPlayer.sendMessage(TextComponent.fromLegacyText(Embedded.getInstance().getIngameMessages().format(
+                Embedded.getInstance().getIngameMessages().getNoHubServerAvailable()
         ))));
     }
 }

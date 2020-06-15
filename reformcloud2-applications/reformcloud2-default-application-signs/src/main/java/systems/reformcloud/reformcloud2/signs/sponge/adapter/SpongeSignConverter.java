@@ -32,7 +32,7 @@ import org.spongepowered.api.block.tileentity.Sign;
 import org.spongepowered.api.block.tileentity.TileEntity;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
-import systems.reformcloud.reformcloud2.executor.api.api.API;
+import systems.refomcloud.reformcloud2.embedded.Embedded;
 import systems.reformcloud.reformcloud2.signs.util.converter.SignConverter;
 import systems.reformcloud.reformcloud2.signs.util.sign.CloudLocation;
 import systems.reformcloud.reformcloud2.signs.util.sign.CloudSign;
@@ -82,7 +82,7 @@ public class SpongeSignConverter implements SignConverter<Sign> {
     private CloudLocation accumulate(Location<World> location) {
         return new CloudLocation(
                 location.getExtent().getName(),
-                API.getInstance().getCurrentProcessInformation().getProcessGroup().getName(),
+                Embedded.getInstance().getCurrentProcessInformation().getProcessGroup().getName(),
                 location.getX(),
                 location.getY(),
                 location.getZ(),

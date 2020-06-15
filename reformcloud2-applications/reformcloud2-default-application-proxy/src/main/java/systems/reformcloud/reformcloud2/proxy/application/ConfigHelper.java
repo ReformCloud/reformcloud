@@ -24,8 +24,8 @@
  */
 package systems.reformcloud.reformcloud2.proxy.application;
 
-import systems.reformcloud.reformcloud2.executor.api.configuration.JsonConfiguration;
-import systems.reformcloud.reformcloud2.executor.api.utility.system.SystemHelper;
+import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.io.IOUtils;
 import systems.reformcloud.reformcloud2.proxy.ProxyConfiguration;
 import systems.reformcloud.reformcloud2.proxy.config.MotdConfiguration;
 import systems.reformcloud.reformcloud2.proxy.config.TabListConfiguration;
@@ -45,7 +45,7 @@ public final class ConfigHelper {
 
     public static void init(File app) {
         if (!Files.exists(app.toPath()) || !Files.exists(Paths.get(app.toString(), "config.json"))) {
-            SystemHelper.createDirectory(app.toPath());
+            IOUtils.createDirectory(app.toPath());
             new JsonConfiguration()
                     .add("config", new ProxyConfiguration(
                             Arrays.asList(

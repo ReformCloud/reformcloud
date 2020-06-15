@@ -34,19 +34,19 @@ import java.lang.reflect.Field;
 
 public final class BukkitUtil {
 
-    private static Field PERM_FIELD;
+    private static Field perm;
 
     static {
         try {
             try {
                 // bukkit
                 String version = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
-                PERM_FIELD = Class.forName("org.bukkit.craftbukkit." + version + ".entity.CraftHumanEntity").getDeclaredField("perm");
-                PERM_FIELD.setAccessible(true);
+                perm = Class.forName("org.bukkit.craftbukkit." + version + ".entity.CraftHumanEntity").getDeclaredField("perm");
+                perm.setAccessible(true);
             } catch (final Throwable ex) {
                 // glowstone
-                PERM_FIELD = Class.forName("net.glowstone.entity.GlowHumanEntity").getDeclaredField("permissions");
-                PERM_FIELD.setAccessible(true);
+                perm = Class.forName("net.glowstone.entity.GlowHumanEntity").getDeclaredField("permissions");
+                perm.setAccessible(true);
             }
         } catch (final ClassNotFoundException | NoSuchFieldException ex) {
             throw new RuntimeException("Error while obtaining bukkit or glowstone perm fields (are you using your own build?)", ex);
@@ -58,10 +58,10 @@ public final class BukkitUtil {
     }
 
     public static void injectPlayer(@NotNull Player player) {
-        Conditions.isTrue(PERM_FIELD != null);
+        Conditions.isTrue(perm != null);
 
         try {
-            PERM_FIELD.set(player, new DefaultPermissible(player));
+            perm.set(player, new DefaultPermissible(player));
         } catch (final IllegalAccessException ex) {
             ex.printStackTrace();
         }

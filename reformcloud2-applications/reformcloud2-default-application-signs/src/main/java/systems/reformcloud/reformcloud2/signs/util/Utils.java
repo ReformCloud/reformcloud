@@ -65,10 +65,6 @@ public final class Utils {
 
     public static boolean canConnectPerState(@NotNull ProcessInformation processInformation) {
         ProcessState state = processInformation.getProcessDetail().getProcessState();
-        return !state.equals(ProcessState.INVISIBLE)
-                && !state.equals(ProcessState.PREPARED)
-                && !state.equals(ProcessState.READY_TO_START)
-                && !state.equals(ProcessState.CREATED)
-                && !state.equals(ProcessState.STOPPED);
+        return state.equals(ProcessState.STARTED) || state.equals(ProcessState.FULL) || state.equals(ProcessState.READY);
     }
 }

@@ -22,24 +22,36 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.web.tokens;
+package systems.reformcloud.reformcloud2.permissions.nukkit;
 
-import io.netty.channel.ChannelHandlerContext;
+import cn.nukkit.Player;
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.commands.permission.PermissionResult;
-import systems.reformcloud.reformcloud2.executor.api.restapi.request.defaults.DefaultWebRequester;
+import systems.reformcloud.reformcloud2.permissions.nukkit.permissible.DefaultPermissible;
 
-import java.util.ArrayList;
+import java.lang.reflect.Field;
 
-public class SetupWebRequester extends DefaultWebRequester {
+public final class NukkitUtil {
 
-    public SetupWebRequester(ChannelHandlerContext context, String name) {
-        super(context, name, new ArrayList<>());
+    private NukkitUtil() {
+        throw new UnsupportedOperationException();
     }
 
-    @NotNull
-    @Override
-    public PermissionResult hasPermissionValue(@NotNull String perm) {
-        return perm.equals("setup.allow") ? PermissionResult.ALLOWED : PermissionResult.DENIED;
+    private static final Field perm;
+
+    static {
+        try {
+            perm = Player.class.getDeclaredField("perm");
+            perm.setAccessible(true);
+        } catch (NoSuchFieldException exception) {
+            throw new RuntimeException(exception);
+        }
+    }
+
+    public static void inject(@NotNull Player player) {
+        try {
+            perm.set(player, new DefaultPermissible(player));
+        } catch (IllegalAccessException exception) {
+            exception.printStackTrace();
+        }
     }
 }

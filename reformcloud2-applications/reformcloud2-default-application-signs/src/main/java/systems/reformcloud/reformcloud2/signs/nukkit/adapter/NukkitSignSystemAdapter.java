@@ -41,7 +41,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.CommonHelper;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
-import systems.reformcloud.reformcloud2.executor.api.utility.annotiations.UndefinedNullability;
 import systems.reformcloud.reformcloud2.signs.SharedSignSystemAdapter;
 import systems.reformcloud.reformcloud2.signs.nukkit.commands.NukkitCommandSigns;
 import systems.reformcloud.reformcloud2.signs.nukkit.listener.NukkitListener;
@@ -79,7 +78,6 @@ public class NukkitSignSystemAdapter extends SharedSignSystemAdapter<BlockEntity
         command.setPermission("reformcloud.command.signs");
     }
 
-    @UndefinedNullability
     public static NukkitSignSystemAdapter getInstance() {
         return instance;
     }

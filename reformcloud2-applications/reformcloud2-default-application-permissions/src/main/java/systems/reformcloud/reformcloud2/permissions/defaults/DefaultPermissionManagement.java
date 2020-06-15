@@ -29,9 +29,13 @@ import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorType;
-import systems.reformcloud.reformcloud2.executor.api.configuration.JsonConfiguration;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.manager.DefaultChannelManager;
+import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.event.EventManager;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.manager.ChannelManager;
+import systems.reformcloud.reformcloud2.executor.api.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.api.utility.list.Streams;
+import systems.reformcloud.reformcloud2.executor.api.wrappers.DatabaseTableWrapper;
 import systems.reformcloud.reformcloud2.permissions.PermissionManagement;
 import systems.reformcloud.reformcloud2.permissions.events.group.PermissionGroupCreateEvent;
 import systems.reformcloud.reformcloud2.permissions.events.group.PermissionGroupDeleteEvent;
@@ -56,18 +60,27 @@ public class DefaultPermissionManagement extends PermissionManagement {
     public static final String PERMISSION_GROUP_TABLE = "reformcloud_internal_db_perm_group";
     public static final String PERMISSION_PLAYER_TABLE = "reformcloud_internal_db_perm_player";
     public static final String PERMISSION_NAME_TO_UNIQUE_ID_TABLE = "reformcloud_internal_db_perm_name_uuid";
+
     private static final boolean NODE = ExecutorAPI.getInstance().getType().equals(ExecutorType.NODE);
+
     private final Map<String, PermissionGroup> nameToGroupCache = new ConcurrentHashMap<>();
     private final Map<UUID, PermissionUser> uniqueIdToUserCache = new ConcurrentHashMap<>();
 
-    public DefaultPermissionManagement() {
-        ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().createDatabase(PERMISSION_GROUP_TABLE);
-        ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().createDatabase(PERMISSION_PLAYER_TABLE);
-        ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().createDatabase(PERMISSION_NAME_TO_UNIQUE_ID_TABLE);
+    private final DatabaseTableWrapper permissionGroupTable;
+    private final DatabaseTableWrapper permissionUserTable;
+    private final DatabaseTableWrapper nameToUniqueIdDatabase;
 
-        for (PermissionGroup permissionGroup : ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().getCompleteDatabase(PERMISSION_GROUP_TABLE, e -> e.get("group", PermissionGroup.TYPE))) {
-            this.eraseGroupCache(permissionGroup);
-            this.nameToGroupCache.put(permissionGroup.getName(), permissionGroup);
+    public DefaultPermissionManagement() {
+        this.permissionGroupTable = ExecutorAPI.getInstance().getDatabaseProvider().createTable(PERMISSION_GROUP_TABLE);
+        this.permissionUserTable = ExecutorAPI.getInstance().getDatabaseProvider().createTable(PERMISSION_PLAYER_TABLE);
+        this.nameToUniqueIdDatabase = ExecutorAPI.getInstance().getDatabaseProvider().createTable(PERMISSION_NAME_TO_UNIQUE_ID_TABLE);
+
+        for (JsonConfiguration configuration : this.permissionGroupTable.getAll()) {
+            PermissionGroup group = configuration.get("group", PermissionGroup.TYPE);
+            if (group != null) {
+                this.eraseGroupCache(group);
+                this.nameToGroupCache.put(group.getName(), group);
+            }
         }
     }
 
@@ -81,13 +94,10 @@ public class DefaultPermissionManagement extends PermissionManagement {
         this.nameToGroupCache.put(permissionGroup.getName(), permissionGroup);
 
         if (NODE) {
-            ExecutorAPI.getInstance()
-                    .getSyncAPI()
-                    .getDatabaseSyncAPI()
-                    .update(PERMISSION_GROUP_TABLE, permissionGroup.getName(), null, new JsonConfiguration().add("group", permissionGroup));
+            this.permissionGroupTable.update(permissionGroup.getName(), "", new JsonConfiguration().add("group", permissionGroup));
         }
 
-        DefaultChannelManager.INSTANCE.getAllSender().forEach(e -> e.sendPacket(new PacketGroupAction(permissionGroup, PermissionAction.UPDATE)));
+        this.publish(new PacketGroupAction(permissionGroup, PermissionAction.UPDATE));
     }
 
     @Override
@@ -131,13 +141,10 @@ public class DefaultPermissionManagement extends PermissionManagement {
         }
 
         if (NODE) {
-            ExecutorAPI.getInstance()
-                    .getSyncAPI()
-                    .getDatabaseSyncAPI()
-                    .insert(PERMISSION_GROUP_TABLE, permissionGroup.getName(), null, new JsonConfiguration().add("group", permissionGroup));
+            this.permissionGroupTable.insert(permissionGroup.getName(), "", new JsonConfiguration().add("group", permissionGroup));
         }
 
-        DefaultChannelManager.INSTANCE.getAllSender().forEach(e -> e.sendPacket(new PacketGroupAction(permissionGroup, PermissionAction.CREATE)));
+        this.publish(new PacketGroupAction(permissionGroup, PermissionAction.CREATE));
         this.nameToGroupCache.put(permissionGroup.getName(), permissionGroup);
 
         return permissionGroup;
@@ -158,13 +165,10 @@ public class DefaultPermissionManagement extends PermissionManagement {
     public void deleteGroup(@NotNull String name) {
         this.getPermissionGroup(name).ifPresent(permissionGroup -> {
             if (NODE) {
-                ExecutorAPI.getInstance()
-                        .getSyncAPI()
-                        .getDatabaseSyncAPI()
-                        .remove(PERMISSION_GROUP_TABLE, permissionGroup.getName(), null);
+                this.permissionGroupTable.remove(permissionGroup.getName(), "");
             }
 
-            DefaultChannelManager.INSTANCE.getAllSender().forEach(e -> e.sendPacket(new PacketGroupAction(permissionGroup, PermissionAction.DELETE)));
+            this.publish(new PacketGroupAction(permissionGroup, PermissionAction.DELETE));
             this.nameToGroupCache.remove(name);
         });
     }
@@ -225,12 +229,12 @@ public class DefaultPermissionManagement extends PermissionManagement {
             return Optional.of(permissionUser);
         }
 
-        JsonConfiguration configuration = ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().find(PERMISSION_PLAYER_TABLE, uniqueId.toString(), null);
-        if (configuration == null) {
+        Optional<JsonConfiguration> configuration = this.permissionUserTable.get(uniqueId.toString(), "");
+        if (!configuration.isPresent()) {
             return Optional.empty();
         }
 
-        permissionUser = configuration.get("user", PermissionUser.TYPE);
+        permissionUser = configuration.get().get("user", PermissionUser.TYPE);
         if (permissionUser == null) {
             return Optional.empty();
         }
@@ -247,12 +251,9 @@ public class DefaultPermissionManagement extends PermissionManagement {
     @NotNull
     private PermissionUser createPermissionUser(@NotNull UUID uniqueID) {
         PermissionUser permissionUser = new PermissionUser(uniqueID, new ArrayList<>(), new ArrayList<>());
-        ExecutorAPI.getInstance()
-                .getSyncAPI()
-                .getDatabaseSyncAPI()
-                .insert(PERMISSION_PLAYER_TABLE, uniqueID.toString(), null, new JsonConfiguration().add("user", permissionUser));
 
-        DefaultChannelManager.INSTANCE.getAllSender().forEach(e -> e.sendPacket(new PacketUserAction(permissionUser, PermissionAction.CREATE)));
+        this.permissionUserTable.insert(uniqueID.toString(), "", new JsonConfiguration().add("user", permissionUser));
+        this.publish(new PacketUserAction(permissionUser, PermissionAction.CREATE));
         this.uniqueIdToUserCache.put(uniqueID, permissionUser);
 
         return permissionUser;
@@ -315,18 +316,15 @@ public class DefaultPermissionManagement extends PermissionManagement {
     public void updateUser(@NotNull PermissionUser permissionUser) {
         this.uniqueIdToUserCache.put(permissionUser.getUniqueID(), permissionUser);
 
-        ExecutorAPI.getInstance()
-                .getSyncAPI()
-                .getDatabaseSyncAPI()
-                .update(PERMISSION_PLAYER_TABLE, permissionUser.getUniqueID().toString(), null, new JsonConfiguration().add("user", permissionUser));
-        DefaultChannelManager.INSTANCE.getAllSender().forEach(e -> e.sendPacket(new PacketUserAction(permissionUser, PermissionAction.UPDATE)));
+        this.permissionUserTable.update(permissionUser.getUniqueID().toString(), "", new JsonConfiguration().add("user", permissionUser));
+        this.publish(new PacketUserAction(permissionUser, PermissionAction.UPDATE));
     }
 
     @Override
     public void deleteUser(@NotNull UUID uuid) {
         PermissionUser user = this.loadUser(uuid);
-        ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().remove(PERMISSION_PLAYER_TABLE, uuid.toString(), null);
-        DefaultChannelManager.INSTANCE.getAllSender().forEach(e -> e.sendPacket(new PacketUserAction(user, PermissionAction.DELETE)));
+        this.permissionUserTable.remove(uuid.toString(), "");
+        this.publish(new PacketUserAction(user, PermissionAction.DELETE));
         this.uniqueIdToUserCache.remove(uuid);
     }
 
@@ -338,19 +336,19 @@ public class DefaultPermissionManagement extends PermissionManagement {
     @Override
     public void handleInternalPermissionGroupUpdate(PermissionGroup permissionGroup) {
         this.nameToGroupCache.put(permissionGroup.getName(), permissionGroup);
-        ExecutorAPI.getInstance().getEventManager().callEvent(new PermissionGroupUpdateEvent(permissionGroup));
+        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).callEvent(new PermissionGroupUpdateEvent(permissionGroup));
     }
 
     @Override
     public void handleInternalPermissionGroupCreate(PermissionGroup permissionGroup) {
         this.nameToGroupCache.put(permissionGroup.getName(), permissionGroup);
-        ExecutorAPI.getInstance().getEventManager().callEvent(new PermissionGroupCreateEvent(permissionGroup));
+        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).callEvent(new PermissionGroupCreateEvent(permissionGroup));
     }
 
     @Override
     public void handleInternalPermissionGroupDelete(PermissionGroup permissionGroup) {
         this.nameToGroupCache.remove(permissionGroup.getName());
-        ExecutorAPI.getInstance().getEventManager().callEvent(new PermissionGroupDeleteEvent(permissionGroup.getName()));
+        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).callEvent(new PermissionGroupDeleteEvent(permissionGroup.getName()));
     }
 
     @Override
@@ -359,18 +357,18 @@ public class DefaultPermissionManagement extends PermissionManagement {
             this.uniqueIdToUserCache.put(permissionUser.getUniqueID(), permissionUser);
         }
 
-        ExecutorAPI.getInstance().getEventManager().callEvent(new PermissionUserUpdateEvent(permissionUser));
+        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).callEvent(new PermissionUserUpdateEvent(permissionUser));
     }
 
     @Override
     public void handleInternalUserCreate(PermissionUser permissionUser) {
-        ExecutorAPI.getInstance().getEventManager().callEvent(new PermissionUserCreateEvent(permissionUser));
+        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).callEvent(new PermissionUserCreateEvent(permissionUser));
     }
 
     @Override
     public void handleInternalUserDelete(PermissionUser permissionUser) {
         this.uniqueIdToUserCache.remove(permissionUser.getUniqueID());
-        ExecutorAPI.getInstance().getEventManager().callEvent(new PermissionUserDeleteEvent(permissionUser.getUniqueID()));
+        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).callEvent(new PermissionUserDeleteEvent(permissionUser.getUniqueID()));
     }
 
     @Override
@@ -425,11 +423,14 @@ public class DefaultPermissionManagement extends PermissionManagement {
     }
 
     private void pushToDB(@NotNull UUID uuid, @NotNull String name) {
-        ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().insert(
-                PERMISSION_NAME_TO_UNIQUE_ID_TABLE,
-                name,
-                uuid.toString(),
-                new JsonConfiguration().add("id", uuid)
-        );
+        this.nameToUniqueIdDatabase.insert(name, uuid.toString(), new JsonConfiguration().add("id", uuid));
+    }
+
+    private void publish(@NotNull Packet packet) {
+        for (NetworkChannel registeredChannel : ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ChannelManager.class).getRegisteredChannels()) {
+            if (registeredChannel.isAuthenticated()) {
+                registeredChannel.sendPacket(packet);
+            }
+        }
     }
 }

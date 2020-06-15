@@ -26,7 +26,7 @@ package systems.reformcloud.reformcloud2.permissions.checks;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import systems.reformcloud.reformcloud2.executor.api.api.API;
+import systems.refomcloud.reformcloud2.embedded.Embedded;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.permissions.nodes.PermissionNode;
 import systems.reformcloud.reformcloud2.permissions.objects.group.PermissionGroup;
@@ -46,7 +46,7 @@ public final class WildcardCheck {
             return hasPermission;
         }
 
-        final ProcessInformation current = API.getInstance().getCurrentProcessInformation();
+        final ProcessInformation current = Embedded.getInstance().getCurrentProcessInformation();
         final Collection<PermissionNode> currentGroupPerms = permissionGroup.getPerGroupPermissions().get(current.getProcessGroup().getName());
         if (currentGroupPerms == null || currentGroupPerms.isEmpty()) {
             return null;
@@ -62,7 +62,7 @@ public final class WildcardCheck {
             return hasPermission;
         }
 
-        final ProcessInformation current = API.getInstance().getCurrentProcessInformation();
+        final ProcessInformation current = Embedded.getInstance().getCurrentProcessInformation();
         final Collection<PermissionNode> currentGroupPerms = permissionUser.getPerGroupPermissions().get(current.getProcessGroup().getName());
         if (currentGroupPerms == null || currentGroupPerms.isEmpty()) {
             return null;

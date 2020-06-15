@@ -22,9 +22,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.permissions.events.group;
+package systems.reformcloud.reformcloud2.node.event.process;
 
-import systems.reformcloud.reformcloud2.executor.api.event.Event;
+import systems.reformcloud.reformcloud2.executor.api.event.events.process.ProcessEvent;
+import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 
-public class PermissionDefaultGroupsChangedEvent extends Event {
+public class LocalProcessPrePrepareEvent extends ProcessEvent {
+
+    public LocalProcessPrePrepareEvent(ProcessInformation processInformation) {
+        super(processInformation);
+    }
 }

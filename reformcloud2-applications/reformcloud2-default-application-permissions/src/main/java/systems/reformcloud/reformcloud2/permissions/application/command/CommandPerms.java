@@ -27,8 +27,8 @@ package systems.reformcloud.reformcloud2.permissions.application.command;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.CommonHelper;
-import systems.reformcloud.reformcloud2.executor.api.commands.basic.GlobalCommand;
-import systems.reformcloud.reformcloud2.executor.api.commands.source.CommandSource;
+import systems.reformcloud.reformcloud2.executor.api.command.Command;
+import systems.reformcloud.reformcloud2.executor.api.command.CommandSender;
 import systems.reformcloud.reformcloud2.permissions.PermissionManagement;
 import systems.reformcloud.reformcloud2.permissions.nodes.NodeGroup;
 import systems.reformcloud.reformcloud2.permissions.nodes.PermissionNode;
@@ -38,7 +38,7 @@ import systems.reformcloud.reformcloud2.permissions.objects.user.PermissionUser;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
-public class CommandPerms extends GlobalCommand {
+public class CommandPerms implements Command {
 
     private static final String[] HELP = new String[]{
             "perms groups",
@@ -85,10 +85,6 @@ public class CommandPerms extends GlobalCommand {
             "perms user [user] delgroup [group]"
     };
 
-    public CommandPerms() {
-        super("perms", "reformcloud.command.perms", "The main perms command", "permissions", "cloudperms");
-    }
-
     @NotNull
     private static String formatPermissionNode(@NotNull PermissionNode node) {
         StringBuilder stringBuilder = new StringBuilder();
@@ -131,35 +127,35 @@ public class CommandPerms extends GlobalCommand {
     }
 
     @Override
-    public boolean handleCommand(@NotNull CommandSource commandSource, String @NotNull [] strings) {
+    public void process(@NotNull CommandSender sender, String[] strings, @NotNull String commandLine) {
         if (strings.length == 1 && strings[0].equalsIgnoreCase("groups")) {
             List<PermissionGroup> groups = new ArrayList<>(PermissionManagement.getInstance().getPermissionGroups());
             groups.sort(Comparator.comparingInt(PermissionGroup::getPriority));
 
-            commandSource.sendMessage(String.format("Registered groups (%d): \n  - %s", groups.size(), String.join("\n  - ",
+            sender.sendMessage(String.format("Registered groups (%d): \n  - %s", groups.size(), String.join("\n  - ",
                     groups
                             .stream()
                             .map(e -> String.format("Name: %s | Priority: %d", e.getName(), e.getPriority()))
                             .toArray(String[]::new))
             ));
-            return true;
+            return;
         }
 
         if (strings.length >= 2 && strings[0].equalsIgnoreCase("user")) {
-            this.handleUserCommand(commandSource, strings);
-            return true;
+            this.handleUserCommand(sender, strings);
+            return;
         }
 
         if (strings.length >= 2 && strings[0].equalsIgnoreCase("group")) {
-            this.handleGroupCommand(commandSource, strings);
-            return true;
+            this.handleGroupCommand(sender, strings);
+            return;
         }
 
-        commandSource.sendMessages(HELP);
-        return true;
+        sender.sendMessages(HELP);
+        return;
     }
 
-    private void handleUserCommand(@NotNull CommandSource source, @NotNull String[] strings) {
+    private void handleUserCommand(@NotNull CommandSender source, @NotNull String[] strings) {
         Optional<PermissionUser> permissionUserOptional = PermissionManagement.getInstance().loadUser(strings[1]);
         if (!permissionUserOptional.isPresent()) {
             source.sendMessage("The permission user " + strings[1] + " is not present");
@@ -547,7 +543,7 @@ public class CommandPerms extends GlobalCommand {
         source.sendMessages(HELP);
     }
 
-    private void handleGroupCommand(@NotNull CommandSource source, @NotNull String[] strings) {
+    private void handleGroupCommand(@NotNull CommandSender source, @NotNull String[] strings) {
         Optional<PermissionGroup> optionalPermissionGroup = PermissionManagement.getInstance().getPermissionGroup(strings[1]);
         if ((strings.length == 3 || strings.length == 4) && strings[2].equalsIgnoreCase("create")) {
             if (optionalPermissionGroup.isPresent()) {
@@ -906,10 +902,10 @@ public class CommandPerms extends GlobalCommand {
             return;
         }
 
-        source.sendRawMessages(HELP);
+        source.sendMessages(HELP);
     }
 
-    private void displayPermissionGroup(@NotNull CommandSource source, @NotNull PermissionGroup permissionGroup) {
+    private void displayPermissionGroup(@NotNull CommandSender source, @NotNull PermissionGroup permissionGroup) {
         StringBuilder stringBuilder = new StringBuilder();
 
         stringBuilder.append("Name     - ").append(permissionGroup.getName()).append("\n");
@@ -944,7 +940,7 @@ public class CommandPerms extends GlobalCommand {
         source.sendMessages(stringBuilder.toString().split("\n"));
     }
 
-    private void displayPermissionUser(@NotNull CommandSource source, @NotNull PermissionUser permissionUser, @NotNull String userName) {
+    private void displayPermissionUser(@NotNull CommandSender source, @NotNull PermissionUser permissionUser, @NotNull String userName) {
         StringBuilder stringBuilder = new StringBuilder();
 
         stringBuilder.append("Name          - ").append(userName).append("\n");

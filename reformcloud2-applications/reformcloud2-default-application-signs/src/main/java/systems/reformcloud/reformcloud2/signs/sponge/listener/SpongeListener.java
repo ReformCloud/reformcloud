@@ -32,6 +32,7 @@ import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.block.InteractBlockEvent;
 import org.spongepowered.api.event.filter.cause.First;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
+import systems.reformcloud.reformcloud2.executor.api.event.EventManager;
 import systems.reformcloud.reformcloud2.signs.event.UserSignPreConnectEvent;
 import systems.reformcloud.reformcloud2.signs.sponge.adapter.SpongeSignSystemAdapter;
 import systems.reformcloud.reformcloud2.signs.util.SignSystemAdapter;
@@ -56,13 +57,14 @@ public class SpongeListener {
                 }
 
                 boolean canConnect = SignSystemAdapter.getInstance().canConnect(cloudSign, player::hasPermission);
-                if (!ExecutorAPI.getInstance().getEventManager().callEvent(new UserSignPreConnectEvent(
+                if (!ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).callEvent(new UserSignPreConnectEvent(
                         player.getUniqueId(), player::hasPermission, cloudSign, canConnect
                 )).isAllowConnection()) {
                     return;
                 }
 
-                ExecutorAPI.getInstance().getSyncAPI().getPlayerSyncAPI().connect(player.getUniqueId(), cloudSign.getCurrentTarget());
+                ExecutorAPI.getInstance().getPlayerProvider().getPlayer(player.getUniqueId())
+                        .ifPresent(wrapper -> wrapper.connect(cloudSign.getCurrentTarget().getProcessDetail().getName()));
             }
         }
     }

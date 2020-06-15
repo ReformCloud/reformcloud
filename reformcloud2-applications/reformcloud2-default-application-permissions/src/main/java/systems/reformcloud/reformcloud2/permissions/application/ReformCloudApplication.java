@@ -28,7 +28,8 @@ import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.application.api.Application;
 import systems.reformcloud.reformcloud2.executor.api.application.updater.ApplicationUpdateRepository;
-import systems.reformcloud.reformcloud2.node.NodeExecutor;
+import systems.reformcloud.reformcloud2.executor.api.command.CommandManager;
+import systems.reformcloud.reformcloud2.executor.api.event.EventManager;
 import systems.reformcloud.reformcloud2.permissions.PermissionManagement;
 import systems.reformcloud.reformcloud2.permissions.application.command.CommandPerms;
 import systems.reformcloud.reformcloud2.permissions.application.listener.ProcessInclusionHandler;
@@ -46,20 +47,16 @@ public class ReformCloudApplication extends Application {
     }
 
     @Override
-    public void onInstallable() {
-        ExecutorAPI.getInstance().getEventManager().registerListener(new ProcessInclusionHandler());
-    }
-
-    @Override
     public void onLoad() {
         instance = this;
+        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).registerListener(new ProcessInclusionHandler());
     }
 
     @Override
     public void onEnable() {
         PermissionManagement.setup();
         PacketHelper.addPacketHandler();
-        NodeExecutor.getInstance().getCommandManager().register(new CommandPerms());
+        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(CommandManager.class).registerCommand(new CommandPerms(), "permissions", "cloudperms");
     }
 
     @Nullable

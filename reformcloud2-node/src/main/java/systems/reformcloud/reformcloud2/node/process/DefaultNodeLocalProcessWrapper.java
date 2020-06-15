@@ -27,6 +27,7 @@ package systems.reformcloud.reformcloud2.node.process;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnmodifiableView;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
+import systems.reformcloud.reformcloud2.executor.api.event.EventManager;
 import systems.reformcloud.reformcloud2.executor.api.groups.template.Version;
 import systems.reformcloud.reformcloud2.executor.api.groups.template.backend.TemplateBackendManager;
 import systems.reformcloud.reformcloud2.executor.api.io.IOUtils;
@@ -42,6 +43,7 @@ import systems.reformcloud.reformcloud2.executor.api.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.utility.process.JavaProcessHelper;
 import systems.reformcloud.reformcloud2.node.NodeExecutor;
 import systems.reformcloud.reformcloud2.node.cluster.ClusterManager;
+import systems.reformcloud.reformcloud2.node.event.process.LocalProcessPrePrepareEvent;
 import systems.reformcloud.reformcloud2.node.process.screen.ProcessScreen;
 import systems.reformcloud.reformcloud2.node.process.screen.ProcessScreenController;
 import systems.reformcloud.reformcloud2.protocol.api.NodeToApiRequestProcessInformationUpdate;
@@ -178,6 +180,7 @@ public class DefaultNodeLocalProcessWrapper extends DefaultNodeRemoteProcessWrap
     }
 
     private void prepare() {
+        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).callEvent(new LocalProcessPrePrepareEvent(this.processInformation));
         EnvironmentBuilder.constructEnvFor(this, this.firstStart, this.connectionKey);
     }
 

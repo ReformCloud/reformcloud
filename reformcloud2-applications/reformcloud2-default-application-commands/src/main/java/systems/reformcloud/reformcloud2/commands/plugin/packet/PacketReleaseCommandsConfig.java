@@ -24,17 +24,13 @@
  */
 package systems.reformcloud.reformcloud2.commands.plugin.packet;
 
-import io.netty.channel.ChannelHandlerContext;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.commands.config.CommandsConfig;
 import systems.reformcloud.reformcloud2.commands.plugin.CommandConfigHandler;
 import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
-import systems.reformcloud.reformcloud2.executor.api.network.challenge.ChallengeAuthHandler;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannelReader;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.PacketSender;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
-import systems.reformcloud.reformcloud2.executor.api.network.handler.ChannelReaderHelper;
 import systems.reformcloud.reformcloud2.executor.api.network.packet.Packet;
 
 public class PacketReleaseCommandsConfig extends Packet {
@@ -50,11 +46,11 @@ public class PacketReleaseCommandsConfig extends Packet {
 
     @Override
     public int getId() {
-        return NetworkUtil.EXTERNAL_BUS + 4;
+        return NetworkUtil.RESERVED_EXTRA_BUS + 3;
     }
 
     @Override
-    public void handlePacketReceive(@NotNull NetworkChannelReader reader, @NotNull ChallengeAuthHandler authHandler, @NotNull ChannelReaderHelper parent, @Nullable PacketSender sender, @NotNull ChannelHandlerContext channel) {
+    public void handlePacketReceive(@NotNull EndpointChannelReader reader, @NotNull NetworkChannel channel) {
         CommandConfigHandler.getInstance().handleCommandConfigRelease(this.commandsConfig);
     }
 

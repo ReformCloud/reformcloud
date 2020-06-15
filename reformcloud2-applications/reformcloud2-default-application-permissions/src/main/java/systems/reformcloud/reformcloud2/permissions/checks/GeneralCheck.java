@@ -26,7 +26,7 @@ package systems.reformcloud.reformcloud2.permissions.checks;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import systems.reformcloud.reformcloud2.executor.api.api.API;
+import systems.refomcloud.reformcloud2.embedded.Embedded;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.permissions.nodes.PermissionNode;
 import systems.reformcloud.reformcloud2.permissions.objects.group.PermissionGroup;
@@ -66,7 +66,7 @@ public final class GeneralCheck {
             return true;
         }
 
-        final ProcessInformation current = API.getInstance().getCurrentProcessInformation();
+        final ProcessInformation current = Embedded.getInstance().getCurrentProcessInformation();
         if (!permissionUser.getPerGroupPermissions().containsKey(current.getProcessGroup().getName())) {
             return null;
         }
@@ -91,7 +91,7 @@ public final class GeneralCheck {
             return true;
         }
 
-        final ProcessInformation current = API.getInstance().getCurrentProcessInformation();
+        final ProcessInformation current = Embedded.getInstance().getCurrentProcessInformation();
         if (!permissionGroup.getPerGroupPermissions().containsKey(current.getProcessGroup().getName())) {
             return null;
         }

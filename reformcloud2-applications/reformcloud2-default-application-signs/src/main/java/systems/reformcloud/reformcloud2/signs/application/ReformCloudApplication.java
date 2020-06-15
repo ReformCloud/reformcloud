@@ -29,10 +29,13 @@ import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.application.api.Application;
 import systems.reformcloud.reformcloud2.executor.api.application.updater.ApplicationUpdateRepository;
-import systems.reformcloud.reformcloud2.executor.api.configuration.JsonConfiguration;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.manager.DefaultChannelManager;
+import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.event.EventManager;
+import systems.reformcloud.reformcloud2.executor.api.io.IOUtils;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.manager.ChannelManager;
+import systems.reformcloud.reformcloud2.executor.api.network.packet.PacketProvider;
 import systems.reformcloud.reformcloud2.executor.api.utility.list.Streams;
-import systems.reformcloud.reformcloud2.executor.api.utility.system.SystemHelper;
 import systems.reformcloud.reformcloud2.signs.application.listener.ProcessInclusionHandler;
 import systems.reformcloud.reformcloud2.signs.application.packets.PacketCreateSign;
 import systems.reformcloud.reformcloud2.signs.application.packets.PacketDeleteBulkSigns;
@@ -44,6 +47,7 @@ import systems.reformcloud.reformcloud2.signs.util.SignSystemAdapter;
 import systems.reformcloud.reformcloud2.signs.util.sign.CloudSign;
 import systems.reformcloud.reformcloud2.signs.util.sign.config.SignConfig;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -86,58 +90,52 @@ public class ReformCloudApplication extends Application {
         insert();
     }
 
-    // ====
-
     private static Collection<CloudSign> read() {
         return databaseEntry.get("signs", new TypeToken<Collection<CloudSign>>() {
         });
     }
 
     private static void insert() {
-        ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().update(SignSystemAdapter.table, "signs", databaseEntry);
-    }
-
-    // ====
-
-    @Override
-    public void onInstallable() {
-        ExecutorAPI.getInstance().getEventManager().registerListener(new ProcessInclusionHandler());
+        ExecutorAPI.getInstance().getDatabaseProvider().getDatabase(SignSystemAdapter.table).update("signs", "", databaseEntry);
     }
 
     @Override
     public void onLoad() {
         instance = this;
+        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).registerListener(new ProcessInclusionHandler());
     }
-
-    // ====
 
     @Override
     public void onEnable() {
-        if (!this.dataFolder().exists()) {
-            SystemHelper.createDirectory(this.dataFolder().toPath());
-            ConfigHelper.createDefault(this.dataFolder().getPath());
+        if (!this.getDataFolder().exists()) {
+            IOUtils.createDirectory(this.getDataFolder().toPath());
+            ConfigHelper.createDefault(this.getDataFolder().getPath());
         }
 
-        ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().createDatabase(SignSystemAdapter.table);
-        if (!ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().contains(SignSystemAdapter.table, "signs")) {
-            ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().insert(
-                    SignSystemAdapter.table,
+        ExecutorAPI.getInstance().getDatabaseProvider().createTable(SignSystemAdapter.table);
+        if (!ExecutorAPI.getInstance().getDatabaseProvider().getDatabase(SignSystemAdapter.table).has("signs")) {
+            ExecutorAPI.getInstance().getDatabaseProvider().getDatabase(SignSystemAdapter.table).insert(
                     "signs",
-                    null,
+                    "",
                     new JsonConfiguration().add("signs", Collections.emptyList())
             );
         }
 
-        ExecutorAPI.getInstance().getPacketHandler().registerNetworkHandlers(
+        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).registerPackets(Arrays.asList(
                 PacketCreateSign.class,
                 PacketDeleteSign.class,
                 PacketDeleteBulkSigns.class,
                 PacketRequestSignLayouts.class
-        );
+        ));
 
-        databaseEntry = ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().find(SignSystemAdapter.table, "signs", null);
-        signConfig = ConfigHelper.read(this.dataFolder().getPath());
-        DefaultChannelManager.INSTANCE.getAllSender().forEach(e -> e.sendPacket(new PacketReloadSignConfig(signConfig)));
+        databaseEntry = ExecutorAPI.getInstance().getDatabaseProvider().getDatabase(SignSystemAdapter.table).get("signs", "").orElseGet(() -> new JsonConfiguration());
+        signConfig = ConfigHelper.read(this.getDataFolder().getPath());
+
+        for (NetworkChannel registeredChannel : ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ChannelManager.class).getRegisteredChannels()) {
+            if (registeredChannel.isAuthenticated()) {
+                registeredChannel.sendPacket(new PacketReloadSignConfig(signConfig));
+            }
+        }
     }
 
     @Nullable

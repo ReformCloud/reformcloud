@@ -29,20 +29,16 @@ import systems.reformcloud.reformcloud2.commands.application.ReformCloudApplicat
 import systems.reformcloud.reformcloud2.executor.api.event.handler.Listener;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.process.api.ProcessInclusion;
-import systems.reformcloud.reformcloud2.executor.api.process.running.events.RunningProcessPrepareEvent;
+import systems.reformcloud.reformcloud2.node.event.process.LocalProcessPrePrepareEvent;
 
 public final class ProcessInclusionHandler {
 
     @Listener
-    public void handle(final @NotNull RunningProcessPrepareEvent event) {
-        this.includeSelfFile(event.getRunningProcess().getProcessInformation());
+    public void handle(final @NotNull LocalProcessPrePrepareEvent event) {
+        this.includeSelfFile(event.getProcessInformation());
     }
 
     private void includeSelfFile(@NotNull ProcessInformation processInformation) {
-        if (processInformation.getProcessDetail().getTemplate().getVersion().isServer()) {
-            return;
-        }
-
         processInformation.getPreInclusions().add(new ProcessInclusion(
                 "https://dl.reformcloud.systems/addonsv2/reformcloud2-default-application-commands-"
                         + ReformCloudApplication.getInstance().getApplication().getApplicationConfig().getVersion() + ".jar",

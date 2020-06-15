@@ -47,7 +47,7 @@ public class PacketGetCommandsConfigResult extends QueryResultPacket {
 
     @Override
     public int getId() {
-        return NetworkUtil.EXTERNAL_BUS + 5;
+        return NetworkUtil.RESERVED_EXTRA_BUS + 2;
     }
 
     @Override
