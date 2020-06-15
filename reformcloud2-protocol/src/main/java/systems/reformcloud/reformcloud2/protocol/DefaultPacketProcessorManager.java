@@ -33,7 +33,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class DefaultPacketProcessorManager extends PacketProcessorManager {
+public final class DefaultPacketProcessorManager extends PacketProcessorManager {
 
     static {
         PacketProcessorManager.setInstance(new DefaultPacketProcessorManager());
