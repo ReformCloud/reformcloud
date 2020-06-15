@@ -114,7 +114,7 @@ public final class LanguageLoader {
         return properties;
     }
 
-    private static class InternalLanguageSource implements LanguageSource {
+    private static final class InternalLanguageSource implements LanguageSource {
 
         private final String name;
         private final String display;

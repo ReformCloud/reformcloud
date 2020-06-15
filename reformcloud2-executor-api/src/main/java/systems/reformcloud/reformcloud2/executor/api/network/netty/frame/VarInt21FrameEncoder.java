@@ -33,7 +33,7 @@ import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
 import java.util.List;
 
 @ChannelHandler.Sharable
-public class VarInt21FrameEncoder extends MessageToMessageEncoder<ByteBuf> {
+public final class VarInt21FrameEncoder extends MessageToMessageEncoder<ByteBuf> {
 
     public static final VarInt21FrameEncoder INSTANCE = new VarInt21FrameEncoder();
 
