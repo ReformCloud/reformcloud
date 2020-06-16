@@ -168,6 +168,7 @@ public final class NodeExecutor extends ExecutorAPI {
         this.taskScheduler.addPermanentTask(new NodeInformationUpdateRunnable());
         this.taskScheduler.addPermanentTask(new ServerWatchdogRunnable());
         this.taskScheduler.addPermanentTask(new ProcessScreenTickRunnable());
+        this.taskScheduler.addPermanentTask(new OnlinePercentCheckerTask());
 
         this.loadCommands();
         this.serviceRegistry.getProviderUnchecked(ApplicationLoader.class).enableApplications();
