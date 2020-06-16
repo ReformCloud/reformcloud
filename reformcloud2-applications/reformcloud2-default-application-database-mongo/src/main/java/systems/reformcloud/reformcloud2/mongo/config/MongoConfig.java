@@ -22,21 +22,41 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api;
+package systems.reformcloud.reformcloud2.mongo.config;
 
-public enum ExecutorType {
+public class MongoConfig {
 
-    NODE(1),
-    API(2),
-    UNKNOWN(-1);
-
-    private final int id;
-
-    ExecutorType(int id) {
-        this.id = id;
+    public MongoConfig(String host, int port, String database, String userName, String password) {
+        this.host = host;
+        this.port = port;
+        this.database = database;
+        this.userName = userName;
+        this.password = password;
     }
 
-    public int getId() {
-        return this.id;
+    private final String host;
+    private final int port;
+    private final String database;
+    private final String userName;
+    private final String password;
+
+    public String getHost() {
+        return this.host;
+    }
+
+    public int getPort() {
+        return this.port;
+    }
+
+    public String getDatabase() {
+        return this.database;
+    }
+
+    public String getUserName() {
+        return this.userName;
+    }
+
+    public String getPassword() {
+        return this.password;
     }
 }

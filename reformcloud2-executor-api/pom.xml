@@ -26,14 +26,6 @@
     </pluginRepositories>
 
     <dependencies>
-        <!-- https://github.com/derklaro/project-deer -->
-        <dependency>
-            <groupId>com.github.derklaro</groupId>
-            <artifactId>project-deer</artifactId>
-            <version>1.0.0</version>
-            <scope>provided</scope>
-        </dependency>
-
         <!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
         <dependency>
             <groupId>com.google.code.gson</groupId>

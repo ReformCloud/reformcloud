@@ -22,7 +22,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.database.basic.drivers.file;
+package systems.reformcloud.reformcloud2.file;
 
 import de.derklaro.projects.deer.api.writer.FileWriter;
 import org.jetbrains.annotations.NotNull;
@@ -32,21 +32,17 @@ import java.io.File;
 
 public class SerializableJsonConfiguration extends JsonConfiguration implements FileWriter {
 
-    public SerializableJsonConfiguration(JsonConfiguration parent) {
-        super(parent.getJsonObject());
-    }
-
     public SerializableJsonConfiguration(File file) {
         super(file);
     }
 
-    public SerializableJsonConfiguration() {
-        super();
+    public SerializableJsonConfiguration(JsonConfiguration configuration) {
+        super(configuration.getJsonObject());
     }
 
     @NotNull
     @Override
     public String toWriteableString() {
-        return this.toPrettyString();
+        return super.toPrettyString();
     }
 }

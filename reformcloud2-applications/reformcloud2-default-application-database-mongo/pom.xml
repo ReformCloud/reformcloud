@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>reformcloud2-default-application-database-mysql</artifactId>
+    <artifactId>reformcloud2-default-application-database-mongo</artifactId>
 
     <pluginRepositories>
         <pluginRepository>
@@ -19,26 +19,25 @@
     </pluginRepositories>
 
     <dependencies>
-        <!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>8.0.20</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/com.zaxxer/HikariCP -->
-        <dependency>
-            <groupId>com.zaxxer</groupId>
-            <artifactId>HikariCP</artifactId>
-            <version>3.4.5</version>
-            <scope>provided</scope>
-        </dependency>
-
         <dependency>
             <groupId>systems.reformcloud.reformcloud2</groupId>
             <artifactId>reformcloud2-node</artifactId>
             <version>2.2.2</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.mongodb/mongo-java-driver -->
+        <dependency>
+            <groupId>org.mongodb</groupId>
+            <artifactId>mongo-java-driver</artifactId>
+            <version>3.12.4</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.8.6</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
@@ -58,10 +57,11 @@
 
                     <excludes>
                         <exclude>*:reformcloud2-node</exclude>
+                        <exclude>com.google.code.gson:*</exclude>
                     </excludes>
 
                     <outputFileName>
-                        reformcloud2-applications/reformcloud2-default-application-database-mysql/src/main/resources/dependencies.txt
+                        reformcloud2-applications/reformcloud2-default-application-database-file/src/main/resources/dependencies.txt
                     </outputFileName>
 
                     <overrideExistingFile>true</overrideExistingFile>

@@ -75,11 +75,9 @@ public interface Configurable<X, V extends Configurable<X, V>> {
     @NotNull
     V get(@NotNull String key);
 
-    @Nullable
-    <T> T get(@NotNull String key, @NotNull TypeToken<T> type);
+    @Nullable <T> T get(@NotNull String key, @NotNull TypeToken<T> type);
 
-    @Nullable
-    <T> T get(@NotNull String key, @NotNull Class<T> type);
+    @Nullable <T> T get(@NotNull String key, @NotNull Class<T> type);
 
     @NotNull
     String getString(@NotNull String key);

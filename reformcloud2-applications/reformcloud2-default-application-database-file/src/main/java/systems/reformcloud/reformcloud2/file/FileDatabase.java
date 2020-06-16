@@ -22,21 +22,24 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api;
+package systems.reformcloud.reformcloud2.file;
 
-public enum ExecutorType {
+import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
+import systems.reformcloud.reformcloud2.executor.api.application.api.Application;
+import systems.reformcloud.reformcloud2.executor.api.provider.DatabaseProvider;
 
-    NODE(1),
-    API(2),
-    UNKNOWN(-1);
+public class FileDatabase extends Application {
 
-    private final int id;
+    private DatabaseProvider before;
 
-    ExecutorType(int id) {
-        this.id = id;
+    @Override
+    public void onLoad() {
+        this.before = ExecutorAPI.getInstance().getDatabaseProvider();
+        ExecutorAPI.getInstance().getServiceRegistry().setProvider(DatabaseProvider.class, new FileDatabaseProvider(), false, true);
     }
 
-    public int getId() {
-        return this.id;
+    @Override
+    public void onDisable() {
+        ExecutorAPI.getInstance().getServiceRegistry().setProvider(DatabaseProvider.class, this.before, false, true);
     }
 }
