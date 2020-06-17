@@ -64,7 +64,8 @@
                     </excludedScopes>
 
                     <excludes>
-                        <exclude>*:reformcloud2-node</exclude>
+                        <exclude>systems.reformcloud.reformcloud2:*</exclude>
+                        <exclude>com.google.code.gson:*</exclude>
                     </excludes>
 
                     <outputFileName>

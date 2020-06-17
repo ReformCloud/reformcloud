@@ -56,11 +56,12 @@
                     </excludedScopes>
 
                     <excludes>
-                        <exclude>*:reformcloud2-node</exclude>
+                        <exclude>systems.reformcloud.reformcloud2:*</exclude>
+                        <exclude>com.google.code.gson:*</exclude>
                     </excludes>
 
                     <outputFileName>
-                        reformcloud2-applications/reformcloud2-default-application-database-mysql/src/main/resources/dependencies.txt
+                        reformcloud2-applications/reformcloud2-default-application-database-rethink/src/main/resources/dependencies.txt
                     </outputFileName>
 
                     <overrideExistingFile>true</overrideExistingFile>

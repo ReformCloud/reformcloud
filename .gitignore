@@ -8,4 +8,4 @@ pom.xml.versionsBackup
 
 # Files which will always get generated in the build process
 reformcloud2-runner/src/main/resources/files/executor.jar
-reformcloud2-executor-api/src/main/resources/internal/dependencies.txt
+dependencies.txt
