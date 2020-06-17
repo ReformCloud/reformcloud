@@ -26,41 +26,28 @@ package systems.reformcloud.reformcloud2.examples.network;
 
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.api.basic.events.ChannelMessageReceivedEvent;
-import systems.reformcloud.reformcloud2.executor.api.api.messaging.util.ErrorReportHandling;
 import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.event.events.messaging.ChannelMessageReceiveEvent;
 import systems.reformcloud.reformcloud2.executor.api.event.handler.Listener;
 
 public class ExampleChannelMessageHandling {
 
-    /*
-    Sends a custom channel message
-     */
+    // Sends a channel message to all nodes and processes
     public static void sendCustomChannelMessage() {
-        ExecutorAPI.getInstance().getSyncAPI().getMessageSyncAPI().sendChannelMessageSync(
-                new JsonConfiguration().add("extra", "hello"), // The data which should get sent to the network components
+        ExecutorAPI.getInstance().getChannelMessageProvider().publishChannelMessage(
                 "testChannel", // The name of the channel which is accessible for better identifying of the message
-                "idChannel", // The sub-name of the channel which is accessible for better identifying of the message
-                ErrorReportHandling.PRINT_ERROR, // Print a error into the console if one of the given receivers is not available
-                "Node-1", "Node-2" // The names of the network components which should receive the message
+                new JsonConfiguration().add("extra", "hello") // The data which should get sent to the network components
         );
     }
 
-    /*
-    Handles the receive of a custom channel message. Do not forgot to register the listener.
-     */
+    // Handles the receive of a custom channel message. Do not forgot to register the listener.
     @Listener
-    public void handle(final @NotNull ChannelMessageReceivedEvent event) {
+    public void handle(final @NotNull ChannelMessageReceiveEvent event) {
         // Checks if the base channel is the same as the message was sent to
-        if (!event.getBaseChannel().equals("testChannel")) {
+        if (!event.getChannel().equals("testChannel")) {
             return;
         }
 
-        // Checks if the sub channel is the same as the message was sent to
-        if (!event.getSubChannel().equals("idChannel")) {
-            return;
-        }
-
-        System.out.println(event.getContent().get("extra")); // print the message which was sent in the json config
+        System.out.println(event.getData().get("extra")); // print the message which was sent in the json config
     }
 }

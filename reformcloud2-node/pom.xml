@@ -29,14 +29,6 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/org.reflections/reflections -->
-        <dependency>
-            <groupId>org.reflections</groupId>
-            <artifactId>reflections</artifactId>
-            <version>0.9.12</version>
-            <scope>provided</scope>
-        </dependency>
-
         <!-- https://mvnrepository.com/artifact/org.fusesource.jansi/jansi -->
         <dependency>
             <groupId>org.fusesource.jansi</groupId>
@@ -88,19 +80,13 @@
                         <configuration>
                             <filters>
                                 <filter>
-                                    <artifact>de.derklaro.projects.deer:project-deer-executor</artifact>
+                                    <artifact>systems.reformcloud.reformcloud2:reformcloud-protocol</artifact>
                                     <excludes>
                                         <exclude>META-INF/*.MF</exclude>
                                     </excludes>
                                 </filter>
                                 <filter>
-                                    <artifact>de.derklaro.projects.deer:project-deer-api</artifact>
-                                    <excludes>
-                                        <exclude>META-INF/*.MF</exclude>
-                                    </excludes>
-                                </filter>
-                                <filter>
-                                    <artifact>org.jetbrains:annotations-java5</artifact>
+                                    <artifact>systems.reformcloud.reformcloud2:reformcloud-shared</artifact>
                                     <excludes>
                                         <exclude>META-INF/*.MF</exclude>
                                     </excludes>

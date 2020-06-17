@@ -25,7 +25,7 @@
 package systems.reformcloud.reformcloud2.examples.event;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.api.basic.events.ProcessStartedEvent;
+import systems.reformcloud.reformcloud2.executor.api.event.events.process.ProcessRegisterEvent;
 import systems.reformcloud.reformcloud2.executor.api.event.handler.Listener;
 import systems.reformcloud.reformcloud2.executor.api.event.priority.EventPriority;
 
@@ -40,7 +40,7 @@ public class ExampleEventListener {
     }
 
     @Listener(priority = EventPriority.LAST) // This listener will be invoked after all others
-    public void handle(final @NotNull ProcessStartedEvent event) {
+    public void handle(final @NotNull ProcessRegisterEvent event) {
         System.out.println("The process " + event.getProcessInformation().getProcessDetail().getName() + " was started");
     }
 }

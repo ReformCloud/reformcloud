@@ -68,8 +68,8 @@
         <module>reformcloud2-shared</module>
         <module>reformcloud2-embedded</module>
         <module>reformcloud2-node</module>
-        <module>reformcloud2-plugins</module>
         <module>reformcloud2-applications</module>
+        <module>reformcloud2-plugins</module>
         <module>reformcloud2-examples</module>
         <module>reformcloud2-runner</module>
     </modules>

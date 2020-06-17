@@ -29,14 +29,14 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.api.API;
+import systems.refomcloud.reformcloud2.embedded.Embedded;
 import systems.reformcloud.reformcloud2.tab.ReformCloudTabPlugin;
 
 public class BukkitTabListeners implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void handle(@NotNull final PlayerJoinEvent event) {
-        if (API.getInstance().getCurrentProcessInformation().getExtra().getBoolean("disable-tab")) {
+        if (Embedded.getInstance().getCurrentProcessInformation().getExtra().getBoolean("disable-tab")) {
             return;
         }
 

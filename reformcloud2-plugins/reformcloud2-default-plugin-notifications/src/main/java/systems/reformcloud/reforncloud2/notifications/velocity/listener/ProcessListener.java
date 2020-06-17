@@ -26,17 +26,13 @@ package systems.reformcloud.reforncloud2.notifications.velocity.listener;
 
 import com.velocitypowered.api.proxy.ProxyServer;
 import net.kyori.text.serializer.legacy.LegacyComponentSerializer;
-import org.jetbrains.annotations.NotNull;
+import systems.refomcloud.reformcloud2.embedded.Embedded;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.api.basic.events.ProcessStartedEvent;
-import systems.reformcloud.reformcloud2.executor.api.api.basic.events.ProcessStoppedEvent;
-import systems.reformcloud.reformcloud2.executor.api.api.basic.events.ProcessUpdatedEvent;
+import systems.reformcloud.reformcloud2.executor.api.event.events.process.ProcessRegisterEvent;
+import systems.reformcloud.reformcloud2.executor.api.event.events.process.ProcessUnregisterEvent;
+import systems.reformcloud.reformcloud2.executor.api.event.events.process.ProcessUpdateEvent;
 import systems.reformcloud.reformcloud2.executor.api.event.handler.Listener;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.manager.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
-import systems.reformcloud.reformcloud2.executor.api.utility.task.Task;
-import systems.reformcloud.reformcloud2.executor.api.utility.thread.AbsoluteThread;
-import systems.reformcloud.reformcloud2.executor.api.velocity.VelocityExecutor;
 
 import java.util.Map;
 import java.util.UUID;
@@ -46,55 +42,48 @@ public final class ProcessListener {
 
     private static final Map<UUID, ProcessInformation> REGISTERED = new ConcurrentHashMap<>();
 
-    public ProcessListener(@NotNull ProxyServer server) {
-        Task.EXECUTOR.execute(() -> {
-            while (DefaultChannelManager.INSTANCE.get("Controller").isEmpty()) {
-                AbsoluteThread.sleep(50);
-            }
+    private final ProxyServer proxyServer;
+    private final Map<UUID, ProcessInformation> registered = new ConcurrentHashMap<>();
 
-            ExecutorAPI.getInstance()
-                    .getSyncAPI()
-                    .getProcessSyncAPI()
-                    .getAllProcesses()
-                    .forEach(e -> REGISTERED.put(e.getProcessDetail().getProcessUniqueID(), e));
-        });
+    public ProcessListener(ProxyServer server) {
+        for (ProcessInformation process : ExecutorAPI.getInstance().getProcessProvider().getProcesses()) {
+            this.registered.put(process.getProcessDetail().getProcessUniqueID(), process);
+        }
 
         this.proxyServer = server;
     }
 
-    private final ProxyServer proxyServer;
-
     @Listener
-    public void handle(final ProcessStartedEvent event) {
+    public void handle(final ProcessRegisterEvent event) {
         this.publishNotification(
-                VelocityExecutor.getInstance().getMessages().getProcessStarted(),
+                Embedded.getInstance().getIngameMessages().getProcessStarted(),
                 event.getProcessInformation().getProcessDetail().getName()
         );
     }
 
     @Listener
-    public void handle(final ProcessStoppedEvent event) {
-        if (!REGISTERED.containsKey(event.getProcessInformation().getProcessDetail().getProcessUniqueID())) {
+    public void handle(final ProcessUnregisterEvent event) {
+        if (!this.registered.containsKey(event.getProcessInformation().getProcessDetail().getProcessUniqueID())) {
             return;
         }
 
         this.publishNotification(
-                VelocityExecutor.getInstance().getMessages().getProcessStopped(),
+                Embedded.getInstance().getIngameMessages().getProcessStopped(),
                 event.getProcessInformation().getProcessDetail().getName()
         );
-        REGISTERED.remove(event.getProcessInformation().getProcessDetail().getProcessUniqueID());
+        this.registered.remove(event.getProcessInformation().getProcessDetail().getProcessUniqueID());
     }
 
     @Listener
-    public void handle(final ProcessUpdatedEvent event) {
-        ProcessInformation old = REGISTERED.put(
+    public void handle(final ProcessUpdateEvent event) {
+        ProcessInformation old = this.registered.put(
                 event.getProcessInformation().getProcessDetail().getProcessUniqueID(),
                 event.getProcessInformation()
         );
         if (old != null) {
             if (!old.getNetworkInfo().isConnected() && event.getProcessInformation().getNetworkInfo().isConnected()) {
                 this.publishNotification(
-                        VelocityExecutor.getInstance().getMessages().getProcessConnected(),
+                        Embedded.getInstance().getIngameMessages().getProcessConnected(),
                         event.getProcessInformation().getProcessDetail().getName()
                 );
             }
@@ -103,13 +92,13 @@ public final class ProcessListener {
         }
 
         this.publishNotification(
-                VelocityExecutor.getInstance().getMessages().getProcessRegistered(),
+                Embedded.getInstance().getIngameMessages().getProcessRegistered(),
                 event.getProcessInformation().getProcessDetail().getName()
         );
     }
 
     private void publishNotification(String message, Object... replacements) {
-        String replacedMessage = VelocityExecutor.getInstance().getMessages().format(message, replacements);
+        String replacedMessage = Embedded.getInstance().getIngameMessages().format(message, replacements);
         this.proxyServer.getAllPlayers()
                 .stream()
                 .filter(e -> e.hasPermission("reformcloud.notify"))

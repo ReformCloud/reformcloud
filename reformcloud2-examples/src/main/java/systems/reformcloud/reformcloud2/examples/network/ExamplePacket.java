@@ -24,14 +24,10 @@
  */
 package systems.reformcloud.reformcloud2.examples.network;
 
-import io.netty.channel.ChannelHandlerContext;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import systems.reformcloud.reformcloud2.executor.api.network.challenge.ChallengeAuthHandler;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.PacketSender;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
-import systems.reformcloud.reformcloud2.executor.api.network.netty.NettyChannelEndpoint;
 import systems.reformcloud.reformcloud2.executor.api.network.packet.Packet;
 
 /**
@@ -58,7 +54,7 @@ public class ExamplePacket extends Packet {
     }
 
     @Override
-    public void handlePacketReceive(@NotNull EndpointChannelReader reader, @NotNull ChallengeAuthHandler authHandler, @NotNull NettyChannelEndpoint parent, @Nullable PacketSender sender, @NotNull ChannelHandlerContext channel) {
+    public void handlePacketReceive(@NotNull EndpointChannelReader reader, @NotNull NetworkChannel channel) {
         System.out.println(this.exampleMessage); // Print out the read message from the read() method
     }
 

@@ -53,6 +53,11 @@ public final class NodeNetworkClient implements NetworkClient {
     }
 
     @Override
+    public boolean connectSync(@NotNull String host, int port, @NotNull Supplier<EndpointChannelReader> supplier) {
+        return this.connect(host, port, supplier);
+    }
+
+    @Override
     public void disconnect() {
         CONNECTIONS.clear();
         CLIENT.disconnect();

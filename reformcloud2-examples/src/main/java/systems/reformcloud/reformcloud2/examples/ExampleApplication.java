@@ -27,6 +27,7 @@ package systems.reformcloud.reformcloud2.examples;
 import systems.reformcloud.reformcloud2.examples.event.ExampleEventListener;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.application.api.Application;
+import systems.reformcloud.reformcloud2.executor.api.event.EventManager;
 
 /**
  * For this example class only the executor-api is required. For a example app.json please look into
@@ -41,6 +42,6 @@ public class ExampleApplication extends Application {
 
     @Override
     public void onEnable() {
-        ExecutorAPI.getInstance().getEventManager().registerListener(new ExampleEventListener()); // Registers a new listener
+        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).registerListener(new ExampleEventListener()); // Registers a new listener
     }
 }

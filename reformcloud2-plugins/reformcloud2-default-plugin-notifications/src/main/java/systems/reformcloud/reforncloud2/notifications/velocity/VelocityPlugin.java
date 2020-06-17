@@ -33,6 +33,7 @@ import com.velocitypowered.api.plugin.Dependency;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.proxy.ProxyServer;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
+import systems.reformcloud.reformcloud2.executor.api.event.EventManager;
 import systems.reformcloud.reforncloud2.notifications.velocity.listener.ProcessListener;
 
 @Plugin(
@@ -54,7 +55,7 @@ public final class VelocityPlugin {
 
     @Subscribe(order = PostOrder.LAST)
     public void handleInit(ProxyInitializeEvent event) {
-        ExecutorAPI.getInstance().getEventManager().registerListener(this.listener);
+        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).registerListener(this.listener);
     }
 
     private final ProcessListener listener;
@@ -63,6 +64,6 @@ public final class VelocityPlugin {
 
     @Subscribe
     public void handle(final ProxyShutdownEvent event) {
-        ExecutorAPI.getInstance().getEventManager().unregisterListener(this.listener);
+        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).unregisterListener(this.listener);
     }
 }
