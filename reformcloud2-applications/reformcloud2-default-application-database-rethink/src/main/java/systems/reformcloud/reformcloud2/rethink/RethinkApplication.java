@@ -22,44 +22,44 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.mysql;
+package systems.reformcloud.reformcloud2.rethink;
 
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.application.api.Application;
 import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.provider.DatabaseProvider;
-import systems.reformcloud.reformcloud2.mysql.config.MySQLDatabaseConfig;
+import systems.reformcloud.reformcloud2.rethink.config.RethinkConfig;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-public class MySQLApplication extends Application {
+public class RethinkApplication extends Application {
 
-    private DatabaseProvider previous;
+    private DatabaseProvider before;
 
     @Override
     public void onLoad() {
-        this.previous = ExecutorAPI.getInstance().getDatabaseProvider();
+        this.before = ExecutorAPI.getInstance().getDatabaseProvider();
         Path configPath = this.getDataFolder().toPath().resolve("config.json");
         if (Files.notExists(configPath)) {
-            new JsonConfiguration().add("config", new MySQLDatabaseConfig("127.0.0.1", 3306, "cloud", "cloud", "")).write(configPath);
+            new JsonConfiguration().add("config", new RethinkConfig("127.0.0.1", 3306, "cloud", "cloud", null)).write(configPath);
         }
 
-        MySQLDatabaseConfig config = JsonConfiguration.read(configPath).get("config", MySQLDatabaseConfig.class);
+        RethinkConfig config = JsonConfiguration.read(configPath).get("config", RethinkConfig.class);
         if (config == null) {
-            System.err.println("Unable to load configuration for mysql module");
+            System.err.println("Unable to load configuration for rethink module");
             return;
         }
 
-        ExecutorAPI.getInstance().getServiceRegistry().setProvider(DatabaseProvider.class, new MySQLDatabaseProvider(config), false, true);
+        ExecutorAPI.getInstance().getServiceRegistry().setProvider(DatabaseProvider.class, new RethinkDatabaseProvider(config), false, true);
     }
 
     @Override
     public void onDisable() {
         DatabaseProvider providerUnchecked = ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(DatabaseProvider.class);
-        if (providerUnchecked instanceof MySQLDatabaseProvider) {
-            ((MySQLDatabaseProvider) providerUnchecked).close();
-            ExecutorAPI.getInstance().getServiceRegistry().setProvider(DatabaseProvider.class, this.previous, false, true);
+        if (providerUnchecked instanceof RethinkDatabaseProvider) {
+            ((RethinkDatabaseProvider) providerUnchecked).close();
+            ExecutorAPI.getInstance().getServiceRegistry().setProvider(DatabaseProvider.class, this.before, false, true);
         }
     }
 }

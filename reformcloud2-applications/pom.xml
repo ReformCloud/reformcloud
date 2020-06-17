@@ -22,6 +22,7 @@
         <module>reformcloud2-default-application-database-mysql</module>
         <module>reformcloud2-default-application-database-file</module>
         <module>reformcloud2-default-application-database-mongo</module>
+        <module>reformcloud2-default-application-database-rethink</module>
     </modules>
 
 </project>
