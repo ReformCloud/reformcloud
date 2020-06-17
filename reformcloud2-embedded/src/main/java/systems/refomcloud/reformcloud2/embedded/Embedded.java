@@ -63,6 +63,9 @@ import systems.reformcloud.reformcloud2.shared.registry.service.DefaultServiceRe
 
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * This class can only get called if the environment is {@link systems.reformcloud.reformcloud2.executor.api.ExecutorType#API}.
@@ -95,11 +98,26 @@ public class Embedded extends ExecutorAPI {
         this.serviceRegistry.setProvider(QueryManager.class, new DefaultQueryManager(), false, true);
 
         this.processInformation = this.config.getProcessInformation();
-        this.networkClient.connectSync(
-                this.config.getConnectionHost(),
-                this.config.getConnectionPort(),
-                () -> new EmbeddedEndpointChannelReader()
-        );
+
+        Lock lock = new ReentrantLock();
+        try {
+            lock.lock();
+            Condition condition = lock.newCondition();
+
+            this.networkClient.connectSync(
+                    this.config.getConnectionHost(),
+                    this.config.getConnectionPort(),
+                    () -> new EmbeddedEndpointChannelReader(lock, condition)
+            );
+
+            try {
+                condition.await();
+            } catch (InterruptedException exception) {
+                throw new RuntimeException(exception);
+            }
+        } finally {
+            lock.unlock();
+        }
 
         this.sendSyncQuery(new ApiToNodeGetIngameMessages()).ifPresent(result -> {
             if (result instanceof ApiToNodeGetIngameMessagesResult) {

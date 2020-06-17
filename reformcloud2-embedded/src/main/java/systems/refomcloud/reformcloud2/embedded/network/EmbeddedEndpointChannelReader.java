@@ -37,13 +37,22 @@ import systems.reformcloud.reformcloud2.executor.api.network.packet.Packet;
 import systems.reformcloud.reformcloud2.protocol.shared.PacketAuthBegin;
 import systems.reformcloud.reformcloud2.protocol.shared.PacketAuthSuccess;
 
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+
 public class EmbeddedEndpointChannelReader extends SharedEndpointChannelReader {
 
-    public EmbeddedEndpointChannelReader() {
+    public EmbeddedEndpointChannelReader(Lock lock, Condition condition) {
         PacketRegister.preAuth();
+
+        this.lock = lock;
+        this.condition = condition;
     }
 
     private boolean wasActive = false;
+
+    private final Lock lock;
+    private final Condition condition;
 
     @Override
     public boolean shouldHandle(@NotNull Packet packet) {
@@ -84,8 +93,15 @@ public class EmbeddedEndpointChannelReader extends SharedEndpointChannelReader {
         if (input.getId() == NetworkUtil.AUTH_BUS_END) {
             if (!(input instanceof PacketAuthSuccess)) {
                 // should never happen
-                super.networkChannel.close();
+                System.exit(-1);
                 return;
+            }
+
+            try {
+                this.lock.lock();
+                this.condition.signalAll();
+            } finally {
+                this.lock.unlock();
             }
 
             super.networkChannel.setName("Controller");
