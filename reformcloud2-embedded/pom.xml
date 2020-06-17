@@ -105,4 +105,8 @@
             <scope>provided</scope>
         </dependency>
     </dependencies>
+
+    <build>
+        <finalName>embedded</finalName>
+    </build>
 </project>

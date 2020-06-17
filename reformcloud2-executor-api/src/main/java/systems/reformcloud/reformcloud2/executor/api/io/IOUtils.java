@@ -138,6 +138,15 @@ public final class IOUtils {
         }
     }
 
+    public static void doOverrideInternalCopy(ClassLoader classLoader, String file, String target) {
+        deleteFile(Paths.get(target));
+        try (InputStream inputStream = classLoader.getResourceAsStream(file)) {
+            doCopy(inputStream, Paths.get(target));
+        } catch (final IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+
     public static void copyDirectory(Path path, Path target) {
         copyDirectory(path, target, new ArrayList<>());
     }
