@@ -90,6 +90,11 @@ public enum ConsoleColour {
     }
 
     @NotNull
+    public static String stripColor(char altColorChar, @NotNull String input) {
+        return stripColor(toColouredString(altColorChar, input));
+    }
+
+    @NotNull
     public static String toColouredString(char altColorChar, @NotNull String textToTranslate) {
         char[] b = textToTranslate.toCharArray();
         for (int i = 0; i < b.length - 1; i++) {

@@ -52,7 +52,7 @@ public class DefaultFormatter extends Formatter {
         stringBuilder.append(" [");
         this.appendLevel(stringBuilder, record.getLevel());
         stringBuilder.append("] ");
-        stringBuilder.append(super.formatMessage(record));
+        stringBuilder.append(ConsoleColour.stripColor('&', super.formatMessage(record)));
         stringBuilder.append('\n');
 
         if (record.getThrown() != null) {
