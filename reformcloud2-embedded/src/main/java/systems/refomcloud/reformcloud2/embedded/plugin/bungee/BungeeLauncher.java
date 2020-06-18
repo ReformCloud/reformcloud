@@ -31,7 +31,7 @@ import systems.reformcloud.reformcloud2.executor.api.language.loading.LanguageLo
 public final class BungeeLauncher extends Plugin {
 
     @Override
-    public void onLoad() {
+    public void onEnable() {
         LanguageLoader.doLoad();
         new BungeeExecutor(this);
     }

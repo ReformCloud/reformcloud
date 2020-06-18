@@ -142,6 +142,10 @@ public final class EnvironmentBuilder {
                 properties.setProperty("server-port", Integer.toString(runningProcess.getProcessInformation().getNetworkInfo().getPort()));
                 properties.setProperty("xbox-auth", Boolean.toString(false));
 
+                if (runningProcess.getProcessInformation().getProcessDetail().getMaxPlayers() >= 0) {
+                    properties.setProperty("max-players", Integer.toString(runningProcess.getProcessInformation().getProcessDetail().getMaxPlayers()));
+                }
+
                 try (OutputStream outputStream = Files.newOutputStream(Paths.get(runningProcess.getPath() + "/server.properties"))) {
                     properties.store(outputStream, "ReformCloud2 node edit");
                 }
@@ -161,6 +165,10 @@ public final class EnvironmentBuilder {
                 properties.setProperty("server-ip", runningProcess.getProcessInformation().getNetworkInfo().getHost());
                 properties.setProperty("server-port", Integer.toString(runningProcess.getProcessInformation().getNetworkInfo().getPort()));
                 properties.setProperty("online-mode", Boolean.toString(false));
+
+                if (runningProcess.getProcessInformation().getProcessDetail().getMaxPlayers() >= 0) {
+                    properties.setProperty("max-players", Integer.toString(runningProcess.getProcessInformation().getProcessDetail().getMaxPlayers()));
+                }
 
                 try (OutputStream outputStream = Files.newOutputStream(Paths.get(runningProcess.getPath() + "/server.properties"))) {
                     properties.store(outputStream, "ReformCloud2 node edit");
@@ -260,6 +268,8 @@ public final class EnvironmentBuilder {
                 s = "ip_forward: true";
             } else if (s.startsWith("- query_port: ")) {
                 s = "- query_port: " + runningProcess.getProcessInformation().getNetworkInfo().getPort();
+            } else if (s.startsWith("  max_players: ") && runningProcess.getProcessInformation().getProcessDetail().getMaxPlayers() >= 0) {
+                s = "  max_players: " + runningProcess.getProcessInformation().getProcessDetail().getMaxPlayers();
             }
 
             return s;
@@ -285,6 +295,8 @@ public final class EnvironmentBuilder {
                 s = "  raknet: " + runningProcess.getProcessInformation().getProcessDetail().getTemplate().getVersion().equals(Version.WATERDOG_PE);
             } else if (s.startsWith("- query_port:")) {
                 s = "- query_port: " + runningProcess.getProcessInformation().getNetworkInfo().getPort();
+            } else if (s.startsWith("  max_players: ") && runningProcess.getProcessInformation().getProcessDetail().getMaxPlayers() >= 0) {
+                s = "  max_players: " + runningProcess.getProcessInformation().getProcessDetail().getMaxPlayers();
             }
 
             return s;
@@ -297,7 +309,7 @@ public final class EnvironmentBuilder {
         rewriteFile(file, s -> {
             if (s.startsWith("bind")) {
                 s = "bind = \"" + runningProcess.getProcessInformation().getNetworkInfo().getHost() + ":" + runningProcess.getProcessInformation().getNetworkInfo().getPort() + "\"";
-            } else if (s.startsWith("show-max-players") && runningProcess.getProcessInformation().getProcessGroup().getPlayerAccessConfiguration().isUseCloudPlayerLimit()) {
+            } else if (s.startsWith("show-max-players") && runningProcess.getProcessInformation().getProcessDetail().getMaxPlayers() >= 0) {
                 s = "show-max-players = " + runningProcess.getProcessInformation().getProcessDetail().getMaxPlayers();
             } else if (s.startsWith("player-info-forwarding-mode")) {
                 s = "player-info-forwarding-mode = \"LEGACY\"";
@@ -315,20 +327,16 @@ public final class EnvironmentBuilder {
 
     private static void rewriteGlowstoneConfig(@NotNull DefaultNodeLocalProcessWrapper runningProcess) {
         rewriteFile(new File(runningProcess.getPath() + "/config/glowstone.yml"), s -> {
-            if (s.trim().startsWith("ip:")) {
+            if (s.startsWith("  ip: ")) {
                 s = "  ip: '" + runningProcess.getProcessInformation().getNetworkInfo().getHost() + "'";
-            }
-
-            if (s.trim().startsWith("port:")) {
+            } else if (s.startsWith("  port: ")) {
                 s = "  port: " + runningProcess.getProcessInformation().getNetworkInfo().getPort();
-            }
-
-            if (s.trim().startsWith("online-mode:")) {
+            } else if (s.startsWith("  online-mode: ")) {
                 s = "  online-mode: false";
-            }
-
-            if (s.trim().startsWith("advanced.proxy-support:")) {
-                s = "  online-mode: false";
+            } else if (s.startsWith("  proxy-support: ")) {
+                s = "  proxy-support: true";
+            } else if (s.startsWith("  max-players: ") && runningProcess.getProcessInformation().getProcessDetail().getMaxPlayers() >= 0) {
+                s = "  max-players: " + runningProcess.getProcessInformation().getProcessDetail().getMaxPlayers();
             }
 
             return s;

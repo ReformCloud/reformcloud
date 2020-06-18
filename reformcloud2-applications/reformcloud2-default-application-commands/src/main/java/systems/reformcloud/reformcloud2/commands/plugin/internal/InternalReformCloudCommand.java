@@ -56,9 +56,9 @@ public final class InternalReformCloudCommand {
                     .onComplete(processes -> {
                         for (ProcessInformation process : processes) {
                             String state = "§coffline";
-                            if (process.getProcessDetail().getProcessState().isValid() && !process.getNetworkInfo().isConnected()) {
+                            if (process.getProcessDetail().getProcessState().isStartedOrOnline() && !process.getNetworkInfo().isConnected()) {
                                 state = "§econnecting";
-                            } else if (process.getProcessDetail().getProcessState().isReady()) {
+                            } else if (process.getProcessDetail().getProcessState().isOnline()) {
                                 state = "§aonline";
                             }
 

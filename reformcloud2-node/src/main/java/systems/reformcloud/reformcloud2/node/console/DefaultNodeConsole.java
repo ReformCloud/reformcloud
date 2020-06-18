@@ -26,14 +26,13 @@ package systems.reformcloud.reformcloud2.node.console;
 
 import org.fusesource.jansi.AnsiConsole;
 import org.jetbrains.annotations.NotNull;
-import org.jline.reader.EndOfFileException;
 import org.jline.reader.LineReader;
 import org.jline.reader.LineReaderBuilder;
-import org.jline.reader.UserInterruptException;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
 import org.jline.utils.InfoCmp;
 import systems.reformcloud.reformcloud2.executor.api.console.Console;
+import systems.reformcloud.reformcloud2.executor.api.task.Task;
 import systems.reformcloud.reformcloud2.node.logger.ConsoleColour;
 
 import java.io.IOException;
@@ -55,7 +54,7 @@ public class DefaultNodeConsole implements Console {
         System.setProperty("library.jansi.version", "ReformCloud");
         AnsiConsole.systemInstall();
 
-        this.prompt = ConsoleColour.translateAlternateColorCodes('&', this.prompt);
+        this.prompt = ConsoleColour.toColouredString('&', this.prompt);
         this.prompt = MessageFormat.format(this.prompt, USER, VERSION);
 
         try {
@@ -75,15 +74,8 @@ public class DefaultNodeConsole implements Console {
 
     @NotNull
     @Override
-    public String readString() {
-        try {
-            return this.lineReader.readLine(this.prompt);
-        } catch (EndOfFileException ignored) {
-        } catch (UserInterruptException exception) {
-            System.exit(-1);
-        }
-
-        return "";
+    public Task<String> readString() {
+        return this.consoleReadThread.getCurrentTask();
     }
 
     @NotNull
@@ -94,7 +86,7 @@ public class DefaultNodeConsole implements Console {
 
     @Override
     public void setPrompt(@NotNull String prompt) {
-        this.prompt = ConsoleColour.translateAlternateColorCodes('&', prompt);
+        this.prompt = ConsoleColour.toColouredString('&', prompt);
     }
 
     @Override

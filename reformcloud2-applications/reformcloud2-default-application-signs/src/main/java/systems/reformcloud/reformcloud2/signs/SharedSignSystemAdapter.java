@@ -301,7 +301,7 @@ public abstract class SharedSignSystemAdapter<T> implements SignSystemAdapter<T>
                 continue;
             }
 
-            if (!sign.getCurrentTarget().getProcessDetail().getProcessState().isReady()) {
+            if (!sign.getCurrentTarget().getProcessDetail().getProcessState().isOnline()) {
                 this.setLines(sign, searching);
                 continue;
             }

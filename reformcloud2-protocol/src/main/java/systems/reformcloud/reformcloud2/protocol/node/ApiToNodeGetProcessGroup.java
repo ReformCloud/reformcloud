@@ -37,6 +37,9 @@ import java.util.Optional;
 
 public class ApiToNodeGetProcessGroup extends ProtocolPacket {
 
+    public ApiToNodeGetProcessGroup() {
+    }
+
     public ApiToNodeGetProcessGroup(String name) {
         this.name = name;
     }

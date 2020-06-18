@@ -38,6 +38,7 @@ public final class DefaultNetworkChannel implements NetworkChannel {
 
     DefaultNetworkChannel(Channel channel) {
         this.channel = channel;
+        this.address = (InetSocketAddress) channel.remoteAddress();
     }
 
     private final Channel channel;

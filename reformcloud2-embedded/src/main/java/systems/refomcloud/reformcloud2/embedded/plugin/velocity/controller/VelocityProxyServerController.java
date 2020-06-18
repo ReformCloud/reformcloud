@@ -71,13 +71,18 @@ public class VelocityProxyServerController implements ProxyServerController {
 
     @Override
     public void handleProcessUpdate(@NotNull ProcessInformation processInformation) {
-        if (!processInformation.getProcessDetail().getTemplate().isServer()) {
+        if (!processInformation.getNetworkInfo().isConnected()) {
             this.cachedProxies.removeIf(e -> e.getProcessDetail().getProcessUniqueID().equals(processInformation.getProcessDetail().getProcessUniqueID()));
-            this.cachedProxies.add(processInformation);
+            this.cachedLobbies.removeIf(e -> e.getProcessDetail().getProcessUniqueID().equals(processInformation.getProcessDetail().getProcessUniqueID()));
+            this.proxyServer.getServer(processInformation.getProcessDetail().getName())
+                    .map(RegisteredServer::getServerInfo)
+                    .ifPresent(this.proxyServer::unregisterServer);
             return;
         }
 
-        if (!processInformation.getNetworkInfo().isConnected()) {
+        if (!processInformation.getProcessDetail().getTemplate().isServer()) {
+            this.cachedProxies.removeIf(e -> e.getProcessDetail().getProcessUniqueID().equals(processInformation.getProcessDetail().getProcessUniqueID()));
+            this.cachedProxies.add(processInformation);
             return;
         }
 

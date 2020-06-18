@@ -35,9 +35,9 @@ public abstract class DependencyLoader {
     /**
      * Loads all default dependencies
      */
-    public static void doLoad() {
+    public static void doLoad(@NotNull ClassLoader classLoader) {
         DependencyLoader dependencyLoader = new DefaultDependencyLoader();
-        dependencyLoader.loadDependencies();
+        dependencyLoader.loadDependencies(classLoader);
         dependencyLoader.addDependencies();
     }
 
@@ -54,7 +54,7 @@ public abstract class DependencyLoader {
     /**
      * Loads all dependencies
      */
-    public abstract void loadDependencies();
+    public abstract void loadDependencies(@NotNull ClassLoader classLoader);
 
     /**
      * Adds all dependencies to the class loader search

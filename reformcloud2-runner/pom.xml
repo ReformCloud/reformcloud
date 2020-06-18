@@ -77,9 +77,9 @@
                         <!-- Copies the final executor file to the resource directory -->
                         <configuration>
                             <failOnError>false</failOnError>
-                            <target name="copy executor">
+                            <target name="copy node">
                                 <copy
-                                        file="${basedir}/../reformcloud2-executor/target/executor.jar"
+                                        file="${basedir}/../reformcloud2-node/target/executor.jar"
                                         tofile="${basedir}/src/main/resources/files/executor.jar"
                                 />
                             </target>

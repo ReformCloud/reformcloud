@@ -26,7 +26,6 @@ package systems.reformcloud.reformcloud2.executor.api.network.channel.shared;
 
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
 import systems.reformcloud.reformcloud2.executor.api.network.packet.Packet;
@@ -54,21 +53,19 @@ public abstract class SharedEndpointChannelReader implements EndpointChannelRead
 
     @Override
     public void read(@NotNull Packet input) {
-        NetworkUtil.EXECUTOR.execute(() -> {
-            if (input.getQueryUniqueID() != null) {
-                Optional<Task<Packet>> waitingQuery = ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(QueryManager.class).getWaitingQuery(input.getQueryUniqueID());
-                if (waitingQuery.isPresent()) {
-                    waitingQuery.get().complete(input);
-                    return;
-                }
+        if (input.getQueryUniqueID() != null) {
+            Optional<Task<Packet>> waitingQuery = ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(QueryManager.class).getWaitingQuery(input.getQueryUniqueID());
+            if (waitingQuery.isPresent()) {
+                waitingQuery.get().complete(input);
+                return;
             }
+        }
 
-            try {
-                input.handlePacketReceive(this, this.networkChannel);
-            } catch (final Throwable throwable) {
-                System.err.println("Error while handling packet " + input.getId() + "@" + input.getClass().getName());
-                throwable.printStackTrace();
-            }
-        });
+        try {
+            input.handlePacketReceive(this, this.networkChannel);
+        } catch (final Throwable throwable) {
+            System.err.println("Error while handling packet " + input.getId() + "@" + input.getClass().getName());
+            throwable.printStackTrace();
+        }
     }
 }

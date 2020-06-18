@@ -25,6 +25,7 @@
 package systems.reformcloud.reformcloud2.executor.api.network.netty.frame;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
 import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
@@ -35,33 +36,41 @@ public class VarInt21FrameDecoder extends ByteToMessageDecoder {
 
     @Override
     protected void decode(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf, List<Object> list) {
-        if (!byteBuf.isReadable()) {
-            return;
-        }
-
-        int readerIndex = byteBuf.readerIndex();
-        for (int i = 0; i < 5; i++) {
+        try {
             if (!byteBuf.isReadable()) {
-                byteBuf.readerIndex(readerIndex);
                 return;
             }
 
-            byte read = byteBuf.readByte();
-            if (read >= 0) {
-                byteBuf.readerIndex(readerIndex);
-                int packetLength = NetworkUtil.readVarInt(byteBuf);
-                if (packetLength == 0) {
-                    return;
-                }
+            int readerIndex = byteBuf.readerIndex();
+            byte[] bytes = new byte[5];
 
-                if (byteBuf.readableBytes() < packetLength) {
+            for (int i = 0; i < 5; i++) {
+                if (!byteBuf.isReadable()) {
                     byteBuf.readerIndex(readerIndex);
                     return;
                 }
 
-                list.add(byteBuf.readRetainedSlice(packetLength));
-                return;
+                bytes[i] = byteBuf.readByte();
+                if (bytes[i] >= 0) {
+                    ByteBuf buf = Unpooled.wrappedBuffer(bytes);
+
+                    try {
+                        int length = NetworkUtil.readVarInt(buf);
+                        if (byteBuf.readableBytes() < length) {
+                            byteBuf.readerIndex(readerIndex);
+                            return;
+                        }
+
+                        list.add(byteBuf.readBytes(length));
+                    } finally {
+                        buf.release();
+                    }
+
+                    return;
+                }
             }
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
         }
     }
 }

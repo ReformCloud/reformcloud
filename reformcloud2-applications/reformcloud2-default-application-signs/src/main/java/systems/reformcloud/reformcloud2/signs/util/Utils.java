@@ -56,7 +56,7 @@ public final class Utils {
         }
 
         ProcessState state = target.getProcessDetail().getProcessState();
-        if (canConnect && (!state.isReady() || state.equals(ProcessState.INVISIBLE))) {
+        if (canConnect && (!state.isOnline() || state.equals(ProcessState.INVISIBLE))) {
             canConnect = permissionChecker.apply(target.getProcessGroup().getPlayerAccessConfiguration().getFullJoinPermission());
         }
 

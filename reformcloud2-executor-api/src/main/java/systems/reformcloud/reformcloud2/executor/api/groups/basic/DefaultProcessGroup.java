@@ -74,7 +74,7 @@ public final class DefaultProcessGroup extends ProcessGroup {
                         "default",
                         false,
                         FileTemplateBackend.NAME,
-                        "#",
+                        "-",
                         new RuntimeConfiguration(
                                 maxMemory,
                                 Collections.emptyList(),
@@ -113,7 +113,7 @@ public final class DefaultProcessGroup extends ProcessGroup {
                         "default",
                         false,
                         FileTemplateBackend.NAME,
-                        "#",
+                        "-",
                         new RuntimeConfiguration(
                                 maxMemory,
                                 Collections.emptyList(),
@@ -155,7 +155,7 @@ public final class DefaultProcessGroup extends ProcessGroup {
                         "default",
                         false,
                         FileTemplateBackend.NAME,
-                        "#",
+                        "-",
                         new RuntimeConfiguration(
                                 maxMemory,
                                 Collections.emptyList(),

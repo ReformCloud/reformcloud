@@ -34,6 +34,9 @@ import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
 
 public class PacketChannelMessage extends ProtocolPacket {
 
+    public PacketChannelMessage() {
+    }
+
     public PacketChannelMessage(@NotNull String channel, @NotNull JsonConfiguration data) {
         this.channel = channel;
         this.data = data;

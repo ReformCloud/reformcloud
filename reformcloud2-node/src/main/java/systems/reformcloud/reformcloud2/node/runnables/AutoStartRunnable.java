@@ -52,7 +52,7 @@ public class AutoStartRunnable implements Runnable {
             }
 
             Collection<ProcessInformation> processes = ExecutorAPI.getInstance().getProcessProvider().getProcessesByProcessGroup(processGroup.getName());
-            int runningProcesses = Streams.allOf(processes, e -> e.getProcessDetail().getProcessState().isValid()).size();
+            int runningProcesses = Streams.allOf(processes, e -> e.getProcessDetail().getProcessState().isStartedOrOnline()).size();
 
             if (processGroup.getStartupConfiguration().getMinOnlineProcesses() > runningProcesses
                     && (processGroup.getStartupConfiguration().getMaxOnlineProcesses() == -1
@@ -78,11 +78,7 @@ public class AutoStartRunnable implements Runnable {
                 ExecutorAPI.getInstance().getProcessProvider().createProcess()
                         .group(processGroup)
                         .prepare()
-                        .thenAccept(process -> {
-                            if (process != null) {
-                                process.setRuntimeState(ProcessState.STARTED);
-                            }
-                        });
+                        .thenAccept(process -> process.setRuntimeState(ProcessState.STARTED));
             }
         } else {
             ExecutorAPI.getInstance().getProcessProvider().createProcess()

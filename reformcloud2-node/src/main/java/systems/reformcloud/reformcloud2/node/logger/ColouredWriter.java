@@ -56,9 +56,7 @@ public class ColouredWriter extends Handler {
     }
 
     private void publish(@NotNull String record) {
-        for (ConsoleColour value : ConsoleColour.values()) {
-            record = value.getPattern().matcher(record).replaceAll(value.getAnsi());
-        }
+        record = ConsoleColour.toColouredString('&', record);
 
         this.lineReader.getTerminal().puts(InfoCmp.Capability.carriage_return);
         this.lineReader.getTerminal().puts(InfoCmp.Capability.clr_eol);

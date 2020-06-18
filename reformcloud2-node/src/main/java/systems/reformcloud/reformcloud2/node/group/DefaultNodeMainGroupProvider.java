@@ -97,7 +97,7 @@ public class DefaultNodeMainGroupProvider implements MainGroupProvider {
 
     public void addGroup(@NotNull MainGroup mainGroup) {
         this.addGroup0(mainGroup);
-        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ClusterManager.class).publishMainGroupCreate(mainGroup);
+        ExecutorAPI.getInstance().getServiceRegistry().getProvider(ClusterManager.class).ifPresent(e -> e.publishMainGroupCreate(mainGroup));
     }
 
     public void addGroup0(@NotNull MainGroup mainGroup) {

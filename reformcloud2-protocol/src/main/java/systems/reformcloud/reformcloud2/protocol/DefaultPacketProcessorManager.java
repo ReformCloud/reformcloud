@@ -35,13 +35,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public final class DefaultPacketProcessorManager extends PacketProcessorManager {
 
-    static {
-        PacketProcessorManager.setInstance(new DefaultPacketProcessorManager());
-    }
-
-    private DefaultPacketProcessorManager() {
-    }
-
     private final Map<Class<? extends Packet>, PacketProcessor<? extends Packet>> processors = new ConcurrentHashMap<>();
 
     @Override

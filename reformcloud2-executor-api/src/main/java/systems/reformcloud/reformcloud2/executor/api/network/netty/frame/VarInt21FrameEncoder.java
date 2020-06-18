@@ -25,27 +25,36 @@
 package systems.reformcloud.reformcloud2.executor.api.network.netty.frame;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.MessageToMessageEncoder;
+import io.netty.handler.codec.MessageToByteEncoder;
 import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
 
-import java.util.List;
-
-@ChannelHandler.Sharable
-public final class VarInt21FrameEncoder extends MessageToMessageEncoder<ByteBuf> {
-
-    public static final VarInt21FrameEncoder INSTANCE = new VarInt21FrameEncoder();
-
-    private VarInt21FrameEncoder() {
-    }
+public class VarInt21FrameEncoder extends MessageToByteEncoder<ByteBuf> {
 
     @Override
-    protected void encode(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf, List<Object> list) {
-        ByteBuf buf = channelHandlerContext.alloc().buffer(5);
-        NetworkUtil.writeVarInt(buf, byteBuf.readableBytes());
+    protected void encode(ChannelHandlerContext ctx, ByteBuf msg, ByteBuf out) {
+        try {
+            int readable = msg.readableBytes();
 
-        list.add(buf);
-        list.add(byteBuf.retain());
+            out.ensureWritable(readable + this.getVarIntSize(readable));
+            NetworkUtil.writeVarInt(out, readable);
+            out.writeBytes(msg, msg.readerIndex(), readable);
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
+        }
+    }
+
+    private int getVarIntSize(int value) {
+        if ((value & 0xffffff80) == 0) {
+            return 1;
+        } else if ((value & 0xffffc000) == 0) {
+            return 2;
+        } else if ((value & 0xffe00000) == 0) {
+            return 3;
+        } else if ((value & 0xf0000000) == 0) {
+            return 4;
+        } else {
+            return 5;
+        }
     }
 }

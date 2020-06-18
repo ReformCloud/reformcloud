@@ -35,7 +35,9 @@ import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChan
 import systems.reformcloud.reformcloud2.executor.api.network.channel.manager.ChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.api.network.packet.query.QueryManager;
+import systems.reformcloud.reformcloud2.executor.api.process.Player;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
+import systems.reformcloud.reformcloud2.executor.api.process.ProcessRuntimeInformation;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessState;
 import systems.reformcloud.reformcloud2.executor.api.process.api.ProcessInclusion;
 import systems.reformcloud.reformcloud2.executor.api.utility.StringUtil;
@@ -137,7 +139,7 @@ public class DefaultNodeLocalProcessWrapper extends DefaultNodeRemoteProcessWrap
     @Override
     public void setRuntimeState(@NotNull ProcessState state) {
         if (state.isRuntimeState() && this.runtimeState != state) {
-            if (this.callRuntimeStateUpdate()) {
+            if (this.callRuntimeStateUpdate(state)) {
                 this.runtimeState = state;
             } else {
                 return;
@@ -155,11 +157,11 @@ public class DefaultNodeLocalProcessWrapper extends DefaultNodeRemoteProcessWrap
         );
     }
 
-    private boolean callRuntimeStateUpdate() {
+    private boolean callRuntimeStateUpdate(@NotNull ProcessState runtimeState) {
         try {
             this.lock.lock();
 
-            switch (this.runtimeState) {
+            switch (runtimeState) {
                 case STARTED:
                     return this.start();
                 case RESTARTING:
@@ -240,7 +242,10 @@ public class DefaultNodeLocalProcessWrapper extends DefaultNodeRemoteProcessWrap
     }
 
     private void stop(boolean finalStop) {
-        JavaProcessHelper.shutdown(this.process, true, true, TimeUnit.SECONDS.toDays(5), this.getShutdownCommands());
+        if (this.isStarted() && this.isAlive()) {
+            JavaProcessHelper.shutdown(this.process, true, true, TimeUnit.SECONDS.toMillis(5), this.getShutdownCommands());
+        }
+
         this.process = null;
 
         if (finalStop) {
@@ -261,6 +266,14 @@ public class DefaultNodeLocalProcessWrapper extends DefaultNodeRemoteProcessWrap
             ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ClusterManager.class).handleProcessUnregister(
                     this.processInformation.getProcessDetail().getName()
             );
+        } else {
+            this.processInformation.getNetworkInfo().setConnected(false);
+            for (Player onlinePlayer : this.processInformation.getProcessPlayerManager().getOnlinePlayers()) {
+                this.processInformation.getProcessPlayerManager().onLogout(onlinePlayer.getUniqueID());
+            }
+
+            this.processInformation.getProcessDetail().setProcessRuntimeInformation(ProcessRuntimeInformation.empty());
+            ExecutorAPI.getInstance().getProcessProvider().updateProcessInformation(this.processInformation);
         }
 
         NodeExecutor.getInstance().getCurrentNodeInformation().removeUsedMemory(this.processInformation.getProcessDetail().getMaxMemory());
@@ -280,11 +293,7 @@ public class DefaultNodeLocalProcessWrapper extends DefaultNodeRemoteProcessWrap
     }
 
     public boolean isAlive() {
-        try {
-            return this.process != null && this.process.getInputStream().available() != -1 && this.process.isAlive();
-        } catch (final IOException ex) {
-            return false;
-        }
+        return this.process != null && this.process.isAlive();
     }
 
     public boolean isStarted() {

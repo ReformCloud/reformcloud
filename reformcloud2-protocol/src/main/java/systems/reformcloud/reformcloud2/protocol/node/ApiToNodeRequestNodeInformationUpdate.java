@@ -38,6 +38,9 @@ import java.util.UUID;
 
 public class ApiToNodeRequestNodeInformationUpdate extends ProtocolPacket {
 
+    public ApiToNodeRequestNodeInformationUpdate() {
+    }
+
     public ApiToNodeRequestNodeInformationUpdate(UUID nodeUniqueId) {
         this.nodeUniqueId = nodeUniqueId;
     }

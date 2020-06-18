@@ -68,6 +68,11 @@ public final class VelocityExecutor extends Embedded {
         return instance;
     }
 
+    @Override
+    protected int getMaxPlayersOfEnvironment() {
+        return this.proxyServer.getConfiguration().getShowMaxPlayers();
+    }
+
     @NotNull
     public VelocityLauncher getPlugin() {
         return this.plugin;

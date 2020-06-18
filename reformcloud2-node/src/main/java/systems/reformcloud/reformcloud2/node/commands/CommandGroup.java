@@ -664,7 +664,7 @@ public final class CommandGroup implements Command {
                 continue;
             }
 
-            newTemplates.add(new Template(0, templateConfig[0], false, backend.get().getName(), "#", new RuntimeConfiguration(
+            newTemplates.add(new Template(0, templateConfig[0], false, backend.get().getName(), "-", new RuntimeConfiguration(
                     version.isServer() ? 512 : 256, new ArrayList<>(), new HashMap<>()
             ), version, new ArrayList<>(), new ArrayList<>(Collections.singletonList(version.isServer() ? SERVER_INCLUSION : PROXY_INCLUSION))));
         }

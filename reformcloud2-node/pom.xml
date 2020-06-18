@@ -11,6 +11,13 @@
 
     <artifactId>reformcloud2-node</artifactId>
 
+    <pluginRepositories>
+        <pluginRepository>
+            <id>reformcloud-central</id>
+            <url>https://repo.reformcloud.systems/</url>
+        </pluginRepository>
+    </pluginRepositories>
+
     <dependencies>
         <!-- default api for all methods -->
         <dependency>
@@ -80,7 +87,9 @@
                         <configuration>
                             <filters>
                                 <filter>
-                                    <artifact>systems.reformcloud.reformcloud2:reformcloud-protocol</artifact>
+                                    <artifact>
+                                        systems.reformcloud.reformcloud2:reformcloud-protocol
+                                    </artifact>
                                     <excludes>
                                         <exclude>META-INF/*.MF</exclude>
                                     </excludes>
@@ -126,6 +135,41 @@
                         </manifestEntries>
                     </archive>
                 </configuration>
+            </plugin>
+
+            <!-- https://github.com/derklaro/maven-dependency-list-plugin -->
+            <plugin>
+                <groupId>de.derklaro</groupId>
+                <artifactId>dependency-list-maven-plugin</artifactId>
+                <version>1.2</version>
+                <configuration>
+                    <excludedScopes>
+                        <excludedScope>test</excludedScope>
+                        <excludedScope>compile</excludedScope>
+                    </excludedScopes>
+
+                    <excludes>
+                        <exclude>*:annotations-java5</exclude>
+                        <exclude>*:slf4j-api</exclude>
+                    </excludes>
+
+                    <outputFileName>
+                        reformcloud2-node/src/main/resources/internal/dependencies.txt
+                    </outputFileName>
+
+                    <overrideExistingFile>true</overrideExistingFile>
+                    <resolveDependenciesOfDependencies>true</resolveDependenciesOfDependencies>
+                    <includeOptionalDependencies>false</includeOptionalDependencies>
+                    <createParentFiles>true</createParentFiles>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>dependency-list</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
 
             <!-- maven antrun plugin (central) -->

@@ -22,33 +22,28 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.protocol.processor;
+package systems.reformcloud.reformcloud2.node.commands;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.network.packet.Packet;
-import systems.reformcloud.reformcloud2.protocol.DefaultPacketProcessorManager;
+import systems.reformcloud.reformcloud2.executor.api.command.Command;
+import systems.reformcloud.reformcloud2.executor.api.command.CommandSender;
+import systems.reformcloud.reformcloud2.node.NodeExecutor;
+import systems.reformcloud.reformcloud2.node.tick.TickAverageCounter;
 
-import java.util.Optional;
+public final class CommandTicksPerSecond implements Command {
 
-public abstract class PacketProcessorManager {
+    @Override
+    public void process(@NotNull CommandSender sender, String[] strings, @NotNull String commandLine) {
+        TickAverageCounter one = NodeExecutor.getInstance().getCloudTickWorker().getTps1();
+        TickAverageCounter five = NodeExecutor.getInstance().getCloudTickWorker().getTps5();
+        TickAverageCounter fifteen = NodeExecutor.getInstance().getCloudTickWorker().getTps15();
 
-    private static PacketProcessorManager instance;
-
-    public static PacketProcessorManager getInstance() {
-        if (instance == null) {
-            instance = new DefaultPacketProcessorManager();
-        }
-
-        return instance;
-    }
-
-    public static void setInstance(PacketProcessorManager instance) {
-        PacketProcessorManager.instance = instance;
+        sender.sendMessage("TPS from last 1m, 5m, 15m: "
+                + format(one.getAverage()) + ", " + format(five.getAverage()) + ", " + format(fifteen.getAverage()));
     }
 
     @NotNull
-    public abstract <T extends Packet> PacketProcessorManager registerProcessor(@NotNull PacketProcessor<T> packetProcessor, @NotNull Class<T> packetClass);
-
-    @NotNull
-    public abstract <T extends Packet> Optional<PacketProcessor<T>> getPacketProcessor(@NotNull Class<T> packetClass);
+    private static String format(double tps) {
+        return ((tps > 18.0) ? "&a" : (tps > 16.0) ? "&e" : "&c") + ((tps > 20.0) ? "*" : "") + Math.min(Math.round(tps * 100.0) / 100.0, 20.0);
+    }
 }

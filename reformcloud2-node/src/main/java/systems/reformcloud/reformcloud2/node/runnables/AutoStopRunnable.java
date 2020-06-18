@@ -53,7 +53,7 @@ public class AutoStopRunnable implements Runnable {
                 int maxPlayers = this.getMaxPlayerSum(processes);
 
                 if (maxPlayers > 0 && onlinePlayers > 0 && ((onlinePlayers * 100) / maxPlayers) > configuration.getMaxPercentOfPlayers()) {
-                    int onlineProcesses = Streams.allOf(processes, e -> e.getProcessDetail().getProcessState().isValid()).size();
+                    int onlineProcesses = Streams.allOf(processes, e -> e.getProcessDetail().getProcessState().isStartedOrOnline()).size();
                     if (processGroup.getStartupConfiguration().getMaxOnlineProcesses() == -1
                             || processGroup.getStartupConfiguration().getMaxOnlineProcesses() > onlineProcesses) {
                         AutoStartRunnable.startPreparedOfGroup(processes, processGroup);

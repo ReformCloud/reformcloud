@@ -89,6 +89,7 @@ public class NodeServerEndpointChannelReader extends SharedEndpointChannelReader
             this.type = packet.getType();
 
             if (packet.getType() == 1) {
+                NodeNetworkClient.CONNECTIONS.remove(super.networkChannel.getAddress());
                 NodeInformation nodeInformation = packet.getData().get("node", NodeInformation.TYPE);
                 if (nodeInformation == null) {
                     // invalid type to id

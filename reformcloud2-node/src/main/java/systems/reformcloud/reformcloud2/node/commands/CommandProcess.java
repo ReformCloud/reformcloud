@@ -103,7 +103,7 @@ public final class CommandProcess implements Command {
         }
 
         if (strings.length == 2 && strings[1].equalsIgnoreCase("screen")) {
-            if (!target.getProcessDetail().getProcessState().isValid()) {
+            if (!target.getProcessDetail().getProcessState().isStartedOrOnline()) {
                 commandSource.sendMessage(LanguageManager.get("command-process-screen-process-not-started", strings[0]));
                 return;
             }
@@ -251,7 +251,7 @@ public final class CommandProcess implements Command {
         builder.append(" > Template     - ").append(information.getProcessDetail().getTemplate().getName()).append("/")
                 .append(information.getProcessDetail().getTemplate().getBackend()).append("\n");
         builder.append("\n");
-        builder.append(" > Ready        - ").append(information.getProcessDetail().getProcessState().isReady() ? "&ayes&r" : "&cno&r").append("\n");
+        builder.append(" > Ready        - ").append(information.getProcessDetail().getProcessState().isOnline() ? "&ayes&r" : "&cno&r").append("\n");
         builder.append(" > State        - ").append(information.getProcessDetail().getProcessState().name()).append("\n");
         builder.append(" > Connected    - ").append(information.getNetworkInfo().isConnected() ? "&ayes&r" : "&cno&r").append("\n");
         builder.append(" > Address      - ").append(information.getNetworkInfo().getHost())

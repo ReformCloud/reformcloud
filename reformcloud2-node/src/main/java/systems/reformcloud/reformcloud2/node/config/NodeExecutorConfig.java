@@ -174,12 +174,12 @@ public final class NodeExecutorConfig {
             System.out.println(LanguageManager.get("general-setup-choose-default-installation"));
             GroupSetupHelper.printAvailable();
 
-            String result = NodeExecutor.getInstance().getConsole().readString();
-            while (!result.trim().isEmpty()) {
+            String result = NodeExecutor.getInstance().getConsole().readString().getUninterruptedly();
+            while (result != null && !result.trim().isEmpty()) {
                 GroupSetupVersion version = GroupSetupHelper.findByName(result);
                 if (version == null) {
                     System.out.println(LanguageManager.get("general-setup-choose-default-installation-wrong"));
-                    result = NodeExecutor.getInstance().getConsole().readString();
+                    result = NodeExecutor.getInstance().getConsole().readString().getUninterruptedly();
                     continue;
                 }
 

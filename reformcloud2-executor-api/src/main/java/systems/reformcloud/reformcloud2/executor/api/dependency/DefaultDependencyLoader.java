@@ -39,14 +39,13 @@ import java.util.List;
 public final class DefaultDependencyLoader extends DependencyLoader {
 
     private static final String LOADING = "Preloading dependency %s %s from repo %s...";
-
     private static final String PATH = System.getProperty("reformcloud.lib.path");
 
     private final List<URL> urls = new ArrayList<>();
 
     @Override
-    public void loadDependencies() {
-        DependencyParser.getAllDependencies("internal/dependencies.txt", new HashMap<>(), DefaultDependencyLoader.class.getClassLoader()).forEach(e -> {
+    public void loadDependencies(@NotNull ClassLoader classLoader) {
+        DependencyParser.getAllDependencies("internal/dependencies.txt", new HashMap<>(), classLoader).forEach(e -> {
             System.out.println(String.format(LOADING, e.getArtifactID(), e.getVersion(), e.getRepository().getName()));
             this.urls.add(this.loadDependency(e));
         });

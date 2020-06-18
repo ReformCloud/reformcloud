@@ -30,6 +30,7 @@ import systems.reformcloud.reformcloud2.executor.api.network.packet.PacketProvid
 import systems.reformcloud.reformcloud2.executor.api.network.packet.exception.PacketAlreadyRegisteredException;
 
 import java.util.Collection;
+import java.util.EmptyStackException;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -87,6 +88,10 @@ public class DefaultPacketProvider implements PacketProvider {
     private @NotNull Packet newInstanceFromClass(@NotNull Class<? extends Packet> packetClass) {
         try {
             return packetClass.getDeclaredConstructor().newInstance();
+        } catch (NoSuchMethodException exception) {
+            System.err.println("Unable to load packet " + packetClass.getName() + " -> NoArgsConstructor is missing");
+            System.err.println("Please report this or fix your application before running the system again");
+            throw new EmptyStackException();
         } catch (Throwable throwable) {
             throw new RuntimeException(throwable);
         }

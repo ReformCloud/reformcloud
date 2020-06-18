@@ -42,7 +42,7 @@ public enum ConsoleColour {
     DARK_GRAY('8', Ansi.ansi().reset().fg(Ansi.Color.BLACK).bold().toString()),
     BLUE('9', Ansi.ansi().reset().fg(Ansi.Color.BLUE).bold().toString()),
     GREEN('a', Ansi.ansi().reset().fg(Ansi.Color.GREEN).bold().toString()),
-    AQUA('b', Ansi.ansi().reset().fg(Ansi.Color.BLACK).boldOff().toString()),
+    AQUA('b', Ansi.ansi().reset().fg(Ansi.Color.CYAN).bold().toString()),
     RED('c', Ansi.ansi().reset().fg(Ansi.Color.RED).bold().toString()),
     LIGHT_PURPLE('d', Ansi.ansi().reset().fg(Ansi.Color.MAGENTA).bold().toString()),
     YELLOW('e', Ansi.ansi().reset().fg(Ansi.Color.YELLOW).bold().toString()),
@@ -90,7 +90,7 @@ public enum ConsoleColour {
     }
 
     @NotNull
-    public static String translateAlternateColorCodes(char altColorChar, @NotNull String textToTranslate) {
+    public static String toColouredString(char altColorChar, @NotNull String textToTranslate) {
         char[] b = textToTranslate.toCharArray();
         for (int i = 0; i < b.length - 1; i++) {
             if (b[i] == altColorChar && ALL_CODES.indexOf(b[i + 1]) > -1) {
@@ -99,6 +99,11 @@ public enum ConsoleColour {
             }
         }
 
-        return new String(b);
+        String s = new String(b);
+        for (ConsoleColour value : ConsoleColour.values()) {
+            s = value.getPattern().matcher(s).replaceAll(value.getAnsi());
+        }
+
+        return s;
     }
 }

@@ -55,6 +55,11 @@ public class SpongeExecutor extends Embedded {
         return instance;
     }
 
+    @Override
+    protected int getMaxPlayersOfEnvironment() {
+        return Sponge.getServer().getMaxPlayers();
+    }
+
     @NotNull
     public SpongeLauncher getPlugin() {
         return this.plugin;

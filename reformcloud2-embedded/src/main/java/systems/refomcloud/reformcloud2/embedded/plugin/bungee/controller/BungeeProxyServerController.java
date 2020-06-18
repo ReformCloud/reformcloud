@@ -90,13 +90,16 @@ public class BungeeProxyServerController implements ProxyServerController {
 
     @Override
     public void handleProcessUpdate(@NotNull ProcessInformation processInformation) {
-        if (!processInformation.getProcessDetail().getTemplate().isServer()) {
+        if (!processInformation.getNetworkInfo().isConnected()) {
             this.cachedProxyServices.removeIf(e -> e.getProcessDetail().getProcessUniqueID().equals(processInformation.getProcessDetail().getProcessUniqueID()));
-            this.cachedProxyServices.add(processInformation);
+            this.cachedLobbyServices.removeIf(e -> e.getProcessDetail().getProcessUniqueID().equals(processInformation.getProcessDetail().getProcessUniqueID()));
+            ProxyServer.getInstance().getServers().remove(processInformation.getProcessDetail().getName());
             return;
         }
 
-        if (!processInformation.getNetworkInfo().isConnected()) {
+        if (!processInformation.getProcessDetail().getTemplate().isServer()) {
+            this.cachedProxyServices.removeIf(e -> e.getProcessDetail().getProcessUniqueID().equals(processInformation.getProcessDetail().getProcessUniqueID()));
+            this.cachedProxyServices.add(processInformation);
             return;
         }
 

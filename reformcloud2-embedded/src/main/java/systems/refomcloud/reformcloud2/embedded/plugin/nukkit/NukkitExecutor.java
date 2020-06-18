@@ -53,6 +53,11 @@ public final class NukkitExecutor extends Embedded {
         return instance;
     }
 
+    @Override
+    protected int getMaxPlayersOfEnvironment() {
+        return Server.getInstance().getMaxPlayers();
+    }
+
     @NotNull
     public Plugin getPlugin() {
         return this.plugin;

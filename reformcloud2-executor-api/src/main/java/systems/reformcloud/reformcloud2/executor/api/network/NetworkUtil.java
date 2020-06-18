@@ -92,33 +92,34 @@ public final class NetworkUtil {
     }
 
     public static void writeVarInt(@NotNull ByteBuf buf, int value) {
-        while (true) {
-            if ((value & 0xFFFFFF80) == 0) {
-                buf.writeByte(value);
-                return;
+        do {
+            byte temp = (byte) (value & 0x7f);
+            value >>>= 7;
+            if (value != 0) {
+                temp |= 0x80;
             }
 
-            buf.writeByte(value & 0x7F | 0x80);
-            value >>>= 7;
-        }
+            buf.writeByte(temp);
+        } while (value != 0);
     }
 
     public static int readVarInt(@NotNull ByteBuf buf) {
-        int i = 0;
-        int j = 0;
-        while (true) {
-            int k = buf.readByte();
-            i |= (k & 0x7F) << j++ * 7;
-            if (j > 5) {
-                throw new RuntimeException("VarInt too big");
-            }
+        int numRead = 0;
+        int result = 0;
+        byte read;
 
-            if ((k & 0x80) != 128) {
-                break;
-            }
-        }
+        do {
+            read = buf.readByte();
+            int value = (read & 0x7f);
+            result |= (value << (7 * numRead));
 
-        return i;
+            numRead++;
+            if (numRead > 5) {
+                throw new RuntimeException("VarInt is too big");
+            }
+        } while ((read & 0x80) != 0);
+
+        return result;
     }
 
     @NotNull

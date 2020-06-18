@@ -40,7 +40,6 @@ public class PacketSerializerEncoder extends MessageToByteEncoder<Packet> {
         }
 
         ProtocolBuffer buffer = new DefaultProtocolBuffer(byteBuf);
-
         try {
             buffer.writeVarInt(packet.getId());
             buffer.writeUniqueId(packet.getQueryUniqueID());

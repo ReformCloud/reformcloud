@@ -48,7 +48,16 @@ public final class CommandLog implements Command {
             return;
         }
 
+        if (!wrapper.get().getProcessInformation().getProcessDetail().getProcessState().isStartedOrOnline()) {
+            sender.sendMessage(LanguageManager.get("command-log-process-not-started", wrapper.get().getProcessInformation().getProcessDetail().getName()));
+            return;
+        }
+
         Optional<String> logUrl = wrapper.get().uploadLog();
-        logUrl.ifPresent(e -> sender.sendMessage(e));
+        if (logUrl.isPresent()) {
+            sender.sendMessage(logUrl.get());
+        } else {
+            sender.sendMessage(LanguageManager.get("command-log-upload-log-failed"));
+        }
     }
 }

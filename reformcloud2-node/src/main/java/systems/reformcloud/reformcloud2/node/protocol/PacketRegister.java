@@ -26,7 +26,7 @@ package systems.reformcloud.reformcloud2.node.protocol;
 
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.network.packet.PacketProvider;
-import systems.reformcloud.reformcloud2.protocol.api.*;
+import systems.reformcloud.reformcloud2.protocol.api.NodeToApiRequestProcessInformationUpdateResult;
 import systems.reformcloud.reformcloud2.protocol.node.*;
 import systems.reformcloud.reformcloud2.protocol.shared.*;
 
@@ -139,16 +139,7 @@ public final class PacketRegister {
         packetProvider.registerPacket(ApiToNodeUploadProcessLog.class);
 
         // node -> api
-        packetProvider.registerPacket(NodeToApiMainGroupCreate.class);
-        packetProvider.registerPacket(NodeToApiMainGroupDelete.class);
-        packetProvider.registerPacket(NodeToApiMainGroupUpdated.class);
-        packetProvider.registerPacket(NodeToApiProcessGroupCreate.class);
-        packetProvider.registerPacket(NodeToApiProcessGroupDelete.class);
-        packetProvider.registerPacket(NodeToApiProcessGroupUpdated.class);
-        packetProvider.registerPacket(NodeToApiProcessRegister.class);
-        packetProvider.registerPacket(NodeToApiProcessUnregister.class);
-        packetProvider.registerPacket(NodeToApiProcessUpdated.class);
-        packetProvider.registerPacket(NodeToApiRequestProcessInformationUpdate.class);
+        packetProvider.registerPacket(NodeToApiRequestProcessInformationUpdateResult.class);
 
         // node <-> api (shared packets)
         packetProvider.registerPacket(PacketAuthBegin.class);

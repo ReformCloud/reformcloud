@@ -48,7 +48,7 @@ public class ApiToNodeSendGlobalChannelMessage extends ProtocolPacket {
 
     @Override
     public int getId() {
-        return NetworkUtil.EMBEDDED_BUS + 23;
+        return NetworkUtil.EMBEDDED_BUS + 91;
     }
 
     @Override

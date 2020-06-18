@@ -92,10 +92,13 @@ public class EmbeddedEndpointChannelReader extends SharedEndpointChannelReader {
     public void read(@NotNull Packet input) {
         if (input.getId() == NetworkUtil.AUTH_BUS_END) {
             if (!(input instanceof PacketAuthSuccess)) {
-                // should never happen
-                System.exit(-1);
                 return;
             }
+
+            super.networkChannel.setName("Controller");
+            super.networkChannel.setAuthenticated(true);
+            ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ChannelManager.class).registerChannel(super.networkChannel);
+            PacketRegister.postAuth();
 
             try {
                 this.lock.lock();
@@ -104,10 +107,6 @@ public class EmbeddedEndpointChannelReader extends SharedEndpointChannelReader {
                 this.lock.unlock();
             }
 
-            super.networkChannel.setName("Controller");
-            super.networkChannel.setAuthenticated(true);
-            ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ChannelManager.class).registerChannel(super.networkChannel);
-            PacketRegister.postAuth();
             return;
         }
 

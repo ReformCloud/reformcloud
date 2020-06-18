@@ -44,12 +44,12 @@ public enum ProcessState {
 
     STOPPED;
 
-    public boolean isValid() {
-        return this.equals(STARTED) || this.equals(READY) || this.equals(FULL) || this.equals(INVISIBLE);
+    public boolean isStartedOrOnline() {
+        return this == STARTED || this.isOnline();
     }
 
-    public boolean isReady() {
-        return this.equals(READY) || this.equals(FULL) || this.equals(INVISIBLE);
+    public boolean isOnline() {
+        return this == READY || this == FULL || this == INVISIBLE;
     }
 
     public boolean isRuntimeState() {

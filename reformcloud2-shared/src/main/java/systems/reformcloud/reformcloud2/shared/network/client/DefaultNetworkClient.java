@@ -41,7 +41,6 @@ import java.util.function.Supplier;
 public final class DefaultNetworkClient implements NetworkClient {
 
     private final EventLoopGroup eventLoopGroup = NetworkUtil.eventLoopGroup();
-
     private final Class<? extends SocketChannel> channelClass = NetworkUtil.socketChannel();
 
     private Channel channel;

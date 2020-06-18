@@ -136,19 +136,15 @@ public final class ProcessInformation implements SerializableObject {
      *
      * @param value The new maximum amount of players or {@code null} if the cloud should only check
      *              if it should use the internal count and set it to the given value.
-     * @return The same instance of the process information
      */
-    @NotNull
-    public ProcessInformation updateMaxPlayers(@Nullable Integer value) {
-        if (this.processGroup.getPlayerAccessConfiguration().isUseCloudPlayerLimit()) {
-            this.processDetail.setMaxPlayers(this.processGroup.getPlayerAccessConfiguration().getMaxPlayers());
-        } else {
-            if (value != null) {
-                this.processDetail.setMaxPlayers(value);
-            }
+    public void updateMaxPlayers(@Nullable Integer value) {
+        if (this.getProcessDetail().getMaxPlayers() >= 0) {
+            return;
         }
 
-        return this;
+        if (value != null) {
+            this.processDetail.setMaxPlayers(value >= 0 ? value : 20);
+        }
     }
 
     /**

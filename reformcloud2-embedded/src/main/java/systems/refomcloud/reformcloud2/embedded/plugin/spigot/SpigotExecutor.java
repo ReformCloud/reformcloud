@@ -53,6 +53,11 @@ public final class SpigotExecutor extends Embedded {
         return instance;
     }
 
+    @Override
+    protected int getMaxPlayersOfEnvironment() {
+        return Bukkit.getMaxPlayers();
+    }
+
     @NotNull
     public JavaPlugin getPlugin() {
         return this.plugin;

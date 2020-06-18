@@ -113,4 +113,16 @@ public final class CloudTickWorker {
     public Thread getMainThread() {
         return this.mainThread;
     }
+
+    public TickAverageCounter getTps1() {
+        return this.tps1;
+    }
+
+    public TickAverageCounter getTps5() {
+        return this.tps5;
+    }
+
+    public TickAverageCounter getTps15() {
+        return this.tps15;
+    }
 }

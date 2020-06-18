@@ -43,6 +43,7 @@ import systems.reformcloud.reformcloud2.node.process.DefaultNodeProcessProvider;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.Random;
+import java.util.UUID;
 
 public class DefaultProcessFactory implements ProcessFactory {
 
@@ -68,14 +69,16 @@ public class DefaultProcessFactory implements ProcessFactory {
             }
 
             int memory = MemoryCalculator.calcMemory(configuration.getProcessGroup().getName(), template);
-            int id = this.nextId(configuration.getProcessGroup().getName());
+            int id = this.nextId(configuration.getProcessGroup().getName(), configuration.getId() <= 0 ? 1 : configuration.getId());
+            UUID processUniqueId = this.preventCollision(configuration.getProcessUniqueId());
 
             ProcessInformation processInformation = new ProcessInformation(new ProcessDetail(
-                    configuration.getProcessUniqueId(),
+                    processUniqueId,
                     nodeInformation.getNodeUniqueID(),
                     nodeInformation.getName(),
-                    configuration.getProcessGroup().getName() + "" + id,
-                    configuration.getDisplayName(),
+                    configuration.getProcessGroup().getName() + template.getServerNameSplitter() + id,
+                    configuration.getDisplayName() != null ? configuration.getDisplayName() : configuration.getProcessGroup().getName()
+                            + (configuration.getProcessGroup().isShowIdInName() ? template.getServerNameSplitter() + id : ""),
                     id,
                     template,
                     configuration.getMemory() == -1 ? memory : configuration.getMemory(),
@@ -84,6 +87,12 @@ public class DefaultProcessFactory implements ProcessFactory {
                     "",
                     this.nextPort(configuration.getProcessGroup().getStartupConfiguration().getStartPort())
             ), configuration.getProcessGroup(), configuration.getExtra(), configuration.getInclusions());
+
+            if (configuration.getMaxPlayers() >= 0) {
+                processInformation.updateMaxPlayers(configuration.getMaxPlayers());
+            } else if (configuration.getProcessGroup().getPlayerAccessConfiguration().isUseCloudPlayerLimit()) {
+                processInformation.updateMaxPlayers(configuration.getProcessGroup().getPlayerAccessConfiguration().getMaxPlayers());
+            }
 
             this.defaultNodeProcessProvider.registerProcess(processInformation);
             ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ClusterManager.class).publishProcessRegister(processInformation);
@@ -115,7 +124,7 @@ public class DefaultProcessFactory implements ProcessFactory {
         NodeInformation best = null;
 
         for (NodeInformation node : ExecutorAPI.getInstance().getNodeInformationProvider().getNodes()) {
-            if (processGroup.getStartupConfiguration().isSearchBestClientAlone()
+            if (!processGroup.getStartupConfiguration().isSearchBestClientAlone()
                     && !processGroup.getStartupConfiguration().getUseOnlyTheseClients().contains(node.getName())) {
                 continue;
             }
@@ -140,18 +149,17 @@ public class DefaultProcessFactory implements ProcessFactory {
         return best;
     }
 
-    private int nextId(@NotNull String groupName) {
+    private int nextId(@NotNull String groupName, int beginId) {
         Collection<Integer> ids = Streams.map(
                 ExecutorAPI.getInstance().getProcessProvider().getProcessesByProcessGroup(groupName),
                 processInformation -> processInformation.getProcessDetail().getId()
         );
 
-        int id = 1;
-        while (ids.contains(id)) {
-            id++;
+        while (ids.contains(beginId)) {
+            beginId++;
         }
 
-        return id;
+        return beginId;
     }
 
     private int nextPort(int start) {
@@ -174,5 +182,13 @@ public class DefaultProcessFactory implements ProcessFactory {
         }
 
         return processGroup.getTemplates().get(RANDOM.nextInt(processGroup.getTemplates().size()));
+    }
+
+    private @NotNull UUID preventCollision(@NotNull UUID current) {
+        while (ExecutorAPI.getInstance().getProcessProvider().getProcessByUniqueId(current).isPresent()) {
+            current = UUID.randomUUID();
+        }
+
+        return current;
     }
 }

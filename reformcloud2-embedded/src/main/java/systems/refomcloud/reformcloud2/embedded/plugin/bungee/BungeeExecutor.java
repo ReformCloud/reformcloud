@@ -77,6 +77,11 @@ public final class BungeeExecutor extends Embedded {
         return instance;
     }
 
+    @Override
+    protected int getMaxPlayersOfEnvironment() {
+        return ProxyServer.getInstance().getConfig().getPlayerLimit();
+    }
+
     @NotNull
     public Plugin getPlugin() {
         return this.plugin;

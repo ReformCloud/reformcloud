@@ -97,7 +97,7 @@ public class DefaultNodeProcessGroupProvider implements ProcessGroupProvider {
 
     public void addProcessGroup(@NotNull ProcessGroup processGroup) {
         this.addProcessGroup0(processGroup);
-        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ClusterManager.class).publishProcessGroupCreate(processGroup);
+        ExecutorAPI.getInstance().getServiceRegistry().getProvider(ClusterManager.class).ifPresent(e -> e.publishProcessGroupCreate(processGroup));
     }
 
     public void addProcessGroup0(@NotNull ProcessGroup processGroup) {

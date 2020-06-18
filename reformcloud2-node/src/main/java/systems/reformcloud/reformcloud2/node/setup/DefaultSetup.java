@@ -50,7 +50,7 @@ public class DefaultSetup implements Setup {
     @Override
     public void runSetup() {
         SetupQuestion question;
-        while ((question = this.questions.peek()) != null) {
+        while ((question = this.questions.poll()) != null) {
             this.handleQuestion(question);
         }
     }
@@ -61,10 +61,11 @@ public class DefaultSetup implements Setup {
     }
 
     private void handleQuestion(@NotNull SetupQuestion question) {
-        String answer = NodeExecutor.getInstance().getConsole().readString();
+        System.out.println(question.getOriginalQuestion());
+        String answer = NodeExecutor.getInstance().getConsole().readString().getUninterruptedly();
         while (!question.getAnswerHandler().apply(new DefaultSetupAnswer(answer))) {
             System.err.println(question.getInvalidInputMessage());
-            answer = NodeExecutor.getInstance().getConsole().readString();
+            answer = NodeExecutor.getInstance().getConsole().readString().getUninterruptedly();
         }
     }
 }

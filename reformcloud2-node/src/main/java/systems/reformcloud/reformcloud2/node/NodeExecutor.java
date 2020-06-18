@@ -101,8 +101,8 @@ public final class NodeExecutor extends ExecutorAPI {
     private final DefaultNodeProcessProvider processProvider = new DefaultNodeProcessProvider();
     private final PlayerProvider playerProvider = new DefaultNodePlayerProvider();
     private final ChannelMessageProvider channelMessageProvider = new DefaultNodeChannelMessageProvider();
-    private final DefaultNodeMainGroupProvider mainGroupProvider;
-    private final DefaultNodeProcessGroupProvider processGroupProvider;
+    private DefaultNodeMainGroupProvider mainGroupProvider;
+    private DefaultNodeProcessGroupProvider processGroupProvider;
     private DefaultNodeNodeInformationProvider nodeInformationProvider;
 
     private final TickedTaskScheduler taskScheduler = new TickedTaskScheduler();
@@ -128,9 +128,6 @@ public final class NodeExecutor extends ExecutorAPI {
         }, "Shutdown-Hook"));
 
         this.registerDefaultServices();
-
-        this.mainGroupProvider = new DefaultNodeMainGroupProvider(System.getProperty("systems.reformcloud.main-group-dir", "reformcloud/groups/main"));
-        this.processGroupProvider = new DefaultNodeProcessGroupProvider(System.getProperty("systems.reformcloud.sub-group-dir", "reformcloud/groups/sub"));
     }
 
     synchronized void bootstrap() {
@@ -138,6 +135,9 @@ public final class NodeExecutor extends ExecutorAPI {
         this.logger = new CloudLogger(this.console.getLineReader());
 
         PacketRegister.register();
+
+        this.mainGroupProvider = new DefaultNodeMainGroupProvider(System.getProperty("systems.reformcloud.main-group-dir", "reformcloud/groups/main"));
+        this.processGroupProvider = new DefaultNodeProcessGroupProvider(System.getProperty("systems.reformcloud.sub-group-dir", "reformcloud/groups/sub"));
 
         this.nodeExecutorConfig.init();
         this.nodeConfig = this.nodeExecutorConfig.getNodeConfig();
@@ -155,7 +155,7 @@ public final class NodeExecutor extends ExecutorAPI {
                 this.processGroupProvider,
                 this.mainGroupProvider,
                 this.currentNodeInformation
-        ), true);
+        ), false, true);
 
         this.serviceRegistry.getProviderUnchecked(ApplicationLoader.class).detectApplications();
         this.serviceRegistry.getProviderUnchecked(ApplicationLoader.class).loadApplications();
@@ -430,6 +430,7 @@ public final class NodeExecutor extends ExecutorAPI {
                 .registerCommand(new CommandLog(), "log")
                 .registerCommand(new CommandReload(), "reload", "rl")
                 .registerCommand(new CommandClear(), "clear", "cls")
+                .registerCommand(new CommandTicksPerSecond(), "tps")
                 .registerCommand(new CommandHelp(), "help", "ask", "?");
     }
 

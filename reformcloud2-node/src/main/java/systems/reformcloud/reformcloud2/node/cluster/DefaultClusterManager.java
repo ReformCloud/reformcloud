@@ -50,8 +50,8 @@ import systems.reformcloud.reformcloud2.node.NodeExecutor;
 import systems.reformcloud.reformcloud2.node.access.ClusterAccessController;
 import systems.reformcloud.reformcloud2.node.group.DefaultNodeMainGroupProvider;
 import systems.reformcloud.reformcloud2.node.group.DefaultNodeProcessGroupProvider;
-import systems.reformcloud.reformcloud2.node.process.DefaultNodeLocalProcessWrapper;
 import systems.reformcloud.reformcloud2.node.process.DefaultNodeProcessProvider;
+import systems.reformcloud.reformcloud2.node.process.DefaultNodeRemoteProcessWrapper;
 import systems.reformcloud.reformcloud2.node.protocol.*;
 import systems.reformcloud.reformcloud2.node.provider.DefaultNodeNodeInformationProvider;
 import systems.reformcloud.reformcloud2.protocol.api.*;
@@ -84,7 +84,15 @@ public class DefaultClusterManager implements ClusterManager {
         Task<ProcessInformation> task = ClusterAccessController.createProcessPrivileged(processGroup, node, displayName, messageOfTheDay, template, inclusions, jsonConfiguration, initialState, uniqueId, memory, id, maxPlayers, targetProcessFactory);
         return Task.supply(() -> {
             ProcessInformation result = task.getUninterruptedly(TimeUnit.SECONDS, 10);
-            return result == null ? null : new DefaultNodeLocalProcessWrapper(result);
+            if (result == null) {
+                return null;
+            }
+
+            if (NodeExecutor.getInstance().isOwnIdentity(result.getProcessDetail().getParentName())) {
+                return ExecutorAPI.getInstance().getProcessProvider().getProcessByUniqueId(result.getProcessDetail().getProcessUniqueID()).orElse(null);
+            }
+
+            return new DefaultNodeRemoteProcessWrapper(result);
         });
     }
 

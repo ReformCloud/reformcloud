@@ -26,12 +26,10 @@ package systems.reformcloud.reformcloud2.executor.api.network.netty;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import io.netty.handler.codec.haproxy.HAProxyMessage;
-import io.netty.util.ReferenceCountUtil;
+import io.netty.util.ReferenceCounted;
+import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
 import systems.reformcloud.reformcloud2.executor.api.network.packet.Packet;
-
-import java.net.InetSocketAddress;
 
 public final class NettyChannelEndpoint extends ChannelInboundHandlerAdapter {
 
@@ -49,16 +47,9 @@ public final class NettyChannelEndpoint extends ChannelInboundHandlerAdapter {
                 if (this.channelReader.shouldHandle(packet)) {
                     this.channelReader.read(packet);
                 }
-
-                return;
-            }
-
-            if (msg instanceof HAProxyMessage) {
-                HAProxyMessage message = (HAProxyMessage) msg;
-                this.channelReader.getNetworkChannel().setRemoteAddress(new InetSocketAddress(message.sourceAddress(), message.sourcePort()));
             }
         } finally {
-            ReferenceCountUtil.release(msg);
+            this.saveRelease(msg);
         }
     }
 
@@ -80,5 +71,24 @@ public final class NettyChannelEndpoint extends ChannelInboundHandlerAdapter {
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) {
         this.channelReader.readOperationCompleted(ctx);
+    }
+
+    private void saveRelease(@NotNull Object o) {
+        if (!(o instanceof ReferenceCounted)) {
+            return;
+        }
+
+        ReferenceCounted referenceCounted = (ReferenceCounted) o;
+        if (referenceCounted.refCnt() > 0) {
+            for (int i = 0; i < referenceCounted.refCnt(); i++) {
+                try {
+                    if (referenceCounted.release()) {
+                        break;
+                    }
+                } catch (Throwable throwable) {
+                    break;
+                }
+            }
+        }
     }
 }

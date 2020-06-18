@@ -72,7 +72,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * Check this by using {@link ExecutorAPI#getType()}. If the current instance is not an api instance
  * just use the default cloud api based on {@link ExecutorAPI#getInstance()}.
  */
-public class Embedded extends ExecutorAPI {
+public abstract class Embedded extends ExecutorAPI {
 
     protected ProcessInformation processInformation;
     protected IngameMessages ingameMessages = new IngameMessages();
@@ -97,6 +97,7 @@ public class Embedded extends ExecutorAPI {
         this.serviceRegistry.setProvider(PacketProvider.class, new DefaultPacketProvider(), false, true);
         this.serviceRegistry.setProvider(QueryManager.class, new DefaultQueryManager(), false, true);
 
+        this.serviceRegistry.getProviderUnchecked(EventManager.class).registerListener(this);
         this.processInformation = this.config.getProcessInformation();
 
         Lock lock = new ReentrantLock();
@@ -111,9 +112,14 @@ public class Embedded extends ExecutorAPI {
             );
 
             try {
-                condition.await();
+                condition.await(30, TimeUnit.SECONDS);
             } catch (InterruptedException exception) {
                 throw new RuntimeException(exception);
+            }
+
+            if (!this.serviceRegistry.getProviderUnchecked(ChannelManager.class).getFirstChannel().isPresent()) {
+                System.exit(-1);
+                return;
             }
         } finally {
             lock.unlock();
@@ -127,6 +133,10 @@ public class Embedded extends ExecutorAPI {
 
         this.processInformation.getProcessDetail().setProcessState(this.processInformation.getProcessDetail().getInitialState());
         this.processInformation.getNetworkInfo().setConnected(true);
+
+        if (this.processInformation.getProcessDetail().getMaxPlayers() < 0) {
+            this.processInformation.updateMaxPlayers(this.getMaxPlayersOfEnvironment());
+        }
 
         PacketProcessorManager.getInstance()
                 .registerProcessor(new ChannelMessageProcessor(), PacketChannelMessage.class)
@@ -244,4 +254,6 @@ public class Embedded extends ExecutorAPI {
             this.processInformation = event.getProcessInformation();
         }
     }
+
+    protected abstract int getMaxPlayersOfEnvironment();
 }

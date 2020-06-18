@@ -25,11 +25,12 @@
 package systems.reformcloud.reformcloud2.executor.api.console;
 
 import org.jetbrains.annotations.NotNull;
+import systems.reformcloud.reformcloud2.executor.api.task.Task;
 
 public interface Console extends AutoCloseable {
 
     @NotNull
-    String readString();
+    Task<String> readString();
 
     @NotNull
     String getPrompt();

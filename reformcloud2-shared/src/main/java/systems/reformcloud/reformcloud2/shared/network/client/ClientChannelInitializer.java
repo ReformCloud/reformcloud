@@ -26,7 +26,6 @@ package systems.reformcloud.reformcloud2.shared.network.client;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
-import io.netty.handler.codec.haproxy.HAProxyMessageDecoder;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
@@ -52,9 +51,8 @@ public final class ClientChannelInitializer extends ChannelInitializer<Channel> 
         NetworkChannel networkChannel = ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ChannelManager.class).createChannel(channel);
 
         channel.pipeline()
-                .addLast("ha_proxy_decoder", new HAProxyMessageDecoder())
                 .addLast("deserializer", new VarInt21FrameDecoder())
-                .addLast("serializer", VarInt21FrameEncoder.INSTANCE)
+                .addLast("serializer", new VarInt21FrameEncoder())
                 .addLast("decoder", new SerializedPacketDecoder())
                 .addLast("encoder", new PacketSerializerEncoder())
                 .addLast("handler", new NettyChannelEndpoint(this.supplier.get().setNetworkChannel(networkChannel)));

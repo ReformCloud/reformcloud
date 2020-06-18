@@ -18,13 +18,6 @@
         </repository>
     </repositories>
 
-    <pluginRepositories>
-        <pluginRepository>
-            <id>reformcloud-central</id>
-            <url>https://repo.reformcloud.systems/</url>
-        </pluginRepository>
-    </pluginRepositories>
-
     <dependencies>
         <!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
         <dependency>
@@ -67,44 +60,4 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-
-    <build>
-        <plugins>
-            <!-- https://github.com/derklaro/maven-dependency-list-plugin -->
-            <plugin>
-                <groupId>de.derklaro</groupId>
-                <artifactId>dependency-list-maven-plugin</artifactId>
-                <version>1.2</version>
-                <configuration>
-                    <excludedScopes>
-                        <excludedScope>test</excludedScope>
-                        <excludedScope>compile</excludedScope>
-                    </excludedScopes>
-
-                    <excludes>
-                        <exclude>com.github.derklaro.project-deer:*</exclude>
-                        <exclude>*:annotations-java5</exclude>
-                        <exclude>*:slf4j-api</exclude>
-                    </excludes>
-
-                    <outputFileName>
-                        reformcloud2-executor-api/src/main/resources/internal/dependencies.txt
-                    </outputFileName>
-
-                    <overrideExistingFile>true</overrideExistingFile>
-                    <resolveDependenciesOfDependencies>true</resolveDependenciesOfDependencies>
-                    <includeOptionalDependencies>false</includeOptionalDependencies>
-                    <createParentFiles>true</createParentFiles>
-                </configuration>
-                <executions>
-                    <execution>
-                        <phase>initialize</phase>
-                        <goals>
-                            <goal>dependency-list</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
 </project>

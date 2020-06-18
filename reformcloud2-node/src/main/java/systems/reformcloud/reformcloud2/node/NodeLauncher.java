@@ -36,7 +36,7 @@ public final class NodeLauncher {
 
     public static synchronized void main(String[] args) {
         LanguageLoader.doLoad();
-        DependencyLoader.doLoad();
+        DependencyLoader.doLoad(NodeLauncher.class.getClassLoader());
 
         long startTime = System.currentTimeMillis();
 

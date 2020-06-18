@@ -44,6 +44,6 @@ public final class CommandHelp implements Command {
         sender.sendMessage(" ");
 
         ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(CommandManager.class)
-                .getCommands().forEach(command -> sender.sendMessage("   -> " + command.getCommand() + " " + String.join(", ", command.getAliases())));
+                .getCommands().forEach(command -> sender.sendMessage("   -> " + String.join(", ", command.getAliases())));
     }
 }
