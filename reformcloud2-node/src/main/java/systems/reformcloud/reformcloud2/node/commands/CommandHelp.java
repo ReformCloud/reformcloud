@@ -29,6 +29,12 @@ import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.command.Command;
 import systems.reformcloud.reformcloud2.executor.api.command.CommandManager;
 import systems.reformcloud.reformcloud2.executor.api.command.CommandSender;
+import systems.reformcloud.reformcloud2.executor.api.utility.list.Duo;
+import systems.reformcloud.reformcloud2.executor.api.utility.list.Streams;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 
 public final class CommandHelp implements Command {
 
@@ -43,7 +49,28 @@ public final class CommandHelp implements Command {
         sender.sendMessage("Discord: https://discord.gg/uskXdVZ");
         sender.sendMessage(" ");
 
-        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(CommandManager.class)
-                .getCommands().forEach(command -> sender.sendMessage("   -> " + String.join(", ", command.getAliases())));
+        Collection<Duo<String, String>> map = Streams.map(
+                ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(CommandManager.class).getCommands(),
+                container -> new Duo<>(String.join(", ", container.getAliases()), container.getDescription())
+        );
+        sender.sendMessages(this.formatHelp(map));
+    }
+
+    @NotNull
+    private String[] formatHelp(@NotNull Collection<Duo<String, String>> messages) {
+        int longest = 0;
+        for (Duo<String, String> message : messages) {
+            if (message.getFirst().length() > longest) {
+                longest = message.getFirst().length();
+            }
+        }
+
+        Collection<String> result = new ArrayList<>(messages.size());
+        for (Duo<String, String> message : messages) {
+            String s = String.join("", Collections.nCopies(Math.max(longest - message.getFirst().length(), 0), " "));
+            result.add(message.getFirst() + s + " | " + message.getSecond());
+        }
+
+        return result.toArray(new String[0]);
     }
 }

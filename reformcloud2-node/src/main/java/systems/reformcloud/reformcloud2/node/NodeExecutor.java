@@ -420,18 +420,18 @@ public final class NodeExecutor extends ExecutorAPI {
 
     private void loadCommands() {
         this.serviceRegistry.getProviderUnchecked(CommandManager.class)
-                .registerCommand(new CommandProcess(), "p", "process", "sever", "proxy")
-                .registerCommand(new CommandCluster(), "clu", "cluster", "c")
-                .registerCommand(new CommandPlayers(), "pl", "players")
-                .registerCommand(new CommandGroup(), "g", "group", "groups")
-                .registerCommand(new CommandCreate(), "create")
-                .registerCommand(new CommandLaunch(), "launch", "l")
-                .registerCommand(new CommandStop(), "stop", "exit", "shutdown")
-                .registerCommand(new CommandLog(), "log")
-                .registerCommand(new CommandReload(), "reload", "rl")
-                .registerCommand(new CommandClear(), "clear", "cls")
-                .registerCommand(new CommandTicksPerSecond(), "tps")
-                .registerCommand(new CommandHelp(), "help", "ask", "?");
+                .registerCommand(new CommandProcess(), "Management of local and remote processes", "p", "process", "sever", "proxy")
+                .registerCommand(new CommandCluster(), "Management of nodes in the cluster", "clu", "cluster", "c")
+                .registerCommand(new CommandPlayers(), "Management of players on processes", "pl", "players")
+                .registerCommand(new CommandGroup(), "Administration of Main/Sub groups", "g", "group", "groups")
+                .registerCommand(new CommandCreate(), "Creation of sub/main groups", "create")
+                .registerCommand(new CommandLaunch(), "Starting or preparing processes", "launch", "l")
+                .registerCommand(new CommandStop(), "Terminates the program", "stop", "exit", "shutdown")
+                .registerCommand(new CommandLog(), "Uploading log files of running processes", "log")
+                .registerCommand(new CommandReload(), "Reloads the system", "reload", "rl")
+                .registerCommand(new CommandClear(), "Empties the console", "clear", "cls")
+                .registerCommand(new CommandTicksPerSecond(), "Shows the ticks per second of the last minute, five and fifteen minutes", "tps")
+                .registerCommand(new CommandHelp(), "Shows an overview of all available commands and their aliases", "help", "ask", "?");
     }
 
     public boolean canStartProcesses(int neededMemory) {

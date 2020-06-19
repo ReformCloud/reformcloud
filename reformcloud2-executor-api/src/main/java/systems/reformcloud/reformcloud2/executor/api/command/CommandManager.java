@@ -35,12 +35,12 @@ import java.util.Optional;
 public interface CommandManager {
 
     @NotNull
-    default CommandManager registerCommand(@NotNull Command command, @NotNull String... aliases) {
-        return this.registerCommand(command, Arrays.asList(aliases));
+    default CommandManager registerCommand(@NotNull Command command, @NotNull String description, @NotNull String... aliases) {
+        return this.registerCommand(command, description, Arrays.asList(aliases));
     }
 
     @NotNull
-    CommandManager registerCommand(@NotNull Command command, @NotNull List<String> aliases);
+    CommandManager registerCommand(@NotNull Command command, @NotNull String description, @NotNull List<String> aliases);
 
     void unregisterCommand(@NotNull CommandContainer command);
 

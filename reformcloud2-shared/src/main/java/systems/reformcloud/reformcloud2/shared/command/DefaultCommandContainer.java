@@ -32,18 +32,25 @@ import java.util.Collection;
 
 public final class DefaultCommandContainer implements CommandContainer {
 
-    DefaultCommandContainer(Collection<String> aliases, Command command) {
+    DefaultCommandContainer(Collection<String> aliases, String description, Command command) {
         this.aliases = aliases;
         this.command = command;
+        this.description = description;
     }
 
     private final Collection<String> aliases;
     private final Command command;
+    private final String description;
 
     @NotNull
     @Override
     public Collection<String> getAliases() {
         return this.aliases;
+    }
+
+    @Override
+    public @NotNull String getDescription() {
+        return this.description;
     }
 
     @NotNull

@@ -39,9 +39,8 @@ public class DefaultCommandManager implements CommandManager {
 
     private final Collection<CommandContainer> commands = new CopyOnWriteArrayList<>();
 
-    @NotNull
     @Override
-    public CommandManager registerCommand(@NotNull Command command, @NotNull List<String> aliases) {
+    public @NotNull CommandManager registerCommand(@NotNull Command command, @NotNull String description, @NotNull List<String> aliases) {
         for (String alias : aliases) {
             Optional<CommandContainer> registeredCommand = this.getCommand(alias.toLowerCase());
             if (registeredCommand.isPresent()) {
@@ -50,7 +49,7 @@ public class DefaultCommandManager implements CommandManager {
             }
         }
 
-        this.commands.add(new DefaultCommandContainer(aliases, command));
+        this.commands.add(new DefaultCommandContainer(aliases, description, command));
         return this;
     }
 

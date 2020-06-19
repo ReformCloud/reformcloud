@@ -34,5 +34,8 @@ public interface CommandContainer {
     Collection<String> getAliases();
 
     @NotNull
+    String getDescription();
+
+    @NotNull
     Command getCommand();
 }
