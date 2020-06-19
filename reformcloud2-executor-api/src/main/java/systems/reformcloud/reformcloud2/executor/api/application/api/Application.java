@@ -29,6 +29,8 @@ import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.application.LoadedApplication;
 import systems.reformcloud.reformcloud2.executor.api.application.loader.AppClassLoader;
 import systems.reformcloud.reformcloud2.executor.api.application.updater.ApplicationUpdateRepository;
+import systems.reformcloud.reformcloud2.executor.api.dependency.DefaultDependencyLoader;
+import systems.reformcloud.reformcloud2.executor.api.dependency.DependencyLoader;
 import systems.reformcloud.reformcloud2.executor.api.network.netty.concurrent.FastNettyThreadFactory;
 
 import java.io.File;
@@ -41,6 +43,7 @@ public class Application {
     private LoadedApplication application;
     private ExecutorService executorService;
     private AppClassLoader appClassLoader;
+    public final DependencyLoader dependencyLoader = new DefaultDependencyLoader();
 
     public final void init(@NotNull LoadedApplication application, AppClassLoader loader) {
         this.application = application;
@@ -91,5 +94,10 @@ public class Application {
     @NotNull
     public final ExecutorService getExecutorService() {
         return this.executorService;
+    }
+
+    @NotNull
+    public DependencyLoader getDependencyLoader() {
+        return this.dependencyLoader;
     }
 }

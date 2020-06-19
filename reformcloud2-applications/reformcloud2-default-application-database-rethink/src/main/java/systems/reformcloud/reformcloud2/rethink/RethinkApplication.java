@@ -26,12 +26,16 @@ package systems.reformcloud.reformcloud2.rethink;
 
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.application.api.Application;
+import systems.reformcloud.reformcloud2.executor.api.base.Conditions;
 import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.dependency.util.DependencyParser;
 import systems.reformcloud.reformcloud2.executor.api.provider.DatabaseProvider;
 import systems.reformcloud.reformcloud2.rethink.config.RethinkConfig;
 
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashMap;
 
 public class RethinkApplication extends Application {
 
@@ -39,6 +43,12 @@ public class RethinkApplication extends Application {
 
     @Override
     public void onLoad() {
+        DependencyParser.getAllDependencies("dependencies.txt", new HashMap<>(), RethinkApplication.class.getClassLoader()).forEach(e -> {
+            URL dependencyURL = RethinkApplication.this.getDependencyLoader().loadDependency(e);
+            Conditions.nonNull(dependencyURL, "Dependency load for " + e.getArtifactID() + " failed");
+            RethinkApplication.this.getDependencyLoader().addDependency(dependencyURL);
+        });
+
         this.before = ExecutorAPI.getInstance().getDatabaseProvider();
         Path configPath = this.getDataFolder().toPath().resolve("config.json");
         if (Files.notExists(configPath)) {

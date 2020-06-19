@@ -26,7 +26,12 @@ package systems.reformcloud.reformcloud2.file;
 
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.application.api.Application;
+import systems.reformcloud.reformcloud2.executor.api.base.Conditions;
+import systems.reformcloud.reformcloud2.executor.api.dependency.util.DependencyParser;
 import systems.reformcloud.reformcloud2.executor.api.provider.DatabaseProvider;
+
+import java.net.URL;
+import java.util.HashMap;
 
 public class FileDatabase extends Application {
 
@@ -34,6 +39,12 @@ public class FileDatabase extends Application {
 
     @Override
     public void onLoad() {
+        DependencyParser.getAllDependencies("dependencies.txt", new HashMap<>(), FileDatabase.class.getClassLoader()).forEach(e -> {
+            URL dependencyURL = FileDatabase.this.getDependencyLoader().loadDependency(e);
+            Conditions.nonNull(dependencyURL, "Dependency load for " + e.getArtifactID() + " failed");
+            FileDatabase.this.getDependencyLoader().addDependency(dependencyURL);
+        });
+
         this.before = ExecutorAPI.getInstance().getDatabaseProvider();
         ExecutorAPI.getInstance().getServiceRegistry().setProvider(DatabaseProvider.class, new FileDatabaseProvider(), false, true);
     }
