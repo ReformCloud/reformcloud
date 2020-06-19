@@ -35,6 +35,7 @@ import systems.reformcloud.reformcloud2.executor.api.network.channel.shared.Shar
 import systems.reformcloud.reformcloud2.executor.api.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.api.node.NodeInformation;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
+import systems.reformcloud.reformcloud2.executor.api.utility.list.Streams;
 import systems.reformcloud.reformcloud2.node.NodeExecutor;
 import systems.reformcloud.reformcloud2.node.cluster.ClusterManager;
 import systems.reformcloud.reformcloud2.node.process.DefaultNodeLocalProcessWrapper;
@@ -93,6 +94,15 @@ public class NodeServerEndpointChannelReader extends SharedEndpointChannelReader
                 NodeInformation nodeInformation = packet.getData().get("node", NodeInformation.TYPE);
                 if (nodeInformation == null) {
                     // invalid type to id
+                    super.networkChannel.close();
+                    return;
+                }
+
+                if (!Streams.hasMatch(
+                        NodeExecutor.getInstance().getNodeConfig().getClusterNodes(),
+                        networkAddress -> networkAddress.getHost().equals(super.networkChannel.getAddress())
+                )) {
+                    // invalid node connected (the node is not registered)
                     super.networkChannel.close();
                     return;
                 }

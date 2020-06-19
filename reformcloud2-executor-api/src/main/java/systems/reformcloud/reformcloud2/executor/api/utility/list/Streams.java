@@ -27,7 +27,6 @@ package systems.reformcloud.reformcloud2.executor.api.utility.list;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.UnmodifiableView;
 import systems.reformcloud.reformcloud2.executor.api.utility.optional.ReferencedOptional;
 
 import java.util.*;
@@ -57,19 +56,6 @@ public final class Streams {
         }
 
         return strings;
-    }
-
-    /**
-     * Makes the given list unmodifiable
-     *
-     * @param in  The list which should be unmodifiable
-     * @param <T> The object parameter of the values in the list
-     * @return A unmodifiable list of all given keys
-     */
-    @NotNull
-    @UnmodifiableView
-    public static <T> List<T> unmodifiable(@NotNull List<T> in) {
-        return Collections.unmodifiableList(in);
     }
 
     /**
@@ -446,5 +432,15 @@ public final class Streams {
         }
 
         return result;
+    }
+
+    public static <T> boolean hasMatch(@NotNull Collection<T> collection, @NotNull Predicate<T> predicate) {
+        for (T t : collection) {
+            if (predicate.test(t)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
