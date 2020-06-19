@@ -28,12 +28,6 @@ pipeline {
             }
         }
 
-        stage('Validate') {
-            steps {
-                sh 'mvn validate';
-            }
-        }
-
         stage('Clean') {
             steps {
                 sh 'mvn clean';
