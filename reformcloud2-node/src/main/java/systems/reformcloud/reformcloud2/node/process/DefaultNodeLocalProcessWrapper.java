@@ -242,8 +242,8 @@ public class DefaultNodeLocalProcessWrapper extends DefaultNodeRemoteProcessWrap
     }
 
     private void stop(boolean finalStop) {
-        if (this.isStarted() && this.isAlive()) {
-            JavaProcessHelper.shutdown(this.process, true, true, TimeUnit.SECONDS.toMillis(5), this.getShutdownCommands());
+        if (this.isStarted()) {
+            JavaProcessHelper.shutdown(this.process, true, true, TimeUnit.SECONDS.toMillis(15), this.getShutdownCommands());
         }
 
         this.process = null;

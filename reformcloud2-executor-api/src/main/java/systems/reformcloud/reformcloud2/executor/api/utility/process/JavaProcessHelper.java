@@ -75,7 +75,7 @@ public final class JavaProcessHelper {
         }
 
         try {
-            return;
+            process.exitValue();
         } catch (final Throwable throwable) {
             process.destroyForcibly();
         }
