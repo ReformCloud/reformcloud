@@ -147,7 +147,12 @@ public final class CommandCluster implements Command {
     private void showInformationAboutToSender(@NotNull CommandSender source, @NotNull NodeInformation information) {
         StringBuilder stringBuilder = new StringBuilder();
 
-        stringBuilder.append(" > Name            - ").append(information.getName()).append("\n");
+        stringBuilder.append(" > Name            - ").append(information.getName());
+        if (NodeExecutor.getInstance().isOwnIdentity(information.getName())) {
+            stringBuilder.append(" (me)");
+        }
+
+        stringBuilder.append("\n");
         stringBuilder.append(" > UniqueID        - ").append(information.getNodeUniqueID()).append("\n");
         stringBuilder.append(" > Memory          - ").append(information.getUsedMemory()).append("MB/").append(information.getMaxMemory()).append("MB\n");
         stringBuilder.append(" > OS              - ").append(information.getProcessRuntimeInformation().getOsVersion()).append("\n");
@@ -178,7 +183,13 @@ public final class CommandCluster implements Command {
 
         stringBuilder.append("Connected nodes (").append(connectedNodes.size()).append(")").append("\n");
         for (NodeInformation connectedNode : connectedNodes) {
-            stringBuilder.append(" > ").append(connectedNode.getName()).append("/").append(connectedNode.getNodeUniqueID()).append("\n");
+            stringBuilder.append(" > ").append(connectedNode.getName()).append("/").append(connectedNode.getNodeUniqueID());
+
+            if (NodeExecutor.getInstance().isOwnIdentity(connectedNode.getName())) {
+                stringBuilder.append(" (me)");
+            }
+
+            stringBuilder.append("\n");
         }
 
         source.sendMessages(stringBuilder.toString().split("\n"));
