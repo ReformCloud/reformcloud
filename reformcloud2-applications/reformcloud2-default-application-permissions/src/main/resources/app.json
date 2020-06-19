@@ -2,6 +2,6 @@
   "name": "PermissionAddon",
   "author": "derklaro",
   "main": "systems.reformcloud.reformcloud2.permissions.application.ReformCloudApplication",
-  "version": "2.2.2",
-  "impl-version": "2.2.2"
+  "version": "2.10.0-SNAPSHOT",
+  "impl-version": "2.10.0-SNAPSHOT"
 }
