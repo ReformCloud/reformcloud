@@ -139,6 +139,14 @@ public final class NodeExecutor extends ExecutorAPI {
         this.mainGroupProvider = new DefaultNodeMainGroupProvider(System.getProperty("systems.reformcloud.main-group-dir", "reformcloud/groups/main"));
         this.processGroupProvider = new DefaultNodeProcessGroupProvider(System.getProperty("systems.reformcloud.sub-group-dir", "reformcloud/groups/sub"));
 
+        for (String mainGroupName : this.mainGroupProvider.getMainGroupNames()) {
+            System.out.println(LanguageManager.get("loading-main-group", mainGroupName));
+        }
+
+        for (String processGroupName : this.processGroupProvider.getProcessGroupNames()) {
+            System.out.println(LanguageManager.get("loading-process-group", processGroupName));
+        }
+
         this.nodeExecutorConfig.init();
         this.nodeConfig = this.nodeExecutorConfig.getNodeConfig();
         this.nodeInformationProvider = new DefaultNodeNodeInformationProvider(this.currentNodeInformation = new NodeInformation(

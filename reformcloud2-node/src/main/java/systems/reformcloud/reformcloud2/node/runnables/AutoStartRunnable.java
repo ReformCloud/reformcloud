@@ -27,6 +27,7 @@ package systems.reformcloud.reformcloud2.node.runnables;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.groups.ProcessGroup;
+import systems.reformcloud.reformcloud2.executor.api.language.LanguageManager;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessState;
 import systems.reformcloud.reformcloud2.executor.api.utility.list.Streams;
@@ -63,6 +64,7 @@ public class AutoStartRunnable implements Runnable {
             int prepared = Streams.allOf(processes, e -> e.getProcessDetail().getProcessState() == ProcessState.PREPARED).size();
             if (processGroup.getStartupConfiguration().getAlwaysPreparedProcesses() > prepared) {
                 ExecutorAPI.getInstance().getProcessProvider().createProcess().group(processGroup).prepare();
+                System.out.println(LanguageManager.get("process-preparing-new-process", processGroup.getName()));
             }
         }
     }
@@ -86,5 +88,7 @@ public class AutoStartRunnable implements Runnable {
                     .prepare()
                     .thenAccept(processWrapper -> processWrapper.setRuntimeState(ProcessState.STARTED));
         }
+
+        System.out.println(LanguageManager.get("process-start-process", processGroup.getName()));
     }
 }

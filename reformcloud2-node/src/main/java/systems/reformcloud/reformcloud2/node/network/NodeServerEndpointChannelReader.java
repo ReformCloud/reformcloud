@@ -29,6 +29,7 @@ import io.netty.channel.ChannelHandlerContext;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.language.LanguageManager;
 import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.manager.ChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.shared.SharedEndpointChannelReader;
@@ -115,6 +116,8 @@ public class NodeServerEndpointChannelReader extends SharedEndpointChannelReader
 
                 super.networkChannel.setName(nodeInformation.getName());
                 ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ClusterManager.class).handleNodeConnect(nodeInformation);
+
+                System.out.println(LanguageManager.get("network-node-other-node-connected", nodeInformation.getName()));
             } else if (packet.getType() == 2) {
                 UUID processUniqueId = packet.getData().get("pid", UUID.class);
                 if (processUniqueId == null) {
