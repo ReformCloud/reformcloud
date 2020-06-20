@@ -57,8 +57,7 @@ public final class SharedJoinAllowChecker {
             return new Duo<>(false, messages.format(messages.getAlreadyConnectedToNetwork()));
         }
 
-        if (configuration.isUseCloudPlayerLimit()
-                && current.getProcessDetail().getMaxPlayers() < current.getProcessPlayerManager().getOnlineCount() + 1
+        if (current.getProcessDetail().getMaxPlayers() <= current.getProcessPlayerManager().getOnlineCount()
                 && !permissionChecker.apply(configuration.getFullJoinPermission())) {
             return new Duo<>(false, messages.format(messages.getProcessFullMessage()));
         }
