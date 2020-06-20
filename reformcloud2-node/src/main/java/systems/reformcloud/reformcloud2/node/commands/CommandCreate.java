@@ -53,7 +53,6 @@ public final class CommandCreate implements Command {
                         " --max-process-count=[max]         | Sets the max process count for the group (default: -1)\n" +
                         " --always-prepared=[prepared]      | Sets the amount of processes which should always be preared (default: 1)\n" +
                         " --max-players=[max]               | Sets the max player count for the processes (default: proxies: 512, servers: 20)\n" +
-                        " --start-priority=[priority]       | Sets the startup priority for the group to start (default: 0)\n" +
                         " --static=[static]                 | Marks the process as a static process (default: false)\n" +
                         " --lobby=[lobby]                   | Marks the process as a lobby (default: false)\n" +
                         " --maintenance=[maintenance]       | Enables the maintenance mode for the group (default: enabled on proxies)\n" +
@@ -150,7 +149,6 @@ public final class CommandCreate implements Command {
         int max = -1;
         int prepared = 1;
         int maxPlayers = version.isServer() ? 20 : 512;
-        int priority = 0;
         boolean staticProcess = false;
         boolean lobby = false;
         boolean maintenance = !version.isServer();
@@ -174,16 +172,6 @@ public final class CommandCreate implements Command {
             }
 
             maxPlayers = maxPlayerCount;
-        }
-
-        if (properties.containsKey("start-priority")) {
-            Integer startPriority = CommonHelper.fromString(properties.getProperty("start-priority"));
-            if (startPriority == null) {
-                source.sendMessage(LanguageManager.get("command-integer-failed-no-limit", properties.getProperty("start-priority")));
-                return;
-            }
-
-            priority = startPriority;
         }
 
         if (properties.containsKey("max-memory")) {
@@ -313,7 +301,6 @@ public final class CommandCreate implements Command {
                         max,
                         min,
                         prepared,
-                        priority,
                         port,
                         "java",
                         new AutomaticStartupConfiguration(false, 90, 30),

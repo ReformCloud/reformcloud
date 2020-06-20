@@ -64,7 +64,6 @@ public final class DefaultProcessGroup extends ProcessGroup {
                 new StartupConfiguration(
                         -1,
                         1,
-                        0,
                         port,
                         "java",
                         true,
@@ -103,7 +102,6 @@ public final class DefaultProcessGroup extends ProcessGroup {
                 new StartupConfiguration(
                         max,
                         min,
-                        0,
                         port,
                         "java",
                         true,
@@ -144,7 +142,6 @@ public final class DefaultProcessGroup extends ProcessGroup {
                         max,
                         min,
                         prepared,
-                        priority,
                         port,
                         "java",
                         AutomaticStartupConfiguration.defaults(),

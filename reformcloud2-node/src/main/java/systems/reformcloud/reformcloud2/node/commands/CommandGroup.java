@@ -69,7 +69,6 @@ public final class CommandGroup implements Command {
                         " --always-prepared-process-count=[count]       | Sets the count of processes which should always be prepared\n" +
                         " --start-port=[port]                           | Sets the start port of the group\n" +
                         " --max-memory=[default/memory]                 | Sets the max memory of the template (format: <template-name>/<max-memory>)\n" +
-                        " --start-priority=[priority]                   | Sets the start priority for the group\n" +
                         " --startup-pickers=[Client1;Node2]             | Sets the startup pickers for the group\n" +
                         " --add-startup-pickers=[Client1;Node2]         | Adds the specified startup pickers to the group\n" +
                         " --remove-startup-pickers=[Client1;Node2]      | Removes the specified startup pickers from the group\n" +
@@ -307,21 +306,6 @@ public final class CommandGroup implements Command {
                         "command-group-edit",
                         "start-port",
                         processGroup.get().getStartupConfiguration().getStartPort()
-                ));
-            }
-
-            if (properties.containsKey("start-priority")) {
-                Integer startPriority = CommonHelper.fromString(properties.getProperty("start-priority"));
-                if (startPriority == null || startPriority <= 0) {
-                    source.sendMessage(LanguageManager.get("command-integer-failed-no-limit", properties.getProperty("start-priority")));
-                    return;
-                }
-
-                processGroup.get().getStartupConfiguration().setStartupPriority(startPriority);
-                source.sendMessage(LanguageManager.get(
-                        "command-group-edit",
-                        "start-priority",
-                        startPriority
                 ));
             }
 
