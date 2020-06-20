@@ -42,12 +42,9 @@ import systems.reformcloud.reformcloud2.node.process.DefaultNodeProcessProvider;
 
 import java.util.Collection;
 import java.util.Optional;
-import java.util.Random;
 import java.util.UUID;
 
 public class DefaultProcessFactory implements ProcessFactory {
-
-    private static final Random RANDOM = new Random();
 
     public DefaultProcessFactory(DefaultNodeProcessProvider defaultNodeProcessProvider) {
         this.defaultNodeProcessProvider = defaultNodeProcessProvider;
@@ -181,7 +178,20 @@ public class DefaultProcessFactory implements ProcessFactory {
             return null;
         }
 
-        return processGroup.getTemplates().get(RANDOM.nextInt(processGroup.getTemplates().size()));
+        Template result = null;
+        for (Template template : processGroup.getTemplates()) {
+            if (template.isGlobal()) {
+                continue;
+            }
+
+            if (result == null) {
+                result = template;
+            } else if (result.getPriority() < template.getPriority()) {
+                result = template;
+            }
+        }
+
+        return result;
     }
 
     private @NotNull UUID preventCollision(@NotNull UUID current) {
