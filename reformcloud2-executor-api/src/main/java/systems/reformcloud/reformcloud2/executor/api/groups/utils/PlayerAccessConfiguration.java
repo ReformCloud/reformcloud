@@ -39,8 +39,7 @@ public final class PlayerAccessConfiguration implements SerializableObject {
                 true,
                 "reformcloud.join.maintenance",
                 false,
-                null,
-                true,
+                "reformcloud.join",
                 true,
                 512
         );
@@ -51,7 +50,6 @@ public final class PlayerAccessConfiguration implements SerializableObject {
     private String maintenanceJoinPermission;
     private boolean joinOnlyPerPermission;
     private String joinPermission;
-    private boolean playerControllerCommandReporting;
     private boolean useCloudPlayerLimit;
     private int maxPlayers;
 
@@ -60,14 +58,12 @@ public final class PlayerAccessConfiguration implements SerializableObject {
     }
 
     public PlayerAccessConfiguration(String fullJoinPermission, boolean maintenance, String maintenanceJoinPermission,
-                                     boolean joinOnlyPerPermission, String joinPermission,
-                                     boolean playerControllerCommandReporting, boolean useCloudPlayerLimit, int maxPlayers) {
+                                     boolean joinOnlyPerPermission, String joinPermission, boolean useCloudPlayerLimit, int maxPlayers) {
         this.fullJoinPermission = fullJoinPermission;
         this.maintenance = maintenance;
         this.maintenanceJoinPermission = maintenanceJoinPermission;
         this.joinOnlyPerPermission = joinOnlyPerPermission;
         this.joinPermission = joinPermission;
-        this.playerControllerCommandReporting = playerControllerCommandReporting;
         this.useCloudPlayerLimit = useCloudPlayerLimit;
         this.maxPlayers = maxPlayers;
     }
@@ -99,10 +95,6 @@ public final class PlayerAccessConfiguration implements SerializableObject {
         return this.joinPermission == null ? "reformcloud.custom.permission" : this.joinPermission;
     }
 
-    public boolean isPlayerControllerCommandReporting() {
-        return this.playerControllerCommandReporting;
-    }
-
     public boolean isUseCloudPlayerLimit() {
         return this.useCloudPlayerLimit;
     }
@@ -127,7 +119,6 @@ public final class PlayerAccessConfiguration implements SerializableObject {
         PlayerAccessConfiguration that = (PlayerAccessConfiguration) o;
         return this.isMaintenance() == that.isMaintenance() &&
                 this.isJoinOnlyPerPermission() == that.isJoinOnlyPerPermission() &&
-                this.isPlayerControllerCommandReporting() == that.isPlayerControllerCommandReporting() &&
                 this.isUseCloudPlayerLimit() == that.isUseCloudPlayerLimit() &&
                 this.getMaxPlayers() == that.getMaxPlayers() &&
                 Objects.equals(this.getMaintenanceJoinPermission(), that.getMaintenanceJoinPermission()) &&
@@ -141,7 +132,6 @@ public final class PlayerAccessConfiguration implements SerializableObject {
         buffer.writeString(this.maintenanceJoinPermission);
         buffer.writeBoolean(this.joinOnlyPerPermission);
         buffer.writeString(this.joinPermission);
-        buffer.writeBoolean(this.playerControllerCommandReporting);
         buffer.writeBoolean(this.useCloudPlayerLimit);
         buffer.writeVarInt(this.maxPlayers);
     }
@@ -153,7 +143,6 @@ public final class PlayerAccessConfiguration implements SerializableObject {
         this.maintenanceJoinPermission = buffer.readString();
         this.joinOnlyPerPermission = buffer.readBoolean();
         this.joinPermission = buffer.readString();
-        this.playerControllerCommandReporting = buffer.readBoolean();
         this.useCloudPlayerLimit = buffer.readBoolean();
         this.maxPlayers = buffer.readVarInt();
     }

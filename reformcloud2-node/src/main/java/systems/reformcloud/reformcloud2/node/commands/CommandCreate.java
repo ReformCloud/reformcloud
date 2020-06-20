@@ -312,8 +312,7 @@ public final class CommandCreate implements Command {
                         maintenance,
                         "reformcloud.join.maintenance",
                         false,
-                        "reformcloud.custom.permission",
-                        true,
+                        "reformcloud.join",
                         true,
                         maxPlayers
                 ))

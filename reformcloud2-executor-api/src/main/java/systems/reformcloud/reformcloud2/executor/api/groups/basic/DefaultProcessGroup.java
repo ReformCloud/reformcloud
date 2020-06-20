@@ -87,8 +87,7 @@ public final class DefaultProcessGroup extends ProcessGroup {
                         maintenance,
                         "reformcloud.join.maintenance",
                         false,
-                        null,
-                        true,
+                        "reformcloud.join",
                         true,
                         maxPlayers
                 ), staticServer, lobby);
@@ -125,8 +124,7 @@ public final class DefaultProcessGroup extends ProcessGroup {
                         maintenance,
                         "reformcloud.join.maintenance",
                         false,
-                        null,
-                        true,
+                        "reformcloud.join",
                         true,
                         50
                 ), staticServer, lobby);
@@ -166,8 +164,7 @@ public final class DefaultProcessGroup extends ProcessGroup {
                         maintenance,
                         "reformcloud.join.maintenance",
                         false,
-                        null,
-                        true,
+                        "reformcloud.join",
                         true,
                         maxPlayers
                 ), staticServer, lobby);
