@@ -41,6 +41,9 @@ public class MainGroup implements Nameable, SerializableObject {
     private String name;
     private Collection<String> subGroups;
 
+    public MainGroup() {
+    }
+
     public MainGroup(String name, Collection<String> subGroups) {
         this.name = name;
         this.subGroups = subGroups;

@@ -48,6 +48,9 @@ public class NodeInformation implements SerializableObject {
 
     private ProcessRuntimeInformation processRuntimeInformation;
 
+    public NodeInformation() {
+    }
+
     public NodeInformation(String name, UUID nodeUniqueID, long startupTime, long usedMemory, long maxMemory) {
         this.name = name;
         this.nodeUniqueID = nodeUniqueID;
