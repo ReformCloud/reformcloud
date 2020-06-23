@@ -56,11 +56,15 @@ public class H2DatabaseProvider extends AbstractSQLDatabaseProvider {
     private final Connection connection;
 
     @Override
-    public void executeUpdate(@NotNull String query, @NonNls Object @NotNull ... objects) {
+    public void executeUpdate(@NotNull String query, @NonNls Object... objects) {
         try (PreparedStatement preparedStatement = this.connection.prepareStatement(query)) {
             int i = 1;
             for (Object object : objects) {
-                preparedStatement.setString(i++, object.toString());
+                if (object instanceof byte[]) {
+                    preparedStatement.setBytes(i, (byte[]) object);
+                } else {
+                    preparedStatement.setString(i++, object.toString());
+                }
             }
 
             preparedStatement.executeUpdate();
@@ -71,15 +75,19 @@ public class H2DatabaseProvider extends AbstractSQLDatabaseProvider {
 
     @Override
     @NotNull
-    public <T> T executeQuery(@NotNull String query, SQLFunction<ResultSet, T> function, @NotNull T defaultValue, @NonNls Object @NotNull ... objects) {
+    public <T> T executeQuery(@NotNull String query, SQLFunction<ResultSet, T> function, @NotNull T defaultValue, @NonNls Object... objects) {
         try (PreparedStatement preparedStatement = this.connection.prepareStatement(query)) {
             int i = 1;
             for (Object object : objects) {
-                preparedStatement.setString(i++, object.toString());
+                if (object instanceof byte[]) {
+                    preparedStatement.setBytes(i, (byte[]) object);
+                } else {
+                    preparedStatement.setString(i++, object.toString());
+                }
             }
 
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                return function.apply(resultSet);
+                return resultSet.next() ? function.apply(resultSet) : defaultValue;
             }
         } catch (SQLException exception) {
             exception.printStackTrace();

@@ -102,11 +102,11 @@ public final class ConfigHelper {
                             )
                     ), Arrays.asList(
                             new TabListConfiguration(
-                                    "\n §8§l» §b§lReform§f§lCloud §8§l➥ §7%proxy_online_count%§8/§7%proxy_max_players% §8§l« \n §7Server §8§l➟ §6%player_server% \n",
+                                    "\n §8§l» §b§lReform§f§lCloud §8§l➥ §7%proxy_online_players%§8/§7%proxy_max_players% §8§l« \n §7Server §8§l➟ §6%player_server% \n",
                                     "\n §7Discord §8§l➟ §bhttps://discord.gg/uskXdVZ \n §7Twitter §8§l➟ §7@§bReform§fCloud \n",
                                     2
                             ), new TabListConfiguration(
-                                    "\n §8§l» §b§lReform§f§lCloud §8§l➥ §7%proxy_online_count%§8/§7%proxy_max_players% §8§l« \n §8§l➟ §7§lNot just a cloud system, but an experience \n",
+                                    "\n §8§l» §b§lReform§f§lCloud §8§l➥ §7%proxy_online_players%§8/§7%proxy_max_players% §8§l« \n §8§l➟ §7§lNot just a cloud system, but an experience \n",
                                     "\n §7Discord §8§l➟ §bhttps://discord.gg/uskXdVZ \n §7Twitter §8§l➟ §7@§bReform§fCloud \n",
                                     2
                             )

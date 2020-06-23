@@ -85,7 +85,6 @@ import java.io.File;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.atomic.AtomicLong;
 
 public final class NodeExecutor extends ExecutorAPI {
 
@@ -443,14 +442,13 @@ public final class NodeExecutor extends ExecutorAPI {
     }
 
     public boolean canStartProcesses(int neededMemory) {
-        AtomicLong atomicLong = new AtomicLong(neededMemory);
         for (DefaultNodeLocalProcessWrapper processWrapper : this.processProvider.getProcessWrappers()) {
             if (processWrapper.isStarted()) {
-                atomicLong.addAndGet(processWrapper.getProcessInformation().getProcessDetail().getMaxMemory());
+                neededMemory += processWrapper.getProcessInformation().getProcessDetail().getMaxMemory();
             }
         }
 
-        if (atomicLong.get() > this.nodeConfig.getMaxMemory()) {
+        if (neededMemory >= this.nodeConfig.getMaxMemory()) {
             return false;
         }
 

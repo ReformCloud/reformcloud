@@ -429,6 +429,10 @@ public class DefaultPermissionManagement extends PermissionManagement {
     private void publish(@NotNull Packet packet) {
         for (NetworkChannel registeredChannel : ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ChannelManager.class).getRegisteredChannels()) {
             if (registeredChannel.isAuthenticated()) {
+                if (NODE && ExecutorAPI.getInstance().getNodeInformationProvider().getNodeInformation(registeredChannel.getName()).isPresent()) {
+                    continue;
+                }
+
                 registeredChannel.sendPacket(packet);
             }
         }

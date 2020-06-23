@@ -59,7 +59,7 @@ public class ReformCloudApplication extends Application {
         ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(CommandManager.class).registerCommand(
                 new CommandPerms(),
                 "Manages the permission users and permission groups in the database and on all currently running processes",
-                "permissions", "cloudperms");
+                "permissions", "cloudperms", "perms");
     }
 
     @Nullable

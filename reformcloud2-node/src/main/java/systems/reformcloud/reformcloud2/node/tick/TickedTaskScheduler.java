@@ -69,6 +69,14 @@ public final class TickedTaskScheduler {
         });
     }
 
+    @NotNull
+    public Task<Void> queue(@NotNull Runnable runnable, int delay) {
+        return this.queue(() -> {
+            runnable.run();
+            return null;
+        }, delay);
+    }
+
     public void addPermanentTask(@NotNull Runnable runnable) {
         this.permanentTasks.add(runnable);
     }

@@ -33,10 +33,10 @@ import systems.reformcloud.reformcloud2.executor.api.groups.template.Template;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessState;
 import systems.reformcloud.reformcloud2.executor.api.process.api.ProcessInclusion;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.UUID;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public abstract class AbstractProcessBuilder implements ProcessBuilder {
 
@@ -51,7 +51,7 @@ public abstract class AbstractProcessBuilder implements ProcessBuilder {
 
     protected ProcessGroup processGroup;
     protected Template template;
-    protected Collection<ProcessInclusion> inclusions = new ArrayList<>();
+    protected Collection<ProcessInclusion> inclusions = new CopyOnWriteArrayList<>();
     protected JsonConfiguration extra = new JsonConfiguration();
     protected ProcessState initialState = ProcessState.READY;
     protected UUID processUniqueId = UUID.randomUUID();

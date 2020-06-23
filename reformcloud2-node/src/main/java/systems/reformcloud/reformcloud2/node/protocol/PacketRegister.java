@@ -141,8 +141,9 @@ public final class PacketRegister {
         // node -> api
         packetProvider.registerPacket(NodeToApiRequestProcessInformationUpdateResult.class);
 
-        // node <-> api (shared packets)
+        // node <-> api & node <-> node (shared packets)
         packetProvider.registerPacket(PacketAuthBegin.class);
+        packetProvider.registerPacket(PacketAuthSuccess.class);
         packetProvider.registerPacket(PacketChannelMessage.class);
         packetProvider.registerPacket(PacketConnectPlayerToServer.class);
         packetProvider.registerPacket(PacketDisconnectPlayer.class);

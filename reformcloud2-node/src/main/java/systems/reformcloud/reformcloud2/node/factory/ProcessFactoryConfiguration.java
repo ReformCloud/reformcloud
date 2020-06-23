@@ -35,6 +35,7 @@ import systems.reformcloud.reformcloud2.executor.api.process.api.ProcessInclusio
 
 import java.util.Collection;
 import java.util.UUID;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class ProcessFactoryConfiguration implements SerializableObject {
 
@@ -53,6 +54,9 @@ public class ProcessFactoryConfiguration implements SerializableObject {
     protected int id;
     protected int maxPlayers;
 
+    public ProcessFactoryConfiguration() {
+    }
+
     public ProcessFactoryConfiguration(String node, String displayName, String messageOfTheDay, ProcessGroup processGroup, Template template,
                                        Collection<ProcessInclusion> inclusions, JsonConfiguration extra, ProcessState initialState,
                                        UUID processUniqueId, int memory, int id, int maxPlayers) {
@@ -61,7 +65,7 @@ public class ProcessFactoryConfiguration implements SerializableObject {
         this.messageOfTheDay = messageOfTheDay;
         this.processGroup = processGroup;
         this.template = template;
-        this.inclusions = inclusions;
+        this.inclusions = new CopyOnWriteArrayList<>(inclusions);
         this.extra = new JsonConfiguration();
         this.extra = extra;
         this.initialState = initialState;
@@ -145,7 +149,7 @@ public class ProcessFactoryConfiguration implements SerializableObject {
 
         this.processGroup = buffer.readObject(ProcessGroup.class);
         this.template = buffer.readObject(Template.class);
-        this.inclusions = buffer.readObjects(ProcessInclusion.class);
+        this.inclusions = new CopyOnWriteArrayList<>(buffer.readObjects(ProcessInclusion.class));
         this.extra = new JsonConfiguration(buffer.readArray());
         this.initialState = ProcessState.values()[buffer.readInt()];
         this.processUniqueId = buffer.readUniqueId();

@@ -35,8 +35,8 @@ public final class PermissionPluginUtil {
     }
 
     public static void awaitConnection(@NotNull Runnable then) {
-        PacketHelper.addPacketHandler();
         PermissionManagement.setup();
+        PacketHelper.addPacketHandler();
         then.run();
     }
 }

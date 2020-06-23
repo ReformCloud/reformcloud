@@ -182,12 +182,19 @@ public class DefaultNodeLocalProcessWrapper extends DefaultNodeRemoteProcessWrap
     }
 
     private void prepare() {
-        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).callEvent(new LocalProcessPrePrepareEvent(this.processInformation));
-        EnvironmentBuilder.constructEnvFor(this, this.firstStart, this.connectionKey);
+        try {
+            this.lock.lock();
+
+            ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).callEvent(new LocalProcessPrePrepareEvent(this.processInformation));
+            EnvironmentBuilder.constructEnvFor(this, this.firstStart, this.connectionKey);
+        } finally {
+            this.lock.unlock();
+        }
     }
 
     private boolean start() {
         if (!NodeExecutor.getInstance().canStartProcesses(this.processInformation.getProcessDetail().getMaxMemory())) {
+            NodeExecutor.getInstance().getTaskScheduler().queue(() -> this.setRuntimeState(ProcessState.STARTED), 20 * 5);
             return false;
         }
 
@@ -229,8 +236,14 @@ public class DefaultNodeLocalProcessWrapper extends DefaultNodeRemoteProcessWrap
                     .directory(this.path.toFile())
                     .redirectErrorStream(true)
                     .start();
-        } catch (IOException exception) {
-            exception.printStackTrace();
+        } catch (Throwable throwable) {
+            if (throwable instanceof IOException) { // low level - but the best way :(
+                NodeExecutor.getInstance().getTaskScheduler().queue(() -> this.setRuntimeState(ProcessState.STARTED), 20 * 5);
+                return false;
+            }
+
+            throwable.printStackTrace();
+            return false;
         }
 
         return true;

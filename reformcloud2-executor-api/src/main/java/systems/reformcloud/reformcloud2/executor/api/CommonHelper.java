@@ -134,7 +134,11 @@ public final class CommonHelper {
     }
 
     public static int calculateMaxMemory() {
-        return (int) ((operatingSystemMXBean().getTotalPhysicalMemorySize() / 1048576) - 2048);
+        return getTotalSystemMemory() - 0x800;
+    }
+
+    public static int getTotalSystemMemory() {
+        return (int) (operatingSystemMXBean().getTotalPhysicalMemorySize() / 0x100000);
     }
 
     public static String getIpAddress(@NotNull String input) {

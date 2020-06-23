@@ -36,7 +36,6 @@ import systems.reformcloud.reformcloud2.executor.api.utility.list.Streams;
 import systems.reformcloud.reformcloud2.signs.application.packets.PacketCreateSign;
 import systems.reformcloud.reformcloud2.signs.application.packets.PacketDeleteBulkSigns;
 import systems.reformcloud.reformcloud2.signs.application.packets.PacketDeleteSign;
-import systems.reformcloud.reformcloud2.signs.application.packets.PacketRequestSignLayoutsResult;
 import systems.reformcloud.reformcloud2.signs.listener.CloudListener;
 import systems.reformcloud.reformcloud2.signs.packets.PacketReloadSignConfig;
 import systems.reformcloud.reformcloud2.signs.util.LayoutUtil;
@@ -79,7 +78,6 @@ public abstract class SharedSignSystemAdapter<T> implements SignSystemAdapter<T>
         ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).registerPackets(Arrays.asList(
                 PacketCreateSign.class,
                 PacketDeleteSign.class,
-                PacketRequestSignLayoutsResult.class,
                 PacketReloadSignConfig.class
         ));
 

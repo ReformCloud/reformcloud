@@ -35,7 +35,9 @@ public final class ProcessInclusionHandler {
 
     @Listener
     public void handle(final @NotNull LocalProcessPrePrepareEvent event) {
-        this.includeSelfFile(event.getProcessInformation());
+        if (!event.getProcessInformation().getProcessDetail().getTemplate().isServer()) {
+            this.includeSelfFile(event.getProcessInformation());
+        }
     }
 
     private void includeSelfFile(@NotNull ProcessInformation processInformation) {
