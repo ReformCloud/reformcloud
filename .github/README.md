@@ -20,7 +20,7 @@ them in the group file and the cloud will copy the paths or templates at the nex
 | Version Name                        | Version ID                   | Recommended Java Version     |
 |-------------------------------------|------------------------------|------------------------------|
 | Bungeecord (Waterfall, Hexacord...) | 1.8 - 1.16                   | Java 11                      |
-| Velocity                            | 1.8 - 1.16                   | Java 11                      |
+| Velocity                            | 1.8 - 1.16.1                 | Java 11                      |
 | Waterdog                            | 1.8 - 1.15.2                 | Java 8                       | 
 | Spigot & Paper                      | 1.8 - 1.15.2                 | <1.12 Java 8 / >1.12 Java 11 |
 | Torch                               | 1.8.8, 1.9.4, 1.12.2         | Java 8                       |
@@ -28,8 +28,8 @@ them in the group file and the cloud will copy the paths or templates at the nex
 | Hose                                | 1.8.8, 1.9.4, 1.10.2, 1.11.2 | Java 8                       |
 | Tuinity                             | 1.15.2                       | Java 11                      |
 | Glowstone                           | 1.10.2, 1.12.2               | Java 8                       |
-| Sponge (Forge)                      | 1.10.2 - 1.12.2              | Java 8                       |
-| Sponge (Vanilla)                    | 1.11.2, 1.12.2               | Java 8                       |
+| Sponge (Forge)                      | 1.10.2 - 1.12.2 (V 7.2.2)    | Java 8                       |
+| Sponge (Vanilla)                    | 1.11.2, 1.12.2 (V 7.2.2)     | Java 8                       |
 | Akarin                              | 1.12.2                       | Java 8                       |
 
 ### Currently supported minecraft-pocket-edition versions:
