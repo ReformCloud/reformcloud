@@ -26,10 +26,10 @@ package systems.reformcloud.reformcloud2.commands.application.update;
 
 import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.commands.application.ReformCloudApplication;
-import systems.reformcloud.reformcloud2.executor.api.common.application.updater.ApplicationRemoteUpdate;
-import systems.reformcloud.reformcloud2.executor.api.common.application.updater.basic.BasicApplicationRemoteUpdate;
-import systems.reformcloud.reformcloud2.executor.api.common.application.updater.basic.DefaultApplicationUpdateRepository;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.system.DownloadHelper;
+import systems.reformcloud.reformcloud2.executor.api.application.updater.ApplicationRemoteUpdate;
+import systems.reformcloud.reformcloud2.executor.api.application.updater.basic.BasicApplicationRemoteUpdate;
+import systems.reformcloud.reformcloud2.executor.api.application.updater.basic.DefaultApplicationUpdateRepository;
+import systems.reformcloud.reformcloud2.executor.api.io.DownloadHelper;
 
 import java.io.IOException;
 import java.util.Properties;
@@ -54,7 +54,7 @@ public class CommandAddonUpdater extends DefaultApplicationUpdateRepository {
 
     @Override
     public boolean isNewVersionAvailable() {
-        return !ReformCloudApplication.self().getApplication().getApplicationConfig().getVersion().equals(this.newVersion);
+        return !ReformCloudApplication.getInstance().getApplication().getApplicationConfig().getVersion().equals(this.newVersion);
     }
 
     @Nullable

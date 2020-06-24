@@ -24,49 +24,19 @@
  */
 package systems.reformcloud.reformcloud2.executor.api;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public enum ExecutorType {
 
-    CONTROLLER(1, true),
-
-    CLIENT(2, true),
-
-    NODE(4, true),
-
-    API(3, true),
-
-    UNKNOWN(-1, false);
-
-    private static final Map<Integer, ExecutorType> BY_ID = new HashMap<>();
-
-    static {
-        for (ExecutorType executorType : values()) {
-            BY_ID.put(executorType.getId(), executorType);
-        }
-    }
+    NODE(1),
+    API(2),
+    UNKNOWN(-1);
 
     private final int id;
-    private final boolean supported;
 
-    ExecutorType(int id, boolean supported) {
+    ExecutorType(int id) {
         this.id = id;
-        this.supported = supported;
-    }
-
-    /* ============================== */
-
-    public static ExecutorType getByID(int id) {
-        return BY_ID.getOrDefault(id, UNKNOWN);
     }
 
     public int getId() {
         return this.id;
     }
-
-    public boolean isSupported() {
-        return this.supported;
-    }
-
 }

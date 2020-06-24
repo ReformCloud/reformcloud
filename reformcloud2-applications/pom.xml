@@ -5,7 +5,7 @@
     <parent>
         <artifactId>reformcloud2</artifactId>
         <groupId>systems.reformcloud.reformcloud2</groupId>
-        <version>2.2.2</version>
+        <version>2.10.0-SNAPSHOT</version>
     </parent>
     <packaging>pom</packaging>
     <modelVersion>4.0.0</modelVersion>
@@ -16,10 +16,13 @@
         <module>reformcloud2-default-application-permissions</module>
         <module>reformcloud2-default-application-commands</module>
         <module>reformcloud2-default-application-signs</module>
-        <module>reformcloud2-default-application-web</module>
         <module>reformcloud2-default-application-proxy</module>
         <module>reformcloud2-default-application-cloudflare</module>
         <module>reformcloud2-default-application-template-backends</module>
+        <module>reformcloud2-default-application-database-mysql</module>
+        <module>reformcloud2-default-application-database-file</module>
+        <module>reformcloud2-default-application-database-mongo</module>
+        <module>reformcloud2-default-application-database-rethink</module>
     </modules>
 
 </project>

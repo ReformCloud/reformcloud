@@ -28,12 +28,6 @@ pipeline {
             }
         }
 
-        stage('Validate') {
-            steps {
-                sh 'mvn validate';
-            }
-        }
-
         stage('Clean') {
             steps {
                 sh 'mvn clean';
@@ -111,7 +105,8 @@ pipeline {
                 archiveArtifacts artifacts: 'ReformCloud2-Applications.zip'
                 archiveArtifacts artifacts: 'ReformCloud2-Plugins.zip'
                 archiveArtifacts artifacts: 'reformcloud2-runner/target/runner.jar'
-                archiveArtifacts artifacts: 'reformcloud2-executor/target/executor.jar'
+                archiveArtifacts artifacts: 'reformcloud2-node/target/executor.jar'
+                archiveArtifacts artifacts: 'reformcloud2-embedded/target/embedded.jar'
             }
         }
     }

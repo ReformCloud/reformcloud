@@ -30,15 +30,15 @@ import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPSClient;
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
-import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
-import systems.reformcloud.reformcloud2.executor.api.common.groups.template.backend.TemplateBackend;
-import systems.reformcloud.reformcloud2.executor.api.common.groups.template.backend.TemplateBackendManager;
-import systems.reformcloud.reformcloud2.executor.api.common.network.NetworkUtil;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.system.SystemHelper;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.task.defaults.DefaultTask;
+import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.groups.ProcessGroup;
+import systems.reformcloud.reformcloud2.executor.api.groups.template.backend.TemplateBackend;
+import systems.reformcloud.reformcloud2.executor.api.groups.template.backend.TemplateBackendManager;
+import systems.reformcloud.reformcloud2.executor.api.io.IOUtils;
+import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
+import systems.reformcloud.reformcloud2.executor.api.task.Task;
+import systems.reformcloud.reformcloud2.executor.api.task.defaults.DefaultTask;
+import systems.reformcloud.reformcloud2.executor.api.utility.list.Streams;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -184,7 +184,7 @@ public final class FTPTemplateBackend implements TemplateBackend {
                 this.loadFiles(ftpFile, path + "/" + ftpFile.getName(), Paths.get(target.toString(), ftpFile.getName()));
             }
         } else if (file.isFile()) {
-            SystemHelper.createDirectory(target.getParent());
+            IOUtils.createDirectory(target.getParent());
             if (Files.notExists(target)) {
                 Files.createFile(target);
             }

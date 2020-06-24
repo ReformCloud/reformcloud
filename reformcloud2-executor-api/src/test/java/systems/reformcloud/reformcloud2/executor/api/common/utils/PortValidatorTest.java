@@ -29,7 +29,7 @@ import org.hamcrest.Description;
 import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Test;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.PortUtil;
+import systems.reformcloud.reformcloud2.executor.api.utility.PortUtil;
 
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;

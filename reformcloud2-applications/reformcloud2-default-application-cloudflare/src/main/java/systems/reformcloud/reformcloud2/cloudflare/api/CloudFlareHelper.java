@@ -27,12 +27,13 @@ package systems.reformcloud.reformcloud2.cloudflare.api;
 import com.google.gson.JsonArray;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.cloudflare.config.CloudFlareConfig;
-import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
-import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
-import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.system.SystemHelper;
+import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
+import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.io.IOUtils;
+import systems.reformcloud.reformcloud2.executor.api.language.LanguageManager;
+import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
+import systems.reformcloud.reformcloud2.executor.api.utility.list.Streams;
+import systems.reformcloud.reformcloud2.node.NodeExecutor;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -41,6 +42,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Collection;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -57,9 +59,8 @@ public final class CloudFlareHelper {
     }
 
     public static boolean init(@NotNull String baseFolder) {
-
         if (Files.notExists(Paths.get(baseFolder + "/config.json"))) {
-            SystemHelper.createDirectory(Paths.get(baseFolder));
+            IOUtils.createDirectory(Paths.get(baseFolder));
             new JsonConfiguration()
                     .add("config", new CloudFlareConfig(
                             "someone@example.com",
@@ -76,7 +77,7 @@ public final class CloudFlareHelper {
     }
 
     public static void loadAlreadyRunning() {
-        for (ProcessInformation processInformation : Streams.allOf(ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getAllProcesses(), e -> !e.getProcessDetail().getTemplate().isServer())) {
+        for (ProcessInformation processInformation : getShouldHandleProcesses()) {
             CloudFlareHelper.createForProcess(processInformation);
         }
     }
@@ -154,6 +155,10 @@ public final class CloudFlareHelper {
     public static void handleStop() {
         Streams.forEachValues(A_RECORD_CACHE, CloudFlareHelper::deleteRecord);
         A_RECORD_CACHE.clear();
+
+        for (ProcessInformation shouldHandleProcess : getShouldHandleProcesses()) {
+            deleteRecord(shouldHandleProcess);
+        }
     }
 
     public static void deleteRecord(ProcessInformation target) {
@@ -219,5 +224,18 @@ public final class CloudFlareHelper {
                 .add("proxied", false)
                 .add("data", new JsonConfiguration().getJsonObject());
 
+    }
+
+    @NotNull
+    private static Collection<ProcessInformation> getShouldHandleProcesses() {
+        return Streams.allOf(
+                ExecutorAPI.getInstance().getProcessProvider().getProcesses(),
+                CloudFlareHelper::shouldHandle
+        );
+    }
+
+    public static boolean shouldHandle(@NotNull ProcessInformation process) {
+        return !process.getProcessDetail().getTemplate().isServer()
+                && NodeExecutor.getInstance().isOwnIdentity(process.getProcessDetail().getParentName());
     }
 }

@@ -24,8 +24,8 @@
  */
 package systems.reformcloud.reformcloud2.proxy.application;
 
-import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.system.SystemHelper;
+import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.io.IOUtils;
 import systems.reformcloud.reformcloud2.proxy.ProxyConfiguration;
 import systems.reformcloud.reformcloud2.proxy.config.MotdConfiguration;
 import systems.reformcloud.reformcloud2.proxy.config.TabListConfiguration;
@@ -45,7 +45,7 @@ public final class ConfigHelper {
 
     public static void init(File app) {
         if (!Files.exists(app.toPath()) || !Files.exists(Paths.get(app.toString(), "config.json"))) {
-            SystemHelper.createDirectory(app.toPath());
+            IOUtils.createDirectory(app.toPath());
             new JsonConfiguration()
                     .add("config", new ProxyConfiguration(
                             Arrays.asList(
@@ -102,11 +102,11 @@ public final class ConfigHelper {
                             )
                     ), Arrays.asList(
                             new TabListConfiguration(
-                                    "\n §8§l» §b§lReform§f§lCloud §8§l➥ §7%proxy_online_count%§8/§7%proxy_max_players% §8§l« \n §7Server §8§l➟ §6%player_server% \n",
+                                    "\n §8§l» §b§lReform§f§lCloud §8§l➥ §7%proxy_online_players%§8/§7%proxy_max_players% §8§l« \n §7Server §8§l➟ §6%player_server% \n",
                                     "\n §7Discord §8§l➟ §bhttps://discord.gg/uskXdVZ \n §7Twitter §8§l➟ §7@§bReform§fCloud \n",
                                     2
                             ), new TabListConfiguration(
-                                    "\n §8§l» §b§lReform§f§lCloud §8§l➥ §7%proxy_online_count%§8/§7%proxy_max_players% §8§l« \n §8§l➟ §7§lNot just a cloud system, but an experience \n",
+                                    "\n §8§l» §b§lReform§f§lCloud §8§l➥ §7%proxy_online_players%§8/§7%proxy_max_players% §8§l« \n §8§l➟ §7§lNot just a cloud system, but an experience \n",
                                     "\n §7Discord §8§l➟ §bhttps://discord.gg/uskXdVZ \n §7Twitter §8§l➟ §7@§bReform§fCloud \n",
                                     2
                             )

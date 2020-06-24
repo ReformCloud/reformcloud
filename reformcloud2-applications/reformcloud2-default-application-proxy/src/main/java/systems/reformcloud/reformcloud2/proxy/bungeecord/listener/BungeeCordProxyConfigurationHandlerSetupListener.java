@@ -25,7 +25,7 @@
 package systems.reformcloud.reformcloud2.proxy.bungeecord.listener;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.common.event.handler.Listener;
+import systems.reformcloud.reformcloud2.executor.api.event.handler.Listener;
 import systems.reformcloud.reformcloud2.proxy.bungeecord.config.BungeeCordProxyConfigurationHandler;
 import systems.reformcloud.reformcloud2.proxy.event.ProxyConfigurationHandlerSetupEvent;
 

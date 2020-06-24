@@ -26,8 +26,8 @@ package systems.reformcloud.reformcloud2.permissions.internal;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
+import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
 import systems.reformcloud.reformcloud2.permissions.defaults.DefaultPermissionManagement;
 
 import java.io.IOException;
@@ -35,6 +35,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
@@ -93,13 +94,12 @@ public final class UUIDFetcher {
 
     @Nullable
     private static UUID fromDatabase(@NotNull String name) {
-        JsonConfiguration configuration = ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().find(
-                DefaultPermissionManagement.PERMISSION_NAME_TO_UNIQUE_ID_TABLE,
+        Optional<JsonConfiguration> configuration = ExecutorAPI.getInstance().getDatabaseProvider().getDatabase(DefaultPermissionManagement.PERMISSION_NAME_TO_UNIQUE_ID_TABLE).get(
                 name,
-                null
+                ""
         );
 
-        return configuration == null || !configuration.has("id") ? null : configuration.get("id", UUID.class);
+        return !configuration.isPresent() || !configuration.get().has("id") ? null : configuration.get().get("id", UUID.class);
     }
 
     @NotNull

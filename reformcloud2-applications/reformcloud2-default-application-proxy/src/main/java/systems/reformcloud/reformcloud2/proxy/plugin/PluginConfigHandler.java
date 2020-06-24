@@ -25,10 +25,9 @@
 package systems.reformcloud.reformcloud2.proxy.plugin;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
+import systems.refomcloud.reformcloud2.embedded.Embedded;
+import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
+import systems.reformcloud.reformcloud2.executor.api.network.packet.PacketProvider;
 import systems.reformcloud.reformcloud2.proxy.ProxyConfigurationHandler;
 import systems.reformcloud.reformcloud2.proxy.application.network.PacketRequestConfig;
 import systems.reformcloud.reformcloud2.proxy.application.network.PacketRequestConfigResult;
@@ -43,22 +42,14 @@ public final class PluginConfigHandler {
     public static void request(@NotNull Runnable then) {
         ProxyConfigurationHandler.setup();
 
-        Task.EXECUTOR.execute(() -> {
-            while (!DefaultChannelManager.INSTANCE.get("Controller").isPresent()) {
-                AbsoluteThread.sleep(20);
-            }
+        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).registerPacket(PacketRequestConfigResult.class);
+        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).registerPacket(PacketProxyConfigUpdate.class);
 
-            ExecutorAPI.getInstance().getPacketHandler().registerHandler(PacketRequestConfigResult.class);
-            DefaultChannelManager.INSTANCE
-                    .get("Controller")
-                    .ifPresent(e -> ExecutorAPI.getInstance().getPacketHandler().getQueryHandler().sendQueryAsync(e, new PacketRequestConfig()).onComplete(result -> {
-                                if (result instanceof PacketRequestConfigResult) {
-                                    ProxyConfigurationHandler.getInstance().handleProxyConfigUpdate(((PacketRequestConfigResult) result).getProxyConfiguration());
-                                    ExecutorAPI.getInstance().getPacketHandler().registerHandler(PacketProxyConfigUpdate.class);
-                                    then.run();
-                                }
-                            })
-                    );
+        Embedded.getInstance().sendSyncQuery(new PacketRequestConfig()).ifPresent(result -> {
+            if (result instanceof PacketRequestConfigResult) {
+                ProxyConfigurationHandler.getInstance().handleProxyConfigUpdate(((PacketRequestConfigResult) result).getProxyConfiguration());
+                then.run();
+            }
         });
     }
 }

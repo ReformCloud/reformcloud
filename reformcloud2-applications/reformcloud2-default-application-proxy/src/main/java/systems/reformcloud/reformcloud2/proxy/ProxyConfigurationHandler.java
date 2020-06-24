@@ -26,7 +26,8 @@ package systems.reformcloud.reformcloud2.proxy;
 
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
+import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
+import systems.reformcloud.reformcloud2.executor.api.event.EventManager;
 import systems.reformcloud.reformcloud2.proxy.config.MotdConfiguration;
 import systems.reformcloud.reformcloud2.proxy.config.TabListConfiguration;
 import systems.reformcloud.reformcloud2.proxy.event.ProxyConfigurationHandlerSetupEvent;
@@ -46,8 +47,7 @@ public abstract class ProxyConfigurationHandler {
     @ApiStatus.Internal
     public static void setup() {
         ProxyConfigurationHandlerSetupEvent setupEvent = new ProxyConfigurationHandlerSetupEvent();
-        ExecutorAPI.getInstance().getEventManager().callEvent(setupEvent);
-
+        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).callEvent(setupEvent);
         ProxyConfigurationHandler.instance = setupEvent.getProxyConfigurationHandler().enable();
     }
 

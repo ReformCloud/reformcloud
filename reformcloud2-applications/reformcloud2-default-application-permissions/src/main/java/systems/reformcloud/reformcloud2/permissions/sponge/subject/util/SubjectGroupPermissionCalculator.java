@@ -24,8 +24,8 @@
  */
 package systems.reformcloud.reformcloud2.permissions.sponge.subject.util;
 
-import systems.reformcloud.reformcloud2.executor.api.api.API;
-import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
+import systems.refomcloud.reformcloud2.embedded.Embedded;
+import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.permissions.nodes.PermissionNode;
 import systems.reformcloud.reformcloud2.permissions.objects.group.PermissionGroup;
 
@@ -41,7 +41,7 @@ public final class SubjectGroupPermissionCalculator {
 
     public static Map<String, Boolean> getPermissionsOf(PermissionGroup group) {
         Map<String, Boolean> out = new HashMap<>();
-        final ProcessInformation current = API.getInstance().getCurrentProcessInformation();
+        final ProcessInformation current = Embedded.getInstance().getCurrentProcessInformation();
         Collection<PermissionNode> permissionNodes = group.getPerGroupPermissions().get(current.getProcessGroup().getName());
         if (permissionNodes != null) {
             permissionNodes.forEach(e -> {

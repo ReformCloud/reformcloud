@@ -28,8 +28,8 @@ import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.plugin.Command;
 import org.jetbrains.annotations.NotNull;
+import systems.refomcloud.reformcloud2.embedded.Embedded;
 import systems.reformcloud.reformcloud2.commands.plugin.internal.InternalReformCloudCommand;
-import systems.reformcloud.reformcloud2.executor.api.bungee.BungeeExecutor;
 
 import java.util.List;
 
@@ -41,11 +41,11 @@ public class CommandReformCloud extends Command {
 
     @Override
     public void execute(CommandSender commandSender, String[] strings) {
-        String prefix = BungeeExecutor.getInstance().getMessages().getPrefix() + " ";
+        String prefix = Embedded.getInstance().getIngameMessages().getPrefix();
         InternalReformCloudCommand.execute(
                 message -> commandSender.sendMessage(TextComponent.fromLegacyText(message)),
                 strings,
-                prefix,
+                prefix.endsWith(" ") ? prefix : prefix + " ",
                 this.getCommandSuccessMessage(),
                 super.getName()
         );
@@ -53,7 +53,7 @@ public class CommandReformCloud extends Command {
 
     @NotNull
     private String getCommandSuccessMessage() {
-        String message = BungeeExecutor.getInstance().getMessages().getCommandExecuteSuccess();
-        return BungeeExecutor.getInstance().getMessages().format(message);
+        String message = Embedded.getInstance().getIngameMessages().getCommandExecuteSuccess();
+        return Embedded.getInstance().getIngameMessages().format(message);
     }
 }

@@ -31,13 +31,16 @@ import systems.reformcloud.reformcloud2.commands.application.packet.PacketGetCom
 import systems.reformcloud.reformcloud2.commands.application.update.CommandAddonUpdater;
 import systems.reformcloud.reformcloud2.commands.config.CommandsConfig;
 import systems.reformcloud.reformcloud2.commands.plugin.packet.PacketReleaseCommandsConfig;
-import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.common.application.api.Application;
-import systems.reformcloud.reformcloud2.executor.api.common.application.updater.ApplicationUpdateRepository;
-import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
-import systems.reformcloud.reformcloud2.executor.api.common.network.NetworkUtil;
-import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.system.SystemHelper;
+import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
+import systems.reformcloud.reformcloud2.executor.api.application.api.Application;
+import systems.reformcloud.reformcloud2.executor.api.application.updater.ApplicationUpdateRepository;
+import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.event.EventManager;
+import systems.reformcloud.reformcloud2.executor.api.io.IOUtils;
+import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.manager.ChannelManager;
+import systems.reformcloud.reformcloud2.executor.api.network.packet.PacketProvider;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -59,20 +62,15 @@ public class ReformCloudApplication extends Application {
     }
 
     @Override
-    public void onInstallable() {
-        ExecutorAPI.getInstance().getEventManager().registerListener(new ProcessInclusionHandler());
-    }
-
-    @Override
     public void onLoad() {
         instance = this;
     }
 
     @Override
     public void onEnable() {
-        final Path path = Paths.get(this.dataFolder().getPath(), "config.json");
+        final Path path = Paths.get(this.getDataFolder().getPath(), "config.json");
         if (!Files.exists(path)) {
-            SystemHelper.createDirectory(this.dataFolder().toPath());
+            IOUtils.createDirectory(path.getParent());
             new JsonConfiguration()
                     .add("config", new CommandsConfig(
                             true, Arrays.asList("l", "leave", "lobby", "hub", "quit"),
@@ -82,14 +80,20 @@ public class ReformCloudApplication extends Application {
 
         commandsConfig = JsonConfiguration.read(path).get("config", new TypeToken<CommandsConfig>() {
         });
-        ExecutorAPI.getInstance().getPacketHandler().registerHandler(PacketGetCommandsConfig.class);
 
-        DefaultChannelManager.INSTANCE.getAllSender().forEach(e -> e.sendPacket(new PacketReleaseCommandsConfig(commandsConfig)));
+        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).registerPacket(PacketGetCommandsConfig.class);
+        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).registerListener(new ProcessInclusionHandler());
+
+        for (NetworkChannel registeredChannel : ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ChannelManager.class).getRegisteredChannels()) {
+            if (registeredChannel.isAuthenticated()) {
+                registeredChannel.sendPacket(new PacketReleaseCommandsConfig(commandsConfig));
+            }
+        }
     }
 
     @Override
-    public void onPreDisable() {
-        ExecutorAPI.getInstance().getPacketHandler().unregisterNetworkHandler(NetworkUtil.EXTERNAL_BUS + 1);
+    public void onDisable() {
+        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).unregisterPacket(NetworkUtil.RESERVED_EXTRA_BUS + 1);
     }
 
     @Nullable

@@ -31,8 +31,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scoreboard.Team;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.common.base.Conditions;
+import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
+import systems.reformcloud.reformcloud2.executor.api.base.Conditions;
+import systems.reformcloud.reformcloud2.executor.api.event.EventManager;
 import systems.reformcloud.reformcloud2.permissions.PermissionManagement;
 import systems.reformcloud.reformcloud2.permissions.objects.group.PermissionGroup;
 import systems.reformcloud.reformcloud2.permissions.objects.user.PermissionUser;
@@ -63,7 +64,7 @@ public class ReformCloudTabPlugin extends JavaPlugin {
         }
 
         Bukkit.getPluginManager().registerEvents(new BukkitTabListeners(), this);
-        ExecutorAPI.getInstance().getEventManager().registerListener(new CloudTabListeners(this));
+        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).registerListener(new CloudTabListeners(this));
     }
 
     public static void pullPlayerNameTags(@NotNull Player player) {

@@ -4,8 +4,8 @@
 
 ReformCloud is a cloud system programmed and optimized for all sizes of networks. 
 The cloud system provides a huge api to access all internal functions, group, processes etc. It's made
-for **synchronized as well as asynchronous programming** and is integrated into the main executors **Node, 
-Controller and Client** but as well into the apis for **Velocity / BungeeCord / Spigot / Sponge / Nukkit etc**.
+for **synchronized as well as asynchronous programming** and is integrated into the main executor **Node**
+ but as well into the apis for **Velocity / BungeeCord / Spigot / Sponge / Nukkit etc**.
 So the development work to integrate something like a private server system into the cloud is not that much work 
 and get be made easily by every developer who spends 5 minutes to read **the documentation of the api**.
 ReformCloud is basically just an application to start and manage the minecraft servers and proxies. 
@@ -19,8 +19,8 @@ them in the group file and the cloud will copy the paths or templates at the nex
 ### Currently supported minecraft-java-edition versions:
 | Version Name                        | Version ID                   | Recommended Java Version     |
 |-------------------------------------|------------------------------|------------------------------|
-| Bungeecord (Waterfall, Hexacord...) | 1.8 - 1.15.2                 | Java 11                      |
-| Velocity                            | 1.8 - 1.15.2                 | Java 11                      |
+| Bungeecord (Waterfall, Hexacord...) | 1.8 - 1.16                   | Java 11                      |
+| Velocity                            | 1.8 - 1.16                   | Java 11                      |
 | Waterdog                            | 1.8 - 1.15.2                 | Java 8                       | 
 | Spigot & Paper                      | 1.8 - 1.15.2                 | <1.12 Java 8 / >1.12 Java 11 |
 | Torch                               | 1.8.8, 1.9.4, 1.12.2         | Java 8                       |
@@ -63,41 +63,6 @@ java -XX:+UseG1GC -XX:MaxGCPauseMillis=50 -XX:CompileThreshold=100 -Xmx512m -Xms
 
 The runner is now going to download the needed libraries for the runtime, so **make sure you have an internet connection** 
 during the first startup!
-
-When you start the system the first time it will asked you which installation you want to do:
-```
-Please choose an executor: ["controller", "client", "node" (recommended)]
-```
-
-**Controller (Master)**: Manages all processes and clients (Wrapper), exists only once in the network
-
-**Client (Wrapper)**: Is like a slave for the controller and starts the processes, can exists multiple 
-times in a network setup
-
-**Node**: This is the ***recommended*** installation, basically it brings the features of the controller/client 
-into one system and can also exists multiple times in a network structure, called "cluster".
-
-
-# Basic installation
-## Controller
-
-The controller will aks two questions:
- 1) Which ip address (or domain) the controller is running on. If the controller is local you can simply
- provide 127.0.0.1. If you have more than one server and you would like to run multiple Clients with the
- controller, provide the public ip address of the server. (On Linux: `ip -a`, on Windows: `ipconfig`).
- 
- 2) The next thing will be the default group installation. There are multiple default things you can choose
- from. Every installation type will create a proxy and lobby group with the version you choose 
- (Excluded `nothing`: as the name says, it will install nothing).
- 
-## Client
-
-The client will ask five questions:
- 1) The client needs the connection key to connect to the controller. The key is located in `CONTROLLER_DIR/reformcloud/.bin/connection.json`.
- 2) After this the client needs the host on which the servers and proxies should get bound to
- 3) Then you have to provide the maximum amount of memory the client is allowed to use
- 4) Next, the client will ask for the controller ip or domain name, provide the same as in the controller setup
- 5) Finally the client asks for the network port of the controller (default `2008`)
 
 ## Node
 
@@ -163,7 +128,7 @@ Because of this you don't need to provide any repository.
         <groupId>systems.reformcloud.reformcloud2</groupId>
         <!-- replace with needed artifact for example 'reformcloud2-executor' or 'reformcloud2-default-application-permissions' -->
         <artifactId>reformcloud2-executor-api</artifactId>
-        <version>2.2.2</version>
+        <version>2.10.0-SNAPSHOT</version>
         <scope>provided</scope>
     </dependency>
 ```

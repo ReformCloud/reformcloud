@@ -26,7 +26,7 @@ package systems.reformcloud.reformcloud2.executor.api.common.utils;
 
 import org.junit.Assert;
 import org.junit.Test;
-import systems.reformcloud.reformcloud2.executor.api.common.base.Conditions;
+import systems.reformcloud.reformcloud2.executor.api.base.Conditions;
 
 import java.util.UUID;
 

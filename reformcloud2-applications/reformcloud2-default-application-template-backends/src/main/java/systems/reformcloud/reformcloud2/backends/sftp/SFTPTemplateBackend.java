@@ -27,15 +27,15 @@ package systems.reformcloud.reformcloud2.backends.sftp;
 import com.google.gson.reflect.TypeToken;
 import com.jcraft.jsch.*;
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
-import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
-import systems.reformcloud.reformcloud2.executor.api.common.groups.template.backend.TemplateBackend;
-import systems.reformcloud.reformcloud2.executor.api.common.groups.template.backend.TemplateBackendManager;
-import systems.reformcloud.reformcloud2.executor.api.common.network.NetworkUtil;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.system.SystemHelper;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.task.defaults.DefaultTask;
+import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.groups.ProcessGroup;
+import systems.reformcloud.reformcloud2.executor.api.groups.template.backend.TemplateBackend;
+import systems.reformcloud.reformcloud2.executor.api.groups.template.backend.TemplateBackendManager;
+import systems.reformcloud.reformcloud2.executor.api.io.IOUtils;
+import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
+import systems.reformcloud.reformcloud2.executor.api.task.Task;
+import systems.reformcloud.reformcloud2.executor.api.task.defaults.DefaultTask;
+import systems.reformcloud.reformcloud2.executor.api.utility.list.Streams;
 
 import java.io.File;
 import java.io.IOException;
@@ -163,7 +163,7 @@ public final class SFTPTemplateBackend implements TemplateBackend {
             }
 
             Path dir = Paths.get(localPath);
-            SystemHelper.recreateDirectory(dir);
+            IOUtils.recreateDirectory(dir);
             if (!localPath.endsWith("/")) {
                 localPath += "/";
             }

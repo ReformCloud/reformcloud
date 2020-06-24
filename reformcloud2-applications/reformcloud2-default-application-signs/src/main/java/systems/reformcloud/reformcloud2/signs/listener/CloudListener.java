@@ -24,16 +24,16 @@
  */
 package systems.reformcloud.reformcloud2.signs.listener;
 
-import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.ProcessStartedEvent;
-import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.ProcessStoppedEvent;
-import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.ProcessUpdatedEvent;
-import systems.reformcloud.reformcloud2.executor.api.common.event.handler.Listener;
+import systems.reformcloud.reformcloud2.executor.api.event.events.process.ProcessRegisterEvent;
+import systems.reformcloud.reformcloud2.executor.api.event.events.process.ProcessUnregisterEvent;
+import systems.reformcloud.reformcloud2.executor.api.event.events.process.ProcessUpdateEvent;
+import systems.reformcloud.reformcloud2.executor.api.event.handler.Listener;
 import systems.reformcloud.reformcloud2.signs.util.SignSystemAdapter;
 
 public class CloudListener {
 
     @Listener
-    public void handle(final ProcessStartedEvent event) {
+    public void handle(final ProcessRegisterEvent event) {
         if (SignSystemAdapter.getInstance() == null) {
             return;
         }
@@ -42,7 +42,7 @@ public class CloudListener {
     }
 
     @Listener
-    public void handle(final ProcessUpdatedEvent event) {
+    public void handle(final ProcessUpdateEvent event) {
         if (SignSystemAdapter.getInstance() == null) {
             return;
         }
@@ -51,7 +51,7 @@ public class CloudListener {
     }
 
     @Listener
-    public void handle(final ProcessStoppedEvent event) {
+    public void handle(final ProcessUnregisterEvent event) {
         if (SignSystemAdapter.getInstance() == null) {
             return;
         }

@@ -37,9 +37,9 @@ import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 import net.md_5.bungee.event.EventPriority;
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.api.API;
-import systems.reformcloud.reformcloud2.executor.api.common.api.basic.events.ProcessUpdatedEvent;
-import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
+import systems.refomcloud.reformcloud2.embedded.Embedded;
+import systems.reformcloud.reformcloud2.executor.api.event.events.process.ProcessUpdateEvent;
+import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.proxy.ProxyConfigurationHandler;
 
 import java.util.Arrays;
@@ -97,11 +97,9 @@ public final class BungeeCordListener implements Listener {
                 }
             }
 
-            ProcessInformation info = API.getInstance().getCurrentProcessInformation();
+            ProcessInformation info = Embedded.getInstance().getCurrentProcessInformation();
             int max = info.getProcessDetail().getMaxPlayers();
             int online = info.getProcessPlayerManager().getOnlineCount();
-
-            // ====
 
             if (players != null) {
                 serverPing.setPlayers(new ServerPing.Players(max, online, playerInfos));
@@ -131,9 +129,9 @@ public final class BungeeCordListener implements Listener {
         initTab0(event.getPlayer());
     }
 
-    @systems.reformcloud.reformcloud2.executor.api.common.event.handler.Listener
-    public void handle(final @NotNull ProcessUpdatedEvent event) {
-        if (event.getProcessInformation().getProcessDetail().getProcessUniqueID().equals(API.getInstance().getCurrentProcessInformation().getProcessDetail().getProcessUniqueID())) {
+    @systems.reformcloud.reformcloud2.executor.api.event.handler.Listener
+    public void handle(final @NotNull ProcessUpdateEvent event) {
+        if (event.getProcessInformation().getProcessDetail().getProcessUniqueID().equals(Embedded.getInstance().getCurrentProcessInformation().getProcessDetail().getProcessUniqueID())) {
             initTab();
         }
     }

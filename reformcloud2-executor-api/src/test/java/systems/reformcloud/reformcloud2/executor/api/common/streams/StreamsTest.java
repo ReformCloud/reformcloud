@@ -26,7 +26,7 @@ package systems.reformcloud.reformcloud2.executor.api.common.streams;
 
 import org.junit.Before;
 import org.junit.Test;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
+import systems.reformcloud.reformcloud2.executor.api.utility.list.Streams;
 
 import java.util.Arrays;
 import java.util.Collection;

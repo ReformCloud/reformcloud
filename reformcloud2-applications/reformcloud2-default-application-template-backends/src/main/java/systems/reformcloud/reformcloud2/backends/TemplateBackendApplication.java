@@ -27,30 +27,26 @@ package systems.reformcloud.reformcloud2.backends;
 import systems.reformcloud.reformcloud2.backends.ftp.FTPTemplateBackend;
 import systems.reformcloud.reformcloud2.backends.sftp.SFTPTemplateBackend;
 import systems.reformcloud.reformcloud2.backends.url.URLTemplateBackend;
-import systems.reformcloud.reformcloud2.executor.api.common.application.api.Application;
-import systems.reformcloud.reformcloud2.executor.api.common.base.Conditions;
-import systems.reformcloud.reformcloud2.executor.api.common.dependency.DefaultDependencyLoader;
-import systems.reformcloud.reformcloud2.executor.api.common.dependency.DependencyLoader;
-import systems.reformcloud.reformcloud2.executor.api.common.dependency.util.DependencyParser;
+import systems.reformcloud.reformcloud2.executor.api.application.api.Application;
+import systems.reformcloud.reformcloud2.executor.api.base.Conditions;
+import systems.reformcloud.reformcloud2.executor.api.dependency.util.DependencyParser;
 
 import java.net.URL;
 import java.util.HashMap;
 
 public class TemplateBackendApplication extends Application {
 
-    public static final DependencyLoader LOADER = new DefaultDependencyLoader();
-
     @Override
     public void onLoad() {
         DependencyParser.getAllDependencies("dependencies.txt", new HashMap<>(), TemplateBackendApplication.class.getClassLoader()).forEach(e -> {
-            URL dependencyURL = TemplateBackendApplication.LOADER.loadDependency(e);
+            URL dependencyURL = TemplateBackendApplication.this.getDependencyLoader().loadDependency(e);
             Conditions.nonNull(dependencyURL, "Dependency load for " + e.getArtifactID() + " failed");
-            TemplateBackendApplication.LOADER.addDependency(dependencyURL);
+            TemplateBackendApplication.this.getDependencyLoader().addDependency(dependencyURL);
         });
 
-        FTPTemplateBackend.load(this.dataFolder().getPath());
-        SFTPTemplateBackend.load(this.dataFolder().getPath());
-        URLTemplateBackend.load(this.dataFolder().getPath());
+        FTPTemplateBackend.load(this.getDataFolder().getPath());
+        SFTPTemplateBackend.load(this.getDataFolder().getPath());
+        URLTemplateBackend.load(this.getDataFolder().getPath());
     }
 
     @Override

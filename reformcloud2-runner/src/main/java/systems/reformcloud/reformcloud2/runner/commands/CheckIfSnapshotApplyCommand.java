@@ -41,7 +41,7 @@ public final class CheckIfSnapshotApplyCommand extends InterpreterCommand {
     public void execute(@NotNull String cursorLine, @NotNull InterpretedReformScript script, @NotNull Collection<String> allLines) {
         String indevBuildDownloadURL = System.getProperty("reformcloud.indev.build.url");
 
-        if (Integer.getInteger("reformcloud.executor.type", 0) != 3
+        if (Integer.getInteger("reformcloud.executor.type", 0) != 2
                 && Boolean.getBoolean("reformcloud.indev.builds") && indevBuildDownloadURL != null) {
             System.out.println("Loading snapshot build from " + indevBuildDownloadURL + "...");
             RunnerUtils.downloadFile(indevBuildDownloadURL, RunnerUtils.EXECUTOR_PATH);

@@ -25,6 +25,7 @@
 package systems.reformcloud.reformcloud2.executor.api.common.configuration;
 
 import org.junit.Test;
+import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
 
 import static org.junit.Assert.*;
 

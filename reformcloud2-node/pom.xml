@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>reformcloud2</artifactId>
+        <groupId>systems.reformcloud.reformcloud2</groupId>
+        <version>2.10.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>reformcloud2-node</artifactId>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>reformcloud-central</id>
+            <url>https://repo.reformcloud.systems/</url>
+        </pluginRepository>
+    </pluginRepositories>
+
+    <dependencies>
+        <!-- default api for all methods -->
+        <dependency>
+            <groupId>systems.reformcloud.reformcloud2</groupId>
+            <artifactId>reformcloud2-shared</artifactId>
+            <version>2.10.0-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <!-- dependencies for reformcloud -->
+        <!-- https://mvnrepository.com/artifact/org.jline/jline -->
+        <dependency>
+            <groupId>org.jline</groupId>
+            <artifactId>jline</artifactId>
+            <version>3.15.0</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.fusesource.jansi/jansi -->
+        <dependency>
+            <groupId>org.fusesource.jansi</groupId>
+            <artifactId>jansi</artifactId>
+            <version>1.18</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-all</artifactId>
+            <version>4.1.50.Final</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/com.h2database/h2 -->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>1.4.200</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.8.6</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <!-- set the final name to executor for the runner -->
+        <finalName>executor</finalName>
+
+        <plugins>
+            <!-- maven shade plugin (central) -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.2.4</version>
+                <executions>
+                    <execution>
+                        <!-- shade while package -->
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <filters>
+                                <filter>
+                                    <artifact>
+                                        systems.reformcloud.reformcloud2:reformcloud-protocol
+                                    </artifact>
+                                    <excludes>
+                                        <exclude>META-INF/*.MF</exclude>
+                                    </excludes>
+                                </filter>
+                                <filter>
+                                    <artifact>systems.reformcloud.reformcloud2:reformcloud-shared</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/*.MF</exclude>
+                                    </excludes>
+                                </filter>
+                                <filter>
+                                    <artifact>systems.reformcloud.reformcloud2:reformcloud2-executor-api</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/*.MF</exclude>
+                                    </excludes>
+                                </filter>
+                                <filter>
+                                    <artifact>org.jetbrains:annotations</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/*.MF</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- maven jar plugin (central) -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.2.0</version>
+                <configuration>
+                    <archive>
+                        <manifestEntries>
+                            <Main-Class>systems.reformcloud.reformcloud2.node.NodeLauncher</Main-Class>
+                            <Version>${project.version}</Version>
+                            <Implementation-Version>${project.version}</Implementation-Version>
+                            <!--suppress UnresolvedMavenProperty -->
+                            <!-- set by another maven plugin -->
+                            <Specification-Version>${describe}</Specification-Version>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
+
+            <!-- https://github.com/derklaro/maven-dependency-list-plugin -->
+            <plugin>
+                <groupId>de.derklaro</groupId>
+                <artifactId>dependency-list-maven-plugin</artifactId>
+                <version>1.2</version>
+                <configuration>
+                    <excludedScopes>
+                        <excludedScope>test</excludedScope>
+                        <excludedScope>compile</excludedScope>
+                    </excludedScopes>
+
+                    <excludes>
+                        <exclude>*:annotations-java5</exclude>
+                        <exclude>*:slf4j-api</exclude>
+                    </excludes>
+
+                    <outputFileName>
+                        reformcloud2-node/src/main/resources/internal/dependencies.txt
+                    </outputFileName>
+
+                    <overrideExistingFile>true</overrideExistingFile>
+                    <resolveDependenciesOfDependencies>true</resolveDependenciesOfDependencies>
+                    <includeOptionalDependencies>false</includeOptionalDependencies>
+                    <createParentFiles>true</createParentFiles>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>dependency-list</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- maven antrun plugin (central) -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>3.0.0</version>
+                <executions>
+                    <execution>
+                        <id>copy</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+
+                        <!-- Copies the final executor file to the resource directory -->
+                        <configuration>
+                            <failOnError>false</failOnError>
+                            <target name="copy embedded">
+                                <copy
+                                        file="${basedir}/../reformcloud2-embedded/target/embedded.jar"
+                                        tofile="${basedir}/src/main/resources/files/embedded.jar"
+                                />
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

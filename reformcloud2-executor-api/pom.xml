@@ -5,7 +5,7 @@
     <parent>
         <artifactId>reformcloud2</artifactId>
         <groupId>systems.reformcloud.reformcloud2</groupId>
-        <version>2.2.2</version>
+        <version>2.10.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -18,22 +18,7 @@
         </repository>
     </repositories>
 
-    <pluginRepositories>
-        <pluginRepository>
-            <id>reformcloud-central</id>
-            <url>https://repo.reformcloud.systems/</url>
-        </pluginRepository>
-    </pluginRepositories>
-
     <dependencies>
-        <!-- https://github.com/derklaro/project-deer -->
-        <dependency>
-            <groupId>com.github.derklaro</groupId>
-            <artifactId>project-deer</artifactId>
-            <version>1.0.0</version>
-            <scope>provided</scope>
-        </dependency>
-
         <!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
         <dependency>
             <groupId>com.google.code.gson</groupId>
@@ -47,7 +32,7 @@
         <dependency>
             <groupId>org.jline</groupId>
             <artifactId>jline</artifactId>
-            <version>3.14.1</version>
+            <version>3.15.0</version>
             <scope>provided</scope>
         </dependency>
 
@@ -74,107 +59,5 @@
             <version>4.13</version>
             <scope>test</scope>
         </dependency>
-
-        <!-- https://mvnrepository.com/artifact/org.reflections/reflections -->
-        <dependency>
-            <groupId>org.reflections</groupId>
-            <artifactId>reflections</artifactId>
-            <version>0.9.12</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/org.mongodb/mongo-java-driver -->
-        <dependency>
-            <groupId>org.mongodb</groupId>
-            <artifactId>mongo-java-driver</artifactId>
-            <version>3.12.4</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>8.0.20</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/com.zaxxer/HikariCP -->
-        <dependency>
-            <groupId>com.zaxxer</groupId>
-            <artifactId>HikariCP</artifactId>
-            <version>3.4.5</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/com.h2database/h2 -->
-        <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-            <version>1.4.200</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/org.bouncycastle/bcprov-jdk15on -->
-        <dependency>
-            <groupId>org.bouncycastle</groupId>
-            <artifactId>bcprov-jdk15on</artifactId>
-            <version>1.65</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/com.rethinkdb/rethinkdb-driver -->
-        <dependency>
-            <groupId>com.rethinkdb</groupId>
-            <artifactId>rethinkdb-driver</artifactId>
-            <version>2.4.3</version>
-            <scope>provided</scope>
-        </dependency>
     </dependencies>
-
-    <build>
-        <plugins>
-            <!-- https://github.com/derklaro/maven-dependency-list-plugin -->
-            <plugin>
-                <groupId>de.derklaro</groupId>
-                <artifactId>dependency-list-maven-plugin</artifactId>
-                <version>1.2</version>
-                <configuration>
-                    <excludedScopes>
-                        <excludedScope>test</excludedScope>
-                        <excludedScope>compile</excludedScope>
-                    </excludedScopes>
-
-                    <excludes>
-                        <exclude>*:h2</exclude>
-                        <exclude>*:mongo-java-driver</exclude>
-                        <exclude>*:mysql-connector-java</exclude>
-                        <exclude>*:project-deer</exclude>
-                        <exclude>com.github.derklaro.project-deer:*</exclude>
-                        <exclude>*:annotations-java5</exclude>
-                        <exclude>*:rethinkdb-driver</exclude>
-                        <exclude>*:HikariCP</exclude>
-                        <exclude>*:slf4j-api</exclude>
-                    </excludes>
-
-                    <outputFileName>
-                        reformcloud2-executor-api/src/main/resources/internal/dependencies.txt
-                    </outputFileName>
-
-                    <overrideExistingFile>true</overrideExistingFile>
-                    <resolveDependenciesOfDependencies>true</resolveDependenciesOfDependencies>
-                    <includeOptionalDependencies>false</includeOptionalDependencies>
-                    <createParentFiles>true</createParentFiles>
-                </configuration>
-                <executions>
-                    <execution>
-                        <phase>initialize</phase>
-                        <goals>
-                            <goal>dependency-list</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
 </project>
