@@ -89,6 +89,8 @@ public enum Version {
             "https://dl.reformcloud.systems/mcversions/spigots/spigot-1.15.1.jar", 1, 41000),
     SPIGOT_1_15_2("Spigot 1.15.2", "1.15.2",
             "https://dl.reformcloud.systems/mcversions/spigots/spigot-1.15.2.jar", 1, 41000),
+    SPIGOT_1_16_1("Spigot 1.16.1", "1.16.1",
+            "https://dl.reformcloud.systems/mcversions/spigots/spigot-1.16.1.jar", 1, 41000),
 
     /**
      * Paper Versions

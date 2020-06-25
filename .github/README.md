@@ -19,10 +19,10 @@ them in the group file and the cloud will copy the paths or templates at the nex
 ### Currently supported minecraft-java-edition versions:
 | Version Name                        | Version ID                   | Recommended Java Version     |
 |-------------------------------------|------------------------------|------------------------------|
-| Bungeecord (Waterfall, Hexacord...) | 1.8 - 1.16                   | Java 11                      |
+| Bungeecord (Waterfall, Hexacord...) | 1.8 - 1.16.1                 | Java 11                      |
 | Velocity                            | 1.8 - 1.16.1                 | Java 11                      |
 | Waterdog                            | 1.8 - 1.15.2                 | Java 8                       | 
-| Spigot & Paper                      | 1.8 - 1.15.2                 | <1.12 Java 8 / >1.12 Java 11 |
+| Spigot & Paper                      | 1.8 - 1.16.1                 | <1.12 Java 8 / >1.12 Java 11 |
 | Torch                               | 1.8.8, 1.9.4, 1.12.2         | Java 8                       |
 | Taco                                | 1.8.8, 1.11.2, 1.12.2        | Java 8                       |
 | Hose                                | 1.8.8, 1.9.4, 1.10.2, 1.11.2 | Java 8                       |
@@ -74,7 +74,6 @@ The node will ask six questions:
  5) Then you have to provide the connection key for other nodes. I you want to setup a cluster and already
  have a node in this cluster copy the key from the other node located in `NODE_DIR/reformcloud/files/.connection/connection.json`.
  If you want to generate a random connection key type `gen`
-
 
 # Found a bug or have a proposal?
 Please
