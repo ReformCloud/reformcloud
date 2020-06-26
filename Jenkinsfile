@@ -18,7 +18,6 @@ pipeline {
         stage('Update snapshot version') {
             when {
                 allOf {
-                    branch 'indev'
                     environment name:'IS_SNAPSHOT', value: 'true'
                 }
             }
