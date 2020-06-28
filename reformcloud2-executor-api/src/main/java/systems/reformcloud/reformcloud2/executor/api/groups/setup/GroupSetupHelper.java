@@ -109,7 +109,7 @@ public final class GroupSetupHelper {
             ), new BasicGroupSetupVersion(
                     "java-velocity-lobby-1.16.1",
                     new ProcessGroup[]{
-                            new DefaultProcessGroup("Lobby", 41000, Version.SPIGOT_1_16_1,
+                            new DefaultProcessGroup("Lobby", 41000, Version.PAPER_1_16_1,
                                     512, false, 50, false, true),
                             new DefaultProcessGroup("Proxy", 25565, Version.VELOCITY,
                                     256, true, 512)
@@ -120,7 +120,7 @@ public final class GroupSetupHelper {
             ), new BasicGroupSetupVersion(
                     "java-bungee-lobby-1.16.1",
                     new ProcessGroup[]{
-                            new DefaultProcessGroup("Lobby", 41000, Version.SPIGOT_1_16_1,
+                            new DefaultProcessGroup("Lobby", 41000, Version.PAPER_1_16_1,
                                     512, false, 50, false, true),
                             new DefaultProcessGroup("Proxy", 25565, Version.WATERFALL,
                                     256, true, 512)
@@ -175,7 +175,7 @@ public final class GroupSetupHelper {
             ), new BasicGroupSetupVersion(
                     "java-default",
                     new ProcessGroup[]{
-                            new DefaultProcessGroup("Lobby", 41000, Version.SPIGOT_1_16_1,
+                            new DefaultProcessGroup("Lobby", 41000, Version.PAPER_1_16_1,
                                     512, false, 50, false, true),
                             new DefaultProcessGroup("Proxy", 25565, Version.WATERFALL,
                                     256, true, 512)
