@@ -53,18 +53,17 @@ public class AutoStartRunnable implements Runnable {
             }
 
             Collection<ProcessInformation> processes = ExecutorAPI.getInstance().getProcessProvider().getProcessesByProcessGroup(processGroup.getName());
-            int runningProcesses = Streams.allOf(processes, e -> e.getProcessDetail().getProcessState().isStartedOrOnline()).size();
-
-            if (processGroup.getStartupConfiguration().getMinOnlineProcesses() > runningProcesses
-                    && (processGroup.getStartupConfiguration().getMaxOnlineProcesses() == -1
-                    || processGroup.getStartupConfiguration().getMaxOnlineProcesses() > runningProcesses)) {
-                startPreparedOfGroup(processes, processGroup);
-            }
-
             int prepared = Streams.allOf(processes, e -> e.getProcessDetail().getProcessState() == ProcessState.PREPARED).size();
             if (processGroup.getStartupConfiguration().getAlwaysPreparedProcesses() > prepared) {
                 ExecutorAPI.getInstance().getProcessProvider().createProcess().group(processGroup).prepare();
                 System.out.println(LanguageManager.get("process-preparing-new-process", processGroup.getName()));
+            }
+
+            int runningProcesses = Streams.allOf(processes, e -> e.getProcessDetail().getProcessState().isStartedOrOnline()).size();
+            if (processGroup.getStartupConfiguration().getMinOnlineProcesses() > runningProcesses
+                    && (processGroup.getStartupConfiguration().getMaxOnlineProcesses() == -1
+                    || processGroup.getStartupConfiguration().getMaxOnlineProcesses() > runningProcesses)) {
+                startPreparedOfGroup(processes, processGroup);
             }
         }
     }
