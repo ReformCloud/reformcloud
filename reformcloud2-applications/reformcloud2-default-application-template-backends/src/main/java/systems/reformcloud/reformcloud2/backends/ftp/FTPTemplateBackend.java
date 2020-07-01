@@ -84,8 +84,7 @@ public final class FTPTemplateBackend implements TemplateBackend {
                     }
 
                     runnable.run();
-                } catch (final InterruptedException ex) {
-                    ex.printStackTrace();
+                } catch (final InterruptedException ignored) {
                 }
             }
         });
