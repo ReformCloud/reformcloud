@@ -27,6 +27,7 @@ package systems.reformcloud.reformcloud2.permissions.defaults;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
+import systems.reformcloud.reformcloud2.executor.api.CommonHelper;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorType;
 import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
@@ -423,7 +424,7 @@ public class DefaultPermissionManagement extends PermissionManagement {
     }
 
     private void pushToDB(@NotNull UUID uuid, @NotNull String name) {
-        this.nameToUniqueIdDatabase.insert(name, uuid.toString(), new JsonConfiguration().add("id", uuid));
+        CommonHelper.EXECUTOR.execute(() -> this.nameToUniqueIdDatabase.insert(name, uuid.toString(), new JsonConfiguration().add("id", uuid)));
     }
 
     private void publish(@NotNull Packet packet) {
