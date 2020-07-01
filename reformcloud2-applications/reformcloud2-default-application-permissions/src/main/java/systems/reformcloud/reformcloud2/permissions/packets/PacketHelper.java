@@ -36,7 +36,7 @@ public final class PacketHelper {
     }
 
     public static void addPacketHandler() {
-        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).registerPacket(PacketGroupAction.class);
-        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).registerPacket(PacketUserAction.class);
+        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).registerPacketIgnored(PacketGroupAction.class);
+        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).registerPacketIgnored(PacketUserAction.class);
     }
 }
