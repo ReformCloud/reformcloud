@@ -74,7 +74,11 @@ public class MySQLDatabaseProvider extends AbstractSQLDatabaseProvider {
         try (Connection connection = this.hikariDataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             int i = 1;
             for (Object object : objects) {
-                preparedStatement.setString(i++, object.toString());
+                if (object instanceof byte[]) {
+                    preparedStatement.setBytes(i++, (byte[]) object);
+                } else {
+                    preparedStatement.setString(i++, object.toString());
+                }
             }
 
             preparedStatement.executeUpdate();
@@ -89,11 +93,15 @@ public class MySQLDatabaseProvider extends AbstractSQLDatabaseProvider {
         try (Connection connection = this.hikariDataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             int i = 1;
             for (Object object : objects) {
-                preparedStatement.setString(i++, object.toString());
+                if (object instanceof byte[]) {
+                    preparedStatement.setBytes(i++, (byte[]) object);
+                } else {
+                    preparedStatement.setString(i++, object.toString());
+                }
             }
 
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                return function.apply(resultSet);
+                return resultSet.next() ? function.apply(resultSet) : defaultValue;
             }
         } catch (SQLException exception) {
             exception.printStackTrace();

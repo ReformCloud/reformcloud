@@ -61,7 +61,7 @@ public class H2DatabaseProvider extends AbstractSQLDatabaseProvider {
             int i = 1;
             for (Object object : objects) {
                 if (object instanceof byte[]) {
-                    preparedStatement.setBytes(i, (byte[]) object);
+                    preparedStatement.setBytes(i++, (byte[]) object);
                 } else {
                     preparedStatement.setString(i++, object.toString());
                 }
@@ -80,7 +80,7 @@ public class H2DatabaseProvider extends AbstractSQLDatabaseProvider {
             int i = 1;
             for (Object object : objects) {
                 if (object instanceof byte[]) {
-                    preparedStatement.setBytes(i, (byte[]) object);
+                    preparedStatement.setBytes(i++, (byte[]) object);
                 } else {
                     preparedStatement.setString(i++, object.toString());
                 }
