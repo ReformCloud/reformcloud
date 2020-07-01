@@ -32,7 +32,21 @@ import java.util.Optional;
 
 public interface PacketProvider {
 
+    default void registerPacketIgnored(@NotNull Class<? extends Packet> packetClass) {
+        try {
+            this.registerPacket(packetClass);
+        } catch (PacketAlreadyRegisteredException ignored) {
+        }
+    }
+
     void registerPacket(@NotNull Class<? extends Packet> packetClass) throws PacketAlreadyRegisteredException;
+
+    default void registerPacketIgnored(@NotNull Packet packet) {
+        try {
+            this.registerPacket(packet);
+        } catch (PacketAlreadyRegisteredException ignored) {
+        }
+    }
 
     void registerPacket(@NotNull Packet packet) throws PacketAlreadyRegisteredException;
 
