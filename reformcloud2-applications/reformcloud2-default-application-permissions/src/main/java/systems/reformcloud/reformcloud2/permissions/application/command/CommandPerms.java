@@ -496,7 +496,7 @@ public class CommandPerms implements Command {
             permissionUser.getPermissionNodes().add(PermissionNode.createNode(strings[3], timeout, positive));
             PermissionManagement.getInstance().updateUser(permissionUser);
             source.sendMessage("The user " + strings[1] + " has now the permission " + strings[3] + " "
-                    + (timeout == -1 ? "lifetime" : "until " + CommonHelper.DATE_FORMAT.format(timeout)));
+                    + (timeout == -1 ? "lifetime " : "until " + CommonHelper.DATE_FORMAT.format(timeout)));
             return;
         }
 
