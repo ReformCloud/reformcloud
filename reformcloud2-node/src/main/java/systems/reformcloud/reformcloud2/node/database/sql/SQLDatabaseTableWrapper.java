@@ -65,7 +65,7 @@ public final class SQLDatabaseTableWrapper implements DatabaseTableWrapper {
     public void update(@NotNull String key, @NotNull String id, @NotNull JsonConfiguration newData) {
         this.provider.executeUpdate(
                 "UPDATE `" + this.name + "` SET `data` = ? WHERE `key` = ? OR `identifier` = ?",
-                key, id, newData.toPrettyBytes()
+                newData.toPrettyBytes(), key, id
         );
     }
 
