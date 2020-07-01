@@ -79,6 +79,8 @@ public final class NodeExecutorConfig {
             AtomicBoolean runClusterSetup = new AtomicBoolean(false);
             List<NetworkAddress> clusterNodes = new ArrayList<>();
 
+            String ips = String.join(", ", CommonHelper.getAllAvailableIpAddresses());
+
             this.setup.addQuestion(new DefaultSetupQuestion(
                     setupAnswer -> {
                         if (setupAnswer.getOriginalAnswer().equalsIgnoreCase("null")) {
@@ -101,7 +103,7 @@ public final class NodeExecutorConfig {
                         return address != null;
                     },
                     LanguageManager.get("node-setup-question-node-address-wrong"),
-                    LanguageManager.get("node-setup-question-node-address")
+                    LanguageManager.get("node-setup-question-node-address", ips)
             )).addQuestion(new DefaultSetupQuestion(
                     setupAnswer -> {
                         Integer port = setupAnswer.getAsInt();

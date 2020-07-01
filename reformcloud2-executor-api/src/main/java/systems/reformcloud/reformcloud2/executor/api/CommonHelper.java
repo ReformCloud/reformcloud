@@ -27,12 +27,15 @@ package systems.reformcloud.reformcloud2.executor.api;
 import com.sun.management.OperatingSystemMXBean;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Unmodifiable;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessRuntimeInformation;
 import systems.reformcloud.reformcloud2.executor.api.utility.optional.ReferencedOptional;
 
 import java.lang.management.*;
 import java.lang.ref.WeakReference;
+import java.net.Inet6Address;
 import java.net.InetAddress;
+import java.net.NetworkInterface;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -151,6 +154,31 @@ public final class CommonHelper {
         } catch (final Throwable throwable) {
             return null;
         }
+    }
+
+    public static @Unmodifiable @NotNull Collection<String> getAllAvailableIpAddresses() {
+        Collection<String> result = new ArrayList<>();
+
+        try {
+            Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
+            while (networkInterfaces.hasMoreElements()) {
+                Enumeration<InetAddress> inetAddresses = networkInterfaces.nextElement().getInetAddresses();
+                while (inetAddresses.hasMoreElements()) {
+                    InetAddress inetAddress = inetAddresses.nextElement();
+                    if (inetAddress instanceof Inet6Address) {
+                        continue; // currently we aren't supporting inet6 because of some minecraft difficulties with it
+                    }
+
+                    String address = inetAddress.getHostAddress();
+                    if (!result.contains(address)) {
+                        result.add(address);
+                    }
+                }
+            }
+        } catch (Throwable ignored) {
+        }
+
+        return result;
     }
 
     public static <T extends Enum<T>> ReferencedOptional<T> findEnumField(Class<T> enumClass, String field) {
