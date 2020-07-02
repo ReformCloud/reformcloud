@@ -7,10 +7,10 @@ FROM openjdk:8-jdk-slim AS build
 
 # Install packages required for build
 RUN apt-get -y update
-RUN apt-get install -y build-essential
-RUN apt-get install -y git
+RUN apt-get install -y --no-install-recommends build-essential
+RUN apt-get install -y --no-install-recommends git
 RUN mkdir -p /usr/share/man/man1
-RUN apt-get install -y maven
+RUN apt-get install -y --no-install-recommends maven
 
 # Run the build
 RUN git submodule update --init
