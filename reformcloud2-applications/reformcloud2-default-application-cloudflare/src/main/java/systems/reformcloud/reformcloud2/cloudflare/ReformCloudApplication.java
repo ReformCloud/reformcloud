@@ -41,7 +41,7 @@ import java.util.Properties;
 
 public class ReformCloudApplication extends Application {
 
-    private final ApplicationUpdateRepository REPOSITORY = new CloudFlareAddonUpdater(this);
+    private final ApplicationUpdateRepository applicationUpdateRepository = new CloudFlareAddonUpdater(this);
 
     private static final ProcessListener LISTENER = new ProcessListener();
     private static boolean loaded = false;
@@ -79,6 +79,6 @@ public class ReformCloudApplication extends Application {
     @Nullable
     @Override
     public ApplicationUpdateRepository getUpdateRepository() {
-        return REPOSITORY;
+        return this.applicationUpdateRepository;
     }
 }
