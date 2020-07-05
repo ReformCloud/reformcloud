@@ -45,7 +45,6 @@ public abstract class ExecutorAPI {
             System.setProperty("io.netty.allocator.maxOrder", "9");
         }
 
-        System.setProperty("java.net.preferIPv4Stack", "true");
         System.setProperty("io.netty.noPreferDirect", "true");
         System.setProperty("io.netty.maxDirectMemory", "0");
         System.setProperty("io.netty.recycler.maxCapacity", "0");
