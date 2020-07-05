@@ -97,7 +97,7 @@ public abstract class Embedded extends ExecutorAPI {
         this.serviceRegistry.setProvider(PacketProvider.class, new DefaultPacketProvider(), false, true);
         this.serviceRegistry.setProvider(QueryManager.class, new DefaultQueryManager(), false, true);
 
-        this.serviceRegistry.getProviderUnchecked(EventManager.class).registerListener(this);
+        this.serviceRegistry.getProviderUnchecked(EventManager.class).registerListener(new CurrentProcessUpdateEventListener());
         this.processInformation = this.config.getProcessInformation();
 
         Lock lock = new ReentrantLock();
@@ -248,12 +248,15 @@ public abstract class Embedded extends ExecutorAPI {
         this.processProvider.updateProcessInformation(this.processInformation);
     }
 
-    @Listener
-    public void handle(@NotNull ProcessUpdateEvent event) {
-        if (this.processInformation.getProcessDetail().getProcessUniqueID().equals(event.getProcessInformation().getProcessDetail().getProcessUniqueID())) {
-            this.processInformation = event.getProcessInformation();
+    protected abstract int getMaxPlayersOfEnvironment();
+
+    public final class CurrentProcessUpdateEventListener {
+
+        @Listener
+        public void handle(@NotNull ProcessUpdateEvent event) {
+            if (Embedded.this.processInformation.getProcessDetail().getProcessUniqueID().equals(event.getProcessInformation().getProcessDetail().getProcessUniqueID())) {
+                Embedded.this.processInformation = event.getProcessInformation();
+            }
         }
     }
-
-    protected abstract int getMaxPlayersOfEnvironment();
 }

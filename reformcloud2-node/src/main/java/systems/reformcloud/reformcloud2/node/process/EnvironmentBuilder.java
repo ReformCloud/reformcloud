@@ -82,7 +82,6 @@ public final class EnvironmentBuilder {
         }
 
         IOUtils.createDirectory(Paths.get(runningProcess.getPath() + "/plugins"));
-        IOUtils.createDirectory(Paths.get(runningProcess.getPath() + "/reformcloud/.connection"));
         IOUtils.doCopy("reformcloud/files/runner.jar", runningProcess.getPath() + "/runner.jar");
         IOUtils.doOverrideInternalCopy(EnvironmentBuilder.class.getClassLoader(), "files/embedded.jar", runningProcess.getPath() + "/plugins/executor.jar");
 

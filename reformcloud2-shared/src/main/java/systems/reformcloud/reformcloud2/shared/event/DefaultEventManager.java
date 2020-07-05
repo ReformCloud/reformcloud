@@ -35,13 +35,16 @@ import systems.reformcloud.reformcloud2.executor.api.task.Task;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public final class DefaultEventManager implements EventManager {
 
-    private final Map<Class<?>, List<ListenerContainer>> registeredListeners = new ConcurrentHashMap<>();
+    private static final Comparator<ListenerContainer> PRIORITY_COMPARATOR = (c1, c2) -> (c1.getPriority().getPriority() > c2.getPriority().getPriority()) ? 1 : -1;
+    private final List<ListenerContainer> registeredListeners = new CopyOnWriteArrayList<>();
 
     @Nullable
     @Override
@@ -60,12 +63,15 @@ public final class DefaultEventManager implements EventManager {
     @NotNull
     @Override
     public <T extends Event> T callEvent(@NotNull T event) {
-        Collection<ListenerContainer> registeredListeners = this.registeredListeners.get(event.getClass());
-        if (registeredListeners == null) {
-            return event;
+        List<ListenerContainer> containers = new ArrayList<>();
+        for (ListenerContainer registeredListener : this.registeredListeners) {
+            if (registeredListener.getTargetEventClass().equals(event.getClass())) {
+                containers.add(registeredListener);
+            }
         }
 
-        for (ListenerContainer registeredListener : registeredListeners) {
+        containers.sort(PRIORITY_COMPARATOR);
+        for (ListenerContainer registeredListener : containers) {
             try {
                 registeredListener.call(event);
             } catch (final InvocationTargetException | IllegalAccessException exception) {
@@ -112,11 +118,7 @@ public final class DefaultEventManager implements EventManager {
             }
 
             ListenerContainer container = new DefaultListenerContainer(parameters[0], listener, declaredMethod, annotation.priority());
-
-            this.registeredListeners.putIfAbsent(parameters[0], new CopyOnWriteArrayList<>());
-            this.registeredListeners.get(parameters[0]).add(container);
-
-            this.registeredListeners.get(parameters[0]).sort(Comparator.comparingInt(t0 -> t0.getPriority().getPriority()));
+            this.registeredListeners.add(container);
         }
     }
 
@@ -133,9 +135,7 @@ public final class DefaultEventManager implements EventManager {
 
     @Override
     public void unregisterListener(@NotNull Object listener) {
-        for (List<ListenerContainer> value : this.registeredListeners.values()) {
-            value.removeIf(listenerContainer -> listenerContainer.getListenerInstance() == listener);
-        }
+        this.registeredListeners.removeIf(listenerContainer -> listenerContainer.getListenerInstance() == listener);
     }
 
     @Override
@@ -146,11 +146,6 @@ public final class DefaultEventManager implements EventManager {
     @NotNull
     @Override
     public @UnmodifiableView List<ListenerContainer> getListeners() {
-        List<ListenerContainer> containers = new ArrayList<>();
-        for (List<ListenerContainer> value : this.registeredListeners.values()) {
-            containers.addAll(value);
-        }
-
-        return containers;
+        return Collections.unmodifiableList(this.registeredListeners);
     }
 }
