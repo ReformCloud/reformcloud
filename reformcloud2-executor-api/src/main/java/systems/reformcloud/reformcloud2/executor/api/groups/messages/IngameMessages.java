@@ -38,8 +38,8 @@ public final class IngameMessages implements SerializableObject {
     private String prefix = "§6Cloud §7|";
     private String processRegistered = "%prefix% §7Registered process §e{0}";
     private String processStarted = "%prefix% §7The process §e{0} §7is §astarting §7now...";
-    private String processConnected = "%prefix% §7The process §e{0} §7 is §aconnected to the network";
-    private String processStopped = "%prefix% §7The process §e{0} §7is now §cstopped§7...";
+    private String processConnected = "%prefix% §7The process §e{0} §7is §aconnected to the network";
+    private String processStopped = "%prefix% §7The process §e{0} §7is now §cstopping§7...";
     private String noHubServerAvailable = "%prefix% §7There is currently §cno §7hub server available";
     private String alreadyConnectedToHub = "%prefix% §7You are §calready §7connected to a hub server";
     private String connectingToHub = "%prefix% §7You will be connected to the §e{0} §7hub...";
