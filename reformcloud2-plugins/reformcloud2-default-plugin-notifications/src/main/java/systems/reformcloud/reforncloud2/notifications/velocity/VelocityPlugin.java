@@ -49,18 +49,17 @@ public final class VelocityPlugin {
 
     @Inject
     public VelocityPlugin(ProxyServer server) {
-        this.listener = new ProcessListener(server);
         proxyServer = server;
     }
 
+    private ProcessListener listener;
+    public static ProxyServer proxyServer;
+
     @Subscribe(order = PostOrder.LAST)
     public void handleInit(ProxyInitializeEvent event) {
+        this.listener = new ProcessListener(proxyServer);
         ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).registerListener(this.listener);
     }
-
-    private final ProcessListener listener;
-
-    public static ProxyServer proxyServer;
 
     @Subscribe
     public void handle(final ProxyShutdownEvent event) {
