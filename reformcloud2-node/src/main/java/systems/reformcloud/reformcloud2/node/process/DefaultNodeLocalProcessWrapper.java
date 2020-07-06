@@ -172,7 +172,7 @@ public class DefaultNodeLocalProcessWrapper extends DefaultNodeRemoteProcessWrap
                     break;
                 case STOPPED:
                     this.stop(true);
-                    break;
+                    return false;
             }
         } finally {
             this.lock.unlock();

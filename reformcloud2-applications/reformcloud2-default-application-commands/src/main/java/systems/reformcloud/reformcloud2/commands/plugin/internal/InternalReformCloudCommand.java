@@ -25,6 +25,7 @@
 package systems.reformcloud.reformcloud2.commands.plugin.internal;
 
 import org.jetbrains.annotations.NotNull;
+import systems.refomcloud.reformcloud2.embedded.Embedded;
 import systems.reformcloud.reformcloud2.executor.api.CommonHelper;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
@@ -196,7 +197,7 @@ public final class InternalReformCloudCommand {
 
             ExecutorAPI.getInstance()
                     .getNodeInformationProvider()
-                    .getNodeInformationAsync(channel.get().getName())
+                    .getNodeInformationAsync(Embedded.getInstance().getCurrentProcessInformation().getProcessDetail().getParentUniqueID())
                     .onComplete(nodeProcessWrapper -> {
                         if (!nodeProcessWrapper.isPresent()) {
                             messageSender.accept(prefix + "§cAn internal error occurred");

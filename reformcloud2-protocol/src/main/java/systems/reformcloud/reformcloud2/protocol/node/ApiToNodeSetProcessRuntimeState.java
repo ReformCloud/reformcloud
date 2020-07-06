@@ -56,7 +56,7 @@ public class ApiToNodeSetProcessRuntimeState extends ProtocolPacket {
 
     @Override
     public void handlePacketReceive(@NotNull EndpointChannelReader reader, @NotNull NetworkChannel channel) {
-        ExecutorAPI.getInstance().getProcessProvider().getProcessByUniqueId(this.processUniqueId).ifPresent(wrapper -> wrapper.setRuntimeState(this.runtimeState));
+        ExecutorAPI.getInstance().getProcessProvider().getProcessByUniqueId(this.processUniqueId).ifPresent(wrapper -> wrapper.setRuntimeStateAsync(this.runtimeState));
     }
 
     @Override

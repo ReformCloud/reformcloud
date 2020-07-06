@@ -30,6 +30,7 @@ import systems.reformcloud.reformcloud2.executor.api.application.api.Application
 import systems.reformcloud.reformcloud2.executor.api.application.updater.ApplicationUpdateRepository;
 import systems.reformcloud.reformcloud2.executor.api.command.CommandManager;
 import systems.reformcloud.reformcloud2.executor.api.event.EventManager;
+import systems.reformcloud.reformcloud2.executor.api.network.packet.PacketProvider;
 import systems.reformcloud.reformcloud2.permissions.PermissionManagement;
 import systems.reformcloud.reformcloud2.permissions.application.command.CommandPerms;
 import systems.reformcloud.reformcloud2.permissions.application.listener.ProcessInclusionHandler;
@@ -60,6 +61,12 @@ public class ReformCloudApplication extends Application {
                 new CommandPerms(),
                 "Manages the permission users and permission groups in the database and on all currently running processes",
                 "permissions", "cloudperms", "perms");
+    }
+
+    @Override
+    public void onDisable() {
+        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).unregisterPacket(PacketHelper.PERMISSION_BUS + 1);
+        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).unregisterPacket(PacketHelper.PERMISSION_BUS + 4);
     }
 
     @Nullable

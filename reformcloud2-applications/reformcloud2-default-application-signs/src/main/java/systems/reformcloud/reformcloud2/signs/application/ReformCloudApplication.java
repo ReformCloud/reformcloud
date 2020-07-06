@@ -43,6 +43,7 @@ import systems.reformcloud.reformcloud2.signs.application.packets.PacketDeleteSi
 import systems.reformcloud.reformcloud2.signs.application.packets.PacketRequestSignLayouts;
 import systems.reformcloud.reformcloud2.signs.application.updater.SignsUpdater;
 import systems.reformcloud.reformcloud2.signs.packets.PacketReloadSignConfig;
+import systems.reformcloud.reformcloud2.signs.packets.PacketUtil;
 import systems.reformcloud.reformcloud2.signs.util.SignSystemAdapter;
 import systems.reformcloud.reformcloud2.signs.util.sign.CloudSign;
 import systems.reformcloud.reformcloud2.signs.util.sign.config.SignConfig;
@@ -136,6 +137,14 @@ public class ReformCloudApplication extends Application {
                 registeredChannel.sendPacket(new PacketReloadSignConfig(signConfig));
             }
         }
+    }
+
+    @Override
+    public void onDisable() {
+        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).unregisterPacket(PacketUtil.SIGN_BUS + 1);
+        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).unregisterPacket(PacketUtil.SIGN_BUS + 2);
+        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).unregisterPacket(PacketUtil.SIGN_BUS + 3);
+        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).unregisterPacket(PacketUtil.SIGN_BUS + 7);
     }
 
     @Nullable
