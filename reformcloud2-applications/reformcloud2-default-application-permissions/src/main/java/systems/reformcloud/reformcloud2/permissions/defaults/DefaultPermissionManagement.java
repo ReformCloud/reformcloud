@@ -374,7 +374,7 @@ public class DefaultPermissionManagement extends PermissionManagement {
 
     @Override
     public boolean hasPermission(@NotNull PermissionGroup group, @NotNull String perm) {
-        Boolean hasPermission = this.hasPermission0(group, perm);
+        Boolean hasPermission = this.hasPermission0(group, perm.toLowerCase());
         return hasPermission != null && hasPermission;
     }
 

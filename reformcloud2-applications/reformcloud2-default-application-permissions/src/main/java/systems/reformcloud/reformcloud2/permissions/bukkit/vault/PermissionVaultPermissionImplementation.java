@@ -25,6 +25,7 @@
 package systems.reformcloud.reformcloud2.permissions.bukkit.vault;
 
 import net.milkbowl.vault.permission.Permission;
+import org.bukkit.plugin.java.JavaPlugin;
 import systems.reformcloud.reformcloud2.executor.api.utility.list.Streams;
 import systems.reformcloud.reformcloud2.permissions.PermissionManagement;
 import systems.reformcloud.reformcloud2.permissions.nodes.NodeGroup;
@@ -37,6 +38,7 @@ public class PermissionVaultPermissionImplementation extends Permission {
     private final PermissionManagement permissionManagement = PermissionManagement.getInstance();
 
     PermissionVaultPermissionImplementation() {
+        super.plugin = JavaPlugin.getProvidingPlugin(Permission.class);
     }
 
     @Override

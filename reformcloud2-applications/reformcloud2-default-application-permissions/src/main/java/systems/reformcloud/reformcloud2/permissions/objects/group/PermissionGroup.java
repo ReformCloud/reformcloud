@@ -177,6 +177,7 @@ public class PermissionGroup implements SerializableObject {
 
     @Nullable
     public Boolean hasPermission(@NotNull String perm) {
+        perm = perm.toLowerCase();
         Boolean hasPermission = WildcardCheck.hasWildcardPermission(this, perm);
         if (hasPermission != null) {
             return hasPermission;

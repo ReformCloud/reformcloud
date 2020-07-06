@@ -183,6 +183,7 @@ public class PermissionUser implements SerializableObject {
             return false;
         }
 
+        permission = permission.toLowerCase();
         if (permission.equalsIgnoreCase("bukkit.brodcast") || permission.equalsIgnoreCase("bukkit.brodcast.admin")) {
             return true;
         }
