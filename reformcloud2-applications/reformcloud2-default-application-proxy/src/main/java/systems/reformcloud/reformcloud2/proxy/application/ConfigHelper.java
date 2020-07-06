@@ -50,7 +50,7 @@ public final class ConfigHelper {
                     .add("config", new ProxyConfiguration(
                             Arrays.asList(
                                     new MotdConfiguration(
-                                            "§b§lReform§f§lCloud §8» §7Server Network §8» [§f§l1.8§7-§6§l1.15§8]",
+                                            "§b§lReform§f§lCloud §8» §7Server Network §8» [§f§l1.8§7-§6§l1.16§8]",
                                             "§b§lN§f§lews §8» §7§lWe are §a§lonline§7§l!",
                                             new String[]{
                                                     " ",
@@ -76,7 +76,7 @@ public final class ConfigHelper {
                                     )
                             ), Arrays.asList(
                             new MotdConfiguration(
-                                    "§b§lReform§f§lCloud §8» §7Server Network §8» [§f§l1.8§7-§6§l1.15§8]",
+                                    "§b§lReform§f§lCloud §8» §7Server Network §8» [§f§l1.8§7-§6§l1.16§8]",
                                     "§b§lN§f§lews §8» §7§lWe are in §c§lmaintenance§7§l!",
                                     new String[]{
                                             " ",

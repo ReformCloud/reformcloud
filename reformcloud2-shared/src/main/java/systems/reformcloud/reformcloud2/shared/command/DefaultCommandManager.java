@@ -31,6 +31,7 @@ import systems.reformcloud.reformcloud2.executor.api.command.Command;
 import systems.reformcloud.reformcloud2.executor.api.command.CommandContainer;
 import systems.reformcloud.reformcloud2.executor.api.command.CommandManager;
 import systems.reformcloud.reformcloud2.executor.api.command.CommandSender;
+import systems.reformcloud.reformcloud2.executor.api.utility.list.Streams;
 
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -44,7 +45,7 @@ public class DefaultCommandManager implements CommandManager {
         for (String alias : aliases) {
             Optional<CommandContainer> registeredCommand = this.getCommand(alias.toLowerCase());
             if (registeredCommand.isPresent()) {
-                throw new RuntimeException("Command " + registeredCommand.get().getClass().getName() + " clashes with "
+                throw new RuntimeException("Command " + registeredCommand.get().getCommand().getClass().getName() + " clashes with "
                         + command.getClass().getName() + " because of alias '" + alias + "'");
             }
         }
@@ -64,6 +65,12 @@ public class DefaultCommandManager implements CommandManager {
 
             return false;
         });
+    }
+
+    @Override
+    public void unregisterCommand(@NotNull String... aliases) {
+        Collection<String> toUnregister = Streams.toLowerCase(Arrays.asList(aliases));
+        this.commands.removeIf(command -> Streams.hasMatch(command.getAliases(), toUnregister::contains));
     }
 
     @NotNull

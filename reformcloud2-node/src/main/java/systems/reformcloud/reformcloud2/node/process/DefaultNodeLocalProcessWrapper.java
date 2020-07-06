@@ -276,9 +276,6 @@ public class DefaultNodeLocalProcessWrapper extends DefaultNodeRemoteProcessWrap
             }
 
             ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ClusterManager.class).publishProcessUnregister(this.processInformation);
-            ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ClusterManager.class).handleProcessUnregister(
-                    this.processInformation.getProcessDetail().getName()
-            );
         } else {
             this.processInformation.getNetworkInfo().setConnected(false);
             for (Player onlinePlayer : this.processInformation.getProcessPlayerManager().getOnlinePlayers()) {

@@ -29,6 +29,7 @@ import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.application.api.Application;
 import systems.reformcloud.reformcloud2.executor.api.application.updater.ApplicationUpdateRepository;
 import systems.reformcloud.reformcloud2.executor.api.event.EventManager;
+import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.manager.ChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.network.packet.PacketProvider;
@@ -60,6 +61,11 @@ public class ProxyApplication extends Application {
                 registeredChannel.sendPacket(new PacketProxyConfigUpdate(ConfigHelper.getProxyConfiguration()));
             }
         }
+    }
+
+    @Override
+    public void onDisable() {
+        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).unregisterPacket(NetworkUtil.RESERVED_EXTRA_BUS + 6);
     }
 
     @Nullable

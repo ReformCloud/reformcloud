@@ -161,6 +161,8 @@ public class DefaultClusterManager implements ClusterManager {
 
     @Override
     public void publishProcessUnregister(@NotNull ProcessInformation processInformation) {
+        this.processProvider.unregisterProcess(processInformation.getProcessDetail().getName());
+
         this.sendPacketToNodes(new NodeToNodeUnregisterProcess(processInformation.getProcessDetail().getName()));
         this.sendPacketToProcesses(new NodeToApiProcessUnregister(processInformation));
 

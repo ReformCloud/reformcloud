@@ -67,6 +67,7 @@ public class ReformCloudApplication extends Application {
     public void onDisable() {
         ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).unregisterPacket(PacketHelper.PERMISSION_BUS + 1);
         ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).unregisterPacket(PacketHelper.PERMISSION_BUS + 4);
+        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(CommandManager.class).unregisterCommand("permissions");
     }
 
     @Nullable

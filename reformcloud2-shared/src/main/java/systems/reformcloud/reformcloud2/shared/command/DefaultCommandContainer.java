@@ -27,13 +27,14 @@ package systems.reformcloud.reformcloud2.shared.command;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.command.Command;
 import systems.reformcloud.reformcloud2.executor.api.command.CommandContainer;
+import systems.reformcloud.reformcloud2.executor.api.utility.list.Streams;
 
 import java.util.Collection;
 
 public final class DefaultCommandContainer implements CommandContainer {
 
     DefaultCommandContainer(Collection<String> aliases, String description, Command command) {
-        this.aliases = aliases;
+        this.aliases = Streams.toLowerCase(aliases);
         this.command = command;
         this.description = description;
     }

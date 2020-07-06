@@ -44,6 +44,8 @@ public interface CommandManager {
 
     void unregisterCommand(@NotNull CommandContainer command);
 
+    void unregisterCommand(@NotNull String... aliases);
+
     @NotNull
     Optional<CommandContainer> getCommand(@NotNull String anyAlias);
 
