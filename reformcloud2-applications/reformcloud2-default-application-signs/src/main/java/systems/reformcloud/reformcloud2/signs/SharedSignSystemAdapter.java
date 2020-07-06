@@ -231,6 +231,10 @@ public abstract class SharedSignSystemAdapter<T> implements SignSystemAdapter<T>
                 continue;
             }
 
+            if (!notAssignedProcess.getProcessDetail().getTemplate().isServer() || notAssignedProcess.getProcessDetail().getProcessUniqueID().equals(this.ownUniqueID)) {
+                continue;
+            }
+
             CloudSign sign = this.getFreeSignForGroup(notAssignedProcess.getProcessGroup());
             if (sign == null) {
                 continue;
