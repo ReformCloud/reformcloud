@@ -68,11 +68,16 @@ import systems.reformcloud.reformcloud2.node.process.DefaultNodeLocalProcessWrap
 import systems.reformcloud.reformcloud2.node.process.DefaultNodeProcessProvider;
 import systems.reformcloud.reformcloud2.node.process.screen.DefaultProcessScreenController;
 import systems.reformcloud.reformcloud2.node.process.screen.ProcessScreenController;
-import systems.reformcloud.reformcloud2.node.protocol.PacketRegister;
+import systems.reformcloud.reformcloud2.node.processors.*;
+import systems.reformcloud.reformcloud2.node.processors.player.*;
+import systems.reformcloud.reformcloud2.node.protocol.*;
 import systems.reformcloud.reformcloud2.node.provider.DefaultNodeNodeInformationProvider;
 import systems.reformcloud.reformcloud2.node.runnables.*;
 import systems.reformcloud.reformcloud2.node.tick.CloudTickWorker;
 import systems.reformcloud.reformcloud2.node.tick.TickedTaskScheduler;
+import systems.reformcloud.reformcloud2.protocol.node.ApiToNodeGetIngameMessages;
+import systems.reformcloud.reformcloud2.protocol.processor.PacketProcessorManager;
+import systems.reformcloud.reformcloud2.protocol.shared.*;
 import systems.reformcloud.reformcloud2.shared.command.DefaultCommandManager;
 import systems.reformcloud.reformcloud2.shared.event.DefaultEventManager;
 import systems.reformcloud.reformcloud2.shared.network.channel.DefaultChannelManager;
@@ -134,6 +139,7 @@ public final class NodeExecutor extends ExecutorAPI {
         this.logger = new CloudLogger(this.console.getLineReader());
 
         PacketRegister.register();
+        this.registerDefaultPacketProcessors();
 
         this.mainGroupProvider = new DefaultNodeMainGroupProvider(System.getProperty("systems.reformcloud.main-group-dir", "reformcloud/groups/main"));
         this.processGroupProvider = new DefaultNodeProcessGroupProvider(System.getProperty("systems.reformcloud.sub-group-dir", "reformcloud/groups/sub"));
@@ -466,5 +472,22 @@ public final class NodeExecutor extends ExecutorAPI {
         this.serviceRegistry.setProvider(QueryManager.class, new DefaultQueryManager(), false, true);
         this.serviceRegistry.setProvider(ProcessFactoryController.class, new DefaultProcessFactoryController(this.processProvider), false, true);
         this.serviceRegistry.setProvider(ProcessScreenController.class, new DefaultProcessScreenController(), false, true);
+    }
+
+    private void registerDefaultPacketProcessors() {
+        PacketProcessorManager.getInstance()
+                .registerProcessor(new PacketConnectPlayerToServerProcessor(), PacketConnectPlayerToServer.class)
+                .registerProcessor(new PacketDisconnectPlayerProcessor(), PacketDisconnectPlayer.class)
+                .registerProcessor(new PacketPlayEffectToPlayerProcessor(), PacketPlayEffectToPlayer.class)
+                .registerProcessor(new PacketPlaySoundToPlayerProcessor(), PacketPlaySoundToPlayer.class)
+                .registerProcessor(new PacketSendPlayerMessageProcessor(), PacketSendPlayerMessage.class)
+                .registerProcessor(new PacketSendPlayerTitleProcessor(), PacketSendPlayerTitle.class)
+                .registerProcessor(new PacketSetPlayerLocationProcessor(), PacketSetPlayerLocation.class)
+                .registerProcessor(new ApiToNodeGetIngameMessagesProcessor(), ApiToNodeGetIngameMessages.class)
+                .registerProcessor(new ChannelMessageProcessor(), PacketChannelMessage.class)
+                .registerProcessor(new NodeToNodeProcessCommandProcessor(), NodeToNodeProcessCommand.class)
+                .registerProcessor(new NodeToNodePublishChannelMessageProcessor(), NodeToNodePublishChannelMessage.class)
+                .registerProcessor(new NodeToNodeRequestNodeInformationUpdateProcessor(), NodeToNodeRequestNodeInformationUpdate.class)
+                .registerProcessor(new NodeToNodeTabCompleteCommandProcessor(), NodeToNodeTabCompleteCommand.class);
     }
 }
