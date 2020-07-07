@@ -115,30 +115,25 @@ public final class CommandGroup implements Command {
     @Override
     public @NotNull List<String> suggest(@NotNull CommandSender commandSender, String[] strings, int bufferIndex, @NotNull String commandLine) {
         List<String> result = new ArrayList<>();
-        switch (bufferIndex) {
-            case 0:
-                result.addAll(Arrays.asList("list", "sub", "main"));
-                break;
-            case 1:
-                if (strings[0].equalsIgnoreCase("sub")) {
-                    result.addAll(ExecutorAPI.getInstance().getProcessGroupProvider().getProcessGroupNames());
-                } else if (strings[0].equalsIgnoreCase("main")) {
-                    result.addAll(ExecutorAPI.getInstance().getMainGroupProvider().getMainGroupNames());
-                }
-                break;
-            case 2:
-                result.addAll(Arrays.asList("stop", "kill", "info", "delete", "edit"));
-                break;
-            case 3:
-                if (strings[2].equalsIgnoreCase("edit") && strings[0].equalsIgnoreCase("sub")) {
-                    result.addAll(Arrays.asList("--maintenance=false", "--static=false", "--max-players=512", "--min-process-count=1",
-                            "--max-process-count=-1", "--always-prepared-process-count=1", "--start-port=25565", "--max-memory=512",
-                            "--startup-pickers=", "--add-startup-pickers=", "--remove-startup-pickers=", "-clear-startup-pickers=true",
-                            "--templates=default/FILE/PAPER_1_8_8", "--add-templates=default/FILE/PAPER_1_8_8", "--remove-templates=default", "--clear-templates=true"));
-                } else if (strings[2].equalsIgnoreCase("edit") && strings[0].equalsIgnoreCase("main")) {
-                    result.addAll(Arrays.asList("--sub-groups=", "--add-sub-groups=", "--remove-sub-groups=", "--clear-sub-groups=true"));
-                }
-                break;
+        if (bufferIndex == 0) {
+            result.addAll(Arrays.asList("list", "sub", "main"));
+        } else if (bufferIndex == 1) {
+            if (strings[0].equalsIgnoreCase("sub")) {
+                result.addAll(ExecutorAPI.getInstance().getProcessGroupProvider().getProcessGroupNames());
+            } else if (strings[0].equalsIgnoreCase("main")) {
+                result.addAll(ExecutorAPI.getInstance().getMainGroupProvider().getMainGroupNames());
+            }
+        } else if (bufferIndex == 2) {
+            result.addAll(Arrays.asList("stop", "kill", "info", "delete", "edit"));
+        } else if (bufferIndex >= 3) {
+            if (strings[2].equalsIgnoreCase("edit") && strings[0].equalsIgnoreCase("sub")) {
+                result.addAll(Arrays.asList("--maintenance=false", "--static=false", "--max-players=512", "--min-process-count=1",
+                        "--max-process-count=-1", "--always-prepared-process-count=1", "--start-port=25565", "--max-memory=512",
+                        "--startup-pickers=", "--add-startup-pickers=", "--remove-startup-pickers=", "-clear-startup-pickers=true",
+                        "--templates=default/FILE/PAPER_1_8_8", "--add-templates=default/FILE/PAPER_1_8_8", "--remove-templates=default", "--clear-templates=true"));
+            } else if (strings[2].equalsIgnoreCase("edit") && strings[0].equalsIgnoreCase("main")) {
+                result.addAll(Arrays.asList("--sub-groups=", "--add-sub-groups=", "--remove-sub-groups=", "--clear-sub-groups=true"));
+            }
         }
 
         return result;
