@@ -33,7 +33,6 @@ import systems.reformcloud.reformcloud2.executor.api.command.CommandContainer;
 import systems.reformcloud.reformcloud2.executor.api.command.CommandManager;
 import systems.reformcloud.reformcloud2.shared.command.sources.ConsoleCommandSender;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -58,12 +57,11 @@ public class DefaultNodeCommandCompleter implements Completer {
         }
 
         String[] split = buffer.split(" ");
-        String[] args = Arrays.copyOfRange(split, 1, split.length);
-        String beginTypeArgument = args.length <= 1 || buffer.endsWith(" ") ? "" : args[args.length - 1].toLowerCase().trim();
+        String beginTypeArgument = split.length <= 1 || buffer.endsWith(" ") ? null : split[split.length - 1].toLowerCase().trim();
 
         list.addAll(commandManager.suggest(buffer, ConsoleCommandSender.INSTANCE)
                 .stream()
-                .filter(candidate -> beginTypeArgument.isEmpty() || candidate.toLowerCase().startsWith(beginTypeArgument))
+                .filter(candidate -> beginTypeArgument == null || candidate.toLowerCase().startsWith(beginTypeArgument))
                 .sorted()
                 .map(Candidate::new)
                 .collect(Collectors.toList()));

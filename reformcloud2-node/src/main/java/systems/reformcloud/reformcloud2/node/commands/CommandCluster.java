@@ -136,9 +136,9 @@ public final class CommandCluster implements Command {
     }
 
     @Override
-    public @NotNull List<String> suggest(@NotNull CommandSender commandSender, String[] strings, @NotNull String commandLine) {
+    public @NotNull List<String> suggest(@NotNull CommandSender commandSender, String[] strings, int bufferIndex, @NotNull String commandLine) {
         List<String> result = new ArrayList<>();
-        switch (strings.length) {
+        switch (bufferIndex) {
             case 0:
                 result.addAll(Arrays.asList("list", "me", "head", "info", "create", "delete"));
                 break;

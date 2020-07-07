@@ -119,9 +119,10 @@ public class DefaultCommandManager implements CommandManager {
             return new ArrayList<>();
         }
 
+        int argumentIndex = (commandLine.length() - commandLine.replace(" ", "").length()) - 1;
         String[] args = split.length > 1 ? Arrays.copyOfRange(split, 1, split.length) : new String[0];
         try {
-            return command.getCommand().suggest(commandSender, args, commandLine);
+            return command.getCommand().suggest(commandSender, args, argumentIndex, commandLine);
         } catch (Throwable throwable) {
             System.err.println("Exception tab completing command \"" + split[0] + "\" with arguments " + String.join(", ", args));
             throwable.printStackTrace();

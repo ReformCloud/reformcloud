@@ -86,6 +86,29 @@ public final class CommandCreate implements Command {
         this.describeCommandToSender(sender);
     }
 
+    @Override
+    public @NotNull List<String> suggest(@NotNull CommandSender commandSender, String[] strings, int bufferIndex, @NotNull String commandLine) {
+        List<String> result = new ArrayList<>();
+        if (bufferIndex == 0) {
+            result.add("new");
+        } else if (bufferIndex == 1) {
+            result.addAll(Arrays.asList("pg", "mg"));
+        } else if (bufferIndex >= 3) {
+            if (bufferIndex == 3 && strings[1].equalsIgnoreCase("mg")) {
+                result.add("--sub-groups=");
+            } else if (bufferIndex == 3 && strings[1].equalsIgnoreCase("pg")) {
+                for (Version value : Version.values()) {
+                    result.add(value.name());
+                }
+            } else if (bufferIndex > 3 && strings[1].equalsIgnoreCase("pg")) {
+                result.addAll(Arrays.asList("--start-port=25565", "--max-memory=512", "--min-process-count=1", "--max-process-count=-1",
+                        "--always-prepared=1", "--max-players=20", "--static=false", "--lobby=false", "--maintenance=false", "--main-groups=", "--startup-pickers="));
+            }
+        }
+
+        return result;
+    }
+
     private void handleMainGroupRequest(CommandSender source, String[] strings) {
         if (strings.length != 3 && strings.length != 4) {
             this.describeCommandToSender(source);

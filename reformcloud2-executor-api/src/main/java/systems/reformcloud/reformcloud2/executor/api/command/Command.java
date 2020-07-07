@@ -39,7 +39,7 @@ public interface Command {
     }
 
     @NotNull
-    default List<String> suggest(@NotNull CommandSender commandSender, @NonNls String[] strings, @NotNull String commandLine) {
+    default List<String> suggest(@NotNull CommandSender commandSender, @NonNls String[] strings, int bufferIndex, @NotNull String commandLine) {
         return new ArrayList<>();
     }
 }
