@@ -183,4 +183,17 @@ public final class CommandLaunch implements Command {
             sender.sendMessage(LanguageManager.get("command-launch-started-processes", amount, base.get().getName()));
         }
     }
+
+    @Override
+    public @NotNull List<String> suggest(@NotNull CommandSender commandSender, String[] strings, int bufferIndex, @NotNull String commandLine) {
+        List<String> result = new ArrayList<>();
+        if (bufferIndex == 0) {
+            result.addAll(ExecutorAPI.getInstance().getProcessGroupProvider().getProcessGroupNames());
+        } else if (bufferIndex >= 1) {
+            result.addAll(Arrays.asList("--template=", "--unique-id=" + UUID.randomUUID(), "--display-name=",
+                    "--max-memory=512", "--id=", "--max-players=20", "--inclusions=", "--amount=1", "--prepare-only=false"));
+        }
+
+        return result;
+    }
 }
