@@ -26,6 +26,7 @@ package systems.reformcloud.reformcloud2.node.commands;
 
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.CommonHelper;
+import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.command.Command;
 import systems.reformcloud.reformcloud2.executor.api.command.CommandSender;
 import systems.reformcloud.reformcloud2.executor.api.language.LanguageManager;
@@ -36,8 +37,7 @@ import systems.reformcloud.reformcloud2.executor.api.wrappers.NodeProcessWrapper
 import systems.reformcloud.reformcloud2.node.NodeExecutor;
 import systems.reformcloud.reformcloud2.node.cluster.ClusterManager;
 
-import java.util.Collection;
-import java.util.Optional;
+import java.util.*;
 
 public final class CommandCluster implements Command {
 
@@ -133,6 +133,34 @@ public final class CommandCluster implements Command {
         }
 
         this.describeCommandToSender(sender);
+    }
+
+    @Override
+    public @NotNull List<String> suggest(@NotNull CommandSender commandSender, String[] strings, @NotNull String commandLine) {
+        List<String> result = new ArrayList<>();
+        switch (strings.length) {
+            case 0:
+                result.addAll(Arrays.asList("list", "me", "head", "info", "create", "delete"));
+                break;
+            case 1:
+                if (strings[0].equalsIgnoreCase("list")) {
+                    result.addAll(ExecutorAPI.getInstance().getNodeInformationProvider().getNodeNames());
+                } else if (strings[0].equalsIgnoreCase("create")) {
+                    result.add("127.0.0.1");
+                } else if (strings[0].equalsIgnoreCase("delete")) {
+                    result.addAll(Streams.map(NodeExecutor.getInstance().getNodeConfig().getClusterNodes(), NetworkAddress::getHost));
+                }
+
+                break;
+            case 2:
+                if (strings[0].equalsIgnoreCase("create")) {
+                    result.add("1809");
+                }
+
+                break;
+        }
+
+        return result;
     }
 
     private boolean existsNode(@NotNull String host) {
