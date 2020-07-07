@@ -100,7 +100,13 @@ public class DefaultCommandManager implements CommandManager {
         }
 
         String[] args = split.length > 1 ? Arrays.copyOfRange(split, 1, split.length) : new String[0];
-        command.getCommand().process(commandSender, args, commandLine);
+        try {
+            command.getCommand().process(commandSender, args, commandLine);
+        } catch (Throwable throwable) {
+            System.err.println("Exception handling command \"" + split[0] + "\" with arguments " + String.join(", ", args));
+            throwable.printStackTrace();
+        }
+
         return true;
     }
 
@@ -114,7 +120,14 @@ public class DefaultCommandManager implements CommandManager {
         }
 
         String[] args = split.length > 1 ? Arrays.copyOfRange(split, 1, split.length) : new String[0];
-        return command.getCommand().suggest(commandSender, args, commandLine);
+        try {
+            return command.getCommand().suggest(commandSender, args, commandLine);
+        } catch (Throwable throwable) {
+            System.err.println("Exception tab completing command \"" + split[0] + "\" with arguments " + String.join(", ", args));
+            throwable.printStackTrace();
+        }
+
+        return new ArrayList<>();
     }
 
     private @Nullable CommandContainer getCommand(@NotNull CommandSender commandSender, @NotNull String[] split) {
