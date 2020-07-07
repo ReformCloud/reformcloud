@@ -50,11 +50,8 @@ import java.util.jar.JarFile;
 public final class Runner {
 
     private final ReformScriptInterpreter interpreter = new RunnerReformScriptInterpreter();
-
     private final Updater applicationsUpdater;
-
     private final Updater cloudVersionUpdater;
-
     private final String[] args;
 
     Runner(@NotNull String[] args) {

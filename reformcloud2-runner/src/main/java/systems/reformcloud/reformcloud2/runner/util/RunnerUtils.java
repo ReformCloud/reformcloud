@@ -102,7 +102,7 @@ public final class RunnerUtils {
      * @param line The message line which should get debugged if debug logging is enabled
      */
     public static void debug(@NotNull String line) {
-        if (Boolean.getBoolean("reformcloud.dev.mode")) {
+        if (Boolean.getBoolean("reformcloud.runner.debug")) {
             System.out.println("DEBUG: " + line);
         }
     }

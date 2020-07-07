@@ -32,9 +32,6 @@ import java.net.URL;
 
 public abstract class DependencyLoader {
 
-    /**
-     * Loads all default dependencies
-     */
     public static void doLoad(@NotNull ClassLoader classLoader) {
         DependencyLoader dependencyLoader = new DefaultDependencyLoader();
         dependencyLoader.loadDependencies(classLoader);
@@ -51,9 +48,6 @@ public abstract class DependencyLoader {
         urlClassLoader.addURL(url);
     }
 
-    /**
-     * Loads all dependencies
-     */
     public abstract void loadDependencies(@NotNull ClassLoader classLoader);
 
     /**

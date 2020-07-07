@@ -17,6 +17,7 @@ PRINTLN
 # VARIABLE reformcloud.lib.path=.
 # VARIABLE reformcloud.disable.native=true
 # VARIABLE reformcloud.executor.debug=true
+# VARIABLE reformcloud.runner.debug=true
 # VARIABLE reformcloud.disable.colours=true
 # VARIABLE reformcloud.indev.builds=true
 # VARIABLE reformcloud.runner.version=2.10.0-SNAPSHOT
