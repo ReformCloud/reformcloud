@@ -177,7 +177,6 @@ public final class NodeExecutor extends ExecutorAPI {
         this.startNetworkListeners();
 
         this.taskScheduler.addPermanentTask(new AutoStartRunnable());
-        this.taskScheduler.addPermanentTask(new AutoStopRunnable());
         this.taskScheduler.addPermanentTask(new NodeInformationUpdateRunnable());
         this.taskScheduler.addPermanentTask(new ServerWatchdogRunnable());
         this.taskScheduler.addPermanentTask(new ProcessScreenTickRunnable());

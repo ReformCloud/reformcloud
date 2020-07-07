@@ -28,7 +28,6 @@ import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.groups.utils.AutomaticStartupConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
-import systems.reformcloud.reformcloud2.executor.api.process.ProcessState;
 
 import java.util.Collection;
 import java.util.Map;
@@ -73,10 +72,7 @@ public class OnlinePercentCheckerTask implements Runnable {
                 continue;
             }
 
-            ExecutorAPI.getInstance().getProcessProvider().createProcess()
-                    .group(processGroup.getName())
-                    .prepare()
-                    .thenAccept(process -> process.setRuntimeState(ProcessState.STARTED));
+            AutoStartRunnable.startPreparedOfGroup(processes, processGroup);
             this.checkGroups.put(processGroup.getName(), configuration.getCheckIntervalInSeconds());
         }
     }
