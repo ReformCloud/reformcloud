@@ -38,6 +38,7 @@ import systems.reformcloud.reformcloud2.executor.api.network.channel.manager.Cha
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessState;
 import systems.reformcloud.reformcloud2.executor.api.utility.StringUtil;
+import systems.reformcloud.reformcloud2.executor.api.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.wrappers.ProcessWrapper;
 import systems.reformcloud.reformcloud2.node.NodeExecutor;
 import systems.reformcloud.reformcloud2.node.process.screen.ProcessScreen;
@@ -238,6 +239,25 @@ public final class CommandProcess implements Command {
         }
 
         this.describeCommandToSender(commandSource);
+    }
+
+    @Override
+    public @NotNull List<String> suggest(@NotNull CommandSender commandSender, String[] strings, int bufferIndex, @NotNull String commandLine) {
+        List<String> result = new ArrayList<>();
+        if (bufferIndex == 0) {
+            result.add("list");
+            result.addAll(Streams.map(ExecutorAPI.getInstance().getProcessProvider().getProcesses(), info -> info.getProcessDetail().getName()));
+        } else if (bufferIndex == 1) {
+            if (strings[0].equalsIgnoreCase("list")) {
+                result.add("--group=");
+            } else {
+                result.addAll(Arrays.asList("info", "start", "stop", "restart", "pause", "screen", "copy", "execute"));
+            }
+        } else if (bufferIndex == 2 && strings[1].equalsIgnoreCase("info")) {
+            result.add("--full=true");
+        }
+
+        return result;
     }
 
     private void describeProcessToSender(CommandSender source, ProcessInformation information, boolean full) {
