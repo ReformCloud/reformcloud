@@ -35,6 +35,8 @@ import systems.reformcloud.reformcloud2.executor.api.process.Player;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.utility.list.Trio;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
@@ -114,6 +116,21 @@ public final class CommandPlayers implements Command {
         }
 
         this.describeCommandToSender(sender);
+    }
+
+    @Override
+    public @NotNull List<String> suggest(@NotNull CommandSender commandSender, String[] strings, int bufferIndex, @NotNull String commandLine) {
+        List<String> result = new ArrayList<>();
+        switch (bufferIndex) {
+            case 0:
+                result.add("list");
+                break;
+            case 1:
+                result.add("info");
+                break;
+        }
+
+        return result;
     }
 
     @Nullable
