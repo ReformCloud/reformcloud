@@ -172,7 +172,7 @@ public final class Streams {
      * @see #filter(Collection, Predicate)
      */
     @Nullable
-    public static <T, F> F filterAndApply(@NotNull List<T> in, @NotNull Predicate<T> predicate, @NotNull Function<T, F> function) {
+    public static <T, F> F filterAndApply(@NotNull Collection<T> in, @NotNull Predicate<T> predicate, @NotNull Function<T, F> function) {
         if (in.isEmpty()) {
             return null;
         }

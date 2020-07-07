@@ -29,8 +29,11 @@ import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.command.Command;
 import systems.reformcloud.reformcloud2.executor.api.command.CommandSender;
 import systems.reformcloud.reformcloud2.executor.api.language.LanguageManager;
+import systems.reformcloud.reformcloud2.executor.api.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.wrappers.ProcessWrapper;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 public final class CommandLog implements Command {
@@ -59,5 +62,18 @@ public final class CommandLog implements Command {
         } else {
             sender.sendMessage(LanguageManager.get("command-log-upload-log-failed"));
         }
+    }
+
+    @Override
+    public @NotNull List<String> suggest(@NotNull CommandSender commandSender, String[] strings, int bufferIndex, @NotNull String commandLine) {
+        List<String> result = new ArrayList<>();
+        if (bufferIndex == 0) {
+            result.addAll(Streams.map(
+                    Streams.allOf(ExecutorAPI.getInstance().getProcessProvider().getProcesses(), info -> info.getProcessDetail().getProcessState().isStartedOrOnline()),
+                    info -> info.getProcessDetail().getName()
+            ));
+        }
+
+        return result;
     }
 }
