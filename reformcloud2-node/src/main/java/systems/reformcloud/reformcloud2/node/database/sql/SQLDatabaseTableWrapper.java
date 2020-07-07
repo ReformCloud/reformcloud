@@ -83,6 +83,10 @@ public final class SQLDatabaseTableWrapper implements DatabaseTableWrapper {
         return this.provider.executeQuery(
                 "SELECT `data` FROM `" + this.name + "` WHERE `key` = ? OR `identifier` = ?",
                 resultSet -> {
+                    if (!resultSet.next()) {
+                        return Optional.empty();
+                    }
+
                     byte[] bytes = resultSet.getBytes("data");
                     if (bytes == null) {
                         return Optional.empty();

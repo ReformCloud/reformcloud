@@ -101,7 +101,9 @@ public class MySQLDatabaseProvider extends AbstractSQLDatabaseProvider {
             }
 
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                return resultSet.next() ? function.apply(resultSet) : defaultValue;
+                return function.apply(resultSet);
+            } catch (Throwable throwable) {
+                return defaultValue;
             }
         } catch (SQLException exception) {
             exception.printStackTrace();
