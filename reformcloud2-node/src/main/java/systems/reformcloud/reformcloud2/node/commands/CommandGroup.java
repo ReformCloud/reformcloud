@@ -81,7 +81,7 @@ public final class CommandGroup implements Command {
                         "group <main> <name> [edit]                     | Edits the specified main group\n" +
                         " --sub-groups=[Group1;Group2]                  | Sets the sub groups of the main group\n" +
                         " --add-sub-groups=[Group1;Group2]              | Adds the sub groups to the main group\n" +
-                        " --remove-sub-groups[Group1;Group2]            | Removes the sub groups from the main group\n" +
+                        " --remove-sub-groups=[Group1;Group2]           | Removes the sub groups from the main group\n" +
                         " --clear-sub-groups=true                       | Clears the sub groups of the main group"
         ).split("\n"));
     }
@@ -110,6 +110,38 @@ public final class CommandGroup implements Command {
         }
 
         this.describeCommandToSender(sender);
+    }
+
+    @Override
+    public @NotNull List<String> suggest(@NotNull CommandSender commandSender, String[] strings, int bufferIndex, @NotNull String commandLine) {
+        List<String> result = new ArrayList<>();
+        switch (bufferIndex) {
+            case 0:
+                result.addAll(Arrays.asList("list", "sub", "main"));
+                break;
+            case 1:
+                if (strings[0].equalsIgnoreCase("sub")) {
+                    result.addAll(ExecutorAPI.getInstance().getProcessGroupProvider().getProcessGroupNames());
+                } else if (strings[0].equalsIgnoreCase("main")) {
+                    result.addAll(ExecutorAPI.getInstance().getMainGroupProvider().getMainGroupNames());
+                }
+                break;
+            case 2:
+                result.addAll(Arrays.asList("stop", "kill", "info", "delete", "edit"));
+                break;
+            case 3:
+                if (strings[2].equalsIgnoreCase("edit") && strings[0].equalsIgnoreCase("sub")) {
+                    result.addAll(Arrays.asList("--maintenance=false", "--static=false", "--max-players=512", "--min-process-count=1",
+                            "--max-process-count=-1", "--always-prepared-process-count=1", "--start-port=25565", "--max-memory=512",
+                            "--startup-pickers=", "--add-startup-pickers=", "--remove-startup-pickers=", "-clear-startup-pickers=true",
+                            "--templates=default/FILE/PAPER_1_8_8", "--add-templates=default/FILE/PAPER_1_8_8", "--remove-templates=default", "--clear-templates=true"));
+                } else if (strings[2].equalsIgnoreCase("edit") && strings[0].equalsIgnoreCase("main")) {
+                    result.addAll(Arrays.asList("--sub-groups=", "--add-sub-groups=", "--remove-sub-groups=", "--clear-sub-groups=true"));
+                }
+                break;
+        }
+
+        return result;
     }
 
     private void handleSubGroupRequest(CommandSender source, String[] strings, Properties properties) {
