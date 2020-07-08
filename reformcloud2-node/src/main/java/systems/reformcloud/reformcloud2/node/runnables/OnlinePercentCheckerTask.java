@@ -58,6 +58,7 @@ public class OnlinePercentCheckerTask implements Runnable {
 
             Collection<ProcessInformation> processes = ExecutorAPI.getInstance().getProcessProvider().getProcessesByProcessGroup(processGroup.getName());
             if (processes.isEmpty()) {
+                this.checkGroups.put(processGroup.getName(), configuration.getCheckIntervalInSeconds());
                 continue;
             }
 
@@ -65,10 +66,12 @@ public class OnlinePercentCheckerTask implements Runnable {
             int online = processes.stream().mapToInt(process -> process.getProcessPlayerManager().getOnlineCount()).sum();
 
             if (this.getPercentOf(online, max) < configuration.getMaxPercentOfPlayers()) {
+                this.checkGroups.put(processGroup.getName(), configuration.getCheckIntervalInSeconds());
                 continue;
             }
 
             if (processGroup.getStartupConfiguration().getMaxOnlineProcesses() != -1 && processes.size() >= processGroup.getStartupConfiguration().getMaxOnlineProcesses()) {
+                this.checkGroups.put(processGroup.getName(), configuration.getCheckIntervalInSeconds());
                 continue;
             }
 
