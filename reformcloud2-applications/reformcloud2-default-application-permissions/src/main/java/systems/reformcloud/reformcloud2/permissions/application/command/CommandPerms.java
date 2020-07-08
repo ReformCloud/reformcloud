@@ -27,8 +27,10 @@ package systems.reformcloud.reformcloud2.permissions.application.command;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.CommonHelper;
+import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.command.Command;
 import systems.reformcloud.reformcloud2.executor.api.command.CommandSender;
+import systems.reformcloud.reformcloud2.executor.api.utility.list.Streams;
 import systems.reformcloud.reformcloud2.permissions.PermissionManagement;
 import systems.reformcloud.reformcloud2.permissions.nodes.NodeGroup;
 import systems.reformcloud.reformcloud2.permissions.nodes.PermissionNode;
@@ -152,7 +154,65 @@ public class CommandPerms implements Command {
         }
 
         sender.sendMessages(HELP);
-        return;
+    }
+
+    @Override
+    public @NotNull List<String> suggest(@NotNull CommandSender commandSender, String[] strings, int bufferIndex, @NotNull String commandLine) {
+        List<String> result = new ArrayList<>();
+        if (bufferIndex == 0) {
+            result.addAll(Arrays.asList("groups", "group", "user"));
+        } else if (bufferIndex >= 1 && strings[0].equalsIgnoreCase("group")) {
+            if (bufferIndex == 1) {
+                result.addAll(Streams.map(PermissionManagement.getInstance().getPermissionGroups(), PermissionGroup::getName));
+            } else if (bufferIndex == 2) {
+                result.addAll(Arrays.asList("create", "delete", "clear", "setdefault", "setpriority", "setprefix", "setsuffix",
+                        "setdisplay", "setcolor", "addgroup", "delgroup", "addperm", "delperm", "parent"));
+            } else if (bufferIndex == 3) {
+                if (strings[2].equalsIgnoreCase("create") || strings[2].equalsIgnoreCase("setdefault")) {
+                    result.addAll(Arrays.asList("true", "false"));
+                } else if (strings[2].equalsIgnoreCase("clear")) {
+                    result.addAll(Arrays.asList("groups", "permissions"));
+                } else if (strings[2].equalsIgnoreCase("setpriority")) {
+                    result.addAll(Arrays.asList("-1", "0", "1", "500"));
+                } else if (strings[2].equalsIgnoreCase("addgroup") || strings[2].equalsIgnoreCase("delgroup")) {
+                    result.addAll(Streams.map(PermissionManagement.getInstance().getPermissionGroups(), PermissionGroup::getName));
+                } else if (strings[2].equalsIgnoreCase("addperm") || strings[2].equalsIgnoreCase("delperm")) {
+                    result.addAll(ExecutorAPI.getInstance().getProcessGroupProvider().getProcessGroupNames());
+                } else if (strings[2].equalsIgnoreCase("parent")) {
+                    result.add("clear");
+                }
+            } else if ((bufferIndex == 4 || bufferIndex == 5) && strings[2].equalsIgnoreCase("addperm")) {
+                result.addAll(Arrays.asList("true", "false"));
+            } else if ((bufferIndex == 6 || bufferIndex == 7) && strings[2].equalsIgnoreCase("addperm")) {
+                result.addAll(Arrays.asList("s", "m", "h", "d", "mo"));
+            }
+        } else if (bufferIndex >= 2 && strings[0].equalsIgnoreCase("user")) {
+            if (bufferIndex == 2) {
+                result.addAll(Arrays.asList("delete", "clear", "setprefix", "setsuffix", "setdisplay", "setcolor",
+                        "addgroup", "delgroup", "setgroup", "addperm", "delperm"));
+            } else if (bufferIndex == 3) {
+                if (strings[2].equalsIgnoreCase("clear")) {
+                    result.addAll(Arrays.asList("true", "false"));
+                } else if (strings[2].equalsIgnoreCase("addgroup") || strings[2].equalsIgnoreCase("setgroup")
+                        || strings[2].equalsIgnoreCase("delgroup")) {
+                    result.addAll(Streams.map(PermissionManagement.getInstance().getPermissionGroups(), PermissionGroup::getName));
+                } else if (strings[2].equalsIgnoreCase("delperm") || strings[2].equalsIgnoreCase("addperm")) {
+                    result.addAll(ExecutorAPI.getInstance().getProcessGroupProvider().getProcessGroupNames());
+                }
+            } else if (bufferIndex == 4 && strings[2].equalsIgnoreCase("addperm")) {
+                result.addAll(Arrays.asList("true", "false"));
+            } else if (bufferIndex == 5) {
+                if (strings[2].equalsIgnoreCase("addperm")) {
+                    result.addAll(Arrays.asList("true", "false"));
+                } else if (strings[2].equalsIgnoreCase("addgroup") || strings[2].equalsIgnoreCase("setgroup")) {
+                    result.addAll(Arrays.asList("s", "m", "h", "d", "mo"));
+                }
+            } else if ((bufferIndex == 6 || bufferIndex == 7) && strings[2].equalsIgnoreCase("addperm")) {
+                result.addAll(Arrays.asList("s", "m", "h", "d", "mo"));
+            }
+        }
+
+        return result;
     }
 
     private void handleUserCommand(@NotNull CommandSender source, @NotNull String[] strings) {
@@ -237,7 +297,7 @@ public class CommandPerms implements Command {
 
             if (strings[2].equalsIgnoreCase("delgroup")) {
                 if (!permissionUser.isInGroup(strings[3])) {
-                    source.sendMessage("The user " + strings[1] + " is already in the permission group " + strings[3]);
+                    source.sendMessage("The user " + strings[1] + " is not in the permission group " + strings[3]);
                     return;
                 }
 
