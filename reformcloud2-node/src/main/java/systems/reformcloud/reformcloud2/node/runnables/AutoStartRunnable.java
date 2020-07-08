@@ -75,19 +75,26 @@ public class AutoStartRunnable implements Runnable {
                     .getProcessByUniqueId(prepared.getProcessDetail().getProcessUniqueID());
             if (processWrapper.isPresent()) {
                 processWrapper.get().setRuntimeState(ProcessState.STARTED);
+                System.out.println(LanguageManager.get("process-start-process", processGroup.getName()));
             } else {
-                ExecutorAPI.getInstance().getProcessProvider().createProcess()
+                ProcessWrapper wrapper = ExecutorAPI.getInstance().getProcessProvider().createProcess()
                         .group(processGroup)
                         .prepare()
-                        .thenAccept(process -> process.setRuntimeState(ProcessState.STARTED));
+                        .getNow(null);
+                if (wrapper != null) {
+                    wrapper.setRuntimeState(ProcessState.STARTED);
+                    System.out.println(LanguageManager.get("process-start-process", processGroup.getName()));
+                }
             }
         } else {
-            ExecutorAPI.getInstance().getProcessProvider().createProcess()
+            ProcessWrapper wrapper = ExecutorAPI.getInstance().getProcessProvider().createProcess()
                     .group(processGroup)
                     .prepare()
-                    .thenAccept(processWrapper -> processWrapper.setRuntimeState(ProcessState.STARTED));
+                    .getNow(null);
+            if (wrapper != null) {
+                wrapper.setRuntimeState(ProcessState.STARTED);
+                System.out.println(LanguageManager.get("process-start-process", processGroup.getName()));
+            }
         }
-
-        System.out.println(LanguageManager.get("process-start-process", processGroup.getName()));
     }
 }
