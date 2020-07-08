@@ -64,7 +64,7 @@ public final class SQLDatabaseTableWrapper implements DatabaseTableWrapper {
     @Override
     public void update(@NotNull String key, @NotNull String id, @NotNull JsonConfiguration newData) {
         this.provider.executeUpdate(
-                "UPDATE `" + this.name + "` SET `data` = ? WHERE `key` = ? OR `identifier` = ?",
+                "UPDATE `" + this.name + "` SET `data` = ? WHERE `key` = ? AND `identifier` = ?",
                 newData.toPrettyBytes(), key, id
         );
     }
@@ -72,7 +72,7 @@ public final class SQLDatabaseTableWrapper implements DatabaseTableWrapper {
     @Override
     public void remove(@NotNull String key, @NotNull String id) {
         this.provider.executeUpdate(
-                "DELETE FROM `" + this.name + "` WHERE `key` = ? OR `identifier` = ?",
+                "DELETE FROM `" + this.name + "` WHERE `key` = ? AND `identifier` = ?",
                 key, id
         );
     }
@@ -81,7 +81,7 @@ public final class SQLDatabaseTableWrapper implements DatabaseTableWrapper {
     @Override
     public Optional<JsonConfiguration> get(@NotNull String key, @NotNull String id) {
         return this.provider.executeQuery(
-                "SELECT `data` FROM `" + this.name + "` WHERE `key` = ? OR `identifier` = ?",
+                "SELECT `data` FROM `" + this.name + "` WHERE `key` = ? AND `identifier` = ?",
                 resultSet -> {
                     if (!resultSet.next()) {
                         return Optional.empty();
