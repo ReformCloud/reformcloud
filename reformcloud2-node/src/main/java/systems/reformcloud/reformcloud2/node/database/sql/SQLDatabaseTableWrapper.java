@@ -32,7 +32,6 @@ import systems.reformcloud.reformcloud2.executor.api.wrappers.DatabaseTableWrapp
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Optional;
@@ -81,7 +80,7 @@ public final class SQLDatabaseTableWrapper implements DatabaseTableWrapper {
     @Override
     public Optional<JsonConfiguration> get(@NotNull String key, @NotNull String id) {
         return this.provider.executeQuery(
-                "SELECT `data` FROM `" + this.name + "` WHERE `key` = ? AND `identifier` = ?",
+                "SELECT `data` FROM `" + this.name + "` WHERE `key` = ? AND (`identifier` = ? OR `identifier` IS NULL)",
                 resultSet -> {
                     if (!resultSet.next()) {
                         return Optional.empty();
@@ -165,7 +164,7 @@ public final class SQLDatabaseTableWrapper implements DatabaseTableWrapper {
     public boolean has(@NotNull String key) {
         return this.provider.executeQuery(
                 "SELECT `key` FROM " + this.name + " WHERE `key` = ?",
-                ResultSet::next,
+                resultSet -> resultSet.next() && resultSet.getString("key") != null,
                 false,
                 key
         );
