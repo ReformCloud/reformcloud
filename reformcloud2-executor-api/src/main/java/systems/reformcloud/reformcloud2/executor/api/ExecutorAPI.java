@@ -80,6 +80,9 @@ public abstract class ExecutorAPI {
         ExecutorAPI.instance = Objects.requireNonNull(instance, "instance");
     }
 
+    /**
+     * @return The current instance of the executor specific implemented version of the channel message provider
+     */
     @NotNull
     public abstract ChannelMessageProvider getChannelMessageProvider();
 
