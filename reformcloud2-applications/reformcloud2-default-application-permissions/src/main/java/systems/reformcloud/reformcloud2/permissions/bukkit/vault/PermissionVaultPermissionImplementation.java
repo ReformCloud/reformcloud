@@ -72,7 +72,7 @@ public class PermissionVaultPermissionImplementation extends Permission {
     @Override
     public boolean playerRemove(String world, String player, String permission) {
         return VaultUtil.getUserFromName(player).map(user -> {
-            PermissionNode node = Streams.filter(user.getPermissionNodes(), e -> e.getActualPermission().equals(permission));
+            PermissionNode node = Streams.filter(user.getPermissionNodes(), e -> e.getActualPermission().equalsIgnoreCase(permission));
             if (node == null) {
                 return false;
             }
@@ -99,7 +99,7 @@ public class PermissionVaultPermissionImplementation extends Permission {
     @Override
     public boolean groupRemove(String world, String group, String permission) {
         return this.permissionManagement.getPermissionGroup(group).map(g -> {
-            PermissionNode node = Streams.filter(g.getPermissionNodes(), e -> e.getActualPermission().equals(permission));
+            PermissionNode node = Streams.filter(g.getPermissionNodes(), e -> e.getActualPermission().equalsIgnoreCase(permission));
             if (node == null) {
                 return false;
             }
@@ -130,7 +130,7 @@ public class PermissionVaultPermissionImplementation extends Permission {
     @Override
     public boolean playerRemoveGroup(String world, String player, String group) {
         return VaultUtil.getUserFromName(player).map(permissionUser -> {
-            NodeGroup nodeGroup = Streams.filter(permissionUser.getGroups(), e -> e.getGroupName().equals(group));
+            NodeGroup nodeGroup = Streams.filter(permissionUser.getGroups(), e -> e.getGroupName().equalsIgnoreCase(group));
             if (nodeGroup == null) {
                 return false;
             }

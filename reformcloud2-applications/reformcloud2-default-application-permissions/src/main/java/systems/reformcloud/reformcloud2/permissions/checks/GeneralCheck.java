@@ -62,7 +62,7 @@ public final class GeneralCheck {
 
     @Nullable
     private static Boolean has(@NotNull PermissionUser permissionUser, @NotNull String perm) {
-        if (permissionUser.getPermissionNodes().stream().anyMatch(e -> e.getActualPermission().equals(perm) && e.isSet())) {
+        if (permissionUser.getPermissionNodes().stream().anyMatch(e -> e.getActualPermission().equalsIgnoreCase(perm) && e.isSet())) {
             return true;
         }
 
@@ -77,7 +77,7 @@ public final class GeneralCheck {
         }
 
         for (PermissionNode currentGroupPerm : currentGroupPerms) {
-            if (currentGroupPerm.getActualPermission().equals(perm)) {
+            if (currentGroupPerm.getActualPermission().equalsIgnoreCase(perm)) {
                 return currentGroupPerm.isSet();
             }
         }
@@ -87,7 +87,7 @@ public final class GeneralCheck {
 
     @Nullable
     private static Boolean has(@NotNull PermissionGroup permissionGroup, @NotNull String perm) {
-        if (permissionGroup.getPermissionNodes().stream().anyMatch(e -> e.getActualPermission().equals(perm) && e.isSet())) {
+        if (permissionGroup.getPermissionNodes().stream().anyMatch(e -> e.getActualPermission().equalsIgnoreCase(perm) && e.isSet())) {
             return true;
         }
 
@@ -103,7 +103,7 @@ public final class GeneralCheck {
         }
 
         for (PermissionNode currentGroupPerm : currentGroupPerms) {
-            if (currentGroupPerm.getActualPermission().equals(perm)) {
+            if (currentGroupPerm.getActualPermission().equalsIgnoreCase(perm)) {
                 return currentGroupPerm.isSet();
             }
         }
