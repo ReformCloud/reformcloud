@@ -88,7 +88,7 @@ public class PermissionUser implements SerializableObject {
 
     @NotNull
     public Map<String, Collection<PermissionNode>> getPerGroupPermissions() {
-        return this.perGroupPermissions == null ? new HashMap<>() : this.perGroupPermissions;
+        return this.perGroupPermissions == null ? (this.perGroupPermissions = new HashMap<>()) : this.perGroupPermissions;
     }
 
     @NotNull
