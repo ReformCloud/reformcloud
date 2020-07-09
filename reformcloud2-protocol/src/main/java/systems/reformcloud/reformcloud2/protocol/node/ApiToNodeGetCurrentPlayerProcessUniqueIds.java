@@ -30,8 +30,8 @@ import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
+import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.utility.list.Duo;
-import systems.reformcloud.reformcloud2.executor.api.wrappers.PlayerWrapper;
 import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
 
 import java.util.Optional;
@@ -55,16 +55,7 @@ public class ApiToNodeGetCurrentPlayerProcessUniqueIds extends ProtocolPacket {
 
     @Override
     public void handlePacketReceive(@NotNull EndpointChannelReader reader, @NotNull NetworkChannel channel) {
-        Optional<PlayerWrapper> player = ExecutorAPI.getInstance().getPlayerProvider().getPlayer(this.playerUniqueId);
-        if (player.isPresent()) {
-            Optional<Duo<UUID, UUID>> playerProcess = player.get().getPlayerProcess();
-            if (playerProcess.isPresent()) {
-                channel.sendQueryResult(this.getQueryUniqueID(), new ApiToNodeGetCurrentPlayerProcessUniqueIdsResult(playerProcess.get()));
-                return;
-            }
-        }
-
-        channel.sendQueryResult(this.getQueryUniqueID(), new ApiToNodeGetCurrentPlayerProcessUniqueIdsResult());
+        channel.sendQueryResult(this.getQueryUniqueID(), new ApiToNodeGetCurrentPlayerProcessUniqueIdsResult(this.getPlayerProcess().orElse(null)));
     }
 
     @Override
@@ -75,5 +66,25 @@ public class ApiToNodeGetCurrentPlayerProcessUniqueIds extends ProtocolPacket {
     @Override
     public void read(@NotNull ProtocolBuffer buffer) {
         this.playerUniqueId = buffer.readUniqueId();
+    }
+
+    @NotNull
+    private Optional<Duo<UUID, UUID>> getPlayerProcess() {
+        UUID proxy = null;
+        UUID server = null;
+
+        for (ProcessInformation process : ExecutorAPI.getInstance().getProcessProvider().getProcesses()) {
+            if (process.getProcessDetail().getTemplate().isServer()
+                    && process.getProcessPlayerManager().isPlayerOnlineOnCurrentProcess(this.playerUniqueId)
+                    && server == null) {
+                server = process.getProcessDetail().getProcessUniqueID();
+            } else if (!process.getProcessDetail().getTemplate().isServer()
+                    && process.getProcessPlayerManager().isPlayerOnlineOnCurrentProcess(this.playerUniqueId)
+                    && proxy == null) {
+                proxy = process.getProcessDetail().getProcessUniqueID();
+            }
+        }
+
+        return proxy == null || server == null ? Optional.empty() : Optional.of(new Duo<>(proxy, server));
     }
 }

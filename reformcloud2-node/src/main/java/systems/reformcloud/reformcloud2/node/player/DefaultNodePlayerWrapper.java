@@ -30,8 +30,10 @@ import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.manager.ChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.network.packet.Packet;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
+import systems.reformcloud.reformcloud2.executor.api.task.Task;
 import systems.reformcloud.reformcloud2.executor.api.utility.list.Duo;
 import systems.reformcloud.reformcloud2.executor.api.wrappers.PlayerWrapper;
+import systems.reformcloud.reformcloud2.executor.api.wrappers.ProcessWrapper;
 import systems.reformcloud.reformcloud2.node.NodeExecutor;
 import systems.reformcloud.reformcloud2.node.protocol.*;
 import systems.reformcloud.reformcloud2.protocol.shared.*;
@@ -48,8 +50,7 @@ public class DefaultNodePlayerWrapper implements PlayerWrapper {
     private final UUID uniqueId;
 
     @NotNull
-    @Override
-    public Optional<Duo<UUID, UUID>> getPlayerProcess() {
+    private Optional<Duo<UUID, UUID>> getPlayerProcess() {
         UUID proxy = null;
         UUID server = null;
 
@@ -66,6 +67,30 @@ public class DefaultNodePlayerWrapper implements PlayerWrapper {
         }
 
         return proxy == null || server == null ? Optional.empty() : Optional.of(new Duo<>(proxy, server));
+    }
+
+    @Override
+    public @NotNull Task<Optional<ProcessInformation>> getConnectedProxy() {
+        return Task.supply(() -> this.getPlayerProcess()
+                .flatMap(duo -> ExecutorAPI.getInstance().getProcessProvider().getProcessByUniqueId(duo.getFirst()))
+                .map(ProcessWrapper::getProcessInformation));
+    }
+
+    @Override
+    public @NotNull Task<Optional<ProcessInformation>> getConnectedServer() {
+        return Task.supply(() -> this.getPlayerProcess()
+                .flatMap(duo -> ExecutorAPI.getInstance().getProcessProvider().getProcessByUniqueId(duo.getSecond()))
+                .map(ProcessWrapper::getProcessInformation));
+    }
+
+    @Override
+    public @NotNull Optional<UUID> getConnectedProxyUniqueId() {
+        return this.getPlayerProcess().map(Duo::getFirst);
+    }
+
+    @Override
+    public @NotNull Optional<UUID> getConnectedServerUniqueId() {
+        return this.getPlayerProcess().map(Duo::getSecond);
     }
 
     @Override

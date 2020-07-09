@@ -25,16 +25,21 @@
 package systems.reformcloud.reformcloud2.executor.api.wrappers;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.utility.list.Duo;
+import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
+import systems.reformcloud.reformcloud2.executor.api.task.Task;
 
 import java.util.Optional;
 import java.util.UUID;
 
 public interface PlayerWrapper {
 
-    /* left (<-) proxy process, right (->) server process */
-    @NotNull
-    Optional<Duo<UUID, UUID>> getPlayerProcess();
+    @NotNull Task<Optional<ProcessInformation>> getConnectedProxy();
+
+    @NotNull Task<Optional<ProcessInformation>> getConnectedServer();
+
+    @NotNull Optional<UUID> getConnectedProxyUniqueId();
+
+    @NotNull Optional<UUID> getConnectedServerUniqueId();
 
     void sendMessage(@NotNull String message);
 
