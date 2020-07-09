@@ -91,7 +91,7 @@ public class CommandPerms implements Command {
     private static String formatPermissionNode(@NotNull PermissionNode node) {
         StringBuilder stringBuilder = new StringBuilder();
 
-        stringBuilder.append("  ").append(node.getActualPermission()).append(" | Since: ").append(CommonHelper.DATE_FORMAT.format(node.getAddTime())).append(" | Until: ");
+        stringBuilder.append("   - ").append(node.getActualPermission()).append(" | Since: ").append(CommonHelper.DATE_FORMAT.format(node.getAddTime())).append(" | Until: ");
         if (node.getTimeout() == -1) {
             stringBuilder.append("lifetime");
         } else {
