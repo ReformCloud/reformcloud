@@ -136,7 +136,7 @@ public interface PlayerWrapper {
     /**
      * Connects / transfers the player to the specified player's server, gracefully closing the current one
      * using the player's currently connected proxy.
-     * <p>If the either this or the target player is not connected this method has no effect.</p>
+     * <p>If either this or the target player is not connected this method has no effect.</p>
      *
      * @param otherPlayer The player to connect to
      */
