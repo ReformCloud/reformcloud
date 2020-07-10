@@ -86,6 +86,9 @@ public abstract class ExecutorAPI {
     @NotNull
     public abstract ChannelMessageProvider getChannelMessageProvider();
 
+    /**
+     * @return The current instance of the executor specific implemented version of the database provider
+     */
     @NotNull
     public abstract DatabaseProvider getDatabaseProvider();
 
