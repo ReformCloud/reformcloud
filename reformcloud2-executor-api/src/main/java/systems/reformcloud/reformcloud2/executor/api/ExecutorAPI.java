@@ -116,6 +116,9 @@ public abstract class ExecutorAPI {
     @NotNull
     public abstract ProcessGroupProvider getProcessGroupProvider();
 
+    /**
+     * @return The current instance of the executor specific implemented version of the process provider
+     */
     @NotNull
     public abstract ProcessProvider getProcessProvider();
 

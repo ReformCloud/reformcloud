@@ -37,7 +37,7 @@ final class DefaultNodeProcessBuilder extends AbstractProcessBuilder {
     @NotNull
     @Override
     public Task<ProcessWrapper> prepare() {
-        if (super.processGroupName != null) {
+        if (super.processGroupName != null && super.processGroup == null) {
             super.processGroup = ExecutorAPI.getInstance().getProcessGroupProvider().getProcessGroup(super.processGroupName).orElse(null);
         }
 
