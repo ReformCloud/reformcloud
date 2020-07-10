@@ -110,6 +110,9 @@ public abstract class ExecutorAPI {
     @NotNull
     public abstract PlayerProvider getPlayerProvider();
 
+    /**
+     * @return The current instance of the executor specific implemented version of the process group provider
+     */
     @NotNull
     public abstract ProcessGroupProvider getProcessGroupProvider();
 

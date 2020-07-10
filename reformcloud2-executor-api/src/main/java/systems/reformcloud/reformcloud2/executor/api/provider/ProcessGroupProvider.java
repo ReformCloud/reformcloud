@@ -33,31 +33,77 @@ import systems.reformcloud.reformcloud2.executor.api.task.Task;
 import java.util.Collection;
 import java.util.Optional;
 
+/**
+ * Provides accessibility to utility methods for handling and managing {@link ProcessGroup}.
+ */
 public interface ProcessGroupProvider {
 
+    /**
+     * Get a process group by it's name. The result is only present if the process group actually exists.
+     *
+     * @param name The name of the process group
+     * @return An optional process group which has the same name as given
+     */
     @NotNull
     Optional<ProcessGroup> getProcessGroup(@NotNull String name);
 
+    /**
+     * Deletes the process group if it exists.
+     *
+     * @param name The name if the process group to delete
+     */
     void deleteProcessGroup(@NotNull String name);
 
+    /**
+     * Updates the specified process group object
+     *
+     * @param processGroup The process group which should get updated
+     */
     void updateProcessGroup(@NotNull ProcessGroup processGroup);
 
+    /**
+     * @return An unmodifiable view of the registered process groups
+     */
     @NotNull
     @UnmodifiableView Collection<ProcessGroup> getProcessGroups();
 
+    /**
+     * @return The amount of process groups which are registered
+     */
     long getProcessGroupCount();
 
+    /**
+     * @return An unmodifiable view of all process group names
+     */
     @NotNull
     @UnmodifiableView Collection<String> getProcessGroupNames();
 
+    /**
+     * Constructs a new builder for a process group by the given name
+     *
+     * @param name The name of the process group to create
+     * @return A new process group builder
+     */
     @NotNull
     ProcessGroupBuilder createProcessGroup(@NotNull String name);
 
+    /**
+     * This method does the same as {@link #getProcessGroup(String)} but asynchronously.
+     *
+     * @param name The name of the process group
+     * @return An optional process group which has the same name as given
+     */
     @NotNull
     default Task<Optional<ProcessGroup>> getProcessGroupAsync(@NotNull String name) {
         return Task.supply(() -> this.getProcessGroup(name));
     }
 
+    /**
+     * This method does the same as {@link #deleteProcessGroup(String)} but asynchronously.
+     *
+     * @param name The name if the process group to delete
+     * @return A task completed after deleting the process group or directly if there is no need for a blocking operation
+     */
     @NotNull
     default Task<Void> deleteProcessGroupAsync(@NotNull String name) {
         return Task.supply(() -> {
@@ -66,6 +112,12 @@ public interface ProcessGroupProvider {
         });
     }
 
+    /**
+     * This method does the same as {@link #updateProcessGroup(ProcessGroup)} but asynchronously.
+     *
+     * @param processGroup The process group which should get updated
+     * @return A task completed after updating the process group or directly if there is no need for a blocking operation
+     */
     @NotNull
     default Task<Void> updateProcessGroupAsync(@NotNull ProcessGroup processGroup) {
         return Task.supply(() -> {
@@ -74,16 +126,31 @@ public interface ProcessGroupProvider {
         });
     }
 
+    /**
+     * This method does the same as {@link #getProcessGroups()} but asynchronously.
+     *
+     * @return An unmodifiable view of the registered process groups
+     */
     @NotNull
     default Task<Collection<ProcessGroup>> getProcessGroupsAsync() {
         return Task.supply(this::getProcessGroups);
     }
 
+    /**
+     * This method does the same as {@link #getProcessGroupCount()} but asynchronously.
+     *
+     * @return The amount of process groups which are registered
+     */
     @NotNull
     default Task<Long> getProcessGroupCountAsync() {
         return Task.supply(this::getProcessGroupCount);
     }
 
+    /**
+     * This method does the same as {@link #getProcessGroupNames()} but asynchronously.
+     *
+     * @return An unmodifiable view of all process group names
+     */
     @NotNull
     default Task<Collection<String>> getProcessGroupNamesAsync() {
         return Task.supply(this::getProcessGroupNames);

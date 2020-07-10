@@ -57,7 +57,7 @@ public interface MainGroupProvider {
     /**
      * Deletes the specified main group object
      *
-     * @param mainGroup The main group which should get deleted
+     * @param mainGroup The main group which should get updated
      */
     void updateMainGroup(@NotNull MainGroup mainGroup);
 
