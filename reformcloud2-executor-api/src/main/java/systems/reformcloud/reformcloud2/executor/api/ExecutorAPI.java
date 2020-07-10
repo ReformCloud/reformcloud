@@ -104,6 +104,9 @@ public abstract class ExecutorAPI {
     @NotNull
     public abstract NodeInformationProvider getNodeInformationProvider();
 
+    /**
+     * @return The current instance of the executor specific implemented version of the player provider
+     */
     @NotNull
     public abstract PlayerProvider getPlayerProvider();
 
