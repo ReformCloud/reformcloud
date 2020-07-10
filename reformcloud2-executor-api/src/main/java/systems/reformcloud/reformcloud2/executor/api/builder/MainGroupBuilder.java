@@ -31,17 +31,41 @@ import systems.reformcloud.reformcloud2.executor.api.task.Task;
 
 import java.util.Collection;
 
+/**
+ * A builder to construct main groups
+ */
 public interface MainGroupBuilder {
 
+    /**
+     * Sets the name of the main group to create
+     *
+     * @param name The name of the main group
+     * @return The same instance of this class as used to call the method
+     */
     @NotNull
     MainGroupBuilder name(@NotNull String name);
 
+    /**
+     * Adds the given group names of sub groups to the new main group
+     *
+     * @param subGroups The sub groups which should extend the main groups
+     * @return The same instance of this class as used to call the method
+     */
     @NotNull
     MainGroupBuilder subGroups(@NonNls String... subGroups);
 
+    /**
+     * Adds the given group names of sub groups to the new main group
+     *
+     * @param subGroups The sub groups which should extend the main groups
+     * @return The same instance of this class as used to call the method
+     */
     @NotNull
     MainGroupBuilder subGroups(@NotNull Collection<String> subGroups);
 
+    /**
+     * @return Creates the new main group and will result with null if the group is already present, the new main group object otherwise
+     */
     @NotNull
     Task<MainGroup> create();
 }
