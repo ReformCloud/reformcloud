@@ -92,9 +92,15 @@ public abstract class ExecutorAPI {
     @NotNull
     public abstract DatabaseProvider getDatabaseProvider();
 
+    /**
+     * @return The current instance of the executor specific implemented version of the main group provider
+     */
     @NotNull
     public abstract MainGroupProvider getMainGroupProvider();
 
+    /**
+     * @return The current instance of the executor specific implemented version of the node information provider
+     */
     @NotNull
     public abstract NodeInformationProvider getNodeInformationProvider();
 
