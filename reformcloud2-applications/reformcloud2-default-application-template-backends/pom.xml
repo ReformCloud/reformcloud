@@ -66,6 +66,7 @@
                     <excludes>
                         <exclude>*:reformcloud2-executor-api</exclude>
                         <exclude>*:gson</exclude>
+                        <exclude>org.jetbrains:*</exclude>
                     </excludes>
 
                     <outputFileName>
