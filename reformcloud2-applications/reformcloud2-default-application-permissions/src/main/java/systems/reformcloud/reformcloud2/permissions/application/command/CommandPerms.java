@@ -134,12 +134,12 @@ public class CommandPerms implements Command {
             List<PermissionGroup> groups = new ArrayList<>(PermissionManagement.getInstance().getPermissionGroups());
             groups.sort(Comparator.comparingInt(PermissionGroup::getPriority));
 
-            sender.sendMessage(String.format("Registered groups (%d): \n  - %s", groups.size(), String.join("\n  - ",
-                    groups
-                            .stream()
-                            .map(e -> String.format("Name: %s | Priority: %d", e.getName(), e.getPriority()))
-                            .toArray(String[]::new))
-            ));
+            StringBuilder stringBuilder = new StringBuilder().append("Registered groups (").append(groups.size()).append("):\n");
+            for (PermissionGroup group : groups) {
+                stringBuilder.append("  - ").append(String.format("Name: %s | Priority: %d", group.getName(), group.getPriority())).append("\n");
+            }
+
+            sender.sendMessages(stringBuilder.toString().split("\n"));
             return;
         }
 
