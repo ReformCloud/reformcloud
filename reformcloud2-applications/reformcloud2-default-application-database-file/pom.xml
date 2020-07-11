@@ -64,9 +64,9 @@
 
                     <excludes>
                         <exclude>systems.reformcloud.reformcloud2:*</exclude>
-                        <exclude>com.github.derklaro:project-deer:project-deer</exclude>
-                        <exclude>*annotations-java5</exclude>
+                        <exclude>com.github.derklaro:project-deer</exclude>
                         <exclude>com.google.code.gson:*</exclude>
+                        <exclude>org.jetbrains:*</exclude>
                     </excludes>
 
                     <outputFileName>
