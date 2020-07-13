@@ -36,7 +36,6 @@ import systems.reformcloud.reformcloud2.executor.api.utility.list.Streams;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.file.Files;
@@ -77,9 +76,7 @@ public final class URLTemplateBackend implements TemplateBackend {
             connection.setUseCaches(false);
             connection.connect();
 
-            try (InputStream ignored = connection.getInputStream()) {
-                return true;
-            }
+            return connection.getResponseCode() >= 200 && connection.getResponseCode() < 300;
         } catch (final IOException ex) {
             return false;
         }
