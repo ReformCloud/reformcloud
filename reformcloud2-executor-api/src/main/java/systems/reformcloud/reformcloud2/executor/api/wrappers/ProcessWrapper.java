@@ -88,12 +88,13 @@ public interface ProcessWrapper {
     void setRuntimeState(@NotNull ProcessState state);
 
     /**
-     * Copies the process files to given template if the process is still registered
+     * Copies the process files to given template if the process is still registered, using the group name
+     * of the current wrapper's process information, the template name and the template backend.
      *
      * @param template The template to copy the process files to
      */
     default void copy(@NotNull Template template) {
-        this.copy(this.getProcessInformation().getProcessGroup().getName(), template.getName());
+        this.copy(this.getProcessInformation().getProcessGroup().getName(), template.getName(), template.getBackend());
     }
 
     /**

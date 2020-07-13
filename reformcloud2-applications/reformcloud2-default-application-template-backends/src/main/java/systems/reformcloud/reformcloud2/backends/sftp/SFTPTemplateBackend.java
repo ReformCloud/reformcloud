@@ -213,7 +213,8 @@ public final class SFTPTemplateBackend implements TemplateBackend {
             try {
                 File[] files = current.toFile().listFiles(e -> {
                     String full = e.getAbsolutePath()
-                            .replaceFirst(current.toFile().getAbsolutePath(), "")
+                            .replace("\\", "/")
+                            .replaceFirst(current.toFile().getAbsolutePath().replace("\\", "/"), "")
                             .replaceFirst("\\\\", "");
                     return !collection.contains(full);
                 });
