@@ -30,6 +30,7 @@ import org.jetbrains.annotations.UnmodifiableView;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.builder.ProcessGroupBuilder;
 import systems.reformcloud.reformcloud2.executor.api.groups.ProcessGroup;
+import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.provider.ProcessGroupProvider;
 import systems.reformcloud.reformcloud2.executor.api.registry.io.FileRegistry;
 import systems.reformcloud.reformcloud2.executor.api.utility.list.Streams;
@@ -70,6 +71,11 @@ public class DefaultNodeProcessGroupProvider implements ProcessGroupProvider {
     public void updateProcessGroup(@NotNull ProcessGroup processGroup) {
         this.updateProcessGroup0(processGroup);
         ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ClusterManager.class).publishProcessGroupUpdate(processGroup);
+
+        for (ProcessInformation processInformation : ExecutorAPI.getInstance().getProcessProvider().getProcessesByProcessGroup(processGroup.getName())) {
+            processInformation.setProcessGroup(processGroup);
+            ExecutorAPI.getInstance().getProcessProvider().updateProcessInformation(processInformation);
+        }
     }
 
     @NotNull

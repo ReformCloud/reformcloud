@@ -439,11 +439,9 @@ public final class CommandGroup implements Command {
             }
 
             ExecutorAPI.getInstance().getProcessGroupProvider().updateProcessGroup(processGroup.get());
-            ExecutorAPI.getInstance().getProcessProvider().getProcessesByProcessGroup(processGroup.get().getName()).forEach(e -> {
-                e.setProcessGroup(processGroup.get());
-                ExecutorAPI.getInstance().getProcessProvider().updateProcessInformation(e);
-                System.out.println(LanguageManager.get("command-group-edited-running-process", e.getProcessDetail().getName()));
-            });
+            for (ProcessInformation process : ExecutorAPI.getInstance().getProcessProvider().getProcessesByProcessGroup(processGroup.get().getName())) {
+                System.out.println(LanguageManager.get("command-group-edited-running-process", process.getProcessDetail().getName()));
+            }
             return;
         }
 
