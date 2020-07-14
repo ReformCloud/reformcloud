@@ -174,7 +174,7 @@ public final class IngameMessages implements SerializableObject {
         this.processConnected = buffer.readString();
         this.processStopped = buffer.readString();
         this.noHubServerAvailable = buffer.readString();
-        this.alreadyConnectedMessage = buffer.readString();
+        this.alreadyConnectedToHub = buffer.readString();
         this.connectingToHub = buffer.readString();
         this.currentProcessClosed = buffer.readString();
         this.commandExecuteSuccess = buffer.readString();
