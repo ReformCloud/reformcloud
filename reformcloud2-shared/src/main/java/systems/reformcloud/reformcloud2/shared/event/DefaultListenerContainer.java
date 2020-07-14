@@ -44,6 +44,8 @@ public final class DefaultListenerContainer implements ListenerContainer {
         this.listenerInstance = listenerInstance;
         this.method = method;
         this.priority = priority;
+
+        this.method.setAccessible(true);
     }
 
     @NotNull
