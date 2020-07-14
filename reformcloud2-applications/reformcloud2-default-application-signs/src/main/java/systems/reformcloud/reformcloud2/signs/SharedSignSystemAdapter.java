@@ -194,7 +194,17 @@ public abstract class SharedSignSystemAdapter<T> implements SignSystemAdapter<T>
 
     @Override
     public boolean canConnect(@NotNull CloudSign cloudSign, @NotNull Function<String, Boolean> permissionChecker) {
-        return cloudSign.getCurrentTarget() != null && Utils.canConnect(cloudSign.getCurrentTarget(), permissionChecker);
+        if (cloudSign.getCurrentTarget() == null || !Utils.canConnect(cloudSign.getCurrentTarget(), permissionChecker)) {
+            return false;
+        }
+
+        SignLayout layout = this.getSignLayout(cloudSign.getGroup());
+        if (layout == null) {
+            return true;
+        }
+
+        ProcessInformation process = cloudSign.getCurrentTarget();
+        return process.getProcessPlayerManager().getOnlineCount() < process.getProcessDetail().getMaxPlayers() || !layout.isSearchingLayoutWhenFull();
     }
 
     @Override
