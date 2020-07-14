@@ -45,7 +45,6 @@ public final class JavaProcessHelper {
         }
 
         Conditions.isTrue(timeOut > 0);
-
         if (!process.isAlive()) {
             return;
         }
@@ -54,7 +53,7 @@ public final class JavaProcessHelper {
             OutputStream outputStream = process.getOutputStream();
             Arrays.stream(shutdownCommands).forEach(e -> {
                 try {
-                    outputStream.write(e.getBytes(StandardCharsets.UTF_8));
+                    outputStream.write((e + "\n").getBytes(StandardCharsets.UTF_8));
                     outputStream.flush();
                 } catch (final IOException ignored) {
                     // Ignore - pipe may be closed already
@@ -62,7 +61,6 @@ public final class JavaProcessHelper {
             });
 
             if (process.waitFor(5, TimeUnit.SECONDS)) {
-                process.exitValue();
                 return;
             }
         } catch (final Throwable ignored) {
