@@ -25,6 +25,8 @@
 package systems.reformcloud.reformcloud2.cloudflare.api;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.cloudflare.config.CloudFlareConfig;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
@@ -135,14 +137,33 @@ public final class CloudFlareHelper {
                             return null;
                         }
 
-                        if (array.get(0).getAsJsonObject().get("code").getAsLong() == 81057) {
+                        JsonElement first = array.get(0);
+                        if (!first.isJsonObject()) {
+                            // Should never happen
+                            return null;
+                        }
+
+                        JsonObject jsonObject = first.getAsJsonObject();
+                        if (jsonObject.has("code") && jsonObject.get("code").getAsLong() == 81057) {
                             // The record already exists
+                            return null;
+                        }
+
+                        if (jsonObject.has("message") && jsonObject.has("code")) {
+                            System.err.println(LanguageManager.get(
+                                    "cloudflare-create-error",
+                                    configuration.getOrDefault("type", "unknown"),
+                                    target.getProcessDetail().getName(),
+                                    jsonObject.get("code").getAsLong(),
+                                    httpURLConnection.getResponseCode(),
+                                    jsonObject.get("message").getAsString())
+                            );
                             return null;
                         }
                     } catch (final Throwable ignored) {
                     }
 
-                    System.err.println(LanguageManager.get("cloudflare-create-error", target.getProcessDetail().getName()));
+                    System.err.println(LanguageManager.get("cloudflare-create-error", target.getProcessDetail().getName(), -1, "No reason provided"));
                 }
             }
         } catch (final IOException ex) {
