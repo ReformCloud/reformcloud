@@ -163,7 +163,14 @@ public final class CloudFlareHelper {
                     } catch (final Throwable ignored) {
                     }
 
-                    System.err.println(LanguageManager.get("cloudflare-create-error", target.getProcessDetail().getName(), -1, "No reason provided"));
+                    System.err.println(LanguageManager.get(
+                            "cloudflare-create-error",
+                            configuration.getOrDefault("type", "unknown"),
+                            target.getProcessDetail().getName(),
+                            -1,
+                            httpURLConnection.getResponseCode(),
+                            "No reason provided"
+                    ));
                 }
             }
         } catch (final IOException ex) {
