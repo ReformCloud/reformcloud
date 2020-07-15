@@ -47,7 +47,7 @@ public final class Utils {
         }
 
         if (canConnect && target.getProcessGroup().getPlayerAccessConfiguration().isUseCloudPlayerLimit()
-                && target.getProcessPlayerManager().getOnlineCount() >= target.getProcessGroup().getPlayerAccessConfiguration().getMaxPlayers()) {
+                && target.getProcessPlayerManager().getOnlineCount() >= target.getProcessDetail().getMaxPlayers()) {
             canConnect = permissionChecker.apply(target.getProcessGroup().getPlayerAccessConfiguration().getFullJoinPermission());
         }
 
