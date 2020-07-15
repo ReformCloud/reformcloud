@@ -181,6 +181,12 @@ public final class CommonHelper {
         return result;
     }
 
+    public static @NotNull String formatThrowable(@NotNull Throwable throwable) {
+        StackTraceElement[] trace = throwable.getStackTrace();
+        return throwable.getClass().getSimpleName() + " : " + throwable.getMessage()
+                + ((trace.length > 0) ? " @ " + throwable.getStackTrace()[0].getClassName() + ":" + throwable.getStackTrace()[0].getLineNumber() : "");
+    }
+
     public static <T extends Enum<T>> ReferencedOptional<T> findEnumField(Class<T> enumClass, String field) {
         Map<String, WeakReference<? extends Enum<?>>> cached = CACHE.computeIfAbsent(enumClass, aClass -> cache(enumClass));
 

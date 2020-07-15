@@ -78,7 +78,7 @@ public final class DownloadHelper {
             try (InputStream stream = httpURLConnection.getInputStream()) {
                 inputStreamConsumer.accept(stream);
             } catch (final IOException ex) {
-                ex.printStackTrace();
+                exceptionConsumer.accept(ex);
             }
         }, exceptionConsumer);
     }
