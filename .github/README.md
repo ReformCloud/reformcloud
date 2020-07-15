@@ -48,7 +48,7 @@ them in the group file and the cloud will copy the paths or templates at the nex
 ## Supported Java Versions
  
  - Java 7 and lower  : **NOT SUPPORTED**
- - Java 8 and bigger : **SUPPORTED**
+ - Java 8 and higher : **SUPPORTED**
  - Java 11           : **RECOMMENDED**
  
 ## Startup
