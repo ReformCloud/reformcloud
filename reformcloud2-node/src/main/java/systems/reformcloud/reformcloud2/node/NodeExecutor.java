@@ -47,6 +47,7 @@ import systems.reformcloud.reformcloud2.executor.api.provider.*;
 import systems.reformcloud.reformcloud2.executor.api.registry.service.ServiceRegistry;
 import systems.reformcloud.reformcloud2.executor.api.utility.NetworkAddress;
 import systems.reformcloud.reformcloud2.node.application.DefaultApplicationLoader;
+import systems.reformcloud.reformcloud2.node.argument.ArgumentParser;
 import systems.reformcloud.reformcloud2.node.cluster.ClusterManager;
 import systems.reformcloud.reformcloud2.node.cluster.DefaultClusterManager;
 import systems.reformcloud.reformcloud2.node.commands.*;
@@ -114,6 +115,7 @@ public final class NodeExecutor extends ExecutorAPI {
 
     private DefaultNodeConsole console;
     private CloudLogger logger;
+    private ArgumentParser argumentParser;
 
     private NodeInformation currentNodeInformation;
 
@@ -134,9 +136,10 @@ public final class NodeExecutor extends ExecutorAPI {
         this.registerDefaultServices();
     }
 
-    synchronized void bootstrap() {
+    synchronized void bootstrap(@NotNull ArgumentParser argumentParser) {
         this.console = new DefaultNodeConsole();
         this.logger = new CloudLogger(this.console.getLineReader());
+        this.argumentParser = argumentParser;
 
         PacketRegister.register();
         this.registerDefaultPacketProcessors();

@@ -98,6 +98,18 @@ public final class IOUtils {
         }
     }
 
+    public static void deleteAllFilesInDirectory(Path dirPath) {
+        try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(dirPath)) {
+            for (Path path : directoryStream) {
+                if (!Files.isDirectory(path)) {
+                    deleteFile(path);
+                }
+            }
+        } catch (IOException exception) {
+            exception.printStackTrace();
+        }
+    }
+
     public static void deleteDirectory(Path dirPath) {
         try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(dirPath)) {
             for (Path path : directoryStream) {

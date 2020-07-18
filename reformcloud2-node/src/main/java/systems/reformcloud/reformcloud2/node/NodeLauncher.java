@@ -29,6 +29,8 @@ import systems.reformcloud.reformcloud2.executor.api.dependency.DependencyLoader
 import systems.reformcloud.reformcloud2.executor.api.io.IOUtils;
 import systems.reformcloud.reformcloud2.executor.api.language.LanguageManager;
 import systems.reformcloud.reformcloud2.executor.api.language.loading.LanguageLoader;
+import systems.reformcloud.reformcloud2.node.argument.ArgumentParser;
+import systems.reformcloud.reformcloud2.node.argument.DefaultArgumentParser;
 
 import java.nio.file.Paths;
 
@@ -42,7 +44,13 @@ public final class NodeLauncher {
 
         IOUtils.recreateDirectory(Paths.get("reformcloud/temp"));
         NodeExecutor nodeExecutor = new NodeExecutor();
-        nodeExecutor.bootstrap();
+
+        ArgumentParser argumentParser = new DefaultArgumentParser(args);
+        if (argumentParser.getBoolean("refresh-versions")) {
+            IOUtils.deleteAllFilesInDirectory(Paths.get("reformcloud/files"));
+        }
+
+        nodeExecutor.bootstrap(argumentParser);
 
         double bootTime = (System.currentTimeMillis() - startTime) / 1000d;
         System.out.println(LanguageManager.get("startup-done", CommonHelper.DECIMAL_FORMAT.format(bootTime)));
