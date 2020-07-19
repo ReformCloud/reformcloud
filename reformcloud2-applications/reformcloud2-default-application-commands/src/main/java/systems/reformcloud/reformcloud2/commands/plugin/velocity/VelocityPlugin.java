@@ -26,6 +26,7 @@ package systems.reformcloud.reformcloud2.commands.plugin.velocity;
 
 import com.google.inject.Inject;
 import com.velocitypowered.api.event.Subscribe;
+import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
 import com.velocitypowered.api.plugin.Dependency;
 import com.velocitypowered.api.plugin.Plugin;
@@ -53,7 +54,14 @@ public class VelocityPlugin {
 
     @Inject
     public VelocityPlugin(ProxyServer proxyServer) {
-        CommandConfigHandler.setInstance(new VelocityCommandConfigHandler(proxyServer));
+        this.proxyServer = proxyServer;
+    }
+
+    private final ProxyServer proxyServer;
+
+    @Subscribe
+    public void handle(ProxyInitializeEvent event) {
+        CommandConfigHandler.setInstance(new VelocityCommandConfigHandler(this.proxyServer));
 
         ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).registerPacket(PacketGetCommandsConfigResult.class);
         ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).registerPacket(PacketReleaseCommandsConfig.class);

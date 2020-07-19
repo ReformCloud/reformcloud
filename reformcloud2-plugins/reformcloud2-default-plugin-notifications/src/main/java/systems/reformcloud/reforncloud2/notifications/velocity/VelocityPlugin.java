@@ -25,7 +25,6 @@
 package systems.reformcloud.reforncloud2.notifications.velocity;
 
 import com.google.inject.Inject;
-import com.velocitypowered.api.event.PostOrder;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
@@ -55,7 +54,7 @@ public final class VelocityPlugin {
     private ProcessListener listener;
     public static ProxyServer proxyServer;
 
-    @Subscribe(order = PostOrder.LAST)
+    @Subscribe
     public void handleInit(ProxyInitializeEvent event) {
         this.listener = new ProcessListener(proxyServer);
         ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).registerListener(this.listener);
