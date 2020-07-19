@@ -36,6 +36,8 @@ import java.lang.ref.WeakReference;
 import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -180,6 +182,18 @@ public final class CommonHelper {
         }
 
         return result;
+    }
+
+    public static void setSystemPropertyIfUnset(@NotNull String property, @NotNull String value) {
+        if (System.getProperty(property) != null) {
+            return;
+        }
+
+        if (System.getSecurityManager() != null) {
+            AccessController.doPrivileged((PrivilegedAction<String>) () -> System.setProperty(property, value));
+        } else {
+            System.setProperty(property, value);
+        }
     }
 
     public static @NotNull String formatThrowable(@NotNull Throwable throwable) {
