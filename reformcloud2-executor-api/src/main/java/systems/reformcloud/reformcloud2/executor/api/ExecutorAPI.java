@@ -119,6 +119,9 @@ public abstract class ExecutorAPI {
     @NotNull
     public abstract ProcessProvider getProcessProvider();
 
+    /**
+     * @return The service registry provided by the current environment
+     */
     @NotNull
     public abstract ServiceRegistry getServiceRegistry();
 
