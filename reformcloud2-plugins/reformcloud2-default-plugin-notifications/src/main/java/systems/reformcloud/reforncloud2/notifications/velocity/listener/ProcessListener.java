@@ -40,8 +40,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public final class ProcessListener {
 
-    private static final Map<UUID, ProcessInformation> REGISTERED = new ConcurrentHashMap<>();
-
     private final ProxyServer proxyServer;
     private final Map<UUID, ProcessInformation> registered = new ConcurrentHashMap<>();
 
