@@ -33,6 +33,7 @@ import systems.reformcloud.reformcloud2.executor.api.event.events.process.Proces
 import systems.reformcloud.reformcloud2.executor.api.event.events.process.ProcessUpdateEvent;
 import systems.reformcloud.reformcloud2.executor.api.event.handler.Listener;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
+import systems.reformcloud.reformcloud2.executor.api.process.ProcessState;
 
 import java.util.Map;
 import java.util.UUID;
@@ -54,7 +55,7 @@ public final class ProcessListener {
     @Listener
     public void handle(final ProcessRegisterEvent event) {
         this.publishNotification(
-                Embedded.getInstance().getIngameMessages().getProcessStarted(),
+                Embedded.getInstance().getIngameMessages().getProcessRegistered(),
                 event.getProcessInformation().getProcessDetail().getName()
         );
     }
@@ -74,14 +75,22 @@ public final class ProcessListener {
 
     @Listener
     public void handle(final ProcessUpdateEvent event) {
-        ProcessInformation old = this.registered.put(
-                event.getProcessInformation().getProcessDetail().getProcessUniqueID(),
-                event.getProcessInformation()
-        );
+        ProcessInformation old = this.registered.put(event.getProcessInformation().getProcessDetail().getProcessUniqueID(), event.getProcessInformation());
+        ProcessState state = event.getProcessInformation().getProcessDetail().getProcessState();
         if (old != null) {
             if (!old.getNetworkInfo().isConnected() && event.getProcessInformation().getNetworkInfo().isConnected()) {
                 this.publishNotification(
                         Embedded.getInstance().getIngameMessages().getProcessConnected(),
+                        event.getProcessInformation().getProcessDetail().getName()
+                );
+            } else if (!old.getProcessDetail().getProcessState().isStartedOrOnline() && event.getProcessInformation().getProcessDetail().getProcessState().isStartedOrOnline()) {
+                this.publishNotification(
+                        Embedded.getInstance().getIngameMessages().getProcessStarted(),
+                        event.getProcessInformation().getProcessDetail().getName()
+                );
+            } else if (state != old.getProcessDetail().getProcessState() && (state == ProcessState.RESTARTING || state == ProcessState.PAUSED)) {
+                this.publishNotification(
+                        Embedded.getInstance().getIngameMessages().getProcessStopped(),
                         event.getProcessInformation().getProcessDetail().getName()
                 );
             }
@@ -89,10 +98,17 @@ public final class ProcessListener {
             return;
         }
 
-        this.publishNotification(
-                Embedded.getInstance().getIngameMessages().getProcessRegistered(),
-                event.getProcessInformation().getProcessDetail().getName()
-        );
+        if (state.isStartedOrOnline()) {
+            this.publishNotification(
+                    Embedded.getInstance().getIngameMessages().getProcessStarted(),
+                    event.getProcessInformation().getProcessDetail().getName()
+            );
+        } else if (state == ProcessState.RESTARTING || state == ProcessState.PAUSED) {
+            this.publishNotification(
+                    Embedded.getInstance().getIngameMessages().getProcessStopped(),
+                    event.getProcessInformation().getProcessDetail().getName()
+            );
+        }
     }
 
     private void publishNotification(String message, Object... replacements) {
