@@ -62,17 +62,14 @@ public final class PlayerListenerHandler {
             ).ifPresent(processInformation -> {
                 Optional<RegisteredServer> server = VelocityExecutor.getInstance().getProxyServer().getServer(processInformation.getProcessDetail().getName());
                 if (!server.isPresent()) {
-                    System.out.println("Unable to find reg server");
                     event.getPlayer().disconnect(LegacyComponentSerializer.legacyLinking().deserialize(VelocityExecutor.getInstance().getIngameMessages().format(
                             VelocityExecutor.getInstance().getIngameMessages().getNoHubServerAvailable()
                     )));
                     return;
                 }
 
-                System.out.println("redirect");
                 event.setResult(ServerPreConnectEvent.ServerResult.allowed(server.get()));
             }).ifEmpty(v -> {
-                System.out.println("nop");
                 event.getPlayer().disconnect(LegacyComponentSerializer.legacyLinking().deserialize(VelocityExecutor.getInstance().getIngameMessages().format(
                         VelocityExecutor.getInstance().getIngameMessages().getNoHubServerAvailable()
                 )));
