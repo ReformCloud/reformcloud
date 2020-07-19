@@ -71,7 +71,7 @@ public final class CommonHelper {
     }
 
     public static OperatingSystemMXBean operatingSystemMXBean() {
-        return (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
+        return ManagementFactory.getPlatformMXBean(OperatingSystemMXBean.class);
     }
 
     public static RuntimeMXBean runtimeMXBean() {
@@ -80,14 +80,6 @@ public final class CommonHelper {
 
     public static ThreadMXBean threadMXBean() {
         return ManagementFactory.getThreadMXBean();
-    }
-
-    public static double cpuUsageSystem() {
-        return operatingSystemMXBean().getSystemCpuLoad() * 100;
-    }
-
-    public static Collection<String> inputArguments() {
-        return runtimeMXBean().getInputArguments();
     }
 
     public static long memoryPoolMXBeanCollectionUsage() {
