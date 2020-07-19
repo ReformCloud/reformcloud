@@ -40,6 +40,7 @@ import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -53,7 +54,7 @@ public final class CommonHelper {
     public static final ArrayDeque<String> EMPTY_STRING_QUEUE = new ArrayDeque<>();
     public static final DateFormat DATE_FORMAT = new SimpleDateFormat("dd.MM.yyyy kk:mm:ss");
     public static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("##.###");
-    private static final Map<Class<? extends Enum<?>>, Map<String, WeakReference<? extends Enum<?>>>> CACHE = new HashMap<>();
+    private static final Map<Class<? extends Enum<?>>, Map<String, WeakReference<? extends Enum<?>>>> CACHE = new ConcurrentHashMap<>();
 
     private CommonHelper() {
         throw new UnsupportedOperationException();
