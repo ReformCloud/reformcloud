@@ -27,6 +27,7 @@ package systems.reformcloud.reformcloud2.permissions.velocity.permission;
 import com.velocitypowered.api.permission.PermissionFunction;
 import com.velocitypowered.api.permission.PermissionProvider;
 import com.velocitypowered.api.permission.PermissionSubject;
+import com.velocitypowered.api.proxy.ConsoleCommandSource;
 import com.velocitypowered.api.proxy.Player;
 
 public final class DefaultPermissionProvider implements PermissionProvider {
@@ -43,6 +44,10 @@ public final class DefaultPermissionProvider implements PermissionProvider {
             return new DefaultPermissionFunction(player);
         }
 
-        return null;
+        if (permissionSubject instanceof ConsoleCommandSource) {
+            return PermissionFunction.ALWAYS_TRUE;
+        }
+
+        throw new RuntimeException("Unable to create permission function for unknown type " + permissionSubject.getClass().getName());
     }
 }
