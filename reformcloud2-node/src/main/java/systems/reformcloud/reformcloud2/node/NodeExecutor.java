@@ -394,6 +394,11 @@ public final class NodeExecutor extends ExecutorAPI {
     }
 
     @NotNull
+    public ArgumentParser getArgumentParser() {
+        return this.argumentParser;
+    }
+
+    @NotNull
     public NetworkAddress getAnyAddress() {
         List<NetworkAddress> networkListeners = this.nodeConfig.getNetworkListeners();
         Conditions.isTrue(!networkListeners.isEmpty(), "Try to run cloud system with no network listener configured");
