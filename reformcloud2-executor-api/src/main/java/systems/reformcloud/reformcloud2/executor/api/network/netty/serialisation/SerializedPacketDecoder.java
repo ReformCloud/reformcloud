@@ -40,7 +40,7 @@ public class SerializedPacketDecoder extends MessageToMessageDecoder<ByteBuf> {
 
     @Override
     protected void decode(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf, List<Object> list) {
-        if (!byteBuf.isReadable()) {
+        if (!channelHandlerContext.channel().isActive() || !byteBuf.isReadable()) {
             return;
         }
 

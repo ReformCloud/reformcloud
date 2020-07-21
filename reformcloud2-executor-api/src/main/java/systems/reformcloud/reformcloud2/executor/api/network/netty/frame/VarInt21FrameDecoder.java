@@ -37,6 +37,11 @@ public class VarInt21FrameDecoder extends ByteToMessageDecoder {
     @Override
     protected void decode(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf, List<Object> list) {
         try {
+            if (!channelHandlerContext.channel().isActive()) {
+                byteBuf.skipBytes(byteBuf.readableBytes());
+                return;
+            }
+
             if (!byteBuf.isReadable()) {
                 return;
             }
