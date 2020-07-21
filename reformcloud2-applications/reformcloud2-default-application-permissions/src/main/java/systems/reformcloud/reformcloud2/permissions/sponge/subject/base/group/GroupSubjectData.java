@@ -59,23 +59,15 @@ public class GroupSubjectData extends AbstractSpongeSubjectData {
     }
 
     private Map<String, Boolean> getPermissions() {
-        Map<String, Boolean> out = new HashMap<>();
-        PermissionGroup permissionGroup = PermissionManagement.getInstance().getGroup(this.group);
-        if (permissionGroup == null) {
-            return out;
-        }
-
-        out.putAll(this.getPermissionsOf(permissionGroup));
-        permissionGroup.getSubGroups().forEach(e -> {
-            PermissionGroup sub = PermissionManagement.getInstance().getGroup(e);
-            if (sub == null) {
-                return;
+        return PermissionManagement.getInstance().getPermissionGroup(this.group).map(permissionGroup -> {
+            Map<String, Boolean> out = new HashMap<>(this.getPermissionsOf(permissionGroup));
+            for (String sub : permissionGroup.getSubGroups()) {
+                PermissionManagement.getInstance().getPermissionGroup(sub)
+                        .ifPresent(subGroup -> out.putAll(this.getPermissionsOf(subGroup)));
             }
 
-            out.putAll(this.getPermissionsOf(sub));
-        });
-
-        return out;
+            return out;
+        }).orElseGet(() -> new HashMap<>());
     }
 
     private Map<String, Boolean> getPermissionsOf(PermissionGroup group) {

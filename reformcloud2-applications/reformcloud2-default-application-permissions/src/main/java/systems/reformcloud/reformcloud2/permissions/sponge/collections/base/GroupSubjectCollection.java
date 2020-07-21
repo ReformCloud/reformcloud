@@ -50,7 +50,7 @@ public class GroupSubjectCollection extends DefaultSubjectCollection {
     @Override
     @NotNull
     public CompletableFuture<Boolean> hasSubject(@NotNull String identifier) {
-        return CompletableFuture.completedFuture(PermissionManagement.getInstance().getGroup(identifier) != null);
+        return CompletableFuture.completedFuture(PermissionManagement.getInstance().getPermissionGroup(identifier).isPresent());
     }
 
     @Override
