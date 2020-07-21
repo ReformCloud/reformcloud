@@ -91,14 +91,14 @@ public final class NetworkInfo implements SerializableObject {
     @Override
     public void write(@NotNull ProtocolBuffer buffer) {
         buffer.writeString(this.host);
-        buffer.writeVarInt(this.port);
-        buffer.writeVarLong(this.connectTime);
+        buffer.writeInt(this.port);
+        buffer.writeLong(this.connectTime);
     }
 
     @Override
     public void read(@NotNull ProtocolBuffer buffer) {
         this.host = buffer.readString();
-        this.port = buffer.readVarInt();
-        this.connectTime = buffer.readVarLong();
+        this.port = buffer.readInt();
+        this.connectTime = buffer.readLong();
     }
 }
