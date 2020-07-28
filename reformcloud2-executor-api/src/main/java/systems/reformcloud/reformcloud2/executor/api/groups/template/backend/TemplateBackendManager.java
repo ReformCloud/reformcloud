@@ -47,6 +47,11 @@ public final class TemplateBackendManager {
     private static final Collection<TemplateBackend> LOADED = new CopyOnWriteArrayList<>();
 
     /**
+     * The default template backend which is provided internally
+     */
+    private static final TemplateBackend DEFAULT = new FileTemplateBackend();
+
+    /**
      * Get a template backend or the default file backend
      *
      * @param name The name of the template which should get loaded
@@ -55,7 +60,7 @@ public final class TemplateBackendManager {
     @NotNull
     public static TemplateBackend getOrDefault(@NotNull String name) {
         TemplateBackend backend = Streams.filter(LOADED, e -> e.getName().equalsIgnoreCase(name));
-        return backend != null ? backend : new FileTemplateBackend();
+        return backend != null ? backend : DEFAULT;
     }
 
     /**
@@ -91,6 +96,6 @@ public final class TemplateBackendManager {
      * Registers the default template backend
      */
     public static void registerDefaults() {
-        registerBackend(new FileTemplateBackend());
+        registerBackend(DEFAULT);
     }
 }

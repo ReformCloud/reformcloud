@@ -89,9 +89,6 @@ public final class LanguageManager {
         }
 
         Object[] strings = Arrays.stream(replacements).map(e -> e == null ? "null" : e.toString()).toArray(String[]::new);
-        return MessageFormat.format(
-                message,
-                strings
-        );
+        return MessageFormat.format(message, strings);
     }
 }

@@ -450,6 +450,7 @@ public final class NodeExecutor extends ExecutorAPI {
                 .registerCommand(new CommandLog(), "Uploading log files of running processes", "log")
                 .registerCommand(new CommandReload(), "Reloads the system", "reload", "rl")
                 .registerCommand(new CommandClear(), "Empties the console", "clear", "cls")
+                .registerCommand(new CommandTemplate(), "Manages the templates", "template", "t", "templates")
                 .registerCommand(new CommandHelp(), "Shows an overview of all available commands and their aliases", "help", "ask", "?");
     }
 

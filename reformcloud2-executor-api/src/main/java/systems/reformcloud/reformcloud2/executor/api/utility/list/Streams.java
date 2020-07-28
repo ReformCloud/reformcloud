@@ -434,6 +434,19 @@ public final class Streams {
         return result;
     }
 
+    @NotNull
+    public static <I, O> Collection<O> map(@NotNull I[] collection, @NotNull Function<I, O> mapper) {
+        Collection<O> result = new ArrayList<>();
+        for (I i : collection) {
+            O out = mapper.apply(i);
+            if (out != null) {
+                result.add(out);
+            }
+        }
+
+        return result;
+    }
+
     public static <T> boolean hasMatch(@NotNull Collection<T> collection, @NotNull Predicate<T> predicate) {
         for (T t : collection) {
             if (predicate.test(t)) {

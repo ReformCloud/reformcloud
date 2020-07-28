@@ -83,6 +83,10 @@ public final class RuntimeConfiguration implements SerializableObject {
         return this.dynamicMemory;
     }
 
+    public void setDynamicMemory(int dynamicMemory) {
+        this.dynamicMemory = dynamicMemory;
+    }
+
     public List<String> getProcessParameters() {
         return this.processParameters;
     }
@@ -97,7 +101,7 @@ public final class RuntimeConfiguration implements SerializableObject {
 
     /* Needs a null check because of add in version 2.0.2 */
     public Collection<String> getShutdownCommands() {
-        return this.shutdownCommands == null ? new CopyOnWriteArrayList<>() : new CopyOnWriteArrayList<>(this.shutdownCommands);
+        return this.shutdownCommands == null ? this.shutdownCommands = new CopyOnWriteArrayList<>() : this.shutdownCommands;
     }
 
     @Override

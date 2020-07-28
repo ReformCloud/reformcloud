@@ -66,7 +66,7 @@ public final class StringUtil {
                 continue;
             }
 
-            properties.setProperty(split[0], split[1]);
+            properties.setProperty(split[0].toLowerCase(), split[1]);
         }
 
         return properties;

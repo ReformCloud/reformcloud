@@ -125,6 +125,30 @@ public final class Template implements Nameable, SerializableObject {
         return this.version.isServer();
     }
 
+    public void setPriority(int priority) {
+        this.priority = priority;
+    }
+
+    public void setGlobal(boolean global) {
+        this.global = global;
+    }
+
+    public void setAutoReleaseOnClose(boolean autoReleaseOnClose) {
+        this.autoReleaseOnClose = autoReleaseOnClose;
+    }
+
+    public void setBackend(String backend) {
+        this.backend = backend;
+    }
+
+    public void setServerNameSplitter(String serverNameSplitter) {
+        this.serverNameSplitter = serverNameSplitter;
+    }
+
+    public void setVersion(Version version) {
+        this.version = version;
+    }
+
     /* Needs null check, added in version 2.0.4 */
     public Collection<Inclusion> getTemplateInclusions() {
         return this.templateInclusions == null ? new ArrayList<>() : this.templateInclusions;

@@ -36,6 +36,7 @@ import systems.reformcloud.reformcloud2.executor.api.groups.utils.StartupConfigu
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 public final class DefaultProcessGroup extends ProcessGroup {
@@ -67,8 +68,8 @@ public final class DefaultProcessGroup extends ProcessGroup {
                         port,
                         "java",
                         true,
-                        Collections.emptyList()
-                ), Collections.singletonList(new Template(
+                        new ArrayList<>()
+                ), new ArrayList<>(Collections.singletonList(new Template(
                         0,
                         "default",
                         false,
@@ -76,13 +77,13 @@ public final class DefaultProcessGroup extends ProcessGroup {
                         "-",
                         new RuntimeConfiguration(
                                 maxMemory,
-                                Collections.emptyList(),
-                                Collections.singletonMap("reformcloud2.developer", "derklaro")
+                                new ArrayList<>(),
+                                new HashMap<>(Collections.singletonMap("reformcloud2.developer", "derklaro"))
                         ),
                         version,
                         new ArrayList<>(),
-                        Collections.singletonList(version.isServer() ? SERVER_INCLUSION : PROXY_INCLUSION)
-                )), new PlayerAccessConfiguration(
+                        new ArrayList<>(Collections.singletonList(version.isServer() ? SERVER_INCLUSION : PROXY_INCLUSION))
+                ))), new PlayerAccessConfiguration(
                         "reformcloud.join.full",
                         maintenance,
                         "reformcloud.join.maintenance",
@@ -104,8 +105,8 @@ public final class DefaultProcessGroup extends ProcessGroup {
                         port,
                         "java",
                         true,
-                        Collections.emptyList()
-                ), Collections.singletonList(new Template(
+                        new ArrayList<>()
+                ), new ArrayList<>(Collections.singletonList(new Template(
                         0,
                         "default",
                         false,
@@ -113,13 +114,13 @@ public final class DefaultProcessGroup extends ProcessGroup {
                         "-",
                         new RuntimeConfiguration(
                                 maxMemory,
-                                Collections.emptyList(),
-                                Collections.singletonMap("reformcloud2.developer", "derklaro")
+                                new ArrayList<>(),
+                                new HashMap<>(Collections.singletonMap("reformcloud2.developer", "derklaro"))
                         ),
                         version,
                         new ArrayList<>(),
-                        Collections.singletonList(version.isServer() ? SERVER_INCLUSION : PROXY_INCLUSION)
-                )), new PlayerAccessConfiguration(
+                        new ArrayList<>(Collections.singletonList(version.isServer() ? SERVER_INCLUSION : PROXY_INCLUSION))
+                ))), new PlayerAccessConfiguration(
                         "reformcloud.join.full",
                         maintenance,
                         "reformcloud.join.maintenance",
@@ -145,7 +146,7 @@ public final class DefaultProcessGroup extends ProcessGroup {
                         AutomaticStartupConfiguration.defaults(),
                         clients.isEmpty(),
                         clients
-                ), Collections.singletonList(new Template(
+                ), new ArrayList<>(Collections.singletonList(new Template(
                         0,
                         "default",
                         false,
@@ -159,7 +160,7 @@ public final class DefaultProcessGroup extends ProcessGroup {
                         version,
                         new ArrayList<>(),
                         Collections.singletonList(version.isServer() ? SERVER_INCLUSION : PROXY_INCLUSION)
-                )), new PlayerAccessConfiguration(
+                ))), new PlayerAccessConfiguration(
                         "reformcloud.join.full",
                         maintenance,
                         "reformcloud.join.maintenance",
