@@ -42,10 +42,7 @@ import systems.reformcloud.reformcloud2.executor.api.utility.StringUtil;
 import systems.reformcloud.reformcloud2.executor.api.utility.list.Duo;
 import systems.reformcloud.reformcloud2.executor.api.utility.list.Streams;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 public final class CommandTemplate implements Command {
 
@@ -389,6 +386,34 @@ public final class CommandTemplate implements Command {
         }
 
         this.describeCommandToSender(sender);
+    }
+
+    @Override
+    public @NotNull List<String> suggest(@NotNull CommandSender commandSender, String[] strings, int bufferIndex, @NotNull String commandLine) {
+        List<String> result = new ArrayList<>();
+        if (bufferIndex == 0) {
+            result.add("versions");
+            for (ProcessGroup processGroup : ExecutorAPI.getInstance().getProcessGroupProvider().getProcessGroups()) {
+                for (Template template : processGroup.getTemplates()) {
+                    result.add(processGroup.getName() + "/" + template.getName());
+                }
+            }
+        } else if (bufferIndex == 1) {
+            result.addAll(Arrays.asList(
+                    "create", "info", "delete", "addProcessParameter", "addJvmOption",
+                    "addSystemProperty", "addShutdownCommand", "removeProcessParameter",
+                    "removeJvmOption", "removeSystemProperty", "removeShutdownCommand",
+                    "addPathInclusion", "addTemplateInclusion", "removePathInclusion",
+                    "removeTemplateInclusion", "edit"
+            ));
+        } else if (bufferIndex >= 2 && strings[1].equalsIgnoreCase("edit")) {
+            result.addAll(Arrays.asList(
+                    "--version=PAPER_1_16_1", "--priority=1", "--global=true", "--autoReleaseOnClose=false",
+                    "--backend=FILE", "--serverNameSplitter=-", "--max-memory=512", "--dynamic-memory=-1"
+            ));
+        }
+
+        return result;
     }
 
     private @Nullable Duo<ProcessGroup, String> parseTemplate(@NotNull String in) {
