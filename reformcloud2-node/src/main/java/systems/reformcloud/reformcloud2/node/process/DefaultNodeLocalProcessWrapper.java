@@ -89,7 +89,7 @@ public class DefaultNodeLocalProcessWrapper extends DefaultNodeRemoteProcessWrap
     private final Path path;
     private final boolean firstStart;
 
-    private ProcessState runtimeState;
+    private ProcessState runtimeState = ProcessState.CREATED;
     private Process process;
 
     @NotNull
