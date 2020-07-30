@@ -31,6 +31,7 @@ import systems.reformcloud.reformcloud2.executor.api.task.exception.TaskCompleti
 
 import java.util.concurrent.*;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 public abstract class Task<V> extends CompletableFuture<V> {
 
@@ -122,4 +123,7 @@ public abstract class Task<V> extends CompletableFuture<V> {
      */
     @NotNull
     public abstract Task<V> onFailure(@NotNull Consumer<TaskCompletionException> consumer);
+
+    @NotNull
+    public abstract <U> Task<U> thenSupply(@NotNull Function<V, U> function);
 }

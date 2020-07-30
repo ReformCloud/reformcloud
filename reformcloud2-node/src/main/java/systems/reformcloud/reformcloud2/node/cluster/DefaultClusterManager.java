@@ -58,7 +58,6 @@ import systems.reformcloud.reformcloud2.protocol.api.*;
 
 import java.util.Collection;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 public class DefaultClusterManager implements ClusterManager {
 
@@ -81,9 +80,10 @@ public class DefaultClusterManager implements ClusterManager {
 
     @Override
     public @NotNull Task<ProcessWrapper> createProcess(@NotNull ProcessGroup processGroup, @Nullable String node, @Nullable String displayName, @Nullable String messageOfTheDay, @Nullable Template template, @NotNull Collection<ProcessInclusion> inclusions, @NotNull JsonConfiguration jsonConfiguration, @NotNull ProcessState initialState, @NotNull UUID uniqueId, int memory, int id, int maxPlayers, @Nullable String targetProcessFactory) {
-        Task<ProcessInformation> task = ClusterAccessController.createProcessPrivileged(processGroup, node, displayName, messageOfTheDay, template, inclusions, jsonConfiguration, initialState, uniqueId, memory, id, maxPlayers, targetProcessFactory);
-        return Task.supply(() -> {
-            ProcessInformation result = task.getUninterruptedly(TimeUnit.SECONDS, 10);
+        return ClusterAccessController.createProcessPrivileged(
+                processGroup, node, displayName, messageOfTheDay, template, inclusions, jsonConfiguration,
+                initialState, uniqueId, memory, id, maxPlayers, targetProcessFactory
+        ).thenSupply(result -> {
             if (result == null) {
                 return null;
             }

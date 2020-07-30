@@ -33,6 +33,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 public final class DefaultTask<V> extends Task<V> {
 
@@ -87,6 +88,13 @@ public final class DefaultTask<V> extends Task<V> {
     public Task<V> onFailure(@NotNull Consumer<TaskCompletionException> consumer) {
         this.failureConsumer = Objects.requireNonNull(consumer);
         return this;
+    }
+
+    @Override
+    public @NotNull <U> Task<U> thenSupply(@NotNull Function<V, U> function) {
+        Task<U> task = new DefaultTask<>();
+        this.thenAccept(result -> task.complete(function.apply(result)));
+        return task;
     }
 
     @Override

@@ -46,6 +46,8 @@ import java.util.function.Predicate;
 
 public class JsonConfiguration implements Configurable<JsonElement, JsonConfiguration> {
 
+    public static final JsonConfiguration EMPTY = new JsonConfiguration();
+
     private Gson gson = new GsonBuilder()
             .setPrettyPrinting()
             .serializeNulls()
