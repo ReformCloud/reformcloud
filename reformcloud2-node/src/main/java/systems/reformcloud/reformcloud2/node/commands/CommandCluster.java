@@ -89,7 +89,7 @@ public final class CommandCluster implements Command {
         if (strings.length == 3 && strings[0].equalsIgnoreCase("create")) {
             String ip = CommonHelper.getIpAddress(strings[1]);
             if (ip == null) {
-                sender.sendMessage(LanguageManager.get("controller-setup-question-controller-address-wrong"));
+                sender.sendMessage(LanguageManager.get("node-setup-question-address-wrong"));
                 return;
             }
 
@@ -113,7 +113,7 @@ public final class CommandCluster implements Command {
         if (strings.length == 2 && strings[0].equalsIgnoreCase("delete")) {
             String ip = CommonHelper.getIpAddress(strings[1]);
             if (ip == null) {
-                sender.sendMessage(LanguageManager.get("controller-setup-question-controller-address-wrong"));
+                sender.sendMessage(LanguageManager.get("node-setup-question-address-wrong"));
                 return;
             }
 
