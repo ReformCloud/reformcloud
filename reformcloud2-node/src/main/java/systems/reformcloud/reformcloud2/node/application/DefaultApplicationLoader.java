@@ -86,6 +86,8 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
         } catch (final IOException exception) {
             exception.printStackTrace();
         }
+
+        System.out.println(LanguageManager.get("application-loaded-amount", this.toLoad.size()));
     }
 
     @Override

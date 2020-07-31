@@ -246,13 +246,16 @@ public final class NodeExecutor extends ExecutorAPI {
         System.out.println(LanguageManager.get("application-net-client-close"));
         this.networkClient.disconnect();
 
+        System.out.println(LanguageManager.get("application-stop-task-scheduler"));
         this.taskScheduler.close();
         this.serviceRegistry.getProviderUnchecked(ApplicationLoader.class).disableApplications();
 
         System.out.println(LanguageManager.get("application-stop-processes"));
         this.processProvider.closeNow(); // important to close the scheduler BEFORE the processes to prevent new processes to start
-        System.out.println(LanguageManager.get("application-stop-process-done"));
+        System.out.println(LanguageManager.get("application-stop-remove-temp-dir"));
         IOUtils.deleteDirectory(Paths.get("reformcloud/temp"));
+
+        System.out.println(LanguageManager.get("application-stop-finished"));
 
         this.logger.close();
         this.console.close();

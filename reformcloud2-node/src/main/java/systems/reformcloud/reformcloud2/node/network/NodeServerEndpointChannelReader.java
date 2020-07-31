@@ -147,6 +147,7 @@ public class NodeServerEndpointChannelReader extends SharedEndpointChannelReader
                 information.getProcessDetail().setProcessState(information.getProcessDetail().getInitialState());
 
                 ExecutorAPI.getInstance().getProcessProvider().updateProcessInformation(information);
+                System.out.println(LanguageManager.get("process-connected-to-node", information.getProcessDetail().getName()));
             } else {
                 // invalid data
                 super.networkChannel.close();
