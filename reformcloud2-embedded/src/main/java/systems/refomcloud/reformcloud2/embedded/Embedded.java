@@ -105,21 +105,22 @@ public abstract class Embedded extends ExecutorAPI {
             lock.lock();
             Condition condition = lock.newCondition();
 
-            this.networkClient.connectSync(
+            this.networkClient.connect(
                     this.config.getConnectionHost(),
                     this.config.getConnectionPort(),
                     () -> new EmbeddedEndpointChannelReader(lock, condition)
             );
 
             try {
-                condition.await(30, TimeUnit.SECONDS);
+                if (!condition.await(30, TimeUnit.SECONDS)) {
+                    System.exit(-1);
+                }
             } catch (InterruptedException exception) {
                 throw new RuntimeException(exception);
             }
 
             if (!this.serviceRegistry.getProviderUnchecked(ChannelManager.class).getFirstChannel().isPresent()) {
                 System.exit(-1);
-                return;
             }
         } finally {
             lock.unlock();

@@ -22,19 +22,20 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.network.client;
+package systems.reformcloud.reformcloud2.executor.api.network.transport;
 
-import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
+public enum EventLoopGroupType {
 
-import java.util.function.Supplier;
+    BOSS("Boss"),
+    WORKER("Worker");
 
-public interface NetworkClient {
+    private final String name;
 
-    boolean connect(@NotNull String host, int port, @NotNull Supplier<EndpointChannelReader> supplier);
+    EventLoopGroupType(String name) {
+        this.name = name;
+    }
 
-    /**
-     * Disconnects all open connections
-     */
-    void disconnect();
+    public String getName() {
+        return this.name;
+    }
 }

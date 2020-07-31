@@ -26,84 +26,49 @@ package systems.reformcloud.reformcloud2.shared.network.client;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
-import io.netty.channel.socket.SocketChannel;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.CommonHelper;
 import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
 import systems.reformcloud.reformcloud2.executor.api.network.client.NetworkClient;
-import systems.reformcloud.reformcloud2.executor.api.task.Task;
-import systems.reformcloud.reformcloud2.executor.api.task.defaults.DefaultTask;
+import systems.reformcloud.reformcloud2.executor.api.network.transport.EventLoopGroupType;
 
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 public final class DefaultNetworkClient implements NetworkClient {
 
-    private final EventLoopGroup eventLoopGroup = NetworkUtil.eventLoopGroup();
-    private final Class<? extends SocketChannel> channelClass = NetworkUtil.socketChannel();
-
+    private final EventLoopGroup eventLoopGroup = NetworkUtil.TRANSPORT_TYPE.getEventLoopGroupFactory(EventLoopGroupType.WORKER);
     private Channel channel;
 
     @Override
     public boolean connect(@NotNull String host, int port, @NotNull Supplier<EndpointChannelReader> supplier) {
-        final Task<Boolean> connectTask = new DefaultTask<>();
-
         try {
-            this.channel = new Bootstrap()
-                    .group(this.eventLoopGroup)
-                    .channel(this.channelClass)
-
-                    .option(ChannelOption.SO_REUSEADDR, true)
-                    .option(ChannelOption.SO_KEEPALIVE, true)
-                    .option(ChannelOption.AUTO_READ, true)
-                    .option(ChannelOption.IP_TOS, 24)
-                    .option(ChannelOption.TCP_NODELAY, true)
-                    .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, CommonHelper.longToInt(TimeUnit.SECONDS.toMillis(5)))
-
-                    .handler(new ClientChannelInitializer(supplier))
-
-                    .connect(host, port)
-                    .addListener(future -> connectTask.complete(future.isSuccess()))
-                    .addListeners(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE, ChannelFutureListener.CLOSE_ON_FAILURE)
-                    .channel();
-        } catch (final Exception ex) {
-            ex.printStackTrace();
-            connectTask.complete(false);
-        }
-
-        Boolean result = connectTask.getUninterruptedly();
-        return result != null && result;
-    }
-
-    @Override
-    public boolean connectSync(@NotNull String host, int port, @NotNull Supplier<EndpointChannelReader> supplier) {
-        try {
-            ChannelFuture future = new Bootstrap()
-                    .group(this.eventLoopGroup)
-                    .channel(this.channelClass)
-
-                    .option(ChannelOption.SO_REUSEADDR, true)
-                    .option(ChannelOption.SO_KEEPALIVE, true)
-                    .option(ChannelOption.AUTO_READ, true)
-                    .option(ChannelOption.IP_TOS, 24)
-                    .option(ChannelOption.TCP_NODELAY, true)
-                    .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, CommonHelper.longToInt(TimeUnit.SECONDS.toMillis(5)))
-
-                    .handler(new ClientChannelInitializer(supplier))
-
-                    .connect(host, port)
-                    .addListeners(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE, ChannelFutureListener.CLOSE_ON_FAILURE)
-                    .sync();
+            ChannelFuture future = this.connect0(host, port, supplier).sync();
             if (future.isSuccess()) {
                 this.channel = future.channel();
             }
 
             return future.isSuccess();
-        } catch (final Exception ex) {
-            ex.printStackTrace();
-            return true;
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            return false;
         }
+    }
+
+    private @NotNull ChannelFuture connect0(@NotNull String host, int port, @NotNull Supplier<EndpointChannelReader> supplier) {
+        return new Bootstrap()
+                .group(this.eventLoopGroup)
+                .channelFactory(NetworkUtil.TRANSPORT_TYPE.getSocketChannelFactory())
+                .option(ChannelOption.SO_REUSEADDR, true)
+                .option(ChannelOption.SO_KEEPALIVE, true)
+                .option(ChannelOption.AUTO_READ, true)
+                .option(ChannelOption.IP_TOS, 24)
+                .option(ChannelOption.TCP_NODELAY, true)
+                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, CommonHelper.longToInt(TimeUnit.SECONDS.toMillis(5)))
+                .handler(new ClientChannelInitializer(supplier))
+                .connect(host, port)
+                .addListeners(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE, ChannelFutureListener.CLOSE_ON_FAILURE);
     }
 
     @Override

@@ -29,11 +29,11 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
-import io.netty.channel.socket.ServerSocketChannel;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
 import systems.reformcloud.reformcloud2.executor.api.network.server.NetworkServer;
+import systems.reformcloud.reformcloud2.executor.api.network.transport.EventLoopGroupType;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -42,15 +42,14 @@ import java.util.function.Supplier;
 public final class DefaultNetworkServer implements NetworkServer {
 
     private final Map<Integer, ChannelFuture> channelFutures = new ConcurrentHashMap<>();
-    private final Class<? extends ServerSocketChannel> channelClass = NetworkUtil.serverSocketChannel();
-    private final EventLoopGroup boss = NetworkUtil.eventLoopGroup();
-    private final EventLoopGroup worker = NetworkUtil.eventLoopGroup();
+    private final EventLoopGroup boss = NetworkUtil.TRANSPORT_TYPE.getEventLoopGroupFactory(EventLoopGroupType.BOSS);
+    private final EventLoopGroup worker = NetworkUtil.TRANSPORT_TYPE.getEventLoopGroupFactory(EventLoopGroupType.WORKER);
 
     @Override
     public void bind(@NotNull String host, int port, @NotNull Supplier<EndpointChannelReader> readerHelper) {
         if (!this.channelFutures.containsKey(port)) {
             new ServerBootstrap()
-                    .channel(this.channelClass)
+                    .channelFactory(NetworkUtil.TRANSPORT_TYPE.getServerSocketChannelFactory())
                     .group(this.boss, this.worker)
 
                     .childOption(ChannelOption.SO_REUSEADDR, true)

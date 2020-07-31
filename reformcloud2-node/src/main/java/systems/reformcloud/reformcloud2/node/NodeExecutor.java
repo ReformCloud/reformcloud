@@ -37,6 +37,7 @@ import systems.reformcloud.reformcloud2.executor.api.groups.template.backend.Tem
 import systems.reformcloud.reformcloud2.executor.api.io.IOUtils;
 import systems.reformcloud.reformcloud2.executor.api.language.LanguageManager;
 import systems.reformcloud.reformcloud2.executor.api.language.loading.LanguageLoader;
+import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.manager.ChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.network.packet.PacketProvider;
 import systems.reformcloud.reformcloud2.executor.api.network.packet.query.QueryManager;
@@ -267,6 +268,8 @@ public final class NodeExecutor extends ExecutorAPI {
     }
 
     private void startNetworkListeners() {
+        System.out.println(LanguageManager.get("network-transport-type-choose", NetworkUtil.TRANSPORT_TYPE.getName()));
+
         for (NetworkAddress networkListener : this.nodeConfig.getNetworkListeners()) {
             if (networkListener.getHost() == null || networkListener.getPort() < 0) {
                 System.err.println(LanguageManager.get(

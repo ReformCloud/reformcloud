@@ -25,23 +25,12 @@
 package systems.reformcloud.reformcloud2.executor.api.network;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.channel.EventLoopGroup;
 import io.netty.channel.WriteBufferWaterMark;
-import io.netty.channel.epoll.Epoll;
-import io.netty.channel.epoll.EpollEventLoopGroup;
-import io.netty.channel.epoll.EpollServerSocketChannel;
-import io.netty.channel.epoll.EpollSocketChannel;
-import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.ServerSocketChannel;
-import io.netty.channel.socket.SocketChannel;
-import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.channel.socket.nio.NioSocketChannel;
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.network.netty.concurrent.FastNettyThreadFactory;
+import systems.reformcloud.reformcloud2.executor.api.network.transport.TransportType;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
 
 public final class NetworkUtil {
 
@@ -55,40 +44,11 @@ public final class NetworkUtil {
 
     public static final Executor EXECUTOR = Executors.newCachedThreadPool();
 
-    public static final WriteBufferWaterMark WATER_MARK = new WriteBufferWaterMark(0x80000, 0x200000);
-    private static final boolean EPOLL = Epoll.isAvailable();
+    public static final WriteBufferWaterMark WATER_MARK = new WriteBufferWaterMark(524_288, 2_097_152);
+    public static final TransportType TRANSPORT_TYPE = TransportType.getBestType();
 
     private NetworkUtil() {
         throw new UnsupportedOperationException();
-    }
-
-    @NotNull
-    public static EventLoopGroup eventLoopGroup() {
-        if (!Boolean.getBoolean("reformcloud.disable.native")) {
-            if (EPOLL) {
-                return new EpollEventLoopGroup(0, newThreadFactory("Epoll"));
-            }
-        }
-
-        return new NioEventLoopGroup(0, newThreadFactory("Nio"));
-    }
-
-    @NotNull
-    public static Class<? extends ServerSocketChannel> serverSocketChannel() {
-        if (!Boolean.getBoolean("reformcloud.disable.native") && EPOLL) {
-            return EpollServerSocketChannel.class;
-        }
-
-        return NioServerSocketChannel.class;
-    }
-
-    @NotNull
-    public static Class<? extends SocketChannel> socketChannel() {
-        if (!Boolean.getBoolean("reformcloud.disable.native") && EPOLL) {
-            return EpollSocketChannel.class;
-        }
-
-        return NioSocketChannel.class;
     }
 
     public static void writeVarInt(@NotNull ByteBuf buf, int value) {
@@ -120,10 +80,5 @@ public final class NetworkUtil {
         } while ((read & 0x80) != 0);
 
         return result;
-    }
-
-    @NotNull
-    public static ThreadFactory newThreadFactory(@NotNull String type) {
-        return new FastNettyThreadFactory("Netty Local " + type + " Thread#%d");
     }
 }
