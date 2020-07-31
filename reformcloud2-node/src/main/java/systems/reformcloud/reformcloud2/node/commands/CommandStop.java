@@ -27,11 +27,18 @@ package systems.reformcloud.reformcloud2.node.commands;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.command.Command;
 import systems.reformcloud.reformcloud2.executor.api.command.CommandSender;
+import systems.reformcloud.reformcloud2.node.NodeExecutor;
 
 public final class CommandStop implements Command {
 
     @Override
     public void process(@NotNull CommandSender sender, String[] strings, @NotNull String commandLine) {
-        System.exit(0);
+        try {
+            NodeExecutor.getInstance().shutdown();
+        } catch (Exception exception) {
+            System.err.println("An exception occurred during system shutdown. Forcing");
+            exception.printStackTrace();
+            System.exit(-1);
+        }
     }
 }

@@ -44,17 +44,18 @@ public class RecordDispatcher extends Thread {
     public void run() {
         while (!super.isInterrupted()) {
             try {
-                this.logger.doLog(this.queue.take());
+                this.logger.flushRecord(this.queue.take());
             } catch (InterruptedException ignored) {
+                break;
             }
         }
 
         for (LogRecord logRecord : this.queue) {
-            this.logger.doLog(logRecord);
+            this.logger.flushRecord(logRecord);
         }
     }
 
-    void queue(@NotNull LogRecord record) {
+    protected void queue(@NotNull LogRecord record) {
         if (!super.isInterrupted()) {
             this.queue.add(record);
         }

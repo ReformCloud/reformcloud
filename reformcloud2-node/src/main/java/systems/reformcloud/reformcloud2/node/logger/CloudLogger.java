@@ -75,11 +75,12 @@ public class CloudLogger extends Logger {
         this.dispatcher.queue(record);
     }
 
-    void doLog(@NotNull LogRecord record) {
+    protected void flushRecord(@NotNull LogRecord record) {
         super.log(record);
     }
 
-    public void close() {
+    public void close() throws InterruptedException {
         this.dispatcher.interrupt();
+        this.dispatcher.join();
     }
 }

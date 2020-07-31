@@ -230,13 +230,7 @@ public final class NodeExecutor extends ExecutorAPI {
         System.out.println(LanguageManager.get("runtime-reload-done", CommonHelper.DECIMAL_FORMAT.format((System.currentTimeMillis() - startTime) / 1000d)));
     }
 
-    private void shutdown() throws Exception {
-        if (!Thread.currentThread().getName().equals("Shutdown-Hook")) {
-            // prevent call from not shutdown hook thread
-            System.exit(0);
-            return;
-        }
-
+    public void shutdown() throws Exception {
         synchronized (this) {
             if (running) {
                 running = false;
@@ -260,8 +254,13 @@ public final class NodeExecutor extends ExecutorAPI {
         System.out.println(LanguageManager.get("application-stop-process-done"));
         IOUtils.deleteDirectory(Paths.get("reformcloud/temp"));
 
-        this.console.close(); // close console before logger
         this.logger.close();
+        this.console.close();
+
+        if (!Thread.currentThread().getName().equals("Shutdown-Hook")) {
+            // now call all other shutdown hooks
+            System.exit(0);
+        }
     }
 
     private void startNetworkListeners() {
