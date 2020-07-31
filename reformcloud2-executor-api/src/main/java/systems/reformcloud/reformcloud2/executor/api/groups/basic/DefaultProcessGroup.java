@@ -133,7 +133,7 @@ public final class DefaultProcessGroup extends ProcessGroup {
 
     public DefaultProcessGroup(String name, int port, Version version,
                                int maxMemory, boolean maintenance, int min, int max, int prepared, int priority,
-                               boolean staticServer, boolean lobby, List<String> clients, int maxPlayers) {
+                               boolean staticServer, boolean lobby, List<String> nodes, int maxPlayers) {
         super(
                 name,
                 true,
@@ -144,8 +144,8 @@ public final class DefaultProcessGroup extends ProcessGroup {
                         port,
                         "java",
                         AutomaticStartupConfiguration.defaults(),
-                        clients.isEmpty(),
-                        clients
+                        nodes.isEmpty(),
+                        nodes
                 ), new ArrayList<>(Collections.singletonList(new Template(
                         0,
                         "default",

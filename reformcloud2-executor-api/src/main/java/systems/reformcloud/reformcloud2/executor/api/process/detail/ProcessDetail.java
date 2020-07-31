@@ -101,7 +101,7 @@ public final class ProcessDetail implements Nameable, SerializableObject {
     }
 
     /**
-     * @return The unique id of the startup picker (node/client)
+     * @return The unique id of the startup picker (node)
      */
     @NotNull
     public UUID getParentUniqueID() {

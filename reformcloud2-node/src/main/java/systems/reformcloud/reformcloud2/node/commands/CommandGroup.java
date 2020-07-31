@@ -69,9 +69,9 @@ public final class CommandGroup implements Command {
                         " --always-prepared-process-count=[count]       | Sets the count of processes which should always be prepared\n" +
                         " --start-port=[port]                           | Sets the start port of the group\n" +
                         " --max-memory=[default/memory]                 | Sets the max memory of the template (format: <template-name>/<max-memory>)\n" +
-                        " --startup-pickers=[Client1;Node2]             | Sets the startup pickers for the group\n" +
-                        " --add-startup-pickers=[Client1;Node2]         | Adds the specified startup pickers to the group\n" +
-                        " --remove-startup-pickers=[Client1;Node2]      | Removes the specified startup pickers from the group\n" +
+                        " --startup-pickers=[Node1;Node2]               | Sets the startup pickers for the group\n" +
+                        " --add-startup-pickers=[Node1;Node2]           | Adds the specified startup pickers to the group\n" +
+                        " --remove-startup-pickers=[Node1;Node2]        | Removes the specified startup pickers from the group\n" +
                         " --clear-startup-pickers=true                  | Clears the startup pickers\n" +
                         " --templates=[default/FILE/WATERFALL;...]      | Sets the templates of the group (format: <name>/<backend>/<version>)\n" +
                         " --add-templates=[default/FILE/WATERFALL;...]  | Adds the specified templates to the group (format: <name>/<backend>/<version>)\n" +
