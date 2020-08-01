@@ -39,6 +39,7 @@ import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class DefaultFileRegistry implements FileRegistry {
@@ -79,25 +80,30 @@ public class DefaultFileRegistry implements FileRegistry {
         IOUtils.deleteFile(new File(this.operatingFolder, key + ".json"));
     }
 
-    @NotNull
     @Override
-    public <T> Optional<T> updateKey(@NotNull String key, @NotNull T newValue) {
+    public <T> void updateKey(@NotNull String key, @NotNull T newValue) {
         Path filePath = Paths.get(this.operatingFolder, key + ".json");
         if (Files.notExists(filePath)) {
-            return Optional.empty();
+            return;
         }
 
         new JsonConfiguration().add("key", newValue).write(filePath);
-        return Optional.of(newValue);
     }
 
     @NotNull
     @Override
-    public <T> Collection<T> readKeys(@NotNull Function<JsonConfiguration, T> function) {
+    public <T> Collection<T> readKeys(@NotNull Function<JsonConfiguration, T> function,
+                                      @NotNull Consumer<Path> failureHandler) {
         Collection<T> result = new CopyOnWriteArrayList<>();
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(this.operatingFolder), path -> path.toString().endsWith(".json"))) {
             for (Path path : stream) {
-                result.add(function.apply(JsonConfiguration.read(path)));
+                T t = function.apply(JsonConfiguration.read(path));
+                if (t == null) {
+                    failureHandler.accept(path);
+                    continue;
+                }
+
+                result.add(t);
             }
         } catch (IOException exception) {
             exception.printStackTrace();

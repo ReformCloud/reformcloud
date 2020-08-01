@@ -30,6 +30,7 @@ import org.jetbrains.annotations.UnmodifiableView;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.builder.ProcessGroupBuilder;
 import systems.reformcloud.reformcloud2.executor.api.groups.ProcessGroup;
+import systems.reformcloud.reformcloud2.executor.api.language.LanguageManager;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.provider.ProcessGroupProvider;
 import systems.reformcloud.reformcloud2.executor.api.registry.io.FileRegistry;
@@ -45,7 +46,11 @@ public class DefaultNodeProcessGroupProvider implements ProcessGroupProvider {
 
     public DefaultNodeProcessGroupProvider(@NotNull String registryFolder) {
         this.fileRegistry = new DefaultFileRegistry(registryFolder);
-        this.processGroups = this.fileRegistry.readKeys(e -> e.get("key", ProcessGroup.TYPE));
+        this.processGroups = this.fileRegistry.readKeys(
+                e -> e.get("key", ProcessGroup.TYPE),
+                path -> System.err.println(LanguageManager.get("startup-unable-to-read-file",
+                        "Process-Group", path.toAbsolutePath().toString()))
+        );
     }
 
     private final Collection<ProcessGroup> processGroups;
@@ -131,6 +136,10 @@ public class DefaultNodeProcessGroupProvider implements ProcessGroupProvider {
 
     public void reload() {
         this.processGroups.clear();
-        this.processGroups.addAll(this.fileRegistry.readKeys(e -> e.get("key", ProcessGroup.TYPE)));
+        this.processGroups.addAll(this.fileRegistry.readKeys(
+                e -> e.get("key", ProcessGroup.TYPE),
+                path -> System.err.println(LanguageManager.get("startup-unable-to-read-file",
+                        "Process-Group", path.toAbsolutePath().toString()))
+        ));
     }
 }

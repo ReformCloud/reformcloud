@@ -27,8 +27,10 @@ package systems.reformcloud.reformcloud2.executor.api.registry.io;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
 
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
@@ -44,8 +46,7 @@ public interface FileRegistry {
      * @param <T>     The type of the object
      * @return The object which should get inserted or the value which is already inserted
      */
-    @NotNull
-    <T> T createKey(@NotNull String keyName, @NotNull T t);
+    @NotNull <T> T createKey(@NotNull String keyName, @NotNull T t);
 
     /**
      * Gets a key from the registry
@@ -54,8 +55,7 @@ public interface FileRegistry {
      * @param <T>     The type of the object
      * @return The key in the registry or {@code null}
      */
-    @NotNull
-    <T> Optional<T> getKey(@NotNull String keyName);
+    @NotNull <T> Optional<T> getKey(@NotNull String keyName);
 
     /**
      * Deletes a key from the registry
@@ -70,18 +70,18 @@ public interface FileRegistry {
      * @param key      The key which should get updates
      * @param newValue The value which should get updated
      * @param <T>      The type of the new value
-     * @return The value which should get updated
      */
-    @NotNull
-    <T> Optional<T> updateKey(@NotNull String key, @NotNull T newValue);
+    <T> void updateKey(@NotNull String key, @NotNull T newValue);
 
     /**
      * Reads all keys from the registry
      *
-     * @param function The function which should apply a json config to the object
-     * @param <T>      The type of the object
+     * @param mapper         The function which should apply a json config to the object
+     * @param failureHandler The handler which get all paths applied which return {@code null}
+     *                       when applied to the mapper
+     * @param <T>            The type of the object
      * @return A collection of all objects in the database
      */
-    @NotNull
-    <T> Collection<T> readKeys(@NotNull Function<JsonConfiguration, T> function);
+    @NotNull <T> Collection<T> readKeys(@NotNull Function<JsonConfiguration, T> mapper,
+                                        @NotNull Consumer<Path> failureHandler);
 }
