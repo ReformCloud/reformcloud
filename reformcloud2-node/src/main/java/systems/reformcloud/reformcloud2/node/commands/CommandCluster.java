@@ -143,7 +143,7 @@ public final class CommandCluster implements Command {
                 result.addAll(Arrays.asList("list", "me", "head", "info", "create", "delete"));
                 break;
             case 1:
-                if (strings[0].equalsIgnoreCase("list")) {
+                if (strings[0].equalsIgnoreCase("info")) {
                     result.addAll(ExecutorAPI.getInstance().getNodeInformationProvider().getNodeNames());
                 } else if (strings[0].equalsIgnoreCase("create")) {
                     result.add("127.0.0.1");
