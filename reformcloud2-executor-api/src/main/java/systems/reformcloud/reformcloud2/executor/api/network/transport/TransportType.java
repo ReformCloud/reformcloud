@@ -24,7 +24,7 @@
  */
 package systems.reformcloud.reformcloud2.executor.api.network.transport;
 
-import io.netty.channel.ChannelFactory;
+import io.netty.bootstrap.ChannelFactory;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.epoll.Epoll;
 import io.netty.channel.epoll.EpollEventLoopGroup;
@@ -41,12 +41,13 @@ import systems.reformcloud.reformcloud2.executor.api.network.netty.concurrent.Fa
 import java.util.concurrent.ThreadFactory;
 import java.util.function.BiFunction;
 
+@SuppressWarnings("deprecation") // 1.8 is too old to use the new channel factory
 public enum TransportType {
 
     EPOLL("Epoll", Epoll.isAvailable(), EpollServerSocketChannel::new,
-            EpollSocketChannel::new, (type, typeName) -> new EpollEventLoopGroup(newThreadFactory(typeName, type))),
+            EpollSocketChannel::new, (type, typeName) -> new EpollEventLoopGroup(Math.min(4, Runtime.getRuntime().availableProcessors() * 2), newThreadFactory(typeName, type))),
     NIO("Nio", true, NioServerSocketChannel::new,
-            NioSocketChannel::new, (type, typeName) -> new NioEventLoopGroup(newThreadFactory(typeName, type)));
+            NioSocketChannel::new, (type, typeName) -> new NioEventLoopGroup(Math.min(4, Runtime.getRuntime().availableProcessors() * 2), newThreadFactory(typeName, type)));
 
     private final String name;
     private final boolean available;

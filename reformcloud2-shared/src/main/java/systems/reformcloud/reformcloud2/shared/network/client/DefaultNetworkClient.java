@@ -36,6 +36,7 @@ import systems.reformcloud.reformcloud2.executor.api.network.transport.EventLoop
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
+@SuppressWarnings("deprecation") // 1.8 is too old to use the new channel factory
 public final class DefaultNetworkClient implements NetworkClient {
 
     private final EventLoopGroup eventLoopGroup = NetworkUtil.TRANSPORT_TYPE.getEventLoopGroupFactory(EventLoopGroupType.WORKER);

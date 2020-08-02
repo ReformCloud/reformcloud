@@ -39,6 +39,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
+@SuppressWarnings("deprecation") // 1.8 is too old to use the new channel factory
 public final class DefaultNetworkServer implements NetworkServer {
 
     private final Map<Integer, ChannelFuture> channelFutures = new ConcurrentHashMap<>();
