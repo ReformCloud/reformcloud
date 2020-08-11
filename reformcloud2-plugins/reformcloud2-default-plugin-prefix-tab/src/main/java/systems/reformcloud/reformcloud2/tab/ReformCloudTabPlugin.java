@@ -165,6 +165,6 @@ public class ReformCloudTabPlugin extends JavaPlugin {
         }
 
         team.addEntry(player.getName());
-        player.setDisplayName(ChatColor.translateAlternateColorCodes('&', permissionUser.getDisplay().orElse("") + player.getName()));
+        player.setDisplayName(ChatColor.translateAlternateColorCodes('&', permissionUser.getPrefix().orElse("") + player.getName()));
     }
 }
