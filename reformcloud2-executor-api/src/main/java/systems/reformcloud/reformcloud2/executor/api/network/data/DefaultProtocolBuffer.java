@@ -45,6 +45,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class DefaultProtocolBuffer extends ProtocolBuffer {
 
@@ -232,9 +233,8 @@ public class DefaultProtocolBuffer extends ProtocolBuffer {
     @NotNull
     @Override
     public <T extends SerializableObject> List<T> readObjects(@NotNull Class<T> tClass) {
-        int size = this.readVarInt();
-        List<T> out = new ArrayList<>(size);
-        for (int i = 0; i < size; i++) {
+        List<T> out = new CopyOnWriteArrayList<>();
+        for (int i = 0; i < this.readVarInt(); i++) {
             out.add(this.readObject0(tClass));
         }
 
