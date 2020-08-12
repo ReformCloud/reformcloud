@@ -131,7 +131,9 @@ public class DefaultProcessScreen implements ProcessScreen {
             this.stringBuffer.setLength(0);
             return lines;
         } catch (IOException exception) {
-            exception.printStackTrace();
+            if (exception.getMessage() == null || !exception.getMessage().equals("Stream closed")) {
+                exception.printStackTrace();
+            }
         }
 
         return Collections.emptyList();
