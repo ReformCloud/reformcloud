@@ -60,6 +60,8 @@ public final class PlayerListenerHandler implements Listener {
         if (!checked.getFirst() && checked.getSecond() != null) {
             event.setKickMessage(checked.getSecond());
             event.setResult(PlayerLoginEvent.Result.KICK_WHITELIST);
+        } else {
+            event.setResult(PlayerLoginEvent.Result.ALLOWED);
         }
     }
 
