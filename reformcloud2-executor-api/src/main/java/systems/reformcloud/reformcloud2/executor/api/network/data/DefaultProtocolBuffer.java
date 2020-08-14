@@ -234,7 +234,8 @@ public class DefaultProtocolBuffer extends ProtocolBuffer {
     @Override
     public <T extends SerializableObject> List<T> readObjects(@NotNull Class<T> tClass) {
         List<T> out = new CopyOnWriteArrayList<>();
-        for (int i = 0; i < this.readVarInt(); i++) {
+        int initial = this.readVarInt();
+        for (int i = 0; i < initial; i++) {
             out.add(this.readObject0(tClass));
         }
 
