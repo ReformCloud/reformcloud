@@ -97,12 +97,22 @@ public final class InternalReformCloudCommand {
 
                 case "start": {
                     ExecutorAPI.getInstance()
-                            .getProcessProvider()
-                            .createProcess()
-                            .group(strings[1])
-                            .prepare()
-                            .onComplete(processWrapper -> processWrapper.setRuntimeState(ProcessState.STARTED));
-                    messageSender.accept(commandSuccessMessage);
+                            .getProcessGroupProvider()
+                            .getProcessGroupAsync(strings[1])
+                            .thenAccept(processGroup -> {
+                                if (!processGroup.isPresent()) {
+                                    messageSender.accept(prefix + "§cThe specified group is unknown");
+                                    return;
+                                }
+
+                                ExecutorAPI.getInstance()
+                                        .getProcessProvider()
+                                        .createProcess()
+                                        .group(strings[1])
+                                        .prepare()
+                                        .onComplete(processWrapper -> processWrapper.setRuntimeState(ProcessState.STARTED));
+                                messageSender.accept(commandSuccessMessage);
+                            });
                     return;
                 }
 
@@ -128,7 +138,7 @@ public final class InternalReformCloudCommand {
                             .getProcessGroupAsync(strings[1])
                             .onComplete(processGroup -> {
                                 if (!processGroup.isPresent()) {
-                                    messageSender.accept(prefix + "§cThis group is unknown");
+                                    messageSender.accept(prefix + "§cThe specified group is unknown");
                                     return;
                                 }
 
