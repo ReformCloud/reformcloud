@@ -30,6 +30,7 @@ import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.command.Command;
 import systems.reformcloud.reformcloud2.executor.api.command.CommandSender;
 import systems.reformcloud.reformcloud2.executor.api.groups.MainGroup;
+import systems.reformcloud.reformcloud2.executor.api.groups.basic.DefaultProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.groups.template.RuntimeConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.groups.template.Template;
 import systems.reformcloud.reformcloud2.executor.api.groups.template.Version;
@@ -318,7 +319,9 @@ public final class CommandCreate implements Command {
                                 memory,
                                 new ArrayList<>(),
                                 new HashMap<>()
-                        ), version
+                        ), version,
+                        new ArrayList<>(),
+                        Collections.singletonList(version.isServer() ? DefaultProcessGroup.SERVER_INCLUSION : DefaultProcessGroup.PROXY_INCLUSION)
                 ))
                 .startupConfiguration(new StartupConfiguration(
                         max,
