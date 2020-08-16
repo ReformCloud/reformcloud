@@ -26,6 +26,7 @@ package systems.reformcloud.reformcloud2.executor.api;
 
 import io.netty.util.ResourceLeakDetector;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.VisibleForTesting;
 import systems.reformcloud.reformcloud2.executor.api.provider.*;
 import systems.reformcloud.reformcloud2.executor.api.registry.service.ServiceRegistry;
 
@@ -73,7 +74,8 @@ public abstract class ExecutorAPI {
      *
      * @param instance The new instance of the executor api
      */
-    protected static void setInstance(@NotNull ExecutorAPI instance) {
+    @VisibleForTesting
+    public static void setInstance(@NotNull ExecutorAPI instance) {
         ExecutorAPI.instance = Objects.requireNonNull(instance, "instance");
     }
 

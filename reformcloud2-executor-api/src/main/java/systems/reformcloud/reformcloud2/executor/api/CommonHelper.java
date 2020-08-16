@@ -197,7 +197,7 @@ public final class CommonHelper {
     public static <T extends Enum<T>> ReferencedOptional<T> findEnumField(Class<T> enumClass, String field) {
         Map<String, WeakReference<? extends Enum<?>>> cached = CACHE.computeIfAbsent(enumClass, aClass -> cache(enumClass));
 
-        WeakReference<? extends Enum<?>> reference = cached.get(field);
+        WeakReference<? extends Enum<?>> reference = cached.get(field.toUpperCase());
         return reference == null ? ReferencedOptional.empty() : ReferencedOptional.build(enumClass.cast(reference.get()));
     }
 

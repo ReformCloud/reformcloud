@@ -43,8 +43,8 @@ import java.util.function.Supplier;
 public final class DefaultNetworkServer implements NetworkServer {
 
     private final Map<Integer, ChannelFuture> channelFutures = new ConcurrentHashMap<>();
-    private final EventLoopGroup boss = NetworkUtil.TRANSPORT_TYPE.getEventLoopGroupFactory(EventLoopGroupType.BOSS);
-    private final EventLoopGroup worker = NetworkUtil.TRANSPORT_TYPE.getEventLoopGroupFactory(EventLoopGroupType.WORKER);
+    private final EventLoopGroup boss = NetworkUtil.TRANSPORT_TYPE.getEventLoopGroup(EventLoopGroupType.BOSS);
+    private final EventLoopGroup worker = NetworkUtil.TRANSPORT_TYPE.getEventLoopGroup(EventLoopGroupType.WORKER);
 
     @Override
     public void bind(@NotNull String host, int port, @NotNull Supplier<EndpointChannelReader> readerHelper) {

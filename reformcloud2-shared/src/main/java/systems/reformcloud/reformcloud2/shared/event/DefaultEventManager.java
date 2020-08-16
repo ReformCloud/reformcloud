@@ -75,7 +75,7 @@ public final class DefaultEventManager implements EventManager {
             try {
                 registeredListener.call(event);
             } catch (final InvocationTargetException | IllegalAccessException exception) {
-                System.err.println("Unable to call event " + event.getClass().getName());
+                System.err.println("Exception posting event " + event.getClass().getName() + " to class " + registeredListener.getListenerInstance().getClass().getName());
                 exception.printStackTrace();
             }
         }

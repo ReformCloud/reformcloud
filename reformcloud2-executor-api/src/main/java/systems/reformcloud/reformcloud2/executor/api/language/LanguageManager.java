@@ -36,9 +36,7 @@ import java.util.stream.Collectors;
 public final class LanguageManager {
 
     private static final Map<LanguageSource, Language> languagePerSource = new HashMap<>();
-
     private static final Map<String, Language> languagePerAddon = new HashMap<>();
-
     private static Language usageLanguage;
 
     public static void load(String defaultLanguage, Language... languages) {

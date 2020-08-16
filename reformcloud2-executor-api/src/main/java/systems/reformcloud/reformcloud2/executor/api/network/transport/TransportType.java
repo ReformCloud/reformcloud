@@ -80,7 +80,7 @@ public enum TransportType {
         return this.socketChannelFactory;
     }
 
-    public @NotNull EventLoopGroup getEventLoopGroupFactory(@NotNull EventLoopGroupType type) {
+    public @NotNull EventLoopGroup getEventLoopGroup(@NotNull EventLoopGroupType type) {
         return this.eventLoopGroupFactory.apply(type, this.getName());
     }
 
