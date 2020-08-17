@@ -24,6 +24,8 @@
  */
 package systems.reformcloud.reformcloud2.backends.sftp;
 
+import systems.reformcloud.reformcloud2.executor.api.base.Conditions;
+
 public final class SFTPConfig {
 
     private final boolean enabled;
@@ -31,7 +33,10 @@ public final class SFTPConfig {
     private final int port;
     private final String user;
     private final String password;
-    private final String baseDirectory;
+    private final String privateKeyFile;
+    private final String knownHostsFile;
+
+    private String baseDirectory;
 
     public SFTPConfig(boolean enabled, String host, int port, String user, String password, String baseDirectory) {
         this.enabled = enabled;
@@ -39,7 +44,25 @@ public final class SFTPConfig {
         this.port = port;
         this.user = user;
         this.password = password;
+        this.privateKeyFile = null;
+        this.knownHostsFile = null;
         this.baseDirectory = baseDirectory;
+    }
+
+    public void validate() {
+        if (!this.baseDirectory.startsWith("/")) {
+            this.baseDirectory = "/" + this.baseDirectory;
+        }
+
+        if (!this.baseDirectory.endsWith("/")) {
+            this.baseDirectory += "/";
+        }
+
+        Conditions.isTrue(this.port >= 0, "SSH Port must be higher than 0");
+        Conditions.nonNull(this.user, "Username has to be given");
+        if (this.password == null) {
+            Conditions.nonNull(this.privateKeyFile, "If no user and password is given, the publickey has to be given");
+        }
     }
 
     public boolean isEnabled() {
@@ -60,6 +83,14 @@ public final class SFTPConfig {
 
     public String getPassword() {
         return this.password;
+    }
+
+    public String getPrivateKeyFile() {
+        return this.privateKeyFile;
+    }
+
+    public String getKnownHostsFile() {
+        return this.knownHostsFile;
     }
 
     public String getBaseDirectory() {
