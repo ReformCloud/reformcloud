@@ -115,12 +115,12 @@ pipeline {
             withCredentials([string(credentialsId: 'discord-webhook', variable: 'url')]) {
                 discordSend description: 'New build of ReformCloud', footer: 'Update', link: BUILD_URL, successful: currentBuild.resultIsBetterOrEqualTo('SUCCESS'), title: JOB_NAME, webhookURL: url
             }
+        }
 
-            success {
-                junit allowEmptyResults: true, testResults: 'reformcloud2-executor-api/target/surefire-reports/TEST-*.xml'
-                junit allowEmptyResults: true, testResults: 'reformcloud2-protocol/target/surefire-reports/TEST-*.xml'
-                junit allowEmptyResults: true, testResults: 'reformcloud2-shared/target/surefire-reports/TEST-*.xml'
-            }
+        success {
+            junit allowEmptyResults: true, testResults: 'reformcloud2-executor-api/target/surefire-reports/TEST-*.xml'
+            junit allowEmptyResults: true, testResults: 'reformcloud2-protocol/target/surefire-reports/TEST-*.xml'
+            junit allowEmptyResults: true, testResults: 'reformcloud2-shared/target/surefire-reports/TEST-*.xml'
         }
     }
 }
