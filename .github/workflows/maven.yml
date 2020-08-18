@@ -5,6 +5,10 @@ on:
     branches:
       - master
       - indev
+  pull_request:
+    branches:
+      - master
+      - indev
 
 jobs:
   build:
