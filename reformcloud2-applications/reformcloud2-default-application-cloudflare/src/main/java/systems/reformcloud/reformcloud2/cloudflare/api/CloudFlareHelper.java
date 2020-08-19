@@ -263,6 +263,10 @@ public final class CloudFlareHelper {
         );
     }
 
+    public static boolean hasEntry(@NotNull ProcessInformation processInformation) {
+        return CACHE.containsKey(processInformation.getProcessDetail().getProcessUniqueID());
+    }
+
     public static boolean shouldHandle(@NotNull ProcessInformation process) {
         return !process.getProcessDetail().getTemplate().isServer()
                 && NodeExecutor.getInstance().isOwnIdentity(process.getProcessDetail().getParentName());

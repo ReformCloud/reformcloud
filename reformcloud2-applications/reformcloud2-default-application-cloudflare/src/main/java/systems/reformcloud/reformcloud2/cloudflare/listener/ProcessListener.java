@@ -27,13 +27,14 @@ package systems.reformcloud.reformcloud2.cloudflare.listener;
 import systems.reformcloud.reformcloud2.cloudflare.api.CloudFlareHelper;
 import systems.reformcloud.reformcloud2.executor.api.event.events.process.ProcessRegisterEvent;
 import systems.reformcloud.reformcloud2.executor.api.event.events.process.ProcessUnregisterEvent;
+import systems.reformcloud.reformcloud2.executor.api.event.events.process.ProcessUpdateEvent;
 import systems.reformcloud.reformcloud2.executor.api.event.handler.Listener;
 
 public final class ProcessListener {
 
     @Listener
-    public void handle(final ProcessRegisterEvent event) {
-        if (!CloudFlareHelper.shouldHandle(event.getProcessInformation())) {
+    public void handle(ProcessRegisterEvent event) {
+        if (!CloudFlareHelper.shouldHandle(event.getProcessInformation()) || !event.getProcessInformation().getNetworkInfo().isConnected()) {
             return;
         }
 
@@ -41,7 +42,20 @@ public final class ProcessListener {
     }
 
     @Listener
-    public void handle(final ProcessUnregisterEvent event) {
+    public void handle(ProcessUpdateEvent event) {
+        if (!CloudFlareHelper.shouldHandle(event.getProcessInformation())) {
+            return;
+        }
+
+        if (!event.getProcessInformation().getNetworkInfo().isConnected() && CloudFlareHelper.hasEntry(event.getProcessInformation())) {
+            CloudFlareHelper.deleteRecord(event.getProcessInformation());
+        } else if (event.getProcessInformation().getNetworkInfo().isConnected() && !CloudFlareHelper.hasEntry(event.getProcessInformation())) {
+            CloudFlareHelper.createForProcess(event.getProcessInformation());
+        }
+    }
+
+    @Listener
+    public void handle(ProcessUnregisterEvent event) {
         CloudFlareHelper.deleteRecord(event.getProcessInformation());
     }
 }
