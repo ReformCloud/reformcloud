@@ -148,6 +148,9 @@ public final class InternalReformCloudCommand {
                             });
                     return;
                 }
+
+                default:
+                    break;
             }
         }
 

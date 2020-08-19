@@ -29,11 +29,14 @@ import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.network.SerializableObject;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
 
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.UnknownHostException;
 
 public final class NetworkInfo implements SerializableObject {
 
-    private String host;
+    private transient InetAddress inetHost;
+    private String plainHost; // for json writes only
     private int port;
     private long connectTime;
 
@@ -41,22 +44,34 @@ public final class NetworkInfo implements SerializableObject {
     public NetworkInfo() {
     }
 
-    public NetworkInfo(String host, int port) {
-        this.host = host;
+    public NetworkInfo(int port) {
         this.port = port;
         this.connectTime = -1L;
     }
 
-    public String getHost() {
-        return this.host;
+    public String getHostPlain() {
+        return this.getHost().getHostAddress();
     }
 
-    public void setHost(String host) {
-        this.host = host;
+    public InetAddress getHost() {
+        if (this.inetHost == null && this.plainHost != null) {
+            try {
+                this.inetHost = InetAddress.getByName(this.plainHost);
+            } catch (UnknownHostException exception) {
+                this.inetHost = InetAddress.getLoopbackAddress();
+            }
+        }
+
+        return this.inetHost;
+    }
+
+    public void setHost(InetAddress host) {
+        this.inetHost = host;
+        this.plainHost = this.getHostPlain();
     }
 
     public InetSocketAddress toInet() {
-        return new InetSocketAddress(this.getHost(), this.getPort());
+        return new InetSocketAddress(this.inetHost, this.getPort());
     }
 
     public int getPort() {
@@ -85,19 +100,24 @@ public final class NetworkInfo implements SerializableObject {
 
     @Override
     public String toString() {
-        return this.host + ":" + this.port;
+        return this.getHostPlain() + ":" + this.port;
     }
 
     @Override
     public void write(@NotNull ProtocolBuffer buffer) {
-        buffer.writeString(this.host);
+        buffer.writeString(this.getHostPlain());
         buffer.writeInt(this.port);
         buffer.writeLong(this.connectTime);
     }
 
     @Override
     public void read(@NotNull ProtocolBuffer buffer) {
-        this.host = buffer.readString();
+        try {
+            this.inetHost = InetAddress.getByName(buffer.readString());
+        } catch (UnknownHostException exception) {
+            this.inetHost = InetAddress.getLoopbackAddress();
+        }
+
         this.port = buffer.readInt();
         this.connectTime = buffer.readLong();
     }

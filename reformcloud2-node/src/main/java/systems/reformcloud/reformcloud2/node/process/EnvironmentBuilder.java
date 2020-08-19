@@ -40,6 +40,7 @@ import systems.reformcloud.reformcloud2.node.NodeExecutor;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.net.Inet6Address;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -137,7 +138,7 @@ public final class EnvironmentBuilder {
             Properties properties = new Properties();
             try (InputStream inputStream = Files.newInputStream(Paths.get(runningProcess.getPath() + "/server.properties"))) {
                 properties.load(inputStream);
-                properties.setProperty("server-ip", runningProcess.getProcessInformation().getNetworkInfo().getHost());
+                properties.setProperty("server-ip", runningProcess.getProcessInformation().getNetworkInfo().getHostPlain());
                 properties.setProperty("server-port", Integer.toString(runningProcess.getProcessInformation().getNetworkInfo().getPort()));
                 properties.setProperty("xbox-auth", Boolean.toString(false));
 
@@ -161,7 +162,7 @@ public final class EnvironmentBuilder {
             IOUtils.doInternalCopy(EnvironmentBuilder.class.getClassLoader(), "files/java/bukkit/server.properties", runningProcess.getPath() + "/server.properties");
             try (InputStream inputStream = Files.newInputStream(Paths.get(runningProcess.getPath() + "/server.properties"))) {
                 properties.load(inputStream);
-                properties.setProperty("server-ip", runningProcess.getProcessInformation().getNetworkInfo().getHost());
+                properties.setProperty("server-ip", runningProcess.getProcessInformation().getNetworkInfo().getHostPlain());
                 properties.setProperty("server-port", Integer.toString(runningProcess.getProcessInformation().getNetworkInfo().getPort()));
                 properties.setProperty("online-mode", Boolean.toString(false));
 
@@ -262,7 +263,7 @@ public final class EnvironmentBuilder {
         File file = Paths.get(runningProcess.getPath() + "/config.yml").toFile();
         rewriteFile(file, s -> {
             if (s.startsWith("  host:")) {
-                s = "  host: " + runningProcess.getProcessInformation().getNetworkInfo().getHost() + ":" + runningProcess.getProcessInformation().getNetworkInfo().getPort();
+                s = "  host: '" + formatHost(runningProcess) + "'";
             } else if (s.startsWith("ip_forward:")) {
                 s = "ip_forward: true";
             } else if (s.startsWith("- query_port: ")) {
@@ -285,7 +286,7 @@ public final class EnvironmentBuilder {
         File file = Paths.get(runningProcess.getPath() + "/config.yml").toFile();
         rewriteFile(file, s -> {
             if (s.startsWith("  host:")) {
-                s = "  host: " + runningProcess.getProcessInformation().getNetworkInfo().getHost() + ":" + runningProcess.getProcessInformation().getNetworkInfo().getPort();
+                s = "  host: '" + formatHost(runningProcess) + "'";
             } else if (s.startsWith("ip_forward:")) {
                 s = "ip_forward: true";
             } else if (s.startsWith("use_xuid_for_uuid:")) {
@@ -307,7 +308,7 @@ public final class EnvironmentBuilder {
         File file = Paths.get(runningProcess.getPath() + "/velocity.toml").toFile();
         rewriteFile(file, s -> {
             if (s.startsWith("bind")) {
-                s = "bind = \"" + runningProcess.getProcessInformation().getNetworkInfo().getHost() + ":" + runningProcess.getProcessInformation().getNetworkInfo().getPort() + "\"";
+                s = "bind = \"" + formatHost(runningProcess) + "\"";
             } else if (s.startsWith("show-max-players") && runningProcess.getProcessInformation().getProcessDetail().getMaxPlayers() >= 0) {
                 s = "show-max-players = " + runningProcess.getProcessInformation().getProcessDetail().getMaxPlayers();
             } else if (s.startsWith("player-info-forwarding-mode")) {
@@ -327,7 +328,7 @@ public final class EnvironmentBuilder {
     private static void rewriteGlowstoneConfig(@NotNull DefaultNodeLocalProcessWrapper runningProcess) {
         rewriteFile(new File(runningProcess.getPath() + "/config/glowstone.yml"), s -> {
             if (s.startsWith("  ip: ")) {
-                s = "  ip: '" + runningProcess.getProcessInformation().getNetworkInfo().getHost() + "'";
+                s = "  ip: '" + runningProcess.getProcessInformation().getNetworkInfo().getHostPlain() + "'";
             } else if (s.startsWith("  port: ")) {
                 s = "  port: " + runningProcess.getProcessInformation().getNetworkInfo().getPort();
             } else if (s.startsWith("  online-mode: ")) {
@@ -355,16 +356,17 @@ public final class EnvironmentBuilder {
 
     private static void rewriteFile(@NotNull File file, UnaryOperator<String> operator) {
         try {
-            List<String> list = Files.readAllLines(file.toPath());
-            List<String> newLine = new ArrayList<>();
+            List<String> oldLines = Files.readAllLines(file.toPath());
+            List<String> newLines = new ArrayList<>();
 
-            list.forEach(s -> newLine.add(operator.apply(s)));
+            for (String oldLine : oldLines) {
+                newLines.add(operator.apply(oldLine));
+            }
 
             try (PrintWriter printWriter = new PrintWriter(new OutputStreamWriter(Files.newOutputStream(file.toPath()), StandardCharsets.UTF_8), true)) {
-                newLine.forEach(s -> {
-                    printWriter.write(s + "\n");
-                    printWriter.flush();
-                });
+                for (String newLine : newLines) {
+                    printWriter.write(newLine + '\n');
+                }
             }
         } catch (final IOException ex) {
             ex.printStackTrace();
@@ -406,5 +408,10 @@ public final class EnvironmentBuilder {
                 processInformation.getProcessInformation().getProcessDetail().getTemplate().getName(),
                 processInformation.getPath()
         ).awaitUninterruptedly();
+    }
+
+    private static String formatHost(DefaultNodeLocalProcessWrapper wrapper) {
+        NetworkInfo networkInfo = wrapper.getProcessInformation().getNetworkInfo();
+        return String.format(networkInfo.getHost() instanceof Inet6Address ? "[%s]:%d" : "%s:%d", networkInfo.getHostPlain(), networkInfo.getPort());
     }
 }

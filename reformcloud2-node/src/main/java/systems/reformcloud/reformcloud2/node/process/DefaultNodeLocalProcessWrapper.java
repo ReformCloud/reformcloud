@@ -173,6 +173,8 @@ public class DefaultNodeLocalProcessWrapper extends DefaultNodeRemoteProcessWrap
                 case STOPPED:
                     this.stop(true);
                     return false;
+                default:
+                    throw new IllegalStateException("Illegal runtime state: " + runtimeState);
             }
         } finally {
             this.lock.unlock();

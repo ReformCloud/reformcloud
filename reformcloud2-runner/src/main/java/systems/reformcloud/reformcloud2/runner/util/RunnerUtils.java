@@ -195,7 +195,7 @@ public final class RunnerUtils {
      */
     public static void downloadFile(@NotNull String url, @NotNull Path target) {
         openURLConnection(url, connection -> {
-            System.out.println(String.format(RunnerUtils.FILE_DOWNLOAD_FORMAT, url, RunnerUtils.getSize(connection.getContentLengthLong())));
+            System.out.printf(RunnerUtils.FILE_DOWNLOAD_FORMAT + "%n", url, RunnerUtils.getSize(connection.getContentLengthLong()));
             long start = System.currentTimeMillis();
 
             try (InputStream stream = connection.getInputStream()) {
@@ -204,7 +204,7 @@ public final class RunnerUtils {
                 ex.printStackTrace();
             }
 
-            System.out.println(String.format(RunnerUtils.FILE_DOWNLOADED_FORMAT, url, System.currentTimeMillis() - start));
+            System.out.printf(RunnerUtils.FILE_DOWNLOADED_FORMAT + "%n", url, System.currentTimeMillis() - start);
         });
     }
 

@@ -84,7 +84,6 @@ public class DefaultProcessFactory implements ProcessFactory {
                     configuration.getMemory() == -1 ? memory : configuration.getMemory(),
                     configuration.getInitialState()
             ), new NetworkInfo(
-                    "",
                     this.nextPort(configuration.getProcessGroup().getStartupConfiguration().getStartPort())
             ), configuration.getProcessGroup(), configuration.getExtra(), configuration.getInclusions());
 

@@ -28,6 +28,8 @@ import com.google.gson.reflect.TypeToken;
 import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.utility.NetworkAddress;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
@@ -47,6 +49,8 @@ public final class NodeConfig {
     private final List<NetworkAddress> networkListeners;
     private final List<NetworkAddress> httpNetworkListeners;
     private final List<NetworkAddress> clusterNodes;
+
+    private transient InetAddress inetStartHost;
 
     public NodeConfig(String name, UUID uniqueID, long maxMemory, String startHost,
                       List<NetworkAddress> networkListeners, List<NetworkAddress> httpNetworkListeners,
@@ -73,8 +77,17 @@ public final class NodeConfig {
         return this.maxMemory < 512 ? 512 : this.maxMemory;
     }
 
-    public String getStartHost() {
-        return this.startHost;
+    public InetAddress getStartHost() {
+        if (this.inetStartHost != null) {
+            return this.inetStartHost;
+        }
+
+        try {
+            return this.inetStartHost = InetAddress.getByName(this.startHost);
+        } catch (UnknownHostException exception) {
+            System.err.printf("Unable to resolve ip address %s! Falling back to loopback address. %n", this.startHost);
+            return this.inetStartHost = InetAddress.getLoopbackAddress();
+        }
     }
 
     public double getMaxSystemCpuUsage() {

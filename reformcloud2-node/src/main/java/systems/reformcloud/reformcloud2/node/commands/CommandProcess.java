@@ -274,7 +274,7 @@ public final class CommandProcess implements Command {
         builder.append(" > Ready        - ").append(information.getProcessDetail().getProcessState().isOnline() ? "&ayes&r" : "&cno&r").append("\n");
         builder.append(" > State        - ").append(information.getProcessDetail().getProcessState().name()).append("\n");
         builder.append(" > Connected    - ").append(information.getNetworkInfo().isConnected() ? "&ayes&r" : "&cno&r").append("\n");
-        builder.append(" > Address      - ").append(information.getNetworkInfo().getHost())
+        builder.append(" > Address      - ").append(information.getNetworkInfo().getHostPlain())
                 .append(":").append(information.getNetworkInfo().getPort()).append("\n");
         if (information.getNetworkInfo().isConnected()) {
             builder.append(" > Connected at - ").append(CommonHelper.DATE_FORMAT.format(information.getNetworkInfo().getConnectTime())).append("\n");

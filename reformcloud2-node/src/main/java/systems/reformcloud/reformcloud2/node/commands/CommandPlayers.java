@@ -128,6 +128,8 @@ public final class CommandPlayers implements Command {
             case 1:
                 result.add("info");
                 break;
+            default:
+                break;
         }
 
         return result;

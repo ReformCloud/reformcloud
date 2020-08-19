@@ -195,15 +195,15 @@ public enum Version {
     /**
      * Proxy versions
      */
-    BUNGEECORD("BungeeCord", "1.8-1.14",
+    BUNGEECORD("BungeeCord", "1.8-1.16",
             "https://ci.md-5.net/job/BungeeCord/lastSuccessfulBuild/artifact/bootstrap/target/BungeeCord.jar", 2, 25565),
-    WATERFALL("Waterfall", "1.8-1.14",
+    WATERFALL("Waterfall", "1.8-1.16",
             "https://papermc.io/ci/job/Waterfall/lastSuccessfulBuild/artifact/Waterfall-Proxy/bootstrap/target/Waterfall.jar", 2, 25565),
-    HEXACORD("HexaCord", "1.7-1.14",
+    HEXACORD("HexaCord", "1.7-1.16",
             "https://github.com/HexagonMC/BungeeCord/releases/download/v246/BungeeCord.jar", 2, 25565),
-    TRAVERTINE("Travertine", "1.7-1.14",
+    TRAVERTINE("Travertine", "1.7-1.16",
             "https://papermc.io/ci/job/Travertine/lastSuccessfulBuild/artifact/Travertine-Proxy/bootstrap/target/Travertine.jar", 2, 25565),
-    VELOCITY("Velocity", "1.8-1.14",
+    VELOCITY("Velocity", "1.8-1.16",
             "https://dl.reformcloud.systems/mcversions/velocity/velocity-proxy-1.0.9-all.jar", 2, 25565),
 
     /**
@@ -215,21 +215,18 @@ public enum Version {
     /**
      * Waterdog as Java Proxy
      */
-    WATERDOG("Waterdog", "1.8-1.14",
+    WATERDOG("Waterdog", "1.8-1.16",
             "https://ci.codemc.org/job/yesdog/job/Waterdog/lastSuccessfulBuild/artifact/Waterfall-Proxy/bootstrap/target/Waterdog.jar", 2, 25565),
 
     /**
      * Waterdog as McPE Proxy
      */
-    WATERDOG_PE("Waterdog", "1.8-1.14",
+    WATERDOG_PE("Waterdog", "1.8-1.16",
             "https://ci.codemc.org/job/yesdog/job/Waterdog/lastSuccessfulBuild/artifact/Waterfall-Proxy/bootstrap/target/Waterdog.jar", 4, 19132);
 
     private static final TreeMap<String, Version> JAVA_SERVER_PROVIDERS = new TreeMap<>();
-
     private static final TreeMap<String, Version> JAVA_PROXY_PROVIDERS = new TreeMap<>();
-
     private static final TreeMap<String, Version> POCKET_SERVER_PROVIDERS = new TreeMap<>();
-
     private static final TreeMap<String, Version> POCKET_PROXY_PROVIDERS = new TreeMap<>();
 
     static {

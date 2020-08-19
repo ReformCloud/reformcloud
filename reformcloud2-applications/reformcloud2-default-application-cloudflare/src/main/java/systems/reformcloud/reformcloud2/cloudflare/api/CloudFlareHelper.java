@@ -41,6 +41,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.net.Inet6Address;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -245,9 +246,9 @@ public final class CloudFlareHelper {
 
     private static JsonConfiguration prepareARecord(ProcessInformation processInformation) {
         return new JsonConfiguration()
-                .add("type", "A")
+                .add("type", processInformation.getNetworkInfo().getHost() instanceof Inet6Address ? "AAAA" : "A")
                 .add("name", processInformation.getProcessDetail().getParentName() + "." + cloudFlareConfig.getDomainName())
-                .add("content", processInformation.getNetworkInfo().getHost())
+                .add("content", processInformation.getNetworkInfo().getHostPlain())
                 .add("ttl", 1)
                 .add("proxied", false)
                 .add("data", new JsonConfiguration().getJsonObject());

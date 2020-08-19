@@ -158,6 +158,8 @@ public final class CommandCluster implements Command {
                 }
 
                 break;
+            default:
+                break;
         }
 
         return result;
