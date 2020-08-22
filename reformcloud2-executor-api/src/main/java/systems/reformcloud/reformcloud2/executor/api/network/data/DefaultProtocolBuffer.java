@@ -249,46 +249,7 @@ public class DefaultProtocolBuffer extends ProtocolBuffer {
 
     @Override
     public void writeVarInt(int value) {
-        do {
-            byte temp = (byte) (value & 0b01111111);
-            value >>>= 7;
-            if (value != 0) {
-                temp |= 0b10000000;
-            }
-
-            this.writeByte(temp);
-        } while (value != 0);
-    }
-
-    @Override
-    public long readVarLong() {
-        int numRead = 0;
-        long result = 0;
-        byte read;
-        do {
-            read = this.readByte();
-            int value = (read & 0b01111111);
-            result |= (value << (7 * numRead));
-
-            if (numRead++ > 10) {
-                throw new RuntimeException("VarLong is too big!");
-            }
-        } while ((read & 0b10000000) != 0);
-
-        return result;
-    }
-
-    @Override
-    public void writeVarLong(long value) {
-        do {
-            byte temp = (byte) (value & 0b01111111);
-            value >>>= 7;
-            if (value != 0) {
-                temp |= 0b10000000;
-            }
-
-            this.writeByte(temp);
-        } while (value != 0);
+        NetworkUtil.writeVarInt(this, value);
     }
 
     @Override

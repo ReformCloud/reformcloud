@@ -27,6 +27,7 @@ package systems.reformcloud.reformcloud2.executor.api.network;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.WriteBufferWaterMark;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.network.transport.TransportType;
 
 import java.util.concurrent.Executor;
@@ -47,38 +48,44 @@ public final class NetworkUtil {
     public static final WriteBufferWaterMark WATER_MARK = new WriteBufferWaterMark(524_288, 2_097_152);
     public static final TransportType TRANSPORT_TYPE = TransportType.getBestType();
 
+    private static final RuntimeException BAD_VAR_INT_RECEIVED = new RuntimeException("Bad VarInt received");
+
     private NetworkUtil() {
         throw new UnsupportedOperationException();
     }
 
     public static void writeVarInt(@NotNull ByteBuf buf, int value) {
-        do {
-            byte temp = (byte) (value & 0x7f);
-            value >>>= 7;
-            if (value != 0) {
-                temp |= 0x80;
+        while (true) {
+            if ((value & -128) == 0) {
+                buf.writeByte(value);
+                return;
             }
 
-            buf.writeByte(temp);
-        } while (value != 0);
+            buf.writeByte(value & 127 | 128);
+            value >>>= 7;
+        }
     }
 
-    public static int readVarInt(@NotNull ByteBuf buf) {
-        int numRead = 0;
-        int result = 0;
-        byte read;
+    public static int readVarInt(@NotNull ByteBuf byteBuf) {
+        Integer varInt = readVarIntUnchecked(byteBuf);
+        if (varInt == null) {
+            throw BAD_VAR_INT_RECEIVED;
+        }
 
-        do {
-            read = buf.readByte();
-            int value = (read & 0x7f);
-            result |= (value << (7 * numRead));
+        return varInt;
+    }
 
-            numRead++;
-            if (numRead > 5) {
-                throw new RuntimeException("VarInt is too big");
+    public static @Nullable Integer readVarIntUnchecked(@NotNull ByteBuf byteBuf) {
+        int i = 0;
+        int maxRead = Math.min(5, byteBuf.readableBytes());
+        for (int j = 0; j < maxRead; j++) {
+            int k = byteBuf.readByte();
+            i |= (k & 127) << j * 7;
+            if ((k & 128) != 128) {
+                return i;
             }
-        } while ((read & 0x80) != 0);
+        }
 
-        return result;
+        return null;
     }
 }

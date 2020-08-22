@@ -83,10 +83,6 @@ public abstract class ProtocolBuffer extends ByteBuf {
 
     public abstract void writeVarInt(int value);
 
-    public abstract long readVarLong();
-
-    public abstract void writeVarLong(long value);
-
     @Nullable
     public abstract UUID readUniqueId();
 
