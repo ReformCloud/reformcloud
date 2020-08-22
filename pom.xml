@@ -36,7 +36,8 @@
 
     <scm>
         <connection>scm:git:git://github.com/derklaro/reformcloud2.git</connection>
-        <developerConnection>scm:git:ssh://github.com/derklaro/reformcloud2.git</developerConnection>
+        <developerConnection>scm:git:ssh://github.com/derklaro/reformcloud2.git
+        </developerConnection>
         <url>https://github.com/derklaro/reformcloud2</url>
     </scm>
 
@@ -46,7 +47,8 @@
     </issueManagement>
 
     <name>reformcloud2-root</name>
-    <description>A simple server management system for minecraft java/bedrock proxies and servers</description>
+    <description>A simple server management system for minecraft java/bedrock proxies and servers
+    </description>
     <url>https://reformcloud.systems/</url>
 
     <distributionManagement>
@@ -97,7 +99,6 @@
         <defaultGoal>clean install</defaultGoal>
 
         <plugins>
-            <!-- plugin to describe version build -->
             <plugin>
                 <groupId>net.md-5</groupId>
                 <artifactId>scriptus</artifactId>
@@ -115,7 +116,6 @@
                 </executions>
             </plugin>
 
-            <!-- maven compiler plugin to set the target and source version (1.8) -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -126,7 +126,6 @@
                 </configuration>
             </plugin>
 
-            <!-- maven checkstyle plugin to prevent bad code ( e.g unused imports ) -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
@@ -181,7 +180,6 @@
 
             <build>
                 <plugins>
-                    <!-- Maven source plugin -->
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-source-plugin</artifactId>
@@ -196,7 +194,6 @@
                         </executions>
                     </plugin>
 
-                    <!-- Maven javadoc plugin -->
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
@@ -211,7 +208,6 @@
                         </executions>
                     </plugin>
 
-                    <!-- Maven GPG plugin to sign files -->
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
@@ -242,5 +238,4 @@
             </build>
         </profile>
     </profiles>
-
 </project>

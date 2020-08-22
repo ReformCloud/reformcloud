@@ -68,18 +68,15 @@
     </dependencies>
 
     <build>
-        <!-- set the final name to executor for the runner -->
         <finalName>executor</finalName>
 
         <plugins>
-            <!-- maven shade plugin (central) -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
                 <version>3.2.4</version>
                 <executions>
                     <execution>
-                        <!-- shade while package -->
                         <phase>package</phase>
                         <goals>
                             <goal>shade</goal>
@@ -118,7 +115,6 @@
                 </executions>
             </plugin>
 
-            <!-- maven jar plugin (central) -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
@@ -130,7 +126,6 @@
                             <Version>${project.version}</Version>
                             <Implementation-Version>${project.version}</Implementation-Version>
                             <!--suppress UnresolvedMavenProperty -->
-                            <!-- set by another maven plugin -->
                             <Specification-Version>${describe}</Specification-Version>
                         </manifestEntries>
                     </archive>
@@ -172,7 +167,6 @@
                 </executions>
             </plugin>
 
-            <!-- maven antrun plugin (central) -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
