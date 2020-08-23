@@ -28,9 +28,9 @@ import com.google.gson.reflect.TypeToken;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
-import systems.reformcloud.reformcloud2.executor.api.common.network.SerializableObject;
-import systems.reformcloud.reformcloud2.executor.api.common.network.data.ProtocolBuffer;
+import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.network.SerializableObject;
+import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
 import systems.reformcloud.reformcloud2.permissions.checks.GeneralCheck;
 import systems.reformcloud.reformcloud2.permissions.checks.WildcardCheck;
 import systems.reformcloud.reformcloud2.permissions.nodes.PermissionNode;
@@ -177,6 +177,7 @@ public class PermissionGroup implements SerializableObject {
 
     @Nullable
     public Boolean hasPermission(@NotNull String perm) {
+        perm = perm.toLowerCase();
         Boolean hasPermission = WildcardCheck.hasWildcardPermission(this, perm);
         if (hasPermission != null) {
             return hasPermission;

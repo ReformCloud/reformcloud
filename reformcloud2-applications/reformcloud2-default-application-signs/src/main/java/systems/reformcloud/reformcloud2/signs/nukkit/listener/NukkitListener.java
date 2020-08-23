@@ -29,7 +29,8 @@ import cn.nukkit.event.EventHandler;
 import cn.nukkit.event.Listener;
 import cn.nukkit.event.player.PlayerInteractEvent;
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
+import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
+import systems.reformcloud.reformcloud2.executor.api.event.EventManager;
 import systems.reformcloud.reformcloud2.signs.event.UserSignPreConnectEvent;
 import systems.reformcloud.reformcloud2.signs.nukkit.adapter.NukkitSignSystemAdapter;
 import systems.reformcloud.reformcloud2.signs.util.SignSystemAdapter;
@@ -54,13 +55,14 @@ public class NukkitListener implements Listener {
                 }
 
                 boolean canConnect = SignSystemAdapter.getInstance().canConnect(cloudSign, event.getPlayer()::hasPermission);
-                if (!ExecutorAPI.getInstance().getEventManager().callEvent(new UserSignPreConnectEvent(
+                if (!ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).callEvent(new UserSignPreConnectEvent(
                         event.getPlayer().getUniqueId(), event.getPlayer()::hasPermission, cloudSign, canConnect
                 )).isAllowConnection()) {
                     return;
                 }
 
-                ExecutorAPI.getInstance().getSyncAPI().getPlayerSyncAPI().connect(event.getPlayer().getUniqueId(), cloudSign.getCurrentTarget());
+                ExecutorAPI.getInstance().getPlayerProvider().getPlayer(event.getPlayer().getUniqueId())
+                        .ifPresent(wrapper -> wrapper.connect(cloudSign.getCurrentTarget().getProcessDetail().getName()));
             }
         }
     }

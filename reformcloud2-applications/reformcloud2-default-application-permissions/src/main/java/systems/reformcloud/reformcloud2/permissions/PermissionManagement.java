@@ -28,8 +28,9 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
-import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.common.base.Conditions;
+import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
+import systems.reformcloud.reformcloud2.executor.api.base.Conditions;
+import systems.reformcloud.reformcloud2.executor.api.event.EventManager;
 import systems.reformcloud.reformcloud2.permissions.defaults.DefaultPermissionManagement;
 import systems.reformcloud.reformcloud2.permissions.events.system.PermissionManagerSetupEvent;
 import systems.reformcloud.reformcloud2.permissions.nodes.NodeGroup;
@@ -51,7 +52,7 @@ public abstract class PermissionManagement {
         Conditions.isTrue(PermissionManagement.instance == null, "Cannot redefine singleton permission management instance");
 
         PermissionManagerSetupEvent permissionManagerSetupEvent = new PermissionManagerSetupEvent(new DefaultPermissionManagement());
-        ExecutorAPI.getInstance().getEventManager().callEvent(permissionManagerSetupEvent);
+        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).callEvent(permissionManagerSetupEvent);
 
         PermissionManagement.instance = permissionManagerSetupEvent.getPermissionManagement();
     }

@@ -25,14 +25,14 @@
 package systems.reformcloud.reforncloud2.notifications.velocity;
 
 import com.google.inject.Inject;
-import com.velocitypowered.api.event.PostOrder;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
 import com.velocitypowered.api.plugin.Dependency;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.proxy.ProxyServer;
-import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
+import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
+import systems.reformcloud.reformcloud2.executor.api.event.EventManager;
 import systems.reformcloud.reforncloud2.notifications.velocity.listener.ProcessListener;
 
 @Plugin(
@@ -48,21 +48,20 @@ public final class VelocityPlugin {
 
     @Inject
     public VelocityPlugin(ProxyServer server) {
-        this.listener = new ProcessListener(server);
         proxyServer = server;
     }
 
-    @Subscribe(order = PostOrder.LAST)
-    public void handleInit(ProxyInitializeEvent event) {
-        ExecutorAPI.getInstance().getEventManager().registerListener(this.listener);
-    }
-
-    private final ProcessListener listener;
-
+    private ProcessListener listener;
     public static ProxyServer proxyServer;
 
     @Subscribe
+    public void handleInit(ProxyInitializeEvent event) {
+        this.listener = new ProcessListener(proxyServer);
+        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).registerListener(this.listener);
+    }
+
+    @Subscribe
     public void handle(final ProxyShutdownEvent event) {
-        ExecutorAPI.getInstance().getEventManager().unregisterListener(this.listener);
+        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).unregisterListener(this.listener);
     }
 }

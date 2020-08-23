@@ -39,6 +39,6 @@ public final class EnvSetVariable extends InterpreterVariable {
     @Override
     public String unwrap(@NotNull String cursorLine, @NotNull Collection<String> fullLines) {
         Integer integer = Integer.getInteger("reformcloud.executor.type");
-        return Boolean.toString(integer != null && integer > 0 && integer < 5);
+        return Boolean.toString(integer != null && integer > 0 && integer <= 2);
     }
 }

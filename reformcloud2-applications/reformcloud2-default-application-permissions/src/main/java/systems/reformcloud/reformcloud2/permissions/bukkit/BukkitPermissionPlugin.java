@@ -30,6 +30,8 @@ import systems.reformcloud.reformcloud2.permissions.bukkit.listeners.BukkitPermi
 import systems.reformcloud.reformcloud2.permissions.bukkit.vault.VaultUtil;
 import systems.reformcloud.reformcloud2.permissions.util.PermissionPluginUtil;
 
+import java.util.logging.Level;
+
 public class BukkitPermissionPlugin extends JavaPlugin {
 
     @Override
@@ -37,10 +39,15 @@ public class BukkitPermissionPlugin extends JavaPlugin {
         PermissionPluginUtil.awaitConnection(() -> {
             Bukkit.getPluginManager().registerEvents(new BukkitPermissionListener(), this);
             if (!Bukkit.getPluginManager().isPluginEnabled("Vault") && !Bukkit.getPluginManager().isPluginEnabled("VaultAPI")) {
+                super.getLogger().info("Vault not detected - not trying to load vault support");
                 return;
             }
 
-            VaultUtil.tryInvoke(this);
+            try {
+                VaultUtil.tryInvoke(this);
+            } catch (Throwable throwable) {
+                super.getLogger().log(Level.WARNING, "Unable to hook into vault", throwable);
+            }
         });
     }
 

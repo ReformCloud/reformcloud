@@ -24,10 +24,9 @@
  */
 package systems.reformcloud.reformcloud2.signs.util;
 
-import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.thread.AbsoluteThread;
+import systems.refomcloud.reformcloud2.embedded.Embedded;
+import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
+import systems.reformcloud.reformcloud2.executor.api.network.packet.PacketProvider;
 import systems.reformcloud.reformcloud2.signs.application.packets.PacketRequestSignLayouts;
 import systems.reformcloud.reformcloud2.signs.application.packets.PacketRequestSignLayoutsResult;
 import systems.reformcloud.reformcloud2.signs.util.sign.config.SignConfig;
@@ -41,17 +40,11 @@ public final class ConfigRequesterUtil {
     }
 
     public static void requestSignConfigAsync(Consumer<SignConfig> callback) {
-        ExecutorAPI.getInstance().getPacketHandler().registerHandler(PacketRequestSignLayoutsResult.class);
-        Task.EXECUTOR.execute(() -> {
-            while (!DefaultChannelManager.INSTANCE.get("Controller").isPresent()) {
-                AbsoluteThread.sleep(200);
+        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).registerPacket(PacketRequestSignLayoutsResult.class);
+        Embedded.getInstance().sendSyncQuery(new PacketRequestSignLayouts()).ifPresent(result -> {
+            if (result instanceof PacketRequestSignLayoutsResult) {
+                callback.accept(((PacketRequestSignLayoutsResult) result).getSignConfig());
             }
-
-            DefaultChannelManager.INSTANCE.get("Controller").ifPresent(e -> ExecutorAPI.getInstance().getPacketHandler().getQueryHandler().sendQueryAsync(e, new PacketRequestSignLayouts()).onComplete(r -> {
-                if (r instanceof PacketRequestSignLayoutsResult) {
-                    callback.accept(((PacketRequestSignLayoutsResult) r).getSignConfig());
-                }
-            }));
         });
     }
 }

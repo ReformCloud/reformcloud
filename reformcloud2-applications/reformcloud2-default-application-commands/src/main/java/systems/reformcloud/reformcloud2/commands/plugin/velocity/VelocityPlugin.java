@@ -25,18 +25,21 @@
 package systems.reformcloud.reformcloud2.commands.plugin.velocity;
 
 import com.google.inject.Inject;
+import com.velocitypowered.api.event.Subscribe;
+import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
+import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
 import com.velocitypowered.api.plugin.Dependency;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.proxy.ProxyServer;
+import systems.refomcloud.reformcloud2.embedded.Embedded;
 import systems.reformcloud.reformcloud2.commands.application.packet.PacketGetCommandsConfig;
 import systems.reformcloud.reformcloud2.commands.application.packet.PacketGetCommandsConfigResult;
 import systems.reformcloud.reformcloud2.commands.plugin.CommandConfigHandler;
 import systems.reformcloud.reformcloud2.commands.plugin.packet.PacketReleaseCommandsConfig;
 import systems.reformcloud.reformcloud2.commands.plugin.velocity.handler.VelocityCommandConfigHandler;
-import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.common.network.NetworkUtil;
-import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
-import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
+import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
+import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
+import systems.reformcloud.reformcloud2.executor.api.network.packet.PacketProvider;
 
 @Plugin(
         id = "reformcloud_2_commands",
@@ -51,21 +54,29 @@ public class VelocityPlugin {
 
     @Inject
     public VelocityPlugin(ProxyServer proxyServer) {
-        CommandConfigHandler.setInstance(new VelocityCommandConfigHandler(proxyServer));
+        this.proxyServer = proxyServer;
+    }
 
-        NetworkUtil.EXECUTOR.execute(() -> {
-            PacketSender sender = DefaultChannelManager.INSTANCE.get("Controller").orNothing();
-            while (sender == null) {
-                sender = DefaultChannelManager.INSTANCE.get("Controller").orNothing();
+    private final ProxyServer proxyServer;
+
+    @Subscribe
+    public void handle(ProxyInitializeEvent event) {
+        CommandConfigHandler.setInstance(new VelocityCommandConfigHandler(this.proxyServer));
+
+        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).registerPacket(PacketGetCommandsConfigResult.class);
+        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).registerPacket(PacketReleaseCommandsConfig.class);
+
+        Embedded.getInstance().sendSyncQuery(new PacketGetCommandsConfig()).ifPresent(e -> {
+            if (e instanceof PacketGetCommandsConfigResult) {
+                CommandConfigHandler.getInstance().handleCommandConfigRelease(((PacketGetCommandsConfigResult) e).getCommandsConfig());
             }
-
-            ExecutorAPI.getInstance().getPacketHandler().registerHandler(PacketGetCommandsConfigResult.class);
-            ExecutorAPI.getInstance().getPacketHandler().getQueryHandler().sendQueryAsync(sender, new PacketGetCommandsConfig()).onComplete(e -> {
-                if (e instanceof PacketGetCommandsConfigResult) {
-                    CommandConfigHandler.getInstance().handleCommandConfigRelease(((PacketGetCommandsConfigResult) e).getCommandsConfig());
-                    ExecutorAPI.getInstance().getPacketHandler().registerHandler(PacketReleaseCommandsConfig.class);
-                }
-            });
         });
+    }
+
+    @Subscribe
+    public void handle(ProxyShutdownEvent event) {
+        CommandConfigHandler.getInstance().unregisterAllCommands();
+        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).unregisterPacket(NetworkUtil.RESERVED_EXTRA_BUS + 3);
+        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).unregisterPacket(NetworkUtil.RESERVED_EXTRA_BUS + 2);
     }
 }

@@ -1,0 +1,9 @@
+version: 2
+updates:
+- package-ecosystem: maven
+  directory: "/"
+  schedule:
+    interval: daily
+    time: "05:00"
+  open-pull-requests-limit: 20
+  target-branch: indev

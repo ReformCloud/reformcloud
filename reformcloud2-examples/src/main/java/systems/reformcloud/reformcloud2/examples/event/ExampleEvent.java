@@ -24,24 +24,10 @@
  */
 package systems.reformcloud.reformcloud2.examples.event;
 
-import systems.reformcloud.reformcloud2.executor.api.common.event.Event;
+import systems.reformcloud.reformcloud2.executor.api.event.Event;
 
 /**
  * Represents an event which can be listen to by the event manager
  */
 public class ExampleEvent extends Event {
-
-    public ExampleEvent() {
-        super(true); // This event should get called async
-    }
-
-    @Override
-    public void preCall() {
-        System.out.println("Now all event listeners will be called...");
-    }
-
-    @Override
-    public void postCall() {
-        System.out.println("All event listeners were called");
-    }
 }

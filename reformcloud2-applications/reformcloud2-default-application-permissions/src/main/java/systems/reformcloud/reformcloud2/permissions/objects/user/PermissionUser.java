@@ -28,9 +28,9 @@ import com.google.gson.reflect.TypeToken;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import systems.reformcloud.reformcloud2.executor.api.common.configuration.JsonConfiguration;
-import systems.reformcloud.reformcloud2.executor.api.common.network.SerializableObject;
-import systems.reformcloud.reformcloud2.executor.api.common.network.data.ProtocolBuffer;
+import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.network.SerializableObject;
+import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
 import systems.reformcloud.reformcloud2.permissions.PermissionManagement;
 import systems.reformcloud.reformcloud2.permissions.checks.GeneralCheck;
 import systems.reformcloud.reformcloud2.permissions.checks.WildcardCheck;
@@ -88,7 +88,7 @@ public class PermissionUser implements SerializableObject {
 
     @NotNull
     public Map<String, Collection<PermissionNode>> getPerGroupPermissions() {
-        return this.perGroupPermissions == null ? new HashMap<>() : this.perGroupPermissions;
+        return this.perGroupPermissions == null ? (this.perGroupPermissions = new HashMap<>()) : this.perGroupPermissions;
     }
 
     @NotNull
@@ -183,6 +183,7 @@ public class PermissionUser implements SerializableObject {
             return false;
         }
 
+        permission = permission.toLowerCase();
         if (permission.equalsIgnoreCase("bukkit.brodcast") || permission.equalsIgnoreCase("bukkit.brodcast.admin")) {
             return true;
         }

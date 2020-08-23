@@ -25,10 +25,14 @@
 package systems.reformcloud.reformcloud2.proxy.application;
 
 import org.jetbrains.annotations.Nullable;
-import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.common.application.api.Application;
-import systems.reformcloud.reformcloud2.executor.api.common.application.updater.ApplicationUpdateRepository;
-import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
+import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
+import systems.reformcloud.reformcloud2.executor.api.application.api.Application;
+import systems.reformcloud.reformcloud2.executor.api.application.updater.ApplicationUpdateRepository;
+import systems.reformcloud.reformcloud2.executor.api.event.EventManager;
+import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.manager.ChannelManager;
+import systems.reformcloud.reformcloud2.executor.api.network.packet.PacketProvider;
 import systems.reformcloud.reformcloud2.proxy.application.listener.ProcessInclusionHandler;
 import systems.reformcloud.reformcloud2.proxy.application.network.PacketRequestConfig;
 import systems.reformcloud.reformcloud2.proxy.application.updater.ProxyAddonUpdater;
@@ -45,17 +49,23 @@ public class ProxyApplication extends Application {
     }
 
     @Override
-    public void onInstallable() {
-        ExecutorAPI.getInstance().getEventManager().registerListener(new ProcessInclusionHandler());
+    public void onLoad() {
+        instance = this;
+        ConfigHelper.init(this.getDataFolder());
+
+        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).registerListener(new ProcessInclusionHandler());
+        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).registerPacket(PacketRequestConfig.class);
+
+        for (NetworkChannel registeredChannel : ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ChannelManager.class).getRegisteredChannels()) {
+            if (registeredChannel.isAuthenticated()) {
+                registeredChannel.sendPacket(new PacketProxyConfigUpdate(ConfigHelper.getProxyConfiguration()));
+            }
+        }
     }
 
     @Override
-    public void onLoad() {
-        instance = this;
-        ConfigHelper.init(this.dataFolder());
-
-        ExecutorAPI.getInstance().getPacketHandler().registerHandler(PacketRequestConfig.class);
-        DefaultChannelManager.INSTANCE.getAllSender().forEach(e -> e.sendPacket(new PacketProxyConfigUpdate(ConfigHelper.getProxyConfiguration())));
+    public void onDisable() {
+        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).unregisterPacket(NetworkUtil.RESERVED_EXTRA_BUS + 6);
     }
 
     @Nullable

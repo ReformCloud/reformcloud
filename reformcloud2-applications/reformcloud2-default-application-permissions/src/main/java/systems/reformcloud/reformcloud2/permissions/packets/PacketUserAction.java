@@ -24,18 +24,14 @@
  */
 package systems.reformcloud.reformcloud2.permissions.packets;
 
-import io.netty.channel.ChannelHandlerContext;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorType;
-import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.common.network.challenge.ChallengeAuthHandler;
-import systems.reformcloud.reformcloud2.executor.api.common.network.channel.NetworkChannelReader;
-import systems.reformcloud.reformcloud2.executor.api.common.network.channel.PacketSender;
-import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
-import systems.reformcloud.reformcloud2.executor.api.common.network.data.ProtocolBuffer;
-import systems.reformcloud.reformcloud2.executor.api.common.network.handler.ChannelReaderHelper;
-import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.manager.ChannelManager;
+import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
+import systems.reformcloud.reformcloud2.executor.api.network.packet.Packet;
 import systems.reformcloud.reformcloud2.permissions.PermissionManagement;
 import systems.reformcloud.reformcloud2.permissions.objects.user.PermissionUser;
 import systems.reformcloud.reformcloud2.permissions.packets.util.PermissionAction;
@@ -59,12 +55,12 @@ public class PacketUserAction extends Packet {
     }
 
     @Override
-    public void handlePacketReceive(@NotNull NetworkChannelReader reader, @NotNull ChallengeAuthHandler authHandler, @NotNull ChannelReaderHelper parent, @Nullable PacketSender sender, @NotNull ChannelHandlerContext channel) {
+    public void handlePacketReceive(@NotNull EndpointChannelReader reader, @NotNull NetworkChannel channel) {
         switch (this.permissionAction) {
             case DELETE: {
                 PermissionManagement.getInstance().handleInternalUserDelete(this.permissionUser);
                 if (ExecutorAPI.getInstance().getType() != ExecutorType.API) {
-                    DefaultChannelManager.INSTANCE.getAllSender().forEach(e -> e.sendPacket(new PacketUserAction(this.permissionUser, PermissionAction.DELETE)));
+                    this.publish(new PacketUserAction(this.permissionUser, PermissionAction.DELETE));
                 }
 
                 break;
@@ -73,7 +69,7 @@ public class PacketUserAction extends Packet {
             case UPDATE: {
                 PermissionManagement.getInstance().handleInternalUserUpdate(this.permissionUser);
                 if (ExecutorAPI.getInstance().getType() != ExecutorType.API) {
-                    DefaultChannelManager.INSTANCE.getAllSender().forEach(e -> e.sendPacket(new PacketUserAction(this.permissionUser, PermissionAction.UPDATE)));
+                    this.publish(new PacketUserAction(this.permissionUser, PermissionAction.UPDATE));
                 }
 
                 break;
@@ -82,7 +78,7 @@ public class PacketUserAction extends Packet {
             case CREATE: {
                 PermissionManagement.getInstance().handleInternalUserCreate(this.permissionUser);
                 if (ExecutorAPI.getInstance().getType() != ExecutorType.API) {
-                    DefaultChannelManager.INSTANCE.getAllSender().forEach(e -> e.sendPacket(new PacketUserAction(this.permissionUser, PermissionAction.CREATE)));
+                    this.publish(new PacketUserAction(this.permissionUser, PermissionAction.CREATE));
                 }
 
                 break;
@@ -100,5 +96,14 @@ public class PacketUserAction extends Packet {
     public void read(@NotNull ProtocolBuffer buffer) {
         this.permissionUser = buffer.readObject(PermissionUser.class);
         this.permissionAction = PermissionAction.values()[buffer.readInt()];
+    }
+
+    private void publish(@NotNull Packet packet) {
+        for (NetworkChannel registeredChannel : ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ChannelManager.class).getRegisteredChannels()) {
+            if (registeredChannel.isAuthenticated()
+                    && !ExecutorAPI.getInstance().getNodeInformationProvider().getNodeInformation(registeredChannel.getName()).isPresent()) {
+                registeredChannel.sendPacket(packet);
+            }
+        }
     }
 }

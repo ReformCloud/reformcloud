@@ -1,0 +1,7 @@
+{
+  "name": "RethinkDatabase",
+  "author": "derklaro",
+  "main": "systems.reformcloud.reformcloud2.rethink.RethinkApplication",
+  "version": "2.10.0",
+  "impl-version": "2.10.0"
+}

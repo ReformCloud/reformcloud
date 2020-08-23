@@ -30,7 +30,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.ServicePriority;
-import org.bukkit.plugin.ServicesManager;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.permissions.PermissionManagement;
 import systems.reformcloud.reformcloud2.permissions.internal.UUIDFetcher;
@@ -61,13 +60,11 @@ public final class VaultUtil {
     }
 
     public static void tryInvoke(@NotNull Plugin plugin) {
-        try {
-            ServicesManager servicesManager = Bukkit.getServicesManager();
-            Permission permission = new PermissionVaultPermissionImplementation();
+        Permission permission = new PermissionVaultPermissionImplementation();
 
-            servicesManager.register(Permission.class, permission, plugin, ServicePriority.Highest);
-            servicesManager.register(Chat.class, new PermissionVaultChatImplementation(permission), plugin, ServicePriority.Highest);
-        } catch (final Throwable ignored) {
-        }
+        Bukkit.getServicesManager().register(Permission.class, permission, plugin, ServicePriority.Highest);
+        Bukkit.getServicesManager().register(Chat.class, new PermissionVaultChatImplementation(permission), plugin, ServicePriority.Highest);
+
+        plugin.getLogger().info("Successfully hooked into vault");
     }
 }

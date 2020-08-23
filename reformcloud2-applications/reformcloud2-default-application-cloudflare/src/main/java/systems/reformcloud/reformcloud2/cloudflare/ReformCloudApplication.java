@@ -28,11 +28,12 @@ import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.cloudflare.api.CloudFlareHelper;
 import systems.reformcloud.reformcloud2.cloudflare.listener.ProcessListener;
 import systems.reformcloud.reformcloud2.cloudflare.update.CloudFlareAddonUpdater;
-import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.common.application.api.Application;
-import systems.reformcloud.reformcloud2.executor.api.common.application.language.ApplicationLanguage;
-import systems.reformcloud.reformcloud2.executor.api.common.application.updater.ApplicationUpdateRepository;
-import systems.reformcloud.reformcloud2.executor.api.common.language.LanguageManager;
+import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
+import systems.reformcloud.reformcloud2.executor.api.application.api.Application;
+import systems.reformcloud.reformcloud2.executor.api.application.updater.ApplicationUpdateRepository;
+import systems.reformcloud.reformcloud2.executor.api.event.EventManager;
+import systems.reformcloud.reformcloud2.executor.api.language.LanguageManager;
+import systems.reformcloud.reformcloud2.executor.api.language.loading.LanguageLoader;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -40,10 +41,9 @@ import java.util.Properties;
 
 public class ReformCloudApplication extends Application {
 
+    private final ApplicationUpdateRepository applicationUpdateRepository = new CloudFlareAddonUpdater(this);
+
     private static final ProcessListener LISTENER = new ProcessListener();
-
-    private static final ApplicationUpdateRepository REPOSITORY = new CloudFlareAddonUpdater();
-
     private static boolean loaded = false;
 
     @Override
@@ -51,20 +51,17 @@ public class ReformCloudApplication extends Application {
         try (InputStream stream = this.getClass().getClassLoader().getResourceAsStream("language-cloudflare.properties")) {
             Properties properties = new Properties();
             properties.load(stream);
-
-            LanguageManager.loadAddonMessageFile(this.getApplication().getName(), new ApplicationLanguage(
-                    this.getApplication().getName(), properties
-            ));
+            LanguageManager.loadAddonMessageFile(this.getApplication().getName(), new LanguageLoader.InternalLanguage(properties));
         } catch (final IOException ex) {
             ex.printStackTrace();
         }
 
-        if (CloudFlareHelper.init(this.dataFolder().getPath())) {
+        if (CloudFlareHelper.init(this.getDataFolder().getPath())) {
             System.err.println(LanguageManager.get("cloudflare-first-init"));
             return;
         }
 
-        ExecutorAPI.getInstance().getEventManager().registerListener(LISTENER);
+        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).registerListener(LISTENER);
         CloudFlareHelper.loadAlreadyRunning();
         loaded = true;
     }
@@ -76,13 +73,12 @@ public class ReformCloudApplication extends Application {
         }
 
         CloudFlareHelper.handleStop();
-        ExecutorAPI.getInstance().getEventManager().unregisterListener(LISTENER);
-        ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getAllProcesses().forEach(CloudFlareHelper::deleteRecord);
+        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).unregisterListener(LISTENER);
     }
 
     @Nullable
     @Override
     public ApplicationUpdateRepository getUpdateRepository() {
-        return REPOSITORY;
+        return this.applicationUpdateRepository;
     }
 }

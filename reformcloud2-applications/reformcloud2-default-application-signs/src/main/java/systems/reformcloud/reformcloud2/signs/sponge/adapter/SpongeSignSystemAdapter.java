@@ -43,8 +43,7 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
-import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.annotiations.UndefinedNullability;
+import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.signs.SharedSignSystemAdapter;
 import systems.reformcloud.reformcloud2.signs.sponge.command.SpongeCommandSigns;
 import systems.reformcloud.reformcloud2.signs.sponge.listener.SpongeListener;
@@ -100,7 +99,6 @@ public class SpongeSignSystemAdapter extends SharedSignSystemAdapter<Sign> {
         Sponge.getCommandManager().register(plugin, signs, "signs");
     }
 
-    @UndefinedNullability
     public static SpongeSignSystemAdapter getInstance() {
         return instance;
     }

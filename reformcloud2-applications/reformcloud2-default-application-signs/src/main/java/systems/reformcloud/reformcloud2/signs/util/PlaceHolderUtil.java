@@ -24,9 +24,11 @@
  */
 package systems.reformcloud.reformcloud2.signs.util;
 
-import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
+import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 
 import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public final class PlaceHolderUtil {
 
@@ -34,7 +36,9 @@ public final class PlaceHolderUtil {
         throw new UnsupportedOperationException();
     }
 
-    public static <T> T format(String line, String group, ProcessInformation processInformation, Function<String, T> function) {
+    private static final Pattern PATTERN = Pattern.compile(".*?(%sign_layout_place_holder_(\\w+)%).*?", Pattern.CASE_INSENSITIVE);
+
+    public static <T> T format(String line, String group, ProcessInformation processInformation, Function<String, T> colorize) {
         line = line.replace("%group%", group);
         line = line.replace("%name%", processInformation.getProcessDetail().getName());
         line = line.replace("%display%", processInformation.getProcessDetail().getDisplayName());
@@ -51,6 +55,16 @@ public final class PlaceHolderUtil {
         line = line.replace("%lobby%", Boolean.toString(processInformation.getProcessGroup().isCanBeUsedAsLobby()));
         line = line.replace("%static%", Boolean.toString(processInformation.getProcessGroup().isCanBeUsedAsLobby()));
         line = line.replace("%motd%", processInformation.getProcessDetail().getMessageOfTheDay());
-        return function.apply(line);
+
+        Matcher matcher;
+        while ((matcher = PATTERN.matcher(line)).find()) {
+            if (2 > matcher.groupCount()) {
+                continue;
+            }
+
+            line = line.replace(matcher.group(1), processInformation.getExtra().getOrDefault(matcher.group(2), ""));
+        }
+
+        return colorize.apply(line);
     }
 }

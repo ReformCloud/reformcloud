@@ -30,9 +30,12 @@ import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 import net.kyori.text.serializer.legacy.LegacyComponentSerializer;
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.shared.SharedPlayerFallbackFilter;
-import systems.reformcloud.reformcloud2.executor.api.velocity.VelocityExecutor;
-import systems.reformcloud.reformcloud2.executor.api.velocity.fallback.VelocityFallbackExtraFilter;
+import systems.refomcloud.reformcloud2.embedded.Embedded;
+import systems.refomcloud.reformcloud2.embedded.controller.ProxyServerController;
+import systems.refomcloud.reformcloud2.embedded.plugin.velocity.VelocityExecutor;
+import systems.refomcloud.reformcloud2.embedded.plugin.velocity.fallback.VelocityFallbackExtraFilter;
+import systems.refomcloud.reformcloud2.embedded.shared.SharedPlayerFallbackFilter;
+import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 
 import java.util.List;
 import java.util.Optional;
@@ -53,42 +56,42 @@ public class CommandLeave implements Command {
 
         Player player = (Player) commandSource;
         if (!player.getCurrentServer().isPresent()) {
-            player.sendMessage(LegacyComponentSerializer.legacyLinking().deserialize(VelocityExecutor.getInstance().getMessages().format(
-                    VelocityExecutor.getInstance().getMessages().getNoHubServerAvailable()
+            player.sendMessage(LegacyComponentSerializer.legacyLinking().deserialize(Embedded.getInstance().getIngameMessages().format(
+                    Embedded.getInstance().getIngameMessages().getNoHubServerAvailable()
             )));
             return;
         }
 
-        if (VelocityExecutor.getInstance().getCachedLobbyServices().stream().anyMatch(
+        if (ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ProxyServerController.class).getCachedLobbyServers().stream().anyMatch(
                 e -> e.getProcessDetail().getName().equals(player.getCurrentServer().get().getServerInfo().getName())
         )) {
-            player.sendMessage(LegacyComponentSerializer.legacyLinking().deserialize(VelocityExecutor.getInstance().getMessages().format(
-                    VelocityExecutor.getInstance().getMessages().getAlreadyConnectedToHub()
+            player.sendMessage(LegacyComponentSerializer.legacyLinking().deserialize(Embedded.getInstance().getIngameMessages().format(
+                    Embedded.getInstance().getIngameMessages().getAlreadyConnectedToHub()
             )));
             return;
         }
 
         SharedPlayerFallbackFilter.filterFallback(
                 player.getUniqueId(),
-                VelocityExecutor.getInstance().getCachedLobbyServices(),
+                ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ProxyServerController.class).getCachedLobbyServers(),
                 player::hasPermission,
                 VelocityFallbackExtraFilter.INSTANCE,
                 null // ignored because we are sure the player is not on a lobby
         ).ifPresent(processInformation -> {
             Optional<RegisteredServer> lobby = VelocityExecutor.getInstance().getProxyServer().getServer(processInformation.getProcessDetail().getName());
             if (!lobby.isPresent()) {
-                player.sendMessage(LegacyComponentSerializer.legacyLinking().deserialize(VelocityExecutor.getInstance().getMessages().format(
-                        VelocityExecutor.getInstance().getMessages().getNoHubServerAvailable()
+                player.sendMessage(LegacyComponentSerializer.legacyLinking().deserialize(Embedded.getInstance().getIngameMessages().format(
+                        Embedded.getInstance().getIngameMessages().getNoHubServerAvailable()
                 )));
                 return;
             }
 
-            player.sendMessage(LegacyComponentSerializer.legacyLinking().deserialize(VelocityExecutor.getInstance().getMessages().format(
-                    VelocityExecutor.getInstance().getMessages().getConnectingToHub(), processInformation.getProcessDetail().getName()
+            player.sendMessage(LegacyComponentSerializer.legacyLinking().deserialize(Embedded.getInstance().getIngameMessages().format(
+                    Embedded.getInstance().getIngameMessages().getConnectingToHub(), processInformation.getProcessDetail().getName()
             )));
             player.createConnectionRequest(lobby.get()).fireAndForget();
-        }).ifEmpty(v -> player.sendMessage(LegacyComponentSerializer.legacyLinking().deserialize(VelocityExecutor.getInstance().getMessages().format(
-                VelocityExecutor.getInstance().getMessages().getNoHubServerAvailable()
+        }).ifEmpty(v -> player.sendMessage(LegacyComponentSerializer.legacyLinking().deserialize(Embedded.getInstance().getIngameMessages().format(
+                Embedded.getInstance().getIngameMessages().getNoHubServerAvailable()
         ))));
     }
 

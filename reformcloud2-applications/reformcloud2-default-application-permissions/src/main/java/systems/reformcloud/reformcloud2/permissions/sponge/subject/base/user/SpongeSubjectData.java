@@ -29,6 +29,8 @@ import org.jetbrains.annotations.Nullable;
 import org.spongepowered.api.service.context.Context;
 import org.spongepowered.api.service.permission.SubjectData;
 import systems.reformcloud.reformcloud2.permissions.PermissionManagement;
+import systems.reformcloud.reformcloud2.permissions.nodes.NodeGroup;
+import systems.reformcloud.reformcloud2.permissions.nodes.PermissionNode;
 import systems.reformcloud.reformcloud2.permissions.objects.group.PermissionGroup;
 import systems.reformcloud.reformcloud2.permissions.objects.user.PermissionUser;
 import systems.reformcloud.reformcloud2.permissions.sponge.subject.AbstractSpongeSubjectData;
@@ -60,34 +62,25 @@ public class SpongeSubjectData extends AbstractSpongeSubjectData {
         Map<String, Boolean> out = new HashMap<>();
         PermissionUser user = PermissionManagement.getInstance().loadUser(this.uniqueID);
 
-        user.getPermissionNodes().forEach(e -> {
-            if (!e.isValid()) {
-                return;
+        for (PermissionNode permissionNode : user.getPermissionNodes()) {
+            if (permissionNode.isValid()) {
+                out.putIfAbsent(permissionNode.getActualPermission(), permissionNode.isSet());
+            }
+        }
+
+        for (NodeGroup group : user.getGroups()) {
+            if (!group.isValid()) {
+                continue;
             }
 
-            out.put(e.getActualPermission(), e.isSet());
-        });
-
-        user.getGroups().forEach(e -> {
-            if (!e.isValid()) {
-                return;
-            }
-
-            PermissionGroup group = PermissionManagement.getInstance().getGroup(e.getGroupName());
-            if (group == null) {
-                return;
-            }
-
-            out.putAll(this.getPermissionsOf(group));
-            group.getSubGroups().forEach(g -> {
-                PermissionGroup sub = PermissionManagement.getInstance().getGroup(g);
-                if (sub == null) {
-                    return;
+            PermissionManagement.getInstance().getPermissionGroup(group.getGroupName()).ifPresent(permissionGroup -> {
+                out.putAll(this.getPermissionsOf(permissionGroup));
+                for (String sub : permissionGroup.getSubGroups()) {
+                    PermissionManagement.getInstance().getPermissionGroup(sub)
+                            .ifPresent(subGroup -> out.putAll(this.getPermissionsOf(subGroup)));
                 }
-
-                out.putAll(this.getPermissionsOf(sub));
             });
-        });
+        }
 
         return out;
     }

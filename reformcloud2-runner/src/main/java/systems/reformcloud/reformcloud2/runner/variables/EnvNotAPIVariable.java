@@ -38,7 +38,7 @@ public final class EnvNotAPIVariable extends InterpreterVariable {
     @NotNull
     @Override
     public String unwrap(@NotNull String cursorLine, @NotNull Collection<String> fullLines) {
-        Integer integer = Integer.getInteger(cursorLine);
+        Integer integer = Integer.getInteger("reformcloud.executor.type");
         return Boolean.toString(integer == null || integer != 3);
     }
 }

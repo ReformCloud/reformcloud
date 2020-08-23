@@ -25,8 +25,8 @@
 package systems.reformcloud.reformcloud2.signs.util;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
-import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessState;
+import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
+import systems.reformcloud.reformcloud2.executor.api.process.ProcessState;
 
 import java.util.function.Function;
 
@@ -47,7 +47,7 @@ public final class Utils {
         }
 
         if (canConnect && target.getProcessGroup().getPlayerAccessConfiguration().isUseCloudPlayerLimit()
-                && target.getProcessPlayerManager().getOnlineCount() >= target.getProcessGroup().getPlayerAccessConfiguration().getMaxPlayers()) {
+                && target.getProcessPlayerManager().getOnlineCount() >= target.getProcessDetail().getMaxPlayers()) {
             canConnect = permissionChecker.apply(target.getProcessGroup().getPlayerAccessConfiguration().getFullJoinPermission());
         }
 
@@ -56,7 +56,7 @@ public final class Utils {
         }
 
         ProcessState state = target.getProcessDetail().getProcessState();
-        if (canConnect && (!state.isReady() || state.equals(ProcessState.INVISIBLE))) {
+        if (canConnect && (!state.isOnline() || state.equals(ProcessState.INVISIBLE))) {
             canConnect = permissionChecker.apply(target.getProcessGroup().getPlayerAccessConfiguration().getFullJoinPermission());
         }
 
@@ -65,10 +65,6 @@ public final class Utils {
 
     public static boolean canConnectPerState(@NotNull ProcessInformation processInformation) {
         ProcessState state = processInformation.getProcessDetail().getProcessState();
-        return !state.equals(ProcessState.INVISIBLE)
-                && !state.equals(ProcessState.PREPARED)
-                && !state.equals(ProcessState.READY_TO_START)
-                && !state.equals(ProcessState.CREATED)
-                && !state.equals(ProcessState.STOPPED);
+        return state.equals(ProcessState.STARTED) || state.equals(ProcessState.FULL) || state.equals(ProcessState.READY);
     }
 }

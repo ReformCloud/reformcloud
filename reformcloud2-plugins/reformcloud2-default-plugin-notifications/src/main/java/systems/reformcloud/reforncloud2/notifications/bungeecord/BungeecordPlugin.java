@@ -25,20 +25,22 @@
 package systems.reformcloud.reforncloud2.notifications.bungeecord;
 
 import net.md_5.bungee.api.plugin.Plugin;
-import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
+import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
+import systems.reformcloud.reformcloud2.executor.api.event.EventManager;
 import systems.reformcloud.reforncloud2.notifications.bungeecord.listener.ProcessListener;
 
 public final class BungeecordPlugin extends Plugin {
 
-    private static final ProcessListener LISTENER = new ProcessListener();
+    private ProcessListener listener;
 
     @Override
     public void onEnable() {
-        ExecutorAPI.getInstance().getEventManager().registerListener(LISTENER);
+        this.listener = new ProcessListener();
+        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).registerListener(this.listener);
     }
 
     @Override
     public void onDisable() {
-        ExecutorAPI.getInstance().getEventManager().unregisterListener(LISTENER);
+        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).unregisterListener(this.listener);
     }
 }

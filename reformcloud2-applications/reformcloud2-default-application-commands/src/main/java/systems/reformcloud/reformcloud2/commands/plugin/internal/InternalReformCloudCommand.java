@@ -25,12 +25,17 @@
 package systems.reformcloud.reformcloud2.commands.plugin.internal;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.common.CommonHelper;
-import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
+import systems.refomcloud.reformcloud2.embedded.Embedded;
+import systems.reformcloud.reformcloud2.executor.api.CommonHelper;
+import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
+import systems.reformcloud.reformcloud2.executor.api.network.channel.manager.ChannelManager;
+import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
+import systems.reformcloud.reformcloud2.executor.api.process.ProcessState;
+import systems.reformcloud.reformcloud2.executor.api.wrappers.ProcessWrapper;
 
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 public final class InternalReformCloudCommand {
@@ -47,15 +52,14 @@ public final class InternalReformCloudCommand {
     ) {
         if (strings.length == 1 && strings[0].equalsIgnoreCase("list")) {
             ExecutorAPI.getInstance()
-                    .getAsyncAPI()
-                    .getProcessAsyncAPI()
-                    .getAllProcessesAsync()
+                    .getProcessProvider()
+                    .getProcessesAsync()
                     .onComplete(processes -> {
                         for (ProcessInformation process : processes) {
                             String state = "§coffline";
-                            if (process.getProcessDetail().getProcessState().isValid() && !process.getNetworkInfo().isConnected()) {
+                            if (process.getProcessDetail().getProcessState().isStartedOrOnline() && !process.getNetworkInfo().isConnected()) {
                                 state = "§econnecting";
-                            } else if (process.getProcessDetail().getProcessState().isReady()) {
+                            } else if (process.getProcessDetail().getProcessState().isOnline()) {
                                 state = "§aonline";
                             }
 
@@ -76,124 +80,98 @@ public final class InternalReformCloudCommand {
             switch (strings[0].toLowerCase()) {
                 case "copy": {
                     ExecutorAPI.getInstance()
-                            .getAsyncAPI()
-                            .getProcessAsyncAPI()
-                            .getProcessAsync(strings[1])
+                            .getProcessProvider()
+                            .getProcessByNameAsync(strings[1])
                             .onComplete(process -> {
-                                if (process == null) {
+                                if (!process.isPresent()) {
                                     messageSender.accept(prefix + "§cThis process is unknown");
                                     return;
                                 }
 
-                                process.toWrapped().copy();
+                                ProcessWrapper wrapper = process.get();
+                                wrapper.copy(wrapper.getProcessInformation().getProcessDetail().getTemplate());
+                                messageSender.accept(commandSuccessMessage);
                             });
-                    messageSender.accept(commandSuccessMessage);
                     return;
                 }
 
                 case "start": {
                     ExecutorAPI.getInstance()
-                            .getAsyncAPI()
-                            .getProcessAsyncAPI()
-                            .startProcessAsync(strings[1]);
-                    messageSender.accept(commandSuccessMessage);
+                            .getProcessGroupProvider()
+                            .getProcessGroupAsync(strings[1])
+                            .thenAccept(processGroup -> {
+                                if (!processGroup.isPresent()) {
+                                    messageSender.accept(prefix + "§cThe specified group is unknown");
+                                    return;
+                                }
+
+                                ExecutorAPI.getInstance()
+                                        .getProcessProvider()
+                                        .createProcess()
+                                        .group(strings[1])
+                                        .prepare()
+                                        .onComplete(processWrapper -> processWrapper.setRuntimeState(ProcessState.STARTED));
+                                messageSender.accept(commandSuccessMessage);
+                            });
                     return;
                 }
 
                 case "stop": {
                     ExecutorAPI.getInstance()
-                            .getAsyncAPI()
-                            .getProcessAsyncAPI()
-                            .stopProcessAsync(strings[1]);
-                    messageSender.accept(commandSuccessMessage);
-                    return;
-                }
-
-                case "stopall": {
-                    ExecutorAPI.getInstance()
-                            .getAsyncAPI()
-                            .getProcessAsyncAPI()
-                            .getProcessesAsync(strings[1])
-                            .onComplete(results -> {
-                                for (ProcessInformation result : results) {
-                                    ExecutorAPI.getInstance().getAsyncAPI().getProcessAsyncAPI().stopProcessAsync(result);
+                            .getProcessProvider()
+                            .getProcessByNameAsync(strings[1])
+                            .onComplete(processWrapper -> {
+                                if (!processWrapper.isPresent()) {
+                                    messageSender.accept(prefix + "§cThis process is unknown");
+                                    return;
                                 }
+
+                                processWrapper.get().setRuntimeState(ProcessState.STOPPED);
+                                messageSender.accept(commandSuccessMessage);
                             });
-                    messageSender.accept(commandSuccessMessage);
                     return;
                 }
 
                 case "maintenance": {
                     ExecutorAPI.getInstance()
-                            .getAsyncAPI()
-                            .getGroupAsyncAPI()
+                            .getProcessGroupProvider()
                             .getProcessGroupAsync(strings[1])
                             .onComplete(processGroup -> {
-                                if (processGroup == null) {
-                                    messageSender.accept(prefix + "§cThis group is unknown");
+                                if (!processGroup.isPresent()) {
+                                    messageSender.accept(prefix + "§cThe specified group is unknown");
                                     return;
                                 }
 
-                                processGroup.getPlayerAccessConfiguration().toggleMaintenance();
-                                ExecutorAPI.getInstance().getSyncAPI().getGroupSyncAPI().updateProcessGroup(processGroup);
+                                processGroup.get().getPlayerAccessConfiguration().toggleMaintenance();
+                                ExecutorAPI.getInstance().getProcessGroupProvider().updateProcessGroup(processGroup.get());
+                                messageSender.accept(commandSuccessMessage);
                             });
-                    messageSender.accept(commandSuccessMessage);
                     return;
                 }
+
+                default:
+                    break;
             }
         }
 
         if (strings.length == 3) {
-            switch (strings[0].toLowerCase()) {
-                case "start": {
-                    Integer count = CommonHelper.fromString(strings[2]);
-                    if (count == null || count <= 0) {
-                        messageSender.accept(prefix + "§cPlease provide a valid count!");
-                        return;
-                    }
-
-                    Task.EXECUTOR.execute(() -> {
-                        for (int started = 1; started <= count; started++) {
-                            ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().startProcess(strings[1]);
-                        }
-                    });
-
-                    messageSender.accept(commandSuccessMessage);
+            if ("start".equals(strings[0].toLowerCase())) {
+                Integer count = CommonHelper.fromString(strings[2]);
+                if (count == null || count <= 0) {
+                    messageSender.accept(prefix + "§cPlease provide a valid count!");
                     return;
                 }
 
-                case "ofall": {
-                    if (strings[2].equalsIgnoreCase("stop")) {
-                        ExecutorAPI.getInstance()
-                                .getAsyncAPI()
-                                .getGroupAsyncAPI()
-                                .getMainGroupAsync(strings[1])
-                                .onComplete(mainGroup -> {
-                                    if (mainGroup == null) {
-                                        messageSender.accept(prefix + "§cThis main group is unknown");
-                                        return;
-                                    }
-
-                                    for (String subGroup : mainGroup.getSubGroups()) {
-                                        ExecutorAPI.getInstance()
-                                                .getAsyncAPI()
-                                                .getProcessAsyncAPI()
-                                                .getProcessesAsync(subGroup)
-                                                .onComplete(processes -> {
-                                                    for (ProcessInformation process : processes) {
-                                                        ExecutorAPI.getInstance()
-                                                                .getAsyncAPI()
-                                                                .getProcessAsyncAPI()
-                                                                .stopProcessAsync(process);
-                                                    }
-                                                });
-                                    }
-                                });
-                        messageSender.accept(commandSuccessMessage);
-                        return;
-                    }
-                    break;
+                for (int started = 1; started <= count; started++) {
+                    ExecutorAPI.getInstance().getProcessProvider()
+                            .createProcess()
+                            .group(strings[1])
+                            .prepare()
+                            .onComplete(wrapper -> wrapper.setRuntimeState(ProcessState.STARTED));
                 }
+
+                messageSender.accept(commandSuccessMessage);
+                return;
             }
         }
 
@@ -204,10 +182,17 @@ public final class InternalReformCloudCommand {
             }
 
             ExecutorAPI.getInstance()
-                    .getAsyncAPI()
-                    .getProcessAsyncAPI()
-                    .executeProcessCommandAsync(strings[1], stringBuilder.toString());
-            messageSender.accept(commandSuccessMessage);
+                    .getProcessProvider()
+                    .getProcessByNameAsync(strings[1])
+                    .onComplete(processWrapper -> {
+                        if (!processWrapper.isPresent()) {
+                            messageSender.accept(prefix + "§cThis process is unknown");
+                            return;
+                        }
+
+                        processWrapper.get().sendCommand(stringBuilder.toString());
+                        messageSender.accept(commandSuccessMessage);
+                    });
             return;
         }
 
@@ -217,16 +202,28 @@ public final class InternalReformCloudCommand {
                 stringBuilder.append(s).append(" ");
             }
 
+            Optional<NetworkChannel> channel = ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ChannelManager.class).getFirstChannel();
+            if (!channel.isPresent()) {
+                messageSender.accept(prefix + "§cThe target node is not connected");
+                return;
+            }
+
             ExecutorAPI.getInstance()
-                    .getAsyncAPI()
-                    .getConsoleAsyncAPI()
-                    .dispatchConsoleCommandAndGetResultAsync(stringBuilder.toString())
-                    .onComplete(messages -> {
-                        for (String message : messages) {
-                            messageSender.accept("§7" + message);
+                    .getNodeInformationProvider()
+                    .getNodeInformationAsync(Embedded.getInstance().getCurrentProcessInformation().getProcessDetail().getParentUniqueID())
+                    .onComplete(nodeProcessWrapper -> {
+                        if (!nodeProcessWrapper.isPresent()) {
+                            messageSender.accept(prefix + "§cAn internal error occurred");
+                            return;
                         }
+
+                        nodeProcessWrapper.get().sendCommandLineAsync(stringBuilder.toString()).onComplete(result -> {
+                            for (String s : result) {
+                                messageSender.accept("§7" + s);
+                            }
+                        });
+                        messageSender.accept(commandSuccessMessage);
                     });
-            messageSender.accept(commandSuccessMessage);
             return;
         }
 
@@ -235,8 +232,6 @@ public final class InternalReformCloudCommand {
         messageSender.accept(prefix + "§7/" + anyAlias + " start <group>");
         messageSender.accept(prefix + "§7/" + anyAlias + " start <group> <amount>");
         messageSender.accept(prefix + "§7/" + anyAlias + " stop <name>");
-        messageSender.accept(prefix + "§7/" + anyAlias + " stopall <group>");
-        messageSender.accept(prefix + "§7/" + anyAlias + " ofall <mainGroup> stop");
         messageSender.accept(prefix + "§7/" + anyAlias + " execute <name> <command>");
         messageSender.accept(prefix + "§7/" + anyAlias + " maintenance <group>");
         messageSender.accept(prefix + "§7/" + anyAlias + " cmd <command>");

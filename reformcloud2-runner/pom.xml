@@ -5,7 +5,7 @@
     <parent>
         <artifactId>reformcloud2</artifactId>
         <groupId>systems.reformcloud.reformcloud2</groupId>
-        <version>2.2.2</version>
+        <version>2.10.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -15,14 +15,12 @@
         <finalName>runner</finalName>
 
         <plugins>
-            <!-- maven shade plugin (central) -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.2.3</version>
+                <version>3.2.4</version>
                 <executions>
                     <execution>
-                        <!-- shade while package -->
                         <phase>package</phase>
                         <goals>
                             <goal>shade</goal>
@@ -41,7 +39,6 @@
                 </executions>
             </plugin>
 
-            <!-- maven jar plugin (central) -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
@@ -54,14 +51,12 @@
                             <Version>${project.version}</Version>
                             <Implementation-Version>${project.version}</Implementation-Version>
                             <!--suppress UnresolvedMavenProperty -->
-                            <!-- set by another plugin -->
                             <Specification-Version>${describe}</Specification-Version>
                         </manifestEntries>
                     </archive>
                 </configuration>
             </plugin>
 
-            <!-- maven antrun plugin (central) -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
@@ -77,9 +72,9 @@
                         <!-- Copies the final executor file to the resource directory -->
                         <configuration>
                             <failOnError>false</failOnError>
-                            <target name="copy executor">
+                            <target name="copy node">
                                 <copy
-                                        file="${basedir}/../reformcloud2-executor/target/executor.jar"
+                                        file="${basedir}/../reformcloud2-node/target/executor.jar"
                                         tofile="${basedir}/src/main/resources/files/executor.jar"
                                 />
                             </target>

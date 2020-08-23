@@ -26,7 +26,7 @@ package systems.reformcloud.reformcloud2.commands.plugin;
 
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.commands.config.CommandsConfig;
-import systems.reformcloud.reformcloud2.executor.api.common.base.Conditions;
+import systems.reformcloud.reformcloud2.executor.api.base.Conditions;
 
 public abstract class CommandConfigHandler {
 

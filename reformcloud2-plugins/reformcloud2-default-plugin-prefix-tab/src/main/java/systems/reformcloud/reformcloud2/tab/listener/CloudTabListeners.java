@@ -28,8 +28,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.api.API;
-import systems.reformcloud.reformcloud2.executor.api.common.event.handler.Listener;
+import systems.refomcloud.reformcloud2.embedded.Embedded;
+import systems.reformcloud.reformcloud2.executor.api.event.handler.Listener;
 import systems.reformcloud.reformcloud2.permissions.PermissionManagement;
 import systems.reformcloud.reformcloud2.permissions.events.group.PermissionGroupUpdateEvent;
 import systems.reformcloud.reformcloud2.permissions.events.user.PermissionUserUpdateEvent;
@@ -45,7 +45,7 @@ public class CloudTabListeners {
 
     @Listener
     public void handle(final @NotNull PermissionUserUpdateEvent event) {
-        if (API.getInstance().getCurrentProcessInformation().getExtra().getBoolean("disable-tab")) {
+        if (Embedded.getInstance().getCurrentProcessInformation().getExtra().getBoolean("disable-tab")) {
             return;
         }
 
@@ -59,7 +59,7 @@ public class CloudTabListeners {
 
     @Listener
     public void handle(final @NotNull PermissionGroupUpdateEvent event) {
-        if (API.getInstance().getCurrentProcessInformation().getExtra().getBoolean("disable-tab")) {
+        if (Embedded.getInstance().getCurrentProcessInformation().getExtra().getBoolean("disable-tab")) {
             return;
         }
 

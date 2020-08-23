@@ -1,0 +1,7 @@
+{
+  "name": "FileDatabase",
+  "author": "derklaro",
+  "main": "systems.reformcloud.reformcloud2.file.FileDatabase",
+  "version": "2.10.0",
+  "impl-version": "2.10.0"
+}

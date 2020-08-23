@@ -24,7 +24,8 @@
  */
 package systems.reformcloud.reformcloud2.permissions.packets;
 
-import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
+import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
+import systems.reformcloud.reformcloud2.executor.api.network.packet.PacketProvider;
 
 public final class PacketHelper {
 
@@ -35,7 +36,7 @@ public final class PacketHelper {
     }
 
     public static void addPacketHandler() {
-        ExecutorAPI.getInstance().getPacketHandler().registerHandler(PacketGroupAction.class);
-        ExecutorAPI.getInstance().getPacketHandler().registerHandler(PacketUserAction.class);
+        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).registerPacketIgnored(PacketGroupAction.class);
+        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).registerPacketIgnored(PacketUserAction.class);
     }
 }

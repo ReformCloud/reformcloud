@@ -28,8 +28,8 @@ import com.velocitypowered.api.command.Command;
 import com.velocitypowered.api.command.CommandSource;
 import net.kyori.text.serializer.legacy.LegacyComponentSerializer;
 import org.jetbrains.annotations.NotNull;
+import systems.refomcloud.reformcloud2.embedded.Embedded;
 import systems.reformcloud.reformcloud2.commands.plugin.internal.InternalReformCloudCommand;
-import systems.reformcloud.reformcloud2.executor.api.velocity.VelocityExecutor;
 
 import java.util.List;
 
@@ -43,11 +43,11 @@ public class CommandReformCloud implements Command {
 
     @Override
     public void execute(CommandSource commandSender, @NotNull String[] strings) {
-        String prefix = VelocityExecutor.getInstance().getMessages().getPrefix() + " ";
+        String prefix = Embedded.getInstance().getIngameMessages().getPrefix();
         InternalReformCloudCommand.execute(
                 message -> commandSender.sendMessage(LegacyComponentSerializer.legacyLinking().deserialize(message)),
                 strings,
-                prefix,
+                prefix.endsWith(" ") ? prefix : prefix + " ",
                 this.getCommandSuccessMessage(),
                 this.aliases.isEmpty() ? "rc" : this.aliases.get(0)
         );
@@ -55,8 +55,8 @@ public class CommandReformCloud implements Command {
 
     @NotNull
     private String getCommandSuccessMessage() {
-        String message = VelocityExecutor.getInstance().getMessages().getCommandExecuteSuccess();
-        return VelocityExecutor.getInstance().getMessages().format(message);
+        String message = Embedded.getInstance().getIngameMessages().getCommandExecuteSuccess();
+        return Embedded.getInstance().getIngameMessages().format(message);
     }
 
     @NotNull

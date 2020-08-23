@@ -29,8 +29,8 @@ import cn.nukkit.blockentity.BlockEntitySign;
 import cn.nukkit.level.Location;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import systems.reformcloud.reformcloud2.executor.api.api.API;
-import systems.reformcloud.reformcloud2.executor.api.common.base.Conditions;
+import systems.refomcloud.reformcloud2.embedded.Embedded;
+import systems.reformcloud.reformcloud2.executor.api.base.Conditions;
 import systems.reformcloud.reformcloud2.signs.util.converter.SignConverter;
 import systems.reformcloud.reformcloud2.signs.util.sign.CloudLocation;
 import systems.reformcloud.reformcloud2.signs.util.sign.CloudSign;
@@ -81,7 +81,7 @@ public class NukkitSignConverter implements SignConverter<BlockEntitySign> {
         Conditions.isTrue(location.getLevel() != null);
         return new CloudLocation(
                 location.getLevel().getName(),
-                API.getInstance().getCurrentProcessInformation().getProcessGroup().getName(),
+                Embedded.getInstance().getCurrentProcessInformation().getProcessGroup().getName(),
                 location.getX(),
                 location.getY(),
                 location.getZ(),

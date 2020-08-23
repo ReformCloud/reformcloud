@@ -18,19 +18,12 @@ pipeline {
         stage('Update snapshot version') {
             when {
                 allOf {
-                    branch 'indev'
                     environment name:'IS_SNAPSHOT', value: 'true'
                 }
             }
 
             steps {
                 sh 'mvn versions:set -DnewVersion="${PROJECT_VERSION}.${BUILD_NUMBER}-SNAPSHOT"';
-            }
-        }
-
-        stage('Validate') {
-            steps {
-                sh 'mvn validate';
             }
         }
 
@@ -111,7 +104,8 @@ pipeline {
                 archiveArtifacts artifacts: 'ReformCloud2-Applications.zip'
                 archiveArtifacts artifacts: 'ReformCloud2-Plugins.zip'
                 archiveArtifacts artifacts: 'reformcloud2-runner/target/runner.jar'
-                archiveArtifacts artifacts: 'reformcloud2-executor/target/executor.jar'
+                archiveArtifacts artifacts: 'reformcloud2-node/target/executor.jar'
+                archiveArtifacts artifacts: 'reformcloud2-embedded/target/embedded.jar'
             }
         }
     }
@@ -121,6 +115,12 @@ pipeline {
             withCredentials([string(credentialsId: 'discord-webhook', variable: 'url')]) {
                 discordSend description: 'New build of ReformCloud', footer: 'Update', link: BUILD_URL, successful: currentBuild.resultIsBetterOrEqualTo('SUCCESS'), title: JOB_NAME, webhookURL: url
             }
+        }
+
+        success {
+            junit allowEmptyResults: true, testResults: 'reformcloud2-executor-api/target/surefire-reports/TEST-*.xml'
+            junit allowEmptyResults: true, testResults: 'reformcloud2-protocol/target/surefire-reports/TEST-*.xml'
+            junit allowEmptyResults: true, testResults: 'reformcloud2-shared/target/surefire-reports/TEST-*.xml'
         }
     }
 }

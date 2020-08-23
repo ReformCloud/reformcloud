@@ -24,21 +24,18 @@
  */
 package systems.reformcloud.reformcloud2.signs;
 
-import com.google.gson.reflect.TypeToken;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import systems.reformcloud.reformcloud2.executor.api.api.API;
-import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
-import systems.reformcloud.reformcloud2.executor.api.common.groups.ProcessGroup;
-import systems.reformcloud.reformcloud2.executor.api.common.network.channel.manager.DefaultChannelManager;
-import systems.reformcloud.reformcloud2.executor.api.common.network.packet.Packet;
-import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.list.Streams;
-import systems.reformcloud.reformcloud2.executor.api.common.utility.task.Task;
+import systems.refomcloud.reformcloud2.embedded.Embedded;
+import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
+import systems.reformcloud.reformcloud2.executor.api.event.EventManager;
+import systems.reformcloud.reformcloud2.executor.api.groups.ProcessGroup;
+import systems.reformcloud.reformcloud2.executor.api.network.packet.PacketProvider;
+import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
+import systems.reformcloud.reformcloud2.executor.api.utility.list.Streams;
 import systems.reformcloud.reformcloud2.signs.application.packets.PacketCreateSign;
 import systems.reformcloud.reformcloud2.signs.application.packets.PacketDeleteBulkSigns;
 import systems.reformcloud.reformcloud2.signs.application.packets.PacketDeleteSign;
-import systems.reformcloud.reformcloud2.signs.application.packets.PacketRequestSignLayoutsResult;
 import systems.reformcloud.reformcloud2.signs.listener.CloudListener;
 import systems.reformcloud.reformcloud2.signs.packets.PacketReloadSignConfig;
 import systems.reformcloud.reformcloud2.signs.util.LayoutUtil;
@@ -58,7 +55,7 @@ import java.util.stream.Collectors;
 public abstract class SharedSignSystemAdapter<T> implements SignSystemAdapter<T> {
 
     private static final String[] EMPTY_SIGN = new String[]{"", "", "", ""};
-    protected final UUID ownUniqueID = API.getInstance().getCurrentProcessInformation().getProcessDetail().getProcessUniqueID();
+    protected final UUID ownUniqueID = Embedded.getInstance().getCurrentProcessInformation().getProcessDetail().getProcessUniqueID();
     protected final Collection<CloudSign> signs = Collections.synchronizedCollection(new ArrayList<CloudSign>() {
         @NotNull
         @Override
@@ -77,27 +74,15 @@ public abstract class SharedSignSystemAdapter<T> implements SignSystemAdapter<T>
 
         SignSystemAdapter.instance.set(this);
 
-        ExecutorAPI.getInstance().getEventManager().registerListener(new CloudListener());
-        ExecutorAPI.getInstance().getPacketHandler().registerNetworkHandlers(
+        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).registerListener(new CloudListener());
+        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).registerPackets(Arrays.asList(
                 PacketCreateSign.class,
                 PacketDeleteSign.class,
-                PacketRequestSignLayoutsResult.class,
                 PacketReloadSignConfig.class
-        );
+        ));
 
         this.start();
     }
-
-    /*
-    AtomicInteger[] counter = new AtomicInteger[]{
-            new AtomicInteger(-1), // start
-            new AtomicInteger(-1), // connecting
-            new AtomicInteger(-1), // empty
-            new AtomicInteger(-1), // online
-            new AtomicInteger(-1), // full
-            new AtomicInteger(-1)  // maintenance
-    };
-     */
 
     @Override
     public void handleProcessStart(@NotNull ProcessInformation processInformation) {
@@ -163,7 +148,7 @@ public abstract class SharedSignSystemAdapter<T> implements SignSystemAdapter<T>
         }
 
         cloudSign = this.getSignConverter().to(t, group);
-        this.sendPacketToController(new PacketCreateSign(cloudSign));
+        Embedded.getInstance().sendPacket(new PacketCreateSign(cloudSign));
 
         return cloudSign;
     }
@@ -172,7 +157,7 @@ public abstract class SharedSignSystemAdapter<T> implements SignSystemAdapter<T>
     public void deleteSign(@NotNull CloudLocation location) {
         CloudSign sign = this.getSignAt(location);
         if (sign != null) {
-            this.sendPacketToController(new PacketDeleteSign(sign));
+            Embedded.getInstance().sendPacket(new PacketDeleteSign(sign));
         }
     }
 
@@ -193,7 +178,7 @@ public abstract class SharedSignSystemAdapter<T> implements SignSystemAdapter<T>
             return;
         }
 
-        this.sendPacketToController(new PacketDeleteBulkSigns(signs));
+        Embedded.getInstance().sendPacket(new PacketDeleteBulkSigns(signs));
     }
 
     @Override
@@ -209,7 +194,17 @@ public abstract class SharedSignSystemAdapter<T> implements SignSystemAdapter<T>
 
     @Override
     public boolean canConnect(@NotNull CloudSign cloudSign, @NotNull Function<String, Boolean> permissionChecker) {
-        return cloudSign.getCurrentTarget() != null && Utils.canConnect(cloudSign.getCurrentTarget(), permissionChecker);
+        SignLayout layout = this.getSignLayout(cloudSign.getGroup());
+        if (layout == null) {
+            return cloudSign.getCurrentTarget() != null && Utils.canConnect(cloudSign.getCurrentTarget(), permissionChecker);
+        }
+
+        if (cloudSign.getCurrentTarget() == null || !Utils.canConnect(cloudSign.getCurrentTarget(), permissionChecker)) {
+            return !layout.isSearchingLayoutWhenFull();
+        }
+
+        ProcessInformation process = cloudSign.getCurrentTarget();
+        return process.getProcessPlayerManager().getOnlineCount() < process.getProcessDetail().getMaxPlayers() || !layout.isSearchingLayoutWhenFull();
     }
 
     @Override
@@ -243,6 +238,10 @@ public abstract class SharedSignSystemAdapter<T> implements SignSystemAdapter<T>
     protected void tryAssignUnassigned() {
         for (ProcessInformation notAssignedProcess : this.allProcesses) {
             if (this.isProcessAssigned(notAssignedProcess) || !Utils.canConnectPerState(notAssignedProcess)) {
+                continue;
+            }
+
+            if (!notAssignedProcess.getProcessDetail().getTemplate().isServer() || notAssignedProcess.getProcessDetail().getProcessUniqueID().equals(this.ownUniqueID)) {
                 continue;
             }
 
@@ -314,7 +313,7 @@ public abstract class SharedSignSystemAdapter<T> implements SignSystemAdapter<T>
                 continue;
             }
 
-            if (!sign.getCurrentTarget().getProcessDetail().getProcessState().isReady()) {
+            if (!sign.getCurrentTarget().getProcessDetail().getProcessState().isOnline()) {
                 this.setLines(sign, searching);
                 continue;
             }
@@ -383,26 +382,22 @@ public abstract class SharedSignSystemAdapter<T> implements SignSystemAdapter<T>
         return LayoutUtil.getLayoutFor(group, this.signConfig).orElse(null);
     }
 
-    private void sendPacketToController(@NotNull Packet packet) {
-        DefaultChannelManager.INSTANCE.get("Controller").ifPresent(e -> e.sendPacket(packet));
-    }
-
     private void start() {
-        Task.EXECUTOR.execute(() -> {
-            Collection<CloudSign> signs = ExecutorAPI.getInstance().getSyncAPI().getDatabaseSyncAPI().find(SignSystemAdapter.table, "signs", null, k -> k.get("signs", new TypeToken<Collection<CloudSign>>() {
-            }));
-            if (signs == null) {
-                return;
-            }
+        ExecutorAPI.getInstance().getDatabaseProvider().getDatabase(SignSystemAdapter.table).getAsync("signs", "")
+                .onComplete(result -> result.ifPresent(configuration -> {
+                    Collection<CloudSign> cloudSigns = configuration.get("signs", CloudSign.COLLECTION_SIGN_TYPE);
+                    if (cloudSigns == null) {
+                        return;
+                    }
 
-            this.signs.addAll(signs.stream().filter(e -> {
-                String current = API.getInstance().getCurrentProcessInformation().getProcessGroup().getName();
-                return current.equals(e.getLocation().getGroup());
-            }).collect(Collectors.toList()));
+                    this.signs.addAll(cloudSigns.stream().filter(e -> {
+                        String current = Embedded.getInstance().getCurrentProcessInformation().getProcessGroup().getName();
+                        return current.equals(e.getLocation().getGroup());
+                    }).collect(Collectors.toList()));
 
-            ExecutorAPI.getInstance().getSyncAPI().getProcessSyncAPI().getAllProcesses().forEach(this::handleProcessStart);
-            this.runTasks();
-        });
+                    ExecutorAPI.getInstance().getProcessProvider().getProcesses().forEach(this::handleProcessStart);
+                    this.runTasks();
+                }));
     }
 
     @Nullable

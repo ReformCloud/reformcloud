@@ -44,13 +44,10 @@ import java.util.stream.Collectors;
 public final class RunnerReformScriptInterpreter implements ReformScriptInterpreter {
 
     private static final String COMMENT_LINE_START = "# ";
-
     private static final String TASK_LINE_START = "TASK ";
-
     private static final String TASK_END = "TASK END";
 
     private final Collection<InterpreterCommand> commands = new CopyOnWriteArrayList<>();
-
     private final Collection<InterpreterVariable> variables = new CopyOnWriteArrayList<>();
 
     @NotNull
@@ -82,8 +79,7 @@ public final class RunnerReformScriptInterpreter implements ReformScriptInterpre
     public InterpreterVariable getVariable(@NotNull String variable) {
         return this.variables
                 .stream()
-                .filter(e -> variable.toLowerCase().contains(e.wrap())
-                        || (e.wrap().endsWith("*_%_") && e.wrap().startsWith(variable)))
+                .filter(e -> variable.toLowerCase().contains(e.wrap()) || (e.wrap().endsWith("*_%_") && e.wrap().startsWith(variable)))
                 .findFirst()
                 .orElse(null);
     }

@@ -26,7 +26,8 @@ package systems.reformcloud.reformcloud2.proxy.bungeecord;
 
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.plugin.Plugin;
-import systems.reformcloud.reformcloud2.executor.api.common.ExecutorAPI;
+import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
+import systems.reformcloud.reformcloud2.executor.api.event.EventManager;
 import systems.reformcloud.reformcloud2.proxy.bungeecord.listener.BungeeCordListener;
 import systems.reformcloud.reformcloud2.proxy.bungeecord.listener.BungeeCordProxyConfigurationHandlerSetupListener;
 import systems.reformcloud.reformcloud2.proxy.plugin.PluginConfigHandler;
@@ -35,13 +36,12 @@ public class BungeeCordPlugin extends Plugin {
 
     @Override
     public void onEnable() {
-        ExecutorAPI.getInstance().getEventManager().registerListener(new BungeeCordProxyConfigurationHandlerSetupListener());
+        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).registerListener(new BungeeCordProxyConfigurationHandlerSetupListener());
 
         PluginConfigHandler.request(() -> {
             BungeeCordListener listener = new BungeeCordListener();
-
             ProxyServer.getInstance().getPluginManager().registerListener(this, listener);
-            ExecutorAPI.getInstance().getEventManager().registerListener(listener);
+            ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).registerListener(listener);
         });
     }
 }

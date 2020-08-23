@@ -28,7 +28,6 @@ import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.service.permission.PermissionService;
 import org.spongepowered.api.service.permission.SubjectCollection;
 import systems.reformcloud.reformcloud2.permissions.PermissionManagement;
-import systems.reformcloud.reformcloud2.permissions.objects.group.PermissionGroup;
 import systems.reformcloud.reformcloud2.permissions.sponge.subject.impl.AbstractGroupSubject;
 
 public class GroupSubject extends AbstractGroupSubject {
@@ -51,12 +50,9 @@ public class GroupSubject extends AbstractGroupSubject {
 
     @Override
     protected boolean has(String permission) {
-        PermissionGroup permissionGroup = PermissionManagement.getInstance().getGroup(this.group);
-        if (permissionGroup == null) {
-            return false;
-        }
-
-        return PermissionManagement.getInstance().hasPermission(permissionGroup, permission.toLowerCase());
+        return PermissionManagement.getInstance().getPermissionGroup(this.group)
+                .map(group -> PermissionManagement.getInstance().hasPermission(group, permission.toLowerCase()))
+                .orElse(Boolean.FALSE);
     }
 
     @Override

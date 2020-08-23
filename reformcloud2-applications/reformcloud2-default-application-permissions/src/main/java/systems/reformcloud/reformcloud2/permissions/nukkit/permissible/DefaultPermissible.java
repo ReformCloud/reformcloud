@@ -30,8 +30,8 @@ import cn.nukkit.permission.Permission;
 import cn.nukkit.permission.PermissionAttachment;
 import cn.nukkit.permission.PermissionAttachmentInfo;
 import cn.nukkit.plugin.Plugin;
-import systems.reformcloud.reformcloud2.executor.api.api.API;
-import systems.reformcloud.reformcloud2.executor.api.common.process.ProcessInformation;
+import systems.refomcloud.reformcloud2.embedded.Embedded;
+import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.permissions.PermissionManagement;
 import systems.reformcloud.reformcloud2.permissions.nodes.NodeGroup;
 import systems.reformcloud.reformcloud2.permissions.nodes.PermissionNode;
@@ -111,7 +111,7 @@ public class DefaultPermissible extends PermissibleBase {
         this.perms = new ConcurrentHashMap<>();
 
         final PermissionUser permissionUser = PermissionManagement.getInstance().loadUser(this.uuid);
-        final ProcessInformation current = API.getInstance().getCurrentProcessInformation();
+        final ProcessInformation current = Embedded.getInstance().getCurrentProcessInformation();
 
         permissionUser.getPermissionNodes().stream().filter(PermissionNode::isValid)
                 .forEach(e -> this.perms.put(e.getActualPermission(), new PermissionAttachmentInfo(
@@ -124,13 +124,13 @@ public class DefaultPermissible extends PermissibleBase {
                 .getGroups()
                 .stream()
                 .filter(NodeGroup::isValid)
-                .map(e -> PermissionManagement.getInstance().getGroup(e.getGroupName()))
+                .map(e -> PermissionManagement.getInstance().getPermissionGroup(e.getGroupName()).orElse(null))
                 .filter(Objects::nonNull)
                 .flatMap(e -> {
                     Stream.Builder<PermissionGroup> stream = Stream.<PermissionGroup>builder().add(e);
                     e.getSubGroups()
                             .stream()
-                            .map(g -> PermissionManagement.getInstance().getGroup(g))
+                            .map(g -> PermissionManagement.getInstance().getPermissionGroup(g).orElse(null))
                             .filter(Objects::nonNull)
                             .forEach(stream);
                     return stream.build();

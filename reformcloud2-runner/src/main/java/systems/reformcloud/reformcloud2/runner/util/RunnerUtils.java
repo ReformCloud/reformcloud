@@ -32,7 +32,9 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
@@ -71,10 +73,6 @@ public final class RunnerUtils {
      * The file downloaded format string
      */
     public static final String FILE_DOWNLOADED_FORMAT = "Download of file %s was completed successfully after %dms";
-    /**
-     * All available executors
-     */
-    public static final Collection<String> AVAILABLE_EXECUTORS = Arrays.asList("node", "controller", "client");
 
     private RunnerUtils() {
         throw new UnsupportedOperationException();
@@ -104,7 +102,7 @@ public final class RunnerUtils {
      * @param line The message line which should get debugged if debug logging is enabled
      */
     public static void debug(@NotNull String line) {
-        if (Boolean.getBoolean("reformcloud.dev.mode")) {
+        if (Boolean.getBoolean("reformcloud.runner.debug")) {
             System.out.println("DEBUG: " + line);
         }
     }
@@ -197,7 +195,7 @@ public final class RunnerUtils {
      */
     public static void downloadFile(@NotNull String url, @NotNull Path target) {
         openURLConnection(url, connection -> {
-            System.out.println(String.format(RunnerUtils.FILE_DOWNLOAD_FORMAT, url, RunnerUtils.getSize(connection.getContentLengthLong())));
+            System.out.printf(RunnerUtils.FILE_DOWNLOAD_FORMAT + "%n", url, RunnerUtils.getSize(connection.getContentLengthLong()));
             long start = System.currentTimeMillis();
 
             try (InputStream stream = connection.getInputStream()) {
@@ -206,7 +204,7 @@ public final class RunnerUtils {
                 ex.printStackTrace();
             }
 
-            System.out.println(String.format(RunnerUtils.FILE_DOWNLOADED_FORMAT, url, System.currentTimeMillis() - start));
+            System.out.printf(RunnerUtils.FILE_DOWNLOADED_FORMAT + "%n", url, System.currentTimeMillis() - start);
         });
     }
 
