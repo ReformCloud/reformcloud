@@ -61,6 +61,8 @@ public final class EnvironmentBuilder {
      * Constructs the env for the specified process
      *
      * @param runningProcess The process for which we are building the env
+     * @param firstStart     If the process is prepared the first time
+     * @param connectionKey  The connection key generated for the process
      */
     static void constructEnvFor(@NotNull DefaultNodeLocalProcessWrapper runningProcess, boolean firstStart, @NotNull String connectionKey) {
         NetworkInfo networkInfo = runningProcess.getProcessInformation().getNetworkInfo();
