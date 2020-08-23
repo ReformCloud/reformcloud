@@ -2,6 +2,6 @@
   "name": "CloudFlareAddon",
   "author": "derklaro",
   "main": "systems.reformcloud.reformcloud2.cloudflare.ReformCloudApplication",
-  "version": "2.10.0-SNAPSHOT",
-  "impl-version": "2.10.0-SNAPSHOT"
+  "version": "2.10.0",
+  "impl-version": "2.10.0"
 }

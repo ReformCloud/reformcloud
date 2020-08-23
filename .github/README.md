@@ -127,7 +127,7 @@ Because of this you don't need to provide any repository.
         <groupId>systems.reformcloud.reformcloud2</groupId>
         <!-- replace with needed artifact for example 'reformcloud2-executor' or 'reformcloud2-default-application-permissions' -->
         <artifactId>reformcloud2-executor-api</artifactId>
-        <version>2.10.0-SNAPSHOT</version>
+        <version>2.10.0</version>
         <scope>provided</scope>
     </dependency>
 ```
