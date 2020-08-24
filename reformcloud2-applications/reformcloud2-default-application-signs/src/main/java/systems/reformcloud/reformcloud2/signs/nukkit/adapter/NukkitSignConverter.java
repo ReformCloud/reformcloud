@@ -25,7 +25,7 @@
 package systems.reformcloud.reformcloud2.signs.nukkit.adapter;
 
 import cn.nukkit.Server;
-import cn.nukkit.blockentity.BlockEntitySign;
+import cn.nukkit.blockentity.Sign;
 import cn.nukkit.level.Location;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -37,29 +37,29 @@ import systems.reformcloud.reformcloud2.signs.util.sign.CloudSign;
 
 import java.math.BigDecimal;
 
-public class NukkitSignConverter implements SignConverter<BlockEntitySign> {
+public class NukkitSignConverter implements SignConverter<Sign> {
 
     static final NukkitSignConverter INSTANCE = new NukkitSignConverter();
 
     @Nullable
     @Override
-    public BlockEntitySign from(@NotNull CloudSign cloudSign) {
+    public Sign from(@NotNull CloudSign cloudSign) {
         Location location = this.accumulate(cloudSign.getLocation());
-        return location != null && location.getLevel().getBlockEntity(location) instanceof BlockEntitySign
-                ? (BlockEntitySign) location.getLevel().getBlockEntity(location)
+        return location != null && location.getLevel().getBlockEntity(location.getBlock().getPosition()) instanceof Sign
+                ? (Sign) location.getLevel().getBlockEntity(location.getBlock().getPosition())
                 : null;
     }
 
     @NotNull
     @Override
-    public CloudSign to(@NotNull BlockEntitySign blockEntitySign, @NotNull String group) {
-        return new CloudSign(group, this.accumulate(blockEntitySign.getLocation().clone()));
+    public CloudSign to(@NotNull Sign blockEntitySign, @NotNull String group) {
+        return new CloudSign(group, this.accumulate(Location.from(blockEntitySign.getPosition(), blockEntitySign.getLevel())));
     }
 
     @NotNull
     @Override
-    public CloudLocation to(@NotNull BlockEntitySign blockEntitySign) {
-        return this.accumulate(blockEntitySign.getLocation().clone());
+    public CloudLocation to(@NotNull Sign blockEntitySign) {
+        return this.accumulate(Location.from(blockEntitySign.getPosition(), blockEntitySign.getLevel()));
     }
 
     private Location accumulate(CloudLocation cloudLocation) {
@@ -67,10 +67,10 @@ public class NukkitSignConverter implements SignConverter<BlockEntitySign> {
             return null;
         }
 
-        return new Location(
-                cloudLocation.getX(),
-                cloudLocation.getY(),
-                cloudLocation.getZ(),
+        return Location.from(
+                (float) cloudLocation.getX(),
+                (float) cloudLocation.getY(),
+                (float) cloudLocation.getZ(),
                 cloudLocation.getYaw(),
                 cloudLocation.getPitch(),
                 Server.getInstance().getLevelByName(cloudLocation.getWorld())

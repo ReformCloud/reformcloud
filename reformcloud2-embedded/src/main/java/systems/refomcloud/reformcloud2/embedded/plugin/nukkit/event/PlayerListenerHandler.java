@@ -54,7 +54,7 @@ public final class PlayerListenerHandler implements Listener {
                 event.getPlayer()::hasPermission,
                 NukkitExecutor.getInstance().getIngameMessages(),
                 null,
-                event.getPlayer().getUniqueId(),
+                event.getPlayer().getServerId(),
                 event.getPlayer().getName()
         );
         if (!checked.getFirst() && checked.getSecond() != null) {
@@ -66,7 +66,7 @@ public final class PlayerListenerHandler implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void handle(final @NotNull PlayerQuitEvent event) {
         ProcessInformation current = Embedded.getInstance().getCurrentProcessInformation();
-        if (!current.getProcessPlayerManager().isPlayerOnlineOnCurrentProcess(event.getPlayer().getUniqueId())) {
+        if (!current.getProcessPlayerManager().isPlayerOnlineOnCurrentProcess(event.getPlayer().getServerId())) {
             return;
         }
 
@@ -78,7 +78,7 @@ public final class PlayerListenerHandler implements Listener {
             }
 
             current.updateRuntimeInformation();
-            current.getProcessPlayerManager().onLogout(event.getPlayer().getUniqueId());
+            current.getProcessPlayerManager().onLogout(event.getPlayer().getServerId());
             Embedded.getInstance().updateCurrentProcessInformation();
         });
     }

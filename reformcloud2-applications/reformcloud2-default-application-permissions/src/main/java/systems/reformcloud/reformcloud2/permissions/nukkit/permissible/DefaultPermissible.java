@@ -24,11 +24,11 @@
  */
 package systems.reformcloud.reformcloud2.permissions.nukkit.permissible;
 
-import cn.nukkit.Player;
 import cn.nukkit.permission.PermissibleBase;
 import cn.nukkit.permission.Permission;
 import cn.nukkit.permission.PermissionAttachment;
 import cn.nukkit.permission.PermissionAttachmentInfo;
+import cn.nukkit.player.Player;
 import cn.nukkit.plugin.Plugin;
 import systems.refomcloud.reformcloud2.embedded.Embedded;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
@@ -52,7 +52,7 @@ public class DefaultPermissible extends PermissibleBase {
 
     public DefaultPermissible(Player player) {
         super(player);
-        this.uuid = player.getUniqueId();
+        this.uuid = player.getServerId();
     }
 
     @Override

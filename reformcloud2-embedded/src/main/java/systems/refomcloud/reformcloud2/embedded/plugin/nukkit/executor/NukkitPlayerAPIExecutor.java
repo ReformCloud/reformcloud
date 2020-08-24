@@ -27,8 +27,10 @@ package systems.refomcloud.reformcloud2.embedded.plugin.nukkit.executor;
 import cn.nukkit.Server;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Location;
-import cn.nukkit.level.ParticleEffect;
 import cn.nukkit.level.Sound;
+import cn.nukkit.utils.Identifier;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import systems.refomcloud.reformcloud2.embedded.executor.PlayerAPIExecutor;
 import systems.reformcloud.reformcloud2.executor.api.CommonHelper;
 
@@ -54,7 +56,7 @@ public class NukkitPlayerAPIExecutor extends PlayerAPIExecutor {
                 return;
             }
 
-            val.getLevel().addSound(val.getLocation(), nukkitSound, f1, f2, val);
+            val.getLevel().addSound(val.getLocation().getPosition(), nukkitSound, f1, f2, val);
         });
     }
 
@@ -66,12 +68,13 @@ public class NukkitPlayerAPIExecutor extends PlayerAPIExecutor {
     @Override
     public void executePlayEffect(UUID player, String entityEffect) {
         Server.getInstance().getPlayer(player).ifPresent(val -> {
-            ParticleEffect effect = CommonHelper.findEnumField(ParticleEffect.class, entityEffect).orNothing();
+            Identifier effect = this.getEffectByName(entityEffect);
             if (effect == null) {
                 return;
             }
 
-            val.getLevel().addParticleEffect(val.getLocation(), effect);
+            Level level = val.getLevel();
+            level.addParticleEffect(val.getLocation().getPosition(), effect, -1L, level.getDimension(), val);
         });
     }
 
@@ -80,12 +83,20 @@ public class NukkitPlayerAPIExecutor extends PlayerAPIExecutor {
         Server.getInstance().getPlayer(player).ifPresent(val -> {
             Level level = Server.getInstance().getLevelByName(world);
             if (level != null) {
-                val.teleport(new Location(x, y, z, yaw, pitch, level));
+                val.teleport(Location.from((float) x, (float) y, (float) z, yaw, pitch, level));
             }
         });
     }
 
     @Override
     public void executeConnect(UUID player, String server) {
+    }
+
+    private @Nullable Identifier getEffectByName(@NotNull String name) {
+        try {
+            return (Identifier) Identifier.class.getField(name.toUpperCase()).get(null);
+        } catch (NoSuchFieldException | IllegalAccessException exception) {
+            return null;
+        }
     }
 }

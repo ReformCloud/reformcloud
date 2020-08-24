@@ -24,7 +24,7 @@
  */
 package systems.reformcloud.reformcloud2.signs.nukkit.listener;
 
-import cn.nukkit.blockentity.BlockEntitySign;
+import cn.nukkit.blockentity.Sign;
 import cn.nukkit.event.EventHandler;
 import cn.nukkit.event.Listener;
 import cn.nukkit.event.player.PlayerInteractEvent;
@@ -43,12 +43,12 @@ public class NukkitListener implements Listener {
         NukkitSignSystemAdapter signSystemAdapter = NukkitSignSystemAdapter.getInstance();
 
         if (event.getAction().equals(PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK)) {
-            if (event.getBlock().getId() == 68 || event.getBlock().getId() == 63) {
-                if (!(event.getBlock().getLevel().getBlockEntity(event.getBlock().getLocation()) instanceof BlockEntitySign)) {
+            if (event.getBlock().getId().getName().endsWith("_SIGN")) {
+                if (!(event.getBlock().getLevel().getBlockEntity(event.getBlock().getPosition()) instanceof Sign)) {
                     return;
                 }
 
-                BlockEntitySign sign = (BlockEntitySign) event.getBlock().getLevel().getBlockEntity(event.getBlock().getLocation());
+                Sign sign = (Sign) event.getBlock().getLevel().getBlockEntity(event.getBlock().getPosition());
                 CloudSign cloudSign = signSystemAdapter.getSignAt(signSystemAdapter.getSignConverter().to(sign));
                 if (cloudSign == null) {
                     return;
@@ -56,12 +56,12 @@ public class NukkitListener implements Listener {
 
                 boolean canConnect = SignSystemAdapter.getInstance().canConnect(cloudSign, event.getPlayer()::hasPermission);
                 if (!ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).callEvent(new UserSignPreConnectEvent(
-                        event.getPlayer().getUniqueId(), event.getPlayer()::hasPermission, cloudSign, canConnect
+                        event.getPlayer().getServerId(), event.getPlayer()::hasPermission, cloudSign, canConnect
                 )).isAllowConnection()) {
                     return;
                 }
 
-                ExecutorAPI.getInstance().getPlayerProvider().getPlayer(event.getPlayer().getUniqueId())
+                ExecutorAPI.getInstance().getPlayerProvider().getPlayer(event.getPlayer().getServerId())
                         .ifPresent(wrapper -> wrapper.connect(cloudSign.getCurrentTarget().getProcessDetail().getName()));
             }
         }

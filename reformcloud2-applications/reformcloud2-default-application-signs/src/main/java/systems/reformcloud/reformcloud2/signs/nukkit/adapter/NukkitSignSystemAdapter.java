@@ -24,19 +24,23 @@
  */
 package systems.reformcloud.reformcloud2.signs.nukkit.adapter;
 
-import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockIds;
 import cn.nukkit.block.BlockSignPost;
-import cn.nukkit.blockentity.BlockEntitySign;
+import cn.nukkit.blockentity.Sign;
 import cn.nukkit.command.PluginCommand;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.level.Location;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.SimpleAxisAlignedBB;
-import cn.nukkit.math.Vector3;
+import cn.nukkit.player.Player;
+import cn.nukkit.plugin.Plugin;
 import cn.nukkit.plugin.PluginBase;
+import cn.nukkit.registry.RegistryException;
+import cn.nukkit.utils.Identifier;
 import cn.nukkit.utils.TextFormat;
+import com.nukkitx.math.vector.Vector3f;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.CommonHelper;
@@ -50,19 +54,9 @@ import systems.reformcloud.reformcloud2.signs.util.sign.CloudSign;
 import systems.reformcloud.reformcloud2.signs.util.sign.config.SignConfig;
 import systems.reformcloud.reformcloud2.signs.util.sign.config.SignSubLayout;
 
-import java.util.Arrays;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+public class NukkitSignSystemAdapter extends SharedSignSystemAdapter<Sign> {
 
-public class NukkitSignSystemAdapter extends SharedSignSystemAdapter<BlockEntitySign> {
-
-    private static final Map<String, Integer> BLOCKS = new ConcurrentHashMap<>();
     private static NukkitSignSystemAdapter instance;
-
-    static {
-        Arrays.stream(Block.fullList).forEach(e -> BLOCKS.put(e.getName(), e.getId()));
-    }
-
     private final PluginBase plugin;
 
     public NukkitSignSystemAdapter(@NotNull SignConfig signConfig, @NotNull PluginBase plugin) {
@@ -73,9 +67,9 @@ public class NukkitSignSystemAdapter extends SharedSignSystemAdapter<BlockEntity
 
         Server.getInstance().getPluginManager().registerEvents(new NukkitListener(), plugin);
 
-        PluginCommand command = (PluginCommand) plugin.getCommand("signs");
+        PluginCommand<Plugin> command = plugin.getCommand("signs");
         command.setExecutor(new NukkitCommandSigns());
-        command.setPermission("reformcloud.command.signs");
+        command.getPermissions().add("reformcloud.command.signs");
     }
 
     public static NukkitSignSystemAdapter getInstance() {
@@ -84,7 +78,7 @@ public class NukkitSignSystemAdapter extends SharedSignSystemAdapter<BlockEntity
 
     @Override
     protected void setSignLines(@NotNull CloudSign cloudSign, @NotNull String[] lines) {
-        BlockEntitySign blockEntitySign = this.getSignConverter().from(cloudSign);
+        Sign blockEntitySign = this.getSignConverter().from(cloudSign);
         if (blockEntitySign == null) {
             return;
         }
@@ -98,16 +92,16 @@ public class NukkitSignSystemAdapter extends SharedSignSystemAdapter<BlockEntity
                 this.plugin, this::updateSigns, CommonHelper.longToInt(Math.round(20 / super.signConfig.getUpdateInterval()))
         );
 
-        double distance = super.signConfig.getKnockBackDistance();
+        float distance = (float) super.signConfig.getKnockBackDistance();
         Server.getInstance().getScheduler().scheduleDelayedRepeatingTask(this.plugin, () -> {
             for (CloudSign sign : this.signs) {
-                BlockEntitySign blockEntitySign = this.getSignConverter().from(sign);
+                Sign blockEntitySign = this.getSignConverter().from(sign);
                 if (blockEntitySign == null) {
                     continue;
                 }
 
-                Location location = blockEntitySign.getLocation();
-                AxisAlignedBB alignedBB = new SimpleAxisAlignedBB(location, location)
+                Location location = Location.from(blockEntitySign.getPosition(), blockEntitySign.getLevel());
+                AxisAlignedBB alignedBB = new SimpleAxisAlignedBB(blockEntitySign.getPosition(), blockEntitySign.getPosition())
                         .expand(distance, distance, distance);
 
                 for (Entity entity : location.getLevel().getNearbyEntities(alignedBB)) {
@@ -120,12 +114,11 @@ public class NukkitSignSystemAdapter extends SharedSignSystemAdapter<BlockEntity
                         continue;
                     }
 
-                    Vector3 vector = player.getPosition()
-                            .subtract(location)
+                    Vector3f vector = player.getPosition()
+                            .sub(location.getX(), location.getY(), location.getZ())
                             .normalize()
-                            .multiply(super.signConfig.getKnockBackStrength());
-                    vector.y = 0.2D;
-                    player.setMotion(vector);
+                            .mul(super.signConfig.getKnockBackStrength());
+                    player.setMotion(Vector3f.from(vector.getX(), 0.2f, vector.getZ()));
                 }
             }
         }, 20, 5);
@@ -143,7 +136,7 @@ public class NukkitSignSystemAdapter extends SharedSignSystemAdapter<BlockEntity
 
     @Override
     public void changeBlock(@NotNull CloudSign sign, @NotNull SignSubLayout layout) {
-        BlockEntitySign blockEntitySign = this.getSignConverter().from(sign);
+        Sign blockEntitySign = this.getSignConverter().from(sign);
         if (blockEntitySign == null) {
             return;
         }
@@ -152,7 +145,7 @@ public class NukkitSignSystemAdapter extends SharedSignSystemAdapter<BlockEntity
     }
 
     @Override
-    public @NotNull SignConverter<BlockEntitySign> getSignConverter() {
+    public @NotNull SignConverter<Sign> getSignConverter() {
         return NukkitSignConverter.INSTANCE;
     }
 
@@ -162,24 +155,36 @@ public class NukkitSignSystemAdapter extends SharedSignSystemAdapter<BlockEntity
         this.restartTasks();
     }
 
-    private void changeBlock0(@NotNull BlockEntitySign sign, @NotNull SignSubLayout layout) {
+    private void changeBlock0(@NotNull Sign sign, @NotNull SignSubLayout layout) {
         if (!(sign.getBlock() instanceof BlockSignPost)) {
             return;
         }
 
         BlockSignPost post = (BlockSignPost) sign.getBlock();
-        Location location = post.getSide(post.getBlockFace().getOpposite()).getLocation();
-        Integer block = BLOCKS.get(layout.getBlock());
+        Location location = this.getLocationFromBlock(post.getSide(post.getBlockFace().getOpposite()));
+        Block block = this.getBlockByName(layout.getBlock());
         if (block == null) {
             return;
         }
 
-        Block nukkitBlock = Block.fullList[(block << 4) + layout.getSubID()].clone();
-        location.getLevel().setBlock(location, nukkitBlock, true, true);
+        location.getLevel().setBlock(location.getPosition().toInt(), block, true, true);
     }
 
     private void restartTasks() {
         Server.getInstance().getScheduler().cancelTask(this.plugin);
         this.runTasks();
+    }
+
+    private @Nullable Block getBlockByName(@NotNull String name) {
+        try {
+            Identifier identifier = (Identifier) BlockIds.class.getField(name.toUpperCase()).get(null);
+            return Block.get(identifier);
+        } catch (NoSuchFieldException | IllegalAccessException | RegistryException exception) {
+            return null;
+        }
+    }
+
+    private @NotNull Location getLocationFromBlock(@NotNull Block block) {
+        return Location.from(block.getPosition(), block.getLevel());
     }
 }

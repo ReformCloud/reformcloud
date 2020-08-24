@@ -24,7 +24,7 @@
  */
 package systems.reformcloud.reformcloud2.permissions.nukkit;
 
-import cn.nukkit.Player;
+import cn.nukkit.player.Player;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.permissions.nukkit.permissible.DefaultPermissible;
 

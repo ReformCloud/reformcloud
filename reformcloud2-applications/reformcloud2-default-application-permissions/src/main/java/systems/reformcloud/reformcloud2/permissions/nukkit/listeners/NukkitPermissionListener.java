@@ -40,6 +40,6 @@ public class NukkitPermissionListener implements Listener {
 
     @EventHandler
     public void handle(final PlayerQuitEvent event) {
-        PermissionManagement.getInstance().handleDisconnect(event.getPlayer().getUniqueId());
+        PermissionManagement.getInstance().handleDisconnect(event.getPlayer().getServerId());
     }
 }
