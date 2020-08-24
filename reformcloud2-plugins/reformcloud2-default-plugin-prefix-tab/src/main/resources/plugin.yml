@@ -1,5 +1,5 @@
 name: ReformCloud2Tab
-version: '2.10.0'
+version: '2.10.1-SNAPSHOT'
 author: derklaro
 main: systems.reformcloud.reformcloud2.tab.ReformCloudTabPlugin
 api-version: '1.13'
