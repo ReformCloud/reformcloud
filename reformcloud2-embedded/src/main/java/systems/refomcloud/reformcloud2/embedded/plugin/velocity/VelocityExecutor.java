@@ -25,6 +25,7 @@
 package systems.refomcloud.reformcloud2.embedded.plugin.velocity;
 
 import com.velocitypowered.api.proxy.ProxyServer;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.jetbrains.annotations.NotNull;
 import systems.refomcloud.reformcloud2.embedded.Embedded;
 import systems.refomcloud.reformcloud2.embedded.controller.ProcessEventHandler;
@@ -39,6 +40,8 @@ import systems.reformcloud.reformcloud2.executor.api.event.EventManager;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 
 public final class VelocityExecutor extends Embedded {
+
+    public static final LegacyComponentSerializer SERIALIZER = LegacyComponentSerializer.builder().character('§').extractUrls().build();
 
     private static VelocityExecutor instance;
     private final ProxyServer proxyServer;

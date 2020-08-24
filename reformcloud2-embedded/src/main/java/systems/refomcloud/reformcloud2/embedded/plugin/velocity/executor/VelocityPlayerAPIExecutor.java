@@ -25,12 +25,12 @@
 package systems.refomcloud.reformcloud2.embedded.plugin.velocity.executor;
 
 import com.velocitypowered.api.proxy.ProxyServer;
-import com.velocitypowered.api.util.title.TextTitle;
-import com.velocitypowered.api.util.title.Titles;
-import net.kyori.text.serializer.legacy.LegacyComponentSerializer;
+import net.kyori.adventure.title.Title;
 import org.jetbrains.annotations.NotNull;
 import systems.refomcloud.reformcloud2.embedded.executor.PlayerAPIExecutor;
+import systems.refomcloud.reformcloud2.embedded.plugin.velocity.VelocityExecutor;
 
+import java.time.Duration;
 import java.util.UUID;
 
 public class VelocityPlayerAPIExecutor extends PlayerAPIExecutor {
@@ -43,12 +43,12 @@ public class VelocityPlayerAPIExecutor extends PlayerAPIExecutor {
 
     @Override
     public void executeSendMessage(UUID player, String message) {
-        this.proxyServer.getPlayer(player).ifPresent(val -> val.sendMessage(LegacyComponentSerializer.legacyLinking().deserialize(message)));
+        this.proxyServer.getPlayer(player).ifPresent(val -> val.sendMessage(VelocityExecutor.SERIALIZER.deserialize(message)));
     }
 
     @Override
     public void executeKickPlayer(UUID player, String message) {
-        this.proxyServer.getPlayer(player).ifPresent(val -> val.disconnect(LegacyComponentSerializer.legacyLinking().deserialize(message)));
+        this.proxyServer.getPlayer(player).ifPresent(val -> val.disconnect(VelocityExecutor.SERIALIZER.deserialize(message)));
     }
 
     @Override
@@ -58,15 +58,12 @@ public class VelocityPlayerAPIExecutor extends PlayerAPIExecutor {
     @Override
     public void executeSendTitle(UUID player, String title, String subTitle, int fadeIn, int stay, int fadeOut) {
         this.proxyServer.getPlayer(player).ifPresent(val -> {
-            TextTitle velocityTitle = Titles
-                    .text()
-                    .title(LegacyComponentSerializer.legacyLinking().deserialize(title))
-                    .subtitle(LegacyComponentSerializer.legacyLinking().deserialize(subTitle))
-                    .fadeIn(fadeIn)
-                    .stay(stay)
-                    .fadeOut(fadeOut)
-                    .build();
-            val.sendTitle(velocityTitle);
+            Title velocityTitle = Title.of(
+                    VelocityExecutor.SERIALIZER.deserialize(title),
+                    VelocityExecutor.SERIALIZER.deserialize(subTitle),
+                    Title.Times.of(Duration.ofSeconds(fadeIn / 20), Duration.ofSeconds(stay / 20), Duration.ofSeconds(fadeOut / 20))
+            );
+            val.showTitle(velocityTitle);
         });
     }
 

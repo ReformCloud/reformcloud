@@ -203,7 +203,7 @@ public enum Version {
             "https://github.com/HexagonMC/BungeeCord/releases/download/v246/BungeeCord.jar", 2, 25565),
     TRAVERTINE("Travertine", "1.7-1.16",
             "https://papermc.io/ci/job/Travertine/lastSuccessfulBuild/artifact/Travertine-Proxy/bootstrap/target/Travertine.jar", 2, 25565),
-    VELOCITY("Velocity", "1.8-1.16",
+    VELOCITY("Velocity-1.0.9", "1.8-1.16",
             "https://dl.reformcloud.systems/mcversions/velocity/velocity-proxy-1.0.9-all.jar", 2, 25565),
 
     /**

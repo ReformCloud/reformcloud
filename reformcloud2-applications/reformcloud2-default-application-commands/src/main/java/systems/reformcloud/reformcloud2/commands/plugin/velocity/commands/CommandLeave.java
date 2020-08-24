@@ -24,11 +24,9 @@
  */
 package systems.reformcloud.reformcloud2.commands.plugin.velocity.commands;
 
-import com.velocitypowered.api.command.Command;
-import com.velocitypowered.api.command.CommandSource;
+import com.velocitypowered.api.command.SimpleCommand;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
-import net.kyori.text.serializer.legacy.LegacyComponentSerializer;
 import org.jetbrains.annotations.NotNull;
 import systems.refomcloud.reformcloud2.embedded.Embedded;
 import systems.refomcloud.reformcloud2.embedded.controller.ProxyServerController;
@@ -40,7 +38,7 @@ import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import java.util.List;
 import java.util.Optional;
 
-public class CommandLeave implements Command {
+public class CommandLeave implements SimpleCommand {
 
     private final List<String> aliases;
 
@@ -48,15 +46,20 @@ public class CommandLeave implements Command {
         this.aliases = aliases;
     }
 
+    @NotNull
+    public List<String> getAliases() {
+        return this.aliases;
+    }
+
     @Override
-    public void execute(CommandSource commandSource, @NotNull String[] strings) {
-        if (!(commandSource instanceof Player)) {
+    public void execute(Invocation invocation) {
+        if (!(invocation.source() instanceof Player)) {
             return;
         }
 
-        Player player = (Player) commandSource;
+        Player player = (Player) invocation.source();
         if (!player.getCurrentServer().isPresent()) {
-            player.sendMessage(LegacyComponentSerializer.legacyLinking().deserialize(Embedded.getInstance().getIngameMessages().format(
+            player.sendMessage(VelocityExecutor.SERIALIZER.deserialize(Embedded.getInstance().getIngameMessages().format(
                     Embedded.getInstance().getIngameMessages().getNoHubServerAvailable()
             )));
             return;
@@ -65,7 +68,7 @@ public class CommandLeave implements Command {
         if (ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ProxyServerController.class).getCachedLobbyServers().stream().anyMatch(
                 e -> e.getProcessDetail().getName().equals(player.getCurrentServer().get().getServerInfo().getName())
         )) {
-            player.sendMessage(LegacyComponentSerializer.legacyLinking().deserialize(Embedded.getInstance().getIngameMessages().format(
+            player.sendMessage(VelocityExecutor.SERIALIZER.deserialize(Embedded.getInstance().getIngameMessages().format(
                     Embedded.getInstance().getIngameMessages().getAlreadyConnectedToHub()
             )));
             return;
@@ -80,23 +83,18 @@ public class CommandLeave implements Command {
         ).ifPresent(processInformation -> {
             Optional<RegisteredServer> lobby = VelocityExecutor.getInstance().getProxyServer().getServer(processInformation.getProcessDetail().getName());
             if (!lobby.isPresent()) {
-                player.sendMessage(LegacyComponentSerializer.legacyLinking().deserialize(Embedded.getInstance().getIngameMessages().format(
+                player.sendMessage(VelocityExecutor.SERIALIZER.deserialize(Embedded.getInstance().getIngameMessages().format(
                         Embedded.getInstance().getIngameMessages().getNoHubServerAvailable()
                 )));
                 return;
             }
 
-            player.sendMessage(LegacyComponentSerializer.legacyLinking().deserialize(Embedded.getInstance().getIngameMessages().format(
+            player.sendMessage(VelocityExecutor.SERIALIZER.deserialize(Embedded.getInstance().getIngameMessages().format(
                     Embedded.getInstance().getIngameMessages().getConnectingToHub(), processInformation.getProcessDetail().getName()
             )));
             player.createConnectionRequest(lobby.get()).fireAndForget();
-        }).ifEmpty(v -> player.sendMessage(LegacyComponentSerializer.legacyLinking().deserialize(Embedded.getInstance().getIngameMessages().format(
+        }).ifEmpty(v -> player.sendMessage(VelocityExecutor.SERIALIZER.deserialize(Embedded.getInstance().getIngameMessages().format(
                 Embedded.getInstance().getIngameMessages().getNoHubServerAvailable()
         ))));
-    }
-
-    @NotNull
-    public List<String> getAliases() {
-        return this.aliases;
     }
 }

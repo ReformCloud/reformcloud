@@ -24,12 +24,17 @@
  */
 package systems.reformcloud.reformcloud2.commands.plugin.velocity.handler;
 
+import com.velocitypowered.api.command.CommandMeta;
 import com.velocitypowered.api.proxy.ProxyServer;
+import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.commands.config.CommandsConfig;
 import systems.reformcloud.reformcloud2.commands.plugin.CommandConfigHandler;
 import systems.reformcloud.reformcloud2.commands.plugin.velocity.commands.CommandLeave;
 import systems.reformcloud.reformcloud2.commands.plugin.velocity.commands.CommandReformCloud;
+import systems.reformcloud.reformcloud2.executor.api.base.Conditions;
+
+import java.util.Arrays;
 
 public class VelocityCommandConfigHandler extends CommandConfigHandler {
 
@@ -47,16 +52,16 @@ public class VelocityCommandConfigHandler extends CommandConfigHandler {
         if (commandsConfig.isLeaveCommandEnabled() && commandsConfig.getLeaveCommands().size() > 0) {
             this.commandLeave = new CommandLeave(commandsConfig.getLeaveCommands());
             this.proxyServer.getCommandManager().register(
-                    this.commandLeave,
-                    commandsConfig.getLeaveCommands().toArray(new String[0])
+                    this.forAliases(commandsConfig.getLeaveCommands().toArray(new String[0])),
+                    this.commandLeave
             );
         }
 
         if (commandsConfig.isReformCloudCommandEnabled() && commandsConfig.getReformCloudCommands().size() > 0) {
             this.commandReformCloud = new CommandReformCloud(commandsConfig.getReformCloudCommands());
             this.proxyServer.getCommandManager().register(
-                    this.commandReformCloud,
-                    commandsConfig.getReformCloudCommands().toArray(new String[0])
+                    this.forAliases(commandsConfig.getReformCloudCommands().toArray(new String[0])),
+                    this.commandReformCloud
             );
         }
     }
@@ -72,5 +77,15 @@ public class VelocityCommandConfigHandler extends CommandConfigHandler {
             this.commandReformCloud.getAliases().forEach(this.proxyServer.getCommandManager()::unregister);
             this.commandReformCloud = null;
         }
+    }
+
+    private @NotNull CommandMeta forAliases(@NonNls String[] aliases) {
+        Conditions.isTrue(aliases.length > 0);
+        CommandMeta.Builder builder = this.proxyServer.getCommandManager().metaBuilder(aliases[0]);
+        if (aliases.length > 1) {
+            builder.aliases(Arrays.copyOfRange(aliases, 1, aliases.length));
+        }
+
+        return builder.build();
     }
 }

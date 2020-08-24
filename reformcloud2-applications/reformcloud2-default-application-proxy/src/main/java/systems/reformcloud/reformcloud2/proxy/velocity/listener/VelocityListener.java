@@ -33,11 +33,11 @@ import com.velocitypowered.api.event.proxy.ProxyPingEvent;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.server.ServerPing;
-import net.kyori.text.Component;
-import net.kyori.text.TextComponent;
-import net.kyori.text.serializer.legacy.LegacyComponentSerializer;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
 import org.jetbrains.annotations.NotNull;
 import systems.refomcloud.reformcloud2.embedded.Embedded;
+import systems.refomcloud.reformcloud2.embedded.plugin.velocity.VelocityExecutor;
 import systems.reformcloud.reformcloud2.executor.api.event.events.process.ProcessUpdateEvent;
 import systems.reformcloud.reformcloud2.executor.api.event.handler.Listener;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
@@ -58,10 +58,10 @@ public final class VelocityListener {
         ProxyConfigurationHandler.getInstance().getCurrentTabListConfiguration().ifPresent(tabListConfiguration -> {
             Component header = tabListConfiguration.getHeader() == null
                     ? TextComponent.empty()
-                    : LegacyComponentSerializer.legacyLinking().deserialize(replaceVelocityPlaceHolders(player, tabListConfiguration.getHeader()));
+                    : VelocityExecutor.SERIALIZER.deserialize(replaceVelocityPlaceHolders(player, tabListConfiguration.getHeader()));
             Component footer = tabListConfiguration.getFooter() == null
                     ? TextComponent.empty()
-                    : LegacyComponentSerializer.legacyLinking().deserialize(replaceVelocityPlaceHolders(player, tabListConfiguration.getFooter()));
+                    : VelocityExecutor.SERIALIZER.deserialize(replaceVelocityPlaceHolders(player, tabListConfiguration.getFooter()));
 
             player.getTabList().setHeaderAndFooter(header, footer);
         });
@@ -103,7 +103,7 @@ public final class VelocityListener {
             int online = info.getProcessPlayerManager().getOnlineCount();
 
             builder
-                    .description(LegacyComponentSerializer.legacyLinking().deserialize(finalMotd))
+                    .description(VelocityExecutor.SERIALIZER.deserialize(finalMotd))
                     .maximumPlayers(max)
                     .onlinePlayers(online)
                     .build();
