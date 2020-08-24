@@ -3,11 +3,11 @@ name: Java CI
 on:
   push:
     branches:
-      - master
+      - stable
       - indev
   pull_request:
     branches:
-      - master
+      - stable
       - indev
 
 jobs:

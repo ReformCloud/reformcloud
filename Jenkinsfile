@@ -48,7 +48,7 @@ pipeline {
         stage('Deploy release') {
             when {
                 allOf {
-                    branch 'master'
+                    branch 'stable'
                     environment name:'IS_SNAPSHOT', value: 'false'
                 }
             }

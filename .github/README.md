@@ -1,6 +1,6 @@
 ![](https://s17.directupload.net/images/190317/g4777bij.png)
 
-# ReformCloud 2 [![Discord](https://img.shields.io/discord/499666347337449472.svg?color=7289DA&label=discord)](https://discord.gg/uskXdVZ) [![CodeFactor](https://www.codefactor.io/repository/github/derklaro/reformcloud2/badge?s=1093a7711bb179b3fb6e48ffbb3e4c1315e5aada)](https://www.codefactor.io/repository/github/derklaro/reformcloud2) [![Build Status](https://travis-ci.com/derklaro/reformcloud2.svg?token=DsMrJCyqH6BCtUu5ax94&branch=master)](https://travis-ci.com/derklaro/reformcloud2)
+# ReformCloud 2 [![Discord](https://img.shields.io/discord/499666347337449472.svg?color=7289DA&label=discord)](https://discord.gg/uskXdVZ) [![CodeFactor](https://www.codefactor.io/repository/github/derklaro/reformcloud2/badge?s=1093a7711bb179b3fb6e48ffbb3e4c1315e5aada)](https://www.codefactor.io/repository/github/derklaro/reformcloud2) [![Build Status](https://travis-ci.com/derklaro/reformcloud2.svg?token=DsMrJCyqH6BCtUu5ax94&branch=stable)](https://travis-ci.com/derklaro/reformcloud2)
 
 ReformCloud is a cloud system programmed and optimized for all sizes of networks. 
 The cloud system provides a huge api to access all internal functions, group, processes etc. It's made
@@ -53,7 +53,7 @@ them in the group file and the cloud will copy the paths or templates at the nex
  
 ## Startup
 
-You can download the latest release version from the [CI](https://ci.reformcloud.systems/job/reformcloud/job/reformcloud2/job/master/lastStableBuild/artifact/reformcloud2-runner/target/runner.jar)
+You can download the latest release version from the [CI](https://ci.reformcloud.systems/job/reformcloud/job/reformcloud2/job/stable/lastStableBuild/artifact/reformcloud2-runner/target/runner.jar)
 or as a zip file from the [download server](https://dl.reformcloud.systems/latest/ReformCloud2-latest.zip).
 
 Just save the file named as `runner.jar` in the folder you want to run the cloud in and start the runner using:
