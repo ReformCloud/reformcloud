@@ -458,7 +458,7 @@ public class CommandPerms implements Command {
 
                 Long timeout = parseTimeout(requestedTimeout, strings[5]);
                 if (timeout == null) {
-                    source.sendMessage("Please provide a valid timeout unit instaed of " + strings[5]);
+                    source.sendMessage("Please provide a valid timeout unit instead of " + strings[5]);
                     return;
                 }
 
@@ -488,7 +488,7 @@ public class CommandPerms implements Command {
 
                 Long timeout = parseTimeout(requestedTimeout, strings[5]);
                 if (timeout == null) {
-                    source.sendMessage("Please provide a valid timeout unit instaed of " + strings[5]);
+                    source.sendMessage("Please provide a valid timeout unit instead of " + strings[5]);
                     return;
                 }
 
@@ -543,7 +543,7 @@ public class CommandPerms implements Command {
 
             Long timeout = parseTimeout(requestedTimeout, strings[6]);
             if (timeout == null) {
-                source.sendMessage("Please provide a valid timeout unit instaed of " + strings[6]);
+                source.sendMessage("Please provide a valid timeout unit instead of " + strings[6]);
                 return;
             }
 
@@ -574,12 +574,12 @@ public class CommandPerms implements Command {
             }
 
             if (requestedTimeout < -1) {
-                requestedTimeout = (long) -1;
+                requestedTimeout = -1L;
             }
 
             Long timeout = parseTimeout(requestedTimeout, strings[7]);
             if (timeout == null) {
-                source.sendMessage("Please provide a valid timeout unit instaed of " + strings[7]);
+                source.sendMessage("Please provide a valid timeout unit instead of " + strings[7]);
                 return;
             }
 

@@ -75,8 +75,14 @@ public class CloudSign implements SerializableObject {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof CloudSign)) return false;
+        if (this == o) {
+            return true;
+        }
+
+        if (!(o instanceof CloudSign)) {
+            return false;
+        }
+
         CloudSign sign = (CloudSign) o;
         return sign.getUniqueID().equals(this.getUniqueID());
     }

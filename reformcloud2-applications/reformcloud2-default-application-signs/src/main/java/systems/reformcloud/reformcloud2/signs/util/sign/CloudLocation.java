@@ -83,16 +83,22 @@ public class CloudLocation implements SerializableObject {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof CloudLocation)) return false;
+        if (this == o) {
+            return true;
+        }
+
+        if (!(o instanceof CloudLocation)) {
+            return false;
+        }
+
         CloudLocation that = (CloudLocation) o;
-        return Double.compare(that.getX(), this.getX()) == 0 &&
-                Double.compare(that.getY(), this.getY()) == 0 &&
-                Double.compare(that.getZ(), this.getZ()) == 0 &&
-                Float.compare(that.getYaw(), this.getYaw()) == 0 &&
-                Float.compare(that.getPitch(), this.getPitch()) == 0 &&
-                Objects.equals(this.getWorld(), that.getWorld()) &&
-                Objects.equals(this.getGroup(), that.getGroup());
+        return Double.compare(that.getX(), this.getX()) == 0
+            && Double.compare(that.getY(), this.getY()) == 0
+            && Double.compare(that.getZ(), this.getZ()) == 0
+            && Float.compare(that.getYaw(), this.getYaw()) == 0
+            && Float.compare(that.getPitch(), this.getPitch()) == 0
+            && Objects.equals(this.getWorld(), that.getWorld())
+            && Objects.equals(this.getGroup(), that.getGroup());
     }
 
     @Override

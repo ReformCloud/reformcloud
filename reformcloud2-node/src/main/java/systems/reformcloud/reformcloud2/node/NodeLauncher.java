@@ -40,7 +40,7 @@ public final class NodeLauncher {
         LanguageLoader.doLoad();
         DependencyLoader.doLoad(NodeLauncher.class.getClassLoader());
 
-        long startTime = System.currentTimeMillis();
+        final long startTime = System.currentTimeMillis();
 
         IOUtils.recreateDirectory(Paths.get("reformcloud/temp"));
         NodeExecutor nodeExecutor = new NodeExecutor();
