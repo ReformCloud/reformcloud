@@ -129,7 +129,8 @@ public class SpongeCommandSigns implements CommandExecutor {
                 .from(player)
                 .distanceLimit(15)
                 .narrowPhase(true)
-                .stopFilter(lastHit -> {
+                .select(BlockRay.notAirFilter())
+                .whilst(lastHit -> {
                     final BlockType blockType = lastHit.getExtent().getBlockType(lastHit.getBlockX(), lastHit.getBlockY(), lastHit.getBlockZ());
                     return blockType.equals(BlockTypes.STANDING_SIGN) || blockType.equals(BlockTypes.WALL_SIGN);
                 })
