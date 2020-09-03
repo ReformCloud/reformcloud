@@ -28,22 +28,19 @@ import org.jetbrains.annotations.ApiStatus;
 
 /**
  * Indicates that a user is able to cancel a specific event
- *
- * @deprecated Use {@link Cancelable} instead
  */
-@Deprecated
-@ApiStatus.ScheduledForRemoval(inVersion = "2.10.3")
-public interface Cancellable {
+@ApiStatus.AvailableSince("2.10.1-SNAPSHOT")
+public interface Cancelable {
 
     /**
      * @return If the current will get cancelled
      */
-    boolean isCancelled();
+    boolean isCanceled();
 
     /**
      * Sets if the event will get cancelled or not
      *
-     * @param cancelled If the event should get cancelled
+     * @param cancel If the event should get cancelled
      */
-    void setCancelled(boolean cancelled);
+    void setCancelled(boolean cancel);
 }

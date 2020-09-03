@@ -22,28 +22,37 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.event;
+package systems.reformcloud.reformcloud2.node.event.logger;
 
-import org.jetbrains.annotations.ApiStatus;
+import systems.reformcloud.reformcloud2.executor.api.event.Cancelable;
+import systems.reformcloud.reformcloud2.executor.api.event.Event;
 
-/**
- * Indicates that a user is able to cancel a specific event
- *
- * @deprecated Use {@link Cancelable} instead
- */
-@Deprecated
-@ApiStatus.ScheduledForRemoval(inVersion = "2.10.3")
-public interface Cancellable {
+import java.util.logging.LogRecord;
 
-    /**
-     * @return If the current will get cancelled
-     */
-    boolean isCancelled();
+public class LogRecordProcessEvent extends Event implements Cancelable {
 
-    /**
-     * Sets if the event will get cancelled or not
-     *
-     * @param cancelled If the event should get cancelled
-     */
-    void setCancelled(boolean cancelled);
+    private LogRecord logRecord;
+    private boolean cancel;
+
+    public LogRecordProcessEvent(LogRecord logRecord) {
+        this.logRecord = logRecord;
+    }
+
+    public LogRecord getLogRecord() {
+        return this.logRecord;
+    }
+
+    public void setLogRecord(LogRecord logRecord) {
+        this.logRecord = logRecord;
+    }
+
+    @Override
+    public boolean isCanceled() {
+        return this.cancel;
+    }
+
+    @Override
+    public void setCancelled(boolean cancel) {
+        this.cancel = cancel;
+    }
 }
