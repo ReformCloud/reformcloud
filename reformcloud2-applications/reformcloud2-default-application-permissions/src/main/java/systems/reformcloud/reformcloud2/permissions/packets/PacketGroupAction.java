@@ -74,6 +74,10 @@ public class PacketGroupAction extends Packet {
                     PermissionManagement.getInstance().handleInternalPermissionGroupDelete(this.permissionGroup);
                     break;
                 }
+
+                default: {
+                    throw new IllegalStateException("Unhandled permission action: " + this.permissionAction);
+                }
             }
 
             return;
@@ -93,6 +97,10 @@ public class PacketGroupAction extends Packet {
             case CREATE: {
                 PermissionManagement.getInstance().handleInternalPermissionGroupCreate(this.permissionGroup);
                 break;
+            }
+
+            default: {
+                throw new IllegalStateException("Unhandled permission action: " + this.permissionAction);
             }
         }
     }

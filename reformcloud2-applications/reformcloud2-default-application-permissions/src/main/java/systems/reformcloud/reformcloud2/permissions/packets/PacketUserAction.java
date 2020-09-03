@@ -83,6 +83,10 @@ public class PacketUserAction extends Packet {
 
                 break;
             }
+
+            default: {
+                throw new IllegalStateException("Unhandled user action " + this.permissionAction);
+            }
         }
     }
 
@@ -101,7 +105,7 @@ public class PacketUserAction extends Packet {
     private void publish(@NotNull Packet packet) {
         for (NetworkChannel registeredChannel : ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ChannelManager.class).getRegisteredChannels()) {
             if (registeredChannel.isAuthenticated()
-                    && !ExecutorAPI.getInstance().getNodeInformationProvider().getNodeInformation(registeredChannel.getName()).isPresent()) {
+                && !ExecutorAPI.getInstance().getNodeInformationProvider().getNodeInformation(registeredChannel.getName()).isPresent()) {
                 registeredChannel.sendPacket(packet);
             }
         }

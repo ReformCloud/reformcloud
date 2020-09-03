@@ -600,8 +600,8 @@ public final class CommandGroup implements Command {
     private void listGroupsToSender(CommandSender source) {
         StringBuilder builder = new StringBuilder();
 
-        Collection<MainGroup> mainGroups = ExecutorAPI.getInstance().getMainGroupProvider().getMainGroups();
-        Collection<ProcessGroup> processGroups = ExecutorAPI.getInstance().getProcessGroupProvider().getProcessGroups();
+        final Collection<MainGroup> mainGroups = ExecutorAPI.getInstance().getMainGroupProvider().getMainGroups();
+        final Collection<ProcessGroup> processGroups = ExecutorAPI.getInstance().getProcessGroupProvider().getProcessGroups();
 
         builder.append(" Main-Groups (").append(mainGroups.size()).append(")");
         for (MainGroup mainGroup : mainGroups) {

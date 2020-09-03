@@ -37,12 +37,12 @@ public final class StartupConfiguration implements SerializableObject {
 
     public static StartupConfiguration createDefault() {
         return new StartupConfiguration(
-                -1,
-                1,
-                0,
-                "java",
-                true,
-                Collections.emptyList()
+            -1,
+            1,
+            0,
+            "java",
+            true,
+            Collections.emptyList()
         );
     }
 
@@ -63,14 +63,14 @@ public final class StartupConfiguration implements SerializableObject {
                                 int startPort, String jvmCommand,
                                 boolean searchBestClientAlone, List<String> useOnlyTheseClients) {
         this(maxOnlineProcesses, minOnlineProcesses, startPort, jvmCommand,
-                AutomaticStartupConfiguration.defaults(), searchBestClientAlone, useOnlyTheseClients);
+            AutomaticStartupConfiguration.defaults(), searchBestClientAlone, useOnlyTheseClients);
     }
 
     public StartupConfiguration(int maxOnlineProcesses, int minOnlineProcesses, int startPort, String jvmCommand,
                                 AutomaticStartupConfiguration automaticStartupConfiguration,
                                 boolean searchBestClientAlone, List<String> useOnlyTheseClients) {
         this(maxOnlineProcesses, minOnlineProcesses, 1, startPort, jvmCommand,
-                automaticStartupConfiguration, searchBestClientAlone, useOnlyTheseClients);
+            automaticStartupConfiguration, searchBestClientAlone, useOnlyTheseClients);
     }
 
     public StartupConfiguration(int maxOnlineProcesses, int minOnlineProcesses, int alwaysPreparedProcesses,
@@ -143,15 +143,21 @@ public final class StartupConfiguration implements SerializableObject {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof StartupConfiguration)) return false;
+        if (this == o) {
+            return true;
+        }
+
+        if (!(o instanceof StartupConfiguration)) {
+            return false;
+        }
+
         StartupConfiguration that = (StartupConfiguration) o;
-        return this.getMaxOnlineProcesses() == that.getMaxOnlineProcesses() &&
-                this.getMinOnlineProcesses() == that.getMinOnlineProcesses() &&
-                this.getStartPort() == that.getStartPort() &&
-                this.isSearchBestClientAlone() == that.isSearchBestClientAlone() &&
-                this.getJvmCommand().equals(that.getJvmCommand()) &&
-                Objects.equals(this.getUseOnlyTheseClients(), that.getUseOnlyTheseClients());
+        return this.getMaxOnlineProcesses() == that.getMaxOnlineProcesses()
+            && this.getMinOnlineProcesses() == that.getMinOnlineProcesses()
+            && this.getStartPort() == that.getStartPort()
+            && this.isSearchBestClientAlone() == that.isSearchBestClientAlone()
+            && this.getJvmCommand().equals(that.getJvmCommand())
+            && Objects.equals(this.getUseOnlyTheseClients(), that.getUseOnlyTheseClients());
     }
 
     @Override

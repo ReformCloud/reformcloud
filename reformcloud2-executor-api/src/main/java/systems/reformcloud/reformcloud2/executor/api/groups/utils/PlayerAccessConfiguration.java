@@ -35,13 +35,13 @@ public final class PlayerAccessConfiguration implements SerializableObject {
 
     public static PlayerAccessConfiguration createDefault() {
         return new PlayerAccessConfiguration(
-                "reformcloud.join.full",
-                true,
-                "reformcloud.join.maintenance",
-                false,
-                "reformcloud.join",
-                true,
-                512
+            "reformcloud.join.full",
+            true,
+            "reformcloud.join.maintenance",
+            false,
+            "reformcloud.join",
+            true,
+            512
         );
     }
 
@@ -114,15 +114,21 @@ public final class PlayerAccessConfiguration implements SerializableObject {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof PlayerAccessConfiguration)) return false;
+        if (this == o) {
+            return true;
+        }
+
+        if (!(o instanceof PlayerAccessConfiguration)) {
+            return false;
+        }
+
         PlayerAccessConfiguration that = (PlayerAccessConfiguration) o;
-        return this.isMaintenance() == that.isMaintenance() &&
-                this.isJoinOnlyPerPermission() == that.isJoinOnlyPerPermission() &&
-                this.isUseCloudPlayerLimit() == that.isUseCloudPlayerLimit() &&
-                this.getMaxPlayers() == that.getMaxPlayers() &&
-                Objects.equals(this.getMaintenanceJoinPermission(), that.getMaintenanceJoinPermission()) &&
-                Objects.equals(this.getJoinPermission(), that.getJoinPermission());
+        return this.isMaintenance() == that.isMaintenance()
+            && this.isJoinOnlyPerPermission() == that.isJoinOnlyPerPermission()
+            && this.isUseCloudPlayerLimit() == that.isUseCloudPlayerLimit()
+            && this.getMaxPlayers() == that.getMaxPlayers()
+            && Objects.equals(this.getMaintenanceJoinPermission(), that.getMaintenanceJoinPermission())
+            && Objects.equals(this.getJoinPermission(), that.getJoinPermission());
     }
 
     @Override

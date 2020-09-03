@@ -193,7 +193,7 @@ public final class NodeExecutor extends ExecutorAPI {
     public synchronized void reload() {
         System.out.println(LanguageManager.get("runtime-try-reload"));
 
-        long startTime = System.currentTimeMillis();
+        final long startTime = System.currentTimeMillis();
         this.serviceRegistry.getProviderUnchecked(ApplicationLoader.class).disableApplications();
 
         this.mainGroupProvider.reload();
