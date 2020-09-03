@@ -33,7 +33,6 @@ import systems.reformcloud.reformcloud2.executor.api.utility.optional.Referenced
 
 import java.lang.management.*;
 import java.lang.ref.WeakReference;
-import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.security.AccessController;
@@ -159,12 +158,7 @@ public final class CommonHelper {
             while (networkInterfaces.hasMoreElements()) {
                 Enumeration<InetAddress> inetAddresses = networkInterfaces.nextElement().getInetAddresses();
                 while (inetAddresses.hasMoreElements()) {
-                    InetAddress inetAddress = inetAddresses.nextElement();
-                    if (inetAddress instanceof Inet6Address) {
-                        continue; // currently we aren't supporting inet6 because of some minecraft difficulties with it
-                    }
-
-                    String address = inetAddress.getHostAddress();
+                    String address = inetAddresses.nextElement().getHostAddress();
                     if (!result.contains(address)) {
                         result.add(address);
                     }
@@ -191,7 +185,7 @@ public final class CommonHelper {
     public static @NotNull String formatThrowable(@NotNull Throwable throwable) {
         StackTraceElement[] trace = throwable.getStackTrace();
         return throwable.getClass().getSimpleName() + " : " + throwable.getMessage()
-                + ((trace.length > 0) ? " @ " + throwable.getStackTrace()[0].getClassName() + ":" + throwable.getStackTrace()[0].getLineNumber() : "");
+            + ((trace.length > 0) ? " @ " + throwable.getStackTrace()[0].getClassName() + ":" + throwable.getStackTrace()[0].getLineNumber() : "");
     }
 
     public static <T extends Enum<T>> ReferencedOptional<T> findEnumField(Class<T> enumClass, String field) {
