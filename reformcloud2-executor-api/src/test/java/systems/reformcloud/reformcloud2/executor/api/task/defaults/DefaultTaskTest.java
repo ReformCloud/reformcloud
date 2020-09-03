@@ -68,7 +68,7 @@ class DefaultTaskTest {
     @Timeout(5)
     void testFutureListenerFailure() {
         Task<Boolean> task = new DefaultTask<>();
-        task.onFailure(result -> Assertions.assertNotNull(result));
+        task.onFailure(Assertions::assertNotNull);
 
         new Thread(() -> {
             try {

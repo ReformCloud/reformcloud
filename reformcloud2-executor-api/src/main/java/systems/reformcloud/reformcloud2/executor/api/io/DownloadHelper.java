@@ -59,7 +59,7 @@ public final class DownloadHelper {
 
             System.out.println(LanguageManager.get("runtime-download-file-completed",
                     url, System.currentTimeMillis() - start));
-        }, throwable -> throwable.printStackTrace());
+        }, Throwable::printStackTrace);
     }
 
     public static void openConnection(@NotNull String url, @NotNull Consumer<InputStream> consumer) {
@@ -68,7 +68,7 @@ public final class DownloadHelper {
 
     public static void openConnection(@NotNull String url, @NotNull Map<String, String> headers,
                                       @NotNull Consumer<InputStream> inputStreamConsumer) {
-        openConnection(url, headers, inputStreamConsumer, ex -> ex.printStackTrace());
+        openConnection(url, headers, inputStreamConsumer, Throwable::printStackTrace);
     }
 
     public static void openConnection(@NotNull String url, @NotNull Map<String, String> headers,

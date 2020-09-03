@@ -56,22 +56,22 @@ public final class Runner {
 
     Runner(@NotNull String[] args) {
         this.interpreter
-                .registerInterpreterCommand(new CheckForUpdatesCommand(this))
-                .registerInterpreterCommand(new CheckIfDevModeCommand())
-                .registerInterpreterCommand(new CheckIfSnapshotApplyCommand())
-                .registerInterpreterCommand(new ExecuteCommand())
-                .registerInterpreterCommand(new IfCommand())
-                .registerInterpreterCommand(new PrintlnCommand())
-                .registerInterpreterCommand(new SetSystemPropertiesCommand())
-                .registerInterpreterCommand(new StartApplicationCommand(this))
-                .registerInterpreterCommand(new UnpackApplicationCommand())
-                .registerInterpreterCommand(new VariableCommand())
-                .registerInterpreterCommand(new WriteEnvCommand())
+            .registerInterpreterCommand(new CheckForUpdatesCommand(this))
+            .registerInterpreterCommand(new CheckIfDevModeCommand())
+            .registerInterpreterCommand(new CheckIfSnapshotApplyCommand())
+            .registerInterpreterCommand(new ExecuteCommand())
+            .registerInterpreterCommand(new IfCommand())
+            .registerInterpreterCommand(new PrintlnCommand())
+            .registerInterpreterCommand(new SetSystemPropertiesCommand())
+            .registerInterpreterCommand(new StartApplicationCommand(this))
+            .registerInterpreterCommand(new UnpackApplicationCommand())
+            .registerInterpreterCommand(new VariableCommand())
+            .registerInterpreterCommand(new WriteEnvCommand())
 
-                .registerInterpreterVariable(new EnvNotAPIVariable())
-                .registerInterpreterVariable(new EnvSetVariable())
-                .registerInterpreterVariable(new GitCommitVariable())
-                .registerInterpreterVariable(new SetupRequiredVariable());
+            .registerInterpreterVariable(new EnvNotAPIVariable())
+            .registerInterpreterVariable(new EnvSetVariable())
+            .registerInterpreterVariable(new GitCommitVariable())
+            .registerInterpreterVariable(new SetupRequiredVariable());
 
         this.applicationsUpdater = new ApplicationsUpdater(RunnerUtils.APP_UPDATE_FOLDER);
         this.cloudVersionUpdater = new CloudVersionUpdater(RunnerUtils.GLOBAL_SCRIPT_FILE);
@@ -93,8 +93,8 @@ public final class Runner {
 
     public void startApplication() {
         Path applicationFile = System.getProperties().containsKey("reformcloud.process.path")
-                ? Paths.get(System.getProperty("reformcloud.process.path"))
-                : RunnerUtils.EXECUTOR_PATH;
+            ? Paths.get(System.getProperty("reformcloud.process.path"))
+            : RunnerUtils.EXECUTOR_PATH;
         if (Files.notExists(applicationFile) || Files.isDirectory(applicationFile)) {
             throw new UnsupportedOperationException("Unable to start non-executable file: " + applicationFile.toString());
         }

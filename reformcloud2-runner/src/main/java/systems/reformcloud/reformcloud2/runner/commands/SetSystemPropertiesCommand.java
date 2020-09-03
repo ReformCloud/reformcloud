@@ -39,8 +39,8 @@ public final class SetSystemPropertiesCommand extends InterpreterCommand {
     @Override
     public void execute(@NotNull String cursorLine, @NotNull InterpretedReformScript script, @NotNull Collection<String> allLines) {
         System.setProperty(
-                "reformcloud.runner.specification",
-                System.getProperty("reformcloud.runner.version").endsWith("-SNAPSHOT") ? "SNAPSHOT" : "RELEASE"
+            "reformcloud.runner.specification",
+            System.getProperty("reformcloud.runner.version").endsWith("-SNAPSHOT") ? "SNAPSHOT" : "RELEASE"
         );
     }
 }

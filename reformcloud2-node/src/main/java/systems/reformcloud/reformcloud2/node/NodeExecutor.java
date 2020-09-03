@@ -188,12 +188,6 @@ public final class NodeExecutor extends ExecutorAPI {
         this.taskScheduler.addPermanentTask(new ProcessScreenTickRunnable());
         this.taskScheduler.addPermanentTask(new OnlinePercentCheckerTask());
 
-        //CHECKSTYLE:OFF
-        if (true) {
-            throw new IllegalStateException("Test exception");
-        }
-        //CHECKSTYLE:ON
-
         this.loadCommands();
         this.serviceRegistry.getProviderUnchecked(ApplicationLoader.class).enableApplications();
     }
@@ -290,7 +284,7 @@ public final class NodeExecutor extends ExecutorAPI {
             this.networkServer.bind(
                 networkListener.getHost(),
                 networkListener.getPort(),
-                () -> new NodeServerEndpointChannelReader()
+                NodeServerEndpointChannelReader::new
             );
         }
 
@@ -305,7 +299,7 @@ public final class NodeExecutor extends ExecutorAPI {
             if (this.networkClient.connect(
                 clusterNode.getHost(),
                 clusterNode.getPort(),
-                () -> new NodeClientEndpointChannelReader()
+                NodeClientEndpointChannelReader::new
             )) {
                 System.out.println(LanguageManager.get(
                     "network-node-connection-to-other-node-success", clusterNode.getHost(), clusterNode.getPort()

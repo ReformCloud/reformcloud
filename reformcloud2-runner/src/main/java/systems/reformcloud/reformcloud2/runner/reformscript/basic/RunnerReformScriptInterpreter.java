@@ -68,20 +68,20 @@ public final class RunnerReformScriptInterpreter implements ReformScriptInterpre
     @Override
     public InterpreterCommand getCommand(@NotNull String command) {
         return this.commands
-                .stream()
-                .filter(e -> e.getCommand().equals(command.toUpperCase()))
-                .findFirst()
-                .orElse(null);
+            .stream()
+            .filter(e -> e.getCommand().equals(command.toUpperCase()))
+            .findFirst()
+            .orElse(null);
     }
 
     @Nullable
     @Override
     public InterpreterVariable getVariable(@NotNull String variable) {
         return this.variables
-                .stream()
-                .filter(e -> variable.toLowerCase().contains(e.wrap()) || (e.wrap().endsWith("*_%_") && e.wrap().startsWith(variable)))
-                .findFirst()
-                .orElse(null);
+            .stream()
+            .filter(e -> variable.toLowerCase().contains(e.wrap()) || (e.wrap().endsWith("*_%_") && e.wrap().startsWith(variable)))
+            .findFirst()
+            .orElse(null);
     }
 
     @Nullable
@@ -90,9 +90,9 @@ public final class RunnerReformScriptInterpreter implements ReformScriptInterpre
         try {
             List<String> allLines = new CopyOnWriteArrayList<>(Files.readAllLines(script));
             Collection<String> comments = allLines
-                    .stream()
-                    .filter(e -> e.startsWith(COMMENT_LINE_START))
-                    .collect(Collectors.toList());
+                .stream()
+                .filter(e -> e.startsWith(COMMENT_LINE_START))
+                .collect(Collectors.toList());
 
             return this.interpret(script, allLines, comments);
         } catch (final IOException ex) {
@@ -188,9 +188,9 @@ public final class RunnerReformScriptInterpreter implements ReformScriptInterpre
         Collection<InterpreterTask> tasks = new ArrayList<>();
 
         Collection<String> linesToParse = allLines
-                .stream()
-                .filter(e -> e.startsWith(TASK_LINE_START))
-                .collect(Collectors.toList());
+            .stream()
+            .filter(e -> e.startsWith(TASK_LINE_START))
+            .collect(Collectors.toList());
 
         List<String> task = new CopyOnWriteArrayList<>();
         for (String line : linesToParse) {

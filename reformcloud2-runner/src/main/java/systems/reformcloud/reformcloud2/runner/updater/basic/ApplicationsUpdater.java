@@ -79,15 +79,15 @@ public final class ApplicationsUpdater implements Updater {
                 Matcher matcher = PATTERN.matcher(entry.getFileName().toString());
                 if (!matcher.find()) {
                     System.err.println("Unable to find match for \"file-name-version.jar\" " +
-                            "is the requested format: " + entry.toString());
+                        "is the requested format: " + entry.toString());
                     continue;
                 }
 
                 String oldName = matcher.group(1);
                 Path old = RunnerUtils.findFile(
-                        APP_FOLDER,
-                        path -> path.getFileName().toString().startsWith(oldName),
-                        new JarFileDirectoryStreamFilter()
+                    APP_FOLDER,
+                    path -> path.getFileName().toString().startsWith(oldName),
+                    new JarFileDirectoryStreamFilter()
                 );
 
                 if (old != null) {
@@ -110,7 +110,7 @@ public final class ApplicationsUpdater implements Updater {
             RunnerUtils.deleteFileIfExists(oldToNewUpdate.getKey());
 
             RunnerUtils.copy(oldToNewUpdate.getValue(), Paths.get(
-                    APP_FOLDER + "/" + oldToNewUpdate.getValue().getFileName()
+                APP_FOLDER + "/" + oldToNewUpdate.getValue().getFileName()
             ));
             RunnerUtils.deleteFileIfExists(oldToNewUpdate.getValue());
         }

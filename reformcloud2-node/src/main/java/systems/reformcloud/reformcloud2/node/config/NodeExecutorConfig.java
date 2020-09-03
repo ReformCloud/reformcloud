@@ -52,7 +52,7 @@ import static systems.reformcloud.reformcloud2.executor.api.utility.list.Streams
 public final class NodeExecutorConfig {
 
     private static final Collection<Path> PATHS = newCollection(
-        s -> Paths.get(s),
+        Paths::get,
         "reformcloud/groups/main",
         "reformcloud/groups/sub",
         "reformcloud/configs",

@@ -62,7 +62,7 @@ public class LoggingOutputStream extends ByteArrayOutputStream {
 
             if (content.isEmpty()
                 || content.equals(LINE_SEPARATOR)
-                || Streams.hasMatch(LoggingOutputStream.EXCLUDED_LINE_STARTS, s -> content.startsWith(s))) {
+                || Streams.hasMatch(LoggingOutputStream.EXCLUDED_LINE_STARTS, content::startsWith)) {
                 return;
             }
 

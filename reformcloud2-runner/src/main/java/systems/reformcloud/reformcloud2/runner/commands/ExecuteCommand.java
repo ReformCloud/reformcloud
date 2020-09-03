@@ -40,10 +40,10 @@ public final class ExecuteCommand extends InterpreterCommand {
     @Override
     public void execute(@NotNull String cursorLine, @NotNull InterpretedReformScript script, @NotNull Collection<String> allLines) {
         InterpreterTask task = script.getAllTasks()
-                .stream()
-                .filter(e -> e.getName().equals(cursorLine.replaceFirst(this.getCommand() + " ", "")))
-                .findFirst()
-                .orElse(null);
+            .stream()
+            .filter(e -> e.getName().equals(cursorLine.replaceFirst(this.getCommand() + " ", "")))
+            .findFirst()
+            .orElse(null);
         if (task == null) {
             throw new UnsupportedOperationException(cursorLine + " tried to call task which does not exists");
         }

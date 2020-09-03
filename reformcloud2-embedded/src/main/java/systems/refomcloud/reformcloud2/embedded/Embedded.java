@@ -149,7 +149,7 @@ public abstract class Embedded extends ExecutorAPI {
                 .registerProcessor(new PacketSendPlayerTitleProcessor(), PacketSendPlayerTitle.class)
                 .registerProcessor(new PacketSetPlayerLocationProcessor(), PacketSetPlayerLocation.class);
 
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> this.networkClient.disconnect()));
+        Runtime.getRuntime().addShutdownHook(new Thread(this.networkClient::disconnect));
         this.updateCurrentProcessInformation();
     }
 
