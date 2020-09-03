@@ -49,13 +49,13 @@ public class JsonConfiguration implements Configurable<JsonElement, JsonConfigur
     public static final JsonConfiguration EMPTY = new JsonConfiguration();
 
     private Gson gson = new GsonBuilder()
-            .setPrettyPrinting()
-            .serializeNulls()
-            .disableHtmlEscaping()
-            .serializeSpecialFloatingPointValues()
-            .setDateFormat(DateFormat.LONG)
-            .registerTypeAdapterFactory(TypeAdapters.newTypeHierarchyFactory(JsonConfiguration.class, new JsonConfigurationTypeAdapter()))
-            .create();
+        .setPrettyPrinting()
+        .serializeNulls()
+        .disableHtmlEscaping()
+        .serializeSpecialFloatingPointValues()
+        .setDateFormat(DateFormat.LONG)
+        .registerTypeAdapterFactory(TypeAdapters.newTypeHierarchyFactory(JsonConfiguration.class, new JsonConfigurationTypeAdapter()))
+        .create();
     private JsonObject jsonObject = new JsonObject();
 
     public JsonConfiguration() {
@@ -261,11 +261,16 @@ public class JsonConfiguration implements Configurable<JsonElement, JsonConfigur
 
     @Override
     public <T> T get(@NotNull String key, @NotNull TypeToken<T> type) {
-        return this.getOrDefault(key, type.getType(), null);
+        return this.get(key, type.getType());
     }
 
     @Override
     public <T> T get(@NotNull String key, @NotNull Class<T> type) {
+        return this.getOrDefault(key, type, null);
+    }
+
+    @Override
+    public <T> @Nullable T get(@NotNull String key, @NotNull Type type) {
         return this.getOrDefault(key, type, null);
     }
 

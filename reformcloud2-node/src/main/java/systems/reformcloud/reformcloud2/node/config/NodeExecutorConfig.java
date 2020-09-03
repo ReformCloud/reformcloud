@@ -52,15 +52,15 @@ import static systems.reformcloud.reformcloud2.executor.api.utility.list.Streams
 public final class NodeExecutorConfig {
 
     private static final Collection<Path> PATHS = newCollection(
-            s -> Paths.get(s),
-            "reformcloud/groups/main",
-            "reformcloud/groups/sub",
-            "reformcloud/configs",
-            "reformcloud/applications",
-            "reformcloud/temp",
-            "reformcloud/static",
-            "reformcloud/templates",
-            "reformcloud/files/.connection"
+        s -> Paths.get(s),
+        "reformcloud/groups/main",
+        "reformcloud/groups/sub",
+        "reformcloud/configs",
+        "reformcloud/applications",
+        "reformcloud/temp",
+        "reformcloud/static",
+        "reformcloud/templates",
+        "reformcloud/files/.connection"
     );
 
     private final Setup setup = new DefaultSetup();
@@ -82,75 +82,75 @@ public final class NodeExecutorConfig {
             String ips = String.join(", ", CommonHelper.getAllAvailableIpAddresses());
 
             this.setup.addQuestion(new DefaultSetupQuestion(
-                    setupAnswer -> {
-                        if (setupAnswer.getOriginalAnswer().equalsIgnoreCase("null")) {
-                            nodeName.set("Node-" + UUID.randomUUID().toString().split("-")[0]);
-                        } else {
-                            nodeName.set(setupAnswer.getOriginalAnswer());
-                        }
+                setupAnswer -> {
+                    if (setupAnswer.getOriginalAnswer().equalsIgnoreCase("null")) {
+                        nodeName.set("Node-" + UUID.randomUUID().toString().split("-")[0]);
+                    } else {
+                        nodeName.set(setupAnswer.getOriginalAnswer());
+                    }
 
+                    return true;
+                },
+                "",
+                LanguageManager.get("node-setup-question-node-name")
+            )).addQuestion(new DefaultSetupQuestion(
+                setupAnswer -> {
+                    String address = CommonHelper.getIpAddress(setupAnswer.getOriginalAnswer());
+                    if (address != null) {
+                        networkAddress.set(address);
+                    }
+
+                    return address != null;
+                },
+                LanguageManager.get("node-setup-question-node-address-wrong"),
+                LanguageManager.get("node-setup-question-node-address", ips)
+            )).addQuestion(new DefaultSetupQuestion(
+                setupAnswer -> {
+                    Integer port = setupAnswer.getAsInt();
+                    if (port != null && port > 0 && port < 65535) {
+                        networkPort.set(port);
                         return true;
-                    },
-                    "",
-                    LanguageManager.get("node-setup-question-node-name")
-            )).addQuestion(new DefaultSetupQuestion(
-                    setupAnswer -> {
-                        String address = CommonHelper.getIpAddress(setupAnswer.getOriginalAnswer());
-                        if (address != null) {
-                            networkAddress.set(address);
-                        }
+                    }
 
-                        return address != null;
-                    },
-                    LanguageManager.get("node-setup-question-node-address-wrong"),
-                    LanguageManager.get("node-setup-question-node-address", ips)
+                    return false;
+                },
+                LanguageManager.get("node-setup-question-integer", 0, 65535),
+                LanguageManager.get("node-setup-question-node-network-port")
             )).addQuestion(new DefaultSetupQuestion(
-                    setupAnswer -> {
-                        Integer port = setupAnswer.getAsInt();
-                        if (port != null && port > 0 && port < 65535) {
-                            networkPort.set(port);
-                            return true;
-                        }
-
-                        return false;
-                    },
-                    LanguageManager.get("node-setup-question-integer", 0, 65535),
-                    LanguageManager.get("node-setup-question-node-network-port")
-            )).addQuestion(new DefaultSetupQuestion(
-                    setupAnswer -> {
-                        Integer webPort = setupAnswer.getAsInt();
-                        if (webPort != null && webPort > 0 && webPort < 65535) {
-                            httpPort.set(webPort);
-                            return true;
-                        }
-
-                        return false;
-                    },
-                    LanguageManager.get("node-setup-question-integer", 0, 65535),
-                    LanguageManager.get("node-setup-question-node-web-port")
-            )).addQuestion(new DefaultSetupQuestion(
-                    setupAnswer -> {
-                        String key = setupAnswer.getOriginalAnswer();
-                        if (setupAnswer.getOriginalAnswer().equalsIgnoreCase("gen")) {
-                            key = StringUtil.generateString(16);
-                        }
-
-                        new JsonConfiguration().add("key", key).write("reformcloud/files/.connection/connection.json");
+                setupAnswer -> {
+                    Integer webPort = setupAnswer.getAsInt();
+                    if (webPort != null && webPort > 0 && webPort < 65535) {
+                        httpPort.set(webPort);
                         return true;
-                    },
-                    "",
-                    LanguageManager.get("node-setup-question-connection-key")
-            )).addQuestion(new DefaultSetupQuestion(
-                    setupAnswer -> {
-                        Boolean clusterSetup = setupAnswer.getAsBoolean();
-                        if (clusterSetup != null) {
-                            runClusterSetup.set(clusterSetup);
-                        }
+                    }
 
-                        return clusterSetup != null;
-                    },
-                    LanguageManager.get("node-setup-question-boolean"),
-                    LanguageManager.get("node-setup-in-cluster")
+                    return false;
+                },
+                LanguageManager.get("node-setup-question-integer", 0, 65535),
+                LanguageManager.get("node-setup-question-node-web-port")
+            )).addQuestion(new DefaultSetupQuestion(
+                setupAnswer -> {
+                    String key = setupAnswer.getOriginalAnswer();
+                    if (setupAnswer.getOriginalAnswer().equalsIgnoreCase("gen")) {
+                        key = StringUtil.generateString(16);
+                    }
+
+                    new JsonConfiguration().add("key", key).write("reformcloud/files/.connection/connection.json");
+                    return true;
+                },
+                "",
+                LanguageManager.get("node-setup-question-connection-key")
+            )).addQuestion(new DefaultSetupQuestion(
+                setupAnswer -> {
+                    Boolean clusterSetup = setupAnswer.getAsBoolean();
+                    if (clusterSetup != null) {
+                        runClusterSetup.set(clusterSetup);
+                    }
+
+                    return clusterSetup != null;
+                },
+                LanguageManager.get("node-setup-question-boolean"),
+                LanguageManager.get("node-setup-in-cluster")
             )).runSetup();
 
             if (runClusterSetup.get()) {
@@ -164,13 +164,13 @@ public final class NodeExecutorConfig {
             }
 
             new JsonConfiguration().add("config", new NodeConfig(
-                    nodeName.get(),
-                    UUID.randomUUID(),
-                    maxMemory,
-                    networkAddress.get(),
-                    new ArrayList<>(Collections.singletonList(new NetworkAddress(networkAddress.get(), networkPort.get()))),
-                    new ArrayList<>(Collections.singletonList(new NetworkAddress(networkAddress.get(), httpPort.get()))),
-                    clusterNodes
+                nodeName.get(),
+                UUID.randomUUID(),
+                maxMemory,
+                networkAddress.get(),
+                new ArrayList<>(Collections.singletonList(new NetworkAddress(networkAddress.get(), networkPort.get()))),
+                new ArrayList<>(Collections.singletonList(new NetworkAddress(networkAddress.get(), httpPort.get()))),
+                clusterNodes
             )).write(NodeConfig.PATH);
 
             System.out.println(LanguageManager.get("general-setup-choose-default-installation"));
@@ -186,8 +186,8 @@ public final class NodeExecutorConfig {
                 }
 
                 version.install(
-                        NodeExecutor.getInstance().getDefaultProcessGroupProvider()::addProcessGroup,
-                        NodeExecutor.getInstance().getDefaultMainGroupProvider()::addGroup
+                    NodeExecutor.getInstance().getDefaultProcessGroupProvider()::addProcessGroup,
+                    NodeExecutor.getInstance().getDefaultMainGroupProvider()::addGroup
                 );
                 System.out.println(LanguageManager.get("general-setup-default-installation-done", version.getName()));
                 break;
@@ -196,13 +196,13 @@ public final class NodeExecutorConfig {
             new JsonConfiguration().add("messages", new IngameMessages()).write(Paths.get("reformcloud/configs/messages.json"));
         }
 
-        this.nodeConfig = JsonConfiguration.read(NodeConfig.PATH).get("config", NodeConfig.TYPE);
+        this.nodeConfig = JsonConfiguration.read(NodeConfig.PATH).get("config", NodeConfig.class);
         this.ingameMessages = JsonConfiguration.read("reformcloud/configs/messages.json").get("messages", IngameMessages.TYPE);
         this.connectionKey = JsonConfiguration.read("reformcloud/files/.connection/connection.json").getOrDefault("key", (String) null);
     }
 
     public NodeConfig reload() {
-        this.nodeConfig = JsonConfiguration.read(NodeConfig.PATH).get("config", NodeConfig.TYPE);
+        this.nodeConfig = JsonConfiguration.read(NodeConfig.PATH).get("config", NodeConfig.class);
         this.ingameMessages = JsonConfiguration.read("reformcloud/configs/messages.json").get("messages", IngameMessages.TYPE);
         this.connectionKey = JsonConfiguration.read("reformcloud/files/.connection/connection.json").getOrDefault("key", (String) null);
 
@@ -215,17 +215,17 @@ public final class NodeExecutorConfig {
 
         AtomicInteger nodeCount = new AtomicInteger(1);
         this.setup.addQuestion(new DefaultSetupQuestion(
-                setupAnswer -> {
-                    Integer count = setupAnswer.getAsInt();
-                    if (count != null && count > 0 && count < 100) {
-                        nodeCount.set(count);
-                        return true;
-                    }
+            setupAnswer -> {
+                Integer count = setupAnswer.getAsInt();
+                if (count != null && count > 0 && count < 100) {
+                    nodeCount.set(count);
+                    return true;
+                }
 
-                    return false;
-                },
-                LanguageManager.get("node-setup-question-integer", 0, 100),
-                LanguageManager.get("node-cluster-setup-node-count")
+                return false;
+            },
+            LanguageManager.get("node-setup-question-integer", 0, 100),
+            LanguageManager.get("node-cluster-setup-node-count")
         )).runSetup();
 
         AtomicReference<String> nodeHost = new AtomicReference<>();
@@ -233,28 +233,28 @@ public final class NodeExecutorConfig {
 
         this.setup.clear();
         this.setup.addQuestion(new DefaultSetupQuestion(
-                setupAnswer -> {
-                    String address = CommonHelper.getIpAddress(setupAnswer.getOriginalAnswer());
-                    if (address != null) {
-                        nodeHost.set(address);
-                    }
+            setupAnswer -> {
+                String address = CommonHelper.getIpAddress(setupAnswer.getOriginalAnswer());
+                if (address != null) {
+                    nodeHost.set(address);
+                }
 
-                    return address != null;
-                },
-                LanguageManager.get("node-setup-question-node-address-wrong"),
-                LanguageManager.get("node-cluster-setup-new-node-host")
+                return address != null;
+            },
+            LanguageManager.get("node-setup-question-node-address-wrong"),
+            LanguageManager.get("node-cluster-setup-new-node-host")
         )).addQuestion(new DefaultSetupQuestion(
-                setupAnswer -> {
-                    Integer nodePort = setupAnswer.getAsInt();
-                    if (nodePort != null && nodePort > 0 && nodePort < 65535) {
-                        out.add(new NetworkAddress(nodeHost.get(), nodePort));
-                        return true;
-                    }
+            setupAnswer -> {
+                Integer nodePort = setupAnswer.getAsInt();
+                if (nodePort != null && nodePort > 0 && nodePort < 65535) {
+                    out.add(new NetworkAddress(nodeHost.get(), nodePort));
+                    return true;
+                }
 
-                    return false;
-                },
-                LanguageManager.get("node-setup-question-integer", 0, 65535),
-                LanguageManager.get("node-cluster-setup-new-node-port")
+                return false;
+            },
+            LanguageManager.get("node-setup-question-integer", 0, 65535),
+            LanguageManager.get("node-cluster-setup-new-node-port")
         ));
 
         for (int i = 1; i <= nodeCount.get(); i++) {

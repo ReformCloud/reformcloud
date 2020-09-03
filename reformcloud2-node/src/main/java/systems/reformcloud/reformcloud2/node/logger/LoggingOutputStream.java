@@ -24,15 +24,26 @@
  */
 package systems.reformcloud.reformcloud2.node.logger;
 
+import systems.reformcloud.reformcloud2.executor.api.utility.list.Streams;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class LoggingOutputStream extends ByteArrayOutputStream {
 
     private static final String LINE_SEPARATOR = System.getProperty("line.separator");
+    private static final Collection<String> EXCLUDED_LINE_STARTS = new ArrayList<>(); // No need to be thread save
+
+    static {
+        String excluded = System.getProperty("systems.reformcloud.logging-excluded-line-starts", "SLF4J:");
+        EXCLUDED_LINE_STARTS.addAll(Arrays.asList(excluded.split(";")));
+    }
 
     public LoggingOutputStream(Logger parent, Level level) {
         this.parent = parent;
@@ -49,9 +60,13 @@ public class LoggingOutputStream extends ByteArrayOutputStream {
             String content = this.toString(StandardCharsets.UTF_8.name());
             super.reset();
 
-            if (!content.isEmpty() && !content.equals(LINE_SEPARATOR)) {
-                this.parent.log(this.level, content);
+            if (content.isEmpty()
+                || content.equals(LINE_SEPARATOR)
+                || Streams.hasMatch(LoggingOutputStream.EXCLUDED_LINE_STARTS, s -> content.startsWith(s))) {
+                return;
             }
+
+            this.parent.log(this.level, content);
         }
     }
 }
