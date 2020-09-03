@@ -70,7 +70,7 @@ public class DefaultEmbeddedPlayerProvider implements PlayerProvider {
                     }
 
                     return Optional.<PlayerWrapper>empty();
-                }).orElseGet(() -> Optional.empty());
+                }).orElseGet(Optional::empty);
     }
 
     @NotNull

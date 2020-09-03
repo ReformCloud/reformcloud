@@ -22,25 +22,25 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.runner.commands;
+package systems.reformcloud.reformcloud2.executor.api.event;
 
-import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.runner.reformscript.InterpretedReformScript;
-import systems.reformcloud.reformcloud2.runner.reformscript.utils.InterpreterCommand;
+import org.jetbrains.annotations.ApiStatus;
 
-import java.util.Collection;
+/**
+ * Indicates that a user is able to cancel a specific event
+ */
+@ApiStatus.AvailableSince("2.10.1-SNAPSHOT")
+public interface Cancelable {
 
-public final class SetSystemPropertiesCommand extends InterpreterCommand {
+    /**
+     * @return If the current will get cancelled
+     */
+    boolean isCanceled();
 
-    public SetSystemPropertiesCommand() {
-        super("set_system_properties");
-    }
-
-    @Override
-    public void execute(@NotNull String cursorLine, @NotNull InterpretedReformScript script, @NotNull Collection<String> allLines) {
-        System.setProperty(
-            "reformcloud.runner.specification",
-            System.getProperty("reformcloud.runner.version").endsWith("-SNAPSHOT") ? "SNAPSHOT" : "RELEASE"
-        );
-    }
+    /**
+     * Sets if the event will get cancelled or not
+     *
+     * @param cancel If the event should get cancelled
+     */
+    void setCancelled(boolean cancel);
 }

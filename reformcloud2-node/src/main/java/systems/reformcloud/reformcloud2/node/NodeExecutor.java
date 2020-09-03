@@ -75,6 +75,7 @@ import systems.reformcloud.reformcloud2.node.processors.player.*;
 import systems.reformcloud.reformcloud2.node.protocol.*;
 import systems.reformcloud.reformcloud2.node.provider.DefaultNodeNodeInformationProvider;
 import systems.reformcloud.reformcloud2.node.runnables.*;
+import systems.reformcloud.reformcloud2.node.sentry.SentryLoggingLoader;
 import systems.reformcloud.reformcloud2.node.tick.CloudTickWorker;
 import systems.reformcloud.reformcloud2.node.tick.TickedTaskScheduler;
 import systems.reformcloud.reformcloud2.protocol.node.ApiToNodeGetIngameMessages;
@@ -120,7 +121,7 @@ public final class NodeExecutor extends ExecutorAPI {
 
     private NodeInformation currentNodeInformation;
 
-    NodeExecutor() {
+    protected NodeExecutor() {
         Conditions.isTrue(new File(".").getAbsolutePath().indexOf('!') == -1, "Cannot run ReformCloud in directory with ! in path.");
 
         ExecutorAPI.setInstance(this);
@@ -137,7 +138,7 @@ public final class NodeExecutor extends ExecutorAPI {
         this.registerDefaultServices();
     }
 
-    synchronized void bootstrap(@NotNull ArgumentParser argumentParser) {
+    protected synchronized void bootstrap(@NotNull ArgumentParser argumentParser) {
         this.console = new DefaultNodeConsole();
         this.logger = new CloudLogger(this.console.getLineReader());
         this.argumentParser = argumentParser;
@@ -148,6 +149,17 @@ public final class NodeExecutor extends ExecutorAPI {
         this.mainGroupProvider = new DefaultNodeMainGroupProvider(System.getProperty("systems.reformcloud.main-group-dir", "reformcloud/groups/main"));
         this.processGroupProvider = new DefaultNodeProcessGroupProvider(System.getProperty("systems.reformcloud.sub-group-dir", "reformcloud/groups/sub"));
 
+        this.nodeExecutorConfig.init();
+        this.nodeConfig = this.nodeExecutorConfig.getNodeConfig();
+        SentryLoggingLoader.loadSentryLogging(this); // load after config
+        this.nodeInformationProvider = new DefaultNodeNodeInformationProvider(this.currentNodeInformation = new NodeInformation(
+            this.nodeConfig.getName(),
+            this.nodeConfig.getUniqueID(),
+            System.currentTimeMillis(),
+            0L,
+            this.nodeConfig.getMaxMemory()
+        ));
+
         for (String mainGroupName : this.mainGroupProvider.getMainGroupNames()) {
             System.out.println(LanguageManager.get("loading-main-group", mainGroupName));
         }
@@ -156,22 +168,12 @@ public final class NodeExecutor extends ExecutorAPI {
             System.out.println(LanguageManager.get("loading-process-group", processGroupName));
         }
 
-        this.nodeExecutorConfig.init();
-        this.nodeConfig = this.nodeExecutorConfig.getNodeConfig();
-        this.nodeInformationProvider = new DefaultNodeNodeInformationProvider(this.currentNodeInformation = new NodeInformation(
-                this.nodeConfig.getName(),
-                this.nodeConfig.getUniqueID(),
-                System.currentTimeMillis(),
-                0L,
-                this.nodeConfig.getMaxMemory()
-        ));
-
         this.serviceRegistry.setProvider(ClusterManager.class, new DefaultClusterManager(
-                this.nodeInformationProvider,
-                this.processProvider,
-                this.processGroupProvider,
-                this.mainGroupProvider,
-                this.currentNodeInformation
+            this.nodeInformationProvider,
+            this.processProvider,
+            this.processGroupProvider,
+            this.mainGroupProvider,
+            this.currentNodeInformation
         ), false, true);
 
         this.serviceRegistry.getProviderUnchecked(ApplicationLoader.class).detectApplications();
@@ -210,18 +212,18 @@ public final class NodeExecutor extends ExecutorAPI {
         this.nodeConfig = this.nodeExecutorConfig.reload();
 
         this.currentNodeInformation = new NodeInformation(
-                this.currentNodeInformation.getName(),
-                this.currentNodeInformation.getNodeUniqueID(),
-                this.currentNodeInformation.getStartupTime(),
-                this.currentNodeInformation.getUsedMemory(),
-                this.nodeConfig.getMaxMemory()
+            this.currentNodeInformation.getName(),
+            this.currentNodeInformation.getNodeUniqueID(),
+            this.currentNodeInformation.getStartupTime(),
+            this.currentNodeInformation.getUsedMemory(),
+            this.nodeConfig.getMaxMemory()
         );
 
         ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ClusterManager.class).publishProcessGroupSet(
-                ExecutorAPI.getInstance().getProcessGroupProvider().getProcessGroups()
+            ExecutorAPI.getInstance().getProcessGroupProvider().getProcessGroups()
         );
         ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ClusterManager.class).publishMainGroupSet(
-                ExecutorAPI.getInstance().getMainGroupProvider().getMainGroups()
+            ExecutorAPI.getInstance().getMainGroupProvider().getMainGroups()
         );
 
         this.serviceRegistry.getProviderUnchecked(ApplicationLoader.class).detectApplications();
@@ -232,6 +234,7 @@ public final class NodeExecutor extends ExecutorAPI {
     }
 
     public void shutdown() throws Exception {
+        // prevent duplicate shutdown requests
         synchronized (this) {
             if (running) {
                 running = false;
@@ -273,37 +276,37 @@ public final class NodeExecutor extends ExecutorAPI {
         for (NetworkAddress networkListener : this.nodeConfig.getNetworkListeners()) {
             if (networkListener.getHost() == null || networkListener.getPort() < 0) {
                 System.err.println(LanguageManager.get(
-                        "startup-bind-net-listener-fail", networkListener.getHost(), networkListener.getPort()
+                    "startup-bind-net-listener-fail", networkListener.getHost(), networkListener.getPort()
                 ));
                 continue;
             }
 
             this.networkServer.bind(
-                    networkListener.getHost(),
-                    networkListener.getPort(),
-                    () -> new NodeServerEndpointChannelReader()
+                networkListener.getHost(),
+                networkListener.getPort(),
+                NodeServerEndpointChannelReader::new
             );
         }
 
         for (NetworkAddress clusterNode : this.nodeConfig.getClusterNodes()) {
             if (clusterNode.getHost() == null || clusterNode.getPort() < 0) {
                 System.err.println(LanguageManager.get(
-                        "startup-connect-node-fail", clusterNode.getHost(), clusterNode.getPort()
+                    "startup-connect-node-fail", clusterNode.getHost(), clusterNode.getPort()
                 ));
                 continue;
             }
 
             if (this.networkClient.connect(
-                    clusterNode.getHost(),
-                    clusterNode.getPort(),
-                    () -> new NodeClientEndpointChannelReader()
+                clusterNode.getHost(),
+                clusterNode.getPort(),
+                NodeClientEndpointChannelReader::new
             )) {
                 System.out.println(LanguageManager.get(
-                        "network-node-connection-to-other-node-success", clusterNode.getHost(), clusterNode.getPort()
+                    "network-node-connection-to-other-node-success", clusterNode.getHost(), clusterNode.getPort()
                 ));
             } else {
                 System.out.println(LanguageManager.get(
-                        "network-node-connection-to-other-node-not-successful", clusterNode.getHost(), clusterNode.getPort()
+                    "network-node-connection-to-other-node-not-successful", clusterNode.getHost(), clusterNode.getPort()
                 ));
             }
         }
@@ -445,18 +448,18 @@ public final class NodeExecutor extends ExecutorAPI {
 
     private void loadCommands() {
         this.serviceRegistry.getProviderUnchecked(CommandManager.class)
-                .registerCommand(new CommandProcess(), "Management of local and remote processes", "p", "process", "sever", "proxy")
-                .registerCommand(new CommandCluster(), "Management of nodes in the cluster", "clu", "cluster", "c")
-                .registerCommand(new CommandPlayers(), "Management of players on processes", "pl", "players")
-                .registerCommand(new CommandGroup(), "Administration of Main/Sub groups", "g", "group", "groups")
-                .registerCommand(new CommandCreate(), "Creation of sub/main groups", "create")
-                .registerCommand(new CommandLaunch(), "Starting or preparing processes", "launch", "l")
-                .registerCommand(new CommandStop(), "Terminates the program", "stop", "exit", "shutdown")
-                .registerCommand(new CommandLog(), "Uploading log files of running processes", "log")
-                .registerCommand(new CommandReload(), "Reloads the system", "reload", "rl")
-                .registerCommand(new CommandClear(), "Empties the console", "clear", "cls")
-                .registerCommand(new CommandTemplate(), "Manages the templates", "template", "t", "templates")
-                .registerCommand(new CommandHelp(), "Shows an overview of all available commands and their aliases", "help", "ask", "?");
+            .registerCommand(new CommandProcess(), "Management of local and remote processes", "p", "process", "sever", "proxy")
+            .registerCommand(new CommandCluster(), "Management of nodes in the cluster", "clu", "cluster", "c")
+            .registerCommand(new CommandPlayers(), "Management of players on processes", "pl", "players")
+            .registerCommand(new CommandGroup(), "Administration of Main/Sub groups", "g", "group", "groups")
+            .registerCommand(new CommandCreate(), "Creation of sub/main groups", "create")
+            .registerCommand(new CommandLaunch(), "Starting or preparing processes", "launch", "l")
+            .registerCommand(new CommandStop(), "Terminates the program", "stop", "exit", "shutdown")
+            .registerCommand(new CommandLog(), "Uploading log files of running processes", "log")
+            .registerCommand(new CommandReload(), "Reloads the system", "reload", "rl")
+            .registerCommand(new CommandClear(), "Empties the console", "clear", "cls")
+            .registerCommand(new CommandTemplate(), "Manages the templates", "template", "t", "templates")
+            .registerCommand(new CommandHelp(), "Shows an overview of all available commands and their aliases", "help", "ask", "?");
     }
 
     public boolean canStartProcesses(int neededMemory) {
@@ -488,18 +491,18 @@ public final class NodeExecutor extends ExecutorAPI {
 
     private void registerDefaultPacketProcessors() {
         PacketProcessorManager.getInstance()
-                .registerProcessor(new PacketConnectPlayerToServerProcessor(), PacketConnectPlayerToServer.class)
-                .registerProcessor(new PacketDisconnectPlayerProcessor(), PacketDisconnectPlayer.class)
-                .registerProcessor(new PacketPlayEffectToPlayerProcessor(), PacketPlayEffectToPlayer.class)
-                .registerProcessor(new PacketPlaySoundToPlayerProcessor(), PacketPlaySoundToPlayer.class)
-                .registerProcessor(new PacketSendPlayerMessageProcessor(), PacketSendPlayerMessage.class)
-                .registerProcessor(new PacketSendPlayerTitleProcessor(), PacketSendPlayerTitle.class)
-                .registerProcessor(new PacketSetPlayerLocationProcessor(), PacketSetPlayerLocation.class)
-                .registerProcessor(new ApiToNodeGetIngameMessagesProcessor(), ApiToNodeGetIngameMessages.class)
-                .registerProcessor(new ChannelMessageProcessor(), PacketChannelMessage.class)
-                .registerProcessor(new NodeToNodeProcessCommandProcessor(), NodeToNodeProcessCommand.class)
-                .registerProcessor(new NodeToNodePublishChannelMessageProcessor(), NodeToNodePublishChannelMessage.class)
-                .registerProcessor(new NodeToNodeRequestNodeInformationUpdateProcessor(), NodeToNodeRequestNodeInformationUpdate.class)
-                .registerProcessor(new NodeToNodeTabCompleteCommandProcessor(), NodeToNodeTabCompleteCommand.class);
+            .registerProcessor(new PacketConnectPlayerToServerProcessor(), PacketConnectPlayerToServer.class)
+            .registerProcessor(new PacketDisconnectPlayerProcessor(), PacketDisconnectPlayer.class)
+            .registerProcessor(new PacketPlayEffectToPlayerProcessor(), PacketPlayEffectToPlayer.class)
+            .registerProcessor(new PacketPlaySoundToPlayerProcessor(), PacketPlaySoundToPlayer.class)
+            .registerProcessor(new PacketSendPlayerMessageProcessor(), PacketSendPlayerMessage.class)
+            .registerProcessor(new PacketSendPlayerTitleProcessor(), PacketSendPlayerTitle.class)
+            .registerProcessor(new PacketSetPlayerLocationProcessor(), PacketSetPlayerLocation.class)
+            .registerProcessor(new ApiToNodeGetIngameMessagesProcessor(), ApiToNodeGetIngameMessages.class)
+            .registerProcessor(new ChannelMessageProcessor(), PacketChannelMessage.class)
+            .registerProcessor(new NodeToNodeProcessCommandProcessor(), NodeToNodeProcessCommand.class)
+            .registerProcessor(new NodeToNodePublishChannelMessageProcessor(), NodeToNodePublishChannelMessage.class)
+            .registerProcessor(new NodeToNodeRequestNodeInformationUpdateProcessor(), NodeToNodeRequestNodeInformationUpdate.class)
+            .registerProcessor(new NodeToNodeTabCompleteCommandProcessor(), NodeToNodeTabCompleteCommand.class);
     }
 }

@@ -43,9 +43,9 @@ public final class CheckForUpdatesCommand extends InterpreterCommand {
     @Override
     public void execute(@NotNull String cursorLine, @NotNull InterpretedReformScript script, @NotNull Collection<String> allLines) {
         if (Integer.getInteger("reformcloud.executor.type", 0) == 2
-                || !Boolean.getBoolean("reformcloud.auto.update")
-                || Boolean.getBoolean("reformcloud.indev.builds")
-                || Boolean.getBoolean("reformcloud.dev.mode")) {
+            || !Boolean.getBoolean("reformcloud.auto.update")
+            || Boolean.getBoolean("reformcloud.indev.builds")
+            || Boolean.getBoolean("reformcloud.dev.mode")) {
             System.out.println("Automatic apply of updates is disabled!");
             return;
         }

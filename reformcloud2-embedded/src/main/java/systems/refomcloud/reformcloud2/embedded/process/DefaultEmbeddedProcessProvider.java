@@ -80,7 +80,7 @@ public class DefaultEmbeddedProcessProvider implements ProcessProvider {
                     }
 
                     return new ArrayList<ProcessInformation>();
-                }).orElseGet(() -> Collections.emptyList());
+                }).orElseGet(Collections::emptyList);
     }
 
     @NotNull
@@ -93,7 +93,7 @@ public class DefaultEmbeddedProcessProvider implements ProcessProvider {
                     }
 
                     return new ArrayList<ProcessInformation>();
-                }).orElseGet(() -> Collections.emptyList());
+                }).orElseGet(Collections::emptyList);
     }
 
     @NotNull
@@ -106,7 +106,7 @@ public class DefaultEmbeddedProcessProvider implements ProcessProvider {
                     }
 
                     return new ArrayList<ProcessInformation>();
-                }).orElseGet(() -> Collections.emptyList());
+                }).orElseGet(Collections::emptyList);
     }
 
     @NotNull
@@ -119,7 +119,7 @@ public class DefaultEmbeddedProcessProvider implements ProcessProvider {
                     }
 
                     return new ArrayList<ProcessInformation>();
-                }).orElseGet(() -> Collections.emptyList());
+                }).orElseGet(Collections::emptyList);
     }
 
     @NotNull
@@ -132,7 +132,7 @@ public class DefaultEmbeddedProcessProvider implements ProcessProvider {
                     }
 
                     return new ArrayList<UUID>();
-                }).orElseGet(() -> Collections.emptyList());
+                }).orElseGet(Collections::emptyList);
     }
 
     @Override

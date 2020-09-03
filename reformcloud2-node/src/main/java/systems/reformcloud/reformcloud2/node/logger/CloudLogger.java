@@ -24,9 +24,13 @@
  */
 package systems.reformcloud.reformcloud2.node.logger;
 
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jline.reader.LineReader;
+import systems.reformcloud.reformcloud2.executor.api.event.EventManager;
 import systems.reformcloud.reformcloud2.executor.api.io.IOUtils;
+import systems.reformcloud.reformcloud2.node.NodeExecutor;
+import systems.reformcloud.reformcloud2.node.event.logger.LogRecordProcessEvent;
 
 import java.io.IOException;
 import java.io.PrintStream;
@@ -76,11 +80,27 @@ public class CloudLogger extends Logger {
     }
 
     protected void flushRecord(@NotNull LogRecord record) {
-        super.log(record);
+        if (this.preProcessRecord(record)) {
+            super.log(record);
+        }
     }
 
     public void close() throws InterruptedException {
         this.dispatcher.interrupt();
         this.dispatcher.join();
+    }
+
+    /**
+     * Pre process the given log record and checks if the provided record should be logged
+     * into the console or not.
+     *
+     * @param logRecord The log record to check
+     * @return {@code true} if the record should be printed, {@code false} otherwise
+     */
+    @ApiStatus.AvailableSince("2.10.1-SNAPSHOT")
+    protected boolean preProcessRecord(@NotNull LogRecord logRecord) {
+        return !NodeExecutor.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class)
+            .callEvent(new LogRecordProcessEvent(logRecord))
+            .isCanceled();
     }
 }

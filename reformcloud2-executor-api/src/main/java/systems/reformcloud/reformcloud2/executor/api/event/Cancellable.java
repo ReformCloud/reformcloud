@@ -24,9 +24,15 @@
  */
 package systems.reformcloud.reformcloud2.executor.api.event;
 
+import org.jetbrains.annotations.ApiStatus;
+
 /**
  * Indicates that a user is able to cancel a specific event
+ *
+ * @deprecated Use {@link Cancelable} instead
  */
+@Deprecated
+@ApiStatus.ScheduledForRemoval(inVersion = "2.10.3")
 public interface Cancellable {
 
     /**

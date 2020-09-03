@@ -72,7 +72,7 @@ public class DefaultEmbeddedMainGroupProvider implements MainGroupProvider {
                     }
 
                     return new ArrayList<MainGroup>();
-                }).orElseGet(() -> Collections.emptyList());
+                }).orElseGet(Collections::emptyList);
     }
 
     @Override
@@ -97,7 +97,7 @@ public class DefaultEmbeddedMainGroupProvider implements MainGroupProvider {
                     }
 
                     return new ArrayList<String>();
-                }).orElseGet(() -> Collections.emptyList());
+                }).orElseGet(Collections::emptyList);
     }
 
     @NotNull
