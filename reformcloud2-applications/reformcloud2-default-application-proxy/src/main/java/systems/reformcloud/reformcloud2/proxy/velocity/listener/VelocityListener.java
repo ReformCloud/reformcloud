@@ -82,14 +82,14 @@ public final class VelocityListener {
         ProxyConfigurationHandler.getInstance().getBestMessageOfTheDayConfiguration().ifPresent(motdConfiguration -> {
             ServerPing.Builder builder = event.getPing().asBuilder();
 
-            String protocol = motdConfiguration.getProtocol() == null ? null : ProxyConfigurationHandler.getInstance().replaceMessageOfTheDayPlaceHolders(motdConfiguration.getProtocol());
-            String[] players = motdConfiguration.getPlayerInfo() == null ? null : Arrays.stream(motdConfiguration.getPlayerInfo())
+            final String protocol = motdConfiguration.getProtocol() == null ? null : ProxyConfigurationHandler.getInstance().replaceMessageOfTheDayPlaceHolders(motdConfiguration.getProtocol());
+            final String[] players = motdConfiguration.getPlayerInfo() == null ? null : Arrays.stream(motdConfiguration.getPlayerInfo())
                     .map(ProxyConfigurationHandler.getInstance()::replaceMessageOfTheDayPlaceHolders)
                     .toArray(String[]::new);
 
             String first = motdConfiguration.getFirstLine() == null ? "" : motdConfiguration.getFirstLine();
             String second = motdConfiguration.getSecondLine() == null ? "" : motdConfiguration.getSecondLine();
-            String finalMotd = ProxyConfigurationHandler.getInstance().replaceMessageOfTheDayPlaceHolders(first + "\n" + second);
+            final String finalMotd = ProxyConfigurationHandler.getInstance().replaceMessageOfTheDayPlaceHolders(first + "\n" + second);
 
             ServerPing.SamplePlayer[] samplePlayers = new ServerPing.SamplePlayer[players == null ? 0 : players.length];
             if (players != null) {

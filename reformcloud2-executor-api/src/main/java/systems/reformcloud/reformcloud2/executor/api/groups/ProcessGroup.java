@@ -131,16 +131,22 @@ public class ProcessGroup implements Nameable, SerializableObject {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof ProcessGroup)) return false;
+        if (this == o) {
+            return true;
+        }
+
+        if (!(o instanceof ProcessGroup)) {
+            return false;
+        }
+
         ProcessGroup that = (ProcessGroup) o;
-        return this.isShowIdInName() == that.isShowIdInName() &&
-                this.isStaticProcess() == that.isStaticProcess() &&
-                this.isCanBeUsedAsLobby() == that.isCanBeUsedAsLobby() &&
-                Objects.equals(this.getName(), that.getName()) &&
-                Objects.equals(this.getStartupConfiguration(), that.getStartupConfiguration()) &&
-                Objects.equals(this.getTemplates(), that.getTemplates()) &&
-                Objects.equals(this.getPlayerAccessConfiguration(), that.getPlayerAccessConfiguration());
+        return this.isShowIdInName() == that.isShowIdInName()
+            && this.isStaticProcess() == that.isStaticProcess()
+            && this.isCanBeUsedAsLobby() == that.isCanBeUsedAsLobby()
+            && Objects.equals(this.getName(), that.getName())
+            && Objects.equals(this.getStartupConfiguration(), that.getStartupConfiguration())
+            && Objects.equals(this.getTemplates(), that.getTemplates())
+            && Objects.equals(this.getPlayerAccessConfiguration(), that.getPlayerAccessConfiguration());
     }
 
     @Override

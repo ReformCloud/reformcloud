@@ -275,22 +275,22 @@ public abstract class SharedSignSystemAdapter<T> implements SignSystemAdapter<T>
             });
             AtomicInteger[] counter = this.perGroupLayoutCounter.get(sign.getGroup());
 
-            SignSubLayout searching = LayoutUtil.getNextAndCheckFor(layout.getSearchingLayouts(), counter[0])
+            final SignSubLayout searching = LayoutUtil.getNextAndCheckFor(layout.getSearchingLayouts(), counter[0])
                     .orElseThrow(() -> new RuntimeException("Waiting layout for current group not present"));
 
-            SignSubLayout maintenance = LayoutUtil.getNextAndCheckFor(layout.getMaintenanceLayout(), counter[5])
+            final SignSubLayout maintenance = LayoutUtil.getNextAndCheckFor(layout.getMaintenanceLayout(), counter[5])
                     .orElseThrow(() -> new RuntimeException("Maintenance layout for current group not present"));
 
-            SignSubLayout connecting = LayoutUtil.getNextAndCheckFor(layout.getWaitingForConnectLayout(), counter[1])
+            final SignSubLayout connecting = LayoutUtil.getNextAndCheckFor(layout.getWaitingForConnectLayout(), counter[1])
                     .orElseThrow(() -> new RuntimeException("Connecting layout for current group not present"));
 
-            SignSubLayout empty = LayoutUtil.getNextAndCheckFor(layout.getEmptyLayout(), counter[2])
+            final SignSubLayout empty = LayoutUtil.getNextAndCheckFor(layout.getEmptyLayout(), counter[2])
                     .orElseThrow(() -> new RuntimeException("Empty layout for current group not present"));
 
-            SignSubLayout full = LayoutUtil.getNextAndCheckFor(layout.getFullLayout(), counter[4])
+            final SignSubLayout full = LayoutUtil.getNextAndCheckFor(layout.getFullLayout(), counter[4])
                     .orElseThrow(() -> new RuntimeException("Full layout for current group not present"));
 
-            SignSubLayout online = LayoutUtil.getNextAndCheckFor(layout.getOnlineLayout(), counter[3])
+            final SignSubLayout online = LayoutUtil.getNextAndCheckFor(layout.getOnlineLayout(), counter[3])
                     .orElseThrow(() -> new RuntimeException("Online layout for current group not present"));
 
             if (sign.getCurrentTarget() == null) {

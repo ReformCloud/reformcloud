@@ -80,8 +80,9 @@ public interface NetworkChannel extends ReNameable {
     void setAuthenticated(boolean authenticated);
 
     /**
-     * @see #isConnected()
      * Closes the current network channel
+     *
+     * @see #isConnected()
      */
     void close();
 }

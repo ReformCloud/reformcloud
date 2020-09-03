@@ -110,16 +110,22 @@ public class NodeInformation implements SerializableObject {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof NodeInformation)) return false;
+        if (this == o) {
+            return true;
+        }
+
+        if (!(o instanceof NodeInformation)) {
+            return false;
+        }
+
         NodeInformation that = (NodeInformation) o;
-        return this.getStartupTime() == that.getStartupTime() &&
-                this.getLastUpdate() == that.getLastUpdate() &&
-                this.getUsedMemory() == that.getUsedMemory() &&
-                this.getMaxMemory() == that.getMaxMemory() &&
-                Objects.equals(this.getName(), that.getName()) &&
-                Objects.equals(this.getNodeUniqueID(), that.getNodeUniqueID()) &&
-                Objects.equals(this.getProcessRuntimeInformation(), that.getProcessRuntimeInformation());
+        return this.getStartupTime() == that.getStartupTime()
+            && this.getLastUpdate() == that.getLastUpdate()
+            && this.getUsedMemory() == that.getUsedMemory()
+            && this.getMaxMemory() == that.getMaxMemory()
+            && Objects.equals(this.getName(), that.getName())
+            && Objects.equals(this.getNodeUniqueID(), that.getNodeUniqueID())
+            && Objects.equals(this.getProcessRuntimeInformation(), that.getProcessRuntimeInformation());
     }
 
     @Override

@@ -65,11 +65,16 @@ public class MainGroup implements Nameable, SerializableObject {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof MainGroup)) return false;
+        if (this == o) {
+            return true;
+        }
+
+        if (!(o instanceof MainGroup)) {
+            return false;
+        }
+
         MainGroup mainGroup = (MainGroup) o;
-        return Objects.equals(this.getName(), mainGroup.getName()) &&
-                Objects.equals(this.getSubGroups(), mainGroup.getSubGroups());
+        return Objects.equals(this.getName(), mainGroup.getName()) && Objects.equals(this.getSubGroups(), mainGroup.getSubGroups());
     }
 
     @Override

@@ -88,7 +88,7 @@ public final class BungeeCordListener implements Listener {
 
             String first = motdConfiguration.getFirstLine() == null ? "" : motdConfiguration.getFirstLine();
             String second = motdConfiguration.getSecondLine() == null ? "" : motdConfiguration.getSecondLine();
-            String finalMotd = ProxyConfigurationHandler.getInstance().replaceMessageOfTheDayPlaceHolders(first + "\n" + second);
+            final String finalMotd = ProxyConfigurationHandler.getInstance().replaceMessageOfTheDayPlaceHolders(first + "\n" + second);
 
             ServerPing.PlayerInfo[] playerInfos = new ServerPing.PlayerInfo[players == null ? 0 : players.length];
             if (players != null) {
