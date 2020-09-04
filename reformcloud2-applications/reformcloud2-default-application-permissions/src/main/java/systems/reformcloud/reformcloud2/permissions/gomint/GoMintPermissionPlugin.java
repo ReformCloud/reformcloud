@@ -22,36 +22,21 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.permissions.nukkit;
+package systems.reformcloud.reformcloud2.permissions.gomint;
 
-import cn.nukkit.Player;
-import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.permissions.nukkit.permissible.DefaultPermissible;
+import io.gomint.GoMint;
+import io.gomint.plugin.Plugin;
+import io.gomint.plugin.PluginName;
+import io.gomint.plugin.Version;
+import systems.reformcloud.reformcloud2.permissions.gomint.listeners.GoMintPermissionListener;
+import systems.reformcloud.reformcloud2.permissions.util.PermissionPluginUtil;
 
-import java.lang.reflect.Field;
+@Version(major = 2, minor = 0)
+@PluginName("ReformCloud2GoMintPermissions")
+public class GoMintPermissionPlugin extends Plugin {
 
-public final class NukkitUtil {
-
-    private NukkitUtil() {
-        throw new UnsupportedOperationException();
-    }
-
-    private static final Field PERM;
-
-    static {
-        try {
-            PERM = Player.class.getDeclaredField("perm");
-            PERM.setAccessible(true);
-        } catch (NoSuchFieldException exception) {
-            throw new RuntimeException(exception);
-        }
-    }
-
-    public static void inject(@NotNull Player player) {
-        try {
-            PERM.set(player, new DefaultPermissible(player));
-        } catch (IllegalAccessException exception) {
-            exception.printStackTrace();
-        }
+    @Override
+    public void onInstall() {
+        PermissionPluginUtil.awaitConnection(() -> GoMint.instance().getPluginManager().registerListener(this, new GoMintPermissionListener()));
     }
 }

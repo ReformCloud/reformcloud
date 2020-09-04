@@ -22,36 +22,24 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.permissions.nukkit;
+package systems.reformcloud.reformcloud2.permissions.gomint.listeners;
 
-import cn.nukkit.Player;
-import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.permissions.nukkit.permissible.DefaultPermissible;
+import io.gomint.event.EventHandler;
+import io.gomint.event.EventListener;
+import io.gomint.event.player.PlayerLoginEvent;
+import io.gomint.event.player.PlayerQuitEvent;
+import systems.reformcloud.reformcloud2.permissions.PermissionManagement;
+import systems.reformcloud.reformcloud2.permissions.gomint.GoMintUtil;
 
-import java.lang.reflect.Field;
+public class GoMintPermissionListener implements EventListener {
 
-public final class NukkitUtil {
-
-    private NukkitUtil() {
-        throw new UnsupportedOperationException();
+    @EventHandler
+    public void handle(PlayerLoginEvent event) {
+        GoMintUtil.inject(event.getPlayer());
     }
 
-    private static final Field PERM;
-
-    static {
-        try {
-            PERM = Player.class.getDeclaredField("perm");
-            PERM.setAccessible(true);
-        } catch (NoSuchFieldException exception) {
-            throw new RuntimeException(exception);
-        }
-    }
-
-    public static void inject(@NotNull Player player) {
-        try {
-            PERM.set(player, new DefaultPermissible(player));
-        } catch (IllegalAccessException exception) {
-            exception.printStackTrace();
-        }
+    @EventHandler
+    public void handle(PlayerQuitEvent event) {
+        PermissionManagement.getInstance().handleDisconnect(event.getPlayer().getUUID());
     }
 }
