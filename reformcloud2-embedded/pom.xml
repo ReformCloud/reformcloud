@@ -20,9 +20,9 @@
             <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
         </repository>
 
-        <!-- bungee repo -->
+        <!-- used for bungeecord and gomint -->
         <repository>
-            <id>bungeecord-repo</id>
+            <id>sonatype-snapshots</id>
             <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
         </repository>
 
@@ -75,6 +75,15 @@
             <groupId>net.md-5</groupId>
             <artifactId>bungeecord-api</artifactId>
             <version>1.16-R0.3</version>
+            <scope>provided</scope>
+            <type>jar</type>
+        </dependency>
+
+        <!-- gomint api -->
+        <dependency>
+            <groupId>io.gomint</groupId>
+            <artifactId>gomint-api</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
             <scope>provided</scope>
             <type>jar</type>
         </dependency>

@@ -74,13 +74,9 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public abstract class Embedded extends ExecutorAPI {
 
-    protected ProcessInformation processInformation;
-    protected IngameMessages ingameMessages = new IngameMessages();
-
     protected final ServiceRegistry serviceRegistry = new DefaultServiceRegistry();
     protected final NetworkClient networkClient = new DefaultNetworkClient();
     protected final EmbeddedConfig config = new EmbeddedConfig();
-
     private final DatabaseProvider databaseProvider = new DefaultEmbeddedDatabaseProvider();
     private final ChannelMessageProvider channelMessageProvider = new DefaultEmbeddedChannelMessageProvider();
     private final NodeInformationProvider nodeInformationProvider = new DefaultEmbeddedNodeInformationProvider();
@@ -88,6 +84,8 @@ public abstract class Embedded extends ExecutorAPI {
     private final MainGroupProvider mainGroupProvider = new DefaultEmbeddedMainGroupProvider();
     private final ProcessGroupProvider processGroupProvider = new DefaultEmbeddedProcessGroupProvider();
     private final ProcessProvider processProvider = new DefaultEmbeddedProcessProvider();
+    protected ProcessInformation processInformation;
+    protected IngameMessages ingameMessages = new IngameMessages();
 
     protected Embedded() {
         ExecutorAPI.setInstance(this);
@@ -106,9 +104,9 @@ public abstract class Embedded extends ExecutorAPI {
             Condition condition = lock.newCondition();
 
             this.networkClient.connect(
-                    this.config.getConnectionHost(),
-                    this.config.getConnectionPort(),
-                    () -> new EmbeddedEndpointChannelReader(lock, condition)
+                this.config.getConnectionHost(),
+                this.config.getConnectionPort(),
+                () -> new EmbeddedEndpointChannelReader(lock, condition)
             );
 
             try {
@@ -140,14 +138,14 @@ public abstract class Embedded extends ExecutorAPI {
         }
 
         PacketProcessorManager.getInstance()
-                .registerProcessor(new ChannelMessageProcessor(), PacketChannelMessage.class)
-                .registerProcessor(new PacketConnectPlayerToServerProcessor(), PacketConnectPlayerToServer.class)
-                .registerProcessor(new PacketDisconnectPlayerProcessor(), PacketDisconnectPlayer.class)
-                .registerProcessor(new PacketPlayEffectToPlayerProcessor(), PacketPlayEffectToPlayer.class)
-                .registerProcessor(new PacketPlaySoundToPlayerProcessor(), PacketPlaySoundToPlayer.class)
-                .registerProcessor(new PacketSendPlayerMessageProcessor(), PacketSendPlayerMessage.class)
-                .registerProcessor(new PacketSendPlayerTitleProcessor(), PacketSendPlayerTitle.class)
-                .registerProcessor(new PacketSetPlayerLocationProcessor(), PacketSetPlayerLocation.class);
+            .registerProcessor(new ChannelMessageProcessor(), PacketChannelMessage.class)
+            .registerProcessor(new PacketConnectPlayerToServerProcessor(), PacketConnectPlayerToServer.class)
+            .registerProcessor(new PacketDisconnectPlayerProcessor(), PacketDisconnectPlayer.class)
+            .registerProcessor(new PacketPlayEffectToPlayerProcessor(), PacketPlayEffectToPlayer.class)
+            .registerProcessor(new PacketPlaySoundToPlayerProcessor(), PacketPlaySoundToPlayer.class)
+            .registerProcessor(new PacketSendPlayerMessageProcessor(), PacketSendPlayerMessage.class)
+            .registerProcessor(new PacketSendPlayerTitleProcessor(), PacketSendPlayerTitle.class)
+            .registerProcessor(new PacketSetPlayerLocationProcessor(), PacketSetPlayerLocation.class);
 
         Runtime.getRuntime().addShutdownHook(new Thread(this.networkClient::disconnect));
         this.updateCurrentProcessInformation();
@@ -234,8 +232,8 @@ public abstract class Embedded extends ExecutorAPI {
     public Task<Packet> sendQuery(@NotNull Packet packet) {
         Optional<NetworkChannel> channel = this.serviceRegistry.getProviderUnchecked(ChannelManager.class).getFirstChannel();
         return channel
-                .map(networkChannel -> this.serviceRegistry.getProviderUnchecked(QueryManager.class).sendPacketQuery(networkChannel, packet))
-                .orElseGet(() -> Task.completedTask(null));
+            .map(networkChannel -> this.serviceRegistry.getProviderUnchecked(QueryManager.class).sendPacketQuery(networkChannel, packet))
+            .orElseGet(() -> Task.completedTask(null));
     }
 
     @NotNull

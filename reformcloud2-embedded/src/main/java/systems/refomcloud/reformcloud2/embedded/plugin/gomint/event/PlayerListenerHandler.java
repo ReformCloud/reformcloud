@@ -22,39 +22,37 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.refomcloud.reformcloud2.embedded.plugin.nukkit.event;
+package systems.refomcloud.reformcloud2.embedded.plugin.gomint.event;
 
-import cn.nukkit.Server;
-import cn.nukkit.event.EventHandler;
-import cn.nukkit.event.EventPriority;
-import cn.nukkit.event.Listener;
-import cn.nukkit.event.player.PlayerLoginEvent;
-import cn.nukkit.event.player.PlayerQuitEvent;
-import org.jetbrains.annotations.NotNull;
+import io.gomint.GoMint;
+import io.gomint.event.EventHandler;
+import io.gomint.event.EventListener;
+import io.gomint.event.player.PlayerLoginEvent;
+import io.gomint.event.player.PlayerQuitEvent;
 import systems.refomcloud.reformcloud2.embedded.Embedded;
-import systems.refomcloud.reformcloud2.embedded.plugin.nukkit.NukkitExecutor;
+import systems.refomcloud.reformcloud2.embedded.plugin.gomint.GoMintExecutor;
 import systems.refomcloud.reformcloud2.embedded.shared.SharedJoinAllowChecker;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessState;
 import systems.reformcloud.reformcloud2.executor.api.utility.list.Duo;
 
-public final class PlayerListenerHandler implements Listener {
+public class PlayerListenerHandler implements EventListener {
 
-    @EventHandler(priority = EventPriority.HIGH)
-    public void handle(final @NotNull PlayerLoginEvent event) {
+    @EventHandler
+    public void handle(PlayerLoginEvent event) {
         if (!Embedded.getInstance().isReady()) {
             event.setCancelled(true);
-            event.setKickMessage(NukkitExecutor.getInstance().getIngameMessages().format(
-                NukkitExecutor.getInstance().getIngameMessages().getProcessNotReadyToAcceptPlayersMessage()
+            event.setKickMessage(GoMintExecutor.getInstance().getIngameMessages().format(
+                GoMintExecutor.getInstance().getIngameMessages().getProcessNotReadyToAcceptPlayersMessage()
             ));
             return;
         }
 
         Duo<Boolean, String> checked = SharedJoinAllowChecker.checkIfConnectAllowed(
-            event.getPlayer()::hasPermission,
-            NukkitExecutor.getInstance().getIngameMessages(),
+            event.getPlayer().getPermissionManager()::hasPermission,
+            GoMintExecutor.getInstance().getIngameMessages(),
             null,
-            event.getPlayer().getUniqueId(),
+            event.getPlayer().getUUID(),
             event.getPlayer().getName()
         );
         if (!checked.getFirst() && checked.getSecond() != null) {
@@ -63,23 +61,21 @@ public final class PlayerListenerHandler implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void handle(final @NotNull PlayerQuitEvent event) {
+    @EventHandler
+    public void handle(PlayerQuitEvent event) {
         ProcessInformation current = Embedded.getInstance().getCurrentProcessInformation();
-        if (!current.getProcessPlayerManager().isPlayerOnlineOnCurrentProcess(event.getPlayer().getUniqueId())) {
+        if (!current.getProcessPlayerManager().isPlayerOnlineOnCurrentProcess(event.getPlayer().getUUID())) {
             return;
         }
 
-        Server.getInstance().getScheduler().scheduleTask(NukkitExecutor.getInstance().getPlugin(), () -> {
-            if (Server.getInstance().getOnlinePlayers().size() < current.getProcessDetail().getMaxPlayers()
-                && !current.getProcessDetail().getProcessState().equals(ProcessState.READY)
-                && !current.getProcessDetail().getProcessState().equals(ProcessState.INVISIBLE)) {
-                current.getProcessDetail().setProcessState(ProcessState.READY);
-            }
+        if (GoMint.instance().getPlayers().size() < current.getProcessDetail().getMaxPlayers()
+            && !current.getProcessDetail().getProcessState().equals(ProcessState.READY)
+            && !current.getProcessDetail().getProcessState().equals(ProcessState.INVISIBLE)) {
+            current.getProcessDetail().setProcessState(ProcessState.READY);
+        }
 
-            current.updateRuntimeInformation();
-            current.getProcessPlayerManager().onLogout(event.getPlayer().getUniqueId());
-            Embedded.getInstance().updateCurrentProcessInformation();
-        });
+        current.updateRuntimeInformation();
+        current.getProcessPlayerManager().onLogout(event.getPlayer().getUUID());
+        Embedded.getInstance().updateCurrentProcessInformation();
     }
 }

@@ -22,25 +22,25 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.refomcloud.reformcloud2.embedded.plugin.nukkit;
+package systems.refomcloud.reformcloud2.embedded.plugin.gomint;
 
-import cn.nukkit.Server;
-import cn.nukkit.plugin.Plugin;
+import io.gomint.GoMint;
+import io.gomint.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import systems.refomcloud.reformcloud2.embedded.Embedded;
 import systems.refomcloud.reformcloud2.embedded.executor.PlayerAPIExecutor;
-import systems.refomcloud.reformcloud2.embedded.plugin.nukkit.executor.NukkitPlayerAPIExecutor;
+import systems.refomcloud.reformcloud2.embedded.plugin.gomint.executor.GoMintPlayerAPIExecutor;
 import systems.refomcloud.reformcloud2.embedded.shared.SharedInvalidPlayerFixer;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorType;
 
-public final class NukkitExecutor extends Embedded {
+public class GoMintExecutor extends Embedded {
 
-    private static NukkitExecutor instance;
+    private static GoMintExecutor instance;
     private final Plugin plugin;
 
-    protected NukkitExecutor(Plugin plugin) {
+    protected GoMintExecutor(Plugin plugin) {
         super.type = ExecutorType.API;
-        PlayerAPIExecutor.setInstance(new NukkitPlayerAPIExecutor());
+        PlayerAPIExecutor.setInstance(new GoMintPlayerAPIExecutor());
 
         instance = this;
         this.plugin = plugin;
@@ -49,24 +49,19 @@ public final class NukkitExecutor extends Embedded {
     }
 
     @NotNull
-    public static NukkitExecutor getInstance() {
+    public static GoMintExecutor getInstance() {
         return instance;
     }
 
     @Override
     protected int getMaxPlayersOfEnvironment() {
-        return Server.getInstance().getMaxPlayers();
-    }
-
-    @NotNull
-    public Plugin getPlugin() {
-        return this.plugin;
+        return GoMint.instance().getMaxPlayers();
     }
 
     private void fixInvalidPlayers() {
         SharedInvalidPlayerFixer.start(
-            uuid -> Server.getInstance().getPlayer(uuid).isPresent(),
-            () -> Server.getInstance().getOnlinePlayers().size()
+            uuid -> GoMint.instance().findPlayerByUUID(uuid) != null,
+            () -> GoMint.instance().getPlayers().size()
         );
     }
 }
