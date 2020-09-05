@@ -57,7 +57,7 @@ public class DefaultEmbeddedPlayerWrapper implements PlayerWrapper {
                     }
 
                     return Optional.<Duo<UUID, UUID>>empty();
-                }).orElseGet(() -> Optional.empty());
+                }).orElseGet(Optional::empty);
     }
 
     @Override

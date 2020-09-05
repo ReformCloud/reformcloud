@@ -72,7 +72,7 @@ public class DefaultEmbeddedProcessGroupProvider implements ProcessGroupProvider
                     }
 
                     return new ArrayList<ProcessGroup>();
-                }).orElseGet(() -> Collections.emptyList());
+                }).orElseGet(Collections::emptyList);
     }
 
     @Override
@@ -97,7 +97,7 @@ public class DefaultEmbeddedProcessGroupProvider implements ProcessGroupProvider
                     }
 
                     return new ArrayList<String>();
-                }).orElseGet(() -> Collections.emptyList());
+                }).orElseGet(Collections::emptyList);
     }
 
     @NotNull

@@ -24,7 +24,6 @@
  */
 package systems.reformcloud.reformcloud2.node.config;
 
-import com.google.gson.reflect.TypeToken;
 import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.utility.NetworkAddress;
 
@@ -37,10 +36,8 @@ import java.util.UUID;
 
 public final class NodeConfig {
 
-    static final TypeToken<NodeConfig> TYPE = new TypeToken<NodeConfig>() {
-    };
+    protected static final Path PATH = Paths.get(System.getProperty("systems.reformcloud.node-config-path", "reformcloud/config.json"));
 
-    static final Path PATH = Paths.get("reformcloud/config.json");
     private final String name;
     private final UUID uniqueID;
     private final long maxMemory;
@@ -50,6 +47,7 @@ public final class NodeConfig {
     private final List<NetworkAddress> httpNetworkListeners;
     private final List<NetworkAddress> clusterNodes;
 
+    private boolean sendAnonymousErrorReports = true;
     private transient InetAddress inetStartHost;
 
     public NodeConfig(String name, UUID uniqueID, long maxMemory, String startHost,
@@ -104,6 +102,14 @@ public final class NodeConfig {
 
     public List<NetworkAddress> getClusterNodes() {
         return this.clusterNodes;
+    }
+
+    public void setSendAnonymousErrorReports(boolean sendAnonymousErrorReports) {
+        this.sendAnonymousErrorReports = sendAnonymousErrorReports;
+    }
+
+    public boolean isSendAnonymousErrorReports() {
+        return this.sendAnonymousErrorReports;
     }
 
     public void save() {

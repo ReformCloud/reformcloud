@@ -81,7 +81,7 @@ public class DefaultEmbeddedDatabaseTableWrapper implements DatabaseTableWrapper
                     }
 
                     return new ArrayList<String>();
-                }).orElseGet(() -> new ArrayList<>());
+                }).orElseGet(ArrayList::new);
     }
 
     @Override
@@ -111,7 +111,7 @@ public class DefaultEmbeddedDatabaseTableWrapper implements DatabaseTableWrapper
                     }
 
                     return new ArrayList<JsonConfiguration>();
-                }).orElseGet(() -> new ArrayList<>());
+                }).orElseGet(ArrayList::new);
     }
 
     @Override

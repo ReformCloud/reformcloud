@@ -67,7 +67,7 @@ public class GroupSubjectData extends AbstractSpongeSubjectData {
             }
 
             return out;
-        }).orElseGet(() -> new HashMap<>());
+        }).orElseGet(HashMap::new);
     }
 
     private Map<String, Boolean> getPermissionsOf(PermissionGroup group) {

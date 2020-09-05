@@ -63,7 +63,7 @@ public class DefaultEmbeddedNodeProcessWrapper implements NodeProcessWrapper {
                     }
 
                     return Optional.<NodeInformation>empty();
-                }).orElseGet(() -> Optional.empty());
+                }).orElseGet(Optional::empty);
     }
 
     @NotNull
@@ -76,7 +76,7 @@ public class DefaultEmbeddedNodeProcessWrapper implements NodeProcessWrapper {
                     }
 
                     return new ArrayList<String>();
-                }).orElseGet(() -> Collections.emptyList());
+                }).orElseGet(Collections::emptyList);
     }
 
     @NotNull
@@ -89,6 +89,6 @@ public class DefaultEmbeddedNodeProcessWrapper implements NodeProcessWrapper {
                     }
 
                     return new ArrayList<String>();
-                }).orElseGet(() -> Collections.emptyList());
+                }).orElseGet(Collections::emptyList);
     }
 }

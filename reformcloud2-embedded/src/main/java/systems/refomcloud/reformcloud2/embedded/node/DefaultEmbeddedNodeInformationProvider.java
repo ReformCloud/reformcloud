@@ -49,7 +49,7 @@ public class DefaultEmbeddedNodeInformationProvider implements NodeInformationPr
                     }
 
                     return Optional.<NodeProcessWrapper>empty();
-                }).orElseGet(() -> Optional.empty());
+                }).orElseGet(Optional::empty);
     }
 
     @NotNull
@@ -65,7 +65,7 @@ public class DefaultEmbeddedNodeInformationProvider implements NodeInformationPr
                     }
 
                     return Optional.<NodeProcessWrapper>empty();
-                }).orElseGet(() -> Optional.empty());
+                }).orElseGet(Optional::empty);
     }
 
     @NotNull
@@ -78,7 +78,7 @@ public class DefaultEmbeddedNodeInformationProvider implements NodeInformationPr
                     }
 
                     return new ArrayList<String>();
-                }).orElseGet(() -> Collections.emptyList());
+                }).orElseGet(Collections::emptyList);
     }
 
     @NotNull
@@ -91,7 +91,7 @@ public class DefaultEmbeddedNodeInformationProvider implements NodeInformationPr
                     }
 
                     return new ArrayList<UUID>();
-                }).orElseGet(() -> Collections.emptyList());
+                }).orElseGet(Collections::emptyList);
     }
 
     @NotNull
@@ -104,7 +104,7 @@ public class DefaultEmbeddedNodeInformationProvider implements NodeInformationPr
                     }
 
                     return new ArrayList<NodeInformation>();
-                }).orElseGet(() -> Collections.emptyList());
+                }).orElseGet(Collections::emptyList);
     }
 
     @Override

@@ -121,7 +121,7 @@ public class BukkitSignSystemAdapter extends SharedSignSystemAdapter<Sign> {
 
     @Override
     public void cleanSigns() {
-        this.run(() -> super.cleanSigns());
+        this.run(super::cleanSigns);
     }
 
     private void changeBlockBehind(@NotNull Sign sign, @NotNull SignSubLayout layout) {

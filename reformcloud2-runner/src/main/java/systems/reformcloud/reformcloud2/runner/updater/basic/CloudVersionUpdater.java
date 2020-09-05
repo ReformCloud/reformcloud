@@ -55,7 +55,7 @@ public final class CloudVersionUpdater implements Updater {
         }
 
         Properties properties = RunnerUtils.loadProperties(
-                System.getProperty("reformcloud.version.url", "https://internal.reformcloud.systems/version.properties")
+            System.getProperty("reformcloud.version.url", "https://internal.reformcloud.systems/version.properties")
         );
         if (properties.containsKey("version")) {
             this.versionAvailable = !properties.getProperty("version").equals(currentVersion);

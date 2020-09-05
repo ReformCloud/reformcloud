@@ -83,7 +83,7 @@ public class DefaultNodeNodeInformationProvider implements NodeInformationProvid
     @NotNull
     @Override
     public @UnmodifiableView Collection<NodeInformation> getNodes() {
-        return Streams.map(this.nodeInformation, e -> e.getNodeInformation());
+        return Streams.map(this.nodeInformation, DefaultNodeProcessWrapper::getNodeInformation);
     }
 
     @Override
@@ -106,7 +106,7 @@ public class DefaultNodeNodeInformationProvider implements NodeInformationProvid
     }
 
     public void removeNode(@NotNull String name) {
-        this.nodeInformation.removeIf(defaultNodeProcessWrapper -> defaultNodeProcessWrapper.nodeInformation.getName().equals(name));
+        this.nodeInformation.removeIf(wrapper -> wrapper.nodeInformation.getName().equals(name));
     }
 
     public void addNode(@NotNull NodeInformation nodeInformation) {

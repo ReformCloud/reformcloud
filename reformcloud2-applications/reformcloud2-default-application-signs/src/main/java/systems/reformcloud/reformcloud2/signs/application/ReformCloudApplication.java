@@ -129,7 +129,7 @@ public class ReformCloudApplication extends Application {
                 PacketRequestSignLayouts.class
         ));
 
-        databaseEntry = ExecutorAPI.getInstance().getDatabaseProvider().getDatabase(SignSystemAdapter.table).get("signs", "").orElseGet(() -> new JsonConfiguration());
+        databaseEntry = ExecutorAPI.getInstance().getDatabaseProvider().getDatabase(SignSystemAdapter.table).get("signs", "").orElseGet(JsonConfiguration::new);
         signConfig = ConfigHelper.read(this.getDataFolder().getPath());
 
         for (NetworkChannel registeredChannel : ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ChannelManager.class).getRegisteredChannels()) {

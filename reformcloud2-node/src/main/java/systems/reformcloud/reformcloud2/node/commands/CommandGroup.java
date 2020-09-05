@@ -512,7 +512,7 @@ public final class CommandGroup implements Command {
 
             if (properties.containsKey("add-sub-groups")) {
                 List<String> groups = this.parseStrings(properties.getProperty("add-sub-groups"));
-                Streams.allOf(mainGroup.get().getSubGroups(), e -> groups.contains(e)).forEach(groups::remove);
+                Streams.allOf(mainGroup.get().getSubGroups(), groups::contains).forEach(groups::remove);
                 mainGroup.get().getSubGroups().addAll(groups);
                 source.sendMessage(LanguageManager.get(
                         "command-group-edit",

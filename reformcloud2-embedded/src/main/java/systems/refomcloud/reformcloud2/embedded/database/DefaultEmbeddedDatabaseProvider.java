@@ -59,7 +59,7 @@ public class DefaultEmbeddedDatabaseProvider implements DatabaseProvider {
                     }
 
                     return new ArrayList<String>();
-                }).orElseGet(() -> new ArrayList<>());
+                }).orElseGet(ArrayList::new);
     }
 
     @NotNull

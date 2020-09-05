@@ -22,25 +22,37 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.runner.commands;
+package systems.reformcloud.reformcloud2.node.event.logger;
 
-import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.runner.reformscript.InterpretedReformScript;
-import systems.reformcloud.reformcloud2.runner.reformscript.utils.InterpreterCommand;
+import systems.reformcloud.reformcloud2.executor.api.event.Cancelable;
+import systems.reformcloud.reformcloud2.executor.api.event.Event;
 
-import java.util.Collection;
+import java.util.logging.LogRecord;
 
-public final class SetSystemPropertiesCommand extends InterpreterCommand {
+public class LogRecordProcessEvent extends Event implements Cancelable {
 
-    public SetSystemPropertiesCommand() {
-        super("set_system_properties");
+    private LogRecord logRecord;
+    private boolean cancel;
+
+    public LogRecordProcessEvent(LogRecord logRecord) {
+        this.logRecord = logRecord;
+    }
+
+    public LogRecord getLogRecord() {
+        return this.logRecord;
+    }
+
+    public void setLogRecord(LogRecord logRecord) {
+        this.logRecord = logRecord;
     }
 
     @Override
-    public void execute(@NotNull String cursorLine, @NotNull InterpretedReformScript script, @NotNull Collection<String> allLines) {
-        System.setProperty(
-            "reformcloud.runner.specification",
-            System.getProperty("reformcloud.runner.version").endsWith("-SNAPSHOT") ? "SNAPSHOT" : "RELEASE"
-        );
+    public boolean isCanceled() {
+        return this.cancel;
+    }
+
+    @Override
+    public void setCancelled(boolean cancel) {
+        this.cancel = cancel;
     }
 }
