@@ -64,7 +64,7 @@ public final class RunnerUtils {
     /**
      * The base url of the reformcloud github repository
      */
-    public static final String REPO_BASE_URL = "https://github.com/derklaro/reformcloud2/";
+    public static final String REPO_BASE_URL = "https://github.com/ReformCloud/reformcloud2/";
     /**
      * The file download format string
      */
