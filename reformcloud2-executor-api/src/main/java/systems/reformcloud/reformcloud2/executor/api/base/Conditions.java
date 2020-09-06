@@ -40,7 +40,7 @@ public final class Conditions {
      */
     public static void isTrue(boolean test, @Nullable Object message) {
         if (!test) {
-            throw new NullPointerException(String.valueOf(message));
+            throw new IllegalArgumentException(String.valueOf(message));
         }
     }
 
@@ -62,7 +62,7 @@ public final class Conditions {
      */
     public static void isTrue(boolean test, @NotNull String message, @Nullable Object... args) {
         if (!test) {
-            throw new NullPointerException(MessageFormat.format(message, args));
+            throw new IllegalStateException(MessageFormat.format(message, args));
         }
     }
 
