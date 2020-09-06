@@ -35,6 +35,7 @@ import io.netty.channel.socket.ServerSocketChannel;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.network.netty.concurrent.FastNettyThreadFactory;
 
@@ -45,9 +46,9 @@ import java.util.function.BiFunction;
 public enum TransportType {
 
     EPOLL("Epoll", Epoll.isAvailable(), EpollServerSocketChannel::new,
-            EpollSocketChannel::new, (type, typeName) -> new EpollEventLoopGroup(Math.min(4, Runtime.getRuntime().availableProcessors() * 2), newThreadFactory(typeName, type))),
+        EpollSocketChannel::new, (type, typeName) -> new EpollEventLoopGroup(Math.min(4, Runtime.getRuntime().availableProcessors() * 2), newThreadFactory(typeName, type))),
     NIO("Nio", true, NioServerSocketChannel::new,
-            NioSocketChannel::new, (type, typeName) -> new NioEventLoopGroup(Math.min(4, Runtime.getRuntime().availableProcessors() * 2), newThreadFactory(typeName, type)));
+        NioSocketChannel::new, (type, typeName) -> new NioEventLoopGroup(Math.min(4, Runtime.getRuntime().availableProcessors() * 2), newThreadFactory(typeName, type)));
 
     private final String name;
     private final boolean available;
@@ -84,6 +85,13 @@ public enum TransportType {
         return this.eventLoopGroupFactory.apply(type, this.getName());
     }
 
+    /**
+     * Get the best transport type for the current machine
+     *
+     * @return the best transport type for the current machine
+     * @deprecated For internal use only. Use {@link systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil#TRANSPORT_TYPE}
+     */
+    @ApiStatus.Internal
     public static @NotNull TransportType getBestType() {
         if (Boolean.getBoolean("reformcloud.disable.native")) {
             return NIO;

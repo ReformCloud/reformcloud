@@ -29,6 +29,7 @@ import systems.reformcloud.reformcloud2.executor.api.CommonHelper;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.command.Command;
 import systems.reformcloud.reformcloud2.executor.api.command.CommandSender;
+import systems.reformcloud.reformcloud2.executor.api.enums.EnumUtil;
 import systems.reformcloud.reformcloud2.executor.api.groups.MainGroup;
 import systems.reformcloud.reformcloud2.executor.api.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.groups.template.RuntimeConfiguration;
@@ -53,36 +54,36 @@ public final class CommandGroup implements Command {
 
     public void describeCommandToSender(@NotNull CommandSender source) {
         source.sendMessages((
-                "group <list>                                   | Shows all registered main and process groups\n" +
-                        "group <sub | main> <name> [info]               | Shows information about a specific group\n" +
-                        "group <sub | main> <name> [delete]             | Deletes the specified process group\n" +
-                        "group <sub | main> <name> [stop]               | Stops either all non-prepared processes of the group or all sub groups of the main group which are not prepared\n" +
-                        "group <sub | main> <name> [kill]               | Stops either all processes of the group or all sub groups of the main group\n" +
-                        " \n" +
-                        "group <sub> <name> [edit]                      | Edits the specified group\n" +
-                        " --maintenance=[maintenance]                   | Enables or disables the maintenance mode\n" +
-                        " --static=[static]                             | Enables or disables the deleting of the process after the stop\n" +
-                        " --lobby=[lobby]                               | Sets if the group can be used as lobby\n" +
-                        " --max-players=[max]                           | Sets the max player count for the process\n" +
-                        " --min-process-count=[min]                     | Sets the min process count for the process\n" +
-                        " --max-process-count=[max]                     | Sets the max process count for the process\n" +
-                        " --always-prepared-process-count=[count]       | Sets the count of processes which should always be prepared\n" +
-                        " --start-port=[port]                           | Sets the start port of the group\n" +
-                        " --max-memory=[default/memory]                 | Sets the max memory of the template (format: <template-name>/<max-memory>)\n" +
-                        " --startup-pickers=[Node1;Node2]               | Sets the startup pickers for the group\n" +
-                        " --add-startup-pickers=[Node1;Node2]           | Adds the specified startup pickers to the group\n" +
-                        " --remove-startup-pickers=[Node1;Node2]        | Removes the specified startup pickers from the group\n" +
-                        " --clear-startup-pickers=true                  | Clears the startup pickers\n" +
-                        " --templates=[default/FILE/WATERFALL;...]      | Sets the templates of the group (format: <name>/<backend>/<version>)\n" +
-                        " --add-templates=[default/FILE/WATERFALL;...]  | Adds the specified templates to the group (format: <name>/<backend>/<version>)\n" +
-                        " --remove-templates=[default;global]           | Removes the specified templates from the group\n" +
-                        " --clear-templates=true                        | Clears the templates of the group\n" +
-                        " \n" +
-                        "group <main> <name> [edit]                     | Edits the specified main group\n" +
-                        " --sub-groups=[Group1;Group2]                  | Sets the sub groups of the main group\n" +
-                        " --add-sub-groups=[Group1;Group2]              | Adds the sub groups to the main group\n" +
-                        " --remove-sub-groups=[Group1;Group2]           | Removes the sub groups from the main group\n" +
-                        " --clear-sub-groups=true                       | Clears the sub groups of the main group"
+            "group <list>                                   | Shows all registered main and process groups\n" +
+                "group <sub | main> <name> [info]               | Shows information about a specific group\n" +
+                "group <sub | main> <name> [delete]             | Deletes the specified process group\n" +
+                "group <sub | main> <name> [stop]               | Stops either all non-prepared processes of the group or all sub groups of the main group which are not prepared\n" +
+                "group <sub | main> <name> [kill]               | Stops either all processes of the group or all sub groups of the main group\n" +
+                " \n" +
+                "group <sub> <name> [edit]                      | Edits the specified group\n" +
+                " --maintenance=[maintenance]                   | Enables or disables the maintenance mode\n" +
+                " --static=[static]                             | Enables or disables the deleting of the process after the stop\n" +
+                " --lobby=[lobby]                               | Sets if the group can be used as lobby\n" +
+                " --max-players=[max]                           | Sets the max player count for the process\n" +
+                " --min-process-count=[min]                     | Sets the min process count for the process\n" +
+                " --max-process-count=[max]                     | Sets the max process count for the process\n" +
+                " --always-prepared-process-count=[count]       | Sets the count of processes which should always be prepared\n" +
+                " --start-port=[port]                           | Sets the start port of the group\n" +
+                " --max-memory=[default/memory]                 | Sets the max memory of the template (format: <template-name>/<max-memory>)\n" +
+                " --startup-pickers=[Node1;Node2]               | Sets the startup pickers for the group\n" +
+                " --add-startup-pickers=[Node1;Node2]           | Adds the specified startup pickers to the group\n" +
+                " --remove-startup-pickers=[Node1;Node2]        | Removes the specified startup pickers from the group\n" +
+                " --clear-startup-pickers=true                  | Clears the startup pickers\n" +
+                " --templates=[default/FILE/WATERFALL;...]      | Sets the templates of the group (format: <name>/<backend>/<version>)\n" +
+                " --add-templates=[default/FILE/WATERFALL;...]  | Adds the specified templates to the group (format: <name>/<backend>/<version>)\n" +
+                " --remove-templates=[default;global]           | Removes the specified templates from the group\n" +
+                " --clear-templates=true                        | Clears the templates of the group\n" +
+                " \n" +
+                "group <main> <name> [edit]                     | Edits the specified main group\n" +
+                " --sub-groups=[Group1;Group2]                  | Sets the sub groups of the main group\n" +
+                " --add-sub-groups=[Group1;Group2]              | Adds the sub groups to the main group\n" +
+                " --remove-sub-groups=[Group1;Group2]           | Removes the sub groups from the main group\n" +
+                " --clear-sub-groups=true                       | Clears the sub groups of the main group"
         ).split("\n"));
     }
 
@@ -128,9 +129,9 @@ public final class CommandGroup implements Command {
         } else if (bufferIndex >= 3) {
             if (strings[2].equalsIgnoreCase("edit") && strings[0].equalsIgnoreCase("sub")) {
                 result.addAll(Arrays.asList("--maintenance=false", "--static=false", "--max-players=512", "--min-process-count=1",
-                        "--max-process-count=-1", "--always-prepared-process-count=1", "--start-port=25565", "--max-memory=512",
-                        "--startup-pickers=", "--add-startup-pickers=", "--remove-startup-pickers=", "--clear-startup-pickers=true", "--lobby=true",
-                        "--templates=default/FILE/PAPER_1_8_8", "--add-templates=default/FILE/PAPER_1_8_8", "--remove-templates=default", "--clear-templates=true"));
+                    "--max-process-count=-1", "--always-prepared-process-count=1", "--start-port=25565", "--max-memory=512",
+                    "--startup-pickers=", "--add-startup-pickers=", "--remove-startup-pickers=", "--clear-startup-pickers=true", "--lobby=true",
+                    "--templates=default/FILE/PAPER_1_8_8", "--add-templates=default/FILE/PAPER_1_8_8", "--remove-templates=default", "--clear-templates=true"));
             } else if (strings[2].equalsIgnoreCase("edit") && strings[0].equalsIgnoreCase("main")) {
                 result.addAll(Arrays.asList("--sub-groups=", "--add-sub-groups=", "--remove-sub-groups=", "--clear-sub-groups=true"));
             }
@@ -148,11 +149,11 @@ public final class CommandGroup implements Command {
 
         if (strings.length == 3 && strings[2].equalsIgnoreCase("stop")) {
             List<ProcessInformation> processes = ExecutorAPI.getInstance()
-                    .getProcessProvider()
-                    .getProcessesByProcessGroup(processGroup.get().getName())
-                    .stream()
-                    .filter(e -> !e.getProcessDetail().getProcessState().equals(ProcessState.PREPARED))
-                    .collect(Collectors.toList());
+                .getProcessProvider()
+                .getProcessesByProcessGroup(processGroup.get().getName())
+                .stream()
+                .filter(e -> !e.getProcessDetail().getProcessState().equals(ProcessState.PREPARED))
+                .collect(Collectors.toList());
             source.sendMessage(LanguageManager.get("command-group-stopping-all-not-prepared", processGroup.get().getName()));
 
             for (ProcessInformation process : processes) {
@@ -164,8 +165,8 @@ public final class CommandGroup implements Command {
 
         if (strings.length == 3 && strings[2].equalsIgnoreCase("kill")) {
             Collection<ProcessInformation> processes = ExecutorAPI.getInstance()
-                    .getProcessProvider()
-                    .getProcessesByProcessGroup(processGroup.get().getName());
+                .getProcessProvider()
+                .getProcessesByProcessGroup(processGroup.get().getName());
             source.sendMessage(LanguageManager.get("command-group-stopping-all", processGroup.get().getName()));
             for (ProcessInformation process : processes) {
                 Optional<ProcessWrapper> wrapper = ExecutorAPI.getInstance().getProcessProvider().getProcessByUniqueId(process.getProcessDetail().getProcessUniqueID());
@@ -183,8 +184,8 @@ public final class CommandGroup implements Command {
             ExecutorAPI.getInstance().getProcessGroupProvider().deleteProcessGroup(processGroup.get().getName());
 
             Collection<ProcessInformation> processes = ExecutorAPI.getInstance()
-                    .getProcessProvider()
-                    .getProcessesByProcessGroup(processGroup.get().getName());
+                .getProcessProvider()
+                .getProcessesByProcessGroup(processGroup.get().getName());
             for (ProcessInformation process : processes) {
                 Optional<ProcessWrapper> wrapper = ExecutorAPI.getInstance().getProcessProvider().getProcessByUniqueId(process.getProcessDetail().getProcessUniqueID());
                 wrapper.ifPresent(processWrapper -> processWrapper.setRuntimeStateAsync(ProcessState.STOPPED));
@@ -204,9 +205,9 @@ public final class CommandGroup implements Command {
 
                 processGroup.get().getPlayerAccessConfiguration().setMaintenance(maintenance);
                 source.sendMessage(LanguageManager.get(
-                        "command-group-edit",
-                        "maintenance",
-                        processGroup.get().getPlayerAccessConfiguration().isMaintenance()
+                    "command-group-edit",
+                    "maintenance",
+                    processGroup.get().getPlayerAccessConfiguration().isMaintenance()
                 ));
             }
 
@@ -219,9 +220,9 @@ public final class CommandGroup implements Command {
 
                 processGroup.get().setStaticProcess(isStatic);
                 source.sendMessage(LanguageManager.get(
-                        "command-group-edit",
-                        "static",
-                        processGroup.get().isStaticProcess()
+                    "command-group-edit",
+                    "static",
+                    processGroup.get().isStaticProcess()
                 ));
             }
 
@@ -234,9 +235,9 @@ public final class CommandGroup implements Command {
 
                 processGroup.get().setCanBeUsedAsLobby(isLobby);
                 source.sendMessage(LanguageManager.get(
-                        "command-group-edit",
-                        "lobby",
-                        isLobby
+                    "command-group-edit",
+                    "lobby",
+                    isLobby
                 ));
             }
 
@@ -249,9 +250,9 @@ public final class CommandGroup implements Command {
 
                 processGroup.get().getPlayerAccessConfiguration().setMaxPlayers(maxPlayers);
                 source.sendMessage(LanguageManager.get(
-                        "command-group-edit",
-                        "max-players",
-                        processGroup.get().getPlayerAccessConfiguration().getMaxPlayers()
+                    "command-group-edit",
+                    "max-players",
+                    processGroup.get().getPlayerAccessConfiguration().getMaxPlayers()
                 ));
             }
 
@@ -268,9 +269,9 @@ public final class CommandGroup implements Command {
                     if (template != null) {
                         template.getRuntimeConfiguration().setMaxMemory(maxMemory);
                         source.sendMessage(LanguageManager.get(
-                                "command-group-edit",
-                                "max-memory",
-                                split[0] + "/" + maxMemory
+                            "command-group-edit",
+                            "max-memory",
+                            split[0] + "/" + maxMemory
                         ));
                     }
                 }
@@ -285,9 +286,9 @@ public final class CommandGroup implements Command {
 
                 processGroup.get().getStartupConfiguration().setMinOnlineProcesses(minProcessCount);
                 source.sendMessage(LanguageManager.get(
-                        "command-group-edit",
-                        "min-process-count",
-                        processGroup.get().getStartupConfiguration().getMinOnlineProcesses()
+                    "command-group-edit",
+                    "min-process-count",
+                    processGroup.get().getStartupConfiguration().getMinOnlineProcesses()
                 ));
             }
 
@@ -300,9 +301,9 @@ public final class CommandGroup implements Command {
 
                 processGroup.get().getStartupConfiguration().setMaxOnlineProcesses(maxProcessCount);
                 source.sendMessage(LanguageManager.get(
-                        "command-group-edit",
-                        "max-process-count",
-                        processGroup.get().getStartupConfiguration().getMaxOnlineProcesses()
+                    "command-group-edit",
+                    "max-process-count",
+                    processGroup.get().getStartupConfiguration().getMaxOnlineProcesses()
                 ));
             }
 
@@ -315,9 +316,9 @@ public final class CommandGroup implements Command {
 
                 processGroup.get().getStartupConfiguration().setAlwaysPreparedProcesses(alwaysPreparedCount);
                 source.sendMessage(LanguageManager.get(
-                        "command-group-edit",
-                        "always-prepared-process-count",
-                        processGroup.get().getStartupConfiguration().getAlwaysPreparedProcesses()
+                    "command-group-edit",
+                    "always-prepared-process-count",
+                    processGroup.get().getStartupConfiguration().getAlwaysPreparedProcesses()
                 ));
             }
 
@@ -330,9 +331,9 @@ public final class CommandGroup implements Command {
 
                 processGroup.get().getStartupConfiguration().setStartPort(startPort);
                 source.sendMessage(LanguageManager.get(
-                        "command-group-edit",
-                        "start-port",
-                        processGroup.get().getStartupConfiguration().getStartPort()
+                    "command-group-edit",
+                    "start-port",
+                    processGroup.get().getStartupConfiguration().getStartPort()
                 ));
             }
 
@@ -340,9 +341,9 @@ public final class CommandGroup implements Command {
                 List<String> startPickers = this.parseStrings(properties.getProperty("startup-pickers"));
                 processGroup.get().getStartupConfiguration().setUseOnlyTheseClients(startPickers);
                 source.sendMessage(LanguageManager.get(
-                        "command-group-edit",
-                        "startup-pickers",
-                        String.join(", ", startPickers)
+                    "command-group-edit",
+                    "startup-pickers",
+                    String.join(", ", startPickers)
                 ));
             }
 
@@ -351,9 +352,9 @@ public final class CommandGroup implements Command {
                 startPickers.addAll(processGroup.get().getStartupConfiguration().getUseOnlyTheseClients());
                 processGroup.get().getStartupConfiguration().setUseOnlyTheseClients(startPickers);
                 source.sendMessage(LanguageManager.get(
-                        "command-group-edit",
-                        "startup-pickers",
-                        String.join(", ", startPickers)
+                    "command-group-edit",
+                    "startup-pickers",
+                    String.join(", ", startPickers)
                 ));
             }
 
@@ -362,9 +363,9 @@ public final class CommandGroup implements Command {
                 startPickers.removeAll(this.parseStrings(properties.getProperty("remove-startup-pickers")));
                 processGroup.get().getStartupConfiguration().setUseOnlyTheseClients(startPickers);
                 source.sendMessage(LanguageManager.get(
-                        "command-group-edit",
-                        "startup-pickers",
-                        String.join(", ", startPickers)
+                    "command-group-edit",
+                    "startup-pickers",
+                    String.join(", ", startPickers)
                 ));
             }
 
@@ -378,9 +379,9 @@ public final class CommandGroup implements Command {
                 if (clear) {
                     processGroup.get().getStartupConfiguration().setUseOnlyTheseClients(new ArrayList<>());
                     source.sendMessage(LanguageManager.get(
-                            "command-group-edit",
-                            "use-specific-start-picker",
-                            "false"
+                        "command-group-edit",
+                        "use-specific-start-picker",
+                        "false"
                     ));
                 }
             }
@@ -390,9 +391,9 @@ public final class CommandGroup implements Command {
                 if (!newTemplates.isEmpty()) {
                     processGroup.get().setTemplates(newTemplates);
                     source.sendMessage(LanguageManager.get(
-                            "command-group-edit",
-                            "templates",
-                            newTemplates.stream().map(Template::getName).collect(Collectors.joining(", "))
+                        "command-group-edit",
+                        "templates",
+                        newTemplates.stream().map(Template::getName).collect(Collectors.joining(", "))
                     ));
                 }
             }
@@ -403,9 +404,9 @@ public final class CommandGroup implements Command {
                     newTemplates.addAll(processGroup.get().getTemplates());
                     processGroup.get().setTemplates(newTemplates);
                     source.sendMessage(LanguageManager.get(
-                            "command-group-edit",
-                            "add-templates",
-                            newTemplates.stream().map(Template::getName).collect(Collectors.joining(", "))
+                        "command-group-edit",
+                        "add-templates",
+                        newTemplates.stream().map(Template::getName).collect(Collectors.joining(", "))
                     ));
                 }
             }
@@ -415,9 +416,9 @@ public final class CommandGroup implements Command {
                 Collection<Template> toRemove = Streams.allOf(processGroup.get().getTemplates(), e -> templatesToRemove.contains(e.getName()));
                 processGroup.get().getTemplates().removeAll(toRemove);
                 source.sendMessage(LanguageManager.get(
-                        "command-group-edit",
-                        "remove-templates",
-                        toRemove.stream().map(Template::getName).collect(Collectors.joining(", "))
+                    "command-group-edit",
+                    "remove-templates",
+                    toRemove.stream().map(Template::getName).collect(Collectors.joining(", "))
                 ));
             }
 
@@ -431,9 +432,9 @@ public final class CommandGroup implements Command {
                 if (clear) {
                     processGroup.get().getTemplates().clear();
                     source.sendMessage(LanguageManager.get(
-                            "command-group-edit",
-                            "templates",
-                            "clear"
+                        "command-group-edit",
+                        "templates",
+                        "clear"
                     ));
                 }
             }
@@ -469,11 +470,11 @@ public final class CommandGroup implements Command {
         if (strings.length == 3 && strings[2].equalsIgnoreCase("stop")) {
             for (String subGroup : mainGroup.get().getSubGroups()) {
                 Collection<ProcessInformation> running = ExecutorAPI.getInstance()
-                        .getProcessProvider()
-                        .getProcessesByProcessGroup(subGroup)
-                        .stream()
-                        .filter(e -> !e.getProcessDetail().getProcessState().equals(ProcessState.PREPARED))
-                        .collect(Collectors.toList());
+                    .getProcessProvider()
+                    .getProcessesByProcessGroup(subGroup)
+                    .stream()
+                    .filter(e -> !e.getProcessDetail().getProcessState().equals(ProcessState.PREPARED))
+                    .collect(Collectors.toList());
                 source.sendMessage(LanguageManager.get("command-group-stopping-all-not-prepared", subGroup));
 
                 for (ProcessInformation information : running) {
@@ -488,8 +489,8 @@ public final class CommandGroup implements Command {
         if (strings.length == 3 && strings[2].equalsIgnoreCase("kill")) {
             for (String subGroup : mainGroup.get().getSubGroups()) {
                 Collection<ProcessInformation> running = ExecutorAPI.getInstance()
-                        .getProcessProvider()
-                        .getProcessesByProcessGroup(subGroup);
+                    .getProcessProvider()
+                    .getProcessesByProcessGroup(subGroup);
                 for (ProcessInformation information : running) {
                     Optional<ProcessWrapper> wrapper = ExecutorAPI.getInstance().getProcessProvider().getProcessByUniqueId(information.getProcessDetail().getProcessUniqueID());
                     wrapper.ifPresent(processWrapper -> processWrapper.setRuntimeStateAsync(ProcessState.STOPPED));
@@ -504,9 +505,9 @@ public final class CommandGroup implements Command {
                 List<String> groups = this.parseStrings(properties.getProperty("sub-groups"));
                 mainGroup.get().setSubGroups(groups);
                 source.sendMessage(LanguageManager.get(
-                        "command-group-edit",
-                        "sub-groups",
-                        String.join(", ", groups)
+                    "command-group-edit",
+                    "sub-groups",
+                    String.join(", ", groups)
                 ));
             }
 
@@ -515,9 +516,9 @@ public final class CommandGroup implements Command {
                 Streams.allOf(mainGroup.get().getSubGroups(), groups::contains).forEach(groups::remove);
                 mainGroup.get().getSubGroups().addAll(groups);
                 source.sendMessage(LanguageManager.get(
-                        "command-group-edit",
-                        "sub-groups",
-                        String.join(", ", mainGroup.get().getSubGroups())
+                    "command-group-edit",
+                    "sub-groups",
+                    String.join(", ", mainGroup.get().getSubGroups())
                 ));
             }
 
@@ -525,9 +526,9 @@ public final class CommandGroup implements Command {
                 List<String> groups = this.parseStrings(properties.getProperty("remove-sub-groups"));
                 mainGroup.get().getSubGroups().removeAll(groups);
                 source.sendMessage(LanguageManager.get(
-                        "command-group-edit",
-                        "sub-groups-remove",
-                        String.join(", ", groups)
+                    "command-group-edit",
+                    "sub-groups-remove",
+                    String.join(", ", groups)
                 ));
             }
 
@@ -541,9 +542,9 @@ public final class CommandGroup implements Command {
                 if (clear) {
                     mainGroup.get().getSubGroups().clear();
                     source.sendMessage(LanguageManager.get(
-                            "command-group-edit",
-                            "sub-groups",
-                            "clear"
+                        "command-group-edit",
+                        "sub-groups",
+                        "clear"
                     ));
                 }
             }
@@ -593,7 +594,7 @@ public final class CommandGroup implements Command {
         append.append("- ");
 
         String s = " > Name" + append.toString() + mainGroup.getName()
-                + "\n" + prefix + " - " + String.join(", ", mainGroup.getSubGroups()) + "\n";
+            + "\n" + prefix + " - " + String.join(", ", mainGroup.getSubGroups()) + "\n";
         source.sendMessages(s.split("\n"));
     }
 
@@ -621,7 +622,7 @@ public final class CommandGroup implements Command {
             builder.append(" > Max-Processes   - ").append(processGroup.getStartupConfiguration().getMaxOnlineProcesses()).append("\n");
             builder.append(" > Start-Port      - ").append(processGroup.getStartupConfiguration().getStartPort()).append("\n");
             builder.append(" > Startup-Pickers - ").append(processGroup.getStartupConfiguration().getUseOnlyTheseClients().isEmpty()
-                    ? "undefined" : String.join(", ", processGroup.getStartupConfiguration().getUseOnlyTheseClients())
+                ? "undefined" : String.join(", ", processGroup.getStartupConfiguration().getUseOnlyTheseClients())
             ).append("\n");
             builder.append(" ");
         }
@@ -667,14 +668,14 @@ public final class CommandGroup implements Command {
                 continue;
             }
 
-            Version version = CommonHelper.findEnumField(Version.class, templateConfig[2].toUpperCase()).orNothing();
+            Version version = EnumUtil.findEnumFieldByName(Version.class, templateConfig[2].toUpperCase()).orElse(null);
             if (version == null) {
                 source.sendMessage(LanguageManager.get("command-group-template-version-not-found", templateConfig[2]));
                 continue;
             }
 
             newTemplates.add(new Template(0, templateConfig[0], false, backend.get().getName(), "-", new RuntimeConfiguration(
-                    version.isServer() ? 512 : 256, new ArrayList<>(), new HashMap<>()
+                version.isServer() ? 512 : 256, new ArrayList<>(), new HashMap<>()
             ), version, new ArrayList<>(), new ArrayList<>(Collections.singletonList(version.isServer() ? SERVER_INCLUSION : PROXY_INCLUSION))));
         }
 

@@ -27,6 +27,7 @@ package systems.reformcloud.reformcloud2.protocol.node;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.enums.EnumUtil;
 import systems.reformcloud.reformcloud2.executor.api.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.groups.template.Template;
 import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
@@ -91,24 +92,24 @@ public class ApiToNodePrepareProcess extends ProtocolPacket {
     @Override
     public void handlePacketReceive(@NotNull EndpointChannelReader reader, @NotNull NetworkChannel channel) {
         ProcessWrapper result = ExecutorAPI.getInstance().getProcessProvider().createProcess()
-                .group(this.processGroupName)
-                .node(this.node)
-                .displayName(this.displayName)
-                .messageOfTheDay(this.messageOfTheDay)
-                .targetProcessFactory(this.targetProcessFactory)
+            .group(this.processGroupName)
+            .node(this.node)
+            .displayName(this.displayName)
+            .messageOfTheDay(this.messageOfTheDay)
+            .targetProcessFactory(this.targetProcessFactory)
 
-                .group(this.processGroup)
-                .template(this.template)
-                .inclusions(this.inclusions)
-                .extra(this.extra)
-                .initialState(this.initialState)
-                .uniqueId(this.processUniqueId)
+            .group(this.processGroup)
+            .template(this.template)
+            .inclusions(this.inclusions)
+            .extra(this.extra)
+            .initialState(this.initialState)
+            .uniqueId(this.processUniqueId)
 
-                .memory(this.memory)
-                .id(this.id)
-                .maxPlayers(this.maxPlayers)
-                .prepare()
-                .getUninterruptedly(TimeUnit.SECONDS, 15);
+            .memory(this.memory)
+            .id(this.id)
+            .maxPlayers(this.maxPlayers)
+            .prepare()
+            .getUninterruptedly(TimeUnit.SECONDS, 15);
         if (result != null) {
             channel.sendQueryResult(this.getQueryUniqueID(), new ApiToNodeGetProcessInformationResult(result.getProcessInformation()));
         } else {
@@ -148,7 +149,7 @@ public class ApiToNodePrepareProcess extends ProtocolPacket {
         this.template = buffer.readObject(Template.class);
         this.inclusions = buffer.readObjects(ProcessInclusion.class);
         this.extra = new JsonConfiguration(buffer.readArray());
-        this.initialState = ProcessState.values()[buffer.readInt()];
+        this.initialState = EnumUtil.findEnumFieldByIndex(ProcessState.class, buffer.readInt()).orElse(null);
         this.processUniqueId = buffer.readUniqueId();
 
         this.memory = buffer.readInt();

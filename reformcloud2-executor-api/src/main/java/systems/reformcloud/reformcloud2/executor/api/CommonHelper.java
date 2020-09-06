@@ -28,11 +28,11 @@ import com.sun.management.OperatingSystemMXBean;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Unmodifiable;
+import systems.reformcloud.reformcloud2.executor.api.enums.EnumUtil;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessRuntimeInformation;
 import systems.reformcloud.reformcloud2.executor.api.utility.optional.ReferencedOptional;
 
 import java.lang.management.*;
-import java.lang.ref.WeakReference;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.security.AccessController;
@@ -41,7 +41,6 @@ import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -55,7 +54,6 @@ public final class CommonHelper {
     public static final ArrayDeque<String> EMPTY_STRING_QUEUE = new ArrayDeque<>();
     public static final DateFormat DATE_FORMAT = new SimpleDateFormat("dd.MM.yyyy kk:mm:ss");
     public static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("##.###");
-    private static final Map<Class<? extends Enum<?>>, Map<String, WeakReference<? extends Enum<?>>>> CACHE = new ConcurrentHashMap<>();
 
     private CommonHelper() {
         throw new UnsupportedOperationException();
@@ -188,21 +186,18 @@ public final class CommonHelper {
             + ((trace.length > 0) ? " @ " + throwable.getStackTrace()[0].getClassName() + ":" + throwable.getStackTrace()[0].getLineNumber() : "");
     }
 
+    /**
+     * Tries to find an enum field by the given name, using a weak cache
+     *
+     * @param enumClass The class to find the constant in
+     * @param field     The name of the field to find
+     * @param <T>       The type of the enum class
+     * @return An optional which is empty if no field by the given value was found or containing the field associated with the name
+     * @deprecated Use {@link EnumUtil#findEnumFieldByName(Class, String)} instead
+     */
+    @Deprecated
+    @ApiStatus.ScheduledForRemoval(inVersion = "2.10.3")
     public static <T extends Enum<T>> ReferencedOptional<T> findEnumField(Class<T> enumClass, String field) {
-        Map<String, WeakReference<? extends Enum<?>>> cached = CACHE.computeIfAbsent(enumClass, aClass -> cache(enumClass));
-
-        WeakReference<? extends Enum<?>> reference = cached.get(field.toUpperCase());
-        return reference == null ? ReferencedOptional.empty() : ReferencedOptional.build(enumClass.cast(reference.get()));
-    }
-
-    private static <T extends Enum<T>> Map<String, WeakReference<? extends Enum<?>>> cache(Class<T> enumClass) {
-        Map<String, WeakReference<? extends Enum<?>>> out = new HashMap<>();
-        try {
-            Collection<T> instance = EnumSet.allOf(enumClass);
-            instance.forEach(t -> out.put(t.name(), new WeakReference<>(t)));
-        } catch (final Throwable ignored) {
-        }
-
-        return out;
+        return ReferencedOptional.build(EnumUtil.findEnumFieldByName(enumClass, field).orElse(null));
     }
 }
