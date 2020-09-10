@@ -157,6 +157,14 @@ public final class CommonHelper {
                 Enumeration<InetAddress> inetAddresses = networkInterfaces.nextElement().getInetAddresses();
                 while (inetAddresses.hasMoreElements()) {
                     String address = inetAddresses.nextElement().getHostAddress();
+                    int location = address.indexOf('%');
+                    if (location != -1) {
+                        // % is used if java can detect which internet adapter the address is from
+                        // It can look like: 0:0:0:0:0:0:0:0%eth2
+                        // We decently remove the information about the internet adapter
+                        address = address.substring(0, location);
+                    }
+
                     if (!result.contains(address)) {
                         result.add(address);
                     }
