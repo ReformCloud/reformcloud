@@ -27,7 +27,6 @@ package systems.reformcloud.reformcloud2.executor.api.enums;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.maps.CaseInsensitiveConcurrentHashMap;
 
-import java.lang.ref.WeakReference;
 import java.util.EnumSet;
 import java.util.Map;
 import java.util.Optional;
@@ -52,12 +51,10 @@ public final class EnumUtil {
      */
     @NotNull
     public static <T extends Enum<T>> Optional<T> findEnumFieldByName(@NotNull Class<T> enumClass, @NotNull String field) {
-        if (!CACHE.containsKey(enumClass)) {
-            CACHE.put(enumClass, EnumUtil.compute(enumClass));
-        }
+        checkClass(enumClass);
 
-        WeakReference<? extends Enum<?>> reference = CACHE.get(enumClass).namesToConstant.get(field);
-        return reference == null ? Optional.empty() : Optional.ofNullable(enumClass.cast(reference.get()));
+        Enum<?> reference = CACHE.get(enumClass).namesToConstant.get(field);
+        return reference == null ? Optional.empty() : Optional.of(enumClass.cast(reference));
     }
 
     /**
@@ -70,12 +67,10 @@ public final class EnumUtil {
      */
     @NotNull
     public static <T extends Enum<T>> Optional<T> findEnumFieldByIndex(@NotNull Class<T> enumClass, int ordinal) {
-        if (!CACHE.containsKey(enumClass)) {
-            CACHE.put(enumClass, EnumUtil.compute(enumClass));
-        }
+        checkClass(enumClass);
 
-        WeakReference<? extends Enum<?>> reference = CACHE.get(enumClass).indexToConstant.get(ordinal);
-        return reference == null ? Optional.empty() : Optional.ofNullable(enumClass.cast(reference.get()));
+        Enum<?> reference = CACHE.get(enumClass).indexToConstant.get(ordinal);
+        return reference == null ? Optional.empty() : Optional.of(enumClass.cast(reference));
     }
 
     /**
@@ -89,11 +84,9 @@ public final class EnumUtil {
     @NotNull
     @SuppressWarnings("unchecked")
     public static <T extends Enum<T>> EnumSet<T> getEnumEntries(@NotNull Class<T> enumClass) {
-        if (!CACHE.containsKey(enumClass)) {
-            CACHE.put(enumClass, EnumUtil.compute(enumClass));
-        }
+        checkClass(enumClass);
 
-        EnumSet<T> enumSet = (EnumSet<T>) CACHE.get(enumClass).base.get();
+        EnumSet<T> enumSet = (EnumSet<T>) CACHE.get(enumClass).base;
         if (enumSet != null) {
             return enumSet;
         }
@@ -115,32 +108,43 @@ public final class EnumUtil {
     private static <T extends Enum<T>> Entry generateEntry(@NotNull EnumSet<T> enums) {
         Entry entry = new Entry(enums);
         for (Enum<T> anEnum : enums) {
-            WeakReference<Enum<T>> weakReference = new WeakReference<>(anEnum);
-            entry.namesToConstant.put(anEnum.name(), weakReference);
-            entry.indexToConstant.put(anEnum.ordinal(), weakReference);
+            entry.namesToConstant.put(anEnum.name(), anEnum);
+            entry.indexToConstant.put(anEnum.ordinal(), anEnum);
         }
 
         return entry;
+    }
+
+    private static <T extends Enum<T>> void checkClass(@NotNull Class<T> enumClass) {
+        if (CACHE.containsKey(enumClass)) {
+            Entry entry = CACHE.get(enumClass);
+            if (entry.base == null || entry.indexToConstant == null || entry.namesToConstant == null) {
+                CACHE.remove(enumClass); // may caused because of gc, remove and refill
+                CACHE.put(enumClass, EnumUtil.compute(enumClass));
+            }
+        } else {
+            CACHE.put(enumClass, EnumUtil.compute(enumClass));
+        }
     }
 
     private static final class Entry {
 
         public static final Entry EMPTY = new Entry();
 
-        private final Map<String, WeakReference<? extends Enum<?>>> namesToConstant;
-        private final Map<Integer, WeakReference<? extends Enum<?>>> indexToConstant;
-        private final WeakReference<EnumSet<?>> base;
+        private final Map<String, Enum<?>> namesToConstant;
+        private final Map<Integer, Enum<?>> indexToConstant;
+        private final EnumSet<?> base;
 
         private Entry() {
             this.namesToConstant = new ConcurrentHashMap<>();
             this.indexToConstant = new ConcurrentHashMap<>();
-            this.base = new WeakReference<>(null);
+            this.base = null;
         }
 
         private Entry(@NotNull EnumSet<?> set) {
             this.namesToConstant = new CaseInsensitiveConcurrentHashMap<>(set.size());
             this.indexToConstant = new ConcurrentHashMap<>(set.size());
-            this.base = new WeakReference<>(set);
+            this.base = set;
         }
     }
 }
