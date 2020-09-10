@@ -26,17 +26,15 @@ package systems.reformcloud.reformcloud2.node.network;
 
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
-import systems.reformcloud.reformcloud2.executor.api.network.client.NetworkClient;
 import systems.reformcloud.reformcloud2.shared.network.client.DefaultNetworkClient;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.function.Supplier;
 
-public final class NodeNetworkClient implements NetworkClient {
+public final class NodeNetworkClient extends DefaultNetworkClient {
 
     public static final Collection<String> CONNECTIONS = new ArrayList<>();
-    private static final NetworkClient CLIENT = new DefaultNetworkClient();
 
     @Override
     public boolean connect(@NotNull String host, int port, @NotNull Supplier<EndpointChannelReader> supplier) {
@@ -44,7 +42,7 @@ public final class NodeNetworkClient implements NetworkClient {
             return false;
         }
 
-        if (CLIENT.connect(host, port, supplier)) {
+        if (super.connect(host, port, supplier)) {
             CONNECTIONS.add(host);
             return true;
         }
@@ -55,6 +53,6 @@ public final class NodeNetworkClient implements NetworkClient {
     @Override
     public void disconnect() {
         CONNECTIONS.clear();
-        CLIENT.disconnect();
+        super.disconnect();
     }
 }
