@@ -86,4 +86,8 @@ public class DefaultPermissionManager implements PermissionManager {
             PermissionManagement.getInstance().updateUser(permissionUser);
         }
     }
+
+    @Override
+    public void toggleOp() {
+    }
 }

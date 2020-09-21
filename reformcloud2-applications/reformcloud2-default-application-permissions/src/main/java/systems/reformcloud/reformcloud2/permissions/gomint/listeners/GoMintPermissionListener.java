@@ -29,13 +29,13 @@ import io.gomint.event.EventListener;
 import io.gomint.event.player.PlayerLoginEvent;
 import io.gomint.event.player.PlayerQuitEvent;
 import systems.reformcloud.reformcloud2.permissions.PermissionManagement;
-import systems.reformcloud.reformcloud2.permissions.gomint.GoMintUtil;
+import systems.reformcloud.reformcloud2.permissions.gomint.manager.DefaultPermissionManager;
 
 public class GoMintPermissionListener implements EventListener {
 
     @EventHandler
     public void handle(PlayerLoginEvent event) {
-        GoMintUtil.inject(event.getPlayer());
+        event.getPlayer().setPermissionManager(new DefaultPermissionManager(event.getPlayer().getUUID()));
     }
 
     @EventHandler
