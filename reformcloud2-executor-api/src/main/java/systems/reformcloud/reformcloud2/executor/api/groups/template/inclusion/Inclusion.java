@@ -26,6 +26,7 @@ package systems.reformcloud.reformcloud2.executor.api.groups.template.inclusion;
 
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
+import systems.reformcloud.reformcloud2.executor.api.enums.EnumUtil;
 import systems.reformcloud.reformcloud2.executor.api.network.SerializableObject;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
 
@@ -68,14 +69,12 @@ public class Inclusion implements SerializableObject {
     public void read(@NotNull ProtocolBuffer buffer) {
         this.key = buffer.readString();
         this.backend = buffer.readString();
-        this.inclusionLoadType = InclusionLoadType.values()[buffer.readVarInt()];
+        this.inclusionLoadType = EnumUtil.findEnumFieldByIndex(InclusionLoadType.class, buffer.readVarInt()).orElse(null);
     }
 
     public enum InclusionLoadType {
 
         PRE,
-
         PAST
-
     }
 }

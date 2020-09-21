@@ -29,6 +29,7 @@ import systems.reformcloud.reformcloud2.executor.api.CommonHelper;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.command.Command;
 import systems.reformcloud.reformcloud2.executor.api.command.CommandSender;
+import systems.reformcloud.reformcloud2.executor.api.enums.EnumUtil;
 import systems.reformcloud.reformcloud2.executor.api.groups.MainGroup;
 import systems.reformcloud.reformcloud2.executor.api.groups.basic.DefaultProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.groups.template.RuntimeConfiguration;
@@ -47,23 +48,23 @@ public final class CommandCreate implements Command {
 
     public void describeCommandToSender(@NotNull CommandSender source) {
         source.sendMessages((
-                "create new pg <name> <version>     | Creates a new process group\n" +
-                        " --start-port=[port]               | Sets the start port of the new process group\n" +
-                        " --max-memory=[memory]             | Sets the max-memory of the process group (default: 512)\n" +
-                        " --min-process-count=[min]         | Sets the min process count for the group (default: 1)\n" +
-                        " --max-process-count=[max]         | Sets the max process count for the group (default: -1)\n" +
-                        " --always-prepared=[prepared]      | Sets the amount of processes which should always be preared (default: 1)\n" +
-                        " --max-players=[max]               | Sets the max player count for the processes (default: proxies: 512, servers: 20)\n" +
-                        " --static=[static]                 | Marks the process as a static process (default: false)\n" +
-                        " --lobby=[lobby]                   | Marks the process as a lobby (default: false)\n" +
-                        " --maintenance=[maintenance]       | Enables the maintenance mode for the group (default: enabled on proxies)\n" +
-                        " --main-groups=[Group1;Group2]     | Sets the default main groups the group should be in\n" +
-                        " --startup-pickers=[Client1;Node2] | Sets the clients on which the processes should start only"
+            "create new pg <name> <version>     | Creates a new process group\n" +
+                " --start-port=[port]               | Sets the start port of the new process group\n" +
+                " --max-memory=[memory]             | Sets the max-memory of the process group (default: 512)\n" +
+                " --min-process-count=[min]         | Sets the min process count for the group (default: 1)\n" +
+                " --max-process-count=[max]         | Sets the max process count for the group (default: -1)\n" +
+                " --always-prepared=[prepared]      | Sets the amount of processes which should always be preared (default: 1)\n" +
+                " --max-players=[max]               | Sets the max player count for the processes (default: proxies: 512, servers: 20)\n" +
+                " --static=[static]                 | Marks the process as a static process (default: false)\n" +
+                " --lobby=[lobby]                   | Marks the process as a lobby (default: false)\n" +
+                " --maintenance=[maintenance]       | Enables the maintenance mode for the group (default: enabled on proxies)\n" +
+                " --main-groups=[Group1;Group2]     | Sets the default main groups the group should be in\n" +
+                " --startup-pickers=[Client1;Node2] | Sets the clients on which the processes should start only"
         ).split("\n"));
         source.sendMessage(" ");
         source.sendMessages((
-                "create new mg <name>               | Creates a new main group\n" +
-                        " --sub-groups=[Group1;Group2]      | Sets the default sub groups which should get added to the group"
+            "create new mg <name>               | Creates a new main group\n" +
+                " --sub-groups=[Group1;Group2]      | Sets the default sub groups which should get added to the group"
         ).split("\n"));
     }
 
@@ -98,12 +99,12 @@ public final class CommandCreate implements Command {
             if (bufferIndex == 3 && strings[1].equalsIgnoreCase("mg")) {
                 result.add("--sub-groups=");
             } else if (bufferIndex == 3 && strings[1].equalsIgnoreCase("pg")) {
-                for (Version value : Version.values()) {
+                for (Version value : EnumUtil.getEnumEntries(Version.class)) {
                     result.add(value.name());
                 }
             } else if (bufferIndex > 3 && strings[1].equalsIgnoreCase("pg")) {
                 result.addAll(Arrays.asList("--start-port=25565", "--max-memory=512", "--min-process-count=1", "--max-process-count=-1",
-                        "--always-prepared=1", "--max-players=20", "--static=false", "--lobby=false", "--maintenance=false", "--main-groups=", "--startup-pickers="));
+                    "--always-prepared=1", "--max-players=20", "--static=false", "--lobby=false", "--maintenance=false", "--main-groups=", "--startup-pickers="));
             }
         }
 
@@ -126,8 +127,8 @@ public final class CommandCreate implements Command {
         Properties properties = StringUtil.calcProperties(strings, 3);
         if (properties.containsKey("sub-groups")) {
             String[] subGroupsStrings = properties.getProperty("sub-groups").contains(";")
-                    ? properties.getProperty("sub-groups").split(";")
-                    : new String[]{properties.getProperty("sub-groups")};
+                ? properties.getProperty("sub-groups").split(";")
+                : new String[]{properties.getProperty("sub-groups")};
 
             for (String subGroup : subGroupsStrings) {
                 if (!ExecutorAPI.getInstance().getProcessGroupProvider().getProcessGroup(subGroup).isPresent()) {
@@ -154,7 +155,7 @@ public final class CommandCreate implements Command {
         }
 
         String name = strings[2];
-        Version version = CommonHelper.findEnumField(Version.class, strings[3].toUpperCase()).orNothing();
+        Version version = EnumUtil.findEnumFieldByName(Version.class, strings[3].toUpperCase()).orElse(null);
         if (version == null) {
             source.sendMessage(LanguageManager.get("command-create-version-not-found", strings[3]));
             return;
@@ -270,8 +271,8 @@ public final class CommandCreate implements Command {
 
         if (properties.containsKey("main-groups")) {
             String[] mainGroups = properties.getProperty("main-groups").contains(";")
-                    ? properties.getProperty("main-groups").split(";")
-                    : new String[]{properties.getProperty("main-groups")};
+                ? properties.getProperty("main-groups").split(";")
+                : new String[]{properties.getProperty("main-groups")};
 
             Collection<MainGroup> basedOn = new ArrayList<>();
             for (String mainGroup : mainGroups) {
@@ -296,8 +297,8 @@ public final class CommandCreate implements Command {
 
         if (properties.containsKey("startup-pickers")) {
             String[] startPickers = properties.getProperty("startup-pickers").contains(";")
-                    ? properties.getProperty("startup-pickers").split(";")
-                    : new String[]{properties.getProperty("startup-pickers")};
+                ? properties.getProperty("startup-pickers").split(";")
+                : new String[]{properties.getProperty("startup-pickers")};
 
             for (String picker : startPickers) {
                 if (clients.contains(picker)) {
@@ -309,42 +310,42 @@ public final class CommandCreate implements Command {
         }
 
         ExecutorAPI.getInstance().getProcessGroupProvider().createProcessGroup(name)
-                .templates(new Template(
-                        0,
-                        "default",
-                        false,
-                        FileTemplateBackend.NAME,
-                        "-",
-                        new RuntimeConfiguration(
-                                memory,
-                                new ArrayList<>(),
-                                new HashMap<>()
-                        ), version,
-                        new ArrayList<>(),
-                        Collections.singletonList(version.isServer() ? DefaultProcessGroup.SERVER_INCLUSION : DefaultProcessGroup.PROXY_INCLUSION)
-                ))
-                .startupConfiguration(new StartupConfiguration(
-                        max,
-                        min,
-                        prepared,
-                        port,
-                        "java",
-                        new AutomaticStartupConfiguration(false, 90, 30),
-                        clients.isEmpty(),
-                        clients
-                ))
-                .playerAccessConfig(new PlayerAccessConfiguration(
-                        "reformcloud.join.full",
-                        maintenance,
-                        "reformcloud.join.maintenance",
-                        false,
-                        "reformcloud.join",
-                        true,
-                        maxPlayers
-                ))
-                .staticGroup(staticProcess)
-                .lobby(lobby)
-                .createPermanently();
+            .templates(new Template(
+                0,
+                "default",
+                false,
+                FileTemplateBackend.NAME,
+                "-",
+                new RuntimeConfiguration(
+                    memory,
+                    new ArrayList<>(),
+                    new HashMap<>()
+                ), version,
+                new ArrayList<>(),
+                Collections.singletonList(version.isServer() ? DefaultProcessGroup.SERVER_INCLUSION : DefaultProcessGroup.PROXY_INCLUSION)
+            ))
+            .startupConfiguration(new StartupConfiguration(
+                max,
+                min,
+                prepared,
+                port,
+                "java",
+                new AutomaticStartupConfiguration(false, 90, 30),
+                clients.isEmpty(),
+                clients
+            ))
+            .playerAccessConfig(new PlayerAccessConfiguration(
+                "reformcloud.join.full",
+                maintenance,
+                "reformcloud.join.maintenance",
+                false,
+                "reformcloud.join",
+                true,
+                maxPlayers
+            ))
+            .staticGroup(staticProcess)
+            .lobby(lobby)
+            .createPermanently();
         source.sendMessage(LanguageManager.get("command-create-pg", name, version.getName()));
     }
 }

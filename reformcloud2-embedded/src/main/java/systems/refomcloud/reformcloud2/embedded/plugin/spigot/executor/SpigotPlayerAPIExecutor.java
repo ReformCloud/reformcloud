@@ -30,7 +30,7 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import systems.refomcloud.reformcloud2.embedded.executor.PlayerAPIExecutor;
-import systems.reformcloud.reformcloud2.executor.api.CommonHelper;
+import systems.reformcloud.reformcloud2.executor.api.enums.EnumUtil;
 
 import java.util.UUID;
 
@@ -71,7 +71,7 @@ public class SpigotPlayerAPIExecutor extends PlayerAPIExecutor {
     @Override
     public void executePlayEffect(UUID player, String entityEffect) {
         Player bukkitPlayer = Bukkit.getPlayer(player);
-        EntityEffect effect = CommonHelper.findEnumField(EntityEffect.class, entityEffect).orNothing();
+        EntityEffect effect = EnumUtil.findEnumFieldByName(EntityEffect.class, entityEffect).orElse(null);
         if (bukkitPlayer != null && effect != null) {
             bukkitPlayer.playEffect(effect);
         }

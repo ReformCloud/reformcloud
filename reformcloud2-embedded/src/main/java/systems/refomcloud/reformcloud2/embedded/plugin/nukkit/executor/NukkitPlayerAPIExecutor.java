@@ -30,7 +30,7 @@ import cn.nukkit.level.Location;
 import cn.nukkit.level.ParticleEffect;
 import cn.nukkit.level.Sound;
 import systems.refomcloud.reformcloud2.embedded.executor.PlayerAPIExecutor;
-import systems.reformcloud.reformcloud2.executor.api.CommonHelper;
+import systems.reformcloud.reformcloud2.executor.api.enums.EnumUtil;
 
 import java.util.UUID;
 
@@ -48,14 +48,12 @@ public class NukkitPlayerAPIExecutor extends PlayerAPIExecutor {
 
     @Override
     public void executePlaySound(UUID player, String sound, float f1, float f2) {
-        Server.getInstance().getPlayer(player).ifPresent(val -> {
-            Sound nukkitSound = CommonHelper.findEnumField(Sound.class, sound).orNothing();
-            if (nukkitSound == null) {
-                return;
-            }
+        Sound nukkitSound = EnumUtil.findEnumFieldByName(Sound.class, sound).orElse(null);
+        if (nukkitSound == null) {
+            return;
+        }
 
-            val.getLevel().addSound(val.getLocation(), nukkitSound, f1, f2, val);
-        });
+        Server.getInstance().getPlayer(player).ifPresent(val -> val.getLevel().addSound(val.getLocation(), nukkitSound, f1, f2, val));
     }
 
     @Override
@@ -65,14 +63,12 @@ public class NukkitPlayerAPIExecutor extends PlayerAPIExecutor {
 
     @Override
     public void executePlayEffect(UUID player, String entityEffect) {
-        Server.getInstance().getPlayer(player).ifPresent(val -> {
-            ParticleEffect effect = CommonHelper.findEnumField(ParticleEffect.class, entityEffect).orNothing();
-            if (effect == null) {
-                return;
-            }
+        ParticleEffect effect = EnumUtil.findEnumFieldByName(ParticleEffect.class, entityEffect).orElse(null);
+        if (effect == null) {
+            return;
+        }
 
-            val.getLevel().addParticleEffect(val.getLocation(), effect);
-        });
+        Server.getInstance().getPlayer(player).ifPresent(val -> val.getLevel().addParticleEffect(val.getLocation(), effect));
     }
 
     @Override
