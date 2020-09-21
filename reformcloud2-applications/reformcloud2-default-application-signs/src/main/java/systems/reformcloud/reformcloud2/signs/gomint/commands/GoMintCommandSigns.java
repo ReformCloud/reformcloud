@@ -66,56 +66,56 @@ public class GoMintCommandSigns extends Command {
     @Override
     public CommandOutput execute(CommandSender commandSender, String s, Map<String, Object> map) {
         if (!(commandSender instanceof PlayerCommandSender)) {
-            return new CommandOutput().fail("Command is only executable as player");
+            return CommandOutput.failure("Command is only executable as player");
         }
 
         EntityPlayer sender = (EntityPlayer) commandSender;
         if (map.containsKey("clean")) {
             SignSystemAdapter.getInstance().cleanSigns();
-            return new CommandOutput().success("§7Cleaning signs, please wait...");
+            return CommandOutput.successful("§7Cleaning signs, please wait...");
         }
 
         if (map.containsKey("deleteall")) {
             SignSystemAdapter.getInstance().deleteAll();
-            return new CommandOutput().success("§7Deleting all signs, please wait...");
+            return CommandOutput.successful("§7Deleting all signs, please wait...");
         }
 
         if (map.containsKey("delete")) {
             Optional<BlockSign> lookingBlock = getTargetBlockSign(sender);
             if (!lookingBlock.isPresent()) {
-                return new CommandOutput().fail("§7You aren't looking at a sign!");
+                return CommandOutput.failure("§7You aren't looking at a sign!");
             }
 
             CloudSign target = this.goMintAdapter.getSignAt(this.goMintAdapter.getSignConverter().to(lookingBlock.get()));
             if (target == null) {
-                return new CommandOutput().fail("§7You aren't looking at a cloud sign!");
+                return CommandOutput.failure("§7You aren't looking at a cloud sign!");
             }
 
             this.goMintAdapter.deleteSign(target.getLocation());
-            return new CommandOutput().success("§7Deleted sign, please wait a second...");
+            return CommandOutput.successful("§7Deleted sign, please wait a second...");
         }
 
         if (map.containsKey("create")) {
             String targetGroup = (String) map.get("group");
             if (targetGroup == null || !ExecutorAPI.getInstance().getProcessGroupProvider().getProcessGroup(targetGroup).isPresent()) {
-                return new CommandOutput().fail("§7The process group %s does not exists", targetGroup);
+                return CommandOutput.failure("§7The process group %s does not exists", targetGroup);
             }
 
             Optional<BlockSign> lookingBlock = getTargetBlockSign(sender);
             if (!lookingBlock.isPresent()) {
-                return new CommandOutput().fail("§7You aren't looking at a sign!");
+                return CommandOutput.failure("§7You aren't looking at a sign!");
             }
 
             CloudSign target = this.goMintAdapter.getSignAt(this.goMintAdapter.getSignConverter().to(lookingBlock.get()));
             if (target != null) {
-                return new CommandOutput().fail("§7The target sign already exists");
+                return CommandOutput.failure("§7The target sign already exists");
             }
 
             this.goMintAdapter.createSign(lookingBlock.get(), targetGroup);
-            return new CommandOutput().success("§7Created the sign successfully, please wait a second...");
+            return CommandOutput.successful("§7Created the sign successfully, please wait a second...");
         }
 
-        return new CommandOutput();
+        return CommandOutput.failure();
     }
 
     private static Optional<BlockSign> getTargetBlockSign(@NotNull EntityPlayer entityPlayer) {
