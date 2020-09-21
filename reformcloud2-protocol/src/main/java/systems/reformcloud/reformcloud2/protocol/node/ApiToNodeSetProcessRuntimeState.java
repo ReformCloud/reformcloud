@@ -26,6 +26,7 @@ package systems.reformcloud.reformcloud2.protocol.node;
 
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
+import systems.reformcloud.reformcloud2.executor.api.enums.EnumUtil;
 import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
@@ -68,6 +69,6 @@ public class ApiToNodeSetProcessRuntimeState extends ProtocolPacket {
     @Override
     public void read(@NotNull ProtocolBuffer buffer) {
         this.processUniqueId = buffer.readUniqueId();
-        this.runtimeState = ProcessState.values()[buffer.readInt()];
+        this.runtimeState = EnumUtil.findEnumFieldByIndex(ProcessState.class, buffer.readInt()).orElse(null);
     }
 }
