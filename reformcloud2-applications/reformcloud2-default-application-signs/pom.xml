@@ -30,6 +30,12 @@
             <id>spigotmc-repo</id>
             <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
         </repository>
+
+        <!-- gomint -->
+        <repository>
+            <id>sonatype-snapshots</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -78,6 +84,14 @@
             <type>jar</type>
             <scope>provided</scope>
         </dependency>
-    </dependencies>
 
+        <!-- gomint api -->
+        <dependency>
+            <groupId>io.gomint</groupId>
+            <artifactId>gomint-api</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+            <scope>provided</scope>
+            <type>jar</type>
+        </dependency>
+    </dependencies>
 </project>
