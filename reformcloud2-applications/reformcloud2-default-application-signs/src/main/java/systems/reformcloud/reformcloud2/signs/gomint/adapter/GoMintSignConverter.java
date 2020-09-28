@@ -1,7 +1,7 @@
 /*
- * MIT License
+ * This file is part of reformcloud2, licensed under the MIT License (MIT).
  *
- * Copyright (c) ReformCloud-Team
+ * Copyright (c) ReformCloud <https://github.com/ReformCloud>
  * Copyright (c) contributors
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -25,7 +25,7 @@
 package systems.reformcloud.reformcloud2.signs.gomint.adapter;
 
 import io.gomint.GoMint;
-import io.gomint.math.Location;
+import io.gomint.math.BlockPosition;
 import io.gomint.world.World;
 import io.gomint.world.block.Block;
 import io.gomint.world.block.BlockSign;
@@ -63,15 +63,15 @@ public class GoMintSignConverter implements SignConverter<BlockSign> {
 
     @Override
     public @NotNull CloudLocation to(@NotNull BlockSign blockSign) {
-        final Location location = blockSign.getLocation();
+        final BlockPosition position = blockSign.getPosition();
         return new CloudLocation(
-            location.getWorld().getWorldName(),
+            blockSign.getWorld().getWorldName(),
             Embedded.getInstance().getCurrentProcessInformation().getProcessGroup().getName(),
-            location.getX(),
-            location.getY(),
-            location.getZ(),
-            location.getYaw(),
-            location.getPitch()
+            position.getX(),
+            position.getY(),
+            position.getZ(),
+            0,
+            0
         );
     }
 

@@ -1,7 +1,7 @@
 /*
- * MIT License
+ * This file is part of reformcloud2, licensed under the MIT License (MIT).
  *
- * Copyright (c) ReformCloud-Team
+ * Copyright (c) ReformCloud <https://github.com/ReformCloud>
  * Copyright (c) contributors
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -91,15 +91,16 @@ public class GoMintSignSystemAdapter extends SharedSignSystemAdapter<BlockSign> 
                     continue;
                 }
 
-                for (EntityPlayer player : blockSign.getLocation().getWorld().getPlayers()) {
+                final Vector signVector = blockSign.getPosition().toVector();
+                for (EntityPlayer player : blockSign.getWorld().getPlayers()) {
                     if (player.getPermissionManager().hasPermission(this.signConfig.getKnockBackBypassPermission())) {
                         continue;
                     }
 
                     final Location location = player.getLocation();
-                    if (this.signConfig.getKnockBackDistance() >= location.distance(blockSign.getLocation())) {
+                    if (this.signConfig.getKnockBackDistance() >= location.distance(signVector)) {
                         Vector vector = player.getLocation()
-                            .subtract(blockSign.getLocation())
+                            .subtract(signVector)
                             .normalize()
                             .multiply((float) this.signConfig.getKnockBackStrength());
                         vector.setY(0.2F);

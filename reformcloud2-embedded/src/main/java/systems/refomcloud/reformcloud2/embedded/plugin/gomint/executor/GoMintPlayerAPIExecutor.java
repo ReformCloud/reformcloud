@@ -1,7 +1,7 @@
 /*
- * MIT License
+ * This file is part of reformcloud2, licensed under the MIT License (MIT).
  *
- * Copyright (c) ReformCloud-Team
+ * Copyright (c) ReformCloud <https://github.com/ReformCloud>
  * Copyright (c) contributors
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -30,7 +30,7 @@ import io.gomint.math.Location;
 import io.gomint.world.Sound;
 import io.gomint.world.World;
 import systems.refomcloud.reformcloud2.embedded.executor.PlayerAPIExecutor;
-import systems.reformcloud.reformcloud2.executor.api.CommonHelper;
+import systems.reformcloud.reformcloud2.executor.api.enums.EnumUtil;
 
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -56,7 +56,7 @@ public class GoMintPlayerAPIExecutor extends PlayerAPIExecutor {
     @Override
     public void executePlaySound(UUID player, String sound, float f1, float f2) {
         EntityPlayer entityPlayer = GoMint.instance().findPlayerByUUID(player);
-        Sound mintySound = CommonHelper.findEnumField(Sound.class, sound.toUpperCase()).orElse(null);
+        Sound mintySound = EnumUtil.findEnumFieldByName(Sound.class, sound.toUpperCase()).orElse(null);
         if (entityPlayer != null && mintySound != null) {
             entityPlayer.playSound(entityPlayer.getLocation(), mintySound, (byte) f1);
         }
