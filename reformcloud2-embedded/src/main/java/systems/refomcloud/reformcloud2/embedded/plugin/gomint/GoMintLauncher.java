@@ -32,7 +32,7 @@ import systems.refomcloud.reformcloud2.embedded.plugin.gomint.event.PlayerListen
 import systems.reformcloud.reformcloud2.executor.api.language.loading.LanguageLoader;
 
 @Version(major = 2, minor = 0)
-@PluginName("ReformCloud2NukkitExecutor")
+@PluginName("ReformCloud2GoMintExecutor")
 public class GoMintLauncher extends Plugin {
 
     @Override
@@ -42,7 +42,7 @@ public class GoMintLauncher extends Plugin {
 
     @Override
     public void onInstall() {
-        new GoMintExecutor(this);
+        new GoMintExecutor();
         GoMint.instance().getPluginManager().registerListener(this, new PlayerListenerHandler());
     }
 }

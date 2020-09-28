@@ -90,6 +90,11 @@ public class CaseInsensitiveConcurrentHashMap<V> extends ConcurrentHashMap<Strin
     }
 
     @Override
+    public V get(Object key) {
+        return super.get(((String) key).toLowerCase());
+    }
+
+    @Override
     public V getOrDefault(Object key, V defaultValue) {
         return super.getOrDefault(((String) key).toLowerCase(), defaultValue);
     }

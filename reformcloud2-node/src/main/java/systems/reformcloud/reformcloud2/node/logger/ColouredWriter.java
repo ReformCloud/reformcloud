@@ -34,11 +34,12 @@ import java.util.logging.LogRecord;
 
 public class ColouredWriter extends Handler {
 
-    ColouredWriter(LineReader lineReader) {
+    private static final String LINE_SEPARATOR = System.lineSeparator();
+    private final LineReader lineReader;
+
+    protected ColouredWriter(LineReader lineReader) {
         this.lineReader = lineReader;
     }
-
-    private final LineReader lineReader;
 
     @Override
     public void publish(LogRecord record) {

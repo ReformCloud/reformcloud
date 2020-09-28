@@ -54,7 +54,7 @@ public final class Runner {
     private final Updater cloudVersionUpdater;
     private final String[] args;
 
-    Runner(@NotNull String[] args) {
+    protected Runner(@NotNull String[] args) {
         this.interpreter
             .registerInterpreterCommand(new CheckForUpdatesCommand(this))
             .registerInterpreterCommand(new CheckIfDevModeCommand())
@@ -107,7 +107,7 @@ public final class Runner {
             URLClassLoader classLoader = new RunnerClassLoader(new URL[]{applicationFilePath.toUri().toURL()});
             Thread.currentThread().setContextClassLoader(classLoader);
 
-            String mainClass = file.getManifest().getMainAttributes().getValue("Main-Class");
+            String mainClass = System.getProperty("reformcloud.application.main.class", file.getManifest().getMainAttributes().getValue("Main-Class"));
             Method main = classLoader.loadClass(mainClass).getMethod("main", String[].class);
 
             main.invoke(null, (Object) this.args);

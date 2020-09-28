@@ -222,6 +222,8 @@ public enum Version {
      */
     NUKKIT_X("NukkitX", "1.0",
         "https://ci.nukkitx.com/job/NukkitX/job/Nukkit/job/master/lastStableBuild/artifact/target/nukkit-1.0-SNAPSHOT.jar", 3, 41000),
+    GO_MINT("GoMint", "1.0.0",
+        "https://gomint-artifacts.s3.amazonaws.com/latest.zip", 3, 41000),
 
     /**
      * Waterdog as Java Proxy
@@ -299,7 +301,8 @@ public enum Version {
     public static String format(Version version) {
         if (version.equals(Version.SPONGEFORGE_1_10_2)
             || version.equals(Version.SPONGEFORGE_1_11_2)
-            || version.equals(Version.SPONGEFORGE_1_12_2)) {
+            || version.equals(Version.SPONGEFORGE_1_12_2)
+            || version.equals(Version.GO_MINT)) {
             return version.getName().toLowerCase().replace(" ", "-") + "/process.jar";
         }
 

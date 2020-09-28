@@ -24,6 +24,7 @@
  */
 package systems.reformcloud.reformcloud2.executor.api.utility;
 
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.base.Conditions;
 
@@ -34,6 +35,7 @@ import java.util.UUID;
 
 public final class StringUtil {
 
+    public static final String EMPTY = "";
     public static final String RUNNER_DOWNLOAD_URL = "https://internal.reformcloud.systems/runner.jar";
     public static final String NULL_PATH = new File("reformcloud/.bin/dev/null").getAbsolutePath();
 
@@ -49,7 +51,19 @@ public final class StringUtil {
     }
 
     @NotNull
-    public static Properties calcProperties(@NotNull String[] strings, int from) {
+    @Contract(pure = true)
+    public static String replaceLastEmpty(@NotNull String text, @NotNull String regex) {
+        return replaceLast(text, regex, EMPTY);
+    }
+
+    @NotNull
+    @Contract(pure = true)
+    public static String replaceLast(@NotNull String text, @NotNull String regex, @NotNull String replacement) {
+        return text.replaceFirst("(?s)(.*)" + regex, "$1" + replacement);
+    }
+
+    @NotNull
+    public static Properties calcProperties(@NotNull String @NotNull [] strings, int from) {
         Properties properties = new Properties();
         if (strings.length < from) {
             return properties;

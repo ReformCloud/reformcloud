@@ -25,7 +25,6 @@
 package systems.refomcloud.reformcloud2.embedded.plugin.gomint;
 
 import io.gomint.GoMint;
-import io.gomint.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import systems.refomcloud.reformcloud2.embedded.Embedded;
 import systems.refomcloud.reformcloud2.embedded.executor.PlayerAPIExecutor;
@@ -36,15 +35,12 @@ import systems.reformcloud.reformcloud2.executor.api.ExecutorType;
 public class GoMintExecutor extends Embedded {
 
     private static GoMintExecutor instance;
-    private final Plugin plugin;
 
-    protected GoMintExecutor(Plugin plugin) {
+    protected GoMintExecutor() {
         super.type = ExecutorType.API;
         PlayerAPIExecutor.setInstance(new GoMintPlayerAPIExecutor());
 
         instance = this;
-        this.plugin = plugin;
-
         this.fixInvalidPlayers();
     }
 
