@@ -35,6 +35,7 @@ import systems.reformcloud.reformcloud2.executor.api.process.NetworkInfo;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.process.detail.ProcessDetail;
 import systems.reformcloud.reformcloud2.executor.api.task.Task;
+import systems.reformcloud.reformcloud2.executor.api.utility.JavaVersion;
 import systems.reformcloud.reformcloud2.executor.api.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.wrappers.NodeProcessWrapper;
 import systems.reformcloud.reformcloud2.node.NodeExecutor;
@@ -73,18 +74,18 @@ public class DefaultProcessFactory implements ProcessFactory {
             UUID processUniqueId = this.preventCollision(configuration.getProcessUniqueId());
 
             ProcessInformation processInformation = new ProcessInformation(new ProcessDetail(
-                    processUniqueId,
-                    nodeInformation.getNodeUniqueID(),
-                    nodeInformation.getName(),
-                    configuration.getProcessGroup().getName() + template.getServerNameSplitter() + id,
-                    configuration.getDisplayName() != null ? configuration.getDisplayName() : configuration.getProcessGroup().getName()
-                            + (configuration.getProcessGroup().isShowIdInName() ? template.getServerNameSplitter() + id : ""),
-                    id,
-                    template,
-                    configuration.getMemory() == -1 ? memory : configuration.getMemory(),
-                    configuration.getInitialState()
+                processUniqueId,
+                nodeInformation.getNodeUniqueID(),
+                nodeInformation.getName(),
+                configuration.getProcessGroup().getName() + template.getServerNameSplitter() + id,
+                configuration.getDisplayName() != null ? configuration.getDisplayName() : configuration.getProcessGroup().getName()
+                    + (configuration.getProcessGroup().isShowIdInName() ? template.getServerNameSplitter() + id : ""),
+                id,
+                template,
+                configuration.getMemory() == -1 ? memory : configuration.getMemory(),
+                configuration.getInitialState()
             ), new NetworkInfo(
-                    this.nextPort(configuration.getProcessGroup().getStartupConfiguration().getStartPort())
+                this.nextPort(configuration.getProcessGroup().getStartupConfiguration().getStartPort())
             ), configuration.getProcessGroup(), configuration.getExtra(), configuration.getInclusions());
 
             if (configuration.getMaxPlayers() >= 0) {
@@ -124,7 +125,7 @@ public class DefaultProcessFactory implements ProcessFactory {
 
         for (NodeInformation node : ExecutorAPI.getInstance().getNodeInformationProvider().getNodes()) {
             if (!processGroup.getStartupConfiguration().isSearchBestClientAlone()
-                    && !processGroup.getStartupConfiguration().getUseOnlyTheseClients().contains(node.getName())) {
+                && !processGroup.getStartupConfiguration().getUseOnlyTheseClients().contains(node.getName())) {
                 continue;
             }
 
@@ -150,8 +151,8 @@ public class DefaultProcessFactory implements ProcessFactory {
 
     private int nextId(@NotNull String groupName, int beginId) {
         Collection<Integer> ids = Streams.map(
-                ExecutorAPI.getInstance().getProcessProvider().getProcessesByProcessGroup(groupName),
-                processInformation -> processInformation.getProcessDetail().getId()
+            ExecutorAPI.getInstance().getProcessProvider().getProcessesByProcessGroup(groupName),
+            processInformation -> processInformation.getProcessDetail().getId()
         );
 
         while (ids.contains(beginId)) {
@@ -163,8 +164,8 @@ public class DefaultProcessFactory implements ProcessFactory {
 
     private int nextPort(int start) {
         Collection<Integer> ports = Streams.map(
-                ExecutorAPI.getInstance().getProcessProvider().getProcesses(),
-                processInformation -> processInformation.getNetworkInfo().getPort()
+            ExecutorAPI.getInstance().getProcessProvider().getProcesses(),
+            processInformation -> processInformation.getNetworkInfo().getPort()
         );
 
         int port = start;
@@ -183,6 +184,12 @@ public class DefaultProcessFactory implements ProcessFactory {
         Template result = null;
         for (Template template : processGroup.getTemplates()) {
             if (template.isGlobal()) {
+                continue;
+            }
+
+            if (!template.getVersion().isCompatible()) {
+                System.err.println("Unable to use template " + template.getName() + " to start a new process from because of incompatible " +
+                    "java version " + JavaVersion.current() + ". Requires at least " + template.getVersion().getMinimumRequiredVersion() + "!");
                 continue;
             }
 

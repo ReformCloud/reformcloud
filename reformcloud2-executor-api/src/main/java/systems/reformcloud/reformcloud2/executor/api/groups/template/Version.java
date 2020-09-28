@@ -26,6 +26,7 @@ package systems.reformcloud.reformcloud2.executor.api.groups.template;
 
 import org.jetbrains.annotations.ApiStatus;
 import systems.reformcloud.reformcloud2.executor.api.io.DownloadHelper;
+import systems.reformcloud.reformcloud2.executor.api.utility.JavaVersion;
 
 import java.util.TreeMap;
 
@@ -223,7 +224,7 @@ public enum Version {
     NUKKIT_X("NukkitX", "1.0",
         "https://ci.nukkitx.com/job/NukkitX/job/Nukkit/job/master/lastStableBuild/artifact/target/nukkit-1.0-SNAPSHOT.jar", 3, 41000),
     GO_MINT("GoMint", "1.0.0",
-        "https://gomint-artifacts.s3.amazonaws.com/latest.zip", 3, 41000),
+        "https://gomint-artifacts.s3.amazonaws.com/latest.zip", 3, 41000, JavaVersion.VERSION_11),
 
     /**
      * Waterdog as Java Proxy
@@ -261,13 +262,19 @@ public enum Version {
     private final String url;
     private final int id;
     private final int defaultPort;
+    private final JavaVersion minimumRequiredVersion;
 
-    Version(final String name, final String version, final String url, int id, int defaultPort) {
+    Version(String name, String version, String url, int id, int defaultPort) {
+        this(name, version, url, id, defaultPort, JavaVersion.VERSION_1_8);
+    }
+
+    Version(String name, String version, String url, int id, int defaultPort, JavaVersion minimumRequiredVersion) {
         this.name = name;
         this.version = version;
         this.url = url;
         this.id = id;
         this.defaultPort = defaultPort;
+        this.minimumRequiredVersion = minimumRequiredVersion;
     }
 
     @Deprecated
@@ -327,6 +334,14 @@ public enum Version {
 
     public int getDefaultPort() {
         return this.defaultPort;
+    }
+
+    public JavaVersion getMinimumRequiredVersion() {
+        return this.minimumRequiredVersion;
+    }
+
+    public boolean isCompatible() {
+        return JavaVersion.current().isCompatibleWith(this.minimumRequiredVersion);
     }
 
     public boolean isServer() {
