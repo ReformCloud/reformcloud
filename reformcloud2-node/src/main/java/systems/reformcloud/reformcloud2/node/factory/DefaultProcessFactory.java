@@ -189,7 +189,9 @@ public class DefaultProcessFactory implements ProcessFactory {
 
             if (!template.getVersion().isCompatible()) {
                 System.err.println("Unable to use template " + template.getName() + " to start a new process from because of incompatible " +
-                    "java version " + JavaVersion.current() + ". Requires at least " + template.getVersion().getMinimumRequiredVersion() + "!");
+                    "java version " + JavaVersion.current() + ". " + (template.getVersion().getMaximumUsableVersion() != JavaVersion.VERSION_UNKNOWN
+                    ? "Requires at least " + template.getVersion().getMinimumRequiredVersion() + " and maximum " + template.getVersion().getMaximumUsableVersion() + "!"
+                    : "Requires at least " + template.getVersion().getMinimumRequiredVersion() + "!"));
                 continue;
             }
 
