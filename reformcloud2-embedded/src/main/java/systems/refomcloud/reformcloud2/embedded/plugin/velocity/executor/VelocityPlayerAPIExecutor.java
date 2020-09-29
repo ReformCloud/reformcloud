@@ -58,10 +58,10 @@ public class VelocityPlayerAPIExecutor extends PlayerAPIExecutor {
     @Override
     public void executeSendTitle(UUID player, String title, String subTitle, int fadeIn, int stay, int fadeOut) {
         this.proxyServer.getPlayer(player).ifPresent(val -> {
-            Title velocityTitle = Title.of(
-                    VelocityExecutor.SERIALIZER.deserialize(title),
-                    VelocityExecutor.SERIALIZER.deserialize(subTitle),
-                    Title.Times.of(Duration.ofSeconds(fadeIn / 20), Duration.ofSeconds(stay / 20), Duration.ofSeconds(fadeOut / 20))
+            Title velocityTitle = Title.title(
+                VelocityExecutor.SERIALIZER.deserialize(title),
+                VelocityExecutor.SERIALIZER.deserialize(subTitle),
+                Title.Times.of(Duration.ofSeconds(fadeIn / 20), Duration.ofSeconds(stay / 20), Duration.ofSeconds(fadeOut / 20))
             );
             val.showTitle(velocityTitle);
         });
