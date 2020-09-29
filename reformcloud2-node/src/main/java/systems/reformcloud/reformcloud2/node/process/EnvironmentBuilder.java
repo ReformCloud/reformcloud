@@ -130,6 +130,9 @@ public final class EnvironmentBuilder {
 
                 IOUtils.unZip(Paths.get(fileName).toFile(), destPath);
                 IOUtils.doCopy(destPath + "/modules/GoMint.jar", destPath + "/process.jar");
+                IOUtils.deleteFile(Paths.get(destPath, "modules", "GoMint.jar"));
+                IOUtils.deleteFile(Paths.get(destPath, "start.bat"));
+                IOUtils.deleteFile(Paths.get(destPath, "start.sh"));
                 IOUtils.deleteFile(new File(fileName));
             }
         }

@@ -24,11 +24,20 @@
  */
 package systems.reformcloud.reformcloud2.signs.gomint;
 
+import io.gomint.plugin.Depends;
 import io.gomint.plugin.Plugin;
 import io.gomint.plugin.PluginName;
 import io.gomint.plugin.Version;
+import systems.reformcloud.reformcloud2.signs.gomint.adapter.GoMintSignSystemAdapter;
+import systems.reformcloud.reformcloud2.signs.util.ConfigRequesterUtil;
 
 @Version(major = 2, minor = 0)
+@Depends("ReformCloud2GoMintExecutor")
 @PluginName("ReformCloud2GoMintSigns")
 public class GoMintPlugin extends Plugin {
+
+    @Override
+    public void onInstall() {
+        ConfigRequesterUtil.requestSignConfigAsync(config -> new GoMintSignSystemAdapter(config, this));
+    }
 }

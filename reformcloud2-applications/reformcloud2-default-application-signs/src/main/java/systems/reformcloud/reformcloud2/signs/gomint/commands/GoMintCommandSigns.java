@@ -28,14 +28,15 @@ import io.gomint.command.Command;
 import io.gomint.command.CommandOutput;
 import io.gomint.command.CommandSender;
 import io.gomint.command.PlayerCommandSender;
-import io.gomint.command.annotation.*;
 import io.gomint.command.validator.StringValidator;
 import io.gomint.entity.EntityPlayer;
 import io.gomint.math.Vector;
 import io.gomint.world.block.Block;
 import io.gomint.world.block.BlockSign;
 import io.gomint.world.block.BlockType;
+import io.gomint.world.block.data.Facing;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.signs.gomint.adapter.GoMintSignSystemAdapter;
 import systems.reformcloud.reformcloud2.signs.util.SignSystemAdapter;
@@ -43,23 +44,26 @@ import systems.reformcloud.reformcloud2.signs.util.sign.CloudSign;
 
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Consumer;
 
-@Name("signs")
-@Permission("reformcloud.command.signs")
-@Description("Create and manage reform cloud signs")
-@Overload(@Parameter(name = "clean", validator = StringValidator.class, arguments = "(?i)[clean]+"))
-@Overload(@Parameter(name = "delete", validator = StringValidator.class, arguments = "(?i)[delete]+"))
-@Overload(@Parameter(name = "deleteall", validator = StringValidator.class, arguments = "(?i)[deleteall]+"))
-@Overload({
-    @Parameter(name = "create", validator = StringValidator.class, arguments = "(?i)[create]+"),
-    @Parameter(name = "group", validator = StringValidator.class, arguments = ".*")
-})
 public class GoMintCommandSigns extends Command {
 
     private final GoMintSignSystemAdapter goMintAdapter;
 
     public GoMintCommandSigns(GoMintSignSystemAdapter goMintAdapter) {
+        super("signs");
+
+        // Initial values setup
+        super.description("Create and manage reform cloud signs");
+        super.permission("reformcloud.command.signs");
+
+        // Parameter setup
+        super.overload().param("clean", new StringValidator("(?i)[clean]+"));
+        super.overload().param("delete", new StringValidator("(?i)[delete]+"));
+        super.overload().param("deleteall", new StringValidator("(?i)[deleteall]+"));
+        super.overload()
+            .param("create", new StringValidator("(?i)[create]+"))
+            .param("group", new StringValidator(".*"));
+
         this.goMintAdapter = goMintAdapter;
     }
 
@@ -119,14 +123,14 @@ public class GoMintCommandSigns extends Command {
     }
 
     private static Optional<BlockSign> getTargetBlockSign(@NotNull EntityPlayer entityPlayer) {
-        InternalFacing facing = InternalFacing.fromPlayer(entityPlayer);
-        Vector start = new Vector(entityPlayer.getLocation().getX(), entityPlayer.getEyeHeight(), entityPlayer.getLocation().getZ());
+        Facing facing = getPlayerFacing(entityPlayer);
+        Vector start = new Vector(entityPlayer.getLocation().getX(), entityPlayer.getLocation().getY() + entityPlayer.getEyeHeight(), entityPlayer.getLocation().getZ());
 
         Block current = entityPlayer.getWorld().getBlockAt(start.toBlockPosition());
         if (current.getBlockType() == BlockType.AIR) {
             for (int i = 0; i < 5; i++) {
-                facing.stepper.accept(start); // Step in players facing direction
-                current = entityPlayer.getWorld().getBlockAt(start.toBlockPosition());
+                current = current.getSide(facing);
+                entityPlayer.sendMessage(current.getBlockType().name());
                 if (current.getBlockType() != BlockType.AIR) {
                     break;
                 }
@@ -136,31 +140,23 @@ public class GoMintCommandSigns extends Command {
         return current instanceof BlockSign ? Optional.of((BlockSign) current) : Optional.empty();
     }
 
-    private enum InternalFacing {
-
-        SOUTH(vector -> vector.add(0, 0, 1)),
-        WEST(vector -> vector.subtract(1, 0, 0)),
-        EAST(vector -> vector.add(1, 0, 0)),
-        NORTH(vector -> vector.subtract(0, 0, 1));
-
-        private final Consumer<Vector> stepper;
-
-        InternalFacing(Consumer<Vector> stepper) {
-            this.stepper = stepper;
+    @Nullable
+    private static Facing getPlayerFacing(@NotNull EntityPlayer entityPlayer) {
+        double rotation = entityPlayer.getLocation().getYaw() % 360.0D;
+        if (rotation < 0.0D) {
+            rotation += 360.0D;
         }
 
-        public static InternalFacing fromPlayer(@NotNull EntityPlayer entityPlayer) {
-            float yaw = entityPlayer.getLocation().getYaw();
-            yaw = (yaw % 360 + 360) % 360;
-            if (yaw > 135 || yaw < -135) {
-                return InternalFacing.NORTH;
-            } else if (yaw < -45) {
-                return InternalFacing.EAST;
-            } else if (yaw > 45) {
-                return InternalFacing.WEST;
+        if ((0.0D > rotation || rotation >= 45.0D) && (315.0D > rotation || rotation >= 360.0D)) {
+            if (45.0D <= rotation && rotation < 135.0D) {
+                return Facing.WEST;
+            } else if (135.0D <= rotation && rotation < 225.0D) {
+                return Facing.NORTH;
             } else {
-                return InternalFacing.SOUTH;
+                return 225.0D <= rotation && rotation < 315.0D ? Facing.EAST : null;
             }
         }
+
+        return Facing.SOUTH;
     }
 }
