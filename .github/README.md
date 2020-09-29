@@ -1,6 +1,6 @@
 ![](https://s17.directupload.net/images/190317/g4777bij.png)
 
-# ReformCloud 2 [![Discord](https://img.shields.io/discord/499666347337449472.svg?color=7289DA&label=discord)](https://discord.gg/uskXdVZ) [![CodeFactor](https://www.codefactor.io/repository/github/derklaro/reformcloud2/badge?s=1093a7711bb179b3fb6e48ffbb3e4c1315e5aada)](https://www.codefactor.io/repository/github/derklaro/reformcloud2) [![Build Status](https://travis-ci.com/derklaro/reformcloud2.svg?token=DsMrJCyqH6BCtUu5ax94&branch=stable)](https://travis-ci.com/derklaro/reformcloud2)
+# ReformCloud 2 [![Discord](https://img.shields.io/discord/499666347337449472.svg?color=7289DA&label=discord)](https://discord.gg/uskXdVZ) [![CodeFactor](https://www.codefactor.io/repository/github/ReformCloud/reformcloud2/badge?s=1093a7711bb179b3fb6e48ffbb3e4c1315e5aada)](https://www.codefactor.io/repository/github/ReformCloud/reformcloud2) [![Build Status](https://travis-ci.com/ReformCloud/reformcloud2.svg?token=DsMrJCyqH6BCtUu5ax94&branch=stable)](https://travis-ci.com/ReformCloud/reformcloud2)
 
 ReformCloud is a cloud system programmed and optimized for all sizes of networks. 
 The cloud system provides a huge api to access all internal functions, group, processes etc. It's made
@@ -77,7 +77,7 @@ The node will ask six questions:
 
 # Found a bug or have a proposal?
 Please
-[**open an issue**](https://github.com/derklaro/reformcloud2/issues/new)
+[**open an issue**](https://github.com/ReformCloud/reformcloud2/issues/new)
 and ***describe the bug/proposal as detailed as possible*** and **look into your email if we have replied to your issue
 and answer upcoming questions**.
 
@@ -91,7 +91,7 @@ But the best support for our work is very simple: ***use the cloud system!***
 # Developer Information
 ## Want to contribute?
 You can simply 
-[**fork the project**](https://github.com/derklaro/reformcloud2/fork)
+[**fork the project**](https://github.com/ReformCloud/reformcloud2/fork)
 make the changes you want to add and create a **pull request**. If your pull request got approved and merged
 you will get added to the list of contributors.
 
@@ -111,7 +111,7 @@ you will get added to the list of contributors.
 
 ## Build this project
 ```
-git clone https://github.com/derklaro/reformcloud2.git
+git clone https://github.com/ReformCloud/reformcloud2.git
 cd reformcloud2/
 mvn clean package
 ```

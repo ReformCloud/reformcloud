@@ -1,7 +1,7 @@
 /*
- * MIT License
+ * This file is part of reformcloud2, licensed under the MIT License (MIT).
  *
- * Copyright (c) ReformCloud-Team
+ * Copyright (c) ReformCloud <https://github.com/ReformCloud>
  * Copyright (c) contributors
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -30,6 +30,7 @@ import systems.reformcloud.reformcloud2.executor.api.CommonHelper;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.command.Command;
 import systems.reformcloud.reformcloud2.executor.api.command.CommandSender;
+import systems.reformcloud.reformcloud2.executor.api.enums.EnumUtil;
 import systems.reformcloud.reformcloud2.executor.api.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.groups.template.RuntimeConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.groups.template.Template;
@@ -55,9 +56,12 @@ public final class CommandTemplate implements Command {
 
         if (strings.length == 1 || strings[0].equalsIgnoreCase("versions")) {
             StringBuilder stringBuilder = new StringBuilder();
-            for (int i = 0; i < Version.values().length; i++) {
-                stringBuilder.append(Version.values()[i]);
-                if (i != 0 && i % 3 == 0) {
+            EnumSet<Version> versions = EnumUtil.getEnumEntries(Version.class);
+
+            int index = 0;
+            for (Version version : versions) {
+                stringBuilder.append(version);
+                if (index++ != 0 && index % 3 == 0) {
                     stringBuilder.append(",\n");
                 } else {
                     stringBuilder.append(", ");
@@ -80,28 +84,28 @@ public final class CommandTemplate implements Command {
             if (strings[1].equalsIgnoreCase("create")) {
                 if (template != null) {
                     sender.sendMessage(LanguageManager.get(
-                            "command-template-template-already-exists",
-                            processGroupStringDuo.getSecond(),
-                            processGroupStringDuo.getFirst().getName()
+                        "command-template-template-already-exists",
+                        processGroupStringDuo.getSecond(),
+                        processGroupStringDuo.getFirst().getName()
                     ));
                     return;
                 }
 
                 processGroupStringDuo.getFirst().getTemplates().add(new Template(
-                        0,
-                        processGroupStringDuo.getSecond(),
-                        false,
-                        FileTemplateBackend.NAME,
-                        "-",
-                        new RuntimeConfiguration(512, new ArrayList<>(), new HashMap<>()),
-                        Version.PAPER_1_16_1
+                    0,
+                    processGroupStringDuo.getSecond(),
+                    false,
+                    FileTemplateBackend.NAME,
+                    "-",
+                    new RuntimeConfiguration(512, new ArrayList<>(), new HashMap<>()),
+                    Version.PAPER_1_16_1
                 ));
                 ExecutorAPI.getInstance().getProcessGroupProvider().updateProcessGroup(processGroupStringDuo.getFirst());
 
                 sender.sendMessage(LanguageManager.get(
-                        "command-template-template-created",
-                        processGroupStringDuo.getFirst().getName(),
-                        processGroupStringDuo.getSecond()
+                    "command-template-template-created",
+                    processGroupStringDuo.getFirst().getName(),
+                    processGroupStringDuo.getSecond()
                 ));
                 return;
             }
@@ -109,9 +113,9 @@ public final class CommandTemplate implements Command {
             if (strings[1].equalsIgnoreCase("info")) {
                 if (template == null) {
                     sender.sendMessage(LanguageManager.get(
-                            "command-template-template-not-exists",
-                            processGroupStringDuo.getSecond(),
-                            processGroupStringDuo.getFirst().getName()
+                        "command-template-template-not-exists",
+                        processGroupStringDuo.getSecond(),
+                        processGroupStringDuo.getFirst().getName()
                     ));
                     return;
                 }
@@ -123,9 +127,9 @@ public final class CommandTemplate implements Command {
             if (strings[1].equalsIgnoreCase("delete")) {
                 if (template == null) {
                     sender.sendMessage(LanguageManager.get(
-                            "command-template-template-not-exists",
-                            processGroupStringDuo.getSecond(),
-                            processGroupStringDuo.getFirst().getName()
+                        "command-template-template-not-exists",
+                        processGroupStringDuo.getSecond(),
+                        processGroupStringDuo.getFirst().getName()
                     ));
                     return;
                 }
@@ -133,9 +137,9 @@ public final class CommandTemplate implements Command {
                 processGroupStringDuo.getFirst().getTemplates().remove(template);
                 ExecutorAPI.getInstance().getProcessGroupProvider().updateProcessGroup(processGroupStringDuo.getFirst());
                 sender.sendMessage(LanguageManager.get(
-                        "command-template-template-deleted",
-                        processGroupStringDuo.getSecond(),
-                        processGroupStringDuo.getFirst().getName()
+                    "command-template-template-deleted",
+                    processGroupStringDuo.getSecond(),
+                    processGroupStringDuo.getFirst().getName()
                 ));
                 return;
             }
@@ -146,9 +150,9 @@ public final class CommandTemplate implements Command {
 
         if (template == null) {
             sender.sendMessage(LanguageManager.get(
-                    "command-template-template-not-exists",
-                    processGroupStringDuo.getSecond(),
-                    processGroupStringDuo.getFirst().getName()
+                "command-template-template-not-exists",
+                processGroupStringDuo.getSecond(),
+                processGroupStringDuo.getFirst().getName()
             ));
             return;
         }
@@ -156,8 +160,8 @@ public final class CommandTemplate implements Command {
         if (strings[1].equalsIgnoreCase("addprocessparameter")) {
             if (template.getRuntimeConfiguration().getProcessParameters().contains(strings[2])) {
                 sender.sendMessage(LanguageManager.get(
-                        "command-template-process-parameter-already-set",
-                        strings[2], template.getName()
+                    "command-template-process-parameter-already-set",
+                    strings[2], template.getName()
                 ));
                 return;
             }
@@ -171,8 +175,8 @@ public final class CommandTemplate implements Command {
         if (strings[1].equalsIgnoreCase("addjvmoption")) {
             if (template.getRuntimeConfiguration().getJvmOptions().contains(strings[2])) {
                 sender.sendMessage(LanguageManager.get(
-                        "command-template-process-jvm-option-already-set",
-                        strings[2], template.getName()
+                    "command-template-process-jvm-option-already-set",
+                    strings[2], template.getName()
                 ));
                 return;
             }
@@ -186,8 +190,8 @@ public final class CommandTemplate implements Command {
         if (strings[1].equalsIgnoreCase("addshutdowncommand")) {
             if (template.getRuntimeConfiguration().getShutdownCommands().contains(strings[2])) {
                 sender.sendMessage(LanguageManager.get(
-                        "command-template-process-shutdown-command-already-set",
-                        strings[2], template.getName()
+                    "command-template-process-shutdown-command-already-set",
+                    strings[2], template.getName()
                 ));
                 return;
             }
@@ -207,8 +211,8 @@ public final class CommandTemplate implements Command {
 
             if (template.getRuntimeConfiguration().getSystemProperties().containsKey(split[0])) {
                 sender.sendMessage(LanguageManager.get(
-                        "command-template-process-system-property-already-set",
-                        strings[2], template.getName()
+                    "command-template-process-system-property-already-set",
+                    strings[2], template.getName()
                 ));
                 return;
             }
@@ -222,8 +226,8 @@ public final class CommandTemplate implements Command {
         if (strings[1].equalsIgnoreCase("removeprocessparameter")) {
             if (!template.getRuntimeConfiguration().getProcessParameters().contains(strings[2])) {
                 sender.sendMessage(LanguageManager.get(
-                        "command-template-process-parameter-not-set",
-                        strings[2], template.getName()
+                    "command-template-process-parameter-not-set",
+                    strings[2], template.getName()
                 ));
                 return;
             }
@@ -237,8 +241,8 @@ public final class CommandTemplate implements Command {
         if (strings[1].equalsIgnoreCase("removejvmoption")) {
             if (!template.getRuntimeConfiguration().getJvmOptions().contains(strings[2])) {
                 sender.sendMessage(LanguageManager.get(
-                        "command-template-process-jvm-option-not-set",
-                        strings[2], template.getName()
+                    "command-template-process-jvm-option-not-set",
+                    strings[2], template.getName()
                 ));
                 return;
             }
@@ -252,8 +256,8 @@ public final class CommandTemplate implements Command {
         if (strings[1].equalsIgnoreCase("removeshutdowncommand")) {
             if (!template.getRuntimeConfiguration().getShutdownCommands().contains(strings[2])) {
                 sender.sendMessage(LanguageManager.get(
-                        "command-template-process-shutdown-command-not-set",
-                        strings[2], template.getName()
+                    "command-template-process-shutdown-command-not-set",
+                    strings[2], template.getName()
                 ));
                 return;
             }
@@ -267,8 +271,8 @@ public final class CommandTemplate implements Command {
         if (strings[1].equalsIgnoreCase("removesystemproperty")) {
             if (!template.getRuntimeConfiguration().getSystemProperties().containsKey(strings[2])) {
                 sender.sendMessage(LanguageManager.get(
-                        "command-template-process-system-property-not-set",
-                        strings[2], template.getName()
+                    "command-template-process-system-property-not-set",
+                    strings[2], template.getName()
                 ));
                 return;
             }
@@ -280,18 +284,18 @@ public final class CommandTemplate implements Command {
         }
 
         if (strings.length == 5 && strings[1].equalsIgnoreCase("removetemplateinclusion")) {
-            Inclusion.InclusionLoadType type = CommonHelper.findEnumField(Inclusion.InclusionLoadType.class, strings[4].toUpperCase()).orElse(null);
+            Inclusion.InclusionLoadType type = EnumUtil.findEnumFieldByName(Inclusion.InclusionLoadType.class, strings[4]).orElse(null);
             if (type == null) {
                 sender.sendMessage(LanguageManager.get(
-                        "command-template-inclusion-load-type-unknown",
-                        strings[4], Streams.map(Inclusion.InclusionLoadType.values(), Enum::name)
+                    "command-template-inclusion-load-type-unknown",
+                    strings[4], Streams.map(EnumUtil.getEnumEntries(Inclusion.InclusionLoadType.class), Enum::name)
                 ));
                 return;
             }
 
             for (Inclusion inclusion : template.getTemplateInclusions()) {
                 if (inclusion.getKey().equalsIgnoreCase(strings[2]) && inclusion.getBackend().equalsIgnoreCase(strings[3])
-                        && inclusion.getInclusionLoadType() == type) {
+                    && inclusion.getInclusionLoadType() == type) {
                     template.getTemplateInclusions().remove(inclusion);
                     ExecutorAPI.getInstance().getProcessGroupProvider().updateProcessGroup(processGroupStringDuo.getFirst());
                     sender.sendMessage(LanguageManager.get("command-template-template-inclusion-removed", inclusion.getKey(), processGroupStringDuo.getSecond()));
@@ -300,23 +304,23 @@ public final class CommandTemplate implements Command {
             }
 
             sender.sendMessage(LanguageManager.get("command-template-unable-to-remove-template-inclusion",
-                    strings[2], strings[3], strings[4], processGroupStringDuo.getSecond()));
+                strings[2], strings[3], strings[4], processGroupStringDuo.getSecond()));
             return;
         }
 
         if (strings.length == 5 && strings[1].equalsIgnoreCase("removepathinclusion")) {
-            Inclusion.InclusionLoadType type = CommonHelper.findEnumField(Inclusion.InclusionLoadType.class, strings[4].toUpperCase()).orElse(null);
+            Inclusion.InclusionLoadType type = EnumUtil.findEnumFieldByName(Inclusion.InclusionLoadType.class, strings[4]).orElse(null);
             if (type == null) {
                 sender.sendMessage(LanguageManager.get(
-                        "command-template-inclusion-load-type-unknown",
-                        strings[4], Streams.map(Inclusion.InclusionLoadType.values(), Enum::name)
+                    "command-template-inclusion-load-type-unknown",
+                    strings[4], Streams.map(EnumUtil.getEnumEntries(Inclusion.InclusionLoadType.class), Enum::name)
                 ));
                 return;
             }
 
             for (Inclusion pathInclusion : template.getPathInclusions()) {
                 if (pathInclusion.getKey().equalsIgnoreCase(strings[2]) && pathInclusion.getBackend().equalsIgnoreCase(strings[3])
-                        && pathInclusion.getInclusionLoadType() == type) {
+                    && pathInclusion.getInclusionLoadType() == type) {
                     template.getPathInclusions().remove(pathInclusion);
                     ExecutorAPI.getInstance().getProcessGroupProvider().updateProcessGroup(processGroupStringDuo.getFirst());
                     sender.sendMessage(LanguageManager.get("command-template-path-inclusion-removed", pathInclusion.getKey(), processGroupStringDuo.getSecond()));
@@ -325,16 +329,16 @@ public final class CommandTemplate implements Command {
             }
 
             sender.sendMessage(LanguageManager.get("command-template-unable-to-remove-path-inclusion",
-                    strings[2], strings[3], strings[4], processGroupStringDuo.getSecond()));
+                strings[2], strings[3], strings[4], processGroupStringDuo.getSecond()));
             return;
         }
 
         if (strings.length == 5 && strings[1].equalsIgnoreCase("addpathinclusion")) {
-            Inclusion.InclusionLoadType type = CommonHelper.findEnumField(Inclusion.InclusionLoadType.class, strings[4].toUpperCase()).orElse(null);
+            Inclusion.InclusionLoadType type = EnumUtil.findEnumFieldByName(Inclusion.InclusionLoadType.class, strings[4]).orElse(null);
             if (type == null) {
                 sender.sendMessage(LanguageManager.get(
-                        "command-template-inclusion-load-type-unknown",
-                        strings[4], Streams.map(Inclusion.InclusionLoadType.values(), Enum::name)
+                    "command-template-inclusion-load-type-unknown",
+                    strings[4], Streams.map(EnumUtil.getEnumEntries(Inclusion.InclusionLoadType.class), Enum::name)
                 ));
                 return;
             }
@@ -353,11 +357,11 @@ public final class CommandTemplate implements Command {
         }
 
         if (strings.length == 5 && strings[1].equalsIgnoreCase("addtemplateinclusion")) {
-            Inclusion.InclusionLoadType type = CommonHelper.findEnumField(Inclusion.InclusionLoadType.class, strings[4].toUpperCase()).orElse(null);
+            Inclusion.InclusionLoadType type = EnumUtil.findEnumFieldByName(Inclusion.InclusionLoadType.class, strings[4]).orElse(null);
             if (type == null) {
                 sender.sendMessage(LanguageManager.get(
-                        "command-template-inclusion-load-type-unknown",
-                        strings[4], Streams.map(Inclusion.InclusionLoadType.values(), Enum::name)
+                    "command-template-inclusion-load-type-unknown",
+                    strings[4], Streams.map(EnumUtil.getEnumEntries(Inclusion.InclusionLoadType.class), Enum::name)
                 ));
                 return;
             }
@@ -400,16 +404,16 @@ public final class CommandTemplate implements Command {
             }
         } else if (bufferIndex == 1) {
             result.addAll(Arrays.asList(
-                    "create", "info", "delete", "addProcessParameter", "addJvmOption",
-                    "addSystemProperty", "addShutdownCommand", "removeProcessParameter",
-                    "removeJvmOption", "removeSystemProperty", "removeShutdownCommand",
-                    "addPathInclusion", "addTemplateInclusion", "removePathInclusion",
-                    "removeTemplateInclusion", "edit"
+                "create", "info", "delete", "addProcessParameter", "addJvmOption",
+                "addSystemProperty", "addShutdownCommand", "removeProcessParameter",
+                "removeJvmOption", "removeSystemProperty", "removeShutdownCommand",
+                "addPathInclusion", "addTemplateInclusion", "removePathInclusion",
+                "removeTemplateInclusion", "edit"
             ));
         } else if (bufferIndex >= 2 && strings[1].equalsIgnoreCase("edit")) {
             result.addAll(Arrays.asList(
-                    "--version=PAPER_1_16_1", "--priority=1", "--global=true", "--autoReleaseOnClose=false",
-                    "--backend=FILE", "--serverNameSplitter=-", "--max-memory=512", "--dynamic-memory=-1"
+                "--version=PAPER_1_16_1", "--priority=1", "--global=true", "--autoReleaseOnClose=false",
+                "--backend=FILE", "--serverNameSplitter=-", "--max-memory=512", "--dynamic-memory=-1"
             ));
         }
 
@@ -423,38 +427,38 @@ public final class CommandTemplate implements Command {
         }
 
         return ExecutorAPI.getInstance().getProcessGroupProvider().getProcessGroup(split[0])
-                .map(processGroup -> new Duo<>(processGroup, split[1]))
-                .orElse(null);
+            .map(processGroup -> new Duo<>(processGroup, split[1]))
+            .orElse(null);
     }
 
     private void describeCommandToSender(@NotNull CommandSender source) {
         source.sendMessages((
-                "template versions                                                                          | Lists all versions which are available to the console\n" +
-                        "template <group>/<template> [create]                                                       | Creates the specified template\n" +
-                        "template <group>/<template> [info]                                                         | Shows information about the specified template\n" +
-                        "template <group>/<template> [delete]                                                       | Deletes the specified template\n" +
-                        "template <group>/<template> addProcessParameter <parameter>                                | Adds the given parameter to the given template\n" +
-                        "template <group>/<template> addJvmOption <option>                                          | Adds the given jvm-option to the given template\n" +
-                        "template <group>/<template> addSystemProperty <key>=<value>                                | Adds the system property parameter to the given template\n" +
-                        "template <group>/<template> addShutdownCommand <command>                                   | Adds the given shutdown command to the given template\n" +
-                        "template <group>/<template> removeProcessParameter <parameter>                             | Adds the given parameter to the given template\n" +
-                        "template <group>/<template> removeJvmOption <option>                                       | Removes the given jvm option from the given template\n" +
-                        "template <group>/<template> removeSystemProperty <key>                                     | Removes the given system property from the given template\n" +
-                        "template <group>/<template> removeShutdownCommand <command>                                | Removes the given shutdown command from the given template\n" +
-                        "template <group>/<template> addPathInclusion <path> <backend> <priority>                   | Adds the path inclusion for the given backend to the specified template\n" +
-                        "template <group>/<template> addTemplateInclusion <group/template> <backend> <priority>     | Adds the template inclusion for the given backend to the specified template\n" +
-                        "template <group>/<template> removePathInclusion <path> <backend> <priority>                | Removes the path inclusion for the given backend from the specified template\n" +
-                        "template <group>/<template> removeTemplateInclusion <group/template> <backend> <priority>  | Removes the template inclusion for the given backend from the specified template\n" +
-                        "\n" +
-                        "template <group>/<template> [edit]                                                         | Edits the specified template - the edit options are listed below\n" +
-                        "   --version=<Version>                                                                     | Sets the version of the specified template\n" +
-                        "   --priority=<priority>                                                                   | Sets the priority of the specified template\n" +
-                        "   --global=<global>                                                                       | Sets weather the template should be global or not\n" +
-                        "   --autoReleaseOnClose=<autoReleaseOnClose>                                               | Sets weather the template should get copied to the backend after every process stop\n" +
-                        "   --backend=<backend>                                                                     | Sets the backend of the template\n" +
-                        "   --serverNameSplitter=<serverNameSplitter>                                               | Sets the server name splitter of the template\n" +
-                        "   --max-memory=<memory>                                                                   | Sets the max memory of the template\n" +
-                        "   --dynamic-memory=<dynamicMemory>                                                        | Sets the dynamic memory of the template"
+            "template versions                                                                          | Lists all versions which are available to the console\n" +
+                "template <group>/<template> [create]                                                       | Creates the specified template\n" +
+                "template <group>/<template> [info]                                                         | Shows information about the specified template\n" +
+                "template <group>/<template> [delete]                                                       | Deletes the specified template\n" +
+                "template <group>/<template> addProcessParameter <parameter>                                | Adds the given parameter to the given template\n" +
+                "template <group>/<template> addJvmOption <option>                                          | Adds the given jvm-option to the given template\n" +
+                "template <group>/<template> addSystemProperty <key>=<value>                                | Adds the system property parameter to the given template\n" +
+                "template <group>/<template> addShutdownCommand <command>                                   | Adds the given shutdown command to the given template\n" +
+                "template <group>/<template> removeProcessParameter <parameter>                             | Adds the given parameter to the given template\n" +
+                "template <group>/<template> removeJvmOption <option>                                       | Removes the given jvm option from the given template\n" +
+                "template <group>/<template> removeSystemProperty <key>                                     | Removes the given system property from the given template\n" +
+                "template <group>/<template> removeShutdownCommand <command>                                | Removes the given shutdown command from the given template\n" +
+                "template <group>/<template> addPathInclusion <path> <backend> <priority>                   | Adds the path inclusion for the given backend to the specified template\n" +
+                "template <group>/<template> addTemplateInclusion <group/template> <backend> <priority>     | Adds the template inclusion for the given backend to the specified template\n" +
+                "template <group>/<template> removePathInclusion <path> <backend> <priority>                | Removes the path inclusion for the given backend from the specified template\n" +
+                "template <group>/<template> removeTemplateInclusion <group/template> <backend> <priority>  | Removes the template inclusion for the given backend from the specified template\n" +
+                "\n" +
+                "template <group>/<template> [edit]                                                         | Edits the specified template - the edit options are listed below\n" +
+                "   --version=<Version>                                                                     | Sets the version of the specified template\n" +
+                "   --priority=<priority>                                                                   | Sets the priority of the specified template\n" +
+                "   --global=<global>                                                                       | Sets weather the template should be global or not\n" +
+                "   --autoReleaseOnClose=<autoReleaseOnClose>                                               | Sets weather the template should get copied to the backend after every process stop\n" +
+                "   --backend=<backend>                                                                     | Sets the backend of the template\n" +
+                "   --serverNameSplitter=<serverNameSplitter>                                               | Sets the server name splitter of the template\n" +
+                "   --max-memory=<memory>                                                                   | Sets the max memory of the template\n" +
+                "   --dynamic-memory=<dynamicMemory>                                                        | Sets the dynamic memory of the template"
         ).split("\n"));
     }
 
@@ -488,17 +492,17 @@ public final class CommandTemplate implements Command {
         stringBuilder.append(" Template Inclusions:").append("\n");
         for (Inclusion templateInclusion : template.getTemplateInclusions()) {
             stringBuilder.append("  - ").append(templateInclusion.getKey())
-                    .append(" | Backend: ").append(templateInclusion.getBackend())
-                    .append(" | Load-Order: ").append(templateInclusion.getInclusionLoadType().name())
-                    .append("\n");
+                .append(" | Backend: ").append(templateInclusion.getBackend())
+                .append(" | Load-Order: ").append(templateInclusion.getInclusionLoadType().name())
+                .append("\n");
         }
 
         stringBuilder.append(" Path Inclusions:").append("\n");
         for (Inclusion pathInclusion : template.getPathInclusions()) {
             stringBuilder.append("  - ").append(pathInclusion.getKey())
-                    .append(" | Backend: ").append(pathInclusion.getBackend())
-                    .append(" | Load-Order: ").append(pathInclusion.getInclusionLoadType().name())
-                    .append("\n");
+                .append(" | Backend: ").append(pathInclusion.getBackend())
+                .append(" | Load-Order: ").append(pathInclusion.getInclusionLoadType().name())
+                .append("\n");
         }
 
         sender.sendMessages(stringBuilder.toString().split("\n"));
@@ -507,7 +511,7 @@ public final class CommandTemplate implements Command {
     private void handleEditCall(@NotNull CommandSender sender, @NotNull Template template, @NotNull ProcessGroup group, @NotNull String[] strings) {
         Properties properties = StringUtil.calcProperties(strings, 2);
         if (properties.containsKey("version")) {
-            Version version = CommonHelper.findEnumField(Version.class, properties.getProperty("version").toUpperCase()).orElse(null);
+            Version version = EnumUtil.findEnumFieldByName(Version.class, properties.getProperty("version")).orElse(null);
             if (version == null) {
                 sender.sendMessage(LanguageManager.get("command-template-unknown-version", properties.getProperty("version")));
                 return;

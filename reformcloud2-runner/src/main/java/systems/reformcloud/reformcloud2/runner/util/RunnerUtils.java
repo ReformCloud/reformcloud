@@ -1,7 +1,7 @@
 /*
- * MIT License
+ * This file is part of reformcloud2, licensed under the MIT License (MIT).
  *
- * Copyright (c) ReformCloud-Team
+ * Copyright (c) ReformCloud <https://github.com/ReformCloud>
  * Copyright (c) contributors
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -64,7 +64,7 @@ public final class RunnerUtils {
     /**
      * The base url of the reformcloud github repository
      */
-    public static final String REPO_BASE_URL = "https://github.com/derklaro/reformcloud2/";
+    public static final String REPO_BASE_URL = "https://github.com/ReformCloud/reformcloud2/";
     /**
      * The file download format string
      */

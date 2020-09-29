@@ -1,7 +1,7 @@
 /*
- * MIT License
+ * This file is part of reformcloud2, licensed under the MIT License (MIT).
  *
- * Copyright (c) ReformCloud-Team
+ * Copyright (c) ReformCloud <https://github.com/ReformCloud>
  * Copyright (c) contributors
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -28,6 +28,7 @@ import com.google.gson.reflect.TypeToken;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import systems.reformcloud.reformcloud2.executor.api.enums.EnumUtil;
 import systems.reformcloud.reformcloud2.executor.api.groups.template.inclusion.Inclusion;
 import systems.reformcloud.reformcloud2.executor.api.network.SerializableObject;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
@@ -161,20 +162,20 @@ public final class Template implements Nameable, SerializableObject {
 
     public Collection<Duo<String, String>> getPathInclusionsOfType(@NotNull Inclusion.InclusionLoadType type) {
         return this.getPathInclusions()
-                .stream()
-                .filter(e -> e.getInclusionLoadType().equals(type))
-                .filter(e -> e.getBackend() != null && e.getKey() != null)
-                .map(e -> new Duo<>(e.getKey(), e.getBackend()))
-                .collect(Collectors.toList());
+            .stream()
+            .filter(e -> e.getInclusionLoadType().equals(type))
+            .filter(e -> e.getBackend() != null && e.getKey() != null)
+            .map(e -> new Duo<>(e.getKey(), e.getBackend()))
+            .collect(Collectors.toList());
     }
 
     public Collection<Duo<String, String>> getTemplateInclusionsOfType(@NotNull Inclusion.InclusionLoadType type) {
         return this.getTemplateInclusions()
-                .stream()
-                .filter(e -> e.getInclusionLoadType().equals(type))
-                .filter(e -> e.getBackend() != null && e.getKey() != null)
-                .map(e -> new Duo<>(e.getKey(), e.getBackend()))
-                .collect(Collectors.toList());
+            .stream()
+            .filter(e -> e.getInclusionLoadType().equals(type))
+            .filter(e -> e.getBackend() != null && e.getKey() != null)
+            .map(e -> new Duo<>(e.getKey(), e.getBackend()))
+            .collect(Collectors.toList());
     }
 
     @Override
@@ -200,7 +201,7 @@ public final class Template implements Nameable, SerializableObject {
         this.backend = buffer.readString();
         this.serverNameSplitter = buffer.readString();
         this.runtimeConfiguration = buffer.readObject(RuntimeConfiguration.class);
-        this.version = Version.values()[buffer.readVarInt()];
+        this.version = EnumUtil.findEnumFieldByIndex(Version.class, buffer.readVarInt()).orElse(null);
         this.templateInclusions = buffer.readObjects(Inclusion.class);
         this.pathInclusions = buffer.readObjects(Inclusion.class);
     }

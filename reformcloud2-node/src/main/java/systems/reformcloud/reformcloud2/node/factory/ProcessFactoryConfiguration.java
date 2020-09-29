@@ -1,7 +1,7 @@
 /*
- * MIT License
+ * This file is part of reformcloud2, licensed under the MIT License (MIT).
  *
- * Copyright (c) ReformCloud-Team
+ * Copyright (c) ReformCloud <https://github.com/ReformCloud>
  * Copyright (c) contributors
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -26,6 +26,7 @@ package systems.reformcloud.reformcloud2.node.factory;
 
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
+import systems.reformcloud.reformcloud2.executor.api.enums.EnumUtil;
 import systems.reformcloud.reformcloud2.executor.api.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.groups.template.Template;
 import systems.reformcloud.reformcloud2.executor.api.network.SerializableObject;
@@ -151,7 +152,7 @@ public class ProcessFactoryConfiguration implements SerializableObject {
         this.template = buffer.readObject(Template.class);
         this.inclusions = new CopyOnWriteArrayList<>(buffer.readObjects(ProcessInclusion.class));
         this.extra = new JsonConfiguration(buffer.readArray());
-        this.initialState = ProcessState.values()[buffer.readInt()];
+        this.initialState = EnumUtil.findEnumFieldByIndex(ProcessState.class, buffer.readInt()).orElse(null);
         this.processUniqueId = buffer.readUniqueId();
 
         this.memory = buffer.readInt();

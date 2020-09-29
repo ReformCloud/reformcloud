@@ -1,7 +1,7 @@
 /*
- * MIT License
+ * This file is part of reformcloud2, licensed under the MIT License (MIT).
  *
- * Copyright (c) ReformCloud-Team
+ * Copyright (c) ReformCloud <https://github.com/ReformCloud>
  * Copyright (c) contributors
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -26,6 +26,7 @@ package systems.reformcloud.reformcloud2.node.logger;
 
 import org.fusesource.jansi.Ansi;
 import org.jetbrains.annotations.NotNull;
+import systems.reformcloud.reformcloud2.executor.api.enums.EnumUtil;
 
 import java.util.regex.Pattern;
 
@@ -105,7 +106,7 @@ public enum ConsoleColour {
         }
 
         String s = new String(b);
-        for (ConsoleColour value : ConsoleColour.values()) {
+        for (ConsoleColour value : EnumUtil.getEnumEntries(ConsoleColour.class)) {
             s = value.getPattern().matcher(s).replaceAll(value.getAnsi());
         }
 

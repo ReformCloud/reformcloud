@@ -1,7 +1,7 @@
 /*
- * MIT License
+ * This file is part of reformcloud2, licensed under the MIT License (MIT).
  *
- * Copyright (c) ReformCloud-Team
+ * Copyright (c) ReformCloud <https://github.com/ReformCloud>
  * Copyright (c) contributors
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -67,10 +67,11 @@ public abstract class PermissionManagement {
      *
      * @param name The name of the group
      * @return The {@link PermissionGroup} or {@code null} if the group does not exists
+     * @deprecated Use {@link #getPermissionGroup(String)} instead
      */
     @Nullable
     @Deprecated
-    @ApiStatus.ScheduledForRemoval
+    @ApiStatus.ScheduledForRemoval(inVersion = "2.10.2")
     public PermissionGroup getGroup(@NotNull String name) {
         return this.getPermissionGroup(name).orElse(null);
     }
@@ -113,10 +114,11 @@ public abstract class PermissionManagement {
      *
      * @param name The name of the new group
      * @return The created group or the group which already exists
+     * @deprecated Use {@link #createPermissionGroup(PermissionGroup)} instead
      */
     @NotNull
     @Deprecated
-    @ApiStatus.ScheduledForRemoval
+    @ApiStatus.ScheduledForRemoval(inVersion = "2.10.2")
     public abstract PermissionGroup createGroup(@NotNull String name);
 
     /**

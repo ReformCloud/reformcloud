@@ -2,7 +2,6 @@ package systems.reformcloud.reformcloud2.executor.api;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import systems.reformcloud.reformcloud2.executor.api.groups.template.Version;
 
 import java.util.UUID;
 
@@ -70,17 +69,7 @@ class CommonHelperTest {
 
     @Test
     void testFormatThrowable() {
-        String expected = "NullPointerException : null @ systems.reformcloud.reformcloud2.executor.api.CommonHelperTest:74";
+        String expected = "NullPointerException : null @ systems.reformcloud.reformcloud2.executor.api.CommonHelperTest:73";
         Assertions.assertEquals(expected, CommonHelper.formatThrowable(new NullPointerException()));
-    }
-
-    @Test
-    void testFindEnumField() {
-        Version version = CommonHelper.findEnumField(Version.class, "paper_1_8_8").orNothing();
-        Assertions.assertNotNull(version);
-        Assertions.assertEquals(Version.PAPER_1_8_8, version);
-
-        Version version1 = CommonHelper.findEnumField(Version.class, "paper_1_4_9").orNothing();
-        Assertions.assertNull(version1);
     }
 }

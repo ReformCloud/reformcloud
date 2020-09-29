@@ -1,7 +1,7 @@
 /*
- * MIT License
+ * This file is part of reformcloud2, licensed under the MIT License (MIT).
  *
- * Copyright (c) ReformCloud-Team
+ * Copyright (c) ReformCloud <https://github.com/ReformCloud>
  * Copyright (c) contributors
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -37,7 +37,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 @SuppressWarnings("deprecation") // 1.8 is too old to use the new channel factory
-public final class DefaultNetworkClient implements NetworkClient {
+public class DefaultNetworkClient implements NetworkClient {
 
     private final EventLoopGroup eventLoopGroup = NetworkUtil.TRANSPORT_TYPE.getEventLoopGroup(EventLoopGroupType.WORKER);
     private Channel channel;

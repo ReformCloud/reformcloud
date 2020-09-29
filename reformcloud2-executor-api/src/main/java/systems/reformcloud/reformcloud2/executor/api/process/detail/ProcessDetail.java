@@ -1,7 +1,7 @@
 /*
- * MIT License
+ * This file is part of reformcloud2, licensed under the MIT License (MIT).
  *
- * Copyright (c) ReformCloud-Team
+ * Copyright (c) ReformCloud <https://github.com/ReformCloud>
  * Copyright (c) contributors
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -27,6 +27,7 @@ package systems.reformcloud.reformcloud2.executor.api.process.detail;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import systems.reformcloud.reformcloud2.executor.api.enums.EnumUtil;
 import systems.reformcloud.reformcloud2.executor.api.groups.template.Template;
 import systems.reformcloud.reformcloud2.executor.api.network.SerializableObject;
 import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer;
@@ -279,8 +280,8 @@ public final class ProcessDetail implements Nameable, SerializableObject {
         this.maxMemory = buffer.readInt();
         this.creationTime = buffer.readLong();
 
-        this.processState = ProcessState.values()[buffer.readVarInt()];
-        this.initialState = ProcessState.values()[buffer.readVarInt()];
+        this.processState = EnumUtil.findEnumFieldByIndex(ProcessState.class, buffer.readVarInt()).orElse(null);
+        this.initialState = EnumUtil.findEnumFieldByIndex(ProcessState.class, buffer.readVarInt()).orElse(null);
 
         this.maxPlayers = buffer.readInt();
         this.messageOfTheDay = buffer.readString();

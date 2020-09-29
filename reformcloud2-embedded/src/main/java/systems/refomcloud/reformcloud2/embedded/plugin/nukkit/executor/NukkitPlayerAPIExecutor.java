@@ -1,7 +1,7 @@
 /*
- * MIT License
+ * This file is part of reformcloud2, licensed under the MIT License (MIT).
  *
- * Copyright (c) ReformCloud-Team
+ * Copyright (c) ReformCloud <https://github.com/ReformCloud>
  * Copyright (c) contributors
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -32,7 +32,7 @@ import cn.nukkit.utils.Identifier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import systems.refomcloud.reformcloud2.embedded.executor.PlayerAPIExecutor;
-import systems.reformcloud.reformcloud2.executor.api.CommonHelper;
+import systems.reformcloud.reformcloud2.executor.api.enums.EnumUtil;
 
 import java.util.UUID;
 
@@ -50,14 +50,12 @@ public class NukkitPlayerAPIExecutor extends PlayerAPIExecutor {
 
     @Override
     public void executePlaySound(UUID player, String sound, float f1, float f2) {
-        Server.getInstance().getPlayer(player).ifPresent(val -> {
-            Sound nukkitSound = CommonHelper.findEnumField(Sound.class, sound).orNothing();
-            if (nukkitSound == null) {
-                return;
-            }
+        Sound nukkitSound = EnumUtil.findEnumFieldByName(Sound.class, sound).orElse(null);
+        if (nukkitSound == null) {
+            return;
+        }
 
-            val.getLevel().addSound(val.getLocation().getPosition(), nukkitSound, f1, f2, val);
-        });
+        Server.getInstance().getPlayer(player).ifPresent(val -> val.getLevel().addSound(val.getLocation().getPosition(), nukkitSound, f1, f2, val));
     }
 
     @Override
