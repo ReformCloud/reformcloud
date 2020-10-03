@@ -87,7 +87,6 @@ public enum TransportType {
 
     /**
      * Get the best transport type for the current machine.
-     * <br />
      * For internal use only. Use {@link systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil#TRANSPORT_TYPE}
      *
      * @return the best transport type for the current machine
