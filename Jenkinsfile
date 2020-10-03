@@ -1,3 +1,4 @@
+#!groovy
 pipeline {
     agent any
 
@@ -18,7 +19,7 @@ pipeline {
         stage('Update snapshot version') {
             when {
                 allOf {
-                    environment name:'IS_SNAPSHOT', value: 'true'
+                    environment name: 'IS_SNAPSHOT', value: 'true'
                 }
             }
 
@@ -49,7 +50,7 @@ pipeline {
             when {
                 allOf {
                     branch 'stable'
-                    environment name:'IS_SNAPSHOT', value: 'false'
+                    environment name: 'IS_SNAPSHOT', value: 'false'
                 }
             }
 
@@ -126,5 +127,5 @@ pipeline {
 }
 
 def getProjectVersion() {
-  return sh(script: "mvn help:evaluate -Dexpression=project.version -q -DforceStdout  | tail -1", returnStdout: true)
+    return sh(script: "mvn help:evaluate -Dexpression=project.version -q -DforceStdout  | tail -1", returnStdout: true)
 }
