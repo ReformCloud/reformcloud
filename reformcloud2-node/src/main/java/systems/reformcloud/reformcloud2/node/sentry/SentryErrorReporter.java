@@ -25,8 +25,7 @@
 package systems.reformcloud.reformcloud2.node.sentry;
 
 import io.sentry.Sentry;
-import io.sentry.SentryClient;
-import io.sentry.event.EventBuilder;
+import io.sentry.SentryEvent;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.CommonHelper;
 import systems.reformcloud.reformcloud2.node.NodeExecutor;
@@ -38,28 +37,28 @@ import systems.reformcloud.reformcloud2.node.NodeExecutor;
         "https://f9ac673179f7438ab441e3bd61a32a90@o440889.ingest.sentry.io/5416465?async=false"
     );
 
-    protected static void init(NodeExecutor nodeExecutor) {
-        SentryClient sentryClient = Sentry.init(SENTRY_DSN);
-        sentryClient.addShouldSendEventCallback(ignored -> nodeExecutor.getNodeConfig().isSendAnonymousErrorReports());
-        sentryClient.addBuilderHelper(SentryErrorReporter::appendExtraInformation);
+    protected static void init(@NotNull NodeExecutor nodeExecutor) {
+        Sentry.init(options -> {
+            options.setDsn(SENTRY_DSN);
+            options.addEventProcessor((event, hint) -> nodeExecutor.getNodeConfig().isSendAnonymousErrorReports() ? SentryErrorReporter.appendExtraInformation(event) : null);
+        });
     }
 
-    private static void appendExtraInformation(@NotNull EventBuilder eventBuilder) {
-        eventBuilder
-            .withRelease(System.getProperty("reformcloud.runner.version", "unsupported"))
+    @NotNull
+    private static SentryEvent appendExtraInformation(@NotNull SentryEvent event) {
+        event.setRelease(System.getProperty("reformcloud.runner.version", "unsupported"));
+        event.setTag("java_version", System.getProperty("java.vm.name") + " (" + System.getProperty("java.runtime.version") + ")");
 
-            .withTag("java_version", System.getProperty("java.vm.name") + " (" + System.getProperty("java.runtime.version") + ")")
+        event.setExtra("system.process_memory_free", formatBytes(Runtime.getRuntime().freeMemory()));
+        event.setExtra("system.process_memory_total", formatBytes(Runtime.getRuntime().totalMemory()));
+        event.setExtra("system.user_name", System.getProperty("user.name"));
+        event.setExtra("system.user_dir", System.getProperty("user.dir"));
+        event.setExtra("system.os", System.getProperty("os.name") + " (Version: " + System.getProperty("os.version") + " Arch: " + System.getProperty("os.arch") + ")");
+        event.setExtra("system.cpu", Runtime.getRuntime().availableProcessors());
+        event.setExtra("system.memory", formatBytes(CommonHelper.getTotalSystemMemory()));
+        event.setExtra("system.current_thread", Thread.currentThread().getName());
 
-            .withExtra("system.process_memory_free", formatBytes(Runtime.getRuntime().freeMemory()))
-            .withExtra("system.process_memory_total", formatBytes(Runtime.getRuntime().totalMemory()))
-
-            .withExtra("system.user_name", System.getProperty("user.name"))
-            .withExtra("system.user_dir", System.getProperty("user.dir"))
-            .withExtra("system.os", System.getProperty("os.name") + " (Version: " + System.getProperty("os.version") + " Arch: " + System.getProperty("os.arch") + ")")
-            .withExtra("system.cpu", Runtime.getRuntime().availableProcessors())
-            .withExtra("system.memory", formatBytes(CommonHelper.getTotalSystemMemory()))
-
-            .withExtra("system.current_thread", Thread.currentThread().getName());
+        return event;
     }
 
     /* Thanks stackoverflow */
