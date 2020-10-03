@@ -98,7 +98,7 @@ public final class CommandTemplate implements Command {
                     FileTemplateBackend.NAME,
                     "-",
                     new RuntimeConfiguration(512, new ArrayList<>(), new HashMap<>()),
-                    Version.PAPER_1_16_1
+                    Version.PAPER_1_16_3
                 ));
                 ExecutorAPI.getInstance().getProcessGroupProvider().updateProcessGroup(processGroupStringDuo.getFirst());
 
