@@ -154,9 +154,12 @@ public class DefaultDependencyLoader implements DependencyLoader {
     private static Path getPath(@NotNull Dependency dependency) {
         String systemPath = dependency.systemPath();
         if (systemPath.trim().isEmpty()) {
-            systemPath = dependency.groupId().replace(".", "/") + "/" + dependency.artifactId() + "/" + dependency.version();
+            systemPath = dependency.groupId().replace(".", "/") + "/" + dependency.artifactId() + "/" + dependency.version() + "/";
         } else {
             systemPath = systemPath.replace("../", "").replace("..\\", "");
+            if (!systemPath.endsWith(dependency.type()) && systemPath.endsWith("/")) {
+                systemPath += "/";
+            }
         }
 
         if (!systemPath.endsWith(dependency.type())) {

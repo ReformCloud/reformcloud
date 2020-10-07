@@ -25,7 +25,6 @@
 package systems.reformcloud.reformcloud2.runner.instrumentation;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.runner.util.JarFileDirectoryStreamFilter;
 
 import java.io.IOException;
 import java.lang.instrument.Instrumentation;
@@ -47,14 +46,23 @@ public final class RunnerPremain {
             throw new RuntimeException("Unable to parse runtime libs path");
         }
 
-        try (DirectoryStream<Path> stream = Files.newDirectoryStream(path, new JarFileDirectoryStreamFilter())) {
+        try {
             instrumentation.appendToSystemClassLoaderSearch(new JarFile(System.getProperty("reformcloud.process.path")));
+            walkFileTree(path, instrumentation);
+        } catch (IOException exception) {
+            throw new RuntimeException("Unable to load dependencies");
+        }
+    }
 
+    private static void walkFileTree(@NotNull Path start, @NotNull Instrumentation instrumentation) throws IOException {
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(start)) {
             for (Path value : stream) {
-                instrumentation.appendToSystemClassLoaderSearch(new JarFile(value.toFile()));
+                if (Files.isDirectory(value)) {
+                    walkFileTree(value, instrumentation);
+                } else if (value.toString().endsWith(".jar")) {
+                    instrumentation.appendToSystemClassLoaderSearch(new JarFile(value.toFile()));
+                }
             }
-        } catch (final IOException ex) {
-            throw new RuntimeException(ex);
         }
     }
 }
