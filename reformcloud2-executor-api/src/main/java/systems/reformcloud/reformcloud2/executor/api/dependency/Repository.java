@@ -28,9 +28,15 @@ import org.jetbrains.annotations.NotNull;
 
 import java.lang.annotation.*;
 
+/**
+ * Represents a repository from which dependency artifacts can be loaded.
+ *
+ * @author derklaro
+ * @since 7. October 2020
+ */
 @Documented
-@Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
 public @interface Repository {
 
     /**
