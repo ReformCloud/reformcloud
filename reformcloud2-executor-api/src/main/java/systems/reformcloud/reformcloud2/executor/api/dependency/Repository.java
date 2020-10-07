@@ -22,66 +22,38 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.application;
+package systems.reformcloud.reformcloud2.executor.api.dependency;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.utility.name.Nameable;
 
-import java.io.File;
-import java.util.jar.JarEntry;
+import java.lang.annotation.*;
 
-/**
- * Represents a config of an application
- *
- * @see LoadedApplication#getApplicationConfig()
- */
-public interface ApplicationConfig extends Nameable {
+@Documented
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
+public @interface Repository {
 
     /**
-     * @return The version of the application
+     * The id of the represented repository
+     *
+     * @return the id of the represented repository
      */
     @NotNull
-    String getVersion();
+    String id();
 
     /**
-     * @return The author of the application
+     * The name of the represented repository or empty if there is no name for the repository
+     *
+     * @return the name of the represented repository or empty if there is no name for the repository
      */
     @NotNull
-    String getAuthor();
+    String name() default "";
 
     /**
-     * @return The main class of the application
+     * The root url of the repository
+     *
+     * @return the root url of the repository
      */
     @NotNull
-    String getMainClassName();
-
-    /**
-     * @return The description of the application
-     */
-    @NotNull
-    String getDescription();
-
-    /**
-     * @return The website of an application
-     */
-    @NotNull
-    String getWebsite();
-
-    /**
-     * @return The api version which the application is using
-     */
-    @NotNull
-    String getImplementedVersion();
-
-    /**
-     * @return The file from which the application is loaded
-     */
-    @NotNull
-    File getApplicationFile();
-
-    /**
-     * @return The {@link JarEntry} from which the application config is loaded
-     */
-    @NotNull
-    JarEntry getApplicationConfigJarEntry();
+    String url();
 }

@@ -84,6 +84,7 @@
                     <resolveDependenciesOfDependencies>true</resolveDependenciesOfDependencies>
                     <includeOptionalDependencies>false</includeOptionalDependencies>
                     <createParentFiles>true</createParentFiles>
+                    <outputFormat>{5}=>{4} {0}:{1}:{2}</outputFormat>
                 </configuration>
                 <executions>
                     <execution>

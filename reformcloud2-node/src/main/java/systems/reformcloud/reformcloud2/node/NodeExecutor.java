@@ -31,6 +31,7 @@ import systems.reformcloud.reformcloud2.executor.api.ExecutorType;
 import systems.reformcloud.reformcloud2.executor.api.application.ApplicationLoader;
 import systems.reformcloud.reformcloud2.executor.api.base.Conditions;
 import systems.reformcloud.reformcloud2.executor.api.command.CommandManager;
+import systems.reformcloud.reformcloud2.executor.api.dependency.DependencyLoader;
 import systems.reformcloud.reformcloud2.executor.api.event.EventManager;
 import systems.reformcloud.reformcloud2.executor.api.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.groups.template.backend.TemplateBackendManager;
@@ -98,6 +99,8 @@ public final class NodeExecutor extends ExecutorAPI {
 
     private static volatile boolean running = true;
 
+    private final DependencyLoader dependencyLoader;
+
     private final NetworkServer networkServer = new DefaultNetworkServer();
     private final NodeNetworkClient networkClient = new NodeNetworkClient();
 
@@ -121,7 +124,7 @@ public final class NodeExecutor extends ExecutorAPI {
 
     private NodeInformation currentNodeInformation;
 
-    protected NodeExecutor() {
+    protected NodeExecutor(DependencyLoader dependencyLoader) {
         Conditions.isTrue(new File(".").getAbsolutePath().indexOf('!') == -1, "Cannot run ReformCloud in directory with ! in path.");
 
         ExecutorAPI.setInstance(this);
@@ -135,6 +138,7 @@ public final class NodeExecutor extends ExecutorAPI {
             }
         }, "Shutdown-Hook"));
 
+        this.dependencyLoader = dependencyLoader;
         this.registerDefaultServices();
     }
 
@@ -363,6 +367,11 @@ public final class NodeExecutor extends ExecutorAPI {
     @Override
     public ServiceRegistry getServiceRegistry() {
         return this.serviceRegistry;
+    }
+
+    @Override
+    public @NotNull DependencyLoader getDependencyLoader() {
+        return this.dependencyLoader;
     }
 
     @Override

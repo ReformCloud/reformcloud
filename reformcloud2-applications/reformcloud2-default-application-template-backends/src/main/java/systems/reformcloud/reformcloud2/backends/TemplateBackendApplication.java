@@ -27,22 +27,17 @@ package systems.reformcloud.reformcloud2.backends;
 import systems.reformcloud.reformcloud2.backends.ftp.FTPTemplateBackend;
 import systems.reformcloud.reformcloud2.backends.sftp.SFTPTemplateBackend;
 import systems.reformcloud.reformcloud2.backends.url.URLTemplateBackend;
+import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.application.api.Application;
-import systems.reformcloud.reformcloud2.executor.api.base.Conditions;
-import systems.reformcloud.reformcloud2.executor.api.dependency.util.DependencyParser;
-
-import java.net.URL;
-import java.util.HashMap;
+import systems.reformcloud.reformcloud2.shared.dependency.DependencyFileLoader;
 
 public class TemplateBackendApplication extends Application {
 
     @Override
     public void onLoad() {
-        DependencyParser.getAllDependencies("dependencies.txt", new HashMap<>(), TemplateBackendApplication.class.getClassLoader()).forEach(e -> {
-            URL dependencyURL = TemplateBackendApplication.this.getDependencyLoader().loadDependency(e);
-            Conditions.nonNull(dependencyURL, "Dependency load for " + e.getArtifactID() + " failed");
-            TemplateBackendApplication.this.getDependencyLoader().addDependency(dependencyURL);
-        });
+        ExecutorAPI.getInstance().getDependencyLoader().load(
+            DependencyFileLoader.collectDependenciesFromFile(TemplateBackendApplication.class.getClassLoader().getResourceAsStream("dependencies.txt"))
+        );
 
         FTPTemplateBackend.load(this.getDataFolder().getPath());
         SFTPTemplateBackend.load(this.getDataFolder().getPath());

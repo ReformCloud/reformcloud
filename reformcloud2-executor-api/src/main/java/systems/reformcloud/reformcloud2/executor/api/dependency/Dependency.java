@@ -25,56 +25,76 @@
 package systems.reformcloud.reformcloud2.executor.api.dependency;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.dependency.repo.Repository;
 
-import java.nio.file.Path;
+import java.lang.annotation.*;
 
 /**
- * Represents an dependency of the cloud system
+ * Represents a dependency which can be loaded dynamically in the runtime.
  *
- * @see DependencyLoader#loadDependency(Dependency)
+ * @author derklaro
+ * @since 7. October 2020
  */
-public interface Dependency {
+@Documented
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface Dependency {
 
     /**
-     * @return The repository of the dependency
+     * The group id of this dependency artifact
+     *
+     * @return the group id of this dependency artifact
      */
     @NotNull
-    Repository getRepository();
+    String groupId();
 
     /**
-     * @return The groupID of the dependency
+     * The artifact id of this dependency
+     *
+     * @return the artifact id of this dependency
      */
     @NotNull
-    String getGroupID();
+    String artifactId();
 
     /**
-     * @return The artifactID of the dependency
+     * The version of this dependency artifact
+     *
+     * @return the version of this dependency artifact
      */
     @NotNull
-    String getArtifactID();
+    String version();
 
     /**
-     * @return The version of the dependency
+     * Indicates that this dependency is optional and there is no need to load it. This means if we fail to download
+     * this dependency the loading process will not be interrupted.
+     *
+     * @return if this dependency is optional
+     */
+    boolean optional() default false;
+
+    /**
+     * Defines the type of this dependency, this defaults to {@code jar}. This defines the file extension of this file.
+     * Some examples are {@code jar} or {@code war}. This means the dependency artifact is loaded
+     * using {@link #artifactId()}.{@code jar}.
+     *
+     * @return The file extension type of this dependency.
      */
     @NotNull
-    String getVersion();
+    String type() default "jar";
 
     /**
-     * @return The path where the dependency is
-     * a) saved
-     * b) should be saved to
+     * Represents the system path where the dependency is copied to in runtime. This path does not allow any {@code ../} and
+     * {@code ..\} operations. If the path is empty (default case) the system path will be defined automatically.
+     *
+     * @return the system path this dependency will be located in
      */
     @NotNull
-    Path getPath();
+    String systemPath() default "";
 
     /**
-     * Prepares the dependency if an update is available
+     * The repository in which this dependency is located.
+     *
+     * @return the repository in which this dependency is located
      */
-    void prepareIfUpdate();
-
-    /**
-     * Downloads the dependency
-     */
-    void download();
+    @NotNull
+    Repository repository();
 }
