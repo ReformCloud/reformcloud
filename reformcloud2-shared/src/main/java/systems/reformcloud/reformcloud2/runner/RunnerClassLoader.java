@@ -22,27 +22,23 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.dependency.repo;
+package systems.reformcloud.reformcloud2.runner;
 
-import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.dependency.Dependency;
+import java.net.URL;
+import java.net.URLClassLoader;
 
-/**
- * Represents an dependency remote repository
- *
- * @see Dependency#getRepository()
- */
-public interface Repository {
+public final class RunnerClassLoader extends URLClassLoader {
 
-    /**
-     * @return The name of the repository
-     */
-    @NotNull
-    String getName();
+    static {
+        ClassLoader.registerAsParallelCapable();
+    }
 
-    /**
-     * @return The url of the repository
-     */
-    @NotNull
-    String getURL();
+    public RunnerClassLoader(URL[] urls) {
+        super(urls, ClassLoader.getSystemClassLoader());
+    }
+
+    @Override
+    public void addURL(URL url) {
+        super.addURL(url);
+    }
 }

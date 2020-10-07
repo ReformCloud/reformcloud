@@ -25,49 +25,56 @@
 package systems.reformcloud.reformcloud2.executor.api.dependency;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import systems.reformcloud.reformcloud2.runner.RunnerClassLoader;
+import org.jetbrains.annotations.UnmodifiableView;
 
-import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.Collection;
 
-public abstract class DependencyLoader {
-
-    public static void doLoad(@NotNull ClassLoader classLoader) {
-        DependencyLoader dependencyLoader = new DefaultDependencyLoader();
-        dependencyLoader.loadDependencies(classLoader);
-        dependencyLoader.addDependencies();
-    }
+/**
+ * A wrapper which can automatically detect and load dependencies in runtime.
+ *
+ * @author derklaro
+ * @since 7. October 2020
+ */
+public interface DependencyLoader {
 
     /**
-     * Appends an url to the class loader search
+     * Loads all provided dependencies.
      *
-     * @param url The url which should be appended
+     * @param dependencies The dependencies which should get loaded
      */
-    void addURL(@NotNull URL url) {
-        RunnerClassLoader urlClassLoader = (RunnerClassLoader) Thread.currentThread().getContextClassLoader();
-        urlClassLoader.addURL(url);
-    }
-
-    public abstract void loadDependencies(@NotNull ClassLoader classLoader);
+    void load(@NotNull Collection<Dependency> dependencies);
 
     /**
-     * Adds all dependencies to the class loader search
-     */
-    public abstract void addDependencies();
-
-    /**
-     * Loads a specific dependency
+     * Detects all {@link Dependency} annotations of a class and loads them.
      *
-     * @param dependency The dependency which should be loaded
-     * @return The file place of the dependency ad {@link URL}
+     * @param clazz the class to detect the dependencies of
      */
-    @Nullable
-    public abstract URL loadDependency(@NotNull Dependency dependency);
+    void detectAndLoad(@NotNull Class<?> clazz);
 
     /**
-     * Adds the dependency location to the class loader search
+     * Detects all {@link Dependency} annotations of a class and loads them.
      *
-     * @param depend The {@link URL} to the place of the dependency
+     * @param clazz the class to detect the dependencies of
+     * @see #detectAndLoad(Class)
      */
-    public abstract void addDependency(@NotNull URL depend);
+    void detectAndLoad(@NotNull Object clazz);
+
+    /**
+     * Detects all dependencies a class is annotated with.
+     *
+     * @param clazz the class to detect the dependencies of
+     * @return a collection of all detected dependencies
+     */
+    @NotNull
+    @UnmodifiableView
+    Collection<Dependency> detectDependencies(@NotNull Class<?> clazz);
+
+    /**
+     * Get the context class loader to load the dependencies from.
+     *
+     * @return the context class loader used to load dependencies.
+     */
+    @NotNull
+    URLClassLoader getContextClassLoader();
 }

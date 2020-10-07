@@ -24,18 +24,10 @@
  */
 package systems.reformcloud.reformcloud2.file;
 
-import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.application.api.Application;
-import systems.reformcloud.reformcloud2.executor.api.base.Conditions;
-import systems.reformcloud.reformcloud2.executor.api.dependency.repo.DefaultRepositories;
-import systems.reformcloud.reformcloud2.executor.api.dependency.repo.Repository;
-import systems.reformcloud.reformcloud2.executor.api.dependency.util.DependencyParser;
 import systems.reformcloud.reformcloud2.executor.api.provider.DatabaseProvider;
-
-import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
+import systems.reformcloud.reformcloud2.shared.dependency.DependencyFileLoader;
 
 public class FileDatabase extends Application {
 
@@ -43,11 +35,9 @@ public class FileDatabase extends Application {
 
     @Override
     public void onLoad() {
-        DependencyParser.getAllDependencies("dependencies.txt", this.prepareRepositoryGetter(), FileDatabase.class.getClassLoader()).forEach(e -> {
-            URL dependencyURL = FileDatabase.this.getDependencyLoader().loadDependency(e);
-            Conditions.nonNull(dependencyURL, "Dependency load for " + e.getArtifactID() + " failed");
-            FileDatabase.this.getDependencyLoader().addDependency(dependencyURL);
-        });
+        ExecutorAPI.getInstance().getDependencyLoader().load(
+            DependencyFileLoader.collectDependenciesFromFile(FileDatabase.class.getClassLoader().getResourceAsStream("dependencies.txt"))
+        );
 
         this.before = ExecutorAPI.getInstance().getDatabaseProvider();
         ExecutorAPI.getInstance().getServiceRegistry().setProvider(DatabaseProvider.class, new FileDatabaseProvider(), false, true);
@@ -56,13 +46,5 @@ public class FileDatabase extends Application {
     @Override
     public void onDisable() {
         ExecutorAPI.getInstance().getServiceRegistry().setProvider(DatabaseProvider.class, this.before, false, true);
-    }
-
-    @NotNull
-    private Map<String, Repository> prepareRepositoryGetter() {
-        Map<String, Repository> out = new HashMap<>();
-        out.put("com.github.derklaro.project-deer:project-deer-executor", DefaultRepositories.JITPACK);
-        out.put("com.github.derklaro.project-deer:project-deer-api", DefaultRepositories.JITPACK);
-        return out;
     }
 }

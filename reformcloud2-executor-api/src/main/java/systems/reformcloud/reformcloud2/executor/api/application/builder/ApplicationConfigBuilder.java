@@ -26,11 +26,8 @@ package systems.reformcloud.reformcloud2.executor.api.application.builder;
 
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.application.ApplicationConfig;
-import systems.reformcloud.reformcloud2.executor.api.dependency.Dependency;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.jar.JarEntry;
 
 public final class ApplicationConfigBuilder {
@@ -41,7 +38,6 @@ public final class ApplicationConfigBuilder {
     private final String version;
     private final File appFile;
     private final JarEntry descFile;
-    private final List<Dependency> dependencies = new ArrayList<>();
     private String description = "A reformcloud application";
 
     private String website = "https://reformcloud.systems";
@@ -55,14 +51,6 @@ public final class ApplicationConfigBuilder {
         this.version = version;
         this.appFile = appFile;
         this.descFile = descFile;
-    }
-
-    public ApplicationConfigBuilder withDependencies(List<Dependency> dependencies) {
-        if (dependencies != null) {
-            this.dependencies.addAll(dependencies);
-        }
-
-        return this;
     }
 
     public ApplicationConfigBuilder withDescription(String description) {
@@ -108,12 +96,6 @@ public final class ApplicationConfigBuilder {
             @Override
             public String getMainClassName() {
                 return ApplicationConfigBuilder.this.main;
-            }
-
-            @NotNull
-            @Override
-            public Dependency[] getDependencies() {
-                return ApplicationConfigBuilder.this.dependencies.toArray(new Dependency[0]);
             }
 
             @NotNull
