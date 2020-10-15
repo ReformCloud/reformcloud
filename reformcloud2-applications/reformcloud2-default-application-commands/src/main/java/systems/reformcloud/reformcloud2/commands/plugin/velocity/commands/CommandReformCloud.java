@@ -25,6 +25,7 @@
 package systems.reformcloud.reformcloud2.commands.plugin.velocity.commands;
 
 import com.velocitypowered.api.command.SimpleCommand;
+import net.kyori.adventure.identity.Identity;
 import org.jetbrains.annotations.NotNull;
 import systems.refomcloud.reformcloud2.embedded.Embedded;
 import systems.refomcloud.reformcloud2.embedded.plugin.velocity.VelocityExecutor;
@@ -44,11 +45,11 @@ public class CommandReformCloud implements SimpleCommand {
     public void execute(Invocation invocation) {
         String prefix = Embedded.getInstance().getIngameMessages().getPrefix();
         InternalReformCloudCommand.execute(
-                message -> invocation.source().sendMessage(VelocityExecutor.SERIALIZER.deserialize(message)),
-                invocation.arguments(),
-                prefix.endsWith(" ") ? prefix : prefix + " ",
-                this.getCommandSuccessMessage(),
-                this.aliases.isEmpty() ? "rc" : this.aliases.get(0)
+            message -> invocation.source().sendMessage(Identity.nil(), VelocityExecutor.SERIALIZER.deserialize(message)),
+            invocation.arguments(),
+            prefix.endsWith(" ") ? prefix : prefix + " ",
+            this.getCommandSuccessMessage(),
+            this.aliases.isEmpty() ? "rc" : this.aliases.get(0)
         );
     }
 

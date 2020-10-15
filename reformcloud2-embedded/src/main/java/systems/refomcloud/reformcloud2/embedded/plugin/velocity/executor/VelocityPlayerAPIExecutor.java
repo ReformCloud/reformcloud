@@ -25,6 +25,7 @@
 package systems.refomcloud.reformcloud2.embedded.plugin.velocity.executor;
 
 import com.velocitypowered.api.proxy.ProxyServer;
+import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.title.Title;
 import org.jetbrains.annotations.NotNull;
 import systems.refomcloud.reformcloud2.embedded.executor.PlayerAPIExecutor;
@@ -43,7 +44,7 @@ public class VelocityPlayerAPIExecutor extends PlayerAPIExecutor {
 
     @Override
     public void executeSendMessage(UUID player, String message) {
-        this.proxyServer.getPlayer(player).ifPresent(val -> val.sendMessage(VelocityExecutor.SERIALIZER.deserialize(message)));
+        this.proxyServer.getPlayer(player).ifPresent(val -> val.sendMessage(Identity.nil(), VelocityExecutor.SERIALIZER.deserialize(message)));
     }
 
     @Override

@@ -25,6 +25,7 @@
 package systems.reformcloud.reforncloud2.notifications.velocity.listener;
 
 import com.velocitypowered.api.proxy.ProxyServer;
+import net.kyori.adventure.identity.Identity;
 import systems.refomcloud.reformcloud2.embedded.Embedded;
 import systems.refomcloud.reformcloud2.embedded.plugin.velocity.VelocityExecutor;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
@@ -55,8 +56,8 @@ public final class ProcessListener {
     @Listener
     public void handle(final ProcessRegisterEvent event) {
         this.publishNotification(
-                Embedded.getInstance().getIngameMessages().getProcessRegistered(),
-                event.getProcessInformation().getProcessDetail().getName()
+            Embedded.getInstance().getIngameMessages().getProcessRegistered(),
+            event.getProcessInformation().getProcessDetail().getName()
         );
     }
 
@@ -67,8 +68,8 @@ public final class ProcessListener {
         }
 
         this.publishNotification(
-                Embedded.getInstance().getIngameMessages().getProcessStopped(),
-                event.getProcessInformation().getProcessDetail().getName()
+            Embedded.getInstance().getIngameMessages().getProcessStopped(),
+            event.getProcessInformation().getProcessDetail().getName()
         );
         this.registered.remove(event.getProcessInformation().getProcessDetail().getProcessUniqueID());
     }
@@ -80,18 +81,18 @@ public final class ProcessListener {
         if (old != null) {
             if (!old.getNetworkInfo().isConnected() && event.getProcessInformation().getNetworkInfo().isConnected()) {
                 this.publishNotification(
-                        Embedded.getInstance().getIngameMessages().getProcessConnected(),
-                        event.getProcessInformation().getProcessDetail().getName()
+                    Embedded.getInstance().getIngameMessages().getProcessConnected(),
+                    event.getProcessInformation().getProcessDetail().getName()
                 );
             } else if (!old.getProcessDetail().getProcessState().isStartedOrOnline() && event.getProcessInformation().getProcessDetail().getProcessState().isStartedOrOnline()) {
                 this.publishNotification(
-                        Embedded.getInstance().getIngameMessages().getProcessStarted(),
-                        event.getProcessInformation().getProcessDetail().getName()
+                    Embedded.getInstance().getIngameMessages().getProcessStarted(),
+                    event.getProcessInformation().getProcessDetail().getName()
                 );
             } else if (state != old.getProcessDetail().getProcessState() && (state == ProcessState.RESTARTING || state == ProcessState.PAUSED)) {
                 this.publishNotification(
-                        Embedded.getInstance().getIngameMessages().getProcessStopped(),
-                        event.getProcessInformation().getProcessDetail().getName()
+                    Embedded.getInstance().getIngameMessages().getProcessStopped(),
+                    event.getProcessInformation().getProcessDetail().getName()
                 );
             }
 
@@ -100,13 +101,13 @@ public final class ProcessListener {
 
         if (state.isStartedOrOnline()) {
             this.publishNotification(
-                    Embedded.getInstance().getIngameMessages().getProcessStarted(),
-                    event.getProcessInformation().getProcessDetail().getName()
+                Embedded.getInstance().getIngameMessages().getProcessStarted(),
+                event.getProcessInformation().getProcessDetail().getName()
             );
         } else if (state == ProcessState.RESTARTING || state == ProcessState.PAUSED) {
             this.publishNotification(
-                    Embedded.getInstance().getIngameMessages().getProcessStopped(),
-                    event.getProcessInformation().getProcessDetail().getName()
+                Embedded.getInstance().getIngameMessages().getProcessStopped(),
+                event.getProcessInformation().getProcessDetail().getName()
             );
         }
     }
@@ -114,8 +115,8 @@ public final class ProcessListener {
     private void publishNotification(String message, Object... replacements) {
         String replacedMessage = Embedded.getInstance().getIngameMessages().format(message, replacements);
         this.proxyServer.getAllPlayers()
-                .stream()
-                .filter(e -> e.hasPermission("reformcloud.notify"))
-                .forEach(player -> player.sendMessage(VelocityExecutor.SERIALIZER.deserialize(replacedMessage)));
+            .stream()
+            .filter(e -> e.hasPermission("reformcloud.notify"))
+            .forEach(player -> player.sendMessage(Identity.nil(), VelocityExecutor.SERIALIZER.deserialize(replacedMessage)));
     }
 }

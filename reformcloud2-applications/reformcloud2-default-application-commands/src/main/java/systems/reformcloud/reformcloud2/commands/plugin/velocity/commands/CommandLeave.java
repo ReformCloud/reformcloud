@@ -27,6 +27,7 @@ package systems.reformcloud.reformcloud2.commands.plugin.velocity.commands;
 import com.velocitypowered.api.command.SimpleCommand;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
+import net.kyori.adventure.identity.Identity;
 import org.jetbrains.annotations.NotNull;
 import systems.refomcloud.reformcloud2.embedded.Embedded;
 import systems.refomcloud.reformcloud2.embedded.controller.ProxyServerController;
@@ -59,42 +60,42 @@ public class CommandLeave implements SimpleCommand {
 
         Player player = (Player) invocation.source();
         if (!player.getCurrentServer().isPresent()) {
-            player.sendMessage(VelocityExecutor.SERIALIZER.deserialize(Embedded.getInstance().getIngameMessages().format(
-                    Embedded.getInstance().getIngameMessages().getNoHubServerAvailable()
+            player.sendMessage(Identity.nil(), VelocityExecutor.SERIALIZER.deserialize(Embedded.getInstance().getIngameMessages().format(
+                Embedded.getInstance().getIngameMessages().getNoHubServerAvailable()
             )));
             return;
         }
 
         if (ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ProxyServerController.class).getCachedLobbyServers().stream().anyMatch(
-                e -> e.getProcessDetail().getName().equals(player.getCurrentServer().get().getServerInfo().getName())
+            e -> e.getProcessDetail().getName().equals(player.getCurrentServer().get().getServerInfo().getName())
         )) {
-            player.sendMessage(VelocityExecutor.SERIALIZER.deserialize(Embedded.getInstance().getIngameMessages().format(
-                    Embedded.getInstance().getIngameMessages().getAlreadyConnectedToHub()
+            player.sendMessage(Identity.nil(), VelocityExecutor.SERIALIZER.deserialize(Embedded.getInstance().getIngameMessages().format(
+                Embedded.getInstance().getIngameMessages().getAlreadyConnectedToHub()
             )));
             return;
         }
 
         SharedPlayerFallbackFilter.filterFallback(
-                player.getUniqueId(),
-                ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ProxyServerController.class).getCachedLobbyServers(),
-                player::hasPermission,
-                VelocityFallbackExtraFilter.INSTANCE,
-                null // ignored because we are sure the player is not on a lobby
+            player.getUniqueId(),
+            ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ProxyServerController.class).getCachedLobbyServers(),
+            player::hasPermission,
+            VelocityFallbackExtraFilter.INSTANCE,
+            null // ignored because we are sure the player is not on a lobby
         ).ifPresent(processInformation -> {
             Optional<RegisteredServer> lobby = VelocityExecutor.getInstance().getProxyServer().getServer(processInformation.getProcessDetail().getName());
             if (!lobby.isPresent()) {
-                player.sendMessage(VelocityExecutor.SERIALIZER.deserialize(Embedded.getInstance().getIngameMessages().format(
-                        Embedded.getInstance().getIngameMessages().getNoHubServerAvailable()
+                player.sendMessage(Identity.nil(), VelocityExecutor.SERIALIZER.deserialize(Embedded.getInstance().getIngameMessages().format(
+                    Embedded.getInstance().getIngameMessages().getNoHubServerAvailable()
                 )));
                 return;
             }
 
-            player.sendMessage(VelocityExecutor.SERIALIZER.deserialize(Embedded.getInstance().getIngameMessages().format(
-                    Embedded.getInstance().getIngameMessages().getConnectingToHub(), processInformation.getProcessDetail().getName()
+            player.sendMessage(Identity.nil(), VelocityExecutor.SERIALIZER.deserialize(Embedded.getInstance().getIngameMessages().format(
+                Embedded.getInstance().getIngameMessages().getConnectingToHub(), processInformation.getProcessDetail().getName()
             )));
             player.createConnectionRequest(lobby.get()).fireAndForget();
-        }).ifEmpty(v -> player.sendMessage(VelocityExecutor.SERIALIZER.deserialize(Embedded.getInstance().getIngameMessages().format(
-                Embedded.getInstance().getIngameMessages().getNoHubServerAvailable()
+        }).ifEmpty(v -> player.sendMessage(Identity.nil(), VelocityExecutor.SERIALIZER.deserialize(Embedded.getInstance().getIngameMessages().format(
+            Embedded.getInstance().getIngameMessages().getNoHubServerAvailable()
         ))));
     }
 }

@@ -124,6 +124,7 @@ public class BukkitSignSystemAdapter extends SharedSignSystemAdapter<Sign> {
         this.run(super::cleanSigns);
     }
 
+    @SuppressWarnings("deprecation") // Not happy with it but it's the backport to 1.8 :/
     private void changeBlockBehind(@NotNull Sign sign, @NotNull SignSubLayout layout) {
         BlockState blockState = sign.getLocation().getBlock().getState();
         BlockFace blockFace = this.getSignFacing(blockState);
@@ -194,16 +195,16 @@ public class BukkitSignSystemAdapter extends SharedSignSystemAdapter<Sign> {
                 }
 
                 location.getWorld()
-                        .getNearbyEntities(location, distance, distance, distance)
-                        .stream()
-                        .filter(e -> e instanceof Player && !e.hasPermission(super.signConfig.getKnockBackBypassPermission()))
-                        .forEach(e -> e.setVelocity(e.getLocation()
-                                .toVector()
-                                .subtract(location.toVector())
-                                .normalize()
-                                .multiply(super.signConfig.getKnockBackStrength())
-                                .setY(0.2D)
-                        ));
+                    .getNearbyEntities(location, distance, distance, distance)
+                    .stream()
+                    .filter(e -> e instanceof Player && !e.hasPermission(super.signConfig.getKnockBackBypassPermission()))
+                    .forEach(e -> e.setVelocity(e.getLocation()
+                        .toVector()
+                        .subtract(location.toVector())
+                        .normalize()
+                        .multiply(super.signConfig.getKnockBackStrength())
+                        .setY(0.2D)
+                    ));
             }
         }, 20, 5);
     }

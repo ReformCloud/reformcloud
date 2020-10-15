@@ -120,6 +120,7 @@ public class EmptyProxiedPlayer implements ProxiedPlayer {
     }
 
     @Override
+    @Deprecated
     public String getUUID() {
         return this.pendingConnection.getUUID();
     }
@@ -239,6 +240,7 @@ public class EmptyProxiedPlayer implements ProxiedPlayer {
     }
 
     @Override
+    @Deprecated
     public InetSocketAddress getAddress() {
         return this.pendingConnection.getAddress();
     }
