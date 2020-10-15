@@ -166,7 +166,7 @@
                     </excludedScopes>
 
                     <excludes>
-                        <exclude>*:annotations-java5</exclude>
+                        <exclude>org.jetbrains:annotations</exclude>
                     </excludes>
 
                     <outputFileName>
