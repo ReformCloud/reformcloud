@@ -26,16 +26,13 @@ package systems.reformcloud.reformcloud2.mysql;
 
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.application.api.Application;
-import systems.reformcloud.reformcloud2.executor.api.base.Conditions;
 import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
-import systems.reformcloud.reformcloud2.executor.api.dependency.util.DependencyParser;
 import systems.reformcloud.reformcloud2.executor.api.provider.DatabaseProvider;
 import systems.reformcloud.reformcloud2.mysql.config.MySQLDatabaseConfig;
+import systems.reformcloud.reformcloud2.shared.dependency.DependencyFileLoader;
 
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashMap;
 
 public class MySQLApplication extends Application {
 
@@ -43,11 +40,9 @@ public class MySQLApplication extends Application {
 
     @Override
     public void onLoad() {
-        DependencyParser.getAllDependencies("dependencies.txt", new HashMap<>(), MySQLApplication.class.getClassLoader()).forEach(e -> {
-            URL dependencyURL = MySQLApplication.this.getDependencyLoader().loadDependency(e);
-            Conditions.nonNull(dependencyURL, "Dependency load for " + e.getArtifactID() + " failed");
-            MySQLApplication.this.getDependencyLoader().addDependency(dependencyURL);
-        });
+        ExecutorAPI.getInstance().getDependencyLoader().load(
+            DependencyFileLoader.collectDependenciesFromFile(MySQLApplication.class.getClassLoader().getResourceAsStream("dependencies.txt"))
+        );
 
         this.previous = ExecutorAPI.getInstance().getDatabaseProvider();
         Path configPath = this.getDataFolder().toPath().resolve("config.json");

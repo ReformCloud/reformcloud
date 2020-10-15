@@ -22,26 +22,28 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.runner;
+package systems.reformcloud.reformcloud2.executor.api.dependency;
 
-import java.net.URL;
-import java.net.URLClassLoader;
+import org.jetbrains.annotations.NonNls;
+
+import java.lang.annotation.*;
 
 /**
- * This class is for internal use only!
+ * Represents a collection of dependencies which should get loaded
+ *
+ * @author derklaro
+ * @since 7. October 2020
  */
-public final class RunnerClassLoader extends URLClassLoader {
+@Documented
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface Dependencies {
 
-    static {
-        ClassLoader.registerAsParallelCapable();
-    }
-
-    public RunnerClassLoader(URL[] urls) {
-        super(urls, ClassLoader.getSystemClassLoader());
-    }
-
-    @Override
-    public void addURL(URL url) {
-        super.addURL(url);
-    }
+    /**
+     * The dependencies which should get loaded
+     *
+     * @return the dependencies which should get loaded
+     */
+    @NonNls
+    Dependency[] value();
 }

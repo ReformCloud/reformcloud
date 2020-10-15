@@ -27,6 +27,7 @@ package systems.reformcloud.reformcloud2.executor.api;
 import io.netty.util.ResourceLeakDetector;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.VisibleForTesting;
+import systems.reformcloud.reformcloud2.executor.api.dependency.DependencyLoader;
 import systems.reformcloud.reformcloud2.executor.api.provider.*;
 import systems.reformcloud.reformcloud2.executor.api.registry.service.ServiceRegistry;
 
@@ -126,6 +127,12 @@ public abstract class ExecutorAPI {
      */
     @NotNull
     public abstract ServiceRegistry getServiceRegistry();
+
+    /**
+     * @return The dependency loader which was used to inject the needed dependencies
+     */
+    @NotNull
+    public abstract DependencyLoader getDependencyLoader();
 
     /**
      * @return If the current cloud instance is ready

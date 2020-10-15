@@ -21,7 +21,7 @@
     <dependencies>
         <dependency>
             <groupId>systems.reformcloud.reformcloud2</groupId>
-            <artifactId>reformcloud2-executor-api</artifactId>
+            <artifactId>reformcloud2-node</artifactId>
             <version>2.10.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
@@ -46,7 +46,7 @@
         <dependency>
             <groupId>commons-net</groupId>
             <artifactId>commons-net</artifactId>
-            <version>3.7</version>
+            <version>3.7.1</version>
             <scope>provided</scope>
         </dependency>
 
@@ -71,7 +71,7 @@
                     </excludedScopes>
 
                     <excludes>
-                        <exclude>*:reformcloud2-executor-api</exclude>
+                        <exclude>systems.reformcloud.reformcloud2:*</exclude>
                         <exclude>*:gson</exclude>
                         <exclude>org.jetbrains:*</exclude>
                     </excludes>
@@ -84,6 +84,7 @@
                     <resolveDependenciesOfDependencies>true</resolveDependenciesOfDependencies>
                     <includeOptionalDependencies>false</includeOptionalDependencies>
                     <createParentFiles>true</createParentFiles>
+                    <outputFormat>{5}=>{4} {0}:{1}:{2}</outputFormat>
                 </configuration>
                 <executions>
                     <execution>

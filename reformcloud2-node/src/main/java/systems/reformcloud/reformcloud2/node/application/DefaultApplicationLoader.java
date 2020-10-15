@@ -24,7 +24,6 @@
  */
 package systems.reformcloud.reformcloud2.node.application;
 
-import com.google.gson.reflect.TypeToken;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
@@ -38,9 +37,6 @@ import systems.reformcloud.reformcloud2.executor.api.application.builder.Applica
 import systems.reformcloud.reformcloud2.executor.api.application.loader.AppClassLoader;
 import systems.reformcloud.reformcloud2.executor.api.application.updater.ApplicationUpdateRepository;
 import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
-import systems.reformcloud.reformcloud2.executor.api.dependency.DefaultDependencyLoader;
-import systems.reformcloud.reformcloud2.executor.api.dependency.Dependency;
-import systems.reformcloud.reformcloud2.executor.api.dependency.DependencyLoader;
 import systems.reformcloud.reformcloud2.executor.api.event.EventManager;
 import systems.reformcloud.reformcloud2.executor.api.io.DownloadHelper;
 import systems.reformcloud.reformcloud2.executor.api.io.IOUtils;
@@ -58,7 +54,10 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.jar.JarEntry;
@@ -68,7 +67,6 @@ import java.util.stream.Collectors;
 public final class DefaultApplicationLoader implements ApplicationLoader {
 
     private static final Path APPLICATION_DIRECTORY = Paths.get("reformcloud", "applications");
-    private static final DependencyLoader APP_LOADER = new DefaultDependencyLoader();
 
     private final Map<String, Application> loadedApplications = new ConcurrentHashMap<>();
     private final Collection<ApplicationConfig> toLoad = new CopyOnWriteArrayList<>();
@@ -156,8 +154,8 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
     @Override
     public boolean doSpecificApplicationUninstall(@NotNull LoadedApplication loadedApplication) {
         return Streams.filterToReference(
-                this.loadedApplications.values(),
-                e -> e.getApplication().getName().equals(loadedApplication.getName())
+            this.loadedApplications.values(),
+            e -> e.getApplication().getName().equals(loadedApplication.getName())
         ).ifPresent(this::disableApplication).isPresent();
     }
 
@@ -190,19 +188,17 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
                 JsonConfiguration jsonConfiguration = new JsonConfiguration(inputStream);
 
                 ApplicationConfig applicationConfig = new ApplicationConfigBuilder(
-                        jsonConfiguration.getString("name"),
-                        jsonConfiguration.getString("main"),
-                        jsonConfiguration.getString("author"),
-                        jsonConfiguration.getString("version"),
-                        path.toFile(),
-                        applicationConfigEntry
+                    jsonConfiguration.getString("name"),
+                    jsonConfiguration.getString("main"),
+                    jsonConfiguration.getString("author"),
+                    jsonConfiguration.getString("version"),
+                    path.toFile(),
+                    applicationConfigEntry
                 )
-                        .withDependencies(jsonConfiguration.getOrDefault("dependencies", new TypeToken<List<Dependency>>() {
-                        }.getType(), new ArrayList<>()))
-                        .withDescription(jsonConfiguration.getOrDefault("description", (String) null))
-                        .withWebsite(jsonConfiguration.getOrDefault("website", (String) null))
-                        .withImplementedVersion(jsonConfiguration.getOrDefault("impl-version", (String) null))
-                        .create();
+                    .withDescription(jsonConfiguration.getOrDefault("description", (String) null))
+                    .withWebsite(jsonConfiguration.getOrDefault("website", (String) null))
+                    .withImplementedVersion(jsonConfiguration.getOrDefault("impl-version", (String) null))
+                    .create();
 
                 if (this.getApplication(applicationConfig.getName()).isPresent()) {
                     System.err.println("Detected duplicate application " + applicationConfig.getName() + " @ " + path.toString());
@@ -229,20 +225,11 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
     @Nullable
     private Application installApplication(@NotNull ApplicationConfig applicationConfig) {
         try {
-            if (applicationConfig.getDependencies().length != 0) {
-                for (Dependency dependency : applicationConfig.getDependencies()) {
-                    URL dependencyUrl = APP_LOADER.loadDependency(dependency);
-                    if (dependencyUrl == null) {
-                        System.err.println("Unable to resolve dependency " + dependency.getArtifactID() + " for app " + applicationConfig.getName());
-                        return null;
-                    }
-
-                    APP_LOADER.addDependency(dependencyUrl);
-                }
-            }
-
             AppClassLoader loader = new AppClassLoader(new URL[]{applicationConfig.getApplicationFile().toURI().toURL()}, Thread.currentThread().getContextClassLoader());
             Class<?> mainClass = loader.loadClass(applicationConfig.getMainClassName());
+
+            // Load the dependencies which are needed for the application to work
+            ExecutorAPI.getInstance().getDependencyLoader().detectAndLoad(mainClass);
 
             Application instance = (Application) mainClass.getDeclaredConstructor().newInstance();
             System.out.println(LanguageManager.get("successfully-pre-installed-app", applicationConfig.getName(), applicationConfig.getAuthor()));
@@ -303,17 +290,17 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
         String name = fileName.replace("-" + split[split.length - 1], "").replace(".jar", "");
 
         System.out.println(LanguageManager.get(
-                "application-download-update",
-                application.getApplication().getApplicationConfig().getName(),
-                application.getApplication().getApplicationConfig().getVersion(),
-                repository.getUpdate().getNewVersion(),
-                repository.getName(),
-                repository.getUpdate().getDownloadUrl()
+            "application-download-update",
+            application.getApplication().getApplicationConfig().getName(),
+            application.getApplication().getApplicationConfig().getVersion(),
+            repository.getUpdate().getNewVersion(),
+            repository.getName(),
+            repository.getUpdate().getDownloadUrl()
         ));
 
         DownloadHelper.downloadAndDisconnect(
-                repository.getUpdate().getDownloadUrl(),
-                "reformcloud/.update/apps/" + name + "-" + repository.getUpdate().getNewVersion() + ".jar"
+            repository.getUpdate().getDownloadUrl(),
+            "reformcloud/.update/apps/" + name + "-" + repository.getUpdate().getNewVersion() + ".jar"
         );
     }
 }
