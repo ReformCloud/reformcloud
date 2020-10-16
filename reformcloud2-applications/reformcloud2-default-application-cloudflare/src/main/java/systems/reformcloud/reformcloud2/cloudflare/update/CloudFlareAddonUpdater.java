@@ -36,12 +36,11 @@ import java.util.Properties;
 
 public class CloudFlareAddonUpdater extends DefaultApplicationUpdateRepository {
 
+    private final ReformCloudApplication application;
+    private String newVersion;
     public CloudFlareAddonUpdater(ReformCloudApplication application) {
         this.application = application;
     }
-
-    private final ReformCloudApplication application;
-    private String newVersion;
 
     @Override
     public void fetchOrigin() {
@@ -70,6 +69,6 @@ public class CloudFlareAddonUpdater extends DefaultApplicationUpdateRepository {
         }
 
         return new BasicApplicationRemoteUpdate(this.newVersion,
-                "https://dl.reformcloud.systems/addonsv2/reformcloud2-default-application-cloudflare-" + this.newVersion + ".jar");
+            "https://dl.reformcloud.systems/addonsv2/reformcloud2-default-application-cloudflare-" + this.newVersion + ".jar");
     }
 }

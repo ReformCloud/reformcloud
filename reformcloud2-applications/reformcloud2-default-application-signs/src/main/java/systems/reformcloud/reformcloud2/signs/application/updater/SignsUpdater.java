@@ -65,6 +65,6 @@ public class SignsUpdater extends DefaultApplicationUpdateRepository {
         }
 
         return new BasicApplicationRemoteUpdate(this.newVersion,
-                "https://dl.reformcloud.systems/addonsv2/reformcloud2-default-application-signs-" + this.newVersion + ".jar");
+            "https://dl.reformcloud.systems/addonsv2/reformcloud2-default-application-signs-" + this.newVersion + ".jar");
     }
 }

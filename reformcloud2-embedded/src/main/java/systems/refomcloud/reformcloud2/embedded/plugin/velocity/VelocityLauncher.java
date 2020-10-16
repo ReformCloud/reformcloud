@@ -33,15 +33,15 @@ import com.velocitypowered.api.proxy.ProxyServer;
 import systems.reformcloud.reformcloud2.executor.api.language.loading.LanguageLoader;
 
 @Plugin(
-        id = "reformcloud_2_api_executor",
-        name = "ReformCloud2VelocityExecutor",
-        version = "2",
-        description = "The reformcloud executor api",
-        authors = {
-                "derklaro",
-                "ReformCloud-Team"
-        },
-        url = "https://reformcloud.systems"
+    id = "reformcloud_2_api_executor",
+    name = "ReformCloud2VelocityExecutor",
+    version = "2",
+    description = "The reformcloud executor api",
+    authors = {
+        "derklaro",
+        "ReformCloud-Team"
+    },
+    url = "https://reformcloud.systems"
 )
 public final class VelocityLauncher {
 

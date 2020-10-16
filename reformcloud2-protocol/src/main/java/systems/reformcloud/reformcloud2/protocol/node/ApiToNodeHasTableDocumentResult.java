@@ -31,14 +31,14 @@ import systems.reformcloud.reformcloud2.executor.api.network.packet.query.QueryR
 
 public class ApiToNodeHasTableDocumentResult extends QueryResultPacket {
 
+    private boolean has;
+
     public ApiToNodeHasTableDocumentResult() {
     }
 
     public ApiToNodeHasTableDocumentResult(boolean has) {
         this.has = has;
     }
-
-    private boolean has;
 
     public boolean has() {
         return this.has;

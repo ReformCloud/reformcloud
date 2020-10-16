@@ -26,6 +26,11 @@ package systems.reformcloud.reformcloud2.mongo.config;
 
 public class MongoConfig {
 
+    private final String host;
+    private final int port;
+    private final String database;
+    private final String userName;
+    private final String password;
     public MongoConfig(String host, int port, String database, String userName, String password) {
         this.host = host;
         this.port = port;
@@ -33,12 +38,6 @@ public class MongoConfig {
         this.userName = userName;
         this.password = password;
     }
-
-    private final String host;
-    private final int port;
-    private final String database;
-    private final String userName;
-    private final String password;
 
     public String getHost() {
         return this.host;

@@ -61,22 +61,22 @@ public class PermissionGroup implements SerializableObject {
     }
 
     public PermissionGroup(
-            @NotNull Collection<PermissionNode> permissionNodes,
-            @NotNull Map<String, Collection<PermissionNode>> perGroupPermissions,
-            @NotNull Collection<String> subGroups,
-            @NotNull String name,
-            int priority
+        @NotNull Collection<PermissionNode> permissionNodes,
+        @NotNull Map<String, Collection<PermissionNode>> perGroupPermissions,
+        @NotNull Collection<String> subGroups,
+        @NotNull String name,
+        int priority
     ) {
         this(permissionNodes, perGroupPermissions, subGroups, name, priority, false);
     }
 
     public PermissionGroup(
-            @NotNull Collection<PermissionNode> permissionNodes,
-            @NotNull Map<String, Collection<PermissionNode>> perGroupPermissions,
-            @NotNull Collection<String> subGroups,
-            @NotNull String name,
-            int priority,
-            boolean defaultGroup
+        @NotNull Collection<PermissionNode> permissionNodes,
+        @NotNull Map<String, Collection<PermissionNode>> perGroupPermissions,
+        @NotNull Collection<String> subGroups,
+        @NotNull String name,
+        int priority,
+        boolean defaultGroup
     ) {
         this(permissionNodes, perGroupPermissions, subGroups, name, priority, defaultGroup, null, null, null, null, new JsonConfiguration());
     }

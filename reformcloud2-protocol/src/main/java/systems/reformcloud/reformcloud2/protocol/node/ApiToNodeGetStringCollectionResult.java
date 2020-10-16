@@ -33,14 +33,14 @@ import java.util.Collection;
 
 public class ApiToNodeGetStringCollectionResult extends QueryResultPacket {
 
+    private Collection<String> result;
+
     public ApiToNodeGetStringCollectionResult() {
     }
 
     public ApiToNodeGetStringCollectionResult(Collection<String> result) {
         this.result = result;
     }
-
-    private Collection<String> result;
 
     public Collection<String> getResult() {
         return this.result;

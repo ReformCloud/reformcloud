@@ -36,16 +36,15 @@ import java.util.UUID;
 
 public final class DefaultNetworkChannel implements NetworkChannel {
 
-    DefaultNetworkChannel(Channel channel) {
-        this.channel = channel;
-        this.address = (InetSocketAddress) channel.remoteAddress();
-    }
-
     private final Channel channel;
     private final long connectionTime = System.currentTimeMillis();
     private InetSocketAddress address;
     private boolean authenticated;
     private String name;
+    DefaultNetworkChannel(Channel channel) {
+        this.channel = channel;
+        this.address = (InetSocketAddress) channel.remoteAddress();
+    }
 
     @Override
     public void sendPacket(@NotNull Object packet) {
@@ -107,14 +106,14 @@ public final class DefaultNetworkChannel implements NetworkChannel {
         this.channel.close(this.channel.voidPromise());
     }
 
-    @Override
-    public void setName(@NotNull String newName) {
-        this.name = newName;
-    }
-
     @NotNull
     @Override
     public String getName() {
         return this.name == null ? "" : this.name;
+    }
+
+    @Override
+    public void setName(@NotNull String newName) {
+        this.name = newName;
     }
 }

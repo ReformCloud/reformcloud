@@ -40,9 +40,15 @@ import java.util.List;
 
 public class ApiToNodeCreateProcessGroup extends ProtocolPacket {
 
+    private String name;
+    private boolean staticGroup;
+    private boolean lobby;
+    private boolean showId;
+    private List<Template> templates;
+    private PlayerAccessConfiguration playerAccessConfiguration;
+    private StartupConfiguration startupConfiguration;
     public ApiToNodeCreateProcessGroup() {
     }
-
     public ApiToNodeCreateProcessGroup(String name, boolean staticGroup, boolean lobby, boolean showId,
                                        List<Template> templates, PlayerAccessConfiguration playerAccessConfiguration,
                                        StartupConfiguration startupConfiguration) {
@@ -55,14 +61,6 @@ public class ApiToNodeCreateProcessGroup extends ProtocolPacket {
         this.startupConfiguration = startupConfiguration;
     }
 
-    private String name;
-    private boolean staticGroup;
-    private boolean lobby;
-    private boolean showId;
-    private List<Template> templates;
-    private PlayerAccessConfiguration playerAccessConfiguration;
-    private StartupConfiguration startupConfiguration;
-
     @Override
     public int getId() {
         return NetworkUtil.EMBEDDED_BUS + 59;
@@ -71,15 +69,15 @@ public class ApiToNodeCreateProcessGroup extends ProtocolPacket {
     @Override
     public void handlePacketReceive(@NotNull EndpointChannelReader reader, @NotNull NetworkChannel channel) {
         ProcessGroup processGroup = ExecutorAPI.getInstance().getProcessGroupProvider()
-                .createProcessGroup(this.name)
-                .staticGroup(this.staticGroup)
-                .lobby(this.lobby)
-                .showId(this.showId)
-                .templates(this.templates)
-                .playerAccessConfig(this.playerAccessConfiguration)
-                .startupConfiguration(this.startupConfiguration)
-                .createPermanently()
-                .getUninterruptedly();
+            .createProcessGroup(this.name)
+            .staticGroup(this.staticGroup)
+            .lobby(this.lobby)
+            .showId(this.showId)
+            .templates(this.templates)
+            .playerAccessConfig(this.playerAccessConfiguration)
+            .startupConfiguration(this.startupConfiguration)
+            .createPermanently()
+            .getUninterruptedly();
         channel.sendQueryResult(this.getQueryUniqueID(), new ApiToNodeCreateProcessGroupResult(processGroup));
     }
 

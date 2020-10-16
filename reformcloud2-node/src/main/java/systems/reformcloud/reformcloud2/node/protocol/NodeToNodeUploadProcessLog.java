@@ -36,14 +36,14 @@ import java.util.UUID;
 
 public class NodeToNodeUploadProcessLog extends ProtocolPacket {
 
+    private UUID uniqueId;
+
     public NodeToNodeUploadProcessLog() {
     }
 
     public NodeToNodeUploadProcessLog(UUID uniqueId) {
         this.uniqueId = uniqueId;
     }
-
-    private UUID uniqueId;
 
     @Override
     public int getId() {

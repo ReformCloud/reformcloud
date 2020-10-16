@@ -40,25 +40,22 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public abstract class AbstractProcessBuilder implements ProcessBuilder {
 
-    protected AbstractProcessBuilder() {
-    }
-
     protected String processGroupName;
     protected String node;
     protected String displayName;
     protected String messageOfTheDay;
     protected String targetProcessFactory;
-
     protected ProcessGroup processGroup;
     protected Template template;
     protected Collection<ProcessInclusion> inclusions = new CopyOnWriteArrayList<>();
     protected JsonConfiguration extra = new JsonConfiguration();
     protected ProcessState initialState = ProcessState.READY;
     protected UUID processUniqueId = UUID.randomUUID();
-
     protected int memory = -1;
     protected int id = -1;
     protected int maxPlayers = -1;
+    protected AbstractProcessBuilder() {
+    }
 
     @NotNull
     @Override

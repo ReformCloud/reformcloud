@@ -60,9 +60,9 @@ public class PermissionUser implements SerializableObject {
     }
 
     public PermissionUser(
-            @NotNull UUID uuid,
-            @NotNull Collection<PermissionNode> permissionNodes,
-            @NotNull Collection<NodeGroup> groups
+        @NotNull UUID uuid,
+        @NotNull Collection<PermissionNode> permissionNodes,
+        @NotNull Collection<NodeGroup> groups
     ) {
         this.uuid = uuid;
         this.permissionNodes = permissionNodes;

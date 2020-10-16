@@ -36,6 +36,11 @@ import java.util.UUID;
 
 public class NodeToNodePlaySoundToPlayer extends ProtocolPacket {
 
+    private UUID uniqueId;
+    private String sound;
+    private float volume;
+    private float pitch;
+
     public NodeToNodePlaySoundToPlayer() {
     }
 
@@ -46,11 +51,6 @@ public class NodeToNodePlaySoundToPlayer extends ProtocolPacket {
         this.pitch = pitch;
     }
 
-    private UUID uniqueId;
-    private String sound;
-    private float volume;
-    private float pitch;
-
     @Override
     public int getId() {
         return NetworkUtil.NODE_BUS + 36;
@@ -59,7 +59,7 @@ public class NodeToNodePlaySoundToPlayer extends ProtocolPacket {
     @Override
     public void handlePacketReceive(@NotNull EndpointChannelReader reader, @NotNull NetworkChannel channel) {
         ExecutorAPI.getInstance().getPlayerProvider().getPlayer(this.uniqueId)
-                .ifPresent(player -> player.playSound(this.sound, this.volume, this.pitch));
+            .ifPresent(player -> player.playSound(this.sound, this.volume, this.pitch));
     }
 
     @Override

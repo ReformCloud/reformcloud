@@ -36,6 +36,11 @@ import java.util.UUID;
 
 public class NodeToNodeCopyProcessToTemplate extends ProtocolPacket {
 
+    private UUID uniqueId;
+    private String group;
+    private String name;
+    private String backend;
+
     public NodeToNodeCopyProcessToTemplate() {
     }
 
@@ -46,11 +51,6 @@ public class NodeToNodeCopyProcessToTemplate extends ProtocolPacket {
         this.backend = backend;
     }
 
-    private UUID uniqueId;
-    private String group;
-    private String name;
-    private String backend;
-
     @Override
     public int getId() {
         return NetworkUtil.NODE_BUS + 26;
@@ -59,8 +59,8 @@ public class NodeToNodeCopyProcessToTemplate extends ProtocolPacket {
     @Override
     public void handlePacketReceive(@NotNull EndpointChannelReader reader, @NotNull NetworkChannel channel) {
         ExecutorAPI.getInstance().getProcessProvider()
-                .getProcessByUniqueId(this.uniqueId)
-                .ifPresent(process -> process.copy(this.group, this.name, this.backend));
+            .getProcessByUniqueId(this.uniqueId)
+            .ifPresent(process -> process.copy(this.group, this.name, this.backend));
     }
 
     @Override

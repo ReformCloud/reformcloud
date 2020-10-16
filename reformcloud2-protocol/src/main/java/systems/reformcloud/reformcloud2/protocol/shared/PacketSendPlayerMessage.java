@@ -35,16 +35,15 @@ import java.util.UUID;
 
 public class PacketSendPlayerMessage extends ProtocolPacket {
 
+    private UUID player;
+    private String message;
+
     public PacketSendPlayerMessage() {
     }
-
     public PacketSendPlayerMessage(UUID player, String message) {
         this.player = player;
         this.message = message;
     }
-
-    private UUID player;
-    private String message;
 
     public UUID getPlayer() {
         return this.player;

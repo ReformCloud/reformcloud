@@ -33,14 +33,14 @@ import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
 
 public class NodeToNodeProcessCommand extends ProtocolPacket {
 
+    private String commandLine;
+
     public NodeToNodeProcessCommand() {
     }
 
     public NodeToNodeProcessCommand(String commandLine) {
         this.commandLine = commandLine;
     }
-
-    private String commandLine;
 
     public String getCommandLine() {
         return this.commandLine;

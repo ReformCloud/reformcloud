@@ -46,8 +46,8 @@ public class NukkitSignConverter implements SignConverter<BlockEntitySign> {
     public BlockEntitySign from(@NotNull CloudSign cloudSign) {
         Location location = this.accumulate(cloudSign.getLocation());
         return location != null && location.getLevel().getBlockEntity(location) instanceof BlockEntitySign
-                ? (BlockEntitySign) location.getLevel().getBlockEntity(location)
-                : null;
+            ? (BlockEntitySign) location.getLevel().getBlockEntity(location)
+            : null;
     }
 
     @NotNull
@@ -68,25 +68,25 @@ public class NukkitSignConverter implements SignConverter<BlockEntitySign> {
         }
 
         return new Location(
-                cloudLocation.getX(),
-                cloudLocation.getY(),
-                cloudLocation.getZ(),
-                cloudLocation.getYaw(),
-                cloudLocation.getPitch(),
-                Server.getInstance().getLevelByName(cloudLocation.getWorld())
+            cloudLocation.getX(),
+            cloudLocation.getY(),
+            cloudLocation.getZ(),
+            cloudLocation.getYaw(),
+            cloudLocation.getPitch(),
+            Server.getInstance().getLevelByName(cloudLocation.getWorld())
         );
     }
 
     private CloudLocation accumulate(Location location) {
         Conditions.isTrue(location.getLevel() != null);
         return new CloudLocation(
-                location.getLevel().getName(),
-                Embedded.getInstance().getCurrentProcessInformation().getProcessGroup().getName(),
-                location.getX(),
-                location.getY(),
-                location.getZ(),
-                BigDecimal.valueOf(location.getYaw()).floatValue(),
-                BigDecimal.valueOf(location.getPitch()).floatValue()
+            location.getLevel().getName(),
+            Embedded.getInstance().getCurrentProcessInformation().getProcessGroup().getName(),
+            location.getX(),
+            location.getY(),
+            location.getZ(),
+            BigDecimal.valueOf(location.getYaw()).floatValue(),
+            BigDecimal.valueOf(location.getPitch()).floatValue()
         );
     }
 }

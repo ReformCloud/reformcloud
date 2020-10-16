@@ -39,6 +39,7 @@ import java.sql.*;
 public class H2DatabaseProvider extends AbstractSQLDatabaseProvider {
 
     private static final Path DB_PATH = Paths.get(System.getProperty("systems.reformcloud.h2-db-path", "reformcloud/.database/h2/h2_db"));
+    private final Connection connection;
 
     public H2DatabaseProvider() {
         if (Files.isDirectory(DB_PATH)) {
@@ -52,8 +53,6 @@ public class H2DatabaseProvider extends AbstractSQLDatabaseProvider {
             throw new RuntimeException(exception);
         }
     }
-
-    private final Connection connection;
 
     @Override
     public void executeUpdate(@NotNull String query, @NonNls Object... objects) {

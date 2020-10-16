@@ -39,16 +39,15 @@ import java.util.UUID;
 
 public class ApiToNodeCompleteCommandLine extends ProtocolPacket {
 
+    private UUID nodeUniqueId;
+    private String commandLine;
+
     public ApiToNodeCompleteCommandLine() {
     }
-
     public ApiToNodeCompleteCommandLine(UUID nodeUniqueId, String commandLine) {
         this.nodeUniqueId = nodeUniqueId;
         this.commandLine = commandLine;
     }
-
-    private UUID nodeUniqueId;
-    private String commandLine;
 
     @Override
     public int getId() {

@@ -46,13 +46,13 @@ public class BungeeProxyServerController implements ProxyServerController {
     static {
         try {
             constructServerInfo = ProxyServer.class.getMethod(
-                    "constructServerInfo",
-                    String.class,
-                    SocketAddress.class,
-                    String.class,
-                    boolean.class,
-                    boolean.class,
-                    String.class
+                "constructServerInfo",
+                String.class,
+                SocketAddress.class,
+                String.class,
+                boolean.class,
+                boolean.class,
+                String.class
             );
             constructServerInfo.setAccessible(true);
         } catch (NoSuchMethodException ignored) {
@@ -60,13 +60,12 @@ public class BungeeProxyServerController implements ProxyServerController {
         }
     }
 
+    private final List<ProcessInformation> cachedLobbyServices = new CopyOnWriteArrayList<>();
+    private final List<ProcessInformation> cachedProxyServices = new CopyOnWriteArrayList<>();
     public BungeeProxyServerController() {
         ProxyServer.getInstance().getConfig().getListeners().forEach(listenerInfo -> listenerInfo.getServerPriority().clear());
         ProxyServer.getInstance().getConfig().getServers().clear();
     }
-
-    private final List<ProcessInformation> cachedLobbyServices = new CopyOnWriteArrayList<>();
-    private final List<ProcessInformation> cachedProxyServices = new CopyOnWriteArrayList<>();
 
     @Override
     public void registerProcess(@NotNull ProcessInformation processInformation) {
@@ -84,7 +83,7 @@ public class BungeeProxyServerController implements ProxyServerController {
         }
 
         this.constructServerInfo(processInformation).ifPresent(
-                info -> ProxyServer.getInstance().getServers().put(info.getName(), info)
+            info -> ProxyServer.getInstance().getServers().put(info.getName(), info)
         );
     }
 
@@ -113,7 +112,7 @@ public class BungeeProxyServerController implements ProxyServerController {
         }
 
         this.constructServerInfo(processInformation).ifPresent(
-                info -> ProxyServer.getInstance().getServers().put(info.getName(), info)
+            info -> ProxyServer.getInstance().getServers().put(info.getName(), info)
         );
     }
 
@@ -147,12 +146,12 @@ public class BungeeProxyServerController implements ProxyServerController {
 
             try {
                 return Optional.of((ServerInfo) constructServerInfo.invoke(ProxyServer.getInstance(),
-                        processInformation.getProcessDetail().getName(),
-                        processInformation.getNetworkInfo().toInet(),
-                        "ReformCloud2",
-                        false,
-                        processInformation.getProcessDetail().getTemplate().getVersion().getId() == 3,
-                        "default"
+                    processInformation.getProcessDetail().getName(),
+                    processInformation.getNetworkInfo().toInet(),
+                    "ReformCloud2",
+                    false,
+                    processInformation.getProcessDetail().getTemplate().getVersion().getId() == 3,
+                    "default"
                 ));
             } catch (InvocationTargetException | IllegalAccessException exception) {
                 exception.printStackTrace();
@@ -162,10 +161,10 @@ public class BungeeProxyServerController implements ProxyServerController {
         }
 
         return Optional.of(ProxyServer.getInstance().constructServerInfo(
-                processInformation.getProcessDetail().getName(),
-                processInformation.getNetworkInfo().toInet(),
-                "ReformCloud2",
-                false
+            processInformation.getProcessDetail().getName(),
+            processInformation.getNetworkInfo().toInet(),
+            "ReformCloud2",
+            false
         ));
     }
 }

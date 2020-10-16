@@ -72,7 +72,7 @@ public class SpongeCommandSigns implements CommandExecutor {
 
             Sign sign = (Sign) end.get().getLocation().getTileEntity().get();
             CloudSign cloudSign = SpongeSignSystemAdapter.getInstance().getSignAt(
-                    SpongeSignSystemAdapter.getInstance().getSignConverter().to(sign)
+                SpongeSignSystemAdapter.getInstance().getSignConverter().to(sign)
             );
             if (cloudSign != null) {
                 src.sendMessage(Text.of("§cThe sign already exists"));
@@ -93,7 +93,7 @@ public class SpongeCommandSigns implements CommandExecutor {
 
             Sign sign = (Sign) end.get().getLocation().getTileEntity().get();
             CloudSign cloudSign = SpongeSignSystemAdapter.getInstance().getSignAt(
-                    SpongeSignSystemAdapter.getInstance().getSignConverter().to(sign)
+                SpongeSignSystemAdapter.getInstance().getSignConverter().to(sign)
             );
             if (cloudSign == null) {
                 src.sendMessage(Text.of("§cThe sign does not exists"));
@@ -126,14 +126,14 @@ public class SpongeCommandSigns implements CommandExecutor {
 
     private Optional<BlockRayHit<World>> getSign(Player player) {
         return BlockRay
-                .from(player)
-                .distanceLimit(15)
-                .narrowPhase(true)
-                .select(BlockRay.notAirFilter())
-                .whilst(lastHit -> {
-                    final BlockType blockType = lastHit.getExtent().getBlockType(lastHit.getBlockX(), lastHit.getBlockY(), lastHit.getBlockZ());
-                    return blockType.equals(BlockTypes.STANDING_SIGN) || blockType.equals(BlockTypes.WALL_SIGN);
-                })
-                .end();
+            .from(player)
+            .distanceLimit(15)
+            .narrowPhase(true)
+            .select(BlockRay.notAirFilter())
+            .whilst(lastHit -> {
+                final BlockType blockType = lastHit.getExtent().getBlockType(lastHit.getBlockX(), lastHit.getBlockY(), lastHit.getBlockZ());
+                return blockType.equals(BlockTypes.STANDING_SIGN) || blockType.equals(BlockTypes.WALL_SIGN);
+            })
+            .end();
     }
 }

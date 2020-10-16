@@ -33,14 +33,14 @@ import java.util.Collection;
 
 public class NodeToNodeProcessCommandResult extends QueryResultPacket {
 
+    private Collection<String> result;
+
     public NodeToNodeProcessCommandResult() {
     }
 
     public NodeToNodeProcessCommandResult(Collection<String> result) {
         this.result = result;
     }
-
-    private Collection<String> result;
 
     public Collection<String> getResult() {
         return this.result;

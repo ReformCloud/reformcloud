@@ -35,16 +35,15 @@ import java.util.UUID;
 
 public class PacketConnectPlayerToServer extends ProtocolPacket {
 
+    private UUID uniqueId;
+    private String server;
+
     public PacketConnectPlayerToServer() {
     }
-
     public PacketConnectPlayerToServer(UUID uniqueId, String server) {
         this.uniqueId = uniqueId;
         this.server = server;
     }
-
-    private UUID uniqueId;
-    private String server;
 
     public UUID getUniqueId() {
         return this.uniqueId;

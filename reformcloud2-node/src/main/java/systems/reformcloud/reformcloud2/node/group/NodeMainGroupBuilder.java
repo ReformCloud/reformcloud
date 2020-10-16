@@ -32,11 +32,11 @@ import systems.reformcloud.reformcloud2.shared.group.DefaultMainGroupBuilder;
 
 public class NodeMainGroupBuilder extends DefaultMainGroupBuilder {
 
+    private final DefaultNodeMainGroupProvider provider;
+
     NodeMainGroupBuilder(DefaultNodeMainGroupProvider provider) {
         this.provider = provider;
     }
-
-    private final DefaultNodeMainGroupProvider provider;
 
     @NotNull
     @Override

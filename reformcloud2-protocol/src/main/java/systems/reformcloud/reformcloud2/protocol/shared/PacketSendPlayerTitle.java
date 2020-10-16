@@ -35,9 +35,14 @@ import java.util.UUID;
 
 public class PacketSendPlayerTitle extends ProtocolPacket {
 
+    private UUID uniqueId;
+    private String title;
+    private String subTitle;
+    private int fadeIn;
+    private int stay;
+    private int fadeOut;
     public PacketSendPlayerTitle() {
     }
-
     public PacketSendPlayerTitle(UUID uniqueId, String title, String subTitle, int fadeIn, int stay, int fadeOut) {
         this.uniqueId = uniqueId;
         this.title = title;
@@ -46,13 +51,6 @@ public class PacketSendPlayerTitle extends ProtocolPacket {
         this.stay = stay;
         this.fadeOut = fadeOut;
     }
-
-    private UUID uniqueId;
-    private String title;
-    private String subTitle;
-    private int fadeIn;
-    private int stay;
-    private int fadeOut;
 
     public UUID getUniqueId() {
         return this.uniqueId;

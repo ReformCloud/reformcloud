@@ -47,15 +47,15 @@ public class SignLayout implements SerializableObject, Cloneable {
     }
 
     public SignLayout(
-            @Nullable String target,
-            boolean searchingLayoutWhenFull,
-            boolean showMaintenanceProcessesOnSigns,
-            @NotNull List<SignSubLayout> searchingLayouts,
-            @NotNull List<SignSubLayout> waitingForConnectLayout,
-            @NotNull List<SignSubLayout> emptyLayout,
-            @NotNull List<SignSubLayout> onlineLayout,
-            @NotNull List<SignSubLayout> fullLayout,
-            @NotNull List<SignSubLayout> maintenanceLayout) {
+        @Nullable String target,
+        boolean searchingLayoutWhenFull,
+        boolean showMaintenanceProcessesOnSigns,
+        @NotNull List<SignSubLayout> searchingLayouts,
+        @NotNull List<SignSubLayout> waitingForConnectLayout,
+        @NotNull List<SignSubLayout> emptyLayout,
+        @NotNull List<SignSubLayout> onlineLayout,
+        @NotNull List<SignSubLayout> fullLayout,
+        @NotNull List<SignSubLayout> maintenanceLayout) {
         this.target = target;
         this.searchingLayoutWhenFull = searchingLayoutWhenFull;
         this.showMaintenanceProcessesOnSigns = showMaintenanceProcessesOnSigns;

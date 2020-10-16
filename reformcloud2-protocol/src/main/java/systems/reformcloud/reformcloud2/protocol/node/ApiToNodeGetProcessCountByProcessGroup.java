@@ -34,14 +34,14 @@ import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
 
 public class ApiToNodeGetProcessCountByProcessGroup extends ProtocolPacket {
 
+    private String processGroup;
+
     public ApiToNodeGetProcessCountByProcessGroup() {
     }
 
     public ApiToNodeGetProcessCountByProcessGroup(String processGroup) {
         this.processGroup = processGroup;
     }
-
-    private String processGroup;
 
     @Override
     public int getId() {

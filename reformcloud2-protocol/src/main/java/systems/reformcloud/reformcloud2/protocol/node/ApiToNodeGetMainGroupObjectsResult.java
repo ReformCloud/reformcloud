@@ -34,14 +34,14 @@ import java.util.Collection;
 
 public class ApiToNodeGetMainGroupObjectsResult extends QueryResultPacket {
 
+    private Collection<MainGroup> mainGroups;
+
     public ApiToNodeGetMainGroupObjectsResult() {
     }
 
     public ApiToNodeGetMainGroupObjectsResult(Collection<MainGroup> mainGroups) {
         this.mainGroups = mainGroups;
     }
-
-    private Collection<MainGroup> mainGroups;
 
     public Collection<MainGroup> getMainGroups() {
         return this.mainGroups;

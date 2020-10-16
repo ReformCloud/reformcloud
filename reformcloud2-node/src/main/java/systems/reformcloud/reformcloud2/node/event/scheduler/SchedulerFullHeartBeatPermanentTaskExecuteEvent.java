@@ -28,11 +28,11 @@ import systems.reformcloud.reformcloud2.executor.api.event.Event;
 
 public class SchedulerFullHeartBeatPermanentTaskExecuteEvent extends Event {
 
+    private final Runnable runnable;
+
     public SchedulerFullHeartBeatPermanentTaskExecuteEvent(Runnable runnable) {
         this.runnable = runnable;
     }
-
-    private final Runnable runnable;
 
     public Runnable getRunnable() {
         return this.runnable;

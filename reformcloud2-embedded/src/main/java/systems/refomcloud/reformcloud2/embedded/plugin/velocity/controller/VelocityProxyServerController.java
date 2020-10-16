@@ -38,14 +38,12 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public class VelocityProxyServerController implements ProxyServerController {
 
+    private final ProxyServer proxyServer;
+    private final List<ProcessInformation> cachedProxies = new CopyOnWriteArrayList<>();
+    private final List<ProcessInformation> cachedLobbies = new CopyOnWriteArrayList<>();
     public VelocityProxyServerController(ProxyServer proxyServer) {
         this.proxyServer = proxyServer;
     }
-
-    private final ProxyServer proxyServer;
-
-    private final List<ProcessInformation> cachedProxies = new CopyOnWriteArrayList<>();
-    private final List<ProcessInformation> cachedLobbies = new CopyOnWriteArrayList<>();
 
     @Override
     public void registerProcess(@NotNull ProcessInformation processInformation) {
@@ -63,8 +61,8 @@ public class VelocityProxyServerController implements ProxyServerController {
         }
 
         ServerInfo serverInfo = new ServerInfo(
-                processInformation.getProcessDetail().getName(),
-                processInformation.getNetworkInfo().toInet()
+            processInformation.getProcessDetail().getName(),
+            processInformation.getNetworkInfo().toInet()
         );
         this.proxyServer.registerServer(serverInfo);
     }
@@ -75,8 +73,8 @@ public class VelocityProxyServerController implements ProxyServerController {
             this.cachedProxies.removeIf(e -> e.getProcessDetail().getProcessUniqueID().equals(processInformation.getProcessDetail().getProcessUniqueID()));
             this.cachedLobbies.removeIf(e -> e.getProcessDetail().getProcessUniqueID().equals(processInformation.getProcessDetail().getProcessUniqueID()));
             this.proxyServer.getServer(processInformation.getProcessDetail().getName())
-                    .map(RegisteredServer::getServerInfo)
-                    .ifPresent(this.proxyServer::unregisterServer);
+                .map(RegisteredServer::getServerInfo)
+                .ifPresent(this.proxyServer::unregisterServer);
             return;
         }
 
@@ -96,8 +94,8 @@ public class VelocityProxyServerController implements ProxyServerController {
         }
 
         ServerInfo serverInfo = new ServerInfo(
-                processInformation.getProcessDetail().getName(),
-                processInformation.getNetworkInfo().toInet()
+            processInformation.getProcessDetail().getName(),
+            processInformation.getNetworkInfo().toInet()
         );
         this.proxyServer.registerServer(serverInfo);
     }
@@ -111,8 +109,8 @@ public class VelocityProxyServerController implements ProxyServerController {
 
         this.cachedLobbies.removeIf(e -> e.getProcessDetail().getProcessUniqueID().equals(processInformation.getProcessDetail().getProcessUniqueID()));
         this.proxyServer.getServer(processInformation.getProcessDetail().getName())
-                .map(RegisteredServer::getServerInfo)
-                .ifPresent(this.proxyServer::unregisterServer);
+            .map(RegisteredServer::getServerInfo)
+            .ifPresent(this.proxyServer::unregisterServer);
     }
 
     @Override

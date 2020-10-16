@@ -36,16 +36,15 @@ import java.util.UUID;
 
 public class ApiToNodeConnectPlayerToPlayer extends ProtocolPacket {
 
+    private UUID playerUniqueId;
+    private UUID otherPlayer;
+
     public ApiToNodeConnectPlayerToPlayer() {
     }
-
     public ApiToNodeConnectPlayerToPlayer(UUID playerUniqueId, UUID otherPlayer) {
         this.playerUniqueId = playerUniqueId;
         this.otherPlayer = otherPlayer;
     }
-
-    private UUID playerUniqueId;
-    private UUID otherPlayer;
 
     public UUID getOtherPlayer() {
         return this.otherPlayer;

@@ -104,12 +104,12 @@ public final class NodeConfig {
         return this.clusterNodes;
     }
 
-    public void setSendAnonymousErrorReports(boolean sendAnonymousErrorReports) {
-        this.sendAnonymousErrorReports = sendAnonymousErrorReports;
-    }
-
     public boolean isSendAnonymousErrorReports() {
         return this.sendAnonymousErrorReports;
+    }
+
+    public void setSendAnonymousErrorReports(boolean sendAnonymousErrorReports) {
+        this.sendAnonymousErrorReports = sendAnonymousErrorReports;
     }
 
     public void save() {

@@ -45,8 +45,8 @@ public class PacketGetCommandsConfig extends Packet {
     @Override
     public void handlePacketReceive(@NotNull EndpointChannelReader reader, @NotNull NetworkChannel channel) {
         channel.sendQueryResult(
-                this.getQueryUniqueID(),
-                new PacketGetCommandsConfigResult(ReformCloudApplication.getCommandsConfig())
+            this.getQueryUniqueID(),
+            new PacketGetCommandsConfigResult(ReformCloudApplication.getCommandsConfig())
         );
     }
 

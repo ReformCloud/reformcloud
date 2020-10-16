@@ -61,8 +61,8 @@ public final class ProcessInformation implements SerializableObject {
 
     @ApiStatus.Internal
     public ProcessInformation(
-            @NotNull ProcessDetail processDetail, @NotNull NetworkInfo networkInfo, @NotNull ProcessGroup processGroup,
-            @NotNull JsonConfiguration extra, @NotNull Collection<ProcessInclusion> preInclusions
+        @NotNull ProcessDetail processDetail, @NotNull NetworkInfo networkInfo, @NotNull ProcessGroup processGroup,
+        @NotNull JsonConfiguration extra, @NotNull Collection<ProcessInclusion> preInclusions
     ) {
         this.processDetail = processDetail;
         this.networkInfo = networkInfo;

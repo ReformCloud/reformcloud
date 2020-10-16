@@ -65,6 +65,45 @@ public class DefaultDependencyLoader implements DependencyLoader {
         this.contextLoader = (URLClassLoader) Thread.currentThread().getContextClassLoader();
     }
 
+    @NotNull
+    @Contract(value = "_ -> new", pure = true)
+    private static Path getPath(@NotNull Dependency dependency) {
+        String systemPath = dependency.systemPath();
+        if (systemPath.trim().isEmpty()) {
+            systemPath = dependency.groupId().replace(".", "/") + "/" + dependency.artifactId() + "/" + dependency.version() + "/";
+        } else {
+            systemPath = systemPath.replace("../", "").replace("..\\", "");
+            if (!systemPath.endsWith(dependency.type()) && systemPath.endsWith("/")) {
+                systemPath += "/";
+            }
+        }
+
+        if (!systemPath.endsWith(dependency.type())) {
+            systemPath += dependency.artifactId() + "-" + dependency.version() + "." + dependency.type();
+        }
+
+        return REPOSITORY_PATH.resolve(systemPath);
+    }
+
+    @NotNull
+    @Contract(value = "_ -> new", pure = true)
+    private static String getDownloadUrl(@NotNull Dependency dependency) {
+        String repoUrl = dependency.repository().url().endsWith("/") ? dependency.repository().url() : dependency.repository().url() + "/";
+        return repoUrl + dependency.groupId().replace(".", "/")
+            + "/" + dependency.artifactId()
+            + "/" + dependency.version()
+            + "/" + dependency.artifactId() + "-" + dependency.version() + "." + dependency.type();
+    }
+
+    private static void handleException(@NotNull String format, @NotNull Dependency dependency, @NotNull Throwable exception) {
+        RuntimeException runtimeException = new RuntimeException(String.format(format, dependency.toString()), exception);
+        if (!dependency.optional()) {
+            throw runtimeException;
+        } else {
+            runtimeException.printStackTrace();
+        }
+    }
+
     @Override
     public void load(@NotNull Collection<Dependency> dependencies) {
         // iterate over all dependencies and find the non-existing ones
@@ -146,45 +185,6 @@ public class DefaultDependencyLoader implements DependencyLoader {
             }
 
             addUrl.invoke(this.contextLoader, url);
-        }
-    }
-
-    @NotNull
-    @Contract(value = "_ -> new", pure = true)
-    private static Path getPath(@NotNull Dependency dependency) {
-        String systemPath = dependency.systemPath();
-        if (systemPath.trim().isEmpty()) {
-            systemPath = dependency.groupId().replace(".", "/") + "/" + dependency.artifactId() + "/" + dependency.version() + "/";
-        } else {
-            systemPath = systemPath.replace("../", "").replace("..\\", "");
-            if (!systemPath.endsWith(dependency.type()) && systemPath.endsWith("/")) {
-                systemPath += "/";
-            }
-        }
-
-        if (!systemPath.endsWith(dependency.type())) {
-            systemPath += dependency.artifactId() + "-" + dependency.version() + "." + dependency.type();
-        }
-
-        return REPOSITORY_PATH.resolve(systemPath);
-    }
-
-    @NotNull
-    @Contract(value = "_ -> new", pure = true)
-    private static String getDownloadUrl(@NotNull Dependency dependency) {
-        String repoUrl = dependency.repository().url().endsWith("/") ? dependency.repository().url() : dependency.repository().url() + "/";
-        return repoUrl + dependency.groupId().replace(".", "/")
-            + "/" + dependency.artifactId()
-            + "/" + dependency.version()
-            + "/" + dependency.artifactId() + "-" + dependency.version() + "." + dependency.type();
-    }
-
-    private static void handleException(@NotNull String format, @NotNull Dependency dependency, @NotNull Throwable exception) {
-        RuntimeException runtimeException = new RuntimeException(String.format(format, dependency.toString()), exception);
-        if (!dependency.optional()) {
-            throw runtimeException;
-        } else {
-            runtimeException.printStackTrace();
         }
     }
 }

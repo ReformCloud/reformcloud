@@ -35,6 +35,9 @@ import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
 
 public class NodeToHeadNodeCreateProcess extends ProtocolPacket {
 
+    private ProcessFactoryConfiguration configuration;
+    private String targetProcessFactory;
+
     public NodeToHeadNodeCreateProcess() {
     }
 
@@ -42,9 +45,6 @@ public class NodeToHeadNodeCreateProcess extends ProtocolPacket {
         this.configuration = configuration;
         this.targetProcessFactory = targetProcessFactory;
     }
-
-    private ProcessFactoryConfiguration configuration;
-    private String targetProcessFactory;
 
     @Override
     public int getId() {
@@ -54,7 +54,7 @@ public class NodeToHeadNodeCreateProcess extends ProtocolPacket {
     @Override
     public void handlePacketReceive(@NotNull EndpointChannelReader reader, @NotNull NetworkChannel channel) {
         ClusterAccessController.createProcessPrivileged(this.configuration, this.targetProcessFactory).thenAccept(
-                result -> channel.sendQueryResult(this.getQueryUniqueID(), new NodeToHeadNodeCreateProcessResult(result))
+            result -> channel.sendQueryResult(this.getQueryUniqueID(), new NodeToHeadNodeCreateProcessResult(result))
         );
     }
 

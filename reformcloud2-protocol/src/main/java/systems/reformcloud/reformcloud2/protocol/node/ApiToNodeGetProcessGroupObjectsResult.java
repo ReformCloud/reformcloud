@@ -34,14 +34,14 @@ import java.util.Collection;
 
 public class ApiToNodeGetProcessGroupObjectsResult extends QueryResultPacket {
 
+    private Collection<ProcessGroup> processGroups;
+
     public ApiToNodeGetProcessGroupObjectsResult() {
     }
 
     public ApiToNodeGetProcessGroupObjectsResult(Collection<ProcessGroup> processGroups) {
         this.processGroups = processGroups;
     }
-
-    private Collection<ProcessGroup> processGroups;
 
     public Collection<ProcessGroup> getProcessGroups() {
         return this.processGroups;

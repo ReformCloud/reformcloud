@@ -33,17 +33,13 @@ import java.util.List;
 
 public interface EventManager {
 
-    @Nullable
-    <T extends Event> T callEvent(@NotNull Class<? extends T> event);
+    @Nullable <T extends Event> T callEvent(@NotNull Class<? extends T> event);
 
-    @NotNull
-    <T extends Event> T callEvent(@NotNull T event);
+    @NotNull <T extends Event> T callEvent(@NotNull T event);
 
-    @NotNull
-    <T extends Event> Task<T> callEventAsync(@NotNull Class<? extends T> event);
+    @NotNull <T extends Event> Task<T> callEventAsync(@NotNull Class<? extends T> event);
 
-    @NotNull
-    <T extends Event> Task<T> callEventAsync(@NotNull T event);
+    @NotNull <T extends Event> Task<T> callEventAsync(@NotNull T event);
 
     void registerListener(@NotNull Object listener);
 

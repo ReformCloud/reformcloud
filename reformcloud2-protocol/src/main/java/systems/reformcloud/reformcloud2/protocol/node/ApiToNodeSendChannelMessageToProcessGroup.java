@@ -35,18 +35,16 @@ import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
 
 public class ApiToNodeSendChannelMessageToProcessGroup extends ProtocolPacket {
 
+    private String processGroup;
+    private String channel;
+    private JsonConfiguration data;
     public ApiToNodeSendChannelMessageToProcessGroup() {
     }
-
     public ApiToNodeSendChannelMessageToProcessGroup(String processGroup, String channel, JsonConfiguration data) {
         this.processGroup = processGroup;
         this.channel = channel;
         this.data = data;
     }
-
-    private String processGroup;
-    private String channel;
-    private JsonConfiguration data;
 
     @Override
     public int getId() {
@@ -56,7 +54,7 @@ public class ApiToNodeSendChannelMessageToProcessGroup extends ProtocolPacket {
     @Override
     public void handlePacketReceive(@NotNull EndpointChannelReader reader, @NotNull NetworkChannel channel) {
         ExecutorAPI.getInstance().getChannelMessageProvider().sendChannelMessage(
-                this.processGroup, this.channel, this.data
+            this.processGroup, this.channel, this.data
         );
     }
 

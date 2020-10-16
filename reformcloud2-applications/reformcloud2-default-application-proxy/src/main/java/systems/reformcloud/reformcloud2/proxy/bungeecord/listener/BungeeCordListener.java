@@ -56,11 +56,11 @@ public final class BungeeCordListener implements Listener {
     public static void initTab0(@NotNull ProxiedPlayer player) {
         ProxyConfigurationHandler.getInstance().getCurrentTabListConfiguration().ifPresent(tabListConfiguration -> {
             BaseComponent[] header = tabListConfiguration.getHeader() == null
-                    ? EMPTY
-                    : TextComponent.fromLegacyText(replaceBungeeCordPlaceHolders(player, tabListConfiguration.getHeader()));
+                ? EMPTY
+                : TextComponent.fromLegacyText(replaceBungeeCordPlaceHolders(player, tabListConfiguration.getHeader()));
             BaseComponent[] footer = tabListConfiguration.getFooter() == null
-                    ? EMPTY
-                    : TextComponent.fromLegacyText(replaceBungeeCordPlaceHolders(player, tabListConfiguration.getFooter()));
+                ? EMPTY
+                : TextComponent.fromLegacyText(replaceBungeeCordPlaceHolders(player, tabListConfiguration.getFooter()));
 
             player.setTabHeader(header, footer);
         });
@@ -69,10 +69,10 @@ public final class BungeeCordListener implements Listener {
     @NotNull
     private static String replaceBungeeCordPlaceHolders(@NotNull ProxiedPlayer player, @NotNull String tablist) {
         tablist = tablist
-                .replace("%player_server%", player.getServer() != null ? player.getServer().getInfo().getName() : "")
-                .replace("%player_name%", player.getName())
-                .replace("%player_unique_id%", player.getUniqueId().toString())
-                .replace("%player_ping%", Long.toString(player.getPing()));
+            .replace("%player_server%", player.getServer() != null ? player.getServer().getInfo().getName() : "")
+            .replace("%player_name%", player.getName())
+            .replace("%player_unique_id%", player.getUniqueId().toString())
+            .replace("%player_ping%", Long.toString(player.getPing()));
         return ProxyConfigurationHandler.getInstance().replaceTabListPlaceHolders(tablist);
     }
 
@@ -83,8 +83,8 @@ public final class BungeeCordListener implements Listener {
 
             String protocol = motdConfiguration.getProtocol() == null ? null : ProxyConfigurationHandler.getInstance().replaceMessageOfTheDayPlaceHolders(motdConfiguration.getProtocol());
             String[] players = motdConfiguration.getPlayerInfo() == null ? null : Arrays.stream(motdConfiguration.getPlayerInfo())
-                    .map(ProxyConfigurationHandler.getInstance()::replaceMessageOfTheDayPlaceHolders)
-                    .toArray(String[]::new);
+                .map(ProxyConfigurationHandler.getInstance()::replaceMessageOfTheDayPlaceHolders)
+                .toArray(String[]::new);
 
             String first = motdConfiguration.getFirstLine() == null ? "" : motdConfiguration.getFirstLine();
             String second = motdConfiguration.getSecondLine() == null ? "" : motdConfiguration.getSecondLine();

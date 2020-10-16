@@ -144,16 +144,16 @@ public class PermissionVaultPermissionImplementation extends Permission {
     @Override
     public String[] getPlayerGroups(String world, String player) {
         return VaultUtil.getUserFromName(player)
-                .map(permissionUser -> permissionUser.getGroups().stream().map(NodeGroup::getGroupName).toArray(String[]::new))
-                .orElse(new String[0]);
+            .map(permissionUser -> permissionUser.getGroups().stream().map(NodeGroup::getGroupName).toArray(String[]::new))
+            .orElse(new String[0]);
     }
 
     @Override
     public String getPrimaryGroup(String world, String player) {
         return VaultUtil.getUserFromName(player)
-                .flatMap(PermissionUser::getHighestPermissionGroup)
-                .map(PermissionGroup::getName)
-                .orElse(null);
+            .flatMap(PermissionUser::getHighestPermissionGroup)
+            .map(PermissionGroup::getName)
+            .orElse(null);
     }
 
     @Override

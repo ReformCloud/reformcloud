@@ -72,10 +72,10 @@ public class ReformCloudApplication extends Application {
         if (!Files.exists(path)) {
             IOUtils.createDirectory(path.getParent());
             new JsonConfiguration()
-                    .add("config", new CommandsConfig(
-                            true, Arrays.asList("l", "leave", "lobby", "hub", "quit"),
-                            true, Arrays.asList("reformcloud", "rc", "cloud")
-                    )).write(path);
+                .add("config", new CommandsConfig(
+                    true, Arrays.asList("l", "leave", "lobby", "hub", "quit"),
+                    true, Arrays.asList("reformcloud", "rc", "cloud")
+                )).write(path);
         }
 
         commandsConfig = JsonConfiguration.read(path).get("config", new TypeToken<CommandsConfig>() {

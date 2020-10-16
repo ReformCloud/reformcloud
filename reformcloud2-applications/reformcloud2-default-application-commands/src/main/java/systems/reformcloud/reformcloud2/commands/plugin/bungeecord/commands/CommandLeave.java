@@ -57,35 +57,35 @@ public class CommandLeave extends Command {
         }
 
         if (ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ProxyServerController.class).getCachedLobbyServers().stream().anyMatch(
-                e -> e.getProcessDetail().getName().equals(proxiedPlayer.getServer().getInfo().getName()))
+            e -> e.getProcessDetail().getName().equals(proxiedPlayer.getServer().getInfo().getName()))
         ) {
             proxiedPlayer.sendMessage(TextComponent.fromLegacyText(Embedded.getInstance().getIngameMessages().format(
-                    Embedded.getInstance().getIngameMessages().getAlreadyConnectedToHub()
+                Embedded.getInstance().getIngameMessages().getAlreadyConnectedToHub()
             )));
             return;
         }
 
         SharedPlayerFallbackFilter.filterFallback(
-                proxiedPlayer.getUniqueId(),
-                ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ProxyServerController.class).getCachedLobbyServers(),
-                proxiedPlayer::hasPermission,
-                BungeeFallbackExtraFilter.INSTANCE,
-                proxiedPlayer.getServer().getInfo().getName()
+            proxiedPlayer.getUniqueId(),
+            ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ProxyServerController.class).getCachedLobbyServers(),
+            proxiedPlayer::hasPermission,
+            BungeeFallbackExtraFilter.INSTANCE,
+            proxiedPlayer.getServer().getInfo().getName()
         ).ifPresent(processInformation -> {
             ServerInfo serverInfo = ProxyServer.getInstance().getServerInfo(processInformation.getProcessDetail().getName());
             if (serverInfo == null) {
                 proxiedPlayer.sendMessage(TextComponent.fromLegacyText(Embedded.getInstance().getIngameMessages().format(
-                        Embedded.getInstance().getIngameMessages().getNoHubServerAvailable()
+                    Embedded.getInstance().getIngameMessages().getNoHubServerAvailable()
                 )));
                 return;
             }
 
             proxiedPlayer.sendMessage(TextComponent.fromLegacyText(Embedded.getInstance().getIngameMessages().format(
-                    Embedded.getInstance().getIngameMessages().getConnectingToHub(), processInformation.getProcessDetail().getName()
+                Embedded.getInstance().getIngameMessages().getConnectingToHub(), processInformation.getProcessDetail().getName()
             )));
             proxiedPlayer.connect(serverInfo);
         }).ifEmpty(v -> proxiedPlayer.sendMessage(TextComponent.fromLegacyText(Embedded.getInstance().getIngameMessages().format(
-                Embedded.getInstance().getIngameMessages().getNoHubServerAvailable()
+            Embedded.getInstance().getIngameMessages().getNoHubServerAvailable()
         ))));
     }
 }

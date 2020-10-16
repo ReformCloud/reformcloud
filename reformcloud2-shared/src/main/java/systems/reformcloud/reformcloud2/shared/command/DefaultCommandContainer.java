@@ -33,15 +33,14 @@ import java.util.Collection;
 
 public final class DefaultCommandContainer implements CommandContainer {
 
+    private final Collection<String> aliases;
+    private final Command command;
+    private final String description;
     DefaultCommandContainer(Collection<String> aliases, String description, Command command) {
         this.aliases = Streams.toLowerCase(aliases);
         this.command = command;
         this.description = description;
     }
-
-    private final Collection<String> aliases;
-    private final Command command;
-    private final String description;
 
     @NotNull
     @Override

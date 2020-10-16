@@ -37,14 +37,14 @@ import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
 
 public class NodeToApiProcessGroupUpdated extends ProtocolPacket {
 
+    private ProcessGroup processGroup;
+
     public NodeToApiProcessGroupUpdated() {
     }
 
     public NodeToApiProcessGroupUpdated(ProcessGroup processGroup) {
         this.processGroup = processGroup;
     }
-
-    private ProcessGroup processGroup;
 
     public ProcessGroup getProcessGroup() {
         return this.processGroup;
@@ -58,7 +58,7 @@ public class NodeToApiProcessGroupUpdated extends ProtocolPacket {
     @Override
     public void handlePacketReceive(@NotNull EndpointChannelReader reader, @NotNull NetworkChannel channel) {
         ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class)
-                .callEvent(new ProcessGroupUpdateEvent(this.processGroup));
+            .callEvent(new ProcessGroupUpdateEvent(this.processGroup));
     }
 
     @Override

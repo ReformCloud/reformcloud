@@ -37,16 +37,15 @@ import java.util.Collection;
 
 public class ApiToNodeCreateMainGroup extends ProtocolPacket {
 
+    private String name;
+    private Collection<String> subGroups;
+
     public ApiToNodeCreateMainGroup() {
     }
-
     public ApiToNodeCreateMainGroup(String name, Collection<String> subGroups) {
         this.name = name;
         this.subGroups = subGroups;
     }
-
-    private String name;
-    private Collection<String> subGroups;
 
     @Override
     public int getId() {

@@ -40,94 +40,94 @@ public class DefaultEmbeddedNodeInformationProvider implements NodeInformationPr
     @Override
     public Optional<NodeProcessWrapper> getNodeInformation(@NotNull String name) {
         return Embedded.getInstance().sendSyncQuery(new ApiToNodeGetNodeInformationByName(name))
-                .map(result -> {
-                    if (result instanceof ApiToNodeGetNodeInformationResult) {
-                        NodeInformation information = ((ApiToNodeGetNodeInformationResult) result).getNodeInformation();
-                        return information == null
-                                ? Optional.<NodeProcessWrapper>empty()
-                                : Optional.<NodeProcessWrapper>of(new DefaultEmbeddedNodeProcessWrapper(information));
-                    }
+            .map(result -> {
+                if (result instanceof ApiToNodeGetNodeInformationResult) {
+                    NodeInformation information = ((ApiToNodeGetNodeInformationResult) result).getNodeInformation();
+                    return information == null
+                        ? Optional.<NodeProcessWrapper>empty()
+                        : Optional.<NodeProcessWrapper>of(new DefaultEmbeddedNodeProcessWrapper(information));
+                }
 
-                    return Optional.<NodeProcessWrapper>empty();
-                }).orElseGet(Optional::empty);
+                return Optional.<NodeProcessWrapper>empty();
+            }).orElseGet(Optional::empty);
     }
 
     @NotNull
     @Override
     public Optional<NodeProcessWrapper> getNodeInformation(@NotNull UUID nodeUniqueId) {
         return Embedded.getInstance().sendSyncQuery(new ApiToNodeGetNodeInformationByUniqueId(nodeUniqueId))
-                .map(result -> {
-                    if (result instanceof ApiToNodeGetNodeInformationResult) {
-                        NodeInformation information = ((ApiToNodeGetNodeInformationResult) result).getNodeInformation();
-                        return information == null
-                                ? Optional.<NodeProcessWrapper>empty()
-                                : Optional.<NodeProcessWrapper>of(new DefaultEmbeddedNodeProcessWrapper(information));
-                    }
+            .map(result -> {
+                if (result instanceof ApiToNodeGetNodeInformationResult) {
+                    NodeInformation information = ((ApiToNodeGetNodeInformationResult) result).getNodeInformation();
+                    return information == null
+                        ? Optional.<NodeProcessWrapper>empty()
+                        : Optional.<NodeProcessWrapper>of(new DefaultEmbeddedNodeProcessWrapper(information));
+                }
 
-                    return Optional.<NodeProcessWrapper>empty();
-                }).orElseGet(Optional::empty);
+                return Optional.<NodeProcessWrapper>empty();
+            }).orElseGet(Optional::empty);
     }
 
     @NotNull
     @Override
     public @UnmodifiableView Collection<String> getNodeNames() {
         return Embedded.getInstance().sendSyncQuery(new ApiToNodeGetNodeNames())
-                .map(result -> {
-                    if (result instanceof ApiToNodeGetNodeNamesResult) {
-                        return ((ApiToNodeGetNodeNamesResult) result).getNames();
-                    }
+            .map(result -> {
+                if (result instanceof ApiToNodeGetNodeNamesResult) {
+                    return ((ApiToNodeGetNodeNamesResult) result).getNames();
+                }
 
-                    return new ArrayList<String>();
-                }).orElseGet(Collections::emptyList);
+                return new ArrayList<String>();
+            }).orElseGet(Collections::emptyList);
     }
 
     @NotNull
     @Override
     public @UnmodifiableView Collection<UUID> getNodeUniqueIds() {
         return Embedded.getInstance().sendSyncQuery(new ApiToNodeGetNodeUniqueIds())
-                .map(result -> {
-                    if (result instanceof ApiToNodeGetNodeUniqueIdsResult) {
-                        return ((ApiToNodeGetNodeUniqueIdsResult) result).getUniqueIds();
-                    }
+            .map(result -> {
+                if (result instanceof ApiToNodeGetNodeUniqueIdsResult) {
+                    return ((ApiToNodeGetNodeUniqueIdsResult) result).getUniqueIds();
+                }
 
-                    return new ArrayList<UUID>();
-                }).orElseGet(Collections::emptyList);
+                return new ArrayList<UUID>();
+            }).orElseGet(Collections::emptyList);
     }
 
     @NotNull
     @Override
     public @UnmodifiableView Collection<NodeInformation> getNodes() {
         return Embedded.getInstance().sendSyncQuery(new ApiToNodeGetNodeObjects())
-                .map(result -> {
-                    if (result instanceof ApiToNodeGetNodeObjectsResult) {
-                        return ((ApiToNodeGetNodeObjectsResult) result).getNodeInformation();
-                    }
+            .map(result -> {
+                if (result instanceof ApiToNodeGetNodeObjectsResult) {
+                    return ((ApiToNodeGetNodeObjectsResult) result).getNodeInformation();
+                }
 
-                    return new ArrayList<NodeInformation>();
-                }).orElseGet(Collections::emptyList);
+                return new ArrayList<NodeInformation>();
+            }).orElseGet(Collections::emptyList);
     }
 
     @Override
     public boolean isNodePresent(@NotNull String name) {
         return Embedded.getInstance().sendSyncQuery(new ApiToNodeIsNodePresentByName(name))
-                .map(result -> {
-                    if (result instanceof ApiToNodeIsNodePresentResult) {
-                        return ((ApiToNodeIsNodePresentResult) result).isPresent();
-                    }
+            .map(result -> {
+                if (result instanceof ApiToNodeIsNodePresentResult) {
+                    return ((ApiToNodeIsNodePresentResult) result).isPresent();
+                }
 
-                    return false;
-                }).orElseGet(() -> false);
+                return false;
+            }).orElseGet(() -> false);
     }
 
     @Override
     public boolean isNodePresent(@NotNull UUID nodeUniqueId) {
         return Embedded.getInstance().sendSyncQuery(new ApiToNodeIsNodePresentByUniqueId(nodeUniqueId))
-                .map(result -> {
-                    if (result instanceof ApiToNodeIsNodePresentResult) {
-                        return ((ApiToNodeIsNodePresentResult) result).isPresent();
-                    }
+            .map(result -> {
+                if (result instanceof ApiToNodeIsNodePresentResult) {
+                    return ((ApiToNodeIsNodePresentResult) result).isPresent();
+                }
 
-                    return false;
-                }).orElseGet(() -> false);
+                return false;
+            }).orElseGet(() -> false);
     }
 }

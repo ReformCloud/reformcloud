@@ -66,13 +66,20 @@ public class DefaultNodeLocalProcessWrapper extends DefaultNodeRemoteProcessWrap
 
     private static final String LIB_PATH = Paths.get("").toAbsolutePath().toString();
     private static final String[] DEFAULT_SHUTDOWN_COMMANDS = new String[]{"end", "stop"};
+    private final Lock lock = new ReentrantLock();
+    private final String connectionKey = StringUtil.generateString(16);
+    private final ProcessScreen processScreen;
+    private final Path path;
+    private final boolean firstStart;
+    private ProcessState runtimeState = ProcessState.CREATED;
+    private Process process;
 
     public DefaultNodeLocalProcessWrapper(ProcessInformation processInformation) {
         super(processInformation);
 
         this.path = processInformation.getProcessGroup().isStaticProcess()
-                ? Paths.get("reformcloud/static", processInformation.getProcessDetail().getName())
-                : Paths.get("reformcloud/temp", processInformation.getProcessDetail().getName() + "-" + processInformation.getProcessDetail().getProcessUniqueID());
+            ? Paths.get("reformcloud/static", processInformation.getProcessDetail().getName())
+            : Paths.get("reformcloud/temp", processInformation.getProcessDetail().getName() + "-" + processInformation.getProcessDetail().getProcessUniqueID());
         this.firstStart = Files.notExists(this.path);
         this.processScreen = ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ProcessScreenController.class).createScreen(this);
 
@@ -83,28 +90,19 @@ public class DefaultNodeLocalProcessWrapper extends DefaultNodeRemoteProcessWrap
         this.setRuntimeState(ProcessState.PREPARED);
     }
 
-    private final Lock lock = new ReentrantLock();
-    private final String connectionKey = StringUtil.generateString(16);
-    private final ProcessScreen processScreen;
-    private final Path path;
-    private final boolean firstStart;
-
-    private ProcessState runtimeState = ProcessState.CREATED;
-    private Process process;
-
     @NotNull
     @Override
     public Optional<ProcessInformation> requestProcessInformationUpdate() {
         NetworkChannel channel = ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ChannelManager.class)
-                .getChannel(this.processInformation.getProcessDetail().getName())
-                .orElse(null);
+            .getChannel(this.processInformation.getProcessDetail().getName())
+            .orElse(null);
         if (channel == null) {
             return Optional.empty();
         }
 
         Packet result = ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(QueryManager.class)
-                .sendPacketQuery(channel, new NodeToApiRequestProcessInformationUpdate())
-                .getUninterruptedly(TimeUnit.SECONDS, 5);
+            .sendPacketQuery(channel, new NodeToApiRequestProcessInformationUpdate())
+            .getUninterruptedly(TimeUnit.SECONDS, 5);
         if (!(result instanceof NodeToApiRequestProcessInformationUpdateResult)) {
             return Optional.empty();
         }
@@ -153,7 +151,7 @@ public class DefaultNodeLocalProcessWrapper extends DefaultNodeRemoteProcessWrap
     @Override
     public void copy(@NotNull String templateGroup, @NotNull String templateName, @NotNull String templateBackend) {
         TemplateBackendManager.get(templateBackend).ifPresent(
-                backend -> backend.deployTemplate(templateGroup, templateName, this.path)
+            backend -> backend.deployTemplate(templateGroup, templateName, this.path)
         );
     }
 
@@ -202,27 +200,27 @@ public class DefaultNodeLocalProcessWrapper extends DefaultNodeRemoteProcessWrap
 
         NodeExecutor.getInstance().getCurrentNodeInformation().addUsedMemory(this.processInformation.getProcessDetail().getMaxMemory());
         List<String> command = new ArrayList<>(Arrays.asList(
-                this.processInformation.getProcessGroup().getStartupConfiguration().getJvmCommand(),
+            this.processInformation.getProcessGroup().getStartupConfiguration().getJvmCommand(),
 
-                "-DIReallyKnowWhatIAmDoingISwear=true",
-                "-Djline.terminal=jline.UnsupportedTerminal",
-                "-Dreformcloud.runner.version=" + System.getProperty("reformcloud.runner.version"),
-                "-Dreformcloud.executor.type=3",
-                "-Dreformcloud.lib.path=" + LIB_PATH,
-                "-Dreformcloud.process.path=" + new File("reformcloud/files/" + Version.format(
-                        this.processInformation.getProcessDetail().getTemplate().getVersion()
-                )).getAbsolutePath()
+            "-DIReallyKnowWhatIAmDoingISwear=true",
+            "-Djline.terminal=jline.UnsupportedTerminal",
+            "-Dreformcloud.runner.version=" + System.getProperty("reformcloud.runner.version"),
+            "-Dreformcloud.executor.type=3",
+            "-Dreformcloud.lib.path=" + LIB_PATH,
+            "-Dreformcloud.process.path=" + new File("reformcloud/files/" + Version.format(
+                this.processInformation.getProcessDetail().getTemplate().getVersion()
+            )).getAbsolutePath()
         ));
         this.processInformation.getProcessDetail().getTemplate().getRuntimeConfiguration().getSystemProperties().forEach(
-                (key, value) -> command.add(String.format("-D%s=%s", key, value))
+            (key, value) -> command.add(String.format("-D%s=%s", key, value))
         );
 
         command.addAll(this.processInformation.getProcessDetail().getTemplate().getRuntimeConfiguration().getJvmOptions());
         command.addAll(Arrays.asList(
-                "-Xmx" + this.processInformation.getProcessDetail().getMaxMemory() + "M",
-                "-cp", StringUtil.NULL_PATH,
-                "-javaagent:runner.jar",
-                "systems.reformcloud.reformcloud2.runner.RunnerExecutor"
+            "-Xmx" + this.processInformation.getProcessDetail().getMaxMemory() + "M",
+            "-cp", StringUtil.NULL_PATH,
+            "-javaagent:runner.jar",
+            "systems.reformcloud.reformcloud2.runner.RunnerExecutor"
         ));
         command.addAll(this.processInformation.getProcessDetail().getTemplate().getRuntimeConfiguration().getProcessParameters());
 
@@ -234,10 +232,10 @@ public class DefaultNodeLocalProcessWrapper extends DefaultNodeRemoteProcessWrap
 
         try {
             this.process = new ProcessBuilder()
-                    .command(command)
-                    .directory(this.path.toFile())
-                    .redirectErrorStream(true)
-                    .start();
+                .command(command)
+                .directory(this.path.toFile())
+                .redirectErrorStream(true)
+                .start();
         } catch (Throwable throwable) {
             if (throwable instanceof IOException) { // low level - but the best way :(
                 NodeExecutor.getInstance().getTaskScheduler().queue(() -> this.setRuntimeState(ProcessState.STARTED), 20 * 5);
@@ -269,10 +267,10 @@ public class DefaultNodeLocalProcessWrapper extends DefaultNodeRemoteProcessWrap
         if (finalStop) {
             if (this.processInformation.getProcessDetail().getTemplate().isAutoReleaseOnClose()) {
                 TemplateBackendManager.getOrDefault(this.processInformation.getProcessDetail().getTemplate().getBackend()).deployTemplate(
-                        this.processInformation.getProcessGroup().getName(),
-                        this.processInformation.getProcessDetail().getTemplate().getName(),
-                        this.path,
-                        this.processInformation.getPreInclusions().stream().map(ProcessInclusion::getName).collect(Collectors.toList())
+                    this.processInformation.getProcessGroup().getName(),
+                    this.processInformation.getProcessDetail().getTemplate().getName(),
+                    this.path,
+                    this.processInformation.getPreInclusions().stream().map(ProcessInclusion::getName).collect(Collectors.toList())
                 );
             }
 

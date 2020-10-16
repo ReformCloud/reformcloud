@@ -51,10 +51,10 @@ public final class ServerChannelInitializer extends ChannelInitializer<Channel> 
         NetworkChannel networkChannel = ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ChannelManager.class).createChannel(channel);
 
         channel.pipeline()
-                .addLast("deserializer", new VarInt21FrameDecoder())
-                .addLast("decoder", new SerializedPacketDecoder())
-                .addLast("serializer", new VarInt21FrameEncoder())
-                .addLast("encoder", new PacketSerializerEncoder())
-                .addLast("handler", new NettyChannelEndpoint(this.reader.get().setNetworkChannel(networkChannel)));
+            .addLast("deserializer", new VarInt21FrameDecoder())
+            .addLast("decoder", new SerializedPacketDecoder())
+            .addLast("serializer", new VarInt21FrameEncoder())
+            .addLast("encoder", new PacketSerializerEncoder())
+            .addLast("handler", new NettyChannelEndpoint(this.reader.get().setNetworkChannel(networkChannel)));
     }
 }

@@ -45,15 +45,15 @@ import java.util.concurrent.atomic.AtomicLong;
 
 public class FileDatabaseTableWrapper implements DatabaseTableWrapper {
 
+    private final Database<SerializableJsonConfiguration> database;
+
     public FileDatabaseTableWrapper(@NotNull String tableName) {
         this.database = DatabaseProvider.getDatabaseDriver().getDatabase(
-                new File("reformcloud/.database", tableName),
-                SerializableJsonConfiguration::new,
-                1
+            new File("reformcloud/.database", tableName),
+            SerializableJsonConfiguration::new,
+            1
         );
     }
-
-    private final Database<SerializableJsonConfiguration> database;
 
     @Override
     public void insert(@NotNull String key, @NotNull String id, @NotNull JsonConfiguration data) {

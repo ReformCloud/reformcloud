@@ -35,16 +35,15 @@ import java.util.UUID;
 
 public class PacketPlayEffectToPlayer extends ProtocolPacket {
 
+    private UUID uniqueId;
+    private String effect;
+
     public PacketPlayEffectToPlayer() {
     }
-
     public PacketPlayEffectToPlayer(UUID uniqueId, String effect) {
         this.uniqueId = uniqueId;
         this.effect = effect;
     }
-
-    private UUID uniqueId;
-    private String effect;
 
     public UUID getUniqueId() {
         return this.uniqueId;

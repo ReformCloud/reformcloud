@@ -139,16 +139,15 @@ public final class TickedTaskScheduler {
 
     public static class TickedTaskSchedulerTask<T> {
 
+        private final Task<T> task;
+        private final Callable<T> callable;
+        private final long targetTick;
+
         public TickedTaskSchedulerTask(Task<T> task, Callable<T> callable, long targetTick) {
             this.task = task;
             this.callable = callable;
             this.targetTick = targetTick;
         }
-
-        private final Task<T> task;
-        private final Callable<T> callable;
-
-        private final long targetTick;
 
         public long getTargetTick() {
             return this.targetTick;

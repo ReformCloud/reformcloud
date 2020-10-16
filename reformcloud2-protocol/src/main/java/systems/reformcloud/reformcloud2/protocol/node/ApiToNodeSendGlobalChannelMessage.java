@@ -35,16 +35,15 @@ import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
 
 public class ApiToNodeSendGlobalChannelMessage extends ProtocolPacket {
 
+    private String channel;
+    private JsonConfiguration data;
+
     public ApiToNodeSendGlobalChannelMessage() {
     }
-
     public ApiToNodeSendGlobalChannelMessage(String channel, JsonConfiguration data) {
         this.channel = channel;
         this.data = data;
     }
-
-    private String channel;
-    private JsonConfiguration data;
 
     @Override
     public int getId() {

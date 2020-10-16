@@ -65,13 +65,13 @@ public final class CloudFlareHelper {
         if (Files.notExists(Paths.get(baseFolder + "/config.json"))) {
             IOUtils.createDirectory(Paths.get(baseFolder));
             new JsonConfiguration()
-                    .add("config", new CloudFlareConfig(
-                            "someone@example.com",
-                            "",
-                            "example.com",
-                            "",
-                            "@"
-                    )).write(Paths.get(baseFolder + "/config.json"));
+                .add("config", new CloudFlareConfig(
+                    "someone@example.com",
+                    "",
+                    "example.com",
+                    "",
+                    "@"
+                )).write(Paths.get(baseFolder + "/config.json"));
             return true;
         }
 
@@ -108,7 +108,7 @@ public final class CloudFlareHelper {
     private static String createRecord(ProcessInformation target, JsonConfiguration configuration) {
         try {
             HttpURLConnection httpURLConnection = (HttpURLConnection) new URL(CLOUD_FLARE_API_URL + "zones/"
-                    + cloudFlareConfig.getZoneId() + "/dns_records").openConnection();
+                + cloudFlareConfig.getZoneId() + "/dns_records").openConnection();
             httpURLConnection.setRequestMethod("POST");
             httpURLConnection.setDoOutput(true);
             httpURLConnection.setUseCaches(false);
@@ -123,7 +123,7 @@ public final class CloudFlareHelper {
             }
 
             try (InputStream stream = httpURLConnection.getResponseCode() < 400
-                    ? httpURLConnection.getInputStream() : httpURLConnection.getErrorStream()
+                ? httpURLConnection.getInputStream() : httpURLConnection.getErrorStream()
             ) {
                 JsonConfiguration result = new JsonConfiguration(stream);
                 httpURLConnection.disconnect();
@@ -152,12 +152,12 @@ public final class CloudFlareHelper {
 
                         if (jsonObject.has("message") && jsonObject.has("code")) {
                             System.err.println(LanguageManager.get(
-                                    "cloudflare-create-error",
-                                    configuration.getOrDefault("type", "unknown"),
-                                    target.getProcessDetail().getName(),
-                                    jsonObject.get("code").getAsLong(),
-                                    httpURLConnection.getResponseCode(),
-                                    jsonObject.get("message").getAsString())
+                                "cloudflare-create-error",
+                                configuration.getOrDefault("type", "unknown"),
+                                target.getProcessDetail().getName(),
+                                jsonObject.get("code").getAsLong(),
+                                httpURLConnection.getResponseCode(),
+                                jsonObject.get("message").getAsString())
                             );
                             return null;
                         }
@@ -165,12 +165,12 @@ public final class CloudFlareHelper {
                     }
 
                     System.err.println(LanguageManager.get(
-                            "cloudflare-create-error",
-                            configuration.getOrDefault("type", "unknown"),
-                            target.getProcessDetail().getName(),
-                            -1,
-                            httpURLConnection.getResponseCode(),
-                            "No reason provided"
+                        "cloudflare-create-error",
+                        configuration.getOrDefault("type", "unknown"),
+                        target.getProcessDetail().getName(),
+                        -1,
+                        httpURLConnection.getResponseCode(),
+                        "No reason provided"
                     ));
                 }
             }
@@ -202,7 +202,7 @@ public final class CloudFlareHelper {
     private static void deleteRecord(String dnsID) {
         try {
             HttpURLConnection httpURLConnection = (HttpURLConnection) new URL(CLOUD_FLARE_API_URL + "zones/"
-                    + cloudFlareConfig.getZoneId() + "/dns_records/" + dnsID).openConnection();
+                + cloudFlareConfig.getZoneId() + "/dns_records/" + dnsID).openConnection();
             httpURLConnection.setRequestMethod("DELETE");
             httpURLConnection.setUseCaches(false);
             httpURLConnection.setRequestProperty("X-Auth-Email", cloudFlareConfig.getEmail());
@@ -211,7 +211,7 @@ public final class CloudFlareHelper {
             httpURLConnection.setRequestProperty("Content-Type", "application/json");
 
             try (InputStream stream = httpURLConnection.getResponseCode() < 400
-                    ? httpURLConnection.getInputStream() : httpURLConnection.getErrorStream()
+                ? httpURLConnection.getInputStream() : httpURLConnection.getErrorStream()
             ) {
                 new JsonConfiguration(stream); // wait for the result
             }
@@ -224,42 +224,42 @@ public final class CloudFlareHelper {
 
     private static JsonConfiguration prepareConfig(ProcessInformation target) {
         return new JsonConfiguration()
-                .add("type", "SRV")
-                .add("name", "_minecraft._tcp." + cloudFlareConfig.getDomainName())
-                .add("content", "SRV 1 1 " + target.getNetworkInfo().getPort()
-                        + " " + target.getProcessDetail().getParentName() + "." + cloudFlareConfig.getDomainName())
-                .add("ttl", 1)
+            .add("type", "SRV")
+            .add("name", "_minecraft._tcp." + cloudFlareConfig.getDomainName())
+            .add("content", "SRV 1 1 " + target.getNetworkInfo().getPort()
+                + " " + target.getProcessDetail().getParentName() + "." + cloudFlareConfig.getDomainName())
+            .add("ttl", 1)
+            .add("priority", 1)
+            .add("proxied", false)
+            .add("data", new JsonConfiguration()
+                .add("service", "_minecraft")
+                .add("proto", "_tcp")
+                .add("name", cloudFlareConfig.getSubDomain().equals("@")
+                    ? cloudFlareConfig.getDomainName() : cloudFlareConfig.getSubDomain())
                 .add("priority", 1)
-                .add("proxied", false)
-                .add("data", new JsonConfiguration()
-                        .add("service", "_minecraft")
-                        .add("proto", "_tcp")
-                        .add("name", cloudFlareConfig.getSubDomain().equals("@")
-                                ? cloudFlareConfig.getDomainName() : cloudFlareConfig.getSubDomain())
-                        .add("priority", 1)
-                        .add("weight", 1)
-                        .add("port", target.getNetworkInfo().getPort())
-                        .add("target", target.getProcessDetail().getParentName() + "." + cloudFlareConfig.getDomainName())
-                        .getJsonObject()
-                );
+                .add("weight", 1)
+                .add("port", target.getNetworkInfo().getPort())
+                .add("target", target.getProcessDetail().getParentName() + "." + cloudFlareConfig.getDomainName())
+                .getJsonObject()
+            );
     }
 
     private static JsonConfiguration prepareARecord(ProcessInformation processInformation) {
         return new JsonConfiguration()
-                .add("type", processInformation.getNetworkInfo().getHost() instanceof Inet6Address ? "AAAA" : "A")
-                .add("name", processInformation.getProcessDetail().getParentName() + "." + cloudFlareConfig.getDomainName())
-                .add("content", processInformation.getNetworkInfo().getHostPlain())
-                .add("ttl", 1)
-                .add("proxied", false)
-                .add("data", new JsonConfiguration().getJsonObject());
+            .add("type", processInformation.getNetworkInfo().getHost() instanceof Inet6Address ? "AAAA" : "A")
+            .add("name", processInformation.getProcessDetail().getParentName() + "." + cloudFlareConfig.getDomainName())
+            .add("content", processInformation.getNetworkInfo().getHostPlain())
+            .add("ttl", 1)
+            .add("proxied", false)
+            .add("data", new JsonConfiguration().getJsonObject());
 
     }
 
     @NotNull
     private static Collection<ProcessInformation> getShouldHandleProcesses() {
         return Streams.allOf(
-                ExecutorAPI.getInstance().getProcessProvider().getProcesses(),
-                CloudFlareHelper::shouldHandle
+            ExecutorAPI.getInstance().getProcessProvider().getProcesses(),
+            CloudFlareHelper::shouldHandle
         );
     }
 
@@ -269,6 +269,6 @@ public final class CloudFlareHelper {
 
     public static boolean shouldHandle(@NotNull ProcessInformation process) {
         return !process.getProcessDetail().getTemplate().isServer()
-                && NodeExecutor.getInstance().isOwnIdentity(process.getProcessDetail().getParentName());
+            && NodeExecutor.getInstance().isOwnIdentity(process.getProcessDetail().getParentName());
     }
 }

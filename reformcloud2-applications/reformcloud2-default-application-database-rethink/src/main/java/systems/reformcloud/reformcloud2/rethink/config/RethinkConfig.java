@@ -26,6 +26,11 @@ package systems.reformcloud.reformcloud2.rethink.config;
 
 public class RethinkConfig {
 
+    private final String host;
+    private final int port;
+    private final String database;
+    private final String userName;
+    private final String password;
     public RethinkConfig(String host, int port, String database, String userName, String password) {
         this.host = host;
         this.port = port;
@@ -33,12 +38,6 @@ public class RethinkConfig {
         this.userName = userName;
         this.password = password;
     }
-
-    private final String host;
-    private final int port;
-    private final String database;
-    private final String userName;
-    private final String password;
 
     public String getHost() {
         return this.host;

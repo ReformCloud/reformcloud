@@ -65,8 +65,8 @@ public final class SpigotExecutor extends Embedded {
 
     private void fixInvalidPlayers() {
         SharedInvalidPlayerFixer.start(
-                uuid -> Bukkit.getPlayer(uuid) != null,
-                () -> Bukkit.getOnlinePlayers().size()
+            uuid -> Bukkit.getPlayer(uuid) != null,
+            () -> Bukkit.getOnlinePlayers().size()
         );
     }
 }

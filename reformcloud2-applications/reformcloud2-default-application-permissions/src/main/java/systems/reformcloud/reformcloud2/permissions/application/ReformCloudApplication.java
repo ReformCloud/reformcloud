@@ -58,9 +58,9 @@ public class ReformCloudApplication extends Application {
         PermissionManagement.setup();
         PacketHelper.addPacketHandler();
         ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(CommandManager.class).registerCommand(
-                new CommandPerms(),
-                "Manages the permission users and permission groups in the database and on all currently running processes",
-                "permissions", "cloudperms", "perms");
+            new CommandPerms(),
+            "Manages the permission users and permission groups in the database and on all currently running processes",
+            "permissions", "cloudperms", "perms");
     }
 
     @Override

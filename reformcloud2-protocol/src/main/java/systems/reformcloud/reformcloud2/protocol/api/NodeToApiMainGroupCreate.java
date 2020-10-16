@@ -37,14 +37,14 @@ import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
 
 public class NodeToApiMainGroupCreate extends ProtocolPacket {
 
+    private MainGroup mainGroup;
+
     public NodeToApiMainGroupCreate() {
     }
 
     public NodeToApiMainGroupCreate(MainGroup mainGroup) {
         this.mainGroup = mainGroup;
     }
-
-    private MainGroup mainGroup;
 
     public MainGroup getMainGroup() {
         return this.mainGroup;
@@ -58,7 +58,7 @@ public class NodeToApiMainGroupCreate extends ProtocolPacket {
     @Override
     public void handlePacketReceive(@NotNull EndpointChannelReader reader, @NotNull NetworkChannel channel) {
         ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class)
-                .callEvent(new MainGroupCreateEvent(this.mainGroup));
+            .callEvent(new MainGroupCreateEvent(this.mainGroup));
     }
 
     @Override

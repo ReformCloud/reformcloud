@@ -43,13 +43,13 @@ public class DefaultEmbeddedMainGroupProvider implements MainGroupProvider {
     @Override
     public Optional<MainGroup> getMainGroup(@NotNull String name) {
         return Embedded.getInstance().sendSyncQuery(new ApiToNodeGetMainGroup(name))
-                .map(result -> {
-                    if (result instanceof ApiToNodeGetMainGroupResult) {
-                        return ((ApiToNodeGetMainGroupResult) result).getMainGroup();
-                    }
+            .map(result -> {
+                if (result instanceof ApiToNodeGetMainGroupResult) {
+                    return ((ApiToNodeGetMainGroupResult) result).getMainGroup();
+                }
 
-                    return null;
-                });
+                return null;
+            });
     }
 
     @Override
@@ -66,38 +66,38 @@ public class DefaultEmbeddedMainGroupProvider implements MainGroupProvider {
     @Override
     public @UnmodifiableView Collection<MainGroup> getMainGroups() {
         return Embedded.getInstance().sendSyncQuery(new ApiToNodeGetMainGroupObjects())
-                .map(result -> {
-                    if (result instanceof ApiToNodeGetMainGroupObjectsResult) {
-                        return ((ApiToNodeGetMainGroupObjectsResult) result).getMainGroups();
-                    }
+            .map(result -> {
+                if (result instanceof ApiToNodeGetMainGroupObjectsResult) {
+                    return ((ApiToNodeGetMainGroupObjectsResult) result).getMainGroups();
+                }
 
-                    return new ArrayList<MainGroup>();
-                }).orElseGet(Collections::emptyList);
+                return new ArrayList<MainGroup>();
+            }).orElseGet(Collections::emptyList);
     }
 
     @Override
     public long getMainGroupCount() {
         return Embedded.getInstance().sendSyncQuery(new ApiToNodeGetMainGroupCount())
-                .map(result -> {
-                    if (result instanceof ApiToNodeGetMainGroupCountResult) {
-                        return ((ApiToNodeGetMainGroupCountResult) result).getCount();
-                    }
+            .map(result -> {
+                if (result instanceof ApiToNodeGetMainGroupCountResult) {
+                    return ((ApiToNodeGetMainGroupCountResult) result).getCount();
+                }
 
-                    return 0L;
-                }).orElseGet(() -> 0L);
+                return 0L;
+            }).orElseGet(() -> 0L);
     }
 
     @NotNull
     @Override
     public @UnmodifiableView Collection<String> getMainGroupNames() {
         return Embedded.getInstance().sendSyncQuery(new ApiToNodeGetMainGroupNames())
-                .map(result -> {
-                    if (result instanceof ApiToNodeGetStringCollectionResult) {
-                        return ((ApiToNodeGetStringCollectionResult) result).getResult();
-                    }
+            .map(result -> {
+                if (result instanceof ApiToNodeGetStringCollectionResult) {
+                    return ((ApiToNodeGetStringCollectionResult) result).getResult();
+                }
 
-                    return new ArrayList<String>();
-                }).orElseGet(Collections::emptyList);
+                return new ArrayList<String>();
+            }).orElseGet(Collections::emptyList);
     }
 
     @NotNull

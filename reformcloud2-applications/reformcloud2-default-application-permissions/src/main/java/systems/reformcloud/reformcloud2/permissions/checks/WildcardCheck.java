@@ -76,9 +76,9 @@ public final class WildcardCheck {
         for (PermissionNode permissionNode : permissionNodes) {
             final String actual = permissionNode.getActualPermission();
             if (actual.length() > 1
-                    && actual.endsWith("*")
-                    && permission.startsWith(actual.substring(0, actual.length() - 1))
-                    && permissionNode.isValid()) {
+                && actual.endsWith("*")
+                && permission.startsWith(actual.substring(0, actual.length() - 1))
+                && permissionNode.isValid()) {
                 return permissionNode.isSet();
             }
         }

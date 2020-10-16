@@ -42,22 +42,22 @@ import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
 import systems.reformcloud.reformcloud2.executor.api.network.packet.PacketProvider;
 
 @Plugin(
-        id = "reformcloud_2_commands",
-        name = "ReformCloud2Commands",
-        version = "2.0",
-        description = "Get access to default reformcloud2 commands",
-        url = "https://reformcloud.systems",
-        authors = {"derklaro"},
-        dependencies = {@Dependency(id = "reformcloud_2_api_executor")}
+    id = "reformcloud_2_commands",
+    name = "ReformCloud2Commands",
+    version = "2.0",
+    description = "Get access to default reformcloud2 commands",
+    url = "https://reformcloud.systems",
+    authors = {"derklaro"},
+    dependencies = {@Dependency(id = "reformcloud_2_api_executor")}
 )
 public class VelocityPlugin {
+
+    private final ProxyServer proxyServer;
 
     @Inject
     public VelocityPlugin(ProxyServer proxyServer) {
         this.proxyServer = proxyServer;
     }
-
-    private final ProxyServer proxyServer;
 
     @Subscribe
     public void handle(ProxyInitializeEvent event) {

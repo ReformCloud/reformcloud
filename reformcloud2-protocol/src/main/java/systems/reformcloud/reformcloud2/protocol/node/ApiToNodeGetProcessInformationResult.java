@@ -33,14 +33,14 @@ import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 
 public class ApiToNodeGetProcessInformationResult extends QueryResultPacket {
 
+    private @Nullable ProcessInformation processInformation;
+
     public ApiToNodeGetProcessInformationResult() {
     }
 
     public ApiToNodeGetProcessInformationResult(@Nullable ProcessInformation processInformation) {
         this.processInformation = processInformation;
     }
-
-    private @Nullable ProcessInformation processInformation;
 
     @Nullable
     public ProcessInformation getProcessInformation() {

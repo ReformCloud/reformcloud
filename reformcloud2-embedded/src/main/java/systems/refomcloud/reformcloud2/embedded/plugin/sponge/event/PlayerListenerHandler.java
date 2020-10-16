@@ -46,17 +46,17 @@ public final class PlayerListenerHandler {
         if (!Embedded.getInstance().isReady()) {
             event.setCancelled(true);
             event.setMessage(Text.of(SpongeExecutor.getInstance().getIngameMessages().format(
-                    SpongeExecutor.getInstance().getIngameMessages().getProcessNotReadyToAcceptPlayersMessage()
+                SpongeExecutor.getInstance().getIngameMessages().getProcessNotReadyToAcceptPlayersMessage()
             )));
             return;
         }
 
         Duo<Boolean, String> checked = SharedJoinAllowChecker.checkIfConnectAllowed(
-                event.getTargetUser()::hasPermission,
-                SpongeExecutor.getInstance().getIngameMessages(),
-                null,
-                event.getTargetUser().getUniqueId(),
-                event.getTargetUser().getName()
+            event.getTargetUser()::hasPermission,
+            SpongeExecutor.getInstance().getIngameMessages(),
+            null,
+            event.getTargetUser().getUniqueId(),
+            event.getTargetUser().getName()
         );
         if (!checked.getFirst() && checked.getSecond() != null) {
             event.setCancelled(true);
@@ -73,8 +73,8 @@ public final class PlayerListenerHandler {
 
         SpongeExecutor.getInstance().getExecutorService().schedule(() -> {
             if (Sponge.getServer().getOnlinePlayers().size() < current.getProcessDetail().getMaxPlayers()
-                    && !current.getProcessDetail().getProcessState().equals(ProcessState.READY)
-                    && !current.getProcessDetail().getProcessState().equals(ProcessState.INVISIBLE)) {
+                && !current.getProcessDetail().getProcessState().equals(ProcessState.READY)
+                && !current.getProcessDetail().getProcessState().equals(ProcessState.INVISIBLE)) {
                 current.getProcessDetail().setProcessState(ProcessState.READY);
             }
 

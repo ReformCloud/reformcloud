@@ -38,7 +38,7 @@ public final class CommandStop implements Command {
         } catch (Exception exception) {
             System.err.println("An exception occurred during system shutdown. Forcing");
             exception.printStackTrace();
-            System.exit(-1);
+            Runtime.getRuntime().halt(-1);
         }
     }
 }

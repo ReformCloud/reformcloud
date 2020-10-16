@@ -105,19 +105,16 @@ public final class NodeExecutor extends ExecutorAPI {
     private final NodeNetworkClient networkClient = new NodeNetworkClient();
 
     private final NodeExecutorConfig nodeExecutorConfig = new NodeExecutorConfig();
-    private NodeConfig nodeConfig;
-
     private final ServiceRegistry serviceRegistry = new DefaultServiceRegistry();
     private final DefaultNodeProcessProvider processProvider = new DefaultNodeProcessProvider();
     private final PlayerProvider playerProvider = new DefaultNodePlayerProvider();
     private final ChannelMessageProvider channelMessageProvider = new DefaultNodeChannelMessageProvider();
+    private final TickedTaskScheduler taskScheduler = new TickedTaskScheduler();
+    private final CloudTickWorker cloudTickWorker = new CloudTickWorker(this.taskScheduler);
+    private NodeConfig nodeConfig;
     private DefaultNodeMainGroupProvider mainGroupProvider;
     private DefaultNodeProcessGroupProvider processGroupProvider;
     private DefaultNodeNodeInformationProvider nodeInformationProvider;
-
-    private final TickedTaskScheduler taskScheduler = new TickedTaskScheduler();
-    private final CloudTickWorker cloudTickWorker = new CloudTickWorker(this.taskScheduler);
-
     private DefaultNodeConsole console;
     private CloudLogger logger;
     private ArgumentParser argumentParser;
@@ -140,6 +137,15 @@ public final class NodeExecutor extends ExecutorAPI {
 
         this.dependencyLoader = dependencyLoader;
         this.registerDefaultServices();
+    }
+
+    @NotNull
+    public static NodeExecutor getInstance() {
+        return (NodeExecutor) ExecutorAPI.getInstance();
+    }
+
+    public static boolean isRunning() {
+        return running;
     }
 
     protected synchronized void bootstrap(@NotNull ArgumentParser argumentParser) {
@@ -317,11 +323,6 @@ public final class NodeExecutor extends ExecutorAPI {
     }
 
     @NotNull
-    public static NodeExecutor getInstance() {
-        return (NodeExecutor) ExecutorAPI.getInstance();
-    }
-
-    @NotNull
     @Override
     public ChannelMessageProvider getChannelMessageProvider() {
         return this.channelMessageProvider;
@@ -449,10 +450,6 @@ public final class NodeExecutor extends ExecutorAPI {
 
     public boolean isOwnIdentity(@NotNull String name) {
         return this.nodeConfig.getName().equals(name);
-    }
-
-    public static boolean isRunning() {
-        return running;
     }
 
     private void loadCommands() {

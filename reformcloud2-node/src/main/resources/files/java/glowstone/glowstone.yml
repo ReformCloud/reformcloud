@@ -106,4 +106,4 @@ libraries:
   repository-url: https://repo.glowstone.net/service/local/repositories/central/content/
   download-attempts: 2
   compatibility-bundle: CRAFTBUKKIT
-  list: []
+  list: [ ]

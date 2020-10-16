@@ -44,95 +44,95 @@ final class ConfigHelper {
 
     static void createDefault(String path) {
         SignConfig config = new SignConfig(
-                1,
-                Collections.singletonList(createDefaultLayout()),
-                false,
-                "reformcloud.knockback.bypass",
-                1.0D,
-                0.8D
+            1,
+            Collections.singletonList(createDefaultLayout()),
+            false,
+            "reformcloud.knockback.bypass",
+            1.0D,
+            0.8D
         );
         new JsonConfiguration()
-                .add("config", config)
-                .write(path + "/layout.json");
+            .add("config", config)
+            .write(path + "/layout.json");
     }
 
     private static SignLayout createDefaultLayout() {
         return new SignLayout(
-                null,
-                true,
-                true,
-                Arrays.asList(
-                        createDefault("STAINED_CLAY", 1, "< = >", "%group%", " Waiting ", "< = >"),
-                        createDefault("STAINED_CLAY", 1, "< == >", "%group%", " Waiting. ", "< == >"),
-                        createDefault("STAINED_CLAY", 1, "< === >", "%group%", " Waiting.. ", "< === >"),
-                        createDefault("STAINED_CLAY", 1, "< ==== >", "%group%", " Waiting... ", "< ==== >"),
-                        createDefault("STAINED_CLAY", 1, "< ===== >", "%group%", " Waiting.... ", "< ===== >"),
-                        createDefault("STAINED_CLAY", 1, "< ====== >", "%group%", " Waiting..... ", "< ====== >"),
-                        createDefault("STAINED_CLAY", 1, "< ======= >", "%group%", " Waiting.... ", "< ======= >"),
-                        createDefault("STAINED_CLAY", 1, "< ======== >", "%group%", " Waiting... ", "< ======== >"),
-                        createDefault("STAINED_CLAY", 1, "< ========= >", "%group%", " Waiting.. ", "< ========= >"),
-                        createDefault("STAINED_CLAY", 1, "< ========== >", "%group%", " Waiting. ", "< ========== >"),
-                        createDefault("STAINED_CLAY", 1, "< =========== >", "%group%", " Waiting ", "< =========== >")
-                ), Arrays.asList(
-                createDefault("STAINED_CLAY", 2, "< = >", "%name%", " Connecting ", "< = >"),
-                createDefault("STAINED_CLAY", 2, "< == >", "%name%", " Connecting. ", "< == >"),
-                createDefault("STAINED_CLAY", 2, "< === >", "%name%", " Connecting.. ", "< === >"),
-                createDefault("STAINED_CLAY", 2, "< ==== >", "%name%", " Connecting... ", "< ==== >"),
-                createDefault("STAINED_CLAY", 2, "< ===== >", "%name%", " Connecting.... ", "< ===== >"),
-                createDefault("STAINED_CLAY", 2, "< ====== >", "%name%", " Connecting..... ", "< ====== >"),
-                createDefault("STAINED_CLAY", 2, "< ======= >", "%name%", " Connecting.... ", "< ======= >"),
-                createDefault("STAINED_CLAY", 2, "< ======== >", "%name%", " Connecting... ", "< ======== >"),
-                createDefault("STAINED_CLAY", 2, "< ========= >", "%name%", " Connecting.. ", "< ========= >"),
-                createDefault("STAINED_CLAY", 2, "< ========== >", "%name%", " Connecting. ", "< ========== >"),
-                createDefault("STAINED_CLAY", 2, "< =========== >", "%name%", " Connecting ", "< =========== >")
+            null,
+            true,
+            true,
+            Arrays.asList(
+                createDefault("STAINED_CLAY", 1, "< = >", "%group%", " Waiting ", "< = >"),
+                createDefault("STAINED_CLAY", 1, "< == >", "%group%", " Waiting. ", "< == >"),
+                createDefault("STAINED_CLAY", 1, "< === >", "%group%", " Waiting.. ", "< === >"),
+                createDefault("STAINED_CLAY", 1, "< ==== >", "%group%", " Waiting... ", "< ==== >"),
+                createDefault("STAINED_CLAY", 1, "< ===== >", "%group%", " Waiting.... ", "< ===== >"),
+                createDefault("STAINED_CLAY", 1, "< ====== >", "%group%", " Waiting..... ", "< ====== >"),
+                createDefault("STAINED_CLAY", 1, "< ======= >", "%group%", " Waiting.... ", "< ======= >"),
+                createDefault("STAINED_CLAY", 1, "< ======== >", "%group%", " Waiting... ", "< ======== >"),
+                createDefault("STAINED_CLAY", 1, "< ========= >", "%group%", " Waiting.. ", "< ========= >"),
+                createDefault("STAINED_CLAY", 1, "< ========== >", "%group%", " Waiting. ", "< ========== >"),
+                createDefault("STAINED_CLAY", 1, "< =========== >", "%group%", " Waiting ", "< =========== >")
+            ), Arrays.asList(
+            createDefault("STAINED_CLAY", 2, "< = >", "%name%", " Connecting ", "< = >"),
+            createDefault("STAINED_CLAY", 2, "< == >", "%name%", " Connecting. ", "< == >"),
+            createDefault("STAINED_CLAY", 2, "< === >", "%name%", " Connecting.. ", "< === >"),
+            createDefault("STAINED_CLAY", 2, "< ==== >", "%name%", " Connecting... ", "< ==== >"),
+            createDefault("STAINED_CLAY", 2, "< ===== >", "%name%", " Connecting.... ", "< ===== >"),
+            createDefault("STAINED_CLAY", 2, "< ====== >", "%name%", " Connecting..... ", "< ====== >"),
+            createDefault("STAINED_CLAY", 2, "< ======= >", "%name%", " Connecting.... ", "< ======= >"),
+            createDefault("STAINED_CLAY", 2, "< ======== >", "%name%", " Connecting... ", "< ======== >"),
+            createDefault("STAINED_CLAY", 2, "< ========= >", "%name%", " Connecting.. ", "< ========= >"),
+            createDefault("STAINED_CLAY", 2, "< ========== >", "%name%", " Connecting. ", "< ========== >"),
+            createDefault("STAINED_CLAY", 2, "< =========== >", "%name%", " Connecting ", "< =========== >")
         ), Arrays.asList(
-                createDefault("STAINED_CLAY", 7, "< = >", "%name%", "%template%", "< = >"),
-                createDefault("STAINED_CLAY", 7, "< == >", "%name%", "%template%", "< == >"),
-                createDefault("STAINED_CLAY", 7, "< === >", "%name%", "%template%", "< === >"),
-                createDefault("STAINED_CLAY", 7, "< ==== >", "%name%", "%template%", "< ==== >"),
-                createDefault("STAINED_CLAY", 7, "< ===== >", "%name%", "%template%", "< ===== >"),
-                createDefault("STAINED_CLAY", 7, "< ====== >", "%name%", "%template%", "< ====== >"),
-                createDefault("STAINED_CLAY", 7, "< ======= >", "%name%", "%online%/%max%", "< ======= >"),
-                createDefault("STAINED_CLAY", 7, "< ======== >", "%name%", "%online%/%max%", "< ======== >"),
-                createDefault("STAINED_CLAY", 7, "< ========= >", "%name%", "%online%/%max%", "< ========= >"),
-                createDefault("STAINED_CLAY", 7, "< ========== >", "%name%", "%online%/%max%", "< ========== >"),
-                createDefault("STAINED_CLAY", 7, "< =========== >", "%name%", "%online%/%max%", "< =========== >")
+            createDefault("STAINED_CLAY", 7, "< = >", "%name%", "%template%", "< = >"),
+            createDefault("STAINED_CLAY", 7, "< == >", "%name%", "%template%", "< == >"),
+            createDefault("STAINED_CLAY", 7, "< === >", "%name%", "%template%", "< === >"),
+            createDefault("STAINED_CLAY", 7, "< ==== >", "%name%", "%template%", "< ==== >"),
+            createDefault("STAINED_CLAY", 7, "< ===== >", "%name%", "%template%", "< ===== >"),
+            createDefault("STAINED_CLAY", 7, "< ====== >", "%name%", "%template%", "< ====== >"),
+            createDefault("STAINED_CLAY", 7, "< ======= >", "%name%", "%online%/%max%", "< ======= >"),
+            createDefault("STAINED_CLAY", 7, "< ======== >", "%name%", "%online%/%max%", "< ======== >"),
+            createDefault("STAINED_CLAY", 7, "< ========= >", "%name%", "%online%/%max%", "< ========= >"),
+            createDefault("STAINED_CLAY", 7, "< ========== >", "%name%", "%online%/%max%", "< ========== >"),
+            createDefault("STAINED_CLAY", 7, "< =========== >", "%name%", "%online%/%max%", "< =========== >")
         ), Arrays.asList(
-                createDefault("STAINED_CLAY", 13, "< = >", "%name%", "%template%", "< = >"),
-                createDefault("STAINED_CLAY", 13, "< == >", "%name%", "%template%", "< == >"),
-                createDefault("STAINED_CLAY", 13, "< === >", "%name%", "%template%", "< === >"),
-                createDefault("STAINED_CLAY", 13, "< ==== >", "%name%", "%template%", "< ==== >"),
-                createDefault("STAINED_CLAY", 13, "< ===== >", "%name%", "%template%", "< ===== >"),
-                createDefault("STAINED_CLAY", 13, "< ====== >", "%name%", "%template%", "< ====== >"),
-                createDefault("STAINED_CLAY", 13, "< ======= >", "%name%", "%online%/%max%", "< ======= >"),
-                createDefault("STAINED_CLAY", 13, "< ======== >", "%name%", "%online%/%max%", "< ======== >"),
-                createDefault("STAINED_CLAY", 13, "< ========= >", "%name%", "%online%/%max%", "< ========= >"),
-                createDefault("STAINED_CLAY", 13, "< ========== >", "%name%", "%online%/%max%", "< ========== >"),
-                createDefault("STAINED_CLAY", 13, "< =========== >", "%name%", "%online%/%max%", "< =========== >")
+            createDefault("STAINED_CLAY", 13, "< = >", "%name%", "%template%", "< = >"),
+            createDefault("STAINED_CLAY", 13, "< == >", "%name%", "%template%", "< == >"),
+            createDefault("STAINED_CLAY", 13, "< === >", "%name%", "%template%", "< === >"),
+            createDefault("STAINED_CLAY", 13, "< ==== >", "%name%", "%template%", "< ==== >"),
+            createDefault("STAINED_CLAY", 13, "< ===== >", "%name%", "%template%", "< ===== >"),
+            createDefault("STAINED_CLAY", 13, "< ====== >", "%name%", "%template%", "< ====== >"),
+            createDefault("STAINED_CLAY", 13, "< ======= >", "%name%", "%online%/%max%", "< ======= >"),
+            createDefault("STAINED_CLAY", 13, "< ======== >", "%name%", "%online%/%max%", "< ======== >"),
+            createDefault("STAINED_CLAY", 13, "< ========= >", "%name%", "%online%/%max%", "< ========= >"),
+            createDefault("STAINED_CLAY", 13, "< ========== >", "%name%", "%online%/%max%", "< ========== >"),
+            createDefault("STAINED_CLAY", 13, "< =========== >", "%name%", "%online%/%max%", "< =========== >")
         ), Arrays.asList(
-                createDefault("STAINED_CLAY", 4, "< = >", "%name%", "§6§lFULL", "< = >"),
-                createDefault("STAINED_CLAY", 4, "< == >", "%name%", "§6§lFULL", "< == >"),
-                createDefault("STAINED_CLAY", 4, "< === >", "%name%", "§6§lFULL", "< === >"),
-                createDefault("STAINED_CLAY", 4, "< ==== >", "%name%", "§6§lFULL", "< ==== >"),
-                createDefault("STAINED_CLAY", 4, "< ===== >", "%name%", "§6§lFULL", "< ===== >"),
-                createDefault("STAINED_CLAY", 4, "< ====== >", "%name%", "§6§lFULL", "< ====== >"),
-                createDefault("STAINED_CLAY", 4, "< ======= >", "%name%", "§6§lFULL", "< ======= >"),
-                createDefault("STAINED_CLAY", 4, "< ======== >", "%name%", "§6§lFULL", "< ======== >"),
-                createDefault("STAINED_CLAY", 4, "< ========= >", "%name%", "§6§lFULL", "< ========= >"),
-                createDefault("STAINED_CLAY", 4, "< ========== >", "%name%", "§6§lFULL", "< ========== >"),
-                createDefault("STAINED_CLAY", 4, "< =========== >", "%name%", "§6§lFULL", "< =========== >")
+            createDefault("STAINED_CLAY", 4, "< = >", "%name%", "§6§lFULL", "< = >"),
+            createDefault("STAINED_CLAY", 4, "< == >", "%name%", "§6§lFULL", "< == >"),
+            createDefault("STAINED_CLAY", 4, "< === >", "%name%", "§6§lFULL", "< === >"),
+            createDefault("STAINED_CLAY", 4, "< ==== >", "%name%", "§6§lFULL", "< ==== >"),
+            createDefault("STAINED_CLAY", 4, "< ===== >", "%name%", "§6§lFULL", "< ===== >"),
+            createDefault("STAINED_CLAY", 4, "< ====== >", "%name%", "§6§lFULL", "< ====== >"),
+            createDefault("STAINED_CLAY", 4, "< ======= >", "%name%", "§6§lFULL", "< ======= >"),
+            createDefault("STAINED_CLAY", 4, "< ======== >", "%name%", "§6§lFULL", "< ======== >"),
+            createDefault("STAINED_CLAY", 4, "< ========= >", "%name%", "§6§lFULL", "< ========= >"),
+            createDefault("STAINED_CLAY", 4, "< ========== >", "%name%", "§6§lFULL", "< ========== >"),
+            createDefault("STAINED_CLAY", 4, "< =========== >", "%name%", "§6§lFULL", "< =========== >")
         ), Arrays.asList(
-                createDefault("STAINED_CLAY", 14, "< = >", "%name%", "§4§lMAINTENANCE", "< = >"),
-                createDefault("STAINED_CLAY", 14, "< == >", "%name%", "§4§lMAINTENANCE", "< == >"),
-                createDefault("STAINED_CLAY", 14, "< === >", "%name%", "§4§lMAINTENANCE", "< === >"),
-                createDefault("STAINED_CLAY", 14, "< ==== >", "%name%", "§4§lMAINTENANCE", "< ==== >"),
-                createDefault("STAINED_CLAY", 14, "< ===== >", "%name%", "§4§lMAINTENANCE", "< ===== >"),
-                createDefault("STAINED_CLAY", 14, "< ====== >", "%name%", "§4§lMAINTENANCE", "< ====== >"),
-                createDefault("STAINED_CLAY", 14, "< ======= >", "%name%", "§4§lMAINTENANCE", "< ======= >"),
-                createDefault("STAINED_CLAY", 14, "< ======== >", "%name%", "§4§lMAINTENANCE", "< ======== >"),
-                createDefault("STAINED_CLAY", 14, "< ========= >", "%name%", "§4§lMAINTENANCE", "< ========= >"),
-                createDefault("STAINED_CLAY", 14, "< ========== >", "%name%", "§4§lMAINTENANCE", "< ========== >"),
-                createDefault("STAINED_CLAY", 14, "< =========== >", "%name%", "§4§lMAINTENANCE", "< =========== >")
+            createDefault("STAINED_CLAY", 14, "< = >", "%name%", "§4§lMAINTENANCE", "< = >"),
+            createDefault("STAINED_CLAY", 14, "< == >", "%name%", "§4§lMAINTENANCE", "< == >"),
+            createDefault("STAINED_CLAY", 14, "< === >", "%name%", "§4§lMAINTENANCE", "< === >"),
+            createDefault("STAINED_CLAY", 14, "< ==== >", "%name%", "§4§lMAINTENANCE", "< ==== >"),
+            createDefault("STAINED_CLAY", 14, "< ===== >", "%name%", "§4§lMAINTENANCE", "< ===== >"),
+            createDefault("STAINED_CLAY", 14, "< ====== >", "%name%", "§4§lMAINTENANCE", "< ====== >"),
+            createDefault("STAINED_CLAY", 14, "< ======= >", "%name%", "§4§lMAINTENANCE", "< ======= >"),
+            createDefault("STAINED_CLAY", 14, "< ======== >", "%name%", "§4§lMAINTENANCE", "< ======== >"),
+            createDefault("STAINED_CLAY", 14, "< ========= >", "%name%", "§4§lMAINTENANCE", "< ========= >"),
+            createDefault("STAINED_CLAY", 14, "< ========== >", "%name%", "§4§lMAINTENANCE", "< ========== >"),
+            createDefault("STAINED_CLAY", 14, "< =========== >", "%name%", "§4§lMAINTENANCE", "< =========== >")
         ));
     }
 

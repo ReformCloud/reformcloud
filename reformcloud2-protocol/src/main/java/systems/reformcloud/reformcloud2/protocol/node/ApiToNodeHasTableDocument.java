@@ -34,16 +34,15 @@ import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
 
 public class ApiToNodeHasTableDocument extends ProtocolPacket {
 
+    private String tableName;
+    private String key;
+
     public ApiToNodeHasTableDocument() {
     }
-
     public ApiToNodeHasTableDocument(String tableName, String key) {
         this.tableName = tableName;
         this.key = key;
     }
-
-    private String tableName;
-    private String key;
 
     @Override
     public int getId() {

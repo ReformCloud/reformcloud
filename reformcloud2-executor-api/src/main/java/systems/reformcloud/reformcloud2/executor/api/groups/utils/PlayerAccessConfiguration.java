@@ -33,18 +33,6 @@ import java.util.Objects;
 
 public final class PlayerAccessConfiguration implements SerializableObject {
 
-    public static PlayerAccessConfiguration createDefault() {
-        return new PlayerAccessConfiguration(
-            "reformcloud.join.full",
-            true,
-            "reformcloud.join.maintenance",
-            false,
-            "reformcloud.join",
-            true,
-            512
-        );
-    }
-
     private String fullJoinPermission;
     private boolean maintenance;
     private String maintenanceJoinPermission;
@@ -52,7 +40,6 @@ public final class PlayerAccessConfiguration implements SerializableObject {
     private String joinPermission;
     private boolean useCloudPlayerLimit;
     private int maxPlayers;
-
     @ApiStatus.Internal
     public PlayerAccessConfiguration() {
     }
@@ -66,6 +53,18 @@ public final class PlayerAccessConfiguration implements SerializableObject {
         this.joinPermission = joinPermission;
         this.useCloudPlayerLimit = useCloudPlayerLimit;
         this.maxPlayers = maxPlayers;
+    }
+
+    public static PlayerAccessConfiguration createDefault() {
+        return new PlayerAccessConfiguration(
+            "reformcloud.join.full",
+            true,
+            "reformcloud.join.maintenance",
+            false,
+            "reformcloud.join",
+            true,
+            512
+        );
     }
 
     @NotNull

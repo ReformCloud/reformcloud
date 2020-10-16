@@ -31,14 +31,14 @@ import systems.reformcloud.reformcloud2.executor.api.network.packet.query.QueryR
 
 public class ApiToNodeIsPlayerOnlineResult extends QueryResultPacket {
 
+    private boolean online;
+
     public ApiToNodeIsPlayerOnlineResult() {
     }
 
     public ApiToNodeIsPlayerOnlineResult(boolean online) {
         this.online = online;
     }
-
-    private boolean online;
 
     public boolean isOnline() {
         return this.online;

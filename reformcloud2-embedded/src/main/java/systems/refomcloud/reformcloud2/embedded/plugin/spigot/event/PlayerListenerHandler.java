@@ -45,17 +45,17 @@ public final class PlayerListenerHandler implements Listener {
         if (!Embedded.getInstance().isReady()) {
             event.setResult(PlayerLoginEvent.Result.KICK_WHITELIST);
             event.setKickMessage(SpigotExecutor.getInstance().getIngameMessages().format(
-                    SpigotExecutor.getInstance().getIngameMessages().getProcessNotReadyToAcceptPlayersMessage()
+                SpigotExecutor.getInstance().getIngameMessages().getProcessNotReadyToAcceptPlayersMessage()
             ));
             return;
         }
 
         Duo<Boolean, String> checked = SharedJoinAllowChecker.checkIfConnectAllowed(
-                event.getPlayer()::hasPermission,
-                SpigotExecutor.getInstance().getIngameMessages(),
-                null,
-                event.getPlayer().getUniqueId(),
-                event.getPlayer().getName()
+            event.getPlayer()::hasPermission,
+            SpigotExecutor.getInstance().getIngameMessages(),
+            null,
+            event.getPlayer().getUniqueId(),
+            event.getPlayer().getName()
         );
         if (!checked.getFirst() && checked.getSecond() != null) {
             event.setKickMessage(checked.getSecond());
@@ -74,8 +74,8 @@ public final class PlayerListenerHandler implements Listener {
 
         Bukkit.getScheduler().runTask(SpigotExecutor.getInstance().getPlugin(), () -> {
             if (Bukkit.getOnlinePlayers().size() < current.getProcessDetail().getMaxPlayers()
-                    && !current.getProcessDetail().getProcessState().equals(ProcessState.READY)
-                    && !current.getProcessDetail().getProcessState().equals(ProcessState.INVISIBLE)) {
+                && !current.getProcessDetail().getProcessState().equals(ProcessState.READY)
+                && !current.getProcessDetail().getProcessState().equals(ProcessState.INVISIBLE)) {
                 current.getProcessDetail().setProcessState(ProcessState.READY);
             }
 

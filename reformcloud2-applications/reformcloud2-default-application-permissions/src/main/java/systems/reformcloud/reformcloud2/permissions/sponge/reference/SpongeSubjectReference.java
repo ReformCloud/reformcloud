@@ -40,9 +40,9 @@ public class SpongeSubjectReference implements SubjectReference {
     private Subject cache;
 
     public SpongeSubjectReference(
-            @NotNull PermissionService service,
-            @NotNull String collection,
-            @NotNull String id
+        @NotNull PermissionService service,
+        @NotNull String collection,
+        @NotNull String id
     ) {
         this.collection = collection;
         this.id = id;

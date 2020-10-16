@@ -105,8 +105,8 @@ public abstract class DefaultSubjectCollection implements SubjectCollection {
     @Override
     @NotNull
     public Map<Subject, Boolean> getLoadedWithPermission(
-            @Nullable Set<Context> contexts,
-            @NotNull String permission
+        @Nullable Set<Context> contexts,
+        @NotNull String permission
     ) {
         Map<Subject, Boolean> out = new ConcurrentHashMap<>();
         this.getLoadedSubjects().forEach(e -> {
@@ -124,8 +124,8 @@ public abstract class DefaultSubjectCollection implements SubjectCollection {
     @NotNull
     public CompletableFuture<Map<SubjectReference, Boolean>> getAllWithPermission(@NotNull String permission) {
         return CompletableFuture.completedFuture(this.getLoadedWithPermission(permission).entrySet().stream().collect(Collectors.toMap(
-                e -> e.getKey().asSubjectReference(),
-                Map.Entry::getValue
+            e -> e.getKey().asSubjectReference(),
+            Map.Entry::getValue
         )));
     }
 
@@ -133,8 +133,8 @@ public abstract class DefaultSubjectCollection implements SubjectCollection {
     @NotNull
     public CompletableFuture<Map<SubjectReference, Boolean>> getAllWithPermission(@NotNull Set<Context> contexts, @NotNull String permission) {
         return CompletableFuture.completedFuture(this.getLoadedWithPermission(contexts, permission).entrySet().stream().collect(Collectors.toMap(
-                e -> e.getKey().asSubjectReference(),
-                Map.Entry::getValue
+            e -> e.getKey().asSubjectReference(),
+            Map.Entry::getValue
         )));
     }
 
@@ -142,8 +142,8 @@ public abstract class DefaultSubjectCollection implements SubjectCollection {
     @NotNull
     public CompletableFuture<Set<String>> getAllIdentifiers() {
         return CompletableFuture.completedFuture(this.getLoadedSubjects().stream()
-                .map(Subject::getIdentifier)
-                .collect(Collectors.toSet())
+            .map(Subject::getIdentifier)
+            .collect(Collectors.toSet())
         );
     }
 

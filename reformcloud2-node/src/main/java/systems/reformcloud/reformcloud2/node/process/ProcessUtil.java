@@ -52,18 +52,18 @@ import java.util.stream.Collectors;
 
 final class ProcessUtil {
 
+    private static final Pattern IP_PATTERN = Pattern.compile(
+        "(?<!\\d|\\d\\.)" +
+            "(?:[01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
+            "(?:[01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
+            "(?:[01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
+            "(?:[01]?\\d\\d?|2[0-4]\\d|25[0-5])" +
+            "(?!\\d|\\.\\d)"
+    );
+
     private ProcessUtil() {
         throw new UnsupportedOperationException();
     }
-
-    private static final Pattern IP_PATTERN = Pattern.compile(
-            "(?<!\\d|\\d\\.)" +
-                    "(?:[01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
-                    "(?:[01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
-                    "(?:[01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
-                    "(?:[01]?\\d\\d?|2[0-4]\\d|25[0-5])" +
-                    "(?!\\d|\\.\\d)"
-    );
 
     static @NotNull Optional<String> uploadLog(@NotNull Collection<String> logLines) {
         StringBuilder stringBuilder = new StringBuilder();
@@ -93,8 +93,8 @@ final class ProcessUtil {
         try {
             HttpURLConnection connection = (HttpURLConnection) new URL(pasteServerUrl + "/documents").openConnection();
             connection.setRequestProperty(
-                    "User-Agent",
-                    "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.95 Safari/537.11"
+                "User-Agent",
+                "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.95 Safari/537.11"
             );
             connection.setRequestMethod("POST");
             connection.setDoOutput(true);
@@ -127,20 +127,20 @@ final class ProcessUtil {
             }
 
             DownloadHelper.openConnection(
-                    inclusion.getUrl(),
-                    new HashMap<>(),
-                    stream -> {
-                        try {
-                            IOUtils.createDirectory(target.getParent());
-                            Files.copy(stream, target);
-                        } catch (final Throwable throwable) {
-                            System.err.println("Unable to prepare inclusion " + inclusion.getName() + "!");
-                            System.err.println("The error was: " + throwable.getMessage());
-                        }
-                    }, throwable -> {
-                        System.err.println("Unable to open connection to given download server " + inclusion.getUrl());
-                        System.err.println("The error was: " + CommonHelper.formatThrowable(throwable));
+                inclusion.getUrl(),
+                new HashMap<>(),
+                stream -> {
+                    try {
+                        IOUtils.createDirectory(target.getParent());
+                        Files.copy(stream, target);
+                    } catch (final Throwable throwable) {
+                        System.err.println("Unable to prepare inclusion " + inclusion.getName() + "!");
+                        System.err.println("The error was: " + throwable.getMessage());
                     }
+                }, throwable -> {
+                    System.err.println("Unable to open connection to given download server " + inclusion.getUrl());
+                    System.err.println("The error was: " + CommonHelper.formatThrowable(throwable));
+                }
             );
         });
 

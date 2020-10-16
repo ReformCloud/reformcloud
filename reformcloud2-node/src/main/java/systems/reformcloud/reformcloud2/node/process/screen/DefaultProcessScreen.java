@@ -48,19 +48,17 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class DefaultProcessScreen implements ProcessScreen {
 
-    DefaultProcessScreen(DefaultNodeLocalProcessWrapper processWrapper) {
-        this.processWrapper = processWrapper;
-    }
-
     private final DefaultNodeLocalProcessWrapper processWrapper;
     private final Collection<String> listeningNodes = new CopyOnWriteArrayList<>();
     private final Lock readLock = new ReentrantLock();
-
     private final Queue<String> cachedLogLines = new ConcurrentLinkedQueue<>();
     private final StringBuffer stringBuffer = new StringBuffer();
     private final byte[] buffer = new byte[1024];
-
     private final int maxCacheSize = Integer.getInteger("systems.reformcloud.screen-cache-max-size", 256);
+
+    DefaultProcessScreen(DefaultNodeLocalProcessWrapper processWrapper) {
+        this.processWrapper = processWrapper;
+    }
 
     @Override
     public @NotNull ProcessInformation getTargetProcess() {
@@ -152,10 +150,10 @@ public class DefaultProcessScreen implements ProcessScreen {
             if (NodeExecutor.getInstance().isOwnIdentity(listeningNode)) {
                 for (String line : lines) {
                     System.out.println(LanguageManager.get(
-                            "screen-line-added",
-                            this.processWrapper.getProcessInformation().getProcessDetail().getName(),
-                            NodeExecutor.getInstance().getCurrentNodeInformation().getName(),
-                            line
+                        "screen-line-added",
+                        this.processWrapper.getProcessInformation().getProcessDetail().getName(),
+                        NodeExecutor.getInstance().getCurrentNodeInformation().getName(),
+                        line
                     ));
                 }
 
@@ -163,12 +161,12 @@ public class DefaultProcessScreen implements ProcessScreen {
             }
 
             ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ChannelManager.class)
-                    .getChannel(listeningNode)
-                    .ifPresent(channel -> channel.sendPacket(new NodeToNodeProcessScreenLines(
-                            this.processWrapper.getProcessInformation().getProcessDetail().getName(),
-                            NodeExecutor.getInstance().getSelfName(),
-                            lines
-                    )));
+                .getChannel(listeningNode)
+                .ifPresent(channel -> channel.sendPacket(new NodeToNodeProcessScreenLines(
+                    this.processWrapper.getProcessInformation().getProcessDetail().getName(),
+                    NodeExecutor.getInstance().getSelfName(),
+                    lines
+                )));
         }
     }
 }

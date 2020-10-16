@@ -71,21 +71,6 @@ public enum ConsoleColour {
     }
 
     @NotNull
-    public String getAnsi() {
-        return this.ansi;
-    }
-
-    @NotNull
-    public Pattern getPattern() {
-        return this.pattern;
-    }
-
-    @Override
-    public String toString() {
-        return this.toString;
-    }
-
-    @NotNull
     public static String stripColor(@NotNull String input) {
         return STRIP_COLOR_PATTERN.matcher(input).replaceAll("");
     }
@@ -111,5 +96,20 @@ public enum ConsoleColour {
         }
 
         return s;
+    }
+
+    @NotNull
+    public String getAnsi() {
+        return this.ansi;
+    }
+
+    @NotNull
+    public Pattern getPattern() {
+        return this.pattern;
+    }
+
+    @Override
+    public String toString() {
+        return this.toString;
     }
 }

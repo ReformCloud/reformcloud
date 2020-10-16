@@ -35,11 +35,11 @@ import java.util.UUID;
 
 public class VelocityPlayerAPIExecutor extends PlayerAPIExecutor {
 
+    private final ProxyServer proxyServer;
+
     public VelocityPlayerAPIExecutor(@NotNull ProxyServer proxyServer) {
         this.proxyServer = proxyServer;
     }
-
-    private final ProxyServer proxyServer;
 
     @Override
     public void executeSendMessage(UUID player, String message) {
@@ -59,13 +59,13 @@ public class VelocityPlayerAPIExecutor extends PlayerAPIExecutor {
     public void executeSendTitle(UUID player, String title, String subTitle, int fadeIn, int stay, int fadeOut) {
         this.proxyServer.getPlayer(player).ifPresent(val -> {
             TextTitle velocityTitle = Titles
-                    .text()
-                    .title(LegacyComponentSerializer.legacyLinking().deserialize(title))
-                    .subtitle(LegacyComponentSerializer.legacyLinking().deserialize(subTitle))
-                    .fadeIn(fadeIn)
-                    .stay(stay)
-                    .fadeOut(fadeOut)
-                    .build();
+                .text()
+                .title(LegacyComponentSerializer.legacyLinking().deserialize(title))
+                .subtitle(LegacyComponentSerializer.legacyLinking().deserialize(subTitle))
+                .fadeIn(fadeIn)
+                .stay(stay)
+                .fadeOut(fadeOut)
+                .build();
             val.sendTitle(velocityTitle);
         });
     }

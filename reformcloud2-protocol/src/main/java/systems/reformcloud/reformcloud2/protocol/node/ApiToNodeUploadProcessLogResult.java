@@ -32,14 +32,14 @@ import systems.reformcloud.reformcloud2.executor.api.network.packet.query.QueryR
 
 public class ApiToNodeUploadProcessLogResult extends QueryResultPacket {
 
+    private String logUrl;
+
     public ApiToNodeUploadProcessLogResult() {
     }
 
     public ApiToNodeUploadProcessLogResult(String logUrl) {
         this.logUrl = logUrl;
     }
-
-    private String logUrl;
 
     @Nullable
     public String getLogUrl() {

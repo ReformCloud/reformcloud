@@ -34,18 +34,16 @@ import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
 
 public class ApiToNodeRemoveDocumentFromTable extends ProtocolPacket {
 
+    private String table;
+    private String key;
+    private String id;
     public ApiToNodeRemoveDocumentFromTable() {
     }
-
     public ApiToNodeRemoveDocumentFromTable(String table, String key, String id) {
         this.table = table;
         this.key = key;
         this.id = id;
     }
-
-    private String table;
-    private String key;
-    private String id;
 
     @Override
     public int getId() {

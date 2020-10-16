@@ -29,13 +29,12 @@ import systems.reformcloud.reformcloud2.executor.api.event.Event;
 
 public class ChannelMessageReceiveEvent extends Event {
 
+    private final String channel;
+    private final JsonConfiguration data;
     public ChannelMessageReceiveEvent(String channel, JsonConfiguration data) {
         this.channel = channel;
         this.data = data;
     }
-
-    private final String channel;
-    private final JsonConfiguration data;
 
     public String getChannel() {
         return this.channel;

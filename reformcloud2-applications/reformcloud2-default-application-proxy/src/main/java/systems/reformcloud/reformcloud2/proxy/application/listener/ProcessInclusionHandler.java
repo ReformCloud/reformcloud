@@ -44,9 +44,9 @@ public final class ProcessInclusionHandler {
         }
 
         processInformation.getPreInclusions().add(new ProcessInclusion(
-                "https://dl.reformcloud.systems/addonsv2/reformcloud2-default-application-proxy-"
-                        + ProxyApplication.getInstance().getApplication().getApplicationConfig().getVersion() + ".jar",
-                "plugins/proxy-" + ProxyApplication.getInstance().getApplication().getApplicationConfig().getVersion() + ".jar"
+            "https://dl.reformcloud.systems/addonsv2/reformcloud2-default-application-proxy-"
+                + ProxyApplication.getInstance().getApplication().getApplicationConfig().getVersion() + ".jar",
+            "plugins/proxy-" + ProxyApplication.getInstance().getApplication().getApplicationConfig().getVersion() + ".jar"
         ));
     }
 }

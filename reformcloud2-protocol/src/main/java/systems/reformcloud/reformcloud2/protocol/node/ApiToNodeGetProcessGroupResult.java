@@ -32,14 +32,14 @@ import systems.reformcloud.reformcloud2.executor.api.network.packet.query.QueryR
 
 public class ApiToNodeGetProcessGroupResult extends QueryResultPacket {
 
+    private ProcessGroup processGroup;
+
     public ApiToNodeGetProcessGroupResult() {
     }
 
     public ApiToNodeGetProcessGroupResult(ProcessGroup processGroup) {
         this.processGroup = processGroup;
     }
-
-    private ProcessGroup processGroup;
 
     public ProcessGroup getProcessGroup() {
         return this.processGroup;
