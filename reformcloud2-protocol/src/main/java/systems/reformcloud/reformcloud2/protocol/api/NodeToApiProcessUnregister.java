@@ -37,14 +37,14 @@ import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
 
 public class NodeToApiProcessUnregister extends ProtocolPacket {
 
+    private ProcessInformation processInformation;
+
     public NodeToApiProcessUnregister() {
     }
 
     public NodeToApiProcessUnregister(ProcessInformation processInformation) {
         this.processInformation = processInformation;
     }
-
-    private ProcessInformation processInformation;
 
     @Override
     public int getId() {
@@ -54,7 +54,7 @@ public class NodeToApiProcessUnregister extends ProtocolPacket {
     @Override
     public void handlePacketReceive(@NotNull EndpointChannelReader reader, @NotNull NetworkChannel channel) {
         ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class)
-                .callEvent(new ProcessUnregisterEvent(this.processInformation));
+            .callEvent(new ProcessUnregisterEvent(this.processInformation));
     }
 
     @Override

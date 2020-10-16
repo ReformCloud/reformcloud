@@ -37,19 +37,18 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 public final class TemplateBackendManager {
 
-    private TemplateBackendManager() {
-        throw new UnsupportedOperationException();
-    }
-
     /**
      * All loaded template backends
      */
     private static final Collection<TemplateBackend> LOADED = new CopyOnWriteArrayList<>();
-
     /**
      * The default template backend which is provided internally
      */
     private static final TemplateBackend DEFAULT = new FileTemplateBackend();
+
+    private TemplateBackendManager() {
+        throw new UnsupportedOperationException();
+    }
 
     /**
      * Get a template backend or the default file backend

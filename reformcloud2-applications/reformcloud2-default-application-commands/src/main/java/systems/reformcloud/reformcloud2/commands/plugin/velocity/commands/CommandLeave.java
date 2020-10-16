@@ -57,41 +57,41 @@ public class CommandLeave implements Command {
         Player player = (Player) commandSource;
         if (!player.getCurrentServer().isPresent()) {
             player.sendMessage(LegacyComponentSerializer.legacyLinking().deserialize(Embedded.getInstance().getIngameMessages().format(
-                    Embedded.getInstance().getIngameMessages().getNoHubServerAvailable()
+                Embedded.getInstance().getIngameMessages().getNoHubServerAvailable()
             )));
             return;
         }
 
         if (ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ProxyServerController.class).getCachedLobbyServers().stream().anyMatch(
-                e -> e.getProcessDetail().getName().equals(player.getCurrentServer().get().getServerInfo().getName())
+            e -> e.getProcessDetail().getName().equals(player.getCurrentServer().get().getServerInfo().getName())
         )) {
             player.sendMessage(LegacyComponentSerializer.legacyLinking().deserialize(Embedded.getInstance().getIngameMessages().format(
-                    Embedded.getInstance().getIngameMessages().getAlreadyConnectedToHub()
+                Embedded.getInstance().getIngameMessages().getAlreadyConnectedToHub()
             )));
             return;
         }
 
         SharedPlayerFallbackFilter.filterFallback(
-                player.getUniqueId(),
-                ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ProxyServerController.class).getCachedLobbyServers(),
-                player::hasPermission,
-                VelocityFallbackExtraFilter.INSTANCE,
-                null // ignored because we are sure the player is not on a lobby
+            player.getUniqueId(),
+            ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ProxyServerController.class).getCachedLobbyServers(),
+            player::hasPermission,
+            VelocityFallbackExtraFilter.INSTANCE,
+            null // ignored because we are sure the player is not on a lobby
         ).ifPresent(processInformation -> {
             Optional<RegisteredServer> lobby = VelocityExecutor.getInstance().getProxyServer().getServer(processInformation.getProcessDetail().getName());
             if (!lobby.isPresent()) {
                 player.sendMessage(LegacyComponentSerializer.legacyLinking().deserialize(Embedded.getInstance().getIngameMessages().format(
-                        Embedded.getInstance().getIngameMessages().getNoHubServerAvailable()
+                    Embedded.getInstance().getIngameMessages().getNoHubServerAvailable()
                 )));
                 return;
             }
 
             player.sendMessage(LegacyComponentSerializer.legacyLinking().deserialize(Embedded.getInstance().getIngameMessages().format(
-                    Embedded.getInstance().getIngameMessages().getConnectingToHub(), processInformation.getProcessDetail().getName()
+                Embedded.getInstance().getIngameMessages().getConnectingToHub(), processInformation.getProcessDetail().getName()
             )));
             player.createConnectionRequest(lobby.get()).fireAndForget();
         }).ifEmpty(v -> player.sendMessage(LegacyComponentSerializer.legacyLinking().deserialize(Embedded.getInstance().getIngameMessages().format(
-                Embedded.getInstance().getIngameMessages().getNoHubServerAvailable()
+            Embedded.getInstance().getIngameMessages().getNoHubServerAvailable()
         ))));
     }
 

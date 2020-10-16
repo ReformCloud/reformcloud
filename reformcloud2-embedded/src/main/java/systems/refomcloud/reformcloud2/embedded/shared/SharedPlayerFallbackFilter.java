@@ -55,29 +55,29 @@ public final class SharedPlayerFallbackFilter {
         }
 
         ProcessInformation filtered = lobbies
-                .stream()
-                .filter(lobby -> lobby.getProcessDetail().getTemplate().isServer())
-                .filter(lobby -> lobby.getNetworkInfo().isConnected())
-                .filter(lobby -> !lobby.getProcessDetail().getName().equals(currentServer))
-                .filter(extraFilter)
-                .filter(lobby -> {
-                    boolean maintenance = lobby.getProcessGroup().getPlayerAccessConfiguration().isMaintenance();
-                    return !maintenance || permissionChecker.apply(lobby.getProcessGroup().getPlayerAccessConfiguration().getMaintenanceJoinPermission());
-                })
-                .filter(lobby -> {
-                    boolean requiredJoinPermission = lobby.getProcessGroup().getPlayerAccessConfiguration().isJoinOnlyPerPermission();
-                    return !requiredJoinPermission || permissionChecker.apply(lobby.getProcessGroup().getPlayerAccessConfiguration().getJoinPermission());
-                })
-                .filter(lobby -> {
-                    boolean cloudPlayerLimit = lobby.getProcessGroup().getPlayerAccessConfiguration().isUseCloudPlayerLimit();
-                    boolean full = lobby.getProcessPlayerManager().getOnlineCount() >= lobby.getProcessGroup().getPlayerAccessConfiguration().getMaxPlayers();
-                    return !cloudPlayerLimit || !full || permissionChecker.apply(lobby.getProcessGroup().getPlayerAccessConfiguration().getFullJoinPermission());
-                })
-                .min(ProcessPriorityComparable.INSTANCE::compare)
-                .orElse(null);
+            .stream()
+            .filter(lobby -> lobby.getProcessDetail().getTemplate().isServer())
+            .filter(lobby -> lobby.getNetworkInfo().isConnected())
+            .filter(lobby -> !lobby.getProcessDetail().getName().equals(currentServer))
+            .filter(extraFilter)
+            .filter(lobby -> {
+                boolean maintenance = lobby.getProcessGroup().getPlayerAccessConfiguration().isMaintenance();
+                return !maintenance || permissionChecker.apply(lobby.getProcessGroup().getPlayerAccessConfiguration().getMaintenanceJoinPermission());
+            })
+            .filter(lobby -> {
+                boolean requiredJoinPermission = lobby.getProcessGroup().getPlayerAccessConfiguration().isJoinOnlyPerPermission();
+                return !requiredJoinPermission || permissionChecker.apply(lobby.getProcessGroup().getPlayerAccessConfiguration().getJoinPermission());
+            })
+            .filter(lobby -> {
+                boolean cloudPlayerLimit = lobby.getProcessGroup().getPlayerAccessConfiguration().isUseCloudPlayerLimit();
+                boolean full = lobby.getProcessPlayerManager().getOnlineCount() >= lobby.getProcessGroup().getPlayerAccessConfiguration().getMaxPlayers();
+                return !cloudPlayerLimit || !full || permissionChecker.apply(lobby.getProcessGroup().getPlayerAccessConfiguration().getFullJoinPermission());
+            })
+            .min(ProcessPriorityComparable.INSTANCE::compare)
+            .orElse(null);
 
         return ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).callEvent(new PlayerFallbackChooseEvent(
-                playerUniqueId, filtered, lobbies
+            playerUniqueId, filtered, lobbies
         )).getFilteredFallback();
     }
 
@@ -89,8 +89,8 @@ public final class SharedPlayerFallbackFilter {
         public int compare(ProcessInformation o1, ProcessInformation o2) {
             // reversed
             int result = Boolean.compare(
-                    o2.getProcessGroup().getPlayerAccessConfiguration().isJoinOnlyPerPermission(),
-                    o1.getProcessGroup().getPlayerAccessConfiguration().isJoinOnlyPerPermission()
+                o2.getProcessGroup().getPlayerAccessConfiguration().isJoinOnlyPerPermission(),
+                o1.getProcessGroup().getPlayerAccessConfiguration().isJoinOnlyPerPermission()
             );
             if (result != 0) {
                 // if the result is not the same compared to the other we'll go on and do the next check

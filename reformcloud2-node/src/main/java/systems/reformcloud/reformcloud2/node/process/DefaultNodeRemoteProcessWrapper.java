@@ -44,11 +44,11 @@ import java.util.concurrent.TimeUnit;
 
 public class DefaultNodeRemoteProcessWrapper implements ProcessWrapper {
 
+    protected ProcessInformation processInformation;
+
     public DefaultNodeRemoteProcessWrapper(ProcessInformation processInformation) {
         this.processInformation = processInformation;
     }
-
-    protected ProcessInformation processInformation;
 
     @NotNull
     @Override
@@ -106,27 +106,27 @@ public class DefaultNodeRemoteProcessWrapper implements ProcessWrapper {
     @Override
     public void copy(@NotNull String templateGroup, @NotNull String templateName, @NotNull String templateBackend) {
         this.sendPacketToProcessNode(new NodeToNodeCopyProcessToTemplate(
-                this.processInformation.getProcessDetail().getProcessUniqueID(), templateGroup, templateName, templateBackend
+            this.processInformation.getProcessDetail().getProcessUniqueID(), templateGroup, templateName, templateBackend
         ));
     }
 
     private void sendPacketToProcessNode(@NotNull Packet packet) {
         ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ChannelManager.class).getChannel(
-                this.processInformation.getProcessDetail().getParentName()
+            this.processInformation.getProcessDetail().getParentName()
         ).ifPresent(channel -> channel.sendPacket(packet));
     }
 
     private @Nullable Packet sendQueryToProcessNode(@NotNull Packet packet) {
         NetworkChannel networkChannel = ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ChannelManager.class).getChannel(
-                this.processInformation.getProcessDetail().getParentName()
+            this.processInformation.getProcessDetail().getParentName()
         ).orElse(null);
         if (networkChannel == null) {
             return null;
         }
 
         return ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(QueryManager.class).sendPacketQuery(
-                networkChannel,
-                packet
+            networkChannel,
+            packet
         ).getUninterruptedly(TimeUnit.SECONDS, 5);
     }
 }

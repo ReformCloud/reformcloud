@@ -39,11 +39,11 @@ import java.util.Queue;
 
 public class DefaultEmbeddedProcessWrapper implements ProcessWrapper {
 
+    private ProcessInformation processInformation;
+
     public DefaultEmbeddedProcessWrapper(ProcessInformation processInformation) {
         this.processInformation = processInformation;
     }
-
-    private ProcessInformation processInformation;
 
     @NotNull
     @Override
@@ -55,40 +55,40 @@ public class DefaultEmbeddedProcessWrapper implements ProcessWrapper {
     @Override
     public Optional<ProcessInformation> requestProcessInformationUpdate() {
         return Embedded.getInstance().sendSyncQuery(new ApiToNodeRequestProcessInformationUpdate(this.processInformation))
-                .map(result -> {
-                    if (result instanceof ApiToNodeGetProcessInformationResult) {
-                        ProcessInformation process = ((ApiToNodeGetProcessInformationResult) result).getProcessInformation();
-                        return process != null ? this.processInformation = process : null;
-                    }
+            .map(result -> {
+                if (result instanceof ApiToNodeGetProcessInformationResult) {
+                    ProcessInformation process = ((ApiToNodeGetProcessInformationResult) result).getProcessInformation();
+                    return process != null ? this.processInformation = process : null;
+                }
 
-                    return null;
-                });
+                return null;
+            });
     }
 
     @NotNull
     @Override
     public Optional<String> uploadLog() {
         return Embedded.getInstance().sendSyncQuery(new ApiToNodeUploadProcessLog(this.processInformation))
-                .map(result -> {
-                    if (result instanceof ApiToNodeUploadProcessLogResult) {
-                        return ((ApiToNodeUploadProcessLogResult) result).getLogUrl();
-                    }
+            .map(result -> {
+                if (result instanceof ApiToNodeUploadProcessLogResult) {
+                    return ((ApiToNodeUploadProcessLogResult) result).getLogUrl();
+                }
 
-                    return null;
-                });
+                return null;
+            });
     }
 
     @NotNull
     @Override
     public @UnmodifiableView Queue<String> getLastLogLines() {
         return Embedded.getInstance().sendSyncQuery(new ApiToNodeGetLastProcessLogLines(this.processInformation))
-                .map(result -> {
-                    if (result instanceof ApiToNodeGetStringCollectionResult) {
-                        return new ArrayDeque<>(((ApiToNodeGetStringCollectionResult) result).getResult());
-                    }
+            .map(result -> {
+                if (result instanceof ApiToNodeGetStringCollectionResult) {
+                    return new ArrayDeque<>(((ApiToNodeGetStringCollectionResult) result).getResult());
+                }
 
-                    return new ArrayDeque<String>();
-                }).orElseGet(() -> CommonHelper.EMPTY_STRING_QUEUE);
+                return new ArrayDeque<String>();
+            }).orElseGet(() -> CommonHelper.EMPTY_STRING_QUEUE);
     }
 
     @Override

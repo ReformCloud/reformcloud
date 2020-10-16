@@ -90,11 +90,11 @@ public final class EnvironmentBuilder {
 
         NetworkAddress connectHost = NodeExecutor.getInstance().getAnyAddress();
         new JsonConfiguration()
-                .add("host", connectHost.getHost())
-                .add("port", connectHost.getPort())
-                .add("key", connectionKey)
-                .add("startInfo", runningProcess.getProcessInformation())
-                .write(runningProcess.getPath() + "/.reformcloud/config.json");
+            .add("host", connectHost.getHost())
+            .add("port", connectHost.getPort())
+            .add("key", connectionKey)
+            .add("startInfo", runningProcess.getProcessInformation())
+            .write(runningProcess.getPath() + "/.reformcloud/config.json");
 
         if (runningProcess.getProcessInformation().getProcessDetail().getTemplate().isServer()) {
             serverStartup(runningProcess);
@@ -383,9 +383,9 @@ public final class EnvironmentBuilder {
             }
 
             TemplateBackendManager.getOrDefault(e.getSecond()).loadTemplate(
-                    splitTemplate[0],
-                    splitTemplate[1],
-                    processInformation.getPath()
+                splitTemplate[0],
+                splitTemplate[1],
+                processInformation.getPath()
             ).awaitUninterruptedly();
         });
     }
@@ -393,22 +393,22 @@ public final class EnvironmentBuilder {
     private static void loadPathInclusions(@NotNull DefaultNodeLocalProcessWrapper processInformation, @NotNull Inclusion.InclusionLoadType loadType) {
         processInformation.getProcessInformation().getProcessDetail().getTemplate().getPathInclusionsOfType(loadType).forEach(e -> {
             TemplateBackendManager.getOrDefault(e.getSecond()).loadPath(
-                    e.getFirst(),
-                    processInformation.getPath()
+                e.getFirst(),
+                processInformation.getPath()
             ).awaitUninterruptedly();
         });
     }
 
     private static void initGlobalTemplateAndCurrentTemplate(@NotNull DefaultNodeLocalProcessWrapper processInformation) {
         TemplateBackendManager.getOrDefault(processInformation.getProcessInformation().getProcessDetail().getTemplate().getBackend()).loadGlobalTemplates(
-                processInformation.getProcessInformation().getProcessGroup(),
-                processInformation.getPath()
+            processInformation.getProcessInformation().getProcessGroup(),
+            processInformation.getPath()
         ).awaitUninterruptedly();
 
         TemplateBackendManager.getOrDefault(processInformation.getProcessInformation().getProcessDetail().getTemplate().getBackend()).loadTemplate(
-                processInformation.getProcessInformation().getProcessGroup().getName(),
-                processInformation.getProcessInformation().getProcessDetail().getTemplate().getName(),
-                processInformation.getPath()
+            processInformation.getProcessInformation().getProcessGroup().getName(),
+            processInformation.getProcessInformation().getProcessDetail().getTemplate().getName(),
+            processInformation.getPath()
         ).awaitUninterruptedly();
     }
 

@@ -40,11 +40,11 @@ import java.util.function.Consumer;
 
 public class MongoDatabaseTableWrapper implements DatabaseTableWrapper {
 
+    private final MongoCollection<Document> collection;
+
     public MongoDatabaseTableWrapper(MongoDatabase database, String name) {
         this.collection = database.getCollection(name);
     }
-
-    private final MongoCollection<Document> collection;
 
     @Override
     public void insert(@NotNull String key, @NotNull String id, @NotNull JsonConfiguration data) {

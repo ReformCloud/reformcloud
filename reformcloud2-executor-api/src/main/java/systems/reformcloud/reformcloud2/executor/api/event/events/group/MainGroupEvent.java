@@ -29,11 +29,11 @@ import systems.reformcloud.reformcloud2.executor.api.groups.MainGroup;
 
 public abstract class MainGroupEvent extends Event {
 
+    protected final MainGroup mainGroup;
+
     public MainGroupEvent(MainGroup mainGroup) {
         this.mainGroup = mainGroup;
     }
-
-    protected final MainGroup mainGroup;
 
     public MainGroup getMainGroup() {
         return this.mainGroup;

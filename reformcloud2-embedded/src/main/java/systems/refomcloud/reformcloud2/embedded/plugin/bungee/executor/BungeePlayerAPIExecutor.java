@@ -59,12 +59,12 @@ public class BungeePlayerAPIExecutor extends PlayerAPIExecutor {
         ProxiedPlayer proxiedPlayer = ProxyServer.getInstance().getPlayer(player);
         if (proxiedPlayer != null) {
             ProxyServer.getInstance().createTitle()
-                    .title(TextComponent.fromLegacyText(title))
-                    .subTitle(TextComponent.fromLegacyText(subTitle))
-                    .fadeIn(fadeIn)
-                    .stay(stay)
-                    .fadeOut(fadeOut)
-                    .send(proxiedPlayer);
+                .title(TextComponent.fromLegacyText(title))
+                .subTitle(TextComponent.fromLegacyText(subTitle))
+                .fadeIn(fadeIn)
+                .stay(stay)
+                .fadeOut(fadeOut)
+                .send(proxiedPlayer);
         }
     }
 

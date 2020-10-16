@@ -38,14 +38,14 @@ import java.util.Collection;
 
 public class NodeToNodeSetMainGroups extends ProtocolPacket {
 
+    private Collection<MainGroup> mainGroups;
+
     public NodeToNodeSetMainGroups() {
     }
 
     public NodeToNodeSetMainGroups(Collection<MainGroup> mainGroups) {
         this.mainGroups = mainGroups;
     }
-
-    private Collection<MainGroup> mainGroups;
 
     @Override
     public int getId() {

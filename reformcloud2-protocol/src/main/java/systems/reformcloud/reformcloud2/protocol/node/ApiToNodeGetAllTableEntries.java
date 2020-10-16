@@ -37,14 +37,14 @@ import java.util.Collection;
 
 public class ApiToNodeGetAllTableEntries extends ProtocolPacket {
 
+    private String tableName;
+
     public ApiToNodeGetAllTableEntries() {
     }
 
     public ApiToNodeGetAllTableEntries(String tableName) {
         this.tableName = tableName;
     }
-
-    private String tableName;
 
     @Override
     public int getId() {

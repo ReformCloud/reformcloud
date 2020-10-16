@@ -36,14 +36,14 @@ import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
 
 public class ApiToNodeGetProcessInformationByName extends ProtocolPacket {
 
+    private String name;
+
     public ApiToNodeGetProcessInformationByName() {
     }
 
     public ApiToNodeGetProcessInformationByName(String name) {
         this.name = name;
     }
-
-    private String name;
 
     @Override
     public int getId() {

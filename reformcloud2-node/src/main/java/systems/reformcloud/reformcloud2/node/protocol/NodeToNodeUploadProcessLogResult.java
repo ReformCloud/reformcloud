@@ -31,14 +31,14 @@ import systems.reformcloud.reformcloud2.executor.api.network.packet.query.QueryR
 
 public class NodeToNodeUploadProcessLogResult extends QueryResultPacket {
 
+    private String logUrl;
+
     public NodeToNodeUploadProcessLogResult() {
     }
 
     public NodeToNodeUploadProcessLogResult(String logUrl) {
         this.logUrl = logUrl;
     }
-
-    private String logUrl;
 
     public String getLogUrl() {
         return this.logUrl;

@@ -116,17 +116,17 @@ public class ReformCloudApplication extends Application {
         ExecutorAPI.getInstance().getDatabaseProvider().createTable(SignSystemAdapter.table);
         if (!ExecutorAPI.getInstance().getDatabaseProvider().getDatabase(SignSystemAdapter.table).has("signs")) {
             ExecutorAPI.getInstance().getDatabaseProvider().getDatabase(SignSystemAdapter.table).insert(
-                    "signs",
-                    "",
-                    new JsonConfiguration().add("signs", Collections.emptyList())
+                "signs",
+                "",
+                new JsonConfiguration().add("signs", Collections.emptyList())
             );
         }
 
         ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).registerPackets(Arrays.asList(
-                PacketCreateSign.class,
-                PacketDeleteSign.class,
-                PacketDeleteBulkSigns.class,
-                PacketRequestSignLayouts.class
+            PacketCreateSign.class,
+            PacketDeleteSign.class,
+            PacketDeleteBulkSigns.class,
+            PacketRequestSignLayouts.class
         ));
 
         databaseEntry = ExecutorAPI.getInstance().getDatabaseProvider().getDatabase(SignSystemAdapter.table).get("signs", "").orElseGet(JsonConfiguration::new);

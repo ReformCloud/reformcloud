@@ -42,15 +42,15 @@ import java.util.List;
 public final class DefaultProcessGroup extends ProcessGroup {
 
     public static final Inclusion PROXY_INCLUSION = new Inclusion(
-            "reformcloud/global/proxies",
-            FileTemplateBackend.NAME,
-            Inclusion.InclusionLoadType.PAST
+        "reformcloud/global/proxies",
+        FileTemplateBackend.NAME,
+        Inclusion.InclusionLoadType.PAST
     );
 
     public static final Inclusion SERVER_INCLUSION = new Inclusion(
-            "reformcloud/global/servers",
-            FileTemplateBackend.NAME,
-            Inclusion.InclusionLoadType.PAST
+        "reformcloud/global/servers",
+        FileTemplateBackend.NAME,
+        Inclusion.InclusionLoadType.PAST
     );
 
     public DefaultProcessGroup(String name, int port, Version version, int maxMemory, boolean maintenance, int maxPlayers) {
@@ -60,114 +60,114 @@ public final class DefaultProcessGroup extends ProcessGroup {
     public DefaultProcessGroup(String name, int port, Version version,
                                int maxMemory, boolean maintenance, int maxPlayers, boolean staticServer, boolean lobby) {
         super(
-                name,
+            name,
+            true,
+            new StartupConfiguration(
+                -1,
+                1,
+                port,
+                "java",
                 true,
-                new StartupConfiguration(
-                        -1,
-                        1,
-                        port,
-                        "java",
-                        true,
-                        new ArrayList<>()
-                ), new ArrayList<>(Collections.singletonList(new Template(
-                        0,
-                        "default",
-                        false,
-                        FileTemplateBackend.NAME,
-                        "-",
-                        new RuntimeConfiguration(
-                                maxMemory,
-                                new ArrayList<>(),
-                                new HashMap<>(Collections.singletonMap("reformcloud2.developer", "derklaro"))
-                        ),
-                        version,
-                        new ArrayList<>(),
-                        new ArrayList<>(Collections.singletonList(version.isServer() ? SERVER_INCLUSION : PROXY_INCLUSION))
-                ))), new PlayerAccessConfiguration(
-                        "reformcloud.join.full",
-                        maintenance,
-                        "reformcloud.join.maintenance",
-                        false,
-                        "reformcloud.join",
-                        true,
-                        maxPlayers
-                ), staticServer, lobby);
+                new ArrayList<>()
+            ), new ArrayList<>(Collections.singletonList(new Template(
+                0,
+                "default",
+                false,
+                FileTemplateBackend.NAME,
+                "-",
+                new RuntimeConfiguration(
+                    maxMemory,
+                    new ArrayList<>(),
+                    new HashMap<>(Collections.singletonMap("reformcloud2.developer", "derklaro"))
+                ),
+                version,
+                new ArrayList<>(),
+                new ArrayList<>(Collections.singletonList(version.isServer() ? SERVER_INCLUSION : PROXY_INCLUSION))
+            ))), new PlayerAccessConfiguration(
+                "reformcloud.join.full",
+                maintenance,
+                "reformcloud.join.maintenance",
+                false,
+                "reformcloud.join",
+                true,
+                maxPlayers
+            ), staticServer, lobby);
     }
 
     public DefaultProcessGroup(String name, int port, Version version,
                                int maxMemory, boolean maintenance, int min, int max, boolean staticServer, boolean lobby) {
         super(
-                name,
+            name,
+            true,
+            new StartupConfiguration(
+                max,
+                min,
+                port,
+                "java",
                 true,
-                new StartupConfiguration(
-                        max,
-                        min,
-                        port,
-                        "java",
-                        true,
-                        new ArrayList<>()
-                ), new ArrayList<>(Collections.singletonList(new Template(
-                        0,
-                        "default",
-                        false,
-                        FileTemplateBackend.NAME,
-                        "-",
-                        new RuntimeConfiguration(
-                                maxMemory,
-                                new ArrayList<>(),
-                                new HashMap<>(Collections.singletonMap("reformcloud2.developer", "derklaro"))
-                        ),
-                        version,
-                        new ArrayList<>(),
-                        new ArrayList<>(Collections.singletonList(version.isServer() ? SERVER_INCLUSION : PROXY_INCLUSION))
-                ))), new PlayerAccessConfiguration(
-                        "reformcloud.join.full",
-                        maintenance,
-                        "reformcloud.join.maintenance",
-                        false,
-                        "reformcloud.join",
-                        true,
-                        50
-                ), staticServer, lobby);
+                new ArrayList<>()
+            ), new ArrayList<>(Collections.singletonList(new Template(
+                0,
+                "default",
+                false,
+                FileTemplateBackend.NAME,
+                "-",
+                new RuntimeConfiguration(
+                    maxMemory,
+                    new ArrayList<>(),
+                    new HashMap<>(Collections.singletonMap("reformcloud2.developer", "derklaro"))
+                ),
+                version,
+                new ArrayList<>(),
+                new ArrayList<>(Collections.singletonList(version.isServer() ? SERVER_INCLUSION : PROXY_INCLUSION))
+            ))), new PlayerAccessConfiguration(
+                "reformcloud.join.full",
+                maintenance,
+                "reformcloud.join.maintenance",
+                false,
+                "reformcloud.join",
+                true,
+                50
+            ), staticServer, lobby);
     }
 
     public DefaultProcessGroup(String name, int port, Version version,
                                int maxMemory, boolean maintenance, int min, int max, int prepared, int priority,
                                boolean staticServer, boolean lobby, List<String> nodes, int maxPlayers) {
         super(
-                name,
+            name,
+            true,
+            new StartupConfiguration(
+                max,
+                min,
+                prepared,
+                port,
+                "java",
+                AutomaticStartupConfiguration.defaults(),
+                nodes.isEmpty(),
+                nodes
+            ), new ArrayList<>(Collections.singletonList(new Template(
+                0,
+                "default",
+                false,
+                FileTemplateBackend.NAME,
+                "-",
+                new RuntimeConfiguration(
+                    maxMemory,
+                    Collections.emptyList(),
+                    Collections.singletonMap("reformcloud2.developer", "derklaro")
+                ),
+                version,
+                new ArrayList<>(),
+                Collections.singletonList(version.isServer() ? SERVER_INCLUSION : PROXY_INCLUSION)
+            ))), new PlayerAccessConfiguration(
+                "reformcloud.join.full",
+                maintenance,
+                "reformcloud.join.maintenance",
+                false,
+                "reformcloud.join",
                 true,
-                new StartupConfiguration(
-                        max,
-                        min,
-                        prepared,
-                        port,
-                        "java",
-                        AutomaticStartupConfiguration.defaults(),
-                        nodes.isEmpty(),
-                        nodes
-                ), new ArrayList<>(Collections.singletonList(new Template(
-                        0,
-                        "default",
-                        false,
-                        FileTemplateBackend.NAME,
-                        "-",
-                        new RuntimeConfiguration(
-                                maxMemory,
-                                Collections.emptyList(),
-                                Collections.singletonMap("reformcloud2.developer", "derklaro")
-                        ),
-                        version,
-                        new ArrayList<>(),
-                        Collections.singletonList(version.isServer() ? SERVER_INCLUSION : PROXY_INCLUSION)
-                ))), new PlayerAccessConfiguration(
-                        "reformcloud.join.full",
-                        maintenance,
-                        "reformcloud.join.maintenance",
-                        false,
-                        "reformcloud.join",
-                        true,
-                        maxPlayers
-                ), staticServer, lobby);
+                maxPlayers
+            ), staticServer, lobby);
     }
 }

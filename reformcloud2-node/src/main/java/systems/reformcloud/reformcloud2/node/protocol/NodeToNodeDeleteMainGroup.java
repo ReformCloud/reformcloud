@@ -36,14 +36,14 @@ import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
 
 public class NodeToNodeDeleteMainGroup extends ProtocolPacket {
 
+    private MainGroup mainGroup;
+
     public NodeToNodeDeleteMainGroup() {
     }
 
     public NodeToNodeDeleteMainGroup(MainGroup mainGroup) {
         this.mainGroup = mainGroup;
     }
-
-    private MainGroup mainGroup;
 
     @Override
     public int getId() {

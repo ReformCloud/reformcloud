@@ -37,13 +37,13 @@ import systems.reformcloud.reformcloud2.proxy.velocity.listener.VelocityListener
 import systems.reformcloud.reformcloud2.proxy.velocity.listener.VelocityProxyConfigurationHandlerSetupListener;
 
 @Plugin(
-        id = "reformcloud_2_proxy",
-        name = "ReformCloud2Proxy",
-        version = "2.0",
-        description = "The proxy plugin",
-        url = "https://reformcloud.systems",
-        authors = {"derklaro"},
-        dependencies = {@Dependency(id = "reformcloud_2_api_executor")}
+    id = "reformcloud_2_proxy",
+    name = "ReformCloud2Proxy",
+    version = "2.0",
+    description = "The proxy plugin",
+    url = "https://reformcloud.systems",
+    authors = {"derklaro"},
+    dependencies = {@Dependency(id = "reformcloud_2_api_executor")}
 )
 public class VelocityPlugin {
 

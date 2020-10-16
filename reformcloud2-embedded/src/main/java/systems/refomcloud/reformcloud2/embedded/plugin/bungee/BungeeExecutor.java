@@ -65,16 +65,16 @@ public final class BungeeExecutor extends Embedded {
         this.fixInvalidPlayers();
     }
 
-    private void fixInvalidPlayers() {
-        SharedInvalidPlayerFixer.start(
-                uuid -> ProxyServer.getInstance().getPlayer(uuid) != null,
-                () -> ProxyServer.getInstance().getOnlineCount()
-        );
-    }
-
     @NotNull
     public static BungeeExecutor getInstance() {
         return instance;
+    }
+
+    private void fixInvalidPlayers() {
+        SharedInvalidPlayerFixer.start(
+            uuid -> ProxyServer.getInstance().getPlayer(uuid) != null,
+            () -> ProxyServer.getInstance().getOnlineCount()
+        );
     }
 
     @Override

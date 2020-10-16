@@ -36,8 +36,8 @@ public class NodeToNodePublishChannelMessageProcessor implements PacketProcessor
     @Override
     public void process(@NotNull NetworkChannel channel, @NotNull NodeToNodePublishChannelMessage packet) {
         ExecutorAPI.getInstance().getProcessProvider().getProcesses()
-                .stream()
-                .filter(processInformation -> processInformation.getProcessDetail().getParentName().equals(NodeExecutor.getInstance().getSelfName()))
-                .forEach(processInformation -> ExecutorAPI.getInstance().getChannelMessageProvider().sendChannelMessage(processInformation, packet.getChannel(), packet.getData()));
+            .stream()
+            .filter(processInformation -> processInformation.getProcessDetail().getParentName().equals(NodeExecutor.getInstance().getSelfName()))
+            .forEach(processInformation -> ExecutorAPI.getInstance().getChannelMessageProvider().sendChannelMessage(processInformation, packet.getChannel(), packet.getData()));
     }
 }

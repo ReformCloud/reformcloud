@@ -139,6 +139,33 @@ public final class DependencyFileLoader {
             this.information = information;
         }
 
+        private static int memberValueHashCode(@NotNull Object value) {
+            Class<?> type = value.getClass();
+            if (!type.isArray()) {
+                return value.hashCode();
+            }
+
+            if (type == byte[].class) {
+                return Arrays.hashCode((byte[]) value);
+            } else if (type == char[].class) {
+                return Arrays.hashCode((char[]) value);
+            } else if (type == double[].class) {
+                return Arrays.hashCode((double[]) value);
+            } else if (type == float[].class) {
+                return Arrays.hashCode((float[]) value);
+            } else if (type == int[].class) {
+                return Arrays.hashCode((int[]) value);
+            } else if (type == long[].class) {
+                return Arrays.hashCode((long[]) value);
+            } else if (type == short[].class) {
+                return Arrays.hashCode((short[]) value);
+            } else if (type == boolean[].class) {
+                return Arrays.hashCode((boolean[]) value);
+            }
+
+            return Arrays.hashCode((Object[]) value);
+        }
+
         @Override
         public Object invoke(Object proxy, Method method, Object[] args) {
             if (method.getParameterCount() > 1) {
@@ -198,33 +225,6 @@ public final class DependencyFileLoader {
             }
 
             return this.hashCode = result;
-        }
-
-        private static int memberValueHashCode(@NotNull Object value) {
-            Class<?> type = value.getClass();
-            if (!type.isArray()) {
-                return value.hashCode();
-            }
-
-            if (type == byte[].class) {
-                return Arrays.hashCode((byte[]) value);
-            } else if (type == char[].class) {
-                return Arrays.hashCode((char[]) value);
-            } else if (type == double[].class) {
-                return Arrays.hashCode((double[]) value);
-            } else if (type == float[].class) {
-                return Arrays.hashCode((float[]) value);
-            } else if (type == int[].class) {
-                return Arrays.hashCode((int[]) value);
-            } else if (type == long[].class) {
-                return Arrays.hashCode((long[]) value);
-            } else if (type == short[].class) {
-                return Arrays.hashCode((short[]) value);
-            } else if (type == boolean[].class) {
-                return Arrays.hashCode((boolean[]) value);
-            }
-
-            return Arrays.hashCode((Object[]) value);
         }
     }
 }

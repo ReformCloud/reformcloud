@@ -32,10 +32,6 @@ import java.lang.reflect.Field;
 
 public final class NukkitUtil {
 
-    private NukkitUtil() {
-        throw new UnsupportedOperationException();
-    }
-
     private static final Field perm;
 
     static {
@@ -45,6 +41,10 @@ public final class NukkitUtil {
         } catch (NoSuchFieldException exception) {
             throw new RuntimeException(exception);
         }
+    }
+
+    private NukkitUtil() {
+        throw new UnsupportedOperationException();
     }
 
     public static void inject(@NotNull Player player) {

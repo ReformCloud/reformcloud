@@ -54,8 +54,8 @@ public final class URLTemplateBackend implements TemplateBackend {
     public static void load(String basePath) {
         if (!Files.exists(Paths.get(basePath + "/url.json"))) {
             new JsonConfiguration()
-                    .add("baseUrl", "https://127.0.0.1/rc/templates")
-                    .write(Paths.get(basePath + "/url.json"));
+                .add("baseUrl", "https://127.0.0.1/rc/templates")
+                .write(Paths.get(basePath + "/url.json"));
         }
 
         TemplateBackendManager.registerBackend(new URLTemplateBackend(JsonConfiguration.read(Paths.get(basePath + "/url.json"))));
@@ -70,8 +70,8 @@ public final class URLTemplateBackend implements TemplateBackend {
         try {
             HttpURLConnection connection = (HttpURLConnection) new URL(this.getBasePath() + group + "-" + template + ".zip").openConnection();
             connection.setRequestProperty(
-                    "User-Agent",
-                    "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.95 Safari/537.11"
+                "User-Agent",
+                "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.95 Safari/537.11"
             );
             connection.setUseCaches(false);
             connection.connect();
@@ -99,7 +99,7 @@ public final class URLTemplateBackend implements TemplateBackend {
     @Override
     public Task<Void> loadGlobalTemplates(@NotNull ProcessGroup group, @NotNull Path target) {
         Streams.allOf(group.getTemplates(), e -> e.getBackend().equals(this.getName())
-                && e.isGlobal()).forEach(e -> this.loadTemplate(group.getName(), e.getName(), target));
+            && e.isGlobal()).forEach(e -> this.loadTemplate(group.getName(), e.getName(), target));
         return Task.completedTask(null);
     }
 

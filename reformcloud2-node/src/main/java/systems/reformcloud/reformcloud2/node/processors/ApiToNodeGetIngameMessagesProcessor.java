@@ -36,7 +36,7 @@ public class ApiToNodeGetIngameMessagesProcessor implements PacketProcessor<ApiT
     @Override
     public void process(@NotNull NetworkChannel channel, @NotNull ApiToNodeGetIngameMessages packet) {
         channel.sendQueryResult(packet.getQueryUniqueID(), new ApiToNodeGetIngameMessagesResult(
-                NodeExecutor.getInstance().getNodeExecutorConfig().getIngameMessages()
+            NodeExecutor.getInstance().getNodeExecutorConfig().getIngameMessages()
         ));
     }
 }

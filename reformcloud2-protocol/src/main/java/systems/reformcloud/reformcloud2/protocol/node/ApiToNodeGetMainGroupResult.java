@@ -33,14 +33,14 @@ import systems.reformcloud.reformcloud2.executor.api.network.packet.query.QueryR
 
 public class ApiToNodeGetMainGroupResult extends QueryResultPacket {
 
+    private MainGroup mainGroup;
+
     public ApiToNodeGetMainGroupResult() {
     }
 
     public ApiToNodeGetMainGroupResult(MainGroup mainGroup) {
         this.mainGroup = mainGroup;
     }
-
-    private MainGroup mainGroup;
 
     @Nullable
     public MainGroup getMainGroup() {

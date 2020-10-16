@@ -47,11 +47,11 @@ import java.util.UUID;
 
 public class DefaultProcessFactory implements ProcessFactory {
 
+    private final DefaultNodeProcessProvider defaultNodeProcessProvider;
+
     public DefaultProcessFactory(DefaultNodeProcessProvider defaultNodeProcessProvider) {
         this.defaultNodeProcessProvider = defaultNodeProcessProvider;
     }
-
-    private final DefaultNodeProcessProvider defaultNodeProcessProvider;
 
     @Override
     public @NotNull Task<ProcessInformation> buildProcessInformation(@NotNull ProcessFactoryConfiguration configuration) {
@@ -73,18 +73,18 @@ public class DefaultProcessFactory implements ProcessFactory {
             UUID processUniqueId = this.preventCollision(configuration.getProcessUniqueId());
 
             ProcessInformation processInformation = new ProcessInformation(new ProcessDetail(
-                    processUniqueId,
-                    nodeInformation.getNodeUniqueID(),
-                    nodeInformation.getName(),
-                    configuration.getProcessGroup().getName() + template.getServerNameSplitter() + id,
-                    configuration.getDisplayName() != null ? configuration.getDisplayName() : configuration.getProcessGroup().getName()
-                            + (configuration.getProcessGroup().isShowIdInName() ? template.getServerNameSplitter() + id : ""),
-                    id,
-                    template,
-                    configuration.getMemory() == -1 ? memory : configuration.getMemory(),
-                    configuration.getInitialState()
+                processUniqueId,
+                nodeInformation.getNodeUniqueID(),
+                nodeInformation.getName(),
+                configuration.getProcessGroup().getName() + template.getServerNameSplitter() + id,
+                configuration.getDisplayName() != null ? configuration.getDisplayName() : configuration.getProcessGroup().getName()
+                    + (configuration.getProcessGroup().isShowIdInName() ? template.getServerNameSplitter() + id : ""),
+                id,
+                template,
+                configuration.getMemory() == -1 ? memory : configuration.getMemory(),
+                configuration.getInitialState()
             ), new NetworkInfo(
-                    this.nextPort(configuration.getProcessGroup().getStartupConfiguration().getStartPort())
+                this.nextPort(configuration.getProcessGroup().getStartupConfiguration().getStartPort())
             ), configuration.getProcessGroup(), configuration.getExtra(), configuration.getInclusions());
 
             if (configuration.getMaxPlayers() >= 0) {
@@ -124,7 +124,7 @@ public class DefaultProcessFactory implements ProcessFactory {
 
         for (NodeInformation node : ExecutorAPI.getInstance().getNodeInformationProvider().getNodes()) {
             if (!processGroup.getStartupConfiguration().isSearchBestClientAlone()
-                    && !processGroup.getStartupConfiguration().getUseOnlyTheseClients().contains(node.getName())) {
+                && !processGroup.getStartupConfiguration().getUseOnlyTheseClients().contains(node.getName())) {
                 continue;
             }
 
@@ -150,8 +150,8 @@ public class DefaultProcessFactory implements ProcessFactory {
 
     private int nextId(@NotNull String groupName, int beginId) {
         Collection<Integer> ids = Streams.map(
-                ExecutorAPI.getInstance().getProcessProvider().getProcessesByProcessGroup(groupName),
-                processInformation -> processInformation.getProcessDetail().getId()
+            ExecutorAPI.getInstance().getProcessProvider().getProcessesByProcessGroup(groupName),
+            processInformation -> processInformation.getProcessDetail().getId()
         );
 
         while (ids.contains(beginId)) {
@@ -163,8 +163,8 @@ public class DefaultProcessFactory implements ProcessFactory {
 
     private int nextPort(int start) {
         Collection<Integer> ports = Streams.map(
-                ExecutorAPI.getInstance().getProcessProvider().getProcesses(),
-                processInformation -> processInformation.getNetworkInfo().getPort()
+            ExecutorAPI.getInstance().getProcessProvider().getProcesses(),
+            processInformation -> processInformation.getNetworkInfo().getPort()
         );
 
         int port = start;

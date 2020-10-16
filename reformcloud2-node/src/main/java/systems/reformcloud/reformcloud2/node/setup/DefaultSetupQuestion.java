@@ -30,15 +30,15 @@ import java.util.function.Function;
 
 public class DefaultSetupQuestion implements SetupQuestion {
 
+    private final Function<SetupAnswer, Boolean> answerHandler;
+    private final String invalidInputMessage;
+    private final String originalQuestion;
+
     public DefaultSetupQuestion(Function<SetupAnswer, Boolean> answerHandler, String invalidInputMessage, String originalQuestion) {
         this.answerHandler = answerHandler;
         this.invalidInputMessage = invalidInputMessage;
         this.originalQuestion = originalQuestion;
     }
-
-    private final Function<SetupAnswer, Boolean> answerHandler;
-    private final String invalidInputMessage;
-    private final String originalQuestion;
 
     @Override
     public @NotNull Function<SetupAnswer, Boolean> getAnswerHandler() {

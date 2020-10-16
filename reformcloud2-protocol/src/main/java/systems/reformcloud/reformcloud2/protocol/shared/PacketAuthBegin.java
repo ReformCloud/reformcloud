@@ -34,6 +34,10 @@ import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
 
 public class PacketAuthBegin extends ProtocolPacket {
 
+    private String connectionKey;
+    private int type;
+    private JsonConfiguration data;
+
     public PacketAuthBegin() {
     }
 
@@ -42,10 +46,6 @@ public class PacketAuthBegin extends ProtocolPacket {
         this.type = type;
         this.data = data;
     }
-
-    private String connectionKey;
-    private int type;
-    private JsonConfiguration data;
 
     public String getConnectionKey() {
         return this.connectionKey;

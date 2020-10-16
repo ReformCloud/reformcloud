@@ -36,14 +36,14 @@ import java.util.Collection;
 
 public class ApiToNodeGetTableEntryNames extends ProtocolPacket {
 
+    private String tableName;
+
     public ApiToNodeGetTableEntryNames() {
     }
 
     public ApiToNodeGetTableEntryNames(String tableName) {
         this.tableName = tableName;
     }
-
-    private String tableName;
 
     @Override
     public int getId() {

@@ -53,13 +53,13 @@ public class DefaultEmbeddedDatabaseProvider implements DatabaseProvider {
     @Override
     public @UnmodifiableView Collection<String> getTableNames() {
         return Embedded.getInstance().sendSyncQuery(new ApiToNodeGetDatabaseNames())
-                .map(result -> {
-                    if (result instanceof ApiToNodeGetDatabaseNamesResult) {
-                        return ((ApiToNodeGetDatabaseNamesResult) result).getNames();
-                    }
+            .map(result -> {
+                if (result instanceof ApiToNodeGetDatabaseNamesResult) {
+                    return ((ApiToNodeGetDatabaseNamesResult) result).getNames();
+                }
 
-                    return new ArrayList<String>();
-                }).orElseGet(ArrayList::new);
+                return new ArrayList<String>();
+            }).orElseGet(ArrayList::new);
     }
 
     @NotNull

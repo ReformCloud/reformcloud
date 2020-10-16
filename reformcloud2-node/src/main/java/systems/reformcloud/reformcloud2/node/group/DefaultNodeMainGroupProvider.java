@@ -43,17 +43,17 @@ import java.util.Optional;
 
 public class DefaultNodeMainGroupProvider implements MainGroupProvider {
 
+    private final Collection<MainGroup> mainGroups;
+    private final FileRegistry fileRegistry;
+
     public DefaultNodeMainGroupProvider(@NotNull String registryFolder) {
         this.fileRegistry = new DefaultFileRegistry(registryFolder);
         this.mainGroups = this.fileRegistry.readKeys(
-                e -> e.get("key", MainGroup.TYPE),
-                path -> System.err.println(LanguageManager.get("startup-unable-to-read-file",
-                        "Main-Group", path.toAbsolutePath().toString()))
+            e -> e.get("key", MainGroup.TYPE),
+            path -> System.err.println(LanguageManager.get("startup-unable-to-read-file",
+                "Main-Group", path.toAbsolutePath().toString()))
         );
     }
-
-    private final Collection<MainGroup> mainGroups;
-    private final FileRegistry fileRegistry;
 
     @NotNull
     @Override
@@ -131,9 +131,9 @@ public class DefaultNodeMainGroupProvider implements MainGroupProvider {
     public void reload() {
         this.mainGroups.clear();
         this.mainGroups.addAll(this.fileRegistry.readKeys(
-                e -> e.get("key", MainGroup.TYPE),
-                path -> System.err.println(LanguageManager.get("startup-unable-to-read-file",
-                        "Main-Group", path.toAbsolutePath().toString()))
+            e -> e.get("key", MainGroup.TYPE),
+            path -> System.err.println(LanguageManager.get("startup-unable-to-read-file",
+                "Main-Group", path.toAbsolutePath().toString()))
         ));
     }
 }

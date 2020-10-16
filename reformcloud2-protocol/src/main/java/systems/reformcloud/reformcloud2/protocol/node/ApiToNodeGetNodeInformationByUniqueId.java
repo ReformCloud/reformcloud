@@ -38,14 +38,14 @@ import java.util.UUID;
 
 public class ApiToNodeGetNodeInformationByUniqueId extends ProtocolPacket {
 
+    private UUID uniqueId;
+
     public ApiToNodeGetNodeInformationByUniqueId() {
     }
 
     public ApiToNodeGetNodeInformationByUniqueId(UUID uniqueId) {
         this.uniqueId = uniqueId;
     }
-
-    private UUID uniqueId;
 
     @Override
     public int getId() {

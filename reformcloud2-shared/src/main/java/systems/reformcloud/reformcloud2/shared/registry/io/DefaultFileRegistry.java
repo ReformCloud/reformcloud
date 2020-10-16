@@ -44,12 +44,12 @@ import java.util.function.Function;
 
 public class DefaultFileRegistry implements FileRegistry {
 
+    private final String operatingFolder;
+
     public DefaultFileRegistry(String operatingFolder) {
         this.operatingFolder = operatingFolder;
         IOUtils.createDirectory(Paths.get(operatingFolder));
     }
-
-    private final String operatingFolder;
 
     @NotNull
     @Override

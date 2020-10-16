@@ -40,6 +40,7 @@ import java.sql.SQLException;
 public class MySQLDatabaseProvider extends AbstractSQLDatabaseProvider {
 
     private static final String CONNECT_ARGUMENTS = "jdbc:mysql://%s:%d/%s?serverTimezone=UTC";
+    private final HikariDataSource hikariDataSource;
 
     public MySQLDatabaseProvider(@NotNull MySQLDatabaseConfig config) {
         HikariConfig hikariConfig = new HikariConfig();
@@ -62,8 +63,6 @@ public class MySQLDatabaseProvider extends AbstractSQLDatabaseProvider {
 
         this.hikariDataSource = new HikariDataSource(hikariConfig);
     }
-
-    private final HikariDataSource hikariDataSource;
 
     public void close() {
         this.hikariDataSource.close();

@@ -27,11 +27,11 @@ package systems.reformcloud.reformcloud2.node.tick;
 public final class TickAverageCounter {
 
     private final int size;
+    private final double[] samples;
+    private final long[] times;
     private long time;
     private double total;
     private int index = 0;
-    private final double[] samples;
-    private final long[] times;
 
     TickAverageCounter(int size) {
         this.size = size;

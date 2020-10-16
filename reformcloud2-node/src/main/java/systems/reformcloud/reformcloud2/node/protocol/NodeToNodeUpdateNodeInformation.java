@@ -36,14 +36,14 @@ import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
 
 public class NodeToNodeUpdateNodeInformation extends ProtocolPacket {
 
+    private NodeInformation nodeInformation;
+
     public NodeToNodeUpdateNodeInformation() {
     }
 
     public NodeToNodeUpdateNodeInformation(NodeInformation nodeInformation) {
         this.nodeInformation = nodeInformation;
     }
-
-    private NodeInformation nodeInformation;
 
     @Override
     public int getId() {

@@ -35,14 +35,14 @@ import java.util.UUID;
 
 public class ApiToNodeGetProcessUniqueIdsResult extends QueryResultPacket {
 
+    private Collection<UUID> uniqueIds;
+
     public ApiToNodeGetProcessUniqueIdsResult() {
     }
 
     public ApiToNodeGetProcessUniqueIdsResult(Collection<UUID> uniqueIds) {
         this.uniqueIds = uniqueIds;
     }
-
-    private Collection<UUID> uniqueIds;
 
     public Collection<UUID> getUniqueIds() {
         return this.uniqueIds;

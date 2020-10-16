@@ -34,13 +34,13 @@ import systems.reformcloud.reformcloud2.permissions.util.PermissionPluginUtil;
 import systems.reformcloud.reformcloud2.permissions.velocity.listener.VelocityPermissionListener;
 
 @Plugin(
-        id = "reformcloud_2_perms",
-        name = "VelocityPermissionPlugin",
-        version = "2",
-        description = "The reformcloud permission plugin",
-        url = "https://reformcloud.systems",
-        authors = {"derklaro"},
-        dependencies = {@Dependency(id = "reformcloud_2_api_executor")}
+    id = "reformcloud_2_perms",
+    name = "VelocityPermissionPlugin",
+    version = "2",
+    description = "The reformcloud permission plugin",
+    url = "https://reformcloud.systems",
+    authors = {"derklaro"},
+    dependencies = {@Dependency(id = "reformcloud_2_api_executor")}
 )
 public class VelocityPermissionPlugin {
 

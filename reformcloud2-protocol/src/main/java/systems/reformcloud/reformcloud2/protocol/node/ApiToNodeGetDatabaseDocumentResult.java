@@ -33,14 +33,14 @@ import systems.reformcloud.reformcloud2.executor.api.network.packet.query.QueryR
 
 public class ApiToNodeGetDatabaseDocumentResult extends QueryResultPacket {
 
+    private JsonConfiguration result;
+
     public ApiToNodeGetDatabaseDocumentResult() {
     }
 
     public ApiToNodeGetDatabaseDocumentResult(JsonConfiguration result) {
         this.result = result;
     }
-
-    private JsonConfiguration result;
 
     @Nullable
     public JsonConfiguration getResult() {

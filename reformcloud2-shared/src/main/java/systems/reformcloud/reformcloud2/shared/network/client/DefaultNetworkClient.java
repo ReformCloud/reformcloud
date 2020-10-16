@@ -59,17 +59,17 @@ public class DefaultNetworkClient implements NetworkClient {
 
     private @NotNull ChannelFuture connect0(@NotNull String host, int port, @NotNull Supplier<EndpointChannelReader> supplier) {
         return new Bootstrap()
-                .group(this.eventLoopGroup)
-                .channelFactory(NetworkUtil.TRANSPORT_TYPE.getSocketChannelFactory())
-                .option(ChannelOption.SO_REUSEADDR, true)
-                .option(ChannelOption.SO_KEEPALIVE, true)
-                .option(ChannelOption.AUTO_READ, true)
-                .option(ChannelOption.IP_TOS, 24)
-                .option(ChannelOption.TCP_NODELAY, true)
-                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, CommonHelper.longToInt(TimeUnit.SECONDS.toMillis(5)))
-                .handler(new ClientChannelInitializer(supplier))
-                .connect(host, port)
-                .addListeners(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE, ChannelFutureListener.CLOSE_ON_FAILURE);
+            .group(this.eventLoopGroup)
+            .channelFactory(NetworkUtil.TRANSPORT_TYPE.getSocketChannelFactory())
+            .option(ChannelOption.SO_REUSEADDR, true)
+            .option(ChannelOption.SO_KEEPALIVE, true)
+            .option(ChannelOption.AUTO_READ, true)
+            .option(ChannelOption.IP_TOS, 24)
+            .option(ChannelOption.TCP_NODELAY, true)
+            .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, CommonHelper.longToInt(TimeUnit.SECONDS.toMillis(5)))
+            .handler(new ClientChannelInitializer(supplier))
+            .connect(host, port)
+            .addListeners(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE, ChannelFutureListener.CLOSE_ON_FAILURE);
     }
 
     @Override

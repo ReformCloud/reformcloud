@@ -34,11 +34,11 @@ import java.util.logging.LogRecord;
 
 public class ColouredWriter extends Handler {
 
+    private final LineReader lineReader;
+
     ColouredWriter(LineReader lineReader) {
         this.lineReader = lineReader;
     }
-
-    private final LineReader lineReader;
 
     @Override
     public void publish(LogRecord record) {

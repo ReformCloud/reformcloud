@@ -109,13 +109,13 @@ public abstract class DefaultProcessGroupBuilder implements ProcessGroupBuilder 
     public ProcessGroup createTemporary() {
         Conditions.nonNull(this.name, "Unable to create process group without a name");
         return new ProcessGroup(
-                this.name,
-                this.showId,
-                this.startupConfiguration,
-                this.templates,
-                this.playerAccessConfiguration,
-                this.staticGroup,
-                this.lobby
+            this.name,
+            this.showId,
+            this.startupConfiguration,
+            this.templates,
+            this.playerAccessConfiguration,
+            this.staticGroup,
+            this.lobby
         );
     }
 }

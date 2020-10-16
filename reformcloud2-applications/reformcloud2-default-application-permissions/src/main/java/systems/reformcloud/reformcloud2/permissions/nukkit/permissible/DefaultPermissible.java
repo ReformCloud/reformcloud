@@ -114,40 +114,40 @@ public class DefaultPermissible extends PermissibleBase {
         final ProcessInformation current = Embedded.getInstance().getCurrentProcessInformation();
 
         permissionUser.getPermissionNodes().stream().filter(PermissionNode::isValid)
-                .forEach(e -> this.perms.put(e.getActualPermission(), new PermissionAttachmentInfo(
-                        this,
-                        e.getActualPermission(),
-                        null,
-                        e.isSet()
-                )));
+            .forEach(e -> this.perms.put(e.getActualPermission(), new PermissionAttachmentInfo(
+                this,
+                e.getActualPermission(),
+                null,
+                e.isSet()
+            )));
         permissionUser
-                .getGroups()
-                .stream()
-                .filter(NodeGroup::isValid)
-                .map(e -> PermissionManagement.getInstance().getPermissionGroup(e.getGroupName()).orElse(null))
-                .filter(Objects::nonNull)
-                .flatMap(e -> {
-                    Stream.Builder<PermissionGroup> stream = Stream.<PermissionGroup>builder().add(e);
-                    e.getSubGroups()
-                            .stream()
-                            .map(g -> PermissionManagement.getInstance().getPermissionGroup(g).orElse(null))
-                            .filter(Objects::nonNull)
-                            .forEach(stream);
-                    return stream.build();
-                }).forEach(g -> {
+            .getGroups()
+            .stream()
+            .filter(NodeGroup::isValid)
+            .map(e -> PermissionManagement.getInstance().getPermissionGroup(e.getGroupName()).orElse(null))
+            .filter(Objects::nonNull)
+            .flatMap(e -> {
+                Stream.Builder<PermissionGroup> stream = Stream.<PermissionGroup>builder().add(e);
+                e.getSubGroups()
+                    .stream()
+                    .map(g -> PermissionManagement.getInstance().getPermissionGroup(g).orElse(null))
+                    .filter(Objects::nonNull)
+                    .forEach(stream);
+                return stream.build();
+            }).forEach(g -> {
             g.getPermissionNodes().stream().filter(PermissionNode::isValid).forEach(e -> this.perms.put(e.getActualPermission(), new PermissionAttachmentInfo(
-                    this,
-                    e.getActualPermission(),
-                    null,
-                    e.isSet()
+                this,
+                e.getActualPermission(),
+                null,
+                e.isSet()
             )));
             Collection<PermissionNode> nodes = g.getPerGroupPermissions().get(current.getProcessGroup().getName());
             if (nodes != null) {
                 nodes.stream().filter(PermissionNode::isValid).forEach(e -> this.perms.put(e.getActualPermission(), new PermissionAttachmentInfo(
-                        this,
-                        e.getActualPermission(),
-                        null,
-                        e.isSet()
+                    this,
+                    e.getActualPermission(),
+                    null,
+                    e.isSet()
                 )));
             }
         });

@@ -33,14 +33,14 @@ import java.util.Collection;
 
 public class NodeToNodeTabCompleteCommandResult extends QueryResultPacket {
 
+    private Collection<String> result;
+
     public NodeToNodeTabCompleteCommandResult() {
     }
 
     public NodeToNodeTabCompleteCommandResult(Collection<String> result) {
         this.result = result;
     }
-
-    private Collection<String> result;
 
     public Collection<String> getResult() {
         return this.result;

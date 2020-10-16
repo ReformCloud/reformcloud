@@ -70,7 +70,7 @@ public final class UUIDFetcher {
             HttpURLConnection httpURLConnection = (HttpURLConnection) new URL("https://api.minetools.eu/uuid/" + name).openConnection();
             httpURLConnection.setDoOutput(false);
             httpURLConnection.setRequestProperty("User-Agent",
-                    "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.95 Safari/537.11");
+                "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.95 Safari/537.11");
             httpURLConnection.setUseCaches(true);
             httpURLConnection.connect();
 
@@ -95,8 +95,8 @@ public final class UUIDFetcher {
     @Nullable
     private static UUID fromDatabase(@NotNull String name) {
         Optional<JsonConfiguration> configuration = ExecutorAPI.getInstance().getDatabaseProvider().getDatabase(DefaultPermissionManagement.PERMISSION_NAME_TO_UNIQUE_ID_TABLE).get(
-                name,
-                ""
+            name,
+            ""
         );
 
         return !configuration.isPresent() || !configuration.get().has("id") ? null : configuration.get().get("id", UUID.class);

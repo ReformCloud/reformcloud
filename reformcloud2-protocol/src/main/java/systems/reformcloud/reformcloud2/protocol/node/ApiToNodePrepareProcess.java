@@ -46,6 +46,21 @@ import java.util.concurrent.TimeUnit;
 
 public class ApiToNodePrepareProcess extends ProtocolPacket {
 
+    private String processGroupName;
+    private String node;
+    private String displayName;
+    private String messageOfTheDay;
+    private String targetProcessFactory;
+    private ProcessGroup processGroup;
+    private Template template;
+    private Collection<ProcessInclusion> inclusions = new ArrayList<>();
+    private JsonConfiguration extra = new JsonConfiguration();
+    private ProcessState initialState = ProcessState.READY;
+    private UUID processUniqueId = UUID.randomUUID();
+    private int memory = -1;
+    private int id = -1;
+    private int maxPlayers = -1;
+
     public ApiToNodePrepareProcess() {
     }
 
@@ -66,23 +81,6 @@ public class ApiToNodePrepareProcess extends ProtocolPacket {
         this.id = id;
         this.maxPlayers = maxPlayers;
     }
-
-    private String processGroupName;
-    private String node;
-    private String displayName;
-    private String messageOfTheDay;
-    private String targetProcessFactory;
-
-    private ProcessGroup processGroup;
-    private Template template;
-    private Collection<ProcessInclusion> inclusions = new ArrayList<>();
-    private JsonConfiguration extra = new JsonConfiguration();
-    private ProcessState initialState = ProcessState.READY;
-    private UUID processUniqueId = UUID.randomUUID();
-
-    private int memory = -1;
-    private int id = -1;
-    private int maxPlayers = -1;
 
     @Override
     public int getId() {

@@ -31,14 +31,14 @@ import systems.reformcloud.reformcloud2.executor.api.network.packet.query.QueryR
 
 public class ApiToNodeIsNodePresentResult extends QueryResultPacket {
 
+    private boolean present;
+
     public ApiToNodeIsNodePresentResult() {
     }
 
     public ApiToNodeIsNodePresentResult(boolean present) {
         this.present = present;
     }
-
-    private boolean present;
 
     public boolean isPresent() {
         return this.present;

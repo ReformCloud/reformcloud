@@ -93,9 +93,9 @@ public final class FTPTemplateBackend implements TemplateBackend {
     public static void load(String basePath) {
         if (Files.notExists(Paths.get(basePath, "ftp.json"))) {
             new JsonConfiguration()
-                    .add("config", new FTPConfig(
-                            false, false, "127.0.0.1", 21, "rc", "password", "rc/templates"
-                    )).write(Paths.get(basePath, "ftp.json"));
+                .add("config", new FTPConfig(
+                    false, false, "127.0.0.1", 21, "rc", "password", "rc/templates"
+                )).write(Paths.get(basePath, "ftp.json"));
         }
 
         FTPConfig config = JsonConfiguration.read(Paths.get(basePath, "ftp.json")).get("config", new TypeToken<FTPConfig>() {
@@ -204,8 +204,8 @@ public final class FTPTemplateBackend implements TemplateBackend {
         }
 
         return future(() ->
-                Streams.allOf(group.getTemplates(), e -> e.getBackend().equals(this.getName())
-                        && e.isGlobal()).forEach(e -> this.loadTemplate(group.getName(), e.getName(), target))
+            Streams.allOf(group.getTemplates(), e -> e.getBackend().equals(this.getName())
+                && e.isGlobal()).forEach(e -> this.loadTemplate(group.getName(), e.getName(), target))
         );
     }
 
@@ -241,8 +241,8 @@ public final class FTPTemplateBackend implements TemplateBackend {
 
         File[] localFiles = current.toFile().listFiles(e -> {
             String full = e.getAbsolutePath()
-                    .replaceFirst(current.toFile().getAbsolutePath(), "")
-                    .replaceFirst("\\\\", "");
+                .replaceFirst(current.toFile().getAbsolutePath(), "")
+                .replaceFirst("\\\\", "");
             return !collection.contains(full);
         });
         if (localFiles == null || localFiles.length == 0) {

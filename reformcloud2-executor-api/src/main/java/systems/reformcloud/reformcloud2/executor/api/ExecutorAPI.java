@@ -38,6 +38,9 @@ import java.util.Objects;
  */
 public abstract class ExecutorAPI {
 
+    /* The current instance of the executor */
+    private static ExecutorAPI instance;
+
     static {
         if (System.getProperty("io.netty.leakDetectionLevel") == null) {
             ResourceLeakDetector.setLevel(ResourceLeakDetector.Level.DISABLED);
@@ -56,9 +59,6 @@ public abstract class ExecutorAPI {
 
     /* The executor type which is currently running */
     protected ExecutorType type = ExecutorType.UNKNOWN;
-
-    /* The current instance of the executor */
-    private static ExecutorAPI instance;
 
     /**
      * @return The current instance of this class

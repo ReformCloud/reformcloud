@@ -50,7 +50,7 @@ public class SpongeSignConverter implements SignConverter<Sign> {
         }
 
         if (sponge.getBlock().getType().equals(BlockTypes.STANDING_SIGN)
-                || sponge.getBlock().getType().equals(BlockTypes.WALL_SIGN)) {
+            || sponge.getBlock().getType().equals(BlockTypes.WALL_SIGN)) {
             TileEntity entity = sponge.getTileEntity().orElse(null);
             return entity instanceof Sign ? (Sign) entity : null;
         }
@@ -81,13 +81,13 @@ public class SpongeSignConverter implements SignConverter<Sign> {
 
     private CloudLocation accumulate(Location<World> location) {
         return new CloudLocation(
-                location.getExtent().getName(),
-                Embedded.getInstance().getCurrentProcessInformation().getProcessGroup().getName(),
-                location.getX(),
-                location.getY(),
-                location.getZ(),
-                -1,
-                -1
+            location.getExtent().getName(),
+            Embedded.getInstance().getCurrentProcessInformation().getProcessGroup().getName(),
+            location.getX(),
+            location.getY(),
+            location.getZ(),
+            -1,
+            -1
         );
     }
 }

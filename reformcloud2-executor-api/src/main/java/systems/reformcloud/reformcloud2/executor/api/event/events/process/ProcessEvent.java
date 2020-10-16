@@ -29,11 +29,11 @@ import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 
 public abstract class ProcessEvent extends Event {
 
+    protected final ProcessInformation processInformation;
+
     public ProcessEvent(ProcessInformation processInformation) {
         this.processInformation = processInformation;
     }
-
-    protected final ProcessInformation processInformation;
 
     public ProcessInformation getProcessInformation() {
         return this.processInformation;

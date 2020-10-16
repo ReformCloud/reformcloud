@@ -35,11 +35,11 @@ import java.util.function.Function;
 
 public class DefaultArgumentParser implements ArgumentParser {
 
+    private final Properties properties;
+
     public DefaultArgumentParser(@NonNls String[] args) {
         this.properties = StringUtil.calcProperties(args, 0);
     }
-
-    private final Properties properties;
 
     @Override
     public boolean has(@NotNull String key) {

@@ -33,15 +33,13 @@ import systems.reformcloud.reformcloud2.executor.api.network.data.ProtocolBuffer
  */
 public class ExampleSerializableObject implements SerializableObject {
 
+    private String exampleString;
+    private int exampleInt;
+    private boolean exampleBoolean;
+
     public ExampleSerializableObject() {
         // The no args constructor is required in every serializable object for the decode process
     }
-
-    private String exampleString;
-
-    private int exampleInt;
-
-    private boolean exampleBoolean;
 
     @Override
     public void write(@NotNull ProtocolBuffer buffer) {

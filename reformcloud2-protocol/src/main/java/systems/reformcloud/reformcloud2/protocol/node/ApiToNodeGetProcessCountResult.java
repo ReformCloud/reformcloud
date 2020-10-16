@@ -31,14 +31,14 @@ import systems.reformcloud.reformcloud2.executor.api.network.packet.query.QueryR
 
 public class ApiToNodeGetProcessCountResult extends QueryResultPacket {
 
+    private long result;
+
     public ApiToNodeGetProcessCountResult() {
     }
 
     public ApiToNodeGetProcessCountResult(long result) {
         this.result = result;
     }
-
-    private long result;
 
     public long getResult() {
         return this.result;

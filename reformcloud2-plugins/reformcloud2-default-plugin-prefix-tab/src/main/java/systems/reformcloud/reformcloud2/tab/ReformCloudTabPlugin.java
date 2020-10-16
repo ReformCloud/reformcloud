@@ -56,17 +56,6 @@ public class ReformCloudTabPlugin extends JavaPlugin {
         }
     }
 
-    @Override
-    public void onEnable() {
-        if (Bukkit.getPluginManager().getPlugin("ReformCloud2BukkitPermissions") == null) {
-            System.err.println("[Tab] Unable to find permission plugin, do not load permission listeners");
-            return;
-        }
-
-        Bukkit.getPluginManager().registerEvents(new BukkitTabListeners(), this);
-        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).registerListener(new CloudTabListeners(this));
-    }
-
     public static void pullPlayerNameTags(@NotNull Player player) {
         Conditions.isTrue(Bukkit.isPrimaryThread(), "Can only update the tab teams from the main thread");
         if (Bukkit.getScoreboardManager() == null) {
@@ -166,5 +155,16 @@ public class ReformCloudTabPlugin extends JavaPlugin {
 
         team.addEntry(player.getName());
         player.setDisplayName(ChatColor.translateAlternateColorCodes('&', permissionUser.getPrefix().orElse("") + player.getName()));
+    }
+
+    @Override
+    public void onEnable() {
+        if (Bukkit.getPluginManager().getPlugin("ReformCloud2BukkitPermissions") == null) {
+            System.err.println("[Tab] Unable to find permission plugin, do not load permission listeners");
+            return;
+        }
+
+        Bukkit.getPluginManager().registerEvents(new BukkitTabListeners(), this);
+        ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).registerListener(new CloudTabListeners(this));
     }
 }

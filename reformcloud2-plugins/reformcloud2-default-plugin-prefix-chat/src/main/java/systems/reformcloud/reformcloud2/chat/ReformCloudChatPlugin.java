@@ -37,6 +37,8 @@ import systems.reformcloud.reformcloud2.permissions.objects.group.PermissionGrou
 
 public class ReformCloudChatPlugin extends JavaPlugin implements Listener {
 
+    private String chatFormat;
+
     @Override
     public void onEnable() {
         if (Bukkit.getPluginManager().getPlugin("ReformCloud2BukkitPermissions") == null) {
@@ -50,8 +52,6 @@ public class ReformCloudChatPlugin extends JavaPlugin implements Listener {
 
         Bukkit.getPluginManager().registerEvents(this, this);
     }
-
-    private String chatFormat;
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void handle(final @NotNull AsyncPlayerChatEvent event) {
@@ -68,14 +68,14 @@ public class ReformCloudChatPlugin extends JavaPlugin implements Listener {
 
             PermissionGroup permissionGroup = user.getHighestPermissionGroup().orElse(null);
             String finalFormat = this.chatFormat
-                    .replace("%name%", event.getPlayer().getName())
-                    .replace("%player_display%", event.getPlayer().getDisplayName())
-                    .replace("%group%", permissionGroup == null ? "" : permissionGroup.getName())
-                    .replace("%priority%", permissionGroup == null ? "" : Integer.toString(permissionGroup.getPriority()))
-                    .replace("%prefix%", user.getPrefix().orElse(""))
-                    .replace("%suffix%", user.getSuffix().orElse(""))
-                    .replace("%display%", user.getDisplay().orElse(""))
-                    .replace("%colour%", user.getColour().orElse(""));
+                .replace("%name%", event.getPlayer().getName())
+                .replace("%player_display%", event.getPlayer().getDisplayName())
+                .replace("%group%", permissionGroup == null ? "" : permissionGroup.getName())
+                .replace("%priority%", permissionGroup == null ? "" : Integer.toString(permissionGroup.getPriority()))
+                .replace("%prefix%", user.getPrefix().orElse(""))
+                .replace("%suffix%", user.getSuffix().orElse(""))
+                .replace("%display%", user.getDisplay().orElse(""))
+                .replace("%colour%", user.getColour().orElse(""));
             finalFormat = ChatColor.translateAlternateColorCodes('&', finalFormat);
             event.setFormat(finalFormat.replace("%message%", message));
         });

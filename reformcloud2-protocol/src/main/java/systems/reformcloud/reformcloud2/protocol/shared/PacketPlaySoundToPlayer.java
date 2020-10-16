@@ -35,6 +35,11 @@ import java.util.UUID;
 
 public class PacketPlaySoundToPlayer extends ProtocolPacket {
 
+    private UUID uniqueId;
+    private String sound;
+    private float volume;
+    private float pitch;
+
     public PacketPlaySoundToPlayer() {
     }
 
@@ -44,11 +49,6 @@ public class PacketPlaySoundToPlayer extends ProtocolPacket {
         this.volume = volume;
         this.pitch = pitch;
     }
-
-    private UUID uniqueId;
-    private String sound;
-    private float volume;
-    private float pitch;
 
     public UUID getUniqueId() {
         return this.uniqueId;

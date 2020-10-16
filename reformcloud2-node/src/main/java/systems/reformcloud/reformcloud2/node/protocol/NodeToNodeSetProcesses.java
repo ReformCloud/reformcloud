@@ -38,14 +38,14 @@ import java.util.Collection;
 
 public class NodeToNodeSetProcesses extends ProtocolPacket {
 
+    private Collection<ProcessInformation> processInformation;
+
     public NodeToNodeSetProcesses() {
     }
 
     public NodeToNodeSetProcesses(Collection<ProcessInformation> processInformation) {
         this.processInformation = processInformation;
     }
-
-    private Collection<ProcessInformation> processInformation;
 
     @Override
     public int getId() {

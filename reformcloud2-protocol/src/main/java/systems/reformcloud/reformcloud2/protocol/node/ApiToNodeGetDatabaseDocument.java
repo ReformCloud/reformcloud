@@ -37,6 +37,10 @@ import java.util.Optional;
 
 public class ApiToNodeGetDatabaseDocument extends ProtocolPacket {
 
+    private String table;
+    private String key;
+    private String id;
+
     public ApiToNodeGetDatabaseDocument() {
     }
 
@@ -45,10 +49,6 @@ public class ApiToNodeGetDatabaseDocument extends ProtocolPacket {
         this.key = key;
         this.id = id;
     }
-
-    private String table;
-    private String key;
-    private String id;
 
     @Override
     public int getId() {

@@ -40,14 +40,14 @@ public final class ProcessInclusionHandler {
 
     private void includeSelfFile(@NotNull ProcessInformation processInformation) {
         if (!processInformation.getProcessDetail().getTemplate().getVersion().isServer()
-                || !processInformation.getProcessGroup().isCanBeUsedAsLobby()) {
+            || !processInformation.getProcessGroup().isCanBeUsedAsLobby()) {
             return;
         }
 
         processInformation.getPreInclusions().add(new ProcessInclusion(
-                "https://dl.reformcloud.systems/addonsv2/reformcloud2-default-application-signs-"
-                        + ReformCloudApplication.getInstance().getApplication().getApplicationConfig().getVersion() + ".jar",
-                "plugins/signs-" + ReformCloudApplication.getInstance().getApplication().getApplicationConfig().getVersion() + ".jar"
+            "https://dl.reformcloud.systems/addonsv2/reformcloud2-default-application-signs-"
+                + ReformCloudApplication.getInstance().getApplication().getApplicationConfig().getVersion() + ".jar",
+            "plugins/signs-" + ReformCloudApplication.getInstance().getApplication().getApplicationConfig().getVersion() + ".jar"
         ));
     }
 }

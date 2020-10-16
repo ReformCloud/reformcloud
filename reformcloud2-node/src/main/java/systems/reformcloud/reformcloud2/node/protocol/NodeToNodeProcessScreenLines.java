@@ -36,6 +36,10 @@ import java.util.Collection;
 
 public class NodeToNodeProcessScreenLines extends ProtocolPacket {
 
+    private String processName;
+    private String nodeName;
+    private Collection<String> newLines;
+
     public NodeToNodeProcessScreenLines() {
     }
 
@@ -44,10 +48,6 @@ public class NodeToNodeProcessScreenLines extends ProtocolPacket {
         this.nodeName = nodeName;
         this.newLines = newLines;
     }
-
-    private String processName;
-    private String nodeName;
-    private Collection<String> newLines;
 
     @Override
     public int getId() {
@@ -58,10 +58,10 @@ public class NodeToNodeProcessScreenLines extends ProtocolPacket {
     public void handlePacketReceive(@NotNull EndpointChannelReader reader, @NotNull NetworkChannel channel) {
         for (String line : this.newLines) {
             System.out.println(LanguageManager.get(
-                    "screen-line-added",
-                    this.processName,
-                    this.nodeName,
-                    line
+                "screen-line-added",
+                this.processName,
+                this.nodeName,
+                line
             ));
         }
     }

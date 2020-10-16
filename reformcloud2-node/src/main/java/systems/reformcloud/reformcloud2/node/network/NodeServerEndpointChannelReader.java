@@ -100,8 +100,8 @@ public class NodeServerEndpointChannelReader extends SharedEndpointChannelReader
                 }
 
                 if (!Streams.hasMatch(
-                        NodeExecutor.getInstance().getNodeConfig().getClusterNodes(),
-                        networkAddress -> networkAddress.getHost().equals(super.networkChannel.getAddress())
+                    NodeExecutor.getInstance().getNodeConfig().getClusterNodes(),
+                    networkAddress -> networkAddress.getHost().equals(super.networkChannel.getAddress())
                 )) {
                     // invalid node connected (the node is not registered)
                     super.networkChannel.close();
@@ -168,13 +168,13 @@ public class NodeServerEndpointChannelReader extends SharedEndpointChannelReader
 
             if (this.type == 1) {
                 ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ClusterManager.class).publishProcessGroupSet(
-                        ExecutorAPI.getInstance().getProcessGroupProvider().getProcessGroups()
+                    ExecutorAPI.getInstance().getProcessGroupProvider().getProcessGroups()
                 );
                 ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ClusterManager.class).publishMainGroupSet(
-                        ExecutorAPI.getInstance().getMainGroupProvider().getMainGroups()
+                    ExecutorAPI.getInstance().getMainGroupProvider().getMainGroups()
                 );
                 ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ClusterManager.class).publishProcessSet(
-                        ExecutorAPI.getInstance().getProcessProvider().getProcesses()
+                    ExecutorAPI.getInstance().getProcessProvider().getProcesses()
                 );
             }
             return;

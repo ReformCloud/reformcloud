@@ -66,8 +66,8 @@ public final class ClusterAccessController {
                                                                    @NotNull JsonConfiguration jsonConfiguration, @NotNull ProcessState initial, @NotNull UUID uniqueId,
                                                                    int memory, int id, int maxPlayers, @Nullable String targetProcessFactory) {
         return createProcessPrivileged(
-                new ProcessFactoryConfiguration(node, displayName, messageOfTheDay, processGroup, template, inclusions, jsonConfiguration, initial, uniqueId, memory, id, maxPlayers),
-                targetProcessFactory
+            new ProcessFactoryConfiguration(node, displayName, messageOfTheDay, processGroup, template, inclusions, jsonConfiguration, initial, uniqueId, memory, id, maxPlayers),
+            targetProcessFactory
         );
     }
 
@@ -78,8 +78,8 @@ public final class ClusterAccessController {
         }
 
         NetworkChannel channel = ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ChannelManager.class)
-                .getChannel(getClusterManager().getHeadNode().getName())
-                .orElseThrow(() -> new IllegalStateException("Head node channel not connected"));
+            .getChannel(getClusterManager().getHeadNode().getName())
+            .orElseThrow(() -> new IllegalStateException("Head node channel not connected"));
         return createProcessOnHeadNode(channel, configuration, targetProcessFactory);
     }
 
@@ -87,14 +87,14 @@ public final class ClusterAccessController {
     private static Task<ProcessInformation> createProcessOnHeadNode(@NotNull NetworkChannel channel, @NotNull ProcessFactoryConfiguration configuration, @Nullable String targetProcessFactory) {
         Task<ProcessInformation> task = new DefaultTask<>();
         ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(QueryManager.class)
-                .sendPacketQuery(channel, new NodeToHeadNodeCreateProcess(configuration, targetProcessFactory))
-                .onComplete(packet -> {
-                    if (packet instanceof NodeToHeadNodeCreateProcessResult) {
-                        task.complete(((NodeToHeadNodeCreateProcessResult) packet).getProcessInformation());
-                    } else {
-                        task.complete(null);
-                    }
-                });
+            .sendPacketQuery(channel, new NodeToHeadNodeCreateProcess(configuration, targetProcessFactory))
+            .onComplete(packet -> {
+                if (packet instanceof NodeToHeadNodeCreateProcessResult) {
+                    task.complete(((NodeToHeadNodeCreateProcessResult) packet).getProcessInformation());
+                } else {
+                    task.complete(null);
+                }
+            });
         return task;
     }
 
@@ -106,9 +106,9 @@ public final class ClusterAccessController {
         }
 
         return factoryController
-                .getProcessFactoryByName(targetProcessFactory)
-                .orElse(factoryController.getDefaultProcessFactory())
-                .buildProcessInformation(configuration);
+            .getProcessFactoryByName(targetProcessFactory)
+            .orElse(factoryController.getDefaultProcessFactory())
+            .buildProcessInformation(configuration);
     }
 
     private static @NotNull ClusterManager getClusterManager() {

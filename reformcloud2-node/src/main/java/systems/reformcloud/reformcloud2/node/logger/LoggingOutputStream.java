@@ -45,13 +45,13 @@ public class LoggingOutputStream extends ByteArrayOutputStream {
         EXCLUDED_LINE_STARTS.addAll(Arrays.asList(excluded.split(";")));
     }
 
+    private final Logger parent;
+    private final Level level;
+
     public LoggingOutputStream(Logger parent, Level level) {
         this.parent = parent;
         this.level = level;
     }
-
-    private final Logger parent;
-    private final Level level;
 
     @Override
     public void flush() throws IOException {

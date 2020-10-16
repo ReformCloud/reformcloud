@@ -38,14 +38,14 @@ import java.util.Collection;
 
 public class NodeToNodeSetProcessGroups extends ProtocolPacket {
 
+    private Collection<ProcessGroup> processGroups;
+
     public NodeToNodeSetProcessGroups() {
     }
 
     public NodeToNodeSetProcessGroups(Collection<ProcessGroup> processGroups) {
         this.processGroups = processGroups;
     }
-
-    private Collection<ProcessGroup> processGroups;
 
     @Override
     public int getId() {

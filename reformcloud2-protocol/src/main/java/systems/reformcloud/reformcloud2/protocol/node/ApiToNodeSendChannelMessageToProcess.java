@@ -40,6 +40,10 @@ import java.util.UUID;
 
 public class ApiToNodeSendChannelMessageToProcess extends ProtocolPacket {
 
+    private UUID targetProcess;
+    private String channel;
+    private JsonConfiguration data;
+
     public ApiToNodeSendChannelMessageToProcess() {
     }
 
@@ -48,10 +52,6 @@ public class ApiToNodeSendChannelMessageToProcess extends ProtocolPacket {
         this.channel = channel;
         this.data = data;
     }
-
-    private UUID targetProcess;
-    private String channel;
-    private JsonConfiguration data;
 
     @Override
     public int getId() {
@@ -62,9 +62,9 @@ public class ApiToNodeSendChannelMessageToProcess extends ProtocolPacket {
     public void handlePacketReceive(@NotNull EndpointChannelReader reader, @NotNull NetworkChannel channel) {
         Optional<ProcessWrapper> process = ExecutorAPI.getInstance().getProcessProvider().getProcessByUniqueId(this.targetProcess);
         process.ifPresent(processWrapper -> ExecutorAPI.getInstance().getChannelMessageProvider().sendChannelMessage(
-                processWrapper.getProcessInformation(),
-                this.channel,
-                this.data
+            processWrapper.getProcessInformation(),
+            this.channel,
+            this.data
         ));
     }
 

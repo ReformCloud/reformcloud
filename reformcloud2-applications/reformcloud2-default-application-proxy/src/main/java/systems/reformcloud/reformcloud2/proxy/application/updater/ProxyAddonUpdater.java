@@ -65,6 +65,6 @@ public class ProxyAddonUpdater extends DefaultApplicationUpdateRepository {
         }
 
         return new BasicApplicationRemoteUpdate(this.newVersion,
-                "https://dl.reformcloud.systems/addonsv2/reformcloud2-default-application-proxy-" + this.newVersion + ".jar");
+            "https://dl.reformcloud.systems/addonsv2/reformcloud2-default-application-proxy-" + this.newVersion + ".jar");
     }
 }
