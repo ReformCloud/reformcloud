@@ -41,8 +41,10 @@ public class PacketSendPlayerTitle extends ProtocolPacket {
     private int fadeIn;
     private int stay;
     private int fadeOut;
+
     public PacketSendPlayerTitle() {
     }
+
     public PacketSendPlayerTitle(UUID uniqueId, String title, String subTitle, int fadeIn, int stay, int fadeOut) {
         this.uniqueId = uniqueId;
         this.title = title;

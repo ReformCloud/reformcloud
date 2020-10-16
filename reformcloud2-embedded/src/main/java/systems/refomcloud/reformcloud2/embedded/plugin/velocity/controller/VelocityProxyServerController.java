@@ -41,6 +41,7 @@ public class VelocityProxyServerController implements ProxyServerController {
     private final ProxyServer proxyServer;
     private final List<ProcessInformation> cachedProxies = new CopyOnWriteArrayList<>();
     private final List<ProcessInformation> cachedLobbies = new CopyOnWriteArrayList<>();
+
     public VelocityProxyServerController(ProxyServer proxyServer) {
         this.proxyServer = proxyServer;
     }

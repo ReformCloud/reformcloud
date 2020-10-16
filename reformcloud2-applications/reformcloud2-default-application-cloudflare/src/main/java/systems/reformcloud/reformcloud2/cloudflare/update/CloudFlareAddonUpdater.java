@@ -38,6 +38,7 @@ public class CloudFlareAddonUpdater extends DefaultApplicationUpdateRepository {
 
     private final ReformCloudApplication application;
     private String newVersion;
+
     public CloudFlareAddonUpdater(ReformCloudApplication application) {
         this.application = application;
     }

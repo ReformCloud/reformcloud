@@ -42,8 +42,10 @@ public class PacketSetPlayerLocation extends ProtocolPacket {
     protected double z;
     protected float yaw;
     protected float pitch;
+
     public PacketSetPlayerLocation() {
     }
+
     public PacketSetPlayerLocation(UUID uniqueId, String world, double x, double y, double z, float yaw, float pitch) {
         this.uniqueId = uniqueId;
         this.world = world;

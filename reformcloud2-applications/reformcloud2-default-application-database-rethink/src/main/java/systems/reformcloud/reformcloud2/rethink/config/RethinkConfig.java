@@ -31,6 +31,7 @@ public class RethinkConfig {
     private final String database;
     private final String userName;
     private final String password;
+
     public RethinkConfig(String host, int port, String database, String userName, String password) {
         this.host = host;
         this.port = port;

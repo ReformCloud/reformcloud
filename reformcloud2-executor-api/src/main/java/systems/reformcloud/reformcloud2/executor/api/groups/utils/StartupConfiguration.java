@@ -43,6 +43,7 @@ public final class StartupConfiguration implements SerializableObject {
     private AutomaticStartupConfiguration automaticStartupConfiguration;
     private boolean searchBestClientAlone;
     private List<String> useOnlyTheseClients;
+
     @ApiStatus.Internal
     public StartupConfiguration() {
     }

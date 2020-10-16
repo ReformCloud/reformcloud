@@ -31,6 +31,7 @@ public class ChannelMessageReceiveEvent extends Event {
 
     private final String channel;
     private final JsonConfiguration data;
+
     public ChannelMessageReceiveEvent(String channel, JsonConfiguration data) {
         this.channel = channel;
         this.data = data;

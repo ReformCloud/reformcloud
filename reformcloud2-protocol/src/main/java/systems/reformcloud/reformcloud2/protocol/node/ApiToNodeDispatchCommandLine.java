@@ -44,6 +44,7 @@ public class ApiToNodeDispatchCommandLine extends ProtocolPacket {
 
     public ApiToNodeDispatchCommandLine() {
     }
+
     public ApiToNodeDispatchCommandLine(UUID nodeUniqueId, String commandLine) {
         this.nodeUniqueId = nodeUniqueId;
         this.commandLine = commandLine;

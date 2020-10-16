@@ -39,8 +39,10 @@ public class PacketPlaySoundToPlayer extends ProtocolPacket {
     private String sound;
     private float volume;
     private float pitch;
+
     public PacketPlaySoundToPlayer() {
     }
+
     public PacketPlaySoundToPlayer(UUID uniqueId, String sound, float volume, float pitch) {
         this.uniqueId = uniqueId;
         this.sound = sound;

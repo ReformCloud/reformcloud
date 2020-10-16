@@ -39,6 +39,7 @@ public class ApiToNodeHasTableDocument extends ProtocolPacket {
 
     public ApiToNodeHasTableDocument() {
     }
+
     public ApiToNodeHasTableDocument(String tableName, String key) {
         this.tableName = tableName;
         this.key = key;

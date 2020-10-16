@@ -47,8 +47,10 @@ public class ApiToNodeCreateProcessGroup extends ProtocolPacket {
     private List<Template> templates;
     private PlayerAccessConfiguration playerAccessConfiguration;
     private StartupConfiguration startupConfiguration;
+
     public ApiToNodeCreateProcessGroup() {
     }
+
     public ApiToNodeCreateProcessGroup(String name, boolean staticGroup, boolean lobby, boolean showId,
                                        List<Template> templates, PlayerAccessConfiguration playerAccessConfiguration,
                                        StartupConfiguration startupConfiguration) {

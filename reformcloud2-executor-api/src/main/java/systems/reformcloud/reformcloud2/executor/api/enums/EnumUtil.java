@@ -36,6 +36,7 @@ public final class EnumUtil {
 
     private static final Map<Class<? extends Enum<?>>, Entry> CACHE = new ConcurrentHashMap<>();
     private static final IllegalStateException BASE_NULL = new IllegalStateException("Entry base evaluated null instead of enum set");
+
     private EnumUtil() {
         throw new UnsupportedOperationException();
     }

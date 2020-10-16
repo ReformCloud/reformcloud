@@ -40,6 +40,7 @@ public final class PlayerAccessConfiguration implements SerializableObject {
     private String joinPermission;
     private boolean useCloudPlayerLimit;
     private int maxPlayers;
+
     @ApiStatus.Internal
     public PlayerAccessConfiguration() {
     }

@@ -111,6 +111,7 @@ public final class NodeExecutor extends ExecutorAPI {
     private final ChannelMessageProvider channelMessageProvider = new DefaultNodeChannelMessageProvider();
     private final TickedTaskScheduler taskScheduler = new TickedTaskScheduler();
     private final CloudTickWorker cloudTickWorker = new CloudTickWorker(this.taskScheduler);
+
     private NodeConfig nodeConfig;
     private DefaultNodeMainGroupProvider mainGroupProvider;
     private DefaultNodeProcessGroupProvider processGroupProvider;

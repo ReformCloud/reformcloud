@@ -40,6 +40,7 @@ public class RethinkDatabaseProvider implements DatabaseProvider, AutoCloseable 
 
     private final Connection connection;
     private final Db database;
+
     public RethinkDatabaseProvider(RethinkConfig config) {
         this.connection = RethinkDB.r.connection()
             .hostname(config.getHost())

@@ -45,6 +45,7 @@ public class EmbeddedEndpointChannelReader extends SharedEndpointChannelReader {
     private final Lock lock;
     private final Condition condition;
     private boolean wasActive = false;
+
     public EmbeddedEndpointChannelReader(Lock lock, Condition condition) {
         PacketRegister.preAuth();
 

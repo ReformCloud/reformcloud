@@ -60,8 +60,10 @@ public class ApiToNodePrepareProcess extends ProtocolPacket {
     private int memory = -1;
     private int id = -1;
     private int maxPlayers = -1;
+
     public ApiToNodePrepareProcess() {
     }
+
     public ApiToNodePrepareProcess(String processGroupName, String node, String displayName, String messageOfTheDay, String targetProcessFactory, ProcessGroup processGroup, Template template,
                                    Collection<ProcessInclusion> inclusions, JsonConfiguration extra, ProcessState initialState, UUID processUniqueId, int memory, int id, int maxPlayers) {
         this.processGroupName = processGroupName;

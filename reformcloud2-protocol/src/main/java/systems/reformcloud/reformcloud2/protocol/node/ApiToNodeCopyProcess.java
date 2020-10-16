@@ -41,8 +41,10 @@ public class ApiToNodeCopyProcess extends ProtocolPacket {
     private String templateGroup;
     private String templateName;
     private String templateBackend;
+
     public ApiToNodeCopyProcess() {
     }
+
     public ApiToNodeCopyProcess(ProcessInformation information, String templateGroup, String templateName, String templateBackend) {
         this.processUniqueId = information.getProcessDetail().getProcessUniqueID();
         this.templateGroup = templateGroup;

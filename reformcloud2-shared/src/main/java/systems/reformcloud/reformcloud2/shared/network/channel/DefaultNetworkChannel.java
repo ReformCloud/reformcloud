@@ -41,6 +41,7 @@ public final class DefaultNetworkChannel implements NetworkChannel {
     private InetSocketAddress address;
     private boolean authenticated;
     private String name;
+
     DefaultNetworkChannel(Channel channel) {
         this.channel = channel;
         this.address = (InetSocketAddress) channel.remoteAddress();

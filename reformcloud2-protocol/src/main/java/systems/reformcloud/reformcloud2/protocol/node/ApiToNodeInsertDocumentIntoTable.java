@@ -39,8 +39,10 @@ public class ApiToNodeInsertDocumentIntoTable extends ProtocolPacket {
     protected String key;
     protected String id;
     protected JsonConfiguration data;
+
     public ApiToNodeInsertDocumentIntoTable() {
     }
+
     public ApiToNodeInsertDocumentIntoTable(String tableName, String key, String id, JsonConfiguration data) {
         this.tableName = tableName;
         this.key = key;

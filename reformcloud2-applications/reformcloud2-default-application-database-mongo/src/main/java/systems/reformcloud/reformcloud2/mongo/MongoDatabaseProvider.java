@@ -44,6 +44,7 @@ public class MongoDatabaseProvider implements DatabaseProvider, AutoCloseable {
 
     private final MongoClient client;
     private final MongoDatabase database;
+
     public MongoDatabaseProvider(MongoConfig config) {
         try {
             this.client = MongoClients.create(MessageFormat.format(

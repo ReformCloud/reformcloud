@@ -48,6 +48,7 @@ public final class VelocityPlugin {
 
     public static ProxyServer proxyServer;
     private ProcessListener listener;
+
     @Inject
     public VelocityPlugin(ProxyServer server) {
         proxyServer = server;

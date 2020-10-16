@@ -54,6 +54,7 @@ public abstract class AbstractProcessBuilder implements ProcessBuilder {
     protected int memory = -1;
     protected int id = -1;
     protected int maxPlayers = -1;
+
     protected AbstractProcessBuilder() {
     }
 

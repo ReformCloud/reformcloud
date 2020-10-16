@@ -48,6 +48,7 @@ public class RethinkDatabaseTableWrapper implements DatabaseTableWrapper {
     private static final TypeReference<Map<String, String>> STRING_MAP_TYPE = Types.mapOf(String.class, String.class);
     private final Connection connection;
     private final Table table;
+
     public RethinkDatabaseTableWrapper(Connection connection, Db database, String targetTable) {
         this.connection = connection;
         this.table = database.table(targetTable);

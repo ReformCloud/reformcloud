@@ -42,6 +42,7 @@ public class ApiToNodeCreateMainGroup extends ProtocolPacket {
 
     public ApiToNodeCreateMainGroup() {
     }
+
     public ApiToNodeCreateMainGroup(String name, Collection<String> subGroups) {
         this.name = name;
         this.subGroups = subGroups;

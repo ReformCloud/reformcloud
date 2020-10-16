@@ -38,8 +38,10 @@ public class ApiToNodeSendChannelMessageToProcessGroup extends ProtocolPacket {
     private String processGroup;
     private String channel;
     private JsonConfiguration data;
+
     public ApiToNodeSendChannelMessageToProcessGroup() {
     }
+
     public ApiToNodeSendChannelMessageToProcessGroup(String processGroup, String channel, JsonConfiguration data) {
         this.processGroup = processGroup;
         this.channel = channel;

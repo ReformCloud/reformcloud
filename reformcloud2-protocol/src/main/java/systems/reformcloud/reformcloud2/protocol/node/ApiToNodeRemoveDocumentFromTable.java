@@ -37,8 +37,10 @@ public class ApiToNodeRemoveDocumentFromTable extends ProtocolPacket {
     private String table;
     private String key;
     private String id;
+
     public ApiToNodeRemoveDocumentFromTable() {
     }
+
     public ApiToNodeRemoveDocumentFromTable(String table, String key, String id) {
         this.table = table;
         this.key = key;

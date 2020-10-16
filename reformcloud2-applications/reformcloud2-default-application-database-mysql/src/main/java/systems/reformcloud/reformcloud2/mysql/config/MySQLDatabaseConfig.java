@@ -31,6 +31,7 @@ public class MySQLDatabaseConfig {
     private final String database;
     private final String userName;
     private final String password;
+
     public MySQLDatabaseConfig(String host, int port, String database, String userName, String password) {
         this.host = host;
         this.port = port;

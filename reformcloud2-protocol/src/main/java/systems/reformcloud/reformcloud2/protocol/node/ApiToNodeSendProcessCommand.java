@@ -42,6 +42,7 @@ public class ApiToNodeSendProcessCommand extends ProtocolPacket {
 
     public ApiToNodeSendProcessCommand() {
     }
+
     public ApiToNodeSendProcessCommand(ProcessInformation information, String commandLine) {
         this.processUniqueId = information.getProcessDetail().getProcessUniqueID();
         this.commandLine = commandLine;

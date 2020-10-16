@@ -40,6 +40,7 @@ public class ApiToNodeSendGlobalChannelMessage extends ProtocolPacket {
 
     public ApiToNodeSendGlobalChannelMessage() {
     }
+
     public ApiToNodeSendGlobalChannelMessage(String channel, JsonConfiguration data) {
         this.channel = channel;
         this.data = data;
