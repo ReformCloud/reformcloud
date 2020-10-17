@@ -13,6 +13,22 @@ class StringUtilTest {
     }
 
     @Test
+    void testReplaceLastEmpty() {
+        Assertions.assertEquals(
+            "1234 The fish 1234 is cooled",
+            StringUtil.replaceLastEmpty("1234 The fish 1234 is cooled1234", "1234")
+        );
+    }
+
+    @Test
+    void testReplaceLast() {
+        Assertions.assertEquals(
+            "1234 The fish 1234 is cooled5",
+            StringUtil.replaceLast("1234 The fish 1234 is cooled1234", "1234", "5")
+        );
+    }
+
+    @Test
     void testCalcProperties() {
         Properties properties = StringUtil.calcProperties(new String[]{"test=true", "error=false", "lol=5", "mcn", "rz=main"}, 1);
         Assertions.assertEquals(3, properties.size());

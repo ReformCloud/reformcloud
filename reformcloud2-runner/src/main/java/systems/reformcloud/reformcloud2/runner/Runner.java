@@ -54,7 +54,7 @@ public final class Runner {
     private final Updater cloudVersionUpdater;
     private final String[] args;
 
-    Runner(@NotNull String[] args) {
+    protected Runner(@NotNull String[] args) {
         this.interpreter
             .registerInterpreterCommand(new CheckForUpdatesCommand(this))
             .registerInterpreterCommand(new CheckIfDevModeCommand())

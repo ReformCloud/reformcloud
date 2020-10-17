@@ -24,6 +24,7 @@
  */
 package systems.reformcloud.reformcloud2.node.logger;
 
+import systems.reformcloud.reformcloud2.executor.api.utility.StringUtil;
 import systems.reformcloud.reformcloud2.executor.api.utility.list.Streams;
 
 import java.io.ByteArrayOutputStream;
@@ -37,7 +38,7 @@ import java.util.logging.Logger;
 
 public class LoggingOutputStream extends ByteArrayOutputStream {
 
-    private static final String LINE_SEPARATOR = System.getProperty("line.separator");
+    private static final String LINE_SEPARATOR = System.lineSeparator();
     private static final Collection<String> EXCLUDED_LINE_STARTS = new ArrayList<>(); // No need to be thread save
 
     static {
@@ -64,6 +65,10 @@ public class LoggingOutputStream extends ByteArrayOutputStream {
                 || content.equals(LINE_SEPARATOR)
                 || Streams.hasMatch(LoggingOutputStream.EXCLUDED_LINE_STARTS, content::startsWith)) {
                 return;
+            }
+
+            if (content.endsWith(LINE_SEPARATOR)) {
+                content = StringUtil.replaceLastEmpty(content, LINE_SEPARATOR);
             }
 
             this.parent.log(this.level, content);
