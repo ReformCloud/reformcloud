@@ -66,11 +66,15 @@ public class DefaultNodeLocalProcessWrapper extends DefaultNodeRemoteProcessWrap
 
     private static final String LIB_PATH = Paths.get("").toAbsolutePath().toString();
     private static final String[] DEFAULT_SHUTDOWN_COMMANDS = new String[]{"end", "stop"};
+
     private final Lock lock = new ReentrantLock();
     private final String connectionKey = StringUtil.generateString(16);
+    private final String jarPath;
+    private final String executationFolder;
     private final ProcessScreen processScreen;
     private final Path path;
     private final boolean firstStart;
+
     private ProcessState runtimeState = ProcessState.CREATED;
     private Process process;
 
@@ -82,6 +86,10 @@ public class DefaultNodeLocalProcessWrapper extends DefaultNodeRemoteProcessWrap
             : Paths.get("reformcloud/temp", processInformation.getProcessDetail().getName() + "-" + processInformation.getProcessDetail().getProcessUniqueID());
         this.firstStart = Files.notExists(this.path);
         this.processScreen = ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ProcessScreenController.class).createScreen(this);
+
+        Path path = Paths.get("reformcloud/files/" + Version.format(this.processInformation.getProcessDetail().getTemplate().getVersion()));
+        this.jarPath = path.toAbsolutePath().toString();
+        this.executationFolder = path.getParent().toAbsolutePath().toString();
 
         IOUtils.createDirectory(this.path);
 
@@ -201,16 +209,24 @@ public class DefaultNodeLocalProcessWrapper extends DefaultNodeRemoteProcessWrap
         NodeExecutor.getInstance().getCurrentNodeInformation().addUsedMemory(this.processInformation.getProcessDetail().getMaxMemory());
         List<String> command = new ArrayList<>(Arrays.asList(
             this.processInformation.getProcessGroup().getStartupConfiguration().getJvmCommand(),
-
             "-DIReallyKnowWhatIAmDoingISwear=true",
             "-Djline.terminal=jline.UnsupportedTerminal",
             "-Dreformcloud.runner.version=" + System.getProperty("reformcloud.runner.version"),
             "-Dreformcloud.executor.type=3",
             "-Dreformcloud.lib.path=" + LIB_PATH,
-            "-Dreformcloud.process.path=" + new File("reformcloud/files/" + Version.format(
-                this.processInformation.getProcessDetail().getTemplate().getVersion()
-            )).getAbsolutePath()
+            "-Dreformcloud.process.path=" + this.jarPath
         ));
+        if (this.processInformation.getProcessDetail().getTemplate().getVersion().equals(Version.GO_MINT)) {
+            command.addAll(Arrays.asList(
+                "-Dreformcloud.application.main.class=io.gomint.server.Bootstrap",
+                "--add-opens",
+                "java.base/java.nio=io.netty.common",
+                "--add-exports",
+                "java.base/jdk.internal.misc=io.netty.common",
+                "-p",
+                this.executationFolder + "/modules"
+            ));
+        }
         this.processInformation.getProcessDetail().getTemplate().getRuntimeConfiguration().getSystemProperties().forEach(
             (key, value) -> command.add(String.format("-D%s=%s", key, value))
         );
@@ -218,7 +234,7 @@ public class DefaultNodeLocalProcessWrapper extends DefaultNodeRemoteProcessWrap
         command.addAll(this.processInformation.getProcessDetail().getTemplate().getRuntimeConfiguration().getJvmOptions());
         command.addAll(Arrays.asList(
             "-Xmx" + this.processInformation.getProcessDetail().getMaxMemory() + "M",
-            "-cp", StringUtil.NULL_PATH,
+            "-cp", this.getClassPath(),
             "-javaagent:runner.jar",
             "systems.reformcloud.reformcloud2.runner.RunnerExecutor"
         ));
@@ -226,7 +242,7 @@ public class DefaultNodeLocalProcessWrapper extends DefaultNodeRemoteProcessWrap
 
         if (this.processInformation.getProcessDetail().getTemplate().getVersion().getId() == 1) {
             command.add("nogui"); // Spigot server
-        } else if (this.processInformation.getProcessDetail().getTemplate().getVersion().getId() == 3) {
+        } else if (this.processInformation.getProcessDetail().getTemplate().getVersion().equals(Version.NUKKIT_X)) {
             command.add("disable-ansi"); // Nukkit server
         }
 
@@ -297,7 +313,14 @@ public class DefaultNodeLocalProcessWrapper extends DefaultNodeRemoteProcessWrap
         return Streams.concat(shutdownCommands, DEFAULT_SHUTDOWN_COMMANDS);
     }
 
-    Path getPath() {
+    private String getClassPath() {
+        Version version = this.processInformation.getProcessDetail().getTemplate().getVersion();
+        return version == Version.GO_MINT
+            ? this.executationFolder + "/modules/*" + File.pathSeparatorChar + this.executationFolder + "/process.jar"
+            : StringUtil.NULL_PATH;
+    }
+
+    protected Path getPath() {
         return this.path;
     }
 

@@ -107,7 +107,7 @@ public final class Runner {
             URLClassLoader classLoader = new RunnerClassLoader(new URL[]{applicationFilePath.toUri().toURL()});
             Thread.currentThread().setContextClassLoader(classLoader);
 
-            String mainClass = file.getManifest().getMainAttributes().getValue("Main-Class");
+            String mainClass = System.getProperty("reformcloud.application.main.class", file.getManifest().getMainAttributes().getValue("Main-Class"));
             Method main = classLoader.loadClass(mainClass).getMethod("main", String[].class);
 
             main.invoke(null, (Object) this.args);

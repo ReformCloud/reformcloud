@@ -35,6 +35,7 @@ import systems.reformcloud.reformcloud2.executor.api.process.NetworkInfo;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.process.detail.ProcessDetail;
 import systems.reformcloud.reformcloud2.executor.api.task.Task;
+import systems.reformcloud.reformcloud2.executor.api.utility.JavaVersion;
 import systems.reformcloud.reformcloud2.executor.api.utility.list.Streams;
 import systems.reformcloud.reformcloud2.executor.api.wrappers.NodeProcessWrapper;
 import systems.reformcloud.reformcloud2.node.NodeExecutor;
@@ -183,6 +184,14 @@ public class DefaultProcessFactory implements ProcessFactory {
         Template result = null;
         for (Template template : processGroup.getTemplates()) {
             if (template.isGlobal()) {
+                continue;
+            }
+
+            if (!template.getVersion().isCompatible()) {
+                System.err.println("Unable to use template " + template.getName() + " to start a new process from because of incompatible " +
+                    "java version " + JavaVersion.current() + ". " + (template.getVersion().getMaximumUsableVersion() != JavaVersion.VERSION_UNKNOWN
+                    ? "Requires at least " + template.getVersion().getMinimumRequiredVersion() + " and maximum " + template.getVersion().getMaximumUsableVersion() + "!"
+                    : "Requires at least " + template.getVersion().getMinimumRequiredVersion() + "!"));
                 continue;
             }
 

@@ -79,7 +79,6 @@ public abstract class Embedded extends ExecutorAPI {
     protected final ServiceRegistry serviceRegistry = new DefaultServiceRegistry();
     protected final NetworkClient networkClient = new DefaultNetworkClient();
     protected final EmbeddedConfig config = new EmbeddedConfig();
-
     private final DatabaseProvider databaseProvider = new DefaultEmbeddedDatabaseProvider();
     private final ChannelMessageProvider channelMessageProvider = new DefaultEmbeddedChannelMessageProvider();
     private final NodeInformationProvider nodeInformationProvider = new DefaultEmbeddedNodeInformationProvider();

@@ -120,6 +120,21 @@ public final class EnvironmentBuilder {
             }
 
             IOUtils.copyDirectory(Paths.get(destPath + "/mods"), Paths.get(runningProcess.getPath() + "/mods"));
+        } else if (isLogicallyGoMint(runningProcess)) {
+            Version version = runningProcess.getProcessInformation().getProcessDetail().getTemplate().getVersion();
+            String fileName = "reformcloud/files/" + version.getName().toLowerCase().replace(" ", "-") + ".zip";
+            String destPath = "reformcloud/files/" + version.getName().toLowerCase().replace(" ", "-");
+
+            if (!Files.exists(Paths.get(destPath))) {
+                DownloadHelper.downloadAndDisconnect(version.getUrl(), fileName);
+
+                IOUtils.unZip(Paths.get(fileName).toFile(), destPath);
+                IOUtils.doCopy(destPath + "/modules/GoMint.jar", destPath + "/process.jar");
+                IOUtils.deleteFile(Paths.get(destPath, "modules", "GoMint.jar"));
+                IOUtils.deleteFile(Paths.get(destPath, "start.bat"));
+                IOUtils.deleteFile(Paths.get(destPath, "start.sh"));
+                IOUtils.deleteFile(new File(fileName));
+            }
         }
 
         if (isLogicallyGlowstone(runningProcess)) {
@@ -134,6 +149,9 @@ public final class EnvironmentBuilder {
             IOUtils.createDirectory(Paths.get(runningProcess.getPath() + "/config/sponge"));
             IOUtils.doInternalCopy(EnvironmentBuilder.class.getClassLoader(), "files/java/sponge/forge/global.conf", runningProcess.getPath() + "/config/sponge/global.conf");
             rewriteSpongeConfig(runningProcess);
+        } else if (isLogicallyGoMint(runningProcess)) {
+            IOUtils.doInternalCopy(EnvironmentBuilder.class.getClassLoader(), "files/mcpe/gomint/server.yml", runningProcess.getPath() + "/server.yml");
+            rewriteGoMintConfig(runningProcess);
         } else if (runningProcess.getProcessInformation().getProcessDetail().getTemplate().getVersion().equals(Version.NUKKIT_X)) {
             IOUtils.doInternalCopy(EnvironmentBuilder.class.getClassLoader(), "files/mcpe/nukkit/server.properties", runningProcess.getPath() + "/server.properties");
             IOUtils.doInternalCopy(EnvironmentBuilder.class.getClassLoader(), "files/mcpe/nukkit/nukkit.yml", runningProcess.getPath() + "/nukkit.yml");
@@ -159,7 +177,7 @@ public final class EnvironmentBuilder {
             rewriteSpigotConfig(runningProcess);
         }
 
-        if (!runningProcess.getProcessInformation().getProcessDetail().getTemplate().getVersion().equals(Version.NUKKIT_X)) {
+        if (runningProcess.getProcessInformation().getProcessDetail().getTemplate().getVersion().getId() != 3) {
             Properties properties = new Properties();
             IOUtils.doInternalCopy(EnvironmentBuilder.class.getClassLoader(), "files/java/bukkit/server.properties", runningProcess.getPath() + "/server.properties");
             try (InputStream inputStream = Files.newInputStream(Paths.get(runningProcess.getPath() + "/server.properties"))) {
@@ -180,7 +198,7 @@ public final class EnvironmentBuilder {
             }
         }
 
-        if (!isLogicallySpongeForge(runningProcess) && !Files.exists(Paths.get(runningProcess.getPath() + "/process.jar"))) {
+        if (!isLogicallySpongeForge(runningProcess) && !isLogicallyGoMint(runningProcess) && !Files.exists(Paths.get(runningProcess.getPath() + "/process.jar"))) {
             Version version = runningProcess.getProcessInformation().getProcessDetail().getTemplate().getVersion();
             if (!Files.exists(Paths.get("reformcloud/files/" + Version.format(version)))) {
                 Version.downloadVersion(version);
@@ -249,6 +267,27 @@ public final class EnvironmentBuilder {
                 s = "ip-forwarding=true";
             } else if (s.startsWith("bungeecord=")) {
                 s = "bungeecord=true";
+            }
+
+            return s;
+        });
+    }
+
+    // GoMint
+    private static boolean isLogicallyGoMint(@NotNull DefaultNodeLocalProcessWrapper runningProcess) {
+        Version version = runningProcess.getProcessInformation().getProcessDetail().getTemplate().getVersion();
+        return version.equals(Version.GO_MINT);
+    }
+
+    private static void rewriteGoMintConfig(@NotNull DefaultNodeLocalProcessWrapper runningProcess) {
+        File config = Paths.get(runningProcess.getPath() + "/server.yml").toFile();
+        rewriteFile(config, s -> {
+            if (s.startsWith("  port: ")) {
+                s = "  port: " + runningProcess.getProcessInformation().getNetworkInfo().getPort();
+            } else if (s.startsWith("  ip: ")) {
+                s = "  ip: '" + runningProcess.getProcessInformation().getNetworkInfo().getHostPlain() + "'";
+            } else if (s.startsWith("  jwtRoot: ")) {
+                s = "  jwtRoot: ''";
             }
 
             return s;

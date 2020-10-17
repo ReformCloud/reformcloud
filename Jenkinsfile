@@ -3,7 +3,7 @@ pipeline {
     agent any
 
     tools {
-        jdk "1.8.0_222"
+        jdk "11.0.8"
     }
 
     options {
