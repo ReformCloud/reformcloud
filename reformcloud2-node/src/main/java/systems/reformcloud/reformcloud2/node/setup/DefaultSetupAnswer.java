@@ -32,11 +32,11 @@ import java.util.function.Function;
 
 public class DefaultSetupAnswer implements SetupAnswer {
 
+    private final String originalAnswer;
+
     public DefaultSetupAnswer(String originalAnswer) {
         this.originalAnswer = originalAnswer;
     }
-
-    private final String originalAnswer;
 
     @Override
     public @NotNull String getOriginalAnswer() {

@@ -59,16 +59,16 @@ public final class CommandLaunch implements Command {
 
     public void describeCommandToSender(@NotNull CommandSender source) {
         source.sendMessages((
-                "launch <group-name>            | Creates a new process bases on the group\n" +
-                        " --template=[template]         | Uses a specific template for the startup (default: random)\n" +
-                        " --unique-id=[unique-id]       | Sets the unique id of the new process (default: random)\n" +
-                        " --display-name=[display-name] | Sets the display name of the new process (default: none)\n" +
-                        " --max-memory=[memory]         | Sets the maximum amount of memory for the new process (default: group-based)\n" +
-                        " --id=[id]                     | Sets the id of the new process (default: chosen from amount of online processes)\n" +
-                        " --max-players=[max-players]   | Sets the maximum amount of players for the process (default: group-based)\n" +
-                        " --inclusions=[url,name;...]   | Sets the inclusions of the process (default: none)\n" +
-                        " --amount=[amount]             | Starts the specified amount of processes (default: 1)\n" +
-                        " --prepare-only=[prepare-only] | Prepares the process but does not start it (default: false)"
+            "launch <group-name>            | Creates a new process bases on the group\n" +
+                " --template=[template]         | Uses a specific template for the startup (default: random)\n" +
+                " --unique-id=[unique-id]       | Sets the unique id of the new process (default: random)\n" +
+                " --display-name=[display-name] | Sets the display name of the new process (default: none)\n" +
+                " --max-memory=[memory]         | Sets the maximum amount of memory for the new process (default: group-based)\n" +
+                " --id=[id]                     | Sets the id of the new process (default: chosen from amount of online processes)\n" +
+                " --max-players=[max-players]   | Sets the maximum amount of players for the process (default: group-based)\n" +
+                " --inclusions=[url,name;...]   | Sets the inclusions of the process (default: none)\n" +
+                " --amount=[amount]             | Starts the specified amount of processes (default: 1)\n" +
+                " --prepare-only=[prepare-only] | Prepares the process but does not start it (default: false)"
         ).split("\n"));
     }
 
@@ -191,7 +191,7 @@ public final class CommandLaunch implements Command {
             result.addAll(ExecutorAPI.getInstance().getProcessGroupProvider().getProcessGroupNames());
         } else if (bufferIndex >= 1) {
             result.addAll(Arrays.asList("--template=", "--unique-id=" + UUID.randomUUID(), "--display-name=",
-                    "--max-memory=512", "--id=", "--max-players=20", "--inclusions=", "--amount=1", "--prepare-only=false"));
+                "--max-memory=512", "--id=", "--max-players=20", "--inclusions=", "--amount=1", "--prepare-only=false"));
         }
 
         return result;

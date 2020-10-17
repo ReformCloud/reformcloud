@@ -57,11 +57,11 @@ public final class VelocityListener {
     public static void initTab0(@NotNull Player player) {
         ProxyConfigurationHandler.getInstance().getCurrentTabListConfiguration().ifPresent(tabListConfiguration -> {
             Component header = tabListConfiguration.getHeader() == null
-                    ? TextComponent.empty()
-                    : LegacyComponentSerializer.legacyLinking().deserialize(replaceVelocityPlaceHolders(player, tabListConfiguration.getHeader()));
+                ? TextComponent.empty()
+                : LegacyComponentSerializer.legacyLinking().deserialize(replaceVelocityPlaceHolders(player, tabListConfiguration.getHeader()));
             Component footer = tabListConfiguration.getFooter() == null
-                    ? TextComponent.empty()
-                    : LegacyComponentSerializer.legacyLinking().deserialize(replaceVelocityPlaceHolders(player, tabListConfiguration.getFooter()));
+                ? TextComponent.empty()
+                : LegacyComponentSerializer.legacyLinking().deserialize(replaceVelocityPlaceHolders(player, tabListConfiguration.getFooter()));
 
             player.getTabList().setHeaderAndFooter(header, footer);
         });
@@ -70,10 +70,10 @@ public final class VelocityListener {
     @NotNull
     private static String replaceVelocityPlaceHolders(@NotNull Player player, @NotNull String tablist) {
         tablist = tablist
-                .replace("%player_server%", player.getCurrentServer().isPresent() ? player.getCurrentServer().get().getServerInfo().getName() : "")
-                .replace("%player_name%", player.getUsername())
-                .replace("%player_unique_id%", player.getUniqueId().toString())
-                .replace("%player_ping%", Long.toString(player.getPing()));
+            .replace("%player_server%", player.getCurrentServer().isPresent() ? player.getCurrentServer().get().getServerInfo().getName() : "")
+            .replace("%player_name%", player.getUsername())
+            .replace("%player_unique_id%", player.getUniqueId().toString())
+            .replace("%player_ping%", Long.toString(player.getPing()));
         return ProxyConfigurationHandler.getInstance().replaceTabListPlaceHolders(tablist);
     }
 
@@ -84,8 +84,8 @@ public final class VelocityListener {
 
             final String protocol = motdConfiguration.getProtocol() == null ? null : ProxyConfigurationHandler.getInstance().replaceMessageOfTheDayPlaceHolders(motdConfiguration.getProtocol());
             final String[] players = motdConfiguration.getPlayerInfo() == null ? null : Arrays.stream(motdConfiguration.getPlayerInfo())
-                    .map(ProxyConfigurationHandler.getInstance()::replaceMessageOfTheDayPlaceHolders)
-                    .toArray(String[]::new);
+                .map(ProxyConfigurationHandler.getInstance()::replaceMessageOfTheDayPlaceHolders)
+                .toArray(String[]::new);
 
             String first = motdConfiguration.getFirstLine() == null ? "" : motdConfiguration.getFirstLine();
             String second = motdConfiguration.getSecondLine() == null ? "" : motdConfiguration.getSecondLine();
@@ -103,10 +103,10 @@ public final class VelocityListener {
             int online = info.getProcessPlayerManager().getOnlineCount();
 
             builder
-                    .description(LegacyComponentSerializer.legacyLinking().deserialize(finalMotd))
-                    .maximumPlayers(max)
-                    .onlinePlayers(online)
-                    .build();
+                .description(LegacyComponentSerializer.legacyLinking().deserialize(finalMotd))
+                .maximumPlayers(max)
+                .onlinePlayers(online)
+                .build();
 
             if (players != null) {
                 builder.clearSamplePlayers().samplePlayers(samplePlayers);

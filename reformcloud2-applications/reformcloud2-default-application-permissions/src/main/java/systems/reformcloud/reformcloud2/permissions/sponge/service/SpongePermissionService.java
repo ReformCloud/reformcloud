@@ -127,8 +127,8 @@ public class SpongePermissionService implements PermissionService {
     @Override
     @NotNull
     public SubjectReference newSubjectReference(
-            @NotNull String collectionIdentifier,
-            @NotNull String subjectIdentifier
+        @NotNull String collectionIdentifier,
+        @NotNull String subjectIdentifier
     ) {
         return new SpongeSubjectReference(this, collectionIdentifier, subjectIdentifier);
     }

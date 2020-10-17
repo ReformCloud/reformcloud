@@ -194,16 +194,16 @@ public class BukkitSignSystemAdapter extends SharedSignSystemAdapter<Sign> {
                 }
 
                 location.getWorld()
-                        .getNearbyEntities(location, distance, distance, distance)
-                        .stream()
-                        .filter(e -> e instanceof Player && !e.hasPermission(super.signConfig.getKnockBackBypassPermission()))
-                        .forEach(e -> e.setVelocity(e.getLocation()
-                                .toVector()
-                                .subtract(location.toVector())
-                                .normalize()
-                                .multiply(super.signConfig.getKnockBackStrength())
-                                .setY(0.2D)
-                        ));
+                    .getNearbyEntities(location, distance, distance, distance)
+                    .stream()
+                    .filter(e -> e instanceof Player && !e.hasPermission(super.signConfig.getKnockBackBypassPermission()))
+                    .forEach(e -> e.setVelocity(e.getLocation()
+                        .toVector()
+                        .subtract(location.toVector())
+                        .normalize()
+                        .multiply(super.signConfig.getKnockBackStrength())
+                        .setY(0.2D)
+                    ));
             }
         }, 20, 5);
     }

@@ -39,14 +39,14 @@ import java.util.UUID;
 
 public class ApiToNodeGetCurrentPlayerProcessUniqueIds extends ProtocolPacket {
 
+    private UUID playerUniqueId;
+
     public ApiToNodeGetCurrentPlayerProcessUniqueIds() {
     }
 
     public ApiToNodeGetCurrentPlayerProcessUniqueIds(UUID playerUniqueId) {
         this.playerUniqueId = playerUniqueId;
     }
-
-    private UUID playerUniqueId;
 
     @Override
     public int getId() {
@@ -75,12 +75,12 @@ public class ApiToNodeGetCurrentPlayerProcessUniqueIds extends ProtocolPacket {
 
         for (ProcessInformation process : ExecutorAPI.getInstance().getProcessProvider().getProcesses()) {
             if (process.getProcessDetail().getTemplate().isServer()
-                    && process.getProcessPlayerManager().isPlayerOnlineOnCurrentProcess(this.playerUniqueId)
-                    && server == null) {
+                && process.getProcessPlayerManager().isPlayerOnlineOnCurrentProcess(this.playerUniqueId)
+                && server == null) {
                 server = process.getProcessDetail().getProcessUniqueID();
             } else if (!process.getProcessDetail().getTemplate().isServer()
-                    && process.getProcessPlayerManager().isPlayerOnlineOnCurrentProcess(this.playerUniqueId)
-                    && proxy == null) {
+                && process.getProcessPlayerManager().isPlayerOnlineOnCurrentProcess(this.playerUniqueId)
+                && proxy == null) {
                 proxy = process.getProcessDetail().getProcessUniqueID();
             }
         }

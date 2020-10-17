@@ -2,7 +2,7 @@ name: 'ReformCloud2NukkitPermissions'
 author: 'derklaro'
 version: '2'
 main: systems.reformcloud.reformcloud2.permissions.nukkit.NukkitPermissionPlugin
-api: ['1.0.0']
+api: [ '1.0.0' ]
 
 load: STARTUP
 

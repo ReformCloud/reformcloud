@@ -97,7 +97,7 @@ public final class GeneralCheck {
         }
 
         final Collection<PermissionNode> currentGroupPerms = permissionGroup.getPerGroupPermissions()
-                .get(current.getProcessGroup().getName());
+            .get(current.getProcessGroup().getName());
         if (currentGroupPerms.isEmpty()) {
             return null;
         }

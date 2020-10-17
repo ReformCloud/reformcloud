@@ -53,12 +53,12 @@ public final class SharedJoinAllowChecker {
         PlayerAccessConfiguration configuration = current.getProcessGroup().getPlayerAccessConfiguration();
 
         if (checkedConnectedServices != null
-                && checkedConnectedServices.stream().anyMatch(e -> e.getProcessPlayerManager().isPlayerOnlineOnCurrentProcess(playerUniqueId))) {
+            && checkedConnectedServices.stream().anyMatch(e -> e.getProcessPlayerManager().isPlayerOnlineOnCurrentProcess(playerUniqueId))) {
             return new Duo<>(false, messages.format(messages.getAlreadyConnectedToNetwork()));
         }
 
         if (current.getProcessDetail().getMaxPlayers() <= current.getProcessPlayerManager().getOnlineCount()
-                && !permissionChecker.apply(configuration.getFullJoinPermission())) {
+            && !permissionChecker.apply(configuration.getFullJoinPermission())) {
             return new Duo<>(false, messages.format(messages.getProcessFullMessage()));
         }
 
@@ -75,8 +75,8 @@ public final class SharedJoinAllowChecker {
         }
 
         if (configuration.isUseCloudPlayerLimit()
-                && current.getProcessDetail().getProcessState().equals(ProcessState.READY)
-                && current.getProcessDetail().getMaxPlayers() <= current.getProcessPlayerManager().getOnlineCount() + 1) {
+            && current.getProcessDetail().getProcessState().equals(ProcessState.READY)
+            && current.getProcessDetail().getMaxPlayers() <= current.getProcessPlayerManager().getOnlineCount() + 1) {
             current.getProcessDetail().setProcessState(ProcessState.FULL);
         }
 

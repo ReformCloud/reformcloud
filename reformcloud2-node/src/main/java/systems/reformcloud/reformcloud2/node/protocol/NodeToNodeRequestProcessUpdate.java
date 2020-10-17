@@ -37,14 +37,14 @@ import java.util.UUID;
 
 public class NodeToNodeRequestProcessUpdate extends ProtocolPacket {
 
+    private UUID uniqueId;
+
     public NodeToNodeRequestProcessUpdate() {
     }
 
     public NodeToNodeRequestProcessUpdate(UUID uniqueId) {
         this.uniqueId = uniqueId;
     }
-
-    private UUID uniqueId;
 
     @Override
     public int getId() {

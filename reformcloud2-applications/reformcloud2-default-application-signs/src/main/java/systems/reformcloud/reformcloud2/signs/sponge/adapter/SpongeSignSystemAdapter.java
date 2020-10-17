@@ -66,7 +66,7 @@ public class SpongeSignSystemAdapter extends SharedSignSystemAdapter<Sign> {
 
     static {
         Arrays.stream(BlockTypes.class.getDeclaredFields()).filter(
-                e -> Modifier.isFinal(e.getModifiers()) && Modifier.isStatic(e.getModifiers())
+            e -> Modifier.isFinal(e.getModifiers()) && Modifier.isStatic(e.getModifiers())
         ).forEach(e -> {
             try {
                 BLOCK_TYPES.put(e.getName(), (BlockType) e.get(BlockTypes.class));
@@ -87,15 +87,15 @@ public class SpongeSignSystemAdapter extends SharedSignSystemAdapter<Sign> {
         Sponge.getEventManager().registerListeners(plugin, new SpongeListener());
 
         CommandSpec signs = CommandSpec
-                .builder()
-                .description(Text.of("The default signs command of the cloud system"))
-                .permission("reformcloud.command.signs")
-                .arguments(
-                        GenericArguments.optional(GenericArguments.string(Text.of("Execute type"))),
-                        GenericArguments.optional(GenericArguments.string(Text.of("Target group")))
-                )
-                .executor(new SpongeCommandSigns())
-                .build();
+            .builder()
+            .description(Text.of("The default signs command of the cloud system"))
+            .permission("reformcloud.command.signs")
+            .arguments(
+                GenericArguments.optional(GenericArguments.string(Text.of("Execute type"))),
+                GenericArguments.optional(GenericArguments.string(Text.of("Target group")))
+            )
+            .executor(new SpongeCommandSigns())
+            .build();
         Sponge.getCommandManager().register(plugin, signs, "signs");
     }
 
@@ -121,46 +121,46 @@ public class SpongeSignSystemAdapter extends SharedSignSystemAdapter<Sign> {
     @Override
     protected void runTasks() {
         Sponge.getScheduler()
-                .createTaskBuilder()
-                .execute(this::updateSigns)
-                .delayTicks(0)
-                .intervalTicks(Math.round(20 / super.signConfig.getUpdateInterval()))
-                .submit(this.plugin);
+            .createTaskBuilder()
+            .execute(this::updateSigns)
+            .delayTicks(0)
+            .intervalTicks(Math.round(20 / super.signConfig.getUpdateInterval()))
+            .submit(this.plugin);
 
         double distance = super.signConfig.getKnockBackDistance();
         Sponge.getScheduler()
-                .createTaskBuilder()
-                .execute(() -> {
-                    for (CloudSign sign : this.signs) {
-                        Sign spongeSign = this.getSignConverter().from(sign);
-                        if (spongeSign == null) {
+            .createTaskBuilder()
+            .execute(() -> {
+                for (CloudSign sign : this.signs) {
+                    Sign spongeSign = this.getSignConverter().from(sign);
+                    if (spongeSign == null) {
+                        continue;
+                    }
+
+                    Vector3d vector = spongeSign.getLocation().getPosition();
+                    for (Entity entity : spongeSign.getWorld().getNearbyEntities(vector, distance)) {
+                        if (!(entity instanceof Player)) {
                             continue;
                         }
 
-                        Vector3d vector = spongeSign.getLocation().getPosition();
-                        for (Entity entity : spongeSign.getWorld().getNearbyEntities(vector, distance)) {
-                            if (!(entity instanceof Player)) {
-                                continue;
-                            }
-
-                            Player player = (Player) entity;
-                            if (player.hasPermission(super.signConfig.getKnockBackBypassPermission())) {
-                                continue;
-                            }
-
-                            Vector3d vector3d = player
-                                    .getLocation()
-                                    .getPosition()
-                                    .sub(vector)
-                                    .normalize()
-                                    .mul(super.signConfig.getKnockBackStrength());
-                            player.setVelocity(new Vector3d(vector3d.getX(), 0.2D, vector3d.getZ()));
+                        Player player = (Player) entity;
+                        if (player.hasPermission(super.signConfig.getKnockBackBypassPermission())) {
+                            continue;
                         }
+
+                        Vector3d vector3d = player
+                            .getLocation()
+                            .getPosition()
+                            .sub(vector)
+                            .normalize()
+                            .mul(super.signConfig.getKnockBackStrength());
+                        player.setVelocity(new Vector3d(vector3d.getX(), 0.2D, vector3d.getZ()));
                     }
-                })
-                .delayTicks(20)
-                .intervalTicks(5)
-                .submit(this.plugin);
+                }
+            })
+            .delayTicks(20)
+            .intervalTicks(5)
+            .submit(this.plugin);
     }
 
     @Override

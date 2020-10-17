@@ -58,7 +58,6 @@
             <artifactId>spigot-api</artifactId>
             <version>1.16.2-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
-            <type>jar</type>
             <exclusions>
                 <exclusion>
                     <groupId>com.google.guava</groupId>
@@ -73,7 +72,6 @@
             <artifactId>nukkit</artifactId>
             <version>1.0-SNAPSHOT</version>
             <scope>provided</scope>
-            <type>jar</type>
         </dependency>
 
         <!-- sponge api -->
@@ -81,7 +79,6 @@
             <groupId>org.spongepowered</groupId>
             <artifactId>spongeapi</artifactId>
             <version>7.3.0</version>
-            <type>jar</type>
             <scope>provided</scope>
         </dependency>
 
@@ -91,7 +88,6 @@
             <artifactId>gomint-api</artifactId>
             <version>1.0.0-SNAPSHOT</version>
             <scope>provided</scope>
-            <type>jar</type>
         </dependency>
     </dependencies>
 </project>

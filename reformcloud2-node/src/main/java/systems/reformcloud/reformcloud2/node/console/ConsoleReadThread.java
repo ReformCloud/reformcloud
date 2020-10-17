@@ -37,13 +37,13 @@ import systems.reformcloud.reformcloud2.shared.command.sources.ConsoleCommandSen
 
 public class ConsoleReadThread extends Thread {
 
+    private final DefaultNodeConsole console;
+    private Task<String> currentTask;
+
     ConsoleReadThread(@NotNull DefaultNodeConsole console) {
         super("ReformCloud console read thread");
         this.console = console;
     }
-
-    private final DefaultNodeConsole console;
-    private Task<String> currentTask;
 
     @Override
     public void run() {

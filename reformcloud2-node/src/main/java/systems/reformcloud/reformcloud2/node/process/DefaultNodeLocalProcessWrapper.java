@@ -67,12 +67,6 @@ public class DefaultNodeLocalProcessWrapper extends DefaultNodeRemoteProcessWrap
     private static final String LIB_PATH = Paths.get("").toAbsolutePath().toString();
     private static final String[] DEFAULT_SHUTDOWN_COMMANDS = new String[]{"end", "stop"};
 
-    /*
-    new File("reformcloud/files/" + Version.format(
-                this.processInformation.getProcessDetail().getTemplate().getVersion()
-            )).getAbsolutePath()
-     */
-
     private final Lock lock = new ReentrantLock();
     private final String connectionKey = StringUtil.generateString(16);
     private final String jarPath;

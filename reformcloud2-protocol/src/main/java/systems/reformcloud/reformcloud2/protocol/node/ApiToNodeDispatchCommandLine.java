@@ -39,6 +39,9 @@ import java.util.UUID;
 
 public class ApiToNodeDispatchCommandLine extends ProtocolPacket {
 
+    private UUID nodeUniqueId;
+    private String commandLine;
+
     public ApiToNodeDispatchCommandLine() {
     }
 
@@ -46,9 +49,6 @@ public class ApiToNodeDispatchCommandLine extends ProtocolPacket {
         this.nodeUniqueId = nodeUniqueId;
         this.commandLine = commandLine;
     }
-
-    private UUID nodeUniqueId;
-    private String commandLine;
 
     @Override
     public int getId() {

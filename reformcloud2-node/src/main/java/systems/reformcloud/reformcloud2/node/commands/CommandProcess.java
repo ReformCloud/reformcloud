@@ -55,19 +55,19 @@ public final class CommandProcess implements Command {
 
     public void describeCommandToSender(@NotNull CommandSender source) {
         source.sendMessages((
-                "process list                                  | Lists all processes\n" +
-                        " --group=[group]                              | Lists all processes of the specified group\n" +
-                        " \n" +
-                        "process <name | uniqueID> [info]              | Shows information about a process\n" +
-                        " --full=[full]                                | Shows the full extra data submitted to the process (default: false)\n" +
-                        " \n" +
-                        "process <name | uniqueID> [start]             | Starts a process which is prepared\n" +
-                        "process <name | uniqueID> [stop]              | Stops the process\n" +
-                        "process <name | uniqueID> [restart]           | Stops and starts the process\n" +
-                        "process <name | uniqueID> [pause]             | Stops the process but does not delete the files (ready to start again)\n" +
-                        "process <name | uniqueID> [screen]            | Toggles the screen logging of the process to the console\n" +
-                        "process <name | uniqueID> [copy]              | Copies the specified process is the currently running template\n" +
-                        "process <name | uniqueID> [execute] <command> | Sends the specified command to the process"
+            "process list                                  | Lists all processes\n" +
+                " --group=[group]                              | Lists all processes of the specified group\n" +
+                " \n" +
+                "process <name | uniqueID> [info]              | Shows information about a process\n" +
+                " --full=[full]                                | Shows the full extra data submitted to the process (default: false)\n" +
+                " \n" +
+                "process <name | uniqueID> [start]             | Starts a process which is prepared\n" +
+                "process <name | uniqueID> [stop]              | Stops the process\n" +
+                "process <name | uniqueID> [restart]           | Stops and starts the process\n" +
+                "process <name | uniqueID> [pause]             | Stops the process but does not delete the files (ready to start again)\n" +
+                "process <name | uniqueID> [screen]            | Toggles the screen logging of the process to the console\n" +
+                "process <name | uniqueID> [copy]              | Copies the specified process is the currently running template\n" +
+                "process <name | uniqueID> [execute] <command> | Sends the specified command to the process"
         ).split("\n"));
     }
 
@@ -121,21 +121,21 @@ public final class CommandProcess implements Command {
                 }
             } else {
                 Optional<NetworkChannel> channel = ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ChannelManager.class)
-                        .getChannel(target.getProcessDetail().getParentName());
+                    .getChannel(target.getProcessDetail().getParentName());
                 if (!channel.isPresent()) {
                     commandSource.sendMessage(LanguageManager.get(
-                            "command-process-screen-node-not-connected",
-                            strings[0],
-                            target.getProcessDetail().getParentName()
+                        "command-process-screen-node-not-connected",
+                        strings[0],
+                        target.getProcessDetail().getParentName()
                     ));
                     return;
                 }
 
                 channel.get().sendPacket(new NodeToNodeToggleProcessScreen(target.getProcessDetail().getProcessUniqueID()));
                 commandSource.sendMessage(LanguageManager.get(
-                        "command-process-screen-toggled-on-node",
-                        strings[0],
-                        target.getProcessDetail().getParentName()
+                    "command-process-screen-toggled-on-node",
+                    strings[0],
+                    target.getProcessDetail().getParentName()
                 ));
             }
 
@@ -151,10 +151,10 @@ public final class CommandProcess implements Command {
 
             wrapper.get().copy(target.getProcessDetail().getTemplate());
             commandSource.sendMessage(LanguageManager.get(
-                    "command-process-process-copied",
-                    strings[0],
-                    target.getProcessDetail().getTemplate().getName(),
-                    target.getProcessDetail().getTemplate().getBackend())
+                "command-process-process-copied",
+                strings[0],
+                target.getProcessDetail().getTemplate().getName(),
+                target.getProcessDetail().getTemplate().getBackend())
             );
             return;
         }
@@ -224,8 +224,8 @@ public final class CommandProcess implements Command {
         }
 
         if (strings.length > 2 && (strings[1].equalsIgnoreCase("command")
-                || strings[1].equalsIgnoreCase("cmd")
-                || strings[1].equalsIgnoreCase("execute"))) {
+            || strings[1].equalsIgnoreCase("cmd")
+            || strings[1].equalsIgnoreCase("execute"))) {
             Optional<ProcessWrapper> wrapper = ExecutorAPI.getInstance().getProcessProvider().getProcessByUniqueId(target.getProcessDetail().getProcessUniqueID());
             if (!wrapper.isPresent()) {
                 commandSource.sendMessage(LanguageManager.get("command-process-process-unknown", strings[0]));
@@ -269,13 +269,13 @@ public final class CommandProcess implements Command {
         builder.append(" > Unique-ID    - ").append(information.getProcessDetail().getProcessUniqueID().toString()).append("\n");
         builder.append(" > Group        - ").append(information.getProcessGroup().getName()).append("\n");
         builder.append(" > Template     - ").append(information.getProcessDetail().getTemplate().getName()).append("/")
-                .append(information.getProcessDetail().getTemplate().getBackend()).append("\n");
+            .append(information.getProcessDetail().getTemplate().getBackend()).append("\n");
         builder.append("\n");
         builder.append(" > Ready        - ").append(information.getProcessDetail().getProcessState().isOnline() ? "&ayes&r" : "&cno&r").append("\n");
         builder.append(" > State        - ").append(information.getProcessDetail().getProcessState().name()).append("\n");
         builder.append(" > Connected    - ").append(information.getNetworkInfo().isConnected() ? "&ayes&r" : "&cno&r").append("\n");
         builder.append(" > Address      - ").append(information.getNetworkInfo().getHostPlain())
-                .append(":").append(information.getNetworkInfo().getPort()).append("\n");
+            .append(":").append(information.getNetworkInfo().getPort()).append("\n");
         if (information.getNetworkInfo().isConnected()) {
             builder.append(" > Connected at - ").append(CommonHelper.DATE_FORMAT.format(information.getNetworkInfo().getConnectTime())).append("\n");
         }
@@ -322,26 +322,26 @@ public final class CommandProcess implements Command {
         UUID process = CommonHelper.tryParse(s);
         if (process != null) {
             return ExecutorAPI.getInstance().getProcessProvider().getProcessByUniqueId(process)
-                    .map(ProcessWrapper::getProcessInformation)
-                    .orElse(null);
+                .map(ProcessWrapper::getProcessInformation)
+                .orElse(null);
         }
 
         return ExecutorAPI.getInstance().getProcessProvider().getProcessByName(s)
-                .map(ProcessWrapper::getProcessInformation)
-                .orElse(null);
+            .map(ProcessWrapper::getProcessInformation)
+            .orElse(null);
     }
 
     private void showAllProcesses(@NotNull CommandSender source, @NotNull ProcessGroup group) {
         Set<ProcessInformation> all = this.sort(ExecutorAPI.getInstance().getProcessProvider().getProcessesByProcessGroup(group.getName()));
         all.forEach(
-                e -> source.sendMessage(String.format(
-                        FORMAT_LIST,
-                        e.getProcessDetail().getName(),
-                        e.getProcessPlayerManager().getOnlineCount(),
-                        e.getProcessDetail().getMaxPlayers(),
-                        e.getProcessDetail().getProcessState().name(),
-                        e.getProcessDetail().getProcessUniqueID().toString()
-                ))
+            e -> source.sendMessage(String.format(
+                FORMAT_LIST,
+                e.getProcessDetail().getName(),
+                e.getProcessPlayerManager().getOnlineCount(),
+                e.getProcessDetail().getMaxPlayers(),
+                e.getProcessDetail().getProcessState().name(),
+                e.getProcessDetail().getProcessUniqueID().toString()
+            ))
         );
     }
 

@@ -34,7 +34,6 @@ import java.util.logging.LogRecord;
 
 public class ColouredWriter extends Handler {
 
-    private static final String LINE_SEPARATOR = System.lineSeparator();
     private final LineReader lineReader;
 
     protected ColouredWriter(LineReader lineReader) {

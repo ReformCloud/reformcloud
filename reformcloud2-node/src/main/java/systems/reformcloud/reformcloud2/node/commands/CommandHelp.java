@@ -41,17 +41,17 @@ public final class CommandHelp implements Command {
     @Override
     public void process(@NotNull CommandSender sender, @NotNull String[] strings, @NotNull String commandLine) {
         sender.sendMessage("ReformCloud git:runner:"
-                + System.getProperty("reformcloud.runner.version", "c-build")
-                + ":"
-                + CommandHelp.class.getPackage().getSpecificationVersion()
-                + " by derklaro and ReformCloud-Community"
+            + System.getProperty("reformcloud.runner.version", "c-build")
+            + ":"
+            + CommandHelp.class.getPackage().getSpecificationVersion()
+            + " by derklaro and ReformCloud-Community"
         );
         sender.sendMessage("Discord: https://discord.gg/uskXdVZ");
         sender.sendMessage(" ");
 
         Collection<Duo<String, String>> map = Streams.map(
-                ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(CommandManager.class).getCommands(),
-                container -> new Duo<>(String.join(", ", container.getAliases()), container.getDescription())
+            ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(CommandManager.class).getCommands(),
+            container -> new Duo<>(String.join(", ", container.getAliases()), container.getDescription())
         );
         sender.sendMessages(this.formatHelp(map));
     }

@@ -76,9 +76,9 @@ public abstract class SharedSignSystemAdapter<T> implements SignSystemAdapter<T>
 
         ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).registerListener(new CloudListener());
         ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(PacketProvider.class).registerPackets(Arrays.asList(
-                PacketCreateSign.class,
-                PacketDeleteSign.class,
-                PacketReloadSignConfig.class
+            PacketCreateSign.class,
+            PacketDeleteSign.class,
+            PacketReloadSignConfig.class
         ));
 
         this.start();
@@ -89,7 +89,7 @@ public abstract class SharedSignSystemAdapter<T> implements SignSystemAdapter<T>
         this.allProcesses.add(processInformation);
 
         if (!processInformation.getProcessDetail().getTemplate().isServer()
-                || processInformation.getProcessDetail().getProcessUniqueID().equals(this.ownUniqueID)) {
+            || processInformation.getProcessDetail().getProcessUniqueID().equals(this.ownUniqueID)) {
             return;
         }
 
@@ -103,7 +103,7 @@ public abstract class SharedSignSystemAdapter<T> implements SignSystemAdapter<T>
     @Override
     public void handleProcessUpdate(@NotNull ProcessInformation processInformation) {
         if (!processInformation.getProcessDetail().getTemplate().isServer()
-                || processInformation.getProcessDetail().getProcessUniqueID().equals(this.ownUniqueID)) {
+            || processInformation.getProcessDetail().getProcessUniqueID().equals(this.ownUniqueID)) {
             return;
         }
 
@@ -169,8 +169,8 @@ public abstract class SharedSignSystemAdapter<T> implements SignSystemAdapter<T>
     @Override
     public void cleanSigns() {
         this.bulkDelete(this.signs.stream()
-                .filter(e -> this.getSignConverter().from(e) == null)
-                .collect(Collectors.toList()));
+            .filter(e -> this.getSignConverter().from(e) == null)
+            .collect(Collectors.toList()));
     }
 
     private void bulkDelete(@NotNull Collection<CloudSign> signs) {
@@ -266,32 +266,32 @@ public abstract class SharedSignSystemAdapter<T> implements SignSystemAdapter<T>
             }
 
             this.perGroupLayoutCounter.putIfAbsent(sign.getGroup(), new AtomicInteger[]{
-                    new AtomicInteger(), // start
-                    new AtomicInteger(), // connecting
-                    new AtomicInteger(), // empty
-                    new AtomicInteger(), // online
-                    new AtomicInteger(), // full
-                    new AtomicInteger()  // maintenance
+                new AtomicInteger(), // start
+                new AtomicInteger(), // connecting
+                new AtomicInteger(), // empty
+                new AtomicInteger(), // online
+                new AtomicInteger(), // full
+                new AtomicInteger()  // maintenance
             });
             AtomicInteger[] counter = this.perGroupLayoutCounter.get(sign.getGroup());
 
             final SignSubLayout searching = LayoutUtil.getNextAndCheckFor(layout.getSearchingLayouts(), counter[0])
-                    .orElseThrow(() -> new RuntimeException("Waiting layout for current group not present"));
+                .orElseThrow(() -> new RuntimeException("Waiting layout for current group not present"));
 
             final SignSubLayout maintenance = LayoutUtil.getNextAndCheckFor(layout.getMaintenanceLayout(), counter[5])
-                    .orElseThrow(() -> new RuntimeException("Maintenance layout for current group not present"));
+                .orElseThrow(() -> new RuntimeException("Maintenance layout for current group not present"));
 
             final SignSubLayout connecting = LayoutUtil.getNextAndCheckFor(layout.getWaitingForConnectLayout(), counter[1])
-                    .orElseThrow(() -> new RuntimeException("Connecting layout for current group not present"));
+                .orElseThrow(() -> new RuntimeException("Connecting layout for current group not present"));
 
             final SignSubLayout empty = LayoutUtil.getNextAndCheckFor(layout.getEmptyLayout(), counter[2])
-                    .orElseThrow(() -> new RuntimeException("Empty layout for current group not present"));
+                .orElseThrow(() -> new RuntimeException("Empty layout for current group not present"));
 
             final SignSubLayout full = LayoutUtil.getNextAndCheckFor(layout.getFullLayout(), counter[4])
-                    .orElseThrow(() -> new RuntimeException("Full layout for current group not present"));
+                .orElseThrow(() -> new RuntimeException("Full layout for current group not present"));
 
             final SignSubLayout online = LayoutUtil.getNextAndCheckFor(layout.getOnlineLayout(), counter[3])
-                    .orElseThrow(() -> new RuntimeException("Online layout for current group not present"));
+                .orElseThrow(() -> new RuntimeException("Online layout for current group not present"));
 
             if (sign.getCurrentTarget() == null) {
                 this.setLines(sign, searching);
@@ -384,27 +384,27 @@ public abstract class SharedSignSystemAdapter<T> implements SignSystemAdapter<T>
 
     private void start() {
         ExecutorAPI.getInstance().getDatabaseProvider().getDatabase(SignSystemAdapter.table).getAsync("signs", "")
-                .onComplete(result -> result.ifPresent(configuration -> {
-                    Collection<CloudSign> cloudSigns = configuration.get("signs", CloudSign.COLLECTION_SIGN_TYPE);
-                    if (cloudSigns == null) {
-                        return;
-                    }
+            .onComplete(result -> result.ifPresent(configuration -> {
+                Collection<CloudSign> cloudSigns = configuration.get("signs", CloudSign.COLLECTION_SIGN_TYPE);
+                if (cloudSigns == null) {
+                    return;
+                }
 
-                    this.signs.addAll(cloudSigns.stream().filter(e -> {
-                        String current = Embedded.getInstance().getCurrentProcessInformation().getProcessGroup().getName();
-                        return current.equals(e.getLocation().getGroup());
-                    }).collect(Collectors.toList()));
+                this.signs.addAll(cloudSigns.stream().filter(e -> {
+                    String current = Embedded.getInstance().getCurrentProcessInformation().getProcessGroup().getName();
+                    return current.equals(e.getLocation().getGroup());
+                }).collect(Collectors.toList()));
 
-                    ExecutorAPI.getInstance().getProcessProvider().getProcesses().forEach(this::handleProcessStart);
-                    this.runTasks();
-                }));
+                ExecutorAPI.getInstance().getProcessProvider().getProcesses().forEach(this::handleProcessStart);
+                this.runTasks();
+            }));
     }
 
     @Nullable
     private CloudSign getSignOf(@NotNull ProcessInformation other) {
         for (CloudSign sign : this.signs) {
             if (sign.getCurrentTarget() != null
-                    && sign.getCurrentTarget().getProcessDetail().getProcessUniqueID().equals(other.getProcessDetail().getProcessUniqueID())) {
+                && sign.getCurrentTarget().getProcessDetail().getProcessUniqueID().equals(other.getProcessDetail().getProcessUniqueID())) {
                 return sign;
             }
         }

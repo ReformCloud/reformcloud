@@ -32,14 +32,14 @@ import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 
 public class NodeToNodeRequestProcessUpdateResult extends QueryResultPacket {
 
+    private ProcessInformation processInformation;
+
     public NodeToNodeRequestProcessUpdateResult() {
     }
 
     public NodeToNodeRequestProcessUpdateResult(ProcessInformation processInformation) {
         this.processInformation = processInformation;
     }
-
-    private ProcessInformation processInformation;
 
     public ProcessInformation getProcessInformation() {
         return this.processInformation;

@@ -61,6 +61,12 @@ import java.util.UUID;
 
 public class DefaultClusterManager implements ClusterManager {
 
+    private final DefaultNodeNodeInformationProvider nodeInformationProvider;
+    private final DefaultNodeProcessProvider processProvider;
+    private final DefaultNodeProcessGroupProvider processGroupProvider;
+    private final DefaultNodeMainGroupProvider mainGroupProvider;
+    private NodeInformation head;
+
     public DefaultClusterManager(DefaultNodeNodeInformationProvider nodeInformationProvider, DefaultNodeProcessProvider processProvider,
                                  DefaultNodeProcessGroupProvider processGroupProvider, DefaultNodeMainGroupProvider mainGroupProvider,
                                  NodeInformation head) {
@@ -71,21 +77,14 @@ public class DefaultClusterManager implements ClusterManager {
         this.head = head;
     }
 
-    private final DefaultNodeNodeInformationProvider nodeInformationProvider;
-    private final DefaultNodeProcessProvider processProvider;
-    private final DefaultNodeProcessGroupProvider processGroupProvider;
-    private final DefaultNodeMainGroupProvider mainGroupProvider;
-
-    private NodeInformation head;
-
     @Override
     public @NotNull Task<ProcessWrapper> createProcess(@NotNull ProcessGroup processGroup, @Nullable String node, @Nullable String displayName,
                                                        @Nullable String messageOfTheDay, @Nullable Template template, @NotNull Collection<ProcessInclusion> inclusions,
                                                        @NotNull JsonConfiguration jsonConfiguration, @NotNull ProcessState initialState, @NotNull UUID uniqueId, int memory,
                                                        int id, int maxPlayers, @Nullable String targetProcessFactory) {
         return ClusterAccessController.createProcessPrivileged(
-                processGroup, node, displayName, messageOfTheDay, template, inclusions, jsonConfiguration,
-                initialState, uniqueId, memory, id, maxPlayers, targetProcessFactory
+            processGroup, node, displayName, messageOfTheDay, template, inclusions, jsonConfiguration,
+            initialState, uniqueId, memory, id, maxPlayers, targetProcessFactory
         ).thenSupply(result -> {
             if (result == null) {
                 return null;
@@ -336,16 +335,16 @@ public class DefaultClusterManager implements ClusterManager {
     private void sendPacketToNodes(@NotNull Packet packet) {
         for (NodeInformation node : ExecutorAPI.getInstance().getNodeInformationProvider().getNodes()) {
             ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ChannelManager.class)
-                    .getChannel(node.getName())
-                    .ifPresent(channel -> channel.sendPacket(packet));
+                .getChannel(node.getName())
+                .ifPresent(channel -> channel.sendPacket(packet));
         }
     }
 
     private void sendPacketToProcesses(@NotNull Packet packet) {
         for (ProcessInformation process : ExecutorAPI.getInstance().getProcessProvider().getProcesses()) {
             ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ChannelManager.class)
-                    .getChannel(process.getProcessDetail().getName())
-                    .ifPresent(channel -> channel.sendPacket(packet));
+                .getChannel(process.getProcessDetail().getName())
+                .ifPresent(channel -> channel.sendPacket(packet));
         }
     }
 

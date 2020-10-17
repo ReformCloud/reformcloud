@@ -35,6 +35,9 @@ import systems.reformcloud.reformcloud2.executor.api.network.packet.Packet;
  */
 public class ExamplePacket extends Packet {
 
+    private String exampleMessage;
+    private ExampleSerializableObject exampleSerializableObject;
+
     public ExamplePacket() {
         // The no args constructor is required in every packet for the decode process
     }
@@ -42,10 +45,6 @@ public class ExamplePacket extends Packet {
     public ExamplePacket(String exampleMessage) {
         this.exampleMessage = exampleMessage;
     }
-
-    private String exampleMessage;
-
-    private ExampleSerializableObject exampleSerializableObject;
 
     @Override
     public int getId() {

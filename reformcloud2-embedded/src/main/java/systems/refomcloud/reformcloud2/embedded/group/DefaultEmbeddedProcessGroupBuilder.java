@@ -42,7 +42,7 @@ class DefaultEmbeddedProcessGroupBuilder extends DefaultProcessGroupBuilder {
     public Task<ProcessGroup> createPermanently() {
         return Task.supply(() -> {
             Optional<Packet> packet = Embedded.getInstance().sendSyncQuery(new ApiToNodeCreateProcessGroup(
-                    super.name, super.staticGroup, super.lobby, super.showId, super.templates, super.playerAccessConfiguration, super.startupConfiguration
+                super.name, super.staticGroup, super.lobby, super.showId, super.templates, super.playerAccessConfiguration, super.startupConfiguration
             ));
             if (!packet.isPresent() || !(packet.get() instanceof ApiToNodeCreateProcessGroupResult)) {
                 return null;

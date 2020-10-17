@@ -37,14 +37,14 @@ import java.util.Collection;
 
 public class ApiToNodeGetProcessInformationObjectsByProcessGroup extends ProtocolPacket {
 
+    private String processGroup;
+
     public ApiToNodeGetProcessInformationObjectsByProcessGroup() {
     }
 
     public ApiToNodeGetProcessInformationObjectsByProcessGroup(String processGroup) {
         this.processGroup = processGroup;
     }
-
-    private String processGroup;
 
     @Override
     public int getId() {

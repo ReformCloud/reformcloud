@@ -38,11 +38,11 @@ import java.util.Optional;
 
 public class DefaultEmbeddedNodeProcessWrapper implements NodeProcessWrapper {
 
+    private NodeInformation nodeInformation;
+
     DefaultEmbeddedNodeProcessWrapper(NodeInformation nodeInformation) {
         this.nodeInformation = nodeInformation;
     }
-
-    private NodeInformation nodeInformation;
 
     @NotNull
     @Override
@@ -54,41 +54,41 @@ public class DefaultEmbeddedNodeProcessWrapper implements NodeProcessWrapper {
     @Override
     public Optional<NodeInformation> requestNodeInformationUpdate() {
         return Embedded.getInstance().sendSyncQuery(new ApiToNodeRequestNodeInformationUpdate(this.nodeInformation.getNodeUniqueID()))
-                .map(result -> {
-                    if (result instanceof ApiToNodeGetNodeInformationResult) {
-                        ApiToNodeGetNodeInformationResult packet = (ApiToNodeGetNodeInformationResult) result;
-                        return packet.getNodeInformation() == null
-                                ? Optional.<NodeInformation>empty()
-                                : Optional.of(this.nodeInformation = packet.getNodeInformation());
-                    }
+            .map(result -> {
+                if (result instanceof ApiToNodeGetNodeInformationResult) {
+                    ApiToNodeGetNodeInformationResult packet = (ApiToNodeGetNodeInformationResult) result;
+                    return packet.getNodeInformation() == null
+                        ? Optional.<NodeInformation>empty()
+                        : Optional.of(this.nodeInformation = packet.getNodeInformation());
+                }
 
-                    return Optional.<NodeInformation>empty();
-                }).orElseGet(Optional::empty);
+                return Optional.<NodeInformation>empty();
+            }).orElseGet(Optional::empty);
     }
 
     @NotNull
     @Override
     public @UnmodifiableView Collection<String> sendCommandLine(@NotNull String commandLine) {
         return Embedded.getInstance().sendSyncQuery(new ApiToNodeDispatchCommandLine(this.nodeInformation.getNodeUniqueID(), commandLine))
-                .map(result -> {
-                    if (result instanceof ApiToNodeGetStringCollectionResult) {
-                        return ((ApiToNodeGetStringCollectionResult) result).getResult();
-                    }
+            .map(result -> {
+                if (result instanceof ApiToNodeGetStringCollectionResult) {
+                    return ((ApiToNodeGetStringCollectionResult) result).getResult();
+                }
 
-                    return new ArrayList<String>();
-                }).orElseGet(Collections::emptyList);
+                return new ArrayList<String>();
+            }).orElseGet(Collections::emptyList);
     }
 
     @NotNull
     @Override
     public @UnmodifiableView Collection<String> tabCompleteCommandLine(@NotNull String commandLine) {
         return Embedded.getInstance().sendSyncQuery(new ApiToNodeCompleteCommandLine(this.nodeInformation.getNodeUniqueID(), commandLine))
-                .map(result -> {
-                    if (result instanceof ApiToNodeGetStringCollectionResult) {
-                        return ((ApiToNodeGetStringCollectionResult) result).getResult();
-                    }
+            .map(result -> {
+                if (result instanceof ApiToNodeGetStringCollectionResult) {
+                    return ((ApiToNodeGetStringCollectionResult) result).getResult();
+                }
 
-                    return new ArrayList<String>();
-                }).orElseGet(Collections::emptyList);
+                return new ArrayList<String>();
+            }).orElseGet(Collections::emptyList);
     }
 }

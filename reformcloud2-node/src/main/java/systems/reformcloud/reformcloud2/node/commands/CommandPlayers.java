@@ -47,8 +47,8 @@ public final class CommandPlayers implements Command {
 
     public void describeCommandToSender(@NotNull CommandSender source) {
         source.sendMessages((
-                "players [list]               | Lists all connected players\n" +
-                        "players <name | uuid> [info] | Shows information about a specific online player"
+            "players [list]               | Lists all connected players\n" +
+                "players <name | uuid> [info] | Shows information about a specific online player"
         ).split("\n"));
     }
 
@@ -62,24 +62,24 @@ public final class CommandPlayers implements Command {
         if (strings[0].equalsIgnoreCase("list")) {
             sender.sendMessage("Online-Players: ");
             ExecutorAPI.getInstance().getProcessProvider().getProcesses()
-                    .stream()
-                    .filter(e -> !e.getProcessDetail().getTemplate().isServer())
-                    .map(e -> e.getProcessPlayerManager().getOnlinePlayers())
-                    .map(players -> players.stream().map(p -> this.findPlayer(p.getUniqueID())).filter(Objects::nonNull))
-                    .forEach(trioStream -> {
-                        StringBuilder stringBuilder = new StringBuilder();
-                        trioStream.filter(e -> e.getThird() != null).forEach(player -> stringBuilder.append(String.format(
-                                FORMAT_STRING,
-                                player.getThird().getName(),
-                                player.getThird().getUniqueID().toString(),
-                                player.getSecond().getProcessDetail().getName(),
-                                player.getFirst().getProcessDetail().getName()
-                        )).append("\n"));
+                .stream()
+                .filter(e -> !e.getProcessDetail().getTemplate().isServer())
+                .map(e -> e.getProcessPlayerManager().getOnlinePlayers())
+                .map(players -> players.stream().map(p -> this.findPlayer(p.getUniqueID())).filter(Objects::nonNull))
+                .forEach(trioStream -> {
+                    StringBuilder stringBuilder = new StringBuilder();
+                    trioStream.filter(e -> e.getThird() != null).forEach(player -> stringBuilder.append(String.format(
+                        FORMAT_STRING,
+                        player.getThird().getName(),
+                        player.getThird().getUniqueID().toString(),
+                        player.getSecond().getProcessDetail().getName(),
+                        player.getFirst().getProcessDetail().getName()
+                    )).append("\n"));
 
-                        if (stringBuilder.length() > 0) {
-                            sender.sendMessages(stringBuilder.substring(0, stringBuilder.length() - 1).split("\n"));
-                        }
-                    });
+                    if (stringBuilder.length() > 0) {
+                        sender.sendMessages(stringBuilder.substring(0, stringBuilder.length() - 1).split("\n"));
+                    }
+                });
             return;
         }
 
@@ -98,7 +98,7 @@ public final class CommandPlayers implements Command {
             }
 
             Player subServerPlayer = trio.getFirst().getProcessPlayerManager().getOnlinePlayers().stream().filter(e -> uniqueID == null
-                    ? e.getName().equals(strings[0]) : e.getUniqueID().equals(uniqueID)).findAny().orElse(null);
+                ? e.getName().equals(strings[0]) : e.getUniqueID().equals(uniqueID)).findAny().orElse(null);
             if (subServerPlayer == null) {
                 sender.sendMessage(LanguageManager.get("command-players-player-not-found", strings[0]));
                 return;
@@ -140,8 +140,8 @@ public final class CommandPlayers implements Command {
         ProcessInformation server = this.getProcess(null, uniqueID, false);
         ProcessInformation proxy = this.getProcess(null, uniqueID, true);
         return server == null || proxy == null
-                ? null
-                : new Trio<>(server, proxy, proxy.getProcessPlayerManager().getPlayerByUniqueID(uniqueID));
+            ? null
+            : new Trio<>(server, proxy, proxy.getProcessPlayerManager().getPlayerByUniqueID(uniqueID));
     }
 
     @Nullable
@@ -149,8 +149,8 @@ public final class CommandPlayers implements Command {
         ProcessInformation server = this.getProcess(name, null, false);
         ProcessInformation proxy = this.getProcess(name, null, true);
         return server == null || proxy == null
-                ? null
-                : new Trio<>(server, proxy, proxy.getProcessPlayerManager().getPlayerByName(name));
+            ? null
+            : new Trio<>(server, proxy, proxy.getProcessPlayerManager().getPlayerByName(name));
     }
 
     @Nullable
@@ -160,10 +160,10 @@ public final class CommandPlayers implements Command {
         }
 
         return ExecutorAPI.getInstance().getProcessProvider().getProcesses()
-                .stream()
-                .filter(e -> proxy != e.getProcessDetail().getTemplate().isServer())
-                .filter(e -> name == null ? e.getProcessPlayerManager().isPlayerOnlineOnCurrentProcess(uuid) : e.getProcessPlayerManager().isPlayerOnlineOnCurrentProcess(name))
-                .findFirst()
-                .orElse(null);
+            .stream()
+            .filter(e -> proxy != e.getProcessDetail().getTemplate().isServer())
+            .filter(e -> name == null ? e.getProcessPlayerManager().isPlayerOnlineOnCurrentProcess(uuid) : e.getProcessPlayerManager().isPlayerOnlineOnCurrentProcess(name))
+            .findFirst()
+            .orElse(null);
     }
 }

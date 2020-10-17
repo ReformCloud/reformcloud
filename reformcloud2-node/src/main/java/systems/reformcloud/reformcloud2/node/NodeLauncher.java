@@ -31,19 +31,29 @@ import systems.reformcloud.reformcloud2.executor.api.language.LanguageManager;
 import systems.reformcloud.reformcloud2.executor.api.language.loading.LanguageLoader;
 import systems.reformcloud.reformcloud2.node.argument.ArgumentParser;
 import systems.reformcloud.reformcloud2.node.argument.DefaultArgumentParser;
+import systems.reformcloud.reformcloud2.shared.dependency.DefaultDependencyLoader;
+import systems.reformcloud.reformcloud2.shared.dependency.DependencyFileLoader;
 
 import java.nio.file.Paths;
 
 public final class NodeLauncher {
 
     public static synchronized void main(String[] args) {
+        // load all needed dependencies before proceeding
+        DependencyLoader dependencyLoader = new DefaultDependencyLoader();
+        dependencyLoader.load(DependencyFileLoader.collectDependenciesFromFile(NodeLauncher.class.getClassLoader().getResourceAsStream("internal/dependencies.txt")));
+
+        // Make a clear space here to show the user that we now start the cloud itself (and because it looks better)
+        System.out.println();
+        System.out.println("Loaded all dependencies successfully - starting...");
+        System.out.println();
+
         LanguageLoader.doLoad();
-        DependencyLoader.doLoad(NodeLauncher.class.getClassLoader());
 
         final long startTime = System.currentTimeMillis();
 
         IOUtils.recreateDirectory(Paths.get("reformcloud/temp"));
-        NodeExecutor nodeExecutor = new NodeExecutor();
+        NodeExecutor nodeExecutor = new NodeExecutor(dependencyLoader);
 
         ArgumentParser argumentParser = new DefaultArgumentParser(args);
         if (argumentParser.getBoolean("refresh-versions")) {

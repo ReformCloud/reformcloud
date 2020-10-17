@@ -46,10 +46,10 @@ public class SpongePermissionDescription implements PermissionDescription {
     private final Text description;
 
     SpongePermissionDescription(
-            @NotNull PermissionService service,
-            @NotNull String id,
-            @Nullable PluginContainer owner,
-            @Nullable Text description
+        @NotNull PermissionService service,
+        @NotNull String id,
+        @Nullable PluginContainer owner,
+        @Nullable Text description
     ) {
         this.service = service;
         this.id = id;

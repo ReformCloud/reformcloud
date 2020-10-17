@@ -48,11 +48,11 @@ import java.util.UUID;
 
 public class DefaultProcessFactory implements ProcessFactory {
 
+    private final DefaultNodeProcessProvider defaultNodeProcessProvider;
+
     public DefaultProcessFactory(DefaultNodeProcessProvider defaultNodeProcessProvider) {
         this.defaultNodeProcessProvider = defaultNodeProcessProvider;
     }
-
-    private final DefaultNodeProcessProvider defaultNodeProcessProvider;
 
     @Override
     public @NotNull Task<ProcessInformation> buildProcessInformation(@NotNull ProcessFactoryConfiguration configuration) {

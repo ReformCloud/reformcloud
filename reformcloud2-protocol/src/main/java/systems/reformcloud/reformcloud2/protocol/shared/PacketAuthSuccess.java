@@ -34,14 +34,14 @@ import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
 
 public class PacketAuthSuccess extends ProtocolPacket {
 
+    private JsonConfiguration data;
+
     public PacketAuthSuccess() {
     }
 
     public PacketAuthSuccess(JsonConfiguration data) {
         this.data = data;
     }
-
-    private JsonConfiguration data;
 
     public JsonConfiguration getData() {
         return this.data;

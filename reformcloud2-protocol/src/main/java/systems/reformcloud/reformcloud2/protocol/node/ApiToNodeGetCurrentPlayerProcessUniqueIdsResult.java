@@ -36,14 +36,14 @@ import java.util.UUID;
 
 public class ApiToNodeGetCurrentPlayerProcessUniqueIdsResult extends QueryResultPacket {
 
+    private Duo<UUID, UUID> result;
+
     public ApiToNodeGetCurrentPlayerProcessUniqueIdsResult() {
     }
 
     public ApiToNodeGetCurrentPlayerProcessUniqueIdsResult(Duo<UUID, UUID> result) {
         this.result = result;
     }
-
-    private Duo<UUID, UUID> result;
 
     @Nullable
     public Duo<UUID, UUID> getResult() {

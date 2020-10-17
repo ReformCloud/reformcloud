@@ -34,14 +34,14 @@ import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
 
 public class ApiToNodeDeleteDatabaseTable extends ProtocolPacket {
 
+    private String tableName;
+
     public ApiToNodeDeleteDatabaseTable() {
     }
 
     public ApiToNodeDeleteDatabaseTable(String tableName) {
         this.tableName = tableName;
     }
-
-    private String tableName;
 
     @Override
     public int getId() {

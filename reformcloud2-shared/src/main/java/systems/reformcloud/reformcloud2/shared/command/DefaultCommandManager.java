@@ -46,7 +46,7 @@ public class DefaultCommandManager implements CommandManager {
             Optional<CommandContainer> registeredCommand = this.getCommand(alias.toLowerCase());
             if (registeredCommand.isPresent()) {
                 throw new RuntimeException("Command " + registeredCommand.get().getCommand().getClass().getName() + " clashes with "
-                        + command.getClass().getName() + " because of alias '" + alias + "'");
+                    + command.getClass().getName() + " because of alias '" + alias + "'");
             }
         }
 

@@ -42,24 +42,24 @@ import java.util.Collection;
 
 public class MongoDatabaseProvider implements DatabaseProvider, AutoCloseable {
 
+    private final MongoClient client;
+    private final MongoDatabase database;
+
     public MongoDatabaseProvider(MongoConfig config) {
         try {
             this.client = MongoClients.create(MessageFormat.format(
-                    "mongodb://{0}:{1}@{2}:{3}/{4}",
-                    config.getUserName(),
-                    URLEncoder.encode(config.getPassword(), StandardCharsets.UTF_8.name()),
-                    config.getHost(),
-                    Integer.toString(config.getPort()),
-                    config.getDatabase()
+                "mongodb://{0}:{1}@{2}:{3}/{4}",
+                config.getUserName(),
+                URLEncoder.encode(config.getPassword(), StandardCharsets.UTF_8.name()),
+                config.getHost(),
+                Integer.toString(config.getPort()),
+                config.getDatabase()
             ));
             this.database = this.client.getDatabase(config.getDatabase());
         } catch (UnsupportedEncodingException exception) {
             throw new RuntimeException(exception);
         }
     }
-
-    private final MongoClient client;
-    private final MongoDatabase database;
 
     @Override
     public @NotNull DatabaseTableWrapper createTable(@NotNull String tableName) {

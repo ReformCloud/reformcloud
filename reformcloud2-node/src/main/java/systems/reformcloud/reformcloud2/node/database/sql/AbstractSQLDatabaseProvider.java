@@ -56,15 +56,15 @@ public abstract class AbstractSQLDatabaseProvider implements DatabaseProvider {
     @Override
     public @UnmodifiableView Collection<String> getTableNames() {
         return this.executeQuery(
-                "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES where TABLE_SCHEMA='PUBLIC'",
-                resultSet -> {
-                    Collection<String> collection = new ArrayList<>();
-                    while (resultSet.next()) {
-                        collection.add(resultSet.getString("table_name"));
-                    }
+            "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES where TABLE_SCHEMA='PUBLIC'",
+            resultSet -> {
+                Collection<String> collection = new ArrayList<>();
+                while (resultSet.next()) {
+                    collection.add(resultSet.getString("table_name"));
+                }
 
-                    return collection;
-                }, new ArrayList<>()
+                return collection;
+            }, new ArrayList<>()
         );
     }
 

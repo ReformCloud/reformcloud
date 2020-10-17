@@ -37,12 +37,11 @@ import java.util.logging.LogRecord;
 public class DefaultFormatter extends Formatter {
 
     private static final DateFormat FORMAT = new SimpleDateFormat(System.getProperty("systems.reformcloud.log-date-format", "dd.MM.yyyy kk:mm:ss"));
+    private final boolean coloured;
 
     DefaultFormatter(boolean coloured) {
         this.coloured = coloured;
     }
-
-    private final boolean coloured;
 
     @Override
     public String format(LogRecord record) {

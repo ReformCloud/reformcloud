@@ -40,9 +40,9 @@ public class NodeToNodeTabCompleteCommandProcessor implements PacketProcessor<No
     @Override
     public void process(@NotNull NetworkChannel channel, @NotNull NodeToNodeTabCompleteCommand packet) {
         Collection<String> result = ExecutorAPI.getInstance()
-                .getServiceRegistry()
-                .getProviderUnchecked(CommandManager.class)
-                .suggest(packet.getCommandLine(), ConsoleCommandSender.INSTANCE);
+            .getServiceRegistry()
+            .getProviderUnchecked(CommandManager.class)
+            .suggest(packet.getCommandLine(), ConsoleCommandSender.INSTANCE);
         channel.sendQueryResult(packet.getQueryUniqueID(), new NodeToNodeTabCompleteCommandResult(result));
     }
 }

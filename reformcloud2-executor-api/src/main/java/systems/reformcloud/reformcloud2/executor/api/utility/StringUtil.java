@@ -25,6 +25,7 @@
 package systems.reformcloud.reformcloud2.executor.api.utility;
 
 import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.base.Conditions;
 
@@ -63,7 +64,8 @@ public final class StringUtil {
     }
 
     @NotNull
-    public static Properties calcProperties(@NotNull String @NotNull [] strings, int from) {
+    @Contract(value = "_, _ -> new", pure = true)
+    public static Properties calcProperties(@NonNls String[] strings, int from) {
         Properties properties = new Properties();
         if (strings.length < from) {
             return properties;

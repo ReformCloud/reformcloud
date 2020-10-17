@@ -36,6 +36,9 @@ import java.util.UUID;
 
 public class NodeToNodeSendPlayerToServer extends ProtocolPacket {
 
+    private UUID uniqueId;
+    private String server;
+
     public NodeToNodeSendPlayerToServer() {
     }
 
@@ -43,9 +46,6 @@ public class NodeToNodeSendPlayerToServer extends ProtocolPacket {
         this.uniqueId = uniqueId;
         this.server = server;
     }
-
-    private UUID uniqueId;
-    private String server;
 
     @Override
     public int getId() {

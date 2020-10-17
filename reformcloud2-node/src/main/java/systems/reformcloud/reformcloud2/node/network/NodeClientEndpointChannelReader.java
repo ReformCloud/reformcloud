@@ -75,9 +75,9 @@ public final class NodeClientEndpointChannelReader extends SharedEndpointChannel
         }
 
         context.writeAndFlush(new PacketAuthBegin(
-                NodeExecutor.getInstance().getNodeExecutorConfig().getConnectionKey(),
-                1,
-                new JsonConfiguration().add("node", NodeExecutor.getInstance().getCurrentNodeInformation())
+            NodeExecutor.getInstance().getNodeExecutorConfig().getConnectionKey(),
+            1,
+            new JsonConfiguration().add("node", NodeExecutor.getInstance().getCurrentNodeInformation())
         ), context.voidPromise());
     }
 
@@ -106,10 +106,10 @@ public final class NodeClientEndpointChannelReader extends SharedEndpointChannel
             ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ChannelManager.class).registerChannel(super.networkChannel);
 
             ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ClusterManager.class).publishProcessGroupSet(
-                    ExecutorAPI.getInstance().getProcessGroupProvider().getProcessGroups()
+                ExecutorAPI.getInstance().getProcessGroupProvider().getProcessGroups()
             );
             ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ClusterManager.class).publishMainGroupSet(
-                    ExecutorAPI.getInstance().getMainGroupProvider().getMainGroups()
+                ExecutorAPI.getInstance().getMainGroupProvider().getMainGroups()
             );
             return;
         }

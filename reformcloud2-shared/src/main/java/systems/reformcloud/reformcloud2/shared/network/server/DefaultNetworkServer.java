@@ -50,26 +50,26 @@ public final class DefaultNetworkServer implements NetworkServer {
     public void bind(@NotNull String host, int port, @NotNull Supplier<EndpointChannelReader> readerHelper) {
         if (!this.channelFutures.containsKey(port)) {
             new ServerBootstrap()
-                    .channelFactory(NetworkUtil.TRANSPORT_TYPE.getServerSocketChannelFactory())
-                    .group(this.boss, this.worker)
+                .channelFactory(NetworkUtil.TRANSPORT_TYPE.getServerSocketChannelFactory())
+                .group(this.boss, this.worker)
 
-                    .childOption(ChannelOption.SO_REUSEADDR, true)
-                    .childOption(ChannelOption.SO_KEEPALIVE, true)
-                    .childOption(ChannelOption.AUTO_READ, true)
-                    .childOption(ChannelOption.IP_TOS, 0x18)
-                    .childOption(ChannelOption.TCP_NODELAY, true)
-                    .childOption(ChannelOption.WRITE_BUFFER_WATER_MARK, NetworkUtil.WATER_MARK)
+                .childOption(ChannelOption.SO_REUSEADDR, true)
+                .childOption(ChannelOption.SO_KEEPALIVE, true)
+                .childOption(ChannelOption.AUTO_READ, true)
+                .childOption(ChannelOption.IP_TOS, 0x18)
+                .childOption(ChannelOption.TCP_NODELAY, true)
+                .childOption(ChannelOption.WRITE_BUFFER_WATER_MARK, NetworkUtil.WATER_MARK)
 
-                    .childHandler(new ServerChannelInitializer(readerHelper))
+                .childHandler(new ServerChannelInitializer(readerHelper))
 
-                    .bind(host, port)
-                    .addListener((ChannelFutureListener) channelFuture -> {
-                        if (channelFuture.isSuccess()) {
-                            DefaultNetworkServer.this.channelFutures.put(port, channelFuture);
-                        } else {
-                            channelFuture.cause().printStackTrace();
-                        }
-                    });
+                .bind(host, port)
+                .addListener((ChannelFutureListener) channelFuture -> {
+                    if (channelFuture.isSuccess()) {
+                        DefaultNetworkServer.this.channelFutures.put(port, channelFuture);
+                    } else {
+                        channelFuture.cause().printStackTrace();
+                    }
+                });
         }
     }
 

@@ -44,11 +44,11 @@ import java.util.UUID;
 
 public class EmptyProxiedPlayer implements ProxiedPlayer {
 
+    private final PendingConnection pendingConnection;
+
     public EmptyProxiedPlayer(@NotNull PendingConnection pendingConnection) {
         this.pendingConnection = pendingConnection;
     }
-
-    private final PendingConnection pendingConnection;
 
     @Override
     public String getDisplayName() {

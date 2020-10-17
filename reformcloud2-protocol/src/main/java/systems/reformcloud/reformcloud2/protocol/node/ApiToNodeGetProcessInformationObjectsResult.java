@@ -34,14 +34,14 @@ import java.util.Collection;
 
 public class ApiToNodeGetProcessInformationObjectsResult extends QueryResultPacket {
 
+    private Collection<ProcessInformation> processInformation;
+
     public ApiToNodeGetProcessInformationObjectsResult() {
     }
 
     public ApiToNodeGetProcessInformationObjectsResult(Collection<ProcessInformation> processInformation) {
         this.processInformation = processInformation;
     }
-
-    private Collection<ProcessInformation> processInformation;
 
     public Collection<ProcessInformation> getProcessInformation() {
         return this.processInformation;

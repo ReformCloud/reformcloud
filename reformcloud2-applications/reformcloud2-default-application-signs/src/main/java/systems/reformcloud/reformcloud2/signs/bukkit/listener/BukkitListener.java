@@ -41,12 +41,12 @@ public class BukkitListener implements Listener {
     @EventHandler
     public void handle(final PlayerInteractEvent event) {
         if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK)
-                && event.getClickedBlock() != null
-                && event.getClickedBlock().getState() instanceof Sign
+            && event.getClickedBlock() != null
+            && event.getClickedBlock().getState() instanceof Sign
         ) {
             Sign sign = (Sign) event.getClickedBlock().getState();
             CloudSign cloudSign = BukkitSignSystemAdapter.getInstance().getSignAt(
-                    BukkitSignSystemAdapter.getInstance().getSignConverter().to(sign)
+                BukkitSignSystemAdapter.getInstance().getSignConverter().to(sign)
             );
 
             if (cloudSign == null) {
@@ -55,13 +55,13 @@ public class BukkitListener implements Listener {
 
             boolean canConnect = SignSystemAdapter.getInstance().canConnect(cloudSign, event.getPlayer()::hasPermission);
             if (!ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class).callEvent(new UserSignPreConnectEvent(
-                    event.getPlayer().getUniqueId(), event.getPlayer()::hasPermission, cloudSign, canConnect
+                event.getPlayer().getUniqueId(), event.getPlayer()::hasPermission, cloudSign, canConnect
             )).isAllowConnection()) {
                 return;
             }
 
             ExecutorAPI.getInstance().getPlayerProvider().getPlayer(event.getPlayer().getUniqueId())
-                    .ifPresent(wrapper -> wrapper.connect(cloudSign.getCurrentTarget().getProcessDetail().getName()));
+                .ifPresent(wrapper -> wrapper.connect(cloudSign.getCurrentTarget().getProcessDetail().getName()));
         }
     }
 }

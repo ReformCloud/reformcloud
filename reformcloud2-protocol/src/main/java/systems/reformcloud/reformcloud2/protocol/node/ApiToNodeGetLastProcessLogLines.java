@@ -39,14 +39,14 @@ import java.util.UUID;
 
 public class ApiToNodeGetLastProcessLogLines extends ProtocolPacket {
 
+    private UUID uniqueId;
+
     public ApiToNodeGetLastProcessLogLines() {
     }
 
     public ApiToNodeGetLastProcessLogLines(ProcessInformation information) {
         this.uniqueId = information.getProcessDetail().getProcessUniqueID();
     }
-
-    private UUID uniqueId;
 
     @Override
     public int getId() {

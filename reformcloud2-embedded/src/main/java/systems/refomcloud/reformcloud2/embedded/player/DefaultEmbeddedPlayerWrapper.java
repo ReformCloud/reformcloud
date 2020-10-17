@@ -42,36 +42,36 @@ import java.util.UUID;
 
 public class DefaultEmbeddedPlayerWrapper implements PlayerWrapper {
 
+    private final UUID playerUniqueId;
+
     DefaultEmbeddedPlayerWrapper(UUID playerUniqueId) {
         this.playerUniqueId = playerUniqueId;
     }
 
-    private final UUID playerUniqueId;
-
     @NotNull
     private Optional<Duo<UUID, UUID>> getPlayerProcess() {
         return Embedded.getInstance().sendSyncQuery(new ApiToNodeGetCurrentPlayerProcessUniqueIds(this.playerUniqueId))
-                .map(result -> {
-                    if (result instanceof ApiToNodeGetCurrentPlayerProcessUniqueIdsResult) {
-                        return Optional.ofNullable(((ApiToNodeGetCurrentPlayerProcessUniqueIdsResult) result).getResult());
-                    }
+            .map(result -> {
+                if (result instanceof ApiToNodeGetCurrentPlayerProcessUniqueIdsResult) {
+                    return Optional.ofNullable(((ApiToNodeGetCurrentPlayerProcessUniqueIdsResult) result).getResult());
+                }
 
-                    return Optional.<Duo<UUID, UUID>>empty();
-                }).orElseGet(Optional::empty);
+                return Optional.<Duo<UUID, UUID>>empty();
+            }).orElseGet(Optional::empty);
     }
 
     @Override
     public @NotNull Task<Optional<ProcessInformation>> getConnectedProxy() {
         return Task.supply(() -> this.getPlayerProcess()
-                .flatMap(duo -> ExecutorAPI.getInstance().getProcessProvider().getProcessByUniqueId(duo.getFirst()))
-                .map(ProcessWrapper::getProcessInformation));
+            .flatMap(duo -> ExecutorAPI.getInstance().getProcessProvider().getProcessByUniqueId(duo.getFirst()))
+            .map(ProcessWrapper::getProcessInformation));
     }
 
     @Override
     public @NotNull Task<Optional<ProcessInformation>> getConnectedServer() {
         return Task.supply(() -> this.getPlayerProcess()
-                .flatMap(duo -> ExecutorAPI.getInstance().getProcessProvider().getProcessByUniqueId(duo.getSecond()))
-                .map(ProcessWrapper::getProcessInformation));
+            .flatMap(duo -> ExecutorAPI.getInstance().getProcessProvider().getProcessByUniqueId(duo.getSecond()))
+            .map(ProcessWrapper::getProcessInformation));
     }
 
     @Override

@@ -53,9 +53,9 @@ public class DefaultNodeChannelMessageProvider implements ChannelMessageProvider
     public void publishChannelMessageToAll(@NotNull String node, @NotNull String channel, @NotNull JsonConfiguration data) {
         if (NodeExecutor.getInstance().isOwnIdentity(node)) {
             ExecutorAPI.getInstance().getProcessProvider().getProcesses()
-                    .stream()
-                    .filter(processInformation -> processInformation.getProcessDetail().getParentName().equals(node))
-                    .forEach(processInformation -> this.sendChannelMessage(processInformation, channel, data));
+                .stream()
+                .filter(processInformation -> processInformation.getProcessDetail().getParentName().equals(node))
+                .forEach(processInformation -> this.sendChannelMessage(processInformation, channel, data));
             return;
         }
 

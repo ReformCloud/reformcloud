@@ -34,14 +34,14 @@ import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
 
 public class ApiToNodeGetDatabaseEntryCount extends ProtocolPacket {
 
+    private String tableName;
+
     public ApiToNodeGetDatabaseEntryCount() {
     }
 
     public ApiToNodeGetDatabaseEntryCount(String tableName) {
         this.tableName = tableName;
     }
-
-    private String tableName;
 
     @Override
     public int getId() {

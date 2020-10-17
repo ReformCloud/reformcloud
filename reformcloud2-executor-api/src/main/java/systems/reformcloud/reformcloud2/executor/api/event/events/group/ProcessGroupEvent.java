@@ -29,11 +29,11 @@ import systems.reformcloud.reformcloud2.executor.api.groups.ProcessGroup;
 
 public abstract class ProcessGroupEvent extends Event {
 
+    protected final ProcessGroup processGroup;
+
     public ProcessGroupEvent(ProcessGroup processGroup) {
         this.processGroup = processGroup;
     }
-
-    protected final ProcessGroup processGroup;
 
     public ProcessGroup getProcessGroup() {
         return this.processGroup;

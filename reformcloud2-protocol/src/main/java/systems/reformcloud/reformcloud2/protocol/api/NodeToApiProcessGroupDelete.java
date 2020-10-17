@@ -37,14 +37,14 @@ import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
 
 public class NodeToApiProcessGroupDelete extends ProtocolPacket {
 
+    private ProcessGroup processGroup;
+
     public NodeToApiProcessGroupDelete() {
     }
 
     public NodeToApiProcessGroupDelete(ProcessGroup processGroup) {
         this.processGroup = processGroup;
     }
-
-    private ProcessGroup processGroup;
 
     @Override
     public int getId() {
@@ -54,7 +54,7 @@ public class NodeToApiProcessGroupDelete extends ProtocolPacket {
     @Override
     public void handlePacketReceive(@NotNull EndpointChannelReader reader, @NotNull NetworkChannel channel) {
         ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(EventManager.class)
-                .callEvent(new ProcessGroupDeleteEvent(this.processGroup));
+            .callEvent(new ProcessGroupDeleteEvent(this.processGroup));
     }
 
     @Override

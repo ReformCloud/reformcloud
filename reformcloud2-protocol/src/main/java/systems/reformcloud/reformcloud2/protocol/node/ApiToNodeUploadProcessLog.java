@@ -37,14 +37,14 @@ import java.util.UUID;
 
 public class ApiToNodeUploadProcessLog extends ProtocolPacket {
 
+    private UUID uniqueId;
+
     public ApiToNodeUploadProcessLog() {
     }
 
     public ApiToNodeUploadProcessLog(ProcessInformation information) {
         this.uniqueId = information.getProcessDetail().getProcessUniqueID();
     }
-
-    private UUID uniqueId;
 
     @Override
     public int getId() {

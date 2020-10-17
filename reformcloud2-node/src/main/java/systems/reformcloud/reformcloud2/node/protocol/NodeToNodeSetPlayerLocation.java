@@ -50,6 +50,6 @@ public class NodeToNodeSetPlayerLocation extends PacketSetPlayerLocation {
     @Override
     public void handlePacketReceive(@NotNull EndpointChannelReader reader, @NotNull NetworkChannel channel) {
         ExecutorAPI.getInstance().getPlayerProvider().getPlayer(this.uniqueId)
-                .ifPresent(player -> player.setLocation(this.world, this.x, this.y, this.z, this.yaw, this.pitch));
+            .ifPresent(player -> player.setLocation(this.world, this.x, this.y, this.z, this.yaw, this.pitch));
     }
 }

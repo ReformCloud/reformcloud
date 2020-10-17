@@ -72,8 +72,8 @@ public class SpongeExecutor extends Embedded {
 
     private void fixInvalidPlayers() {
         SharedInvalidPlayerFixer.start(
-                uuid -> Sponge.getServer().getPlayer(uuid).isPresent(),
-                () -> Sponge.getServer().getOnlinePlayers().size()
+            uuid -> Sponge.getServer().getPlayer(uuid).isPresent(),
+            () -> Sponge.getServer().getOnlinePlayers().size()
         );
     }
 }

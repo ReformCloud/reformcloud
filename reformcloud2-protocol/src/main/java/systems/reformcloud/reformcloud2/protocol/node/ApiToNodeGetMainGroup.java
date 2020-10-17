@@ -37,14 +37,14 @@ import java.util.Optional;
 
 public class ApiToNodeGetMainGroup extends ProtocolPacket {
 
+    private String name;
+
     public ApiToNodeGetMainGroup() {
     }
 
     public ApiToNodeGetMainGroup(String name) {
         this.name = name;
     }
-
-    private String name;
 
     @Override
     public int getId() {

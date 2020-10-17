@@ -106,14 +106,14 @@ public final class DefaultEventManager implements EventManager {
             Class<?>[] parameters = declaredMethod.getParameterTypes();
             if (parameters.length != 1) {
                 System.err.println("Unable to register listener method " + declaredMethod.getName()
-                        + "@" + listener.getClass().getName() + " because method has more or less than one parameter");
+                    + "@" + listener.getClass().getName() + " because method has more or less than one parameter");
                 continue;
             }
 
             if (!Event.class.isAssignableFrom(parameters[0])) {
                 System.err.println("Unable to register listener method " + declaredMethod.getName()
-                        + "@" + listener.getClass().getName() + " because parameter type " + parameters[0].getName()
-                        + " is not assignable from " + Event.class.getName());
+                    + "@" + listener.getClass().getName() + " because parameter type " + parameters[0].getName()
+                    + " is not assignable from " + Event.class.getName());
                 continue;
             }
 

@@ -37,13 +37,13 @@ import systems.reformcloud.reformcloud2.permissions.sponge.service.SpongePermiss
 import systems.reformcloud.reformcloud2.permissions.util.PermissionPluginUtil;
 
 @Plugin(
-        id = "reformcloud_2_perms",
-        name = "SpongePermissionPlugin",
-        version = "2",
-        description = "The reformcloud permission plugin",
-        authors = {"derklaro"},
-        url = "https://reformcloud.systems",
-        dependencies = {@Dependency(id = "reformcloud_2_api_executor")}
+    id = "reformcloud_2_perms",
+    name = "SpongePermissionPlugin",
+    version = "2",
+    description = "The reformcloud permission plugin",
+    authors = {"derklaro"},
+    url = "https://reformcloud.systems",
+    dependencies = {@Dependency(id = "reformcloud_2_api_executor")}
 )
 public class SpongePermissionPlugin {
 

@@ -25,7 +25,6 @@
 package systems.reformcloud.reformcloud2.executor.api.application;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.dependency.Dependency;
 import systems.reformcloud.reformcloud2.executor.api.utility.name.Nameable;
 
 import java.io.File;
@@ -55,12 +54,6 @@ public interface ApplicationConfig extends Nameable {
      */
     @NotNull
     String getMainClassName();
-
-    /**
-     * @return All needed dependencies for an application
-     */
-    @NotNull
-    Dependency[] getDependencies();
 
     /**
      * @return The description of the application

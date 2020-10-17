@@ -43,11 +43,11 @@ import java.util.UUID;
 
 public class DefaultNodePlayerWrapper implements PlayerWrapper {
 
+    private final UUID uniqueId;
+
     DefaultNodePlayerWrapper(UUID uniqueId) {
         this.uniqueId = uniqueId;
     }
-
-    private final UUID uniqueId;
 
     @NotNull
     private Optional<Duo<UUID, UUID>> getPlayerProcess() {
@@ -56,12 +56,12 @@ public class DefaultNodePlayerWrapper implements PlayerWrapper {
 
         for (ProcessInformation process : ExecutorAPI.getInstance().getProcessProvider().getProcesses()) {
             if (process.getProcessDetail().getTemplate().isServer()
-                    && process.getProcessPlayerManager().isPlayerOnlineOnCurrentProcess(this.uniqueId)
-                    && server == null) {
+                && process.getProcessPlayerManager().isPlayerOnlineOnCurrentProcess(this.uniqueId)
+                && server == null) {
                 server = process.getProcessDetail().getProcessUniqueID();
             } else if (!process.getProcessDetail().getTemplate().isServer()
-                    && process.getProcessPlayerManager().isPlayerOnlineOnCurrentProcess(this.uniqueId)
-                    && proxy == null) {
+                && process.getProcessPlayerManager().isPlayerOnlineOnCurrentProcess(this.uniqueId)
+                && proxy == null) {
                 proxy = process.getProcessDetail().getProcessUniqueID();
             }
         }
@@ -72,15 +72,15 @@ public class DefaultNodePlayerWrapper implements PlayerWrapper {
     @Override
     public @NotNull Task<Optional<ProcessInformation>> getConnectedProxy() {
         return Task.supply(() -> this.getPlayerProcess()
-                .flatMap(duo -> ExecutorAPI.getInstance().getProcessProvider().getProcessByUniqueId(duo.getFirst()))
-                .map(ProcessWrapper::getProcessInformation));
+            .flatMap(duo -> ExecutorAPI.getInstance().getProcessProvider().getProcessByUniqueId(duo.getFirst()))
+            .map(ProcessWrapper::getProcessInformation));
     }
 
     @Override
     public @NotNull Task<Optional<ProcessInformation>> getConnectedServer() {
         return Task.supply(() -> this.getPlayerProcess()
-                .flatMap(duo -> ExecutorAPI.getInstance().getProcessProvider().getProcessByUniqueId(duo.getSecond()))
-                .map(ProcessWrapper::getProcessInformation));
+            .flatMap(duo -> ExecutorAPI.getInstance().getProcessProvider().getProcessByUniqueId(duo.getSecond()))
+            .map(ProcessWrapper::getProcessInformation));
     }
 
     @Override
@@ -195,7 +195,7 @@ public class DefaultNodePlayerWrapper implements PlayerWrapper {
     public void connect(@NotNull UUID otherPlayer) {
         for (ProcessInformation process : ExecutorAPI.getInstance().getProcessProvider().getProcesses()) {
             if (process.getProcessDetail().getTemplate().isServer()
-                    && process.getProcessPlayerManager().isPlayerOnlineOnCurrentProcess(otherPlayer)) {
+                && process.getProcessPlayerManager().isPlayerOnlineOnCurrentProcess(otherPlayer)) {
                 this.connect(process.getProcessDetail().getName());
                 break;
             }
@@ -209,20 +209,20 @@ public class DefaultNodePlayerWrapper implements PlayerWrapper {
         }
 
         ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ChannelManager.class)
-                .getChannel(proxy.getProcessDetail().getName())
-                .ifPresent(channel -> channel.sendPacket(packet));
+            .getChannel(proxy.getProcessDetail().getName())
+            .ifPresent(channel -> channel.sendPacket(packet));
     }
 
     private void sendPacketToParent(@NotNull ProcessInformation processInformation, @NotNull Packet packet) {
         ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ChannelManager.class)
-                .getChannel(processInformation.getProcessDetail().getParentName())
-                .ifPresent(channel -> channel.sendPacket(packet));
+            .getChannel(processInformation.getProcessDetail().getParentName())
+            .ifPresent(channel -> channel.sendPacket(packet));
     }
 
     private @Nullable ProcessInformation getPlayerProxy() {
         for (ProcessInformation process : ExecutorAPI.getInstance().getProcessProvider().getProcesses()) {
             if (!process.getProcessDetail().getTemplate().isServer()
-                    && process.getProcessPlayerManager().isPlayerOnlineOnCurrentProcess(this.uniqueId)) {
+                && process.getProcessPlayerManager().isPlayerOnlineOnCurrentProcess(this.uniqueId)) {
                 return process;
             }
         }
@@ -233,7 +233,7 @@ public class DefaultNodePlayerWrapper implements PlayerWrapper {
     private @Nullable ProcessInformation getPlayerServer() {
         for (ProcessInformation process : ExecutorAPI.getInstance().getProcessProvider().getProcesses()) {
             if (process.getProcessDetail().getTemplate().isServer()
-                    && process.getProcessPlayerManager().isPlayerOnlineOnCurrentProcess(this.uniqueId)) {
+                && process.getProcessPlayerManager().isPlayerOnlineOnCurrentProcess(this.uniqueId)) {
                 return process;
             }
         }

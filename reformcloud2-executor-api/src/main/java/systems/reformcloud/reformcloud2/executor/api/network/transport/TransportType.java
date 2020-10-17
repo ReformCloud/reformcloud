@@ -65,26 +65,6 @@ public enum TransportType {
         this.eventLoopGroupFactory = eventLoopGroupFactory;
     }
 
-    public @NotNull String getName() {
-        return this.name;
-    }
-
-    public boolean isAvailable() {
-        return this.available;
-    }
-
-    public @NotNull ChannelFactory<? extends ServerSocketChannel> getServerSocketChannelFactory() {
-        return this.serverSocketChannelFactory;
-    }
-
-    public @NotNull ChannelFactory<? extends SocketChannel> getSocketChannelFactory() {
-        return this.socketChannelFactory;
-    }
-
-    public @NotNull EventLoopGroup getEventLoopGroup(@NotNull EventLoopGroupType type) {
-        return this.eventLoopGroupFactory.apply(type, this.getName());
-    }
-
     /**
      * Get the best transport type for the current machine.
      * For internal use only. Use {@link systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil#TRANSPORT_TYPE}
@@ -108,5 +88,25 @@ public enum TransportType {
 
     public static @NotNull ThreadFactory newThreadFactory(@NotNull String name, @NotNull EventLoopGroupType type) {
         return new FastNettyThreadFactory("Netty " + type.getName() + ' ' + name + " Thread#%d");
+    }
+
+    public @NotNull String getName() {
+        return this.name;
+    }
+
+    public boolean isAvailable() {
+        return this.available;
+    }
+
+    public @NotNull ChannelFactory<? extends ServerSocketChannel> getServerSocketChannelFactory() {
+        return this.serverSocketChannelFactory;
+    }
+
+    public @NotNull ChannelFactory<? extends SocketChannel> getSocketChannelFactory() {
+        return this.socketChannelFactory;
+    }
+
+    public @NotNull EventLoopGroup getEventLoopGroup(@NotNull EventLoopGroupType type) {
+        return this.eventLoopGroupFactory.apply(type, this.getName());
     }
 }

@@ -69,8 +69,8 @@ public final class CommandLog implements Command {
         List<String> result = new ArrayList<>();
         if (bufferIndex == 0) {
             result.addAll(Streams.map(
-                    Streams.allOf(ExecutorAPI.getInstance().getProcessProvider().getProcesses(), info -> info.getProcessDetail().getProcessState().isStartedOrOnline()),
-                    info -> info.getProcessDetail().getName()
+                Streams.allOf(ExecutorAPI.getInstance().getProcessProvider().getProcesses(), info -> info.getProcessDetail().getProcessState().isStartedOrOnline()),
+                info -> info.getProcessDetail().getName()
             ));
         }
 

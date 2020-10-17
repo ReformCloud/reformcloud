@@ -39,11 +39,11 @@ public class ReformCloudReconnectHandler implements ReconnectHandler {
     @Override
     public ServerInfo getServer(@NotNull ProxiedPlayer proxiedPlayer) {
         return SharedPlayerFallbackFilter.filterFallback(
-                proxiedPlayer.getUniqueId(),
-                ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ProxyServerController.class).getCachedLobbyServers(),
-                proxiedPlayer::hasPermission,
-                BungeeFallbackExtraFilter.INSTANCE,
-                proxiedPlayer.getServer() == null ? null : proxiedPlayer.getServer().getInfo().getName()
+            proxiedPlayer.getUniqueId(),
+            ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ProxyServerController.class).getCachedLobbyServers(),
+            proxiedPlayer::hasPermission,
+            BungeeFallbackExtraFilter.INSTANCE,
+            proxiedPlayer.getServer() == null ? null : proxiedPlayer.getServer().getInfo().getName()
         ).map(info -> ProxyServer.getInstance().getServerInfo(info.getProcessDetail().getName())).orNothing();
     }
 

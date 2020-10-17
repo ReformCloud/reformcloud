@@ -37,14 +37,14 @@ import java.util.UUID;
 
 public class NodeToNodeToggleProcessScreen extends ProtocolPacket {
 
+    private UUID processUniqueId;
+
     public NodeToNodeToggleProcessScreen() {
     }
 
     public NodeToNodeToggleProcessScreen(UUID processUniqueId) {
         this.processUniqueId = processUniqueId;
     }
-
-    private UUID processUniqueId;
 
     @Override
     public int getId() {

@@ -39,14 +39,14 @@ import java.util.Collection;
 
 public class ApiToNodeGetProcessInformationObjectsByVersion extends ProtocolPacket {
 
+    private Version version;
+
     public ApiToNodeGetProcessInformationObjectsByVersion() {
     }
 
     public ApiToNodeGetProcessInformationObjectsByVersion(Version version) {
         this.version = version;
     }
-
-    private Version version;
 
     @Override
     public int getId() {

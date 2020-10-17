@@ -125,11 +125,11 @@ public class DefaultPermissionManagement extends PermissionManagement {
     @Deprecated
     public PermissionGroup createGroup(@NotNull String name) {
         PermissionGroup newGroup = new PermissionGroup(
-                new ArrayList<>(),
-                new ConcurrentHashMap<>(),
-                new ArrayList<>(),
-                name,
-                0
+            new ArrayList<>(),
+            new ConcurrentHashMap<>(),
+            new ArrayList<>(),
+            name,
+            0
         );
         return this.createPermissionGroup(newGroup);
     }
@@ -402,7 +402,7 @@ public class DefaultPermissionManagement extends PermissionManagement {
 
     private void eraseUserCache(@NotNull PermissionUser permissionUser) {
         boolean hasChanged = permissionUser.getGroups().removeIf(group -> !group.isValid())
-                || permissionUser.getPermissionNodes().removeIf(permissionNode -> !permissionNode.isValid());
+            || permissionUser.getPermissionNodes().removeIf(permissionNode -> !permissionNode.isValid());
         for (Map.Entry<String, Collection<PermissionNode>> stringCollectionEntry : permissionUser.getPerGroupPermissions().entrySet()) {
             hasChanged = stringCollectionEntry.getValue().removeIf(permissionNode -> !permissionNode.isValid());
         }

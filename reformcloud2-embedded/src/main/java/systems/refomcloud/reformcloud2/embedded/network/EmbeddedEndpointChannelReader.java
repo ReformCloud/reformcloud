@@ -42,17 +42,16 @@ import java.util.concurrent.locks.Lock;
 
 public class EmbeddedEndpointChannelReader extends SharedEndpointChannelReader {
 
+    private final Lock lock;
+    private final Condition condition;
+    private boolean wasActive = false;
+
     public EmbeddedEndpointChannelReader(Lock lock, Condition condition) {
         PacketRegister.preAuth();
 
         this.lock = lock;
         this.condition = condition;
     }
-
-    private boolean wasActive = false;
-
-    private final Lock lock;
-    private final Condition condition;
 
     @Override
     public boolean shouldHandle(@NotNull Packet packet) {
@@ -70,9 +69,9 @@ public class EmbeddedEndpointChannelReader extends SharedEndpointChannelReader {
         }
 
         context.writeAndFlush(new PacketAuthBegin(
-                Embedded.getInstance().getConfig().getConnectionKey(),
-                2,
-                new JsonConfiguration().add("pid", Embedded.getInstance().getCurrentProcessInformation().getProcessDetail().getProcessUniqueID())
+            Embedded.getInstance().getConfig().getConnectionKey(),
+            2,
+            new JsonConfiguration().add("pid", Embedded.getInstance().getCurrentProcessInformation().getProcessDetail().getProcessUniqueID())
         ), context.voidPromise());
     }
 

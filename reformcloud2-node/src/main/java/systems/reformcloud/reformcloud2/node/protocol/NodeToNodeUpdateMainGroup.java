@@ -36,14 +36,14 @@ import systems.reformcloud.reformcloud2.protocol.ProtocolPacket;
 
 public class NodeToNodeUpdateMainGroup extends ProtocolPacket {
 
+    private MainGroup mainGroup;
+
     public NodeToNodeUpdateMainGroup() {
     }
 
     public NodeToNodeUpdateMainGroup(MainGroup mainGroup) {
         this.mainGroup = mainGroup;
     }
-
-    private MainGroup mainGroup;
 
     @Override
     public int getId() {

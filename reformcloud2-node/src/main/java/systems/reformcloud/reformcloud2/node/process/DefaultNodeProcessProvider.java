@@ -76,9 +76,9 @@ public final class DefaultNodeProcessProvider implements ProcessProvider {
     @Override
     public @UnmodifiableView Collection<ProcessInformation> getProcessesByProcessGroup(@NotNull String processGroup) {
         return Streams.newCollection(
-                this.processes,
-                process -> process.getProcessInformation().getProcessGroup().getName().equals(processGroup),
-                ProcessWrapper::getProcessInformation
+            this.processes,
+            process -> process.getProcessInformation().getProcessGroup().getName().equals(processGroup),
+            ProcessWrapper::getProcessInformation
         );
     }
 
@@ -86,23 +86,23 @@ public final class DefaultNodeProcessProvider implements ProcessProvider {
     @Override
     public @UnmodifiableView Collection<ProcessInformation> getProcessesByMainGroup(@NotNull String mainGroup) {
         return ExecutorAPI.getInstance().getMainGroupProvider().getMainGroup(mainGroup)
-                .map(group -> {
-                    Collection<ProcessInformation> result = new ArrayList<>();
-                    for (String subGroup : group.getSubGroups()) {
-                        result.addAll(this.getProcessesByProcessGroup(subGroup));
-                    }
+            .map(group -> {
+                Collection<ProcessInformation> result = new ArrayList<>();
+                for (String subGroup : group.getSubGroups()) {
+                    result.addAll(this.getProcessesByProcessGroup(subGroup));
+                }
 
-                    return result;
-                }).orElse(Collections.emptyList());
+                return result;
+            }).orElse(Collections.emptyList());
     }
 
     @NotNull
     @Override
     public @UnmodifiableView Collection<ProcessInformation> getProcessesByVersion(@NotNull Version version) {
         return Streams.newCollection(
-                this.processes,
-                process -> process.getProcessInformation().getProcessDetail().getTemplate().getVersion() == version,
-                ProcessWrapper::getProcessInformation
+            this.processes,
+            process -> process.getProcessInformation().getProcessDetail().getTemplate().getVersion() == version,
+            ProcessWrapper::getProcessInformation
         );
     }
 
@@ -180,8 +180,8 @@ public final class DefaultNodeProcessProvider implements ProcessProvider {
 
     public void updateProcessInformation0(@NotNull ProcessInformation processInformation) {
         DefaultNodeRemoteProcessWrapper old = Streams.filter(
-                this.processes,
-                process -> process.getProcessInformation().getProcessDetail().getProcessUniqueID().equals(processInformation.getProcessDetail().getProcessUniqueID())
+            this.processes,
+            process -> process.getProcessInformation().getProcessDetail().getProcessUniqueID().equals(processInformation.getProcessDetail().getProcessUniqueID())
         );
         if (old != null) {
             old.setProcessInformation(processInformation);

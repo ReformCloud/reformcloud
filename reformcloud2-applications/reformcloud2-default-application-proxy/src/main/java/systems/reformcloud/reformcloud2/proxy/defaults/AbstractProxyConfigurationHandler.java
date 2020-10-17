@@ -44,9 +44,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 public abstract class AbstractProxyConfigurationHandler extends ProxyConfigurationHandler {
 
     private final AtomicInteger[] atomicIntegers = new AtomicInteger[]{
-            new AtomicInteger(0),
-            new AtomicInteger(0),
-            new AtomicInteger(0)
+        new AtomicInteger(0),
+        new AtomicInteger(0),
+        new AtomicInteger(0)
     };
     private @Nullable ProxyConfiguration proxyConfiguration;
     private MotdConfiguration currentMessageOfTheDayConfiguration;
@@ -82,22 +82,22 @@ public abstract class AbstractProxyConfigurationHandler extends ProxyConfigurati
     @Override
     public @NotNull Optional<MotdConfiguration> getBestMessageOfTheDayConfiguration() {
         return Embedded.getInstance().getCurrentProcessInformation().getProcessGroup().getPlayerAccessConfiguration().isMaintenance()
-                ? this.getCurrentMaintenanceMessageOfTheDayConfiguration()
-                : this.getCurrentMessageOfTheDayConfiguration();
+            ? this.getCurrentMaintenanceMessageOfTheDayConfiguration()
+            : this.getCurrentMessageOfTheDayConfiguration();
     }
 
     @Override
     public @NotNull String replaceMessageOfTheDayPlaceHolders(@NotNull String messageOfTheDay) {
         ProcessInformation current = Embedded.getInstance().getCurrentProcessInformation();
         messageOfTheDay = messageOfTheDay
-                .replace("%proxy_name%", current.getProcessDetail().getName())
-                .replace("%proxy_display_name%", current.getProcessDetail().getDisplayName())
-                .replace("%proxy_unique_id%", current.getProcessDetail().getProcessUniqueID().toString())
-                .replace("%proxy_id%", Integer.toString(current.getProcessDetail().getId()))
-                .replace("%proxy_online_players%", Integer.toString(current.getProcessPlayerManager().getOnlineCount()))
-                .replace("%proxy_max_players%", Integer.toString(current.getProcessDetail().getMaxPlayers()))
-                .replace("%proxy_group%", current.getProcessGroup().getName())
-                .replace("%proxy_parent%", current.getProcessDetail().getParentName());
+            .replace("%proxy_name%", current.getProcessDetail().getName())
+            .replace("%proxy_display_name%", current.getProcessDetail().getDisplayName())
+            .replace("%proxy_unique_id%", current.getProcessDetail().getProcessUniqueID().toString())
+            .replace("%proxy_id%", Integer.toString(current.getProcessDetail().getId()))
+            .replace("%proxy_online_players%", Integer.toString(current.getProcessPlayerManager().getOnlineCount()))
+            .replace("%proxy_max_players%", Integer.toString(current.getProcessDetail().getMaxPlayers()))
+            .replace("%proxy_group%", current.getProcessGroup().getName())
+            .replace("%proxy_parent%", current.getProcessDetail().getParentName());
         return ProxyConfigurationHandler.translateAlternateColorCodes('&', messageOfTheDay);
     }
 

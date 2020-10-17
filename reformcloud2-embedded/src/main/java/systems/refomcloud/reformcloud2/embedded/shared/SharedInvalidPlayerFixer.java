@@ -51,7 +51,7 @@ public final class SharedInvalidPlayerFixer {
 
             for (Player onlinePlayer : current.getProcessPlayerManager().getOnlinePlayers()) {
                 if (onlinePlayer.getJoined() + TimeUnit.SECONDS.toMillis(5) > System.currentTimeMillis()
-                        || onlineChecker.apply(onlinePlayer.getUniqueID())) {
+                    || onlineChecker.apply(onlinePlayer.getUniqueID())) {
                     continue;
                 }
 
@@ -67,8 +67,8 @@ public final class SharedInvalidPlayerFixer {
             }
 
             if (onlineCountSupplier.get() < current.getProcessDetail().getMaxPlayers()
-                    && !current.getProcessDetail().getProcessState().equals(ProcessState.READY)
-                    && !current.getProcessDetail().getProcessState().equals(ProcessState.INVISIBLE)) {
+                && !current.getProcessDetail().getProcessState().equals(ProcessState.READY)
+                && !current.getProcessDetail().getProcessState().equals(ProcessState.INVISIBLE)) {
                 current.getProcessDetail().setProcessState(ProcessState.READY);
             }
 

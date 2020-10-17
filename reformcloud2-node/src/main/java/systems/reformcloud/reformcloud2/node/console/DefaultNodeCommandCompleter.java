@@ -46,13 +46,13 @@ public class DefaultNodeCommandCompleter implements Completer {
 
         if (buffer.lastIndexOf(' ') == -1) {
             list.addAll(commandManager.getCommands()
-                    .stream()
-                    .map(CommandContainer::getAliases)
-                    .flatMap(Collection::stream)
-                    .filter(candidate -> buffer.isEmpty() || candidate.startsWith(buffer))
-                    .sorted()
-                    .map(Candidate::new)
-                    .collect(Collectors.toList()));
+                .stream()
+                .map(CommandContainer::getAliases)
+                .flatMap(Collection::stream)
+                .filter(candidate -> buffer.isEmpty() || candidate.startsWith(buffer))
+                .sorted()
+                .map(Candidate::new)
+                .collect(Collectors.toList()));
             return;
         }
 
@@ -60,10 +60,10 @@ public class DefaultNodeCommandCompleter implements Completer {
         String beginTypeArgument = split.length <= 1 || buffer.endsWith(" ") ? null : split[split.length - 1].toLowerCase().trim();
 
         list.addAll(commandManager.suggest(buffer, ConsoleCommandSender.INSTANCE)
-                .stream()
-                .filter(candidate -> beginTypeArgument == null || candidate.toLowerCase().startsWith(beginTypeArgument))
-                .sorted()
-                .map(Candidate::new)
-                .collect(Collectors.toList()));
+            .stream()
+            .filter(candidate -> beginTypeArgument == null || candidate.toLowerCase().startsWith(beginTypeArgument))
+            .sorted()
+            .map(Candidate::new)
+            .collect(Collectors.toList()));
     }
 }

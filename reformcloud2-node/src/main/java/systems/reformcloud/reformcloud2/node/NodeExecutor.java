@@ -31,6 +31,7 @@ import systems.reformcloud.reformcloud2.executor.api.ExecutorType;
 import systems.reformcloud.reformcloud2.executor.api.application.ApplicationLoader;
 import systems.reformcloud.reformcloud2.executor.api.base.Conditions;
 import systems.reformcloud.reformcloud2.executor.api.command.CommandManager;
+import systems.reformcloud.reformcloud2.executor.api.dependency.DependencyLoader;
 import systems.reformcloud.reformcloud2.executor.api.event.EventManager;
 import systems.reformcloud.reformcloud2.executor.api.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.groups.template.backend.TemplateBackendManager;
@@ -98,30 +99,30 @@ public final class NodeExecutor extends ExecutorAPI {
 
     private static volatile boolean running = true;
 
+    private final DependencyLoader dependencyLoader;
+
     private final NetworkServer networkServer = new DefaultNetworkServer();
     private final NodeNetworkClient networkClient = new NodeNetworkClient();
 
     private final NodeExecutorConfig nodeExecutorConfig = new NodeExecutorConfig();
-    private NodeConfig nodeConfig;
-
     private final ServiceRegistry serviceRegistry = new DefaultServiceRegistry();
     private final DefaultNodeProcessProvider processProvider = new DefaultNodeProcessProvider();
     private final PlayerProvider playerProvider = new DefaultNodePlayerProvider();
     private final ChannelMessageProvider channelMessageProvider = new DefaultNodeChannelMessageProvider();
-    private DefaultNodeMainGroupProvider mainGroupProvider;
-    private DefaultNodeProcessGroupProvider processGroupProvider;
-    private DefaultNodeNodeInformationProvider nodeInformationProvider;
-
     private final TickedTaskScheduler taskScheduler = new TickedTaskScheduler();
     private final CloudTickWorker cloudTickWorker = new CloudTickWorker(this.taskScheduler);
 
+    private NodeConfig nodeConfig;
+    private DefaultNodeMainGroupProvider mainGroupProvider;
+    private DefaultNodeProcessGroupProvider processGroupProvider;
+    private DefaultNodeNodeInformationProvider nodeInformationProvider;
     private DefaultNodeConsole console;
     private CloudLogger logger;
     private ArgumentParser argumentParser;
 
     private NodeInformation currentNodeInformation;
 
-    protected NodeExecutor() {
+    protected NodeExecutor(DependencyLoader dependencyLoader) {
         Conditions.isTrue(new File(".").getAbsolutePath().indexOf('!') == -1, "Cannot run ReformCloud in directory with ! in path.");
 
         ExecutorAPI.setInstance(this);
@@ -135,7 +136,17 @@ public final class NodeExecutor extends ExecutorAPI {
             }
         }, "Shutdown-Hook"));
 
+        this.dependencyLoader = dependencyLoader;
         this.registerDefaultServices();
+    }
+
+    @NotNull
+    public static NodeExecutor getInstance() {
+        return (NodeExecutor) ExecutorAPI.getInstance();
+    }
+
+    public static boolean isRunning() {
+        return running;
     }
 
     protected synchronized void bootstrap(@NotNull ArgumentParser argumentParser) {
@@ -313,11 +324,6 @@ public final class NodeExecutor extends ExecutorAPI {
     }
 
     @NotNull
-    public static NodeExecutor getInstance() {
-        return (NodeExecutor) ExecutorAPI.getInstance();
-    }
-
-    @NotNull
     @Override
     public ChannelMessageProvider getChannelMessageProvider() {
         return this.channelMessageProvider;
@@ -363,6 +369,11 @@ public final class NodeExecutor extends ExecutorAPI {
     @Override
     public ServiceRegistry getServiceRegistry() {
         return this.serviceRegistry;
+    }
+
+    @Override
+    public @NotNull DependencyLoader getDependencyLoader() {
+        return this.dependencyLoader;
     }
 
     @Override
@@ -440,10 +451,6 @@ public final class NodeExecutor extends ExecutorAPI {
 
     public boolean isOwnIdentity(@NotNull String name) {
         return this.nodeConfig.getName().equals(name);
-    }
-
-    public static boolean isRunning() {
-        return running;
     }
 
     private void loadCommands() {

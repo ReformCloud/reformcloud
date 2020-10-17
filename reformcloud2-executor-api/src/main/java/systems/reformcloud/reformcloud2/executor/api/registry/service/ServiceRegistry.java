@@ -46,14 +46,11 @@ public interface ServiceRegistry {
 
     <T> void setProvider(@NotNull Class<T> service, @NotNull T provider, boolean immutable, boolean needsReplacement) throws ProviderImmutableException;
 
-    @NotNull
-    <T> Optional<T> getProvider(@NotNull Class<T> service);
+    @NotNull <T> Optional<T> getProvider(@NotNull Class<T> service);
 
-    @NotNull
-    <T> Optional<ServiceRegistryEntry<T>> getRegisteredEntry(@NotNull Class<T> service);
+    @NotNull <T> Optional<ServiceRegistryEntry<T>> getRegisteredEntry(@NotNull Class<T> service);
 
-    @NotNull
-    <T> T getProviderUnchecked(@NotNull Class<T> service) throws ProviderNotRegisteredException;
+    @NotNull <T> T getProviderUnchecked(@NotNull Class<T> service) throws ProviderNotRegisteredException;
 
     @NotNull
     @UnmodifiableView Collection<ServiceRegistryEntry<?>> getRegisteredServices();

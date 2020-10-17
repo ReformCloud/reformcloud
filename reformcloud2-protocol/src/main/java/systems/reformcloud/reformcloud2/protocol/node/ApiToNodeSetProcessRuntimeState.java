@@ -39,16 +39,15 @@ import java.util.UUID;
 
 public class ApiToNodeSetProcessRuntimeState extends ProtocolPacket {
 
+    private UUID processUniqueId;
+    private ProcessState runtimeState;
+
     public ApiToNodeSetProcessRuntimeState() {
     }
-
     public ApiToNodeSetProcessRuntimeState(ProcessInformation information, ProcessState runtimeState) {
         this.processUniqueId = information.getProcessDetail().getProcessUniqueID();
         this.runtimeState = runtimeState;
     }
-
-    private UUID processUniqueId;
-    private ProcessState runtimeState;
 
     @Override
     public int getId() {

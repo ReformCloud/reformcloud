@@ -38,18 +38,18 @@ import java.util.Collection;
 
 public class RethinkDatabaseProvider implements DatabaseProvider, AutoCloseable {
 
-    public RethinkDatabaseProvider(RethinkConfig config) {
-        this.connection = RethinkDB.r.connection()
-                .hostname(config.getHost())
-                .port(config.getPort())
-                .user(config.getUserName(), config.getPassword())
-                .db(config.getDatabase())
-                .connect();
-        this.database = RethinkDB.r.db(config.getDatabase());
-    }
-
     private final Connection connection;
     private final Db database;
+
+    public RethinkDatabaseProvider(RethinkConfig config) {
+        this.connection = RethinkDB.r.connection()
+            .hostname(config.getHost())
+            .port(config.getPort())
+            .user(config.getUserName(), config.getPassword())
+            .db(config.getDatabase())
+            .connect();
+        this.database = RethinkDB.r.db(config.getDatabase());
+    }
 
     @Override
     public @NotNull DatabaseTableWrapper createTable(@NotNull String tableName) {

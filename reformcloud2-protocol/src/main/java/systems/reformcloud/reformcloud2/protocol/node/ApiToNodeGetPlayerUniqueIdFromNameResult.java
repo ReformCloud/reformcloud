@@ -33,14 +33,14 @@ import java.util.UUID;
 
 public class ApiToNodeGetPlayerUniqueIdFromNameResult extends QueryResultPacket {
 
+    private UUID uniqueId;
+
     public ApiToNodeGetPlayerUniqueIdFromNameResult() {
     }
 
     public ApiToNodeGetPlayerUniqueIdFromNameResult(UUID uniqueId) {
         this.uniqueId = uniqueId;
     }
-
-    private UUID uniqueId;
 
     public UUID getUniqueId() {
         return this.uniqueId;

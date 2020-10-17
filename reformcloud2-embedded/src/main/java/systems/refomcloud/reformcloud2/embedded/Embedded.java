@@ -36,6 +36,7 @@ import systems.refomcloud.reformcloud2.embedded.player.DefaultEmbeddedPlayerProv
 import systems.refomcloud.reformcloud2.embedded.process.DefaultEmbeddedProcessProvider;
 import systems.refomcloud.reformcloud2.embedded.processors.*;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
+import systems.reformcloud.reformcloud2.executor.api.dependency.DependencyLoader;
 import systems.reformcloud.reformcloud2.executor.api.event.EventManager;
 import systems.reformcloud.reformcloud2.executor.api.event.events.process.ProcessUpdateEvent;
 import systems.reformcloud.reformcloud2.executor.api.event.handler.Listener;
@@ -54,6 +55,7 @@ import systems.reformcloud.reformcloud2.protocol.node.ApiToNodeGetIngameMessages
 import systems.reformcloud.reformcloud2.protocol.node.ApiToNodeGetIngameMessagesResult;
 import systems.reformcloud.reformcloud2.protocol.processor.PacketProcessorManager;
 import systems.reformcloud.reformcloud2.protocol.shared.*;
+import systems.reformcloud.reformcloud2.shared.dependency.DefaultDependencyLoader;
 import systems.reformcloud.reformcloud2.shared.event.DefaultEventManager;
 import systems.reformcloud.reformcloud2.shared.network.channel.DefaultChannelManager;
 import systems.reformcloud.reformcloud2.shared.network.client.DefaultNetworkClient;
@@ -84,6 +86,8 @@ public abstract class Embedded extends ExecutorAPI {
     private final MainGroupProvider mainGroupProvider = new DefaultEmbeddedMainGroupProvider();
     private final ProcessGroupProvider processGroupProvider = new DefaultEmbeddedProcessGroupProvider();
     private final ProcessProvider processProvider = new DefaultEmbeddedProcessProvider();
+    private final DependencyLoader dependencyLoader = new DefaultDependencyLoader();
+
     protected ProcessInformation processInformation;
     protected IngameMessages ingameMessages = new IngameMessages();
 
@@ -202,6 +206,12 @@ public abstract class Embedded extends ExecutorAPI {
     @Override
     public ServiceRegistry getServiceRegistry() {
         return this.serviceRegistry;
+    }
+
+    @NotNull
+    @Override
+    public DependencyLoader getDependencyLoader() {
+        return this.dependencyLoader;
     }
 
     @Override

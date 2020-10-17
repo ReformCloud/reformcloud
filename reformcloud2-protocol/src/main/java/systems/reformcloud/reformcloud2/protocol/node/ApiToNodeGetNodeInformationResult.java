@@ -32,14 +32,14 @@ import systems.reformcloud.reformcloud2.executor.api.node.NodeInformation;
 
 public class ApiToNodeGetNodeInformationResult extends QueryResultPacket {
 
+    private NodeInformation nodeInformation;
+
     public ApiToNodeGetNodeInformationResult() {
     }
 
     public ApiToNodeGetNodeInformationResult(NodeInformation nodeInformation) {
         this.nodeInformation = nodeInformation;
     }
-
-    private NodeInformation nodeInformation;
 
     public NodeInformation getNodeInformation() {
         return this.nodeInformation;

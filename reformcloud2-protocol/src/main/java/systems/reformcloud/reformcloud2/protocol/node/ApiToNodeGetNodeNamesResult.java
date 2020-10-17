@@ -33,14 +33,14 @@ import java.util.Collection;
 
 public class ApiToNodeGetNodeNamesResult extends QueryResultPacket {
 
+    private Collection<String> names;
+
     public ApiToNodeGetNodeNamesResult() {
     }
 
     public ApiToNodeGetNodeNamesResult(Collection<String> names) {
         this.names = names;
     }
-
-    private Collection<String> names;
 
     public Collection<String> getNames() {
         return this.names;
