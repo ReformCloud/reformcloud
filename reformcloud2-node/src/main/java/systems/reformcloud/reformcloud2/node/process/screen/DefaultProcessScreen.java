@@ -56,7 +56,7 @@ public class DefaultProcessScreen implements ProcessScreen {
     private final byte[] buffer = new byte[1024];
     private final int maxCacheSize = Integer.getInteger("systems.reformcloud.screen-cache-max-size", 256);
 
-    DefaultProcessScreen(DefaultNodeLocalProcessWrapper processWrapper) {
+    protected DefaultProcessScreen(DefaultNodeLocalProcessWrapper processWrapper) {
         this.processWrapper = processWrapper;
     }
 

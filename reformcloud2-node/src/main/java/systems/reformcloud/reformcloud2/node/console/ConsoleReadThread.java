@@ -83,7 +83,7 @@ public class ConsoleReadThread extends Thread {
     }
 
     @NotNull
-    Task<String> getCurrentTask() {
+    protected Task<String> getCurrentTask() {
         if (this.currentTask == null) {
             return this.currentTask = new DefaultTask<>();
         }

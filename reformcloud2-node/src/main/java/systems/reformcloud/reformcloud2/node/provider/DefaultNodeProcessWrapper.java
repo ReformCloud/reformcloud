@@ -44,7 +44,7 @@ public class DefaultNodeProcessWrapper implements NodeProcessWrapper {
 
     protected NodeInformation nodeInformation;
 
-    DefaultNodeProcessWrapper(@NotNull NodeInformation nodeInformation) {
+    protected DefaultNodeProcessWrapper(@NotNull NodeInformation nodeInformation) {
         this.nodeInformation = nodeInformation;
     }
 

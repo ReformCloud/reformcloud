@@ -34,7 +34,7 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.UUID;
 
-public final class NodeConfig {
+public class NodeConfig {
 
     protected static final Path PATH = Paths.get(System.getProperty("systems.reformcloud.node-config-path", "reformcloud/config.json"));
 

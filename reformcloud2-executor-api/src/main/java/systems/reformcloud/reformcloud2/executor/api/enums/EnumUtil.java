@@ -129,7 +129,7 @@ public final class EnumUtil {
 
     private static final class Entry {
 
-        public static final Entry EMPTY = new Entry();
+        protected static final Entry EMPTY = new Entry();
 
         private final Map<String, Enum<?>> namesToConstant;
         private final Map<Integer, Enum<?>> indexToConstant;

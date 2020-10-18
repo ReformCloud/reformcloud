@@ -56,7 +56,7 @@ public class DefaultNodeRemoteProcessWrapper implements ProcessWrapper {
         return this.processInformation;
     }
 
-    void setProcessInformation(@NotNull ProcessInformation information) {
+    protected void setProcessInformation(@NotNull ProcessInformation information) {
         this.processInformation = information;
     }
 

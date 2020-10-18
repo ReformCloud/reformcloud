@@ -51,7 +51,7 @@ import java.util.Objects;
 import java.util.Properties;
 import java.util.function.UnaryOperator;
 
-public final class EnvironmentBuilder {
+final class EnvironmentBuilder {
 
     private EnvironmentBuilder() {
         throw new AssertionError("You should not instantiate the class");

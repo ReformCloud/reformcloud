@@ -41,7 +41,7 @@ public final class SQLDatabaseTableWrapper implements DatabaseTableWrapper {
     private final String name;
     private final AbstractSQLDatabaseProvider provider;
 
-    SQLDatabaseTableWrapper(@NotNull String name, @NotNull AbstractSQLDatabaseProvider provider) {
+    protected SQLDatabaseTableWrapper(@NotNull String name, @NotNull AbstractSQLDatabaseProvider provider) {
         this.name = name;
         this.provider = provider;
 

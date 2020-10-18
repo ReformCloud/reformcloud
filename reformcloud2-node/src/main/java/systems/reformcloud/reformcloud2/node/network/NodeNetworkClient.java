@@ -28,13 +28,13 @@ import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
 import systems.reformcloud.reformcloud2.shared.network.client.DefaultNetworkClient;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Supplier;
 
 public final class NodeNetworkClient extends DefaultNetworkClient {
 
-    public static final Collection<String> CONNECTIONS = new ArrayList<>();
+    public static final Collection<String> CONNECTIONS = new CopyOnWriteArrayList<>();
 
     @Override
     public boolean connect(@NotNull String host, int port, @NotNull Supplier<EndpointChannelReader> supplier) {

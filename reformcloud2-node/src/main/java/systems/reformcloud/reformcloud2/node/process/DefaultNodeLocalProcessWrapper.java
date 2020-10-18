@@ -297,7 +297,7 @@ public class DefaultNodeLocalProcessWrapper extends DefaultNodeRemoteProcessWrap
         return Streams.concat(shutdownCommands, DEFAULT_SHUTDOWN_COMMANDS);
     }
 
-    Path getPath() {
+    protected Path getPath() {
         return this.path;
     }
 
