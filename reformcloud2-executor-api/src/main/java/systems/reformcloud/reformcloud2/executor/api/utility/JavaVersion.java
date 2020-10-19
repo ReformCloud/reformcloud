@@ -25,6 +25,7 @@
 package systems.reformcloud.reformcloud2.executor.api.utility;
 
 import org.jetbrains.annotations.NotNull;
+import systems.reformcloud.reformcloud2.executor.api.enums.EnumUtil;
 
 public enum JavaVersion {
 
@@ -73,14 +74,17 @@ public enum JavaVersion {
         return this.versionName;
     }
 
-    private static JavaVersion getVersionForMajor(int major) {
-        return major >= values().length || major <= 0 ? JavaVersion.VERSION_UNKNOWN : values()[major - 1];
+    @NotNull
+    public static JavaVersion getVersionForMajor(int major) {
+        return EnumUtil.findEnumFieldByIndex(JavaVersion.class, major - 1).orElse(JavaVersion.VERSION_UNKNOWN);
     }
 
+    @NotNull
     public static JavaVersion current() {
         return CURRENT;
     }
 
+    @NotNull
     public static JavaVersion forClassVersion(int classVersion) {
         return getVersionForMajor(classVersion - 44);
     }
