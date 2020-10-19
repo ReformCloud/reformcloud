@@ -40,7 +40,7 @@ import java.util.Optional;
 
 public class AutoStartRunnable implements Runnable {
 
-    static void startPreparedOfGroup(@NotNull Collection<ProcessInformation> processes, @NotNull ProcessGroup processGroup) {
+    private static void startPreparedOfGroup(@NotNull Collection<ProcessInformation> processes, @NotNull ProcessGroup processGroup) {
         ProcessInformation prepared = Streams.filter(processes, e -> e.getProcessDetail().getProcessState() == ProcessState.PREPARED);
         if (prepared != null) {
             Optional<ProcessWrapper> processWrapper = ExecutorAPI.getInstance().getProcessProvider()
