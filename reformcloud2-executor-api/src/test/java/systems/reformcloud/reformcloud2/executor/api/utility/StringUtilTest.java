@@ -8,8 +8,14 @@ import java.util.Properties;
 class StringUtilTest {
 
     @Test
+    @Deprecated
     void testGenerateString() {
         Assertions.assertEquals(64, StringUtil.generateString(2).length());
+    }
+
+    @Test
+    void testGenerateRandomString() {
+        Assertions.assertEquals(56, StringUtil.generateRandomString(56).length());
     }
 
     @Test

@@ -24,15 +24,17 @@
  */
 package systems.reformcloud.reformcloud2.executor.api.utility;
 
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.base.Conditions;
+import systems.reformcloud.reformcloud2.executor.api.utility.random.ThreadLocalFastRandom;
 
 import java.io.File;
 import java.util.Arrays;
 import java.util.Properties;
-import java.util.UUID;
+import java.util.stream.IntStream;
 
 public final class StringUtil {
 
@@ -40,15 +42,26 @@ public final class StringUtil {
     public static final String RUNNER_DOWNLOAD_URL = "https://internal.reformcloud.systems/runner.jar";
     public static final String NULL_PATH = new File("reformcloud/.bin/dev/null").getAbsolutePath();
 
+    private static final Character[] CHARACTERS = IntStream.range(48, 123).filter(i -> Character.isDigit(i) || Character.isLetter(i)).mapToObj(i -> (char) i).toArray(Character[]::new);
+
     @NotNull
+    @Deprecated
+    @ApiStatus.ScheduledForRemoval(inVersion = "2.10.3")
     public static String generateString(int times) {
-        Conditions.isTrue(times > 0);
-        StringBuilder stringBuilder = new StringBuilder();
-        for (int i = 0; i < times; i++) {
-            stringBuilder.append(UUID.randomUUID().toString().replace("-", ""));
+        return generateRandomString(times * 32);
+    }
+
+    @NotNull
+    @Contract(value = "_ -> new", pure = true)
+    public static String generateRandomString(int length) {
+        Conditions.isTrue(length > 0);
+
+        StringBuilder stringBuffer = new StringBuilder(length);
+        for (int i = 0; i < length; i++) {
+            stringBuffer.append(CHARACTERS[ThreadLocalFastRandom.current().nextInt(CHARACTERS.length)]);
         }
 
-        return stringBuilder.toString();
+        return stringBuffer.toString();
     }
 
     @NotNull

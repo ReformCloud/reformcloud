@@ -132,7 +132,7 @@ public final class NodeExecutorConfig {
                 setupAnswer -> {
                     String key = setupAnswer.getOriginalAnswer();
                     if (setupAnswer.getOriginalAnswer().equalsIgnoreCase("gen")) {
-                        key = StringUtil.generateString(16);
+                        key = StringUtil.generateRandomString(512);
                     }
 
                     new JsonConfiguration().add("key", key).write("reformcloud/files/.connection/connection.json");
