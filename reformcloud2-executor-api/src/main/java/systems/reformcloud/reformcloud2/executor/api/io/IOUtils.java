@@ -130,7 +130,7 @@ public final class IOUtils {
         try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(dirPath)) {
             for (Path path : directoryStream) {
                 if (Files.isDirectory(path)) {
-                    deleteDirectory(path);
+                    doDeleteDirectory(path);
                 } else {
                     deleteFile(path);
                 }
