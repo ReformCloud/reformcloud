@@ -100,7 +100,9 @@ public class OnlinePercentCheckerTask implements Runnable {
                 continue;
             }
 
-            int max = processes.stream().mapToInt(process -> process.getProcessDetail().getMaxPlayers()).sum();
+            int max = processes.stream()
+                .filter(process -> process.getProcessDetail().getProcessState().isStartedOrOnline())
+                .mapToInt(process -> process.getProcessDetail().getMaxPlayers()).sum();
             int online = processes.stream().mapToInt(process -> process.getProcessPlayerManager().getOnlineCount()).sum();
 
             if (this.getPercentOf(online, max) < configuration.getMaxPercentOfPlayers()) {
