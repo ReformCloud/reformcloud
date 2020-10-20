@@ -90,7 +90,6 @@ import systems.reformcloud.reformcloud2.shared.network.packet.DefaultQueryManage
 import systems.reformcloud.reformcloud2.shared.network.server.DefaultNetworkServer;
 import systems.reformcloud.reformcloud2.shared.registry.service.DefaultServiceRegistry;
 
-import java.io.File;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Random;
@@ -123,7 +122,7 @@ public final class NodeExecutor extends ExecutorAPI {
     private NodeInformation currentNodeInformation;
 
     protected NodeExecutor(DependencyLoader dependencyLoader) {
-        Conditions.isTrue(new File(".").getAbsolutePath().indexOf('!') == -1, "Cannot run ReformCloud in directory with ! in path.");
+        Conditions.isTrue(Paths.get("").toAbsolutePath().toString().indexOf('!') == -1, "Cannot run ReformCloud in directory with ! in path.");
 
         ExecutorAPI.setInstance(this);
         super.type = ExecutorType.NODE;

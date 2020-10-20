@@ -31,7 +31,6 @@ import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.cloudflare.config.CloudFlareConfig;
 import systems.reformcloud.reformcloud2.executor.api.ExecutorAPI;
 import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
-import systems.reformcloud.reformcloud2.executor.api.io.IOUtils;
 import systems.reformcloud.reformcloud2.executor.api.language.LanguageManager;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.utility.list.Streams;
@@ -44,7 +43,7 @@ import java.net.HttpURLConnection;
 import java.net.Inet6Address;
 import java.net.URL;
 import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Map;
 import java.util.UUID;
@@ -61,9 +60,8 @@ public final class CloudFlareHelper {
         throw new UnsupportedOperationException();
     }
 
-    public static boolean init(@NotNull String baseFolder) {
-        if (Files.notExists(Paths.get(baseFolder + "/config.json"))) {
-            IOUtils.createDirectory(Paths.get(baseFolder));
+    public static boolean init(@NotNull Path configPath) {
+        if (Files.notExists(configPath)) {
             new JsonConfiguration()
                 .add("config", new CloudFlareConfig(
                     "someone@example.com",
@@ -71,11 +69,11 @@ public final class CloudFlareHelper {
                     "example.com",
                     "",
                     "@"
-                )).write(Paths.get(baseFolder + "/config.json"));
+                )).write(configPath);
             return true;
         }
 
-        cloudFlareConfig = JsonConfiguration.read(Paths.get(baseFolder + "/config.json")).get("config", CloudFlareConfig.TYPE_TOKEN);
+        cloudFlareConfig = JsonConfiguration.read(configPath).get("config", CloudFlareConfig.TYPE_TOKEN);
         return false;
     }
 

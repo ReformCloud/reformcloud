@@ -33,11 +33,11 @@ import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConf
 import systems.reformcloud.reformcloud2.executor.api.io.IOUtils;
 import systems.reformcloud.reformcloud2.executor.api.wrappers.DatabaseTableWrapper;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Optional;
@@ -49,7 +49,7 @@ public class FileDatabaseTableWrapper implements DatabaseTableWrapper {
 
     public FileDatabaseTableWrapper(@NotNull String tableName) {
         this.database = DatabaseProvider.getDatabaseDriver().getDatabase(
-            new File("reformcloud/.database", tableName),
+            Paths.get("reformcloud/.database").resolve(tableName).toFile(),
             SerializableJsonConfiguration::new,
             1
         );

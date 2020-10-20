@@ -39,17 +39,19 @@ import systems.reformcloud.reformcloud2.node.NodeExecutor;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.Inet6Address;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Properties;
 import java.util.function.UnaryOperator;
+import java.util.stream.Collectors;
 
 final class EnvironmentBuilder {
 
@@ -80,12 +82,12 @@ final class EnvironmentBuilder {
             loadPathInclusions(runningProcess, Inclusion.InclusionLoadType.PAST);
         }
 
-        if (!Files.exists(Paths.get("reformcloud/files/runner.jar"))) {
+        if (Files.notExists(Paths.get("reformcloud/files/runner.jar"))) {
             DownloadHelper.downloadAndDisconnect(StringUtil.RUNNER_DOWNLOAD_URL, "reformcloud/files/runner.jar");
         }
 
         IOUtils.createDirectory(Paths.get(runningProcess.getPath() + "/plugins"));
-        IOUtils.doCopy("reformcloud/files/runner.jar", runningProcess.getPath() + "/runner.jar");
+        IOUtils.doCopy("reformcloud/files/runner.jar", runningProcess.getPath().resolve("runner.jar"));
         IOUtils.doOverrideInternalCopy(EnvironmentBuilder.class.getClassLoader(), "files/embedded.jar", runningProcess.getPath() + "/plugins/executor.jar");
 
         NetworkAddress connectHost = NodeExecutor.getInstance().getAnyAddress();
@@ -111,15 +113,16 @@ final class EnvironmentBuilder {
             String fileName = "reformcloud/files/" + version.getName().toLowerCase().replace(" ", "-") + ".zip";
             String destPath = "reformcloud/files/" + version.getName().toLowerCase().replace(" ", "-");
 
-            if (!Files.exists(Paths.get(destPath))) {
+            Path targetDestination = Paths.get(destPath);
+            if (Files.notExists(targetDestination)) {
                 DownloadHelper.downloadAndDisconnect(version.getUrl(), fileName);
 
-                IOUtils.unZip(Paths.get(fileName).toFile(), destPath);
-                IOUtils.rename(Paths.get(destPath + "/sponge.jar").toFile(), destPath + "/process.jar");
-                IOUtils.deleteFile(new File(fileName));
+                IOUtils.unZip(Paths.get(fileName), targetDestination);
+                IOUtils.rename(targetDestination.resolve("sponge.jar"), destPath + "/process.jar");
+                IOUtils.deleteFile(fileName);
             }
 
-            IOUtils.copyDirectory(Paths.get(destPath + "/mods"), Paths.get(runningProcess.getPath() + "/mods"));
+            IOUtils.copyDirectory(targetDestination.resolve("mods"), runningProcess.getPath().resolve("mods"));
         }
 
         if (isLogicallyGlowstone(runningProcess)) {
@@ -180,16 +183,16 @@ final class EnvironmentBuilder {
             }
         }
 
-        if (!isLogicallySpongeForge(runningProcess) && !Files.exists(Paths.get(runningProcess.getPath() + "/process.jar"))) {
+        if (!isLogicallySpongeForge(runningProcess) && Files.notExists(Paths.get(runningProcess.getPath() + "/process.jar"))) {
             Version version = runningProcess.getProcessInformation().getProcessDetail().getTemplate().getVersion();
-            if (!Files.exists(Paths.get("reformcloud/files/" + Version.format(version)))) {
+            if (Files.notExists(Paths.get("reformcloud/files/" + Version.format(version)))) {
                 Version.downloadVersion(version);
             }
         }
     }
 
     private static void proxyStartup(@NotNull DefaultNodeLocalProcessWrapper runningProcess) {
-        if (!Files.exists(Paths.get(runningProcess.getPath() + "/server-icon.png"))) {
+        if (Files.notExists(Paths.get(runningProcess.getPath() + "/server-icon.png"))) {
             IOUtils.doInternalCopy(EnvironmentBuilder.class.getClassLoader(), "files/server-icon.png", runningProcess.getPath() + "/server-icon.png");
         }
 
@@ -197,7 +200,7 @@ final class EnvironmentBuilder {
             BufferedImage bufferedImage = ImageIO.read(Paths.get(runningProcess.getPath() + "/server-icon.png").toFile());
             if (bufferedImage.getHeight() != 64 || bufferedImage.getWidth() != 64) {
                 System.err.println("The server icon of the process " + runningProcess.getProcessInformation().getProcessDetail().getName() + " is not correctly sized");
-                IOUtils.rename(Paths.get(runningProcess.getPath() + "/server-icon.png").toFile(), runningProcess.getPath() + "/server-icon-old.png");
+                IOUtils.rename(Paths.get(runningProcess.getPath() + "/server-icon.png"), runningProcess.getPath() + "/server-icon-old.png");
                 IOUtils.doInternalCopy(EnvironmentBuilder.class.getClassLoader(), "files/server-icon.png", runningProcess.getPath() + "/server-icon.png");
             }
         } catch (final IOException ex) {
@@ -215,9 +218,9 @@ final class EnvironmentBuilder {
             rewriteVelocityConfig(runningProcess);
         }
 
-        if (!Files.exists(Paths.get(runningProcess.getPath() + "/process.jar"))) {
+        if (Files.notExists(Paths.get(runningProcess.getPath() + "/process.jar"))) {
             Version version = runningProcess.getProcessInformation().getProcessDetail().getTemplate().getVersion();
-            if (!Files.exists(Paths.get("reformcloud/files/" + Version.format(version)))) {
+            if (Files.notExists(Paths.get("reformcloud/files/" + Version.format(version)))) {
                 Version.downloadVersion(version);
             }
         }
@@ -243,8 +246,7 @@ final class EnvironmentBuilder {
     }
 
     private static void rewriteSpongeConfig(@NotNull DefaultNodeLocalProcessWrapper runningProcess) {
-        File config = Paths.get(runningProcess.getPath() + "/config/sponge/global.conf").toFile();
-        rewriteFile(config, s -> {
+        rewriteFile(runningProcess.getPath().resolve("config/sponge/global.conf"), s -> {
             if (s.startsWith("ip-forwarding=")) {
                 s = "ip-forwarding=true";
             } else if (s.startsWith("bungeecord=")) {
@@ -262,8 +264,7 @@ final class EnvironmentBuilder {
     }
 
     private static void rewriteBungeeConfig(@NotNull DefaultNodeLocalProcessWrapper runningProcess) {
-        File file = Paths.get(runningProcess.getPath() + "/config.yml").toFile();
-        rewriteFile(file, s -> {
+        rewriteFile(runningProcess.getPath().resolve("config.yml"), s -> {
             if (s.startsWith("  host:")) {
                 s = "  host: '" + formatHost(runningProcess) + "'";
             } else if (s.startsWith("ip_forward:")) {
@@ -285,8 +286,7 @@ final class EnvironmentBuilder {
     }
 
     private static void rewriteWaterDogConfig(@NotNull DefaultNodeLocalProcessWrapper runningProcess) {
-        File file = Paths.get(runningProcess.getPath() + "/config.yml").toFile();
-        rewriteFile(file, s -> {
+        rewriteFile(runningProcess.getPath().resolve("config.yml"), s -> {
             if (s.startsWith("  host:")) {
                 s = "  host: '" + formatHost(runningProcess) + "'";
             } else if (s.startsWith("ip_forward:")) {
@@ -307,8 +307,7 @@ final class EnvironmentBuilder {
 
     //Velocity
     private static void rewriteVelocityConfig(@NotNull DefaultNodeLocalProcessWrapper runningProcess) {
-        File file = Paths.get(runningProcess.getPath() + "/velocity.toml").toFile();
-        rewriteFile(file, s -> {
+        rewriteFile(runningProcess.getPath().resolve("velocity.toml"), s -> {
             if (s.startsWith("bind")) {
                 s = "bind = \"" + formatHost(runningProcess) + "\"";
             } else if (s.startsWith("show-max-players") && runningProcess.getProcessInformation().getProcessDetail().getMaxPlayers() >= 0) {
@@ -328,7 +327,7 @@ final class EnvironmentBuilder {
     }
 
     private static void rewriteGlowstoneConfig(@NotNull DefaultNodeLocalProcessWrapper runningProcess) {
-        rewriteFile(new File(runningProcess.getPath() + "/config/glowstone.yml"), s -> {
+        rewriteFile(runningProcess.getPath().resolve("config/glowstone.yml"), s -> {
             if (s.startsWith("  ip: ")) {
                 s = "  ip: '" + runningProcess.getProcessInformation().getNetworkInfo().getHostPlain() + "'";
             } else if (s.startsWith("  port: ")) {
@@ -347,7 +346,7 @@ final class EnvironmentBuilder {
 
     //Spigot
     private static void rewriteSpigotConfig(@NotNull DefaultNodeLocalProcessWrapper runningProcess) {
-        rewriteFile(new File(runningProcess.getPath() + "/spigot.yml"), s -> {
+        rewriteFile(runningProcess.getPath().resolve("spigot.yml"), s -> {
             if (s.trim().startsWith("bungeecord:")) {
                 s = "  bungeecord: true";
             }
@@ -356,19 +355,11 @@ final class EnvironmentBuilder {
         });
     }
 
-    private static void rewriteFile(@NotNull File file, UnaryOperator<String> operator) {
+    private static void rewriteFile(@NotNull Path path, UnaryOperator<String> operator) {
         try {
-            List<String> oldLines = Files.readAllLines(file.toPath());
-            List<String> newLines = new ArrayList<>();
-
-            for (String oldLine : oldLines) {
-                newLines.add(operator.apply(oldLine));
-            }
-
-            try (PrintWriter printWriter = new PrintWriter(new OutputStreamWriter(Files.newOutputStream(file.toPath()), StandardCharsets.UTF_8), true)) {
-                for (String newLine : newLines) {
-                    printWriter.write(newLine + '\n');
-                }
+            List<String> lines = Files.readAllLines(path).stream().map(line -> operator.apply(line) + '\n').collect(Collectors.toList());
+            if (!lines.isEmpty()) {
+                Files.write(path, lines);
             }
         } catch (final IOException ex) {
             ex.printStackTrace();

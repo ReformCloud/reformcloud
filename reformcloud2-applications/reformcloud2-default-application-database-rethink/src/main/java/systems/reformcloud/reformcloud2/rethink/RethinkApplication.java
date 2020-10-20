@@ -45,7 +45,7 @@ public class RethinkApplication extends Application {
         );
 
         this.before = ExecutorAPI.getInstance().getDatabaseProvider();
-        Path configPath = this.getDataFolder().toPath().resolve("config.json");
+        Path configPath = this.getDataDirectory().resolve("config.json");
         if (Files.notExists(configPath)) {
             new JsonConfiguration().add("config", new RethinkConfig("127.0.0.1", 3306, "cloud", "cloud", null)).write(configPath);
         }

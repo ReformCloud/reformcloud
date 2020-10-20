@@ -55,7 +55,7 @@ public class ReformCloudApplication extends Application {
             ex.printStackTrace();
         }
 
-        if (CloudFlareHelper.init(this.getDataFolder().getPath())) {
+        if (CloudFlareHelper.init(this.getDataDirectory().resolve("config.json"))) {
             System.err.println(LanguageManager.get("cloudflare-first-init"));
             return;
         }

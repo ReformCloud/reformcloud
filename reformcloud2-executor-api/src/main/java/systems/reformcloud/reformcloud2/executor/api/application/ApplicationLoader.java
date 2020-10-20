@@ -99,4 +99,11 @@ public interface ApplicationLoader {
     @NotNull
     @UnmodifiableView
     Collection<LoadedApplication> getApplications();
+
+    /**
+     * @return the folder from which the applications are loaded.
+     * @since 20. October 2020
+     */
+    @NotNull
+    Path getApplicationFolder();
 }

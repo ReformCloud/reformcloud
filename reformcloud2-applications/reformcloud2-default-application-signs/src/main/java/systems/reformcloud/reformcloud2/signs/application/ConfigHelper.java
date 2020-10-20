@@ -29,6 +29,7 @@ import systems.reformcloud.reformcloud2.signs.util.sign.config.SignConfig;
 import systems.reformcloud.reformcloud2.signs.util.sign.config.SignLayout;
 import systems.reformcloud.reformcloud2.signs.util.sign.config.SignSubLayout;
 
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -38,22 +39,19 @@ final class ConfigHelper {
         throw new UnsupportedOperationException();
     }
 
-    static SignConfig read(String path) {
-        return JsonConfiguration.read(path + "/layout.json").get("config", SignConfig.TYPE);
+    static SignConfig read(Path configFile) {
+        return JsonConfiguration.read(configFile).get("config", SignConfig.TYPE);
     }
 
-    static void createDefault(String path) {
-        SignConfig config = new SignConfig(
+    static void createDefault(Path configFile) {
+        new JsonConfiguration().add("config", new SignConfig(
             1,
             Collections.singletonList(createDefaultLayout()),
             false,
             "reformcloud.knockback.bypass",
             1.0D,
             0.8D
-        );
-        new JsonConfiguration()
-            .add("config", config)
-            .write(path + "/layout.json");
+        )).write(configFile);
     }
 
     private static SignLayout createDefaultLayout() {

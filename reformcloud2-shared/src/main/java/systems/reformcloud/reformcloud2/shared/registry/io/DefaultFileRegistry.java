@@ -30,7 +30,6 @@ import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConf
 import systems.reformcloud.reformcloud2.executor.api.io.IOUtils;
 import systems.reformcloud.reformcloud2.executor.api.registry.io.FileRegistry;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
@@ -44,17 +43,17 @@ import java.util.function.Function;
 
 public class DefaultFileRegistry implements FileRegistry {
 
-    private final String operatingFolder;
+    private final Path operatingFolder;
 
     public DefaultFileRegistry(String operatingFolder) {
-        this.operatingFolder = operatingFolder;
-        IOUtils.createDirectory(Paths.get(operatingFolder));
+        this.operatingFolder = Paths.get(operatingFolder);
+        IOUtils.createDirectory(this.operatingFolder);
     }
 
     @NotNull
     @Override
     public <T> T createKey(@NotNull String keyName, @NotNull T t) {
-        Path filePath = Paths.get(this.operatingFolder, keyName + ".json");
+        Path filePath = this.operatingFolder.resolve(keyName + ".json");
         if (Files.exists(filePath)) {
             return t;
         }
@@ -66,7 +65,7 @@ public class DefaultFileRegistry implements FileRegistry {
     @NotNull
     @Override
     public <T> Optional<T> getKey(@NotNull String keyName) {
-        Path filePath = Paths.get(this.operatingFolder, keyName + ".json");
+        Path filePath = this.operatingFolder.resolve(keyName + ".json");
         if (Files.notExists(filePath)) {
             return Optional.empty();
         }
@@ -77,12 +76,12 @@ public class DefaultFileRegistry implements FileRegistry {
 
     @Override
     public void deleteKey(@NotNull String key) {
-        IOUtils.deleteFile(new File(this.operatingFolder, key + ".json"));
+        IOUtils.deleteFile(this.operatingFolder.resolve(key + ".json"));
     }
 
     @Override
     public <T> void updateKey(@NotNull String key, @NotNull T newValue) {
-        Path filePath = Paths.get(this.operatingFolder, key + ".json");
+        Path filePath = this.operatingFolder.resolve(key + ".json");
         if (Files.notExists(filePath)) {
             return;
         }
@@ -95,7 +94,7 @@ public class DefaultFileRegistry implements FileRegistry {
     public <T> Collection<T> readKeys(@NotNull Function<JsonConfiguration, T> function,
                                       @NotNull Consumer<Path> failureHandler) {
         Collection<T> result = new CopyOnWriteArrayList<>();
-        try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(this.operatingFolder), path -> path.toString().endsWith(".json"))) {
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(this.operatingFolder, path -> path.toString().endsWith(".json"))) {
             for (Path path : stream) {
                 T t = function.apply(JsonConfiguration.read(path));
                 if (t == null) {

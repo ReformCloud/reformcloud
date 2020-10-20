@@ -51,7 +51,6 @@ import systems.reformcloud.reformcloud2.node.process.screen.ProcessScreenControl
 import systems.reformcloud.reformcloud2.protocol.api.NodeToApiRequestProcessInformationUpdate;
 import systems.reformcloud.reformcloud2.protocol.api.NodeToApiRequestProcessInformationUpdateResult;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -209,9 +208,9 @@ public class DefaultNodeLocalProcessWrapper extends DefaultNodeRemoteProcessWrap
             "-Dreformcloud.runner.version=" + System.getProperty("reformcloud.runner.version"),
             "-Dreformcloud.executor.type=3",
             "-Dreformcloud.lib.path=" + LIB_PATH,
-            "-Dreformcloud.process.path=" + new File("reformcloud/files/" + Version.format(
+            "-Dreformcloud.process.path=" + Paths.get("reformcloud/files", Version.format(
                 this.processInformation.getProcessDetail().getTemplate().getVersion()
-            )).getAbsolutePath()
+            )).toAbsolutePath().toString()
         ));
         this.processInformation.getProcessDetail().getTemplate().getRuntimeConfiguration().getSystemProperties().forEach(
             (key, value) -> command.add(String.format("-D%s=%s", key, value))

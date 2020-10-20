@@ -44,7 +44,6 @@ import systems.reformcloud.reformcloud2.executor.api.network.packet.PacketProvid
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Arrays;
 
 public class ReformCloudApplication extends Application {
@@ -68,8 +67,8 @@ public class ReformCloudApplication extends Application {
 
     @Override
     public void onEnable() {
-        final Path path = Paths.get(this.getDataFolder().getPath(), "config.json");
-        if (!Files.exists(path)) {
+        final Path path = this.getDataDirectory().resolve("config.json");
+        if (Files.notExists(path)) {
             IOUtils.createDirectory(path.getParent());
             new JsonConfiguration()
                 .add("config", new CommandsConfig(

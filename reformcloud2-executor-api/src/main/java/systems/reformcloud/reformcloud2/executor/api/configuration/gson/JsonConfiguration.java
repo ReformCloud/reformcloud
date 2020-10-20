@@ -134,7 +134,7 @@ public class JsonConfiguration implements Configurable<JsonElement, JsonConfigur
     }
 
     public static JsonConfiguration read(Path path) {
-        if (!Files.exists(path)) {
+        if (Files.notExists(path)) {
             return new JsonConfiguration();
         }
 
@@ -543,7 +543,7 @@ public class JsonConfiguration implements Configurable<JsonElement, JsonConfigur
 
     @Override
     public void write(Path path) {
-        IOUtils.deleteFile(path.toFile());
+        IOUtils.deleteFile(path);
         IOUtils.createFile(path);
 
         try (OutputStreamWriter outputStreamWriter = new OutputStreamWriter(Files.newOutputStream(path), StandardCharsets.UTF_8)) {

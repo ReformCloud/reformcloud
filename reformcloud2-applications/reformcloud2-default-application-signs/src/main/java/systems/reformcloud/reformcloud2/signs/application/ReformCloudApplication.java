@@ -31,7 +31,6 @@ import systems.reformcloud.reformcloud2.executor.api.application.api.Application
 import systems.reformcloud.reformcloud2.executor.api.application.updater.ApplicationUpdateRepository;
 import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
 import systems.reformcloud.reformcloud2.executor.api.event.EventManager;
-import systems.reformcloud.reformcloud2.executor.api.io.IOUtils;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.NetworkChannel;
 import systems.reformcloud.reformcloud2.executor.api.network.channel.manager.ChannelManager;
 import systems.reformcloud.reformcloud2.executor.api.network.packet.PacketProvider;
@@ -48,6 +47,8 @@ import systems.reformcloud.reformcloud2.signs.util.SignSystemAdapter;
 import systems.reformcloud.reformcloud2.signs.util.sign.CloudSign;
 import systems.reformcloud.reformcloud2.signs.util.sign.config.SignConfig;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -108,9 +109,9 @@ public class ReformCloudApplication extends Application {
 
     @Override
     public void onEnable() {
-        if (!this.getDataFolder().exists()) {
-            IOUtils.createDirectory(this.getDataFolder().toPath());
-            ConfigHelper.createDefault(this.getDataFolder().getPath());
+        Path configFile = this.getDataDirectory().resolve("layout.json");
+        if (Files.notExists(configFile)) {
+            ConfigHelper.createDefault(configFile);
         }
 
         ExecutorAPI.getInstance().getDatabaseProvider().createTable(SignSystemAdapter.table);
@@ -130,7 +131,7 @@ public class ReformCloudApplication extends Application {
         ));
 
         databaseEntry = ExecutorAPI.getInstance().getDatabaseProvider().getDatabase(SignSystemAdapter.table).get("signs", "").orElseGet(JsonConfiguration::new);
-        signConfig = ConfigHelper.read(this.getDataFolder().getPath());
+        signConfig = ConfigHelper.read(configFile);
 
         for (NetworkChannel registeredChannel : ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ChannelManager.class).getRegisteredChannels()) {
             if (registeredChannel.isAuthenticated()) {

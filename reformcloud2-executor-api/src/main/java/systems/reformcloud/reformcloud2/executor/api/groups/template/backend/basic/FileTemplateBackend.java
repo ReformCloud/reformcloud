@@ -32,7 +32,6 @@ import systems.reformcloud.reformcloud2.executor.api.io.IOUtils;
 import systems.reformcloud.reformcloud2.executor.api.task.Task;
 import systems.reformcloud.reformcloud2.executor.api.utility.list.Streams;
 
-import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -76,14 +75,14 @@ public class FileTemplateBackend implements TemplateBackend {
     @NotNull
     @Override
     public Task<Void> loadPath(@NotNull String path, @NotNull Path target) {
-        File from = new File(path);
-        if (!from.exists()) {
-            IOUtils.createDirectory(from.toPath());
+        Path localPath = Paths.get(path);
+        if (Files.notExists(localPath)) {
+            IOUtils.createDirectory(localPath);
             return Task.completedTask(null);
         }
 
-        if (from.isDirectory()) {
-            IOUtils.copyDirectory(from.toPath(), target);
+        if (Files.isDirectory(localPath)) {
+            IOUtils.copyDirectory(localPath, target);
         }
 
         return Task.completedTask(null);

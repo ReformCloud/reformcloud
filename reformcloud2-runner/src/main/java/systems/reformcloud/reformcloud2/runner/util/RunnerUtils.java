@@ -24,20 +24,22 @@
  */
 package systems.reformcloud.reformcloud2.runner.util;
 
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
+import java.util.stream.Collectors;
 
 public final class RunnerUtils {
 
@@ -56,7 +58,13 @@ public final class RunnerUtils {
     /**
      * The file where the reform script is located by default
      */
+    @Deprecated
+    @ApiStatus.ScheduledForRemoval(inVersion = "2.10.3")
     public static final File GLOBAL_SCRIPT_FILE = new File("global.reformscript");
+    /**
+     * The file where the reform script is located by default
+     */
+    public static final Path GLOBAL_REFORM_SCRIPT_FILE = Paths.get("global.reformscript");
     /**
      * The default discord invite for the reformcloud discord
      */
@@ -125,7 +133,10 @@ public final class RunnerUtils {
      *
      * @param from The location of the compiled file which should get copied
      * @param to   The target of the file which should get copied
+     * @deprecated Use {@link #copyCompiledFile(String, Path)} instead
      */
+    @Deprecated
+    @ApiStatus.ScheduledForRemoval(inVersion = "2.10.3")
     public static void copyCompiledFile(@NotNull String from, @NotNull File to) {
         copyCompiledFile(from, to.toPath());
     }
@@ -142,7 +153,7 @@ public final class RunnerUtils {
                 throw new RuntimeException("Unable to find compiled default reformscript. Please validate");
             }
 
-            if (to.getParent() != null && !Files.exists(to.getParent())) {
+            if (to.getParent() != null && Files.notExists(to.getParent())) {
                 Files.createDirectories(to.getParent());
             }
 
@@ -242,7 +253,7 @@ public final class RunnerUtils {
      */
     @Nullable
     public static Path findFile(@NotNull Path folderToSearch, @NotNull Predicate<Path> filter, @NotNull DirectoryStream.Filter<Path> pathFilter) {
-        if (!Files.exists(folderToSearch) || !Files.isDirectory(folderToSearch)) {
+        if (Files.notExists(folderToSearch) || !Files.isDirectory(folderToSearch)) {
             throw new RuntimeException("Tried to search in a folder which does not exists or is not a folder");
         }
 
@@ -280,7 +291,7 @@ public final class RunnerUtils {
      */
     public static void copy(@NotNull Path from, @NotNull Path to) {
         try {
-            if (to.getParent() != null && !Files.exists(to.getParent())) {
+            if (to.getParent() != null && Files.notExists(to.getParent())) {
                 Files.createDirectories(to.getParent());
             }
 
@@ -298,16 +309,9 @@ public final class RunnerUtils {
      */
     public static void rewriteFile(@NotNull Path path, @NotNull UnaryOperator<String> operator) {
         try {
-            List<String> list = Files.readAllLines(path);
-            List<String> newLine = new ArrayList<>();
-
-            list.forEach(s -> newLine.add(operator.apply(s)));
-
-            try (PrintWriter printWriter = new PrintWriter(new OutputStreamWriter(Files.newOutputStream(path), StandardCharsets.UTF_8), true)) {
-                newLine.forEach(s -> {
-                    printWriter.write(s + "\n");
-                    printWriter.flush();
-                });
+            List<String> lines = Files.readAllLines(path).stream().map(line -> operator.apply(line) + '\n').collect(Collectors.toList());
+            if (!lines.isEmpty()) {
+                Files.write(path, lines);
             }
         } catch (final IOException ex) {
             ex.printStackTrace();
