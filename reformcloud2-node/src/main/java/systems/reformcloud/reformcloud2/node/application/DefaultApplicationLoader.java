@@ -66,7 +66,7 @@ import java.util.stream.Collectors;
 
 public final class DefaultApplicationLoader implements ApplicationLoader {
 
-    private static final Path APPLICATION_DIRECTORY = Paths.get("reformcloud", "applications");
+    private static final Path APPLICATION_DIRECTORY = Paths.get(System.getProperty("systems.reformcloud.application-directory", "reformcloud/applications"));
 
     private final Map<String, Application> loadedApplications = new ConcurrentHashMap<>();
     private final Collection<ApplicationConfig> toLoad = new CopyOnWriteArrayList<>();
@@ -169,6 +169,11 @@ public final class DefaultApplicationLoader implements ApplicationLoader {
     @Override
     public @UnmodifiableView Collection<LoadedApplication> getApplications() {
         return Collections.unmodifiableCollection(this.loadedApplications.values().stream().map(Application::getApplication).collect(Collectors.toList()));
+    }
+
+    @Override
+    public @NotNull Path getApplicationFolder() {
+        return APPLICATION_DIRECTORY;
     }
 
     @Nullable

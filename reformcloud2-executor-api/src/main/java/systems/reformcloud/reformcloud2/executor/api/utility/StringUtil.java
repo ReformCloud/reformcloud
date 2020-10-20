@@ -31,7 +31,7 @@ import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.base.Conditions;
 import systems.reformcloud.reformcloud2.executor.api.utility.random.ThreadLocalFastRandom;
 
-import java.io.File;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Properties;
 import java.util.stream.IntStream;
@@ -40,7 +40,7 @@ public final class StringUtil {
 
     public static final String EMPTY = "";
     public static final String RUNNER_DOWNLOAD_URL = "https://internal.reformcloud.systems/runner.jar";
-    public static final String NULL_PATH = new File("reformcloud/.bin/dev/null").getAbsolutePath();
+    public static final String NULL_PATH = Paths.get("reformcloud/.bin/dev/null").toAbsolutePath().toString();
 
     private static final Character[] CHARACTERS = IntStream.range(48, 123).filter(i -> Character.isDigit(i) || Character.isLetter(i)).mapToObj(i -> (char) i).toArray(Character[]::new);
 

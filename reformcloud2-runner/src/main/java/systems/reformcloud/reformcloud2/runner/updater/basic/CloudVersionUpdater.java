@@ -28,13 +28,13 @@ import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.runner.updater.Updater;
 import systems.reformcloud.reformcloud2.runner.util.RunnerUtils;
 
-import java.io.File;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Properties;
 
 public final class CloudVersionUpdater implements Updater {
 
-    private final File globalReformScriptFile;
+    private final Path globalReformScriptFile;
     private boolean versionAvailable = false;
 
     /**
@@ -42,7 +42,7 @@ public final class CloudVersionUpdater implements Updater {
      *
      * @param globalReformScriptFile The location of the reform script
      */
-    public CloudVersionUpdater(@NotNull File globalReformScriptFile) {
+    public CloudVersionUpdater(@NotNull Path globalReformScriptFile) {
         this.globalReformScriptFile = globalReformScriptFile;
     }
 
@@ -85,7 +85,7 @@ public final class CloudVersionUpdater implements Updater {
     private void rewriteGlobalFile(@NotNull String currentVersion) {
         System.setProperty("reformcloud.runner.version", currentVersion);
 
-        RunnerUtils.rewriteFile(this.globalReformScriptFile.toPath(), s -> {
+        RunnerUtils.rewriteFile(this.globalReformScriptFile, s -> {
             if (s.startsWith("# VARIABLE reformcloud.runner.version=") || s.startsWith("VARIABLE reformcloud.runner.version=")) {
                 s = "VARIABLE reformcloud.runner.version=" + currentVersion;
             }

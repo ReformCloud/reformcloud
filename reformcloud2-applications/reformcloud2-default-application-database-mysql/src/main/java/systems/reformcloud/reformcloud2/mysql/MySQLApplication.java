@@ -45,7 +45,7 @@ public class MySQLApplication extends Application {
         );
 
         this.previous = ExecutorAPI.getInstance().getDatabaseProvider();
-        Path configPath = this.getDataFolder().toPath().resolve("config.json");
+        Path configPath = this.getDataDirectory().resolve("config.json");
         if (Files.notExists(configPath)) {
             new JsonConfiguration().add("config", new MySQLDatabaseConfig("127.0.0.1", 3306, "cloud", "cloud", "")).write(configPath);
         }

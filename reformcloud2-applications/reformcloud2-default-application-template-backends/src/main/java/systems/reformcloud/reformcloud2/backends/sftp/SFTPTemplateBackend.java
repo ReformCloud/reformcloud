@@ -65,14 +65,14 @@ public final class SFTPTemplateBackend implements TemplateBackend {
         this.ensureConnected();
     }
 
-    public static void load(String basePath) {
-        if (Files.notExists(Paths.get(basePath, "sftp.json"))) {
+    public static void load(Path configPath) {
+        if (Files.notExists(configPath)) {
             new JsonConfiguration().add("config", new SFTPConfig(
                 false, "127.0.0.1", 22, "rc", "password", "rc/templates"
-            )).write(Paths.get(basePath, "sftp.json"));
+            )).write(configPath);
         }
 
-        SFTPConfig config = JsonConfiguration.read(Paths.get(basePath, "sftp.json")).get("config", SFTPConfig.class);
+        SFTPConfig config = JsonConfiguration.read(configPath).get("config", SFTPConfig.class);
         if (config == null || !config.isEnabled()) {
             return;
         }

@@ -25,14 +25,12 @@
 package systems.reformcloud.reformcloud2.proxy.application;
 
 import systems.reformcloud.reformcloud2.executor.api.configuration.gson.JsonConfiguration;
-import systems.reformcloud.reformcloud2.executor.api.io.IOUtils;
 import systems.reformcloud.reformcloud2.proxy.ProxyConfiguration;
 import systems.reformcloud.reformcloud2.proxy.config.MotdConfiguration;
 import systems.reformcloud.reformcloud2.proxy.config.TabListConfiguration;
 
-import java.io.File;
 import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.util.Arrays;
 
 public final class ConfigHelper {
@@ -43,9 +41,8 @@ public final class ConfigHelper {
         throw new UnsupportedOperationException();
     }
 
-    public static void init(File app) {
-        if (!Files.exists(app.toPath()) || !Files.exists(Paths.get(app.toString(), "config.json"))) {
-            IOUtils.createDirectory(app.toPath());
+    public static void init(Path configFile) {
+        if (Files.notExists(configFile)) {
             new JsonConfiguration()
                 .add("config", new ProxyConfiguration(
                     Arrays.asList(
@@ -111,11 +108,10 @@ public final class ConfigHelper {
                         2
                     )
                 )
-                )).write(Paths.get(app.toString(), "config.json"));
+                )).write(configFile);
         }
 
-        proxyConfiguration = JsonConfiguration.read(Paths.get(app.toString(), "config.json"))
-            .get("config", ProxyConfiguration.TYPE);
+        proxyConfiguration = JsonConfiguration.read(configFile).get("config", ProxyConfiguration.TYPE);
     }
 
     public static ProxyConfiguration getProxyConfiguration() {

@@ -71,7 +71,7 @@ public final class NodeExecutorConfig {
 
     public void init() {
         this.createDirectories();
-        if (!Files.exists(NodeConfig.PATH)) {
+        if (Files.notExists(NodeConfig.PATH)) {
             AtomicReference<String> nodeName = new AtomicReference<>();
             AtomicReference<String> networkAddress = new AtomicReference<>();
             AtomicInteger networkPort = new AtomicInteger();
