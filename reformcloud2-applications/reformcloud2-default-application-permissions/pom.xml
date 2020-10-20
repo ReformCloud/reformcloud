@@ -111,6 +111,14 @@
             <scope>provided</scope>
         </dependency>
 
+        <!-- CloudBurst -->
+        <dependency>
+            <groupId>org.cloudburstmc</groupId>
+            <artifactId>cloudburst-server</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+
         <!-- sponge api -->
         <dependency>
             <groupId>org.spongepowered</groupId>
