@@ -267,7 +267,7 @@ public final class NodeExecutor extends ExecutorAPI {
         System.out.println(LanguageManager.get("application-stop-processes"));
         this.processProvider.closeNow(); // important to close the scheduler BEFORE the processes to prevent new processes to start
         System.out.println(LanguageManager.get("application-stop-remove-temp-dir"));
-        IOUtils.deleteDirectory(Paths.get("reformcloud/temp"));
+        IOUtils.deleteDirectorySilently(Paths.get("reformcloud/temp"));
 
         System.out.println(LanguageManager.get("application-stop-finished"));
 

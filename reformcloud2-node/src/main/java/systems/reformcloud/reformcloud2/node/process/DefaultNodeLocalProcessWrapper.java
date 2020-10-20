@@ -276,7 +276,7 @@ public class DefaultNodeLocalProcessWrapper extends DefaultNodeRemoteProcessWrap
             }
 
             if (!this.processInformation.getProcessGroup().isStaticProcess()) {
-                IOUtils.deleteDirectory(this.path);
+                IOUtils.deleteDirectorySilently(this.path);
             }
 
             ExecutorAPI.getInstance().getServiceRegistry().getProviderUnchecked(ClusterManager.class).publishProcessUnregister(this.processInformation);

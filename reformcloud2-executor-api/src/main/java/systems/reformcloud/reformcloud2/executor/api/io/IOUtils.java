@@ -112,6 +112,21 @@ public final class IOUtils {
     }
 
     public static void deleteDirectory(Path dirPath) {
+        try {
+            doDeleteDirectory(dirPath);
+        } catch (IOException exception) {
+            exception.printStackTrace();
+        }
+    }
+
+    public static void deleteDirectorySilently(Path dirPath) {
+        try {
+            doDeleteDirectory(dirPath);
+        } catch (IOException ignored) {
+        }
+    }
+
+    private static void doDeleteDirectory(Path dirPath) throws IOException {
         try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(dirPath)) {
             for (Path path : directoryStream) {
                 if (Files.isDirectory(path)) {
@@ -120,11 +135,9 @@ public final class IOUtils {
                     deleteFile(path);
                 }
             }
-        } catch (IOException exception) {
-            exception.printStackTrace();
         }
 
-        deleteFile(dirPath);
+        Files.deleteIfExists(dirPath);
     }
 
     public static void recreateDirectory(Path path) {
