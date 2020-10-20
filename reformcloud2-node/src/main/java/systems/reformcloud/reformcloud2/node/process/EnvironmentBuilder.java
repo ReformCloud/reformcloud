@@ -247,9 +247,9 @@ final class EnvironmentBuilder {
 
     private static void rewriteSpongeConfig(@NotNull DefaultNodeLocalProcessWrapper runningProcess) {
         rewriteFile(runningProcess.getPath().resolve("config/sponge/global.conf"), s -> {
-            if (s.startsWith("ip-forwarding=")) {
+            if (s.trim().startsWith("ip-forwarding=")) {
                 s = "ip-forwarding=true";
-            } else if (s.startsWith("bungeecord=")) {
+            } else if (s.trim().startsWith("bungeecord=")) {
                 s = "bungeecord=true";
             }
 
@@ -265,14 +265,14 @@ final class EnvironmentBuilder {
 
     private static void rewriteBungeeConfig(@NotNull DefaultNodeLocalProcessWrapper runningProcess) {
         rewriteFile(runningProcess.getPath().resolve("config.yml"), s -> {
-            if (s.startsWith("  host:")) {
-                s = "  host: '" + formatHost(runningProcess) + "'";
-            } else if (s.startsWith("ip_forward:")) {
+            if (s.trim().startsWith("host:")) {
+                s = "    host: '" + formatHost(runningProcess) + "'";
+            } else if (s.trim().startsWith("ip_forward:")) {
                 s = "ip_forward: true";
-            } else if (s.startsWith("- query_port: ")) {
-                s = "- query_port: " + runningProcess.getProcessInformation().getNetworkInfo().getPort();
-            } else if (s.startsWith("  max_players: ") && runningProcess.getProcessInformation().getProcessDetail().getMaxPlayers() >= 0) {
-                s = "  max_players: " + runningProcess.getProcessInformation().getProcessDetail().getMaxPlayers();
+            } else if (s.trim().startsWith("- query_port:")) {
+                s = "  - query_port: " + runningProcess.getProcessInformation().getNetworkInfo().getPort();
+            } else if (s.trim().startsWith("max_players:") && runningProcess.getProcessInformation().getProcessDetail().getMaxPlayers() >= 0) {
+                s = "    max_players: " + runningProcess.getProcessInformation().getProcessDetail().getMaxPlayers();
             }
 
             return s;
@@ -287,18 +287,18 @@ final class EnvironmentBuilder {
 
     private static void rewriteWaterDogConfig(@NotNull DefaultNodeLocalProcessWrapper runningProcess) {
         rewriteFile(runningProcess.getPath().resolve("config.yml"), s -> {
-            if (s.startsWith("  host:")) {
-                s = "  host: '" + formatHost(runningProcess) + "'";
-            } else if (s.startsWith("ip_forward:")) {
+            if (s.trim().startsWith("host:")) {
+                s = "    host: '" + formatHost(runningProcess) + "'";
+            } else if (s.trim().startsWith("ip_forward:")) {
                 s = "ip_forward: true";
-            } else if (s.startsWith("use_xuid_for_uuid:")) {
+            } else if (s.trim().startsWith("use_xuid_for_uuid:")) {
                 s = "use_xuid_for_uuid: true";
-            } else if (s.startsWith("  raknet:")) {
-                s = "  raknet: " + runningProcess.getProcessInformation().getProcessDetail().getTemplate().getVersion().equals(Version.WATERDOG_PE);
-            } else if (s.startsWith("- query_port:")) {
-                s = "- query_port: " + runningProcess.getProcessInformation().getNetworkInfo().getPort();
-            } else if (s.startsWith("  max_players: ") && runningProcess.getProcessInformation().getProcessDetail().getMaxPlayers() >= 0) {
-                s = "  max_players: " + runningProcess.getProcessInformation().getProcessDetail().getMaxPlayers();
+            } else if (s.trim().startsWith("raknet:")) {
+                s = "    raknet: " + runningProcess.getProcessInformation().getProcessDetail().getTemplate().getVersion().equals(Version.WATERDOG_PE);
+            } else if (s.trim().startsWith("- query_port:")) {
+                s = "  - query_port: " + runningProcess.getProcessInformation().getNetworkInfo().getPort();
+            } else if (s.trim().startsWith("max_players:") && runningProcess.getProcessInformation().getProcessDetail().getMaxPlayers() >= 0) {
+                s = "    max_players: " + runningProcess.getProcessInformation().getProcessDetail().getMaxPlayers();
             }
 
             return s;
@@ -308,11 +308,11 @@ final class EnvironmentBuilder {
     //Velocity
     private static void rewriteVelocityConfig(@NotNull DefaultNodeLocalProcessWrapper runningProcess) {
         rewriteFile(runningProcess.getPath().resolve("velocity.toml"), s -> {
-            if (s.startsWith("bind")) {
+            if (s.trim().startsWith("bind")) {
                 s = "bind = \"" + formatHost(runningProcess) + "\"";
-            } else if (s.startsWith("show-max-players") && runningProcess.getProcessInformation().getProcessDetail().getMaxPlayers() >= 0) {
+            } else if (s.trim().startsWith("show-max-players") && runningProcess.getProcessInformation().getProcessDetail().getMaxPlayers() >= 0) {
                 s = "show-max-players = " + runningProcess.getProcessInformation().getProcessDetail().getMaxPlayers();
-            } else if (s.startsWith("player-info-forwarding-mode")) {
+            } else if (s.trim().startsWith("player-info-forwarding-mode")) {
                 s = "player-info-forwarding-mode = \"LEGACY\"";
             }
 
@@ -328,15 +328,15 @@ final class EnvironmentBuilder {
 
     private static void rewriteGlowstoneConfig(@NotNull DefaultNodeLocalProcessWrapper runningProcess) {
         rewriteFile(runningProcess.getPath().resolve("config/glowstone.yml"), s -> {
-            if (s.startsWith("  ip: ")) {
+            if (s.trim().startsWith("ip:")) {
                 s = "  ip: '" + runningProcess.getProcessInformation().getNetworkInfo().getHostPlain() + "'";
-            } else if (s.startsWith("  port: ")) {
+            } else if (s.trim().startsWith("port:")) {
                 s = "  port: " + runningProcess.getProcessInformation().getNetworkInfo().getPort();
-            } else if (s.startsWith("  online-mode: ")) {
+            } else if (s.trim().startsWith("online-mode:")) {
                 s = "  online-mode: false";
-            } else if (s.startsWith("  proxy-support: ")) {
+            } else if (s.trim().startsWith("proxy-support:")) {
                 s = "  proxy-support: true";
-            } else if (s.startsWith("  max-players: ") && runningProcess.getProcessInformation().getProcessDetail().getMaxPlayers() >= 0) {
+            } else if (s.trim().startsWith("max-players:") && runningProcess.getProcessInformation().getProcessDetail().getMaxPlayers() >= 0) {
                 s = "  max-players: " + runningProcess.getProcessInformation().getProcessDetail().getMaxPlayers();
             }
 
@@ -357,7 +357,7 @@ final class EnvironmentBuilder {
 
     private static void rewriteFile(@NotNull Path path, UnaryOperator<String> operator) {
         try {
-            List<String> lines = Files.readAllLines(path).stream().map(line -> operator.apply(line) + '\n').collect(Collectors.toList());
+            List<String> lines = Files.readAllLines(path).stream().map(operator::apply).collect(Collectors.toList());
             if (!lines.isEmpty()) {
                 Files.write(path, lines);
             }

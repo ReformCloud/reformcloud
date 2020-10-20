@@ -309,7 +309,7 @@ public final class RunnerUtils {
      */
     public static void rewriteFile(@NotNull Path path, @NotNull UnaryOperator<String> operator) {
         try {
-            List<String> lines = Files.readAllLines(path).stream().map(line -> operator.apply(line) + '\n').collect(Collectors.toList());
+            List<String> lines = Files.readAllLines(path).stream().map(operator::apply).collect(Collectors.toList());
             if (!lines.isEmpty()) {
                 Files.write(path, lines);
             }
