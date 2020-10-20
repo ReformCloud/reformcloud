@@ -93,7 +93,7 @@ public final class IOUtils {
 
     public static void doCopy(String from, Path target) {
         try (InputStream inputStream = Files.newInputStream(Paths.get(from))) {
-            doCopy(inputStream, target);
+            doCopy(inputStream, target, StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException exception) {
             exception.printStackTrace();
         }
