@@ -25,6 +25,7 @@
 package systems.reformcloud.reformcloud2.permissions.nukkit.permissible;
 
 import cn.nukkit.Player;
+import cn.nukkit.Server;
 import cn.nukkit.permission.PermissibleBase;
 import cn.nukkit.permission.Permission;
 import cn.nukkit.permission.PermissionAttachment;
@@ -59,22 +60,26 @@ public class DefaultPermissible extends PermissibleBase {
 
     @Override
     public boolean isPermissionSet(String name) {
-        return this.has(name);
+        return this.hasPermission(name);
     }
 
     @Override
     public boolean isPermissionSet(Permission perm) {
-        return this.has(perm.getName());
+        return this.hasPermission(perm.getName());
     }
 
     @Override
     public boolean hasPermission(String name) {
+        if (name.equalsIgnoreCase(Server.BROADCAST_CHANNEL_USERS) || name.equalsIgnoreCase(Server.BROADCAST_CHANNEL_ADMINISTRATIVE)) {
+            return true;
+        }
+
         return this.has(name);
     }
 
     @Override
     public boolean hasPermission(Permission perm) {
-        return this.has(perm.getName());
+        return this.hasPermission(perm.getName());
     }
 
     @Override

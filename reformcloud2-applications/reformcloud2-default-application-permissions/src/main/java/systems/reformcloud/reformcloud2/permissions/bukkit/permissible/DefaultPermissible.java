@@ -24,6 +24,7 @@
  */
 package systems.reformcloud.reformcloud2.permissions.bukkit.permissible;
 
+import org.bukkit.Server;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.PermissibleBase;
 import org.bukkit.permissions.Permission;
@@ -59,22 +60,26 @@ public class DefaultPermissible extends PermissibleBase {
 
     @Override
     public boolean isPermissionSet(@NotNull String name) {
-        return this.has(name);
+        return this.hasPermission(name);
     }
 
     @Override
     public boolean isPermissionSet(@NotNull Permission perm) {
-        return this.has(perm.getName());
+        return this.hasPermission(perm.getName());
     }
 
     @Override
     public boolean hasPermission(@NotNull String name) {
+        if (name.equalsIgnoreCase(Server.BROADCAST_CHANNEL_USERS) || name.equalsIgnoreCase(Server.BROADCAST_CHANNEL_ADMINISTRATIVE)) {
+            return true;
+        }
+
         return this.has(name);
     }
 
     @Override
     public boolean hasPermission(@NotNull Permission perm) {
-        return this.has(perm.getName());
+        return this.hasPermission(perm.getName());
     }
 
     @Override
