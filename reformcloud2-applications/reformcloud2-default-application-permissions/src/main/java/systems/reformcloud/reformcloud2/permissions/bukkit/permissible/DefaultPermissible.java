@@ -31,21 +31,17 @@ import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
-import systems.refomcloud.reformcloud2.embedded.Embedded;
-import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.permissions.PermissionManagement;
-import systems.reformcloud.reformcloud2.permissions.nodes.NodeGroup;
-import systems.reformcloud.reformcloud2.permissions.nodes.PermissionNode;
-import systems.reformcloud.reformcloud2.permissions.objects.group.PermissionGroup;
 import systems.reformcloud.reformcloud2.permissions.objects.user.PermissionUser;
+import systems.reformcloud.reformcloud2.permissions.util.PermissionPluginUtil;
 
-import java.util.*;
-import java.util.stream.Stream;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class DefaultPermissible extends PermissibleBase {
 
     private final UUID uuid;
-    private Set<PermissionAttachmentInfo> perms;
 
     public DefaultPermissible(Player player) {
         super(player);
@@ -118,51 +114,10 @@ public class DefaultPermissible extends PermissibleBase {
     @Override
     @NotNull
     public Set<PermissionAttachmentInfo> getEffectivePermissions() {
-        this.perms = new HashSet<>();
-
-        final PermissionUser permissionUser = PermissionManagement.getInstance().loadUser(this.uuid);
-        final ProcessInformation current = Embedded.getInstance().getCurrentProcessInformation();
-
-        permissionUser.getPermissionNodes().stream().filter(PermissionNode::isValid)
-            .forEach(e -> this.perms.add(new PermissionAttachmentInfo(
-                this,
-                e.getActualPermission(),
-                null,
-                e.isSet()
-            )));
-        permissionUser
-            .getGroups()
+        return PermissionPluginUtil.collectPermissionsOfUser(PermissionManagement.getInstance().loadUser(this.uuid))
             .stream()
-            .filter(NodeGroup::isValid)
-            .map(e -> PermissionManagement.getInstance().getPermissionGroup(e.getGroupName()).orElse(null))
-            .filter(Objects::nonNull)
-            .flatMap(e -> {
-                Stream.Builder<PermissionGroup> stream = Stream.<PermissionGroup>builder().add(e);
-                e.getSubGroups()
-                    .stream()
-                    .map(g -> PermissionManagement.getInstance().getPermissionGroup(g).orElse(null))
-                    .filter(Objects::nonNull)
-                    .forEach(stream);
-                return stream.build();
-            }).forEach(g -> {
-            g.getPermissionNodes().stream().filter(PermissionNode::isValid).forEach(e -> this.perms.add(new PermissionAttachmentInfo(
-                this,
-                e.getActualPermission(),
-                null,
-                e.isSet()
-            )));
-            Collection<PermissionNode> nodes = g.getPerGroupPermissions().get(current.getProcessGroup().getName());
-            if (nodes != null) {
-                nodes.stream().filter(PermissionNode::isValid).forEach(e -> this.perms.add(new PermissionAttachmentInfo(
-                    this,
-                    e.getActualPermission(),
-                    null,
-                    e.isSet()
-                )));
-            }
-        });
-
-        return this.perms;
+            .map(node -> new PermissionAttachmentInfo(this, node.getActualPermission(), null, node.isSet()))
+            .collect(Collectors.toSet());
     }
 
     private boolean has(String name) {

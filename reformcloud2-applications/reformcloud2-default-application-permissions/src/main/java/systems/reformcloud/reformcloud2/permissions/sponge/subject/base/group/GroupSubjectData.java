@@ -29,14 +29,14 @@ import org.jetbrains.annotations.Nullable;
 import org.spongepowered.api.service.context.Context;
 import org.spongepowered.api.service.permission.SubjectData;
 import systems.reformcloud.reformcloud2.permissions.PermissionManagement;
-import systems.reformcloud.reformcloud2.permissions.objects.group.PermissionGroup;
+import systems.reformcloud.reformcloud2.permissions.nodes.PermissionNode;
 import systems.reformcloud.reformcloud2.permissions.sponge.subject.AbstractSpongeSubjectData;
-import systems.reformcloud.reformcloud2.permissions.sponge.subject.util.SubjectGroupPermissionCalculator;
+import systems.reformcloud.reformcloud2.permissions.util.PermissionPluginUtil;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class GroupSubjectData extends AbstractSpongeSubjectData {
 
@@ -58,19 +58,12 @@ public class GroupSubjectData extends AbstractSpongeSubjectData {
         return this.getPermissions();
     }
 
+    @NotNull
     private Map<String, Boolean> getPermissions() {
-        return PermissionManagement.getInstance().getPermissionGroup(this.group).map(permissionGroup -> {
-            Map<String, Boolean> out = new HashMap<>(this.getPermissionsOf(permissionGroup));
-            for (String sub : permissionGroup.getSubGroups()) {
-                PermissionManagement.getInstance().getPermissionGroup(sub)
-                    .ifPresent(subGroup -> out.putAll(this.getPermissionsOf(subGroup)));
-            }
-
-            return out;
-        }).orElseGet(HashMap::new);
-    }
-
-    private Map<String, Boolean> getPermissionsOf(PermissionGroup group) {
-        return SubjectGroupPermissionCalculator.getPermissionsOf(group);
+        return PermissionManagement.getInstance().getPermissionGroup(this.group)
+            .map(PermissionPluginUtil::collectPermissionsOfGroup)
+            .orElseGet(Collections::emptyList)
+            .stream()
+            .collect(Collectors.toMap(PermissionNode::getActualPermission, PermissionNode::isSet));
     }
 }

@@ -24,6 +24,7 @@
  */
 package systems.reformcloud.reformcloud2.permissions.sponge.subject.util;
 
+import org.jetbrains.annotations.ApiStatus;
 import systems.refomcloud.reformcloud2.embedded.Embedded;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.permissions.nodes.PermissionNode;
@@ -33,6 +34,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+@Deprecated
+@ApiStatus.ScheduledForRemoval(inVersion = "2.10.3")
 public final class SubjectGroupPermissionCalculator {
 
     private SubjectGroupPermissionCalculator() {
