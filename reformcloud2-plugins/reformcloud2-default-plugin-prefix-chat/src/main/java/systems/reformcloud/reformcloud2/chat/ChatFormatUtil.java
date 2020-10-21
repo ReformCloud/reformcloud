@@ -24,60 +24,44 @@
  */
 package systems.reformcloud.reformcloud2.chat;
 
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.permissions.PermissionManagement;
 import systems.reformcloud.reformcloud2.permissions.objects.group.PermissionGroup;
 
-public class ReformCloudChatPlugin extends JavaPlugin implements Listener {
+import java.util.UUID;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
-    private String chatFormat;
+final class ChatFormatUtil {
 
-    @Override
-    public void onEnable() {
-        if (Bukkit.getPluginManager().getPlugin("ReformCloud2BukkitPermissions") == null) {
-            System.err.println("[Chat] Unable to find permission plugin, do not load permission listeners");
-            return;
-        }
-
-        super.getConfig().options().copyDefaults(true);
-        super.saveConfig();
-        this.chatFormat = super.getConfig().getString("format", "%display%%name% &7➤ &f%message%");
-
-        Bukkit.getPluginManager().registerEvents(this, this);
+    private ChatFormatUtil() {
+        throw new UnsupportedOperationException();
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void handle(final @NotNull AsyncPlayerChatEvent event) {
-        PermissionManagement.getInstance().getExistingUser(event.getPlayer().getUniqueId()).ifPresent(user -> {
-            String message = event.getMessage().replace("%", "%%");
-            if (ChatColor.stripColor(message).trim().isEmpty()) {
-                event.setCancelled(true);
-                return;
-            }
-
-            if (event.getPlayer().hasPermission("reformcloud.chat.coloured")) {
-                message = ChatColor.translateAlternateColorCodes('&', message);
+    @Nullable
+    static String buildFormat(@NotNull UUID playerUniqueId, @NotNull String format, @NotNull String message,
+                              @NotNull String playerName, @NotNull String playerDisplayName,
+                              @NotNull Function<String, Boolean> permissionChecker, @NotNull BiFunction<Character, String, String> colourReplacer) {
+        return PermissionManagement.getInstance().getExistingUser(playerUniqueId).map(user -> {
+            String usableMessage = permissionChecker.apply("reformcloud.chat.coloured")
+                ? colourReplacer.apply('&', message.replace("%", "%%"))
+                : message.replace("%", "%%");
+            if (usableMessage.trim().isEmpty()) {
+                return null;
             }
 
             PermissionGroup permissionGroup = user.getHighestPermissionGroup().orElse(null);
-            String finalFormat = this.chatFormat
-                .replace("%name%", event.getPlayer().getName())
-                .replace("%player_display%", event.getPlayer().getDisplayName())
+            return format
+                .replace("%name%", playerName)
+                .replace("%player_display%", playerDisplayName)
                 .replace("%group%", permissionGroup == null ? "" : permissionGroup.getName())
                 .replace("%priority%", permissionGroup == null ? "" : Integer.toString(permissionGroup.getPriority()))
                 .replace("%prefix%", user.getPrefix().orElse(""))
                 .replace("%suffix%", user.getSuffix().orElse(""))
                 .replace("%display%", user.getDisplay().orElse(""))
-                .replace("%colour%", user.getColour().orElse(""));
-            finalFormat = ChatColor.translateAlternateColorCodes('&', finalFormat);
-            event.setFormat(finalFormat.replace("%message%", message));
-        });
+                .replace("%colour%", user.getColour().orElse(""))
+                .replace("%message%", message);
+        }).orElse(null);
     }
 }
