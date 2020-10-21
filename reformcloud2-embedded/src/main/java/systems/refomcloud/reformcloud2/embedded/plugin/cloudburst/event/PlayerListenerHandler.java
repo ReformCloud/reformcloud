@@ -32,7 +32,6 @@ import org.cloudburstmc.server.event.player.PlayerQuitEvent;
 import org.jetbrains.annotations.NotNull;
 import systems.refomcloud.reformcloud2.embedded.Embedded;
 import systems.refomcloud.reformcloud2.embedded.plugin.cloudburst.CloudBurstExecutor;
-import systems.refomcloud.reformcloud2.embedded.plugin.nukkit.NukkitExecutor;
 import systems.refomcloud.reformcloud2.embedded.shared.SharedJoinAllowChecker;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessState;
@@ -44,15 +43,15 @@ public final class PlayerListenerHandler {
     public void handle(final @NotNull PlayerLoginEvent event) {
         if (!Embedded.getInstance().isReady()) {
             event.setCancelled(true);
-            event.setKickMessage(NukkitExecutor.getInstance().getIngameMessages().format(
-                NukkitExecutor.getInstance().getIngameMessages().getProcessNotReadyToAcceptPlayersMessage()
+            event.setKickMessage(CloudBurstExecutor.getInstance().getIngameMessages().format(
+                CloudBurstExecutor.getInstance().getIngameMessages().getProcessNotReadyToAcceptPlayersMessage()
             ));
             return;
         }
 
         Duo<Boolean, String> checked = SharedJoinAllowChecker.checkIfConnectAllowed(
             event.getPlayer()::hasPermission,
-            NukkitExecutor.getInstance().getIngameMessages(),
+            CloudBurstExecutor.getInstance().getIngameMessages(),
             null,
             event.getPlayer().getServerId(),
             event.getPlayer().getName()

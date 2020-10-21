@@ -130,7 +130,7 @@ final class EnvironmentBuilder {
             IOUtils.doInternalCopy(EnvironmentBuilder.class.getClassLoader(), "files/mcpe/nukkit/nukkit.yml", runningProcess.getPath() + "/nukkit.yml");
         } else if (runningProcess.getProcessInformation().getProcessDetail().getTemplate().getVersion().equals(Version.CLOUDBURST)) {
             IOUtils.doInternalCopy(EnvironmentBuilder.class.getClassLoader(), "files/mcpe/cloudburst/server.properties", runningProcess.getPath() + "/server.properties");
-            IOUtils.doInternalCopy(EnvironmentBuilder.class.getClassLoader(), "files/mcpe/cloudburst/nukkit.yml", runningProcess.getPath() + "/nukkit.yml");
+            IOUtils.doInternalCopy(EnvironmentBuilder.class.getClassLoader(), "files/mcpe/cloudburst/cloudburst.yml", runningProcess.getPath() + "/cloudburst.yml");
         }
 
         if (isLogicallyGlowstone(runningProcess)) {

@@ -16,6 +16,8 @@ settings:
   # Number of asynchronous workers
   # If set to auto, it'll try to detect the number of cores (and at least 4)
   async-workers: auto
+  # Attempt to port forward on the gateway using UPnP
+  upnp: false
 
 network:
   # Threshold for batching packets, in bytes. Only these packets will be compressed
@@ -54,7 +56,7 @@ timings:
   privacy: false
   # Settings sections to ignore. These sections won't be sent to Aikar's Timing parser
   # Example formats:
-  ignore: []
+  ignore: [ ]
 
 level-settings:
   # The default format that levels will use when created
@@ -120,8 +122,8 @@ aliases:
 # These settings will override the generator set in server.properties and allows loading multiple levels
 worlds:
   world:
-    generator: nukkitx:standard
+    generator: cloudburst:standard
     options: overworld
   nether:
-    generator: nukkitx:standard
+    generator: cloudburst:standard
     options: nether
