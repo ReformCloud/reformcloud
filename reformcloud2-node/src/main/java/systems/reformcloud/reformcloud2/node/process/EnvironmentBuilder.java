@@ -125,6 +125,14 @@ final class EnvironmentBuilder {
             IOUtils.copyDirectory(targetDestination.resolve("mods"), runningProcess.getPath().resolve("mods"));
         }
 
+        if (runningProcess.getProcessInformation().getProcessDetail().getTemplate().getVersion().equals(Version.NUKKIT_X)) {
+            IOUtils.doInternalCopy(EnvironmentBuilder.class.getClassLoader(), "files/mcpe/nukkit/server.properties", runningProcess.getPath() + "/server.properties");
+            IOUtils.doInternalCopy(EnvironmentBuilder.class.getClassLoader(), "files/mcpe/nukkit/nukkit.yml", runningProcess.getPath() + "/nukkit.yml");
+        } else if (runningProcess.getProcessInformation().getProcessDetail().getTemplate().getVersion().equals(Version.CLOUDBURST)) {
+            IOUtils.doInternalCopy(EnvironmentBuilder.class.getClassLoader(), "files/mcpe/cloudburst/server.properties", runningProcess.getPath() + "/server.properties");
+            IOUtils.doInternalCopy(EnvironmentBuilder.class.getClassLoader(), "files/mcpe/cloudburst/cloudburst.yml", runningProcess.getPath() + "/cloudburst.yml");
+        }
+
         if (isLogicallyGlowstone(runningProcess)) {
             IOUtils.createDirectory(Paths.get(runningProcess.getPath() + "/config"));
             IOUtils.doInternalCopy(EnvironmentBuilder.class.getClassLoader(), "files/java/glowstone/glowstone.yml", runningProcess.getPath() + "/config/glowstone.yml");
@@ -137,9 +145,8 @@ final class EnvironmentBuilder {
             IOUtils.createDirectory(Paths.get(runningProcess.getPath() + "/config/sponge"));
             IOUtils.doInternalCopy(EnvironmentBuilder.class.getClassLoader(), "files/java/sponge/forge/global.conf", runningProcess.getPath() + "/config/sponge/global.conf");
             rewriteSpongeConfig(runningProcess);
-        } else if (runningProcess.getProcessInformation().getProcessDetail().getTemplate().getVersion().equals(Version.NUKKIT_X)) {
-            IOUtils.doInternalCopy(EnvironmentBuilder.class.getClassLoader(), "files/mcpe/nukkit/server.properties", runningProcess.getPath() + "/server.properties");
-            IOUtils.doInternalCopy(EnvironmentBuilder.class.getClassLoader(), "files/mcpe/nukkit/nukkit.yml", runningProcess.getPath() + "/nukkit.yml");
+        } else if (runningProcess.getProcessInformation().getProcessDetail().getTemplate().getVersion().equals(Version.NUKKIT_X)
+            || runningProcess.getProcessInformation().getProcessDetail().getTemplate().getVersion().equals(Version.CLOUDBURST)) {
             Properties properties = new Properties();
             try (InputStream inputStream = Files.newInputStream(Paths.get(runningProcess.getPath() + "/server.properties"))) {
                 properties.load(inputStream);

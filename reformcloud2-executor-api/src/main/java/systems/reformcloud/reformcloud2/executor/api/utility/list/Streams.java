@@ -456,4 +456,9 @@ public final class Streams {
 
         return false;
     }
+
+    @NotNull
+    public static <T> Predicate<T> negate(@NotNull Predicate<T> predicate) {
+        return predicate.negate();
+    }
 }

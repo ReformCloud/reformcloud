@@ -1,0 +1,14 @@
+name: 'ReformCloud2Chat'
+author: 'derklaro'
+version: '2'
+main: systems.reformcloud.reformcloud2.chat.NukkitChatPlugin
+api: [ '1.0.0' ]
+
+load: STARTUP
+
+softdepend:
+  - ReformCloud2NukkitPermissions
+
+# Additional
+website: 'https://reformcloud.systems'
+description: 'The reformcloud permission plugin'

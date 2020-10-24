@@ -454,7 +454,7 @@ public final class NodeExecutor extends ExecutorAPI {
 
     private void loadCommands() {
         this.serviceRegistry.getProviderUnchecked(CommandManager.class)
-            .registerCommand(new CommandProcess(), "Management of local and remote processes", "p", "process", "sever", "proxy")
+            .registerCommand(new CommandProcess(), "Management of local and remote processes", "p", "process", "server", "proxy")
             .registerCommand(new CommandCluster(), "Management of nodes in the cluster", "clu", "cluster", "c")
             .registerCommand(new CommandPlayers(), "Management of players on processes", "pl", "players")
             .registerCommand(new CommandGroup(), "Administration of Main/Sub groups", "g", "group", "groups")

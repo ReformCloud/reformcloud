@@ -35,6 +35,7 @@ import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -127,17 +128,36 @@ public final class IOUtils {
     }
 
     private static void doDeleteDirectory(Path dirPath) throws IOException {
-        try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(dirPath)) {
+        Collection<IOException> exceptions = new ArrayList<>();
+        deleteDirectoryChecked(dirPath, exceptions);
+
+        if (!exceptions.isEmpty()) {
+            throw new IOException("Caught " + exceptions.size() + " exceptions: " + exceptions.stream().map(IOException::getMessage).collect(Collectors.joining(", ")));
+        }
+    }
+
+    private static void deleteDirectoryChecked(Path dir, Collection<IOException> exceptions) {
+        try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(dir)) {
             for (Path path : directoryStream) {
                 if (Files.isDirectory(path)) {
-                    doDeleteDirectory(path);
+                    deleteDirectoryChecked(path, exceptions);
                 } else {
-                    deleteFile(path);
+                    try {
+                        Files.delete(path);
+                    } catch (IOException exception) {
+                        exceptions.add(exception);
+                    }
                 }
             }
+        } catch (IOException exception) {
+            exceptions.add(exception);
         }
 
-        Files.deleteIfExists(dirPath);
+        try {
+            Files.delete(dir);
+        } catch (IOException exception) {
+            exceptions.add(exception);
+        }
     }
 
     public static void recreateDirectory(Path path) {

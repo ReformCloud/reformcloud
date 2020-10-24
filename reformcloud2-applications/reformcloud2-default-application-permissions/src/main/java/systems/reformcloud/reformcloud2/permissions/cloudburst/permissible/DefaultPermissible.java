@@ -22,21 +22,21 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.permissions.bukkit.permissible;
+package systems.reformcloud.reformcloud2.permissions.cloudburst.permissible;
 
-import org.bukkit.Server;
-import org.bukkit.entity.Player;
-import org.bukkit.permissions.PermissibleBase;
-import org.bukkit.permissions.Permission;
-import org.bukkit.permissions.PermissionAttachment;
-import org.bukkit.permissions.PermissionAttachmentInfo;
-import org.bukkit.plugin.Plugin;
-import org.jetbrains.annotations.NotNull;
+import org.cloudburstmc.server.Server;
+import org.cloudburstmc.server.permission.PermissibleBase;
+import org.cloudburstmc.server.permission.Permission;
+import org.cloudburstmc.server.permission.PermissionAttachment;
+import org.cloudburstmc.server.permission.PermissionAttachmentInfo;
+import org.cloudburstmc.server.player.Player;
+import org.cloudburstmc.server.plugin.PluginContainer;
 import systems.reformcloud.reformcloud2.permissions.PermissionManagement;
+import systems.reformcloud.reformcloud2.permissions.nodes.PermissionNode;
 import systems.reformcloud.reformcloud2.permissions.objects.user.PermissionUser;
 import systems.reformcloud.reformcloud2.permissions.util.PermissionPluginUtil;
 
-import java.util.Set;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -46,7 +46,7 @@ public class DefaultPermissible extends PermissibleBase {
 
     public DefaultPermissible(Player player) {
         super(player);
-        this.uuid = player.getUniqueId();
+        this.uuid = player.getServerId();
     }
 
     @Override
@@ -59,17 +59,17 @@ public class DefaultPermissible extends PermissibleBase {
     }
 
     @Override
-    public boolean isPermissionSet(@NotNull String name) {
+    public boolean isPermissionSet(String name) {
         return this.hasPermission(name);
     }
 
     @Override
-    public boolean isPermissionSet(@NotNull Permission perm) {
+    public boolean isPermissionSet(Permission perm) {
         return this.hasPermission(perm.getName());
     }
 
     @Override
-    public boolean hasPermission(@NotNull String name) {
+    public boolean hasPermission(String name) {
         if (name.equalsIgnoreCase(Server.BROADCAST_CHANNEL_USERS) || name.equalsIgnoreCase(Server.BROADCAST_CHANNEL_ADMINISTRATIVE)) {
             return true;
         }
@@ -78,24 +78,22 @@ public class DefaultPermissible extends PermissibleBase {
     }
 
     @Override
-    public boolean hasPermission(@NotNull Permission perm) {
+    public boolean hasPermission(Permission perm) {
         return this.hasPermission(perm.getName());
     }
 
     @Override
-    @NotNull
-    public PermissionAttachment addAttachment(@NotNull Plugin plugin, @NotNull String name, boolean value) {
+    public PermissionAttachment addAttachment(PluginContainer plugin, String name, Boolean value) {
         return new PermissionAttachment(plugin, this);
     }
 
     @Override
-    @NotNull
-    public PermissionAttachment addAttachment(@NotNull Plugin plugin) {
+    public PermissionAttachment addAttachment(PluginContainer plugin) {
         return new PermissionAttachment(plugin, this);
     }
 
     @Override
-    public void removeAttachment(@NotNull PermissionAttachment attachment) {
+    public void removeAttachment(PermissionAttachment attachment) {
     }
 
     @Override
@@ -107,22 +105,15 @@ public class DefaultPermissible extends PermissibleBase {
     }
 
     @Override
-    public PermissionAttachment addAttachment(@NotNull Plugin plugin, @NotNull String name, boolean value, int ticks) {
-        return new PermissionAttachment(plugin, this);
-    }
-
-    @Override
-    public PermissionAttachment addAttachment(@NotNull Plugin plugin, int ticks) {
-        return new PermissionAttachment(plugin, this);
-    }
-
-    @Override
-    @NotNull
-    public Set<PermissionAttachmentInfo> getEffectivePermissions() {
+    public Map<String, PermissionAttachmentInfo> getEffectivePermissions() {
         return PermissionPluginUtil.collectPermissionsOfUser(PermissionManagement.getInstance().loadUser(this.uuid))
             .stream()
-            .map(node -> new PermissionAttachmentInfo(this, node.getActualPermission(), null, node.isSet()))
-            .collect(Collectors.toSet());
+            .collect(Collectors.toMap(PermissionNode::getActualPermission, node -> new PermissionAttachmentInfo(this, node.getActualPermission(), null, node.isSet())));
+    }
+
+    @Override
+    public PermissionAttachment addAttachment(PluginContainer plugin, String name) {
+        return new PermissionAttachment(plugin, this);
     }
 
     private boolean has(String name) {

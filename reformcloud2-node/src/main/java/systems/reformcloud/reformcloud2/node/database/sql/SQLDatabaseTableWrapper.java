@@ -71,8 +71,8 @@ public final class SQLDatabaseTableWrapper implements DatabaseTableWrapper {
     @Override
     public void remove(@NotNull String key, @NotNull String id) {
         this.provider.executeUpdate(
-            "DELETE FROM `" + this.name + "` WHERE `key` = ? AND (`identifier` = ? OR `identifier` IS NULL)",
-            key, id
+            "DELETE FROM `" + this.name + "` WHERE `key` = ?" + (id.isEmpty() ? "" : " AND (`identifier` = ? OR `identifier` IS NULL)"),
+            key, id.isEmpty() ? null : id
         );
     }
 
@@ -80,7 +80,7 @@ public final class SQLDatabaseTableWrapper implements DatabaseTableWrapper {
     @Override
     public Optional<JsonConfiguration> get(@NotNull String key, @NotNull String id) {
         return this.provider.executeQuery(
-            "SELECT `data` FROM `" + this.name + "` WHERE `key` = ? AND (`identifier` = ? OR `identifier` IS NULL)",
+            "SELECT `data` FROM `" + this.name + "` WHERE `key` = ?" + (id.isEmpty() ? "" : " AND (`identifier` = ? OR `identifier` IS NULL)"),
             resultSet -> {
                 if (!resultSet.next()) {
                     return Optional.empty();
@@ -97,7 +97,7 @@ public final class SQLDatabaseTableWrapper implements DatabaseTableWrapper {
                     ex.printStackTrace();
                     return Optional.empty();
                 }
-            }, Optional.empty(), key, id
+            }, Optional.empty(), key, id.isEmpty() ? null : id
         );
     }
 

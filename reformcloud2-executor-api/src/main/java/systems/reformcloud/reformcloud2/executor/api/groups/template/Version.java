@@ -167,6 +167,8 @@ public enum Version {
      */
     NUKKIT_X("NukkitX", "1.0",
         "https://ci.nukkitx.com/job/NukkitX/job/Nukkit/job/master/lastStableBuild/artifact/target/nukkit-1.0-SNAPSHOT.jar", 3, 41000),
+    CLOUDBURST("CloudBurst", "0.0.1",
+        "https://ci.nukkitx.com/job/NukkitX/job/Server/job/bleeding/lastStableBuild/artifact/target/Cloudburst.jar", 3, 41000),
 
     /**
      * Waterdog as Java Proxy
