@@ -27,11 +27,13 @@ package systems.reformcloud.reformcloud2.signs.cloudburst;
 import com.google.inject.Inject;
 import org.cloudburstmc.server.Server;
 import org.cloudburstmc.server.event.Listener;
+import org.cloudburstmc.server.event.server.ServerInitializationEvent;
 import org.cloudburstmc.server.event.server.ServerShutdownEvent;
 import org.cloudburstmc.server.event.server.ServerStartEvent;
 import org.cloudburstmc.server.plugin.Dependency;
 import org.cloudburstmc.server.plugin.Plugin;
 import systems.reformcloud.reformcloud2.signs.cloudburst.adapter.CloudBurstSignSystemAdapter;
+import systems.reformcloud.reformcloud2.signs.cloudburst.commands.CloudBurstCommandSigns;
 import systems.reformcloud.reformcloud2.signs.util.ConfigRequesterUtil;
 
 @Plugin(
@@ -50,10 +52,16 @@ public class CloudBurstPlugin {
     }
 
     @Listener
-    public void handle(ServerStartEvent event) {
-        ConfigRequesterUtil.requestSignConfigAsync(
-            e -> Server.getInstance().getScheduler().scheduleTask(this, () -> new CloudBurstSignSystemAdapter(e, this))
+    public void handle(ServerInitializationEvent event) {
+        Server.getInstance().getCommandRegistry().register(
+            Server.getInstance().getPluginManager().getPlugin("reformcloud_2_signs").orElse(null),
+            new CloudBurstCommandSigns()
         );
+    }
+
+    @Listener
+    public void handle(ServerStartEvent event) {
+        ConfigRequesterUtil.requestSignConfigAsync(config -> new CloudBurstSignSystemAdapter(config, this));
     }
 
     @Listener

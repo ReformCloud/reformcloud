@@ -44,7 +44,6 @@ import org.jetbrains.annotations.Nullable;
 import systems.reformcloud.reformcloud2.executor.api.CommonHelper;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
 import systems.reformcloud.reformcloud2.signs.SharedSignSystemAdapter;
-import systems.reformcloud.reformcloud2.signs.cloudburst.commands.CloudBurstCommandSigns;
 import systems.reformcloud.reformcloud2.signs.cloudburst.listener.CloudBurstListener;
 import systems.reformcloud.reformcloud2.signs.util.PlaceHolderUtil;
 import systems.reformcloud.reformcloud2.signs.util.converter.SignConverter;
@@ -66,10 +65,6 @@ public class CloudBurstSignSystemAdapter extends SharedSignSystemAdapter<Sign> {
         this.plugin = plugin;
 
         Server.getInstance().getEventManager().registerListeners(plugin, new CloudBurstListener());
-        Server.getInstance().getCommandRegistry().register(
-            Server.getInstance().getPluginManager().getPlugin("reformcloud_2_signs").orElse(null),
-            new CloudBurstCommandSigns()
-        );
     }
 
     public static CloudBurstSignSystemAdapter getInstance() {
@@ -160,7 +155,7 @@ public class CloudBurstSignSystemAdapter extends SharedSignSystemAdapter<Sign> {
             return;
         }
 
-        Block behind = sign.getBlock().getSide(sign.getBlockState().ensureTrait(BlockTraits.DIRECTION).getOpposite());
+        Block behind = sign.getBlock().getSide(sign.getBlockState().ensureTrait(BlockTraits.FACING_DIRECTION).getOpposite());
         try {
             Field blockType = BlockIds.class.getDeclaredField(layout.getBlock().toUpperCase());
             blockType.setAccessible(true);
