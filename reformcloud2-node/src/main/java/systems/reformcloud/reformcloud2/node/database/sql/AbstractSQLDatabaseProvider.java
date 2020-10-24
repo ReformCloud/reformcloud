@@ -91,6 +91,10 @@ public abstract class AbstractSQLDatabaseProvider implements DatabaseProvider {
     protected void appendObjectsToPreparedStatement(@NotNull PreparedStatement statement, @NonNls Object... objects) throws SQLException {
         int i = 1;
         for (Object object : objects) {
+            if (object == null) {
+                continue;
+            }
+
             if (object instanceof byte[]) {
                 statement.setBytes(i++, (byte[]) object);
             } else {
