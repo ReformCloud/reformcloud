@@ -22,21 +22,45 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.network.server;
+package systems.reformcloud.reformcloud2.executor.api.http.request;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
+import systems.reformcloud.reformcloud2.executor.api.http.HttpInformation;
+import systems.reformcloud.reformcloud2.executor.api.http.cookie.CookieHolder;
 
-import java.util.function.Supplier;
+import java.net.URI;
+import java.util.List;
+import java.util.Map;
 
-public interface NetworkServer extends Server {
+public interface HttpRequest<T extends HttpRequest<T>> extends CookieHolder<T>, HttpInformation<T> {
 
-    /**
-     * Binds to the given ip:port
-     *
-     * @param host         The host on which the cloud should bing
-     * @param port         The port which the cloud should use
-     * @param readerHelper The channel reader which accepts all actions coming through the channel
-     */
-    void bind(@NotNull String host, int port, @NotNull Supplier<EndpointChannelReader> readerHelper);
+    @NotNull
+    HttpRequestSource source();
+
+    @NotNull
+    RequestMethod requestMethod();
+
+    @NotNull
+    T requestMethod(@NotNull RequestMethod requestMethod);
+
+    @NotNull
+    String uriString();
+
+    @NotNull
+    URI uri();
+
+    @NotNull
+    T uri(@NotNull String uri);
+
+    @NotNull
+    String path();
+
+    @NotNull
+    T path(@NotNull String path);
+
+    @NotNull
+    Map<String, String> pathParameters();
+
+    @NotNull
+    Map<String, List<String>> queryParameters();
 }

@@ -22,21 +22,51 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.network.server;
+package systems.reformcloud.reformcloud2.executor.api.http.decode;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.function.Supplier;
+public class DecodeResult {
 
-public interface NetworkServer extends Server {
+    protected static final DecodeResult SUCCESS = new DecodeResult(null);
+    protected static final DecodeResult UNFINISHED = new DecodeResult(new RuntimeException("Decode process still running"));
 
-    /**
-     * Binds to the given ip:port
-     *
-     * @param host         The host on which the cloud should bing
-     * @param port         The port which the cloud should use
-     * @param readerHelper The channel reader which accepts all actions coming through the channel
-     */
-    void bind(@NotNull String host, int port, @NotNull Supplier<EndpointChannelReader> readerHelper);
+    private final Throwable cause;
+
+    protected DecodeResult(Throwable cause) {
+        this.cause = cause;
+    }
+
+    @NotNull
+    public static DecodeResult result(@Nullable Throwable cause) {
+        return cause == null ? SUCCESS : new DecodeResult(cause);
+    }
+
+    @NotNull
+    public static DecodeResult success() {
+        return SUCCESS;
+    }
+
+    @NotNull
+    public static DecodeResult unfinished() {
+        return UNFINISHED;
+    }
+
+    public boolean isFinished() {
+        return this.cause != UNFINISHED.cause;
+    }
+
+    public boolean isSuccess() {
+        return this.cause == null;
+    }
+
+    public boolean isFailure() {
+        return this.cause != null && this.cause != UNFINISHED.cause;
+    }
+
+    @Nullable
+    public Throwable getCause() {
+        return this.cause;
+    }
 }

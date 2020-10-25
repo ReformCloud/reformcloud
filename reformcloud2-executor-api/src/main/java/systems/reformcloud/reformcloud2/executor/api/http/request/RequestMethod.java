@@ -22,21 +22,39 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.network.server;
+package systems.reformcloud.reformcloud2.executor.api.http.request;
 
-import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
-
-import java.util.function.Supplier;
-
-public interface NetworkServer extends Server {
-
+public enum RequestMethod {
     /**
-     * Binds to the given ip:port
-     *
-     * @param host         The host on which the cloud should bing
-     * @param port         The port which the cloud should use
-     * @param readerHelper The channel reader which accepts all actions coming through the channel
+     * The GET method requests a representation of the specified resource. Requests using GET should
+     * only retrieve data.
      */
-    void bind(@NotNull String host, int port, @NotNull Supplier<EndpointChannelReader> readerHelper);
+    GET,
+    /**
+     * The POST method is used to submit an entity to the specified resource, often causing a change
+     * in state or side effects on the server.
+     */
+    POST,
+    /**
+     * The HEAD method asks for a response identical to that of a GET request, but without the
+     * response body.
+     */
+    HEAD,
+    /**
+     * The OPTIONS method is used to describe the communication options for the target resource.
+     */
+    OPTIONS,
+    /**
+     * The PUT method replaces all current representations of the target resource with the request
+     * payload.
+     */
+    PUT,
+    /**
+     * The DELETE method deletes the specified resource.
+     */
+    DELETE,
+    /**
+     * The TRACE method performs a message loop-back test along the path to the target resource.
+     */
+    TRACE
 }

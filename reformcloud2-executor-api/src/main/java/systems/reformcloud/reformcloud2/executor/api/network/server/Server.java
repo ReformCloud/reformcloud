@@ -24,19 +24,17 @@
  */
 package systems.reformcloud.reformcloud2.executor.api.network.server;
 
-import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.network.channel.EndpointChannelReader;
-
-import java.util.function.Supplier;
-
-public interface NetworkServer extends Server {
+public interface Server {
 
     /**
-     * Binds to the given ip:port
+     * Closes a network server
      *
-     * @param host         The host on which the cloud should bing
-     * @param port         The port which the cloud should use
-     * @param readerHelper The channel reader which accepts all actions coming through the channel
+     * @param port The port of the network server which should get closed
      */
-    void bind(@NotNull String host, int port, @NotNull Supplier<EndpointChannelReader> readerHelper);
+    void close(int port);
+
+    /**
+     * Closes all open network servers
+     */
+    void closeAll();
 }
