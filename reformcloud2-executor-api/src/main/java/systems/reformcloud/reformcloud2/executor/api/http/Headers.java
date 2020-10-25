@@ -34,33 +34,33 @@ import java.util.Set;
 public interface Headers extends Iterable<Map.Entry<String, String>> {
 
     @NotNull
-    Optional<String> get(String name);
+    Optional<String> get(@NotNull String name);
 
     @NotNull
-    String get(String name, String defaultValue);
+    String get(@NotNull String name, @NotNull String defaultValue);
 
     @NotNull
-    Optional<Integer> getInt(String name);
+    Optional<Integer> getInt(@NotNull String name);
 
-    int getInt(String name, int defaultValue);
-
-    @NotNull
-    Optional<Short> getShort(String name);
-
-    short getShort(String name, short defaultValue);
+    int getInt(@NotNull String name, int defaultValue);
 
     @NotNull
-    Optional<Long> getTimeMillis(String name);
+    Optional<Short> getShort(@NotNull String name);
 
-    long getTimeMillis(String name, long defaultValue);
+    short getShort(@NotNull String name, short defaultValue);
 
     @NotNull
-    List<String> getAll(String name);
+    Optional<Long> getTimeMillis(@NotNull String name);
+
+    long getTimeMillis(@NotNull String name, long defaultValue);
+
+    @NotNull
+    List<String> getAll(@NotNull String name);
 
     @NotNull
     List<Map.Entry<String, String>> entries();
 
-    boolean contains(String name);
+    boolean contains(@NotNull String name);
 
     boolean isEmpty();
 
@@ -73,22 +73,22 @@ public interface Headers extends Iterable<Map.Entry<String, String>> {
     Headers add(@NotNull Headers headers);
 
     @NotNull
-    Headers addInt(String name, int value);
+    Headers addInt(@NotNull String name, int value);
 
     @NotNull
-    Headers addShort(String name, short value);
+    Headers addShort(@NotNull String name, short value);
 
     @NotNull
     Headers setAll(@NotNull Headers headers);
 
     @NotNull
-    Headers setInt(String name, int value);
+    Headers setInt(@NotNull String name, int value);
 
     @NotNull
-    Headers setShort(String name, short value);
+    Headers setShort(@NotNull String name, short value);
 
     @NotNull
-    Headers remove(String name);
+    Headers remove(@NotNull String name);
 
     @NotNull
     Headers clear();
