@@ -25,14 +25,14 @@
 package systems.reformcloud.reformcloud2.executor.api.http.request;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.http.HttpInformation;
 import systems.reformcloud.reformcloud2.executor.api.http.cookie.CookieHolder;
 
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
-public interface HttpRequest<T extends HttpRequest<T>> extends CookieHolder<T>, HttpInformation<T> {
+public interface HttpRequest<T extends HttpRequest<T>> extends CookieHolder<T> {
 
     @NotNull
     HttpRequestSource source();
@@ -59,8 +59,32 @@ public interface HttpRequest<T extends HttpRequest<T>> extends CookieHolder<T>, 
     T path(@NotNull String path);
 
     @NotNull
+    byte[] body();
+
+    @NotNull
     Map<String, String> pathParameters();
 
     @NotNull
+    Optional<String> pathParameter(@NotNull String name);
+
+    @NotNull
+    String pathParameter(@NotNull String name, @NotNull String defaultValue);
+
+    @NotNull
+    T setPathParameter(@NotNull String name, @NotNull String value);
+
+    @NotNull
     Map<String, List<String>> queryParameters();
+
+    @NotNull
+    Optional<List<String>> queryParameter(@NotNull String name);
+
+    @NotNull
+    List<String> queryParameter(@NotNull String name, @NotNull List<String> defaultValue);
+
+    @NotNull
+    T setQueryParameter(@NotNull String name, @NotNull String value);
+
+    @NotNull
+    T setQueryParameters(@NotNull String name, @NotNull String... value);
 }

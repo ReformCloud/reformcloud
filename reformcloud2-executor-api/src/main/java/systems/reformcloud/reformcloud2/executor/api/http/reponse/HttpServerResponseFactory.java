@@ -22,18 +22,23 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.http.listener;
+package systems.reformcloud.reformcloud2.executor.api.http.reponse;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import org.jetbrains.annotations.NotNull;
+import systems.reformcloud.reformcloud2.executor.api.http.Headers;
+import systems.reformcloud.reformcloud2.executor.api.http.HttpVersion;
+import systems.reformcloud.reformcloud2.executor.api.http.decode.DecodeResult;
+import systems.reformcloud.reformcloud2.executor.api.http.request.HttpRequest;
 
-@Documented
-@Target(ElementType.METHOD)
-@Retention(RetentionPolicy.RUNTIME)
-public @interface Priority {
+import java.util.concurrent.atomic.AtomicReference;
 
-    int value() default 0;
+public abstract class HttpServerResponseFactory {
+
+    protected static final AtomicReference<HttpServerResponseFactory> DEFAULT_FACTORY = new AtomicReference<>();
+
+    @NotNull
+    public abstract ListeningHttpServerResponse<?> response(@NotNull HttpRequest<?> request);
+
+    @NotNull
+    public abstract ListeningHttpServerResponse<?> response(@NotNull HttpVersion httpVersion, @NotNull Headers headers, @NotNull DecodeResult decodeResult);
 }

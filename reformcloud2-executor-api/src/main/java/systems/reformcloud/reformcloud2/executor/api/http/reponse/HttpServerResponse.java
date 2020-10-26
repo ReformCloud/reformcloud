@@ -25,15 +25,20 @@
 package systems.reformcloud.reformcloud2.executor.api.http.reponse;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.http.HttpInformation;
 import systems.reformcloud.reformcloud2.executor.api.http.HttpStatusCode;
 import systems.reformcloud.reformcloud2.executor.api.http.cookie.CookieHolder;
 
-public interface HttpServerResponse<T extends HttpServerResponse<T>> extends CookieHolder<T>, HttpInformation<T> {
+public interface HttpServerResponse<T extends HttpServerResponse<T>> extends CookieHolder<T> {
 
     @NotNull
     HttpStatusCode status();
 
     @NotNull
     T status(@NotNull HttpStatusCode httpStatusCode);
+
+    @NotNull
+    T body(byte[] response);
+
+    @NotNull
+    byte[] body();
 }

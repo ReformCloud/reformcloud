@@ -26,11 +26,12 @@ package systems.reformcloud.reformcloud2.executor.api.http.cookie;
 
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
+import systems.reformcloud.reformcloud2.executor.api.http.HttpInformation;
 
 import java.util.Collection;
 import java.util.Optional;
 
-public interface CookieHolder<T extends CookieHolder<T>> {
+public interface CookieHolder<T extends CookieHolder<T>> extends HttpInformation<T> {
 
     @NotNull
     Optional<HttpCookie> cookie(@NotNull String name);

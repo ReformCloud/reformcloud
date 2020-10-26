@@ -22,25 +22,34 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.http.reponse;
+package systems.reformcloud.reformcloud2.node.http.response;
 
+import io.netty.handler.codec.http.DefaultHttpHeaders;
 import org.jetbrains.annotations.NotNull;
+import systems.reformcloud.reformcloud2.executor.api.http.Headers;
+import systems.reformcloud.reformcloud2.executor.api.http.HttpVersion;
+import systems.reformcloud.reformcloud2.executor.api.http.decode.DecodeResult;
+import systems.reformcloud.reformcloud2.executor.api.http.reponse.HttpServerResponseFactory;
+import systems.reformcloud.reformcloud2.executor.api.http.reponse.ListeningHttpServerResponse;
 import systems.reformcloud.reformcloud2.executor.api.http.request.HttpRequest;
+import systems.reformcloud.reformcloud2.node.http.DefaultHeaders;
 
-public interface ListeningHttpServerResponse<T extends ListeningHttpServerResponse<T>> extends HttpServerResponse<T> {
+public class DefaultHttpServerResponseFactory extends HttpServerResponseFactory {
 
-    @NotNull
-    static ListeningHttpServerResponse<?> response(@NotNull HttpRequest<?> request) {
-        return HttpServerResponseFactory.DEFAULT_FACTORY.get().response(request);
+    private DefaultHttpServerResponseFactory() {
     }
 
-    boolean lastHandler();
+    public static void init() {
+        HttpServerResponseFactory.DEFAULT_FACTORY.set(new DefaultHttpServerResponseFactory());
+    }
 
-    @NotNull
-    T lastHandler(boolean lastHandler);
+    @Override
+    public @NotNull ListeningHttpServerResponse<?> response(@NotNull HttpRequest<?> request) {
+        return this.response(request.httpVersion(), new DefaultHeaders(new DefaultHttpHeaders()), request.result());
+    }
 
-    boolean closeAfterSent();
-
-    @NotNull
-    T closeAfterSent(boolean close);
+    @Override
+    public @NotNull ListeningHttpServerResponse<?> response(@NotNull HttpVersion httpVersion, @NotNull Headers headers, @NotNull DecodeResult decodeResult) {
+        return new DefaultListeningHttpServerResponse(httpVersion, headers, decodeResult);
+    }
 }

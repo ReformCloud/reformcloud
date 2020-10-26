@@ -56,5 +56,14 @@ public enum RequestMethod {
     /**
      * The TRACE method performs a message loop-back test along the path to the target resource.
      */
-    TRACE
+    TRACE,
+    /**
+     * The CONNECT method converts the request connection to a transparent TCP/IP tunnel, usually
+     * to facilitate SSL-encrypted communication (HTTPS) through an unencrypted HTTP proxy.
+     */
+    CONNECT,
+    /**
+     * The PATCH method applies partial modifications to a resource.
+     */
+    PATCH
 }

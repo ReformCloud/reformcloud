@@ -22,22 +22,39 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.http.listener;
+package systems.reformcloud.reformcloud2.node.http;
 
 import org.jetbrains.annotations.NotNull;
-import systems.reformcloud.reformcloud2.executor.api.http.request.RequestMethod;
+import systems.reformcloud.reformcloud2.executor.api.http.Headers;
+import systems.reformcloud.reformcloud2.executor.api.http.HttpInformation;
+import systems.reformcloud.reformcloud2.executor.api.http.HttpVersion;
+import systems.reformcloud.reformcloud2.executor.api.http.decode.DecodeResult;
+import systems.reformcloud.reformcloud2.node.http.decode.DefaultDecodeResultHolder;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+public abstract class DefaultHttpInformation<T extends HttpInformation<T>> extends DefaultDecodeResultHolder<T> implements HttpInformation<T>, InstanceHolder<T> {
 
-@Documented
-@Target(ElementType.METHOD)
-@Retention(RetentionPolicy.RUNTIME)
-public @interface RequestMethods {
+    protected final Headers headers;
+    protected HttpVersion httpVersion;
 
-    @NotNull
-    RequestMethod[] value() default RequestMethod.GET;
+    protected DefaultHttpInformation(HttpVersion httpVersion, Headers headers, DecodeResult decodeResult) {
+        super(decodeResult);
+        this.headers = headers;
+        this.httpVersion = httpVersion;
+    }
+
+    @Override
+    public @NotNull HttpVersion httpVersion() {
+        return this.httpVersion;
+    }
+
+    @Override
+    public @NotNull T httpVersion(@NotNull HttpVersion httpVersion) {
+        this.httpVersion = httpVersion;
+        return this.self();
+    }
+
+    @Override
+    public @NotNull Headers headers() {
+        return this.headers;
+    }
 }

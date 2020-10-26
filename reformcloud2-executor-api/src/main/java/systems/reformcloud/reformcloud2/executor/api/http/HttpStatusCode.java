@@ -412,4 +412,8 @@ public enum HttpStatusCode {
 
         throw new IllegalStateException("Unknown status code " + result);
     }
+
+    public int code() {
+        return this.code;
+    }
 }

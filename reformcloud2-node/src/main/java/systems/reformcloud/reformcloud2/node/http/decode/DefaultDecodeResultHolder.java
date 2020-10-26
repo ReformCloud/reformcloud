@@ -22,18 +22,29 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.http.listener;
+package systems.reformcloud.reformcloud2.node.http.decode;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import org.jetbrains.annotations.NotNull;
+import systems.reformcloud.reformcloud2.executor.api.http.decode.DecodeResult;
+import systems.reformcloud.reformcloud2.executor.api.http.decode.DecodeResultHolder;
+import systems.reformcloud.reformcloud2.node.http.InstanceHolder;
 
-@Documented
-@Target(ElementType.METHOD)
-@Retention(RetentionPolicy.RUNTIME)
-public @interface Priority {
+public abstract class DefaultDecodeResultHolder<T extends DecodeResultHolder<T>> implements DecodeResultHolder<T>, InstanceHolder<T> {
 
-    int value() default 0;
+    protected DecodeResult decodeResult;
+
+    protected DefaultDecodeResultHolder(DecodeResult decodeResult) {
+        this.decodeResult = decodeResult;
+    }
+
+    @Override
+    public @NotNull DecodeResult result() {
+        return this.decodeResult;
+    }
+
+    @Override
+    public @NotNull T result(@NotNull DecodeResult decodeResult) {
+        this.decodeResult = decodeResult;
+        return this.self();
+    }
 }

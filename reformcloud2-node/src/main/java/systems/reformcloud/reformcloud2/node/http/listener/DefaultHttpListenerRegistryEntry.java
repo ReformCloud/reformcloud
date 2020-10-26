@@ -22,18 +22,37 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.http.listener;
+package systems.reformcloud.reformcloud2.node.http.listener;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import org.jetbrains.annotations.NotNull;
+import systems.reformcloud.reformcloud2.executor.api.http.listener.HttpListener;
+import systems.reformcloud.reformcloud2.executor.api.http.listener.HttpListenerRegistryEntry;
+import systems.reformcloud.reformcloud2.executor.api.http.request.RequestMethod;
 
-@Documented
-@Target(ElementType.METHOD)
-@Retention(RetentionPolicy.RUNTIME)
-public @interface Priority {
+final class DefaultHttpListenerRegistryEntry implements HttpListenerRegistryEntry {
 
-    int value() default 0;
+    private final HttpListener listener;
+    private final RequestMethod[] requestMethods;
+    private final int priority;
+
+    DefaultHttpListenerRegistryEntry(HttpListener listener, RequestMethod[] requestMethods, int priority) {
+        this.listener = listener;
+        this.requestMethods = requestMethods;
+        this.priority = priority;
+    }
+
+    @Override
+    public @NotNull HttpListener getListener() {
+        return this.listener;
+    }
+
+    @Override
+    public @NotNull RequestMethod[] getHandlingRequestMethods() {
+        return this.requestMethods;
+    }
+
+    @Override
+    public int priority() {
+        return this.priority;
+    }
 }

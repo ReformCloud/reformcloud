@@ -35,6 +35,7 @@ import systems.reformcloud.reformcloud2.executor.api.dependency.DependencyLoader
 import systems.reformcloud.reformcloud2.executor.api.event.EventManager;
 import systems.reformcloud.reformcloud2.executor.api.groups.ProcessGroup;
 import systems.reformcloud.reformcloud2.executor.api.groups.template.backend.TemplateBackendManager;
+import systems.reformcloud.reformcloud2.executor.api.http.server.HttpServer;
 import systems.reformcloud.reformcloud2.executor.api.io.IOUtils;
 import systems.reformcloud.reformcloud2.executor.api.language.LanguageManager;
 import systems.reformcloud.reformcloud2.executor.api.language.loading.LanguageLoader;
@@ -45,14 +46,30 @@ import systems.reformcloud.reformcloud2.executor.api.network.packet.query.QueryM
 import systems.reformcloud.reformcloud2.executor.api.network.server.NetworkServer;
 import systems.reformcloud.reformcloud2.executor.api.node.NodeInformation;
 import systems.reformcloud.reformcloud2.executor.api.process.ProcessInformation;
-import systems.reformcloud.reformcloud2.executor.api.provider.*;
+import systems.reformcloud.reformcloud2.executor.api.provider.ChannelMessageProvider;
+import systems.reformcloud.reformcloud2.executor.api.provider.DatabaseProvider;
+import systems.reformcloud.reformcloud2.executor.api.provider.MainGroupProvider;
+import systems.reformcloud.reformcloud2.executor.api.provider.NodeInformationProvider;
+import systems.reformcloud.reformcloud2.executor.api.provider.PlayerProvider;
+import systems.reformcloud.reformcloud2.executor.api.provider.ProcessGroupProvider;
 import systems.reformcloud.reformcloud2.executor.api.registry.service.ServiceRegistry;
 import systems.reformcloud.reformcloud2.executor.api.utility.NetworkAddress;
 import systems.reformcloud.reformcloud2.node.application.DefaultApplicationLoader;
 import systems.reformcloud.reformcloud2.node.argument.ArgumentParser;
 import systems.reformcloud.reformcloud2.node.cluster.ClusterManager;
 import systems.reformcloud.reformcloud2.node.cluster.DefaultClusterManager;
-import systems.reformcloud.reformcloud2.node.commands.*;
+import systems.reformcloud.reformcloud2.node.commands.CommandClear;
+import systems.reformcloud.reformcloud2.node.commands.CommandCluster;
+import systems.reformcloud.reformcloud2.node.commands.CommandCreate;
+import systems.reformcloud.reformcloud2.node.commands.CommandGroup;
+import systems.reformcloud.reformcloud2.node.commands.CommandHelp;
+import systems.reformcloud.reformcloud2.node.commands.CommandLaunch;
+import systems.reformcloud.reformcloud2.node.commands.CommandLog;
+import systems.reformcloud.reformcloud2.node.commands.CommandPlayers;
+import systems.reformcloud.reformcloud2.node.commands.CommandProcess;
+import systems.reformcloud.reformcloud2.node.commands.CommandReload;
+import systems.reformcloud.reformcloud2.node.commands.CommandStop;
+import systems.reformcloud.reformcloud2.node.commands.CommandTemplate;
 import systems.reformcloud.reformcloud2.node.config.NodeConfig;
 import systems.reformcloud.reformcloud2.node.config.NodeExecutorConfig;
 import systems.reformcloud.reformcloud2.node.console.DefaultNodeConsole;
@@ -61,6 +78,7 @@ import systems.reformcloud.reformcloud2.node.factory.DefaultProcessFactoryContro
 import systems.reformcloud.reformcloud2.node.factory.ProcessFactoryController;
 import systems.reformcloud.reformcloud2.node.group.DefaultNodeMainGroupProvider;
 import systems.reformcloud.reformcloud2.node.group.DefaultNodeProcessGroupProvider;
+import systems.reformcloud.reformcloud2.node.http.server.DefaultHttpServer;
 import systems.reformcloud.reformcloud2.node.logger.CloudLogger;
 import systems.reformcloud.reformcloud2.node.messaging.DefaultNodeChannelMessageProvider;
 import systems.reformcloud.reformcloud2.node.network.NodeClientEndpointChannelReader;
@@ -71,17 +89,43 @@ import systems.reformcloud.reformcloud2.node.process.DefaultNodeLocalProcessWrap
 import systems.reformcloud.reformcloud2.node.process.DefaultNodeProcessProvider;
 import systems.reformcloud.reformcloud2.node.process.screen.DefaultProcessScreenController;
 import systems.reformcloud.reformcloud2.node.process.screen.ProcessScreenController;
-import systems.reformcloud.reformcloud2.node.processors.*;
-import systems.reformcloud.reformcloud2.node.processors.player.*;
-import systems.reformcloud.reformcloud2.node.protocol.*;
+import systems.reformcloud.reformcloud2.node.processors.ApiToNodeGetIngameMessagesProcessor;
+import systems.reformcloud.reformcloud2.node.processors.ChannelMessageProcessor;
+import systems.reformcloud.reformcloud2.node.processors.NodeToNodeProcessCommandProcessor;
+import systems.reformcloud.reformcloud2.node.processors.NodeToNodePublishChannelMessageProcessor;
+import systems.reformcloud.reformcloud2.node.processors.NodeToNodeRequestNodeInformationUpdateProcessor;
+import systems.reformcloud.reformcloud2.node.processors.NodeToNodeTabCompleteCommandProcessor;
+import systems.reformcloud.reformcloud2.node.processors.player.PacketConnectPlayerToServerProcessor;
+import systems.reformcloud.reformcloud2.node.processors.player.PacketDisconnectPlayerProcessor;
+import systems.reformcloud.reformcloud2.node.processors.player.PacketPlayEffectToPlayerProcessor;
+import systems.reformcloud.reformcloud2.node.processors.player.PacketPlaySoundToPlayerProcessor;
+import systems.reformcloud.reformcloud2.node.processors.player.PacketSendPlayerMessageProcessor;
+import systems.reformcloud.reformcloud2.node.processors.player.PacketSendPlayerTitleProcessor;
+import systems.reformcloud.reformcloud2.node.processors.player.PacketSetPlayerLocationProcessor;
+import systems.reformcloud.reformcloud2.node.protocol.NodeToNodeProcessCommand;
+import systems.reformcloud.reformcloud2.node.protocol.NodeToNodePublishChannelMessage;
+import systems.reformcloud.reformcloud2.node.protocol.NodeToNodeRequestNodeInformationUpdate;
+import systems.reformcloud.reformcloud2.node.protocol.NodeToNodeTabCompleteCommand;
+import systems.reformcloud.reformcloud2.node.protocol.PacketRegister;
 import systems.reformcloud.reformcloud2.node.provider.DefaultNodeNodeInformationProvider;
-import systems.reformcloud.reformcloud2.node.runnables.*;
+import systems.reformcloud.reformcloud2.node.runnables.AutoStartRunnable;
+import systems.reformcloud.reformcloud2.node.runnables.NodeInformationUpdateRunnable;
+import systems.reformcloud.reformcloud2.node.runnables.OnlinePercentCheckerTask;
+import systems.reformcloud.reformcloud2.node.runnables.ProcessScreenTickRunnable;
+import systems.reformcloud.reformcloud2.node.runnables.ServerWatchdogRunnable;
 import systems.reformcloud.reformcloud2.node.sentry.SentryLoggingLoader;
 import systems.reformcloud.reformcloud2.node.tick.CloudTickWorker;
 import systems.reformcloud.reformcloud2.node.tick.TickedTaskScheduler;
 import systems.reformcloud.reformcloud2.protocol.node.ApiToNodeGetIngameMessages;
 import systems.reformcloud.reformcloud2.protocol.processor.PacketProcessorManager;
-import systems.reformcloud.reformcloud2.protocol.shared.*;
+import systems.reformcloud.reformcloud2.protocol.shared.PacketChannelMessage;
+import systems.reformcloud.reformcloud2.protocol.shared.PacketConnectPlayerToServer;
+import systems.reformcloud.reformcloud2.protocol.shared.PacketDisconnectPlayer;
+import systems.reformcloud.reformcloud2.protocol.shared.PacketPlayEffectToPlayer;
+import systems.reformcloud.reformcloud2.protocol.shared.PacketPlaySoundToPlayer;
+import systems.reformcloud.reformcloud2.protocol.shared.PacketSendPlayerMessage;
+import systems.reformcloud.reformcloud2.protocol.shared.PacketSendPlayerTitle;
+import systems.reformcloud.reformcloud2.protocol.shared.PacketSetPlayerLocation;
 import systems.reformcloud.reformcloud2.shared.command.DefaultCommandManager;
 import systems.reformcloud.reformcloud2.shared.event.DefaultEventManager;
 import systems.reformcloud.reformcloud2.shared.network.channel.DefaultChannelManager;
@@ -100,6 +144,7 @@ public final class NodeExecutor extends ExecutorAPI {
 
     private final DependencyLoader dependencyLoader;
 
+    private final HttpServer httpServer = new DefaultHttpServer();
     private final NetworkServer networkServer = new DefaultNetworkServer();
     private final NodeNetworkClient networkClient = new NodeNetworkClient();
 
@@ -257,6 +302,7 @@ public final class NodeExecutor extends ExecutorAPI {
 
         System.out.println(LanguageManager.get("application-net-server-close"));
         this.networkServer.closeAll();
+        this.httpServer.closeAll();
         System.out.println(LanguageManager.get("application-net-client-close"));
         this.networkClient.disconnect();
 
@@ -291,11 +337,18 @@ public final class NodeExecutor extends ExecutorAPI {
                 continue;
             }
 
-            this.networkServer.bind(
-                networkListener.getHost(),
-                networkListener.getPort(),
-                NodeServerEndpointChannelReader::new
-            );
+            this.networkServer.bind(networkListener.getHost(), networkListener.getPort(), NodeServerEndpointChannelReader::new);
+        }
+
+        for (NetworkAddress httpNetworkListener : this.nodeConfig.getHttpNetworkListeners()) {
+            if (httpNetworkListener.getHost() == null || httpNetworkListener.getPort() < 0) {
+                System.err.println(LanguageManager.get(
+                    "startup-bind-net-listener-fail", httpNetworkListener.getHost(), httpNetworkListener.getPort()
+                ));
+                continue;
+            }
+
+            this.httpServer.bind(httpNetworkListener.getHost(), httpNetworkListener.getPort());
         }
 
         for (NetworkAddress clusterNode : this.nodeConfig.getClusterNodes()) {
@@ -446,6 +499,11 @@ public final class NodeExecutor extends ExecutorAPI {
     @NotNull
     public DefaultNodeProcessProvider getDefaultNodeProcessProvider() {
         return this.processProvider;
+    }
+
+    @NotNull
+    public HttpServer getHttpServer() {
+        return this.httpServer;
     }
 
     public boolean isOwnIdentity(@NotNull String name) {

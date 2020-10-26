@@ -22,18 +22,28 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.http.listener;
+package systems.reformcloud.reformcloud2.node.http.server;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelInitializer;
+import io.netty.handler.codec.http.HttpObjectAggregator;
+import io.netty.handler.codec.http.HttpServerCodec;
+import systems.reformcloud.reformcloud2.executor.api.http.listener.HttpListenerRegistry;
+import systems.reformcloud.reformcloud2.node.http.request.DefaultHttpRequestSource;
 
-@Documented
-@Target(ElementType.METHOD)
-@Retention(RetentionPolicy.RUNTIME)
-public @interface Priority {
+public class DefaultHttpServerChannelInitializer extends ChannelInitializer<Channel> {
 
-    int value() default 0;
+    private final HttpListenerRegistry listenerRegistry;
+
+    public DefaultHttpServerChannelInitializer(HttpListenerRegistry listenerRegistry) {
+        this.listenerRegistry = listenerRegistry;
+    }
+
+    @Override
+    protected void initChannel(Channel ch) {
+        ch.pipeline()
+            .addLast(ServerConstants.HTTP_SERVER_CODEC, new HttpServerCodec())
+            .addLast(ServerConstants.HTTP_OBJECT_AGGREGATOR, new HttpObjectAggregator(Short.MAX_VALUE))
+            .addLast(ServerConstants.HTTP_HANDLER, new DefaultHttpHandler(new DefaultHttpRequestSource(ch), this.listenerRegistry));
+    }
 }

@@ -27,7 +27,7 @@ package systems.reformcloud.reformcloud2.executor.api.http.listener;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnmodifiableView;
 
-import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 public interface HttpListenerRegistry {
@@ -46,5 +46,5 @@ public interface HttpListenerRegistry {
 
     @NotNull
     @UnmodifiableView
-    Map<String, Collection<HttpListener>> getListeners();
+    Map<String, List<HttpListenerRegistryEntry>> getListeners();
 }

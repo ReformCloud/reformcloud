@@ -24,16 +24,16 @@
  */
 package systems.reformcloud.reformcloud2.executor.api.http.listener;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import org.jetbrains.annotations.NotNull;
+import systems.reformcloud.reformcloud2.executor.api.http.request.RequestMethod;
 
-@Documented
-@Target(ElementType.METHOD)
-@Retention(RetentionPolicy.RUNTIME)
-public @interface Priority {
+public interface HttpListenerRegistryEntry {
 
-    int value() default 0;
+    @NotNull
+    HttpListener getListener();
+
+    @NotNull
+    RequestMethod[] getHandlingRequestMethods();
+
+    int priority();
 }

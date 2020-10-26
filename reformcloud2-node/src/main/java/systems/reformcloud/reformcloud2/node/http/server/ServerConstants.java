@@ -22,18 +22,15 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.http.listener;
+package systems.reformcloud.reformcloud2.node.http.server;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+public final class ServerConstants {
 
-@Documented
-@Target(ElementType.METHOD)
-@Retention(RetentionPolicy.RUNTIME)
-public @interface Priority {
+    public static final String HTTP_SERVER_CODEC = "http-server-coded";
+    public static final String HTTP_OBJECT_AGGREGATOR = "http-object-aggregator";
+    public static final String HTTP_HANDLER = "http-handler";
 
-    int value() default 0;
+    private ServerConstants() {
+        throw new UnsupportedOperationException();
+    }
 }
