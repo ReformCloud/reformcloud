@@ -73,7 +73,7 @@ public interface Headers extends Iterable<Map.Entry<String, String>> {
     Headers add(@NotNull Headers headers);
 
     @NotNull
-    Headers add(String name, Object value);
+    Headers add(@NotNull String name, @NotNull Object value);
 
     @NotNull
     Headers addInt(@NotNull String name, int value);
@@ -85,7 +85,7 @@ public interface Headers extends Iterable<Map.Entry<String, String>> {
     Headers setAll(@NotNull Headers headers);
 
     @NotNull
-    Headers set(String name, Object value);
+    Headers set(@NotNull String name, @NotNull Object value);
 
     @NotNull
     Headers setInt(@NotNull String name, int value);

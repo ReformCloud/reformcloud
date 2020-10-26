@@ -122,7 +122,7 @@ public class DefaultHeaders implements Headers {
     }
 
     @Override
-    public @NotNull Headers add(String name, Object value) {
+    public @NotNull Headers add(@NotNull String name, @NotNull Object value) {
         this.headers.add(name, value);
         return this;
     }
@@ -149,7 +149,7 @@ public class DefaultHeaders implements Headers {
     }
 
     @Override
-    public @NotNull Headers set(String name, Object value) {
+    public @NotNull Headers set(@NotNull String name, @NotNull Object value) {
         this.headers.set(name, value);
         return this;
     }
