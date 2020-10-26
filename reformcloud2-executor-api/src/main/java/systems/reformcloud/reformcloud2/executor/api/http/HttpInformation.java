@@ -27,14 +27,37 @@ package systems.reformcloud.reformcloud2.executor.api.http;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.http.decode.DecodeResultHolder;
 
+/**
+ * Represents some information about the HTTP request.
+ *
+ * @param <T> the type of the implementing api
+ * @author derklaro
+ * @since 25. October 2020
+ */
 public interface HttpInformation<T extends HttpInformation<T>> extends DecodeResultHolder<T> {
 
+    /**
+     * Get the http version of this information.
+     *
+     * @return the http version of this information.
+     */
     @NotNull
     HttpVersion httpVersion();
 
+    /**
+     * Sets the http version of this information.
+     *
+     * @param httpVersion the http version of this information.
+     * @return the same instance of this class, for chaining
+     */
     @NotNull
     T httpVersion(@NotNull HttpVersion httpVersion);
 
+    /**
+     * Get the http headers of this information.
+     *
+     * @return the http headers of this information.
+     */
     @NotNull
     Headers headers();
 }

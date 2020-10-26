@@ -30,10 +30,20 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * Sets the priority of a {@link HttpListener}.
+ *
+ * @author derklaro
+ * @since 25. October 2020
+ */
 @Documented
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Priority {
-
+    /**
+     * Get the priority of a listener method.
+     *
+     * @return the priority of a listener method.
+     */
     int value() default 0;
 }

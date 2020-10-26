@@ -26,9 +26,20 @@ package systems.reformcloud.reformcloud2.executor.api.http;
 
 import java.nio.charset.StandardCharsets;
 
+/**
+ * Represents all handleable http versions.
+ *
+ * @author derklaro
+ * @since 25. October 2020
+ */
 public enum HttpVersion {
-
+    /**
+     * Represents HTTP 1.0.
+     */
     HTTP_1_0("HTTP", 1, 0, false),
+    /**
+     * Represents HTTP 1.1 which is exactly like HTTP 1.0 but keep alive default is by default {@code true}.
+     */
     HTTP_1_1("HTTP", 1, 1, true);
 
     private final String protocolName;

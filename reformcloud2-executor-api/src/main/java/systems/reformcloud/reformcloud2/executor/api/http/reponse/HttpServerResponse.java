@@ -28,17 +28,46 @@ import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.http.HttpStatusCode;
 import systems.reformcloud.reformcloud2.executor.api.http.cookie.CookieHolder;
 
+/**
+ * Represents a server HTTP response.
+ *
+ * @param <T> the type of the implementing api
+ * @author derklaro
+ * @since 25. October 2020
+ */
 public interface HttpServerResponse<T extends HttpServerResponse<T>> extends CookieHolder<T> {
 
+    /**
+     * Get the response status.
+     *
+     * @return the response status.
+     */
     @NotNull
     HttpStatusCode status();
 
+    /**
+     * Sets the response status.
+     *
+     * @param httpStatusCode the new response status.
+     * @return the same instance of this class, for chaining
+     */
     @NotNull
     T status(@NotNull HttpStatusCode httpStatusCode);
 
-    @NotNull
-    T body(byte[] response);
-
+    /**
+     * Get the response body sent to the client.
+     *
+     * @return the response body sent to the client.
+     */
     @NotNull
     byte[] body();
+
+    /**
+     * Sets the body of the result sent to the client.
+     *
+     * @param response the body response to send to the client.
+     * @return the same instance of this class, for chaining
+     */
+    @NotNull
+    T body(byte[] response);
 }

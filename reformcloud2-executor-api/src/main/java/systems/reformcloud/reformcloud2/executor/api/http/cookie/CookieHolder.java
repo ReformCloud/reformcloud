@@ -31,20 +31,57 @@ import systems.reformcloud.reformcloud2.executor.api.http.HttpInformation;
 import java.util.Collection;
 import java.util.Optional;
 
+/**
+ * An expanded version of a {@link HttpInformation} which holds information about cookies
+ * provided to the incoming/outgoing connection.
+ *
+ * @param <T> the type of the implementing api
+ * @author derklaro
+ * @since 25. October 2020
+ */
 public interface CookieHolder<T extends CookieHolder<T>> extends HttpInformation<T> {
 
+    /**
+     * Get a cookie by it's name.
+     *
+     * @param name the name of the cookie to get.
+     * @return the cookie or an empty optional if a cookie by the {@code name} does not exists.
+     */
     @NotNull
     Optional<HttpCookie> cookie(@NotNull String name);
 
+    /**
+     * Get all cookies known to this holder.
+     *
+     * @return all cookies known to this holder.
+     */
     @NotNull
     Collection<HttpCookie> cookies();
 
+    /**
+     * Adds a cookie to the known cookies of this holder.
+     *
+     * @param cookie the cookie to add.
+     * @return the same instance of the providing type, for chaining
+     */
     @NotNull
     T cookie(@NotNull HttpCookie cookie);
 
+    /**
+     * Adds cookies to the known cookies of this holder.
+     *
+     * @param cookies the cookies to add.
+     * @return the same instance of the providing type, for chaining
+     */
     @NotNull
     T cookies(@NonNls HttpCookie... cookies);
 
+    /**
+     * Adds cookies to the known cookies of this holder.
+     *
+     * @param cookies the cookies to add.
+     * @return the same instance of the providing type, for chaining
+     */
     @NotNull
     T cookies(@NotNull Collection<HttpCookie> cookies);
 }

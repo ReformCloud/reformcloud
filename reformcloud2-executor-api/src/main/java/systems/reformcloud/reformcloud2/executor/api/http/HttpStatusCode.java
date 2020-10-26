@@ -30,6 +30,9 @@ import org.jetbrains.annotations.NotNull;
  * Represents the available status codes which a web server can return when you have made a request
  * to the server. Documentation notes from <a href="https://en.wikipedia.org/wiki/List_of_HTTP_status_codes">
  * Wikipedia</a>
+ *
+ * @author derklaro
+ * @since 25. October 2020
  */
 public enum HttpStatusCode {
     /**

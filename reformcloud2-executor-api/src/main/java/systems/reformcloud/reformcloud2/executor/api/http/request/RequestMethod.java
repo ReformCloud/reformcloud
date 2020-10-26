@@ -24,6 +24,12 @@
  */
 package systems.reformcloud.reformcloud2.executor.api.http.request;
 
+/**
+ * Represents a collection of all handleable request methods.
+ *
+ * @author derklaro
+ * @since 25. October 2020
+ */
 public enum RequestMethod {
     /**
      * The GET method requests a representation of the specified resource. Requests using GET should

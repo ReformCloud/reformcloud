@@ -33,11 +33,21 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * Specifies the request methods a http listener method is handling.
+ *
+ * @author derklaro
+ * @since 25. October 2020
+ */
 @Documented
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface RequestMethods {
-
+    /**
+     * Get the request methods the listening method is handling.
+     *
+     * @return the request methods the listening method is handling.
+     */
     @NotNull
     RequestMethod[] value() default RequestMethod.GET;
 }

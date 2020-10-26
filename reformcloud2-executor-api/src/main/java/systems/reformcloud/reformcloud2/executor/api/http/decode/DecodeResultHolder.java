@@ -26,11 +26,30 @@ package systems.reformcloud.reformcloud2.executor.api.http.decode;
 
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Holds the decode result of a http message.
+ *
+ * @param <T> the type of the implementing api
+ * @author derklaro
+ * @since 25. October 2020
+ */
 public interface DecodeResultHolder<T extends DecodeResultHolder<T>> {
 
+    /**
+     * Get the result of decoding this object.
+     *
+     * @return the result of decoding this object.
+     */
     @NotNull
     DecodeResult result();
 
+    /**
+     * Updates the decode result of this object. This method is not supposed to be used
+     * by directly and is not a supported api. You may use it if you know what you are doing.
+     *
+     * @param decodeResult the new decode result.
+     * @return the same instance of this class, for chaining
+     */
     @NotNull
     T result(@NotNull DecodeResult decodeResult);
 }

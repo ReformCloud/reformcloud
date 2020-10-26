@@ -28,10 +28,28 @@ import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.http.listener.HttpListenerRegistry;
 import systems.reformcloud.reformcloud2.executor.api.network.server.Server;
 
+/**
+ * Represents a server extension with HTTP support.
+ *
+ * @author derklaro
+ * @since 25. October 200
+ */
 public interface HttpServer extends Server {
 
+    /**
+     * Binds the HTTP server to the given host and port.
+     *
+     * @param host the host to bind to.
+     * @param port the port to bind to.
+     * @return if the server was bound successfully
+     */
     boolean bind(@NotNull String host, int port);
 
+    /**
+     * Get the listener registry this server is using.
+     *
+     * @return the listener registry this server is using.
+     */
     @NotNull
     HttpListenerRegistry getListenerRegistry();
 }
