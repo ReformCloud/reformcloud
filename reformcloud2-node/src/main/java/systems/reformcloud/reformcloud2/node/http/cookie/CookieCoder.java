@@ -44,13 +44,12 @@ public final class CookieCoder {
 
     @NotNull
     public static Set<HttpCookie> decode(@NotNull String header) {
-        return ServerCookieDecoder.LAX.decode(header).stream().map(cookie -> HttpCookie.cookie(cookie.name())
+        return ServerCookieDecoder.LAX.decode(header).stream().map(cookie -> HttpCookie.cookie(cookie.name(), cookie.value())
             .httpOnly(cookie.isHttpOnly())
             .domain(cookie.domain())
             .maxAge(cookie.maxAge())
             .path(cookie.path())
             .secure(cookie.isSecure())
-            .value(cookie.value())
             .wrap(cookie.wrap())
         ).collect(Collectors.toSet());
     }
