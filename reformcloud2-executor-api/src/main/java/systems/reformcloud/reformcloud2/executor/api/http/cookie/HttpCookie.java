@@ -140,7 +140,7 @@ public interface HttpCookie {
 
     /**
      * Sets the maximum age of this cookie in seconds. If a max age of {@link HttpCookie#UNDEFINED_MAX_AGE} is
-     * specified the cookie will be removed if the browser gets closed. If a max age of {@link 0} is specified
+     * specified the cookie will be removed if the browser gets closed. If a max age of {@code 0} is specified
      * the cookie will be removed immediately from the browser.
      *
      * @param maxAge the maximum age of this cookie in seconds.
