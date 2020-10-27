@@ -31,13 +31,44 @@ import systems.reformcloud.reformcloud2.executor.api.http.websocket.listener.Soc
 
 import java.util.concurrent.Future;
 
+/**
+ * Represents an extended {@link HttpRequestSource} which has some more util methods
+ * to work with web socket frames.
+ *
+ * @author derklaro
+ * @since 27. October 2020
+ */
 public interface SocketFrameSource extends HttpRequestSource {
 
+    /**
+     * Sends a web socket frame to this source.
+     *
+     * @param socketFrame the frame to send.
+     * @return a future completed when the I/O thread performed the write action.
+     */
     @NotNull
     Future<Void> sendFrame(@NotNull SocketFrame<?> socketFrame);
 
+    /**
+     * Get the listener registry of the web frame listeners which are handled if sent by the client.
+     *
+     * @return the listener registry of the web frame listeners.
+     */
     @NotNull
     SocketFrameListenerRegistry listenerRegistry();
 
+    /**
+     * Closes the connection to the client by sending a close message before
+     * actually closing the channel.
+     *
+     * @param statusCode the close status reason code.
+     * @param statusText the close status reason text or empty.
+     */
     void close(int statusCode, @NotNull String statusText);
+
+    /**
+     * Closes the connection by sending a default {@code NORMAL_CLOSE} with the
+     * status {@code 1000} and the message {@code bye}.
+     */
+    @Override void close();
 }

@@ -26,14 +26,36 @@ package systems.reformcloud.reformcloud2.executor.api.http.websocket;
 
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * A socket frame which holds a binary encoded UTF-8 string.
+ *
+ * @param <T> the type of the implementing api
+ * @author derklaro
+ * @see SocketFrame#textFrame(String)
+ * @since 27. October 2020
+ */
 public interface TextSocketFrame<T extends TextSocketFrame<T>> extends SocketFrame<T> {
 
+    /**
+     * Get the text data of this frame.
+     *
+     * @return the text data of this frame.
+     */
     @NotNull
     String text();
 
+    /**
+     * Sets the text data of this frame.
+     *
+     * @param text the text data of this frame.
+     * @return the same instance of this class, for chaining
+     */
     @NotNull
     T text(@NotNull String text);
 
+    /**
+     * {@inheritDoc}
+     */
     @NotNull
     @Override
     default SocketFrameType type() {

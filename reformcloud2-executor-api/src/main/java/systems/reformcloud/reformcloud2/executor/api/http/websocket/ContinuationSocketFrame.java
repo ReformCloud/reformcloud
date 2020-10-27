@@ -26,14 +26,37 @@ package systems.reformcloud.reformcloud2.executor.api.http.websocket;
 
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Web socket continuation is frame contains text or binary data resuming the last
+ * sent fragment if a message is split up into multiple fragments.
+ *
+ * @param <T> the type of the implementing api
+ * @author derklaro
+ * @see SocketFrame#continuationFrame(String)
+ * @since 27. October 2020
+ */
 public interface ContinuationSocketFrame<T extends ContinuationSocketFrame<T>> extends SocketFrame<T> {
 
+    /**
+     * Get the text data in this frame.
+     *
+     * @return the text data in this frame.
+     */
     @NotNull
     String text();
 
+    /**
+     * Sets the text data in this frame.
+     *
+     * @param text the text data in this frame.
+     * @return the same instance of this class, for chaining
+     */
     @NotNull
     T text(@NotNull String text);
 
+    /**
+     * {@inheritDoc}
+     */
     @NotNull
     @Override
     default SocketFrameType type() {

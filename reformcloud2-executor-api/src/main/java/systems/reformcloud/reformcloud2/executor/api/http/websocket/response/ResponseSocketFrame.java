@@ -28,13 +28,33 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.http.websocket.SocketFrame;
 
+/**
+ * Represents a response to a frame sent to the server holding the actual
+ * response and some more information how to interact with the next listeners
+ * and the network connection to the client.
+ *
+ * @param <T> the type of the implementing api
+ * @author derklaro
+ * @since 27. October 2020
+ */
 public interface ResponseSocketFrame<T extends ResponseSocketFrame<T>> {
 
+    /**
+     * Creates a new response which uses as message the given socket frame.
+     *
+     * @param responseFrame the response frame which should be sent to the client.
+     * @return the created response frame.
+     */
     @Contract(value = "_ -> new", pure = true)
     static @NotNull ResponseSocketFrame<?> response(@NotNull SocketFrame<?> responseFrame) {
         return ResponseSocketFrameFactory.DEFAULT.get().forFrame(responseFrame);
     }
 
+    /**
+     * Get the response which should be sent to the client.
+     *
+     * @return the response which should be sent to the client.
+     */
     @NotNull
     SocketFrame<?> response();
 

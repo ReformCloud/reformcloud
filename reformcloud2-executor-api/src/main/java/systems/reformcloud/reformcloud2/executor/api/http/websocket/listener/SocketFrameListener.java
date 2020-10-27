@@ -26,11 +26,37 @@ package systems.reformcloud.reformcloud2.executor.api.http.websocket.listener;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import systems.reformcloud.reformcloud2.executor.api.http.websocket.SocketFrame;
 import systems.reformcloud.reformcloud2.executor.api.http.websocket.request.RequestSocketFrame;
 import systems.reformcloud.reformcloud2.executor.api.http.websocket.response.ResponseSocketFrame;
 
+/**
+ * A listener which handles socket frames sent by a client to the server. The priority
+ * this listener has compared to other can be set by adding a {@link systems.reformcloud.reformcloud2.executor.api.http.listener.Priority}
+ * annotation to the {@link #handleFrame(RequestSocketFrame)} method. By default this
+ * priority will be {@code 0}. You may also specify the frame types this handler
+ * handles by adding a {@link FrameTypes} annotation to the {@link #handleFrame(RequestSocketFrame)}
+ * method. By default the handler handles all frame types sent by the client.
+ *
+ * @author derklaro
+ * @see SocketFrameListenerRegistry#registerListeners(SocketFrameListener...)
+ * @since 27. October 2020
+ */
 public interface SocketFrameListener {
 
+    /**
+     * Handles a web socket frame and can be casted to the correct type after receiving. The answer
+     * (if there is one) to the message can be build by using {@link ResponseSocketFrame#response(SocketFrame)}
+     * which creates a new {@link ResponseSocketFrame} holding the socket frame of the response for example
+     * created by {@link SocketFrame#textFrame(String)} and some listener information which can change the
+     * way how the next listeners are called/the connection is handled. The invocation of {@link ResponseSocketFrame#closeAfterSent(boolean)}
+     * causes the connection to be closed after sending the response to the message. The invocation of
+     * {@link ResponseSocketFrame#lastHandler(boolean)} causes that the handler is the last handler and afterwards
+     * no more listeners are called.
+     *
+     * @param frame the received frame from the client.
+     * @return the response to the received frame or {@code null} if there is no response.
+     */
     @Nullable
     ResponseSocketFrame<?> handleFrame(@NotNull RequestSocketFrame frame);
 }

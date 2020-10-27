@@ -27,24 +27,73 @@ package systems.reformcloud.reformcloud2.executor.api.http.websocket;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * Represents a socket frame which indicates the close of the connection.
+ *
+ * @param <T> the type of the implementing api
+ * @author derklaro
+ * @see SocketFrame#closeFrame(int, String)
+ * @since 27. October 2020
+ */
 public interface CloseSocketFrame<T extends CloseSocketFrame<T>> extends SocketFrame<T> {
 
+    /**
+     * Get the status code why the connection was closed.
+     *
+     * @return the status code why the connection was closed.
+     */
     int statusCode();
 
+    /**
+     * Sets the status code why the connection was closed.
+     *
+     * @param statusCode the status code why the connection was closed.
+     * @return the same instance of this class, for chaining
+     */
     @NotNull
     T statusCode(int statusCode);
 
+    /**
+     * Get the status code as a formatted object.
+     *
+     * @return the status code as a formatted object.
+     */
     @Nullable
     default CloseStatus status() {
         return CloseStatus.fromCode(this.statusCode());
     }
 
+    /**
+     * Sets the status code why the connection was closed.
+     *
+     * @param status the status why the connection was closed.
+     * @return the same instance of this class, for chaining
+     */
+    @NotNull
+    default T status(@NotNull CloseStatus status) {
+        return this.statusCode(status.code());
+    }
+
+    /**
+     * Get the reason text why the connection was closed or empty if there was no reason provided.
+     *
+     * @return the reason why the connection were closed.
+     */
     @NotNull
     String reasonText();
 
+    /**
+     * Sets the reason why the connection was closed or empty if there is no reason.
+     *
+     * @param reasonText the reason why the connection was closed.
+     * @return the same instance of this class, for chaining
+     */
     @NotNull
     T reasonText(@NotNull String reasonText);
 
+    /**
+     * {@inheritDoc}
+     */
     @NotNull
     @Override
     default SocketFrameType type() {

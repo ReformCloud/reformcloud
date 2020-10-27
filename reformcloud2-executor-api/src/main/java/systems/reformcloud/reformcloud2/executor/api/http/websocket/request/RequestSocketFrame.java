@@ -27,11 +27,28 @@ package systems.reformcloud.reformcloud2.executor.api.http.websocket.request;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.http.websocket.SocketFrame;
 
+/**
+ * Represents a request frame which holds two information: the actual frame
+ * sent to the server and the source of the frame.
+ *
+ * @author derklaro
+ * @since 27. October 2020
+ */
 public interface RequestSocketFrame {
 
+    /**
+     * Get the request frame the client sent to the server.
+     *
+     * @return the request frame the client sent to the server.
+     */
     @NotNull
     SocketFrame<?> request();
 
+    /**
+     * Get the source the frame was sent from.
+     *
+     * @return the source the frame was sent from.
+     */
     @NotNull
     SocketFrameSource source();
 }

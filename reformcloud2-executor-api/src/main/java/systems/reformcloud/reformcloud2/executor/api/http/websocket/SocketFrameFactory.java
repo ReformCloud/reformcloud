@@ -24,23 +24,62 @@
  */
 package systems.reformcloud.reformcloud2.executor.api.http.websocket;
 
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.atomic.AtomicReference;
 
+/**
+ * Represents a factory for frame factories.
+ *
+ * @author derklaro
+ * @since 27. October 2020
+ */
 public abstract class SocketFrameFactory {
-
+    /**
+     * The default frame factory.
+     */
+    @ApiStatus.Internal
     protected static final AtomicReference<SocketFrameFactory> DEFAULT = new AtomicReference<>();
 
+    /**
+     * Creates a new socket frame for the given type. The returned implementation
+     * is not a sub type of for example a {@link CloseSocketFrame} even if as the
+     * {@code type} {@link SocketFrameType#CLOSE} is provided. For specific
+     * implementation use {@link #close(int, String)}, {@link #continuation(String)}
+     * and {@link #text(String)}.
+     *
+     * @param frameType the type of socket frame to create.
+     * @return the created socket frame
+     */
     @NotNull
     public abstract SocketFrame<?> forType(@NotNull SocketFrameType frameType);
 
+    /**
+     * Creates a new close socket frame.
+     *
+     * @param status     the status code why the connection was closed.
+     * @param statusText the reason text why the connection was closed or empty.
+     * @return the created close socket frame.
+     */
     @NotNull
     public abstract CloseSocketFrame<?> close(int status, @NotNull String statusText);
 
+    /**
+     * Creates a new continuation frame.
+     *
+     * @param text the text of the frame or empty if a binary continuation frame.
+     * @return the created continuation frame.
+     */
     @NotNull
     public abstract ContinuationSocketFrame<?> continuation(@NotNull String text);
 
+    /**
+     * Creates a new text frame.
+     *
+     * @param text the text data of the frame
+     * @return the created text socket frame
+     */
     @NotNull
     public abstract TextSocketFrame<?> text(@NotNull String text);
 }

@@ -24,6 +24,7 @@
  */
 package systems.reformcloud.reformcloud2.executor.api.http.reponse;
 
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.http.Headers;
 import systems.reformcloud.reformcloud2.executor.api.http.HttpVersion;
@@ -42,6 +43,7 @@ public abstract class HttpServerResponseFactory {
     /**
      * The default response factory.
      */
+    @ApiStatus.Internal
     protected static final AtomicReference<HttpServerResponseFactory> DEFAULT_FACTORY = new AtomicReference<>();
 
     /**
