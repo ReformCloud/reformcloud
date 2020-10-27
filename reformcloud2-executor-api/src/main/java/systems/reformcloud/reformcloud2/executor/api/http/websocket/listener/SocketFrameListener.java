@@ -32,5 +32,5 @@ import systems.reformcloud.reformcloud2.executor.api.http.websocket.response.Res
 public interface SocketFrameListener {
 
     @Nullable
-    ResponseSocketFrame<?> handleFrame(@NotNull RequestSocketFrame<?> frame);
+    ResponseSocketFrame<?> handleFrame(@NotNull RequestSocketFrame frame);
 }
