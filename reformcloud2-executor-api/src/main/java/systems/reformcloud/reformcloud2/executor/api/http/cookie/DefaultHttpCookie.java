@@ -25,6 +25,7 @@
 package systems.reformcloud.reformcloud2.executor.api.http.cookie;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 final class DefaultHttpCookie implements HttpCookie {
 
@@ -69,23 +70,23 @@ final class DefaultHttpCookie implements HttpCookie {
     }
 
     @Override
-    public @NotNull String domain() {
+    public @Nullable String domain() {
         return this.domain;
     }
 
     @Override
-    public @NotNull HttpCookie domain(@NotNull String domain) {
+    public @NotNull HttpCookie domain(@Nullable String domain) {
         this.domain = domain;
         return this;
     }
 
     @Override
-    public @NotNull String path() {
+    public @Nullable String path() {
         return this.path;
     }
 
     @Override
-    public @NotNull HttpCookie path(@NotNull String path) {
+    public @NotNull HttpCookie path(@Nullable String path) {
         this.path = path;
         return this;
     }
