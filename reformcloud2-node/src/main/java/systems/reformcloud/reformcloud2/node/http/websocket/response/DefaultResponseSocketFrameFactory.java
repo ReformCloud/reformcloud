@@ -31,11 +31,11 @@ import systems.reformcloud.reformcloud2.executor.api.http.websocket.response.Res
 
 public class DefaultResponseSocketFrameFactory extends ResponseSocketFrameFactory {
 
-    public static void init() {
-        ResponseSocketFrameFactory.DEFAULT.set(new DefaultResponseSocketFrameFactory());
+    private DefaultResponseSocketFrameFactory() {
     }
 
-    private DefaultResponseSocketFrameFactory() {
+    public static void init() {
+        ResponseSocketFrameFactory.DEFAULT.set(new DefaultResponseSocketFrameFactory());
     }
 
     @Override

@@ -62,6 +62,46 @@ public class WebSocketFrameHandler extends SimpleChannelInboundHandler<WebSocket
         this.socketFrameSource = socketFrameSource;
     }
 
+    @NotNull
+    private static SocketFrame<?> fromNetty(WebSocketFrame frame) {
+        if (frame instanceof TextWebSocketFrame) {
+            return new DefaultTextSocketFrame(frame.rsv(), frame.isFinalFragment(), ((TextWebSocketFrame) frame).text());
+        } else if (frame instanceof CloseWebSocketFrame) {
+            CloseWebSocketFrame closeFrame = (CloseWebSocketFrame) frame;
+            return new DefaultCloseSocketFrame(frame.rsv(), frame.isFinalFragment(), closeFrame.statusCode(), closeFrame.reasonText());
+        } else if (frame instanceof ContinuationWebSocketFrame) {
+            return new DefaultContinuationSocketFrame(frame.rsv(), frame.isFinalFragment(), ((ContinuationWebSocketFrame) frame).text());
+        } else if (frame instanceof PingWebSocketFrame) {
+            return new TypedSocketFrame(SocketFrameType.PING, frame.rsv(), frame.isFinalFragment(), BinaryUtils.binaryArrayFromByteBuf(frame));
+        } else if (frame instanceof PongWebSocketFrame) {
+            return new TypedSocketFrame(SocketFrameType.PONG, frame.rsv(), frame.isFinalFragment(), BinaryUtils.binaryArrayFromByteBuf(frame));
+        } else if (frame instanceof BinaryWebSocketFrame) {
+            return new TypedSocketFrame(SocketFrameType.BINARY, frame.rsv(), frame.isFinalFragment(), BinaryUtils.binaryArrayFromByteBuf(frame));
+        } else {
+            throw new IllegalStateException("Illegal/unimplemented socket frame type: " + frame.getClass().getName());
+        }
+    }
+
+    @Contract("_ -> new")
+    public static @NotNull WebSocketFrame toNetty(@NotNull SocketFrame<?> frame) {
+        switch (frame.type()) {
+            case TEXT:
+                return new TextWebSocketFrame(frame.finalFragment(), frame.rsv(), Unpooled.wrappedBuffer(frame.content()));
+            case PING:
+                return new PingWebSocketFrame(frame.finalFragment(), frame.rsv(), Unpooled.wrappedBuffer(frame.content()));
+            case PONG:
+                return new PongWebSocketFrame(frame.finalFragment(), frame.rsv(), Unpooled.wrappedBuffer(frame.content()));
+            case BINARY:
+                return new BinaryWebSocketFrame(frame.finalFragment(), frame.rsv(), Unpooled.wrappedBuffer(frame.content()));
+            case CLOSE:
+                return new CloseWebSocketFrame(frame.finalFragment(), frame.rsv(), Unpooled.wrappedBuffer(frame.content()));
+            case CONTINUATION:
+                return new ContinuationWebSocketFrame(frame.finalFragment(), frame.rsv(), Unpooled.wrappedBuffer(frame.content()));
+            default:
+                throw new IllegalStateException("Unsupported frame type: " + frame.type());
+        }
+    }
+
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         if (!(cause instanceof IOException)) {
@@ -101,46 +141,6 @@ public class WebSocketFrameHandler extends SimpleChannelInboundHandler<WebSocket
                     return;
                 }
             }
-        }
-    }
-
-    @NotNull
-    private static SocketFrame<?> fromNetty(WebSocketFrame frame) {
-        if (frame instanceof TextWebSocketFrame) {
-            return new DefaultTextSocketFrame(frame.rsv(), frame.isFinalFragment(), ((TextWebSocketFrame) frame).text());
-        } else if (frame instanceof CloseWebSocketFrame) {
-            CloseWebSocketFrame closeFrame = (CloseWebSocketFrame) frame;
-            return new DefaultCloseSocketFrame(frame.rsv(), frame.isFinalFragment(), closeFrame.statusCode(), closeFrame.reasonText());
-        } else if (frame instanceof ContinuationWebSocketFrame) {
-            return new DefaultContinuationSocketFrame(frame.rsv(), frame.isFinalFragment(), ((ContinuationWebSocketFrame) frame).text());
-        } else if (frame instanceof PingWebSocketFrame) {
-            return new TypedSocketFrame(SocketFrameType.PING, frame.rsv(), frame.isFinalFragment(), BinaryUtils.binaryArrayFromByteBuf(frame));
-        } else if (frame instanceof PongWebSocketFrame) {
-            return new TypedSocketFrame(SocketFrameType.PONG, frame.rsv(), frame.isFinalFragment(), BinaryUtils.binaryArrayFromByteBuf(frame));
-        } else if (frame instanceof BinaryWebSocketFrame) {
-            return new TypedSocketFrame(SocketFrameType.BINARY, frame.rsv(), frame.isFinalFragment(), BinaryUtils.binaryArrayFromByteBuf(frame));
-        } else {
-            throw new IllegalStateException("Illegal/unimplemented socket frame type: " + frame.getClass().getName());
-        }
-    }
-
-    @Contract("_ -> new")
-    public static @NotNull WebSocketFrame toNetty(@NotNull SocketFrame<?> frame) {
-        switch (frame.type()) {
-            case TEXT:
-                return new TextWebSocketFrame(frame.finalFragment(), frame.rsv(), Unpooled.wrappedBuffer(frame.content()));
-            case PING:
-                return new PingWebSocketFrame(frame.finalFragment(), frame.rsv(), Unpooled.wrappedBuffer(frame.content()));
-            case PONG:
-                return new PongWebSocketFrame(frame.finalFragment(), frame.rsv(), Unpooled.wrappedBuffer(frame.content()));
-            case BINARY:
-                return new BinaryWebSocketFrame(frame.finalFragment(), frame.rsv(), Unpooled.wrappedBuffer(frame.content()));
-            case CLOSE:
-                return new CloseWebSocketFrame(frame.finalFragment(), frame.rsv(), Unpooled.wrappedBuffer(frame.content()));
-            case CONTINUATION:
-                return new ContinuationWebSocketFrame(frame.finalFragment(), frame.rsv(), Unpooled.wrappedBuffer(frame.content()));
-            default:
-                throw new IllegalStateException("Unsupported frame type: " + frame.type());
         }
     }
 }

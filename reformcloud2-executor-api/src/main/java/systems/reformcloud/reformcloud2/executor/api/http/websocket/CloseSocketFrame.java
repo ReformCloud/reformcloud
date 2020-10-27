@@ -176,10 +176,6 @@ public interface CloseSocketFrame<T extends CloseSocketFrame<T>> extends SocketF
             this.code = code;
         }
 
-        public int code() {
-            return this.code;
-        }
-
         @Nullable
         public static CloseStatus fromCode(int code) {
             for (CloseStatus value : VALUES) {
@@ -189,6 +185,10 @@ public interface CloseSocketFrame<T extends CloseSocketFrame<T>> extends SocketF
             }
 
             return null;
+        }
+
+        public int code() {
+            return this.code;
         }
     }
 }

@@ -34,11 +34,11 @@ import systems.reformcloud.reformcloud2.executor.api.http.websocket.TextSocketFr
 
 public final class DefaultSocketFrameFactory extends SocketFrameFactory {
 
-    public static void init() {
-        SocketFrameFactory.DEFAULT.set(new DefaultSocketFrameFactory());
+    private DefaultSocketFrameFactory() {
     }
 
-    private DefaultSocketFrameFactory() {
+    public static void init() {
+        SocketFrameFactory.DEFAULT.set(new DefaultSocketFrameFactory());
     }
 
     @Override
