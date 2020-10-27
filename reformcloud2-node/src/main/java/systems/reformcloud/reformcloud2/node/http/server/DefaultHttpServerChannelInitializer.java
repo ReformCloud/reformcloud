@@ -28,8 +28,9 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
+import io.netty.handler.codec.http.cors.CorsConfigBuilder;
+import io.netty.handler.codec.http.cors.CorsHandler;
 import systems.reformcloud.reformcloud2.executor.api.http.listener.HttpListenerRegistry;
-import systems.reformcloud.reformcloud2.node.http.request.DefaultHttpRequestSource;
 
 public class DefaultHttpServerChannelInitializer extends ChannelInitializer<Channel> {
 
@@ -44,6 +45,7 @@ public class DefaultHttpServerChannelInitializer extends ChannelInitializer<Chan
         ch.pipeline()
             .addLast(ServerConstants.HTTP_SERVER_CODEC, new HttpServerCodec())
             .addLast(ServerConstants.HTTP_OBJECT_AGGREGATOR, new HttpObjectAggregator(Short.MAX_VALUE))
-            .addLast(ServerConstants.HTTP_HANDLER, new DefaultHttpHandler(new DefaultHttpRequestSource(ch), this.listenerRegistry));
+            .addLast(ServerConstants.HTTP_CORS_HANDLER, new CorsHandler(CorsConfigBuilder.forAnyOrigin().allowNullOrigin().allowCredentials().build()))
+            .addLast(ServerConstants.HTTP_HANDLER, new DefaultHttpHandler(this.listenerRegistry));
     }
 }
