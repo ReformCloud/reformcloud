@@ -37,6 +37,8 @@ import systems.reformcloud.reformcloud2.executor.api.network.NetworkUtil;
 import systems.reformcloud.reformcloud2.executor.api.network.transport.EventLoopGroupType;
 import systems.reformcloud.reformcloud2.node.http.listener.DefaultHttpListenerRegistry;
 import systems.reformcloud.reformcloud2.node.http.response.DefaultHttpServerResponseFactory;
+import systems.reformcloud.reformcloud2.node.http.websocket.DefaultSocketFrameFactory;
+import systems.reformcloud.reformcloud2.node.http.websocket.response.DefaultResponseSocketFrameFactory;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -51,7 +53,9 @@ public class DefaultHttpServer implements HttpServer {
     private final EventLoopGroup workerGroup = NetworkUtil.TRANSPORT_TYPE.getEventLoopGroup(EventLoopGroupType.WORKER);
 
     public DefaultHttpServer() {
+        DefaultSocketFrameFactory.init();
         DefaultHttpServerResponseFactory.init();
+        DefaultResponseSocketFrameFactory.init();
     }
 
     @Override

@@ -22,17 +22,48 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.node.http.server;
+package systems.reformcloud.reformcloud2.executor.api.http.websocket;
 
-public final class ServerConstants {
+import org.jetbrains.annotations.NotNull;
 
-    public static final String HTTP_SERVER_CODEC = "http-server-coded";
-    public static final String HTTP_OBJECT_AGGREGATOR = "http-object-aggregator";
-    public static final String HTTP_CORS_HANDLER = "http-cors-handler";
-    public static final String HTTP_HANDLER = "http-handler";
-    public static final String WEB_SOCKET_HANDLER = "web-socket-handler";
+public interface SocketFrame<T extends SocketFrame<T>> {
 
-    private ServerConstants() {
-        throw new UnsupportedOperationException();
+    @NotNull
+    static SocketFrame<?> typedFrame(@NotNull SocketFrameType type) {
+        return SocketFrameFactory.DEFAULT.get().forType(type);
     }
+
+    @NotNull
+    static CloseSocketFrame<?> closeFrame(int status, @NotNull String statusText) {
+        return SocketFrameFactory.DEFAULT.get().close(status, statusText);
+    }
+
+    @NotNull
+    static ContinuationSocketFrame<?> continuationFrame(@NotNull String text) {
+        return SocketFrameFactory.DEFAULT.get().continuation(text);
+    }
+
+    @NotNull
+    static TextSocketFrame<?> textFrame(@NotNull String text) {
+        return SocketFrameFactory.DEFAULT.get().text(text);
+    }
+
+    @NotNull
+    byte[] content();
+
+    @NotNull
+    T content(@NotNull byte[] content);
+
+    boolean finalFragment();
+
+    @NotNull
+    T finalFragment(boolean finalFragment);
+
+    int rsv();
+
+    @NotNull
+    T rsv(int rsv);
+
+    @NotNull
+    SocketFrameType type();
 }

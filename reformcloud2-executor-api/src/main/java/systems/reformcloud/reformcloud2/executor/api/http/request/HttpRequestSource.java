@@ -25,9 +25,11 @@
 package systems.reformcloud.reformcloud2.executor.api.http.request;
 
 import org.jetbrains.annotations.NotNull;
+import systems.reformcloud.reformcloud2.executor.api.http.websocket.request.SocketFrameSource;
 
 import java.io.Closeable;
 import java.net.SocketAddress;
+import java.util.Optional;
 
 /**
  * Represents a source of a HTTP connection.
@@ -99,6 +101,17 @@ public interface HttpRequestSource extends Closeable {
      */
     @NotNull
     SocketAddress clientAddress();
+
+    /**
+     * Upgrades this HTTP request source to a socket frame source. If the client does not send
+     * a version header the version {@code 00} is assumed. If the client sends an unsupported
+     * version as header, this method will return an empty optional as we cannot decode the
+     * messages sent by the client.
+     *
+     * @return the upgraded socket frame source build on top of this HTTP request source.
+     */
+    @NotNull
+    Optional<SocketFrameSource> upgrade();
 
     /**
      * Closes the connection to this source.

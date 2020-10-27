@@ -22,17 +22,17 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.node.http.server;
+package systems.reformcloud.reformcloud2.executor.api.http.websocket.response;
 
-public final class ServerConstants {
+import org.jetbrains.annotations.NotNull;
+import systems.reformcloud.reformcloud2.executor.api.http.websocket.SocketFrame;
 
-    public static final String HTTP_SERVER_CODEC = "http-server-coded";
-    public static final String HTTP_OBJECT_AGGREGATOR = "http-object-aggregator";
-    public static final String HTTP_CORS_HANDLER = "http-cors-handler";
-    public static final String HTTP_HANDLER = "http-handler";
-    public static final String WEB_SOCKET_HANDLER = "web-socket-handler";
+import java.util.concurrent.atomic.AtomicReference;
 
-    private ServerConstants() {
-        throw new UnsupportedOperationException();
-    }
+public abstract class ResponseSocketFrameFactory {
+
+    protected static final AtomicReference<ResponseSocketFrameFactory> DEFAULT = new AtomicReference<>();
+
+    @NotNull
+    public abstract ResponseSocketFrame<?> forFrame(@NotNull SocketFrame<?> socketFrame);
 }

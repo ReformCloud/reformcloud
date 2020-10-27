@@ -22,17 +22,37 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.node.http.server;
+package systems.reformcloud.reformcloud2.node.http.websocket.listener;
 
-public final class ServerConstants {
+import org.jetbrains.annotations.NotNull;
+import systems.reformcloud.reformcloud2.executor.api.http.websocket.SocketFrameType;
+import systems.reformcloud.reformcloud2.executor.api.http.websocket.listener.SocketFrameListener;
+import systems.reformcloud.reformcloud2.executor.api.http.websocket.listener.SocketFrameListenerRegistryEntry;
 
-    public static final String HTTP_SERVER_CODEC = "http-server-coded";
-    public static final String HTTP_OBJECT_AGGREGATOR = "http-object-aggregator";
-    public static final String HTTP_CORS_HANDLER = "http-cors-handler";
-    public static final String HTTP_HANDLER = "http-handler";
-    public static final String WEB_SOCKET_HANDLER = "web-socket-handler";
+final class DefaultSocketFrameListenerRegistryEntry implements SocketFrameListenerRegistryEntry {
 
-    private ServerConstants() {
-        throw new UnsupportedOperationException();
+    private final SocketFrameListener listener;
+    private final SocketFrameType[] socketFrameType;
+    private final int priority;
+
+    DefaultSocketFrameListenerRegistryEntry(SocketFrameListener listener, SocketFrameType[] socketFrameType, int priority) {
+        this.listener = listener;
+        this.socketFrameType = socketFrameType;
+        this.priority = priority;
+    }
+
+    @Override
+    public @NotNull SocketFrameListener getListener() {
+        return this.listener;
+    }
+
+    @Override
+    public @NotNull SocketFrameType[] getHandlingFrameTypes() {
+        return this.socketFrameType;
+    }
+
+    @Override
+    public int priority() {
+        return this.priority;
     }
 }

@@ -45,12 +45,13 @@ import systems.reformcloud.reformcloud2.executor.api.http.listener.HttpListenerR
 import systems.reformcloud.reformcloud2.executor.api.http.listener.HttpListenerRegistryEntry;
 import systems.reformcloud.reformcloud2.executor.api.http.reponse.ListeningHttpServerResponse;
 import systems.reformcloud.reformcloud2.executor.api.http.request.HttpRequest;
-import systems.reformcloud.reformcloud2.executor.api.http.request.HttpRequestSource;
 import systems.reformcloud.reformcloud2.executor.api.http.request.RequestMethod;
 import systems.reformcloud.reformcloud2.executor.api.utility.StringUtil;
 import systems.reformcloud.reformcloud2.node.http.DefaultHeaders;
 import systems.reformcloud.reformcloud2.node.http.cookie.CookieCoder;
 import systems.reformcloud.reformcloud2.node.http.request.DefaultHttpRequest;
+import systems.reformcloud.reformcloud2.node.http.request.DefaultHttpRequestSource;
+import systems.reformcloud.reformcloud2.node.http.utils.BinaryUtils;
 
 import java.io.IOException;
 import java.net.URI;
@@ -61,11 +62,9 @@ import java.util.Map;
 
 public class DefaultHttpHandler extends SimpleChannelInboundHandler<io.netty.handler.codec.http.HttpRequest> {
 
-    private final HttpRequestSource requestSource;
     private final HttpListenerRegistry registry;
 
-    public DefaultHttpHandler(HttpRequestSource requestSource, HttpListenerRegistry registry) {
-        this.requestSource = requestSource;
+    public DefaultHttpHandler(HttpListenerRegistry registry) {
         this.registry = registry;
     }
 
@@ -161,13 +160,7 @@ public class DefaultHttpHandler extends SimpleChannelInboundHandler<io.netty.han
 
     @NotNull
     private static byte[] readBodyFromRequest(@NotNull FullHttpRequest request) {
-        if (request.content().hasArray()) {
-            return request.content().array();
-        } else {
-            byte[] body = new byte[request.content().readableBytes()];
-            request.content().getBytes(request.content().readerIndex(), body);
-            return body;
-        }
+        return BinaryUtils.binaryArrayFromByteBuf(request);
     }
 
     @Override
@@ -214,7 +207,7 @@ public class DefaultHttpHandler extends SimpleChannelInboundHandler<io.netty.han
                     new DefaultHeaders(msg.headers()),
                     msg.decoderResult().isSuccess() ? DecodeResult.success() : msg.decoderResult().isFailure()
                         ? DecodeResult.result(msg.decoderResult().cause()) : DecodeResult.unfinished(),
-                    this.requestSource,
+                    new DefaultHttpRequestSource(ctx.channel(), msg),
                     fromNetty(msg.method()),
                     msg.uri(),
                     path,

@@ -22,17 +22,32 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.node.http.server;
+package systems.reformcloud.reformcloud2.executor.api.http.websocket.listener;
 
-public final class ServerConstants {
+import org.jetbrains.annotations.NotNull;
+import systems.reformcloud.reformcloud2.executor.api.http.websocket.SocketFrameType;
 
-    public static final String HTTP_SERVER_CODEC = "http-server-coded";
-    public static final String HTTP_OBJECT_AGGREGATOR = "http-object-aggregator";
-    public static final String HTTP_CORS_HANDLER = "http-cors-handler";
-    public static final String HTTP_HANDLER = "http-handler";
-    public static final String WEB_SOCKET_HANDLER = "web-socket-handler";
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-    private ServerConstants() {
-        throw new UnsupportedOperationException();
-    }
+/**
+ * Specifies the socket frame types a socket listener handles.
+ *
+ * @author derklaro
+ * @since 27. October 2020
+ */
+@Documented
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface FrameTypes {
+    /**
+     * Get the socket frame types a socket listener handles.
+     *
+     * @return the socket frame types a socket listener handles.
+     */
+    @NotNull
+    SocketFrameType[] value() default {};
 }

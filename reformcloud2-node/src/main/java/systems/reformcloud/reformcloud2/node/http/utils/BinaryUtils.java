@@ -22,17 +22,30 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.node.http.server;
+package systems.reformcloud.reformcloud2.node.http.utils;
 
-public final class ServerConstants {
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufHolder;
+import org.jetbrains.annotations.NotNull;
 
-    public static final String HTTP_SERVER_CODEC = "http-server-coded";
-    public static final String HTTP_OBJECT_AGGREGATOR = "http-object-aggregator";
-    public static final String HTTP_CORS_HANDLER = "http-cors-handler";
-    public static final String HTTP_HANDLER = "http-handler";
-    public static final String WEB_SOCKET_HANDLER = "web-socket-handler";
+public final class BinaryUtils {
 
-    private ServerConstants() {
+    private BinaryUtils() {
         throw new UnsupportedOperationException();
+    }
+
+    @NotNull
+    public static byte[] binaryArrayFromByteBuf(@NotNull ByteBufHolder holder) {
+        return binaryArrayFromByteBuf(holder.content());
+    }
+
+    public static byte[] binaryArrayFromByteBuf(@NotNull ByteBuf holder) {
+        if (holder.hasArray()) {
+            return holder.array();
+        } else {
+            byte[] body = new byte[holder.readableBytes()];
+            holder.getBytes(holder.readerIndex(), body);
+            return body;
+        }
     }
 }
