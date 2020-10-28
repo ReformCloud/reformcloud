@@ -24,8 +24,12 @@
  */
 package systems.reformcloud.reformcloud2.node.http.request;
 
+import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
+import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.HttpRequest;
+import io.netty.handler.codec.http.HttpResponseStatus;
+import io.netty.handler.codec.http.websocketx.WebSocketHandshakeException;
 import io.netty.handler.codec.http.websocketx.WebSocketServerHandshaker;
 import io.netty.handler.codec.http.websocketx.WebSocketServerHandshakerFactory;
 import org.jetbrains.annotations.NotNull;
@@ -37,6 +41,7 @@ import systems.reformcloud.reformcloud2.node.http.websocket.listener.DefaultSock
 import systems.reformcloud.reformcloud2.node.http.websocket.request.DefaultSocketFrameSource;
 
 import java.net.SocketAddress;
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
 public class DefaultHttpRequestSource implements HttpRequestSource {
@@ -106,8 +111,17 @@ public class DefaultHttpRequestSource implements HttpRequestSource {
             // we can handshake with the client so we remove our request header first as netty
             // will add a new one to decode the handshake response of the client.
             this.channel.pipeline().remove(ServerConstants.HTTP_HANDLER);
-            // send the handshake request to the client
-            handshaker.handshake(this.channel, this.request);
+            try {
+                // send the handshake request to the client
+                handshaker.handshake(this.channel, this.request);
+            } catch (WebSocketHandshakeException exception) {
+                this.channel.writeAndFlush(new DefaultFullHttpResponse(
+                    this.request.protocolVersion(),
+                    HttpResponseStatus.OK,
+                    Unpooled.wrappedBuffer(("Unable to upgrade connection: " + exception.getMessage()).getBytes(StandardCharsets.UTF_8))
+                ));
+                return Optional.empty();
+            }
             // Now create the upgraded socket frame source
             SocketFrameSource socketFrameSource = new DefaultSocketFrameSource(this.channel, new DefaultSocketFrameListenerRegistry());
             // Switch the endpoint handler to the websocket handler
