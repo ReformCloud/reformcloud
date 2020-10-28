@@ -26,15 +26,15 @@ package systems.reformcloud.reformcloud2.node.http.websocket.request;
 
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.http.websocket.SocketFrame;
-import systems.reformcloud.reformcloud2.executor.api.http.websocket.request.RequestSocketFrame;
+import systems.reformcloud.reformcloud2.executor.api.http.websocket.request.RequestFrameHolder;
 import systems.reformcloud.reformcloud2.executor.api.http.websocket.request.SocketFrameSource;
 
-public class DefaultRequestSocketFrame implements RequestSocketFrame {
+public class DefaultRequestFrameHolder implements RequestFrameHolder {
 
     private final SocketFrame<?> socketFrame;
     private final SocketFrameSource frameSource;
 
-    public DefaultRequestSocketFrame(SocketFrame<?> socketFrame, SocketFrameSource frameSource) {
+    public DefaultRequestFrameHolder(SocketFrame<?> socketFrame, SocketFrameSource frameSource) {
         this.socketFrame = socketFrame;
         this.frameSource = frameSource;
     }

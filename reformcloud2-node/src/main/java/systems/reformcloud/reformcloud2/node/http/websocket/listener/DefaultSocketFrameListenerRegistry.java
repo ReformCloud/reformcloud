@@ -32,7 +32,7 @@ import systems.reformcloud.reformcloud2.executor.api.http.websocket.listener.Fra
 import systems.reformcloud.reformcloud2.executor.api.http.websocket.listener.SocketFrameListener;
 import systems.reformcloud.reformcloud2.executor.api.http.websocket.listener.SocketFrameListenerRegistry;
 import systems.reformcloud.reformcloud2.executor.api.http.websocket.listener.SocketFrameListenerRegistryEntry;
-import systems.reformcloud.reformcloud2.executor.api.http.websocket.request.RequestSocketFrame;
+import systems.reformcloud.reformcloud2.executor.api.http.websocket.request.RequestFrameHolder;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -49,7 +49,7 @@ public class DefaultSocketFrameListenerRegistry implements SocketFrameListenerRe
     public @NotNull SocketFrameListenerRegistry registerListeners(@NotNull SocketFrameListener... frameListeners) {
         try {
             for (SocketFrameListener listener : frameListeners) {
-                Method handle = listener.getClass().getDeclaredMethod("handleFrame", RequestSocketFrame.class);
+                Method handle = listener.getClass().getDeclaredMethod("handleFrame", RequestFrameHolder.class);
 
                 Priority priority = handle.getAnnotation(Priority.class);
                 int handlerPriority = priority == null ? 0 : priority.value();

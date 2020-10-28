@@ -22,33 +22,46 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package systems.reformcloud.reformcloud2.executor.api.http.websocket.request;
+package systems.reformcloud.reformcloud2.node.http.websocket.response;
 
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.http.websocket.SocketFrame;
+import systems.reformcloud.reformcloud2.executor.api.http.websocket.response.ResponseFrameHolder;
 
-/**
- * Represents a request frame which holds two information: the actual frame
- * sent to the server and the source of the frame.
- *
- * @author derklaro
- * @since 27. October 2020
- */
-public interface RequestSocketFrame {
+public class DefaultResponseFrameHolder implements ResponseFrameHolder<DefaultResponseFrameHolder> {
 
-    /**
-     * Get the request frame the client sent to the server.
-     *
-     * @return the request frame the client sent to the server.
-     */
-    @NotNull
-    SocketFrame<?> request();
+    private final SocketFrame<?> response;
+    private boolean lastHandler;
+    private boolean closeAfterSent;
 
-    /**
-     * Get the source the frame was sent from.
-     *
-     * @return the source the frame was sent from.
-     */
-    @NotNull
-    SocketFrameSource source();
+    public DefaultResponseFrameHolder(SocketFrame<?> response) {
+        this.response = response;
+    }
+
+    @Override
+    public @NotNull SocketFrame<?> response() {
+        return this.response;
+    }
+
+    @Override
+    public boolean lastHandler() {
+        return this.lastHandler;
+    }
+
+    @Override
+    public @NotNull DefaultResponseFrameHolder lastHandler(boolean lastHandler) {
+        this.lastHandler = lastHandler;
+        return this;
+    }
+
+    @Override
+    public boolean closeAfterSent() {
+        return this.closeAfterSent;
+    }
+
+    @Override
+    public @NotNull DefaultResponseFrameHolder closeAfterSent(boolean close) {
+        this.closeAfterSent = close;
+        return this;
+    }
 }

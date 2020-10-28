@@ -26,7 +26,7 @@ package systems.reformcloud.reformcloud2.node.http.websocket.response;
 
 import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.http.websocket.SocketFrame;
-import systems.reformcloud.reformcloud2.executor.api.http.websocket.response.ResponseSocketFrame;
+import systems.reformcloud.reformcloud2.executor.api.http.websocket.response.ResponseFrameHolder;
 import systems.reformcloud.reformcloud2.executor.api.http.websocket.response.ResponseSocketFrameFactory;
 
 public class DefaultResponseSocketFrameFactory extends ResponseSocketFrameFactory {
@@ -39,7 +39,7 @@ public class DefaultResponseSocketFrameFactory extends ResponseSocketFrameFactor
     }
 
     @Override
-    public @NotNull ResponseSocketFrame<?> forFrame(@NotNull SocketFrame<?> socketFrame) {
-        return new DefaultResponseSocketFrame(socketFrame);
+    public @NotNull ResponseFrameHolder<?> forFrame(@NotNull SocketFrame<?> socketFrame) {
+        return new DefaultResponseFrameHolder(socketFrame);
     }
 }

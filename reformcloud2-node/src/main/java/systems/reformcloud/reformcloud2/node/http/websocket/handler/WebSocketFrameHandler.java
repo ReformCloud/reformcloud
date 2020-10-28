@@ -41,15 +41,15 @@ import org.jetbrains.annotations.NotNull;
 import systems.reformcloud.reformcloud2.executor.api.http.websocket.SocketFrame;
 import systems.reformcloud.reformcloud2.executor.api.http.websocket.SocketFrameType;
 import systems.reformcloud.reformcloud2.executor.api.http.websocket.listener.SocketFrameListenerRegistryEntry;
-import systems.reformcloud.reformcloud2.executor.api.http.websocket.request.RequestSocketFrame;
+import systems.reformcloud.reformcloud2.executor.api.http.websocket.request.RequestFrameHolder;
 import systems.reformcloud.reformcloud2.executor.api.http.websocket.request.SocketFrameSource;
-import systems.reformcloud.reformcloud2.executor.api.http.websocket.response.ResponseSocketFrame;
+import systems.reformcloud.reformcloud2.executor.api.http.websocket.response.ResponseFrameHolder;
 import systems.reformcloud.reformcloud2.node.http.utils.BinaryUtils;
 import systems.reformcloud.reformcloud2.node.http.websocket.DefaultCloseSocketFrame;
 import systems.reformcloud.reformcloud2.node.http.websocket.DefaultContinuationSocketFrame;
 import systems.reformcloud.reformcloud2.node.http.websocket.DefaultTextSocketFrame;
 import systems.reformcloud.reformcloud2.node.http.websocket.TypedSocketFrame;
-import systems.reformcloud.reformcloud2.node.http.websocket.request.DefaultRequestSocketFrame;
+import systems.reformcloud.reformcloud2.node.http.websocket.request.DefaultRequestFrameHolder;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -123,21 +123,21 @@ public class WebSocketFrameHandler extends SimpleChannelInboundHandler<WebSocket
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, WebSocketFrame msg) {
-        RequestSocketFrame frame = new DefaultRequestSocketFrame(fromNetty(msg), this.socketFrameSource);
+        RequestFrameHolder frame = new DefaultRequestFrameHolder(fromNetty(msg), this.socketFrameSource);
         for (SocketFrameListenerRegistryEntry listener : this.socketFrameSource.listenerRegistry().getListeners()) {
             if (listener.getHandlingFrameTypes().length != 0 && Arrays.binarySearch(listener.getHandlingFrameTypes(), frame.request().type()) < 0) {
                 continue;
             }
 
-            ResponseSocketFrame<?> responseSocketFrame = listener.getListener().handleFrame(frame);
-            if (responseSocketFrame != null) {
-                ChannelFuture channelFuture = ctx.channel().writeAndFlush(toNetty(responseSocketFrame.response()));
-                if (responseSocketFrame.closeAfterSent()) {
+            ResponseFrameHolder<?> responseFrameHolder = listener.getListener().handleFrame(frame);
+            if (responseFrameHolder != null) {
+                ChannelFuture channelFuture = ctx.channel().writeAndFlush(toNetty(responseFrameHolder.response()));
+                if (responseFrameHolder.closeAfterSent()) {
                     channelFuture.addListener(ChannelFutureListener.CLOSE);
                     return;
                 }
 
-                if (responseSocketFrame.lastHandler()) {
+                if (responseFrameHolder.lastHandler()) {
                     return;
                 }
             }

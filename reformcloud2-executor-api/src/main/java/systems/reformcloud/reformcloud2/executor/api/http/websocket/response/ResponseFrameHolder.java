@@ -37,7 +37,7 @@ import systems.reformcloud.reformcloud2.executor.api.http.websocket.SocketFrame;
  * @author derklaro
  * @since 27. October 2020
  */
-public interface ResponseSocketFrame<T extends ResponseSocketFrame<T>> {
+public interface ResponseFrameHolder<T extends ResponseFrameHolder<T>> {
 
     /**
      * Creates a new response which uses as message the given socket frame.
@@ -46,7 +46,7 @@ public interface ResponseSocketFrame<T extends ResponseSocketFrame<T>> {
      * @return the created response frame.
      */
     @Contract(value = "_ -> new", pure = true)
-    static @NotNull ResponseSocketFrame<?> response(@NotNull SocketFrame<?> responseFrame) {
+    static @NotNull ResponseFrameHolder<?> response(@NotNull SocketFrame<?> responseFrame) {
         return ResponseSocketFrameFactory.DEFAULT.get().forFrame(responseFrame);
     }
 

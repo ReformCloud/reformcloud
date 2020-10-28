@@ -50,5 +50,5 @@ public abstract class ResponseSocketFrameFactory {
      * @return the created response frame.
      */
     @NotNull
-    public abstract ResponseSocketFrame<?> forFrame(@NotNull SocketFrame<?> socketFrame);
+    public abstract ResponseFrameHolder<?> forFrame(@NotNull SocketFrame<?> socketFrame);
 }
